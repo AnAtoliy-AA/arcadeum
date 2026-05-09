@@ -224,9 +224,9 @@ class WalletService {
 1. Conditional `User.findOneAndUpdate({ _id, [currency]: { $gte: amount }}, { $inc: { [currency]: ±amount }})` — the `$gte` guard makes the debit check atomic, eliminating read-then-write races.
 2. `WalletTransaction.create({ ..., balanceAfter: result.[currency] })`.
 
-If step 1 returns `null` on a debit, throw `InsufficientFundsException` (the transaction aborts). If a duplicate `idempotencyKey` collides on step 2, the unique-index error is caught, the prior transaction is fetched and returned, and step 1's mutation is undone (transaction abort) — so a duplicate idempotent call is genuinely a no-op.
+If step 1 returns `null` on a debit, throw `InsufficientFundsException` (the transaction aborts). If a duplicate `idempotencyKey` collides on step 2, the unique-index error is caught, the entire Mongo transaction aborts (undoing the `$inc` from step 1), and a fresh non-transactional read fetches the prior ledger row to return to the caller. The implementation must keep the unique-index violation **inside** the same Mongo transaction as the `$inc` — otherwise a duplicate idempotent call would double-increment the balance. The fetch of the prior row happens after the abort, outside the transaction.
 
-**Socket emit** — on every successful mutation, the service emits `wallet:updated` with payload `{ coins, gems }` to the user's socket room only. Never broadcast.
+**Socket emit** — on every successful mutation, the service emits `wallet:updated` with payload `{ coins, gems }` to the user's socket room only. Never broadcast. The payload is treated as a **trigger only** by both web and mobile clients — neither does optimistic updates from it; both refetch authoritatively after the trigger. Web calls `router.refresh()`; mobile calls `queryClient.invalidateQueries({ queryKey: ['wallet'] })`. This keeps the BE the sole source of truth and avoids two display paths.
 
 ### REST API surface
 
@@ -333,7 +333,7 @@ Duplicate `idempotencyKey` is **not** an error — service catches the unique-in
 
 - `JwtAuthGuard` on every player route; user identity from JWT only.
 - `JwtAuthGuard` + `RolesGuard` with `@Roles('admin')` on every admin route.
-- Wallet schema fields and ledger collection are read-only outside `WalletService`. Enforced by review + lint rule.
+- Wallet schema fields and ledger collection are read-only outside `WalletService`. Enforced by review + an ESLint `no-restricted-syntax` rule. Concrete selector (in the web ESLint config and the BE ESLint config, scoped to exclude `apps/be/src/wallet/**`): `MemberExpression[property.name=/^(coins|gems)$/]` flags any direct read or write of those properties; the service is the only file allowed to use them. The wallet module's own ESLint override unblocks the rule inside `apps/be/src/wallet/`.
 - Admin actions log structured events (`adminUserId`, `targetUserId`, `currency`, `amount`, `reason`, `note`, transaction id) via the existing logger.
 - Socket emit goes only to the user's own room.
 
@@ -385,14 +385,14 @@ Duplicate `idempotencyKey` is **not** an error — service catches the unique-in
 
 ## Edge cases & open questions
 
-| Topic                             | Decision                                                                                                                                                 | Notes                                                                                                           |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| New users (existing accounts)     | Mongoose `default: 0` covers reads. One-time `updateMany` backfill ensures on-disk consistency.                                                          | Runs once on deploy.                                                                                            |
-| User deletion                     | Out of scope for ARC-615. The ledger references `userId`. If user deletion exists or is added later, deletion semantics for the wallet are decided then. | Surface in implementation plan.                                                                                 |
-| Currency rename / addition        | `currency` is a string enum. Adding `'tickets'` is a code-only change plus a `WalletReason` extension. Old ledger rows remain valid.                     | No migration needed.                                                                                            |
-| Reconciliation job                | Out of scope. A nightly job verifying `sum(delta) per (userId, currency) == User.[currency]` can be added later.                                         | Drift would only show up after a transaction-handling bug, which the integration tests are designed to prevent. |
-| Per-day admin caps / fraud limits | Out of scope. Single-transaction `Max(1_000_000)` is the only ceiling.                                                                                   | Add when policy is clearer.                                                                                     |
-| Moderator role access             | Locked out in 615. Widen later if policy says so.                                                                                                        | Easier to widen than narrow.                                                                                    |
+| Topic                             | Decision                                                                                                                                                 | Notes                                                                                                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New users (existing accounts)     | Mongoose `default: 0` covers reads. One-time `updateMany` backfill ensures on-disk consistency.                                                          | Runs once on deploy. Mechanism (module bootstrap vs ops command vs migration) decided in planning — the repo has no migration framework, so module bootstrap is likely simplest. |
+| User deletion                     | Out of scope for ARC-615. The ledger references `userId`. If user deletion exists or is added later, deletion semantics for the wallet are decided then. | Surface in implementation plan.                                                                                                                                                  |
+| Currency rename / addition        | `currency` is a string enum. Adding `'tickets'` is a code-only change plus a `WalletReason` extension. Old ledger rows remain valid.                     | No migration needed.                                                                                                                                                             |
+| Reconciliation job                | Out of scope. A nightly job verifying `sum(delta) per (userId, currency) == User.[currency]` can be added later.                                         | Drift would only show up after a transaction-handling bug, which the integration tests are designed to prevent.                                                                  |
+| Per-day admin caps / fraud limits | Out of scope. Single-transaction `Max(1_000_000)` is the only ceiling.                                                                                   | Add when policy is clearer.                                                                                                                                                      |
+| Moderator role access             | Locked out in 615. Widen later if policy says so.                                                                                                        | Easier to widen than narrow.                                                                                                                                                     |
 
 ## Cross-cutting compliance
 

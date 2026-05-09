@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.7] - 2026-05-09
+
+### Added
+- FE admin + public surface, i18n, SEO regression (ARC-610) (ARC-610)
+- admin + public controllers + module wiring (ARC-610) (ARC-610)
+- add service with admin/public queries, transitions, and registration (ARC-610) (ARC-610)
+- add Tournament schema, interfaces, DTOs, helpers (ARC-610) (ARC-610)
+
+### Documentation
+- add tournaments implementation plan (ARC-610) (ARC-610)
+- add tournaments design spec (ARC-610) (ARC-610)
+
+
 ## [1.13.6] - 2026-05-09
 
 ### Added

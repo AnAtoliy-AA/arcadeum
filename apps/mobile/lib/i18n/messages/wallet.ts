@@ -1,3 +1,5 @@
+// Mobile supports en / es / fr only (ru and by are web-only locales).
+// Keys mirror the web wallet namespace (apps/web/src/shared/i18n/messages/pages/wallet/).
 import type { TranslationMap } from '../types';
 
 export const walletMessages = {

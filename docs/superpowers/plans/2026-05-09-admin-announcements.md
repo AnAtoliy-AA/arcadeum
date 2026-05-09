@@ -1284,7 +1284,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { OptionalJwtAuthGuard } from '../auth/jwt/optional-jwt.guard';
+import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { AnnouncementsService } from './announcements.service';
 import { ActiveAnnouncementDto } from './dto/active-announcement.dto';
@@ -1316,7 +1316,7 @@ function pickLocaleFromHeader(
 }
 
 @Controller('announcements')
-@UseGuards(OptionalJwtAuthGuard)
+@UseGuards(JwtOptionalAuthGuard)
 export class PublicAnnouncementsController {
   constructor(private readonly service: AnnouncementsService) {}
 
@@ -1342,27 +1342,14 @@ export class PublicAnnouncementsController {
 }
 ```
 
-**Note on `OptionalJwtAuthGuard`:** if no such guard exists, create one as a thin extension of `JwtAuthGuard` that overrides `handleRequest` to return `null` on `info`/`err` instead of throwing. Add it at `apps/be/src/auth/jwt/optional-jwt.guard.ts` and a 4-line spec.
-
-```ts
-// apps/be/src/auth/jwt/optional-jwt.guard.ts
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt.guard';
-
-@Injectable()
-export class OptionalJwtAuthGuard extends JwtAuthGuard {
-  handleRequest<TUser>(err: unknown, user: TUser | false): TUser | null {
-    return user || null;
-  }
-}
-```
+**Note on `JwtOptionalAuthGuard`:** the guard already exists at [apps/be/src/auth/jwt/jwt-optional.guard.ts](apps/be/src/auth/jwt/jwt-optional.guard.ts). It swallows auth errors and attaches `req.user` only when a valid bearer is present (otherwise `req.user === null`). No changes to the guard are needed — just import it.
 
 - [ ] **Step 4: Run — pass**.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/be/src/announcements/public-announcements.controller.ts apps/be/src/announcements/public-announcements.controller.spec.ts apps/be/src/auth/jwt/optional-jwt.guard.ts
+git add apps/be/src/announcements/public-announcements.controller.ts apps/be/src/announcements/public-announcements.controller.spec.ts
 git commit -m "feat(announcements): public active endpoint with locale fallback + cache headers (ARC-608)"
 ```
 
@@ -1600,7 +1587,7 @@ export async function fetchActiveAnnouncement(
 
 ```ts
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { useLanguage } from '@/shared/i18n/context';
@@ -1621,10 +1608,17 @@ export function useActiveAnnouncement(): {
     refreshKey: ACTIVE_ANNOUNCEMENT_REFRESH_KEY,
   });
 
-  const [tick, setTick] = useState(0);
+  // Capture refetch in a ref so the polling effect doesn't churn timers
+  // when the `query` object identity changes (it does on every render).
+  const refetchRef = useRef(query.refetch);
+  useEffect(() => {
+    refetchRef.current = query.refetch;
+  }, [query.refetch]);
 
   useEffect(() => {
-    const handler = () => setTick((t) => t + 1);
+    const handler = () => {
+      void refetchRef.current();
+    };
     window.addEventListener('focus', handler);
     return () => window.removeEventListener('focus', handler);
   }, []);
@@ -1632,15 +1626,11 @@ export function useActiveAnnouncement(): {
   useEffect(() => {
     const id = window.setInterval(() => {
       if (document.visibilityState === 'visible') {
-        void query.refetch();
+        void refetchRef.current();
       }
     }, 60_000);
     return () => window.clearInterval(id);
-  }, [query]);
-
-  useEffect(() => {
-    if (tick > 0) void query.refetch();
-  }, [tick, query]);
+  }, []);
 
   const filtered = useMemo<AnnouncementPublicItem | null>(() => {
     const a = query.data ?? null;
@@ -1721,9 +1711,7 @@ git commit -m "feat(announcements-banner): mount widget in root layout (ARC-608)
 
   Expected: **~6 tests**.
 
-- [ ] **Step 2: Implement** mirroring [admin-users/api.ts](apps/web/src/features/admin-users/api.ts). Add `apiClient.post`/`apiClient.del` if not yet present in `apps/web/src/shared/lib/api-client.ts` (it already has `get`/`patch`; add `post` and `del` minimal implementations and update its tests).
-
-  > **If api-client lacks `post`/`del`:** create the missing methods following the `patch` shape, write 4 new test cases for them in `apps/web/src/shared/lib/api-client.test.ts`, and commit as a separate prep commit before the feature work.
+- [ ] **Step 2: Implement** mirroring [admin-users/api.ts](apps/web/src/features/admin-users/api.ts). Use `apiClient.post`, `apiClient.patch`, and `apiClient.delete` — all already exist on `apps/web/src/shared/lib/api-client.ts:224,232,236`. The method name is `delete`, not `del`.
 
 - [ ] **Step 3: Commit**.
 
@@ -1979,14 +1967,14 @@ test.describe('/admin/announcements SEO regression', () => {
 
 ## Risks during execution
 
-| Risk                                                                                           | Mitigation                                                                                                                      |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `OptionalJwtAuthGuard` doesn't exist; creating it touches auth code.                           | Smallest possible extension of `JwtAuthGuard` (override `handleRequest`). 4-line spec. No regression to existing auth behavior. |
-| Mongoose `string` enum sort gives wrong severity order.                                        | `aggregate` pipeline with `_rank` `$switch` — included in service spec.                                                         |
-| `apiClient.post`/`del` don't exist.                                                            | Add them with tests in a separate prep commit before Phase 9.                                                                   |
-| `endsAt: null` accidentally treated as "now" by `$lte: null` quirk.                            | Explicit `{ $or: [{ endsAt: null }, { endsAt: { $gt: now } }] }` — covered by `buildActiveFilter` tests.                        |
-| Tamagui `<Text>` doesn't accept native `title` attribute → truncated cell loses tooltip.       | Wrap in `<span title={fullText}>{children}</span>`.                                                                             |
-| Test that close button is hidden for critical: absent attribute returns `null`, not `'false'`. | Use `not.toBeInTheDocument()` (or `queryByRole('button')` returns `null`).                                                      |
+| Risk                                                                                           | Mitigation                                                                                                       |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Optional JWT guard naming/path.                                                                | Use the existing `JwtOptionalAuthGuard` at `apps/be/src/auth/jwt/jwt-optional.guard.ts` — no new guard required. |
+| Mongoose `string` enum sort gives wrong severity order.                                        | `aggregate` pipeline with `_rank` `$switch` — included in service spec.                                          |
+| Wrong api-client method name (`del` vs `delete`).                                              | Use `apiClient.delete(path, options)` — `del` is not a method.                                                   |
+| `endsAt: null` accidentally treated as "now" by `$lte: null` quirk.                            | Explicit `{ $or: [{ endsAt: null }, { endsAt: { $gt: now } }] }` — covered by `buildActiveFilter` tests.         |
+| Tamagui `<Text>` doesn't accept native `title` attribute → truncated cell loses tooltip.       | Wrap in `<span title={fullText}>{children}</span>`.                                                              |
+| Test that close button is hidden for critical: absent attribute returns `null`, not `'false'`. | Use `not.toBeInTheDocument()` (or `queryByRole('button')` returns `null`).                                       |
 
 ## Reminders
 

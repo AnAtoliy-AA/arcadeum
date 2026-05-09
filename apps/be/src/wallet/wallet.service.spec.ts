@@ -130,4 +130,49 @@ describe('WalletService', () => {
       ).rejects.toThrow();
     });
   });
+
+  describe('debit', () => {
+    it('decrements balance and writes a ledger row', async () => {
+      userModel.findOneAndUpdate.mockResolvedValue({ coins: 50, gems: 0 });
+      txModel.create.mockResolvedValue([
+        makeTxDoc({
+          _id: new Types.ObjectId(),
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: -50,
+          balanceAfter: 50,
+          reason: 'admin_deduct',
+          idempotencyKey: 'k2',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      ]);
+
+      const result = await service.debit(
+        userId,
+        'coins',
+        50,
+        'admin_deduct',
+        'k2',
+      );
+
+      expect(userModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { _id: expect.any(Types.ObjectId) as unknown, coins: { $gte: 50 } },
+        { $inc: { coins: -50 } },
+        expect.objectContaining({ new: true }) as unknown,
+      );
+      expect(result.delta).toBe(-50);
+    });
+
+    it('throws InsufficientFundsException when balance < amount', async () => {
+      userModel.findOneAndUpdate.mockResolvedValue(null);
+      userModel.findById.mockReturnValue({
+        lean: () => Promise.resolve({ coins: 10, gems: 0 }),
+      });
+
+      await expect(
+        service.debit(userId, 'coins', 50, 'admin_deduct', 'k3'),
+      ).rejects.toThrow(/insufficientFunds/);
+      expect(txModel.create).not.toHaveBeenCalled();
+    });
+  });
 });

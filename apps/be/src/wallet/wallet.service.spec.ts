@@ -175,4 +175,42 @@ describe('WalletService', () => {
       expect(txModel.create).not.toHaveBeenCalled();
     });
   });
+
+  describe('idempotency', () => {
+    it('returns the prior transaction when the key is reused', async () => {
+      const priorId = new Types.ObjectId();
+      session.withTransaction.mockImplementationOnce(() => {
+        const err = new Error('dup') as Error & {
+          code: number;
+          keyPattern: Record<string, number>;
+        };
+        err.code = 11000;
+        err.keyPattern = { idempotencyKey: 1 };
+        return Promise.reject(err);
+      });
+      txModel.findOne.mockResolvedValue(
+        makeTxDoc({
+          _id: priorId,
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 100,
+          balanceAfter: 100,
+          reason: 'admin_grant',
+          idempotencyKey: 'k-dup',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      );
+
+      const result = await service.credit(
+        userId,
+        'coins',
+        100,
+        'admin_grant',
+        'k-dup',
+      );
+
+      expect(result.id).toBe(String(priorId));
+      expect(txModel.create).not.toHaveBeenCalled();
+    });
+  });
 });

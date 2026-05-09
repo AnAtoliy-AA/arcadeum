@@ -1,4 +1,5 @@
 import { adminAnnouncementsEn } from './admin-announcements/en';
+import { adminTournamentsEn } from './admin-tournaments/en';
 
 export const en = {
   admin: {
@@ -98,6 +99,7 @@ export const en = {
       totalLabel: '{total} notes',
     },
     announcements: adminAnnouncementsEn,
+    tournaments: adminTournamentsEn,
   },
   tournaments: {
     title: 'Tournaments',
@@ -122,6 +124,32 @@ export const en = {
       },
     ],
     comingSoon: 'Tournament mode is coming soon. Stay tuned!',
+    list: {
+      loading: 'Loading tournaments…',
+      empty: 'No tournaments yet. Check back soon!',
+      card: {
+        registered: '{count} / {max} registered',
+        prize: 'Prize',
+        registerCta: 'Register',
+        unregisterCta: 'Unregister',
+        signInToRegister: 'Sign in to register',
+        full: 'Join waitlist',
+        registrationClosed: 'Registration closed',
+        effectiveStatus: {
+          scheduled: 'Scheduled',
+          registration_open: 'Registration open',
+          registration_closed: 'Registration closed',
+          live: 'Live',
+          awaiting_results: 'Awaiting results',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Sea Battle',
+        },
+      },
+    },
   },
   blog: {
     title: 'Gaming Blog',

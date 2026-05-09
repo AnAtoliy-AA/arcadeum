@@ -1,6 +1,4 @@
 'use client';
-import type { PageTranslations } from '@/shared/i18n/page-translations';
-
 import dynamic from 'next/dynamic';
 import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 
@@ -12,8 +10,8 @@ const TournamentsPageDynamic = dynamic(
   },
 );
 
-const TournamentsClient = (props: { t?: PageTranslations }) => {
-  return <TournamentsPageDynamic {...props} />;
+const TournamentsClient = () => {
+  return <TournamentsPageDynamic />;
 };
 
 export default TournamentsClient;

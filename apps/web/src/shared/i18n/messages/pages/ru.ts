@@ -1,4 +1,5 @@
 import { adminAnnouncementsRu } from './admin-announcements/ru';
+import { adminTournamentsRu } from './admin-tournaments/ru';
 
 export const ru = {
   admin: {
@@ -100,6 +101,7 @@ export const ru = {
       totalLabel: '{total} платежей',
     },
     announcements: adminAnnouncementsRu,
+    tournaments: adminTournamentsRu,
   },
   tournaments: {
     title: 'Турниры',
@@ -124,6 +126,32 @@ export const ru = {
       },
     ],
     comingSoon: 'Режим турниров скоро появится. Следите за обновлениями!',
+    list: {
+      loading: 'Загрузка турниров…',
+      empty: 'Турниров пока нет. Загляните позже!',
+      card: {
+        registered: 'Записано {count} / {max}',
+        prize: 'Приз',
+        registerCta: 'Зарегистрироваться',
+        unregisterCta: 'Отменить регистрацию',
+        signInToRegister: 'Войдите, чтобы зарегистрироваться',
+        full: 'В лист ожидания',
+        registrationClosed: 'Регистрация закрыта',
+        effectiveStatus: {
+          scheduled: 'Запланирован',
+          registration_open: 'Регистрация открыта',
+          registration_closed: 'Регистрация закрыта',
+          live: 'Идёт',
+          awaiting_results: 'Ожидание результатов',
+          completed: 'Завершён',
+          cancelled: 'Отменён',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Морской бой',
+        },
+      },
+    },
   },
   blog: {
     title: 'Игровой блог',

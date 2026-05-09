@@ -1,4 +1,5 @@
 import { adminAnnouncementsFr } from './admin-announcements/fr';
+import { adminTournamentsFr } from './admin-tournaments/fr';
 
 export const fr = {
   admin: {
@@ -98,6 +99,7 @@ export const fr = {
       totalLabel: '{total} notes',
     },
     announcements: adminAnnouncementsFr,
+    tournaments: adminTournamentsFr,
   },
   tournaments: {
     title: 'Tournois',
@@ -122,6 +124,32 @@ export const fr = {
       },
     ],
     comingSoon: "Le mode tournoi arrive bientôt. Restez à l'écoute !",
+    list: {
+      loading: 'Chargement des tournois…',
+      empty: 'Aucun tournoi pour le moment. Revenez bientôt !',
+      card: {
+        registered: 'Inscrits {count} / {max}',
+        prize: 'Prix',
+        registerCta: "S'inscrire",
+        unregisterCta: 'Se désinscrire',
+        signInToRegister: 'Connectez-vous pour vous inscrire',
+        full: "Liste d'attente",
+        registrationClosed: 'Inscription fermée',
+        effectiveStatus: {
+          scheduled: 'Programmé',
+          registration_open: 'Inscription ouverte',
+          registration_closed: 'Inscription fermée',
+          live: 'En cours',
+          awaiting_results: 'Résultats à venir',
+          completed: 'Terminé',
+          cancelled: 'Annulé',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Bataille navale',
+        },
+      },
+    },
   },
   blog: {
     title: 'Blog de Jeux',

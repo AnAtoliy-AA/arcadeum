@@ -1,4 +1,3 @@
-import { getTranslations } from '@/shared/i18n/server';
 import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
 import TournamentsClient from './TournamentsClient';
@@ -12,13 +11,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Tournaments Page
- * Fetches translations on the server and passes them to TournamentsClient.
- * Use TournamentsClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Tournaments Page (public). Translations are read on the client via
+ * useLanguage to support the locale + nested list shape.
  */
-export default async function TournamentsPage() {
-  const messages = await getTranslations();
-  const t = messages.pages?.tournaments;
-
-  return <TournamentsClient t={t} />;
+export default function TournamentsPage() {
+  return <TournamentsClient />;
 }

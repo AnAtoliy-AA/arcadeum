@@ -1,4 +1,5 @@
 import { adminAnnouncementsBy } from './admin-announcements/by';
+import { adminTournamentsBy } from './admin-tournaments/by';
 
 export const by = {
   admin: {
@@ -98,6 +99,7 @@ export const by = {
       totalLabel: '{total} плацяжоў',
     },
     announcements: adminAnnouncementsBy,
+    tournaments: adminTournamentsBy,
   },
   tournaments: {
     title: 'Турніры',
@@ -122,6 +124,32 @@ export const by = {
       },
     ],
     comingSoon: "Рэжым турніраў хутка з'явіцца. Сачыце за абнаўленнямі!",
+    list: {
+      loading: 'Загрузка турніраў…',
+      empty: 'Турніраў пакуль няма. Зазірніце пазней!',
+      card: {
+        registered: 'Запісана {count} / {max}',
+        prize: 'Прыз',
+        registerCta: 'Запісацца',
+        unregisterCta: 'Адмяніць запіс',
+        signInToRegister: 'Увайдзіце, каб запісацца',
+        full: 'У спіс чакання',
+        registrationClosed: 'Рэгістрацыя закрыта',
+        effectiveStatus: {
+          scheduled: 'Запланаваны',
+          registration_open: 'Рэгістрацыя адкрыта',
+          registration_closed: 'Рэгістрацыя закрыта',
+          live: 'Ідзе',
+          awaiting_results: 'Чакаем вынікі',
+          completed: 'Завершаны',
+          cancelled: 'Адменены',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Марскі бой',
+        },
+      },
+    },
   },
   blog: {
     title: 'Гульнявы блог',

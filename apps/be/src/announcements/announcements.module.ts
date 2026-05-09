@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { User, UserSchema } from '../auth/schemas/user.schema';
 import {
   Announcement,
   AnnouncementSchema,
@@ -15,6 +16,7 @@ import { PublicAnnouncementsController } from './public-announcements.controller
     AuthModule,
     MongooseModule.forFeature([
       { name: Announcement.name, schema: AnnouncementSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [AdminAnnouncementsController, PublicAnnouncementsController],

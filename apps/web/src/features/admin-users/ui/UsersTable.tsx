@@ -17,6 +17,7 @@ export interface UsersTableLabels {
   totalLabel: string;
   roleLabels: Record<UserRole, string>;
   selfTooltip: string;
+  walletButtonLabel: string;
 }
 
 export interface UsersTableProps {
@@ -29,6 +30,7 @@ export interface UsersTableProps {
   currentUserId: string;
   hasFilter: boolean;
   onRoleChange: (userId: string, role: UserRole) => void;
+  onWalletOpen: (userId: string) => void;
   onPageChange: (next: number) => void;
   pendingUserId?: string;
   labels: UsersTableLabels;
@@ -43,6 +45,7 @@ export function UsersTable({
   currentUserId,
   hasFilter,
   onRoleChange,
+  onWalletOpen,
   onPageChange,
   pendingUserId,
   labels,
@@ -108,8 +111,10 @@ export function UsersTable({
             item={it}
             currentUserId={currentUserId}
             onRoleChange={onRoleChange}
+            onWalletOpen={onWalletOpen}
             roleLabels={labels.roleLabels}
             selfTooltip={labels.selfTooltip}
+            walletButtonLabel={labels.walletButtonLabel}
             isPending={pendingUserId === it.id}
             zebra={i % 2 === 1}
           />

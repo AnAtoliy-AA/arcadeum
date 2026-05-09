@@ -3,6 +3,7 @@ import type { AdminWalletI18n } from './en';
 export const adminWalletFr: AdminWalletI18n = {
   drawer: {
     title: 'Portefeuille',
+    openButton: 'Portefeuille',
     sections: {
       balance: 'Solde',
       grantDeduct: 'Accorder ou déduire',

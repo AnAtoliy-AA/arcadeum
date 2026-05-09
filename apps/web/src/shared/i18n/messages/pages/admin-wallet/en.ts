@@ -1,6 +1,7 @@
 export const adminWalletEn = {
   drawer: {
     title: 'Wallet',
+    openButton: 'Wallet',
     sections: {
       balance: 'Balance',
       grantDeduct: 'Grant or deduct',

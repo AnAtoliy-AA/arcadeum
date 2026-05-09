@@ -7,6 +7,8 @@ import type { UserRole } from '@/entities/session/model/types';
 import { ApiError } from '@/shared/lib/api-client';
 import { UsersFilters } from '@/features/admin-users/ui/UsersFilters';
 import { UsersTable } from '@/features/admin-users/ui/UsersTable';
+import { AdminWalletDrawer } from '@/features/admin-wallet/ui/AdminWalletDrawer';
+import type { AdminWalletI18n } from '@/shared/i18n/messages/pages/admin-wallet/en';
 
 interface UsersI18n {
   title: string;
@@ -48,6 +50,9 @@ export default function AdminUsersClient({
   const [role, setRole] = useState<UserRole | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pendingUserId, setPendingUserId] = useState<string | undefined>();
+  const [walletTarget, setWalletTarget] = useState<{ userId: string } | null>(
+    null,
+  );
 
   const {
     data,
@@ -85,6 +90,25 @@ export default function AdminUsersClient({
     }
   };
 
+  const tWallet = messages.pages?.admin?.wallet as AdminWalletI18n | undefined;
+
+  const walletDrawerLabels = tWallet
+    ? {
+        title: tWallet.drawer.title,
+        sections: tWallet.drawer.sections,
+        form: {
+          currencyLabel: tWallet.form.currencyLabel,
+          amountLabel: tWallet.form.amountLabel,
+          noteLabel: tWallet.form.noteLabel,
+          grant: tWallet.form.grant,
+          deduct: tWallet.form.deduct,
+          submitting: tWallet.form.submitting,
+          success: tWallet.form.success,
+          errors: tWallet.errors,
+        },
+      }
+    : null;
+
   const labels = t
     ? {
         empty: t.empty,
@@ -93,6 +117,7 @@ export default function AdminUsersClient({
         totalLabel: t.totalLabel,
         roleLabels: t.role,
         selfTooltip: t.selfTooltip,
+        walletButtonLabel: tWallet?.drawer.openButton ?? 'Wallet',
       }
     : null;
   const filtersLabels = t
@@ -138,6 +163,7 @@ export default function AdminUsersClient({
               currentUserId={currentUserId}
               hasFilter={!!q || !!role}
               onRoleChange={handleRoleChange}
+              onWalletOpen={(userId) => setWalletTarget({ userId })}
               onPageChange={setPage}
               pendingUserId={pendingUserId}
               labels={labels}
@@ -145,6 +171,14 @@ export default function AdminUsersClient({
           )}
         </YStack>
       </Container>
+      {walletDrawerLabels && (
+        <AdminWalletDrawer
+          userId={walletTarget?.userId ?? ''}
+          open={!!walletTarget}
+          onClose={() => setWalletTarget(null)}
+          labels={walletDrawerLabels}
+        />
+      )}
     </PageLayout>
   );
 }

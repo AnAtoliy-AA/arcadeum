@@ -19,6 +19,10 @@ import {
   AdminWalletDrawer,
   type AdminWalletDrawerLabels,
 } from './AdminWalletDrawer';
+import type {
+  WalletCurrency,
+  WalletReason,
+} from '@/features/wallet/server/wallet.types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -58,10 +62,10 @@ const mockRecent = {
   items: [
     {
       id: 'tx1',
-      currency: 'coins',
+      currency: 'coins' as WalletCurrency,
       delta: 100,
       balanceAfter: 500,
-      reason: 'admin_grant',
+      reason: 'admin_grant' as WalletReason,
       createdAt: '2026-01-01T00:00:00Z',
     },
   ],

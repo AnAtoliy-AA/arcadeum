@@ -39,6 +39,7 @@ const labels: UsersTableLabels = {
     premium: 'Prem',
   },
   selfTooltip: 'cant edit',
+  walletButtonLabel: 'Wallet',
 };
 
 const baseProps = {
@@ -51,6 +52,7 @@ const baseProps = {
   currentUserId: 'me',
   hasFilter: false,
   onRoleChange: () => {},
+  onWalletOpen: () => {},
   onPageChange: () => {},
   labels,
 };

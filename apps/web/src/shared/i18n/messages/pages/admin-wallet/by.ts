@@ -3,6 +3,7 @@ import type { AdminWalletI18n } from './en';
 export const adminWalletBy: AdminWalletI18n = {
   drawer: {
     title: 'Кашалёк',
+    openButton: 'Кашалёк',
     sections: {
       balance: 'Баланс',
       grantDeduct: 'Налічыць або спісаць',

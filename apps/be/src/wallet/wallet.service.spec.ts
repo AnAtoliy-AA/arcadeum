@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { WalletService } from './wallet.service';
+import { WalletGateway } from './wallet.gateway';
 import { User } from '../auth/schemas/user.schema';
 import { WalletTransaction } from './schemas/wallet-transaction.schema';
 
@@ -39,6 +40,7 @@ describe('WalletService', () => {
     withTransaction: jest.Mock;
     endSession: jest.Mock;
   };
+  let walletGateway: { emitBalance: jest.Mock };
 
   beforeEach(async () => {
     userModel = {
@@ -57,6 +59,9 @@ describe('WalletService', () => {
     connection = {
       startSession: jest.fn().mockResolvedValue(session),
     };
+    walletGateway = {
+      emitBalance: jest.fn(),
+    };
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -64,6 +69,7 @@ describe('WalletService', () => {
         { provide: getConnectionToken(), useValue: connection },
         { provide: getModelToken(User.name), useValue: userModel },
         { provide: getModelToken(WalletTransaction.name), useValue: txModel },
+        { provide: WalletGateway, useValue: walletGateway },
       ],
     }).compile();
 
@@ -103,6 +109,10 @@ describe('WalletService', () => {
       expect(txModel.create).toHaveBeenCalled();
       expect(result.delta).toBe(100);
       expect(result.balanceAfter).toBe(100);
+      expect(walletGateway.emitBalance).toHaveBeenCalledWith(
+        userId,
+        expect.any(Object),
+      );
     });
 
     it('rejects zero amount', async () => {
@@ -161,6 +171,10 @@ describe('WalletService', () => {
         expect.objectContaining({ new: true }) as unknown,
       );
       expect(result.delta).toBe(-50);
+      expect(walletGateway.emitBalance).toHaveBeenCalledWith(
+        userId,
+        expect.any(Object),
+      );
     });
 
     it('throws InsufficientFundsException when balance < amount', async () => {

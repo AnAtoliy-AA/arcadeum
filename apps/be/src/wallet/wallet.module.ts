@@ -10,6 +10,7 @@ import {
 import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
 import { AdminWalletController } from './admin-wallet.controller';
+import { WalletGateway } from './wallet.gateway';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { AdminWalletController } from './admin-wallet.controller';
     ]),
   ],
   controllers: [WalletController, AdminWalletController],
-  providers: [WalletService, RolesGuard],
+  providers: [WalletService, WalletGateway, RolesGuard],
   exports: [WalletService],
 })
 export class WalletModule {}

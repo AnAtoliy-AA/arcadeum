@@ -4,6 +4,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model, Types } from 'mongoose';
 import { WalletService } from './wallet.service';
 import { WalletModule } from './wallet.module';
+import { WalletGateway } from './wallet.gateway';
 import { InsufficientFundsException } from './exceptions/insufficient-funds.exception';
 import { User } from '../auth/schemas/user.schema';
 import {
@@ -24,7 +25,10 @@ describe('WalletService (integration)', () => {
 
     const moduleRef = await Test.createTestingModule({
       imports: [MongooseModule.forRoot(uri), AuthModule, WalletModule],
-    }).compile();
+    })
+      .overrideProvider(WalletGateway)
+      .useValue({ emitBalance: jest.fn() })
+      .compile();
 
     wallet = moduleRef.get(WalletService);
     userModel = moduleRef.get<Model<User>>(getModelToken(User.name));

@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -20,6 +22,7 @@ import type {
 } from './interfaces/wallet-transaction.interface';
 import { InsufficientFundsException } from './exceptions/insufficient-funds.exception';
 import { InvalidCurrencyException } from './exceptions/invalid-currency.exception';
+import { WalletGateway } from './wallet.gateway';
 
 type UserBalanceFields = { coins: number; gems: number };
 
@@ -34,6 +37,8 @@ export class WalletService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(WalletTransaction.name)
     private readonly txModel: Model<WalletTransactionDocument>,
+    @Inject(forwardRef(() => WalletGateway))
+    private readonly gateway: WalletGateway,
   ) {}
 
   async credit(
@@ -50,6 +55,7 @@ export class WalletService {
     const session = await this.connection.startSession();
     try {
       let createdTx: WalletTransactionDocument | null = null;
+      let lastBalance: WalletBalance | null = null;
 
       await session.withTransaction(async () => {
         const user = await this.userModel.findOneAndUpdate(
@@ -62,10 +68,12 @@ export class WalletService {
           throw new NotFoundException('wallet.userNotFound');
         }
 
-        const balanceAfter = this.pickBalance(
-          user as unknown as UserBalanceFields,
-          currency,
-        );
+        const userFields = user as unknown as UserBalanceFields;
+        lastBalance = {
+          coins: userFields.coins ?? 0,
+          gems: userFields.gems ?? 0,
+        };
+        const balanceAfter = this.pickBalance(userFields, currency);
 
         const docs = await this.txModel.create(
           [
@@ -87,6 +95,10 @@ export class WalletService {
 
       if (!createdTx) {
         throw new InternalServerErrorException('wallet.transactionFailed');
+      }
+
+      if (lastBalance !== null) {
+        this.gateway.emitBalance(userId, lastBalance);
       }
 
       return this.toView(createdTx);
@@ -115,6 +127,7 @@ export class WalletService {
     const session = await this.connection.startSession();
     try {
       let createdTx: WalletTransactionDocument | null = null;
+      let lastBalance: WalletBalance | null = null;
 
       await session.withTransaction(async () => {
         const user = await this.userModel.findOneAndUpdate(
@@ -139,10 +152,12 @@ export class WalletService {
           throw new InsufficientFundsException(currency, amount, available);
         }
 
-        const balanceAfter = this.pickBalance(
-          user as unknown as UserBalanceFields,
-          currency,
-        );
+        const userFields = user as unknown as UserBalanceFields;
+        lastBalance = {
+          coins: userFields.coins ?? 0,
+          gems: userFields.gems ?? 0,
+        };
+        const balanceAfter = this.pickBalance(userFields, currency);
 
         const docs = await this.txModel.create(
           [
@@ -164,6 +179,10 @@ export class WalletService {
 
       if (!createdTx) {
         throw new InternalServerErrorException('wallet.transactionFailed');
+      }
+
+      if (lastBalance !== null) {
+        this.gateway.emitBalance(userId, lastBalance);
       }
 
       return this.toView(createdTx);

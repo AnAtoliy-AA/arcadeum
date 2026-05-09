@@ -76,6 +76,7 @@ Paths are illustrative; actual locations are confirmed via the `/new-mobile-scre
 | ----------------------------------------- | ------ | ------------------------------------------------------------------ |
 | `features/wallet/api/useWallet.ts`        | Create | TanStack Query hooks: `useWalletBalance`, `useWalletTransactions`. |
 | `features/wallet/api/useWalletSocket.ts`  | Create | Subscribes to `wallet:updated` and invalidates queries.            |
+| `features/wallet/lib/wallet-socket.ts`    | Create | Mobile-side singleton `walletSocket` (mirrors web).                |
 | `features/wallet/ui/BalanceChip.tsx`      | Create | Mobile chip.                                                       |
 | `features/wallet/ui/WalletScreenView.tsx` | Create | Screen body.                                                       |
 | `app/(authed)/_layout.tsx` (existing)     | Modify | Mount `useWalletSocket()` once in the authed group.                |
@@ -489,9 +490,7 @@ describe('WalletService', () => {
 
   describe('credit', () => {
     it('increments balance and writes a ledger row', async () => {
-      userModel.findOneAndUpdate.mockReturnValue({
-        session: () => Promise.resolve({ coins: 100, gems: 0 }),
-      });
+      userModel.findOneAndUpdate.mockResolvedValue({ coins: 100, gems: 0 });
       txModel.create.mockResolvedValue([
         {
           _id: new Types.ObjectId(),
@@ -557,13 +556,11 @@ async credit(
     let createdTx: WalletTransactionDocument | null = null;
 
     await session.withTransaction(async () => {
-      const user = await this.userModel
-        .findOneAndUpdate(
-          { _id: new Types.ObjectId(userId) },
-          { $inc: { [currency]: amount } },
-          { new: true, session },
-        )
-        .session(session);
+      const user = await this.userModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(userId) },
+        { $inc: { [currency]: amount } },
+        { new: true, session },
+      );
 
       if (!user) {
         throw new NotFoundException('wallet.userNotFound');
@@ -603,8 +600,14 @@ async credit(
   }
 }
 
+private static readonly MAX_TRANSACTION_AMOUNT = 1_000_000;
+
 private assertPositiveInteger(amount: number): void {
-  if (!Number.isInteger(amount) || amount <= 0) {
+  if (
+    !Number.isInteger(amount) ||
+    amount <= 0 ||
+    amount > WalletService.MAX_TRANSACTION_AMOUNT
+  ) {
     throw new BadRequestException('wallet.invalidAmount');
   }
 }
@@ -693,9 +696,7 @@ git commit -m "feat(wallet): implement credit with idempotency + validation (ARC
 ```ts
 describe('debit', () => {
   it('decrements balance and writes a ledger row', async () => {
-    userModel.findOneAndUpdate.mockReturnValue({
-      session: () => Promise.resolve({ coins: 50, gems: 0 }),
-    });
+    userModel.findOneAndUpdate.mockResolvedValue({ coins: 50, gems: 0 });
     txModel.create.mockResolvedValue([
       {
         _id: new Types.ObjectId(),
@@ -729,10 +730,10 @@ describe('debit', () => {
   });
 
   it('throws InsufficientFundsException when balance < amount', async () => {
-    userModel.findOneAndUpdate.mockReturnValue({
-      session: () => Promise.resolve(null), // no doc matched the $gte
+    userModel.findOneAndUpdate.mockResolvedValue(null); // no doc matched the $gte
+    userModel.findById.mockReturnValue({
+      session: () => ({ lean: () => Promise.resolve({ coins: 10, gems: 0 }) }),
     });
-    userModel.findById.mockResolvedValue({ coins: 10, gems: 0 });
 
     await expect(
       service.debit(userId, 'coins', 50, 'admin_deduct', 'k3'),
@@ -763,21 +764,18 @@ async debit(
     let createdTx: WalletTransactionDocument | null = null;
 
     await session.withTransaction(async () => {
-      const user = await this.userModel
-        .findOneAndUpdate(
-          {
-            _id: new Types.ObjectId(userId),
-            [currency]: { $gte: amount },
-          },
-          { $inc: { [currency]: -amount } },
-          { new: true, session },
-        )
-        .session(session);
+      const user = await this.userModel.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(userId),
+          [currency]: { $gte: amount },
+        },
+        { $inc: { [currency]: -amount } },
+        { new: true, session },
+      );
 
       if (!user) {
         const current = await this.userModel
-          .findById(userId)
-          .session(session)
+          .findById(userId, null, { session })
           .lean();
         const available = current
           ? (current as Record<string, number>)[currency] ?? 0
@@ -1349,38 +1347,62 @@ git commit -m "test(wallet): add integration tests for atomicity and idempotency
 - Modify: `apps/be/src/wallet/wallet.service.ts`
 - Modify: `apps/be/src/wallet/wallet.module.ts`
 
-- [ ] **Step 1: Gateway**
+- [ ] **Step 1: Gateway with handshake-based auth**
+
+The room a client may join is derived from the verified JWT in `handshake.auth.token`, not from a client-supplied body. This prevents one user from eavesdropping on another's `wallet:updated` events.
 
 ```ts
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 import type { WalletBalance } from './interfaces/wallet-balance.interface';
+
+interface JwtPayload {
+  sub: string;
+  email: string;
+  username: string;
+}
 
 @WebSocketGateway({
   namespace: '/wallet',
   cors: { origin: corsOriginMatcher },
 })
-export class WalletGateway {
+export class WalletGateway implements OnGatewayConnection {
   private readonly logger = new Logger(WalletGateway.name);
 
   @WebSocketServer() server!: Server;
 
-  @SubscribeMessage('joinWallet')
-  async handleJoin(
-    @MessageBody() body: { userId?: string },
-    @ConnectedSocket() client: Socket,
-  ): Promise<void> {
-    const userId = typeof body?.userId === 'string' ? body.userId.trim() : '';
-    if (!userId) return;
-    await client.join(userId);
+  constructor(
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    try {
+      const token = (client.handshake.auth as { token?: string } | undefined)
+        ?.token;
+      if (!token) {
+        client.disconnect(true);
+        return;
+      }
+      const payload = await this.jwt.verifyAsync<JwtPayload>(token, {
+        secret: resolveJwtSecret(this.config),
+      });
+      // Authoritative room name — never trust client input.
+      await client.join(payload.sub);
+      (client.data as { userId?: string }).userId = payload.sub;
+    } catch (err) {
+      this.logger.warn(`Wallet socket auth failed: ${(err as Error).message}`);
+      client.disconnect(true);
+    }
   }
 
   emitBalance(userId: string, balance: WalletBalance): void {
@@ -1389,7 +1411,9 @@ export class WalletGateway {
 }
 ```
 
-Note: matches the existing chat.gateway.ts join-by-user-id pattern.
+Note: there is no `joinWallet` subscribe handler — the join happens server-side at connection time using the verified JWT, so a client cannot ask to join an arbitrary room.
+
+The gateway needs `JwtService` and `ConfigService`. `JwtService` comes from `AuthModule` (already imported by `WalletModule`); confirm `AuthModule` exports it (`grep -n "JwtModule\|exports" apps/be/src/auth/auth.module.ts`). If it doesn't, add `JwtModule.register({ ... })` to `WalletModule` mirroring the auth module's setup, or have AuthModule export `JwtService`.
 
 - [ ] **Step 2: Service consumes the gateway after every successful write**
 
@@ -1474,19 +1498,29 @@ export class WalletBootstrap implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    const result = await this.userModel.updateMany(
-      { $or: [{ coins: { $exists: false } }, { gems: { $exists: false } }] },
-      { $setOnInsert: {}, $set: { coins: 0, gems: 0 } } as never,
-      // $setOnInsert is a no-op for updateMany but Mongoose is strict.
-    );
-    if (result.modifiedCount > 0) {
-      this.logger.log(`Wallet backfill: filled ${result.modifiedCount} users`);
+    // Two scoped updates so we never touch a field that already exists. If
+    // we used a single $or filter with `$set: { coins: 0, gems: 0 }`, a user
+    // with `coins: 100` and no `gems` would have both reset to 0.
+    const [coinsResult, gemsResult] = await Promise.all([
+      this.userModel.updateMany(
+        { coins: { $exists: false } },
+        { $set: { coins: 0 } },
+      ),
+      this.userModel.updateMany(
+        { gems: { $exists: false } },
+        { $set: { gems: 0 } },
+      ),
+    ]);
+    const total =
+      (coinsResult.modifiedCount ?? 0) + (gemsResult.modifiedCount ?? 0);
+    if (total > 0) {
+      this.logger.log(
+        `Wallet backfill: coins on ${coinsResult.modifiedCount ?? 0} users, gems on ${gemsResult.modifiedCount ?? 0} users`,
+      );
     }
   }
 }
 ```
-
-(Adjust the `$set` to drop `$setOnInsert` if Mongoose typings allow — the goal is to set `coins`/`gems` to 0 for any user missing them. Test the query shape locally before committing.)
 
 - [ ] **Step 2: Register in `WalletModule.providers`**
 
@@ -1820,10 +1854,11 @@ export const walletSocket: Socket = io(`${SOCKET_BASE}/wallet`, {
   autoConnect: false,
 });
 
-export function connectWalletSocket(userId: string, token: string): void {
+export function connectWalletSocket(token: string): void {
   walletSocket.auth = { token };
   if (!walletSocket.connected) walletSocket.connect();
-  walletSocket.emit('joinWallet', { userId });
+  // No `joinWallet` emit — the server joins the client to its own room using
+  // the verified JWT during the connection handshake.
 }
 
 export function disconnectWalletSocket(): void {
@@ -1855,7 +1890,9 @@ import { Suspense } from 'react';
 import { getWalletBalance } from '../server/wallet.server';
 import { getTranslations } from '@/shared/i18n/server';
 import { CoinIcon, GemIcon, Pill } from '@arcadeum/ui'; // adjust to actual exports
-import { WalletLiveBridge } from './WalletLiveBridge';
+
+// NOTE: `<WalletLiveBridge />` is mounted once in the authed layout (see Task 23,
+// Step 2) — do NOT render it here.
 
 async function BalanceChipInner() {
   const t = await getTranslations('wallet');
@@ -1866,7 +1903,6 @@ async function BalanceChipInner() {
     <div className="wallet-balance-chip" aria-label={t('chip.coinsLabel')}>
       <Pill icon={<CoinIcon />} label={fmt.format(balance.coins)} />
       <Pill icon={<GemIcon />} label={fmt.format(balance.gems)} />
-      <WalletLiveBridge />
     </div>
   );
 }
@@ -1904,32 +1940,53 @@ import {
 } from '../lib/wallet-socket';
 
 interface Props {
-  userId: string;
   authToken: string;
 }
 
-export function WalletLiveBridge({ userId, authToken }: Props) {
+export function WalletLiveBridge({ authToken }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    connectWalletSocket(userId, authToken);
+    connectWalletSocket(authToken);
     const onUpdate = () => router.refresh();
     walletSocket.on('wallet:updated', onUpdate);
     return () => {
       walletSocket.off('wallet:updated', onUpdate);
       disconnectWalletSocket();
     };
-  }, [userId, authToken, router]);
+  }, [authToken, router]);
 
   return null;
 }
 ```
 
-`userId` and `authToken` are passed in from the Server Component parent (which has access via cookies). Update `BalanceChip` to compute and pass these as props.
+`userId` is **not** a prop — the BE gateway derives it from the verified JWT on connection (Task 15). `authToken` is the only thing the client needs to hand to the socket.
 
-- [ ] **Step 2: Update `BalanceChip` to pass `userId` + `authToken`**
+- [ ] **Step 2: Single mount point at the authed layout**
 
-(Re-confirm the shape of the auth token / where it lives. If access is short-lived or refresh-dependent, this hook may need to re-pull periodically — for ARC-615, a one-off pass on mount is acceptable.)
+To avoid threading `authToken` through every Server Component that renders a wallet surface, mount `<WalletLiveBridge />` exactly once in the authed group's layout (or root layout — locate the existing authed group with `find apps/web/src/app -name "layout.tsx" -path "*authed*"`). The layout reads the cookie once and passes the token:
+
+```tsx
+// apps/web/src/app/[locale]/(authed)/layout.tsx (modify existing)
+import { cookies } from 'next/headers';
+import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+
+export default async function AuthedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const token = (await cookies()).get('access_token')?.value; // confirm cookie name
+  return (
+    <>
+      {children}
+      {token ? <WalletLiveBridge authToken={token} /> : null}
+    </>
+  );
+}
+```
+
+This means `BalanceChip` (Task 22) and `/wallet/page.tsx` (Task 25) must **not** render their own `<WalletLiveBridge />` — the layout owns it for the whole authed tree. Remove that line from those tasks' code samples when implementing.
 
 - [ ] **Step 3: Commit**
 
@@ -1975,7 +2032,9 @@ import {
 } from '@/features/wallet/server/wallet.server';
 import { WalletPageView } from '@/features/wallet/ui/WalletPageView';
 import type { WalletCurrency } from '@/features/wallet/server/wallet.types';
-import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+
+// `<WalletLiveBridge />` is mounted by the authed layout — no need to render
+// it here.
 
 export async function generateMetadata() {
   const t = await getTranslations('wallet');
@@ -2008,12 +2067,7 @@ export default async function WalletPage({
     getWalletTransactions({ currency, cursor, limit: 20 }),
   ]);
 
-  return (
-    <>
-      <WalletPageView balance={balance} page={page} currency={currency} />
-      <WalletLiveBridge /* userId, authToken from cookies */ />
-    </>
-  );
+  return <WalletPageView balance={balance} page={page} currency={currency} />;
 }
 ```
 
@@ -2106,9 +2160,7 @@ export async function grantWalletAction(
 
 // deductWalletAction mirrors grantWalletAction (same schema, different endpoint).
 
-export async function loadAdminWalletAction(
-  userId: string,
-): Promise<
+export async function loadAdminWalletAction(userId: string): Promise<
   WalletActionResult<{
     balance: WalletBalance;
     recent: PaginatedWalletTransactions;
@@ -2265,15 +2317,57 @@ export function useWalletTransactions(currency?: 'coins' | 'gems') {
 
 - [ ] **Step 3: Commit**
 
-### Task 31 — Mobile socket hook
+### Task 31 — Mobile wallet socket client
+
+**Files:**
+
+- Create: `apps/mobile/src/features/wallet/lib/wallet-socket.ts`
+
+- [ ] **Step 1: Locate the existing mobile socket setup** (`grep -rn "socket\|Socket" apps/mobile/src/shared apps/mobile/src/features`)
+
+- [ ] **Step 2: Mirror the web socket client (Task 21), adjusted for the mobile API base resolver**
+
+```ts
+import { io, type Socket } from 'socket.io-client';
+import { resolveApiUrl } from '@/shared/lib/api-base'; // confirm path on mobile
+
+function resolveSocketUrl(): string {
+  const apiUrl = resolveApiUrl('');
+  try {
+    const url = new URL(apiUrl);
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    return url.toString().replace(/\/$/, '');
+  } catch {
+    return apiUrl.replace(/\/$/, '');
+  }
+}
+
+const SOCKET_BASE = resolveSocketUrl();
+
+export const walletSocket: Socket = io(`${SOCKET_BASE}/wallet`, {
+  transports: ['websocket'],
+  autoConnect: false,
+});
+
+export function connectWalletSocket(token: string): void {
+  walletSocket.auth = { token };
+  if (!walletSocket.connected) walletSocket.connect();
+}
+
+export function disconnectWalletSocket(): void {
+  walletSocket.disconnect();
+}
+```
+
+- [ ] **Step 3: Commit**
+
+### Task 32 — Mobile socket hook
 
 **Files:**
 
 - Create: `apps/mobile/src/features/wallet/api/useWalletSocket.ts`
 
-- [ ] **Step 1: Locate the existing mobile socket setup** (`grep -rn "socket\|Socket" apps/mobile/src/shared`)
-
-- [ ] **Step 2: Hook**
+- [ ] **Step 1: Hook (consumes the client from Task 31; auth token comes from the existing mobile auth store)**
 
 ```ts
 import { useEffect } from 'react';
@@ -2282,27 +2376,30 @@ import {
   walletSocket,
   connectWalletSocket,
   disconnectWalletSocket,
-} from '@/shared/lib/wallet-socket';
+} from '@/features/wallet/lib/wallet-socket';
 
-export function useWalletSocket(userId: string, token: string) {
+export function useWalletSocket(token: string | null | undefined) {
   const qc = useQueryClient();
   useEffect(() => {
-    connectWalletSocket(userId, token);
+    if (!token) return;
+    connectWalletSocket(token);
     const onUpdate = () => qc.invalidateQueries({ queryKey: ['wallet'] });
     walletSocket.on('wallet:updated', onUpdate);
     return () => {
       walletSocket.off('wallet:updated', onUpdate);
       disconnectWalletSocket();
     };
-  }, [userId, token, qc]);
+  }, [token, qc]);
 }
 ```
 
-- [ ] **Step 3: Mount once in `app/(authed)/_layout.tsx`** so the subscription is shared across all tabs/screens.
+`userId` is no longer a parameter — the BE gateway derives the room from the verified JWT.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 2: Mount once in `app/(authed)/_layout.tsx`** so the subscription is shared across all tabs/screens. Read the auth token from the existing mobile auth store and pass it to the hook.
 
-### Task 32 — Mobile `BalanceChip` + header mount
+- [ ] **Step 3: Commit**
+
+### Task 33 — Mobile `BalanceChip` + header mount
 
 **Files:**
 
@@ -2317,7 +2414,7 @@ export function useWalletSocket(userId: string, token: string) {
 
 - [ ] **Step 4: Commit**
 
-### Task 33 — Mobile `/profile/wallet` screen
+### Task 34 — Mobile `/profile/wallet` screen
 
 **Files:**
 
@@ -2334,7 +2431,7 @@ Layout: header with title, balance summary, segmented control (All / Coins / Gem
 
 - [ ] **Step 4: Commit**
 
-### Task 34 — Mobile i18n
+### Task 35 — Mobile i18n
 
 **Files:**
 
@@ -2347,7 +2444,7 @@ Layout: header with title, balance summary, segmented control (All / Coins / Gem
 
 ## Phase 9 — E2E
 
-### Task 35 — Playwright: admin grant flow
+### Task 36 — Playwright: admin grant flow
 
 **Files:**
 
@@ -2380,7 +2477,7 @@ test('admin grant updates the player balance', async ({
 
 - [ ] **Step 2: Commit**
 
-### Task 36 — Playwright: wallet page filters + pagination
+### Task 37 — Playwright: wallet page filters + pagination
 
 **Files:**
 
@@ -2394,7 +2491,7 @@ test('admin grant updates the player balance', async ({
 
 - [ ] **Step 2: Commit**
 
-### Task 37 — Playwright: socket-driven refresh
+### Task 38 — Playwright: socket-driven refresh
 
 **Files:**
 
@@ -2408,7 +2505,7 @@ test('admin grant updates the player balance', async ({
 
 ## Phase 10 — Final verification
 
-### Task 38 — Cross-cutting verification
+### Task 39 — Cross-cutting verification
 
 - [ ] **Step 1: Full BE test suite**
 

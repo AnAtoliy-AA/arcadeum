@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   DarkTheme,
   DefaultTheme,
@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AppHeader } from '@/components/ui/AppHeader';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -21,11 +22,11 @@ import { PendingRequestNotice } from '@/components/ui/PendingRequestNotice';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useIsTV } from '@/hooks/useTVFocus';
 
-
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const [queryClient] = useState(() => new QueryClient());
 
   if (!loaded) {
     // Async font loading only occurs in development.
@@ -34,13 +35,15 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SessionTokensProvider>
-        <SettingsProvider>
-          <ErrorToastProvider>
-            <NavigationRoot />
-          </ErrorToastProvider>
-        </SettingsProvider>
-      </SessionTokensProvider>
+      <QueryClientProvider client={queryClient}>
+        <SessionTokensProvider>
+          <SettingsProvider>
+            <ErrorToastProvider>
+              <NavigationRoot />
+            </ErrorToastProvider>
+          </SettingsProvider>
+        </SessionTokensProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

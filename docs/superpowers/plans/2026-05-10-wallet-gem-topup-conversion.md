@@ -1318,7 +1318,18 @@ Client component. Inputs: `gems` (number). Computed display: `coins = gems * rat
 
 **Sub-decision for the implementer:** the cleanest path is exposing a tiny `GET /wallet/conversion-rate` BE endpoint (no auth — the rate is global) and passing the result as a prop from the page. This keeps the form a pure client component without its own server action just to get the rate.
 
-- [ ] **Step 1: Add `GET /wallet/conversion-rate` BE endpoint** in `gem-conversion.controller.ts` (open route, no `@UseGuards`). Returns `{ rate: number }`.
+- [ ] **Step 1: Add `GET /wallet/conversion-rate` BE endpoint** in a NEW `gem-conversion-info.controller.ts` (NOT inside `gem-conversion.controller.ts` — the existing one's `@Controller('wallet/convert-gems-to-coins')` would scope sub-routes under that path, not at `/wallet/conversion-rate`). The new controller:
+  ```ts
+  @Controller('wallet/conversion-rate')
+  export class GemConversionInfoController {
+    constructor(private readonly service: GemConversionService) {}
+    @Get()
+    rate(): { rate: number } {
+      return { rate: this.service.getRate() }; // expose getRate() as a public method on the service
+    }
+  }
+  ```
+  Add `getRate(): number` returning `this.rate` to `GemConversionService`. Register `GemConversionInfoController` in `GemsModule.controllers`. Open route — no `@UseGuards`.
 - [ ] **Step 2: Implement the form. Step 3: Vitest covering math + 422 path. Step 4: Commit.**
 
 ### Task 25 — Compose into `/wallet/page.tsx`

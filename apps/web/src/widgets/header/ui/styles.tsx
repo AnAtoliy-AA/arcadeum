@@ -95,9 +95,9 @@ export const MobileNav = styled(YStack, {
   width: '100%',
   maxWidth: '100vw',
   zIndex: '$1',
-  backgroundColor: '$background',
+  backgroundColor: 'rgba(12, 14, 15, 0.95)',
   borderTopWidth: 1,
-  borderTopColor: '$borderColor',
+  borderTopColor: '$glassBorder',
   paddingHorizontal: '$5',
   paddingTop: '$4',
   gap: '$1',
@@ -118,15 +118,10 @@ export const MobileVersionText = styled(Typography, {
 
 export const MobileUserInfo = styled(XStack, {
   name: 'MobileUserInfo',
-  paddingVertical: 14,
-  paddingHorizontal: '$4',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  marginVertical: '$1',
+  paddingVertical: '$4',
+  paddingHorizontal: '$2',
   alignItems: 'center',
-  gap: '$2',
+  gap: '$3',
   flexWrap: 'wrap',
 });
 
@@ -156,10 +151,13 @@ export const NavMobileLink = styled(LinkButton, {
   paddingVertical: '$3',
   paddingHorizontal: '$4',
   justifyContent: 'flex-start',
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
   variants: {
     isActive: {
       true: {
-        backgroundColor: '$backgroundPress',
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
         color: '$primary',
       },
     },

@@ -35,19 +35,22 @@ const roleStyles: Record<UserRole, RoleStyle> = {
     glow: '0 0 8px color-mix(in srgb, var(--roleSupporterFrom) 35%, transparent)',
   },
   moderator: {
-    bg: 'var(--successBgSoft)',
+    bg: 'linear-gradient(135deg, color-mix(in srgb, var(--success) 20%, transparent), color-mix(in srgb, var(--successBg) 20%, transparent))',
     text: 'var(--success)',
+    glow: '0 0 8px color-mix(in srgb, var(--success) 30%, transparent)',
   },
   tester: {
-    bg: 'var(--infoBgSoft)',
+    bg: 'linear-gradient(135deg, color-mix(in srgb, var(--info) 20%, transparent), color-mix(in srgb, var(--infoBg) 20%, transparent))',
     text: 'var(--info)',
+    glow: '0 0 8px color-mix(in srgb, var(--info) 30%, transparent)',
   },
   developer: {
-    bg: 'color-mix(in srgb, var(--roleDeveloperShade) 15%, transparent)',
+    bg: 'linear-gradient(135deg, color-mix(in srgb, var(--roleDeveloper) 20%, transparent), color-mix(in srgb, var(--roleDeveloperShade) 20%, transparent))',
     text: 'var(--roleDeveloper)',
+    glow: '0 0 10px color-mix(in srgb, var(--roleDeveloper) 35%, transparent)',
   },
   admin: {
-    bg: 'var(--danger)',
+    bg: 'linear-gradient(135deg, var(--danger), color-mix(in srgb, var(--danger) 70%, black))',
     text: 'var(--white)',
     glow: '0 0 12px color-mix(in srgb, var(--danger) 40%, transparent)',
   },

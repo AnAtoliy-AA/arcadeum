@@ -68,6 +68,10 @@ export type AvatarProps = {
   size?: AvatarSize;
   'data-testid'?: string;
   isHost?: boolean;
+  style?: React.CSSProperties;
+  borderColor?: string;
+  boxShadow?: string;
+  borderWidth?: number;
 };
 
 export const Avatar = memo(function Avatar({
@@ -77,13 +81,24 @@ export const Avatar = memo(function Avatar({
   size = 'md',
   'data-testid': dataTestId,
   isHost,
+  style,
+  borderColor,
+  boxShadow,
+  borderWidth,
 }: AvatarProps): ReactElement {
   const initials = useMemo(() => getInitials(name), [name]);
   const sizeValue = sizeMap[size];
   const fontSize = fontSizeMap[size];
 
   return (
-    <StyledAvatarContainer size={size} data-testid={dataTestId}>
+    <StyledAvatarContainer
+      size={size}
+      data-testid={dataTestId}
+      style={style}
+      borderColor={borderColor}
+      boxShadow={boxShadow}
+      borderWidth={borderWidth}
+    >
       {src ? (
         <img
           src={src}

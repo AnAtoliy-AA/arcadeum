@@ -69,11 +69,39 @@ export default function ProfileMenu() {
       <Button
         variant="chip"
         size="sm"
-        gap="$2"
+        gap="$3"
         onClick={toggleMenu}
-        display={['none', 'none', 'flex']}
+        display={['none', 'flex', 'flex']}
+        hoverStyle={{
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+          scale: 1.01,
+        }}
+        pressStyle={{ scale: 0.98 }}
+        style={{ transition: 'all 0.2s ease' }}
       >
-        <Avatar name={displayName} size="sm" />
+        <Avatar
+          name={displayName}
+          size="sm"
+          borderWidth={
+            role === 'admin' || role === 'vip' || role === 'premium'
+              ? 1
+              : undefined
+          }
+          borderColor={
+            role === 'admin'
+              ? 'var(--danger)'
+              : role === 'vip' || role === 'premium'
+                ? 'var(--roleVip)'
+                : undefined
+          }
+          boxShadow={
+            role === 'admin'
+              ? '0 0 8px color-mix(in srgb, var(--danger) 50%, transparent)'
+              : role === 'vip' || role === 'premium'
+                ? '0 0 8px color-mix(in srgb, var(--roleVip) 50%, transparent)'
+                : undefined
+          }
+        />
         <UserNameEllipsis data-testid="header-username">
           {displayName}
         </UserNameEllipsis>
@@ -93,8 +121,8 @@ export default function ProfileMenu() {
               href={routes.admin}
               onClick={closeMenu}
               data-testid="header-admin-link"
+              icon={<UserIcon size={18} />}
             >
-              <UserIcon size={18} />
               {t('navigation.adminTab')}
             </DropdownLink>
             <Divider spacing="sm" />
@@ -105,40 +133,58 @@ export default function ProfileMenu() {
           href={routes.wallet}
           onClick={closeMenu}
           data-testid="header-wallet-link"
+          icon={<WalletIcon size={18} />}
         >
-          <WalletIcon size={18} />
           {t('navigation.walletTab')}
         </DropdownLink>
 
-        <DropdownLink href="/settings" onClick={closeMenu}>
-          <SettingsIcon size={18} />
+        <DropdownLink
+          href="/settings"
+          onClick={closeMenu}
+          icon={<SettingsIcon size={18} />}
+        >
           {t('navigation.settingsTab')}
         </DropdownLink>
 
-        <DropdownLink href={routes.stats} onClick={closeMenu}>
-          <BarChartIcon size={18} />
+        <DropdownLink
+          href={routes.stats}
+          onClick={closeMenu}
+          icon={<BarChartIcon size={18} />}
+        >
           {t('navigation.statsTab')}
         </DropdownLink>
 
-        <DropdownLink href={routes.referrals} onClick={closeMenu}>
-          <GiftIcon size={18} />
+        <DropdownLink
+          href={routes.referrals}
+          onClick={closeMenu}
+          icon={<GiftIcon size={18} />}
+        >
           {t('referrals.nav.inviteFriends')}
         </DropdownLink>
 
         <Divider spacing="sm" />
 
-        <DropdownLink href={routes.terms} onClick={closeMenu}>
-          <FileTextIcon size={18} />
+        <DropdownLink
+          href={routes.terms}
+          onClick={closeMenu}
+          icon={<FileTextIcon size={18} />}
+        >
           {t('legal.nav.terms')}
         </DropdownLink>
 
-        <DropdownLink href={routes.privacy} onClick={closeMenu}>
-          <LockIcon size={18} />
+        <DropdownLink
+          href={routes.privacy}
+          onClick={closeMenu}
+          icon={<LockIcon size={18} />}
+        >
           {t('legal.nav.privacy')}
         </DropdownLink>
 
-        <DropdownLink href={routes.contact} onClick={closeMenu}>
-          <MailIcon size={18} />
+        <DropdownLink
+          href={routes.contact}
+          onClick={closeMenu}
+          icon={<MailIcon size={18} />}
+        >
           {t('legal.nav.contact')}
         </DropdownLink>
 

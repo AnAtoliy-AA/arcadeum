@@ -8,7 +8,7 @@ import Link from 'next/link';
 export const ProfileMenuContainer = styled(YStack, {
   name: 'ProfileMenuContainer',
   position: 'relative',
-  $md: { display: 'none' },
+  display: 'flex',
 });
 
 export const UserName = styled(Typography, {
@@ -40,7 +40,8 @@ export const ProfileDropdown = styled(YStack, {
   backdropFilter: 'blur(32px) saturate(160%)',
   boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
   transformOrigin: 'right top',
-  paddingVertical: '$2',
+  paddingVertical: '$4',
+  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
 
   variants: {
     isOpen: {
@@ -69,14 +70,26 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
         {...props}
         onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
       >
+        {/* Top Glow Edge */}
         <YStack
           position="absolute"
           top={0}
           left={0}
           right={0}
-          height={1}
+          height={2}
           pointerEvents="none"
-          background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 10%, transparent), transparent)"
+          background="linear-gradient(90deg, transparent, var(--primary), transparent)"
+          opacity={0.5}
+        />
+        {/* Glass Highlight Shine */}
+        <YStack
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          pointerEvents="none"
+          background="linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%)"
         />
         {children}
       </ProfileDropdown>
@@ -84,45 +97,79 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
   },
 );
 
+export const DropdownItem = styled(XStack, {
+  name: 'DropdownItem',
+  alignItems: 'center',
+  gap: '$4',
+  height: 54,
+  paddingHorizontal: '$5',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  position: 'relative',
+
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+
+  pressStyle: {
+    opacity: 0.8,
+  },
+});
+
+const DropdownAccent = styled(YStack, {
+  position: 'absolute',
+  left: 0,
+  top: 12,
+  bottom: 12,
+  width: 2,
+  borderRadius: 2,
+  backgroundColor: '$primary',
+  opacity: 0,
+  transition: 'all 0.2s ease',
+
+  variants: {
+    active: {
+      true: {
+        opacity: 1,
+      },
+    },
+  } as const,
+});
+
 export function DropdownLink({
   href,
   onClick,
   children,
   icon,
+  'data-testid': dataTestId,
 }: {
   href: string;
   onClick?: () => void;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  'data-testid'?: string;
 }) {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <Link
       href={href}
       prefetch={false}
       style={{ textDecoration: 'none' }}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      data-testid={dataTestId}
     >
-      <XStack
-        alignItems="center"
-        gap="$4"
-        height={48}
-        paddingHorizontal="$4"
-        cursor="pointer"
-        hoverStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
-        transition="background-color 0.2s ease"
-      >
-        <Typography
-          uiSize="sm"
-          weight="800"
-          color="$color"
-          flexDirection="row"
-          alignItems="center"
-          gap={12}
-        >
+      <DropdownItem>
+        <DropdownAccent active={isHovered} />
+        <XStack alignItems="center" gap={20}>
           {icon}
-          {children}
-        </Typography>
-      </XStack>
+          <Typography uiSize="sm" weight="800" color="$color">
+            {children}
+          </Typography>
+        </XStack>
+      </DropdownItem>
     </Link>
   );
 }
@@ -131,33 +178,30 @@ export function DropdownButton({
   onClick,
   children,
   icon,
+  'data-testid': dataTestId,
 }: {
   onClick?: () => void;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  'data-testid'?: string;
 }) {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
-    <XStack
-      alignItems="center"
-      gap="$4"
-      height={48}
-      paddingHorizontal="$4"
-      cursor="pointer"
-      hoverStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
-      transition="background-color 0.2s ease"
+    <DropdownItem
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      data-testid={dataTestId}
     >
-      <Typography
-        uiSize="sm"
-        weight="800"
-        color="$color"
-        flexDirection="row"
-        alignItems="center"
-        gap={12}
-      >
+      <DropdownAccent active={isHovered} />
+      <XStack alignItems="center" gap={20}>
         {icon}
-        {children}
-      </Typography>
-    </XStack>
+        <Typography uiSize="sm" weight="800" color="$color">
+          {children}
+        </Typography>
+      </XStack>
+    </DropdownItem>
   );
 }
+

@@ -16,6 +16,7 @@ import { AdminGemPackagesController } from './controllers/admin-gem-packages.con
 import { GemPurchasesController } from './controllers/gem-purchases.controller';
 import { GemConversionController } from './controllers/gem-conversion.controller';
 import { GemConversionInfoController } from './controllers/gem-conversion-info.controller';
+import { GemsBootstrap } from './lib/gems-bootstrap';
 
 /**
  * GemsModule — Phase 5+6.
@@ -45,6 +46,7 @@ import { GemConversionInfoController } from './controllers/gem-conversion-info.c
     GemPackagesService,
     GemPurchasesService,
     GemConversionService,
+    GemsBootstrap,
     RolesGuard,
   ],
   exports: [GemPackagesService, GemPurchasesService, GemConversionService],

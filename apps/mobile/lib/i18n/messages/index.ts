@@ -13,6 +13,7 @@ import { supportMessages } from './support';
 import { tournamentsMessages } from './tournaments';
 import { walletMessages } from './wallet';
 import { welcomeMessages } from './welcome';
+import { gemsMessages } from './gems';
 
 export const translations = {
   en: {
@@ -31,6 +32,7 @@ export const translations = {
     settings: settingsMessages.en,
     tournaments: tournamentsMessages.en,
     wallet: walletMessages.en,
+    gems: gemsMessages.en,
   },
   es: {
     api: apiMessages.es,
@@ -48,6 +50,7 @@ export const translations = {
     settings: settingsMessages.es,
     tournaments: tournamentsMessages.es,
     wallet: walletMessages.es,
+    gems: gemsMessages.es,
   },
   fr: {
     api: apiMessages.fr,
@@ -65,6 +68,7 @@ export const translations = {
     settings: settingsMessages.fr,
     tournaments: tournamentsMessages.fr,
     wallet: walletMessages.fr,
+    gems: gemsMessages.fr,
   },
 } as const satisfies TranslationMap;
 

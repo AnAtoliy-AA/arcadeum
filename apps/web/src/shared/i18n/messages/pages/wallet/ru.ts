@@ -40,6 +40,9 @@ export const walletRu: WalletI18n = {
     tournament_entry: 'Взнос за турнир',
     tournament_refund: 'Возврат за турнир',
     tournament_prize: 'Призовые турнира',
+    gem_purchase: 'Куплены кристаллы',
+    gem_to_coin_conversion_debit: 'Конвертация кристаллов в монеты',
+    gem_to_coin_conversion_credit: 'Монеты из конвертации',
   },
   errors: {
     insufficientFunds: 'Недостаточно средств.',

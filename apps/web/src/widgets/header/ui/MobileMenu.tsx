@@ -24,6 +24,7 @@ import {
   LogoutIcon,
   SupportIcon,
   UserIcon,
+  WalletIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
@@ -80,6 +81,18 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
             ))}
           </MobileUserInfo>
+          <LinkButton
+            href={routes.wallet}
+            variant="ghost"
+            size="sm"
+            gap="$2"
+            isActive={pathname === routes.wallet}
+            fullWidth
+            data-testid="mobile-wallet-link"
+          >
+            <WalletIcon size={18} />
+            {t('navigation.walletTab')}
+          </LinkButton>
           {role === 'admin' && (
             <LinkButton
               href={routes.admin}

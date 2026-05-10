@@ -9,6 +9,7 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { AdminPaymentNotesController } from './admin-payment-notes.controller';
+import { PaypalGateway } from './lib/paypal.gateway';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { AdminPaymentNotesController } from './admin-payment-notes.controller';
     ]),
   ],
   controllers: [PaymentsController, AdminPaymentNotesController],
-  providers: [PaymentsService, PaymentNotesService, RolesGuard],
-  exports: [PaymentsService, PaymentNotesService],
+  providers: [PaymentsService, PaymentNotesService, RolesGuard, PaypalGateway],
+  exports: [PaymentsService, PaymentNotesService, PaypalGateway],
 })
 export class PaymentsModule {}

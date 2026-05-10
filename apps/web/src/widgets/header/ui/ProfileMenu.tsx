@@ -15,6 +15,7 @@ import {
   LogoutIcon,
   ChevronIcon,
   UserIcon,
+  WalletIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -98,6 +99,15 @@ export default function ProfileMenu() {
             <Divider spacing="sm" />
           </>
         )}
+
+        <DropdownLink
+          href={routes.wallet}
+          onClick={closeMenu}
+          data-testid="header-wallet-link"
+        >
+          <WalletIcon size={16} />
+          {t('navigation.walletTab')}
+        </DropdownLink>
 
         <DropdownLink href="/settings" onClick={closeMenu}>
           <SettingsIcon size={16} />

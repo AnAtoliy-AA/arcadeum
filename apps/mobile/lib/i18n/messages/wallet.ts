@@ -33,6 +33,9 @@ export const walletMessages = {
       tournament_entry: 'Tournament entry',
       tournament_refund: 'Tournament refund',
       tournament_prize: 'Tournament prize',
+      gem_purchase: 'Gems purchased',
+      gem_to_coin_conversion_debit: 'Converted gems to coins',
+      gem_to_coin_conversion_credit: 'Coins from conversion',
     },
     errors: {
       insufficientFunds: 'Insufficient balance.',
@@ -71,6 +74,9 @@ export const walletMessages = {
       tournament_entry: 'Inscripción al torneo',
       tournament_refund: 'Reembolso del torneo',
       tournament_prize: 'Premio del torneo',
+      gem_purchase: 'Gemas compradas',
+      gem_to_coin_conversion_debit: 'Gemas convertidas a monedas',
+      gem_to_coin_conversion_credit: 'Monedas de la conversión',
     },
     errors: {
       insufficientFunds: 'Saldo insuficiente.',
@@ -109,6 +115,9 @@ export const walletMessages = {
       tournament_entry: 'Inscription au tournoi',
       tournament_refund: 'Remboursement du tournoi',
       tournament_prize: 'Prix du tournoi',
+      gem_purchase: 'Gemmes achetées',
+      gem_to_coin_conversion_debit: 'Gemmes converties en pièces',
+      gem_to_coin_conversion_credit: 'Pièces issues de la conversion',
     },
     errors: {
       insufficientFunds: 'Solde insuffisant.',

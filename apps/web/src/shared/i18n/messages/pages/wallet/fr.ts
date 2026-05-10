@@ -40,6 +40,9 @@ export const walletFr: WalletI18n = {
     tournament_entry: 'Inscription au tournoi',
     tournament_refund: 'Remboursement du tournoi',
     tournament_prize: 'Prix du tournoi',
+    gem_purchase: 'Gemmes achetées',
+    gem_to_coin_conversion_debit: 'Gemmes converties en pièces',
+    gem_to_coin_conversion_credit: 'Pièces issues de la conversion',
   },
   errors: {
     insufficientFunds: 'Solde insuffisant.',

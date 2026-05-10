@@ -38,6 +38,9 @@ export const walletEn = {
     tournament_entry: 'Tournament entry',
     tournament_refund: 'Tournament refund',
     tournament_prize: 'Tournament prize',
+    gem_purchase: 'Gems purchased',
+    gem_to_coin_conversion_debit: 'Converted gems to coins',
+    gem_to_coin_conversion_credit: 'Coins from conversion',
   },
   errors: {
     insufficientFunds: 'Insufficient balance.',

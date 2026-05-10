@@ -11,6 +11,10 @@ import type {
   WalletBalance,
   WalletCurrency,
 } from '@/features/wallet/server/wallet.types';
+import { PendingGemPurchases } from '@/features/gems/ui/PendingGemPurchases';
+import { GemStore } from '@/features/gems/ui/GemStore';
+import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
+import { getConversionRate } from '@/features/gems/server/gems.server';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -47,6 +51,15 @@ export default async function WalletPage({
   const currency = parseCurrency(sp.currency);
   const cursor = sp.cursor;
 
+  // Fetch the conversion rate server-side (no auth needed — public endpoint).
+  let conversionRate = 100;
+  try {
+    const rateData = await getConversionRate();
+    conversionRate = rateData.rate;
+  } catch {
+    // Fallback to default if BE is unavailable
+  }
+
   // Render an empty state for unauthenticated visitors so the route stays
   // crawlable and never 5xxs. The header chip is also gated on auth, so an
   // unauthenticated session shouldn't normally land here, but bots / direct
@@ -54,11 +67,26 @@ export default async function WalletPage({
   const accessToken = await getServerAccessToken();
   if (!accessToken) {
     return (
-      <WalletPageView
-        balance={EMPTY_BALANCE}
-        page={EMPTY_PAGE}
-        currency={currency}
-      />
+      <div>
+        <WalletPageView
+          balance={EMPTY_BALANCE}
+          page={EMPTY_PAGE}
+          currency={currency}
+        />
+        <div
+          style={{
+            maxWidth: '900px',
+            margin: '0 auto',
+            padding: '0 16px 32px',
+          }}
+          data-testid="gem-sections"
+        >
+          {/* GemStore is always shown — no auth required for browsing */}
+          <div id="gem-store" style={{ marginBottom: '32px' }}>
+            <GemStore />
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -75,5 +103,28 @@ export default async function WalletPage({
     console.error('Failed to load wallet during SSR:', err);
   }
 
-  return <WalletPageView balance={balance} page={page} currency={currency} />;
+  const { gems: currentGems } = balance;
+
+  return (
+    <div>
+      <WalletPageView balance={balance} page={page} currency={currency} />
+
+      {/* Gem sections: pending purchases banner, gem store, and conversion form */}
+      <div
+        style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px 48px' }}
+        data-testid="gem-sections"
+      >
+        {/* Pending purchases banner — renders nothing if no pending purchases */}
+        <PendingGemPurchases />
+
+        {/* Gem store — lists purchasable packages */}
+        <div id="gem-store" style={{ marginBottom: '32px' }}>
+          <GemStore />
+        </div>
+
+        {/* Convert gems to coins form */}
+        <ConvertGemsForm rate={conversionRate} currentGems={currentGems} />
+      </div>
+    </div>
+  );
 }

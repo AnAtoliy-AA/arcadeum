@@ -2,6 +2,8 @@ import { adminAnnouncementsEs } from './admin-announcements/es';
 import { adminTournamentsEs } from './admin-tournaments/es';
 import { walletEs } from './wallet/es';
 import { adminWalletEs } from './admin-wallet/es';
+import { gemsEs } from './gems/es';
+import { adminGemPackagesEs } from './admin-gem-packages/es';
 
 export const es = {
   admin: {
@@ -468,4 +470,6 @@ export const es = {
     comingSoon: '¡La tienda de recompensas llegará pronto!',
   },
   wallet: walletEs,
+  gems: gemsEs,
+  adminGemPackages: adminGemPackagesEs,
 };

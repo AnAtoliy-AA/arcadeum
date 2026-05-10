@@ -8,5 +8,8 @@ export const WALLET_REASONS = [
   'tournament_entry',
   'tournament_refund',
   'tournament_prize',
+  'gem_purchase',
+  'gem_to_coin_conversion_debit',
+  'gem_to_coin_conversion_credit',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

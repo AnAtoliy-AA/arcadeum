@@ -5,7 +5,10 @@ export type WalletReason =
   | 'game_win'
   | 'tournament_entry'
   | 'tournament_refund'
-  | 'tournament_prize';
+  | 'tournament_prize'
+  | 'gem_purchase'
+  | 'gem_to_coin_conversion_debit'
+  | 'gem_to_coin_conversion_credit';
 
 export interface WalletBalance {
   coins: number;

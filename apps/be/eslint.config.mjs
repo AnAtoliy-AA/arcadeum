@@ -46,9 +46,15 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/wallet/**/*.ts'],
+    files: ['src/wallet/**/*.ts', 'src/gems/**/*.ts'],
     rules: {
       'no-restricted-syntax': 'off',
+    },
+  },
+  {
+    files: ['**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
 );

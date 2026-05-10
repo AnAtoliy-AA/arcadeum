@@ -40,6 +40,9 @@ export const walletBy: WalletI18n = {
     tournament_entry: 'Узнос за турнір',
     tournament_refund: 'Вяртанне за турнір',
     tournament_prize: 'Прыз турніру',
+    gem_purchase: 'Куплены каштоўныя камяні',
+    gem_to_coin_conversion_debit: 'Канвертацыя камянёў у манеты',
+    gem_to_coin_conversion_credit: 'Манеты з канвертацыі',
   },
   errors: {
     insufficientFunds: 'Недастаткова сродкаў.',

@@ -2,6 +2,8 @@ import { adminAnnouncementsBy } from './admin-announcements/by';
 import { adminTournamentsBy } from './admin-tournaments/by';
 import { walletBy } from './wallet/by';
 import { adminWalletBy } from './admin-wallet/by';
+import { gemsBy } from './gems/by';
+import { adminGemPackagesBy } from './admin-gem-packages/by';
 
 export const by = {
   admin: {
@@ -470,4 +472,6 @@ export const by = {
     comingSoon: 'Крама ўзнагарод хутка адкрыецца!',
   },
   wallet: walletBy,
+  gems: gemsBy,
+  adminGemPackages: adminGemPackagesBy,
 };

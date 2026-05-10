@@ -1,7 +1,33 @@
 export const adminEconomyEs = {
   title: 'Configuración de economía',
+  keys: {
+    game_win_coin_reward: {
+      name: 'Recompensa por victoria',
+      description: 'Monedas otorgadas a cada ganador al finalizar una partida.',
+    },
+    gem_to_coin_rate: {
+      name: 'Tasa gemas a monedas',
+      description: 'Cuántas monedas produce una gema al convertir.',
+    },
+    referral_reward_coins_per: {
+      name: 'Bono por referido',
+      description: 'Monedas que recibe el invitador por cada referido exitoso.',
+    },
+    referral_tier_1_bonus_coins: {
+      name: 'Bono nivel 1 (3 invitados)',
+      description: 'Bono único de monedas al alcanzar 3 referidos exitosos.',
+    },
+    referral_tier_2_bonus_coins: {
+      name: 'Bono nivel 2 (5 invitados)',
+      description: 'Bono único de monedas al alcanzar 5 referidos exitosos.',
+    },
+    referral_tier_3_bonus_coins: {
+      name: 'Bono nivel 3 (10 invitados)',
+      description: 'Bono único de monedas al alcanzar 10 referidos exitosos.',
+    },
+  },
   table: {
-    key: 'Clave',
+    key: 'Ajuste',
     current: 'Valor actual',
     default: 'Predeterminado',
     source: 'Origen',

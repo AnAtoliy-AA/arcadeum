@@ -3,14 +3,23 @@ import { render, screen } from '@testing-library/react';
 
 // ─── Mock server-only and listEconomySettings ─────────────────────────────────
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(async () => ({ get: () => undefined })),
+}));
 vi.mock('../server/economy.server', () => ({
   listEconomySettings: vi.fn(),
 }));
 // Mock client components to avoid needing full DOM setup for dialogs
 vi.mock('./EconomyRow', () => ({
-  EconomyRow: ({ setting }: { setting: { key: string } }) => (
+  EconomyRow: ({
+    setting,
+    name,
+  }: {
+    setting: { key: string };
+    name: string;
+  }) => (
     <tr data-testid={`economy-row-${setting.key}`}>
-      <td>{setting.key}</td>
+      <td data-testid={`economy-row-name-${setting.key}`}>{name}</td>
     </tr>
   ),
 }));
@@ -86,7 +95,7 @@ describe('AdminEconomyTable', () => {
     const element = await AdminEconomyTable();
     render(element);
 
-    expect(screen.getByText('Key')).toBeTruthy();
+    expect(screen.getByText('Setting')).toBeTruthy();
     expect(screen.getByText('Current value')).toBeTruthy();
     expect(screen.getByText('Default')).toBeTruthy();
     expect(screen.getByText('Source')).toBeTruthy();

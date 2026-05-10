@@ -1,57 +1,29 @@
+import { getTranslations } from '@/shared/i18n/server';
+import { adminEconomyEn } from '@/shared/i18n/messages/pages/admin-economy/en';
+import type { EconomyKey } from '../server/economy.types';
 import { listEconomySettings } from '../server/economy.server';
 import { EconomyRow } from './EconomyRow';
 
-// ─── Hardcoded English labels (server component — no i18n wiring needed) ──────
-// NOTE: When the admin economy i18n namespace is wired (Task 17), replace these
-// with getTranslations() and pass the translated strings down.
-
-const TABLE_LABELS = {
-  key: 'Key',
-  current: 'Current value',
-  default: 'Default',
-  source: 'Source',
-  lastChanged: 'Last changed',
-  actions: 'Actions',
-};
-
-const ROW_LABELS = {
-  edit: 'Edit',
-  reset: 'Reset to default',
-  history: 'History',
-  sources: {
-    override: 'Admin override',
-    env: 'Environment',
-    default: 'Code default',
-  },
-  editDialog: {
-    title: 'Edit {{key}}',
-    currentLabel: 'Current',
-    newValueLabel: 'New value',
-    save: 'Save',
-    cancel: 'Cancel',
-  },
-  buttons: {
-    reset: 'Reset to default',
-  },
-  errors: {
-    invalidValue: 'Value must be a positive integer up to 1,000,000.',
-    generic: 'Could not save. Please retry.',
-    forbidden: 'You do not have permission.',
-    keyNotFound: 'Unknown setting.',
-  },
-  toasts: {
-    saved: 'Saved {{key}} = {{value}}.',
-    reset: 'Reset {{key}} to default.',
-  },
-  auditDrawer: {
-    title: 'History for {{key}}',
-    empty: 'No changes yet.',
-    from: 'From',
-    to: 'To',
-  },
-};
+interface AdminEconomyMessages {
+  adminEconomy?: Partial<typeof adminEconomyEn>;
+}
 
 export async function AdminEconomyTable() {
+  const messages = (await getTranslations()) as AdminEconomyMessages;
+  const t = messages.adminEconomy ?? {};
+
+  const tableLabels = { ...adminEconomyEn.table, ...(t.table ?? {}) };
+  const sources = { ...adminEconomyEn.sources, ...(t.sources ?? {}) };
+  const buttons = { ...adminEconomyEn.buttons, ...(t.buttons ?? {}) };
+  const editDialog = { ...adminEconomyEn.editDialog, ...(t.editDialog ?? {}) };
+  const auditDrawer = {
+    ...adminEconomyEn.auditDrawer,
+    ...(t.auditDrawer ?? {}),
+  };
+  const errors = { ...adminEconomyEn.errors, ...(t.errors ?? {}) };
+  const toasts = { ...adminEconomyEn.toasts, ...(t.toasts ?? {}) };
+  const keys = { ...adminEconomyEn.keys, ...(t.keys ?? {}) };
+
   const settings = await listEconomySettings();
 
   if (settings.length === 0) {
@@ -64,6 +36,18 @@ export async function AdminEconomyTable() {
       </div>
     );
   }
+
+  const rowLabels = {
+    edit: buttons.edit,
+    reset: buttons.reset,
+    history: buttons.history,
+    sources,
+    editDialog,
+    buttons: { reset: buttons.reset },
+    errors,
+    toasts,
+    auditDrawer,
+  };
 
   return (
     <div
@@ -86,12 +70,12 @@ export async function AdminEconomyTable() {
           >
             {(
               [
-                TABLE_LABELS.key,
-                TABLE_LABELS.current,
-                TABLE_LABELS.default,
-                TABLE_LABELS.source,
-                TABLE_LABELS.lastChanged,
-                TABLE_LABELS.actions,
+                tableLabels.key,
+                tableLabels.current,
+                tableLabels.default,
+                tableLabels.source,
+                tableLabels.lastChanged,
+                tableLabels.actions,
               ] as const
             ).map((col) => (
               <th
@@ -112,13 +96,18 @@ export async function AdminEconomyTable() {
           </tr>
         </thead>
         <tbody>
-          {settings.map((setting) => (
-            <EconomyRow
-              key={setting.key}
-              setting={setting}
-              labels={ROW_LABELS}
-            />
-          ))}
+          {settings.map((setting) => {
+            const meta = keys[setting.key as EconomyKey];
+            return (
+              <EconomyRow
+                key={setting.key}
+                setting={setting}
+                labels={rowLabels}
+                name={meta?.name ?? setting.key}
+                description={meta?.description}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>

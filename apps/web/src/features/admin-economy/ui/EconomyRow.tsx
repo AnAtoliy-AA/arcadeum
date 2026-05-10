@@ -41,9 +41,16 @@ interface EconomyRowLabels {
 interface EconomyRowProps {
   setting: EconomySettingView;
   labels: EconomyRowLabels;
+  name: string;
+  description?: string;
 }
 
-export function EconomyRow({ setting, labels }: EconomyRowProps) {
+export function EconomyRow({
+  setting,
+  labels,
+  name,
+  description,
+}: EconomyRowProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -78,15 +85,38 @@ export function EconomyRow({ setting, labels }: EconomyRowProps) {
         data-testid={`economy-row-${setting.key}`}
         style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
       >
-        <td
-          style={{
-            padding: '12px 16px',
-            fontSize: '13px',
-            fontFamily: 'monospace',
-            color: '#a1a1aa',
-          }}
-        >
-          {setting.key}
+        <td style={{ padding: '12px 16px', maxWidth: '320px' }}>
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#e4e4e7',
+              marginBottom: '2px',
+            }}
+          >
+            {name}
+          </div>
+          {description ? (
+            <div
+              style={{
+                fontSize: '12px',
+                color: '#71717a',
+                lineHeight: 1.4,
+                marginBottom: '4px',
+              }}
+            >
+              {description}
+            </div>
+          ) : null}
+          <div
+            style={{
+              fontSize: '11px',
+              fontFamily: 'monospace',
+              color: '#52525b',
+            }}
+          >
+            {setting.key}
+          </div>
         </td>
         <td
           style={{

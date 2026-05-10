@@ -1,7 +1,38 @@
 export const adminEconomyEn = {
   title: 'Economy settings',
+  keys: {
+    game_win_coin_reward: {
+      name: 'Game win reward',
+      description:
+        'Coins credited to each winner when a game session completes.',
+    },
+    gem_to_coin_rate: {
+      name: 'Gem-to-coin rate',
+      description: 'How many coins one gem produces when converted.',
+    },
+    referral_reward_coins_per: {
+      name: 'Per-referral bonus',
+      description:
+        'Coins credited to a referrer on every successful referral signup.',
+    },
+    referral_tier_1_bonus_coins: {
+      name: 'Tier 1 bonus (3 invites)',
+      description:
+        'One-time coin bonus when a referrer reaches 3 successful invites.',
+    },
+    referral_tier_2_bonus_coins: {
+      name: 'Tier 2 bonus (5 invites)',
+      description:
+        'One-time coin bonus when a referrer reaches 5 successful invites.',
+    },
+    referral_tier_3_bonus_coins: {
+      name: 'Tier 3 bonus (10 invites)',
+      description:
+        'One-time coin bonus when a referrer reaches 10 successful invites.',
+    },
+  },
   table: {
-    key: 'Key',
+    key: 'Setting',
     current: 'Current value',
     default: 'Default',
     source: 'Source',

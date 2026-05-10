@@ -67,6 +67,14 @@ class EconomySettingsService {
 
 `getNumber` resolution order: in-memory cache → DB row → env var → code-level default. The cache stores the resolved final number — never `undefined`/`null` — so subsequent reads stay cheap even with no override.
 
+The `source` field returned by `listAll` follows the same resolution order and reports:
+
+- `'override'` when a DB row exists.
+- `'env'` when no DB row but the env var is set to a valid positive integer.
+- `'default'` when neither a DB row nor a valid env var exists; the code-level default applies.
+
+`refreshCache()` (public, no args) clears the entire cache on this instance. Per-key invalidation is internal: `setNumber` and `resetToDefault` invalidate only the affected key via a private `invalidateKey(key)` helper. The admin endpoint exposes only the "clear all" form.
+
 ### D3 — Typed key registry
 
 **Decision:** a single config file at `apps/be/src/economy/economy-keys.ts`:
@@ -312,9 +320,20 @@ No wallet/referrals/payments i18n changes. No mobile changes.
 - Drop `perReferralCoins`, `tierBonusCoins`, the `readPositiveInt` helper, and the constructor env-reads.
 - Inject `EconomySettingsService`.
 - `payoutPerReferral`: `const amount = await this.economy.getNumber('referral_reward_coins_per');` — skip wallet if 0 (the resolved value can be 0 only via env, since DTOs reject 0).
-- `payoutTierBonus`: `const amount = await this.economy.getNumber(\`referral*tier*${tier}\_bonus_coins\` as EconomyKey);`.
+- `payoutTierBonus`: use a typed tier-to-key lookup helper inside the service so the call site has no `as EconomyKey` casts:
 
-Wait — that template-string key type-asserts back to `EconomyKey`. Cleaner: a small lookup helper inside the service: `private readonly tierKeys = { 1: 'referral_tier_1_bonus_coins', 2: 'referral_tier_2_bonus_coins', 3: 'referral_tier_3_bonus_coins' } as const satisfies Record<number, EconomyKey>;`.
+```ts
+private readonly tierKeys = {
+  1: 'referral_tier_1_bonus_coins',
+  2: 'referral_tier_2_bonus_coins',
+  3: 'referral_tier_3_bonus_coins',
+} as const satisfies Record<number, EconomyKey>;
+
+// In payoutTierBonus:
+const key = this.tierKeys[tier];
+if (!key) return;
+const amount = await this.economy.getNumber(key);
+```
 
 ## Validation, errors, security
 
@@ -322,7 +341,7 @@ Wait — that template-string key type-asserts back to `EconomyKey`. Cleaner: a 
 - All `/admin/economy/*` routes guarded by `JwtAuthGuard + RolesGuard + @Roles('admin')`.
 - `EconomySettingsService.setNumber` / `resetToDefault` require an `adminUserId` parameter (passed from the controller, taken from the JWT). The service itself does not enforce "is admin" — the controller does. Direct internal callers are trusted (and there shouldn't be any).
 - `getNumber` validates the DB value the same way as env reads — if a row's `value` is somehow not a positive integer, fall back to env/default and log a warning. (Defensive — schema-level validation should prevent this.)
-- Audit row write happens inside a Mongo transaction with the setting update so they commit together. (Optional refinement; spec calls it out but plan can simplify if the cross-doc transaction adds too much complexity for v1. Acceptable to write sequentially with audit-first — if the setting write fails, you have an audit row claiming a change that didn't happen. Strict consistency is desirable but cosmetic for an audit log.)
+- Audit row write happens inside a Mongo transaction with the setting update so they commit together. **The plan commits to transactional writes** (not sequential) — same pattern the wallet uses for ledger + balance, and the cross-doc transaction is trivially cheap for two writes on a single replica set. This avoids the "phantom audit row" and "silent change with no audit" failure modes entirely.
 
 ## Tests
 

@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.10] - 2026-05-10
+
+### Added
+- dedicated /payment/gem-cancel page + auto-cancel on return (ARC-617) (ARC-617)
+- add Wallet link to profile menu and mobile menu (ARC-617) (ARC-617)
+- route gem purchases to dedicated /payment/gem-success page (ARC-617) (ARC-617)
+- add Cancel button on pending purchases (ARC-617) (ARC-617)
+- seed default gem packages on first deploy (ARC-617) (ARC-617)
+- add new reason labels and gem store copy in 3 locales (ARC-617) (ARC-617)
+- add gems i18n namespace in 5 locales (ARC-617) (ARC-617)
+- labels for gem_purchase + conversion reasons in 5 locales (ARC-617) (ARC-617)
+- compose gem widgets into wallet screen (ARC-617) (ARC-617)
+- add gem store, pending banner, and convert form components (ARC-617) (ARC-617)
+- add TanStack Query hooks for packages, purchases, conversion (ARC-617) (ARC-617)
+- compose gem store + pending + convert into /wallet page (ARC-617) (ARC-617)
+- add convert-gems form with insufficient-funds path (ARC-617) (ARC-617)
+- add pending purchases banner with verify action (ARC-617) (ARC-617)
+- add GemStore Server Component + buy button (ARC-617) (ARC-617)
+- add web server actions for buy/finalize/convert (ARC-617) (ARC-617)
+- add web server module for gems data fetching (ARC-617) (ARC-617)
+- add admin page with table and form (ARC-617) (ARC-617)
+- add server actions for CRUD (ARC-617) (ARC-617)
+- finalize GemsModule wiring with GemConversionService and controllers (ARC-617) (ARC-617)
+- add gems-to-coins conversion endpoint and rate-info endpoint (ARC-617) (ARC-617)
+- add GemConversionService with atomic gems-to-coins (ARC-617) (ARC-617)
+- add gem purchases controller and CreateGemOrderDto (ARC-617) (ARC-617)
+- add GemPurchasesService createOrder and listPending (ARC-617) (ARC-617)
+- add public and admin gem-package controllers + module wiring (ARC-617) (ARC-617)
+- add GemPackagesService with admin CRUD (ARC-617) (ARC-617)
+- add gem-package DTOs (ARC-617) (ARC-617)
+- add GemPackage and GemPurchase schemas (ARC-617) (ARC-617)
+- extract PaypalGateway for shared PayPal API access (ARC-617) (ARC-617)
+- extend WalletReason with gem_purchase and conversion (ARC-617) (ARC-617)
+
+### Fixed
+- split finalize into helper + action so the success page can render (ARC-617) (ARC-617)
+- capture APPROVED PayPal orders before crediting (ARC-617) (ARC-617)
+- align Buy buttons across gem package cards (ARC-617) (ARC-617)
+- set PayPal redirect env defaults in integration test (ARC-617) (ARC-617)
+
+### Refactored
+- use PaypalGateway in createSession (ARC-617) (ARC-617)
+- expose MAX_TRANSACTION_AMOUNT for cross-module reuse (ARC-617) (ARC-617)
+
+### Documentation
+- document GEM_TO_COIN_RATE env var (ARC-617) (ARC-617)
+- fix /wallet/conversion-rate routing in ARC-617 plan (ARC-617)
+- add ARC-617 implementation plan (ARC-617)
+- fold spec reviewer recommendations into ARC-617 design (ARC-617)
+- add ARC-617 gem top-up + conversion design spec (ARC-617)
+
+
 ## [1.13.9] - 2026-05-10
 
 ### Added

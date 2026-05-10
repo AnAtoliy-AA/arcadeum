@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ConfigService } from '@nestjs/config';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
+import { EconomySettingsService } from '../economy/economy-settings.service';
+import type { EconomyKey } from '../economy/economy-keys';
 
 interface RewardTierDefinition {
   tier: number;
@@ -61,8 +62,12 @@ const REWARD_TIERS: RewardTierDefinition[] = [
 @Injectable()
 export class ReferralService {
   private readonly logger = new Logger(ReferralService.name);
-  private readonly perReferralCoins: number;
-  private readonly tierBonusCoins: Record<number, number>;
+
+  private readonly tierKeys = {
+    1: 'referral_tier_1_bonus_coins',
+    2: 'referral_tier_2_bonus_coins',
+    3: 'referral_tier_3_bonus_coins',
+  } as const satisfies Record<number, EconomyKey>;
 
   constructor(
     @InjectModel(Referral.name)
@@ -72,28 +77,8 @@ export class ReferralService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     private readonly wallet: WalletService,
-    private readonly config: ConfigService,
-  ) {
-    this.perReferralCoins = this.readPositiveInt(
-      'REFERRAL_REWARD_COINS_PER',
-      50,
-    );
-    this.tierBonusCoins = {
-      1: this.readPositiveInt('REFERRAL_TIER_1_BONUS_COINS', 100),
-      2: this.readPositiveInt('REFERRAL_TIER_2_BONUS_COINS', 200),
-      3: this.readPositiveInt('REFERRAL_TIER_3_BONUS_COINS', 500),
-    };
-  }
-
-  private readPositiveInt(name: string, fallback: number): number {
-    const raw = this.config.get<string>(name);
-    if (!raw) return fallback;
-    const parsed = Number(raw);
-    // 0 is a valid "disabled" value; positive integers are valid reward amounts.
-    if (Number.isInteger(parsed) && parsed >= 0) return parsed;
-    this.logger.warn(`Invalid ${name}="${raw}"; using default ${fallback}`);
-    return fallback;
-  }
+    private readonly economy: EconomySettingsService,
+  ) {}
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -177,12 +162,13 @@ export class ReferralService {
     referralId: string,
     referredUserId: string,
   ): Promise<void> {
-    if (this.perReferralCoins <= 0) return;
+    const amount = await this.economy.getNumber('referral_reward_coins_per');
+    if (amount <= 0) return;
     try {
       await this.wallet.credit(
         referrerId,
         'coins',
-        this.perReferralCoins,
+        amount,
         'referral_bonus',
         `referral-${referralId}-payout-${referrerId}`,
         { referralId, referredUserId },
@@ -274,8 +260,10 @@ export class ReferralService {
     tier: number,
     requiredInvites: number,
   ): Promise<void> {
-    const amount = this.tierBonusCoins[tier];
-    if (!amount || amount <= 0) return;
+    const key = this.tierKeys[tier as keyof typeof this.tierKeys];
+    if (!key) return;
+    const amount = await this.economy.getNumber(key);
+    if (amount <= 0) return;
     try {
       await this.wallet.credit(
         referrerId,

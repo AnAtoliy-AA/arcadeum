@@ -21,7 +21,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { WalletService } from '../wallet/wallet.service';
-import { ConfigService } from '@nestjs/config';
+import { EconomySettingsService } from '../economy/economy-settings.service';
 
 /**
  * Games Service Facade
@@ -33,7 +33,6 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
-  private readonly gameWinCoinReward: number;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -49,13 +48,8 @@ export class GamesService {
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly wallet: WalletService,
-    private readonly config: ConfigService,
-  ) {
-    const raw = this.config.get<string>('GAME_WIN_COIN_REWARD');
-    const parsed = raw ? Number(raw) : 50;
-    this.gameWinCoinReward =
-      Number.isInteger(parsed) && parsed > 0 ? parsed : 50;
-  }
+    private readonly economy: EconomySettingsService,
+  ) {}
 
   // ========== Room Operations ==========
 
@@ -459,12 +453,15 @@ export class GamesService {
       const winners = await this.sessionsService.getWinners(sessionId);
       if (winners.length === 0) return;
 
+      const reward = await this.economy.getNumber('game_win_coin_reward');
+      if (reward <= 0) return;
+
       for (const winnerId of winners) {
         try {
           await this.wallet.credit(
             winnerId,
             'coins',
-            this.gameWinCoinReward,
+            reward,
             'game_win',
             `game-${sessionId}-payout-${winnerId}`,
             { sessionId, gameId: session.gameId },

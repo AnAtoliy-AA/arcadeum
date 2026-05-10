@@ -206,7 +206,9 @@ describe('GemPurchasesService', () => {
         expect.objectContaining({
           amountUsd: 499,
           description: expect.stringContaining('120') as unknown, // totalGems = 100 + 20
-          returnUrl: 'https://example.com/return',
+          // Gem-specific return URL is derived from PAYPAL_RETURN_URL by
+          // swapping the path to /payment/gem-success.
+          returnUrl: 'https://example.com/payment/gem-success',
           cancelUrl: 'https://example.com/cancel',
         }),
       );

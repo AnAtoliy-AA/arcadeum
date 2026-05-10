@@ -65,11 +65,29 @@ export class GemPurchasesService {
 
     const totalGems = pkg.gems + (pkg.bonusGems ?? 0);
 
-    const returnUrl = this.config.get<string>('PAYPAL_RETURN_URL');
+    // Gem purchases need their own return URL so the FE can auto-finalize
+    // on redirect. The donation flow's PAYPAL_RETURN_URL ('/payment/success')
+    // knows nothing about gems and would leave the row pending forever.
+    // Prefer PAYPAL_GEM_RETURN_URL if set; otherwise derive from the donation
+    // return URL by replacing its path with '/payment/gem-success'.
+    const explicitGemReturn = this.config.get<string>('PAYPAL_GEM_RETURN_URL');
+    const donationReturn = this.config.get<string>('PAYPAL_RETURN_URL');
     const cancelUrl = this.config.get<string>('PAYPAL_CANCEL_URL');
-    if (!returnUrl || !cancelUrl) {
+    if (!donationReturn || !cancelUrl) {
       throw new InternalServerErrorException('payments.missingRedirects');
     }
+    const returnUrl =
+      explicitGemReturn ??
+      (() => {
+        try {
+          const u = new URL(donationReturn);
+          u.pathname = '/payment/gem-success';
+          u.search = '';
+          return u.toString();
+        } catch {
+          return donationReturn; // fallback — better than throwing
+        }
+      })();
 
     const order = await this.paypal.createOrder({
       amountUsd: pkg.priceUsd,

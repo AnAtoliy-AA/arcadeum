@@ -14,6 +14,7 @@ import { AdminModule } from './admin/admin.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
 import { WalletModule } from './wallet/wallet.module';
+import { GemsModule } from './gems/gems.module';
 import { resolveMongoUri } from './common/utils/mongo-uri.util';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -34,6 +35,7 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     AnnouncementsModule,
     TournamentsModule,
     WalletModule,
+    GemsModule,
     MongooseModule.forRoot(resolveMongoUri()),
   ],
   controllers: [AppController],

@@ -10,6 +10,7 @@ import {
 } from './schemas/referral-reward.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: User.name, schema: UserSchema },
     ]),
     forwardRef(() => AuthModule),
+    forwardRef(() => WalletModule),
   ],
   controllers: [ReferralController, BadgesController],
   providers: [ReferralService],

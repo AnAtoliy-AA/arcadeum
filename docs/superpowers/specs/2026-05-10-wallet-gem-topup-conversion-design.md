@@ -63,7 +63,7 @@ Players buy gems with real money via PayPal, then convert gems to coins at a fix
 
 **Why env var:** Gem → coin is a global lever (not per-package), and changing it should be a config tweak, not a code change.
 
-**Why client-supplied `conversionId`:** Lets the caller retry safely (same id → idempotent). Server-generated UUID also acceptable; the plan picks one explicitly.
+**Why client-supplied `conversionId`:** Lets the caller retry safely (same id → idempotent). The contract: **the FE generates a UUID at the moment the user clicks "Convert"** and passes it on every retry. The BE rejects requests with a missing or non-UUID `conversionId` (400). Server-side generation would force the FE to handle "did the previous call land?" via a separate state machine; client-side ids keep retries simple.
 
 ### D5 — Idempotency keys
 
@@ -250,9 +250,7 @@ class PaypalGateway {
     returnUrl: string;
     cancelUrl: string;
   }): Promise<{ orderId: string; approveUrl: string }>;
-  getOrder(
-    orderId: string,
-  ): Promise<{
+  getOrder(orderId: string): Promise<{
     status:
       | 'CREATED'
       | 'APPROVED'
@@ -287,8 +285,10 @@ async convertGemsToCoins(userId, gems, conversionId): Promise<...> {
     throw new BadRequestException('gems.invalidAmount');
   }
   const coins = gems * this.gemToCoinRate;
-  if (coins > 1_000_000) {
-    // The wallet's per-tx cap; reject before the wallet does so the message is gem-specific.
+  if (coins > WalletService.MAX_TRANSACTION_AMOUNT) {
+    // Reuse the wallet's per-transaction cap (1_000_000 from ARC-615) so the
+    // limit can never drift between the conversion endpoint and the wallet
+    // service. Reject before the wallet does so the message is gem-specific.
     throw new BadRequestException('gems.conversionExceedsCap');
   }
 
@@ -364,6 +364,11 @@ async finalizeOrder(userId, paypalOrderId): Promise<...> {
   }
 
   // Credit gems with the PayPal order id as the idempotency key.
+  // No `parentSession` here on purpose: this is a single wallet write with
+  // no other side effects in the same transaction (the GemPurchase row update
+  // happens after the credit completes — the wallet's idempotency layer makes
+  // a partial-state retry safe). Compare with `convertGemsToCoins` which DOES
+  // need parentSession because it does two atomic writes.
   const tx = await this.wallet.credit(
     userId, 'gems', purchase.gems,
     'gem_purchase',
@@ -436,7 +441,7 @@ apps/mobile/features/gems/
     └── ConvertGemsForm.tsx
 ```
 
-Wallet screen composes these. PayPal redirect uses `expo-web-browser.openAuthSessionAsync` which returns the redirect URL synchronously when the user closes the auth session — the mobile screen extracts `orderId` from the URL and calls finalize.
+Wallet screen composes these. PayPal redirect uses `expo-web-browser.openAuthSessionAsync`, which resolves with `{ type: 'success', url }` when PayPal redirects back to the deep link, or `{ type: 'cancel' }` if the user dismisses the auth sheet. On `success`, extract `orderId` from the URL and call finalize. On `cancel`, leave the `GemPurchase` row in `pending` state and rely on the Verify banner (D3) for recovery the next time the user opens the wallet.
 
 ## i18n
 

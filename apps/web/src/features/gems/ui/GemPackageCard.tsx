@@ -64,20 +64,25 @@ export function GemPackageCard({ pkg }: GemPackageCardProps) {
         </div>
       )}
 
-      {/* Price */}
+      {/* Price + Buy button — pinned to the bottom of the card so cards
+          with different content heights (e.g. with vs without bonus row)
+          still align their CTAs in a single row. */}
       <div
-        data-testid="package-price"
         style={{
-          fontSize: '20px',
-          fontWeight: 700,
-          color: '#e4e4e7',
+          marginTop: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
         }}
       >
-        {priceDisplay}
+        <div
+          data-testid="package-price"
+          style={{ fontSize: '20px', fontWeight: 700, color: '#e4e4e7' }}
+        >
+          {priceDisplay}
+        </div>
+        <BuyGemsButton packageId={pkg.id} />
       </div>
-
-      {/* Buy button */}
-      <BuyGemsButton packageId={pkg.id} />
     </div>
   );
 }

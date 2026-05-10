@@ -88,6 +88,12 @@ describe('GemsModule (integration)', () => {
   let txModel: Model<WalletTransactionDocument>;
 
   beforeAll(async () => {
+    // Provide PayPal redirect env vars so GemPurchasesService.createOrder
+    // doesn't throw payments.missingRedirects on hosts (CI) where they're
+    // unset. The actual values are irrelevant — PaypalGateway is mocked.
+    process.env.PAYPAL_RETURN_URL ??= 'http://test.local/payment/return';
+    process.env.PAYPAL_CANCEL_URL ??= 'http://test.local/payment/cancel';
+
     replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
     const uri = replSet.getUri();
     paypalGateway = buildPaypalGateway();

@@ -40,6 +40,9 @@ export const walletEs: WalletI18n = {
     tournament_entry: 'Inscripción al torneo',
     tournament_refund: 'Reembolso del torneo',
     tournament_prize: 'Premio del torneo',
+    gem_purchase: 'Gemas compradas',
+    gem_to_coin_conversion_debit: 'Gemas convertidas a monedas',
+    gem_to_coin_conversion_credit: 'Monedas de la conversión',
   },
   errors: {
     insufficientFunds: 'Saldo insuficiente.',

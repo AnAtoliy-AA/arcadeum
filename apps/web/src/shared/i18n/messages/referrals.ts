@@ -35,6 +35,11 @@ export const en = {
   nav: {
     inviteFriends: 'Invite Friends',
   },
+  coinReward: {
+    perFriend: '+{{coins}} coins per friend',
+    tierBonus: '+{{coins}} coin bonus',
+    totalEarnedLabel: 'Coins earned from referrals',
+  },
 };
 
 export const es = {
@@ -71,6 +76,11 @@ export const es = {
   },
   nav: {
     inviteFriends: 'Invitar Amigos',
+  },
+  coinReward: {
+    perFriend: '+{{coins}} monedas por amigo',
+    tierBonus: 'Bono de +{{coins}} monedas',
+    totalEarnedLabel: 'Monedas ganadas por referidos',
   },
 };
 
@@ -109,6 +119,11 @@ export const fr = {
   nav: {
     inviteFriends: 'Inviter des Amis',
   },
+  coinReward: {
+    perFriend: '+{{coins}} pièces par ami',
+    tierBonus: 'Bonus de +{{coins}} pièces',
+    totalEarnedLabel: 'Pièces gagnées via parrainage',
+  },
 };
 
 export const ru = {
@@ -146,6 +161,11 @@ export const ru = {
   nav: {
     inviteFriends: 'Пригласить друзей',
   },
+  coinReward: {
+    perFriend: '+{{coins}} монет за друга',
+    tierBonus: '+{{coins}} монет бонусом',
+    totalEarnedLabel: 'Монеты заработанные за приглашения',
+  },
 };
 
 export const by = {
@@ -182,6 +202,11 @@ export const by = {
   },
   nav: {
     inviteFriends: 'Запрасіць сяброў',
+  },
+  coinReward: {
+    perFriend: '+{{coins}} манет за сябра',
+    tierBonus: '+{{coins}} манет бонусам',
+    totalEarnedLabel: 'Манеты заробленыя за запрашэнні',
   },
 };
 

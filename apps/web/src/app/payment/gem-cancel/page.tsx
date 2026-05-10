@@ -8,9 +8,23 @@ export const metadata: Metadata = {
 };
 
 interface SearchParams {
-  // PayPal redirects with `?token=ORDER_ID` on cancel as well as success.
   token?: string;
 }
+
+const ANIMATIONS = `
+  @keyframes gem-cancel-fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes gem-cancel-pop {
+    0%   { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .gem-cancel-card { animation: gem-cancel-fade-in 0.4s ease-out both; }
+  .gem-cancel-icon {
+    animation: gem-cancel-pop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+`;
 
 export default async function GemPurchaseCancelPage({
   searchParams,
@@ -20,60 +34,147 @@ export default async function GemPurchaseCancelPage({
   const sp = await searchParams;
   const orderId = sp.token;
 
-  // If we have an order id, mark the row as cancelled so it doesn't sit
-  // in the player's pending banner. Idempotent / silent on errors — the
-  // worst case is the row stays pending and the player can clear it from
-  // the wallet page's Cancel button.
+  // If we have an order id, mark the row cancelled so it doesn't sit in the
+  // player's Verify banner. Idempotent / silent on errors.
   if (orderId && typeof orderId === 'string') {
     await cancelGemPurchase({ orderId });
   }
 
   return (
-    <main
-      style={{
-        maxWidth: 560,
-        margin: '0 auto',
-        padding: '48px 16px',
-        textAlign: 'center',
-      }}
-    >
-      <h1
+    <>
+      <style>{ANIMATIONS}</style>
+      <main
         style={{
-          fontSize: 24,
-          fontWeight: 700,
-          color: '#e4e4e7',
-          marginBottom: 12,
+          minHeight: '70vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 16px',
         }}
       >
-        Purchase cancelled
-      </h1>
-      <p style={{ fontSize: 15, color: '#d4d4d8', lineHeight: 1.5 }}>
-        No charge was made. You can pick a different package or try again any
-        time.
-      </p>
-      {orderId ? (
-        <p style={{ fontSize: 12, color: '#71717a', marginTop: 12 }}>
-          PayPal token: <code>{orderId}</code>
-        </p>
-      ) : null}
-      <div style={{ marginTop: 24 }}>
-        <Link
-          href="/wallet"
+        <div
+          className="gem-cancel-card"
           style={{
-            display: 'inline-block',
-            padding: '10px 18px',
-            borderRadius: 8,
-            background: 'rgba(124,58,237,0.15)',
-            border: '1px solid rgba(124,58,237,0.4)',
-            color: '#a78bfa',
-            fontSize: 14,
-            fontWeight: 600,
-            textDecoration: 'none',
+            maxWidth: 480,
+            width: '100%',
+            padding: '40px 32px',
+            borderRadius: 24,
+            background:
+              'linear-gradient(180deg, rgba(148,163,184,0.05) 0%, rgba(148,163,184,0.02) 100%)',
+            border: '1px solid rgba(148,163,184,0.18)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
           }}
         >
-          Open wallet
-        </Link>
-      </div>
-    </main>
+          <div
+            className="gem-cancel-icon"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              background:
+                'linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08))',
+              border: '1px solid rgba(148,163,184,0.3)',
+              color: '#94a3b8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 36,
+            }}
+          >
+            ✕
+          </div>
+
+          <h1
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+              color: '#f4f4f5',
+              margin: 0,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Purchase cancelled
+          </h1>
+
+          <p
+            style={{
+              fontSize: 15,
+              color: '#d4d4d8',
+              lineHeight: 1.5,
+              margin: 0,
+              maxWidth: 360,
+            }}
+          >
+            No charge was made. You can pick a different package or try again
+            any time.
+          </p>
+
+          {orderId ? (
+            <code
+              style={{
+                fontSize: 11,
+                color: '#71717a',
+                background: 'rgba(0,0,0,0.3)',
+                padding: '6px 10px',
+                borderRadius: 6,
+                fontFamily: 'ui-monospace, monospace',
+                marginTop: 4,
+                wordBreak: 'break-all',
+              }}
+            >
+              {orderId}
+            </code>
+          ) : null}
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+              marginTop: 12,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            <Link
+              href="/wallet"
+              style={{
+                display: 'inline-block',
+                padding: '11px 22px',
+                borderRadius: 10,
+                background: 'rgba(124,58,237,0.15)',
+                border: '1px solid rgba(124,58,237,0.4)',
+                color: '#a78bfa',
+                fontSize: 14,
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              Open wallet
+            </Link>
+            <Link
+              href="/wallet#buy-gems"
+              style={{
+                display: 'inline-block',
+                padding: '11px 22px',
+                borderRadius: 10,
+                background: 'transparent',
+                border: '1px solid rgba(148,163,184,0.3)',
+                color: '#a1a1aa',
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Try again
+            </Link>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }

@@ -2,6 +2,8 @@ import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
 import { walletRu } from './wallet/ru';
 import { adminWalletRu } from './admin-wallet/ru';
+import { gemsRu } from './gems/ru';
+import { adminGemPackagesRu } from './admin-gem-packages/ru';
 
 export const ru = {
   admin: {
@@ -471,4 +473,6 @@ export const ru = {
     comingSoon: 'Магазин наград скоро откроется!',
   },
   wallet: walletRu,
+  gems: gemsRu,
+  adminGemPackages: adminGemPackagesRu,
 };

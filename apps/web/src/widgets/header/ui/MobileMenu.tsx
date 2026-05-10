@@ -11,11 +11,11 @@ import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
   MobileUserInfo,
-  UserNameEllipsis,
   MobileVersionText,
   NavMobileLink,
 } from './styles';
 import { XStack, YStack } from 'tamagui';
+import { UserNameEllipsis } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';

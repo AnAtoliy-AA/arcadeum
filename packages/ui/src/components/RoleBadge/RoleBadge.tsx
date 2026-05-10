@@ -47,9 +47,9 @@ const roleStyles: Record<UserRole, RoleStyle> = {
     text: 'var(--roleDeveloper)',
   },
   admin: {
-    bg: 'var(--dangerBgSoft)',
-    text: 'var(--danger)',
-    glow: '0 0 10px var(--dangerBorder)',
+    bg: 'var(--danger)',
+    text: 'var(--white)',
+    glow: '0 0 12px color-mix(in srgb, var(--danger) 40%, transparent)',
   },
 };
 

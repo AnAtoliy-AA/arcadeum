@@ -27,7 +27,8 @@ import {
   UserNameEllipsis,
   ProfileDropdownWrapper,
   DropdownLink,
-} from './styles';
+  DropdownButton,
+} from '@arcadeum/ui';
 
 export default function ProfileMenu() {
   const { snapshot, clearTokens } = useSessionTokens();
@@ -93,7 +94,7 @@ export default function ProfileMenu() {
               onClick={closeMenu}
               data-testid="header-admin-link"
             >
-              <UserIcon size={16} />
+              <UserIcon size={18} />
               {t('navigation.adminTab')}
             </DropdownLink>
             <Divider spacing="sm" />
@@ -105,53 +106,46 @@ export default function ProfileMenu() {
           onClick={closeMenu}
           data-testid="header-wallet-link"
         >
-          <WalletIcon size={16} />
+          <WalletIcon size={18} />
           {t('navigation.walletTab')}
         </DropdownLink>
 
         <DropdownLink href="/settings" onClick={closeMenu}>
-          <SettingsIcon size={16} />
+          <SettingsIcon size={18} />
           {t('navigation.settingsTab')}
         </DropdownLink>
 
         <DropdownLink href={routes.stats} onClick={closeMenu}>
-          <BarChartIcon size={16} />
+          <BarChartIcon size={18} />
           {t('navigation.statsTab')}
         </DropdownLink>
 
         <DropdownLink href={routes.referrals} onClick={closeMenu}>
-          <GiftIcon size={16} />
+          <GiftIcon size={18} />
           {t('referrals.nav.inviteFriends')}
         </DropdownLink>
 
         <Divider spacing="sm" />
 
         <DropdownLink href={routes.terms} onClick={closeMenu}>
-          <FileTextIcon size={16} />
+          <FileTextIcon size={18} />
           {t('legal.nav.terms')}
         </DropdownLink>
 
         <DropdownLink href={routes.privacy} onClick={closeMenu}>
-          <LockIcon size={16} />
+          <LockIcon size={18} />
           {t('legal.nav.privacy')}
         </DropdownLink>
 
         <DropdownLink href={routes.contact} onClick={closeMenu}>
-          <MailIcon size={16} />
+          <MailIcon size={18} />
           {t('legal.nav.contact')}
         </DropdownLink>
 
         <Divider spacing="sm" />
-
-        <Button
-          variant="listItem"
-          onClick={handleLogout}
-          data-testid="desktop-logout-button"
-          icon={<LogoutIcon size={16} />}
-          gap="$3"
-        >
+        <DropdownButton onClick={handleLogout} icon={<LogoutIcon size={18} />}>
           {t('common.actions.logout')}
-        </Button>
+        </DropdownButton>
       </ProfileDropdownWrapper>
     </ProfileMenuContainer>
   );

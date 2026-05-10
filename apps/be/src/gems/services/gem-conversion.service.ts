@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
-import { ConfigService } from '@nestjs/config';
 import { WalletService } from '../../wallet/wallet.service';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 import type { WalletBalance } from '../../wallet/interfaces/wallet-balance.interface';
 
 const UUID_RE =
@@ -11,20 +11,15 @@ const UUID_RE =
 @Injectable()
 export class GemConversionService {
   private readonly logger = new Logger(GemConversionService.name);
-  private readonly rate: number;
 
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly wallet: WalletService,
-    private readonly config: ConfigService,
-  ) {
-    const raw = this.config.get<string>('GEM_TO_COIN_RATE');
-    const parsed = raw ? Number(raw) : 100;
-    this.rate = Number.isInteger(parsed) && parsed > 0 ? parsed : 100;
-  }
+    private readonly economy: EconomySettingsService,
+  ) {}
 
-  getRate(): number {
-    return this.rate;
+  async getRate(): Promise<number> {
+    return this.economy.getNumber('gem_to_coin_rate');
   }
 
   async convertGemsToCoins(
@@ -43,7 +38,9 @@ export class GemConversionService {
     if (!UUID_RE.test(conversionId)) {
       throw new BadRequestException('gems.invalidConversionId');
     }
-    const coins = gems * this.rate;
+
+    const rate = await this.economy.getNumber('gem_to_coin_rate');
+    const coins = gems * rate;
     if (coins > WalletService.MAX_TRANSACTION_AMOUNT) {
       throw new BadRequestException('gems.conversionExceedsCap');
     }
@@ -57,7 +54,7 @@ export class GemConversionService {
           gems,
           'gem_to_coin_conversion_debit',
           `gem-to-coin-${conversionId}-debit`,
-          { conversionId, rate: this.rate },
+          { conversionId, rate },
           session,
         );
         await this.wallet.credit(
@@ -66,7 +63,7 @@ export class GemConversionService {
           coins,
           'gem_to_coin_conversion_credit',
           `gem-to-coin-${conversionId}-credit`,
-          { conversionId, rate: this.rate },
+          { conversionId, rate },
           session,
         );
       });
@@ -102,7 +99,7 @@ export class GemConversionService {
       gemsDebited: gems,
       coinsCredited: coins,
       newBalance: balance,
-      rate: this.rate,
+      rate,
     };
   }
 

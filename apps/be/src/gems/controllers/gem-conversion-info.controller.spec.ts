@@ -38,14 +38,14 @@ describe('GemConversionInfoController', () => {
 
   describe('GET /wallet/conversion-rate', () => {
     it('is an open route — no auth required', async () => {
-      conversionService.getRate.mockReturnValue(100);
+      conversionService.getRate.mockResolvedValue(100);
 
       // Should succeed without any auth headers
       await request(server()).get('/wallet/conversion-rate').expect(200);
     });
 
     it('returns the default rate of 100', async () => {
-      conversionService.getRate.mockReturnValue(100);
+      conversionService.getRate.mockResolvedValue(100);
 
       const res = await request(server())
         .get('/wallet/conversion-rate')
@@ -54,8 +54,8 @@ describe('GemConversionInfoController', () => {
       expect(res.body as unknown).toEqual({ rate: 100 });
     });
 
-    it('returns the env-tuned rate when GEM_TO_COIN_RATE is set', async () => {
-      conversionService.getRate.mockReturnValue(200);
+    it('returns the economy-tuned rate when set to 200', async () => {
+      conversionService.getRate.mockResolvedValue(200);
 
       const res = await request(server())
         .get('/wallet/conversion-rate')
@@ -65,7 +65,7 @@ describe('GemConversionInfoController', () => {
     });
 
     it('calls service.getRate()', async () => {
-      conversionService.getRate.mockReturnValue(50);
+      conversionService.getRate.mockResolvedValue(50);
 
       await request(server()).get('/wallet/conversion-rate').expect(200);
 

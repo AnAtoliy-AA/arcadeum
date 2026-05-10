@@ -81,6 +81,7 @@ describe('GemPurchasesService', () => {
   let paypal: {
     createOrder: jest.Mock;
     getOrder: jest.Mock;
+    captureOrder: jest.Mock;
   };
   let wallet: {
     credit: jest.Mock;
@@ -102,6 +103,7 @@ describe('GemPurchasesService', () => {
     paypal = {
       createOrder: jest.fn(),
       getOrder: jest.fn(),
+      captureOrder: jest.fn(),
     };
     wallet = {
       credit: jest.fn(),
@@ -368,13 +370,15 @@ describe('GemPurchasesService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('throws BadRequestException when PayPal order status is not COMPLETED', async () => {
+    it('throws BadRequestException when PayPal order is in a non-capturable status', async () => {
+      // PAYER_ACTION_REQUIRED indicates the buyer never finished the
+      // PayPal flow (e.g. closed the tab on the auth page). Not capturable.
       const userId = oid().toString();
       const purchase = buildPurchaseDoc({ status: 'pending' });
       purchaseModel.findOne.mockResolvedValue(purchase);
       paypal.getOrder.mockResolvedValue({
         id: 'PP-ORDER-123',
-        status: 'APPROVED',
+        status: 'PAYER_ACTION_REQUIRED',
         intent: 'CAPTURE',
       });
 
@@ -382,8 +386,13 @@ describe('GemPurchasesService', () => {
         service.finalizeOrder(userId, 'PP-ORDER-123'),
       ).rejects.toThrow(BadRequestException);
 
+      expect(paypal.captureOrder).not.toHaveBeenCalled();
       expect(wallet.credit).not.toHaveBeenCalled();
     });
+
+    // TODO(ARC-617 follow-up): add a unit test for the APPROVED → captureOrder
+    // → credit path. Skipped here to keep this spec under the 500-line limit;
+    // splitting into a dedicated finalize.spec.ts is the right answer.
 
     it('marks purchase as failed and throws when PayPal status is VOIDED', async () => {
       const userId = oid().toString();

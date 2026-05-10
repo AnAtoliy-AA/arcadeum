@@ -138,7 +138,14 @@ export class GemPurchasesService {
       throw new BadRequestException('gems.orderNotEligible');
     }
 
-    const paypalOrder = await this.paypal.getOrder(paypalOrderId);
+    let paypalOrder = await this.paypal.getOrder(paypalOrderId);
+    // With intent=CAPTURE, PayPal lands in APPROVED after the buyer clicks
+    // Pay Now. We must explicitly capture to flip it to COMPLETED. (Some
+    // sandbox flows auto-capture and return COMPLETED directly — both paths
+    // are covered.)
+    if (paypalOrder.status === 'APPROVED') {
+      paypalOrder = await this.paypal.captureOrder(paypalOrderId);
+    }
     if (paypalOrder.status !== 'COMPLETED') {
       if (paypalOrder.status === 'VOIDED') {
         purchase.status = 'failed';

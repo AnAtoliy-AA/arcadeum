@@ -161,6 +161,52 @@ export class PaypalGateway {
     }
   }
 
+  /**
+   * Capture an APPROVED order to flip it to COMPLETED.
+   * With `intent: 'CAPTURE'`, PayPal puts the order in APPROVED after the
+   * buyer clicks Pay Now. This call finalises the funds movement.
+   * Returns the order's status after the capture attempt — typically
+   * `COMPLETED`, but can be `VOIDED` if the capture failed.
+   */
+  async captureOrder(orderId: string): Promise<PayPalGetOrderResponse> {
+    const token = await this.authToken();
+    const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
+    try {
+      const res = await axios.post<PayPalGetOrderResponse>(
+        `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': randomUUID(),
+          },
+          timeout: 10000,
+        },
+      );
+      return res.data;
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      // PayPal returns 422 with `ORDER_ALREADY_CAPTURED` when the order is
+      // already in COMPLETED state — treat as success and let the caller
+      // fall through to the wallet credit. Re-fetch the order so the
+      // caller sees its real status.
+      const status = axiosErr.response?.status;
+      const data = axiosErr.response?.data as
+        | { name?: string; details?: { issue?: string }[] }
+        | undefined;
+      const issue = data?.details?.[0]?.issue;
+      if (status === 422 && issue === 'ORDER_ALREADY_CAPTURED') {
+        return this.getOrder(orderId);
+      }
+      this.logger.error(
+        `PayPal captureOrder ${orderId} failed: ${axiosErr.message}`,
+        axiosErr.response?.data,
+      );
+      throw new ServiceUnavailableException('paypal.unavailable');
+    }
+  }
+
   private requiredEnv(name: string): string {
     const v = this.config.get<string>(name);
     if (!v) throw new InternalServerErrorException(`paypal.${name}_missing`);

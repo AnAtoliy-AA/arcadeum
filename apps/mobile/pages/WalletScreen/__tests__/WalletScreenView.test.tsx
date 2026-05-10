@@ -26,6 +26,48 @@ jest.mock('@/stores/sessionTokens', () => ({
   useSessionTokens: jest.fn(),
 }));
 
+// Mock gem widgets so WalletScreenView tests stay focused on wallet logic
+/* eslint-disable @typescript-eslint/no-require-imports */
+jest.mock('@/features/gems/ui/PendingGemPurchasesBanner', () => ({
+  PendingGemPurchasesBanner: () => {
+    const { View } = require('react-native') as { View: unknown };
+    const mockReact = require('react') as typeof import('react');
+    return mockReact.createElement(
+      View as React.ComponentType<{ testID: string }>,
+      {
+        testID: 'mock-pending-gem-purchases-banner',
+      },
+    );
+  },
+}));
+
+jest.mock('@/features/gems/ui/GemStoreList', () => ({
+  GemStoreList: () => {
+    const { View } = require('react-native') as { View: unknown };
+    const mockReact = require('react') as typeof import('react');
+    return mockReact.createElement(
+      View as React.ComponentType<{ testID: string }>,
+      {
+        testID: 'mock-gem-store-list',
+      },
+    );
+  },
+}));
+
+jest.mock('@/features/gems/ui/ConvertGemsForm', () => ({
+  ConvertGemsForm: () => {
+    const { View } = require('react-native') as { View: unknown };
+    const mockReact = require('react') as typeof import('react');
+    return mockReact.createElement(
+      View as React.ComponentType<{ testID: string }>,
+      {
+        testID: 'mock-convert-gems-form',
+      },
+    );
+  },
+}));
+/* eslint-enable @typescript-eslint/no-require-imports */
+
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { useWalletBalance, useWalletTransactions } =
   require('@/features/wallet/api/useWallet') as {
@@ -104,5 +146,12 @@ describe('WalletScreenView', () => {
   it('shows empty state when no transactions', () => {
     const { getByText } = render(<WalletScreenView />);
     expect(getByText('wallet.page.empty.title')).toBeTruthy();
+  });
+
+  it('renders gem widgets in wallet screen (pending banner, store, convert form)', () => {
+    const { getByTestId } = render(<WalletScreenView />);
+    expect(getByTestId('mock-pending-gem-purchases-banner')).toBeTruthy();
+    expect(getByTestId('mock-gem-store-list')).toBeTruthy();
+    expect(getByTestId('mock-convert-gems-form')).toBeTruthy();
   });
 });

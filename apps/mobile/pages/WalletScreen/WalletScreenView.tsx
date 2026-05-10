@@ -16,6 +16,9 @@ import {
   useWalletBalance,
   useWalletTransactions,
 } from '@/features/wallet/api/useWallet';
+import { PendingGemPurchasesBanner } from '@/features/gems/ui/PendingGemPurchasesBanner';
+import { GemStoreList } from '@/features/gems/ui/GemStoreList';
+import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import type {
   WalletCurrency,
   WalletTransactionView,
@@ -218,6 +221,13 @@ export function WalletScreenView() {
               onRefresh={onRefresh}
               tintColor={palette.tint}
             />
+          }
+          ListHeaderComponent={
+            <View testID="wallet-gem-widgets">
+              <PendingGemPurchasesBanner />
+              <GemStoreList />
+              <ConvertGemsForm />
+            </View>
           }
           contentContainerStyle={
             transactions.length === 0

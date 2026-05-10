@@ -133,11 +133,29 @@ export const en = {
       card: {
         registered: '{count} / {max} registered',
         prize: 'Prize',
+        entryFee: 'Entry fee',
+        prizePool: 'Prize pool',
         registerCta: 'Register',
         unregisterCta: 'Unregister',
         signInToRegister: 'Sign in to register',
         full: 'Join waitlist',
         registrationClosed: 'Registration closed',
+        confirmRegister: {
+          title: 'Confirm entry',
+          body: 'This tournament costs {fee} coins. Your balance: {balance} coins.',
+          confirm: 'Pay & Register',
+          cancel: 'Cancel',
+        },
+        confirmUnregister: {
+          refund: "You'll be refunded {amount} coins.",
+          title: 'Cancel registration',
+          body: 'Are you sure?',
+          confirm: 'Yes, cancel',
+          cancelButton: 'No, keep me in',
+        },
+        errors: {
+          insufficientFunds: 'Not enough coins to enter.',
+        },
         effectiveStatus: {
           scheduled: 'Scheduled',
           registration_open: 'Registration open',

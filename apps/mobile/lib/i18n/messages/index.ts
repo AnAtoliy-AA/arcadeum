@@ -10,6 +10,7 @@ import { navigationMessages } from './navigation';
 import { paymentsMessages } from './payments';
 import { settingsMessages } from './settings';
 import { supportMessages } from './support';
+import { tournamentsMessages } from './tournaments';
 import { walletMessages } from './wallet';
 import { welcomeMessages } from './welcome';
 
@@ -28,6 +29,7 @@ export const translations = {
     support: supportMessages.en,
     payments: paymentsMessages.en,
     settings: settingsMessages.en,
+    tournaments: tournamentsMessages.en,
     wallet: walletMessages.en,
   },
   es: {
@@ -44,6 +46,7 @@ export const translations = {
     support: supportMessages.es,
     payments: paymentsMessages.es,
     settings: settingsMessages.es,
+    tournaments: tournamentsMessages.es,
     wallet: walletMessages.es,
   },
   fr: {
@@ -60,6 +63,7 @@ export const translations = {
     support: supportMessages.fr,
     payments: paymentsMessages.fr,
     settings: settingsMessages.fr,
+    tournaments: tournamentsMessages.fr,
     wallet: walletMessages.fr,
   },
 } as const satisfies TranslationMap;

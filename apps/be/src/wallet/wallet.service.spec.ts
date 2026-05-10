@@ -1,7 +1,7 @@
 // wallet.service.spec.ts
 import { Test } from '@nestjs/testing';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 import { WalletService } from './wallet.service';
 import { WalletGateway } from './wallet.gateway';
 import { User } from '../auth/schemas/user.schema';
@@ -340,6 +340,146 @@ describe('WalletService', () => {
 
       expect(result.id).toBe(String(priorId));
       expect(txModel.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('credit (parentSession)', () => {
+    it('uses the caller-supplied session and skips its own transaction', async () => {
+      const externalSession = {} as ClientSession;
+      userModel.findOneAndUpdate.mockResolvedValue({ coins: 100, gems: 0 });
+      txModel.create.mockResolvedValue([
+        makeTxDoc({
+          _id: new Types.ObjectId(),
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 100,
+          balanceAfter: 100,
+          reason: 'admin_grant',
+          idempotencyKey: 'k-parent',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      ]);
+
+      await service.credit(
+        userId,
+        'coins',
+        100,
+        'admin_grant',
+        'k-parent',
+        undefined,
+        externalSession,
+      );
+
+      // No own startSession call.
+      expect(connection.startSession).not.toHaveBeenCalled();
+      // findOneAndUpdate was called with the external session.
+      expect(userModel.findOneAndUpdate).toHaveBeenCalledWith(
+        expect.any(Object) as unknown,
+        expect.any(Object) as unknown,
+        expect.objectContaining({ session: externalSession }) as unknown,
+      );
+      // The gateway emit is deferred (not called inline).
+      expect(walletGateway.emitBalance).not.toHaveBeenCalled();
+    });
+
+    it('re-throws duplicate key error to abort the caller transaction', async () => {
+      const externalSession = {} as ClientSession;
+      const dupErr = new Error('dup') as Error & {
+        code: number;
+        keyPattern: Record<string, number>;
+      };
+      dupErr.code = 11000;
+      dupErr.keyPattern = { idempotencyKey: 1 };
+
+      userModel.findOneAndUpdate.mockResolvedValue({ coins: 100, gems: 0 });
+      txModel.create.mockRejectedValue(dupErr);
+
+      await expect(
+        service.credit(
+          userId,
+          'coins',
+          100,
+          'admin_grant',
+          'k-parent-dup',
+          undefined,
+          externalSession,
+        ),
+      ).rejects.toMatchObject({ code: 11000 });
+
+      // Should NOT call findOne to recover — caller is responsible.
+      expect(txModel.findOne).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('debit (parentSession)', () => {
+    it('uses the caller-supplied session and skips its own transaction', async () => {
+      const externalSession = {} as ClientSession;
+      userModel.findOneAndUpdate.mockResolvedValue({ coins: 50, gems: 0 });
+      txModel.create.mockResolvedValue([
+        makeTxDoc({
+          _id: new Types.ObjectId(),
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: -50,
+          balanceAfter: 50,
+          reason: 'admin_deduct',
+          idempotencyKey: 'k-debit-parent',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      ]);
+
+      await service.debit(
+        userId,
+        'coins',
+        50,
+        'admin_deduct',
+        'k-debit-parent',
+        undefined,
+        externalSession,
+      );
+
+      // No own startSession call.
+      expect(connection.startSession).not.toHaveBeenCalled();
+      // findOneAndUpdate was called with the external session.
+      expect(userModel.findOneAndUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ coins: { $gte: 50 } }) as unknown,
+        expect.any(Object) as unknown,
+        expect.objectContaining({ session: externalSession }) as unknown,
+      );
+      // The gateway emit is deferred (not called inline).
+      expect(walletGateway.emitBalance).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findByIdempotencyKey', () => {
+    it('returns the transaction view when found', async () => {
+      const txId = new Types.ObjectId();
+      txModel.findOne.mockResolvedValue(
+        makeTxDoc({
+          _id: txId,
+          userId: new Types.ObjectId(userId),
+          currency: 'coins',
+          delta: 100,
+          balanceAfter: 100,
+          reason: 'admin_grant',
+          idempotencyKey: 'find-key',
+          createdAt: new Date('2026-05-09T00:00:00Z'),
+        }),
+      );
+
+      const result = await service.findByIdempotencyKey('find-key');
+
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe(String(txId));
+      expect(txModel.findOne).toHaveBeenCalledWith({
+        idempotencyKey: 'find-key',
+      });
+    });
+
+    it('returns null when not found', async () => {
+      txModel.findOne.mockResolvedValue(null);
+      const result = await service.findByIdempotencyKey('missing-key');
+      expect(result).toBeNull();
     });
   });
 });

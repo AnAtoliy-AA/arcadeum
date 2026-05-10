@@ -42,6 +42,8 @@ export const adminTournamentsBy = {
     optional: 'неабавязкова',
     maxPlayers: 'Макс. гульцоў',
     prizeDescription: 'Прыз',
+    entryFeeLabel: 'Узнос (манеты)',
+    prizePoolLabel: 'Прызавы фонд (манеты)',
     tabs: {
       en: 'English',
       ru: 'Русский',
@@ -55,6 +57,20 @@ export const adminTournamentsBy = {
       nameRequired: 'Англійская назва абавязковая.',
       capacityRange: 'Месцаў павінна быць ад 2 да 256.',
       windowOrder: 'Час закрыцця рэгістрацыі павінен быць пазней за адкрыццё.',
+    },
+  },
+  markComplete: {
+    button: 'Завяршыць',
+    dialog: {
+      title: 'Выберыце пераможцу',
+      body: 'Хто перамог у гэтым турніры?',
+      confirm: 'Завяршыць',
+      cancel: 'Адмена',
+    },
+    errors: {
+      notRegistered: 'Абраны карыстальнік не зарэгістраваны ў турніры.',
+      notLive: 'Турнір павінен быць актыўным для завяршэння.',
+      generic: 'Не атрымалася завяршыць. Паспрабуйце яшчэ раз.',
     },
   },
   transitionPrompt: {

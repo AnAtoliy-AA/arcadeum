@@ -50,6 +50,18 @@ export class UpdateTournamentDto {
   @MaxLength(500)
   prizeDescription?: string | null;
 
+  @IsInt()
+  @Min(0)
+  @Max(1_000_000)
+  @IsOptional()
+  entryFeeCoins?: number;
+
+  @IsInt()
+  @Min(0)
+  @Max(1_000_000)
+  @IsOptional()
+  prizePoolCoins?: number;
+
   @IsOptional()
   @IsObject()
   @ValidateNested()

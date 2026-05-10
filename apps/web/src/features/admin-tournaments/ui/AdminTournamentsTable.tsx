@@ -29,6 +29,7 @@ export interface AdminTournamentsTableLabels {
   edit: string;
   delete: string;
   transition: string;
+  markComplete: string;
 }
 
 export interface AdminTournamentsTableProps {
@@ -42,6 +43,7 @@ export interface AdminTournamentsTableProps {
   onEdit: (item: AdminTournamentItem) => void;
   onDelete: (item: AdminTournamentItem) => void;
   onTransition: (item: AdminTournamentItem) => void;
+  onMarkComplete: (item: AdminTournamentItem) => void;
   labels: AdminTournamentsTableLabels;
 }
 
@@ -59,6 +61,7 @@ export function AdminTournamentsTable({
   onEdit,
   onDelete,
   onTransition,
+  onMarkComplete,
   labels,
 }: AdminTournamentsTableProps) {
   const { locale } = useLanguage();
@@ -136,6 +139,7 @@ export function AdminTournamentsTable({
           const canTransition = nextStatuses(item.status).length > 0;
           const canDelete =
             item.status === 'scheduled' || item.status === 'cancelled';
+          const canMarkComplete = item.status === 'live';
           return (
             <XStack
               key={item.id}
@@ -197,6 +201,16 @@ export function AdminTournamentsTable({
                     data-testid={`transition-${item.id}`}
                   >
                     {labels.transition}
+                  </Button>
+                )}
+                {canMarkComplete && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => onMarkComplete(item)}
+                    data-testid={`mark-complete-${item.id}`}
+                  >
+                    {labels.markComplete}
                   </Button>
                 )}
                 {canDelete && (

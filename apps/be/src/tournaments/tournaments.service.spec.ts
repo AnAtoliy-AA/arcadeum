@@ -1,24 +1,28 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { TournamentsService } from './tournaments.service';
 import { Tournament, type TournamentStatus } from './schemas/tournament.schema';
+import { WalletService } from '../wallet/wallet.service';
 
-const oid = () => new Types.ObjectId();
+export const oid = () => new Types.ObjectId();
 
-const buildDoc = (
+export const buildDoc = (
   overrides: Partial<{
     _id: Types.ObjectId;
     status: TournamentStatus;
     scheduledAt: Date;
     maxPlayers: number;
     name: string;
+    entryFeeCoins: number;
+    prizePoolCoins: number;
+    winnerUserId: string | null;
     registrations: Array<{
       userId: Types.ObjectId;
       displayName: string | null;
@@ -36,6 +40,9 @@ const buildDoc = (
   maxPlayers: overrides.maxPlayers ?? 16,
   prizeDescription: null,
   resultText: null,
+  entryFeeCoins: overrides.entryFeeCoins ?? 0,
+  prizePoolCoins: overrides.prizePoolCoins ?? 0,
+  winnerUserId: overrides.winnerUserId ?? null,
   content: { en: { name: overrides.name ?? 'Cup' } },
   registrations: overrides.registrations ?? [],
   createdBy: { _id: oid(), displayName: 'Admin' },
@@ -43,7 +50,7 @@ const buildDoc = (
   updatedAt: new Date('2026-04-02T00:00:00Z'),
 });
 
-const buildFindChain = (returnDocs: unknown[]) => ({
+export const buildFindChain = (returnDocs: unknown[]) => ({
   populate: jest.fn().mockReturnThis(),
   sort: jest.fn().mockReturnThis(),
   skip: jest.fn().mockReturnThis(),
@@ -51,38 +58,70 @@ const buildFindChain = (returnDocs: unknown[]) => ({
   lean: jest.fn().mockResolvedValue(returnDocs),
 });
 
-const buildFindByIdChain = (returnDoc: unknown) => ({
+export const buildFindByIdChain = (returnDoc: unknown) => ({
   populate: jest.fn().mockReturnThis(),
   lean: jest.fn().mockResolvedValue(returnDoc),
 });
 
-describe('TournamentsService', () => {
+/** Build a minimal mock Mongo session with withTransaction support. */
+export const buildMockSession = () => ({
+  withTransaction: jest
+    .fn()
+    .mockImplementation(async (fn: () => Promise<void>) => {
+      await fn();
+    }),
+  endSession: jest.fn().mockResolvedValue(undefined),
+});
+
+export const buildModel = () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  findByIdAndDelete: jest.fn(),
+  updateOne: jest.fn(),
+  countDocuments: jest.fn(),
+  create: jest.fn(),
+});
+
+export const buildWalletService = () => ({
+  debit: jest.fn(),
+  credit: jest.fn(),
+  getBalance: jest.fn().mockResolvedValue({ coins: 50, gems: 0 }),
+  emitAfterCommit: jest.fn(),
+  findByIdempotencyKey: jest.fn().mockResolvedValue(null),
+});
+
+export const buildConnection = () => ({
+  startSession: jest.fn().mockResolvedValue(buildMockSession()),
+});
+
+export const buildServiceModule = async (
+  model: ReturnType<typeof buildModel>,
+  walletService: ReturnType<typeof buildWalletService>,
+  connection: ReturnType<typeof buildConnection>,
+) => {
+  const moduleRef = await Test.createTestingModule({
+    providers: [
+      TournamentsService,
+      { provide: getModelToken(Tournament.name), useValue: model },
+      { provide: WalletService, useValue: walletService },
+      { provide: getConnectionToken(), useValue: connection },
+    ],
+  }).compile();
+  return moduleRef.get(TournamentsService);
+};
+
+describe('TournamentsService — core', () => {
   let service: TournamentsService;
-  let model: {
-    find: jest.Mock;
-    findById: jest.Mock;
-    findByIdAndUpdate: jest.Mock;
-    findByIdAndDelete: jest.Mock;
-    countDocuments: jest.Mock;
-    create: jest.Mock;
-  };
+  let model: ReturnType<typeof buildModel>;
+  let walletService: ReturnType<typeof buildWalletService>;
+  let connection: ReturnType<typeof buildConnection>;
 
   beforeEach(async () => {
-    model = {
-      find: jest.fn(),
-      findById: jest.fn(),
-      findByIdAndUpdate: jest.fn(),
-      findByIdAndDelete: jest.fn(),
-      countDocuments: jest.fn(),
-      create: jest.fn(),
-    };
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        TournamentsService,
-        { provide: getModelToken(Tournament.name), useValue: model },
-      ],
-    }).compile();
-    service = moduleRef.get(TournamentsService);
+    model = buildModel();
+    walletService = buildWalletService();
+    connection = buildConnection();
+    service = await buildServiceModule(model, walletService, connection);
   });
 
   describe('listForAdmin', () => {
@@ -109,13 +148,11 @@ describe('TournamentsService', () => {
     it('applies status, gameType, q filters with escapeRegExp', async () => {
       model.find.mockReturnValue(buildFindChain([]));
       model.countDocuments.mockResolvedValue(0);
-
       await service.listForAdmin({
         status: 'scheduled',
         gameType: 'sea_battle_v1',
         q: 'a.b',
       });
-
       expect(model.find).toHaveBeenCalledWith({
         status: 'scheduled',
         gameType: 'sea_battle_v1',
@@ -126,21 +163,17 @@ describe('TournamentsService', () => {
 
   describe('listPublic', () => {
     it('excludes cancelled and resolves locale with EN fallback', async () => {
-      const ru = { name: 'Кубок' };
       const enOnly = buildDoc();
       const withRu = {
         ...buildDoc(),
-        content: { en: { name: 'Cup' }, ru },
+        content: { en: { name: 'Cup' }, ru: { name: 'Кубок' } },
       };
-      const chain = buildFindChain([enOnly, withRu]);
-      model.find.mockReturnValue(chain);
+      model.find.mockReturnValue(buildFindChain([enOnly, withRu]));
 
       const result = await service.listPublic('ru', false);
 
-      expect(model.find).toHaveBeenCalledWith({
-        status: { $ne: 'cancelled' },
-      });
-      expect(result.items[0]?.name).toBe('Cup'); // EN fallback
+      expect(model.find).toHaveBeenCalledWith({ status: { $ne: 'cancelled' } });
+      expect(result.items[0]?.name).toBe('Cup');
       expect(result.items[1]?.name).toBe('Кубок');
     });
 
@@ -157,7 +190,6 @@ describe('TournamentsService', () => {
         ],
       });
       model.find.mockReturnValue(buildFindChain([doc]));
-
       const result = await service.listPublic('en', true, userOid.toString());
       expect(result.items[0]?.isRegistered).toBe(true);
     });
@@ -230,7 +262,6 @@ describe('TournamentsService', () => {
       model.findById.mockReturnValue({
         lean: jest.fn().mockResolvedValue(buildDoc({ _id: id })),
       });
-
       await expect(
         service.transition(id.toString(), 'completed'),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -270,7 +301,6 @@ describe('TournamentsService', () => {
           .fn()
           .mockResolvedValue(buildDoc({ _id: id, status: 'live' })),
       });
-
       await expect(service.remove(id.toString())).rejects.toBeInstanceOf(
         ConflictException,
       );
@@ -283,103 +313,6 @@ describe('TournamentsService', () => {
       });
       model.findByIdAndDelete.mockResolvedValue({});
       await expect(service.remove(id.toString())).resolves.toBeUndefined();
-    });
-  });
-
-  describe('register', () => {
-    it('rejects when status not registration_open', async () => {
-      const id = oid();
-      model.findById.mockReturnValue({
-        lean: jest.fn().mockResolvedValue(buildDoc({ _id: id })),
-      });
-      await expect(
-        service.register(id.toString(), oid().toString(), 'me'),
-      ).rejects.toBeInstanceOf(ConflictException);
-    });
-
-    it('places caller on waitlist when at capacity', async () => {
-      const id = oid();
-      const fullRegs = Array.from({ length: 16 }, () => ({
-        userId: oid(),
-        displayName: null,
-        registeredAt: new Date(),
-        waitlist: false,
-      }));
-      model.findById.mockReturnValue({
-        lean: jest.fn().mockResolvedValue(
-          buildDoc({
-            _id: id,
-            status: 'registration_open',
-            registrations: fullRegs,
-          }),
-        ),
-      });
-      model.findByIdAndUpdate.mockResolvedValue({});
-
-      const result = await service.register(
-        id.toString(),
-        oid().toString(),
-        null,
-      );
-      expect(result.waitlist).toBe(true);
-    });
-
-    it('is idempotent for already-registered user', async () => {
-      const id = oid();
-      const userOid = oid();
-      model.findById.mockReturnValue({
-        lean: jest.fn().mockResolvedValue(
-          buildDoc({
-            _id: id,
-            status: 'registration_open',
-            registrations: [
-              {
-                userId: userOid,
-                displayName: null,
-                registeredAt: new Date(),
-                waitlist: false,
-              },
-            ],
-          }),
-        ),
-      });
-
-      const result = await service.register(
-        id.toString(),
-        userOid.toString(),
-        null,
-      );
-      expect(result.waitlist).toBe(false);
-      expect(model.findByIdAndUpdate).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('unregister', () => {
-    it('forbids unregister for live or completed', async () => {
-      const id = oid();
-      model.findById.mockReturnValue({
-        lean: jest
-          .fn()
-          .mockResolvedValue(buildDoc({ _id: id, status: 'live' })),
-      });
-      await expect(
-        service.unregister(id.toString(), oid().toString()),
-      ).rejects.toBeInstanceOf(ForbiddenException);
-    });
-
-    it('pulls registration for scheduled/registration_open', async () => {
-      const id = oid();
-      model.findById.mockReturnValue({
-        lean: jest
-          .fn()
-          .mockResolvedValue(
-            buildDoc({ _id: id, status: 'registration_open' }),
-          ),
-      });
-      model.findByIdAndUpdate.mockResolvedValue({});
-      await expect(
-        service.unregister(id.toString(), oid().toString()),
-      ).resolves.toBeUndefined();
     });
   });
 

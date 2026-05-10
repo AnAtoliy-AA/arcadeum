@@ -38,6 +38,11 @@ export type TournamentContentMap = Partial<
   Record<TournamentLocale, TournamentLocaleContent>
 > & { en: TournamentLocaleContent };
 
+export interface TournamentRegistrationEntry {
+  userId: string;
+  displayName?: string | null;
+}
+
 export interface AdminTournamentItem {
   id: string;
   status: TournamentStatus;
@@ -48,9 +53,13 @@ export interface AdminTournamentItem {
   maxPlayers: number;
   prizeDescription: string | null;
   resultText: string | null;
+  entryFeeCoins: number;
+  prizePoolCoins: number;
+  winnerUserId: string | null;
   content: TournamentContentMap;
   registeredCount: number;
   waitlistCount: number;
+  registrations?: TournamentRegistrationEntry[];
   createdBy: { id: string; displayName: string | null } | null;
   createdAt: string;
   updatedAt: string;
@@ -78,6 +87,8 @@ export interface CreateTournamentBody {
   registrationClosesAt?: string | null;
   maxPlayers: number;
   prizeDescription?: string | null;
+  entryFeeCoins?: number;
+  prizePoolCoins?: number;
   content: TournamentContentMap;
 }
 
@@ -151,4 +162,20 @@ export async function deleteTournament(
   await apiClient.delete<void>(`/admin/tournaments/${encodeURIComponent(id)}`, {
     token: accessToken,
   });
+}
+
+export interface MarkCompleteBody {
+  winnerUserId: string;
+}
+
+export async function markTournamentComplete(
+  id: string,
+  body: MarkCompleteBody,
+  accessToken: string,
+): Promise<AdminTournamentItem> {
+  return apiClient.post<AdminTournamentItem>(
+    `/admin/tournaments/${encodeURIComponent(id)}/complete`,
+    body,
+    { token: accessToken },
+  );
 }

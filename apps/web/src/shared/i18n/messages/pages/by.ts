@@ -133,11 +133,29 @@ export const by = {
       card: {
         registered: 'Запісана {count} / {max}',
         prize: 'Прыз',
+        entryFee: 'Узнос',
+        prizePool: 'Прызавы фонд',
         registerCta: 'Запісацца',
         unregisterCta: 'Адмяніць запіс',
         signInToRegister: 'Увайдзіце, каб запісацца',
         full: 'У спіс чакання',
         registrationClosed: 'Рэгістрацыя закрыта',
+        confirmRegister: {
+          title: 'Пацвердзіць удзел',
+          body: 'Гэты турнір каштуе {fee} манет. Ваш баланс: {balance} манет.',
+          confirm: 'Аплаціць і запісацца',
+          cancel: 'Адмена',
+        },
+        confirmUnregister: {
+          refund: 'Вам будзе вернута {amount} манет.',
+          title: 'Адмена рэгістрацыі',
+          body: 'Вы ўпэўнены?',
+          confirm: 'Так, адмяніць',
+          cancelButton: 'Не, застацца',
+        },
+        errors: {
+          insufficientFunds: 'Недастаткова манет для ўдзелу.',
+        },
         effectiveStatus: {
           scheduled: 'Запланаваны',
           registration_open: 'Рэгістрацыя адкрыта',

@@ -133,11 +133,29 @@ export const fr = {
       card: {
         registered: 'Inscrits {count} / {max}',
         prize: 'Prix',
+        entryFee: "Frais d'entrée",
+        prizePool: 'Cagnotte',
         registerCta: "S'inscrire",
         unregisterCta: 'Se désinscrire',
         signInToRegister: 'Connectez-vous pour vous inscrire',
         full: "Liste d'attente",
         registrationClosed: 'Inscription fermée',
+        confirmRegister: {
+          title: 'Confirmer la participation',
+          body: 'Ce tournoi coûte {fee} pièces. Votre solde : {balance} pièces.',
+          confirm: "Payer et s'inscrire",
+          cancel: 'Annuler',
+        },
+        confirmUnregister: {
+          refund: 'Vous serez remboursé de {amount} pièces.',
+          title: "Annuler l'inscription",
+          body: 'Êtes-vous sûr ?',
+          confirm: 'Oui, annuler',
+          cancelButton: 'Non, rester',
+        },
+        errors: {
+          insufficientFunds: 'Pas assez de pièces pour participer.',
+        },
         effectiveStatus: {
           scheduled: 'Programmé',
           registration_open: 'Inscription ouverte',

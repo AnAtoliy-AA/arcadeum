@@ -129,11 +129,29 @@ export const es = {
       card: {
         registered: 'Inscritos {count} / {max}',
         prize: 'Premio',
+        entryFee: 'Cuota de entrada',
+        prizePool: 'Premio en juego',
         registerCta: 'Inscribirse',
         unregisterCta: 'Cancelar inscripción',
         signInToRegister: 'Inicia sesión para inscribirte',
         full: 'Lista de espera',
         registrationClosed: 'Inscripción cerrada',
+        confirmRegister: {
+          title: 'Confirmar entrada',
+          body: 'Este torneo cuesta {fee} monedas. Tu saldo: {balance} monedas.',
+          confirm: 'Pagar e inscribirse',
+          cancel: 'Cancelar',
+        },
+        confirmUnregister: {
+          refund: 'Se te devolverán {amount} monedas.',
+          title: 'Cancelar inscripción',
+          body: '¿Estás seguro?',
+          confirm: 'Sí, cancelar',
+          cancelButton: 'No, mantenerme',
+        },
+        errors: {
+          insufficientFunds: 'No tienes suficientes monedas para participar.',
+        },
         effectiveStatus: {
           scheduled: 'Programado',
           registration_open: 'Inscripción abierta',

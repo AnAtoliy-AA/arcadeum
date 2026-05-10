@@ -8,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
-import { Connection, Model, Types } from 'mongoose';
+import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import {
   WalletTransaction,
@@ -48,68 +48,30 @@ export class WalletService {
     reason: WalletReason,
     idempotencyKey: string,
     metadata?: Record<string, unknown>,
+    parentSession?: ClientSession,
   ): Promise<WalletTransactionView> {
     this.assertPositiveInteger(amount);
     this.assertCurrency(currency);
-
-    const session = await this.connection.startSession();
     try {
-      let createdTx: WalletTransactionDocument | null = null;
-      let lastBalance: WalletBalance | null = null;
-
-      await session.withTransaction(async () => {
-        const user = await this.userModel.findOneAndUpdate(
-          { _id: new Types.ObjectId(userId) },
-          { $inc: { [currency]: amount } },
-          { new: true, session },
-        );
-
-        if (!user) {
-          throw new NotFoundException('wallet.userNotFound');
-        }
-
-        const userFields = user as unknown as UserBalanceFields;
-        lastBalance = {
-          coins: userFields.coins ?? 0,
-          gems: userFields.gems ?? 0,
-        };
-        const balanceAfter = this.pickBalance(userFields, currency);
-
-        const docs = await this.txModel.create(
-          [
-            {
-              userId: new Types.ObjectId(userId),
-              currency,
-              delta: amount,
-              balanceAfter,
-              reason,
-              idempotencyKey,
-              metadata,
-            },
-          ],
-          { session },
-        );
-
-        createdTx = docs[0];
-      });
-
-      if (!createdTx) {
-        throw new InternalServerErrorException('wallet.transactionFailed');
-      }
-
-      if (lastBalance !== null) {
-        this.gateway.emitBalance(userId, lastBalance);
-      }
-
-      return this.toView(createdTx);
+      return await this.withSession(parentSession, async (session, isOwn) =>
+        this.doWrite(session, isOwn, {
+          userId,
+          currency,
+          amount,
+          reason,
+          idempotencyKey,
+          metadata,
+          direction: 1,
+        }),
+      );
     } catch (err) {
-      if (this.isDuplicateIdempotencyKey(err)) {
+      // Own-session path: recover from duplicate key by returning the prior tx.
+      // Parent-session path: re-throw so the caller's transaction aborts.
+      if (!parentSession && this.isDuplicateIdempotencyKey(err)) {
         const prior = await this.txModel.findOne({ idempotencyKey });
         if (prior) return this.toView(prior);
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -120,80 +82,30 @@ export class WalletService {
     reason: WalletReason,
     idempotencyKey: string,
     metadata?: Record<string, unknown>,
+    parentSession?: ClientSession,
   ): Promise<WalletTransactionView> {
     this.assertPositiveInteger(amount);
     this.assertCurrency(currency);
-
-    const session = await this.connection.startSession();
     try {
-      let createdTx: WalletTransactionDocument | null = null;
-      let lastBalance: WalletBalance | null = null;
-
-      await session.withTransaction(async () => {
-        const user = await this.userModel.findOneAndUpdate(
-          {
-            _id: new Types.ObjectId(userId),
-            [currency]: { $gte: amount },
-          },
-          { $inc: { [currency]: -amount } },
-          { new: true, session },
-        );
-
-        if (!user) {
-          const current = await this.userModel
-            .findById(userId, null, { session })
-            .lean();
-          const available = current
-            ? this.pickBalance(
-                current as unknown as UserBalanceFields,
-                currency,
-              )
-            : 0;
-          throw new InsufficientFundsException(currency, amount, available);
-        }
-
-        const userFields = user as unknown as UserBalanceFields;
-        lastBalance = {
-          coins: userFields.coins ?? 0,
-          gems: userFields.gems ?? 0,
-        };
-        const balanceAfter = this.pickBalance(userFields, currency);
-
-        const docs = await this.txModel.create(
-          [
-            {
-              userId: new Types.ObjectId(userId),
-              currency,
-              delta: -amount,
-              balanceAfter,
-              reason,
-              idempotencyKey,
-              metadata,
-            },
-          ],
-          { session },
-        );
-
-        createdTx = docs[0];
-      });
-
-      if (!createdTx) {
-        throw new InternalServerErrorException('wallet.transactionFailed');
-      }
-
-      if (lastBalance !== null) {
-        this.gateway.emitBalance(userId, lastBalance);
-      }
-
-      return this.toView(createdTx);
+      return await this.withSession(parentSession, async (session, isOwn) =>
+        this.doWrite(session, isOwn, {
+          userId,
+          currency,
+          amount,
+          reason,
+          idempotencyKey,
+          metadata,
+          direction: -1,
+        }),
+      );
     } catch (err) {
-      if (this.isDuplicateIdempotencyKey(err)) {
+      // Own-session path: recover from duplicate key by returning the prior tx.
+      // Parent-session path: re-throw so the caller's transaction aborts.
+      if (!parentSession && this.isDuplicateIdempotencyKey(err)) {
         const prior = await this.txModel.findOne({ idempotencyKey });
         if (prior) return this.toView(prior);
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -246,6 +158,116 @@ export class WalletService {
       : null;
 
     return { items, nextCursor };
+  }
+
+  async findByIdempotencyKey(
+    key: string,
+  ): Promise<WalletTransactionView | null> {
+    const doc = await this.txModel.findOne({ idempotencyKey: key });
+    return doc ? this.toView(doc) : null;
+  }
+
+  emitAfterCommit(userId: string, balance: WalletBalance): void {
+    this.gateway.emitBalance(userId, balance);
+  }
+
+  private async withSession<T>(
+    parentSession: ClientSession | undefined,
+    fn: (session: ClientSession, isOwn: boolean) => Promise<T>,
+  ): Promise<T> {
+    if (parentSession) {
+      return fn(parentSession, false);
+    }
+    const ownSession = await this.connection.startSession();
+    try {
+      let result!: T;
+      await ownSession.withTransaction(async () => {
+        result = await fn(ownSession, true);
+      });
+      return result;
+    } finally {
+      await ownSession.endSession();
+    }
+  }
+
+  private async doWrite(
+    session: ClientSession,
+    isOwnSession: boolean,
+    args: {
+      userId: string;
+      currency: WalletCurrency;
+      amount: number;
+      reason: WalletReason;
+      idempotencyKey: string;
+      metadata?: Record<string, unknown>;
+      direction: 1 | -1;
+    },
+  ): Promise<WalletTransactionView> {
+    const {
+      userId,
+      currency,
+      amount,
+      reason,
+      idempotencyKey,
+      metadata,
+      direction,
+    } = args;
+
+    const filter: Record<string, unknown> = { _id: new Types.ObjectId(userId) };
+    if (direction === -1) filter[currency] = { $gte: amount };
+
+    let createdTx: WalletTransactionDocument | null = null;
+    let lastBalance: WalletBalance | null = null;
+
+    const user = await this.userModel.findOneAndUpdate(
+      filter,
+      { $inc: { [currency]: direction * amount } },
+      { new: true, session },
+    );
+
+    if (!user) {
+      if (direction === -1) {
+        const current = await this.userModel
+          .findById(userId, null, { session })
+          .lean();
+        const available = current
+          ? this.pickBalance(current as unknown as UserBalanceFields, currency)
+          : 0;
+        throw new InsufficientFundsException(currency, amount, available);
+      }
+      throw new NotFoundException('wallet.userNotFound');
+    }
+
+    const balanceFields = user as unknown as UserBalanceFields;
+    lastBalance = { coins: balanceFields.coins, gems: balanceFields.gems };
+
+    const docs = await this.txModel.create(
+      [
+        {
+          userId: new Types.ObjectId(userId),
+          currency,
+          delta: direction * amount,
+          balanceAfter: this.pickBalance(balanceFields, currency),
+          reason,
+          idempotencyKey,
+          metadata,
+        },
+      ],
+      { session },
+    );
+    createdTx = docs[0];
+
+    if (!createdTx || !lastBalance) {
+      throw new InternalServerErrorException('wallet.transactionFailed');
+    }
+
+    // Emit only after the transaction is durably committed. Inside a parent
+    // session we don't know if the parent will commit, so defer to the caller.
+    if (isOwnSession) {
+      this.gateway.emitBalance(userId, lastBalance);
+    }
+
+    return this.toView(createdTx);
   }
 
   private pickBalance(

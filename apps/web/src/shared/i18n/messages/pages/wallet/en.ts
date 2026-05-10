@@ -34,6 +34,10 @@ export const walletEn = {
   reasons: {
     admin_grant: 'Granted by admin',
     admin_deduct: 'Deducted by admin',
+    game_win: 'Game win',
+    tournament_entry: 'Tournament entry',
+    tournament_refund: 'Tournament refund',
+    tournament_prize: 'Tournament prize',
   },
   errors: {
     insufficientFunds: 'Insufficient balance.',

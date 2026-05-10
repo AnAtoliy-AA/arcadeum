@@ -18,6 +18,8 @@ export interface PublicTournamentItem {
   maxPlayers: number;
   prizeDescription: string | null;
   resultText: string | null;
+  entryFeeCoins: number;
+  prizePoolCoins: number;
   status: TournamentStatus;
   effectiveStatus: EffectiveTournamentStatus;
   registeredCount: number;

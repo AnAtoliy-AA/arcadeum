@@ -36,6 +36,10 @@ export const walletRu: WalletI18n = {
   reasons: {
     admin_grant: 'Выдано администратором',
     admin_deduct: 'Списано администратором',
+    game_win: 'Победа в игре',
+    tournament_entry: 'Взнос за турнир',
+    tournament_refund: 'Возврат за турнир',
+    tournament_prize: 'Призовые турнира',
   },
   errors: {
     insufficientFunds: 'Недостаточно средств.',

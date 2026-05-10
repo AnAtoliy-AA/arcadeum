@@ -42,6 +42,8 @@ export const adminTournamentsEn = {
     optional: 'optional',
     maxPlayers: 'Max players',
     prizeDescription: 'Prize',
+    entryFeeLabel: 'Entry fee (coins)',
+    prizePoolLabel: 'Prize pool (coins)',
     tabs: {
       en: 'English',
       ru: 'Русский',
@@ -55,6 +57,20 @@ export const adminTournamentsEn = {
       nameRequired: 'English name is required.',
       capacityRange: 'Capacity must be between 2 and 256.',
       windowOrder: 'Registration close time must be after open time.',
+    },
+  },
+  markComplete: {
+    button: 'Mark complete',
+    dialog: {
+      title: 'Select winner',
+      body: 'Who won this tournament?',
+      confirm: 'Mark complete',
+      cancel: 'Cancel',
+    },
+    errors: {
+      notRegistered: 'Selected user is not registered for this tournament.',
+      notLive: 'Tournament must be live to mark complete.',
+      generic: 'Could not mark complete. Please try again.',
     },
   },
   transitionPrompt: {

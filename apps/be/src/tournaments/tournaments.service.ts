@@ -5,8 +5,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
+import { Connection, FilterQuery, Model, Types } from 'mongoose';
 import {
   Tournament,
   TournamentDocument,
@@ -20,6 +20,7 @@ import {
   deriveEffectiveStatus,
 } from './lib/derive-effective-window';
 import { canDelete, canTransition } from './lib/transition';
+import { TournamentWalletOps } from './lib/tournament-wallet-ops';
 import type {
   AdminTournamentItem,
   AdminTournamentsListResponse,
@@ -32,6 +33,7 @@ import type {
 import type { CreateTournamentDto } from './dto/create-tournament.dto';
 import type { UpdateTournamentDto } from './dto/update-tournament.dto';
 import type { AdminTournamentStatusFilter } from './dto/list-admin-tournaments.dto';
+import { WalletService } from '../wallet/wallet.service';
 
 interface PopulatedCreator {
   _id: Types.ObjectId;
@@ -55,6 +57,9 @@ interface TournamentLean {
   maxPlayers: number;
   prizeDescription: string | null;
   resultText: string | null;
+  entryFeeCoins: number;
+  prizePoolCoins: number;
+  winnerUserId: string | null;
   content: TournamentContentMap;
   registrations: RegistrationLean[];
   createdBy: Types.ObjectId | PopulatedCreator;
@@ -72,10 +77,16 @@ interface ListForAdminArgs {
 
 @Injectable()
 export class TournamentsService {
+  private readonly walletOps: TournamentWalletOps;
+
   constructor(
     @InjectModel(Tournament.name)
     private readonly model: Model<TournamentDocument>,
-  ) {}
+    @InjectConnection() private readonly connection: Connection,
+    private readonly wallet: WalletService,
+  ) {
+    this.walletOps = new TournamentWalletOps(connection, wallet, model);
+  }
 
   async listForAdmin(
     args: ListForAdminArgs,
@@ -184,6 +195,9 @@ export class TournamentsService {
       maxPlayers: body.maxPlayers,
       prizeDescription: body.prizeDescription ?? null,
       resultText: null,
+      entryFeeCoins: body.entryFeeCoins ?? 0,
+      prizePoolCoins: body.prizePoolCoins ?? 0,
+      winnerUserId: null,
       content: body.content,
       registrations: [],
       createdBy: new Types.ObjectId(requesterUserId),
@@ -238,11 +252,18 @@ export class TournamentsService {
         to,
       });
     }
+
     const $set: Record<string, unknown> = { status: to };
     if (to === 'completed' && resultText !== undefined) {
       $set.resultText = resultText;
     }
-    await this.model.findByIdAndUpdate(id, { $set });
+
+    if (to === 'cancelled') {
+      await this.walletOps.cancelWithRefunds(doc, $set);
+    } else {
+      await this.model.findByIdAndUpdate(id, { $set });
+    }
+
     return this.findAdminItem(id);
   }
 
@@ -300,17 +321,23 @@ export class TournamentsService {
       (r) => r.userId.toString() === userId,
     );
     if (already) return { ok: true, waitlist: already.waitlist };
+
     const waitlist = doc.registrations.length >= doc.maxPlayers;
-    await this.model.findByIdAndUpdate(id, {
-      $push: {
-        registrations: {
-          userId: userOid,
-          displayName,
-          registeredAt: new Date(),
-          waitlist,
-        },
-      },
-    });
+    const regRow = {
+      userId: userOid,
+      displayName,
+      registeredAt: new Date(),
+      waitlist,
+    };
+
+    if ((doc.entryFeeCoins ?? 0) === 0) {
+      await this.model.findByIdAndUpdate(id, {
+        $push: { registrations: regRow },
+      });
+      return { ok: true, waitlist };
+    }
+
+    await this.walletOps.chargeEntryFee(doc, userId, regRow);
     return { ok: true, waitlist };
   }
 
@@ -328,10 +355,60 @@ export class TournamentsService {
         status: doc.status,
       });
     }
+
     const userOid = new Types.ObjectId(userId);
-    await this.model.findByIdAndUpdate(id, {
-      $pull: { registrations: { userId: userOid } },
-    });
+
+    if ((doc.entryFeeCoins ?? 0) === 0) {
+      await this.model.findByIdAndUpdate(id, {
+        $pull: { registrations: { userId: userOid } },
+      });
+      return;
+    }
+
+    await this.walletOps.refundEntryFee(doc, userId);
+  }
+
+  async markComplete(
+    id: string,
+    winnerUserId: string,
+  ): Promise<AdminTournamentItem> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException({ code: 'INVALID_TOURNAMENT_ID' });
+    }
+    const doc = await this.model.findById(id).lean<TournamentLean | null>();
+    if (!doc) {
+      throw new NotFoundException({ code: 'TOURNAMENT_NOT_FOUND' });
+    }
+
+    if (doc.status === 'completed') {
+      if (doc.winnerUserId === winnerUserId) {
+        return this.findAdminItem(id);
+      }
+      throw new BadRequestException({
+        code: 'TOURNAMENT_ALREADY_COMPLETED',
+        winnerUserId: doc.winnerUserId,
+      });
+    }
+
+    if (doc.status !== 'live') {
+      throw new BadRequestException({
+        code: 'TOURNAMENT_NOT_LIVE',
+        status: doc.status,
+      });
+    }
+
+    const isRegistered = doc.registrations.some(
+      (r) => r.userId.toString() === winnerUserId,
+    );
+    if (!isRegistered) {
+      throw new BadRequestException({
+        code: 'WINNER_NOT_REGISTERED',
+        winnerUserId,
+      });
+    }
+
+    await this.walletOps.markCompleteWithPrize(doc, winnerUserId);
+    return this.findAdminItem(id);
   }
 
   async listRegistrations(

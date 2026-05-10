@@ -101,6 +101,15 @@ export class Tournament {
   @Prop({ type: String, default: null, maxlength: 500 })
   prizeDescription!: string | null;
 
+  @Prop({ type: Number, default: 0, min: 0, max: 1_000_000 })
+  entryFeeCoins!: number;
+
+  @Prop({ type: Number, default: 0, min: 0, max: 1_000_000 })
+  prizePoolCoins!: number;
+
+  @Prop({ type: String, default: null })
+  winnerUserId!: string | null;
+
   @Prop({ type: String, default: null, maxlength: 1000 })
   resultText!: string | null;
 

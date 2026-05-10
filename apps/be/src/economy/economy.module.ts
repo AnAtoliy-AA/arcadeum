@@ -12,6 +12,7 @@ import {
   EconomySettingsAuditSchema,
 } from './schemas/economy-settings-audit.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
+import { EconomySettingsService } from './economy-settings.service';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
       { name: EconomySettingsAudit.name, schema: EconomySettingsAuditSchema },
     ]),
   ],
-  providers: [],
+  providers: [EconomySettingsService],
   controllers: [],
-  exports: [],
+  exports: [EconomySettingsService],
 })
 export class EconomyModule {}

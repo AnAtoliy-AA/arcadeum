@@ -89,7 +89,8 @@ export class ReferralService {
     const raw = this.config.get<string>(name);
     if (!raw) return fallback;
     const parsed = Number(raw);
-    if (Number.isInteger(parsed) && parsed > 0) return parsed;
+    // 0 is a valid "disabled" value; positive integers are valid reward amounts.
+    if (Number.isInteger(parsed) && parsed >= 0) return parsed;
     this.logger.warn(`Invalid ${name}="${raw}"; using default ${fallback}`);
     return fallback;
   }
@@ -152,7 +153,7 @@ export class ReferralService {
       return;
     }
 
-    await this.referralModel.create({
+    const referral = await this.referralModel.create({
       referrerId,
       referredUserId,
       status: 'completed',
@@ -163,7 +164,34 @@ export class ReferralService {
       referredBy: referrerId,
     });
 
+    await this.payoutPerReferral(
+      referrerId,
+      String(referral._id),
+      referredUserId,
+    );
     await this.checkAndGrantRewards(referrerId);
+  }
+
+  private async payoutPerReferral(
+    referrerId: string,
+    referralId: string,
+    referredUserId: string,
+  ): Promise<void> {
+    if (this.perReferralCoins <= 0) return;
+    try {
+      await this.wallet.credit(
+        referrerId,
+        'coins',
+        this.perReferralCoins,
+        'referral_bonus',
+        `referral-${referralId}-payout-${referrerId}`,
+        { referralId, referredUserId },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Referral coin payout failed for ${referrerId} on referral ${referralId}: ${(err as Error).message}`,
+      );
+    }
   }
 
   async getReferralStats(userId: string) {

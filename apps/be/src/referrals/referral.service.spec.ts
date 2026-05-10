@@ -120,4 +120,79 @@ describe('ReferralService', () => {
       expect(walletService.credit).not.toHaveBeenCalled();
     });
   });
+
+  describe('per-referral coin payout', () => {
+    it('credits the referrer the configured amount on a successful trackReferral', async () => {
+      const referralId = new Types.ObjectId();
+      referralModel.create.mockResolvedValueOnce({ _id: referralId });
+
+      await service.trackReferral('CODE', referredUserId);
+
+      expect(walletService.credit).toHaveBeenCalledWith(
+        referrerId,
+        'coins',
+        50,
+        'referral_bonus',
+        `referral-${referralId.toHexString()}-payout-${referrerId}`,
+        expect.objectContaining({
+          referralId: referralId.toHexString(),
+          referredUserId,
+        }),
+      );
+    });
+
+    it('logs and continues when wallet.credit throws', async () => {
+      walletService.credit.mockRejectedValueOnce(new Error('wallet-down'));
+
+      await expect(
+        service.trackReferral('CODE', referredUserId),
+      ).resolves.not.toThrow();
+    });
+
+    it('skips wallet path when REFERRAL_REWARD_COINS_PER is 0', async () => {
+      const zeroModule = await Test.createTestingModule({
+        providers: [
+          ReferralService,
+          { provide: getModelToken(Referral.name), useValue: referralModel },
+          {
+            provide: getModelToken(ReferralReward.name),
+            useValue: rewardModel,
+          },
+          { provide: getModelToken(User.name), useValue: userModel },
+          { provide: WalletService, useValue: walletService },
+          {
+            provide: ConfigService,
+            useValue: {
+              get: jest.fn((k: string) =>
+                k === 'REFERRAL_REWARD_COINS_PER' ? '0' : undefined,
+              ),
+            },
+          },
+        ],
+      }).compile();
+
+      const zeroService = zeroModule.get(ReferralService);
+
+      jest.clearAllMocks();
+      userModel.findOne.mockReturnValue({
+        exec: () =>
+          Promise.resolve({
+            id: referrerId,
+            referralCode: 'CODE',
+          }),
+      });
+      referralModel.findOne.mockResolvedValue(null);
+      referralModel.create.mockResolvedValue({ _id: new Types.ObjectId() });
+      userModel.findByIdAndUpdate.mockResolvedValue({});
+      referralModel.countDocuments.mockResolvedValue(0);
+      rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' });
+
+      await zeroService.trackReferral('CODE', referredUserId);
+
+      const perReferralCalls = walletService.credit.mock.calls.filter(
+        (c) => (c as unknown[])[3] === 'referral_bonus',
+      );
+      expect(perReferralCalls).toHaveLength(0);
+    });
+  });
 });

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.11] - 2026-05-10
+
+### Added
+- labels for referral_bonus and referral_tier_bonus (ARC-618) (ARC-618)
+- show coin rewards on referrals page (ARC-618) (ARC-618)
+- i18n keys for coin-reward copy in 5 locales (ARC-618) (ARC-618)
+- labels for referral_bonus and referral_tier_bonus in 5 locales (ARC-618) (ARC-618)
+- credit tier bonus coins when crossing thresholds (ARC-618) (ARC-618)
+- credit referrer coins on every successful referral (ARC-618) (ARC-618)
+- inject WalletService + ConfigService, read coin env vars (ARC-618) (ARC-618)
+- import WalletModule (ARC-618) (ARC-618)
+- extend WalletReason with referral_bonus and referral_tier_bonus (ARC-618) (ARC-618)
+
+### Documentation
+- document referral coin reward env vars (ARC-618) (ARC-618)
+- fold plan reviewer recommendations into ARC-618 plan (ARC-618)
+- add ARC-618 referral coin rewards implementation plan (ARC-618)
+- clarify aggregation key for future coinsEarned rollup (ARC-618) (ARC-618)
+- add ARC-618 referral coin rewards design spec (ARC-618)
+
+
 ## [1.13.10] - 2026-05-10
 
 ### Added

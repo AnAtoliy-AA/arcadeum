@@ -11,5 +11,7 @@ export const WALLET_REASONS = [
   'gem_purchase',
   'gem_to_coin_conversion_debit',
   'gem_to_coin_conversion_credit',
+  'referral_bonus',
+  'referral_tier_bonus',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

@@ -235,7 +235,7 @@ private readPositiveInt(name: string, fallback: number): number {
 
 No new endpoints. `getReferralStats` continues to return its existing payload; the wallet history at `/wallet/transactions` already shows referral payouts via the new reason values.
 
-**Optional, low-priority enhancement** (not in scope but easy follow-up): `getReferralStats` could compute a `coinsEarned` total by aggregating wallet transactions where `reason in ['referral_bonus', 'referral_tier_bonus']` and `metadata.referrerId === userId` — but this requires either a wallet-side query helper or a small read inside ReferralService. Defer to ARC-619+.
+**Optional, low-priority enhancement** (not in scope but easy follow-up): `getReferralStats` could compute a `coinsEarned` total by aggregating wallet transactions where `reason in ['referral_bonus', 'referral_tier_bonus']` and `userId === referrerId`. The aggregation keys on `WalletTransaction.userId` directly (which is already the referrer for these rows) — **not** on a `metadata.referrerId` field — so no metadata migration is needed when this enhancement lands. Defer to ARC-619+.
 
 ## Web UI
 

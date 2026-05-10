@@ -264,6 +264,31 @@ export class ReferralService {
           );
         }
       }
+
+      await this.payoutTierBonus(userId, tier.tier, tier.requiredInvites);
+    }
+  }
+
+  private async payoutTierBonus(
+    referrerId: string,
+    tier: number,
+    requiredInvites: number,
+  ): Promise<void> {
+    const amount = this.tierBonusCoins[tier];
+    if (!amount || amount <= 0) return;
+    try {
+      await this.wallet.credit(
+        referrerId,
+        'coins',
+        amount,
+        'referral_tier_bonus',
+        `referral-tier-${referrerId}-${tier}`,
+        { tier, requiredInvites },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Referral tier bonus failed for ${referrerId} tier ${tier}: ${(err as Error).message}`,
+      );
     }
   }
 }

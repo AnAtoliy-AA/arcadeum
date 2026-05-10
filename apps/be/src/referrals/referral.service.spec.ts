@@ -195,4 +195,124 @@ describe('ReferralService', () => {
       expect(perReferralCalls).toHaveLength(0);
     });
   });
+
+  describe('tier bonus payout', () => {
+    it('credits tier 1 bonus when totalReferrals reaches 3', async () => {
+      referralModel.countDocuments.mockResolvedValue(3);
+      rewardModel.findOne.mockResolvedValue(null);
+      rewardModel.create.mockResolvedValue({});
+
+      await service.trackReferral('CODE', referredUserId);
+
+      const tierCalls = walletService.credit.mock.calls.filter(
+        (c) => (c as unknown[])[3] === 'referral_tier_bonus',
+      );
+      expect(tierCalls).toHaveLength(1);
+      expect(tierCalls[0]).toEqual([
+        referrerId,
+        'coins',
+        100,
+        'referral_tier_bonus',
+        `referral-tier-${referrerId}-1`,
+        expect.objectContaining({ tier: 1, requiredInvites: 3 }),
+      ]);
+    });
+
+    it('does not skip tier 1 on a subsequent referral that has already crossed it', async () => {
+      // 4 invites → tier 1 still applies; wallet idempotency deduplicates at storage
+      referralModel.countDocuments.mockResolvedValue(4);
+      rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' }); // badge already granted
+
+      await service.trackReferral('CODE', referredUserId);
+
+      const tierCalls = walletService.credit.mock.calls.filter(
+        (c) => (c as unknown[])[3] === 'referral_tier_bonus',
+      );
+      expect(tierCalls).toHaveLength(1);
+      expect((tierCalls[0] as unknown[])[4]).toBe(
+        `referral-tier-${referrerId}-1`,
+      );
+    });
+
+    it('credits both tier 1 and tier 2 when total is 5 (seed scenario)', async () => {
+      referralModel.countDocuments.mockResolvedValue(5);
+      rewardModel.findOne.mockResolvedValue(null);
+      rewardModel.create.mockResolvedValue({});
+
+      await service.trackReferral('CODE', referredUserId);
+
+      const tierCalls = walletService.credit.mock.calls.filter(
+        (c) => (c as unknown[])[3] === 'referral_tier_bonus',
+      );
+      expect(tierCalls).toHaveLength(2);
+      expect(
+        tierCalls.map((c) => (c as unknown[])[4] as string).sort(),
+      ).toEqual([
+        `referral-tier-${referrerId}-1`,
+        `referral-tier-${referrerId}-2`,
+      ]);
+    });
+
+    it('skips tier wallet call when tier bonus env is 0', async () => {
+      const zeroTierModule = await Test.createTestingModule({
+        providers: [
+          ReferralService,
+          { provide: getModelToken(Referral.name), useValue: referralModel },
+          {
+            provide: getModelToken(ReferralReward.name),
+            useValue: rewardModel,
+          },
+          { provide: getModelToken(User.name), useValue: userModel },
+          { provide: WalletService, useValue: walletService },
+          {
+            provide: ConfigService,
+            useValue: {
+              get: jest.fn((k: string) =>
+                k === 'REFERRAL_TIER_1_BONUS_COINS' ? '0' : undefined,
+              ),
+            },
+          },
+        ],
+      }).compile();
+
+      const zeroTierService = zeroTierModule.get(ReferralService);
+
+      jest.clearAllMocks();
+      userModel.findOne.mockReturnValue({
+        exec: () =>
+          Promise.resolve({
+            id: referrerId,
+            referralCode: 'CODE',
+          }),
+      });
+      referralModel.findOne.mockResolvedValue(null);
+      referralModel.create.mockResolvedValue({ _id: new Types.ObjectId() });
+      userModel.findByIdAndUpdate.mockResolvedValue({});
+      referralModel.countDocuments.mockResolvedValue(3);
+      rewardModel.findOne.mockResolvedValue(null);
+      rewardModel.create.mockResolvedValue({});
+
+      await zeroTierService.trackReferral('CODE', referredUserId);
+
+      const tier1Calls = walletService.credit.mock.calls.filter(
+        (c) =>
+          (c as unknown[])[3] === 'referral_tier_bonus' &&
+          (c as unknown[])[4] === `referral-tier-${referrerId}-1`,
+      );
+      expect(tier1Calls).toHaveLength(0);
+    });
+
+    it('logs and continues when tier wallet.credit throws', async () => {
+      walletService.credit
+        .mockResolvedValueOnce({}) // per-referral call succeeds
+        .mockRejectedValueOnce(new Error('wallet-down')); // tier call fails
+      referralModel.countDocuments.mockResolvedValue(3);
+      rewardModel.findOne.mockResolvedValue(null);
+      rewardModel.create.mockResolvedValue({});
+
+      await expect(
+        service.trackReferral('CODE', referredUserId),
+      ).resolves.not.toThrow();
+    });
+  });
 });

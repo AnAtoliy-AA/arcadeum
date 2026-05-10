@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReferralController } from './referral.controller';
 import { BadgesController } from './badges.controller';
@@ -14,6 +15,7 @@ import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       { name: Referral.name, schema: ReferralSchema },
       { name: ReferralReward.name, schema: ReferralRewardSchema },

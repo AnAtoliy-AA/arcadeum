@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
+import { WalletService } from '../wallet/wallet.service';
 
 interface RewardTierDefinition {
   tier: number;
@@ -59,6 +61,8 @@ const REWARD_TIERS: RewardTierDefinition[] = [
 @Injectable()
 export class ReferralService {
   private readonly logger = new Logger(ReferralService.name);
+  private readonly perReferralCoins: number;
+  private readonly tierBonusCoins: Record<number, number>;
 
   constructor(
     @InjectModel(Referral.name)
@@ -67,7 +71,28 @@ export class ReferralService {
     private readonly rewardModel: Model<ReferralReward>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-  ) {}
+    private readonly wallet: WalletService,
+    private readonly config: ConfigService,
+  ) {
+    this.perReferralCoins = this.readPositiveInt(
+      'REFERRAL_REWARD_COINS_PER',
+      50,
+    );
+    this.tierBonusCoins = {
+      1: this.readPositiveInt('REFERRAL_TIER_1_BONUS_COINS', 100),
+      2: this.readPositiveInt('REFERRAL_TIER_2_BONUS_COINS', 200),
+      3: this.readPositiveInt('REFERRAL_TIER_3_BONUS_COINS', 500),
+    };
+  }
+
+  private readPositiveInt(name: string, fallback: number): number {
+    const raw = this.config.get<string>(name);
+    if (!raw) return fallback;
+    const parsed = Number(raw);
+    if (Number.isInteger(parsed) && parsed > 0) return parsed;
+    this.logger.warn(`Invalid ${name}="${raw}"; using default ${fallback}`);
+    return fallback;
+  }
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

@@ -4,6 +4,7 @@ import { walletEs } from './wallet/es';
 import { adminWalletEs } from './admin-wallet/es';
 import { gemsEs } from './gems/es';
 import { adminGemPackagesEs } from './admin-gem-packages/es';
+import { adminEconomyEs } from './admin-economy/es';
 
 export const es = {
   admin: {
@@ -472,4 +473,5 @@ export const es = {
   wallet: walletEs,
   gems: gemsEs,
   adminGemPackages: adminGemPackagesEs,
+  adminEconomy: adminEconomyEs,
 };

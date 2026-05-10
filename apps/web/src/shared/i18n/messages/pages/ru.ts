@@ -19,6 +19,7 @@ export const ru = {
       payments: 'Платежи',
       announcements: 'Объявления',
       tournaments: 'Турниры',
+      economy: 'Экономика',
       comingSoon: 'Скоро',
     },
     error: {

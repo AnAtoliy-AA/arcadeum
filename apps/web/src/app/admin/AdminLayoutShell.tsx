@@ -21,6 +21,7 @@ interface AdminNavTranslations {
   payments?: string;
   announcements?: string;
   tournaments?: string;
+  economy?: string;
   comingSoon?: string;
 }
 
@@ -49,6 +50,7 @@ export default async function AdminLayoutShell({
       payments: navT?.payments,
       announcements: navT?.announcements,
       tournaments: navT?.tournaments,
+      economy: navT?.economy,
     },
     comingSoon: navT?.comingSoon ?? 'Coming soon',
   };

@@ -19,6 +19,7 @@ export const by = {
       payments: 'Плацяжы',
       announcements: "Аб'явы",
       tournaments: 'Турніры',
+      economy: 'Эканоміка',
       comingSoon: 'Хутка',
     },
     error: {

@@ -19,6 +19,7 @@ export const en = {
       payments: 'Payments',
       announcements: 'Announcements',
       tournaments: 'Tournaments',
+      economy: 'Economy',
       comingSoon: 'Coming soon',
     },
     error: {

@@ -19,6 +19,7 @@ export const es = {
       payments: 'Pagos',
       announcements: 'Anuncios',
       tournaments: 'Torneos',
+      economy: 'Economía',
       comingSoon: 'Próximamente',
     },
     error: {

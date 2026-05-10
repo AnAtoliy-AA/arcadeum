@@ -71,23 +71,26 @@ export class GemPurchasesService {
     // Prefer PAYPAL_GEM_RETURN_URL if set; otherwise derive from the donation
     // return URL by replacing its path with '/payment/gem-success'.
     const explicitGemReturn = this.config.get<string>('PAYPAL_GEM_RETURN_URL');
+    const explicitGemCancel = this.config.get<string>('PAYPAL_GEM_CANCEL_URL');
     const donationReturn = this.config.get<string>('PAYPAL_RETURN_URL');
-    const cancelUrl = this.config.get<string>('PAYPAL_CANCEL_URL');
-    if (!donationReturn || !cancelUrl) {
+    const donationCancel = this.config.get<string>('PAYPAL_CANCEL_URL');
+    if (!donationReturn || !donationCancel) {
       throw new InternalServerErrorException('payments.missingRedirects');
     }
+    const swapPath = (raw: string, path: string): string => {
+      try {
+        const u = new URL(raw);
+        u.pathname = path;
+        u.search = '';
+        return u.toString();
+      } catch {
+        return raw; // fallback — better than throwing
+      }
+    };
     const returnUrl =
-      explicitGemReturn ??
-      (() => {
-        try {
-          const u = new URL(donationReturn);
-          u.pathname = '/payment/gem-success';
-          u.search = '';
-          return u.toString();
-        } catch {
-          return donationReturn; // fallback — better than throwing
-        }
-      })();
+      explicitGemReturn ?? swapPath(donationReturn, '/payment/gem-success');
+    const cancelUrl =
+      explicitGemCancel ?? swapPath(donationCancel, '/payment/gem-cancel');
 
     const order = await this.paypal.createOrder({
       amountUsd: pkg.priceUsd,

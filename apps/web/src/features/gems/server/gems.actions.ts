@@ -156,11 +156,11 @@ export async function finalizeGemPurchaseAction(input: {
 }
 
 /**
- * Cancel a stuck pending purchase. The BE marks the GemPurchase row as
- * `cancelled`. Used to clear orphans (created against a different PayPal
- * env) or never-completed redirects from the pending banner.
+ * Bare cancel helper — no revalidation. Safe to call from a Server
+ * Component render (which can't use revalidatePath). The action wrapper
+ * below adds revalidation for the client (Cancel button) caller.
  */
-export async function cancelGemPurchaseAction(input: {
+export async function cancelGemPurchase(input: {
   orderId: string;
 }): Promise<CancelGemPurchaseResult> {
   if (!input.orderId || typeof input.orderId !== 'string') {
@@ -172,8 +172,17 @@ export async function cancelGemPurchaseAction(input: {
   );
   if (res.status === 404) return { ok: false, error: 'not_found' };
   if (!res.ok) return { ok: false, error: 'generic' };
-  revalidatePath('/wallet');
   return { ok: true };
+}
+
+export async function cancelGemPurchaseAction(input: {
+  orderId: string;
+}): Promise<CancelGemPurchaseResult> {
+  const result = await cancelGemPurchase(input);
+  if (result.ok) {
+    revalidatePath('/wallet');
+  }
+  return result;
 }
 
 /**

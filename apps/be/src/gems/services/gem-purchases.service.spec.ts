@@ -208,10 +208,11 @@ describe('GemPurchasesService', () => {
         expect.objectContaining({
           amountUsd: 499,
           description: expect.stringContaining('120') as unknown, // totalGems = 100 + 20
-          // Gem-specific return URL is derived from PAYPAL_RETURN_URL by
-          // swapping the path to /payment/gem-success.
+          // Gem-specific URLs are derived from the donation URLs by
+          // swapping the path. Both end up at /payment/gem-* so the
+          // gem flow has its own success/cancel handling.
           returnUrl: 'https://example.com/payment/gem-success',
-          cancelUrl: 'https://example.com/cancel',
+          cancelUrl: 'https://example.com/payment/gem-cancel',
         }),
       );
       expect(purchaseModel.create).toHaveBeenCalledWith(

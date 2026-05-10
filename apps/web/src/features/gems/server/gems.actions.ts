@@ -95,7 +95,12 @@ export async function buyGemsAction(input: {
  * Finalizes a gem purchase after PayPal redirect.
  * On success, revalidates the wallet page.
  */
-export async function finalizeGemPurchaseAction(input: {
+/**
+ * Bare finalize helper — no revalidation. Safe to call from a Server
+ * Component render (which can't use revalidatePath). The action wrapper
+ * below adds revalidation for the client (Verify button) caller.
+ */
+export async function finalizeGemPurchase(input: {
   orderId: string;
 }): Promise<FinalizeGemPurchaseResult> {
   if (!input.orderId || typeof input.orderId !== 'string') {
@@ -133,12 +138,21 @@ export async function finalizeGemPurchaseAction(input: {
     newBalance: { coins: number; gems: number };
   };
 
-  revalidatePath('/wallet');
   return {
     ok: true,
     gemsCredited: data.gemsCredited,
     newBalance: data.newBalance,
   };
+}
+
+export async function finalizeGemPurchaseAction(input: {
+  orderId: string;
+}): Promise<FinalizeGemPurchaseResult> {
+  const result = await finalizeGemPurchase(input);
+  if (result.ok) {
+    revalidatePath('/wallet');
+  }
+  return result;
 }
 
 /**

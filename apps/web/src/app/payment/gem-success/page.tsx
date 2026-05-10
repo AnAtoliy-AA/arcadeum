@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { finalizeGemPurchaseAction } from '@/features/gems/server/gems.actions';
+import { finalizeGemPurchase } from '@/features/gems/server/gems.actions';
 
 export const metadata: Metadata = {
   title: 'Gem Purchase · Arcadeum',
@@ -35,8 +35,11 @@ export default async function GemPurchaseSuccessPage({
   }
 
   // Auto-finalize on the server. Idempotent — already-completed orders
-  // come back with gemsCredited: 0.
-  const result = await finalizeGemPurchaseAction({ orderId });
+  // come back with gemsCredited: 0. We use the bare helper (not the
+  // server action) because revalidatePath can't run during a Server
+  // Component render — and we don't need revalidation here, the page
+  // is itself the fresh render that shows the result.
+  const result = await finalizeGemPurchase({ orderId });
 
   if (result.ok) {
     const credited = result.gemsCredited;

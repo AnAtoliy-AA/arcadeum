@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GameRoomsService } from './rooms/game-rooms.service';

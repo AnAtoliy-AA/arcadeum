@@ -60,9 +60,9 @@
 
 ### E2E
 
-| Path                                       | Action | Responsibility                 |
-| ------------------------------------------ | ------ | ------------------------------ |
-| `apps/web/e2e/admin/admin-economy.spec.ts` | Create | Mocked + skip-annotated specs. |
+| Path                                               | Action | Responsibility                 |
+| -------------------------------------------------- | ------ | ------------------------------ |
+| `apps/web/e2e/admin-economy/admin-economy.spec.ts` | Create | Mocked + skip-annotated specs. |
 
 ---
 
@@ -309,13 +309,19 @@ import {
   EconomySettingDocument,
 } from './schemas/economy-setting.schema';
 import { EconomySettingsAudit } from './schemas/economy-settings-audit.schema';
+import { ECONOMY_KEYS } from './economy-keys';
+import { Types } from 'mongoose';
+
+const oid = (): string => new Types.ObjectId().toString();
+const adminId = oid();
 
 describe('EconomySettingsService', () => {
   let service: EconomySettingsService;
   let settingModel: {
     findOne: jest.Mock;
-    create: jest.Mock;
+    findOneAndUpdate: jest.Mock;
     deleteOne: jest.Mock;
+    find: jest.Mock;
   };
   let auditModel: { create: jest.Mock; find: jest.Mock };
   let configService: { get: jest.Mock };
@@ -325,8 +331,9 @@ describe('EconomySettingsService', () => {
   beforeEach(async () => {
     settingModel = {
       findOne: jest.fn(),
-      create: jest.fn(),
+      findOneAndUpdate: jest.fn(),
       deleteOne: jest.fn(),
+      find: jest.fn(),
     };
     auditModel = { create: jest.fn(), find: jest.fn() };
     configService = { get: jest.fn() };
@@ -553,7 +560,7 @@ describe('setNumber', () => {
 
   it('rejects unknown keys', async () => {
     await expect(
-      service.setNumber('not_a_real_key' as any, 50, adminId),
+      service.setNumber('not_a_real_key' as unknown as EconomyKey, 50, adminId),
     ).rejects.toThrow(/unknownKey/);
   });
 });
@@ -575,6 +582,8 @@ describe('resetToDefault', () => {
 
 - [ ] **Step 2: Implement `setNumber` + `resetToDefault`**
 
+Read `fromValue` INSIDE the transaction using the session, so concurrent setters can't both see the same pre-change value. This makes the audit log a faithful sequential record under contention.
+
 ```ts
 async setNumber(
   key: EconomyKey,
@@ -588,16 +597,17 @@ async setNumber(
     throw new BadRequestException('economy.invalidValue');
   }
 
-  const fromValue = await this.resolve(key);
-
   const session = await this.connection.startSession();
   try {
     await session.withTransaction(async () => {
+      // Read prior value INSIDE the transaction so the audit's fromValue is
+      // the pre-write value as observed by THIS transaction. Two concurrent
+      // setters will serialize on the unique key index and each capture
+      // their own correct fromValue.
+      const fromValue = await this.resolveWithSession(key, session);
       await this.settingModel.findOneAndUpdate(
         { key },
-        {
-          $set: { value, updatedBy: new Types.ObjectId(adminUserId) },
-        },
+        { $set: { value, updatedBy: new Types.ObjectId(adminUserId) } },
         { upsert: true, session, new: true },
       );
       await this.auditModel.create(
@@ -626,15 +636,15 @@ async resetToDefault(
   if (!isEconomyKey(key)) {
     throw new BadRequestException('economy.unknownKey');
   }
-  const fromValue = await this.resolve(key);
 
   const session = await this.connection.startSession();
   try {
     await session.withTransaction(async () => {
+      const fromValue = await this.resolveWithSession(key, session);
       await this.settingModel.deleteOne({ key }, { session });
-      // After deleting the row, re-resolve so the audit toValue reflects
-      // the post-delete state (env or default).
-      const toValue = await this.resolveWithoutDb(key);
+      // After deleting the row, the resolved value falls through to env/
+      // default. The session sees the post-delete state.
+      const toValue = this.resolveWithoutDb(key);
       await this.auditModel.create(
         [
           {
@@ -654,7 +664,21 @@ async resetToDefault(
   this.invalidateKey(key);
 }
 
-private async resolveWithoutDb(key: EconomyKey): Promise<number> {
+/**
+ * Same as `resolve` but reads the DB row through the supplied session so
+ * the read is part of the surrounding transaction's snapshot.
+ */
+private async resolveWithSession(
+  key: EconomyKey,
+  session: ClientSession,
+): Promise<number> {
+  const cfg = ECONOMY_KEYS_CONFIG[key];
+  const doc = await this.settingModel.findOne({ key }, null, { session }).lean();
+  if (doc && this.isValidValue(doc.value)) return doc.value;
+  return this.resolveWithoutDb(key);
+}
+
+private resolveWithoutDb(key: EconomyKey): number {
   const cfg = ECONOMY_KEYS_CONFIG[key];
   const envRaw = this.config.get<string>(cfg.env);
   const env = envRaw ? Number(envRaw) : NaN;
@@ -662,6 +686,8 @@ private async resolveWithoutDb(key: EconomyKey): Promise<number> {
   return cfg.default;
 }
 ```
+
+Add the `ClientSession` import from `mongoose`.
 
 - [ ] **Step 3: Run, expect PASS.**
 
@@ -956,7 +982,7 @@ Tests:
 
 1. `getNumber` empty DB + env present → env value.
 2. `getNumber` empty DB + no env → code default.
-3. `setNumber` writes both setting + audit rows in one transaction; rollback if audit insert fails (force via duplicate-key error or schema validation failure).
+3. `setNumber` writes both setting + audit rows in one transaction; rollback if audit insert fails. Inject the failure by spying on `auditModel.create` and making it throw on the next call — verify (a) no `EconomySetting` row was committed and (b) the call rejects with the thrown error. The setting + audit are both rolled back by the surrounding `withTransaction`.
 4. `setNumber` invalidates cache; next `getNumber` returns new value without TTL wait.
 5. `resetToDefault` removes the row and writes audit with the env/default `toValue`.
 6. `listAll` returns all 6 keys including those without DB rows.
@@ -1284,9 +1310,16 @@ git commit -m "feat(admin-economy): add server actions for set/reset/refresh/his
 
 ```tsx
 import { Suspense } from 'react';
+import { setRequestLocale } from 'next-intl/server'; // confirm via grep: another admin page that uses setRequestLocale
 import { AdminEconomyTable } from '@/features/admin-economy/ui/AdminEconomyTable';
 
-export default function AdminEconomyPage() {
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AdminEconomyPage({ params }: PageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <Suspense fallback={<div>Loading…</div>}>
       <AdminEconomyTable />
@@ -1294,6 +1327,10 @@ export default function AdminEconomyPage() {
   );
 }
 ```
+
+If `setRequestLocale` isn't the pattern this codebase uses (verify by reading another admin page like `apps/web/src/app/[locale]/admin/gem-packages/page.tsx`), mirror whatever it does instead.
+
+`AdminEconomyTable` should fetch translations via `getTranslations('pages.admin.economy')` (or the actual namespace path used after Task 17 wiring) and pass translated strings down to client islands as props — client components can't call the server translation helper, so all i18n resolution happens in the Server Component layer.
 
 - [ ] **Step 1: `/check-ui-components`** for table primitives in `@arcadeum/ui`.
 - [ ] **Step 2: Implement.**
@@ -1341,7 +1378,7 @@ git commit -m "feat(admin-economy): add audit history drawer (ARC-619)"
 **Files:**
 
 - Create: `apps/web/src/shared/i18n/messages/pages/admin-economy/{en,ru,es,fr,by}.ts`
-- Modify: existing i18n registry file (look at how `admin-tournaments` registered itself; mirror that)
+- Modify: `apps/web/src/shared/i18n/messages/pages/{en,ru,es,fr,by}.ts` (5 per-locale aggregators). Each one already imports namespace exports like `adminTournamentsEn` and `adminGemPackagesEn` and composes them inside an `admin.*` tree. Add a parallel `import { adminEconomyXx } from './admin-economy/xx';` and slot it under `admin.economy: adminEconomyXx`. Read `pages/en.ts` first to confirm the nesting shape.
 
 `en.ts`:
 
@@ -1430,7 +1467,7 @@ git commit -m "docs(economy): annotate env vars as overridable; document cache T
 
 **Files:**
 
-- Create: `apps/web/e2e/admin/admin-economy.spec.ts`
+- Create: `apps/web/e2e/admin-economy/admin-economy.spec.ts`
 
 Follow the pattern from `apps/web/e2e/wallet/admin-grant.spec.ts`. Mocked block: route reaches /admin/economy without 5xx; the table renders. Skip-annotated block documents live-flow requirements (admin login + signup admin token).
 
@@ -1459,13 +1496,14 @@ git commit -m "test(admin-economy/e2e): scaffold admin economy spec (ARC-619)"
   4. Click Reset on `game_win_coin_reward`. Source back to `env`/`default`. Next game-win returns to the prior value.
   5. Click History. Shows two rows (set + reset) with the admin's name.
 
-- [ ] Push branch, open PR (follow the established `--no-verify` exception if the pre-push e2e hook needs Mongo and your local env doesn't have it).
+- [ ] Push branch, open PR.
 
 ```bash
 git push -u origin ARC-619
-# fallback if hook needs Mongo: git push -u origin ARC-619 --no-verify
 gh pr create --base develop --head ARC-619 ...
 ```
+
+If the pre-push hook fails because it tries to run e2e against a non-running local Mongo, that's the established escape hatch from prior tickets and the user has previously authorized `--no-verify` for this specific reason. Don't add it preemptively — only if the push fails for that exact reason.
 
 ---
 
@@ -1477,7 +1515,7 @@ gh pr create --base develop --head ARC-619 ...
 - [ ] In-memory TTL cache (default 60s, env-tunable via `ECONOMY_CACHE_TTL_SECONDS`).
 - [ ] `GamesService`, `GemConversionService`, `ReferralService` read their respective coin/rate values from `EconomySettingsService.getNumber(...)` at use-time. No more constructor env-reads for the migrated knobs.
 - [ ] `GemConversionService.getRate()` is async; `gem-conversion-info.controller.ts` awaits it.
-- [ ] `/admin/economy` web page: lists all 6 keys, shows source, supports edit/reset/history/refresh-cache via server actions.
+- [ ] `/admin/economy` web page: lists all 6 keys, shows source, supports edit / reset / view-history via server actions. (A "Refresh cache" button is out of scope for v1 — the action exists but no UI surface invokes it. Ops can curl the endpoint until a future ticket adds the button.)
 - [ ] Admin routes guarded by `JwtAuthGuard + RolesGuard + @Roles('admin')`.
 - [ ] DTOs reject value <= 0 and > 1_000_000.
 - [ ] Unknown key → 404.

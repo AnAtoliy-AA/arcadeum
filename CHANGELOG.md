@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.9] - 2026-05-10
+
+### Added
+- add new reason labels and tournament copy (ARC-616) (ARC-616)
+- add register confirm dialog (ARC-616) (ARC-616)
+- show entry fee and prize pool (ARC-616) (ARC-616)
+- add i18n keys for fees and confirm dialogs (ARC-616) (ARC-616)
+- add labels for new reasons in 5 locales (ARC-616) (ARC-616)
+- add unregister confirm dialog with refund summary (ARC-616) (ARC-616)
+- add register confirm dialog with insufficient-funds path (ARC-616) (ARC-616)
+- show entry fee and prize pool on public surfaces (ARC-616) (ARC-616)
+- add mark-complete dialog with winner picker (ARC-616) (ARC-616)
+- add entry fee and prize pool inputs (ARC-616) (ARC-616)
+- credit winners coins when session completes (ARC-616) (ARC-616)
+- wire WalletService and reward config (ARC-616) (ARC-616)
+- add admin endpoint to mark tournament complete (ARC-616) (ARC-616)
+- admin markComplete pays prize pool to winner (ARC-616) (ARC-616)
+- refund all paid registrations on admin cancel (ARC-616) (ARC-616)
+- refund entry fee on unregister before start (ARC-616) (ARC-616)
+- charge entry fee on register, atomic with insert (ARC-616) (ARC-616)
+- wire WalletService and Connection (ARC-616) (ARC-616)
+- add bootstrap to backfill new coin fields (ARC-616) (ARC-616)
+- add coin fields to DTOs and mark-complete DTO (ARC-616) (ARC-616)
+- add entryFeeCoins, prizePoolCoins, winnerUserId (ARC-616) (ARC-616)
+- support parentSession for cross-module transactions (ARC-616) (ARC-616)
+- extend WalletReason with game_win and tournament_* (ARC-616) (ARC-616)
+
+### Fixed
+- replace brittle snapshot with explicit assertions (ARC-616) (ARC-616)
+
+### Documentation
+- document GAME_WIN_COIN_REWARD env var (ARC-616) (ARC-616)
+- fold plan reviewer recommendations into ARC-616 plan (ARC-616)
+- add ARC-616 implementation plan (ARC-616)
+- fold spec reviewer recommendations into ARC-616 design (ARC-616)
+- add ARC-616 earn/spend loop design spec (ARC-616)
+
+
 ## [1.13.8] - 2026-05-09
 
 ### Added

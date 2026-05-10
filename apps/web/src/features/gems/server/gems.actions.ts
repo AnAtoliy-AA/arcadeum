@@ -26,6 +26,10 @@ export type ConvertGemsResult =
   | { ok: true; data: ConversionResult }
   | { ok: false; error: 'insufficient' | 'invalid' | 'generic' };
 
+export type CancelGemPurchaseResult =
+  | { ok: true }
+  | { ok: false; error: 'not_found' | 'generic' };
+
 // ─── Internal fetch helper ────────────────────────────────────────────────────
 
 async function authFetch(path: string, init?: RequestInit): Promise<Response> {
@@ -135,6 +139,27 @@ export async function finalizeGemPurchaseAction(input: {
     gemsCredited: data.gemsCredited,
     newBalance: data.newBalance,
   };
+}
+
+/**
+ * Cancel a stuck pending purchase. The BE marks the GemPurchase row as
+ * `cancelled`. Used to clear orphans (created against a different PayPal
+ * env) or never-completed redirects from the pending banner.
+ */
+export async function cancelGemPurchaseAction(input: {
+  orderId: string;
+}): Promise<CancelGemPurchaseResult> {
+  if (!input.orderId || typeof input.orderId !== 'string') {
+    return { ok: false, error: 'generic' };
+  }
+  const res = await authFetch(
+    `/payments/gems/orders/${encodeURIComponent(input.orderId)}/cancel`,
+    { method: 'POST' },
+  );
+  if (res.status === 404) return { ok: false, error: 'not_found' };
+  if (!res.ok) return { ok: false, error: 'generic' };
+  revalidatePath('/wallet');
+  return { ok: true };
 }
 
 /**

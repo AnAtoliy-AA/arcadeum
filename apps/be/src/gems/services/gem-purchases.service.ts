@@ -169,6 +169,30 @@ export class GemPurchasesService {
     return docs.map((d) => this.toView(d));
   }
 
+  /**
+   * Mark a pending purchase as cancelled. Player-driven cleanup for orders
+   * that can't be finalized — e.g. orphans from a prior PayPal env, or
+   * never-completed redirects. Only the row's owner can cancel, and only
+   * while the row is still `pending`.
+   */
+  async cancelPending(
+    userId: string,
+    paypalOrderId: string,
+  ): Promise<{ cancelled: true }> {
+    const result = await this.purchaseModel.updateOne(
+      {
+        paypalOrderId,
+        userId: new Types.ObjectId(userId),
+        status: 'pending',
+      },
+      { $set: { status: 'cancelled', finalizedAt: new Date() } },
+    );
+    if (result.matchedCount === 0) {
+      throw new NotFoundException('gems.orderNotFound');
+    }
+    return { cancelled: true };
+  }
+
   private toView(doc: GemPurchaseLean): GemPurchaseView {
     return {
       id: doc._id.toString(),

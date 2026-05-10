@@ -1,4 +1,5 @@
 import { getPendingPurchases } from '../server/gems.server';
+import { CancelGemPurchaseButton } from './CancelGemPurchaseButton';
 import { VerifyGemPurchaseButton } from './VerifyGemPurchaseButton';
 
 export async function PendingGemPurchases() {
@@ -69,7 +70,10 @@ export async function PendingGemPurchases() {
                   {priceDisplay} · {date}
                 </span>
               </div>
-              <VerifyGemPurchaseButton orderId={purchase.paypalOrderId} />
+              <div style={{ display: 'inline-flex', gap: '8px' }}>
+                <VerifyGemPurchaseButton orderId={purchase.paypalOrderId} />
+                <CancelGemPurchaseButton orderId={purchase.paypalOrderId} />
+              </div>
             </div>
           );
         })}

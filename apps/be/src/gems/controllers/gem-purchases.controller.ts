@@ -37,4 +37,12 @@ export class GemPurchasesController {
   pending(@Req() req: { user: AuthenticatedUser }) {
     return this.service.listPendingForUser(req.user.userId);
   }
+
+  @Post(':orderId/cancel')
+  cancel(
+    @Req() req: { user: AuthenticatedUser },
+    @Param('orderId') orderId: string,
+  ) {
+    return this.service.cancelPending(req.user.userId, orderId);
+  }
 }

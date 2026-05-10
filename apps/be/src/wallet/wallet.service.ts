@@ -30,7 +30,7 @@ type UserBalanceFields = { coins: number; gems: number };
 export class WalletService {
   private readonly logger = new Logger(WalletService.name);
 
-  private static readonly MAX_TRANSACTION_AMOUNT = 1_000_000;
+  public static readonly MAX_TRANSACTION_AMOUNT = 1_000_000;
 
   constructor(
     @InjectConnection() private readonly connection: Connection,

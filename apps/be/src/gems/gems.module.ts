@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GemPackage, GemPackageSchema } from './schemas/gem-package.schema';
 import { GemPurchase, GemPurchaseSchema } from './schemas/gem-purchase.schema';
 import { GemPackagesService } from './services/gem-packages.service';
@@ -28,6 +29,7 @@ import { GemConversionInfoController } from './controllers/gem-conversion-info.c
     WalletModule,
     ConfigModule,
     MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
       { name: GemPackage.name, schema: GemPackageSchema },
       { name: GemPurchase.name, schema: GemPurchaseSchema },
     ]),

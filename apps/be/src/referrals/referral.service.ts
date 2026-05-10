@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
+import { WalletService } from '../wallet/wallet.service';
 
 interface RewardTierDefinition {
   tier: number;
@@ -59,6 +61,8 @@ const REWARD_TIERS: RewardTierDefinition[] = [
 @Injectable()
 export class ReferralService {
   private readonly logger = new Logger(ReferralService.name);
+  private readonly perReferralCoins: number;
+  private readonly tierBonusCoins: Record<number, number>;
 
   constructor(
     @InjectModel(Referral.name)
@@ -67,7 +71,29 @@ export class ReferralService {
     private readonly rewardModel: Model<ReferralReward>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-  ) {}
+    private readonly wallet: WalletService,
+    private readonly config: ConfigService,
+  ) {
+    this.perReferralCoins = this.readPositiveInt(
+      'REFERRAL_REWARD_COINS_PER',
+      50,
+    );
+    this.tierBonusCoins = {
+      1: this.readPositiveInt('REFERRAL_TIER_1_BONUS_COINS', 100),
+      2: this.readPositiveInt('REFERRAL_TIER_2_BONUS_COINS', 200),
+      3: this.readPositiveInt('REFERRAL_TIER_3_BONUS_COINS', 500),
+    };
+  }
+
+  private readPositiveInt(name: string, fallback: number): number {
+    const raw = this.config.get<string>(name);
+    if (!raw) return fallback;
+    const parsed = Number(raw);
+    // 0 is a valid "disabled" value; positive integers are valid reward amounts.
+    if (Number.isInteger(parsed) && parsed >= 0) return parsed;
+    this.logger.warn(`Invalid ${name}="${raw}"; using default ${fallback}`);
+    return fallback;
+  }
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -127,7 +153,7 @@ export class ReferralService {
       return;
     }
 
-    await this.referralModel.create({
+    const referral = await this.referralModel.create({
       referrerId,
       referredUserId,
       status: 'completed',
@@ -138,7 +164,34 @@ export class ReferralService {
       referredBy: referrerId,
     });
 
+    await this.payoutPerReferral(
+      referrerId,
+      String(referral._id),
+      referredUserId,
+    );
     await this.checkAndGrantRewards(referrerId);
+  }
+
+  private async payoutPerReferral(
+    referrerId: string,
+    referralId: string,
+    referredUserId: string,
+  ): Promise<void> {
+    if (this.perReferralCoins <= 0) return;
+    try {
+      await this.wallet.credit(
+        referrerId,
+        'coins',
+        this.perReferralCoins,
+        'referral_bonus',
+        `referral-${referralId}-payout-${referrerId}`,
+        { referralId, referredUserId },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Referral coin payout failed for ${referrerId} on referral ${referralId}: ${(err as Error).message}`,
+      );
+    }
   }
 
   async getReferralStats(userId: string) {
@@ -211,6 +264,31 @@ export class ReferralService {
           );
         }
       }
+
+      await this.payoutTierBonus(userId, tier.tier, tier.requiredInvites);
+    }
+  }
+
+  private async payoutTierBonus(
+    referrerId: string,
+    tier: number,
+    requiredInvites: number,
+  ): Promise<void> {
+    const amount = this.tierBonusCoins[tier];
+    if (!amount || amount <= 0) return;
+    try {
+      await this.wallet.credit(
+        referrerId,
+        'coins',
+        amount,
+        'referral_tier_bonus',
+        `referral-tier-${referrerId}-${tier}`,
+        { tier, requiredInvites },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Referral tier bonus failed for ${referrerId} tier ${tier}: ${(err as Error).message}`,
+      );
     }
   }
 }

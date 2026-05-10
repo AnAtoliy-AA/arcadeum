@@ -43,6 +43,8 @@ export const walletBy: WalletI18n = {
     gem_purchase: 'Куплены каштоўныя камяні',
     gem_to_coin_conversion_debit: 'Канвертацыя камянёў у манеты',
     gem_to_coin_conversion_credit: 'Манеты з канвертацыі',
+    referral_bonus: 'Бонус за запрашэнне',
+    referral_tier_bonus: 'Бонус за ўзровень запрашэнняў',
   },
   errors: {
     insufficientFunds: 'Недастаткова сродкаў.',

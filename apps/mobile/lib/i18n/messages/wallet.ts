@@ -36,6 +36,8 @@ export const walletMessages = {
       gem_purchase: 'Gems purchased',
       gem_to_coin_conversion_debit: 'Converted gems to coins',
       gem_to_coin_conversion_credit: 'Coins from conversion',
+      referral_bonus: 'Referral bonus',
+      referral_tier_bonus: 'Referral tier bonus',
     },
     errors: {
       insufficientFunds: 'Insufficient balance.',
@@ -77,6 +79,8 @@ export const walletMessages = {
       gem_purchase: 'Gemas compradas',
       gem_to_coin_conversion_debit: 'Gemas convertidas a monedas',
       gem_to_coin_conversion_credit: 'Monedas de la conversión',
+      referral_bonus: 'Bono por referido',
+      referral_tier_bonus: 'Bono de nivel por referidos',
     },
     errors: {
       insufficientFunds: 'Saldo insuficiente.',
@@ -118,6 +122,8 @@ export const walletMessages = {
       gem_purchase: 'Gemmes achetées',
       gem_to_coin_conversion_debit: 'Gemmes converties en pièces',
       gem_to_coin_conversion_credit: 'Pièces issues de la conversion',
+      referral_bonus: 'Bonus de parrainage',
+      referral_tier_bonus: 'Bonus de palier de parrainage',
     },
     errors: {
       insufficientFunds: 'Solde insuffisant.',

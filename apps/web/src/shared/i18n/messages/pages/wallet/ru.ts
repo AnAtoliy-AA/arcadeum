@@ -43,6 +43,8 @@ export const walletRu: WalletI18n = {
     gem_purchase: 'Куплены кристаллы',
     gem_to_coin_conversion_debit: 'Конвертация кристаллов в монеты',
     gem_to_coin_conversion_credit: 'Монеты из конвертации',
+    referral_bonus: 'Бонус за приглашение',
+    referral_tier_bonus: 'Бонус за уровень приглашений',
   },
   errors: {
     insufficientFunds: 'Недостаточно средств.',

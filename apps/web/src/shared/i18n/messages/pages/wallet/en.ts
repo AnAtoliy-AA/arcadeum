@@ -41,6 +41,8 @@ export const walletEn = {
     gem_purchase: 'Gems purchased',
     gem_to_coin_conversion_debit: 'Converted gems to coins',
     gem_to_coin_conversion_credit: 'Coins from conversion',
+    referral_bonus: 'Referral bonus',
+    referral_tier_bonus: 'Referral tier bonus',
   },
   errors: {
     insufficientFunds: 'Insufficient balance.',

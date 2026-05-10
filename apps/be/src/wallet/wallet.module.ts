@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -18,7 +18,7 @@ import { WalletBootstrap } from './lib/wallet-bootstrap';
 
 @Module({
   imports: [
-    AuthModule,
+    forwardRef(() => AuthModule),
     // Register our own JwtModule so WalletGateway can verify socket-handshake
     // JWTs. AuthModule's JwtModule registration sets `global: true` inside its
     // useFactory return, which is JwtModuleOptions.global (signing), not the

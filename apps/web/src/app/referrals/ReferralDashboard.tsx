@@ -8,6 +8,7 @@ import { LoadingState, EmptyState, CosmeticBadge } from '@/shared/ui';
 import { ReferralShareCard } from '@/features/referrals/ui/ReferralShareCard';
 import { ReferralProgressCard } from '@/features/referrals/ui/ReferralProgressCard';
 import { ReferralRewardsCard } from '@/features/referrals/ui/ReferralRewardsCard';
+import { REFERRAL_COIN_REWARDS } from '@/features/referrals/lib/coin-rewards';
 import {
   DashboardContainer,
   DashboardTitle,
@@ -61,6 +62,20 @@ export default function ReferralDashboard() {
           <DashboardSubtitle>
             {t('referrals.dashboard.subtitle')}
           </DashboardSubtitle>
+          <p
+            data-testid="per-friend-coin-reward"
+            data-coins={REFERRAL_COIN_REWARDS.perFriend}
+            style={{
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              color: '#4ade80',
+              margin: 0,
+            }}
+          >
+            {t('referrals.coinReward.perFriend', {
+              coins: String(REFERRAL_COIN_REWARDS.perFriend),
+            })}
+          </p>
         </div>
         <BadgesRow
           badgeIds={data.rewards

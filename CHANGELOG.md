@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.16] - 2026-05-11
+
+### Added
+- add match HUD with threat strip, combo hints, flash banner (ARC-630) (ARC-630)
+
+### Fixed
+- apply PR-631 review-2 §5 fixes (ARC-630) (ARC-630)
+- address PR-631 review feedback (ARC-630) (ARC-630)
+
+
 ## [1.13.15] - 2026-05-11
 
 

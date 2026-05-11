@@ -131,16 +131,11 @@ export const frMessages = {
         reorder: 'Mélangez la pioche',
         insight: 'Regardez les 3 premières cartes du paquet',
         cancel: 'Annule toute action sauf Incident Critique ou Désamorcer',
-        collectionAlpha:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionBeta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionGamma:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionDelta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionEpsilon:
-          'Collectez des modules identiques pour voler des cartes',
+        collectionAlpha: 'Collectez des modules pour voler des cartes',
+        collectionBeta: 'Collectez des modules pour voler des cartes',
+        collectionGamma: 'Collectez des modules pour voler des cartes',
+        collectionDelta: 'Collectez des modules pour voler des cartes',
+        collectionEpsilon: 'Collectez des modules pour voler des cartes',
         // Future Pack descriptions
         seeFuture5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture3x: 'Réorganisez les 3 premières cartes',

@@ -5,9 +5,19 @@ vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('./GameTableSection', () => ({
-  GameTableSection: ({ centerSlot }: { centerSlot?: React.ReactNode }) => (
-    <div data-testid="game-table-section-stub">{centerSlot}</div>
+vi.mock('./opponents/OpponentsRow', () => ({
+  OpponentsRow: ({
+    opponents,
+    currentTurnPlayerId,
+  }: {
+    opponents: Array<{ playerId: string }>;
+    currentTurnPlayerId: string | null;
+  }) => (
+    <div
+      data-testid="opponents-row-stub"
+      data-opponent-count={opponents.length}
+      data-current-turn={currentTurnPlayerId ?? ''}
+    />
   ),
 }));
 
@@ -87,19 +97,50 @@ function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
   } as MatchWidgetProps;
 }
 
-describe('MatchWidget (ARC-632)', () => {
-  it('renders the table shell with Arena slotted as the center', () => {
+describe('MatchWidget (ARC-634)', () => {
+  it('renders the three-row layout: OpponentsRow + Arena + PlayerHand', () => {
     render(<MatchWidget {...makeProps()} />);
     expect(screen.getByTestId('match-widget')).toBeInTheDocument();
-    expect(screen.getByTestId('game-table-section-stub')).toBeInTheDocument();
-    // Arena lands inside GameTableSection's centerSlot (the stub re-renders
-    // children inline so we can see the arena inside the table stub).
+    expect(screen.getByTestId('opponents-row-stub')).toBeInTheDocument();
     expect(screen.getByTestId('arena-stub')).toBeInTheDocument();
+    expect(screen.getByTestId('player-hand-stub')).toBeInTheDocument();
   });
 
-  it('mounts PlayerHand when the current player is alive and game is live', () => {
-    render(<MatchWidget {...makeProps()} />);
-    expect(screen.getByTestId('player-hand-stub')).toBeInTheDocument();
+  it('passes only opponents (not the current user) to OpponentsRow', () => {
+    const players = [
+      { playerId: 'p1', hand: [] as CriticalCard[], alive: true },
+      { playerId: 'p2', hand: [] as CriticalCard[], alive: true },
+      { playerId: 'p3', hand: [] as CriticalCard[], alive: true },
+    ];
+    render(
+      <MatchWidget
+        {...makeProps({
+          currentUserId: 'p1',
+          snapshot: {
+            deck: [],
+            discardPile: [],
+            playerOrder: ['p1', 'p2', 'p3'],
+            currentTurnIndex: 1,
+            pendingDraws: 1,
+            pendingDefuse: null,
+            pendingFavor: null,
+            pendingAlter: null,
+            pendingAction: null,
+            players,
+            logs: [],
+            allowActionCardCombos: false,
+          },
+        })}
+      />,
+    );
+    expect(screen.getByTestId('opponents-row-stub')).toHaveAttribute(
+      'data-opponent-count',
+      '2',
+    );
+    expect(screen.getByTestId('opponents-row-stub')).toHaveAttribute(
+      'data-current-turn',
+      'p2',
+    );
   });
 
   it('hides PlayerHand when the current player is eliminated', () => {

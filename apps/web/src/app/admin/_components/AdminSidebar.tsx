@@ -27,9 +27,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
   return (
     <YStack
       gap="$2"
-      width={220}
-      minWidth={200}
-      $xs={{ width: '100%', minWidth: 0 }}
+      width="100%"
       data-testid="admin-sidebar"
     >
       {ADMIN_SIDEBAR_ITEMS.map((item) => {

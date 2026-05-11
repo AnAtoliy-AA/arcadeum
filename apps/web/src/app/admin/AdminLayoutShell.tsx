@@ -1,14 +1,8 @@
-import {
-  PageLayout,
-  Container,
-  GlassCard,
-  Typography,
-  XStack,
-  YStack,
-} from '@arcadeum/ui';
+import { PageLayout } from '@arcadeum/ui';
 import type { ReactNode } from 'react';
 import { getTranslations } from '@/shared/i18n/server';
 import { AdminSidebar } from './_components/AdminSidebar';
+import styles from './AdminLayoutShell.module.css';
 
 interface AdminLayoutShellProps {
   username: string;
@@ -57,25 +51,18 @@ export default async function AdminLayoutShell({
 
   return (
     <PageLayout>
-      <Container size="xl">
-        <GlassCard p="$3" mb="$3">
-          <Typography variant="caption" alpha="medium">
-            {signedInAs}
-          </Typography>
-        </GlassCard>
+      <div className={styles.shell}>
+        <div className={styles.caption}>
+          <span className={styles.captionText}>{signedInAs}</span>
+        </div>
 
-        <XStack
-          width="100%"
-          gap="$4"
-          flexWrap="wrap"
-          $xs={{ flexDirection: 'column', flexWrap: 'nowrap' }}
-        >
-          <AdminSidebar labels={sidebarLabels} />
-          <YStack flex={1} minWidth={0} width="100%">
-            {children}
-          </YStack>
-        </XStack>
-      </Container>
+        <div className={styles.row}>
+          <div className={styles.sidebar}>
+            <AdminSidebar labels={sidebarLabels} />
+          </div>
+          <div className={styles.content}>{children}</div>
+        </div>
+      </div>
     </PageLayout>
   );
 }

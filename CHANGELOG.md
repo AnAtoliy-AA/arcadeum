@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.12] - 2026-05-11
+
+### Added
+- ARC-620 modern profile menu UI and UX polish (ARC-620)
+- [ARC-620] modernize profile menu styles and migrate to shared components (ARC-620)
+
+### Fixed
+- restore missing logout test ID in ProfileMenu (N/A)
+- ARC-620 stabilize E2E tests and fix mobile layout overlaps (ARC-620)
+
+
 ## [1.13.11] - 2026-05-10
 
 ### Added

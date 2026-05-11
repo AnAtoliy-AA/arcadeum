@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack } from 'tamagui';
+import { HudStyles } from './hudStyles';
 import { ThreatStrip } from './ThreatStrip';
 import { ComboHints } from './ComboHints';
 import { FlashBanner } from './FlashBanner';
@@ -28,6 +29,7 @@ export function MatchHud({
 
   return (
     <>
+      <HudStyles />
       {showStrip && currentPlayer && (
         <XStack
           justifyContent="center"

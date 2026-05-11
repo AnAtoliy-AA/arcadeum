@@ -91,21 +91,15 @@ export function FlashBanner({
   };
 
   return (
-    <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `@keyframes flashBannerIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }`,
-        }}
-      />
-      <div
-        data-testid="flash-banner"
-        data-kind={kind}
-        role="status"
-        aria-live="polite"
-        style={style}
-      >
-        {text}
-      </div>
-    </>
+    <div
+      data-testid="flash-banner"
+      data-kind={kind}
+      role="status"
+      aria-live="polite"
+      title={text}
+      style={style}
+    >
+      {text}
+    </div>
   );
 }

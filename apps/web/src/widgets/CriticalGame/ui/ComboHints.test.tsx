@@ -79,4 +79,20 @@ describe('ComboHints', () => {
       'true',
     );
   });
+
+  it('labels each chip with its translation key', () => {
+    // The mocked t() returns the key unchanged, so the chip text content is
+    // exactly the i18n key path. Locking this down prevents accidental renames
+    // of the hud namespace.
+    render(<ComboHints hand={[]} allowActionCardCombos={false} />);
+    expect(screen.getByTestId('combo-hint-pair')).toHaveTextContent(
+      'games.table.hud.combo.pair',
+    );
+    expect(screen.getByTestId('combo-hint-triple')).toHaveTextContent(
+      'games.table.hud.combo.triple',
+    );
+    expect(screen.getByTestId('combo-hint-fiver')).toHaveTextContent(
+      'games.table.hud.combo.fiver',
+    );
+  });
 });

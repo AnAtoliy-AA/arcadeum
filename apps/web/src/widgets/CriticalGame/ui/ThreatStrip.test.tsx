@@ -46,4 +46,37 @@ describe('ThreatStrip', () => {
       'danger',
     );
   });
+
+  it('ignores hidden cards in the denominator', () => {
+    // 1 critical visible + 1 known non-critical + 2 hidden = 50% chance among
+    // the known portion. Using deck.length would incorrectly report 25%.
+    const deck: CriticalCard[] = [
+      'critical_event',
+      'strike',
+      'hidden' as CriticalCard,
+      'hidden' as CriticalCard,
+    ];
+    render(<ThreatStrip hand={['neutralizer']} deck={deck} />);
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('50%');
+  });
+
+  it('exposes a data-pulse flag instead of inlining an animation rule', () => {
+    // The keyframes live in HudStyles and are gated on prefers-reduced-motion.
+    // ThreatStrip only signals "should pulse" via a data attribute; inlining
+    // an animation rule would bypass that gate.
+    const { rerender } = render(<ThreatStrip hand={['strike']} deck={[]} />);
+    expect(screen.getByTestId('threat-strip')).toHaveAttribute(
+      'data-pulse',
+      'true',
+    );
+    expect(
+      screen.getByTestId('threat-strip').getAttribute('style') ?? '',
+    ).not.toContain('animation');
+
+    rerender(<ThreatStrip hand={['neutralizer']} deck={[]} />);
+    expect(screen.getByTestId('threat-strip')).toHaveAttribute(
+      'data-pulse',
+      'false',
+    );
+  });
 });

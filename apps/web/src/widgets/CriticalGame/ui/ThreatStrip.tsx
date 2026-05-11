@@ -20,10 +20,14 @@ function countDefuses(hand: CriticalCard[]): number {
 
 function computeOverloadOdds(deck: CriticalCard[]): number | null {
   if (deck.length === 0) return null;
+  // Hidden cards have unknown identity, so they can't enter the numerator.
+  // To avoid artificially lowering the odds, only consider visible cards
+  // for both numerator and denominator: this reports the chance among the
+  // portion of the deck we actually know about.
   const visible = deck.filter((c) => (c as string) !== 'hidden').length;
   if (visible === 0) return null;
   const criticals = deck.filter((c) => c === 'critical_event').length;
-  return Math.round((criticals / deck.length) * 100);
+  return Math.round((criticals / visible) * 100);
 }
 
 function levelFromOdds(odds: number | null): 'safe' | 'warn' | 'danger' {
@@ -46,6 +50,7 @@ export function ThreatStrip({ hand, deck }: ThreatStripProps) {
   const oddsLevel = levelFromOdds(overloadOdds);
   const noDefuses = defuseCount === 0;
 
+  const shouldPulse = noDefuses || oddsLevel === 'danger';
   const containerStyle: CSSProperties = {
     display: 'inline-grid',
     gridTemplateColumns: 'auto 1fr auto',
@@ -55,16 +60,12 @@ export function ThreatStrip({ hand, deck }: ThreatStripProps) {
     minWidth: 240,
     borderRadius: 9999,
     background: 'rgba(0,0,0,0.45)',
-    border: `1px solid ${noDefuses || oddsLevel === 'danger' ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}`,
+    border: `1px solid ${shouldPulse ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}`,
     color: '#fff',
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: 0.4,
     textTransform: 'uppercase',
-    animation:
-      noDefuses || oddsLevel === 'danger'
-        ? 'threatPulse 1.4s ease-in-out infinite'
-        : undefined,
   };
 
   const barTrackStyle: CSSProperties = {
@@ -95,37 +96,31 @@ export function ThreatStrip({ hand, deck }: ThreatStripProps) {
   const oddsLabel = overloadOdds === null ? '—' : `${overloadOdds}%`;
 
   return (
-    <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `@keyframes threatPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0.18); } }`,
-        }}
-      />
-      <div
-        data-testid="threat-strip"
-        data-level={oddsLevel}
-        data-no-defuses={noDefuses ? 'true' : 'false'}
-        style={containerStyle}
-        aria-label={t('games.table.hud.threat.label')}
+    <div
+      data-testid="threat-strip"
+      data-level={oddsLevel}
+      data-no-defuses={noDefuses ? 'true' : 'false'}
+      data-pulse={shouldPulse ? 'true' : 'false'}
+      style={containerStyle}
+      aria-label={t('games.table.hud.threat.label')}
+    >
+      <span
+        data-testid="threat-strip-odds"
+        style={{ color: LEVEL_COLOR[oddsLevel] }}
+        title={t('games.table.hud.threat.oddsTitle')}
       >
-        <span
-          data-testid="threat-strip-odds"
-          style={{ color: LEVEL_COLOR[oddsLevel] }}
-          title={t('games.table.hud.threat.oddsTitle')}
-        >
-          {oddsLabel}
-        </span>
-        <span style={barTrackStyle} aria-hidden>
-          <span style={barFillStyle} />
-        </span>
-        <span
-          data-testid="threat-strip-defuses"
-          style={defuseStyle}
-          title={t('games.table.hud.threat.defusesTitle')}
-        >
-          🛡 {defuseCount}
-        </span>
-      </div>
-    </>
+        {oddsLabel}
+      </span>
+      <span style={barTrackStyle} aria-hidden>
+        <span style={barFillStyle} />
+      </span>
+      <span
+        data-testid="threat-strip-defuses"
+        style={defuseStyle}
+        title={t('games.table.hud.threat.defusesTitle')}
+      >
+        🛡 {defuseCount}
+      </span>
+    </div>
   );
 }

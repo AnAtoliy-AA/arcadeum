@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.20] - 2026-05-11
+
+### Added
+- OpponentsRow + OpponentTile (ARC-634) (ARC-634)
+
+
 ## [1.13.19] - 2026-05-11
 
 ### Added

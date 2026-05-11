@@ -1,11 +1,24 @@
 'use client';
 
-import { useCallback, useMemo, type ComponentProps } from 'react';
+import { useCallback, useMemo, useState, type ComponentProps } from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
 import { GameBoard, TableArea } from './styles/layout';
-import { PlayerHand } from './PlayerHand';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
+import { HandZone } from './hand/HandZone';
+import {
+  detectCombo,
+  handWithUids,
+  asComboCards,
+  type ComboKind,
+} from '../lib/combo';
+import { getCardTranslationKey } from '../lib/cardUtils';
+import type { CriticalCard } from '../types';
+
+const DEFUSE_CARDS: readonly CriticalCard[] = [
+  'neutralizer',
+  'containment_field',
+];
 
 export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
   /**
@@ -17,12 +30,10 @@ export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
 };
 
 /**
- * Widget-mode renderer for an active Critical match.
- *
- * Layout: a three-row stack — `OpponentsRow` (ARC-634) above the `Arena`
- * (ARC-632 / ARC-633), with the legacy `PlayerHand` at the bottom until
- * ARC-635 swaps in `HandZone`. No longer uses `GameTableSection`'s ring
- * layout; opponents are now a horizontal strip / FFA grid.
+ * Widget-mode renderer for an active Critical match. Three-row stack:
+ * `OpponentsRow` (ARC-634) · `Arena` (ARC-632 / ARC-633) · `HandZone`
+ * (ARC-635). Owns `selectedUids` so the same selection drives both the
+ * arena's `ComboCard` (label + tint) and the rail's `Play` button.
  */
 export function MatchWidget({
   room: _room,
@@ -34,26 +45,107 @@ export function MatchWidget({
   isMyTurn,
   canAct,
   canPlayNope,
-  actionBusy,
-  aliveOpponents,
-  handLayout,
-  setHandLayout,
+  actionBusy: _actionBusy,
+  aliveOpponents: _aliveOpponents,
+  handLayout: _handLayout,
+  setHandLayout: _setHandLayout,
   resolveDisplayName,
   t,
   actions,
-  idleTimerTriggered,
-  autoplayState,
-  handleUnstash,
+  idleTimerTriggered: _idleTimerTriggered,
+  autoplayState: _autoplayState,
+  handleUnstash: _handleUnstash,
   handlePlayActionCard,
-  handleOpenFavorModal,
+  handleOpenFavorModal: _handleOpenFavorModal,
   handleOpenEventCombo,
   handleOpenFiverCombo,
   formatLogMessage,
 }: MatchWidgetProps) {
+  const [selectedUids, setSelectedUids] = useState<string[]>([]);
+
+  // Memoize hand so downstream useCallback / useMemo deps are stable when
+  // the parent re-renders without `currentPlayer.hand` actually changing.
+  const hand = useMemo(() => currentPlayer?.hand ?? [], [currentPlayer?.hand]);
+  const handCards = useMemo(() => handWithUids(hand), [hand]);
+  const selectedSet = useMemo(() => new Set(selectedUids), [selectedUids]);
+  const selectedCards = useMemo(
+    () => handCards.filter((c) => selectedSet.has(c.uid)),
+    [handCards, selectedSet],
+  );
+  // Drop stale uids when the hand shrinks (cards played / lost). Keeping
+  // them in state would leave the Play button referring to nothing.
+  const validSelectedUids = useMemo(
+    () => selectedCards.map((c) => c.uid),
+    [selectedCards],
+  );
+
+  const allowActionCardCombos = snapshot.allowActionCardCombos ?? false;
+  const detected = useMemo(
+    () => detectCombo(selectedCards, allowActionCardCombos),
+    [selectedCards, allowActionCardCombos],
+  );
+
+  const tCompat = t as unknown as (
+    key: string,
+    params?: Record<string, string | number>,
+  ) => string;
+
+  const comboLabel = useMemo(() => {
+    const name = detected.cardId
+      ? tCompat(getCardTranslationKey(detected.cardId, cardVariant))
+      : '';
+    return tCompat(detected.labelKey, name ? { name } : undefined);
+  }, [detected, tCompat, cardVariant]);
+
+  const combo: { kind: ComboKind; label: string } = {
+    kind: detected.kind,
+    label: comboLabel,
+  };
+
+  const handleToggleSelect = useCallback((uid: string) => {
+    setSelectedUids((prev) =>
+      prev.includes(uid) ? prev.filter((x) => x !== uid) : [...prev, uid],
+    );
+  }, []);
+
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
     actions.drawCard();
   }, [actions, isMyTurn, isGameOver]);
+
+  const canPlay = useMemo(() => {
+    if (!isMyTurn || isGameOver || !canAct) return false;
+    return (
+      detected.kind === 'single' ||
+      detected.kind === 'pair' ||
+      detected.kind === 'triple' ||
+      detected.kind === 'five'
+    );
+  }, [isMyTurn, isGameOver, canAct, detected.kind]);
+
+  const handlePlay = useCallback(() => {
+    if (!canPlay) return;
+    if (detected.kind === 'single') {
+      handlePlayActionCard(detected.selected[0].id);
+    } else if (detected.kind === 'pair' || detected.kind === 'triple') {
+      handleOpenEventCombo(asComboCards(detected.selected), hand);
+    } else if (detected.kind === 'five') {
+      handleOpenFiverCombo();
+    }
+    setSelectedUids([]);
+  }, [
+    canPlay,
+    detected,
+    hand,
+    handlePlayActionCard,
+    handleOpenEventCombo,
+    handleOpenFiverCombo,
+  ]);
+
+  const defuseCount = useMemo(
+    () => hand.filter((c) => DEFUSE_CARDS.includes(c)).length,
+    [hand],
+  );
 
   const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
   const currentPlayerName = useMemo(() => {
@@ -70,7 +162,7 @@ export function MatchWidget({
     [resolveDisplayName],
   );
 
-  const hand = currentPlayer?.hand ?? [];
+  const showHand = !!currentPlayer && currentPlayer.alive && !isGameOver;
 
   return (
     <div data-testid="match-widget">
@@ -89,7 +181,8 @@ export function MatchWidget({
             isGameOver={isGameOver}
             onDrawAndEnd={handleDrawAndEnd}
             hand={hand}
-            allowActionCardCombos={snapshot.allowActionCardCombos ?? false}
+            allowActionCardCombos={allowActionCardCombos}
+            combo={combo}
             currentPlayerName={currentPlayerName}
             pendingDraws={snapshot.pendingDraws}
             logs={snapshot.logs ?? []}
@@ -97,40 +190,20 @@ export function MatchWidget({
           />
         </TableArea>
 
-        {currentPlayer && currentPlayer.alive && !isGameOver && (
-          <PlayerHand
-            currentPlayer={currentPlayer}
-            onUnstashCard={handleUnstash}
-            isMyTurn={isMyTurn}
-            isGameOver={isGameOver}
-            canAct={canAct}
-            canPlayNope={canPlayNope}
-            actionBusy={actionBusy}
-            aliveOpponents={aliveOpponents}
-            discardPileLength={snapshot?.discardPile?.length ?? 0}
-            logs={snapshot?.logs ?? []}
-            pendingAction={snapshot?.pendingAction ?? null}
-            pendingFavor={snapshot?.pendingFavor ?? null}
-            pendingDefuse={snapshot?.pendingDefuse ?? null}
-            deckSize={snapshot?.deck?.length ?? 0}
-            playerOrder={snapshot?.playerOrder ?? []}
-            currentUserId={currentUserId}
-            allowActionCardCombos={snapshot?.allowActionCardCombos ?? false}
-            t={t as (key: string) => string}
-            onDraw={actions.drawCard}
-            onPlayActionCard={handlePlayActionCard}
-            onPlayNope={actions.playNope}
-            onPlaySeeTheFuture={actions.playSeeTheFuture}
-            onOpenFavorModal={handleOpenFavorModal}
-            onGiveFavorCard={actions.giveFavorCard}
-            onPlayDefuse={actions.playDefuse}
-            onOpenEventCombo={handleOpenEventCombo}
-            onOpenFiverCombo={handleOpenFiverCombo}
-            forceEnableAutoplay={idleTimerTriggered}
-            onAutoplayEnabledChange={autoplayState.setAllEnabled}
+        {showHand && (
+          <HandZone
+            cards={handCards}
+            selectedUids={validSelectedUids}
+            onToggleSelect={handleToggleSelect}
+            combo={combo}
+            defuseCount={defuseCount}
+            canPlay={canPlay}
+            canDraw={isMyTurn && !isGameOver}
+            canNope={canPlayNope}
             cardVariant={cardVariant}
-            handLayout={handLayout}
-            setHandLayout={setHandLayout}
+            onPlay={handlePlay}
+            onDraw={handleDrawAndEnd}
+            onNope={actions.playNope}
           />
         )}
       </GameBoard>

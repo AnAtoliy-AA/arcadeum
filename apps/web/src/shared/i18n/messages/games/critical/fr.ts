@@ -124,7 +124,7 @@ export const frMessages = {
       rapture: 'Le Ravissement',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
-        neutralizer: 'Utilisez pour désamorcer un Incident Critique',
+        neutralizer: 'Désamorce un Incident Critique',
         strike: 'Fin du tour sans piocher, le joueur suivant joue 2 tours',
         evade: 'Terminez votre tour sans piocher de carte',
         trade: 'Forcez un autre joueur à vous donner une carte',
@@ -142,13 +142,13 @@ export const frMessages = {
         alterFuture5x: 'Réorganisez les 5 premières cartes',
         revealFuture3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         seeFuture_5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture_3x: 'Réorganisez les 3 premières cartes',
         alterFuture_5x: 'Réorganisez les 5 premières cartes',
         revealFuture_3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture_3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         drawBottom: 'Piochez la carte du fond du paquet',
         swapTopBottom: 'Échangez la carte du dessus et du dessous du paquet',
         bury: 'Piochez la carte du dessus, puis enterrez-la dans le paquet',
@@ -168,8 +168,7 @@ export const frMessages = {
         // Chaos Pack descriptions
         criticalImplosion:
           'Si pioché face visible, explose immédiatement et ne peut pas être désamorcé',
-        containmentField:
-          'Permet de garder un Incident Critique en main sans exploser',
+        containmentField: 'Tient une Critique en main sans exploser',
         fission:
           'Mélange les Incidents Critiques dans le paquet et termine le tour sans piocher',
         tribute:
@@ -239,6 +238,11 @@ export const frMessages = {
         triple: '3× triple',
         fiver: '5 différentes',
         placeholder: 'Sélectionnez des cartes pour un combo',
+        playSingle: 'Jouer {{name}}',
+        playPair: 'Jouer 2× {{name}} · voler',
+        playTriple: 'Jouer 3× {{name}} · nommer carte',
+        playFiver: 'Jouer 5 · choisir de la défausse',
+        invalid: 'Combo invalide',
       },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',
@@ -387,8 +391,7 @@ export const frMessages = {
       },
       alterTheFuture: {
         title: "Altérer l'Avenir",
-        description:
-          'Réorganisez les cartes du dessus du paquet. La carte du dessus (#1) sera piochée ensuite.',
+        description: 'Réorganisez le dessus du paquet. Le n°1 sera pioché.',
         confirm: 'Confirmer',
       },
       shareTheFuture: {

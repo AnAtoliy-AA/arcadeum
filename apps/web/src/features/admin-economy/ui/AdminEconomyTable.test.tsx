@@ -35,6 +35,13 @@ const ALL_KEYS = [
   'referral_tier_1_bonus_coins',
   'referral_tier_2_bonus_coins',
   'referral_tier_3_bonus_coins',
+  'daily_reward_day_1',
+  'daily_reward_day_2',
+  'daily_reward_day_3',
+  'daily_reward_day_4',
+  'daily_reward_day_5',
+  'daily_reward_day_6',
+  'daily_reward_day_7',
 ] as const;
 
 function makeSetting(
@@ -57,7 +64,7 @@ beforeEach(() => {
 });
 
 describe('AdminEconomyTable', () => {
-  it('renders a row for each of the 6 economy keys', async () => {
+  it('renders a row for each registered economy key', async () => {
     const settings = ALL_KEYS.map((k) => makeSetting(k));
     vi.mocked(listEconomySettings).mockResolvedValue(settings);
 

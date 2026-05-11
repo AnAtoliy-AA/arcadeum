@@ -188,7 +188,11 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <Divider spacing="sm" />
-        <DropdownButton onClick={handleLogout} icon={<LogoutIcon size={18} />}>
+        <DropdownButton
+          data-testid="desktop-logout-button"
+          onClick={handleLogout}
+          icon={<LogoutIcon size={18} />}
+        >
           {t('common.actions.logout')}
         </DropdownButton>
       </ProfileDropdownWrapper>

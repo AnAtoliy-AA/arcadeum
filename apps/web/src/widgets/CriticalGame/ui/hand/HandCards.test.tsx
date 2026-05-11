@@ -63,4 +63,71 @@ describe('HandCards', () => {
     fireEvent.click(screen.getByTestId('hand-card-evade-2'));
     expect(onToggleSelect).not.toHaveBeenCalled();
   });
+
+  it('tags each card tile with the role its border colour is derived from', () => {
+    // One representative card per role. The HandCard cell exposes
+    // `data-role` so visual regressions (wrong color, wrong icon) are
+    // catchable without a snapshot diff that flakes on layout.
+    renderCards({
+      cards: handWithUids([
+        'strike',
+        'neutralizer',
+        'evade',
+        'cancel',
+        'trade',
+        'insight',
+        'wildcard',
+        'critical_event',
+      ] as CriticalCard[]),
+    });
+    expect(screen.getByTestId('hand-card-strike-0')).toHaveAttribute(
+      'data-role',
+      'attack',
+    );
+    expect(screen.getByTestId('hand-card-neutralizer-1')).toHaveAttribute(
+      'data-role',
+      'defuse',
+    );
+    expect(screen.getByTestId('hand-card-evade-2')).toHaveAttribute(
+      'data-role',
+      'skip',
+    );
+    expect(screen.getByTestId('hand-card-cancel-3')).toHaveAttribute(
+      'data-role',
+      'nope',
+    );
+    expect(screen.getByTestId('hand-card-trade-4')).toHaveAttribute(
+      'data-role',
+      'favor',
+    );
+    expect(screen.getByTestId('hand-card-insight-5')).toHaveAttribute(
+      'data-role',
+      'see',
+    );
+    expect(screen.getByTestId('hand-card-wildcard-6')).toHaveAttribute(
+      'data-role',
+      'combo',
+    );
+    expect(screen.getByTestId('hand-card-critical_event-7')).toHaveAttribute(
+      'data-role',
+      'special',
+    );
+  });
+
+  it('shows a duplicate-count badge only for cards with copies in hand', () => {
+    renderCards({
+      cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),
+    });
+    // strike has 2 copies — badges on both cells, reading "×2".
+    expect(screen.getByTestId('hand-card-count-strike-0')).toHaveTextContent(
+      '×2',
+    );
+    expect(screen.getByTestId('hand-card-count-strike-1')).toHaveTextContent(
+      '×2',
+    );
+    // evade is solo — no badge.
+    expect(
+      screen.queryByTestId('hand-card-count-evade-2'),
+    ).not.toBeInTheDocument();
+  });
 });

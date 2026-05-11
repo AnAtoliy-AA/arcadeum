@@ -280,6 +280,7 @@ export function MatchWidget({
             logs={snapshot.logs ?? []}
             formatLogMessage={formatLogMessage}
             serverOverloadOdds={snapshot.overloadOdds}
+            hiddenCount={snapshot.hiddenCount}
           />
         </TableArea>
 

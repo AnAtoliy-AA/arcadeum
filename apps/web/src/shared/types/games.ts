@@ -257,6 +257,14 @@ export interface CriticalSnapshot {
    * client falls back to its lower-bound estimate.
    */
   overloadOdds?: number | null;
+  /**
+   * Count of deck cards the snapshot is masking from this client
+   * (Tracker reveal, future-peek, etc.) that aren't already represented
+   * as `'hidden'` entries inside `deck`. Folded into the ThreatStrip's
+   * client-fallback denominator. Optional for forward compat — when
+   * the server doesn't emit it the client treats it as zero.
+   */
+  hiddenCount?: number;
 }
 
 // Texas Hold'em types

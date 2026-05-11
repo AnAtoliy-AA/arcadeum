@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getConnectionToken } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
 import { GemConversionService } from './gem-conversion.service';
 import { WalletService } from '../../wallet/wallet.service';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 import { InsufficientFundsException } from '../../wallet/exceptions/insufficient-funds.exception';
 
 const VALID_UUID = '123e4567-e89b-12d3-a456-426614174000';
@@ -42,56 +42,44 @@ const buildConnection = () => {
   };
 };
 
-const buildConfig = (rate?: string) => ({
-  get: jest.fn((key: string) => {
-    if (key === 'GEM_TO_COIN_RATE') return rate;
-    return undefined;
-  }),
+const buildEconomy = (rate = 100) => ({
+  getNumber: jest.fn().mockResolvedValue(rate),
 });
 
-const buildModule = async (configValue?: string) => {
+const buildModule = async (rate = 100) => {
   const wallet = buildWallet();
   const conn = buildConnection();
-  const config = buildConfig(configValue);
+  const economy = buildEconomy(rate);
 
   const moduleRef = await Test.createTestingModule({
     providers: [
       GemConversionService,
       { provide: WalletService, useValue: wallet },
       { provide: getConnectionToken(), useValue: conn },
-      { provide: ConfigService, useValue: config },
+      { provide: EconomySettingsService, useValue: economy },
     ],
   }).compile();
 
   const service = moduleRef.get(GemConversionService);
-  return { service, wallet, conn, config };
+  return { service, wallet, conn, economy };
 };
 
 describe('GemConversionService', () => {
   describe('getRate', () => {
-    it('defaults to 100 when env var is not set', async () => {
-      const { service } = await buildModule(undefined);
-      expect(service.getRate()).toBe(100);
+    it('defaults to 100 when economy returns 100', async () => {
+      const { service } = await buildModule(100);
+      expect(await service.getRate()).toBe(100);
     });
 
-    it('uses custom rate from env when valid', async () => {
-      const { service } = await buildModule('200');
-      expect(service.getRate()).toBe(200);
+    it('uses custom rate when economy returns 200', async () => {
+      const { service } = await buildModule(200);
+      expect(await service.getRate()).toBe(200);
     });
 
-    it('falls back to 100 when env var is invalid (non-integer)', async () => {
-      const { service } = await buildModule('abc');
-      expect(service.getRate()).toBe(100);
-    });
-
-    it('falls back to 100 when env var is zero', async () => {
-      const { service } = await buildModule('0');
-      expect(service.getRate()).toBe(100);
-    });
-
-    it('falls back to 100 when env var is negative', async () => {
-      const { service } = await buildModule('-5');
-      expect(service.getRate()).toBe(100);
+    it('delegates to economy.getNumber with gem_to_coin_rate key', async () => {
+      const { service, economy } = await buildModule(150);
+      await service.getRate();
+      expect(economy.getNumber).toHaveBeenCalledWith('gem_to_coin_rate');
     });
   });
 
@@ -142,7 +130,7 @@ describe('GemConversionService', () => {
   describe('convertGemsToCoins — cap validation', () => {
     it('throws 400 when computed coins exceed MAX_TRANSACTION_AMOUNT', async () => {
       // rate=100 * 10001 = 1_000_100 > 1_000_000
-      const { service } = await buildModule('100');
+      const { service } = await buildModule(100);
       await expect(
         service.convertGemsToCoins('user1', 10_001, VALID_UUID),
       ).rejects.toThrow(BadRequestException);
@@ -150,7 +138,7 @@ describe('GemConversionService', () => {
 
     it('allows exactly MAX_TRANSACTION_AMOUNT coins', async () => {
       // rate=100, gems=10_000, coins=1_000_000 which equals MAX exactly (not >)
-      const { service, wallet } = await buildModule('100');
+      const { service, wallet } = await buildModule(100);
       wallet.debit.mockResolvedValue({});
       wallet.credit.mockResolvedValue({});
       wallet.getBalance.mockResolvedValue({ coins: 1_000_000, gems: 0 });
@@ -168,7 +156,7 @@ describe('GemConversionService', () => {
     it('calls debit then credit with correct args and returns result', async () => {
       const userId = 'user-abc';
       const gems = 500;
-      const { service, wallet } = await buildModule('100');
+      const { service, wallet } = await buildModule(100);
       wallet.debit.mockResolvedValue({});
       wallet.credit.mockResolvedValue({});
       wallet.getBalance.mockResolvedValue({ coins: 50_000, gems: 100 });
@@ -213,8 +201,8 @@ describe('GemConversionService', () => {
       expect(wallet.emitAfterCommit).toHaveBeenCalledWith('user1', balance);
     });
 
-    it('uses custom rate from env: GEM_TO_COIN_RATE=200 produces coins = gems * 200', async () => {
-      const { service, wallet } = await buildModule('200');
+    it('uses custom rate from economy: rate=200 produces coins = gems * 200', async () => {
+      const { service, wallet } = await buildModule(200);
       wallet.debit.mockResolvedValue({});
       wallet.credit.mockResolvedValue({});
       wallet.getBalance.mockResolvedValue({ coins: 200, gems: 0 });

@@ -10,7 +10,7 @@ export class GemConversionInfoController {
   constructor(private readonly service: GemConversionService) {}
 
   @Get()
-  rate(): { rate: number } {
-    return { rate: this.service.getRate() };
+  async rate(): Promise<{ rate: number }> {
+    return { rate: await this.service.getRate() };
   }
 }

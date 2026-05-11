@@ -11,7 +11,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { WalletService } from '../wallet/wallet.service';
-import { ConfigService } from '@nestjs/config';
+import { EconomySettingsService } from '../economy/economy-settings.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -81,8 +81,8 @@ describe('GamesService', () => {
     const mockWalletService = {
       credit: jest.fn(),
     };
-    const mockConfigService = {
-      get: jest.fn().mockReturnValue(undefined),
+    const mockEconomyService = {
+      getNumber: jest.fn().mockResolvedValue(50),
     };
 
     module = await Test.createTestingModule({
@@ -102,7 +102,7 @@ describe('GamesService', () => {
           useValue: mockLeaderboardSync,
         },
         { provide: WalletService, useValue: mockWalletService },
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: EconomySettingsService, useValue: mockEconomyService },
       ],
     }).compile();
 

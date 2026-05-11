@@ -12,6 +12,7 @@ import {
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 import { WalletModule } from '../wallet/wallet.module';
+import { EconomyModule } from '../economy/economy.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { WalletModule } from '../wallet/wallet.module';
     ]),
     forwardRef(() => AuthModule),
     forwardRef(() => WalletModule),
+    EconomyModule,
   ],
   controllers: [ReferralController, BadgesController],
   providers: [ReferralService],

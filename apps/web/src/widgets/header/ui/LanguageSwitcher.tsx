@@ -58,7 +58,11 @@ export default function LanguageSwitcher({
       $md={{ marginHorizontal: '$5' }}
       className={className}
     >
-      <XStack alignItems="center" justifyContent="center">
+      <XStack
+        alignItems="center"
+        justifyContent="center"
+        className="header-language-globe"
+      >
         <GlobeIcon size={18} />
       </XStack>
       <Select

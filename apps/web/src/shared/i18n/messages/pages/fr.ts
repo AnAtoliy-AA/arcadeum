@@ -4,6 +4,7 @@ import { walletFr } from './wallet/fr';
 import { adminWalletFr } from './admin-wallet/fr';
 import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
+import { adminEconomyFr } from './admin-economy/fr';
 
 export const fr = {
   admin: {
@@ -18,6 +19,7 @@ export const fr = {
       payments: 'Paiements',
       announcements: 'Annonces',
       tournaments: 'Tournois',
+      economy: 'Économie',
       comingSoon: 'Bientôt',
     },
     error: {
@@ -475,4 +477,5 @@ export const fr = {
   wallet: walletFr,
   gems: gemsFr,
   adminGemPackages: adminGemPackagesFr,
+  adminEconomy: adminEconomyFr,
 };

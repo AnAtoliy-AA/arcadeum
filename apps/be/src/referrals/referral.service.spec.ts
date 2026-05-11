@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ConfigService } from '@nestjs/config';
 import { ReferralService } from './referral.service';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward } from './schemas/referral-reward.schema';
 import { User } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
+import { EconomySettingsService } from '../economy/economy-settings.service';
 
 const makeObjectId = () => new Types.ObjectId().toHexString();
 
@@ -34,6 +34,23 @@ describe('ReferralService', () => {
     findByIdAndUpdate: jest.fn(),
   };
 
+  const buildEconomy = (overrides: Record<string, number> = {}) => {
+    const defaults: Record<string, number> = {
+      referral_reward_coins_per: 50,
+      referral_tier_1_bonus_coins: 100,
+      referral_tier_2_bonus_coins: 200,
+      referral_tier_3_bonus_coins: 500,
+      ...overrides,
+    };
+    return {
+      getNumber: jest
+        .fn()
+        .mockImplementation((key: string) =>
+          Promise.resolve(defaults[key] ?? 0),
+        ),
+    };
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -46,12 +63,7 @@ describe('ReferralService', () => {
         { provide: getModelToken(ReferralReward.name), useValue: rewardModel },
         { provide: getModelToken(User.name), useValue: userModel },
         { provide: WalletService, useValue: walletService },
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn(() => undefined),
-          },
-        },
+        { provide: EconomySettingsService, useValue: buildEconomy() },
       ],
     }).compile();
 
@@ -161,12 +173,8 @@ describe('ReferralService', () => {
           { provide: getModelToken(User.name), useValue: userModel },
           { provide: WalletService, useValue: walletService },
           {
-            provide: ConfigService,
-            useValue: {
-              get: jest.fn((k: string) =>
-                k === 'REFERRAL_REWARD_COINS_PER' ? '0' : undefined,
-              ),
-            },
+            provide: EconomySettingsService,
+            useValue: buildEconomy({ referral_reward_coins_per: 0 }),
           },
         ],
       }).compile();
@@ -265,12 +273,8 @@ describe('ReferralService', () => {
           { provide: getModelToken(User.name), useValue: userModel },
           { provide: WalletService, useValue: walletService },
           {
-            provide: ConfigService,
-            useValue: {
-              get: jest.fn((k: string) =>
-                k === 'REFERRAL_TIER_1_BONUS_COINS' ? '0' : undefined,
-              ),
-            },
+            provide: EconomySettingsService,
+            useValue: buildEconomy({ referral_tier_1_bonus_coins: 0 }),
           },
         ],
       }).compile();

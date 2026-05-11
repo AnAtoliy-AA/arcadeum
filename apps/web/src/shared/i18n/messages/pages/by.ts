@@ -4,6 +4,7 @@ import { walletBy } from './wallet/by';
 import { adminWalletBy } from './admin-wallet/by';
 import { gemsBy } from './gems/by';
 import { adminGemPackagesBy } from './admin-gem-packages/by';
+import { adminEconomyBy } from './admin-economy/by';
 
 export const by = {
   admin: {
@@ -18,6 +19,7 @@ export const by = {
       payments: 'Плацяжы',
       announcements: "Аб'явы",
       tournaments: 'Турніры',
+      economy: 'Эканоміка',
       comingSoon: 'Хутка',
     },
     error: {
@@ -474,4 +476,5 @@ export const by = {
   wallet: walletBy,
   gems: gemsBy,
   adminGemPackages: adminGemPackagesBy,
+  adminEconomy: adminEconomyBy,
 };

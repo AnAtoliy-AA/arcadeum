@@ -1,6 +1,10 @@
 // Belarusian mirrors Russian for these short admin labels.
 export const adminEconomyBy = {
   title: 'Настройкі эканомікі',
+  subtitle:
+    'Перавызначайце значэнні эканомікі ў рэальным часе. Змены прымяняюцца пасля заканчэння TTL кэша (па змаўчанні 60 с) або пасля яго абнаўлення.',
+  loading: 'Загрузка…',
+  empty: 'Настройкі эканомікі не знойдзены.',
   keys: {
     game_win_coin_reward: {
       name: 'Узнагарода за перамогу',

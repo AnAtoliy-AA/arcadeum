@@ -27,12 +27,13 @@ export async function AdminEconomyTable() {
   const settings = await listEconomySettings();
 
   if (settings.length === 0) {
+    const emptyLabel = t.empty ?? adminEconomyEn.empty;
     return (
       <div
         data-testid="economy-table-empty"
         style={{ textAlign: 'center', padding: '48px 16px', color: '#71717a' }}
       >
-        No economy settings found.
+        {emptyLabel}
       </div>
     );
   }

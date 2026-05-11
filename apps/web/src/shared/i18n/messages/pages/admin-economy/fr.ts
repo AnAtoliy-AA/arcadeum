@@ -1,5 +1,9 @@
 export const adminEconomyFr = {
   title: "Paramètres d'économie",
+  subtitle:
+    "Remplacez les valeurs d'économie à la volée. Les changements prennent effet après le TTL du cache (60 s par défaut) ou après rafraîchissement.",
+  loading: 'Chargement…',
+  empty: "Aucun paramètre d'économie trouvé.",
   keys: {
     game_win_coin_reward: {
       name: 'Récompense de victoire',

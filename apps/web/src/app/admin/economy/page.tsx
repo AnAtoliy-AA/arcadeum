@@ -5,7 +5,9 @@ import { getTranslations } from '@/shared/i18n/server';
 import { adminEconomyEn } from '@/shared/i18n/messages/pages/admin-economy/en';
 
 interface AdminEconomyPageMessages {
-  pages?: { adminEconomy?: { title?: string } };
+  pages?: {
+    adminEconomy?: { title?: string; subtitle?: string; loading?: string };
+  };
 }
 
 // No metadata export — inherit noindex/nofollow from /admin/layout.tsx.
@@ -14,7 +16,10 @@ export default async function AdminEconomyPage() {
   await requireAdmin();
 
   const messages = (await getTranslations()) as AdminEconomyPageMessages;
-  const title = messages.pages?.adminEconomy?.title ?? adminEconomyEn.title;
+  const t = messages.pages?.adminEconomy ?? {};
+  const title = t.title ?? adminEconomyEn.title;
+  const subtitle = t.subtitle ?? adminEconomyEn.subtitle;
+  const loading = t.loading ?? adminEconomyEn.loading;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
@@ -29,10 +34,7 @@ export default async function AdminEconomyPage() {
         >
           {title}
         </h1>
-        <p style={{ fontSize: '14px', color: '#71717a' }}>
-          Override runtime economy values. Changes take effect after the cache
-          TTL (default 60 s) or after refreshing the cache.
-        </p>
+        <p style={{ fontSize: '14px', color: '#71717a' }}>{subtitle}</p>
       </div>
 
       <Suspense
@@ -45,7 +47,7 @@ export default async function AdminEconomyPage() {
               color: '#71717a',
             }}
           >
-            Loading…
+            {loading}
           </div>
         }
       >

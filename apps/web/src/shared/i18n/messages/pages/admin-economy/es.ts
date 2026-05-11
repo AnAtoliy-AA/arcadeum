@@ -1,5 +1,9 @@
 export const adminEconomyEs = {
   title: 'Configuración de economía',
+  subtitle:
+    'Anula los valores de economía en tiempo real. Los cambios se aplican tras el TTL de la caché (60 s por defecto) o al refrescarla.',
+  loading: 'Cargando…',
+  empty: 'No se encontraron ajustes de economía.',
   keys: {
     game_win_coin_reward: {
       name: 'Recompensa por victoria',

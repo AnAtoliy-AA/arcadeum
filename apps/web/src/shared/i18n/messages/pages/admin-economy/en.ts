@@ -1,5 +1,9 @@
 export const adminEconomyEn = {
   title: 'Economy settings',
+  subtitle:
+    'Override runtime economy values. Changes take effect after the cache TTL (default 60 s) or after refreshing the cache.',
+  loading: 'Loading…',
+  empty: 'No economy settings found.',
   keys: {
     game_win_coin_reward: {
       name: 'Game win reward',

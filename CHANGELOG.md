@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.14] - 2026-05-11
+
+### Added
+- Day 7 gem bonus on top of coin reward (ARC-621) (ARC-621)
+- compact chip on home page (ARC-621) (ARC-621)
+- mount DailyRewardCard on /wallet (ARC-621) (ARC-621)
+- translations across 5 locales (ARC-621) (ARC-621)
+- DailyRewardCard + ClaimButton (ARC-621) (ARC-621)
+- claim Server Action (ARC-621) (ARC-621)
+- server fetch for /daily-rewards/me (ARC-621) (ARC-621)
+- GET /me + POST /claim endpoints (ARC-621) (ARC-621)
+- service with streak + idempotent wallet credit (ARC-621) (ARC-621)
+- pure streak math util (ARC-621) (ARC-621)
+- add UserDailyReward schema (ARC-621) (ARC-621)
+- register daily_reward_day_1..7 keys (ARC-621) (ARC-621)
+
+### Documentation
+- implementation plan for ARC-621 (ARC-621)
+- design spec for ARC-621 (ARC-621)
+
+
 ## [1.13.13] - 2026-05-11
 
 ### Added

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.21] - 2026-05-11
+
+### Added
+- HandZone + selection-aware combo (ARC-635) (ARC-635)
+
+
 ## [1.13.20] - 2026-05-11
 
 ### Added

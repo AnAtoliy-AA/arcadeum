@@ -4,6 +4,7 @@ import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getCardTranslationKey } from '../../lib/cardUtils';
 import { getCardRole, type CardRole } from '../../lib/cardRoles';
+import { CardImage } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
 
 interface HandCardProps {
@@ -43,7 +44,12 @@ const ROLE_GLOW: Record<CardRole, string> = {
   special: 'rgba(244, 114, 182, 0.40)',
 };
 
-const ROLE_ICON: Record<CardRole, string> = {
+/**
+ * Fallback glyph used when the active card variant has no sprite sheet
+ * (e.g. the unthemed "default" variant). Keyed by role so the icon at
+ * least tracks the border colour.
+ */
+const ROLE_FALLBACK_GLYPH: Record<CardRole, string> = {
   attack: '⚔',
   defuse: '🛡',
   skip: '👟',
@@ -130,9 +136,26 @@ export function HandCard({
       }
       flexShrink={0}
     >
-      <Text fontSize={28} lineHeight={32}>
-        {ROLE_ICON[role]}
-      </Text>
+      <YStack
+        data-testid={`hand-card-art-${card.uid}`}
+        position="relative"
+        width="100%"
+        flex={1}
+        borderRadius={6}
+        overflow="hidden"
+        backgroundColor="rgba(0,0,0,0.45)"
+        alignItems="center"
+        justifyContent="center"
+      >
+        {/* Role glyph sits underneath so it shows through when the
+            active variant has no sprite sheet (CardImage renders null).
+            When a sheet exists, the absolutely-positioned sprite layer
+            paints over the glyph. */}
+        <Text fontSize={26} lineHeight={30} opacity={0.65}>
+          {ROLE_FALLBACK_GLYPH[role]}
+        </Text>
+        <CardImage variant={cardVariant ?? ''} cardType={card.id} />
+      </YStack>
       <Text
         fontSize={10}
         fontWeight="800"
@@ -141,6 +164,7 @@ export function HandCard({
         textAlign="center"
         numberOfLines={2}
         color={borderColor}
+        paddingTop={4}
       >
         {name}
       </Text>

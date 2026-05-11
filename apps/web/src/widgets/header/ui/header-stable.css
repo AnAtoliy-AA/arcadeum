@@ -121,3 +121,30 @@
     display: flex;
   }
 }
+
+@media (max-width: 480px) {
+  .header-inner {
+    height: 56px;
+    padding-left: 8px;
+    padding-right: 8px;
+    gap: 4px;
+  }
+  .header-inner .actions-styled {
+    gap: 6px;
+  }
+  .header-language-switcher {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .header-language-globe {
+    display: none;
+  }
+  /* Compact wallet pills on iPhone SE-class screens */
+  .wallet-balance-chip {
+    gap: 4px !important;
+  }
+  .wallet-balance-pill {
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+  }
+}

@@ -220,6 +220,29 @@ export const enMessages = {
       cards: 'cards',
       card: 'card',
     },
+    hud: {
+      threat: {
+        label: 'Threat',
+        oddsTitle:
+          'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
+        defusesTitle: 'Defuses you hold',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× pair',
+        triple: '3× triple',
+        fiver: '5 different',
+      },
+      extraTurns: '+{{count}} turn',
+      extraTurnsPlural: '+{{count}} turns',
+      flash: {
+        draw: 'Drew {{card}}',
+        play: 'Played {{card}}',
+        defuse: 'Defused — {{card}} reinserted',
+        eliminated: '{{name}} eliminated',
+        critical: '⚠ Critical drawn',
+      },
+    },
     players: {
       you: 'You',
       alive: 'Alive',

@@ -226,6 +226,29 @@ export const ruMessages = {
       cards: 'карт',
       card: 'карта',
     },
+    hud: {
+      threat: {
+        label: 'Угроза',
+        oddsTitle:
+          'Минимальный шанс вытянуть Критическую карту (только видимые карты — скрытые могут увеличить шанс)',
+        defusesTitle: 'Защитные карты у вас',
+      },
+      combo: {
+        label: 'Комбо',
+        pair: '2× пара',
+        triple: '3× тройка',
+        fiver: '5 разных',
+      },
+      extraTurns: '+{{count}} ход',
+      extraTurnsPlural: '+{{count}} ходов',
+      flash: {
+        draw: 'Взято: {{card}}',
+        play: 'Сыграно: {{card}}',
+        defuse: 'Обезврежено — {{card}} возвращена',
+        eliminated: '{{name}} выбыл',
+        critical: '⚠ Тянет Критическую',
+      },
+    },
     players: {
       you: 'Вы',
       alive: 'Жив',

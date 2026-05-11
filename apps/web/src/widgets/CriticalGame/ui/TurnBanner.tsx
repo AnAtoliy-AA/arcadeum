@@ -8,6 +8,8 @@ interface TurnBannerProps {
   isMyTurn: boolean;
   currentPlayerName: string;
   secondsRemaining: number | null;
+  /** Pending draws from the snapshot. Renders a +N chip when > 1. */
+  pendingDraws?: number;
 }
 
 const PULSE_KEYFRAMES_CSS = `
@@ -34,6 +36,7 @@ export function TurnBanner({
   isMyTurn,
   currentPlayerName,
   secondsRemaining,
+  pendingDraws,
 }: TurnBannerProps) {
   const palette = useScenePalette();
   const { t } = useTranslation();
@@ -43,6 +46,14 @@ export function TurnBanner({
     : t('games.table.players.playerTurn', { name: currentPlayerName });
 
   const timer = formatTimer(secondsRemaining);
+  const extra =
+    typeof pendingDraws === 'number' ? Math.max(0, pendingDraws - 1) : 0;
+  const extraLabel =
+    extra > 0
+      ? extra === 1
+        ? t('games.table.hud.extraTurns', { count: extra })
+        : t('games.table.hud.extraTurnsPlural', { count: extra })
+      : null;
 
   const shellStyle: CSSProperties = {
     position: 'relative',
@@ -110,6 +121,27 @@ export function TurnBanner({
         <span aria-hidden style={borderOverlayStyle} />
         <span data-testid="turn-banner-dot" style={dotStyle} />
         <span style={labelStyle}>{label}</span>
+        {extraLabel && (
+          <span
+            data-testid="turn-banner-extra"
+            style={{
+              position: 'relative',
+              zIndex: 1,
+              padding: '2px 8px',
+              borderRadius: 9999,
+              background: 'rgba(245, 158, 11, 0.18)',
+              color: '#fbbf24',
+              border: '1px solid rgba(245, 158, 11, 0.45)',
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: 0.4,
+              textTransform: 'uppercase',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {extraLabel}
+          </span>
+        )}
         <span style={timerStyle}>{timer}</span>
       </div>
     </>

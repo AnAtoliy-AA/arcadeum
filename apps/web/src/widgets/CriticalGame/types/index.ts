@@ -5,6 +5,7 @@ import {
   CriticalPlayerState,
   CriticalComboCard,
   CriticalLogEntry,
+  CriticalLogKind,
   ChatScope,
   ATTACK_PACK_CARDS,
   BASE_ACTION_CARDS,
@@ -72,6 +73,7 @@ export type {
   CriticalPlayerState,
   CriticalComboCard,
   CriticalLogEntry,
+  CriticalLogKind,
   ChatScope,
   MarkedCardInfo,
 };

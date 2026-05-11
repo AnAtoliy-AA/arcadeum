@@ -249,6 +249,7 @@ export const ruMessages = {
         playTriple: 'Сыграть 3× {{name}} · назвать карту',
         playFiver: 'Сыграть 5 · взять из сброса',
         invalid: 'Недопустимое комбо',
+        pickTarget: 'Выберите цель',
       },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} ходов',

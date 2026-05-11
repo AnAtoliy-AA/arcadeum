@@ -8,6 +8,13 @@ interface ThreatStripProps {
   hand: CriticalCard[];
   deck: CriticalCard[];
   /**
+   * Count of deck cards the snapshot has masked (Tracker/future-peek,
+   * etc.). Folded into the client-fallback denominator so the percentage
+   * doesn't overstate when most of the deck is hidden. Ignored when
+   * `serverOverloadOdds` is supplied.
+   */
+  hiddenCount?: number;
+  /**
    * Server-authoritative draw-elimination odds. When provided, used
    * directly and the tooltip drops its "min odds (visible only)" caveat.
    * Falls back to the visible-deck approximation when undefined.
@@ -24,17 +31,28 @@ function countDefuses(hand: CriticalCard[]): number {
   return hand.filter((c) => DEFUSE_CARDS.includes(c)).length;
 }
 
-function computeOverloadOdds(deck: CriticalCard[]): number | null {
-  if (deck.length === 0) return null;
+function computeOverloadOdds(
+  deck: CriticalCard[],
+  externalHiddenCount: number,
+): number | null {
   // Hidden cards COULD be a critical, but we can't count them in the
-  // numerator without server data. Keeping them in the denominator yields
-  // a LOWER BOUND on the true odds (a "min odds" estimate). The tooltip
-  // labels this clearly so users don't read the percentage as exact.
-  // Production should source `overloadOdds` directly from the snapshot.
+  // numerator without server data. Keeping them in the denominator
+  // yields a LOWER BOUND on the true odds (a "min odds" estimate). The
+  // tooltip labels this clearly so users don't read the percentage as
+  // exact. Production should source `overloadOdds` directly from the
+  // snapshot.
+  //
+  // `deck` may contain `'hidden'` placeholders (Tracker/peek masks) OR
+  // exclude hidden cards entirely — `externalHiddenCount` covers the
+  // latter case so the denominator stays honest when most of the deck
+  // is opaque to the client.
   const visible = deck.filter((c) => (c as string) !== 'hidden').length;
-  if (visible === 0) return null;
+  const totalHidden = deck.length - visible + Math.max(0, externalHiddenCount);
+  if (visible === 0 && totalHidden > 0) return null;
+  const denominator = visible + totalHidden;
+  if (denominator === 0) return null;
   const criticals = deck.filter((c) => c === 'critical_event').length;
-  return Math.round((criticals / deck.length) * 100);
+  return Math.round((criticals / denominator) * 100);
 }
 
 function levelFromOdds(odds: number | null): 'safe' | 'warn' | 'danger' {
@@ -53,11 +71,15 @@ const LEVEL_COLOR: Record<'safe' | 'warn' | 'danger', string> = {
 export function ThreatStrip({
   hand,
   deck,
+  hiddenCount = 0,
   serverOverloadOdds,
 }: ThreatStripProps) {
   const { t } = useTranslation();
   const defuseCount = useMemo(() => countDefuses(hand), [hand]);
-  const clientOdds = useMemo(() => computeOverloadOdds(deck), [deck]);
+  const clientOdds = useMemo(
+    () => computeOverloadOdds(deck, hiddenCount),
+    [deck, hiddenCount],
+  );
   const fromServer =
     serverOverloadOdds !== undefined && serverOverloadOdds !== null;
   const overloadOdds = fromServer ? (serverOverloadOdds as number) : clientOdds;

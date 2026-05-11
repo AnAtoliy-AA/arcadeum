@@ -246,6 +246,7 @@ export const esMessages = {
         playTriple: 'Jugar 3× {{name}} · nombrar carta',
         playFiver: 'Jugar 5 · elegir del descarte',
         invalid: 'Combo no válido',
+        pickTarget: 'Elige un objetivo',
       },
       extraTurns: '+{{count}} turno',
       extraTurnsPlural: '+{{count}} turnos',

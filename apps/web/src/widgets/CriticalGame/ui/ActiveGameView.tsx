@@ -100,7 +100,6 @@ export function ActiveGameView({
   const media = useMedia();
   const isMobile = media.sm;
   const widgetMode = useWidgetMode();
-
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
@@ -118,9 +117,7 @@ export function ActiveGameView({
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
   }
-
   const showResultModal = isGameOver && !modalDismissed;
-
   useWebGameHaptics(isMyTurn);
 
   const {

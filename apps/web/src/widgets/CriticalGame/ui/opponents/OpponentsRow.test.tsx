@@ -100,4 +100,22 @@ describe('OpponentsRow', () => {
       'true',
     );
   });
+
+  it('forwards onSelectTarget calls with the clicked opponent id', () => {
+    const onSelectTarget = vi.fn();
+    renderRow({ opponents: makePlayers(2), onSelectTarget });
+    screen.getByTestId('opponent-tile-p2').click();
+    expect(onSelectTarget).toHaveBeenCalledWith('p2');
+  });
+
+  it('does not invoke onSelectTarget for eliminated tiles', () => {
+    const onSelectTarget = vi.fn();
+    const opponents: CriticalPlayerTableState[] = [
+      { playerId: 'p1', alive: true, hand: ['strike'] as CriticalCard[] },
+      { playerId: 'p2', alive: false, hand: [] as CriticalCard[] },
+    ];
+    renderRow({ opponents, onSelectTarget });
+    screen.getByTestId('opponent-tile-p2').click();
+    expect(onSelectTarget).not.toHaveBeenCalled();
+  });
 });

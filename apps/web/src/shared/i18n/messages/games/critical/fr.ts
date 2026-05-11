@@ -69,7 +69,6 @@ export const frMessages = {
       },
     },
   },
-
   table: {
     cards: {
       criticalEvent: 'Incident Critique',
@@ -243,6 +242,7 @@ export const frMessages = {
         playTriple: 'Jouer 3× {{name}} · nommer carte',
         playFiver: 'Jouer 5 · choisir de la défausse',
         invalid: 'Combo invalide',
+        pickTarget: 'Choisissez une cible',
       },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',

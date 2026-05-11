@@ -21,6 +21,8 @@ interface ArenaCenterProps {
   deck: CriticalCard[];
   /** Server-authoritative overload odds; forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
+  /** Cards the snapshot has hidden — folded into client-fallback odds. */
+  hiddenCount?: number;
   // Flash banner
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
@@ -43,6 +45,7 @@ export function ArenaCenter({
   combo,
   deck,
   serverOverloadOdds,
+  hiddenCount,
   logs,
   formatLogMessage,
 }: ArenaCenterProps) {
@@ -84,6 +87,7 @@ export function ArenaCenter({
         hand={hand}
         deck={deck}
         serverOverloadOdds={serverOverloadOdds}
+        hiddenCount={hiddenCount}
       />
     </YStack>
   );

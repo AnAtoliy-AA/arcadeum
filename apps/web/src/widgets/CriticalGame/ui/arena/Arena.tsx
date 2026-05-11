@@ -24,6 +24,8 @@ interface ArenaProps {
   formatLogMessage: (message?: string | null) => string;
   /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
+  /** Cards the snapshot has hidden — folded into client-fallback odds. */
+  hiddenCount?: number;
 }
 
 /**
@@ -46,6 +48,7 @@ export function Arena({
   logs,
   formatLogMessage,
   serverOverloadOdds,
+  hiddenCount,
 }: ArenaProps) {
   return (
     <XStack
@@ -75,6 +78,7 @@ export function Arena({
         logs={logs}
         formatLogMessage={formatLogMessage}
         serverOverloadOdds={serverOverloadOdds}
+        hiddenCount={hiddenCount}
       />
       <DiscardPile pile={discardPile} cardVariant={cardVariant} />
     </XStack>

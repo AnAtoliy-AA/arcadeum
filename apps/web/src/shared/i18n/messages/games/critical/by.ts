@@ -247,6 +247,7 @@ export const byMessages = {
         playTriple: 'Згуляць 3× {{name}} · назваць карту',
         playFiver: 'Згуляць 5 · узяць са скіду',
         invalid: 'Несапраўднае камбо',
+        pickTarget: 'Абярыце мэту',
       },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} хадоў',

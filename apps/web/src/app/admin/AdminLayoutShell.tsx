@@ -65,6 +65,7 @@ export default async function AdminLayoutShell({
         </GlassCard>
 
         <XStack
+          width="100%"
           gap="$4"
           flexWrap="wrap"
           $xs={{ flexDirection: 'column', flexWrap: 'nowrap' }}

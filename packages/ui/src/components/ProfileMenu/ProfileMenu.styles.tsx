@@ -8,7 +8,10 @@ import Link from 'next/link';
 export const ProfileMenuContainer = styled(YStack, {
   name: 'ProfileMenuContainer',
   position: 'relative',
-  display: 'flex',
+  zIndex: 100,
+  $sm: {
+    display: 'none',
+  },
 });
 
 export const UserName = styled(Typography, {

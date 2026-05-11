@@ -65,13 +65,12 @@ export default function ProfileMenu() {
   if (!displayName) return null;
 
   return (
-    <ProfileMenuContainer data-profile-menu>
+    <ProfileMenuContainer data-profile-menu data-testid="profile-menu">
       <Button
         variant="chip"
         size="sm"
         gap="$3"
         onClick={toggleMenu}
-        display={['none', 'flex', 'flex']}
         hoverStyle={{
           backgroundColor: 'rgba(255, 255, 255, 0.08)',
           scale: 1.01,

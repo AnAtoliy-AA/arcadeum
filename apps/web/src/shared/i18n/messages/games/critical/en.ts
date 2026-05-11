@@ -236,6 +236,7 @@ export const enMessages = {
         pair: '2× pair',
         triple: '3× triple',
         fiver: '5 different',
+        placeholder: 'Select cards to combo',
       },
       extraTurns: '+{{count}} turn',
       extraTurnsPlural: '+{{count}} turns',

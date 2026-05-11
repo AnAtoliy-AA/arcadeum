@@ -1,10 +1,11 @@
 'use client';
 
 import { XStack } from 'tamagui';
-import type { CriticalCard } from '../../types';
+import type { CriticalCard, CriticalLogEntry } from '../../types';
 import { DrawPile } from './DrawPile';
 import { DiscardPile } from './DiscardPile';
 import { ArenaCenter } from './ArenaCenter';
+import type { ComboKind } from './ComboCard';
 
 interface ArenaProps {
   deck: CriticalCard[];
@@ -13,12 +14,20 @@ interface ArenaProps {
   isMyTurn: boolean;
   isGameOver: boolean;
   onDrawAndEnd: () => void;
+  // ArenaCenter passthrough
+  hand: CriticalCard[];
+  allowActionCardCombos: boolean;
+  combo?: { kind: ComboKind; label: string };
+  currentPlayerName: string;
+  pendingDraws: number;
+  logs: CriticalLogEntry[];
+  formatLogMessage: (message?: string | null) => string;
 }
 
 /**
  * Three-column arena row (draw · center · discard) — Row 2 of the §7
- * widget layout. The center column is currently a placeholder slot for
- * the HUD pieces that ARC-633 will move inside it.
+ * widget layout. The center column hosts the turn pill, combo intent
+ * card, threat strip, and an absolutely-positioned flash banner.
  */
 export function Arena({
   deck,
@@ -27,6 +36,13 @@ export function Arena({
   isMyTurn,
   isGameOver,
   onDrawAndEnd,
+  hand,
+  allowActionCardCombos,
+  combo,
+  currentPlayerName,
+  pendingDraws,
+  logs,
+  formatLogMessage,
 }: ArenaProps) {
   return (
     <XStack
@@ -45,7 +61,17 @@ export function Arena({
         onDraw={onDrawAndEnd}
         cardVariant={cardVariant}
       />
-      <ArenaCenter />
+      <ArenaCenter
+        isMyTurn={isMyTurn}
+        currentPlayerName={currentPlayerName}
+        pendingDraws={pendingDraws}
+        hand={hand}
+        allowActionCardCombos={allowActionCardCombos}
+        combo={combo}
+        deck={deck}
+        logs={logs}
+        formatLogMessage={formatLogMessage}
+      />
       <DiscardPile pile={discardPile} cardVariant={cardVariant} />
     </XStack>
   );

@@ -288,60 +288,64 @@ export function ActiveGameView({
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}
         />
-        <XStack justifyContent="center">
-          <TurnBanner
-            isMyTurn={!!isMyTurn}
-            currentPlayerName={
-              currentTurnPlayer
-                ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
-                : ''
-            }
-            secondsRemaining={null}
-            pendingDraws={snapshot.pendingDraws}
-          />
-        </XStack>
-        <MatchHud
-          snapshot={snapshot}
-          currentPlayer={currentPlayer}
-          isGameOver={!!isGameOver}
-          formatLogMessage={formatLogMessage}
-        />
-
-        {/* Flag-gated render. MatchWidget is currently a pass-through to */}
-        {/* ActiveGameContent; the §7 rework lands inside MatchWidget. */}
-        {(() => {
-          const ContentImpl = widgetMode ? MatchWidget : ActiveGameContent;
-          return (
-            <ContentImpl
-              room={room}
+        {/* Flag-off: legacy top-of-page TurnBanner + MatchHud. In widget */}
+        {/* mode these move inside the Arena's center column (ARC-633). */}
+        {!widgetMode && (
+          <>
+            <XStack justifyContent="center">
+              <TurnBanner
+                isMyTurn={!!isMyTurn}
+                currentPlayerName={
+                  currentTurnPlayer
+                    ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+                    : ''
+                }
+                secondsRemaining={null}
+                pendingDraws={snapshot.pendingDraws}
+              />
+            </XStack>
+            <MatchHud
               snapshot={snapshot}
-              currentUserId={currentUserId}
               currentPlayer={currentPlayer}
-              cardVariant={cardVariant}
               isGameOver={!!isGameOver}
-              isMyTurn={!!isMyTurn}
-              canAct={!!canAct}
-              canPlayNope={canPlayNope}
-              actionBusy={actionBusy}
-              aliveOpponents={aliveOpponents}
-              handLayout={handLayout}
-              setHandLayout={setHandLayout}
-              resolveDisplayName={resolveDisplayName}
-              t={
-                t as unknown as (
-                  key: string,
-                  params?: Record<string, string | number>,
-                ) => string
-              }
-              actions={actions}
-              idleTimerTriggered={idleTimerTriggered}
-              autoplayState={autoplayState}
-              handleUnstash={handleUnstash}
-              handlePlayActionCard={handlePlayActionCard}
-              handleOpenFavorModal={handleOpenFavorModal}
-              handleOpenEventCombo={handleOpenEventCombo}
-              handleOpenFiverCombo={handleOpenFiverCombo}
+              formatLogMessage={formatLogMessage}
             />
+          </>
+        )}
+
+        {(() => {
+          const sharedProps = {
+            room,
+            snapshot,
+            currentUserId,
+            currentPlayer,
+            cardVariant,
+            isGameOver: !!isGameOver,
+            isMyTurn: !!isMyTurn,
+            canAct: !!canAct,
+            canPlayNope,
+            actionBusy,
+            aliveOpponents,
+            handLayout,
+            setHandLayout,
+            resolveDisplayName,
+            t: t as unknown as (
+              key: string,
+              params?: Record<string, string | number>,
+            ) => string,
+            actions,
+            idleTimerTriggered,
+            autoplayState,
+            handleUnstash,
+            handlePlayActionCard,
+            handleOpenFavorModal,
+            handleOpenEventCombo,
+            handleOpenFiverCombo,
+          };
+          return widgetMode ? (
+            <MatchWidget {...sharedProps} formatLogMessage={formatLogMessage} />
+          ) : (
+            <ActiveGameContent {...sharedProps} />
           );
         })()}
       </YStack>

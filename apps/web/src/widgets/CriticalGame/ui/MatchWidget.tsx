@@ -1,13 +1,20 @@
 'use client';
 
-import { useCallback, type ComponentProps } from 'react';
+import { useCallback, useMemo, type ComponentProps } from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
 import { GameBoard, TableArea } from './styles/layout';
 import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
 import { Arena } from './arena/Arena';
 
-export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent>;
+export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
+  /**
+   * Format a raw `CriticalLogEntry.message` for display. Comes from
+   * `useDisplayNames` in `ActiveGameView` — passed down so the FlashBanner
+   * inside the new ArenaCenter can surface formatted log entries.
+   */
+  formatLogMessage: (message?: string | null) => string;
+};
 
 /**
  * Widget-mode renderer for an active Critical match (ARC-631 onwards).
@@ -42,11 +49,20 @@ export function MatchWidget({
   handleOpenFavorModal,
   handleOpenEventCombo,
   handleOpenFiverCombo,
+  formatLogMessage,
 }: MatchWidgetProps) {
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
     actions.drawCard();
   }, [actions, isMyTurn, isGameOver]);
+
+  const currentPlayerName = useMemo(() => {
+    const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex];
+    if (!turnPlayerId) return '';
+    return resolveDisplayName(turnPlayerId, 'Player') ?? 'Player';
+  }, [snapshot.playerOrder, snapshot.currentTurnIndex, resolveDisplayName]);
+
+  const hand = currentPlayer?.hand ?? [];
 
   const arena = (
     <Arena
@@ -56,6 +72,12 @@ export function MatchWidget({
       isMyTurn={isMyTurn}
       isGameOver={isGameOver}
       onDrawAndEnd={handleDrawAndEnd}
+      hand={hand}
+      allowActionCardCombos={snapshot.allowActionCardCombos ?? false}
+      currentPlayerName={currentPlayerName}
+      pendingDraws={snapshot.pendingDraws}
+      logs={snapshot.logs ?? []}
+      formatLogMessage={formatLogMessage}
     />
   );
 

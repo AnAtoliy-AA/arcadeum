@@ -35,6 +35,12 @@ function renderArena(
     isMyTurn: true,
     isGameOver: false,
     onDrawAndEnd: vi.fn(),
+    hand: ['strike'] as CriticalCard[],
+    allowActionCardCombos: false,
+    currentPlayerName: 'Alice',
+    pendingDraws: 1,
+    logs: [],
+    formatLogMessage: (m?: string | null) => m ?? '',
     ...override,
   };
   return render(

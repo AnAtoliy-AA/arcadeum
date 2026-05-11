@@ -82,6 +82,7 @@ function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
     handleOpenFavorModal: vi.fn(),
     handleOpenEventCombo: vi.fn(),
     handleOpenFiverCombo: vi.fn(),
+    formatLogMessage: (m?: string | null) => m ?? '',
     ...override,
   } as MatchWidgetProps;
 }

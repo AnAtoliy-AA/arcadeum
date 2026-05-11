@@ -153,11 +153,11 @@ describe('EconomySettingsService (integration)', () => {
     expect(resetAudit.toValue).toBe(77);
   });
 
-  // ─── Test 6: listAll returns all 6 keys ────────────────────────────────────
-  it('listAll returns all 6 economy keys including those with no DB rows', async () => {
+  // ─── Test 6: listAll returns all registered keys ───────────────────────────
+  it('listAll returns all economy keys including those with no DB rows', async () => {
     const all = await service.listAll();
     expect(all).toHaveLength(ECONOMY_KEYS.length);
-    expect(all).toHaveLength(6);
+    expect(all).toHaveLength(14);
 
     // Each entry has the required shape
     for (const entry of all) {

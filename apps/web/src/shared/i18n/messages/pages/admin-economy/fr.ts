@@ -32,6 +32,42 @@ export const adminEconomyFr = {
       description:
         'Bonus unique de pièces lorsque le parrain atteint 10 parrainages réussis.',
     },
+    daily_reward_day_1: {
+      name: 'Récompense quotidienne — Jour 1',
+      description: 'Pièces attribuées le premier jour de la série de 7 jours.',
+    },
+    daily_reward_day_2: {
+      name: 'Récompense quotidienne — Jour 2',
+      description: 'Pièces attribuées le deuxième jour de la série de 7 jours.',
+    },
+    daily_reward_day_3: {
+      name: 'Récompense quotidienne — Jour 3',
+      description:
+        'Pièces attribuées le troisième jour de la série de 7 jours.',
+    },
+    daily_reward_day_4: {
+      name: 'Récompense quotidienne — Jour 4',
+      description:
+        'Pièces attribuées le quatrième jour de la série de 7 jours.',
+    },
+    daily_reward_day_5: {
+      name: 'Récompense quotidienne — Jour 5',
+      description:
+        'Pièces attribuées le cinquième jour de la série de 7 jours.',
+    },
+    daily_reward_day_6: {
+      name: 'Récompense quotidienne — Jour 6',
+      description: 'Pièces attribuées le sixième jour de la série de 7 jours.',
+    },
+    daily_reward_day_7: {
+      name: 'Récompense quotidienne — Jour 7',
+      description: 'Pièces attribuées le septième jour de la série de 7 jours.',
+    },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Récompense quotidienne — Bonus de gemmes Jour 7',
+      description:
+        'Gemmes attribuées en plus des pièces au Jour 7 de la série.',
+    },
   },
   table: {
     key: 'Paramètre',

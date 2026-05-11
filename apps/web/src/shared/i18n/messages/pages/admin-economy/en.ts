@@ -34,6 +34,42 @@ export const adminEconomyEn = {
       description:
         'One-time coin bonus when a referrer reaches 10 successful invites.',
     },
+    daily_reward_day_1: {
+      name: 'Daily reward — Day 1',
+      description: 'Coins awarded for the first day of the 7-day daily streak.',
+    },
+    daily_reward_day_2: {
+      name: 'Daily reward — Day 2',
+      description:
+        'Coins awarded for the second day of the 7-day daily streak.',
+    },
+    daily_reward_day_3: {
+      name: 'Daily reward — Day 3',
+      description: 'Coins awarded for the third day of the 7-day daily streak.',
+    },
+    daily_reward_day_4: {
+      name: 'Daily reward — Day 4',
+      description:
+        'Coins awarded for the fourth day of the 7-day daily streak.',
+    },
+    daily_reward_day_5: {
+      name: 'Daily reward — Day 5',
+      description: 'Coins awarded for the fifth day of the 7-day daily streak.',
+    },
+    daily_reward_day_6: {
+      name: 'Daily reward — Day 6',
+      description: 'Coins awarded for the sixth day of the 7-day daily streak.',
+    },
+    daily_reward_day_7: {
+      name: 'Daily reward — Day 7',
+      description:
+        'Coins awarded for the seventh day of the 7-day daily streak.',
+    },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Daily reward — Day 7 gem bonus',
+      description:
+        'Gems awarded in addition to coins on Day 7 of the daily streak.',
+    },
   },
   table: {
     key: 'Setting',

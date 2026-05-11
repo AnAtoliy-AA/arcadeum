@@ -24,6 +24,17 @@ export const ECONOMY_KEYS_CONFIG = {
     env: 'REFERRAL_TIER_3_BONUS_COINS',
     default: 500,
   },
+  daily_reward_day_1: { env: 'DAILY_REWARD_DAY_1', default: 10 },
+  daily_reward_day_2: { env: 'DAILY_REWARD_DAY_2', default: 20 },
+  daily_reward_day_3: { env: 'DAILY_REWARD_DAY_3', default: 35 },
+  daily_reward_day_4: { env: 'DAILY_REWARD_DAY_4', default: 55 },
+  daily_reward_day_5: { env: 'DAILY_REWARD_DAY_5', default: 80 },
+  daily_reward_day_6: { env: 'DAILY_REWARD_DAY_6', default: 110 },
+  daily_reward_day_7: { env: 'DAILY_REWARD_DAY_7', default: 150 },
+  daily_reward_day_7_bonus_gems: {
+    env: 'DAILY_REWARD_DAY_7_BONUS_GEMS',
+    default: 1,
+  },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

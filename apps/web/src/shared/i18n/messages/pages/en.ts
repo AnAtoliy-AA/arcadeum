@@ -5,6 +5,7 @@ import { adminWalletEn } from './admin-wallet/en';
 import { gemsEn } from './gems/en';
 import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
+import { dailyRewardsEn } from './daily-rewards/en';
 
 export const en = {
   admin: {
@@ -474,4 +475,5 @@ export const en = {
   gems: gemsEn,
   adminGemPackages: adminGemPackagesEn,
   adminEconomy: adminEconomyEn,
+  dailyRewards: dailyRewardsEn,
 };

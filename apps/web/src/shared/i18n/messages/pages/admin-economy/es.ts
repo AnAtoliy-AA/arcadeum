@@ -29,6 +29,39 @@ export const adminEconomyEs = {
       name: 'Bono nivel 3 (10 invitados)',
       description: 'Bono único de monedas al alcanzar 10 referidos exitosos.',
     },
+    daily_reward_day_1: {
+      name: 'Recompensa diaria — Día 1',
+      description: 'Monedas otorgadas el primer día de la racha de 7 días.',
+    },
+    daily_reward_day_2: {
+      name: 'Recompensa diaria — Día 2',
+      description: 'Monedas otorgadas el segundo día de la racha de 7 días.',
+    },
+    daily_reward_day_3: {
+      name: 'Recompensa diaria — Día 3',
+      description: 'Monedas otorgadas el tercer día de la racha de 7 días.',
+    },
+    daily_reward_day_4: {
+      name: 'Recompensa diaria — Día 4',
+      description: 'Monedas otorgadas el cuarto día de la racha de 7 días.',
+    },
+    daily_reward_day_5: {
+      name: 'Recompensa diaria — Día 5',
+      description: 'Monedas otorgadas el quinto día de la racha de 7 días.',
+    },
+    daily_reward_day_6: {
+      name: 'Recompensa diaria — Día 6',
+      description: 'Monedas otorgadas el sexto día de la racha de 7 días.',
+    },
+    daily_reward_day_7: {
+      name: 'Recompensa diaria — Día 7',
+      description: 'Monedas otorgadas el séptimo día de la racha de 7 días.',
+    },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Recompensa diaria — Bono de gemas del Día 7',
+      description:
+        'Gemas otorgadas además de las monedas el Día 7 de la racha.',
+    },
   },
   table: {
     key: 'Ajuste',

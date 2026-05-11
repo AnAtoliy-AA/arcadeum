@@ -16,6 +16,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
 import { WalletModule } from './wallet/wallet.module';
 import { GemsModule } from './gems/gems.module';
 import { EconomyModule } from './economy/economy.module';
+import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
 import { resolveMongoUri } from './common/utils/mongo-uri.util';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -38,6 +39,7 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     WalletModule,
     GemsModule,
     EconomyModule,
+    DailyRewardsModule,
     MongooseModule.forRoot(resolveMongoUri()),
   ],
   controllers: [AppController],

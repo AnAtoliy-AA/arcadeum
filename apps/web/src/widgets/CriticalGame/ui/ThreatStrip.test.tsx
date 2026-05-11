@@ -62,6 +62,47 @@ describe('ThreatStrip', () => {
     expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('25%');
   });
 
+  it('prefers serverOverloadOdds over the client estimate when provided', () => {
+    // Client estimate from the visible deck would be 33% (1 of 3 cards
+    // visible is a critical). The server says 60%, which wins.
+    const deck: CriticalCard[] = ['critical_event', 'strike', 'evade'];
+    render(
+      <ThreatStrip
+        hand={['neutralizer']}
+        deck={deck}
+        serverOverloadOdds={60}
+      />,
+    );
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('60%');
+    expect(screen.getByTestId('threat-strip')).toHaveAttribute(
+      'data-odds-source',
+      'server',
+    );
+  });
+
+  it('renders 0% (not em-dash) when server reports zero', () => {
+    render(
+      <ThreatStrip hand={['neutralizer']} deck={[]} serverOverloadOdds={0} />,
+    );
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('0%');
+  });
+
+  it('falls back to the client estimate when serverOverloadOdds is null', () => {
+    const deck: CriticalCard[] = ['critical_event', 'strike', 'evade', 'trade'];
+    render(
+      <ThreatStrip
+        hand={['neutralizer']}
+        deck={deck}
+        serverOverloadOdds={null}
+      />,
+    );
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('25%');
+    expect(screen.getByTestId('threat-strip')).toHaveAttribute(
+      'data-odds-source',
+      'client',
+    );
+  });
+
   it('exposes a data-pulse flag instead of inlining an animation rule', () => {
     // The keyframes live in HudStyles and are gated on prefers-reduced-motion.
     // ThreatStrip only signals "should pulse" via a data attribute; inlining

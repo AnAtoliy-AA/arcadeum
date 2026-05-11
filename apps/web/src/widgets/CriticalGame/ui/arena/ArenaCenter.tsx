@@ -19,6 +19,8 @@ interface ArenaCenterProps {
   combo?: { kind: ComboKind; label: string };
   // Threat strip
   deck: CriticalCard[];
+  /** Server-authoritative overload odds; forwarded to ThreatStrip. */
+  serverOverloadOdds?: number | null;
   // Flash banner
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
@@ -40,6 +42,7 @@ export function ArenaCenter({
   allowActionCardCombos,
   combo,
   deck,
+  serverOverloadOdds,
   logs,
   formatLogMessage,
 }: ArenaCenterProps) {
@@ -77,7 +80,11 @@ export function ArenaCenter({
         allowActionCardCombos={allowActionCardCombos}
         combo={combo}
       />
-      <ThreatStrip hand={hand} deck={deck} />
+      <ThreatStrip
+        hand={hand}
+        deck={deck}
+        serverOverloadOdds={serverOverloadOdds}
+      />
     </YStack>
   );
 }

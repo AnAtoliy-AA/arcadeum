@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.22] - 2026-05-11
+
+### Added
+- drop header in widget mode; Rules + Fullscreen on HandRail (ARC-636) (ARC-636)
+
+
 ## [1.13.21] - 2026-05-11
 
 ### Added

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.23] - 2026-05-11
+
+### Added
+- emit log.kind for HUD classification (ARC-637) (ARC-637)
+
+
 ## [1.13.22] - 2026-05-11
 
 ### Added

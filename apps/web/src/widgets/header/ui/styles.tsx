@@ -79,125 +79,6 @@ export const DesktopOnly = styled(XStack, {
   $md: { display: 'none' },
 });
 
-// ─── Profile Menu ─────────────────────────────────────────────────────────────
-
-export const ProfileMenuContainer = styled(YStack, {
-  name: 'ProfileMenuContainer',
-  position: 'relative',
-  $md: { display: 'none' },
-});
-
-export const UserName = styled(Typography, {
-  name: 'UserName',
-  uiSize: 'sm',
-  weight: '500',
-  maxWidth: 140,
-});
-
-export const UserNameEllipsis = styled(UserName, {
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-
-export const ProfileDropdown = styled(YStack, {
-  name: 'ProfileDropdown',
-  position: 'absolute',
-  right: 0,
-  minWidth: 220,
-  backgroundColor: '$glassBg',
-  borderColor: '$glassBorder',
-  borderWidth: 1,
-  borderRadius: '$4',
-  overflow: 'hidden',
-  zIndex: 1000,
-  top: 'calc(100% + 12px)',
-  backdropFilter: 'blur(20px) saturate(160%)',
-  boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-  transformOrigin: 'right top',
-
-  variants: {
-    isOpen: {
-      true: {
-        opacity: 1,
-        pointerEvents: 'auto',
-        visibility: 'visible',
-        transform: 'translateY(0) scale(1)',
-      },
-      false: {
-        opacity: 0,
-        pointerEvents: 'none',
-        visibility: 'hidden',
-        transform: 'translateY(-10px) scale(0.96)',
-      },
-    },
-  } as const,
-});
-
-export const ProfileDropdownWrapper = ProfileDropdown.styleable(
-  ({ isOpen, children, onPress, onClick, ...props }, ref) => {
-    return (
-      <ProfileDropdown
-        ref={ref}
-        isOpen={isOpen}
-        {...props}
-        onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
-      >
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          height={1}
-          pointerEvents="none"
-          background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
-        />
-        {children}
-      </ProfileDropdown>
-    );
-  },
-);
-
-export function DropdownLink({
-  href,
-  onClick,
-  children,
-}: {
-  href: string;
-  onClick?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      prefetch={false}
-      className="link-no-decoration"
-      onClick={onClick}
-    >
-      <XStack
-        alignItems="center"
-        gap="$3"
-        height={44}
-        paddingHorizontal="$4"
-        cursor="pointer"
-        hoverStyle={{ backgroundColor: '$glassBgHover' }}
-        transition="background-color 0.2s ease"
-      >
-        <Typography
-          uiSize="sm"
-          weight="500"
-          color="$color"
-          flexDirection="row"
-          alignItems="center"
-          gap={12}
-        >
-          {children}
-        </Typography>
-      </XStack>
-    </Link>
-  );
-}
-
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
 export const MobileMenuContainer = styled(XStack, {
@@ -214,9 +95,9 @@ export const MobileNav = styled(YStack, {
   width: '100%',
   maxWidth: '100vw',
   zIndex: '$1',
-  backgroundColor: '$background',
+  backgroundColor: 'rgba(12, 14, 15, 0.95)',
   borderTopWidth: 1,
-  borderTopColor: '$borderColor',
+  borderTopColor: '$glassBorder',
   paddingHorizontal: '$5',
   paddingTop: '$4',
   gap: '$1',
@@ -237,15 +118,10 @@ export const MobileVersionText = styled(Typography, {
 
 export const MobileUserInfo = styled(XStack, {
   name: 'MobileUserInfo',
-  paddingVertical: 14,
-  paddingHorizontal: '$4',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  marginVertical: '$1',
+  paddingVertical: '$4',
+  paddingHorizontal: '$2',
   alignItems: 'center',
-  gap: '$2',
+  gap: '$3',
   flexWrap: 'wrap',
 });
 
@@ -275,10 +151,13 @@ export const NavMobileLink = styled(LinkButton, {
   paddingVertical: '$3',
   paddingHorizontal: '$4',
   justifyContent: 'flex-start',
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
   variants: {
     isActive: {
       true: {
-        backgroundColor: '$backgroundPress',
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
         color: '$primary',
       },
     },

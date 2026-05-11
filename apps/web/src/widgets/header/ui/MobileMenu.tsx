@@ -11,15 +11,16 @@ import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
   MobileUserInfo,
-  UserNameEllipsis,
   MobileVersionText,
   NavMobileLink,
 } from './styles';
 import { XStack, YStack } from 'tamagui';
+import { UserNameEllipsis } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
+import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
 import {
   LogoutIcon,
   SupportIcon,
@@ -73,6 +74,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
       {isAuthenticated && displayName && (
         <>
           <MobileUserInfo>
+            <Avatar name={displayName} size="sm" />
             <UserNameEllipsis>{displayName}</UserNameEllipsis>
             {role !== 'free' && (
               <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>

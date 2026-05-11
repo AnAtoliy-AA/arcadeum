@@ -22,6 +22,7 @@ const InputContainer = styled(XStack, {
   gap: '$3',
   ai: 'center',
   backdropFilter: 'blur(20px)',
+  zIndex: 10,
   
   hoverStyle: {
     backgroundColor: '$glassBgHover',

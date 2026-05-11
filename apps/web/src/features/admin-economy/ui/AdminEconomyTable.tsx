@@ -5,12 +5,12 @@ import { listEconomySettings } from '../server/economy.server';
 import { EconomyRow } from './EconomyRow';
 
 interface AdminEconomyMessages {
-  adminEconomy?: Partial<typeof adminEconomyEn>;
+  pages?: { adminEconomy?: Partial<typeof adminEconomyEn> };
 }
 
 export async function AdminEconomyTable() {
   const messages = (await getTranslations()) as AdminEconomyMessages;
-  const t = messages.adminEconomy ?? {};
+  const t = messages.pages?.adminEconomy ?? {};
 
   const tableLabels = { ...adminEconomyEn.table, ...(t.table ?? {}) };
   const sources = { ...adminEconomyEn.sources, ...(t.sources ?? {}) };

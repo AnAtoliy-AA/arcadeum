@@ -5,7 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { adminEconomyEn } from '@/shared/i18n/messages/pages/admin-economy/en';
 
 interface AdminEconomyPageMessages {
-  adminEconomy?: { title?: string };
+  pages?: { adminEconomy?: { title?: string } };
 }
 
 // No metadata export — inherit noindex/nofollow from /admin/layout.tsx.
@@ -14,7 +14,7 @@ export default async function AdminEconomyPage() {
   await requireAdmin();
 
   const messages = (await getTranslations()) as AdminEconomyPageMessages;
-  const title = messages.adminEconomy?.title ?? adminEconomyEn.title;
+  const title = messages.pages?.adminEconomy?.title ?? adminEconomyEn.title;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>

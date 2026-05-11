@@ -57,7 +57,7 @@ export default async function AdminLayoutShell({
 
   return (
     <PageLayout>
-      <Container size="lg">
+      <Container size="xl">
         <GlassCard p="$3" mb="$3">
           <Typography variant="caption" alpha="medium">
             {signedInAs}

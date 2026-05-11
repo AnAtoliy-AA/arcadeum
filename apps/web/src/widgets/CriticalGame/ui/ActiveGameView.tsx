@@ -25,6 +25,7 @@ import { GameModals } from './GameModals';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ActiveGameContent } from './ActiveGameContent';
+import { MatchWidget } from './MatchWidget';
 import { CriticalGameHeader } from './CriticalGameHeader';
 import { MobileActionSheet } from './MobileActionSheet';
 import { getVariantStyles } from './styles/variants';
@@ -32,6 +33,7 @@ import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import { TurnBanner } from './TurnBanner';
 import { MatchHud } from './MatchHud';
+import { useWidgetMode } from '../hooks/useWidgetMode';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -97,6 +99,7 @@ export function ActiveGameView({
   const { t } = useTranslation();
   const media = useMedia();
   const isMobile = media.sm;
+  const widgetMode = useWidgetMode();
 
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
@@ -304,36 +307,43 @@ export function ActiveGameView({
           formatLogMessage={formatLogMessage}
         />
 
-        <ActiveGameContent
-          room={room}
-          snapshot={snapshot}
-          currentUserId={currentUserId}
-          currentPlayer={currentPlayer}
-          cardVariant={cardVariant}
-          isGameOver={!!isGameOver}
-          isMyTurn={!!isMyTurn}
-          canAct={!!canAct}
-          canPlayNope={canPlayNope}
-          actionBusy={actionBusy}
-          aliveOpponents={aliveOpponents}
-          handLayout={handLayout}
-          setHandLayout={setHandLayout}
-          resolveDisplayName={resolveDisplayName}
-          t={
-            t as unknown as (
-              key: string,
-              params?: Record<string, string | number>,
-            ) => string
-          }
-          actions={actions}
-          idleTimerTriggered={idleTimerTriggered}
-          autoplayState={autoplayState}
-          handleUnstash={handleUnstash}
-          handlePlayActionCard={handlePlayActionCard}
-          handleOpenFavorModal={handleOpenFavorModal}
-          handleOpenEventCombo={handleOpenEventCombo}
-          handleOpenFiverCombo={handleOpenFiverCombo}
-        />
+        {/* Flag-gated render. MatchWidget is currently a pass-through to */}
+        {/* ActiveGameContent; the §7 rework lands inside MatchWidget. */}
+        {(() => {
+          const ContentImpl = widgetMode ? MatchWidget : ActiveGameContent;
+          return (
+            <ContentImpl
+              room={room}
+              snapshot={snapshot}
+              currentUserId={currentUserId}
+              currentPlayer={currentPlayer}
+              cardVariant={cardVariant}
+              isGameOver={!!isGameOver}
+              isMyTurn={!!isMyTurn}
+              canAct={!!canAct}
+              canPlayNope={canPlayNope}
+              actionBusy={actionBusy}
+              aliveOpponents={aliveOpponents}
+              handLayout={handLayout}
+              setHandLayout={setHandLayout}
+              resolveDisplayName={resolveDisplayName}
+              t={
+                t as unknown as (
+                  key: string,
+                  params?: Record<string, string | number>,
+                ) => string
+              }
+              actions={actions}
+              idleTimerTriggered={idleTimerTriggered}
+              autoplayState={autoplayState}
+              handleUnstash={handleUnstash}
+              handlePlayActionCard={handlePlayActionCard}
+              handleOpenFavorModal={handleOpenFavorModal}
+              handleOpenEventCombo={handleOpenEventCombo}
+              handleOpenFiverCombo={handleOpenFiverCombo}
+            />
+          );
+        })()}
       </YStack>
 
       {currentPlayer && (

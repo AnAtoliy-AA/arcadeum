@@ -20,14 +20,15 @@ function countDefuses(hand: CriticalCard[]): number {
 
 function computeOverloadOdds(deck: CriticalCard[]): number | null {
   if (deck.length === 0) return null;
-  // Hidden cards have unknown identity, so they can't enter the numerator.
-  // To avoid artificially lowering the odds, only consider visible cards
-  // for both numerator and denominator: this reports the chance among the
-  // portion of the deck we actually know about.
+  // Hidden cards COULD be a critical, but we can't count them in the
+  // numerator without server data. Keeping them in the denominator yields
+  // a LOWER BOUND on the true odds (a "min odds" estimate). The tooltip
+  // labels this clearly so users don't read the percentage as exact.
+  // Production should source `overloadOdds` directly from the snapshot.
   const visible = deck.filter((c) => (c as string) !== 'hidden').length;
   if (visible === 0) return null;
   const criticals = deck.filter((c) => c === 'critical_event').length;
-  return Math.round((criticals / visible) * 100);
+  return Math.round((criticals / deck.length) * 100);
 }
 
 function levelFromOdds(odds: number | null): 'safe' | 'warn' | 'danger' {

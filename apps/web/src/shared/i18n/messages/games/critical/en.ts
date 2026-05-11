@@ -223,7 +223,8 @@ export const enMessages = {
     hud: {
       threat: {
         label: 'Threat',
-        oddsTitle: 'Chance the next draw is a Critical card',
+        oddsTitle:
+          'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
         defusesTitle: 'Defuses you hold',
       },
       combo: {

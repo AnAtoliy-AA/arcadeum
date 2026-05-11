@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type CSSProperties } from 'react';
-import type { CriticalLogEntry } from '../types';
+import type { CriticalLogEntry, CriticalLogKind } from '../types';
 
 interface FlashBannerProps {
   logs: CriticalLogEntry[];
@@ -11,7 +11,19 @@ interface FlashBannerProps {
 
 type FlashKind = 'info' | 'danger' | 'defuse' | 'eliminated';
 
+const KIND_TO_FLASH: Record<CriticalLogKind, FlashKind> = {
+  eliminated: 'eliminated',
+  defuse: 'defuse',
+  critical: 'danger',
+  play: 'info',
+  draw: 'info',
+  system: 'info',
+};
+
 function classifyMessage(message: string): FlashKind {
+  // Fallback path for log entries that don't carry a structured `kind`.
+  // String matching is fragile across translations — entries should set
+  // `kind` server-side once that contract lands.
   const lower = message.toLowerCase();
   if (lower.includes('eliminat')) return 'eliminated';
   if (lower.includes('defus') || lower.includes('neutraliz')) return 'defuse';
@@ -23,6 +35,13 @@ function classifyMessage(message: string): FlashKind {
     return 'danger';
   }
   return 'info';
+}
+
+function classifyEntry(entry: CriticalLogEntry): FlashKind {
+  if (entry.kind && entry.kind in KIND_TO_FLASH) {
+    return KIND_TO_FLASH[entry.kind];
+  }
+  return classifyMessage(entry.message ?? '');
 }
 
 const KIND_COLORS: Record<
@@ -68,10 +87,18 @@ export function FlashBanner({
   if (!latest || dismissedId === latest.id) return null;
   const text = formatMessage(latest.message).trim();
   if (!text) return null;
-  const kind = classifyMessage(latest.message ?? '');
+  const kind = classifyEntry(latest);
   const palette = KIND_COLORS[kind];
 
-  const style: CSSProperties = {
+  // The banner owns its own centered wrapper so MatchHud doesn't need to
+  // reserve an empty slot when nothing is flashing.
+  const wrapperStyle: CSSProperties = {
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: 4,
+  };
+
+  const pillStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     padding: '6px 14px',
@@ -91,15 +118,17 @@ export function FlashBanner({
   };
 
   return (
-    <div
-      data-testid="flash-banner"
-      data-kind={kind}
-      role="status"
-      aria-live="polite"
-      title={text}
-      style={style}
-    >
-      {text}
+    <div style={wrapperStyle}>
+      <div
+        data-testid="flash-banner"
+        data-kind={kind}
+        role="status"
+        aria-live="polite"
+        title={text}
+        style={pillStyle}
+      >
+        {text}
+      </div>
     </div>
   );
 }

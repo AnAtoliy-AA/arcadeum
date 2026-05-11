@@ -46,9 +46,9 @@ export function MatchHud({
           />
         </XStack>
       )}
-      <XStack justifyContent="center" paddingTop="$1" minHeight={24}>
-        <FlashBanner logs={logs} formatMessage={formatLogMessage} />
-      </XStack>
+      {/* FlashBanner owns its own centered wrapper and returns null when */}
+      {/* there's nothing to flash — no empty band on game-over. */}
+      <FlashBanner logs={logs} formatMessage={formatLogMessage} />
     </>
   );
 }

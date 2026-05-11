@@ -230,7 +230,8 @@ export const frMessages = {
     hud: {
       threat: {
         label: 'Menace',
-        oddsTitle: 'Probabilité de piocher une carte Critique',
+        oddsTitle:
+          'Probabilité minimale de piocher une carte Critique (cartes visibles uniquement — les cartes cachées peuvent l’augmenter)',
         defusesTitle: 'Cartes de Défuse en main',
       },
       combo: {

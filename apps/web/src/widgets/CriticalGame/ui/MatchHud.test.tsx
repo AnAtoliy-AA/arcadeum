@@ -89,14 +89,14 @@ describe('MatchHud', () => {
     expect(screen.queryByTestId('combo-hints')).not.toBeInTheDocument();
   });
 
-  it('still mounts the flash banner slot when the strip is hidden', () => {
-    // The flash banner wrapper is always rendered so feedback messages can
-    // still surface during elimination and post-game windows. The banner
-    // itself is empty when there are no actionable logs.
+  it('does not render an empty flash slot when there is nothing to show', () => {
+    // FlashBanner owns its own wrapper and returns null when no log warrants
+    // a flash, so MatchHud should not reserve any visible band post-game.
     const { container } = renderHud({
       currentPlayer: null,
       snapshot: makeSnapshot({ logs: [] }),
     });
     expect(container.querySelector('[data-testid="flash-banner"]')).toBeNull();
+    expect(container.querySelector('[data-testid="threat-strip"]')).toBeNull();
   });
 });

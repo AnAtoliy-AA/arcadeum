@@ -199,9 +199,24 @@ export interface CriticalPlayerState {
 // ===== SHARED TYPES =====
 export type ChatScope = 'all' | 'players' | 'private' | 'team';
 
+/**
+ * Structured event kind for moment-to-moment HUD feedback. Optional for
+ * backwards compatibility — when absent, the client falls back to string
+ * matching on the message text. New emitters should set this so the UI
+ * doesn't depend on log message phrasing surviving i18n or refactors.
+ */
+export type CriticalLogKind =
+  | 'play'
+  | 'draw'
+  | 'defuse'
+  | 'eliminated'
+  | 'critical'
+  | 'system';
+
 export interface CriticalLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  kind?: CriticalLogKind;
   message: string;
   createdAt: string;
   senderId?: string | null;

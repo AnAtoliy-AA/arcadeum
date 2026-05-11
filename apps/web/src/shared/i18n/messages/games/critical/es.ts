@@ -226,7 +226,8 @@ export const esMessages = {
     hud: {
       threat: {
         label: 'Amenaza',
-        oddsTitle: 'Probabilidad de robar una carta Crítica',
+        oddsTitle:
+          'Probabilidad mínima de robar una carta Crítica (solo cartas visibles — las ocultas pueden aumentarla)',
         defusesTitle: 'Cartas de Defusa que tienes',
       },
       combo: {

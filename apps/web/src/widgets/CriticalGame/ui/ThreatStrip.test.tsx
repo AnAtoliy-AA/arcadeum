@@ -47,9 +47,11 @@ describe('ThreatStrip', () => {
     );
   });
 
-  it('ignores hidden cards in the denominator', () => {
-    // 1 critical visible + 1 known non-critical + 2 hidden = 50% chance among
-    // the known portion. Using deck.length would incorrectly report 25%.
+  it('reports min odds (visible criticals over full deck size) when cards are hidden', () => {
+    // 1 visible critical + 1 visible non-critical + 2 hidden = 1/4 = 25%.
+    // Hidden cards stay in the denominator because they COULD be critical;
+    // we can't count them in the numerator without server data, so the
+    // reported percentage is a lower bound. The tooltip labels this.
     const deck: CriticalCard[] = [
       'critical_event',
       'strike',
@@ -57,7 +59,7 @@ describe('ThreatStrip', () => {
       'hidden' as CriticalCard,
     ];
     render(<ThreatStrip hand={['neutralizer']} deck={deck} />);
-    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('50%');
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('25%');
   });
 
   it('exposes a data-pulse flag instead of inlining an animation rule', () => {

@@ -89,7 +89,7 @@ export function MobileHandBar({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     minHeight: 48,
   };
 
@@ -119,12 +119,14 @@ export function MobileHandBar({
     primary?: boolean;
     accent?: string;
     enabled: boolean;
+    flex?: number;
   }): CSSProperties {
     const accent = opts.accent ?? '#34d399';
     return {
-      flex: 1,
+      flex: opts.flex ?? 1,
+      minWidth: 0,
       minHeight: 44,
-      padding: '0 12px',
+      padding: '0 10px',
       borderRadius: 10,
       border: opts.primary
         ? `1px solid ${accent}`
@@ -194,16 +196,20 @@ export function MobileHandBar({
         <span data-testid="mobile-hand-bar-defuses" style={defusePillStyle}>
           🛡 {defuseCount}
         </span>
-        <span style={{ flex: 1 }} />
-      </div>
-      <div style={{ ...rowStyle, marginTop: 6 }}>
         <button
           type="button"
           data-testid="mobile-hand-bar-play"
           data-combo-kind={combo.kind}
           disabled={!canPlay}
           onClick={canPlay ? onPlay : undefined}
-          style={buttonStyle({ primary: true, enabled: canPlay })}
+          style={{
+            ...buttonStyle({ primary: true, enabled: canPlay, flex: 3 }),
+            // Long combo labels would otherwise wrap or overflow on
+            // narrow phones — ellipsis keeps the row honest.
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
         >
           {combo.label}
         </button>
@@ -212,7 +218,7 @@ export function MobileHandBar({
           data-testid="mobile-hand-bar-draw"
           disabled={!canDraw}
           onClick={canDraw ? onDraw : undefined}
-          style={buttonStyle({ enabled: canDraw })}
+          style={buttonStyle({ enabled: canDraw, flex: 2 })}
         >
           {t('games.table.actions.draw')}
         </button>
@@ -225,6 +231,7 @@ export function MobileHandBar({
               primary: true,
               accent: '#f59e0b',
               enabled: true,
+              flex: 2,
             })}
           >
             {t('games.table.actions.playNope')}

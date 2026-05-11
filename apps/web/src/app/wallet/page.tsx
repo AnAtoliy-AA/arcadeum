@@ -15,6 +15,7 @@ import { PendingGemPurchases } from '@/features/gems/ui/PendingGemPurchases';
 import { GemStore } from '@/features/gems/ui/GemStore';
 import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import { getConversionRate } from '@/features/gems/server/gems.server';
+import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -107,6 +108,12 @@ export default async function WalletPage({
 
   return (
     <div>
+      {/* Daily reward CTA. Rendered above the wallet view so the claim flow is
+          the first thing a returning player sees. The card self-suppresses
+          (returns null) when the BE call fails — same defensive pattern as
+          BalanceChip — so it never blocks the page from rendering. */}
+      <DailyRewardCard />
+
       <WalletPageView balance={balance} page={page} currency={currency} />
 
       {/* Gem sections: pending purchases banner, gem store, and conversion form */}

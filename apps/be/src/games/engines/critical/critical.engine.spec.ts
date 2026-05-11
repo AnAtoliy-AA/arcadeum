@@ -370,4 +370,108 @@ describe('CriticalEngine', () => {
       expect(result.success).toBe(false);
     });
   });
+
+  // ARC-637: structured `kind` on log entries lets the web FlashBanner
+  // classify events without string-matching the message text.
+  describe('log.kind for HUD classification', () => {
+    it("tags a routine draw with kind: 'draw'", () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.deck = ['evade', 'evade', 'evade'] as CriticalCard[];
+
+      const result = engine.executeAction(
+        state,
+        'draw_card',
+        createMockContext('p1'),
+      );
+      expect(result.success).toBe(true);
+      const drawLog = result.state!.logs.find((l) => l.kind === 'draw');
+      expect(drawLog).toBeDefined();
+    });
+
+    it("tags an elimination with kind: 'eliminated'", () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      // Force a Critical card on top, and strip p1's defuse so they explode.
+      state.deck = ['critical_event'] as CriticalCard[];
+      state.players[0].hand = state.players[0].hand.filter(
+        (c) => c !== 'neutralizer' && c !== 'containment_field',
+      );
+
+      const result = engine.executeAction(
+        state,
+        'draw_card',
+        createMockContext('p1'),
+      );
+      expect(result.success).toBe(true);
+      const explodeLog = result.state!.logs.find(
+        (l) => l.kind === 'eliminated',
+      );
+      expect(explodeLog).toBeDefined();
+    });
+
+    it("tags a Critical draw that's safely defused with kind: 'critical'", () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      // Force the Critical on top; p1 keeps a neutralizer so it triggers
+      // the "must play Defuse" branch, which is a `critical` kind log.
+      state.deck = ['critical_event'] as CriticalCard[];
+      if (!state.players[0].hand.includes('neutralizer')) {
+        state.players[0].hand.push('neutralizer');
+      }
+
+      const result = engine.executeAction(
+        state,
+        'draw_card',
+        createMockContext('p1'),
+      );
+      expect(result.success).toBe(true);
+      const criticalLog = result.state!.logs.find((l) => l.kind === 'critical');
+      expect(criticalLog).toBeDefined();
+    });
+
+    it("tags playing Defuse with kind: 'defuse'", () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.deck = ['critical_event', 'evade'] as CriticalCard[];
+      if (!state.players[0].hand.includes('neutralizer')) {
+        state.players[0].hand.push('neutralizer');
+      }
+
+      // Step 1: draw the Critical → enters pendingDefuse state.
+      const drawResult = engine.executeAction(
+        state,
+        'draw_card',
+        createMockContext('p1'),
+      );
+      expect(drawResult.success).toBe(true);
+      expect(drawResult.state!.pendingDefuse).toBe('p1');
+
+      // Step 2: play the defuse with a reinsert position.
+      const defuseResult = engine.executeAction(
+        drawResult.state!,
+        'neutralizer',
+        createMockContext('p1'),
+        { position: 0 },
+      );
+      expect(defuseResult.success).toBe(true);
+      const defuseLog = defuseResult.state!.logs.find(
+        (l) => l.kind === 'defuse',
+      );
+      expect(defuseLog).toBeDefined();
+    });
+
+    it('preserves kind through sanitizeStateForPlayer', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.logs = [
+        {
+          id: 'l1',
+          type: 'system',
+          kind: 'eliminated',
+          message: 'something happened',
+          scope: 'all',
+          createdAt: '',
+        },
+      ];
+
+      const sanitized = engine.sanitizeStateForPlayer(state, 'p1');
+      expect(sanitized.logs?.[0]?.kind).toBe('eliminated');
+    });
+  });
 });

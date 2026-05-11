@@ -11,6 +11,7 @@ import {
 import { FIVER_COMBO_SIZE } from './critical-validation.utils';
 
 export interface LogEntryOptions {
+  kind?: string;
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;

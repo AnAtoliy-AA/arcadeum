@@ -13,6 +13,7 @@ import {
 } from '../base/game-engine.interface';
 
 export interface LogEntryOptions {
+  kind?: string;
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;

@@ -21,6 +21,7 @@ export { executeCancel };
 import { executeDefuse as executeDefuseHelper } from './critical-defuse.utils';
 
 export interface LogEntryOptions {
+  kind?: string;
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
@@ -79,6 +80,7 @@ export class CriticalLogic {
             'action',
             `Drew an Exploding Cat but safely held it using Containment Field! 📦`,
             {
+              kind: 'critical',
               scope: 'all',
               senderId: playerId,
             },
@@ -94,6 +96,7 @@ export class CriticalLogic {
             'action',
             `Drew an Exploding Cat! Must play Defuse!`,
             {
+              kind: 'critical',
               scope: 'all',
               senderId: playerId,
             },
@@ -109,6 +112,7 @@ export class CriticalLogic {
         helpers.addLog(
           state,
           helpers.createLogEntry('system', `Player exploded!`, {
+            kind: 'eliminated',
             scope: 'all',
             senderId: playerId,
           }),
@@ -132,6 +136,7 @@ export class CriticalLogic {
             'system',
             `Drew Critical Implosion (Open)! IMPLOSION! Player eliminated! 🤯`,
             {
+              kind: 'eliminated',
               scope: 'all',
               senderId: playerId,
             },
@@ -156,6 +161,7 @@ export class CriticalLogic {
             'action',
             `Drew Critical Implosion (First time). It goes back in the deck FACE UP! 😰`,
             {
+              kind: 'critical',
               scope: 'all',
               senderId: playerId,
             },
@@ -174,6 +180,7 @@ export class CriticalLogic {
     helpers.addLog(
       state,
       helpers.createLogEntry('action', `Drew a card`, {
+        kind: 'draw',
         scope: 'all',
         senderId: playerId,
       }),

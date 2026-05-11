@@ -42,6 +42,7 @@ export function executeDefuse(
   helpers.addLog(
     state,
     helpers.createLogEntry('action', `Defused an Exploding Cat!`, {
+      kind: 'defuse',
       scope: 'all',
       senderId: playerId,
     }),

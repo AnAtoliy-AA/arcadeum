@@ -23,6 +23,12 @@ export type ChatScope = 'all' | 'players' | 'private' | 'team';
 export interface GameLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  /**
+   * Game-specific structured event kind for client HUD classification
+   * (e.g. Critical's FlashBanner). Optional and untyped at this layer so
+   * each game can define its own union (see `CriticalLogKind`).
+   */
+  kind?: string;
   message: string;
   createdAt: string;
   scope?: ChatScope;

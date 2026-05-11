@@ -64,9 +64,13 @@ export default async function AdminLayoutShell({
           </Typography>
         </GlassCard>
 
-        <XStack gap="$4" flexWrap="wrap">
+        <XStack
+          gap="$4"
+          flexWrap="wrap"
+          $xs={{ flexDirection: 'column', flexWrap: 'nowrap' }}
+        >
           <AdminSidebar labels={sidebarLabels} />
-          <YStack flex={1} minWidth={280}>
+          <YStack flex={1} minWidth={0} width="100%">
             {children}
           </YStack>
         </XStack>

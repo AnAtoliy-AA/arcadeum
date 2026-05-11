@@ -25,7 +25,13 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <YStack gap="$2" width={220} minWidth={200} data-testid="admin-sidebar">
+    <YStack
+      gap="$2"
+      width={220}
+      minWidth={200}
+      $xs={{ width: '100%', minWidth: 0 }}
+      data-testid="admin-sidebar"
+    >
       {ADMIN_SIDEBAR_ITEMS.map((item) => {
         const active = isActive(item.href, pathname);
         const card = (

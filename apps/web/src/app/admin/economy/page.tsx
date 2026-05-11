@@ -22,7 +22,15 @@ export default async function AdminEconomyPage() {
   const loading = t.loading ?? adminEconomyEn.loading;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '1200px',
+        minWidth: 0,
+        margin: '0 auto',
+        padding: '32px 16px',
+      }}
+    >
       <div style={{ marginBottom: '24px' }}>
         <h1
           style={{

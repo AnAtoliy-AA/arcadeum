@@ -53,6 +53,8 @@ export async function AdminEconomyTable() {
   return (
     <div
       style={{
+        width: '100%',
+        maxWidth: '100%',
         borderRadius: '12px',
         border: '1px solid rgba(255,255,255,0.08)',
         overflowX: 'auto',

@@ -11,8 +11,10 @@ import { claimDailyRewardAction } from '../server/daily-rewards.actions';
 
 const labels = {
   claim: 'Claim {n} coins',
+  gemBonusSuffix: ' + {n} 💎',
   claimed: 'Come back tomorrow',
   toastClaimed: 'You claimed {n} coins!',
+  toastGemBonusSuffix: ' + {n} 💎',
   errorAlreadyClaimed: 'Already claimed today.',
   errorUnauthorized: 'Sign in to claim.',
   errorGeneric: 'Could not claim. Try again.',
@@ -43,10 +45,60 @@ describe('ClaimButton', () => {
     expect(btn.disabled).toBe(true);
   });
 
+  it('renders the gem bonus suffix when nextRewardGems > 0', () => {
+    render(
+      <ClaimButton
+        canClaim={true}
+        nextRewardCoins={150}
+        nextRewardGems={1}
+        labels={labels}
+      />,
+    );
+    const btn = screen.getByTestId('daily-reward-claim-btn');
+    expect(btn.textContent).toContain('Claim 150 coins');
+    expect(btn.textContent).toContain('1 💎');
+  });
+
+  it('shows coin + gem totals in the success toast on Day 7', async () => {
+    vi.mocked(claimDailyRewardAction).mockResolvedValueOnce({
+      ok: true,
+      result: {
+        awardedCoins: 150,
+        awardedGems: 1,
+        currentStreak: 7,
+        coinsBalanceAfter: 460,
+        gemsBalanceAfter: 1,
+      },
+    });
+
+    render(
+      <ClaimButton
+        canClaim={true}
+        nextRewardCoins={150}
+        nextRewardGems={1}
+        labels={labels}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('daily-reward-claim-btn'));
+
+    await waitFor(() => {
+      const text = screen.getByTestId('daily-reward-success').textContent ?? '';
+      expect(text).toContain('You claimed 150 coins!');
+      expect(text).toContain('1 💎');
+    });
+  });
+
   it('fires the Server Action on click and shows a success message', async () => {
     vi.mocked(claimDailyRewardAction).mockResolvedValueOnce({
       ok: true,
-      result: { awardedCoins: 25, currentStreak: 1, balanceAfter: 125 },
+      result: {
+        awardedCoins: 25,
+        awardedGems: 0,
+        currentStreak: 1,
+        coinsBalanceAfter: 125,
+        gemsBalanceAfter: null,
+      },
     });
 
     render(

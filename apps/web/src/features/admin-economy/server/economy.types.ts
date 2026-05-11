@@ -11,7 +11,8 @@ export type EconomyKey =
   | 'daily_reward_day_4'
   | 'daily_reward_day_5'
   | 'daily_reward_day_6'
-  | 'daily_reward_day_7';
+  | 'daily_reward_day_7'
+  | 'daily_reward_day_7_bonus_gems';
 
 export interface EconomySettingView {
   key: EconomyKey;

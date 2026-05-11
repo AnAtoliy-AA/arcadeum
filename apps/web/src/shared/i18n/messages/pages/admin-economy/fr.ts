@@ -63,6 +63,11 @@ export const adminEconomyFr = {
       name: 'Récompense quotidienne — Jour 7',
       description: 'Pièces attribuées le septième jour de la série de 7 jours.',
     },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Récompense quotidienne — Bonus de gemmes Jour 7',
+      description:
+        'Gemmes attribuées en plus des pièces au Jour 7 de la série.',
+    },
   },
   table: {
     key: 'Paramètre',

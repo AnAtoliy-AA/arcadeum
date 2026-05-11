@@ -31,6 +31,10 @@ export const ECONOMY_KEYS_CONFIG = {
   daily_reward_day_5: { env: 'DAILY_REWARD_DAY_5', default: 80 },
   daily_reward_day_6: { env: 'DAILY_REWARD_DAY_6', default: 110 },
   daily_reward_day_7: { env: 'DAILY_REWARD_DAY_7', default: 150 },
+  daily_reward_day_7_bonus_gems: {
+    env: 'DAILY_REWARD_DAY_7_BONUS_GEMS',
+    default: 1,
+  },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

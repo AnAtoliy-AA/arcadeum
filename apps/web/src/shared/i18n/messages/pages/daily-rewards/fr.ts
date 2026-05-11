@@ -1,8 +1,9 @@
 export const dailyRewardsFr = {
   title: 'Récompense quotidienne',
   subtitle:
-    'Réclame ta récompense une fois par jour pour conserver ta série de 7 jours. Saute un jour et tu repars au Jour 1.',
+    'Réclame ta récompense une fois par jour pour conserver ta série de 7 jours. Saute un jour et tu repars au Jour 1. Le Jour 7 offre aussi un bonus en gemmes.',
   claim: 'Réclamer {n} pièces',
+  gemBonusSuffix: ' + {n} 💎',
   claimed: 'Reviens demain',
   nextResetIn: 'Réinitialisation dans {time}',
   streakLabel: 'Série : {n} / 7',
@@ -14,5 +15,6 @@ export const dailyRewardsFr = {
   },
   toasts: {
     claimed: 'Tu as gagné {n} pièces !',
+    gemBonusSuffix: ' + {n} 💎',
   },
 };

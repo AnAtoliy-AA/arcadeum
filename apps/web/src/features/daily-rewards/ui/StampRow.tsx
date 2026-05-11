@@ -83,6 +83,7 @@ export function StampRow({
             data-state={state}
             aria-label={dayLabel.replace('{n}', String(day))}
             style={{
+              position: 'relative',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -109,6 +110,25 @@ export function StampRow({
             >
               {dayLabel.replace('{n}', String(day))}
             </span>
+            {day === 7 && (
+              <span
+                aria-hidden
+                data-testid="daily-reward-stamp-7-gem"
+                style={{
+                  position: 'absolute',
+                  top: '-6px',
+                  right: '-4px',
+                  fontSize: '12px',
+                  lineHeight: 1,
+                  filter:
+                    state === 'locked'
+                      ? 'grayscale(0.7) opacity(0.5)'
+                      : 'none',
+                }}
+              >
+                💎
+              </span>
+            )}
           </div>
         );
       })}

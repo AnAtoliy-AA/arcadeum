@@ -6,10 +6,14 @@ import { claimDailyRewardAction } from '../server/daily-rewards.actions';
 export interface ClaimButtonLabels {
   /** Default CTA copy when claim is available, e.g. "Claim {n} coins". */
   claim: string;
+  /** Suffix appended when next claim also awards gems, e.g. " + {n} 💎". */
+  gemBonusSuffix: string;
   /** Disabled-state copy when the user has already claimed today. */
   claimed: string;
   /** Toast/success message after a successful claim ("You claimed {n} coins!"). */
   toastClaimed: string;
+  /** Toast suffix appended when the claim also awarded gems. */
+  toastGemBonusSuffix: string;
   /** Error copy for 409 already-claimed. */
   errorAlreadyClaimed: string;
   /** Error copy for 401 unauthorized. */
@@ -23,6 +27,8 @@ export interface ClaimButtonProps {
   canClaim: boolean;
   /** Coin amount the next claim will award. */
   nextRewardCoins: number;
+  /** Gem amount the next claim will award. 0 means no gem bonus. */
+  nextRewardGems?: number;
   labels: ClaimButtonLabels;
 }
 
@@ -35,6 +41,7 @@ export interface ClaimButtonProps {
 export function ClaimButton({
   canClaim,
   nextRewardCoins,
+  nextRewardGems = 0,
   labels,
 }: ClaimButtonProps) {
   const [isPending, startTransition] = useTransition();
@@ -51,10 +58,16 @@ export function ClaimButton({
     startTransition(async () => {
       const res = await claimDailyRewardAction();
       if (res.ok) {
-        const msg = labels.toastClaimed.replace(
+        let msg = labels.toastClaimed.replace(
           '{n}',
           String(res.result.awardedCoins),
         );
+        if (res.result.awardedGems > 0) {
+          msg += labels.toastGemBonusSuffix.replace(
+            '{n}',
+            String(res.result.awardedGems),
+          );
+        }
         setFeedback({ kind: 'success', message: msg });
       } else if (res.code === 'already_claimed') {
         setFeedback({ kind: 'error', message: labels.errorAlreadyClaimed });
@@ -67,9 +80,15 @@ export function ClaimButton({
   };
 
   const disabled = !canClaim || isPending;
-  const label = canClaim
-    ? labels.claim.replace('{n}', String(nextRewardCoins))
-    : labels.claimed;
+  let label: string;
+  if (canClaim) {
+    label = labels.claim.replace('{n}', String(nextRewardCoins));
+    if (nextRewardGems > 0) {
+      label += labels.gemBonusSuffix.replace('{n}', String(nextRewardGems));
+    }
+  } else {
+    label = labels.claimed;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

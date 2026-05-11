@@ -19,6 +19,8 @@ export interface DailyRewardStatus {
   currentStreak: number;
   /** Coin amount the next claim will pay out (snapshot of the economy key). */
   nextRewardCoins: number;
+  /** Gem amount the next claim will pay out. Only > 0 on Day 7. */
+  nextRewardGems: number;
   /** ISO timestamp of the next UTC midnight — when canClaim flips back. */
   nextResetAt: string;
 }
@@ -30,8 +32,11 @@ export interface DailyRewardStatus {
  */
 export interface DailyRewardClaimResult {
   awardedCoins: number;
+  awardedGems: number;
   currentStreak: number;
-  balanceAfter: number;
+  coinsBalanceAfter: number;
+  /** Only populated when awardedGems > 0; null otherwise. */
+  gemsBalanceAfter: number | null;
 }
 
 interface UserDailyRewardLean {
@@ -72,12 +77,17 @@ export class DailyRewardsService {
     const nextRewardCoins = await this.economy.getNumber(
       rewardKeyForStreak(nextDay),
     );
+    const nextRewardGems =
+      nextDay === 7
+        ? await this.economy.getNumber('daily_reward_day_7_bonus_gems')
+        : 0;
 
     return {
       canClaim,
       nextDay,
       currentStreak: streak,
       nextRewardCoins,
+      nextRewardGems,
       nextResetAt: nextUtcMidnight(today),
     };
   }
@@ -103,22 +113,41 @@ export class DailyRewardsService {
       const prevStreak = doc?.currentStreak ?? 0;
       const prevDay = doc?.lastClaimedDay ?? null;
       const newStreak = nextStreak(prevStreak, prevDay, today);
-      const key = rewardKeyForStreak(newStreak);
-      const amount = await this.economy.getNumber(key);
+      const coinAmount = await this.economy.getNumber(
+        rewardKeyForStreak(newStreak),
+      );
+      const gemAmount =
+        newStreak === 7
+          ? await this.economy.getNumber('daily_reward_day_7_bonus_gems')
+          : 0;
 
       // Credit the wallet first inside the same session so that if it
-      // throws (insufficient funds for debit is impossible here, but other
-      // failures are) we abort the transaction and the user-daily-reward
-      // doc is never persisted.
-      const tx = await this.wallet.credit(
+      // throws we abort the transaction and the user-daily-reward doc is
+      // never persisted. On Day 7 we also award gems via a separate
+      // idempotency-keyed credit.
+      const coinsTx = await this.wallet.credit(
         userId,
         'coins',
-        amount,
+        coinAmount,
         'daily_reward',
         `${userId}:${today}`,
         { streakDay: newStreak },
         session,
       );
+
+      let gemsBalanceAfter: number | null = null;
+      if (gemAmount > 0) {
+        const gemsTx = await this.wallet.credit(
+          userId,
+          'gems',
+          gemAmount,
+          'daily_reward',
+          `${userId}:${today}:gems`,
+          { streakDay: newStreak, bonus: true },
+          session,
+        );
+        gemsBalanceAfter = gemsTx.balanceAfter;
+      }
 
       await this.model.findOneAndUpdate(
         { userId: new Types.ObjectId(userId) },
@@ -133,9 +162,11 @@ export class DailyRewardsService {
       );
 
       return {
-        awardedCoins: amount,
+        awardedCoins: coinAmount,
+        awardedGems: gemAmount,
         currentStreak: newStreak,
-        balanceAfter: tx.balanceAfter,
+        coinsBalanceAfter: coinsTx.balanceAfter,
+        gemsBalanceAfter,
       };
     });
   }

@@ -65,6 +65,11 @@ export const adminEconomyEn = {
       description:
         'Coins awarded for the seventh day of the 7-day daily streak.',
     },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Daily reward — Day 7 gem bonus',
+      description:
+        'Gems awarded in addition to coins on Day 7 of the daily streak.',
+    },
   },
   table: {
     key: 'Setting',

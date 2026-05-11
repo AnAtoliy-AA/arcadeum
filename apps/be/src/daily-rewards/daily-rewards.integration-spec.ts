@@ -100,8 +100,10 @@ describe('DailyRewardsService (integration)', () => {
     const result = await service.claim(userId);
 
     expect(result.awardedCoins).toBe(10); // daily_reward_day_1 default
+    expect(result.awardedGems).toBe(0);
     expect(result.currentStreak).toBe(1);
-    expect(result.balanceAfter).toBe(10);
+    expect(result.coinsBalanceAfter).toBe(10);
+    expect(result.gemsBalanceAfter).toBeNull();
 
     // Wallet balance bumped
     expect(await wallet.getBalance(userId)).toMatchObject({ coins: 10 });

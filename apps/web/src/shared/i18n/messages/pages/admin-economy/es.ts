@@ -57,6 +57,11 @@ export const adminEconomyEs = {
       name: 'Recompensa diaria — Día 7',
       description: 'Monedas otorgadas el séptimo día de la racha de 7 días.',
     },
+    daily_reward_day_7_bonus_gems: {
+      name: 'Recompensa diaria — Bono de gemas del Día 7',
+      description:
+        'Gemas otorgadas además de las monedas el Día 7 de la racha.',
+    },
   },
   table: {
     key: 'Ajuste',

@@ -73,6 +73,7 @@ describe('DailyRewardsController (integration)', () => {
         nextDay: 1,
         currentStreak: 0,
         nextRewardCoins: 10,
+        nextRewardGems: 0,
         nextResetAt: '2026-05-12T00:00:00.000Z',
       };
       service.getStatus.mockResolvedValue(payload);
@@ -94,8 +95,10 @@ describe('DailyRewardsController (integration)', () => {
     it('returns 201 with the claim result on success', async () => {
       const payload = {
         awardedCoins: 10,
+        awardedGems: 0,
         currentStreak: 1,
-        balanceAfter: 10,
+        coinsBalanceAfter: 10,
+        gemsBalanceAfter: null,
       };
       service.claim.mockResolvedValue(payload);
 

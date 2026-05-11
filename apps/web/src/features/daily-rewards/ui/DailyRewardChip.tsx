@@ -57,10 +57,15 @@ async function DailyRewardChipInner() {
         <ClaimButton
           canClaim={status.canClaim}
           nextRewardCoins={status.nextRewardCoins}
+          nextRewardGems={status.nextRewardGems}
           labels={{
             claim: claimLabel,
+            gemBonusSuffix:
+              t.gemBonusSuffix ?? dailyRewardsEn.gemBonusSuffix,
             claimed: claimedLabel,
             toastClaimed: toasts.claimed ?? dailyRewardsEn.toasts.claimed,
+            toastGemBonusSuffix:
+              toasts.gemBonusSuffix ?? dailyRewardsEn.toasts.gemBonusSuffix,
             errorAlreadyClaimed:
               errors.alreadyClaimed ?? dailyRewardsEn.errors.alreadyClaimed,
             errorUnauthorized:

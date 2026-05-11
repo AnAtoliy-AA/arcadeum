@@ -56,6 +56,7 @@ describe('DailyRewardsService', () => {
           daily_reward_day_5: 80,
           daily_reward_day_6: 110,
           daily_reward_day_7: 150,
+          daily_reward_day_7_bonus_gems: 1,
         };
         return Promise.resolve(table[key] ?? 0);
       }),
@@ -236,6 +237,33 @@ describe('DailyRewardsService', () => {
 
       expect(result.currentStreak).toBe(1);
       expect(result.awardedCoins).toBe(10);
+    });
+
+    it('Day 7 also credits the gem bonus on a separate idempotency key', async () => {
+      stubFindOne({
+        userId: new Types.ObjectId(userId),
+        lastClaimedDay: yesterday,
+        currentStreak: 6,
+      });
+      model.findOneAndUpdate.mockResolvedValue({});
+      walletService.credit
+        .mockResolvedValueOnce({ balanceAfter: 150 }) // coins tx
+        .mockResolvedValueOnce({ balanceAfter: 1 }); // gems tx
+
+      const result = await service.claim(userId);
+
+      expect(result.currentStreak).toBe(7);
+      expect(result.awardedCoins).toBe(150);
+      expect(result.awardedGems).toBe(1);
+      expect(result.coinsBalanceAfter).toBe(150);
+      expect(result.gemsBalanceAfter).toBe(1);
+      expect(walletService.credit).toHaveBeenCalledTimes(2);
+      const coinsArgs = walletService.credit.mock.calls[0] as unknown[];
+      const gemsArgs = walletService.credit.mock.calls[1] as unknown[];
+      expect(coinsArgs[1]).toBe('coins');
+      expect(coinsArgs[4]).toBe(`${userId}:${today}`);
+      expect(gemsArgs[1]).toBe('gems');
+      expect(gemsArgs[4]).toBe(`${userId}:${today}:gems`);
     });
 
     it('throws DailyRewardAlreadyClaimedError on a double claim same UTC day', async () => {

@@ -13,6 +13,8 @@ export interface DailyRewardStatus {
   currentStreak: number;
   /** Coin amount the next claim will pay out (snapshot of the economy key). */
   nextRewardCoins: number;
+  /** Gem amount the next claim will pay out. Only > 0 on Day 7. */
+  nextRewardGems: number;
   /** ISO timestamp of the next UTC midnight — when canClaim flips back. */
   nextResetAt: string;
 }
@@ -23,6 +25,9 @@ export interface DailyRewardStatus {
  */
 export interface DailyRewardClaimResult {
   awardedCoins: number;
+  awardedGems: number;
   currentStreak: number;
-  balanceAfter: number;
+  coinsBalanceAfter: number;
+  /** Only populated when awardedGems > 0; null otherwise. */
+  gemsBalanceAfter: number | null;
 }

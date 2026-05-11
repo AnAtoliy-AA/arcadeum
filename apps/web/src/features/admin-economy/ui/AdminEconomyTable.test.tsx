@@ -42,6 +42,7 @@ const ALL_KEYS = [
   'daily_reward_day_5',
   'daily_reward_day_6',
   'daily_reward_day_7',
+  'daily_reward_day_7_bonus_gems',
 ] as const;
 
 function makeSetting(

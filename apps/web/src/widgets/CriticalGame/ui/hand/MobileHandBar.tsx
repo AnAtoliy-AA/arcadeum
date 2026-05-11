@@ -190,12 +190,22 @@ export function MobileHandBar({
   const bar = (
     <div data-testid="mobile-hand-bar" style={wrapperStyle}>
       <div style={rowStyle}>
-        <span data-testid="mobile-hand-bar-count" style={pillStyle}>
-          🃏 {handCount}
-        </span>
-        <span data-testid="mobile-hand-bar-defuses" style={defusePillStyle}>
-          🛡 {defuseCount}
-        </span>
+        <div
+          data-testid="mobile-hand-bar-stats"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            flexShrink: 0,
+          }}
+        >
+          <span data-testid="mobile-hand-bar-count" style={pillStyle}>
+            🃏 {handCount}
+          </span>
+          <span data-testid="mobile-hand-bar-defuses" style={defusePillStyle}>
+            🛡 {defuseCount}
+          </span>
+        </div>
         <button
           type="button"
           data-testid="mobile-hand-bar-play"

@@ -87,6 +87,14 @@ export interface CriticalState {
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  /**
+   * Server-authoritative draw-elimination odds, populated on sanitize so
+   * the web ThreatStrip can show an exact percentage instead of its
+   * "min odds (visible cards only)" approximation. Computed as
+   * (criticals_remaining / deck.length) × 100; null when the deck is
+   * empty. Omitted on raw `CriticalState` (only set by `sanitize`).
+   */
+  overloadOdds?: number | null;
   [key: string]: unknown;
 }
 
@@ -468,6 +476,22 @@ export function sanitizeCriticalStateForPlayer(
         }
       });
     }
+  }
+
+  // Server-authoritative draw-elimination odds. Counts `critical_event`
+  // always; face-up `critical_implosion` is an instant-eliminate so it
+  // joins the count when armed. Bottom-half implosion (not face-up) is
+  // not yet dangerous, so it's excluded — drawing it just flips it.
+  if (state.deck.length === 0) {
+    sanitized.overloadOdds = null;
+  } else {
+    const implosionArmed = !!state.implosionState?.isFaceUp;
+    const criticals = state.deck.filter(
+      (c) =>
+        c === 'critical_event' ||
+        (implosionArmed && c === 'critical_implosion'),
+    ).length;
+    sanitized.overloadOdds = Math.round((criticals / state.deck.length) * 100);
   }
 
   return sanitized;

@@ -229,6 +229,7 @@ export const enMessages = {
         label: 'Threat',
         oddsTitle:
           'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
+        oddsTitleServer: 'Chance the next draw is a Critical card',
         defusesTitle: 'Defuses you hold',
       },
       combo: {

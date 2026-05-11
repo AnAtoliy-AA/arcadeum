@@ -22,6 +22,8 @@ interface ArenaProps {
   pendingDraws: number;
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
+  serverOverloadOdds?: number | null;
 }
 
 /**
@@ -43,6 +45,7 @@ export function Arena({
   pendingDraws,
   logs,
   formatLogMessage,
+  serverOverloadOdds,
 }: ArenaProps) {
   return (
     <XStack
@@ -71,6 +74,7 @@ export function Arena({
         deck={deck}
         logs={logs}
         formatLogMessage={formatLogMessage}
+        serverOverloadOdds={serverOverloadOdds}
       />
       <DiscardPile pile={discardPile} cardVariant={cardVariant} />
     </XStack>

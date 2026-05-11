@@ -232,6 +232,7 @@ export const esMessages = {
         label: 'Amenaza',
         oddsTitle:
           'Probabilidad mínima de robar una carta Crítica (solo cartas visibles — las ocultas pueden aumentarla)',
+        oddsTitleServer: 'Probabilidad de robar una carta Crítica',
         defusesTitle: 'Cartas de Defusa que tienes',
       },
       combo: {

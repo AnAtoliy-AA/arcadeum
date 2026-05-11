@@ -7,6 +7,12 @@ import type { CriticalCard } from '../types';
 interface ThreatStripProps {
   hand: CriticalCard[];
   deck: CriticalCard[];
+  /**
+   * Server-authoritative draw-elimination odds. When provided, used
+   * directly and the tooltip drops its "min odds (visible only)" caveat.
+   * Falls back to the visible-deck approximation when undefined.
+   */
+  serverOverloadOdds?: number | null;
 }
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
@@ -44,10 +50,17 @@ const LEVEL_COLOR: Record<'safe' | 'warn' | 'danger', string> = {
   danger: '#ef4444',
 };
 
-export function ThreatStrip({ hand, deck }: ThreatStripProps) {
+export function ThreatStrip({
+  hand,
+  deck,
+  serverOverloadOdds,
+}: ThreatStripProps) {
   const { t } = useTranslation();
   const defuseCount = useMemo(() => countDefuses(hand), [hand]);
-  const overloadOdds = useMemo(() => computeOverloadOdds(deck), [deck]);
+  const clientOdds = useMemo(() => computeOverloadOdds(deck), [deck]);
+  const fromServer =
+    serverOverloadOdds !== undefined && serverOverloadOdds !== null;
+  const overloadOdds = fromServer ? (serverOverloadOdds as number) : clientOdds;
   const oddsLevel = levelFromOdds(overloadOdds);
   const noDefuses = defuseCount === 0;
 
@@ -102,13 +115,18 @@ export function ThreatStrip({ hand, deck }: ThreatStripProps) {
       data-level={oddsLevel}
       data-no-defuses={noDefuses ? 'true' : 'false'}
       data-pulse={shouldPulse ? 'true' : 'false'}
+      data-odds-source={fromServer ? 'server' : 'client'}
       style={containerStyle}
       aria-label={t('games.table.hud.threat.label')}
     >
       <span
         data-testid="threat-strip-odds"
         style={{ color: LEVEL_COLOR[oddsLevel] }}
-        title={t('games.table.hud.threat.oddsTitle')}
+        title={t(
+          fromServer
+            ? 'games.table.hud.threat.oddsTitleServer'
+            : 'games.table.hud.threat.oddsTitle',
+        )}
       >
         {oddsLabel}
       </span>

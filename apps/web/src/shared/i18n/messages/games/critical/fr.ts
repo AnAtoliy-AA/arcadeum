@@ -169,8 +169,7 @@ export const frMessages = {
         criticalImplosion:
           'Si pioché face visible, explose immédiatement et ne peut pas être désamorcé',
         containmentField: 'Tient une Critique en main sans exploser',
-        fission:
-          'Mélange les Incidents Critiques dans le paquet et termine le tour sans piocher',
+        fission: 'Mélange les Critiques dans le paquet et termine le tour',
         tribute:
           'Tous les joueurs (vous inclus) mettent une carte de leur main sur le paquet',
         blackout: "Cible un joueur. Il jouera son prochain tour à l'aveugle",
@@ -230,6 +229,7 @@ export const frMessages = {
         label: 'Menace',
         oddsTitle:
           'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
+        oddsTitleServer: 'Probabilité de piocher une carte Critique',
         defusesTitle: 'Cartes de Défuse en main',
       },
       combo: {

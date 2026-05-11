@@ -249,6 +249,14 @@ export interface CriticalSnapshot {
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  /**
+   * Server-authoritative draw-elimination odds (0-100). When present,
+   * the ThreatStrip uses this directly instead of its visible-cards
+   * approximation. Computed as (criticals_remaining / deck.length) × 100.
+   * Optional for forward compat — older servers don't emit it and the
+   * client falls back to its lower-bound estimate.
+   */
+  overloadOdds?: number | null;
 }
 
 // Texas Hold'em types

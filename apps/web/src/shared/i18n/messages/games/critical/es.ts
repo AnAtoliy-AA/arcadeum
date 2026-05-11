@@ -248,10 +248,7 @@ export const esMessages = {
         invalid: 'Combo no válido',
         pickTarget: 'Elige un objetivo',
       },
-      cards: {
-        toggleName: 'Nombre de la carta',
-        toggleDescription: 'Descripción de la carta',
-      },
+      /* prettier-ignore */ cards: { toggleName: 'Nombre de la carta', toggleDescription: 'Descripción de la carta' },
       extraTurns: '+{{count}} turno',
       extraTurnsPlural: '+{{count}} turnos',
       flash: {

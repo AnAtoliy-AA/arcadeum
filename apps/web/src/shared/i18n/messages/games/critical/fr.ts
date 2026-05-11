@@ -243,10 +243,7 @@ export const frMessages = {
         invalid: 'Combo invalide',
         pickTarget: 'Choisissez une cible',
       },
-      cards: {
-        toggleName: 'Nom de la carte',
-        toggleDescription: 'Description de la carte',
-      },
+      /* prettier-ignore */ cards: { toggleName: 'Nom de la carte', toggleDescription: 'Description de la carte' },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',
       flash: {

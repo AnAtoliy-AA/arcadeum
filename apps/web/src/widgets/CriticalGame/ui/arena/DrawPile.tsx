@@ -4,6 +4,7 @@ import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
+import { CardSlot } from '../styles';
 
 interface DrawPileProps {
   deck: CriticalCard[];
@@ -51,7 +52,9 @@ export function DrawPile({
       hoverStyle={disabled ? undefined : { scale: 1.02 }}
       pressStyle={disabled ? undefined : { scale: 0.98 }}
     >
-      <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
+      <CardSlot $role="deck">
+        <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
+      </CardSlot>
       <Text
         data-testid="arena-draw-pile-count"
         fontSize={12}

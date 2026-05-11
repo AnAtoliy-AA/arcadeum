@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ComboKind } from '../../lib/combo';
 
@@ -57,6 +58,16 @@ export function MobileHandBar({
   const [menuOpen, setMenuOpen] = useState(false);
   // Card-text toggles always present, so the menu always exists.
   const hasMenu = true;
+
+  // Rendered into a portal so an ancestor `transform`/`filter` (e.g. the
+  // `animate-entrance` class on ActiveGameView) doesn't create a new
+  // containing block and pin our `position: fixed` to that wrapper
+  // instead of the viewport. SSR-safe via the `mounted` guard.
+  // Mount-flag for SSR safety; the rule's cascading-renders concern
+  // doesn't apply to a one-shot first-paint flip.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
 
   const wrapperStyle: CSSProperties = {
     position: 'fixed',
@@ -172,7 +183,9 @@ export function MobileHandBar({
     cursor: 'pointer',
   };
 
-  return (
+  if (!mounted || typeof document === 'undefined') return null;
+
+  const bar = (
     <div data-testid="mobile-hand-bar" style={wrapperStyle}>
       <div style={rowStyle}>
         <span data-testid="mobile-hand-bar-count" style={pillStyle}>
@@ -293,4 +306,6 @@ export function MobileHandBar({
       )}
     </div>
   );
+
+  return createPortal(bar, document.body);
 }

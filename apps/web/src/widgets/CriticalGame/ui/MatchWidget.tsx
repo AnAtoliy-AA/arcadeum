@@ -6,6 +6,7 @@ import { GameBoard, TableArea } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
+import { RulesModal } from './RulesModal';
 import {
   detectCombo,
   handWithUids,
@@ -27,6 +28,13 @@ export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
    * inside the new ArenaCenter can surface formatted log entries.
    */
   formatLogMessage: (message?: string | null) => string;
+  /**
+   * Fullscreen state + toggle, sourced from `useFullscreen` in the
+   * parent. The HandRail menu (ARC-636) exposes the toggle so widget
+   * mode doesn't need the legacy `CriticalGameHeader` to access it.
+   */
+  isFullscreen: boolean;
+  toggleFullscreen: () => void;
 };
 
 /**
@@ -36,7 +44,7 @@ export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
  * arena's `ComboCard` (label + tint) and the rail's `Play` button.
  */
 export function MatchWidget({
-  room: _room,
+  room,
   snapshot,
   currentUserId,
   currentPlayer,
@@ -60,8 +68,13 @@ export function MatchWidget({
   handleOpenEventCombo,
   handleOpenFiverCombo,
   formatLogMessage,
+  isFullscreen,
+  toggleFullscreen,
 }: MatchWidgetProps) {
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const handleOpenRules = useCallback(() => setRulesOpen(true), []);
+  const handleCloseRules = useCallback(() => setRulesOpen(false), []);
 
   // Memoize hand so downstream useCallback / useMemo deps are stable when
   // the parent re-renders without `currentPlayer.hand` actually changing.
@@ -201,12 +214,22 @@ export function MatchWidget({
             canDraw={isMyTurn && !isGameOver}
             canNope={canPlayNope}
             cardVariant={cardVariant}
+            isFullscreen={isFullscreen}
             onPlay={handlePlay}
             onDraw={handleDrawAndEnd}
             onNope={actions.playNope}
+            onOpenRules={handleOpenRules}
+            onToggleFullscreen={toggleFullscreen}
           />
         )}
       </GameBoard>
+      <RulesModal
+        isOpen={rulesOpen}
+        onClose={handleCloseRules}
+        currentVariant={cardVariant || 'default'}
+        isPrivate={room?.visibility === 'private'}
+        t={t}
+      />
     </div>
   );
 }

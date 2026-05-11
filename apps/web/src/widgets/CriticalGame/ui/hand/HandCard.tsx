@@ -2,7 +2,10 @@
 
 import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { getCardTranslationKey } from '../../lib/cardUtils';
+import {
+  getCardTranslationKey,
+  getCardDescriptionKey,
+} from '../../lib/cardUtils';
 import { getCardRole, type CardRole } from '../../lib/cardRoles';
 import { CardImage } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
@@ -84,6 +87,7 @@ export function HandCard({
   const { t } = useTranslation();
   const role = getCardRole(card.id);
   const name = t(getCardTranslationKey(card.id, cardVariant));
+  const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
   const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
 
@@ -109,8 +113,8 @@ export function HandCard({
               }
             }
       }
-      width={isSelected ? 92 : 88}
-      height={isSelected ? 128 : 120}
+      width={isSelected ? 132 : 124}
+      height={isSelected ? 208 : 196}
       borderRadius={10}
       borderWidth={2}
       borderColor={borderColor}
@@ -118,10 +122,11 @@ export function HandCard({
       transform={isSelected ? [{ translateY: -8 }] : undefined}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.7 : 1}
-      alignItems="center"
-      justifyContent="space-between"
+      alignItems="stretch"
+      justifyContent="flex-start"
       paddingHorizontal={6}
-      paddingVertical={10}
+      paddingVertical={8}
+      gap={4}
       shadowColor={glow}
       shadowRadius={isSelected ? 14 : 8}
       shadowOpacity={1}
@@ -140,7 +145,7 @@ export function HandCard({
         data-testid={`hand-card-art-${card.uid}`}
         position="relative"
         width="100%"
-        flex={1}
+        height={96}
         borderRadius={6}
         overflow="hidden"
         backgroundColor="rgba(0,0,0,0.45)"
@@ -151,22 +156,32 @@ export function HandCard({
             active variant has no sprite sheet (CardImage renders null).
             When a sheet exists, the absolutely-positioned sprite layer
             paints over the glyph. */}
-        <Text fontSize={26} lineHeight={30} opacity={0.65}>
+        <Text fontSize={36} lineHeight={40} opacity={0.6}>
           {ROLE_FALLBACK_GLYPH[role]}
         </Text>
         <CardImage variant={cardVariant ?? ''} cardType={card.id} />
       </YStack>
       <Text
-        fontSize={10}
+        data-testid={`hand-card-name-${card.uid}`}
+        fontSize={11}
         fontWeight="800"
         letterSpacing={0.4}
         textTransform="uppercase"
         textAlign="center"
         numberOfLines={2}
         color={borderColor}
-        paddingTop={4}
       >
         {name}
+      </Text>
+      <Text
+        data-testid={`hand-card-description-${card.uid}`}
+        fontSize={9}
+        lineHeight={12}
+        textAlign="center"
+        numberOfLines={4}
+        color="rgba(226, 232, 240, 0.78)"
+      >
+        {description}
       </Text>
       {!!count && count > 1 && (
         <YStack

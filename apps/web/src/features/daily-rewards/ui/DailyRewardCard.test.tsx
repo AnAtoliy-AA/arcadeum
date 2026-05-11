@@ -119,6 +119,25 @@ describe('StampRow', () => {
     ).toBe('locked');
   });
 
+  it('renders the gem-bonus badge on Day 7 only', () => {
+    render(
+      <StampRow
+        nextDay={1}
+        currentStreak={0}
+        canClaim={true}
+        dayLabel={dayLabel}
+      />,
+    );
+    expect(
+      screen.queryByTestId('daily-reward-stamp-7-gem'),
+    ).not.toBeNull();
+    // None of the other stamps should have a gem badge marker.
+    for (let i = 1; i <= 6; i++) {
+      const stamp = screen.getByTestId(`daily-reward-stamp-${i}`);
+      expect(stamp.querySelector('[data-testid$="-gem"]')).toBeNull();
+    }
+  });
+
   it('replaces {n} in the dayLabel for each stamp aria-label', () => {
     render(
       <StampRow

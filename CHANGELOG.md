@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.19] - 2026-05-11
+
+### Added
+- ArenaCenter + ComboCard inside Arena (ARC-633) (ARC-633)
+
+
 ## [1.13.18] - 2026-05-11
 
 ### Added

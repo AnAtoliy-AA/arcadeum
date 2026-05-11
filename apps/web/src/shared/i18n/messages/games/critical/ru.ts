@@ -242,6 +242,7 @@ export const ruMessages = {
         pair: '2× пара',
         triple: '3× тройка',
         fiver: '5 разных',
+        placeholder: 'Выберите карты для комбо',
       },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} ходов',

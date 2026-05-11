@@ -243,6 +243,7 @@ export const frMessages = {
         pair: '2× paire',
         triple: '3× triple',
         fiver: '5 différentes',
+        placeholder: 'Sélectionnez des cartes pour un combo',
       },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',

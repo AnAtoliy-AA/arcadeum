@@ -239,6 +239,7 @@ export const esMessages = {
         pair: '2× par',
         triple: '3× trío',
         fiver: '5 diferentes',
+        placeholder: 'Selecciona cartas para un combo',
       },
       extraTurns: '+{{count}} turno',
       extraTurnsPlural: '+{{count}} turnos',

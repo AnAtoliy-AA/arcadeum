@@ -240,6 +240,7 @@ export const byMessages = {
         pair: '2× пара',
         triple: '3× тройка',
         fiver: '5 розных',
+        placeholder: 'Абярыце карты для камбо',
       },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} хадоў',

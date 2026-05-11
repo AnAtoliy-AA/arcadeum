@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.17] - 2026-05-11
+
+### Added
+- scaffold MatchWidget behind widget_mode flag (ARC-631) (ARC-631)
+
+
 ## [1.13.16] - 2026-05-11
 
 ### Added

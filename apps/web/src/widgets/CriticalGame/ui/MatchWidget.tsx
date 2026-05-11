@@ -200,6 +200,7 @@ export function MatchWidget({
             pendingDraws={snapshot.pendingDraws}
             logs={snapshot.logs ?? []}
             formatLogMessage={formatLogMessage}
+            serverOverloadOdds={snapshot.overloadOdds}
           />
         </TableArea>
 

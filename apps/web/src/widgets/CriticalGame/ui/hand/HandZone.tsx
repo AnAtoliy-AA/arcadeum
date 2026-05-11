@@ -15,9 +15,12 @@ interface HandZoneProps {
   canDraw: boolean;
   canNope: boolean;
   cardVariant?: string;
+  isFullscreen?: boolean;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
+  onOpenRules?: () => void;
+  onToggleFullscreen?: () => void;
 }
 
 /**
@@ -49,9 +52,12 @@ export function HandZone(props: HandZoneProps) {
         canDraw={props.canDraw}
         canNope={props.canNope}
         cardVariant={props.cardVariant}
+        isFullscreen={props.isFullscreen}
         onPlay={props.onPlay}
         onDraw={props.onDraw}
         onNope={props.onNope}
+        onOpenRules={props.onOpenRules}
+        onToggleFullscreen={props.onToggleFullscreen}
       />
       <HandCards
         cards={props.cards}

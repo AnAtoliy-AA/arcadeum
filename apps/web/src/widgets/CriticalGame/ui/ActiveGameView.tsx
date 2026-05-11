@@ -263,31 +263,64 @@ export function ActiveGameView({
     [snapshot.players, resolveDisplayName],
   );
 
+  const buildSharedProps = () => ({
+    room,
+    snapshot,
+    currentUserId,
+    currentPlayer,
+    cardVariant,
+    isGameOver: !!isGameOver,
+    isMyTurn: !!isMyTurn,
+    canAct: !!canAct,
+    canPlayNope,
+    actionBusy,
+    aliveOpponents,
+    handLayout,
+    setHandLayout,
+    resolveDisplayName,
+    t: t as unknown as (
+      k: string,
+      p?: Record<string, string | number>,
+    ) => string,
+    actions,
+    idleTimerTriggered,
+    autoplayState,
+    handleUnstash,
+    handlePlayActionCard,
+    handleOpenFavorModal,
+    handleOpenEventCombo,
+    handleOpenFiverCombo,
+  });
+
   return (
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
       <YStack flex={1} className="animate-entrance">
-        <CriticalGameHeader
-          room={room}
-          t={
-            t as unknown as (
-              key: string,
-              params?: Record<string, string | number>,
-            ) => string
-          }
-          idleTimerEnabled={idleTimerEnabled}
-          actionBusy={actionBusy}
-          isGameOver={!!isGameOver}
-          currentPlayer={currentPlayer ?? undefined}
-          canAct={!!canAct}
-          isMyTurn={!!isMyTurn}
-          handleIdleTimeout={handleIdleTimeout}
-          autoplayState={autoplayState}
-          idleTimerTriggered={idleTimerTriggered}
-          handleStopAutoplay={handleStopAutoplay}
-          isFullscreen={isFullscreen}
-          toggleFullscreen={toggleFullscreen}
-        />
+        {/* Flag-off: legacy header sits above the match. Widget mode hoists */}
+        {/* Rules / Fullscreen into a small menu inside HandRail (ARC-636). */}
+        {!widgetMode && (
+          <CriticalGameHeader
+            room={room}
+            t={
+              t as unknown as (
+                key: string,
+                params?: Record<string, string | number>,
+              ) => string
+            }
+            idleTimerEnabled={idleTimerEnabled}
+            actionBusy={actionBusy}
+            isGameOver={!!isGameOver}
+            currentPlayer={currentPlayer ?? undefined}
+            canAct={!!canAct}
+            isMyTurn={!!isMyTurn}
+            handleIdleTimeout={handleIdleTimeout}
+            autoplayState={autoplayState}
+            idleTimerTriggered={idleTimerTriggered}
+            handleStopAutoplay={handleStopAutoplay}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
+          />
+        )}
         {/* Flag-off: legacy top-of-page TurnBanner + MatchHud. In widget */}
         {/* mode these move inside the Arena's center column (ARC-633). */}
         {!widgetMode && (
@@ -313,41 +346,16 @@ export function ActiveGameView({
           </>
         )}
 
-        {(() => {
-          const sharedProps = {
-            room,
-            snapshot,
-            currentUserId,
-            currentPlayer,
-            cardVariant,
-            isGameOver: !!isGameOver,
-            isMyTurn: !!isMyTurn,
-            canAct: !!canAct,
-            canPlayNope,
-            actionBusy,
-            aliveOpponents,
-            handLayout,
-            setHandLayout,
-            resolveDisplayName,
-            t: t as unknown as (
-              key: string,
-              params?: Record<string, string | number>,
-            ) => string,
-            actions,
-            idleTimerTriggered,
-            autoplayState,
-            handleUnstash,
-            handlePlayActionCard,
-            handleOpenFavorModal,
-            handleOpenEventCombo,
-            handleOpenFiverCombo,
-          };
-          return widgetMode ? (
-            <MatchWidget {...sharedProps} formatLogMessage={formatLogMessage} />
-          ) : (
-            <ActiveGameContent {...sharedProps} />
-          );
-        })()}
+        {widgetMode ? (
+          <MatchWidget
+            {...buildSharedProps()}
+            formatLogMessage={formatLogMessage}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
+          />
+        ) : (
+          <ActiveGameContent {...buildSharedProps()} />
+        )}
       </YStack>
 
       {currentPlayer && (

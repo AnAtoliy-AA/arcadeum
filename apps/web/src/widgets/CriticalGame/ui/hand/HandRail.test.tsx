@@ -86,4 +86,59 @@ describe('HandRail', () => {
     fireEvent.click(screen.getByTestId('hand-rail-nope'));
     expect(onNope).toHaveBeenCalledTimes(1);
   });
+
+  it('hides the chrome menu by default (no callbacks provided)', () => {
+    renderRail();
+    expect(screen.queryByTestId('hand-rail-menu')).not.toBeInTheDocument();
+  });
+
+  it('renders Rules + Fullscreen buttons when both callbacks are provided', () => {
+    const onOpenRules = vi.fn();
+    const onToggleFullscreen = vi.fn();
+    renderRail({ onOpenRules, onToggleFullscreen });
+    fireEvent.click(screen.getByTestId('hand-rail-rules'));
+    expect(onOpenRules).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByTestId('hand-rail-fullscreen'));
+    expect(onToggleFullscreen).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders only the Rules button when fullscreen callback is omitted', () => {
+    renderRail({ onOpenRules: vi.fn() });
+    expect(screen.getByTestId('hand-rail-rules')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('hand-rail-fullscreen'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('exposes the right aria-label on the fullscreen button by state', () => {
+    const { rerender } = renderRail({
+      onToggleFullscreen: vi.fn(),
+      isFullscreen: false,
+    });
+    expect(screen.getByTestId('hand-rail-fullscreen')).toHaveAttribute(
+      'aria-label',
+      'games.table.controlPanel.enterFullscreen',
+    );
+    rerender(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+        <HandRail
+          handCount={5}
+          defuseCount={1}
+          combo={{ kind: 'none', label: 'Select cards' }}
+          canPlay={false}
+          canDraw={true}
+          canNope={false}
+          onPlay={vi.fn()}
+          onDraw={vi.fn()}
+          onNope={vi.fn()}
+          onToggleFullscreen={vi.fn()}
+          isFullscreen={true}
+        />
+      </TamaguiProvider>,
+    );
+    expect(screen.getByTestId('hand-rail-fullscreen')).toHaveAttribute(
+      'aria-label',
+      'games.table.controlPanel.exitFullscreen',
+    );
+  });
 });

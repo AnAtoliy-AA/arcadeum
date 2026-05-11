@@ -16,17 +16,19 @@ interface HandRailProps {
   canDraw: boolean;
   canNope: boolean;
   cardVariant?: string;
+  /**
+   * Widget-mode replacement for the legacy CriticalGameHeader buttons.
+   * When omitted, the menu row is hidden (e.g. for tests that don't care
+   * about the chrome).
+   */
+  isFullscreen?: boolean;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
+  onOpenRules?: () => void;
+  onToggleFullscreen?: () => void;
 }
 
-/**
- * Side rail next to the hand: shows the player's hand count, defuse
- * count, and the two primary action buttons (contextual Play + Draw +
- * end). A Nope button appears reactively when a nope-eligible pending
- * action is on the table.
- */
 export function HandRail({
   handCount,
   defuseCount,
@@ -35,12 +37,16 @@ export function HandRail({
   canDraw,
   canNope,
   cardVariant: _cardVariant,
+  isFullscreen,
   onPlay,
   onDraw,
   onNope,
+  onOpenRules,
+  onToggleFullscreen,
 }: HandRailProps) {
   const { t } = useTranslation();
   const playLabel = combo.label;
+  const hasMenu = !!(onOpenRules || onToggleFullscreen);
 
   return (
     <YStack
@@ -123,6 +129,47 @@ export function HandRail({
             {t('games.table.actions.playNope')}
           </Text>
         </Button>
+      )}
+      {hasMenu && (
+        <XStack
+          data-testid="hand-rail-menu"
+          gap="$1"
+          paddingTop="$1"
+          borderTopWidth={1}
+          borderTopColor="rgba(255,255,255,0.08)"
+        >
+          {onOpenRules && (
+            <Button
+              data-testid="hand-rail-rules"
+              size="$2"
+              flex={1}
+              backgroundColor="rgba(255,255,255,0.05)"
+              onPress={onOpenRules}
+            >
+              <Text fontSize={10} fontWeight="700" letterSpacing={0.4}>
+                {t('games.table.controlPanel.rules')}
+              </Text>
+            </Button>
+          )}
+          {onToggleFullscreen && (
+            <Button
+              data-testid="hand-rail-fullscreen"
+              size="$2"
+              flex={1}
+              backgroundColor="rgba(255,255,255,0.05)"
+              onPress={onToggleFullscreen}
+              aria-label={t(
+                isFullscreen
+                  ? 'games.table.controlPanel.exitFullscreen'
+                  : 'games.table.controlPanel.enterFullscreen',
+              )}
+            >
+              <Text fontSize={12} fontWeight="700">
+                {isFullscreen ? '⤡' : '⛶'}
+              </Text>
+            </Button>
+          )}
+        </XStack>
       )}
     </YStack>
   );

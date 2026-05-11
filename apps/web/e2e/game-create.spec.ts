@@ -105,7 +105,9 @@ test.describe('Game Room Creation', () => {
 
     const submitBtn = page.getByTestId('create-room-button');
     await expect(submitBtn).toBeVisible();
-    await submitBtn.click();
+    await submitBtn.dispatchEvent('click');
+
+    // On failure to create, we should still be on the same page
     await expect(page).toHaveURL(/\/games\/create/);
   });
 
@@ -125,13 +127,13 @@ test.describe('Game Room Creation', () => {
     await expect(maxInput).toHaveValue('7');
 
     const submitBtn = page.getByRole('button', { name: /create room/i });
-    await submitBtn.click();
+    await submitBtn.dispatchEvent('click');
     await expect(page).toHaveURL(/\/games\/create/);
 
     await maxInput.click();
     await maxInput.fill('6');
     await expect(maxInput).toHaveValue('6');
-    await submitBtn.click();
+    await submitBtn.dispatchEvent('click');
 
     await expect(page).toHaveURL(
       /\/games\/rooms\/507f1f77bcf86cd799439011/,

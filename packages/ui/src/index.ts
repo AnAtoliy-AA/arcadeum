@@ -70,5 +70,6 @@ export * from './components/EnergyBar';
 export * from './components/ModeTab';
 export * from './components/DeltaChip';
 export * from './components/TrendPill';
+export * from './components/ProfileMenu';
 
 export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

@@ -86,7 +86,7 @@ export const StickyMobileCta = styled(YStack, {
     backdropFilter: 'blur(16px)',
     borderTopWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
-    zIndex: 100,
+    zIndex: 150,
   },
 } as unknown as Record<string, unknown>);
 

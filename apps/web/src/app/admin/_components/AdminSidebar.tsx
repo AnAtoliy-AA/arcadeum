@@ -25,11 +25,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <YStack
-      gap="$2"
-      width="100%"
-      data-testid="admin-sidebar"
-    >
+    <YStack gap="$2" width="100%" data-testid="admin-sidebar">
       {ADMIN_SIDEBAR_ITEMS.map((item) => {
         const active = isActive(item.href, pathname);
         const card = (
@@ -40,14 +36,6 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
             borderColor={active ? '$primary' : '$borderColor'}
             backgroundColor={active ? '$primaryBgSoft' : undefined}
             cursor={item.enabled ? 'pointer' : 'default'}
-            hoverStyle={
-              item.enabled && !active
-                ? {
-                    borderColor: '$borderColorHover',
-                    backgroundColor: '$backgroundHover',
-                  }
-                : undefined
-            }
             data-testid={`admin-nav-${item.id}`}
             data-active={active ? 'true' : undefined}
           >

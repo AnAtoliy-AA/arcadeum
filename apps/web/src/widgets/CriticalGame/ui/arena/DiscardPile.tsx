@@ -23,7 +23,12 @@ export function DiscardPile({ pile, cardVariant }: DiscardPileProps) {
           positioned slot it expands to fill the nearest positioned
           ancestor and dominates the arena. `CardSlot` is what the legacy
           table layout uses for the same component. */}
-      <CardSlot $role="lastPlayed">
+      <CardSlot
+        $role="lastPlayed"
+        width={140}
+        height={196}
+        $sm={{ width: 96, height: 134 }}
+      >
         <LastPlayedCardDisplay
           discardPile={pile}
           t={tCompat}

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.18] - 2026-05-11
+
+### Added
+- Arena row inside MatchWidget (ARC-632) (ARC-632)
+
+
 ## [1.13.17] - 2026-05-11
 
 ### Added

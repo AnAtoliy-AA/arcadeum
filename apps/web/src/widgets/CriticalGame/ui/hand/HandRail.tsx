@@ -22,6 +22,11 @@ interface HandRailProps {
    * about the chrome).
    */
   isFullscreen?: boolean;
+  /** Toggles for the hand-card text rows (delegated to MatchWidget). */
+  showCardName?: boolean;
+  showCardDescription?: boolean;
+  onToggleCardName?: () => void;
+  onToggleCardDescription?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -38,6 +43,10 @@ export function HandRail({
   canNope,
   cardVariant: _cardVariant,
   isFullscreen,
+  showCardName,
+  showCardDescription,
+  onToggleCardName,
+  onToggleCardDescription,
   onPlay,
   onDraw,
   onNope,
@@ -46,7 +55,7 @@ export function HandRail({
 }: HandRailProps) {
   const { t } = useTranslation();
   const playLabel = combo.label;
-  const hasMenu = !!(onOpenRules || onToggleFullscreen);
+  const hasCardToggles = !!(onToggleCardName || onToggleCardDescription);
 
   return (
     <YStack
@@ -130,7 +139,67 @@ export function HandRail({
           </Text>
         </Button>
       )}
-      {hasMenu && (
+      {hasCardToggles && (
+        <XStack
+          data-testid="hand-rail-card-toggles"
+          gap="$1"
+          paddingTop="$1"
+          borderTopWidth={1}
+          borderTopColor="rgba(255,255,255,0.08)"
+        >
+          {onToggleCardName && (
+            <Button
+              data-testid="hand-rail-toggle-name"
+              size="$2"
+              flex={1}
+              backgroundColor={
+                showCardName
+                  ? 'rgba(52,211,153,0.15)'
+                  : 'rgba(255,255,255,0.05)'
+              }
+              borderWidth={1}
+              borderColor={
+                showCardName
+                  ? 'rgba(52,211,153,0.55)'
+                  : 'rgba(255,255,255,0.08)'
+              }
+              onPress={onToggleCardName}
+              aria-pressed={!!showCardName}
+              aria-label={t('games.table.hud.cards.toggleName')}
+            >
+              <Text fontSize={10} fontWeight="700" letterSpacing={0.4}>
+                {showCardName ? '✓ Aa' : '   Aa'}
+              </Text>
+            </Button>
+          )}
+          {onToggleCardDescription && (
+            <Button
+              data-testid="hand-rail-toggle-description"
+              size="$2"
+              flex={1}
+              backgroundColor={
+                showCardDescription
+                  ? 'rgba(52,211,153,0.15)'
+                  : 'rgba(255,255,255,0.05)'
+              }
+              borderWidth={1}
+              borderColor={
+                showCardDescription
+                  ? 'rgba(52,211,153,0.55)'
+                  : 'rgba(255,255,255,0.08)'
+              }
+              onPress={onToggleCardDescription}
+              aria-pressed={!!showCardDescription}
+              aria-label={t('games.table.hud.cards.toggleDescription')}
+            >
+              <Text fontSize={10} fontWeight="700" letterSpacing={0.4}>
+                {showCardDescription ? '✓ ¶' : '   ¶'}
+              </Text>
+            </Button>
+          )}
+        </XStack>
+      )}
+      {(onOpenRules || onToggleFullscreen) && (
         <XStack
           data-testid="hand-rail-menu"
           gap="$1"

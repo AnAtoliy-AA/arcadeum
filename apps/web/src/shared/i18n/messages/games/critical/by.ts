@@ -249,6 +249,10 @@ export const byMessages = {
         invalid: 'Несапраўднае камбо',
         pickTarget: 'Абярыце мэту',
       },
+      cards: {
+        toggleName: 'Назва карты',
+        toggleDescription: 'Апісанне карты',
+      },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} хадоў',
       flash: {

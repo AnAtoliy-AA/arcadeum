@@ -11,6 +11,8 @@ interface HandCardsProps {
   onToggleSelect: (uid: string) => void;
   cardVariant?: string;
   disabled?: boolean;
+  showName?: boolean;
+  showDescription?: boolean;
 }
 
 /**
@@ -24,6 +26,8 @@ export function HandCards({
   onToggleSelect,
   cardVariant,
   disabled = false,
+  showName = true,
+  showDescription = true,
 }: HandCardsProps) {
   const selected = useMemo(() => new Set(selectedUids), [selectedUids]);
   const countsById = useMemo(() => {
@@ -49,6 +53,8 @@ export function HandCards({
           disabled={disabled}
           cardVariant={cardVariant}
           count={countsById.get(card.id)}
+          showName={showName}
+          showDescription={showDescription}
           onToggle={() => onToggleSelect(card.uid)}
         />
       ))}

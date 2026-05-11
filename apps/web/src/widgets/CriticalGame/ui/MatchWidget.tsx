@@ -82,8 +82,21 @@ export function MatchWidget({
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
+  // Per-session show/hide for the card name + description rows. Default
+  // both ON so first-time players see the rules text; experienced
+  // players can collapse to art-only via the rail toggles.
+  const [showCardName, setShowCardName] = useState(true);
+  const [showCardDescription, setShowCardDescription] = useState(true);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
   const handleCloseRules = useCallback(() => setRulesOpen(false), []);
+  const handleToggleCardName = useCallback(
+    () => setShowCardName((v) => !v),
+    [],
+  );
+  const handleToggleCardDescription = useCallback(
+    () => setShowCardDescription((v) => !v),
+    [],
+  );
 
   // Memoize hand so downstream useCallback / useMemo deps are stable when
   // the parent re-renders without `currentPlayer.hand` actually changing.
@@ -296,11 +309,15 @@ export function MatchWidget({
             canNope={canPlayNope}
             cardVariant={cardVariant}
             isFullscreen={isFullscreen}
+            showCardName={showCardName}
+            showCardDescription={showCardDescription}
             onPlay={handlePlay}
             onDraw={handleDrawAndEnd}
             onNope={actions.playNope}
             onOpenRules={handleOpenRules}
             onToggleFullscreen={toggleFullscreen}
+            onToggleCardName={handleToggleCardName}
+            onToggleCardDescription={handleToggleCardDescription}
           />
         )}
       </GameBoard>

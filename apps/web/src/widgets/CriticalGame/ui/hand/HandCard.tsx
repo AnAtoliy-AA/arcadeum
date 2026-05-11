@@ -22,6 +22,10 @@ interface HandCardProps {
    * selected — the badge is a quick legibility cue, not a stack.
    */
   count?: number;
+  /** Show / hide the uppercase card name under the art (default: true). */
+  showName?: boolean;
+  /** Show / hide the description block under the name (default: true). */
+  showDescription?: boolean;
   onToggle: () => void;
 }
 
@@ -82,6 +86,8 @@ export function HandCard({
   disabled = false,
   cardVariant,
   count,
+  showName = true,
+  showDescription = true,
   onToggle,
 }: HandCardProps) {
   const { t } = useTranslation();
@@ -90,6 +96,11 @@ export function HandCard({
   const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
   const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
+
+  // Width stays fixed; height adapts to which text rows are visible so a
+  // hand of art-only cells doesn't waste vertical space.
+  const baseHeight = 160 + (showName ? 24 : 0) + (showDescription ? 56 : 0);
+  const selectedBoost = 12;
 
   return (
     <YStack
@@ -113,8 +124,8 @@ export function HandCard({
               }
             }
       }
-      width={isSelected ? 132 : 124}
-      height={isSelected ? 208 : 196}
+      width={isSelected ? 140 : 132}
+      height={baseHeight + (isSelected ? selectedBoost : 0)}
       borderRadius={10}
       borderWidth={2}
       borderColor={borderColor}
@@ -145,7 +156,8 @@ export function HandCard({
         data-testid={`hand-card-art-${card.uid}`}
         position="relative"
         width="100%"
-        height={96}
+        flex={1}
+        minHeight={120}
         borderRadius={6}
         overflow="hidden"
         backgroundColor="rgba(0,0,0,0.45)"
@@ -156,33 +168,37 @@ export function HandCard({
             active variant has no sprite sheet (CardImage renders null).
             When a sheet exists, the absolutely-positioned sprite layer
             paints over the glyph. */}
-        <Text fontSize={36} lineHeight={40} opacity={0.6}>
+        <Text fontSize={44} lineHeight={48} opacity={0.6}>
           {ROLE_FALLBACK_GLYPH[role]}
         </Text>
         <CardImage variant={cardVariant ?? ''} cardType={card.id} />
       </YStack>
-      <Text
-        data-testid={`hand-card-name-${card.uid}`}
-        fontSize={11}
-        fontWeight="800"
-        letterSpacing={0.4}
-        textTransform="uppercase"
-        textAlign="center"
-        numberOfLines={2}
-        color={borderColor}
-      >
-        {name}
-      </Text>
-      <Text
-        data-testid={`hand-card-description-${card.uid}`}
-        fontSize={9}
-        lineHeight={12}
-        textAlign="center"
-        numberOfLines={4}
-        color="rgba(226, 232, 240, 0.78)"
-      >
-        {description}
-      </Text>
+      {showName && (
+        <Text
+          data-testid={`hand-card-name-${card.uid}`}
+          fontSize={11}
+          fontWeight="800"
+          letterSpacing={0.4}
+          textTransform="uppercase"
+          textAlign="center"
+          numberOfLines={2}
+          color={borderColor}
+        >
+          {name}
+        </Text>
+      )}
+      {showDescription && (
+        <Text
+          data-testid={`hand-card-description-${card.uid}`}
+          fontSize={9}
+          lineHeight={12}
+          textAlign="center"
+          numberOfLines={4}
+          color="rgba(226, 232, 240, 0.78)"
+        >
+          {description}
+        </Text>
+      )}
       {!!count && count > 1 && (
         <YStack
           data-testid={`hand-card-count-${card.uid}`}

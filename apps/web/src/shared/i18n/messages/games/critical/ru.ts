@@ -251,6 +251,10 @@ export const ruMessages = {
         invalid: 'Недопустимое комбо',
         pickTarget: 'Выберите цель',
       },
+      cards: {
+        toggleName: 'Название карты',
+        toggleDescription: 'Описание карты',
+      },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} ходов',
       flash: {

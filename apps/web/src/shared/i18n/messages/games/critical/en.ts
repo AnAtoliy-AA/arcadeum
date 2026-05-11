@@ -245,6 +245,10 @@ export const enMessages = {
         invalid: 'Invalid combo',
         pickTarget: 'Pick a target',
       },
+      cards: {
+        toggleName: 'Card name',
+        toggleDescription: 'Card description',
+      },
       extraTurns: '+{{count}} turn',
       extraTurnsPlural: '+{{count}} turns',
       flash: {

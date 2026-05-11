@@ -1,5 +1,4 @@
 import { variants as cardVariants } from './fr-variants';
-
 export const frMessages = {
   critical_v1: {
     name: 'Critique',
@@ -243,6 +242,10 @@ export const frMessages = {
         playFiver: 'Jouer 5 · choisir de la défausse',
         invalid: 'Combo invalide',
         pickTarget: 'Choisissez une cible',
+      },
+      cards: {
+        toggleName: 'Nom de la carte',
+        toggleDescription: 'Description de la carte',
       },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',

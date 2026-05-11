@@ -12,11 +12,15 @@ interface MobileHandBarProps {
   canDraw: boolean;
   canNope: boolean;
   isFullscreen?: boolean;
+  showCardName: boolean;
+  showCardDescription: boolean;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
   onOpenRules?: () => void;
   onToggleFullscreen?: () => void;
+  onToggleCardName: () => void;
+  onToggleCardDescription: () => void;
 }
 
 /**
@@ -39,15 +43,20 @@ export function MobileHandBar({
   canDraw,
   canNope,
   isFullscreen,
+  showCardName,
+  showCardDescription,
   onPlay,
   onDraw,
   onNope,
   onOpenRules,
   onToggleFullscreen,
+  onToggleCardName,
+  onToggleCardDescription,
 }: MobileHandBarProps) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const hasMenu = !!(onOpenRules || onToggleFullscreen);
+  // Card-text toggles always present, so the menu always exists.
+  const hasMenu = true;
 
   const wrapperStyle: CSSProperties = {
     position: 'fixed',
@@ -227,6 +236,27 @@ export function MobileHandBar({
           role="menu"
           style={popoverStyle}
         >
+          <button
+            type="button"
+            role="menuitemcheckbox"
+            aria-checked={showCardName}
+            data-testid="mobile-hand-bar-toggle-name"
+            onClick={onToggleCardName}
+            style={popoverItemStyle}
+          >
+            {showCardName ? '☑' : '☐'} {t('games.table.hud.cards.toggleName')}
+          </button>
+          <button
+            type="button"
+            role="menuitemcheckbox"
+            aria-checked={showCardDescription}
+            data-testid="mobile-hand-bar-toggle-description"
+            onClick={onToggleCardDescription}
+            style={popoverItemStyle}
+          >
+            {showCardDescription ? '☑' : '☐'}{' '}
+            {t('games.table.hud.cards.toggleDescription')}
+          </button>
           {onOpenRules && (
             <button
               type="button"

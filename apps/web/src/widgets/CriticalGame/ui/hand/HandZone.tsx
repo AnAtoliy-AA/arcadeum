@@ -17,11 +17,15 @@ interface HandZoneProps {
   canNope: boolean;
   cardVariant?: string;
   isFullscreen?: boolean;
+  showCardName: boolean;
+  showCardDescription: boolean;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
   onOpenRules?: () => void;
   onToggleFullscreen?: () => void;
+  onToggleCardName: () => void;
+  onToggleCardDescription: () => void;
 }
 
 /**
@@ -51,6 +55,8 @@ export function HandZone(props: HandZoneProps) {
           selectedUids={props.selectedUids}
           onToggleSelect={props.onToggleSelect}
           cardVariant={props.cardVariant}
+          showName={props.showCardName}
+          showDescription={props.showCardDescription}
         />
         <MobileHandBar
           handCount={props.cards.length}
@@ -60,11 +66,15 @@ export function HandZone(props: HandZoneProps) {
           canDraw={props.canDraw}
           canNope={props.canNope}
           isFullscreen={props.isFullscreen}
+          showCardName={props.showCardName}
+          showCardDescription={props.showCardDescription}
           onPlay={props.onPlay}
           onDraw={props.onDraw}
           onNope={props.onNope}
           onOpenRules={props.onOpenRules}
           onToggleFullscreen={props.onToggleFullscreen}
+          onToggleCardName={props.onToggleCardName}
+          onToggleCardDescription={props.onToggleCardDescription}
         />
       </YStack>
     );
@@ -88,6 +98,10 @@ export function HandZone(props: HandZoneProps) {
         canNope={props.canNope}
         cardVariant={props.cardVariant}
         isFullscreen={props.isFullscreen}
+        showCardName={props.showCardName}
+        showCardDescription={props.showCardDescription}
+        onToggleCardName={props.onToggleCardName}
+        onToggleCardDescription={props.onToggleCardDescription}
         onPlay={props.onPlay}
         onDraw={props.onDraw}
         onNope={props.onNope}
@@ -99,6 +113,8 @@ export function HandZone(props: HandZoneProps) {
         selectedUids={props.selectedUids}
         onToggleSelect={props.onToggleSelect}
         cardVariant={props.cardVariant}
+        showName={props.showCardName}
+        showDescription={props.showCardDescription}
       />
     </XStack>
   );

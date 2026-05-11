@@ -3,9 +3,9 @@
 import { useCallback, useMemo, type ComponentProps } from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
 import { GameBoard, TableArea } from './styles/layout';
-import { GameTableSection } from './GameTableSection';
 import { PlayerHand } from './PlayerHand';
 import { Arena } from './arena/Arena';
+import { OpponentsRow } from './opponents/OpponentsRow';
 
 export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
   /**
@@ -17,13 +17,12 @@ export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
 };
 
 /**
- * Widget-mode renderer for an active Critical match (ARC-631 onwards).
+ * Widget-mode renderer for an active Critical match.
  *
- * Layout-wise this mirrors `ActiveGameContent` for now — same `GameBoard >
- * TableArea > GameTableSection + PlayerHand` shell — with one change: the
- * center of the table is rendered by the new `Arena` (draw · center ·
- * discard) instead of the legacy `CenterTableSection`. The HUD pieces and
- * combo intent card move inside `Arena`'s center column in ARC-633.
+ * Layout: a three-row stack — `OpponentsRow` (ARC-634) above the `Arena`
+ * (ARC-632 / ARC-633), with the legacy `PlayerHand` at the bottom until
+ * ARC-635 swaps in `HandZone`. No longer uses `GameTableSection`'s ring
+ * layout; opponents are now a horizontal strip / FFA grid.
  */
 export function MatchWidget({
   room: _room,
@@ -56,49 +55,45 @@ export function MatchWidget({
     actions.drawCard();
   }, [actions, isMyTurn, isGameOver]);
 
+  const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
   const currentPlayerName = useMemo(() => {
-    const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex];
     if (!turnPlayerId) return '';
     return resolveDisplayName(turnPlayerId, 'Player') ?? 'Player';
-  }, [snapshot.playerOrder, snapshot.currentTurnIndex, resolveDisplayName]);
+  }, [turnPlayerId, resolveDisplayName]);
+
+  const opponents = useMemo(
+    () => snapshot.players.filter((p) => p.playerId !== currentUserId),
+    [snapshot.players, currentUserId],
+  );
+  const tileResolveName = useCallback(
+    (id: string, fb: string) => resolveDisplayName(id, fb) ?? fb,
+    [resolveDisplayName],
+  );
 
   const hand = currentPlayer?.hand ?? [];
-
-  const arena = (
-    <Arena
-      deck={snapshot.deck}
-      discardPile={snapshot.discardPile}
-      cardVariant={cardVariant}
-      isMyTurn={isMyTurn}
-      isGameOver={isGameOver}
-      onDrawAndEnd={handleDrawAndEnd}
-      hand={hand}
-      allowActionCardCombos={snapshot.allowActionCardCombos ?? false}
-      currentPlayerName={currentPlayerName}
-      pendingDraws={snapshot.pendingDraws}
-      logs={snapshot.logs ?? []}
-      formatLogMessage={formatLogMessage}
-    />
-  );
 
   return (
     <div data-testid="match-widget">
       <GameBoard>
+        <OpponentsRow
+          opponents={opponents}
+          currentTurnPlayerId={turnPlayerId}
+          resolveDisplayName={tileResolveName}
+        />
         <TableArea>
-          <GameTableSection
-            players={snapshot.players}
-            playerOrder={snapshot.playerOrder}
-            currentTurnIndex={snapshot.currentTurnIndex}
-            currentUserId={currentUserId}
+          <Arena
             deck={snapshot.deck}
-            discardPileLength={snapshot.discardPile.length}
-            pendingDraws={snapshot.pendingDraws}
             discardPile={snapshot.discardPile}
-            logs={snapshot.logs ?? []}
-            resolveDisplayName={(id, fb) => resolveDisplayName(id, fb) ?? fb}
-            t={t as (key: string) => string}
             cardVariant={cardVariant}
-            centerSlot={arena}
+            isMyTurn={isMyTurn}
+            isGameOver={isGameOver}
+            onDrawAndEnd={handleDrawAndEnd}
+            hand={hand}
+            allowActionCardCombos={snapshot.allowActionCardCombos ?? false}
+            currentPlayerName={currentPlayerName}
+            pendingDraws={snapshot.pendingDraws}
+            logs={snapshot.logs ?? []}
+            formatLogMessage={formatLogMessage}
           />
         </TableArea>
 

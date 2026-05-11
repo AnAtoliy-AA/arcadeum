@@ -43,7 +43,18 @@ export function HandCards({
       flexWrap="wrap"
       gap="$2"
       padding="$2"
-      $sm={{ overflow: 'scroll', flexWrap: 'nowrap' }}
+      // On mobile the parent is a column with no fixed height — `flex: 1`
+      // inside a column collapses to 0px, hiding the cards entirely.
+      // Force an intrinsic height + horizontal scroll instead.
+      $sm={{
+        flex: 0,
+        flexBasis: 'auto',
+        flexWrap: 'nowrap',
+        overflowX: 'scroll',
+        overflowY: 'hidden',
+        width: '100%',
+        minHeight: 230,
+      }}
     >
       {cards.map((card) => (
         <HandCard

@@ -226,6 +226,10 @@ export const ruMessages = {
       cards: 'карт',
       card: 'карта',
     },
+    arena: {
+      drawHint: 'Нажмите, чтобы взять карту и закончить ход',
+      drawAria: 'Взять карту и закончить ход',
+    },
     hud: {
       threat: {
         label: 'Угроза',

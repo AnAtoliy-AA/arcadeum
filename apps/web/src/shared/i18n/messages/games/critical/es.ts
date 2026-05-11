@@ -223,6 +223,10 @@ export const esMessages = {
       cards: 'cartas',
       card: 'carta',
     },
+    arena: {
+      drawHint: 'Tócalo para robar y terminar el turno',
+      drawAria: 'Robar una carta y terminar el turno',
+    },
     hud: {
       threat: {
         label: 'Amenaza',

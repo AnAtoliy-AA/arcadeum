@@ -224,6 +224,10 @@ export const byMessages = {
       cards: 'карт',
       card: 'карта',
     },
+    arena: {
+      drawHint: 'Націсніце, каб узяць карту і скончыць ход',
+      drawAria: 'Узяць карту і скончыць ход',
+    },
     hud: {
       threat: {
         label: 'Пагроза',

@@ -220,6 +220,10 @@ export const enMessages = {
       cards: 'cards',
       card: 'card',
     },
+    arena: {
+      drawHint: 'Tap to draw + end turn',
+      drawAria: 'Draw a card and end your turn',
+    },
     hud: {
       threat: {
         label: 'Threat',

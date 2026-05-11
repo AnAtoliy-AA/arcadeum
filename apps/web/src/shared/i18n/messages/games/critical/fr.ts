@@ -227,11 +227,15 @@ export const frMessages = {
       cards: 'cartes',
       card: 'carte',
     },
+    arena: {
+      drawHint: 'Toucher pour piocher et terminer le tour',
+      drawAria: 'Piocher une carte et terminer le tour',
+    },
     hud: {
       threat: {
         label: 'Menace',
         oddsTitle:
-          'Probabilité minimale de piocher une carte Critique (cartes visibles uniquement — les cartes cachées peuvent l’augmenter)',
+          'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
         defusesTitle: 'Cartes de Défuse en main',
       },
       combo: {

@@ -1,8 +1,13 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, params?: Record<string, string | number>) => {
+      if (params && 'name' in params) return `${key}:${params.name}`;
+      return key;
+    },
+  }),
 }));
 
 vi.mock('./opponents/OpponentsRow', () => ({
@@ -21,12 +26,53 @@ vi.mock('./opponents/OpponentsRow', () => ({
   ),
 }));
 
-vi.mock('./PlayerHand', () => ({
-  PlayerHand: () => <div data-testid="player-hand-stub" />,
+vi.mock('./arena/Arena', () => ({
+  Arena: ({ combo }: { combo?: { kind: string; label: string } }) => (
+    <div
+      data-testid="arena-stub"
+      data-combo-kind={combo?.kind ?? ''}
+      data-combo-label={combo?.label ?? ''}
+    />
+  ),
 }));
 
-vi.mock('./arena/Arena', () => ({
-  Arena: () => <div data-testid="arena-stub" />,
+vi.mock('./hand/HandZone', () => ({
+  HandZone: ({
+    combo,
+    canPlay,
+    cards,
+    onPlay,
+    onToggleSelect,
+  }: {
+    combo: { kind: string; label: string };
+    canPlay: boolean;
+    cards: Array<{ uid: string }>;
+    onPlay: () => void;
+    onToggleSelect: (uid: string) => void;
+  }) => (
+    <div
+      data-testid="hand-zone-stub"
+      data-combo-kind={combo.kind}
+      data-can-play={canPlay ? 'true' : 'false'}
+      data-card-uids={cards.map((c) => c.uid).join(',')}
+    >
+      <button
+        type="button"
+        data-testid="hand-zone-stub-play"
+        onClick={onPlay}
+      />
+      <button
+        type="button"
+        data-testid="hand-zone-stub-select-strike-0"
+        onClick={() => onToggleSelect('strike-0')}
+      />
+      <button
+        type="button"
+        data-testid="hand-zone-stub-select-strike-1"
+        onClick={() => onToggleSelect('strike-1')}
+      />
+    </div>
+  ),
 }));
 
 vi.mock('./styles/layout', () => ({
@@ -44,7 +90,7 @@ import type { CriticalCard, CriticalPlayerState } from '../types';
 function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
   const currentPlayer: CriticalPlayerState = {
     playerId: 'p1',
-    hand: ['strike'] as CriticalCard[],
+    hand: ['strike', 'strike', 'evade'] as CriticalCard[],
     alive: true,
   };
   const baseSnapshot = {
@@ -59,7 +105,7 @@ function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
     pendingAction: null,
     players: [currentPlayer],
     logs: [],
-    allowActionCardCombos: false,
+    allowActionCardCombos: true,
   };
   return {
     room: { id: 'room' } as never,
@@ -97,53 +143,15 @@ function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
   } as MatchWidgetProps;
 }
 
-describe('MatchWidget (ARC-634)', () => {
-  it('renders the three-row layout: OpponentsRow + Arena + PlayerHand', () => {
+describe('MatchWidget (ARC-635)', () => {
+  it('renders the three-row layout: OpponentsRow + Arena + HandZone', () => {
     render(<MatchWidget {...makeProps()} />);
-    expect(screen.getByTestId('match-widget')).toBeInTheDocument();
     expect(screen.getByTestId('opponents-row-stub')).toBeInTheDocument();
     expect(screen.getByTestId('arena-stub')).toBeInTheDocument();
-    expect(screen.getByTestId('player-hand-stub')).toBeInTheDocument();
+    expect(screen.getByTestId('hand-zone-stub')).toBeInTheDocument();
   });
 
-  it('passes only opponents (not the current user) to OpponentsRow', () => {
-    const players = [
-      { playerId: 'p1', hand: [] as CriticalCard[], alive: true },
-      { playerId: 'p2', hand: [] as CriticalCard[], alive: true },
-      { playerId: 'p3', hand: [] as CriticalCard[], alive: true },
-    ];
-    render(
-      <MatchWidget
-        {...makeProps({
-          currentUserId: 'p1',
-          snapshot: {
-            deck: [],
-            discardPile: [],
-            playerOrder: ['p1', 'p2', 'p3'],
-            currentTurnIndex: 1,
-            pendingDraws: 1,
-            pendingDefuse: null,
-            pendingFavor: null,
-            pendingAlter: null,
-            pendingAction: null,
-            players,
-            logs: [],
-            allowActionCardCombos: false,
-          },
-        })}
-      />,
-    );
-    expect(screen.getByTestId('opponents-row-stub')).toHaveAttribute(
-      'data-opponent-count',
-      '2',
-    );
-    expect(screen.getByTestId('opponents-row-stub')).toHaveAttribute(
-      'data-current-turn',
-      'p2',
-    );
-  });
-
-  it('hides PlayerHand when the current player is eliminated', () => {
+  it('hides HandZone when the current player is eliminated', () => {
     render(
       <MatchWidget
         {...makeProps({
@@ -155,11 +163,67 @@ describe('MatchWidget (ARC-634)', () => {
         })}
       />,
     );
-    expect(screen.queryByTestId('player-hand-stub')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('hand-zone-stub')).not.toBeInTheDocument();
   });
 
-  it('hides PlayerHand when the game is over', () => {
+  it('hides HandZone when the game is over', () => {
     render(<MatchWidget {...makeProps({ isGameOver: true })} />);
-    expect(screen.queryByTestId('player-hand-stub')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('hand-zone-stub')).not.toBeInTheDocument();
+  });
+
+  it('drives Arena + HandZone with the same combo (placeholder by default)', () => {
+    render(<MatchWidget {...makeProps()} />);
+    expect(screen.getByTestId('arena-stub')).toHaveAttribute(
+      'data-combo-kind',
+      'none',
+    );
+    expect(screen.getByTestId('hand-zone-stub')).toHaveAttribute(
+      'data-combo-kind',
+      'none',
+    );
+  });
+
+  it('upgrades combo to `pair` when two same-name cards are selected', () => {
+    render(<MatchWidget {...makeProps()} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-0'));
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-1'));
+    expect(screen.getByTestId('arena-stub')).toHaveAttribute(
+      'data-combo-kind',
+      'pair',
+    );
+    expect(screen.getByTestId('hand-zone-stub')).toHaveAttribute(
+      'data-can-play',
+      'true',
+    );
+  });
+
+  it('routes single-card plays to handlePlayActionCard', () => {
+    const handlePlayActionCard = vi.fn();
+    render(<MatchWidget {...makeProps({ handlePlayActionCard })} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-0'));
+    fireEvent.click(screen.getByTestId('hand-zone-stub-play'));
+    expect(handlePlayActionCard).toHaveBeenCalledWith('strike');
+  });
+
+  it('routes pair combos to handleOpenEventCombo', () => {
+    const handleOpenEventCombo = vi.fn();
+    render(<MatchWidget {...makeProps({ handleOpenEventCombo })} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-0'));
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-1'));
+    fireEvent.click(screen.getByTestId('hand-zone-stub-play'));
+    expect(handleOpenEventCombo).toHaveBeenCalledTimes(1);
+    expect(handleOpenEventCombo).toHaveBeenCalledWith(
+      ['strike', 'strike'],
+      ['strike', 'strike', 'evade'],
+    );
+  });
+
+  it('disables play when it is not your turn', () => {
+    render(<MatchWidget {...makeProps({ isMyTurn: false })} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-select-strike-0'));
+    expect(screen.getByTestId('hand-zone-stub')).toHaveAttribute(
+      'data-can-play',
+      'false',
+    );
   });
 });

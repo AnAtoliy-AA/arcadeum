@@ -31,6 +31,7 @@ import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import { TurnBanner } from './TurnBanner';
+import { MatchHud } from './MatchHud';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -182,7 +183,7 @@ export function ActiveGameView({
     (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
     [t, cardVariant],
   );
-  const { resolveDisplayName } = useDisplayNames({
+  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room,
     snapshot,
@@ -206,10 +207,10 @@ export function ActiveGameView({
     handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
-    setStashModal: () => { }, // Handled by useCriticalModals
-    setMarkModal: () => { },
-    setStealDrawModal: () => { },
-    setSmiteModal: () => { },
+    setStashModal: () => {}, // Handled by useCriticalModals
+    setMarkModal: () => {},
+    setStealDrawModal: () => {},
+    setSmiteModal: () => {},
     setTargetedAttackModal,
   });
 
@@ -293,8 +294,15 @@ export function ActiveGameView({
                 : ''
             }
             secondsRemaining={null}
+            pendingDraws={snapshot.pendingDraws}
           />
         </XStack>
+        <MatchHud
+          snapshot={snapshot}
+          currentPlayer={currentPlayer}
+          isGameOver={!!isGameOver}
+          formatLogMessage={formatLogMessage}
+        />
 
         <ActiveGameContent
           room={room}

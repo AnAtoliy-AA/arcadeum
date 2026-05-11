@@ -223,6 +223,28 @@ export const esMessages = {
       cards: 'cartas',
       card: 'carta',
     },
+    hud: {
+      threat: {
+        label: 'Amenaza',
+        oddsTitle: 'Probabilidad de robar una carta Crítica',
+        defusesTitle: 'Cartas de Defusa que tienes',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× par',
+        triple: '3× trío',
+        fiver: '5 diferentes',
+      },
+      extraTurns: '+{{count}} turno',
+      extraTurnsPlural: '+{{count}} turnos',
+      flash: {
+        draw: 'Robaste {{card}}',
+        play: 'Jugaste {{card}}',
+        defuse: 'Defusada — {{card}} reinsertada',
+        eliminated: '{{name}} eliminado',
+        critical: '⚠ Crítica robada',
+      },
+    },
     players: {
       you: 'Tú',
       alive: 'Vivo',

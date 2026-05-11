@@ -227,6 +227,28 @@ export const frMessages = {
       cards: 'cartes',
       card: 'carte',
     },
+    hud: {
+      threat: {
+        label: 'Menace',
+        oddsTitle: 'Probabilité de piocher une carte Critique',
+        defusesTitle: 'Cartes de Défuse en main',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× paire',
+        triple: '3× triple',
+        fiver: '5 différentes',
+      },
+      extraTurns: '+{{count}} tour',
+      extraTurnsPlural: '+{{count}} tours',
+      flash: {
+        draw: '{{card}} piochée',
+        play: '{{card}} jouée',
+        defuse: 'Défusée — {{card}} replacée',
+        eliminated: '{{name}} éliminé',
+        critical: '⚠ Critique piochée',
+      },
+    },
     players: {
       you: 'Vous',
       alive: 'En vie',

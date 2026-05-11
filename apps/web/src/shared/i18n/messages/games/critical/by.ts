@@ -224,6 +224,28 @@ export const byMessages = {
       cards: 'карт',
       card: 'карта',
     },
+    hud: {
+      threat: {
+        label: 'Пагроза',
+        oddsTitle: 'Шанец, што наступная цягнутая карта — Крытычная',
+        defusesTitle: 'Карты Дэфузу ў вас',
+      },
+      combo: {
+        label: 'Комба',
+        pair: '2× пара',
+        triple: '3× тройка',
+        fiver: '5 розных',
+      },
+      extraTurns: '+{{count}} ход',
+      extraTurnsPlural: '+{{count}} хадоў',
+      flash: {
+        draw: 'Узята: {{card}}',
+        play: 'Згулі: {{card}}',
+        defuse: 'Абясшкоджана — {{card}} вернута',
+        eliminated: '{{name}} выбыў',
+        critical: '⚠ Цягне Крытычную',
+      },
+    },
     players: {
       you: 'Вы',
       alive: 'Жывы',

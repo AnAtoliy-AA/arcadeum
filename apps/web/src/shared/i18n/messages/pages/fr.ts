@@ -5,6 +5,7 @@ import { adminWalletFr } from './admin-wallet/fr';
 import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
+import { dailyRewardsFr } from './daily-rewards/fr';
 
 export const fr = {
   admin: {
@@ -478,4 +479,5 @@ export const fr = {
   gems: gemsFr,
   adminGemPackages: adminGemPackagesFr,
   adminEconomy: adminEconomyFr,
+  dailyRewards: dailyRewardsFr,
 };

@@ -54,13 +54,18 @@ export async function AdminEconomyTable() {
     <div
       style={{
         borderRadius: '12px',
-        overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.08)',
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <table
         data-testid="economy-table"
-        style={{ width: '100%', borderCollapse: 'collapse' }}
+        style={{
+          width: '100%',
+          minWidth: '720px',
+          borderCollapse: 'collapse',
+        }}
       >
         <thead>
           <tr

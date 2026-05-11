@@ -223,6 +223,7 @@ export const byMessages = {
       pendingDraws: 'Засталося хадоў',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Абезвр.',
     },
     arena: {
       drawHint: 'Націсніце, каб узяць карту і скончыць ход',

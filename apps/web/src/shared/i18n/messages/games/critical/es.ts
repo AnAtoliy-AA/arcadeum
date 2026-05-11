@@ -221,7 +221,8 @@ export const esMessages = {
       discard: 'Descarte',
       pendingDraws: 'Robos pendientes',
       cards: 'cartas',
-      card: 'carta',
+      /* prettier-ignore */ card: 'carta',
+      defuses: 'Desactiv.',
     },
     arena: {
       drawHint: 'Tócalo para robar y terminar el turno',

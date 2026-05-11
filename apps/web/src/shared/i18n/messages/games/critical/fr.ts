@@ -216,7 +216,8 @@ export const frMessages = {
       discard: 'Défausse',
       pendingDraws: 'Pioches en attente',
       cards: 'cartes',
-      card: 'carte',
+      /* prettier-ignore */ card: 'carte',
+      defuses: 'Désamorc.',
     },
     arena: {
       drawHint: 'Toucher pour piocher et terminer le tour',

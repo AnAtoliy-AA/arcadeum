@@ -219,6 +219,7 @@ export const enMessages = {
       pendingDraws: 'Pending draws',
       cards: 'cards',
       card: 'card',
+      defuses: 'Defuses',
     },
     arena: {
       drawHint: 'Tap to draw + end turn',

@@ -225,6 +225,7 @@ export const ruMessages = {
       pendingDraws: 'Осталось ходов',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Обезвреж.',
     },
     arena: {
       drawHint: 'Нажмите, чтобы взять карту и закончить ход',

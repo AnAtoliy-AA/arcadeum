@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.13] - 2026-05-11
+
+### Added
+- stack coin/gem balance pills vertically on mobile (ARC-619) (ARC-619)
+- tighter layout on iPhone SE-class screens (ARC-619) (ARC-619)
+- show human-readable names and descriptions for keys (ARC-619) (ARC-619)
+- add Economy entry to admin sidebar (ARC-619) (ARC-619)
+- i18n namespace in 5 locales (ARC-619) (ARC-619)
+- add audit history drawer (ARC-619) (ARC-619)
+- add edit dialog with reset action (ARC-619) (ARC-619)
+- add admin page with settings table (ARC-619) (ARC-619)
+- add server actions for set/reset/refresh/history (ARC-619) (ARC-619)
+- add web server module for economy settings (ARC-619) (ARC-619)
+- add AdminEconomyController with CRUD + audit routes (ARC-619) (ARC-619)
+- add EconomySettingsService with getNumber, setNumber, resetToDefault, listAll, getAuditFor, TTL cache (ARC-619) (ARC-619)
+- scaffold EconomyModule and register in AppModule (ARC-619) (ARC-619)
+- add EconomySetting + audit schemas, interfaces, DTO (ARC-619) (ARC-619)
+- add typed economy key registry (ARC-619) (ARC-619)
+
+### Fixed
+- drop GlassCard hoverStyle to eliminate Tamagui SSR hydration mismatch (ARC-619) (ARC-619)
+- swap Tamagui shell for plain CSS module to ensure mobile fill (ARC-619) (ARC-619)
+- widen admin Container to xl so it fills wider viewports (ARC-619) (ARC-619)
+- force XStack to 100% width to fill admin shell (ARC-619) (ARC-619)
+- make admin shell + economy page responsive on mobile (ARC-619) (ARC-619)
+- horizontal-scroll table on narrow screens (ARC-619) (ARC-619)
+- server getTranslations now loads the actual locale (ARC-619) (ARC-619)
+- read i18n from messages.pages.adminEconomy (ARC-619) (ARC-619)
+
+### Refactored
+- read coin rewards from EconomySettings (ARC-619) (ARC-619)
+- read gem_to_coin_rate from EconomySettings; getRate now async (ARC-619) (ARC-619)
+- read game_win_coin_reward from EconomySettings (ARC-619) (ARC-619)
+
+### Documentation
+- annotate env vars as overridable; document cache TTL (ARC-619) (ARC-619)
+- fold plan reviewer recommendations into ARC-619 plan (ARC-619)
+- add ARC-619 admin economy settings implementation plan (ARC-619)
+- fold spec reviewer recommendations into ARC-619 design (ARC-619)
+- add ARC-619 admin-tunable economy settings design (ARC-619)
+
+
 ## [1.13.12] - 2026-05-11
 
 ### Added

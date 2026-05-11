@@ -22,9 +22,24 @@ export interface CriticalPlayerState {
   [key: string]: unknown;
 }
 
+/**
+ * Structured event kind for HUD feedback (FlashBanner classifier). Mirrors
+ * the same union on the web client (`CriticalLogKind`). Optional for
+ * backward compatibility — clients fall back to message string-matching
+ * when absent.
+ */
+export type CriticalLogKind =
+  | 'play'
+  | 'draw'
+  | 'defuse'
+  | 'eliminated'
+  | 'critical'
+  | 'system';
+
 export interface CriticalLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  kind?: CriticalLogKind;
   message: string;
   createdAt: string;
   scope?: ChatScope;

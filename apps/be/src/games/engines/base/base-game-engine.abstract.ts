@@ -81,6 +81,7 @@ export abstract class BaseGameEngine<
     type: 'system' | 'action' | 'message',
     message: string,
     options?: {
+      kind?: string;
       scope?: ChatScope;
       senderId?: string;
       senderName?: string;
@@ -89,6 +90,7 @@ export abstract class BaseGameEngine<
     return {
       id: randomUUID(),
       type,
+      kind: options?.kind,
       message,
       createdAt: new Date().toISOString(),
       scope: options?.scope || 'all',

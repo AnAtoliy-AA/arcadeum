@@ -101,6 +101,7 @@ export class GlimwormService implements OnModuleDestroy {
       const existing = session.worms[userId];
       existing.disconnected = false;
       delete existing.disconnectedAt;
+      this.emitSnapshots(session);
       return existing;
     }
 
@@ -119,6 +120,9 @@ export class GlimwormService implements OnModuleDestroy {
       inventoryPowerup: null,
     };
     session.worms[userId] = worm;
+    // Push a lobby snapshot so every player's lobby UI sees the new worm
+    // (and which colors are now taken).
+    this.emitSnapshots(session);
     return worm;
   }
 
@@ -132,6 +136,7 @@ export class GlimwormService implements OnModuleDestroy {
       delete session.worms[userId];
       delete session.lastInputAt[userId];
       delete session.damageTickAt[userId];
+      this.emitSnapshots(session);
       return;
     }
 
@@ -146,6 +151,7 @@ export class GlimwormService implements OnModuleDestroy {
     const worm = session.worms[userId];
     if (!worm) throw new Error('No worm for user');
     worm.ready = ready;
+    this.emitSnapshots(session);
   }
 
   start(roomId: string, hostUserId: string, opts: GlimwormStartOpts): void {
@@ -280,8 +286,14 @@ export class GlimwormService implements OnModuleDestroy {
     if (!session) throw new Error('No session for room');
     const worm = session.worms[userId];
     if (!worm) throw new Error('No worm for user');
-    const picked = nextFreeColor(session, color);
-    worm.color = picked;
+    // Exclude this worm from the "used" set so it can re-pick its own color
+    // (otherwise nextFreeColor would see worm.color as taken and reassign).
+    const picked = nextFreeColor(session, color, worm.id);
+    if (picked !== worm.color) {
+      worm.color = picked;
+      // Broadcast so every player's lobby sees who claimed which color.
+      this.emitSnapshots(session);
+    }
     return picked;
   }
 

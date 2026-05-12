@@ -86,8 +86,13 @@ const aabbHit = (a: Vec2, ar: number, b: Vec2, br: number): boolean => {
 export function nextFreeColor(
   session: GlimwormSession,
   requested?: string,
+  excludeWormId?: string,
 ): string {
-  const used = new Set(Object.values(session.worms).map((w) => w.color));
+  const used = new Set(
+    Object.values(session.worms)
+      .filter((w) => w.id !== excludeWormId)
+      .map((w) => w.color),
+  );
   if (
     requested &&
     !used.has(requested) &&

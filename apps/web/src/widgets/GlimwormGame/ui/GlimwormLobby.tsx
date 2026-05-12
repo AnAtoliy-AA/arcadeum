@@ -57,11 +57,20 @@ export function GlimwormLobby({
   const { t } = useTranslation();
   const selectedColor = useGlimwormStore((s) => s.selectedColor);
   const setColor = useGlimwormStore((s) => s.setColor);
+  const latestSnapshot = useGlimwormStore((s) => s.latestSnapshot);
 
   const [variant, setVariant] = useState<GlimwormVariant>('battle_royale');
   const [powerupsEnabled, setPowerupsEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Read which colors are claimed by which player. The BE pushes a fresh
+  // snapshot on join/leave/color-pick, so this reflects the live lobby state.
+  const otherWorms =
+    latestSnapshot?.worms.filter((w) => w.id !== currentUserId) ?? [];
+  const takenColors = new Set(otherWorms.map((w) => w.color));
+  const myWorm = latestSnapshot?.worms.find((w) => w.id === currentUserId);
+  const effectiveSelectedColor = selectedColor ?? myWorm?.color ?? null;
 
   // Listen for BE responses so we can clear busy + surface errors.
   useEffect(() => {
@@ -236,14 +245,17 @@ export function GlimwormLobby({
           </div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {PALETTE.map((color) => {
-              const isSelected = color === selectedColor;
+              const isSelected = color === effectiveSelectedColor;
+              const isTaken = takenColors.has(color) && !isSelected;
               return (
                 <button
                   key={color}
                   type="button"
                   aria-label={color}
                   aria-pressed={isSelected}
-                  onClick={() => handleColor(color)}
+                  disabled={isTaken}
+                  onClick={() => !isTaken && handleColor(color)}
+                  title={isTaken ? 'Taken by another player' : color}
                   style={{
                     width: 30,
                     height: 30,
@@ -252,7 +264,8 @@ export function GlimwormLobby({
                     border: isSelected
                       ? '3px solid #fff'
                       : '2px solid rgba(255,255,255,0.18)',
-                    cursor: 'pointer',
+                    opacity: isTaken ? 0.3 : 1,
+                    cursor: isTaken ? 'not-allowed' : 'pointer',
                   }}
                 />
               );

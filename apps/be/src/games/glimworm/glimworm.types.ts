@@ -44,6 +44,13 @@ export interface Arena {
 
 export type GlimwormVariant = 'battle_royale' | 'time_attack' | 'lives_heats';
 
+export interface GlimwormStartOptsRecord {
+  variant: GlimwormVariant;
+  powerupsEnabled: boolean;
+  fillWithBots?: boolean;
+  botCount?: number;
+}
+
 export interface GlimwormSession {
   roomId: string;
   hostUserId: string;
@@ -61,6 +68,8 @@ export interface GlimwormSession {
   lastInputAt: Record<WormId, number>;
   lastPowerupSpawnAt: number;
   damageTickAt: Record<WormId, number>;
+  /** Last opts passed to start() — used by rematch() to relive the same round. */
+  lastStartOpts?: GlimwormStartOptsRecord;
 }
 
 export interface GlimwormWormSnapshot {

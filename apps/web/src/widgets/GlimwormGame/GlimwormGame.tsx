@@ -51,9 +51,19 @@ export default function GlimwormGame(
   const isCountdown = effectiveStatus === 'countdown';
   const isEnded = effectiveStatus === 'ended';
 
-  const handleRematch = useCallback(() => {
+  // Restart = drop back to lobby (host can change settings before next start).
+  const handleRestart = useCallback(() => {
     if (!currentUserId) return;
     gameSocket.emit('glimworm.restart', {
+      roomId,
+      userId: currentUserId,
+    });
+  }, [roomId, currentUserId]);
+
+  // Rematch = one-click new round with the same options as last time.
+  const handleRematch = useCallback(() => {
+    if (!currentUserId) return;
+    gameSocket.emit('glimworm.rematch', {
       roomId,
       userId: currentUserId,
     });
@@ -86,12 +96,16 @@ export default function GlimwormGame(
           background: '#06070d',
         }}
       />
-      <GlimwormHud isHost={isHost} onRestart={handleRematch} />
+      <GlimwormHud isHost={isHost} onRestart={handleRestart} />
       <GlimwormDeathOverlay />
       {isCountdown && <GlimwormCountdown />}
       {!isCountdown && !isEnded && <GlimwormControlsHint />}
       {isEnded && (
-        <GlimwormResultOverlay isHost={isHost} onRematch={handleRematch} />
+        <GlimwormResultOverlay
+          isHost={isHost}
+          onRematch={handleRematch}
+          onLobby={handleRestart}
+        />
       )}
     </div>
   );

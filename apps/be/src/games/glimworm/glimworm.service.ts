@@ -205,6 +205,13 @@ export class GlimwormService implements OnModuleDestroy {
 
     session.variant = opts.variant;
     session.powerupsEnabled = opts.powerupsEnabled;
+    // Snapshot the opts so rematch() can replay them.
+    session.lastStartOpts = {
+      variant: opts.variant,
+      powerupsEnabled: opts.powerupsEnabled,
+      fillWithBots: opts.fillWithBots,
+      botCount: opts.botCount,
+    };
     const center: Vec2 = {
       x: session.arena.width / 2,
       y: session.arena.height / 2,
@@ -314,6 +321,30 @@ export class GlimwormService implements OnModuleDestroy {
       this.emitSnapshots(session);
     }
     return picked;
+  }
+
+  /**
+   * One-click rematch: reset the session and immediately start a new round
+   * with the same options the host picked last time (variant, power-ups,
+   * fillWithBots/botCount). Falls back to plain restart if no prior opts
+   * are remembered.
+   */
+  rematch(roomId: string, hostUserId: string): void {
+    const session = this.stateStore.get(roomId);
+    if (!session) throw new Error('No session for room');
+    if (session.hostUserId !== hostUserId) {
+      throw new Error('Only host can rematch');
+    }
+    const opts = session.lastStartOpts;
+    this.restart(roomId, hostUserId);
+    if (opts) {
+      this.start(roomId, hostUserId, {
+        variant: opts.variant,
+        powerupsEnabled: opts.powerupsEnabled,
+        fillWithBots: opts.fillWithBots,
+        botCount: opts.botCount,
+      });
+    }
   }
 
   /**

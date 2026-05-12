@@ -227,6 +227,28 @@ export class GlimwormGateway {
     }
   }
 
+  @SubscribeMessage('glimworm.rematch')
+  handleRematch(
+    @MessageBody() payload: GlimwormRestartBody,
+    @ConnectedSocket() client: Socket,
+  ): void {
+    const { roomId, userId } = extractRoomAndUser(
+      payload as unknown as Record<string, unknown>,
+    );
+    try {
+      this.glimwormService.rematch(roomId, userId);
+      client.emit('glimworm.rematch.ack', maybeEncrypt({ roomId, userId }));
+    } catch (error) {
+      this.handleException({
+        error,
+        action: 'glimworm rematch',
+        roomId,
+        userId,
+        userMessage: 'Unable to rematch.',
+      });
+    }
+  }
+
   @SubscribeMessage('glimworm.color.pick')
   handleColorPick(
     @MessageBody() payload: GlimwormColorPickBody,

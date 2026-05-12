@@ -4,7 +4,10 @@ import { useGlimwormStore } from '../store/glimwormStore';
 
 interface GlimwormResultOverlayProps {
   isHost: boolean;
+  /** One-click new round with the same settings (host-only). */
   onRematch: () => void;
+  /** Send the room back to the lobby so settings can be changed (host-only). */
+  onLobby?: () => void;
 }
 
 /**
@@ -15,6 +18,7 @@ interface GlimwormResultOverlayProps {
 export function GlimwormResultOverlay({
   isHost,
   onRematch,
+  onLobby,
 }: GlimwormResultOverlayProps): React.JSX.Element | null {
   const snapshot = useGlimwormStore((s) => s.latestSnapshot);
   if (!snapshot || snapshot.status !== 'ended') return null;
@@ -169,24 +173,54 @@ export function GlimwormResultOverlay({
         </div>
 
         {isHost ? (
-          <button
-            type="button"
-            onClick={onRematch}
+          <div
             style={{
-              padding: '12px 28px',
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #5ee0ff 0%, #7c5cff 100%)',
-              color: '#fff',
-              border: 0,
-              cursor: 'pointer',
-              fontSize: 15,
-              fontWeight: 700,
-              fontFamily: 'inherit',
-              boxShadow: '0 6px 20px rgba(124,92,255,0.4)',
+              display: 'flex',
+              gap: 10,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
             }}
           >
-            ↻ Rematch
-          </button>
+            <button
+              type="button"
+              onClick={onRematch}
+              style={{
+                padding: '12px 28px',
+                borderRadius: 8,
+                background:
+                  'linear-gradient(135deg, #5ee0ff 0%, #7c5cff 100%)',
+                color: '#fff',
+                border: 0,
+                cursor: 'pointer',
+                fontSize: 15,
+                fontWeight: 700,
+                fontFamily: 'inherit',
+                boxShadow: '0 6px 20px rgba(124,92,255,0.4)',
+              }}
+            >
+              ↻ Rematch
+            </button>
+            {onLobby && (
+              <button
+                type="button"
+                onClick={onLobby}
+                style={{
+                  padding: '12px 22px',
+                  borderRadius: 8,
+                  background: 'rgba(255,255,255,0.08)',
+                  color: '#cbd5e1',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  fontFamily: 'inherit',
+                }}
+                title="Drop back to the lobby to change variant, power-ups, or bots"
+              >
+                Back to lobby
+              </button>
+            )}
+          </div>
         ) : (
           <div
             style={{

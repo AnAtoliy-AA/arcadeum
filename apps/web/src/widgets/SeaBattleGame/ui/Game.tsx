@@ -69,7 +69,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     setLastIsLobby(false);
   }
 
-  const [resultModalDismissed, setResultModalDismissed] = useState(false);
+  // Track which session id the result modal has been dismissed for. Using the
+  // session id (instead of a plain boolean) means the dismissal naturally
+  // resets when a rematch produces a new session, so the next game-over
+  // shows the modal again instead of only the win confetti.
+  const [dismissedForSessionId, setDismissedForSessionId] = useState<
+    string | null
+  >(null);
 
   const {
     startSession,
@@ -89,6 +95,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   }, [autoPlace]);
 
   const {
+    session,
     snapshot,
     startBusy,
     isMyTurn,
@@ -154,9 +161,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   });
 
   const handleOpenRematch = useCallback(() => {
-    setResultModalDismissed(true);
+    if (session?.id) setDismissedForSessionId(session.id);
     openRematchModal();
-  }, [openRematchModal, setResultModalDismissed]);
+  }, [openRematchModal, session?.id]);
+
+  const resultModalDismissed =
+    !!session?.id && dismissedForSessionId === session.id;
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null, fallback?: string | null) => {
@@ -385,7 +395,9 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           isOpen={isGameOver && !resultModalDismissed}
           result={gameResult}
           onRematch={isHost ? handleOpenRematch : undefined}
-          onClose={() => setResultModalDismissed(true)}
+          onClose={() => {
+            if (session?.id) setDismissedForSessionId(session.id);
+          }}
           rematchLoading={rematchLoading}
           t={t}
         />
@@ -426,6 +438,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       t,
       isGameOver,
       resultModalDismissed,
+      session?.id,
       gameResult,
       isHost,
       handleOpenRematch,

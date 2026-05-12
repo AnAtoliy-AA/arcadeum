@@ -17,6 +17,7 @@ import type { ChatScope } from '../store/gameChatStore';
 
 interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
+  currentUserId?: string | null;
   onClose?: () => void;
   teamMode?: boolean;
 }
@@ -35,6 +36,7 @@ const TEAM_SCOPES: { value: ChatScope; label: string }[] = [
 
 export function GameChat({
   resolveDisplayName,
+  currentUserId,
   onClose,
   teamMode,
 }: GameChatProps) {
@@ -131,22 +133,24 @@ export function GameChat({
           </YStack>
         ) : (
           <YStack gap="$1">
-            {logs.map((log) => (
-              <ChatMessage
-                key={log.id}
-                senderName={
-                  resolveDisplayName
-                    ? resolveDisplayName(
-                        log.senderId ?? undefined,
-                        log.senderName ?? undefined,
-                      )
-                    : (log.senderName ?? undefined)
-                }
-                content={log.message}
-                type={log.type}
-                isOwn={false} // Store doesn't track isOwn specifically in logs, but we could add it
-              />
-            ))}
+            {logs.map((log) => {
+              const isOwn = !!currentUserId && log.senderId === currentUserId;
+              const senderName = resolveDisplayName
+                ? resolveDisplayName(
+                    log.senderId ?? undefined,
+                    log.senderName ?? undefined,
+                  )
+                : (log.senderName ?? undefined);
+              return (
+                <ChatMessage
+                  key={log.id}
+                  senderName={senderName}
+                  content={log.message}
+                  type={log.type}
+                  isOwn={isOwn}
+                />
+              );
+            })}
           </YStack>
         )}
       </ScrollView>

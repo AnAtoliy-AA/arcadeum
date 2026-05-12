@@ -80,6 +80,20 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const logs = useGameChatStore((s) => s.logs);
   const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(logs);
 
+  const resolveDisplayName = useCallback(
+    (id?: string, fallback?: string) => {
+      if (id && userId && id === userId) return t('chat.you');
+      const member = room.members?.find((m) => m.id === id);
+      return member?.displayName ?? fallback ?? id;
+    },
+    [room.members, userId, t],
+  );
+
+  const popupSenderName = latestMessage
+    ? (resolveDisplayName(latestMessage.senderId, latestMessage.senderName) ??
+      latestMessage.senderName)
+    : '';
+
   return (
     <>
       <style>{fullscreenStyles}</style>
@@ -122,14 +136,19 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           {children({ isFullscreen, toggleFullscreen })}
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
-            <GameChat onClose={() => setShowChat(false)} teamMode={teamMode} />
+            <GameChat
+              onClose={() => setShowChat(false)}
+              teamMode={teamMode}
+              resolveDisplayName={resolveDisplayName}
+              currentUserId={userId}
+            />
           </ChatPanel>
         </GameRow>
 
         {latestMessage && (
           <ChatMessagePopup
             key={latestMessage.id}
-            senderName={latestMessage.senderName}
+            senderName={popupSenderName}
             message={latestMessage.message}
             visible={!!latestMessage}
             onDismiss={dismissPopup}

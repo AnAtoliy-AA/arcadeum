@@ -11,6 +11,7 @@ export const en = {
     },
     send: 'Send',
     loginRequired: 'Login required to view messages',
+    you: 'You',
   },
   list: {
     search: {
@@ -41,6 +42,7 @@ export const es = {
     },
     send: 'Enviar',
     loginRequired: 'Inicia sesión para ver los mensajes',
+    you: 'Tú',
   },
   list: {
     search: {
@@ -71,6 +73,7 @@ export const fr = {
     },
     send: 'Envoyer',
     loginRequired: 'Connexion requise pour voir les messages',
+    you: 'Toi',
   },
   list: {
     search: {
@@ -101,6 +104,7 @@ export const ru = {
     },
     send: 'Отправить',
     loginRequired: 'Войдите, чтобы просмотреть сообщения',
+    you: 'Вы',
   },
   list: {
     search: {
@@ -131,6 +135,7 @@ export const by = {
     },
     send: 'Адправіць',
     loginRequired: 'Увайдзіце, каб прагледзець паведамленні',
+    you: 'Вы',
   },
   list: {
     search: {

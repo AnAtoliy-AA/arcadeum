@@ -132,6 +132,14 @@ export const ChatMessage = memo(function ChatMessage({
           </Typography>
         </XStack>
       )}
+      {isOwn && !isSystem && senderName && (
+        <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
+          <Typography uiSize="xs" weight="600" alpha="medium" letterSpacing={0.5} textTransform="uppercase">
+            {senderName}
+          </Typography>
+          <Avatar name={senderName} size="sm" src={avatarUrl} />
+        </XStack>
+      )}
       <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">
         <Typography 
           uiSize={isSystem ? 'xs' : 'sm'} 

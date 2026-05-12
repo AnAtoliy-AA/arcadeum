@@ -221,7 +221,14 @@ export function MatchWidget({
       // playActionCard / opens a non-target modal for stash, etc.).
       if (isTargetedSingle(cardId)) {
         if (!targetPlayerId) return;
-        actions.playActionCard(cardId, { targetPlayerId });
+        // `trade` (Favor) has a dedicated socket on the BE — the generic
+        // play_action gateway rejects it via isSimpleActionCard. The rest
+        // of the targeted singles ride the play_action path.
+        if (cardId === 'trade') {
+          actions.playFavor(targetPlayerId);
+        } else {
+          actions.playActionCard(cardId, { targetPlayerId });
+        }
       } else {
         handlePlayActionCard(cardId);
       }

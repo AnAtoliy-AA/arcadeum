@@ -176,10 +176,11 @@ export function executeSmite(
     state,
     helpers.createLogEntry(
       'action',
-      `SMITED ${targetPlayerId}! They must take 3 turns! ⚡`,
+      `SMITED them — must take 3 turns! ⚡`,
       {
         scope: 'all',
         senderId: playerId,
+        targetId: targetPlayerId,
       },
     ),
   );
@@ -402,9 +403,10 @@ export function executeRapture(
 
     helpers.addLog(
       state,
-      helpers.createLogEntry('action', `gave a card to ${playerId} (Rapture)`, {
+      helpers.createLogEntry('action', `gave a card (Rapture)`, {
         scope: 'private',
         senderId: victim.playerId,
+        targetId: playerId,
       }),
     );
   });

@@ -221,6 +221,7 @@ export interface CriticalLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
   scope?: ChatScope;
 }
 
@@ -317,6 +318,7 @@ export interface TexasHoldemLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
   scope?: ChatScope;
 }
 

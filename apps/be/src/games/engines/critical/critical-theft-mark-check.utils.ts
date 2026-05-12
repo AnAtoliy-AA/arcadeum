@@ -41,6 +41,7 @@ export function checkAndHandleMarkedCard(
         {
           scope: 'all',
           senderId: markInfo.markedBy,
+          targetId: playerId,
         },
       ),
     );

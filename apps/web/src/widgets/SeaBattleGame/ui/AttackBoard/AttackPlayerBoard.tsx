@@ -21,6 +21,7 @@ import { type TranslationKey } from '@/shared/lib/useTranslation';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;
@@ -178,7 +179,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           className={isDefending ? 'sb-section-danger-breathe' : undefined}
           backdropFilter="blur(8px)"
         >
-          <PlayerName data-testid="player-board-name" color={theme.textColor}>
+          <PlayerName
+            data-testid="player-board-name"
+            color={theme.textColor}
+            style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
+          >
             {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
             {team && <TeamPill team={team} />}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
@@ -265,7 +270,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         className={isMyTurn && !team ? 'sb-breathe' : undefined}
         backdropFilter="blur(8px)"
       >
-        <PlayerName data-testid="player-board-name" color={theme.textColor}>
+        <PlayerName
+          data-testid="player-board-name"
+          color={theme.textColor}
+          style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
+        >
           {t(
             'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
           )}

@@ -25,6 +25,7 @@ export interface LogEntryOptions {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 /** Utility class for Critical game logic */

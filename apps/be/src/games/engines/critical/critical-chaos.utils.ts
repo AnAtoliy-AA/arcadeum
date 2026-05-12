@@ -14,6 +14,7 @@ export interface LogEntryOptions {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 export interface EngineHelpers {
@@ -275,9 +276,10 @@ export function executeBlackout(
 
   helpers.addLog(
     state,
-    helpers.createLogEntry('action', `Played Blackout on ${targetId}!`, {
+    helpers.createLogEntry('action', `Played Blackout!`, {
       scope: 'all',
       senderId: playerId,
+      targetId,
     }),
   );
 

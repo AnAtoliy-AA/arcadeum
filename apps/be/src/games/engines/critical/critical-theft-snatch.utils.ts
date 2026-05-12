@@ -45,6 +45,7 @@ export function executeSnatch(
     helpers.createLogEntry('action', `Played Snatch!`, {
       scope: 'all',
       senderId: playerId,
+      targetId: targetPlayerId,
     }),
   );
 

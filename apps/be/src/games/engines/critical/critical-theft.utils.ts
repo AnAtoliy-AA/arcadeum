@@ -17,6 +17,7 @@ export interface LogEntryOptions {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 export interface EngineHelpers {
@@ -177,6 +178,7 @@ export function executeSwapHands(
     helpers.createLogEntry('action', 'Played Swap Hands!', {
       scope: 'all',
       senderId: playerId,
+      targetId: targetPlayerId,
     }),
   );
   return { success: true, state };
@@ -246,10 +248,11 @@ export function executeMark(
     state,
     helpers.createLogEntry(
       'action',
-      `Marked a card in another player's hand 🏷️`,
+      `Marked a card in their hand 🏷️`,
       {
         scope: 'all',
         senderId: playerId,
+        targetId: targetPlayerId,
       },
     ),
   );
@@ -300,10 +303,11 @@ export function executeStealDraw(
     state,
     helpers.createLogEntry(
       'action',
-      `Played I'll Take That! Next card drawn by target goes to them 🤏`,
+      `Played I'll Take That! Their next drawn card goes to me 🤏`,
       {
         scope: 'all',
         senderId: playerId,
+        targetId: targetPlayerId,
       },
     ),
   );

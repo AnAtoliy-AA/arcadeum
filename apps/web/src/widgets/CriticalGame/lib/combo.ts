@@ -146,7 +146,13 @@ export function asComboCards(
  * modal.
  */
 export const TARGETED_SINGLE_CARDS: ReadonlySet<CriticalCard> =
-  new Set<CriticalCard>(['targeted_strike', 'mark', 'steal_draw', 'smite']);
+  new Set<CriticalCard>([
+    'targeted_strike',
+    'mark',
+    'steal_draw',
+    'smite',
+    'trade',
+  ]);
 
 export function isTargetedSingle(id: CriticalCard): boolean {
   return TARGETED_SINGLE_CARDS.has(id);

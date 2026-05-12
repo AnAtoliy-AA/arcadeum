@@ -15,6 +15,7 @@ export interface LogEntryOptions {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 export interface EngineHelpers {

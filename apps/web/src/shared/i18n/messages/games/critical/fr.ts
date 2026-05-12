@@ -157,8 +157,7 @@ export const frMessages = {
         megaEvade: 'Terminez TOUS vos tours restants sans piocher',
         invert: 'Inversez le sens du jeu',
         // Theft Pack descriptions
-        wildcard:
-          "Joker - peut remplacer n'importe quelle carte de collection dans les combos",
+        wildcard: "Joker - peut remplacer n'importe quelle carte de collection dans les combos",
         mark: "Marquez une carte au hasard dans la main d'un autre joueur. Si il la joue ou la défausse, vous la volez !",
         stealDraw: 'La prochaine carte que ce joueur pioche va dans votre main',
         stash:

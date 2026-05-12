@@ -159,8 +159,6 @@ export function ActiveGameView({
     playFavor: actions.playFavor,
   });
 
-  useGameChatIntegration(snapshot?.logs, actions.postHistoryNote);
-
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
@@ -191,6 +189,14 @@ export function ActiveGameView({
     translateCardType,
     seeTheFutureLabel,
   });
+
+  useGameChatIntegration(
+    snapshot?.logs,
+    actions.postHistoryNote,
+    resolveDisplayName,
+  );
+  // (No registered actor-color resolver in Critical — GameChat falls back
+  // to the shared getPlayerColor(id), which is exactly what we want for FFA.)
 
   const gameHandlers = useGameHandlers({
     selectedMode,

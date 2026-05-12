@@ -258,20 +258,48 @@ export class SeaBattleBotService {
   private getSmartTarget(
     target: SeaBattlePlayer,
   ): { r: number; c: number } | null {
-    // Find a damaged but not sunk ship
-    const damagedShip = target.ships.find((s: Ship) => s.hits > 0 && !s.sunk);
+    const hasUnsunkDamagedShip = target.ships.some(
+      (s: Ship) => s.hits > 0 && !s.sunk,
+    );
+    if (!hasUnsunkDamagedShip) {
+      return null;
+    }
 
-    if (damagedShip) {
-      // Pick the first cell of this ship that isn't hit yet
-      const nextCell = damagedShip.cells.find(
-        (c) => target.board[c.row][c.col] !== CELL_STATE.HIT,
-      );
+    const candidates: { r: number; c: number }[] = [];
+    const seen = new Set<string>();
+    const directions: [number, number][] = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
 
-      if (nextCell) {
-        return { r: nextCell.row, c: nextCell.col };
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (target.board[r][c] !== CELL_STATE.HIT) continue;
+
+        for (const [dr, dc] of directions) {
+          const nr = r + dr;
+          const nc = c + dc;
+          if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) {
+            continue;
+          }
+          const cell = target.board[nr][nc];
+          if (cell === CELL_STATE.HIT || cell === CELL_STATE.MISS) {
+            continue;
+          }
+          const key = `${nr},${nc}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          candidates.push({ r: nr, c: nc });
+        }
       }
     }
 
-    return null;
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    return candidates[Math.floor(Math.random() * candidates.length)];
   }
 }

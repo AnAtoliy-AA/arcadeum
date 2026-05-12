@@ -71,7 +71,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
-  const [showAllVariants, setShowAllVariants] = React.useState(false);
   const { snapshot } = useSessionTokens();
 
   const { mutate: persistVariant } = useMutation({
@@ -145,12 +144,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     setSelectedVariant(roomVariant);
   }, [roomVariant]);
 
-  const VISIBLE_COUNT = 4;
-  const visibleVariants = showAllVariants
-    ? SEA_BATTLE_VARIANTS
-    : SEA_BATTLE_VARIANTS.slice(0, VISIBLE_COUNT);
-  const hiddenCount = SEA_BATTLE_VARIANTS.length - VISIBLE_COUNT;
-
   const theme = getSeaBattleTheme(selectedVariant);
   const variantInfo = getVariantInfo(selectedVariant);
 
@@ -168,13 +161,8 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // the Start button for stacking context.
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      <XStack
-        gap="$4"
-        flexWrap="wrap"
-        alignItems="flex-start"
-        $md={{ flexDirection: 'column', gap: '$3' }}
-      >
-        <YStack gap="$2">
+      <YStack gap="$3" width="100%" minWidth={0}>
+        <YStack gap="$2" width="100%" minWidth={0}>
           <Text
             fontSize={10}
             color="rgba(148,163,184,0.6)"
@@ -183,8 +171,16 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           >
             {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
           </Text>
-          <XStack gap="$2" flexWrap="wrap">
-            {visibleVariants.map((variant) => (
+          {/* Single horizontally-scrollable row so chips never wrap into the
+              sidebar. flexWrap left out on purpose. */}
+          <XStack
+            gap="$2"
+            width="100%"
+            minWidth={0}
+            overflow="scroll"
+            paddingBottom="$1"
+          >
+            {SEA_BATTLE_VARIANTS.map((variant) => (
               <XStack
                 key={variant.id}
                 alignItems="center"
@@ -194,6 +190,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 borderRadius={20}
                 borderWidth={1.5}
                 cursor="pointer"
+                flexShrink={0}
                 onClick={() => handleVariantSelect(variant.id)}
                 borderColor={
                   selectedVariant === variant.id
@@ -216,30 +213,13 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 </Text>
               </XStack>
             ))}
-            {!showAllVariants && hiddenCount > 0 && (
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius={20}
-                borderWidth={1}
-                borderColor="rgba(255,255,255,0.1)"
-                cursor="pointer"
-                onClick={() => setShowAllVariants(true)}
-                aria-label="Show all themes"
-              >
-                <Text fontSize={11} color="rgba(148,163,184,0.5)">
-                  + {hiddenCount} more ▾
-                </Text>
-              </XStack>
-            )}
           </XStack>
         </YStack>
 
         <SeaBattleThemeProvider variant={selectedVariant}>
           <SeaBattleThemePreview selectedVariant={selectedVariant} />
         </SeaBattleThemeProvider>
-      </XStack>
+      </YStack>
     ) : null;
 
   const headerActionsSlot = (

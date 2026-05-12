@@ -14,6 +14,7 @@ interface AttackBoardCellProps {
   rIndex: number;
   cIndex: number;
   isAttackable: boolean;
+  isPending?: boolean;
   isMe: boolean;
 }
 
@@ -24,6 +25,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   rIndex,
   cIndex,
   isAttackable,
+  isPending = false,
   isMe,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
@@ -36,7 +38,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         borderColor: theme.cellBorder,
         borderRadius: parseInt(theme.borderRadius) || 4,
       }}
-      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${animClass || ''}`}
+      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${animClass || ''}`}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
     >
@@ -58,7 +60,24 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           {icon}
         </Text>
       )}
-      {displayState === CELL_STATE.MISS && (
+      {isPending && (
+        <Text
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          fontSize={13}
+          pointerEvents="none"
+          userSelect="none"
+        >
+          🎯
+        </Text>
+      )}
+      {!isPending && displayState === CELL_STATE.MISS && (
         <div
           style={{
             position: 'absolute',

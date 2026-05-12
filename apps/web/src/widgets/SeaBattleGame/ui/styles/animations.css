@@ -217,3 +217,23 @@
 .sb-board-grid:not(.sb-my-turn) .sb-cell {
   cursor: default !important;
 }
+
+/* Optimistic "shot fired" state — shown until the server confirms the hit/miss. */
+@keyframes sb-pending-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+.sb-cell.sb-cell-pending {
+  cursor: wait !important;
+}
+.sb-cell.sb-cell-pending > .sb-icon-hit,
+.sb-cell.sb-cell-pending > span:last-child {
+  animation: sb-pending-pulse 0.9s ease-in-out infinite;
+}

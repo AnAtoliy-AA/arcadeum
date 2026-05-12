@@ -248,6 +248,22 @@ export class GameSessionsService {
   }
 
   /**
+   * Sanitize an already-loaded session summary for a specific player without
+   * an extra DB read. Use during broadcast paths where the freshly-saved
+   * session is in hand.
+   */
+  sanitizeSummaryForPlayer(
+    session: GameSessionSummary,
+    playerId: string,
+  ): unknown {
+    const engine = this.engineRegistry.getEngine(session.gameId);
+    return engine.sanitizeStateForPlayer(
+      session.state as unknown as BaseGameState,
+      playerId,
+    );
+  }
+
+  /**
    * Get available actions for a player
    */
   async getAvailableActions(

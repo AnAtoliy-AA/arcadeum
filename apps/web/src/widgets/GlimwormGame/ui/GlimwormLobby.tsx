@@ -115,6 +115,7 @@ export function GlimwormLobby({
       variant,
       powerupsEnabled,
       fillWithBots: !!options?.withBots,
+      botCount: options?.botCount,
     });
     // Failsafe: re-enable in case neither ack nor exception arrives.
     setTimeout(() => setBusy(false), 3000);

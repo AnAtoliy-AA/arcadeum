@@ -26,6 +26,7 @@ interface GlimwormStartBody {
   variant: unknown;
   powerupsEnabled?: unknown;
   fillWithBots?: unknown;
+  botCount?: unknown;
 }
 
 interface GlimwormColorPickBody {
@@ -178,10 +179,16 @@ export class GlimwormGateway {
       const variant = variantRaw as GlimwormVariant;
       const powerupsEnabled = payload.powerupsEnabled === true;
       const fillWithBots = payload.fillWithBots === true;
+      const botCount =
+        typeof payload.botCount === 'number' &&
+        Number.isFinite(payload.botCount)
+          ? payload.botCount
+          : undefined;
       this.glimwormService.start(roomId, userId, {
         variant,
         powerupsEnabled,
         fillWithBots,
+        botCount,
       });
       client.emit(
         'glimworm.start.ack',

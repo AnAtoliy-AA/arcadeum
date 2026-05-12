@@ -48,6 +48,13 @@ export interface GlimwormStartOpts {
   variant: GlimwormVariant;
   powerupsEnabled: boolean;
   fillWithBots?: boolean;
+  /**
+   * Desired bot count when `fillWithBots` is true. Bots are added on top of
+   * the existing players (humans + already-joined bots) up to this many bots
+   * total. Clamped to [1, MAX_WORMS - 1]. Defaults to enough bots to reach
+   * the legacy SOLO_FILL_TARGET (3) of total worms.
+   */
+  botCount?: number;
 }
 
 const MAX_WORMS = 10;
@@ -174,7 +181,14 @@ export class GlimwormService implements OnModuleDestroy {
     if (hostWorm) hostWorm.ready = true;
 
     if (opts.fillWithBots) {
-      fillWithBots(session, GlimwormService.SOLO_FILL_TARGET);
+      const humans = Object.values(session.worms).filter((w) => !w.isBot).length;
+      // Caller-requested bot count, clamped. With no botCount, fall back to
+      // SOLO_FILL_TARGET (3 total worms — 1 human + 2 bots).
+      const requested =
+        typeof opts.botCount === 'number' && Number.isFinite(opts.botCount)
+          ? Math.max(1, Math.min(MAX_WORMS - humans, Math.floor(opts.botCount)))
+          : Math.max(1, GlimwormService.SOLO_FILL_TARGET - humans);
+      fillWithBots(session, humans + requested);
     }
 
     const readyWorms = Object.values(session.worms).filter((w) => w.ready);

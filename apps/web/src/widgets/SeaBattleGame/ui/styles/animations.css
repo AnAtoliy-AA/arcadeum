@@ -220,9 +220,9 @@
 
 /* Optimistic "shot fired" state — shown until the server confirms the hit/miss.
    Timeline (one-shot, then calm wait state):
-     0–250ms  : 🎯 snaps onto the cell (aim lock).
-     250–800ms: 🚀 streaks in from above-right, lands on the cell.
-     800ms+   : gentle "impact" pulse on 🎯 while the server reply lands.
+     0–300ms   : 🎯 snaps onto the cell (aim lock).
+     300–1300ms: 🚀 streaks in from above-right, lands on the cell.
+     1300ms+   : gentle "impact" pulse on 🎯 while the server reply lands.
    The board grid has overflow:hidden, so the rocket appears to fly in from the
    "sky" above the targeted spot. */
 @keyframes sb-aim-snap {
@@ -276,9 +276,9 @@
 }
 .sb-cell.sb-cell-pending .sb-aim {
   animation:
-    sb-aim-snap 0.25s ease-out forwards,
-    sb-impact-pulse 1.4s ease-in-out 0.85s infinite;
+    sb-aim-snap 0.3s ease-out forwards,
+    sb-impact-pulse 1.6s ease-in-out 1.3s infinite;
 }
 .sb-cell.sb-cell-pending .sb-missile {
-  animation: sb-missile-fly 0.55s cubic-bezier(0.45, 0, 0.9, 0.55) 0.25s both;
+  animation: sb-missile-fly 1s cubic-bezier(0.45, 0, 0.9, 0.55) 0.3s both;
 }

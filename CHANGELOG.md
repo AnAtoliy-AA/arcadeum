@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.27] - 2026-05-12
+
+### Added
+- let host remove unassigned bots from the pool (ARC-646) (ARC-646)
+- one-click rematch with the same bot count (ARC-646) (ARC-646)
+- aim → fire → wait sequence on pending cell (ARC-646) (ARC-646)
+- rocket-drop animation on pending attack cell (ARC-646) (ARC-646)
+- optimistic cell feedback on attack click (ARC-646) (ARC-646)
+
+### Fixed
+- distribute extra width as gaps so capped board grid fills the row (ARC-646) (ARC-646)
+- cap board column width so 8-player fullscreen fits without scroll (ARC-646) (ARC-646)
+- serialize per-room placement to stop concurrent-write race (ARC-646) (ARC-646)
+- switch theme list to horizontal-above-preview on web mobile (ARC-646) (ARC-646)
+- bound theme list to preview height + keep side-by-side on web mobile (ARC-646) (ARC-646)
+- scroll theme chips horizontally so they don't overlap the sidebar (ARC-646) (ARC-646)
+- make unassigned-bot remove button visible in dark mode (ARC-646) (ARC-646)
+- show team-mode lobby cap from team config, not room.maxPlayers (ARC-646) (ARC-646)
+- size rematch room to fit the carried team config (ARC-646) (ARC-646)
+- label bot participants as "Bot N" in lobby member list (ARC-646) (ARC-646)
+- actually display the host's rematch message to invitees (ARC-646) (ARC-646)
+- switch fullscreen to CSS overlay so modals stay visible (ARC-646) (ARC-646)
+- carry team bots into rematch room participants (ARC-646) (ARC-646)
+- route non-host clicks to a chat request, keep create host-only (ARC-646) (ARC-646)
+- show rematch button on result modal to non-host players (ARC-646) (ARC-646)
+- accept rematch body without roomId, hide bots from invite list (ARC-646) (ARC-646)
+- scope result-modal dismissal per session (ARC-646) (ARC-646)
+- apply 4-col layout to 4-player view too (ARC-646) (ARC-646)
+- apply 4-col layout to 5-player view too (ARC-646) (ARC-646)
+- use 4-col layout for 6 boards to fit desktop viewport (ARC-646) (ARC-646)
+- run self-heal before validation, not just execution (ARC-646) (ARC-646)
+- self-heal stuck team rotation on every action (ARC-646) (ARC-646)
+- advance team shooter when active shooter is eliminated (ARC-646) (ARC-646)
+- follow hit-lines and probe neighbours instead of cheating (ARC-646) (ARC-646)
+- probe random neighbour after a hit instead of cheating (ARC-646) (ARC-646)
+
+### Improved
+- drop redundant Mongo reads on attack broadcast (ARC-646) (ARC-646)
+- halve bot move delays for snappier gameplay (ARC-646) (ARC-646)
+
+### Refactored
+- put theme list as a vertical column to the right of the preview (ARC-646) (ARC-646)
+- extract bot delay magic numbers into named constants (ARC-646) (ARC-646)
+
+
 ## [1.13.26] - 2026-05-12
 
 ### Added

@@ -84,6 +84,14 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
   ): TState;
 
   /**
+   * Optional self-heal hook. Engines may implement this to repair persisted
+   * states that have drifted into an invalid-but-recoverable shape (e.g. a
+   * shooter pointer left on a dead player). Called once before validate +
+   * execute on every action. Must be idempotent.
+   */
+  normalizeState?(state: TState): TState;
+
+  /**
    * Validate a player action
    * @param state Current game state
    * @param action Action to validate

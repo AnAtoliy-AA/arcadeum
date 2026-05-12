@@ -150,6 +150,16 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     }
   }
 
+  normalizeState(state: SeaBattleState): SeaBattleState {
+    // Heal team rotations that may have drifted (e.g. a team's shooter pointer
+    // left on a dead player by a pre-ARC-646 server). Mutates in place and
+    // returns the same reference. Idempotent on healthy state.
+    if (state.phase === GAME_PHASE.BATTLE && state.teams) {
+      healStuckTeamRotation(state);
+    }
+    return state;
+  }
+
   executeAction(
     state: SeaBattleState,
     action: string,
@@ -157,14 +167,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     payload?: unknown,
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
-
-    // Defensive self-heal: if the persisted state has a team rotation pointing
-    // at a dead player (legacy bug pre-ARC-646), normalize before processing
-    // the action. Idempotent on healthy state.
-    if (newState.phase === GAME_PHASE.BATTLE && newState.teams) {
-      healStuckTeamRotation(newState);
-    }
-
     const player = newState.players.find((p) => p.playerId === context.userId);
 
     if (!player) {

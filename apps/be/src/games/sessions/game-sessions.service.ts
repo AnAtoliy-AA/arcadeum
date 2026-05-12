@@ -178,6 +178,14 @@ export class GameSessionsService {
     // Get the game engine
     const engine = this.engineRegistry.getEngine(session.gameId);
 
+    // Self-heal any drifted state before validation/execution. Engines opt in
+    // via the optional normalizeState hook; must be idempotent.
+    if (engine.normalizeState) {
+      session.state = engine.normalizeState(
+        session.state as unknown as BaseGameState,
+      ) as unknown as Record<string, unknown>;
+    }
+
     // Create action context
     const context: GameActionContext = {
       userId,

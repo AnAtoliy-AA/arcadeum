@@ -7,6 +7,8 @@ export type ChatMessageProps = {
   content: string;
   senderName?: string;
   senderColor?: string;
+  targetName?: string;
+  targetColor?: string;
   timestamp?: string;
   isOwn?: boolean;
   avatarUrl?: string;
@@ -112,6 +114,8 @@ export const ChatMessage = memo(function ChatMessage({
   content,
   senderName,
   senderColor,
+  targetName,
+  targetColor,
   timestamp,
   isOwn = false,
   avatarUrl,
@@ -171,6 +175,19 @@ export const ChatMessage = memo(function ChatMessage({
               >
                 {senderName}
               </Typography>
+              {targetName ? (
+                <>
+                  {' → '}
+                  <Typography
+                    uiSize="xs"
+                    weight="700"
+                    fontStyle="normal"
+                    {...(targetColor ? { color: targetColor } : {})}
+                  >
+                    {targetName}
+                  </Typography>
+                </>
+              ) : null}
               {` ${content}`}
             </>
           ) : isEncrypted ? (

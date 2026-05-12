@@ -250,6 +250,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
           state.logs.push(
             this.createLogEntry('action', `sunk ${shipName}!`, {
               senderId: player.playerId,
+              targetId: target.playerId,
             }),
           );
         }
@@ -282,6 +283,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         `attacked ${cellLabel} - ${result.toUpperCase()}!`,
         {
           senderId: player.playerId,
+          targetId: target.playerId,
         },
       ),
     );

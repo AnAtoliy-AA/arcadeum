@@ -85,6 +85,7 @@ export abstract class BaseGameEngine<
       scope?: ChatScope;
       senderId?: string;
       senderName?: string;
+      targetId?: string;
     },
   ): GameLogEntry {
     return {
@@ -96,6 +97,7 @@ export abstract class BaseGameEngine<
       scope: options?.scope || 'all',
       senderId: options?.senderId || null,
       senderName: options?.senderName || null,
+      targetId: options?.targetId || null,
     };
   }
 

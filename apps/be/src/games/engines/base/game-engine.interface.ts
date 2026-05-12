@@ -34,6 +34,12 @@ export interface GameLogEntry {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  /**
+   * Optional id of the player this action is targeting. Surfaced in chat so
+   * viewers can see e.g. "Bob → Alice attacked F10 - HIT!" without parsing
+   * out raw ids. Free-text messages and most system events leave this null.
+   */
+  targetId?: string | null;
 }
 
 export interface BaseGameState {

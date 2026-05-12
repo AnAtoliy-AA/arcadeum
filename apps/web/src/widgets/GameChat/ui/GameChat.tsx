@@ -147,11 +147,21 @@ export function GameChat({
                 ? (resolveActorColor?.(log.senderId) ??
                   getPlayerColor(log.senderId))
                 : undefined;
+              const targetId = log.targetId;
+              const targetName =
+                targetId && resolveDisplayName
+                  ? resolveDisplayName(targetId, undefined)
+                  : (targetId ?? undefined);
+              const targetColor = targetId
+                ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
+                : undefined;
               return (
                 <ChatMessage
                   key={log.id}
                   senderName={log.senderId ? senderName : undefined}
                   senderColor={senderColor}
+                  targetName={targetId ? targetName : undefined}
+                  targetColor={targetColor}
                   content={log.message}
                   type={log.type}
                   isOwn={isOwn}

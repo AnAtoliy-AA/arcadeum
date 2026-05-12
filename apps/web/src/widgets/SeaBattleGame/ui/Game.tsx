@@ -136,30 +136,25 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [room, startSession],
   );
 
-  // Rematch-with-bots auto-start: if this room was created by a rematch
-  // request that recorded a bot count in gameOptions.autoStartWithBots, fire
-  // startSession once when the host enters the empty lobby so the player
-  // doesn't have to click "Start with bots" again.
+  // Auto-start a rematch with bots: host lands in a fresh lobby whose
+  // gameOptions.autoStartWithBots was carried over from the previous game.
   const autoStartedRematchRef = useRef(false);
-  const autoStartBotCount = useMemo(() => {
-    const value = (room?.gameOptions as { autoStartWithBots?: unknown } | undefined)
-      ?.autoStartWithBots;
-    return typeof value === 'number' && value > 0 ? value : 0;
-  }, [room?.gameOptions]);
-
+  const autoStartBotCountRaw = (room?.gameOptions as
+    | { autoStartWithBots?: unknown }
+    | undefined)?.autoStartWithBots;
+  const autoStartBotCount =
+    typeof autoStartBotCountRaw === 'number' ? autoStartBotCountRaw : 0;
   useEffect(() => {
     if (
       autoStartedRematchRef.current ||
       !isHost ||
-      !room ||
-      room.status !== 'lobby' ||
+      room?.status !== 'lobby' ||
       autoStartBotCount <= 0
-    ) {
+    )
       return;
-    }
     autoStartedRematchRef.current = true;
     handleStartGame({ withBots: true, botCount: autoStartBotCount });
-  }, [isHost, room, autoStartBotCount, handleStartGame]);
+  }, [isHost, room?.status, autoStartBotCount, handleStartGame]);
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
@@ -208,6 +203,18 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     if (session?.id) setDismissedForSessionId(session.id);
     openRematchModal();
   }, [openRematchModal, session?.id]);
+
+  // Non-hosts can request a rematch but can't actually start one — only the
+  // host creates the new room. The request posts a public chat note so the
+  // host (and everyone else) sees the ask.
+  const handleRematchClick = useCallback(() => {
+    if (isHost) {
+      handleOpenRematch();
+      return;
+    }
+    postHistoryNoteAction('🔁 Wants a rematch!', 'all');
+    if (session?.id) setDismissedForSessionId(session.id);
+  }, [isHost, handleOpenRematch, postHistoryNoteAction, session?.id]);
 
   const resultModalDismissed =
     !!session?.id && dismissedForSessionId === session.id;
@@ -438,7 +445,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <GameResultModal
           isOpen={isGameOver && !resultModalDismissed}
           result={gameResult}
-          onRematch={handleOpenRematch}
+          onRematch={handleRematchClick}
           onClose={() => {
             if (session?.id) setDismissedForSessionId(session.id);
           }}
@@ -486,7 +493,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       resultModalDismissed,
       session?.id,
       gameResult,
-      handleOpenRematch,
+      handleRematchClick,
       rematchLoading,
       showRematchModal,
       snapshot?.players,

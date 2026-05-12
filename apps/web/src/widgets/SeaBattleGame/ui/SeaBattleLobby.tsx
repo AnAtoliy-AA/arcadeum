@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { XStack, YStack, Text } from 'tamagui';
+import { XStack, YStack, Text, useMedia } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -72,6 +72,11 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
   const { snapshot } = useSessionTokens();
+  const media = useMedia();
+  // gtSm = wide enough for side-by-side preview + vertical list. Below that
+  // (web mobile / narrow tablets) we flip to a horizontal scrollable list
+  // sitting above the preview so the field doesn't get squeezed.
+  const themeListHorizontal = !media.gtSm;
 
   const { mutate: persistVariant } = useMutation({
     mutationFn: async (newVariant: string) => {
@@ -159,76 +164,94 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Theme picker + preview only — team mode controls now live in the
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
+  const renderThemeChip = (variant: (typeof SEA_BATTLE_VARIANTS)[number]) => (
+    <XStack
+      key={variant.id}
+      alignItems="center"
+      gap="$2"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      borderRadius={12}
+      borderWidth={1.5}
+      cursor="pointer"
+      flexShrink={0}
+      onClick={() => handleVariantSelect(variant.id)}
+      borderColor={
+        selectedVariant === variant.id
+          ? 'rgba(96,165,250,0.6)'
+          : 'rgba(255,255,255,0.1)'
+      }
+      backgroundColor={
+        selectedVariant === variant.id
+          ? 'rgba(96,165,250,0.12)'
+          : 'rgba(255,255,255,0.03)'
+      }
+    >
+      <Text fontSize={14}>{variant.emoji}</Text>
+      <Text
+        fontSize={12}
+        fontWeight="500"
+        color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
+      >
+        {t(variant.name as TranslationKey)}
+      </Text>
+    </XStack>
+  );
+
+  const themeLabel = (
+    <Text
+      fontSize={10}
+      color="rgba(148,163,184,0.6)"
+      letterSpacing={2}
+      textTransform="uppercase"
+    >
+      {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
+    </Text>
+  );
+
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      // Side-by-side everywhere (including narrow web-mobile widths). The
-      // preview drives the row height; the theme list flex-fills the
-      // remaining column and scrolls so it never exceeds the preview field.
-      <XStack
-        gap="$4"
-        width="100%"
-        minWidth={0}
-        alignItems="stretch"
-      >
-        <SeaBattleThemeProvider variant={selectedVariant}>
-          <SeaBattleThemePreview selectedVariant={selectedVariant} />
-        </SeaBattleThemeProvider>
-
-        <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
-          <Text
-            fontSize={10}
-            color="rgba(148,163,184,0.6)"
-            letterSpacing={2}
-            textTransform="uppercase"
-          >
-            {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-          </Text>
-          {/* flex:1 + minHeight:0 is the canonical "fill remaining height
-              and scroll instead of growing" trick — the outer YStack is
-              stretched to the preview's height by alignItems="stretch". */}
-          <YStack
-            gap="$2"
-            flex={1}
-            minHeight={0}
-            overflow="scroll"
-            paddingRight="$1"
-          >
-            {SEA_BATTLE_VARIANTS.map((variant) => (
-              <XStack
-                key={variant.id}
-                alignItems="center"
-                gap="$2"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius={12}
-                borderWidth={1.5}
-                cursor="pointer"
-                flexShrink={0}
-                onClick={() => handleVariantSelect(variant.id)}
-                borderColor={
-                  selectedVariant === variant.id
-                    ? 'rgba(96,165,250,0.6)'
-                    : 'rgba(255,255,255,0.1)'
-                }
-                backgroundColor={
-                  selectedVariant === variant.id
-                    ? 'rgba(96,165,250,0.12)'
-                    : 'rgba(255,255,255,0.03)'
-                }
-              >
-                <Text fontSize={14}>{variant.emoji}</Text>
-                <Text
-                  fontSize={12}
-                  fontWeight="500"
-                  color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
-                >
-                  {t(variant.name as TranslationKey)}
-                </Text>
-              </XStack>
-            ))}
+      themeListHorizontal ? (
+        // Narrow viewport: horizontal scrollable list ABOVE the preview so
+        // neither the field nor the chip labels get squeezed.
+        <YStack gap="$3" width="100%" minWidth={0}>
+          <YStack gap="$2" width="100%" minWidth={0}>
+            {themeLabel}
+            <XStack
+              gap="$2"
+              width="100%"
+              minWidth={0}
+              overflow="scroll"
+              paddingBottom="$1"
+            >
+              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+            </XStack>
           </YStack>
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
         </YStack>
-      </XStack>
+      ) : (
+        // Wide viewport: preview on the left, vertical list on the right,
+        // list bounded to preview height and scrollable.
+        <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
+          <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
+            {themeLabel}
+            <YStack
+              gap="$2"
+              flex={1}
+              minHeight={0}
+              overflow="scroll"
+              paddingRight="$1"
+            >
+              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+            </YStack>
+          </YStack>
+        </XStack>
+      )
     ) : null;
 
   const headerActionsSlot = (

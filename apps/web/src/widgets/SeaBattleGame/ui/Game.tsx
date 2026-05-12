@@ -394,7 +394,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <GameResultModal
           isOpen={isGameOver && !resultModalDismissed}
           result={gameResult}
-          onRematch={isHost ? handleOpenRematch : undefined}
+          onRematch={handleOpenRematch}
           onClose={() => {
             if (session?.id) setDismissedForSessionId(session.id);
           }}
@@ -442,7 +442,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       resultModalDismissed,
       session?.id,
       gameResult,
-      isHost,
       handleOpenRematch,
       rematchLoading,
       showRematchModal,

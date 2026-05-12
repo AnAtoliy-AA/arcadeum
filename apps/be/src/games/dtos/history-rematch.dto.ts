@@ -1,10 +1,4 @@
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 import {
   GAME_ROOM_VISIBILITY_VALUES,
   type GameRoomVisibility,
@@ -18,10 +12,11 @@ export class HistoryRematchDto {
   @IsString()
   roomId?: string;
 
+  // Bots-only rematch is allowed → empty array means "just me + bots, fill
+  // the room from the lobby".
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @ArrayNotEmpty()
   participantIds?: string[];
 
   @IsOptional()

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useMemo, memo } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo, memo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -136,6 +136,31 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [room, startSession],
   );
 
+  // Rematch-with-bots auto-start: if this room was created by a rematch
+  // request that recorded a bot count in gameOptions.autoStartWithBots, fire
+  // startSession once when the host enters the empty lobby so the player
+  // doesn't have to click "Start with bots" again.
+  const autoStartedRematchRef = useRef(false);
+  const autoStartBotCount = useMemo(() => {
+    const value = (room?.gameOptions as { autoStartWithBots?: unknown } | undefined)
+      ?.autoStartWithBots;
+    return typeof value === 'number' && value > 0 ? value : 0;
+  }, [room?.gameOptions]);
+
+  useEffect(() => {
+    if (
+      autoStartedRematchRef.current ||
+      !isHost ||
+      !room ||
+      room.status !== 'lobby' ||
+      autoStartBotCount <= 0
+    ) {
+      return;
+    }
+    autoStartedRematchRef.current = true;
+    handleStartGame({ withBots: true, botCount: autoStartBotCount });
+  }, [isHost, room, autoStartBotCount, handleStartGame]);
+
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
       if (!accessToken || !roomId) return;
@@ -144,6 +169,25 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       } catch {}
     },
     [roomId, accessToken],
+  );
+
+  // Carry the bot count from the current game into the rematch so the new
+  // room can auto-start a fresh game with the same number of bots.
+  const previousBotCount = useMemo(
+    () =>
+      snapshot?.players.filter((p) => p.playerId.startsWith('bot-')).length ??
+      0,
+    [snapshot?.players],
+  );
+
+  const rematchGameOptions = useMemo(
+    () => ({
+      ...(room?.gameOptions || {}),
+      ...(previousBotCount > 0
+        ? { autoStartWithBots: previousBotCount }
+        : {}),
+    }),
+    [room?.gameOptions, previousBotCount],
   );
 
   const {
@@ -157,7 +201,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     handleDeclineInvitation,
   } = useRematch({
     roomId,
-    gameOptions: room?.gameOptions,
+    gameOptions: rematchGameOptions,
   });
 
   const handleOpenRematch = useCallback(() => {

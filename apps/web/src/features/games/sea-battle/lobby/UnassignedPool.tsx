@@ -56,12 +56,12 @@ export function UnassignedPool(props: UnassignedPoolProps) {
                   </Typography>
                   {isBot && onRemoveBot && (
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       size="sm"
                       onClick={() => onRemoveBot(m.userId)}
                       data-testid={`unassigned-remove-${m.userId}`}
                     >
-                      ✕
+                      ×
                     </Button>
                   )}
                 </XStack>

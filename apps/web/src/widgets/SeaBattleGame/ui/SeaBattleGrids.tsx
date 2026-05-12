@@ -8,6 +8,10 @@ interface SeaBattleGridsProps {
 
 const MIN_BOARD_WIDTH_DESKTOP = 280;
 const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 220;
+// Cap so boards don't blow up on very wide viewports (e.g. fullscreen on a
+// 1080p+ screen with 4 columns), where a single 10×10 board would otherwise
+// take ~480px and two rows wouldn't fit vertically.
+const MAX_BOARD_WIDTH_DESKTOP = 360;
 
 function idealCols(count: number): number {
   if (count <= 1) return 1;
@@ -85,6 +89,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     );
   }
 
+  // On desktop layouts, clamp each column's max width so two-row arrangements
+  // (5–8 players) keep both rows visible without vertical scroll, even in
+  // fullscreen on wide displays. Mobile / short viewports keep their 1fr
+  // behaviour since the cap is bigger than they have width for anyway.
+  const desktopColumnTemplate = `repeat(${cols}, minmax(0, ${MAX_BOARD_WIDTH_DESKTOP}px))`;
+  const flexColumnTemplate = `repeat(${cols}, minmax(0, 1fr))`;
+  const gridTemplateColumns =
+    !isMobilePortrait && !media.short ? desktopColumnTemplate : flexColumnTemplate;
+
   return (
     <div
       ref={containerRef}
@@ -92,7 +105,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       className="sb-grids-container"
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        gridTemplateColumns,
         gridAutoRows: 'min-content',
         gap: media.short ? 10 : media.sm ? 12 : 16,
         width: '100%',

@@ -15,6 +15,7 @@ export interface LogEntryOptions {
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 /** Execute collection combo - Pair, Trio, or Fiver */
@@ -122,7 +123,7 @@ export function executeCollectionCombo(
       helpers.createLogEntry(
         'action',
         `Played ${cards.length}x ${cards[0]} combo and stole a card!`,
-        { scope: 'all', senderId: playerId },
+        { scope: 'all', senderId: playerId, targetId: target.playerId },
       ),
     );
     helpers.addLog(
@@ -143,7 +144,7 @@ export function executeCollectionCombo(
         helpers.createLogEntry(
           'action',
           `Played ${cards.length}x ${cards[0]} combo and stole a ${requestedCard}!`,
-          { scope: 'all', senderId: playerId },
+          { scope: 'all', senderId: playerId, targetId: target.playerId },
         ),
       );
     } else {
@@ -152,7 +153,7 @@ export function executeCollectionCombo(
         helpers.createLogEntry(
           'action',
           `Played ${cards.length}x ${cards[0]} combo but target didn't have the requested card!`,
-          { scope: 'all', senderId: playerId },
+          { scope: 'all', senderId: playerId, targetId: target.playerId },
         ),
       );
     }

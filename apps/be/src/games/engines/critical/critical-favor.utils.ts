@@ -71,7 +71,11 @@ export function executeFavor(
     helpers.createLogEntry(
       'action',
       `Requested a favor - waiting for response`,
-      { scope: 'all', senderId: playerId },
+      {
+        scope: 'all',
+        senderId: playerId,
+        targetId: payload.targetPlayerId,
+      },
     ),
   );
 
@@ -121,6 +125,7 @@ export function executeGiveFavorCard(
     helpers.createLogEntry('action', `Gave a card as favor`, {
       scope: 'all',
       senderId: playerId,
+      targetId: requester.playerId,
     }),
   );
 

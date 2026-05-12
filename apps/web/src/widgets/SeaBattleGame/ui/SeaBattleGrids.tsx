@@ -13,8 +13,7 @@ function idealCols(count: number): number {
   if (count <= 1) return 1;
   if (count === 2) return 2;
   if (count === 3) return 3;
-  if (count <= 4) return 2; // 2x2
-  return 4; // 5–8 → 4 wide so two rows fit a desktop viewport without scroll
+  return 4; // 4–8 → 4 wide so the layout never needs more than two rows
 }
 
 /**

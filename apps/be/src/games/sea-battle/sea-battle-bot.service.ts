@@ -13,11 +13,17 @@ import {
 } from '../engines/sea-battle/sea-battle.constants';
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
+const LOCK_TIMEOUT_MS = 30000;
+
+// Randomised bot delays make matches feel human without dragging on.
+const PLACEMENT_DELAY_MS = { min: 500, max: 1500 };
+const PLACEMENT_CONFIRM_DELAY_MS = { min: 250, max: 750 };
+const ATTACK_DELAY_MS = { min: 500, max: 1250 };
+
 @Injectable()
 export class SeaBattleBotService {
   private readonly logger = new Logger(SeaBattleBotService.name);
   private readonly processing = new Map<string, number>(); // lockKey -> timestamp
-  private readonly LOCK_TIMEOUT_MS = 30000; // 30 seconds
 
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
@@ -62,7 +68,7 @@ export class SeaBattleBotService {
         const lockTime = this.processing.get(lockKey);
         if (lockTime) {
           const age = Date.now() - lockTime;
-          if (age < this.LOCK_TIMEOUT_MS) {
+          if (age < LOCK_TIMEOUT_MS) {
             continue;
           } else {
             this.logger.warn(
@@ -94,12 +100,16 @@ export class SeaBattleBotService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private async randomDelay(range: { min: number; max: number }) {
+    await this.sleep(range.min + Math.random() * (range.max - range.min));
+  }
+
   private async handlePlacement(session: GameSessionSummary, botId: string) {
     const lockKey = `${session.roomId}:${botId}`;
     this.processing.set(lockKey, Date.now());
 
     try {
-      await this.sleep(500 + Math.random() * 1000);
+      await this.randomDelay(PLACEMENT_DELAY_MS);
 
       // Check current state before auto-placing
       let currentSession = await this.seaBattleService.findSessionByRoom(
@@ -122,7 +132,7 @@ export class SeaBattleBotService {
       // Auto place ships
       await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
 
-      await this.sleep(250 + Math.random() * 500);
+      await this.randomDelay(PLACEMENT_CONFIRM_DELAY_MS);
 
       // Check current state again before confirming
       currentSession = await this.seaBattleService.findSessionByRoom(
@@ -164,7 +174,7 @@ export class SeaBattleBotService {
       let currentSession = sessionSnapshot;
 
       while (isStillMyTurn) {
-        await this.sleep(500 + Math.random() * 750);
+        await this.randomDelay(ATTACK_DELAY_MS);
 
         const state = currentSession.state as unknown as SeaBattleState;
         const botPlayer = state.players.find(

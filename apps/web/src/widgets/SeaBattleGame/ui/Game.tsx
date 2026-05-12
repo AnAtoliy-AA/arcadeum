@@ -114,9 +114,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     return viewerTeam.playerIds.filter((id) => id !== currentUserId);
   }, [viewerTeam, currentUserId]);
 
-  // Use shared chat integration hook
-  useGameChatIntegration(snapshot?.logs, postHistoryNoteAction);
-
   const handleStartGame = useCallback(
     (options?: { withBots?: boolean; botCount?: number }) => {
       if (!room) return;
@@ -179,11 +176,19 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       }
 
       const member = room.members?.find((m) => m.id === id);
-      if (member?.displayName) return member.displayName;
+      if (member?.displayName && member.displayName !== 'Unknown')
+        return member.displayName;
 
       return fallback || id || '';
     },
     [currentUserId, room, t, snapshot],
+  );
+
+  // Use shared chat integration hook
+  useGameChatIntegration(
+    snapshot?.logs,
+    postHistoryNoteAction,
+    resolveDisplayNameBound,
   );
 
   const cardVariant = (room?.gameOptions?.variant ||

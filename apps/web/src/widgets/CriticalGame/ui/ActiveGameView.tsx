@@ -159,8 +159,6 @@ export function ActiveGameView({
     playFavor: actions.playFavor,
   });
 
-  useGameChatIntegration(snapshot?.logs, actions.postHistoryNote);
-
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
@@ -191,6 +189,12 @@ export function ActiveGameView({
     translateCardType,
     seeTheFutureLabel,
   });
+
+  useGameChatIntegration(
+    snapshot?.logs,
+    actions.postHistoryNote,
+    resolveDisplayName,
+  );
 
   const gameHandlers = useGameHandlers({
     selectedMode,

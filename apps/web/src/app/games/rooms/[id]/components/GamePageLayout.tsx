@@ -78,15 +78,25 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   // Chat message popup — reads from global store written by game widgets
   const logs = useGameChatStore((s) => s.logs);
+  const registeredResolver = useGameChatStore((s) => s.resolveDisplayName);
   const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(logs);
 
-  const resolveDisplayName = useCallback(
+  const fallbackResolver = useCallback(
     (id?: string, fallback?: string) => {
       if (id && userId && id === userId) return t('chat.you');
       const member = room.members?.find((m) => m.id === id);
       return member?.displayName ?? fallback ?? id;
     },
     [room.members, userId, t],
+  );
+
+  const resolveDisplayName = useCallback(
+    (id?: string, fallback?: string) => {
+      const fromGame = registeredResolver?.(id, fallback);
+      if (fromGame && fromGame !== 'Unknown') return fromGame;
+      return fallbackResolver(id, fallback);
+    },
+    [registeredResolver, fallbackResolver],
   );
 
   const popupSenderName = latestMessage

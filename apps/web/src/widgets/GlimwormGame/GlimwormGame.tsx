@@ -86,35 +86,12 @@ export default function GlimwormGame(
           background: '#06070d',
         }}
       />
-      <GlimwormHud />
+      <GlimwormHud isHost={isHost} onRestart={handleRematch} />
       <GlimwormDeathOverlay />
       {isCountdown && <GlimwormCountdown />}
       {!isCountdown && !isEnded && <GlimwormControlsHint />}
       {isEnded && (
         <GlimwormResultOverlay isHost={isHost} onRematch={handleRematch} />
-      )}
-      {isHost && currentUserId && !isEnded && (
-        <button
-          type="button"
-          onClick={handleRematch}
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            zIndex: 2,
-            padding: '8px 14px',
-            borderRadius: 6,
-            background: 'rgba(177,94,255,0.85)',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.18)',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: 13,
-            fontFamily: 'system-ui, sans-serif',
-          }}
-        >
-          ↻ Restart
-        </button>
       )}
     </div>
   );

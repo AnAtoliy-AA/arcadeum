@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { useGlimwormStore } from '../store/glimwormStore';
-import type { GlimwormVariant, PowerupKind } from '../types';
+import type {
+  GlimwormVariant,
+  GlimwormWormSnapshot,
+  PowerupKind,
+} from '../types';
 
 const POWERUP_EMOJI: Record<PowerupKind, string> = {
   speed: '⚡',
@@ -28,7 +32,29 @@ const POWERUP_NAME_KEY: Record<PowerupKind, TranslationKey> = {
   ghost: 'games.glimworm_v1.powerup.ghost.name',
 };
 
-export function GlimwormHud(): React.JSX.Element | null {
+/** Friendly display name for a worm in the HUD. */
+function displayName(
+  w: GlimwormWormSnapshot,
+  botIndexById: Map<string, number>,
+): string {
+  if (w.self) return 'You';
+  if (w.id.startsWith('bot-')) {
+    const idx = botIndexById.get(w.id);
+    return idx !== undefined ? `Bot ${idx}` : 'Bot';
+  }
+  // Real human guests: show a short fingerprint until we wire usernames.
+  return `Player ${w.id.slice(0, 4)}`;
+}
+
+interface GlimwormHudProps {
+  /** Whether the local user is the room host (controls Restart visibility). */
+  isHost?: boolean;
+  /** Fired when the host clicks the inline restart icon. */
+  onRestart?: () => void;
+}
+
+export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | null {
+  const { isHost = false, onRestart } = props;
   const { t } = useTranslation();
   const snapshot = useGlimwormStore((s) => s.latestSnapshot);
   const status = useGlimwormStore((s) => s.connectionStatus);
@@ -52,6 +78,16 @@ export function GlimwormHud(): React.JSX.Element | null {
   const top5 = [...snapshot.worms]
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
+
+  // Stable Bot 1, Bot 2, … indexing based on insertion order in the snapshot.
+  const botIndexById = useMemo(() => {
+    const m = new Map<string, number>();
+    let i = 1;
+    for (const w of snapshot.worms) {
+      if (w.id.startsWith('bot-')) m.set(w.id, i++);
+    }
+    return m;
+  }, [snapshot.worms]);
 
   const handleUsePowerup = () => {
     setInput({ angle: localInput.angle, usePowerup: true });
@@ -121,15 +157,53 @@ export function GlimwormHud(): React.JSX.Element | null {
           position: 'absolute',
           top: 12,
           right: 12,
-          background: 'rgba(0,0,0,0.5)',
-          padding: '6px 10px',
-          borderRadius: 6,
+          background: 'rgba(0,0,0,0.55)',
+          padding: '8px 12px',
+          borderRadius: 8,
           fontSize: 13,
-          minWidth: 140,
+          minWidth: 168,
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
-          {t('games.glimworm_v1.hud.score')}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 6,
+          }}
+        >
+          <span style={{ fontWeight: 700, letterSpacing: 0.4 }}>
+            {t('games.glimworm_v1.hud.score')}
+          </span>
+          {isHost && onRestart && (
+            <button
+              type="button"
+              onClick={onRestart}
+              aria-label="Restart round"
+              title="Restart round"
+              style={{
+                pointerEvents: 'auto',
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: 'rgba(177,94,255,0.25)',
+                color: '#e4c8ff',
+                border: '1px solid rgba(177,94,255,0.55)',
+                cursor: 'pointer',
+                fontSize: 12,
+                lineHeight: 1,
+                fontFamily: 'inherit',
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              ↻
+            </button>
+          )}
         </div>
         {top5.map((w) => (
           <div
@@ -137,8 +211,10 @@ export function GlimwormHud(): React.JSX.Element | null {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
-              opacity: w.alive ? 1 : 0.5,
+              gap: 8,
+              opacity: w.alive ? 1 : 0.45,
+              fontWeight: w.self ? 600 : 400,
+              padding: '2px 0',
             }}
           >
             <span
@@ -147,11 +223,31 @@ export function GlimwormHud(): React.JSX.Element | null {
                 height: 10,
                 borderRadius: '50%',
                 background: w.color,
+                boxShadow: w.self ? `0 0 6px ${w.color}` : 'none',
                 display: 'inline-block',
+                flexShrink: 0,
               }}
             />
-            <span style={{ flex: 1 }}>{w.id.slice(0, 8)}</span>
-            <span>{w.score}</span>
+            <span
+              style={{
+                flex: 1,
+                color: w.self ? '#fff' : 'rgba(203,213,225,0.92)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {displayName(w, botIndexById)}
+            </span>
+            <span
+              style={{
+                fontVariantNumeric: 'tabular-nums',
+                color: '#a0e8ff',
+                fontWeight: 600,
+              }}
+            >
+              {w.score}
+            </span>
           </div>
         ))}
       </div>

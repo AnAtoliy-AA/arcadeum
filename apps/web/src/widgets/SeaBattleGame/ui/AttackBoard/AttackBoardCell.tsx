@@ -61,21 +61,40 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         </Text>
       )}
       {isPending && (
-        <Text
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize={13}
-          pointerEvents="none"
-          userSelect="none"
-        >
-          🎯
-        </Text>
+        <>
+          <Text
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize={11}
+            pointerEvents="none"
+            userSelect="none"
+            opacity={0.6}
+          >
+            🎯
+          </Text>
+          <Text
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize={14}
+            pointerEvents="none"
+            userSelect="none"
+            className="sb-missile"
+          >
+            🚀
+          </Text>
+        </>
       )}
       {!isPending && displayState === CELL_STATE.MISS && (
         <div

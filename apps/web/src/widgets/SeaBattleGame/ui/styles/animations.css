@@ -218,22 +218,47 @@
   cursor: default !important;
 }
 
-/* Optimistic "shot fired" state — shown until the server confirms the hit/miss. */
-@keyframes sb-pending-pulse {
+/* Optimistic "shot fired" state — shown until the server confirms the hit/miss.
+   The board grid has overflow:hidden, so the rocket appears to fly in from the
+   "sky" above the cell and land on the targeted spot. */
+@keyframes sb-missile-drop {
+  0% {
+    transform: translate(120%, -380%) rotate(135deg) scale(1.4);
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(255, 200, 80, 0));
+  }
+  15% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 200, 80, 0.85));
+  }
+  85% {
+    transform: translate(0, 0) rotate(135deg) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.9));
+  }
+  100% {
+    transform: translate(0, 0) rotate(135deg) scale(0.6);
+    opacity: 0;
+    filter: drop-shadow(0 0 12px rgba(255, 80, 40, 1));
+  }
+}
+@keyframes sb-target-lock {
   0%,
   100% {
-    opacity: 0.5;
-    transform: scale(0.9);
+    opacity: 0.4;
+    transform: scale(0.85);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.05);
+    opacity: 0.8;
+    transform: scale(1.1);
   }
 }
 .sb-cell.sb-cell-pending {
   cursor: wait !important;
 }
-.sb-cell.sb-cell-pending > .sb-icon-hit,
-.sb-cell.sb-cell-pending > span:last-child {
-  animation: sb-pending-pulse 0.9s ease-in-out infinite;
+.sb-cell.sb-cell-pending .sb-missile {
+  animation: sb-missile-drop 0.8s cubic-bezier(0.45, 0, 0.9, 0.55) infinite;
+}
+.sb-cell.sb-cell-pending > .sb-icon-hit {
+  animation: sb-target-lock 1s ease-in-out infinite;
 }

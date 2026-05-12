@@ -39,6 +39,7 @@ import {
   countAliveTeams,
   getActiveShooterId,
   getActiveTeam,
+  healStuckTeamRotation,
   isTeamAlive,
   normalizeTeamShooterAfterDeath,
 } from './team-rotation.utils';
@@ -156,6 +157,14 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     payload?: unknown,
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
+
+    // Defensive self-heal: if the persisted state has a team rotation pointing
+    // at a dead player (legacy bug pre-ARC-646), normalize before processing
+    // the action. Idempotent on healthy state.
+    if (newState.phase === GAME_PHASE.BATTLE && newState.teams) {
+      healStuckTeamRotation(newState);
+    }
+
     const player = newState.players.find((p) => p.playerId === context.userId);
 
     if (!player) {

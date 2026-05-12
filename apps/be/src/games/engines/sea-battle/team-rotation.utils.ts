@@ -79,6 +79,59 @@ export function normalizeTeamShooterAfterDeath(
   }
 }
 
+/**
+ * Self-heal: walks every team's currentShooterIndex past dead players, skips
+ * past any fully-dead active team, and re-syncs currentTurnIndex with the
+ * resulting active shooter. Idempotent on healthy state — safe to run before
+ * every action. Recovers games whose state was saved in a stuck shape (e.g.
+ * by a pre-fix server version) without needing manual intervention.
+ */
+export function healStuckTeamRotation(state: SeaBattleState): void {
+  if (
+    !state.teams ||
+    !state.teamOrder ||
+    state.currentTeamIndex === undefined
+  ) {
+    return;
+  }
+
+  // Advance each team's shooter pointer past any dead player.
+  for (const team of state.teams) {
+    const current = state.players.find(
+      (p) => p.playerId === team.playerIds[team.currentShooterIndex],
+    );
+    if (current?.alive) continue;
+    const n = team.playerIds.length;
+    let next = team.currentShooterIndex;
+    for (let step = 0; step < n; step++) {
+      next = (next + 1) % n;
+      const candidate = state.players.find(
+        (p) => p.playerId === team.playerIds[next],
+      );
+      if (candidate?.alive) {
+        team.currentShooterIndex = next;
+        break;
+      }
+    }
+  }
+
+  // If the active team is fully eliminated, walk to the next alive team.
+  const teamCount = state.teamOrder.length;
+  let nextTeam = state.currentTeamIndex;
+  for (let step = 0; step < teamCount; step++) {
+    if (isTeamAlive(state, state.teamOrder[nextTeam])) break;
+    nextTeam = (nextTeam + 1) % teamCount;
+  }
+  state.currentTeamIndex = nextTeam;
+
+  // Re-sync currentTurnIndex with whatever the resolved active shooter is.
+  const shooter = getActiveShooterId(state);
+  if (shooter) {
+    const idx = state.playerOrder.indexOf(shooter);
+    if (idx >= 0) state.currentTurnIndex = idx;
+  }
+}
+
 export function advanceTeamRotationOnMiss(state: SeaBattleState): void {
   if (
     !state.teams ||

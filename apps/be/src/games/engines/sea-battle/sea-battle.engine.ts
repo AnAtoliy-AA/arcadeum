@@ -39,7 +39,9 @@ import {
   countAliveTeams,
   getActiveShooterId,
   getActiveTeam,
+  healStuckTeamRotation,
   isTeamAlive,
+  normalizeTeamShooterAfterDeath,
 } from './team-rotation.utils';
 import {
   runPlaceShip,
@@ -146,6 +148,16 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       default:
         return false;
     }
+  }
+
+  normalizeState(state: SeaBattleState): SeaBattleState {
+    // Heal team rotations that may have drifted (e.g. a team's shooter pointer
+    // left on a dead player by a pre-ARC-646 server). Mutates in place and
+    // returns the same reference. Idempotent on healthy state.
+    if (state.phase === GAME_PHASE.BATTLE && state.teams) {
+      healStuckTeamRotation(state);
+    }
+    return state;
   }
 
   executeAction(
@@ -262,6 +274,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         state.logs.push(
           this.createLogEntry('system', 'A player has been eliminated!'),
         );
+        // In team mode, make sure the eliminated player isn't left as their
+        // team's active shooter — otherwise their team's next turn deadlocks
+        // on a dead player.
+        normalizeTeamShooterAfterDeath(state, target.playerId);
         this.checkAndSetWinner(state);
       }
     } else {

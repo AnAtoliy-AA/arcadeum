@@ -1,50 +1,49 @@
 import { useState, useCallback, useEffect, RefObject } from 'react';
 
 /**
- * Hook for managing fullscreen mode
+ * CSS-based "expand to viewport" mode. Avoids the real Fullscreen API on
+ * purpose: that API renders only the fullscreen element and its descendants,
+ * which hides body-level portals — and every modal in this app
+ * (GameResultModal, RematchModal, etc.) ports through Dialog.Portal to body.
+ * Toggling a class instead keeps the modal layer reachable.
  */
 export function useFullscreen(containerRef: RefObject<HTMLDivElement | null>) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const toggleFullscreen = useCallback(async () => {
-    if (!containerRef.current) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    } catch {}
-  }, [containerRef]);
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    const node = containerRef.current;
+    if (!node) return;
+    if (isFullscreen) {
+      node.classList.add('is-fullscreen');
+    } else {
+      node.classList.remove('is-fullscreen');
+    }
+    return () => {
+      node.classList.remove('is-fullscreen');
     };
+  }, [containerRef, isFullscreen]);
 
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F key to toggle fullscreen
+      const target = e.target as HTMLElement;
+      const isTyping =
+        target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+      if (isTyping) return;
       if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const target = e.target as HTMLElement;
-        // Don't trigger if typing in input/textarea
-        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
-          e.preventDefault();
-          toggleFullscreen();
-        }
+        e.preventDefault();
+        setIsFullscreen((prev) => !prev);
+      } else if (e.key === 'Escape') {
+        setIsFullscreen((prev) => (prev ? false : prev));
       }
     };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [toggleFullscreen]);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return {
     isFullscreen,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useMemo, memo } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo, memo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -69,7 +69,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     setLastIsLobby(false);
   }
 
-  const [resultModalDismissed, setResultModalDismissed] = useState(false);
+  // Track which session id the result modal has been dismissed for. Using the
+  // session id (instead of a plain boolean) means the dismissal naturally
+  // resets when a rematch produces a new session, so the next game-over
+  // shows the modal again instead of only the win confetti.
+  const [dismissedForSessionId, setDismissedForSessionId] = useState<
+    string | null
+  >(null);
 
   const {
     startSession,
@@ -89,6 +95,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   }, [autoPlace]);
 
   const {
+    session,
     snapshot,
     startBusy,
     isMyTurn,
@@ -129,6 +136,26 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [room, startSession],
   );
 
+  // Auto-start a rematch with bots: host lands in a fresh lobby whose
+  // gameOptions.autoStartWithBots was carried over from the previous game.
+  const autoStartedRematchRef = useRef(false);
+  const autoStartBotCountRaw = (room?.gameOptions as
+    | { autoStartWithBots?: unknown }
+    | undefined)?.autoStartWithBots;
+  const autoStartBotCount =
+    typeof autoStartBotCountRaw === 'number' ? autoStartBotCountRaw : 0;
+  useEffect(() => {
+    if (
+      autoStartedRematchRef.current ||
+      !isHost ||
+      room?.status !== 'lobby' ||
+      autoStartBotCount <= 0
+    )
+      return;
+    autoStartedRematchRef.current = true;
+    handleStartGame({ withBots: true, botCount: autoStartBotCount });
+  }, [isHost, room?.status, autoStartBotCount, handleStartGame]);
+
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
       if (!accessToken || !roomId) return;
@@ -137,6 +164,25 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       } catch {}
     },
     [roomId, accessToken],
+  );
+
+  // Carry the bot count from the current game into the rematch so the new
+  // room can auto-start a fresh game with the same number of bots.
+  const previousBotCount = useMemo(
+    () =>
+      snapshot?.players.filter((p) => p.playerId.startsWith('bot-')).length ??
+      0,
+    [snapshot?.players],
+  );
+
+  const rematchGameOptions = useMemo(
+    () => ({
+      ...(room?.gameOptions || {}),
+      ...(previousBotCount > 0
+        ? { autoStartWithBots: previousBotCount }
+        : {}),
+    }),
+    [room?.gameOptions, previousBotCount],
   );
 
   const {
@@ -150,13 +196,28 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     handleDeclineInvitation,
   } = useRematch({
     roomId,
-    gameOptions: room?.gameOptions,
+    gameOptions: rematchGameOptions,
   });
 
   const handleOpenRematch = useCallback(() => {
-    setResultModalDismissed(true);
+    if (session?.id) setDismissedForSessionId(session.id);
     openRematchModal();
-  }, [openRematchModal, setResultModalDismissed]);
+  }, [openRematchModal, session?.id]);
+
+  // Non-hosts can request a rematch but can't actually start one — only the
+  // host creates the new room. The request posts a public chat note so the
+  // host (and everyone else) sees the ask.
+  const handleRematchClick = useCallback(() => {
+    if (isHost) {
+      handleOpenRematch();
+      return;
+    }
+    postHistoryNoteAction('🔁 Wants a rematch!', 'all');
+    if (session?.id) setDismissedForSessionId(session.id);
+  }, [isHost, handleOpenRematch, postHistoryNoteAction, session?.id]);
+
+  const resultModalDismissed =
+    !!session?.id && dismissedForSessionId === session.id;
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null, fallback?: string | null) => {
@@ -384,8 +445,10 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <GameResultModal
           isOpen={isGameOver && !resultModalDismissed}
           result={gameResult}
-          onRematch={isHost ? handleOpenRematch : undefined}
-          onClose={() => setResultModalDismissed(true)}
+          onRematch={handleRematchClick}
+          onClose={() => {
+            if (session?.id) setDismissedForSessionId(session.id);
+          }}
           rematchLoading={rematchLoading}
           t={t}
         />
@@ -393,14 +456,16 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <RematchModal
           isOpen={showRematchModal}
           players={
-            snapshot?.players.map((p) => ({
-              playerId: p.playerId,
-              displayName: resolveDisplayNameBound(
-                p.playerId,
-                `Player ${p.playerId.slice(0, 4)} `,
-              ),
-              alive: p.alive,
-            })) || []
+            snapshot?.players
+              .filter((p) => !p.playerId.startsWith('bot-'))
+              .map((p) => ({
+                playerId: p.playerId,
+                displayName: resolveDisplayNameBound(
+                  p.playerId,
+                  `Player ${p.playerId.slice(0, 4)} `,
+                ),
+                alive: p.alive,
+              })) || []
           }
           currentUserId={currentUserId}
           rematchLoading={rematchLoading}
@@ -413,6 +478,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <RematchInvitationModal
           isOpen={!!invitation}
           senderName={invitation?.hostName || ''}
+          message={invitation?.message}
           onAccept={handleAcceptInvitation}
           onDecline={handleDeclineInvitation}
           t={t}
@@ -420,26 +486,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       </>
     ),
     [
-      showRules,
-      showRulesOpen,
-      onShowRulesClose,
-      t,
-      isGameOver,
-      resultModalDismissed,
-      gameResult,
-      isHost,
-      handleOpenRematch,
-      rematchLoading,
-      showRematchModal,
-      snapshot?.players,
-      resolveDisplayNameBound,
-      currentUserId,
-      closeRematchModal,
-      handleRematch,
-      cardVariant,
-      invitation,
-      handleAcceptInvitation,
-      handleDeclineInvitation,
+      showRules, showRulesOpen, onShowRulesClose, t,
+      isGameOver, resultModalDismissed, session?.id, gameResult,
+      handleRematchClick, rematchLoading, showRematchModal,
+      snapshot?.players, resolveDisplayNameBound, currentUserId,
+      closeRematchModal, handleRematch, cardVariant,
+      invitation, handleAcceptInvitation, handleDeclineInvitation,
     ],
   );
 

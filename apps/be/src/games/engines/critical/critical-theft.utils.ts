@@ -246,15 +246,11 @@ export function executeMark(
 
   helpers.addLog(
     state,
-    helpers.createLogEntry(
-      'action',
-      `Marked a card in their hand 🏷️`,
-      {
-        scope: 'all',
-        senderId: playerId,
-        targetId: targetPlayerId,
-      },
-    ),
+    helpers.createLogEntry('action', `Marked a card in their hand 🏷️`, {
+      scope: 'all',
+      senderId: playerId,
+      targetId: targetPlayerId,
+    }),
   );
 
   // Private message to marker showing which card was marked

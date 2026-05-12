@@ -318,14 +318,49 @@ export class GameHistoryService {
         ? participantIds.filter((id) => id !== userId) // filter out host
         : originalParticipantIds;
 
-    // Build participants array: host ONLY
+    // Build participants array: host + any bots that were stamped into the
+    // carried-over team config. Without this, team-mode rematches start with
+    // empty seats — startSession then fails with "Not enough players" because
+    // the bot ids referenced in teams aren't actually room participants.
     const now = new Date();
-    const participants = [
-      {
-        userId,
-        joinedAt: now,
-      },
+    const participants: { userId: string; joinedAt: Date }[] = [
+      { userId, joinedAt: now },
     ];
+    const carriedOptions = dto.gameOptions || originalRoom.gameOptions || {};
+    const carriedTeams = (
+      carriedOptions as {
+        teams?: { playerIds?: string[]; targetSize?: number }[];
+      }
+    ).teams;
+    if (Array.isArray(carriedTeams)) {
+      const seen = new Set<string>([userId]);
+      for (const team of carriedTeams) {
+        if (!Array.isArray(team.playerIds)) continue;
+        for (const pid of team.playerIds) {
+          if (typeof pid !== 'string') continue;
+          if (!pid.startsWith('bot-')) continue;
+          if (seen.has(pid)) continue;
+          seen.add(pid);
+          participants.push({ userId: pid, joinedAt: now });
+        }
+      }
+    }
+
+    // In team mode the room cap must accommodate the team config (up to 8 in
+    // MAX_PLAYERS_TEAM_MODE). Without this bump, rematching out of a small
+    // FFA-sized room (maxPlayers=5/6) into a team game leaves the lobby
+    // showing "8 / 6" once the bots get added.
+    const rematchMaxPlayers = Array.isArray(carriedTeams)
+      ? Math.max(
+          originalRoom.maxPlayers ?? 0,
+          carriedTeams.reduce(
+            (sum, t) =>
+              sum + (typeof t.targetSize === 'number' ? t.targetSize : 0),
+            0,
+          ),
+          participants.length,
+        )
+      : originalRoom.maxPlayers;
 
     // Generate rematch name: "someName" -> "someName Rematch 1" -> "someName Rematch 2"
     // Extract base name (strip existing " Rematch N" suffix if present)
@@ -365,7 +400,7 @@ export class GameHistoryService {
       name: rematchName,
       hostId: userId,
       visibility: originalRoom.visibility,
-      maxPlayers: originalRoom.maxPlayers,
+      maxPlayers: rematchMaxPlayers,
       participants,
       status: 'lobby',
       createdAt: now,

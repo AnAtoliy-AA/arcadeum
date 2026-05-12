@@ -25,12 +25,15 @@ import { GameModals } from './GameModals';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
 import { ActiveGameContent } from './ActiveGameContent';
+import { MatchWidget } from './MatchWidget';
 import { CriticalGameHeader } from './CriticalGameHeader';
 import { MobileActionSheet } from './MobileActionSheet';
 import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import { TurnBanner } from './TurnBanner';
+import { MatchHud } from './MatchHud';
+import { useWidgetMode } from '../hooks/useWidgetMode';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -96,7 +99,7 @@ export function ActiveGameView({
   const { t } = useTranslation();
   const media = useMedia();
   const isMobile = media.sm;
-
+  const widgetMode = useWidgetMode();
   // Layout State
   const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
@@ -114,9 +117,7 @@ export function ActiveGameView({
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
   }
-
   const showResultModal = isGameOver && !modalDismissed;
-
   useWebGameHaptics(isMyTurn);
 
   const {
@@ -158,8 +159,6 @@ export function ActiveGameView({
     playFavor: actions.playFavor,
   });
 
-  useGameChatIntegration(snapshot?.logs, actions.postHistoryNote);
-
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
@@ -182,7 +181,7 @@ export function ActiveGameView({
     (cardType: CriticalCard) => t(getCardTranslationKey(cardType, cardVariant)),
     [t, cardVariant],
   );
-  const { resolveDisplayName } = useDisplayNames({
+  const { resolveDisplayName, formatLogMessage } = useDisplayNames({
     currentUserId,
     room,
     snapshot,
@@ -190,6 +189,14 @@ export function ActiveGameView({
     translateCardType,
     seeTheFutureLabel,
   });
+
+  useGameChatIntegration(
+    snapshot?.logs,
+    actions.postHistoryNote,
+    resolveDisplayName,
+  );
+  // (No registered actor-color resolver in Critical — GameChat falls back
+  // to the shared getPlayerColor(id), which is exactly what we want for FFA.)
 
   const gameHandlers = useGameHandlers({
     selectedMode,
@@ -206,10 +213,10 @@ export function ActiveGameView({
     handleOpenEventCombo,
     setSelectedMode,
     setSelectedTarget,
-    setStashModal: () => { }, // Handled by useCriticalModals
-    setMarkModal: () => { },
-    setStealDrawModal: () => { },
-    setSmiteModal: () => { },
+    setStashModal: () => {}, // Handled by useCriticalModals
+    setMarkModal: () => {},
+    setStealDrawModal: () => {},
+    setSmiteModal: () => {},
     setTargetedAttackModal,
   });
 
@@ -259,73 +266,99 @@ export function ActiveGameView({
     [snapshot.players, resolveDisplayName],
   );
 
+  const buildSharedProps = () => ({
+    room,
+    snapshot,
+    currentUserId,
+    currentPlayer,
+    cardVariant,
+    isGameOver: !!isGameOver,
+    isMyTurn: !!isMyTurn,
+    canAct: !!canAct,
+    canPlayNope,
+    actionBusy,
+    aliveOpponents,
+    handLayout,
+    setHandLayout,
+    resolveDisplayName,
+    t: t as unknown as (
+      k: string,
+      p?: Record<string, string | number>,
+    ) => string,
+    actions,
+    idleTimerTriggered,
+    autoplayState,
+    handleUnstash,
+    handlePlayActionCard,
+    handleOpenFavorModal,
+    handleOpenEventCombo,
+    handleOpenFiverCombo,
+  });
+
   return (
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
       <YStack flex={1} className="animate-entrance">
-        <CriticalGameHeader
-          room={room}
-          t={
-            t as unknown as (
-              key: string,
-              params?: Record<string, string | number>,
-            ) => string
-          }
-          idleTimerEnabled={idleTimerEnabled}
-          actionBusy={actionBusy}
-          isGameOver={!!isGameOver}
-          currentPlayer={currentPlayer ?? undefined}
-          canAct={!!canAct}
-          isMyTurn={!!isMyTurn}
-          handleIdleTimeout={handleIdleTimeout}
-          autoplayState={autoplayState}
-          idleTimerTriggered={idleTimerTriggered}
-          handleStopAutoplay={handleStopAutoplay}
-          isFullscreen={isFullscreen}
-          toggleFullscreen={toggleFullscreen}
-        />
-        <XStack justifyContent="center">
-          <TurnBanner
-            isMyTurn={!!isMyTurn}
-            currentPlayerName={
-              currentTurnPlayer
-                ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
-                : ''
+        {/* Flag-off: legacy header sits above the match. Widget mode hoists */}
+        {/* Rules / Fullscreen into a small menu inside HandRail (ARC-636). */}
+        {!widgetMode && (
+          <CriticalGameHeader
+            room={room}
+            t={
+              t as unknown as (
+                key: string,
+                params?: Record<string, string | number>,
+              ) => string
             }
-            secondsRemaining={null}
+            idleTimerEnabled={idleTimerEnabled}
+            actionBusy={actionBusy}
+            isGameOver={!!isGameOver}
+            currentPlayer={currentPlayer ?? undefined}
+            canAct={!!canAct}
+            isMyTurn={!!isMyTurn}
+            handleIdleTimeout={handleIdleTimeout}
+            autoplayState={autoplayState}
+            idleTimerTriggered={idleTimerTriggered}
+            handleStopAutoplay={handleStopAutoplay}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
           />
-        </XStack>
+        )}
+        {/* Flag-off: legacy top-of-page TurnBanner + MatchHud. In widget */}
+        {/* mode these move inside the Arena's center column (ARC-633). */}
+        {!widgetMode && (
+          <>
+            <XStack justifyContent="center">
+              <TurnBanner
+                isMyTurn={!!isMyTurn}
+                currentPlayerName={
+                  currentTurnPlayer
+                    ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
+                    : ''
+                }
+                secondsRemaining={null}
+                pendingDraws={snapshot.pendingDraws}
+              />
+            </XStack>
+            <MatchHud
+              snapshot={snapshot}
+              currentPlayer={currentPlayer}
+              isGameOver={!!isGameOver}
+              formatLogMessage={formatLogMessage}
+            />
+          </>
+        )}
 
-        <ActiveGameContent
-          room={room}
-          snapshot={snapshot}
-          currentUserId={currentUserId}
-          currentPlayer={currentPlayer}
-          cardVariant={cardVariant}
-          isGameOver={!!isGameOver}
-          isMyTurn={!!isMyTurn}
-          canAct={!!canAct}
-          canPlayNope={canPlayNope}
-          actionBusy={actionBusy}
-          aliveOpponents={aliveOpponents}
-          handLayout={handLayout}
-          setHandLayout={setHandLayout}
-          resolveDisplayName={resolveDisplayName}
-          t={
-            t as unknown as (
-              key: string,
-              params?: Record<string, string | number>,
-            ) => string
-          }
-          actions={actions}
-          idleTimerTriggered={idleTimerTriggered}
-          autoplayState={autoplayState}
-          handleUnstash={handleUnstash}
-          handlePlayActionCard={handlePlayActionCard}
-          handleOpenFavorModal={handleOpenFavorModal}
-          handleOpenEventCombo={handleOpenEventCombo}
-          handleOpenFiverCombo={handleOpenFiverCombo}
-        />
+        {widgetMode ? (
+          <MatchWidget
+            {...buildSharedProps()}
+            formatLogMessage={formatLogMessage}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
+          />
+        ) : (
+          <ActiveGameContent {...buildSharedProps()} />
+        )}
       </YStack>
 
       {currentPlayer && (

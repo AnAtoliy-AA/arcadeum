@@ -1,13 +1,23 @@
 import 'dotenv/config';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
 import { getAllowedOrigins } from './common/utils/cors.util';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new ArcadeumLogger(),
-  });
+  const logger = new ArcadeumLogger();
+  logger.setLogLevels(['error', 'warn', 'log']);
+  const app = await NestFactory.create(AppModule, { logger });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: { enableImplicitConversion: false },
+    }),
+  );
 
   app.enableCors({
     origin: getAllowedOrigins(),

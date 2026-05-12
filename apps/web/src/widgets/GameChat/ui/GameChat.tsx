@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import {
   XStack,
   YStack,
@@ -12,26 +12,71 @@ import {
 } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
 interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
+  currentUserId?: string | null;
   onClose?: () => void;
+  teamMode?: boolean;
 }
 
-const SCOPES: { value: ChatScope; label: string }[] = [
+const FFA_SCOPES: { value: ChatScope; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'players', label: 'Players' },
   { value: 'private', label: 'Private' },
 ];
 
-export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
+const TEAM_SCOPES: { value: ChatScope; label: string }[] = [
+  { value: 'team', label: 'Team' },
+  { value: 'all', label: 'All' },
+  { value: 'private', label: 'Private' },
+];
+
+const RESULT_COLORS: Record<string, string> = {
+  HIT: '#F97316', // orange
+  MISS: '#94A3B8', // slate
+  SUNK: '#EF4444', // red
+};
+
+const RESULT_PATTERN = /\b(HIT|MISS|SUNK)\b/;
+
+function renderResultHighlights(message: string): ReactNode {
+  // Split on the first occurrence of a result keyword; wrap that keyword
+  // in a colored, bold span. The rest of the message stays as-is.
+  const match = RESULT_PATTERN.exec(message);
+  if (!match) return message;
+  const idx = match.index;
+  const keyword = match[0];
+  const color = RESULT_COLORS[keyword];
+  return (
+    <>
+      {message.slice(0, idx)}
+      <span style={{ color, fontWeight: 800, fontStyle: 'normal' }}>
+        {keyword}
+      </span>
+      {message.slice(idx + keyword.length)}
+    </>
+  );
+}
+
+export function GameChat({
+  resolveDisplayName,
+  currentUserId,
+  onClose,
+  teamMode,
+}: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
+  const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
 
+  const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [chatMessage, setChatMessage] = useState('');
-  const [chatScope, setChatScope] = useState<ChatScope>('all');
+  const [chatScope, setChatScope] = useState<ChatScope>(
+    teamMode ? 'team' : 'all',
+  );
   const scrollRef = useRef<TamaguiScrollView>(null);
 
   useEffect(() => {
@@ -88,7 +133,7 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
         borderBottomWidth={1}
         borderBottomColor="$glassBorder"
       >
-        {SCOPES.map(({ value, label }) => (
+        {scopes.map(({ value, label }) => (
           <Button
             key={value}
             size="sm"
@@ -117,22 +162,44 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
           </YStack>
         ) : (
           <YStack gap="$1">
-            {logs.map((log) => (
-              <ChatMessage
-                key={log.id}
-                senderName={
-                  resolveDisplayName
-                    ? resolveDisplayName(
-                        log.senderId ?? undefined,
-                        log.senderName ?? undefined,
-                      )
-                    : (log.senderName ?? undefined)
-                }
-                content={log.message}
-                type={log.type}
-                isOwn={false} // Store doesn't track isOwn specifically in logs, but we could add it
-              />
-            ))}
+            {logs.map((log) => {
+              const isOwn = !!currentUserId && log.senderId === currentUserId;
+              const senderName = resolveDisplayName
+                ? resolveDisplayName(
+                    log.senderId ?? undefined,
+                    log.senderName ?? undefined,
+                  )
+                : (log.senderName ?? undefined);
+              const senderColor = log.senderId
+                ? (resolveActorColor?.(log.senderId) ??
+                  getPlayerColor(log.senderId))
+                : undefined;
+              const targetId = log.targetId;
+              const targetName =
+                targetId && resolveDisplayName
+                  ? resolveDisplayName(targetId, undefined)
+                  : (targetId ?? undefined);
+              const targetColor = targetId
+                ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
+                : undefined;
+              const contentNode =
+                log.type === 'action' || log.type === 'system'
+                  ? renderResultHighlights(log.message)
+                  : undefined;
+              return (
+                <ChatMessage
+                  key={log.id}
+                  senderName={log.senderId ? senderName : undefined}
+                  senderColor={senderColor}
+                  targetName={targetId ? targetName : undefined}
+                  targetColor={targetColor}
+                  content={log.message}
+                  contentNode={contentNode}
+                  type={log.type}
+                  isOwn={isOwn}
+                />
+              );
+            })}
           </YStack>
         )}
       </ScrollView>
@@ -147,7 +214,9 @@ export function GameChat({ resolveDisplayName, onClose }: GameChatProps) {
             ? 'Send to everyone'
             : chatScope === 'players'
               ? 'Send to players'
-              : 'Private note'
+              : chatScope === 'team'
+                ? 'Send to team'
+                : 'Private note'
         }
       />
     </GlassCard>

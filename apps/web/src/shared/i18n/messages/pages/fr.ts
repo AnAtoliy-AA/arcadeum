@@ -1,4 +1,114 @@
+import { adminAnnouncementsFr } from './admin-announcements/fr';
+import { adminTournamentsFr } from './admin-tournaments/fr';
+import { walletFr } from './wallet/fr';
+import { adminWalletFr } from './admin-wallet/fr';
+import { gemsFr } from './gems/fr';
+import { adminGemPackagesFr } from './admin-gem-packages/fr';
+import { adminEconomyFr } from './admin-economy/fr';
+import { dailyRewardsFr } from './daily-rewards/fr';
+
 export const fr = {
+  admin: {
+    title: 'Administration',
+    welcome: "Bienvenue dans l'espace administrateur",
+    welcomeBody:
+      'Les panneaux apparaîtront ici au fur et à mesure de leur publication. Utilisez la barre latérale pour naviguer.',
+    signedInAs: 'Connecté en tant que {username}',
+    nav: {
+      dashboard: 'Tableau de bord',
+      users: 'Utilisateurs',
+      payments: 'Paiements',
+      announcements: 'Annonces',
+      tournaments: 'Tournois',
+      economy: 'Économie',
+      comingSoon: 'Bientôt',
+    },
+    error: {
+      title: "Une erreur s'est produite",
+      body: 'Une erreur est survenue lors du chargement de cette page.',
+      retry: 'Réessayer',
+    },
+    users: {
+      title: 'Utilisateurs',
+      search: {
+        placeholder: "Recherche par nom d'utilisateur, email ou nom",
+      },
+      filter: {
+        role: { all: 'Tous les rôles', placeholder: 'Filtrer par rôle' },
+      },
+      table: {
+        username: "Nom d'utilisateur",
+        email: 'Email',
+        role: 'Rôle',
+        createdAt: 'Créé le',
+        actions: 'Actions',
+      },
+      empty: {
+        noResults: 'Aucun utilisateur ne correspond aux filtres.',
+        noUsers: 'Aucun utilisateur pour le moment.',
+      },
+      pagination: {
+        prev: 'Précédent',
+        next: 'Suivant',
+        of: 'Page {current} sur {total}',
+      },
+      totalLabel: '{total} utilisateurs',
+      selfTooltip: 'Vous ne pouvez pas changer votre propre rôle.',
+      role: {
+        free: 'Gratuit',
+        premium: 'Premium',
+        vip: 'VIP',
+        supporter: 'Soutien',
+        moderator: 'Modérateur',
+        tester: 'Testeur',
+        developer: 'Développeur',
+        admin: 'Admin',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN:
+          'Vous ne pouvez pas changer votre propre rôle.',
+        LAST_ADMIN_PROTECTED:
+          'Impossible de rétrograder le dernier administrateur.',
+        USER_NOT_FOUND: 'Utilisateur introuvable.',
+        INVALID_USER_ID: 'Identifiant utilisateur invalide.',
+        generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
+      },
+    },
+    payments: {
+      title: 'Paiements',
+      search: { placeholder: 'Recherche par note, nom ou ID de transaction' },
+      filter: {
+        visibility: {
+          label: 'Visibilité',
+          all: 'Tous',
+          public: 'Publics seulement',
+          private: 'Privés seulement',
+        },
+      },
+      table: {
+        user: 'Utilisateur',
+        amount: 'Montant',
+        note: 'Note',
+        visibility: 'Visibilité',
+        createdAt: 'Créé le',
+        transactionId: 'Transaction',
+      },
+      chip: { public: 'Public', private: 'Privé', anonymous: 'Anonyme' },
+      empty: {
+        noResults: 'Aucun paiement ne correspond aux filtres.',
+        noNotes: 'Aucun paiement pour le moment.',
+      },
+      pagination: {
+        prev: 'Précédent',
+        next: 'Suivant',
+        of: 'Page {current} sur {total}',
+      },
+      totalLabel: '{total} notes',
+    },
+    announcements: adminAnnouncementsFr,
+    tournaments: adminTournamentsFr,
+    wallet: adminWalletFr,
+  },
   tournaments: {
     title: 'Tournois',
     subtitle: 'Affrontez les meilleurs joueurs du monde',
@@ -22,6 +132,50 @@ export const fr = {
       },
     ],
     comingSoon: "Le mode tournoi arrive bientôt. Restez à l'écoute !",
+    list: {
+      loading: 'Chargement des tournois…',
+      empty: 'Aucun tournoi pour le moment. Revenez bientôt !',
+      card: {
+        registered: 'Inscrits {count} / {max}',
+        prize: 'Prix',
+        entryFee: "Frais d'entrée",
+        prizePool: 'Cagnotte',
+        registerCta: "S'inscrire",
+        unregisterCta: 'Se désinscrire',
+        signInToRegister: 'Connectez-vous pour vous inscrire',
+        full: "Liste d'attente",
+        registrationClosed: 'Inscription fermée',
+        confirmRegister: {
+          title: 'Confirmer la participation',
+          body: 'Ce tournoi coûte {fee} pièces. Votre solde : {balance} pièces.',
+          confirm: "Payer et s'inscrire",
+          cancel: 'Annuler',
+        },
+        confirmUnregister: {
+          refund: 'Vous serez remboursé de {amount} pièces.',
+          title: "Annuler l'inscription",
+          body: 'Êtes-vous sûr ?',
+          confirm: 'Oui, annuler',
+          cancelButton: 'Non, rester',
+        },
+        errors: {
+          insufficientFunds: 'Pas assez de pièces pour participer.',
+        },
+        effectiveStatus: {
+          scheduled: 'Programmé',
+          registration_open: 'Inscription ouverte',
+          registration_closed: 'Inscription fermée',
+          live: 'En cours',
+          awaiting_results: 'Résultats à venir',
+          completed: 'Terminé',
+          cancelled: 'Annulé',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Bataille navale',
+        },
+      },
+    },
   },
   blog: {
     title: 'Blog de Jeux',
@@ -159,6 +313,126 @@ export const fr = {
     subtitle: 'Voyez où vous vous situez parmi les meilleurs joueurs',
     description:
       'Suivez votre position dans tous les jeux, comparez vos statistiques avec vos amis et suivez les meilleurs joueurs. Les classements se mettent à jour en temps réel.',
+    live: 'En direct',
+    capturedAt: 'Capturé {time}',
+    hero: {
+      eyebrow: 'En direct · Saison 4',
+      title: 'Course au classement.',
+      tagline: 'Mis à jour toutes les 30 secondes. Le top 100 vise la Coupe.',
+    },
+    ticker: { live: 'En direct' },
+    modes: {
+      all: { name: 'Tous les jeux', subtitle: 'Classement combiné', icon: '◎' },
+      critical: {
+        name: 'Critical',
+        subtitle: 'Cartes à enjeux',
+        icon: '♠',
+      },
+      sea_battle: {
+        name: 'Bataille navale',
+        subtitle: 'Stratégie navale',
+        icon: '⚓',
+      },
+    },
+    cup: {
+      eyebrow: 'Tournoi',
+      title: "Coupe d'automne",
+      endsIn: 'Se termine dans',
+      prizePool: 'Cagnotte',
+      participants: 'Participants',
+      qualifiedLabel: 'Qualifiés',
+      comingSoon: 'Bientôt disponible',
+      comingSoonBody:
+        'Les tournois en direct et les cagnottes arrivent bientôt.',
+    },
+    mythic: {
+      label: 'Mythique',
+      streak: 'Série de {count} parties',
+      leadOver: "+{delta} d'avance sur #2",
+      recentLabel: '12 dernières parties',
+      challenge: '⚔ Défier',
+      watch: '▶ Voir le replay',
+      follow: 'Suivre',
+      runnerUp: 'Vice-champion',
+      thirdPlace: 'Troisième',
+    },
+    controls: {
+      global: 'Mondial',
+      perGame: 'Par jeu',
+      tournaments: 'Tournois',
+      friends: 'Amis',
+      regional: 'Régional',
+      searchPlaceholder: 'Trouver un joueur…',
+      jumpToMe: '↓ Aller à moi',
+      ranges: {
+        today: "Aujourd'hui",
+        week: 'Semaine',
+        month: 'Mois',
+        season: 'Saison',
+      },
+    },
+    table: {
+      rank: '#',
+      player: 'Joueur',
+      region: 'Région',
+      rating: 'Score',
+      record: 'V–D–N',
+      winrate: 'Ratio',
+      form: 'Forme',
+      trend: 'Tendance',
+    },
+    trend: {
+      up: 'Hausse de {n}',
+      down: 'Baisse de {n}',
+      same: 'Inchangé',
+    },
+    climbers: { title: 'Plus fortes hausses' },
+    fallers: { title: 'Plus fortes baisses' },
+    squads: { title: 'Meilleures équipes', members: '{count} membres' },
+    regions: {
+      title: 'Par région',
+      na: 'Amérique du Nord',
+      eu: 'Europe',
+      sa: 'Amérique du Sud',
+      asia: 'Asie',
+      oceania: 'Océanie',
+      africa: 'Afrique',
+      me: 'Moyen-Orient',
+    },
+    rewards: {
+      title: 'Échelle des récompenses',
+      mythic: "Couronne mythique + 12k d'or",
+      diamond: "Éclat de diamant + 6k d'or",
+      platinum: "Trophée platine + 3k d'or",
+      gold: "1k d'or + cosmétique",
+    },
+    self: {
+      pinned: 'Votre rang',
+      unranked: 'Non classé — jouez 5 parties classées pour apparaître',
+      share: 'Partager',
+    },
+    loadMore: 'Charger plus',
+    freshness: {
+      updatedAt: 'Mis à jour {ago}',
+      justNow: "à l'instant",
+      secondsAgo: 'il y a {n} s',
+      minutesAgo: 'il y a {n} min',
+      hoursAgo: 'il y a {n} h',
+    },
+    profile: {
+      eyebrow: 'Joueur',
+      placeholder:
+        "Profil complet avec historique du score, parties récentes et infos d'équipe à venir.",
+      back: 'Retour au classement',
+    },
+    empty: {
+      title: 'Aucun classement pour le moment',
+      body: 'Soyez le premier à grimper.',
+    },
+    errorState: {
+      title: 'Impossible de charger le classement',
+      retry: 'Réessayer',
+    },
     features: [
       {
         title: "Classement d'amis",
@@ -201,4 +475,9 @@ export const fr = {
     ],
     comingSoon: 'La boutique de récompenses arrive bientôt !',
   },
+  wallet: walletFr,
+  gems: gemsFr,
+  adminGemPackages: adminGemPackagesFr,
+  adminEconomy: adminEconomyFr,
+  dailyRewards: dailyRewardsFr,
 };

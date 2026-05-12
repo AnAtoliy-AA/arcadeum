@@ -178,6 +178,14 @@ export class GameSessionsService {
     // Get the game engine
     const engine = this.engineRegistry.getEngine(session.gameId);
 
+    // Self-heal any drifted state before validation/execution. Engines opt in
+    // via the optional normalizeState hook; must be idempotent.
+    if (engine.normalizeState) {
+      session.state = engine.normalizeState(
+        session.state as unknown as BaseGameState,
+      ) as unknown as Record<string, unknown>;
+    }
+
     // Create action context
     const context: GameActionContext = {
       userId,
@@ -241,6 +249,22 @@ export class GameSessionsService {
 
     const engine = this.engineRegistry.getEngine(session.gameId);
 
+    return engine.sanitizeStateForPlayer(
+      session.state as unknown as BaseGameState,
+      playerId,
+    );
+  }
+
+  /**
+   * Sanitize an already-loaded session summary for a specific player without
+   * an extra DB read. Use during broadcast paths where the freshly-saved
+   * session is in hand.
+   */
+  sanitizeSummaryForPlayer(
+    session: GameSessionSummary,
+    playerId: string,
+  ): unknown {
+    const engine = this.engineRegistry.getEngine(session.gameId);
     return engine.sanitizeStateForPlayer(
       session.state as unknown as BaseGameState,
       playerId,

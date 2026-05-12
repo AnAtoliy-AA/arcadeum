@@ -197,15 +197,31 @@ export interface CriticalPlayerState {
 }
 
 // ===== SHARED TYPES =====
-export type ChatScope = 'all' | 'players' | 'private';
+export type ChatScope = 'all' | 'players' | 'private' | 'team';
+
+/**
+ * Structured event kind for moment-to-moment HUD feedback. Optional for
+ * backwards compatibility — when absent, the client falls back to string
+ * matching on the message text. New emitters should set this so the UI
+ * doesn't depend on log message phrasing surviving i18n or refactors.
+ */
+export type CriticalLogKind =
+  | 'play'
+  | 'draw'
+  | 'defuse'
+  | 'eliminated'
+  | 'critical'
+  | 'system';
 
 export interface CriticalLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  kind?: CriticalLogKind;
   message: string;
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
   scope?: ChatScope;
 }
 
@@ -234,6 +250,22 @@ export interface CriticalSnapshot {
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  /**
+   * Server-authoritative draw-elimination odds (0-100). When present,
+   * the ThreatStrip uses this directly instead of its visible-cards
+   * approximation. Computed as (criticals_remaining / deck.length) × 100.
+   * Optional for forward compat — older servers don't emit it and the
+   * client falls back to its lower-bound estimate.
+   */
+  overloadOdds?: number | null;
+  /**
+   * Count of deck cards the snapshot is masking from this client
+   * (Tracker reveal, future-peek, etc.) that aren't already represented
+   * as `'hidden'` entries inside `deck`. Folded into the ThreatStrip's
+   * client-fallback denominator. Optional for forward compat — when
+   * the server doesn't emit it the client treats it as zero.
+   */
+  hiddenCount?: number;
 }
 
 // Texas Hold'em types
@@ -286,6 +318,7 @@ export interface TexasHoldemLogEntry {
   createdAt: string;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
   scope?: ChatScope;
 }
 

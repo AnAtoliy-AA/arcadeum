@@ -16,7 +16,11 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { SeaBattleBotService } from './sea-battle-bot.service';
-import { MAX_PLAYERS } from '../engines/sea-battle/sea-battle.constants';
+import {
+  MAX_PLAYERS,
+  MAX_PLAYERS_TEAM_MODE,
+} from '../engines/sea-battle/sea-battle.constants';
+import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -120,15 +124,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     await this.realtimeService.emitSessionSnapshot(
       session.roomId,
       session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
+      // Use the in-memory session — sanitizeSummaryForPlayer is a pure
+      // engine transform, no DB read. Wrapped in Promise.resolve to fit the
+      // async sanitizer signature.
+      (s, pId) => {
+        const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
         if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
+          return Promise.resolve({
+            ...s,
+            state: sanitized as Record<string, unknown>,
+          });
         }
-        return s;
+        return Promise.resolve(s);
       },
     );
   }
@@ -149,21 +156,26 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       throw new Error('Only the host can start the game');
     }
 
+    const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
+    const teamMode = !!opts.teamMode;
+    const cap = teamMode ? MAX_PLAYERS_TEAM_MODE : MAX_PLAYERS;
+
     const participants = await this.roomsService.getRoomParticipants(roomId);
     const playerIds = [...participants];
 
     // If only one player, automatically add a bot to meet minimum requirements (2 players)
     // This handles both explicit bot mode and fallback for single users
-    if (playerIds.length === 1) {
+    // In team mode, bots are added during lobby (addBotToTeam), so skip auto-fill here
+    if (!teamMode && playerIds.length === 1) {
       const targetBotCount = botCount !== undefined ? botCount : 1;
-      const needed = Math.min(MAX_PLAYERS - 1, targetBotCount);
+      const needed = Math.min(cap - 1, targetBotCount);
       for (let i = 0; i < needed; i++) {
         playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
       }
-    } else if (withBots) {
+    } else if (!teamMode && withBots) {
       const targetTotalPlayers = playerIds.length + (botCount || 1);
       const needed = Math.min(
-        MAX_PLAYERS - playerIds.length,
+        cap - playerIds.length,
         Math.max(0, targetTotalPlayers - playerIds.length),
       );
       for (let i = 0; i < needed; i++) {
@@ -175,17 +187,36 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       throw new Error('Not enough players to start Sea Battle (minimum 2)');
     }
 
-    if (playerIds.length > MAX_PLAYERS) {
-      throw new Error(
-        `Too many players to start Sea Battle (maximum ${MAX_PLAYERS})`,
-      );
+    if (playerIds.length > cap) {
+      throw new Error(`Too many players to start Sea Battle (maximum ${cap})`);
+    }
+
+    if (teamMode) {
+      if (!opts.teams || opts.teams.length < 2) {
+        throw new Error('Team mode requires at least 2 configured teams');
+      }
+      for (const t of opts.teams) {
+        if (t.playerIds.length !== t.targetSize) {
+          throw new Error(`Team "${t.name}" is not full`);
+        }
+      }
     }
 
     const session = await this.sessionsService.createSession({
       roomId,
       gameId: room.gameId,
       playerIds,
-      config: { ...room.gameOptions },
+      config: teamMode
+        ? {
+            teams: opts.teams!.map((t) => ({
+              id: t.id,
+              name: t.name,
+              color: t.color,
+              playerIds: t.playerIds,
+            })),
+            hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
+          }
+        : { ...room.gameOptions },
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');

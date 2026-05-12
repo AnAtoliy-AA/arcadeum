@@ -6,6 +6,8 @@ export const en = {
   historyTab: 'History',
   settingsTab: 'Settings',
   statsTab: 'Statistics',
+  walletTab: 'Wallet',
+  adminTab: 'Admin',
 };
 
 export const es = {
@@ -14,6 +16,8 @@ export const es = {
   historyTab: 'Historial',
   settingsTab: 'Configuración',
   statsTab: 'Estadísticas',
+  walletTab: 'Cartera',
+  adminTab: 'Administración',
 };
 
 export const fr = {
@@ -22,6 +26,8 @@ export const fr = {
   historyTab: 'Historique',
   settingsTab: 'Paramètres',
   statsTab: 'Statistiques',
+  walletTab: 'Portefeuille',
+  adminTab: 'Administration',
 };
 
 export const ru = {
@@ -30,6 +36,8 @@ export const ru = {
   historyTab: 'История',
   settingsTab: 'Настройки',
   statsTab: 'Статистика',
+  walletTab: 'Кошелёк',
+  adminTab: 'Админ',
 };
 
 export const by = {
@@ -38,6 +46,8 @@ export const by = {
   historyTab: 'Гісторыя',
   settingsTab: 'Налады',
   statsTab: 'Статыстыка',
+  walletTab: 'Кашалёк',
+  adminTab: 'Адмін',
 };
 
 export const navigationMessages = {

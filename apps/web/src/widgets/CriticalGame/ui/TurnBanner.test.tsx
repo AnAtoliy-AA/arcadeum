@@ -13,6 +13,12 @@ vi.mock('@/shared/lib/useTranslation', () => ({
         const name = params?.name ?? '';
         return `${name}'s turn`;
       }
+      if (
+        key === 'games.table.hud.extraTurns' ||
+        key === 'games.table.hud.extraTurnsPlural'
+      ) {
+        return `+${params?.count ?? 0} turn`;
+      }
       return key;
     },
   }),
@@ -26,6 +32,7 @@ interface RenderBannerProps {
   isMyTurn?: boolean;
   currentPlayerName?: string;
   secondsRemaining?: number | null;
+  pendingDraws?: number;
 }
 
 function renderBanner(props: RenderBannerProps = {}) {
@@ -33,6 +40,7 @@ function renderBanner(props: RenderBannerProps = {}) {
     isMyTurn = false,
     currentPlayerName = 'Player',
     secondsRemaining = 0,
+    pendingDraws,
   } = props;
   return render(
     <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
@@ -41,6 +49,7 @@ function renderBanner(props: RenderBannerProps = {}) {
           isMyTurn={isMyTurn}
           currentPlayerName={currentPlayerName}
           secondsRemaining={secondsRemaining}
+          pendingDraws={pendingDraws}
         />
       </ScenePaletteProvider>
     </TamaguiProvider>,
@@ -66,6 +75,16 @@ describe('TurnBanner', () => {
   it('renders timer as 0:00 when null', () => {
     renderBanner({ secondsRemaining: null });
     expect(screen.getByTestId('turn-banner')).toHaveTextContent('0:00');
+  });
+
+  it('hides the extra-turn chip when pendingDraws is 0 or 1', () => {
+    renderBanner({ pendingDraws: 1 });
+    expect(screen.queryByTestId('turn-banner-extra')).not.toBeInTheDocument();
+  });
+
+  it('renders +N chip when pendingDraws > 1', () => {
+    renderBanner({ pendingDraws: 3 });
+    expect(screen.getByTestId('turn-banner-extra')).toHaveTextContent('+2');
   });
 
   it('gates the pulsing dot animation behind prefers-reduced-motion: no-preference', () => {

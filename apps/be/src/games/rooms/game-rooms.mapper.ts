@@ -29,11 +29,31 @@ export class GameRoomsMapper {
     const uniqueMemberIds = new Set<string>();
     const members: GameRoomMemberSummary[] = [];
 
+    // Number bots by their join order so the lobby/sidebar renders "Bot 1",
+    // "Bot 2", ... instead of "Unknown" (which is the userMap fallback for
+    // bot ids — they aren't real Users so no record exists in Mongo).
+    let botCounter = 0;
+    const botIndexById = new Map<string, number>();
+    for (const p of room.participants) {
+      const pUserId = String(p.userId);
+      if (pUserId.startsWith('bot-') && !botIndexById.has(pUserId)) {
+        botCounter += 1;
+        botIndexById.set(pUserId, botCounter);
+      }
+    }
+
     for (const p of room.participants) {
       const pUserId = String(p.userId);
       if (!uniqueMemberIds.has(pUserId)) {
         uniqueMemberIds.add(pUserId);
-        members.push(this.mapUserToMember(pUserId, userMap, room.hostId));
+        members.push(
+          this.mapUserToMember(
+            pUserId,
+            userMap,
+            room.hostId,
+            botIndexById.get(pUserId),
+          ),
+        );
       }
     }
 
@@ -115,16 +135,19 @@ export class GameRoomsMapper {
     userId: string,
     userMap: Map<string, User>,
     roomHostId: string,
+    botIndex?: number,
   ) {
     const user = userMap.get(userId);
     const isAnonymous = userId.startsWith('anon_');
+    const isBot = userId.startsWith('bot-');
     const anonSuffix = isAnonymous
       ? userId.replace('anon_', '').slice(0, 4)
       : '';
-    const displayName =
-      user?.username ||
-      user?.email ||
-      (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
+    const displayName = isBot
+      ? `Bot${botIndex ? ` ${botIndex}` : ''}`
+      : user?.username ||
+        user?.email ||
+        (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
 
     return {
       id: userId,

@@ -1,5 +1,4 @@
 import { variants as cardVariants } from './fr-variants';
-
 export const frMessages = {
   critical_v1: {
     name: 'Critique',
@@ -69,7 +68,6 @@ export const frMessages = {
       },
     },
   },
-
   table: {
     cards: {
       criticalEvent: 'Incident Critique',
@@ -124,36 +122,31 @@ export const frMessages = {
       rapture: 'Le Ravissement',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
-        neutralizer: 'Utilisez pour désamorcer un Incident Critique',
+        neutralizer: 'Désamorce un Incident Critique',
         strike: 'Fin du tour sans piocher, le joueur suivant joue 2 tours',
         evade: 'Terminez votre tour sans piocher de carte',
         trade: 'Forcez un autre joueur à vous donner une carte',
         reorder: 'Mélangez la pioche',
         insight: 'Regardez les 3 premières cartes du paquet',
         cancel: 'Annule toute action sauf Incident Critique ou Désamorcer',
-        collectionAlpha:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionBeta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionGamma:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionDelta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionEpsilon:
-          'Collectez des modules identiques pour voler des cartes',
+        collectionAlpha: 'Collectez des modules pour voler des cartes',
+        collectionBeta: 'Collectez des modules pour voler des cartes',
+        collectionGamma: 'Collectez des modules pour voler des cartes',
+        collectionDelta: 'Collectez des modules pour voler des cartes',
+        collectionEpsilon: 'Collectez des modules pour voler des cartes',
         // Future Pack descriptions
         seeFuture5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture3x: 'Réorganisez les 3 premières cartes',
         alterFuture5x: 'Réorganisez les 5 premières cartes',
         revealFuture3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         seeFuture_5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture_3x: 'Réorganisez les 3 premières cartes',
         alterFuture_5x: 'Réorganisez les 5 premières cartes',
         revealFuture_3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture_3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         drawBottom: 'Piochez la carte du fond du paquet',
         swapTopBottom: 'Échangez la carte du dessus et du dessous du paquet',
         bury: 'Piochez la carte du dessus, puis enterrez-la dans le paquet',
@@ -164,8 +157,7 @@ export const frMessages = {
         megaEvade: 'Terminez TOUS vos tours restants sans piocher',
         invert: 'Inversez le sens du jeu',
         // Theft Pack descriptions
-        wildcard:
-          "Joker - peut remplacer n'importe quelle carte de collection dans les combos",
+        wildcard: "Joker - peut remplacer n'importe quelle carte de collection dans les combos",
         mark: "Marquez une carte au hasard dans la main d'un autre joueur. Si il la joue ou la défausse, vous la volez !",
         stealDraw: 'La prochaine carte que ce joueur pioche va dans votre main',
         stash:
@@ -173,10 +165,8 @@ export const frMessages = {
         // Chaos Pack descriptions
         criticalImplosion:
           'Si pioché face visible, explose immédiatement et ne peut pas être désamorcé',
-        containmentField:
-          'Permet de garder un Incident Critique en main sans exploser',
-        fission:
-          'Mélange les Incidents Critiques dans le paquet et termine le tour sans piocher',
+        containmentField: 'Tient une Critique en main sans exploser',
+        fission: 'Mélange les Critiques dans le paquet et termine le tour',
         tribute:
           'Tous les joueurs (vous inclus) mettent une carte de leur main sur le paquet',
         blackout: "Cible un joueur. Il jouera son prochain tour à l'aveugle",
@@ -225,7 +215,44 @@ export const frMessages = {
       discard: 'Défausse',
       pendingDraws: 'Pioches en attente',
       cards: 'cartes',
-      card: 'carte',
+      /* prettier-ignore */ card: 'carte',
+      defuses: 'Désamorc.',
+    },
+    arena: {
+      drawHint: 'Toucher pour piocher et terminer le tour',
+      drawAria: 'Piocher une carte et terminer le tour',
+    },
+    hud: {
+      threat: {
+        label: 'Menace',
+        oddsTitle:
+          'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
+        oddsTitleServer: 'Probabilité de piocher une carte Critique',
+        defusesTitle: 'Cartes de Défuse en main',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× paire',
+        triple: '3× triple',
+        fiver: '5 différentes',
+        placeholder: 'Sélectionnez des cartes pour un combo',
+        playSingle: 'Jouer {{name}}',
+        playPair: 'Jouer 2× {{name}} · voler',
+        playTriple: 'Jouer 3× {{name}} · nommer carte',
+        playFiver: 'Jouer 5 · choisir de la défausse',
+        invalid: 'Combo invalide',
+        pickTarget: 'Choisissez une cible',
+      },
+      /* prettier-ignore */ cards: { toggleName: 'Nom de la carte', toggleDescription: 'Description de la carte' },
+      extraTurns: '+{{count}} tour',
+      extraTurnsPlural: '+{{count}} tours',
+      flash: {
+        draw: '{{card}} piochée',
+        play: '{{card}} jouée',
+        defuse: 'Défusée — {{card}} replacée',
+        eliminated: '{{name}} éliminé',
+        critical: '⚠ Critique piochée',
+      },
     },
     players: {
       you: 'Vous',
@@ -364,8 +391,7 @@ export const frMessages = {
       },
       alterTheFuture: {
         title: "Altérer l'Avenir",
-        description:
-          'Réorganisez les cartes du dessus du paquet. La carte du dessus (#1) sera piochée ensuite.',
+        description: 'Réorganisez le dessus du paquet. Le n°1 sera pioché.',
         confirm: 'Confirmer',
       },
       shareTheFuture: {

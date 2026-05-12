@@ -190,6 +190,46 @@ export const enMessages = {
       pendingDraws: 'Pending draws',
       cards: 'cards',
       card: 'card',
+      defuses: 'Defuses',
+    },
+    arena: {
+      drawHint: 'Tap to draw + end turn',
+      drawAria: 'Draw a card and end your turn',
+    },
+    hud: {
+      threat: {
+        label: 'Threat',
+        oddsTitle:
+          'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
+        oddsTitleServer: 'Chance the next draw is a Critical card',
+        defusesTitle: 'Defuses you hold',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× pair',
+        triple: '3× triple',
+        fiver: '5 different',
+        placeholder: 'Select cards to combo',
+        playSingle: 'Play {{name}}',
+        playPair: 'Play 2× {{name}} · steal',
+        playTriple: 'Play 3× {{name}} · name a card',
+        playFiver: 'Play 5 · pick from discard',
+        invalid: 'Invalid combo',
+        pickTarget: 'Pick a target',
+      },
+      cards: {
+        toggleName: 'Card name',
+        toggleDescription: 'Card description',
+      },
+      extraTurns: '+{{count}} turn',
+      extraTurnsPlural: '+{{count}} turns',
+      flash: {
+        draw: 'Drew {{card}}',
+        play: 'Played {{card}}',
+        defuse: 'Defused — {{card}} reinserted',
+        eliminated: '{{name}} eliminated',
+        critical: '⚠ Critical drawn',
+      },
     },
     players: {
       you: 'You',

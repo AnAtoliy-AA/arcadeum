@@ -75,6 +75,7 @@ export function executeTargetedAttack(
       {
         scope: 'all',
         senderId: playerId,
+        targetId: targetPlayerId,
       },
     ),
   );
@@ -299,7 +300,7 @@ export function executeChainStrike(
     helpers.createLogEntry(
       'action',
       `Played Chain Strike! ${targetPlayerId} then ${chainTargetId} must each draw!`,
-      { scope: 'all', senderId: playerId },
+      { scope: 'all', senderId: playerId, targetId: targetPlayerId },
     ),
   );
 

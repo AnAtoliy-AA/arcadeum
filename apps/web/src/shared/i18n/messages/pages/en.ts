@@ -1,4 +1,114 @@
+import { adminAnnouncementsEn } from './admin-announcements/en';
+import { adminTournamentsEn } from './admin-tournaments/en';
+import { walletEn } from './wallet/en';
+import { adminWalletEn } from './admin-wallet/en';
+import { gemsEn } from './gems/en';
+import { adminGemPackagesEn } from './admin-gem-packages/en';
+import { adminEconomyEn } from './admin-economy/en';
+import { dailyRewardsEn } from './daily-rewards/en';
+
 export const en = {
+  admin: {
+    title: 'Admin',
+    welcome: 'Welcome to the admin area',
+    welcomeBody:
+      'Feature panels will appear here as they ship. Use the sidebar to navigate.',
+    signedInAs: 'Signed in as {username}',
+    nav: {
+      dashboard: 'Dashboard',
+      users: 'Users',
+      payments: 'Payments',
+      announcements: 'Announcements',
+      tournaments: 'Tournaments',
+      economy: 'Economy',
+      comingSoon: 'Coming soon',
+    },
+    error: {
+      title: 'Something went wrong',
+      body: 'An error occurred while loading this admin page.',
+      retry: 'Try again',
+    },
+    users: {
+      title: 'Users',
+      search: { placeholder: 'Search by username, email, or display name' },
+      filter: {
+        role: { all: 'All roles', placeholder: 'Filter by role' },
+      },
+      table: {
+        username: 'Username',
+        email: 'Email',
+        role: 'Role',
+        createdAt: 'Created',
+        actions: 'Actions',
+      },
+      empty: {
+        noResults: 'No users match your filters.',
+        noUsers: 'No users yet.',
+      },
+      pagination: {
+        prev: 'Previous',
+        next: 'Next',
+        of: 'Page {current} of {total}',
+      },
+      totalLabel: '{total} users',
+      selfTooltip: "You can't change your own role.",
+      role: {
+        free: 'Free',
+        premium: 'Premium',
+        vip: 'VIP',
+        supporter: 'Supporter',
+        moderator: 'Moderator',
+        tester: 'Tester',
+        developer: 'Developer',
+        admin: 'Admin',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: "You can't change your own role.",
+        LAST_ADMIN_PROTECTED: "Can't demote the last admin.",
+        USER_NOT_FOUND: 'User not found.',
+        INVALID_USER_ID: 'Invalid user id.',
+        generic: 'Something went wrong. Please try again.',
+      },
+    },
+    payments: {
+      title: 'Payments',
+      search: { placeholder: 'Search by note, name, or transaction id' },
+      filter: {
+        visibility: {
+          label: 'Visibility',
+          all: 'All',
+          public: 'Public only',
+          private: 'Private only',
+        },
+      },
+      table: {
+        user: 'User',
+        amount: 'Amount',
+        note: 'Note',
+        visibility: 'Visibility',
+        createdAt: 'Created',
+        transactionId: 'Transaction',
+      },
+      chip: {
+        public: 'Public',
+        private: 'Private',
+        anonymous: 'Anonymous',
+      },
+      empty: {
+        noResults: 'No payment notes match your filters.',
+        noNotes: 'No payment notes yet.',
+      },
+      pagination: {
+        prev: 'Previous',
+        next: 'Next',
+        of: 'Page {current} of {total}',
+      },
+      totalLabel: '{total} notes',
+    },
+    announcements: adminAnnouncementsEn,
+    tournaments: adminTournamentsEn,
+    wallet: adminWalletEn,
+  },
   tournaments: {
     title: 'Tournaments',
     subtitle: 'Compete against the best players worldwide',
@@ -22,6 +132,50 @@ export const en = {
       },
     ],
     comingSoon: 'Tournament mode is coming soon. Stay tuned!',
+    list: {
+      loading: 'Loading tournaments…',
+      empty: 'No tournaments yet. Check back soon!',
+      card: {
+        registered: '{count} / {max} registered',
+        prize: 'Prize',
+        entryFee: 'Entry fee',
+        prizePool: 'Prize pool',
+        registerCta: 'Register',
+        unregisterCta: 'Unregister',
+        signInToRegister: 'Sign in to register',
+        full: 'Join waitlist',
+        registrationClosed: 'Registration closed',
+        confirmRegister: {
+          title: 'Confirm entry',
+          body: 'This tournament costs {fee} coins. Your balance: {balance} coins.',
+          confirm: 'Pay & Register',
+          cancel: 'Cancel',
+        },
+        confirmUnregister: {
+          refund: "You'll be refunded {amount} coins.",
+          title: 'Cancel registration',
+          body: 'Are you sure?',
+          confirm: 'Yes, cancel',
+          cancelButton: 'No, keep me in',
+        },
+        errors: {
+          insufficientFunds: 'Not enough coins to enter.',
+        },
+        effectiveStatus: {
+          scheduled: 'Scheduled',
+          registration_open: 'Registration open',
+          registration_closed: 'Registration closed',
+          live: 'Live',
+          awaiting_results: 'Awaiting results',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Sea Battle',
+        },
+      },
+    },
   },
   blog: {
     title: 'Gaming Blog',
@@ -159,6 +313,122 @@ export const en = {
     subtitle: 'See where you rank among top players',
     description:
       'Track your position across all games, compare stats with friends, and follow the top players in each category. Rankings update in real time after every match.',
+    live: 'Live',
+    capturedAt: 'Captured {time}',
+    hero: {
+      eyebrow: 'Live · Season 4',
+      title: 'Race the leaderboard.',
+      tagline:
+        'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.',
+    },
+    ticker: { live: 'Live' },
+    modes: {
+      all: { name: 'All games', subtitle: 'Combined ladder', icon: '◎' },
+      critical: { name: 'Critical', subtitle: 'High-stakes cards', icon: '♠' },
+      sea_battle: {
+        name: 'Sea Battle',
+        subtitle: 'Naval strategy',
+        icon: '⚓',
+      },
+    },
+    cup: {
+      eyebrow: 'Tournament',
+      title: 'Autumn Cup',
+      endsIn: 'Ends in',
+      prizePool: 'Prize pool',
+      participants: 'Participants',
+      qualifiedLabel: 'Qualified',
+      comingSoon: 'Coming soon',
+      comingSoonBody: 'Live tournaments and prize pools are coming soon.',
+    },
+    mythic: {
+      label: 'Mythic',
+      streak: '{count}-game streak',
+      leadOver: '+{delta} over #2',
+      recentLabel: 'Last 12 matches',
+      challenge: '⚔ Challenge',
+      watch: '▶ Watch replay',
+      follow: 'Follow',
+      runnerUp: 'Runner · Up',
+      thirdPlace: '3rd · Place',
+    },
+    controls: {
+      global: 'Global',
+      perGame: 'Per-game',
+      tournaments: 'Tournaments',
+      friends: 'Friends',
+      regional: 'Regional',
+      searchPlaceholder: 'Find player…',
+      jumpToMe: '↓ Jump to me',
+      ranges: {
+        today: 'Today',
+        week: 'Week',
+        month: 'Month',
+        season: 'Season',
+      },
+    },
+    table: {
+      rank: '#',
+      player: 'Player',
+      region: 'Region',
+      rating: 'Rating',
+      record: 'W–L–D',
+      winrate: 'Winrate',
+      form: 'Form',
+      trend: 'Trend',
+    },
+    trend: {
+      up: 'Up {n}',
+      down: 'Down {n}',
+      same: 'No change',
+    },
+    climbers: { title: 'Top climbers' },
+    fallers: { title: 'Biggest drops' },
+    squads: { title: 'Top squads', members: '{count} members' },
+    regions: {
+      title: 'By region',
+      na: 'North America',
+      eu: 'Europe',
+      sa: 'South America',
+      asia: 'Asia',
+      oceania: 'Oceania',
+      africa: 'Africa',
+      me: 'Middle East',
+    },
+    rewards: {
+      title: 'Reward ladder',
+      mythic: 'Mythic crown + 12k gold',
+      diamond: 'Diamond shard + 6k gold',
+      platinum: 'Platinum trophy + 3k gold',
+      gold: '1k gold + cosmetic',
+    },
+    self: {
+      pinned: 'Your rank',
+      unranked: 'Unranked — play 5 ranked games to appear',
+      share: 'Share',
+    },
+    loadMore: 'Load more',
+    freshness: {
+      updatedAt: 'Updated {ago}',
+      justNow: 'just now',
+      secondsAgo: '{n}s ago',
+      minutesAgo: '{n}m ago',
+      hoursAgo: '{n}h ago',
+    },
+    profile: {
+      eyebrow: 'Player',
+      placeholder:
+        'Full profile with rating history, recent matches, and squad info is coming soon.',
+      back: 'Back to leaderboard',
+    },
+    empty: {
+      title: 'No rankings yet',
+      body: 'Be the first to climb the ladder.',
+    },
+    errorState: {
+      title: "Couldn't load leaderboard",
+      retry: 'Retry',
+    },
     features: [
       {
         title: 'Friends Leaderboard',
@@ -201,4 +471,9 @@ export const en = {
     ],
     comingSoon: 'Rewards shop is coming soon. Start earning points today!',
   },
+  wallet: walletEn,
+  gems: gemsEn,
+  adminGemPackages: adminGemPackagesEn,
+  adminEconomy: adminEconomyEn,
+  dailyRewards: dailyRewardsEn,
 };

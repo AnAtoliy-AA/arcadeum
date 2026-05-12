@@ -14,6 +14,8 @@ import {
   MailIcon,
   LogoutIcon,
   ChevronIcon,
+  UserIcon,
+  WalletIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -25,7 +27,8 @@ import {
   UserNameEllipsis,
   ProfileDropdownWrapper,
   DropdownLink,
-} from './styles';
+  DropdownButton,
+} from '@arcadeum/ui';
 
 export default function ProfileMenu() {
   const { snapshot, clearTokens } = useSessionTokens();
@@ -62,15 +65,42 @@ export default function ProfileMenu() {
   if (!displayName) return null;
 
   return (
-    <ProfileMenuContainer data-profile-menu>
+    <ProfileMenuContainer data-profile-menu data-testid="profile-menu">
       <Button
         variant="chip"
         size="sm"
-        gap="$2"
+        gap="$3"
         onClick={toggleMenu}
-        display={['none', 'none', 'flex']}
+        hoverStyle={{
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+          scale: 1.01,
+        }}
+        pressStyle={{ scale: 0.98 }}
+        style={{ transition: 'all 0.2s ease' }}
       >
-        <Avatar name={displayName} size="sm" />
+        <Avatar
+          name={displayName}
+          size="sm"
+          borderWidth={
+            role === 'admin' || role === 'vip' || role === 'premium'
+              ? 1
+              : undefined
+          }
+          borderColor={
+            role === 'admin'
+              ? 'var(--danger)'
+              : role === 'vip' || role === 'premium'
+                ? 'var(--roleVip)'
+                : undefined
+          }
+          boxShadow={
+            role === 'admin'
+              ? '0 0 8px color-mix(in srgb, var(--danger) 50%, transparent)'
+              : role === 'vip' || role === 'premium'
+                ? '0 0 8px color-mix(in srgb, var(--roleVip) 50%, transparent)'
+                : undefined
+          }
+        />
         <UserNameEllipsis data-testid="header-username">
           {displayName}
         </UserNameEllipsis>
@@ -84,49 +114,87 @@ export default function ProfileMenu() {
       </Button>
 
       <ProfileDropdownWrapper isOpen={isOpen}>
-        <DropdownLink href="/settings" onClick={closeMenu}>
-          <SettingsIcon size={16} />
+        {role === 'admin' && (
+          <>
+            <DropdownLink
+              href={routes.admin}
+              onClick={closeMenu}
+              data-testid="header-admin-link"
+              icon={<UserIcon size={18} />}
+            >
+              {t('navigation.adminTab')}
+            </DropdownLink>
+            <Divider spacing="sm" />
+          </>
+        )}
+
+        <DropdownLink
+          href={routes.wallet}
+          onClick={closeMenu}
+          data-testid="header-wallet-link"
+          icon={<WalletIcon size={18} />}
+        >
+          {t('navigation.walletTab')}
+        </DropdownLink>
+
+        <DropdownLink
+          href="/settings"
+          onClick={closeMenu}
+          icon={<SettingsIcon size={18} />}
+        >
           {t('navigation.settingsTab')}
         </DropdownLink>
 
-        <DropdownLink href={routes.stats} onClick={closeMenu}>
-          <BarChartIcon size={16} />
+        <DropdownLink
+          href={routes.stats}
+          onClick={closeMenu}
+          icon={<BarChartIcon size={18} />}
+        >
           {t('navigation.statsTab')}
         </DropdownLink>
 
-        <DropdownLink href={routes.referrals} onClick={closeMenu}>
-          <GiftIcon size={16} />
+        <DropdownLink
+          href={routes.referrals}
+          onClick={closeMenu}
+          icon={<GiftIcon size={18} />}
+        >
           {t('referrals.nav.inviteFriends')}
         </DropdownLink>
 
         <Divider spacing="sm" />
 
-        <DropdownLink href={routes.terms} onClick={closeMenu}>
-          <FileTextIcon size={16} />
+        <DropdownLink
+          href={routes.terms}
+          onClick={closeMenu}
+          icon={<FileTextIcon size={18} />}
+        >
           {t('legal.nav.terms')}
         </DropdownLink>
 
-        <DropdownLink href={routes.privacy} onClick={closeMenu}>
-          <LockIcon size={16} />
+        <DropdownLink
+          href={routes.privacy}
+          onClick={closeMenu}
+          icon={<LockIcon size={18} />}
+        >
           {t('legal.nav.privacy')}
         </DropdownLink>
 
-        <DropdownLink href={routes.contact} onClick={closeMenu}>
-          <MailIcon size={16} />
+        <DropdownLink
+          href={routes.contact}
+          onClick={closeMenu}
+          icon={<MailIcon size={18} />}
+        >
           {t('legal.nav.contact')}
         </DropdownLink>
 
         <Divider spacing="sm" />
-
-        <Button
-          variant="listItem"
-          onClick={handleLogout}
+        <DropdownButton
           data-testid="desktop-logout-button"
-          icon={<LogoutIcon size={16} />}
-          gap="$3"
+          onClick={handleLogout}
+          icon={<LogoutIcon size={18} />}
         >
           {t('common.actions.logout')}
-        </Button>
+        </DropdownButton>
       </ProfileDropdownWrapper>
     </ProfileMenuContainer>
   );

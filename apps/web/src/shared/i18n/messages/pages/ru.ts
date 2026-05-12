@@ -1,4 +1,116 @@
+import { adminAnnouncementsRu } from './admin-announcements/ru';
+import { adminTournamentsRu } from './admin-tournaments/ru';
+import { walletRu } from './wallet/ru';
+import { adminWalletRu } from './admin-wallet/ru';
+import { gemsRu } from './gems/ru';
+import { adminGemPackagesRu } from './admin-gem-packages/ru';
+import { adminEconomyRu } from './admin-economy/ru';
+import { dailyRewardsRu } from './daily-rewards/ru';
+
 export const ru = {
+  admin: {
+    title: 'Админ',
+    welcome: 'Добро пожаловать в панель администратора',
+    welcomeBody:
+      'Панели функций будут появляться здесь по мере готовности. Используйте боковое меню для навигации.',
+    signedInAs: 'Вы вошли как {username}',
+    nav: {
+      dashboard: 'Панель',
+      users: 'Пользователи',
+      payments: 'Платежи',
+      announcements: 'Объявления',
+      tournaments: 'Турниры',
+      economy: 'Экономика',
+      comingSoon: 'Скоро',
+    },
+    error: {
+      title: 'Что-то пошло не так',
+      body: 'Произошла ошибка при загрузке этой страницы.',
+      retry: 'Повторить',
+    },
+    users: {
+      title: 'Пользователи',
+      search: {
+        placeholder: 'Поиск по имени, email или отображаемому имени',
+      },
+      filter: {
+        role: { all: 'Все роли', placeholder: 'Фильтр по роли' },
+      },
+      table: {
+        username: 'Имя пользователя',
+        email: 'Email',
+        role: 'Роль',
+        createdAt: 'Создан',
+        actions: 'Действия',
+      },
+      empty: {
+        noResults: 'Нет пользователей по фильтру.',
+        noUsers: 'Пользователей пока нет.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Вперёд',
+        of: 'Страница {current} из {total}',
+      },
+      totalLabel: '{total} пользователей',
+      selfTooltip: 'Нельзя изменить свою собственную роль.',
+      role: {
+        free: 'Бесплатный',
+        premium: 'Премиум',
+        vip: 'VIP',
+        supporter: 'Спонсор',
+        moderator: 'Модератор',
+        tester: 'Тестер',
+        developer: 'Разработчик',
+        admin: 'Админ',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: 'Нельзя изменить свою собственную роль.',
+        LAST_ADMIN_PROTECTED: 'Нельзя понизить последнего администратора.',
+        USER_NOT_FOUND: 'Пользователь не найден.',
+        INVALID_USER_ID: 'Неверный идентификатор пользователя.',
+        generic: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
+    },
+    payments: {
+      title: 'Платежи',
+      search: { placeholder: 'Поиск по тексту, имени или ID транзакции' },
+      filter: {
+        visibility: {
+          label: 'Видимость',
+          all: 'Все',
+          public: 'Только публичные',
+          private: 'Только приватные',
+        },
+      },
+      table: {
+        user: 'Пользователь',
+        amount: 'Сумма',
+        note: 'Заметка',
+        visibility: 'Видимость',
+        createdAt: 'Создано',
+        transactionId: 'Транзакция',
+      },
+      chip: {
+        public: 'Публичная',
+        private: 'Приватная',
+        anonymous: 'Аноним',
+      },
+      empty: {
+        noResults: 'Нет платежей по фильтру.',
+        noNotes: 'Платежей пока нет.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Вперёд',
+        of: 'Страница {current} из {total}',
+      },
+      totalLabel: '{total} платежей',
+    },
+    announcements: adminAnnouncementsRu,
+    tournaments: adminTournamentsRu,
+    wallet: adminWalletRu,
+  },
   tournaments: {
     title: 'Турниры',
     subtitle: 'Соревнуйтесь с лучшими игроками мира',
@@ -22,6 +134,50 @@ export const ru = {
       },
     ],
     comingSoon: 'Режим турниров скоро появится. Следите за обновлениями!',
+    list: {
+      loading: 'Загрузка турниров…',
+      empty: 'Турниров пока нет. Загляните позже!',
+      card: {
+        registered: 'Записано {count} / {max}',
+        prize: 'Приз',
+        entryFee: 'Взнос',
+        prizePool: 'Призовой фонд',
+        registerCta: 'Зарегистрироваться',
+        unregisterCta: 'Отменить регистрацию',
+        signInToRegister: 'Войдите, чтобы зарегистрироваться',
+        full: 'В лист ожидания',
+        registrationClosed: 'Регистрация закрыта',
+        confirmRegister: {
+          title: 'Подтвердить участие',
+          body: 'Этот турнир стоит {fee} монет. Ваш баланс: {balance} монет.',
+          confirm: 'Оплатить и зарегистрироваться',
+          cancel: 'Отмена',
+        },
+        confirmUnregister: {
+          refund: 'Вам будет возвращено {amount} монет.',
+          title: 'Отмена регистрации',
+          body: 'Вы уверены?',
+          confirm: 'Да, отменить',
+          cancelButton: 'Нет, остаться',
+        },
+        errors: {
+          insufficientFunds: 'Недостаточно монет для участия.',
+        },
+        effectiveStatus: {
+          scheduled: 'Запланирован',
+          registration_open: 'Регистрация открыта',
+          registration_closed: 'Регистрация закрыта',
+          live: 'Идёт',
+          awaiting_results: 'Ожидание результатов',
+          completed: 'Завершён',
+          cancelled: 'Отменён',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Морской бой',
+        },
+      },
+    },
   },
   blog: {
     title: 'Игровой блог',
@@ -158,6 +314,126 @@ export const ru = {
     subtitle: 'Узнайте своё место среди лучших игроков',
     description:
       'Отслеживайте свою позицию во всех играх, сравнивайте статистику с друзьями и следите за лучшими игроками. Рейтинги обновляются в реальном времени.',
+    live: 'В прямом эфире',
+    capturedAt: 'Снимок {time}',
+    hero: {
+      eyebrow: 'В прямом эфире · Сезон 4',
+      title: 'Догоняй таблицу.',
+      tagline:
+        'Обновляется каждые 30 секунд. Топ-100 игроков готовится к Кубку чемпионов.',
+    },
+    ticker: { live: 'В эфире' },
+    modes: {
+      all: { name: 'Все игры', subtitle: 'Сводный рейтинг', icon: '◎' },
+      critical: {
+        name: 'Critical',
+        subtitle: 'Карты с высокими ставками',
+        icon: '♠',
+      },
+      sea_battle: {
+        name: 'Морской бой',
+        subtitle: 'Морская стратегия',
+        icon: '⚓',
+      },
+    },
+    cup: {
+      eyebrow: 'Турнир',
+      title: 'Осенний кубок',
+      endsIn: 'Заканчивается через',
+      prizePool: 'Призовой фонд',
+      participants: 'Участники',
+      qualifiedLabel: 'Прошли',
+      comingSoon: 'Скоро',
+      comingSoonBody: 'Турниры с призовыми фондами появятся в ближайшее время.',
+    },
+    mythic: {
+      label: 'Мифик',
+      streak: 'Серия из {count} побед',
+      leadOver: '+{delta} над #2',
+      recentLabel: 'Последние 12 матчей',
+      challenge: '⚔ Вызвать',
+      watch: '▶ Смотреть запись',
+      follow: 'Подписаться',
+      runnerUp: 'Серебро',
+      thirdPlace: 'Бронза',
+    },
+    controls: {
+      global: 'Глобальный',
+      perGame: 'По играм',
+      tournaments: 'Турниры',
+      friends: 'Друзья',
+      regional: 'Регион',
+      searchPlaceholder: 'Найти игрока…',
+      jumpToMe: '↓ К моему рангу',
+      ranges: {
+        today: 'Сегодня',
+        week: 'Неделя',
+        month: 'Месяц',
+        season: 'Сезон',
+      },
+    },
+    table: {
+      rank: '#',
+      player: 'Игрок',
+      region: 'Регион',
+      rating: 'Рейтинг',
+      record: 'П–П–Н',
+      winrate: 'Винрейт',
+      form: 'Форма',
+      trend: 'Тренд',
+    },
+    trend: {
+      up: 'Вверх на {n}',
+      down: 'Вниз на {n}',
+      same: 'Без изменений',
+    },
+    climbers: { title: 'Топ роста' },
+    fallers: { title: 'Крупнейшие падения' },
+    squads: { title: 'Топ кланов', members: '{count} участников' },
+    regions: {
+      title: 'По регионам',
+      na: 'Северная Америка',
+      eu: 'Европа',
+      sa: 'Южная Америка',
+      asia: 'Азия',
+      oceania: 'Океания',
+      africa: 'Африка',
+      me: 'Ближний Восток',
+    },
+    rewards: {
+      title: 'Лестница наград',
+      mythic: 'Мифическая корона + 12 тыс. золота',
+      diamond: 'Алмазный осколок + 6 тыс. золота',
+      platinum: 'Платиновый кубок + 3 тыс. золота',
+      gold: '1 тыс. золота + косметика',
+    },
+    self: {
+      pinned: 'Ваш ранг',
+      unranked: 'Без ранга — сыграйте 5 рейтинговых матчей',
+      share: 'Поделиться',
+    },
+    loadMore: 'Показать ещё',
+    freshness: {
+      updatedAt: 'Обновлено {ago}',
+      justNow: 'только что',
+      secondsAgo: '{n} с назад',
+      minutesAgo: '{n} мин назад',
+      hoursAgo: '{n} ч назад',
+    },
+    profile: {
+      eyebrow: 'Игрок',
+      placeholder:
+        'Полный профиль с историей рейтинга, последними матчами и информацией о клане скоро появится.',
+      back: 'Назад к таблице',
+    },
+    empty: {
+      title: 'Рейтингов пока нет',
+      body: 'Будьте первым на вершине.',
+    },
+    errorState: {
+      title: 'Не удалось загрузить таблицу лидеров',
+      retry: 'Повторить',
+    },
     features: [
       {
         title: 'Таблицы друзей',
@@ -199,4 +475,9 @@ export const ru = {
     ],
     comingSoon: 'Магазин наград скоро откроется!',
   },
+  wallet: walletRu,
+  gems: gemsRu,
+  adminGemPackages: adminGemPackagesRu,
+  adminEconomy: adminEconomyRu,
+  dailyRewards: dailyRewardsRu,
 };

@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import {
-  getMessages,
+  loadMessages,
   DEFAULT_LOCALE,
   type Locale,
   type TranslationBundle,
@@ -14,7 +14,7 @@ export async function getTranslations(): Promise<TranslationBundle> {
   const cookieStore = await cookies();
   const locale =
     (cookieStore.get('app-language')?.value as Locale) || DEFAULT_LOCALE;
-  return getMessages(locale);
+  return loadMessages(locale);
 }
 
 /**

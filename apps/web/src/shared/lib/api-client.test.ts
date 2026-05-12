@@ -160,6 +160,43 @@ describe('apiClient', () => {
     }
   });
 
+  it('uses the generous CLIENT_TIMEOUT as default for browser fetches (ARC-594)', async () => {
+    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+    (fetch as Mock).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    });
+
+    await apiClient.get('/default-timeout');
+
+    const longTimeouts = setTimeoutSpy.mock.calls
+      .map((call) => call[1])
+      .filter((ms): ms is number => typeof ms === 'number' && ms >= 1000);
+    // 30_000 is CLIENT_TIMEOUT; 5_000 (prod SSR) and 15_000 (dev SSR) would be
+    // wrong defaults for browser-initiated requests.
+    expect(longTimeouts).toContain(30_000);
+    expect(longTimeouts).not.toContain(5_000);
+
+    setTimeoutSpy.mockRestore();
+  });
+
+  it('respects a caller-provided timeout override', async () => {
+    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+    (fetch as Mock).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    });
+
+    await apiClient.get('/explicit-timeout', { timeout: 1234 });
+
+    const timeoutValues = setTimeoutSpy.mock.calls.map((call) => call[1]);
+    expect(timeoutValues).toContain(1234);
+
+    setTimeoutSpy.mockRestore();
+  });
+
   it('supports all HTTP methods', async () => {
     (fetch as Mock).mockResolvedValue({
       ok: true,
@@ -171,6 +208,15 @@ describe('apiClient', () => {
     expect(fetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({ method: 'PUT' }),
+    );
+
+    await apiClient.patch('/update', { foo: 'bar' });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ foo: 'bar' }),
+      }),
     );
 
     await apiClient.delete('/remove');

@@ -30,5 +30,14 @@ backend-e2e-errors.log
 
 # docs/superpowers
 
+# Lighthouse audit reports (large auto-generated JSON)
+docs/superpowers/specs/lighthouse/
+
 # E2E test results
 test-results/
+
+# Local debug screenshots (Playwright MCP captures, etc.)
+# Repo-root *.png/*.jpg are screenshots; legitimate assets live under apps/, packages/, and assets/
+/*.png
+/*.jpg
+/*.jpeg

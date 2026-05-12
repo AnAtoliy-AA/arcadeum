@@ -14,6 +14,7 @@ import { TranslationKey } from '@/shared/lib/useTranslation';
 interface RematchInvitationModalProps {
   isOpen: boolean;
   senderName: string;
+  message?: string;
   onAccept: () => void;
   onDecline: () => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
@@ -37,6 +38,7 @@ const MessageText = styled(Paragraph, {
 export function RematchInvitationModal({
   isOpen,
   senderName,
+  message,
   onAccept,
   onDecline,
   t,
@@ -67,6 +69,27 @@ export function RematchInvitationModal({
               name: senderName,
             })}
           </MessageText>
+
+          {message && message.trim().length > 0 && (
+            <YStack
+              alignSelf="stretch"
+              marginBottom="$5"
+              padding="$3"
+              borderRadius="$3"
+              borderWidth={1}
+              borderColor="rgba(255, 255, 255, 0.12)"
+              backgroundColor="rgba(255, 255, 255, 0.04)"
+            >
+              <Paragraph
+                fontSize="$3"
+                lineHeight="$3"
+                color="rgba(255, 255, 255, 0.9)"
+                fontStyle="italic"
+              >
+                “{message}”
+              </Paragraph>
+            </YStack>
+          )}
 
           <ModalActions>
             <ModalButton

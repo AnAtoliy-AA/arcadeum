@@ -9,6 +9,15 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
+import { LeaderboardsModule } from './leaderboards/leaderboards.module';
+import { AdminModule } from './admin/admin.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
+import { TournamentsModule } from './tournaments/tournaments.module';
+import { WalletModule } from './wallet/wallet.module';
+import { GemsModule } from './gems/gems.module';
+import { EconomyModule } from './economy/economy.module';
+import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
+import { resolveMongoUri } from './common/utils/mongo-uri.util';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
@@ -23,7 +32,15 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     GamesModule,
     PaymentsModule,
     ReferralModule,
-    MongooseModule.forRoot(process.env.MONGODB_URI || ''),
+    LeaderboardsModule,
+    AdminModule,
+    AnnouncementsModule,
+    TournamentsModule,
+    WalletModule,
+    GemsModule,
+    EconomyModule,
+    DailyRewardsModule,
+    MongooseModule.forRoot(resolveMongoUri()),
   ],
   controllers: [AppController],
   providers: [

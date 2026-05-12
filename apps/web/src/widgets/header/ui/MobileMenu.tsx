@@ -11,16 +11,22 @@ import { appConfig } from '@/shared/config/app-config';
 import {
   MobileNav,
   MobileUserInfo,
-  UserNameEllipsis,
   MobileVersionText,
   NavMobileLink,
 } from './styles';
 import { XStack, YStack } from 'tamagui';
+import { UserNameEllipsis } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
-import { LogoutIcon, SupportIcon } from '@arcadeum/ui/components/Icons/index';
+import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
+import {
+  LogoutIcon,
+  SupportIcon,
+  UserIcon,
+  WalletIcon,
+} from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 
@@ -68,6 +74,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
       {isAuthenticated && displayName && (
         <>
           <MobileUserInfo>
+            <Avatar name={displayName} size="sm" />
             <UserNameEllipsis>{displayName}</UserNameEllipsis>
             {role !== 'free' && (
               <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
@@ -76,6 +83,32 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               <CosmeticBadge key={badgeId} badgeId={badgeId} />
             ))}
           </MobileUserInfo>
+          <LinkButton
+            href={routes.wallet}
+            variant="ghost"
+            size="sm"
+            gap="$2"
+            isActive={pathname === routes.wallet}
+            fullWidth
+            data-testid="mobile-wallet-link"
+          >
+            <WalletIcon size={18} />
+            {t('navigation.walletTab')}
+          </LinkButton>
+          {role === 'admin' && (
+            <LinkButton
+              href={routes.admin}
+              variant="ghost"
+              size="sm"
+              gap="$2"
+              isActive={pathname === routes.admin}
+              fullWidth
+              data-testid="mobile-admin-link"
+            >
+              <UserIcon size={18} />
+              {t('navigation.adminTab')}
+            </LinkButton>
+          )}
           <Button
             variant="listItem"
             mt="$2"

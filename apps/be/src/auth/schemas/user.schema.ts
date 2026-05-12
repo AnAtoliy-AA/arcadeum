@@ -43,6 +43,12 @@ export class User {
 
   @Prop({ type: String, default: null })
   referredBy?: string | null;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  coins!: number;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  gems!: number;
 }
 
 export type UserDocument = User & Document;

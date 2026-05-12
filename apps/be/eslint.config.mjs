@@ -30,12 +30,31 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "MemberExpression[property.name=/^(coins|gems)$/]",
+          message: 'Direct access to wallet balance fields is forbidden outside `apps/be/src/wallet/`. Use WalletService.',
+        },
+      ],
     },
   },
   {
     files: ['**/*.styles.ts'],
     rules: {
       'max-lines': 'off',
+    },
+  },
+  {
+    files: ['src/wallet/**/*.ts', 'src/gems/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
+    },
+  },
+  {
+    files: ['**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
 );

@@ -223,6 +223,46 @@ export const byMessages = {
       pendingDraws: 'Засталося хадоў',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Абезвр.',
+    },
+    arena: {
+      drawHint: 'Націсніце, каб узяць карту і скончыць ход',
+      drawAria: 'Узяць карту і скончыць ход',
+    },
+    hud: {
+      threat: {
+        label: 'Пагроза',
+        oddsTitle:
+          'Мінімальны шанец цягнуць Крытычную карту (толькі бачныя карты — схаваныя могуць павялічыць шанец)',
+        oddsTitleServer: 'Шанец, што наступная карта — Крытычная',
+        defusesTitle: 'Карты Дэфузу ў вас',
+      },
+      combo: {
+        label: 'Комба',
+        pair: '2× пара',
+        triple: '3× тройка',
+        fiver: '5 розных',
+        placeholder: 'Абярыце карты для камбо',
+        playSingle: 'Згуляць {{name}}',
+        playPair: 'Згуляць 2× {{name}} · скрасці',
+        playTriple: 'Згуляць 3× {{name}} · назваць карту',
+        playFiver: 'Згуляць 5 · узяць са скіду',
+        invalid: 'Несапраўднае камбо',
+        pickTarget: 'Абярыце мэту',
+      },
+      cards: {
+        toggleName: 'Назва карты',
+        toggleDescription: 'Апісанне карты',
+      },
+      extraTurns: '+{{count}} ход',
+      extraTurnsPlural: '+{{count}} хадоў',
+      flash: {
+        draw: 'Узята: {{card}}',
+        play: 'Згулі: {{card}}',
+        defuse: 'Абясшкоджана — {{card}} вернута',
+        eliminated: '{{name}} выбыў',
+        critical: '⚠ Цягне Крытычную',
+      },
     },
     players: {
       you: 'Вы',

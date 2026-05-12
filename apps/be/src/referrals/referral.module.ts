@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReferralController } from './referral.controller';
 import { BadgesController } from './badges.controller';
@@ -10,15 +11,20 @@ import {
 } from './schemas/referral-reward.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
+import { WalletModule } from '../wallet/wallet.module';
+import { EconomyModule } from '../economy/economy.module';
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       { name: Referral.name, schema: ReferralSchema },
       { name: ReferralReward.name, schema: ReferralRewardSchema },
       { name: User.name, schema: UserSchema },
     ]),
     forwardRef(() => AuthModule),
+    forwardRef(() => WalletModule),
+    EconomyModule,
   ],
   controllers: [ReferralController, BadgesController],
   providers: [ReferralService],

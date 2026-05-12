@@ -225,6 +225,43 @@ export const ruMessages = {
       pendingDraws: 'Осталось ходов',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Обезвреж.',
+    },
+    arena: {
+      drawHint: 'Нажмите, чтобы взять карту и закончить ход',
+      drawAria: 'Взять карту и закончить ход',
+    },
+    hud: {
+      threat: {
+        label: 'Угроза',
+        oddsTitle:
+          'Минимальный шанс вытянуть Критическую карту (только видимые карты — скрытые могут увеличить шанс)',
+        oddsTitleServer: 'Шанс, что следующая карта — Критическая',
+        defusesTitle: 'Защитные карты у вас',
+      },
+      combo: {
+        label: 'Комбо',
+        pair: '2× пара',
+        triple: '3× тройка',
+        fiver: '5 разных',
+        placeholder: 'Выберите карты для комбо',
+        playSingle: 'Сыграть {{name}}',
+        playPair: 'Сыграть 2× {{name}} · украсть',
+        playTriple: 'Сыграть 3× {{name}} · назвать карту',
+        playFiver: 'Сыграть 5 · взять из сброса',
+        invalid: 'Недопустимое комбо',
+        pickTarget: 'Выберите цель',
+      },
+      /* prettier-ignore */ cards: { toggleName: 'Название карты', toggleDescription: 'Описание карты' },
+      extraTurns: '+{{count}} ход',
+      extraTurnsPlural: '+{{count}} ходов',
+      flash: {
+        draw: 'Взято: {{card}}',
+        play: 'Сыграно: {{card}}',
+        defuse: 'Обезврежено — {{card}} возвращена',
+        eliminated: '{{name}} выбыл',
+        critical: '⚠ Тянет Критическую',
+      },
     },
     players: {
       you: 'Вы',

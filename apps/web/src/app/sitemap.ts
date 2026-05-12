@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     routes.payment,
     routes.rewards,
     routes.tournaments,
+    routes.wallet,
   ].map((route) => ({
     url: `${appConfig.siteUrl}${route === routes.home ? '' : route}`,
     lastModified: new Date(),

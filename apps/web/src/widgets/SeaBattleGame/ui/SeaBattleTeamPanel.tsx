@@ -19,6 +19,7 @@ import {
   TeamSetupPanel,
   TeamSlotsBoard,
   UnassignedPool,
+  emitRemoveBotFromTeam,
   emitSetTeamMode,
   emitToggleHideShips,
   type SeaBattleTeam,
@@ -174,7 +175,20 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
         )}
 
         {teamMode && hasUnassigned && (
-          <UnassignedPool members={members} teams={teams} />
+          <UnassignedPool
+            members={members}
+            teams={teams}
+            onRemoveBot={
+              isHost
+                ? (botId) =>
+                    emitRemoveBotFromTeam({
+                      roomId,
+                      userId,
+                      targetUserId: botId,
+                    })
+                : undefined
+            }
+          />
         )}
       </YStack>
     </Card>

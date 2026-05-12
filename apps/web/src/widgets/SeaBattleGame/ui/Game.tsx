@@ -478,6 +478,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <RematchInvitationModal
           isOpen={!!invitation}
           senderName={invitation?.hostName || ''}
+          message={invitation?.message}
           onAccept={handleAcceptInvitation}
           onDecline={handleDeclineInvitation}
           t={t}
@@ -485,26 +486,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       </>
     ),
     [
-      showRules,
-      showRulesOpen,
-      onShowRulesClose,
-      t,
-      isGameOver,
-      resultModalDismissed,
-      session?.id,
-      gameResult,
-      handleRematchClick,
-      rematchLoading,
-      showRematchModal,
-      snapshot?.players,
-      resolveDisplayNameBound,
-      currentUserId,
-      closeRematchModal,
-      handleRematch,
-      cardVariant,
-      invitation,
-      handleAcceptInvitation,
-      handleDeclineInvitation,
+      showRules, showRulesOpen, onShowRulesClose, t,
+      isGameOver, resultModalDismissed, session?.id, gameResult,
+      handleRematchClick, rematchLoading, showRematchModal,
+      snapshot?.players, resolveDisplayNameBound, currentUserId,
+      closeRematchModal, handleRematch, cardVariant,
+      invitation, handleAcceptInvitation, handleDeclineInvitation,
     ],
   );
 

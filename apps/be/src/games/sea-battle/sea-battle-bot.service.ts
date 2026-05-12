@@ -24,6 +24,25 @@ const ATTACK_DELAY_MS = { min: 500, max: 1250 };
 export class SeaBattleBotService {
   private readonly logger = new Logger(SeaBattleBotService.name);
   private readonly processing = new Map<string, number>(); // lockKey -> timestamp
+  // Per-room placement chain. When several bots auto-place at the same time
+  // each one was racing on session.state (read → clone → write), so the last
+  // save clobbered the others and the loser confirmed with 0/10 ships. This
+  // queues placement engine calls per room while leaving each bot's
+  // human-feeling delay in parallel.
+  private readonly placementChain = new Map<string, Promise<unknown>>();
+
+  private chainPlacement<T>(
+    roomId: string,
+    task: () => Promise<T>,
+  ): Promise<T> {
+    const prev = this.placementChain.get(roomId) ?? Promise.resolve();
+    const next = prev.catch(() => undefined).then(task);
+    this.placementChain.set(
+      roomId,
+      next.catch(() => undefined),
+    );
+    return next;
+  }
 
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
@@ -129,8 +148,11 @@ export class SeaBattleBotService {
         return;
       }
 
-      // Auto place ships
-      await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
+      // Auto place ships — serialized per room so concurrent bots don't
+      // overwrite each other's freshly-placed ships.
+      await this.chainPlacement(session.roomId, () =>
+        this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId),
+      );
 
       await this.randomDelay(PLACEMENT_CONFIRM_DELAY_MS);
 
@@ -149,8 +171,11 @@ export class SeaBattleBotService {
         return;
       }
 
-      // Confirm placement
-      await this.seaBattleService.confirmPlacementByRoom(botId, session.roomId);
+      // Confirm placement — same per-room queue so the confirm only runs
+      // after this bot's autoPlace save has landed.
+      await this.chainPlacement(session.roomId, () =>
+        this.seaBattleService.confirmPlacementByRoom(botId, session.roomId),
+      );
     } finally {
       this.processing.delete(lockKey);
       // Re-trigger check in case battle phase started while we were locked

@@ -248,9 +248,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
           markSurroundingCellsAsMiss(target, hitShip);
           state.logs.push(
-            this.createLogEntry('action', `sunk ${shipName}!`, {
+            this.createLogEntry('action', `☠️ sunk ${shipName}!`, {
               senderId: player.playerId,
               targetId: target.playerId,
+              kind: 'sb.sunk-ship',
             }),
           );
         }
@@ -277,13 +278,20 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       shipName,
     };
 
+    const resultMark =
+      result === ATTACK_RESULT.HIT
+        ? '💥'
+        : result === ATTACK_RESULT.SUNK
+          ? '☠️'
+          : '🌊';
     state.logs.push(
       this.createLogEntry(
         'action',
-        `attacked ${cellLabel} - ${result.toUpperCase()}!`,
+        `attacked ${cellLabel} — ${resultMark} ${result.toUpperCase()}!`,
         {
           senderId: player.playerId,
           targetId: target.playerId,
+          kind: `sb.attack-${result}`,
         },
       ),
     );

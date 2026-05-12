@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import {
   XStack,
   YStack,
@@ -34,6 +34,33 @@ const TEAM_SCOPES: { value: ChatScope; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'private', label: 'Private' },
 ];
+
+const RESULT_COLORS: Record<string, string> = {
+  HIT: '#F97316', // orange
+  MISS: '#94A3B8', // slate
+  SUNK: '#EF4444', // red
+};
+
+const RESULT_PATTERN = /\b(HIT|MISS|SUNK)\b/;
+
+function renderResultHighlights(message: string): ReactNode {
+  // Split on the first occurrence of a result keyword; wrap that keyword
+  // in a colored, bold span. The rest of the message stays as-is.
+  const match = RESULT_PATTERN.exec(message);
+  if (!match) return message;
+  const idx = match.index;
+  const keyword = match[0];
+  const color = RESULT_COLORS[keyword];
+  return (
+    <>
+      {message.slice(0, idx)}
+      <span style={{ color, fontWeight: 800, fontStyle: 'normal' }}>
+        {keyword}
+      </span>
+      {message.slice(idx + keyword.length)}
+    </>
+  );
+}
 
 export function GameChat({
   resolveDisplayName,
@@ -155,6 +182,10 @@ export function GameChat({
               const targetColor = targetId
                 ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
                 : undefined;
+              const contentNode =
+                log.type === 'action' || log.type === 'system'
+                  ? renderResultHighlights(log.message)
+                  : undefined;
               return (
                 <ChatMessage
                   key={log.id}
@@ -163,6 +194,7 @@ export function GameChat({
                   targetName={targetId ? targetName : undefined}
                   targetColor={targetColor}
                   content={log.message}
+                  contentNode={contentNode}
                   type={log.type}
                   isOwn={isOwn}
                 />

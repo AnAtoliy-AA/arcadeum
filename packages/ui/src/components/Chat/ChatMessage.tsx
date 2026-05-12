@@ -1,10 +1,14 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { XStack, YStack, styled, ThemeableStack, GetProps } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 import { Typography } from '../Typography/Typography';
 
 export type ChatMessageProps = {
   content: string;
+  /** Optional rich rendering of the message body — when provided, takes
+   * precedence over `content` for system/action rows. Used to inject
+   * inline colored spans (e.g. HIT/MISS/SUNK keywords). */
+  contentNode?: React.ReactNode;
   senderName?: string;
   senderColor?: string;
   targetName?: string;
@@ -112,6 +116,7 @@ const MessageBubble = styled(YStack, {
 
 export const ChatMessage = memo(function ChatMessage({
   content,
+  contentNode,
   senderName,
   senderColor,
   targetName,
@@ -188,12 +193,12 @@ export const ChatMessage = memo(function ChatMessage({
                   </Typography>
                 </>
               ) : null}
-              {` ${content}`}
+              {contentNode ? <> {contentNode}</> : ` ${content}`}
             </>
           ) : isEncrypted ? (
             '[Encrypted Message]'
           ) : (
-            content
+            (contentNode ?? content)
           )}
         </Typography>
         {timestamp && !isSystem && (

@@ -102,6 +102,26 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const teams = teamOpts.teams ?? [];
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
 
+  // In team mode, the lobby cap is the sum of team target sizes (up to 8).
+  // The persisted room.maxPlayers can lag behind this (e.g. when a small FFA
+  // room is rematched into a larger team setup), so we override it locally so
+  // the lobby reads "8 / 8" instead of "8 / 6".
+  const teamCap = React.useMemo(
+    () =>
+      teams.reduce(
+        (sum, t) => sum + (typeof t.targetSize === 'number' ? t.targetSize : 0),
+        0,
+      ),
+    [teams],
+  );
+  const effectiveRoom = React.useMemo(
+    () =>
+      teamMode && teamCap > (room.maxPlayers ?? 0)
+        ? { ...room, maxPlayers: teamCap }
+        : room,
+    [room, teamMode, teamCap],
+  );
+
   const allTeamsFull =
     teams.length >= 2 &&
     teams.every((team) => team.playerIds.length === team.targetSize);
@@ -272,7 +292,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       )}
       <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
         <ReusableGameLobby
-          room={room}
+          room={effectiveRoom}
           isHost={isHost}
           startBusy={startBusy}
           startDisabled={teamStartBlocked}

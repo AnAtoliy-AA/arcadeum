@@ -11,8 +11,12 @@ import {
 } from '../schemas/game-room.schema';
 
 export class HistoryRematchDto {
+  // Populated by the controller from the :roomId path param. Optional in the
+  // body so the validator doesn't reject the request when the client only
+  // supplies participantIds / gameOptions / message.
+  @IsOptional()
   @IsString()
-  roomId: string;
+  roomId?: string;
 
   @IsOptional()
   @IsArray()

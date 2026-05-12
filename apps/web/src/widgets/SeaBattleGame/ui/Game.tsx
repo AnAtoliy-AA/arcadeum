@@ -405,14 +405,16 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         <RematchModal
           isOpen={showRematchModal}
           players={
-            snapshot?.players.map((p) => ({
-              playerId: p.playerId,
-              displayName: resolveDisplayNameBound(
-                p.playerId,
-                `Player ${p.playerId.slice(0, 4)} `,
-              ),
-              alive: p.alive,
-            })) || []
+            snapshot?.players
+              .filter((p) => !p.playerId.startsWith('bot-'))
+              .map((p) => ({
+                playerId: p.playerId,
+                displayName: resolveDisplayNameBound(
+                  p.playerId,
+                  `Player ${p.playerId.slice(0, 4)} `,
+                ),
+                alive: p.alive,
+              })) || []
           }
           currentUserId={currentUserId}
           rematchLoading={rematchLoading}

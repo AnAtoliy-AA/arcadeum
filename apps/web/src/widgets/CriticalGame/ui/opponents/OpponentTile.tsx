@@ -5,6 +5,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
 import type { CriticalPlayerTableState } from '../../types';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 interface OpponentTileProps {
   player: CriticalPlayerTableState;
@@ -62,7 +63,9 @@ export function OpponentTile({
   const isIdle = idlePlayers.includes(player.playerId);
   const alive = player.alive;
 
-  let ringColor: string = 'rgba(255,255,255,0.10)';
+  const playerColor = getPlayerColor(player.playerId);
+
+  let ringColor: string = alive ? playerColor : 'rgba(255,255,255,0.10)';
   if (!alive) ringColor = ELIMINATED_RING;
   else if (isTarget) ringColor = TARGET_RING;
   else if (isCurrentTurn) ringColor = TURN_RING;
@@ -114,6 +117,8 @@ export function OpponentTile({
         height={avatarSize}
         borderRadius={9999}
         backgroundColor="rgba(255,255,255,0.08)"
+        borderWidth={alive ? 2 : 0}
+        borderColor={alive ? playerColor : 'transparent'}
         alignItems="center"
         justifyContent="center"
       >
@@ -129,6 +134,7 @@ export function OpponentTile({
           letterSpacing={0.3}
           numberOfLines={1}
           maxWidth={isMobile ? 80 : 100}
+          style={alive ? { color: playerColor } : undefined}
         >
           {displayName}
         </Text>

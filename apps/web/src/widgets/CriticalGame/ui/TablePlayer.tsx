@@ -17,6 +17,7 @@ import { useMedia, Text } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
@@ -221,7 +222,10 @@ export function TablePlayer({
           </PlayerAvatar>
         </div>
 
-        <PlayerName data-testid={`player-name-${playerId}`}>
+        <PlayerName
+          data-testid={`player-name-${playerId}`}
+          color={player.alive ? getPlayerColor(playerId) : undefined}
+        >
           {displayName}
           {isPlayerIdle && <IdleBadge />}
         </PlayerName>

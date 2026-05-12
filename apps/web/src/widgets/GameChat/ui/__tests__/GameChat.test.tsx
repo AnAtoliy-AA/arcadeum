@@ -32,11 +32,13 @@ vi.mock('@arcadeum/ui', async () => {
       React.createElement('input', { 'data-testid': 'chat-input' }),
     ChatMessage: ({
       senderName,
+      senderColor,
       content,
       isOwn,
       type,
     }: {
       senderName?: string;
+      senderColor?: string;
       content: string;
       isOwn?: boolean;
       type?: 'system' | 'action' | 'message';
@@ -47,6 +49,7 @@ vi.mock('@arcadeum/ui', async () => {
           'data-testid': 'chat-message',
           'data-is-own': String(!!isOwn),
           'data-sender': senderName ?? '',
+          'data-sender-color': senderColor ?? '',
           'data-type': type ?? 'message',
         },
         content,
@@ -94,7 +97,7 @@ describe('GameChat', () => {
     expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
   });
 
-  it('prefixes action/system logs with the resolved sender name', () => {
+  it('passes raw message, sender name and a deterministic color for action/system logs', () => {
     useGameChatStore
       .getState()
       .setLogs([
@@ -112,12 +115,23 @@ describe('GameChat', () => {
     );
 
     const rendered = screen.getAllByTestId('chat-message');
-    expect(rendered[0]?.textContent).toBe('You Drew a card');
-    expect(rendered[1]?.textContent).toBe('Bob exploded!');
-    // chat messages are not prefixed
-    expect(rendered[2]?.textContent).toBe('hi');
-    // no senderId → no prefix
-    expect(rendered[3]?.textContent).toBe('Game started');
+
+    // Action log: raw content, sender name resolved, deterministic color set.
+    expect(rendered[0]?.textContent).toBe('Drew a card');
+    expect(rendered[0]?.getAttribute('data-sender')).toBe('You');
+    const p1Color = rendered[0]?.getAttribute('data-sender-color');
+    expect(p1Color).toMatch(/^#/);
+
+    // Same player id in a chat message gets the SAME color.
+    expect(rendered[2]?.getAttribute('data-sender-color')).toBe(p1Color);
+
+    // Different player → different color (probabilistically, but our palette is small)
+    expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
+    expect(rendered[1]?.getAttribute('data-sender-color')).toMatch(/^#/);
+
+    // Log without a senderId → no sender, no color.
+    expect(rendered[3]?.getAttribute('data-sender')).toBe('');
+    expect(rendered[3]?.getAttribute('data-sender-color')).toBe('');
   });
 
   it('treats messages as not-own when currentUserId is missing', () => {

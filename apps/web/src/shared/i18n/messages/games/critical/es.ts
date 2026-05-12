@@ -130,8 +130,7 @@ export const esMessages = {
         trade: 'Obliga a otro jugador a darte una carta',
         reorder: 'Mezcla el mazo de robo',
         insight: 'Mira las 3 cartas superiores del mazo',
-        cancel:
-          'Cancela cualquier acción excepto Incidente Crítico o Desactivar',
+        cancel: 'Cancela cualquier acción excepto Incidente Crítico o Desactivar',
         collectionAlpha: 'Junta nodos iguales para robar cartas',
         collectionBeta: 'Junta nodos iguales para robar cartas',
         collectionGamma: 'Junta nodos iguales para robar cartas',

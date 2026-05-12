@@ -12,6 +12,7 @@ import {
 } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
@@ -141,16 +142,15 @@ export function GameChat({
                     log.senderName ?? undefined,
                   )
                 : (log.senderName ?? undefined);
-              const isAction = log.type === 'action' || log.type === 'system';
-              const content =
-                isAction && log.senderId && senderName
-                  ? `${senderName} ${log.message}`
-                  : log.message;
+              const senderColor = log.senderId
+                ? getPlayerColor(log.senderId)
+                : undefined;
               return (
                 <ChatMessage
                   key={log.id}
-                  senderName={senderName}
-                  content={content}
+                  senderName={log.senderId ? senderName : undefined}
+                  senderColor={senderColor}
+                  content={log.message}
                   type={log.type}
                   isOwn={isOwn}
                 />

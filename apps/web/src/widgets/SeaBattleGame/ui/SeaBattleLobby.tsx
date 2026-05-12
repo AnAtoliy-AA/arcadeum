@@ -161,18 +161,20 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // the Start button for stacking context.
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
+      // Side-by-side everywhere (including narrow web-mobile widths). The
+      // preview drives the row height; the theme list flex-fills the
+      // remaining column and scrolls so it never exceeds the preview field.
       <XStack
         gap="$4"
         width="100%"
         minWidth={0}
-        alignItems="flex-start"
-        $sm={{ flexDirection: 'column' }}
+        alignItems="stretch"
       >
         <SeaBattleThemeProvider variant={selectedVariant}>
           <SeaBattleThemePreview selectedVariant={selectedVariant} />
         </SeaBattleThemeProvider>
 
-        <YStack gap="$2" flex={1} minWidth={0} maxHeight={320}>
+        <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
           <Text
             fontSize={10}
             color="rgba(148,163,184,0.6)"
@@ -181,9 +183,16 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           >
             {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
           </Text>
-          {/* Vertical, scrollable list to the right of the preview board so
-              theme chips never bleed into the sidebar. */}
-          <YStack gap="$2" overflow="scroll" paddingRight="$1">
+          {/* flex:1 + minHeight:0 is the canonical "fill remaining height
+              and scroll instead of growing" trick — the outer YStack is
+              stretched to the preview's height by alignItems="stretch". */}
+          <YStack
+            gap="$2"
+            flex={1}
+            minHeight={0}
+            overflow="scroll"
+            paddingRight="$1"
+          >
             {SEA_BATTLE_VARIANTS.map((variant) => (
               <XStack
                 key={variant.id}
@@ -194,6 +203,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 borderRadius={12}
                 borderWidth={1.5}
                 cursor="pointer"
+                flexShrink={0}
                 onClick={() => handleVariantSelect(variant.id)}
                 borderColor={
                   selectedVariant === variant.id

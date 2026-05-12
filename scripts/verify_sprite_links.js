@@ -7,7 +7,7 @@ const PUBLIC_SPRITES_DIR = path.join(__dirname, '../apps/web/public/images/cards
 console.log('--- Critical Game Sprite Link Verification ---');
 
 const allEntries = fs.readdirSync(VARIANTS_DIR);
-const variantFiles = [];
+const variantMap = new Map();
 
 allEntries.forEach(entry => {
   const fullPath = path.join(VARIANTS_DIR, entry);
@@ -16,20 +16,21 @@ allEntries.forEach(entry => {
   if (stats.isDirectory()) {
     const cardsPath = path.join(fullPath, 'cards.ts');
     if (fs.existsSync(cardsPath)) {
-      variantFiles.push({ name: entry, path: cardsPath });
+      variantMap.set(entry, cardsPath);
     }
   } else if (entry.endsWith('.ts') && !['types.ts', 'base.ts', 'index.ts'].includes(entry) && !entry.includes('.test.') && !entry.includes('.spec.')) {
-    variantFiles.push({ name: entry.replace('.ts', ''), path: fullPath });
+    const name = entry.replace('.ts', '');
+    if (!variantMap.has(name)) {
+      variantMap.set(name, fullPath);
+    }
   }
 });
 
 let errors = 0;
 let warnings = 0;
 
-variantFiles.forEach(variant => {
-  const filePath = variant.path;
+variantMap.forEach((filePath, variantName) => {
   const content = fs.readFileSync(filePath, 'utf8');
-  const variantName = variant.name;
 
   // 1. Check if getCardSpriteUrl is defined
   const spriteUrlMatch = content.match(/getCardSpriteUrl:\s*\(\)\s*(?::\s*\w+)?\s*=>\s*['"](.+?)['"]/);
@@ -61,7 +62,7 @@ variantFiles.forEach(variant => {
 });
 
 console.log('\n--- Summary ---');
-console.log(`Verified: ${variantFiles.length} variants`);
+console.log(`Verified: ${variantMap.size} variants`);
 console.log(`Errors:   ${errors}`);
 console.log(`Warnings: ${warnings}`);
 

@@ -117,6 +117,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         alignItems: 'stretch',
         justifyItems: 'stretch',
         alignContent: 'start',
+        // Tracks are capped at MAX_BOARD_WIDTH_DESKTOP so on wide / fullscreen
+        // displays the row would otherwise leave a large blank strip on the
+        // right of the rightmost board. Use space-evenly to redistribute that
+        // slack as extra inter-board gaps, so the layout fills the row.
+        justifyContent: 'space-evenly',
         flexGrow: 1,
       }}
     >

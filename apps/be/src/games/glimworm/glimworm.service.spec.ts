@@ -112,17 +112,30 @@ describe('GlimwormService — lifecycle', () => {
       ).toThrow('Only host can start');
     });
 
-    it('throws when fewer than 2 ready worms', () => {
+    it('throws when fewer than 2 worms in the session', () => {
       const { service } = makeService();
       service.joinRoom('r1', 'u1');
-      service.joinRoom('r1', 'u2');
-      service.markReady('r1', 'u1', true);
+      // Only the host has joined — no guests, no bots.
       expect(() =>
         service.start('r1', 'u1', {
           variant: 'battle_royale',
           powerupsEnabled: false,
         }),
-      ).toThrow('Need at least 2 ready players');
+      ).toThrow('Need at least 2 players');
+    });
+
+    it('auto-readies everyone when host starts (no per-player handshake needed)', () => {
+      const { service, store } = makeService();
+      service.joinRoom('r1', 'u1');
+      service.joinRoom('r1', 'u2');
+      // Neither is explicitly marked ready.
+      service.start('r1', 'u1', {
+        variant: 'battle_royale',
+        powerupsEnabled: false,
+      });
+      const session = store.get('r1');
+      expect(session?.worms['u1'].ready).toBe(true);
+      expect(session?.worms['u2'].ready).toBe(true);
     });
 
     it('starts: sets countdown status, startedAt, schedules tick interval, seeds segments', () => {

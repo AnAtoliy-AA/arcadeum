@@ -173,12 +173,10 @@ export class GlimwormService implements OnModuleDestroy {
     if (session.hostUserId !== hostUserId) {
       throw new Error('Only host can start');
     }
-    // Ensure the host is registered as a worm and marked ready.
+    // Ensure the host is registered as a worm.
     if (!session.worms[hostUserId]) {
       this.joinRoom(roomId, hostUserId);
     }
-    const hostWorm = session.worms[hostUserId];
-    if (hostWorm) hostWorm.ready = true;
 
     if (opts.fillWithBots) {
       const humans = Object.values(session.worms).filter((w) => !w.isBot).length;
@@ -191,10 +189,17 @@ export class GlimwormService implements OnModuleDestroy {
       fillWithBots(session, humans + requested);
     }
 
-    const readyWorms = Object.values(session.worms).filter((w) => w.ready);
-    if (readyWorms.length < 2) {
+    // Host clicking Start commits the current roster to playing — auto-ready
+    // everyone so we don't need a separate per-player Ready handshake (which
+    // ReusableGameLobby doesn't surface).
+    for (const w of Object.values(session.worms)) {
+      w.ready = true;
+    }
+
+    const totalWorms = Object.keys(session.worms).length;
+    if (totalWorms < 2) {
       throw new Error(
-        `Need at least 2 ready players (have ${readyWorms.length})`,
+        `Need at least 2 players (have ${totalWorms}); add a guest or start with bots.`,
       );
     }
 

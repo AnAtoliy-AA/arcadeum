@@ -318,14 +318,28 @@ export class GameHistoryService {
         ? participantIds.filter((id) => id !== userId) // filter out host
         : originalParticipantIds;
 
-    // Build participants array: host ONLY
+    // Build participants array: host + any bots that were stamped into the
+    // carried-over team config. Without this, team-mode rematches start with
+    // empty seats — startSession then fails with "Not enough players" because
+    // the bot ids referenced in teams aren't actually room participants.
     const now = new Date();
-    const participants = [
-      {
-        userId,
-        joinedAt: now,
-      },
+    const participants: { userId: string; joinedAt: Date }[] = [
+      { userId, joinedAt: now },
     ];
+    const carriedOptions = dto.gameOptions || originalRoom.gameOptions || {};
+    const carriedTeams = (
+      carriedOptions as { teams?: { playerIds?: string[] }[] }
+    ).teams;
+    if (Array.isArray(carriedTeams)) {
+      for (const team of carriedTeams) {
+        if (!Array.isArray(team.playerIds)) continue;
+        for (const pid of team.playerIds) {
+          if (typeof pid === 'string' && pid.startsWith('bot-')) {
+            participants.push({ userId: pid, joinedAt: now });
+          }
+        }
+      }
+    }
 
     // Generate rematch name: "someName" -> "someName Rematch 1" -> "someName Rematch 2"
     // Extract base name (strip existing " Rematch N" suffix if present)

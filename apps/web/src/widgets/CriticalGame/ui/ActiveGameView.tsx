@@ -195,6 +195,8 @@ export function ActiveGameView({
     actions.postHistoryNote,
     resolveDisplayName,
   );
+  // (No registered actor-color resolver in Critical — GameChat falls back
+  // to the shared getPlayerColor(id), which is exactly what we want for FFA.)
 
   const gameHandlers = useGameHandlers({
     selectedMode,

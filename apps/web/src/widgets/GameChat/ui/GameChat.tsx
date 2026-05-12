@@ -43,6 +43,7 @@ export function GameChat({
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
+  const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [chatMessage, setChatMessage] = useState('');
@@ -143,7 +144,8 @@ export function GameChat({
                   )
                 : (log.senderName ?? undefined);
               const senderColor = log.senderId
-                ? getPlayerColor(log.senderId)
+                ? (resolveActorColor?.(log.senderId) ??
+                  getPlayerColor(log.senderId))
                 : undefined;
               return (
                 <ChatMessage

@@ -85,7 +85,7 @@ function PlayerRow({
       <Text
         fontSize={19}
         fontWeight="600"
-        style={{ color: getPlayerColor(player.playerId) }}
+        style={{ color: teamColor ?? getPlayerColor(player.playerId) }}
       >
         {resolveDisplayName(player.playerId, 'Player')}{' '}
         {isMe
@@ -145,6 +145,12 @@ export function SeaBattleTable({
 
   const teamMode = !!teams && teams.length > 0;
   const playerById = new Map(players.map((p) => [p.playerId, p]));
+  const activePlayerTeam = activePlayer
+    ? teams?.find((tm) => tm.playerIds.includes(activePlayer.playerId))
+    : undefined;
+  const activePlayerColor = activePlayer
+    ? (activePlayerTeam?.color ?? getPlayerColor(activePlayer.playerId))
+    : undefined;
 
   return (
     <YStack
@@ -184,11 +190,7 @@ export function SeaBattleTable({
           <Text
             fontSize={17}
             fontWeight="800"
-            style={
-              activePlayer
-                ? { color: getPlayerColor(activePlayer.playerId) }
-                : undefined
-            }
+            style={activePlayerColor ? { color: activePlayerColor } : undefined}
           >
             {isMyTurn
               ? t(

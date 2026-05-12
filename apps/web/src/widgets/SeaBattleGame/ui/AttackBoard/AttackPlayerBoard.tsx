@@ -182,7 +182,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <PlayerName
             data-testid="player-board-name"
             color={theme.textColor}
-            style={{ color: getPlayerColor(player.playerId) }}
+            style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
           >
             {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
             {team && <TeamPill team={team} />}
@@ -273,7 +273,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerName
           data-testid="player-board-name"
           color={theme.textColor}
-          style={{ color: getPlayerColor(player.playerId) }}
+          style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
         >
           {t(
             'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,

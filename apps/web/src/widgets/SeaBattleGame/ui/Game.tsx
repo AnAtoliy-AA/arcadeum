@@ -27,6 +27,7 @@ import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { Card, Typography } from '@arcadeum/ui';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 import { RulesModal } from './RulesModal';
 import './styles/animations.css';
@@ -184,11 +185,24 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [currentUserId, room, t, snapshot],
   );
 
+  const resolveActorColor = useCallback(
+    (id?: string | null) => {
+      if (!id) return undefined;
+      if (teams && teams.length > 0) {
+        const team = teams.find((t) => t.playerIds.includes(id));
+        if (team?.color) return team.color;
+      }
+      return getPlayerColor(id);
+    },
+    [teams],
+  );
+
   // Use shared chat integration hook
   useGameChatIntegration(
     snapshot?.logs,
     postHistoryNoteAction,
     resolveDisplayNameBound,
+    resolveActorColor,
   );
 
   const cardVariant = (room?.gameOptions?.variant ||

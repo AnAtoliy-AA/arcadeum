@@ -7,4 +7,5 @@ export type {
   ChatLogEntry,
   ChatScope,
   ChatDisplayNameResolver,
+  ChatActorColorResolver,
 } from './store/gameChatStore';

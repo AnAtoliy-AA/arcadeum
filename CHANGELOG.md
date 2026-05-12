@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.25] - 2026-05-12
+
+### Added
+- redesign HandRail for legibility (ARC-639) (ARC-639)
+- stack count + defuse pills vertically (ARC-639) (ARC-639)
+- collapse MobileHandBar into a single row (ARC-639) (ARC-639)
+- enlarge arena pile cards (ARC-639) (ARC-639)
+- bigger sprite + toggle card name/description (ARC-639) (ARC-639)
+- enlarge hand card; add description (ARC-639) (ARC-639)
+- wire hiddenCount + cover hand card roles (ARC-639/641) (ARC-639)
+- complete widget UX — target flow, hand visual, mobile bar (ARC-639) (ARC-639)
+
+### Fixed
+- stack Arena vertically on mobile (ARC-639) (ARC-639)
+- portal MobileHandBar to document.body (ARC-639) (ARC-639)
+- show hand cards on mobile (ARC-639) (ARC-639)
+- contain Arena pile cards inside CardSlot (ARC-639) (ARC-639)
+- render real sprite art on hand cards (ARC-639) (ARC-639)
+
+
 ## [1.13.24] - 2026-05-11
 
 ### Added

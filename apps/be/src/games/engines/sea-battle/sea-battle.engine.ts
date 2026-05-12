@@ -40,6 +40,7 @@ import {
   getActiveShooterId,
   getActiveTeam,
   isTeamAlive,
+  normalizeTeamShooterAfterDeath,
 } from './team-rotation.utils';
 import {
   runPlaceShip,
@@ -262,6 +263,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         state.logs.push(
           this.createLogEntry('system', 'A player has been eliminated!'),
         );
+        // In team mode, make sure the eliminated player isn't left as their
+        // team's active shooter — otherwise their team's next turn deadlocks
+        // on a dead player.
+        normalizeTeamShooterAfterDeath(state, target.playerId);
         this.checkAndSetWinner(state);
       }
     } else {

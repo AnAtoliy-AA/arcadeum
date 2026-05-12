@@ -46,6 +46,39 @@ export function countAliveTeams(state: SeaBattleState): number {
   return state.teamOrder.filter((tid) => isTeamAlive(state, tid)).length;
 }
 
+/**
+ * Move the dying player's team off them as the active shooter so the next
+ * time that team plays it picks a live teammate. Without this, an eliminated
+ * player whose team is still alive can leave currentTurnIndex pointing at a
+ * dead player, deadlocking the game (bot service breaks on "alive=false";
+ * humans see "Waiting for <Player>...").
+ *
+ * No-op when the dying player isn't their team's current shooter, or when no
+ * live teammate remains (the team will then fail isTeamAlive and lose).
+ */
+export function normalizeTeamShooterAfterDeath(
+  state: SeaBattleState,
+  deadPlayerId: string,
+): void {
+  if (!state.teams) return;
+  const team = state.teams.find((t) => t.playerIds.includes(deadPlayerId));
+  if (!team) return;
+  if (team.playerIds[team.currentShooterIndex] !== deadPlayerId) return;
+
+  const n = team.playerIds.length;
+  let next = team.currentShooterIndex;
+  for (let step = 0; step < n; step++) {
+    next = (next + 1) % n;
+    const candidate = state.players.find(
+      (p) => p.playerId === team.playerIds[next],
+    );
+    if (candidate?.alive) {
+      team.currentShooterIndex = next;
+      return;
+    }
+  }
+}
+
 export function advanceTeamRotationOnMiss(state: SeaBattleState): void {
   if (
     !state.teams ||

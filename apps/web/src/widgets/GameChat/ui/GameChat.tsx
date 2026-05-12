@@ -141,11 +141,16 @@ export function GameChat({
                     log.senderName ?? undefined,
                   )
                 : (log.senderName ?? undefined);
+              const isAction = log.type === 'action' || log.type === 'system';
+              const content =
+                isAction && log.senderId && senderName
+                  ? `${senderName} ${log.message}`
+                  : log.message;
               return (
                 <ChatMessage
                   key={log.id}
                   senderName={senderName}
-                  content={log.message}
+                  content={content}
                   type={log.type}
                   isOwn={isOwn}
                 />

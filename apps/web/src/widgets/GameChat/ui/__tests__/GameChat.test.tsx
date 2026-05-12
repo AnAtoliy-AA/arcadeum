@@ -34,10 +34,12 @@ vi.mock('@arcadeum/ui', async () => {
       senderName,
       content,
       isOwn,
+      type,
     }: {
       senderName?: string;
       content: string;
       isOwn?: boolean;
+      type?: 'system' | 'action' | 'message';
     }) =>
       React.createElement(
         'div',
@@ -45,6 +47,7 @@ vi.mock('@arcadeum/ui', async () => {
           'data-testid': 'chat-message',
           'data-is-own': String(!!isOwn),
           'data-sender': senderName ?? '',
+          'data-type': type ?? 'message',
         },
         content,
       ),
@@ -89,6 +92,32 @@ describe('GameChat', () => {
     expect(rendered[0]?.getAttribute('data-sender')).toBe('You');
     expect(rendered[1]?.getAttribute('data-is-own')).toBe('false');
     expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
+  });
+
+  it('prefixes action/system logs with the resolved sender name', () => {
+    useGameChatStore
+      .getState()
+      .setLogs([
+        makeLog({ id: 'a', type: 'action', senderId: 'p1', message: 'Drew a card' }),
+        makeLog({ id: 'b', type: 'system', senderId: 'p2', message: 'exploded!' }),
+        makeLog({ id: 'c', type: 'message', senderId: 'p1', message: 'hi' }),
+        makeLog({ id: 'd', type: 'action', senderId: null, message: 'Game started' }),
+      ]);
+
+    render(
+      <GameChat
+        currentUserId="p1"
+        resolveDisplayName={(id) => (id === 'p1' ? 'You' : 'Bob')}
+      />,
+    );
+
+    const rendered = screen.getAllByTestId('chat-message');
+    expect(rendered[0]?.textContent).toBe('You Drew a card');
+    expect(rendered[1]?.textContent).toBe('Bob exploded!');
+    // chat messages are not prefixed
+    expect(rendered[2]?.textContent).toBe('hi');
+    // no senderId → no prefix
+    expect(rendered[3]?.textContent).toBe('Game started');
   });
 
   it('treats messages as not-own when currentUserId is missing', () => {

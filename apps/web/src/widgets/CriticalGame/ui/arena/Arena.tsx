@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack } from 'tamagui';
+import { XStack, YStack, useMedia } from 'tamagui';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 import { DrawPile } from './DrawPile';
 import { DiscardPile } from './DiscardPile';
@@ -24,6 +24,8 @@ interface ArenaProps {
   formatLogMessage: (message?: string | null) => string;
   /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
+  /** Cards the snapshot has hidden — folded into client-fallback odds. */
+  hiddenCount?: number;
 }
 
 /**
@@ -46,37 +48,80 @@ export function Arena({
   logs,
   formatLogMessage,
   serverOverloadOdds,
+  hiddenCount,
 }: ArenaProps) {
+  const media = useMedia();
+  const isMobile = media.sm;
+
+  const drawPile = (
+    <DrawPile
+      deck={deck}
+      count={deck.length}
+      disabled={!isMyTurn || isGameOver}
+      onDraw={onDrawAndEnd}
+      cardVariant={cardVariant}
+    />
+  );
+  const arenaCenter = (
+    <ArenaCenter
+      isMyTurn={isMyTurn}
+      currentPlayerName={currentPlayerName}
+      pendingDraws={pendingDraws}
+      hand={hand}
+      allowActionCardCombos={allowActionCardCombos}
+      combo={combo}
+      deck={deck}
+      logs={logs}
+      formatLogMessage={formatLogMessage}
+      serverOverloadOdds={serverOverloadOdds}
+      hiddenCount={hiddenCount}
+    />
+  );
+  const discardPileEl = (
+    <DiscardPile pile={discardPile} cardVariant={cardVariant} />
+  );
+
+  // Mobile: stack vertically so the center column gets full row width
+  // for the turn pill, combo chips, threat strip, and FlashBanner —
+  // otherwise the side piles squeeze it to a few pixels and the
+  // absolutely-positioned overlays collide with neighbours.
+  if (isMobile) {
+    return (
+      <YStack
+        data-testid="arena"
+        data-layout="mobile"
+        width="100%"
+        gap="$2"
+        paddingHorizontal="$2"
+        alignItems="stretch"
+      >
+        <XStack
+          width="100%"
+          alignItems="center"
+          justifyContent="space-around"
+          gap="$2"
+        >
+          {drawPile}
+          {discardPileEl}
+        </XStack>
+        {arenaCenter}
+      </YStack>
+    );
+  }
+
   return (
     <XStack
       data-testid="arena"
+      data-layout="desktop"
       width="100%"
       alignItems="center"
       justifyContent="space-between"
       gap="$4"
       paddingHorizontal="$3"
-      $sm={{ gap: '$2', paddingHorizontal: '$2' }}
     >
-      <DrawPile
-        deck={deck}
-        count={deck.length}
-        disabled={!isMyTurn || isGameOver}
-        onDraw={onDrawAndEnd}
-        cardVariant={cardVariant}
-      />
-      <ArenaCenter
-        isMyTurn={isMyTurn}
-        currentPlayerName={currentPlayerName}
-        pendingDraws={pendingDraws}
-        hand={hand}
-        allowActionCardCombos={allowActionCardCombos}
-        combo={combo}
-        deck={deck}
-        logs={logs}
-        formatLogMessage={formatLogMessage}
-        serverOverloadOdds={serverOverloadOdds}
-      />
-      <DiscardPile pile={discardPile} cardVariant={cardVariant} />
+      {drawPile}
+      {arenaCenter}
+      {discardPileEl}
     </XStack>
   );
 }

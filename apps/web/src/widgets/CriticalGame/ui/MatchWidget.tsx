@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useMemo, useState, type ComponentProps } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
 import { GameBoard, TableArea } from './styles/layout';
 import { Arena } from './arena/Arena';
@@ -11,6 +18,7 @@ import {
   detectCombo,
   handWithUids,
   asComboCards,
+  isTargetedSingle,
   type ComboKind,
 } from '../lib/combo';
 import { getCardTranslationKey } from '../lib/cardUtils';
@@ -72,9 +80,23 @@ export function MatchWidget({
   toggleFullscreen,
 }: MatchWidgetProps) {
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
+  const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
+  // Per-session show/hide for the card name + description rows. Default
+  // both ON so first-time players see the rules text; experienced
+  // players can collapse to art-only via the rail toggles.
+  const [showCardName, setShowCardName] = useState(true);
+  const [showCardDescription, setShowCardDescription] = useState(true);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
   const handleCloseRules = useCallback(() => setRulesOpen(false), []);
+  const handleToggleCardName = useCallback(
+    () => setShowCardName((v) => !v),
+    [],
+  );
+  const handleToggleCardDescription = useCallback(
+    () => setShowCardDescription((v) => !v),
+    [],
+  );
 
   // Memoize hand so downstream useCallback / useMemo deps are stable when
   // the parent re-renders without `currentPlayer.hand` actually changing.
@@ -85,11 +107,46 @@ export function MatchWidget({
     () => handCards.filter((c) => selectedSet.has(c.uid)),
     [handCards, selectedSet],
   );
-  // Drop stale uids when the hand shrinks (cards played / lost). Keeping
-  // them in state would leave the Play button referring to nothing.
+  // Drop stale uids when the hand shrinks (cards played / lost) so the
+  // Play button never references nothing. `validSelectedUids` is what we
+  // pass downstream; the effect below re-syncs `selectedUids` state so
+  // pruned uids don't linger as ghost selections after Favor/Nope side
+  // effects (ARC-644).
   const validSelectedUids = useMemo(
     () => selectedCards.map((c) => c.uid),
     [selectedCards],
+  );
+  /* eslint-disable react-hooks/set-state-in-effect --
+   * State sync with derived data:
+   * 1. Hand-shrink: when Favor/Nope strips a card mid-turn, selectedUids
+   *    holds a uid that no longer matches the hand. If a new card lands
+   *    on the same index it reuses the uid and silently re-selects.
+   *    We must mirror `validSelectedUids` back into state.
+   * 2. Turn-flip: armed target + selection only make sense while it's
+   *    my turn. Clearing on `!isMyTurn` avoids carrying intent across
+   *    turns.
+   * Both are external-event syncs (server snapshot pushes), not the
+   * cascading-renders pattern the rule guards against.
+   */
+  useEffect(() => {
+    if (validSelectedUids.length !== selectedUids.length) {
+      setSelectedUids(validSelectedUids);
+    }
+  }, [validSelectedUids, selectedUids]);
+
+  const prevIsMyTurn = useRef(isMyTurn);
+  useEffect(() => {
+    if (prevIsMyTurn.current && !isMyTurn) {
+      setTargetPlayerId(null);
+      setSelectedUids([]);
+    }
+    prevIsMyTurn.current = isMyTurn;
+  }, [isMyTurn]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleSelectTarget = useCallback(
+    (id: string) => setTargetPlayerId((curr) => (curr === id ? null : id)),
+    [],
   );
 
   const allowActionCardCombos = snapshot.allowActionCardCombos ?? false;
@@ -103,12 +160,20 @@ export function MatchWidget({
     params?: Record<string, string | number>,
   ) => string;
 
+  // A targeted single (e.g. `targeted_strike`) needs an armed opponent
+  // before it can play. Surface this in the combo label so the rail's
+  // Play button reads "Pick a target" instead of the disabled card name.
+  const requiresTarget =
+    detected.kind === 'single' && isTargetedSingle(detected.selected[0].id);
+  const needsTargetPick = requiresTarget && !targetPlayerId;
+
   const comboLabel = useMemo(() => {
+    if (needsTargetPick) return tCompat('games.table.hud.combo.pickTarget');
     const name = detected.cardId
       ? tCompat(getCardTranslationKey(detected.cardId, cardVariant))
       : '';
     return tCompat(detected.labelKey, name ? { name } : undefined);
-  }, [detected, tCompat, cardVariant]);
+  }, [detected, tCompat, cardVariant, needsTargetPick]);
 
   const combo: { kind: ComboKind; label: string } = {
     kind: detected.kind,
@@ -128,28 +193,51 @@ export function MatchWidget({
 
   const canPlay = useMemo(() => {
     if (!isMyTurn || isGameOver || !canAct) return false;
-    return (
+    const validKind =
       detected.kind === 'single' ||
       detected.kind === 'pair' ||
       detected.kind === 'triple' ||
-      detected.kind === 'five'
-    );
-  }, [isMyTurn, isGameOver, canAct, detected.kind]);
+      detected.kind === 'five';
+    if (!validKind) return false;
+    if (requiresTarget && !targetPlayerId) return false;
+    return true;
+  }, [
+    isMyTurn,
+    isGameOver,
+    canAct,
+    detected.kind,
+    requiresTarget,
+    targetPlayerId,
+  ]);
 
   const handlePlay = useCallback(() => {
     if (!canPlay) return;
     if (detected.kind === 'single') {
-      handlePlayActionCard(detected.selected[0].id);
+      const cardId = detected.selected[0].id;
+      // Targeted singles bypass the legacy modal entirely — the widget
+      // already has an armed target, so pass it through to the server in
+      // one shot. The fall-through `handlePlayActionCard(id)` for
+      // un-targeted cards keeps the existing behaviour (sets +
+      // playActionCard / opens a non-target modal for stash, etc.).
+      if (isTargetedSingle(cardId)) {
+        if (!targetPlayerId) return;
+        actions.playActionCard(cardId, { targetPlayerId });
+      } else {
+        handlePlayActionCard(cardId);
+      }
     } else if (detected.kind === 'pair' || detected.kind === 'triple') {
       handleOpenEventCombo(asComboCards(detected.selected), hand);
     } else if (detected.kind === 'five') {
       handleOpenFiverCombo();
     }
     setSelectedUids([]);
+    setTargetPlayerId(null);
   }, [
     canPlay,
     detected,
     hand,
+    targetPlayerId,
+    actions,
     handlePlayActionCard,
     handleOpenEventCombo,
     handleOpenFiverCombo,
@@ -183,6 +271,10 @@ export function MatchWidget({
         <OpponentsRow
           opponents={opponents}
           currentTurnPlayerId={turnPlayerId}
+          targetPlayerId={targetPlayerId}
+          onSelectTarget={
+            isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
+          }
           resolveDisplayName={tileResolveName}
         />
         <TableArea>
@@ -201,6 +293,7 @@ export function MatchWidget({
             logs={snapshot.logs ?? []}
             formatLogMessage={formatLogMessage}
             serverOverloadOdds={snapshot.overloadOdds}
+            hiddenCount={snapshot.hiddenCount}
           />
         </TableArea>
 
@@ -216,11 +309,15 @@ export function MatchWidget({
             canNope={canPlayNope}
             cardVariant={cardVariant}
             isFullscreen={isFullscreen}
+            showCardName={showCardName}
+            showCardDescription={showCardDescription}
             onPlay={handlePlay}
             onDraw={handleDrawAndEnd}
             onNope={actions.playNope}
             onOpenRules={handleOpenRules}
             onToggleFullscreen={toggleFullscreen}
+            onToggleCardName={handleToggleCardName}
+            onToggleCardDescription={handleToggleCardDescription}
           />
         )}
       </GameBoard>

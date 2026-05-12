@@ -221,7 +221,8 @@ export const esMessages = {
       discard: 'Descarte',
       pendingDraws: 'Robos pendientes',
       cards: 'cartas',
-      card: 'carta',
+      /* prettier-ignore */ card: 'carta',
+      defuses: 'Desactiv.',
     },
     arena: {
       drawHint: 'Tócalo para robar y terminar el turno',
@@ -246,7 +247,9 @@ export const esMessages = {
         playTriple: 'Jugar 3× {{name}} · nombrar carta',
         playFiver: 'Jugar 5 · elegir del descarte',
         invalid: 'Combo no válido',
+        pickTarget: 'Elige un objetivo',
       },
+      /* prettier-ignore */ cards: { toggleName: 'Nombre de la carta', toggleDescription: 'Descripción de la carta' },
       extraTurns: '+{{count}} turno',
       extraTurnsPlural: '+{{count}} turnos',
       flash: {

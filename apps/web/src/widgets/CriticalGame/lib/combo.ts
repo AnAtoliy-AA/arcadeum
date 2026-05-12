@@ -136,3 +136,18 @@ export function asComboCards(
 ): CriticalComboCard[] {
   return selected.map((s) => s.id as CriticalComboCard);
 }
+
+/**
+ * Action cards that consume an armed target player when played as a
+ * single. Mirrors `useGameHandlers.handlePlayActionCard` — cards that
+ * route to a target-selection modal in the legacy flow. In widget mode,
+ * the target is armed up-front by clicking an opponent tile and these
+ * cards play directly with `{ targetPlayerId }` instead of opening a
+ * modal.
+ */
+export const TARGETED_SINGLE_CARDS: ReadonlySet<CriticalCard> =
+  new Set<CriticalCard>(['targeted_strike', 'mark', 'steal_draw', 'smite']);
+
+export function isTargetedSingle(id: CriticalCard): boolean {
+  return TARGETED_SINGLE_CARDS.has(id);
+}

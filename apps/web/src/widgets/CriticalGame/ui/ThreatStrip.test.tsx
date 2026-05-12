@@ -87,6 +87,26 @@ describe('ThreatStrip', () => {
     expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('0%');
   });
 
+  it('folds external hiddenCount into the client-fallback denominator', () => {
+    // 10 visible cards, 1 critical, 2 cards hidden outside the deck array.
+    // 1 / (10 + 2) ≈ 8% — not 10% — because the hidden cards COULD be
+    // critical (but we can't count them in the numerator).
+    const deck: CriticalCard[] = [
+      'critical_event',
+      'strike',
+      'strike',
+      'strike',
+      'evade',
+      'evade',
+      'evade',
+      'trade',
+      'trade',
+      'trade',
+    ];
+    render(<ThreatStrip hand={['neutralizer']} deck={deck} hiddenCount={2} />);
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('8%');
+  });
+
   it('falls back to the client estimate when serverOverloadOdds is null', () => {
     const deck: CriticalCard[] = ['critical_event', 'strike', 'evade', 'trade'];
     render(

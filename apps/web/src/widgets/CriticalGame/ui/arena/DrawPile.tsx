@@ -4,6 +4,7 @@ import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
+import { CardSlot } from '../styles';
 
 interface DrawPileProps {
   deck: CriticalCard[];
@@ -51,7 +52,17 @@ export function DrawPile({
       hoverStyle={disabled ? undefined : { scale: 1.02 }}
       pressStyle={disabled ? undefined : { scale: 0.98 }}
     >
-      <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
+      {/* Override the legacy slot dimensions — the widget arena has
+          more vertical real-estate than the table-mode header, so the
+          pile cards can read larger. */}
+      <CardSlot
+        $role="deck"
+        width={140}
+        height={196}
+        $sm={{ width: 96, height: 134 }}
+      >
+        <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
+      </CardSlot>
       <Text
         data-testid="arena-draw-pile-count"
         fontSize={12}

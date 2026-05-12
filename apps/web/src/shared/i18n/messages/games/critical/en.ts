@@ -219,6 +219,7 @@ export const enMessages = {
       pendingDraws: 'Pending draws',
       cards: 'cards',
       card: 'card',
+      defuses: 'Defuses',
     },
     arena: {
       drawHint: 'Tap to draw + end turn',
@@ -243,6 +244,11 @@ export const enMessages = {
         playTriple: 'Play 3× {{name}} · name a card',
         playFiver: 'Play 5 · pick from discard',
         invalid: 'Invalid combo',
+        pickTarget: 'Pick a target',
+      },
+      cards: {
+        toggleName: 'Card name',
+        toggleDescription: 'Card description',
       },
       extraTurns: '+{{count}} turn',
       extraTurnsPlural: '+{{count}} turns',

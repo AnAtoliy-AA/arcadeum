@@ -1,5 +1,4 @@
 import { variants as cardVariants } from './fr-variants';
-
 export const frMessages = {
   critical_v1: {
     name: 'Critique',
@@ -69,7 +68,6 @@ export const frMessages = {
       },
     },
   },
-
   table: {
     cards: {
       criticalEvent: 'Incident Critique',
@@ -218,7 +216,8 @@ export const frMessages = {
       discard: 'Défausse',
       pendingDraws: 'Pioches en attente',
       cards: 'cartes',
-      card: 'carte',
+      /* prettier-ignore */ card: 'carte',
+      defuses: 'Désamorc.',
     },
     arena: {
       drawHint: 'Toucher pour piocher et terminer le tour',
@@ -243,7 +242,9 @@ export const frMessages = {
         playTriple: 'Jouer 3× {{name}} · nommer carte',
         playFiver: 'Jouer 5 · choisir de la défausse',
         invalid: 'Combo invalide',
+        pickTarget: 'Choisissez une cible',
       },
+      /* prettier-ignore */ cards: { toggleName: 'Nom de la carte', toggleDescription: 'Description de la carte' },
       extraTurns: '+{{count}} tour',
       extraTurnsPlural: '+{{count}} tours',
       flash: {

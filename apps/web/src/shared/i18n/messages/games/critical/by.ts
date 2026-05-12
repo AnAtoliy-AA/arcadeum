@@ -223,6 +223,7 @@ export const byMessages = {
       pendingDraws: 'Засталося хадоў',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Абезвр.',
     },
     arena: {
       drawHint: 'Націсніце, каб узяць карту і скончыць ход',
@@ -247,6 +248,11 @@ export const byMessages = {
         playTriple: 'Згуляць 3× {{name}} · назваць карту',
         playFiver: 'Згуляць 5 · узяць са скіду',
         invalid: 'Несапраўднае камбо',
+        pickTarget: 'Абярыце мэту',
+      },
+      cards: {
+        toggleName: 'Назва карты',
+        toggleDescription: 'Апісанне карты',
       },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} хадоў',

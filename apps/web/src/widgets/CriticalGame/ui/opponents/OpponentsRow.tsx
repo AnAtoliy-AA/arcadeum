@@ -16,6 +16,12 @@ interface OpponentsRowProps {
    * hand zone's selection state.
    */
   targetPlayerId?: string | null;
+  /**
+   * Called when an opponent tile is activated. Omitted when target
+   * selection isn't possible — e.g. the local player isn't on the clock,
+   * or no targeted card is selected.
+   */
+  onSelectTarget?: (playerId: string) => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
 }
 
@@ -29,6 +35,7 @@ export function OpponentsRow({
   opponents,
   currentTurnPlayerId,
   targetPlayerId,
+  onSelectTarget,
   resolveDisplayName,
 }: OpponentsRowProps) {
   const media = useMedia();
@@ -55,6 +62,11 @@ export function OpponentsRow({
           player={opponent}
           isCurrentTurn={opponent.playerId === currentTurnPlayerId}
           isTarget={!!targetPlayerId && opponent.playerId === targetPlayerId}
+          onSelect={
+            onSelectTarget && opponent.alive
+              ? () => onSelectTarget(opponent.playerId)
+              : undefined
+          }
           resolveDisplayName={resolveDisplayName}
         />
       ))}

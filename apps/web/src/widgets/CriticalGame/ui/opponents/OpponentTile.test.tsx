@@ -99,4 +99,32 @@ describe('OpponentTile', () => {
       'true',
     );
   });
+
+  it('fires onSelect when the tile is clicked (alive opponent)', () => {
+    const onSelect = vi.fn();
+    renderTile({ onSelect });
+    // Tamagui maps `onPress` to a `click` listener on the web.
+    screen.getByTestId('opponent-tile-p1').click();
+    expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes role=button and aria-pressed when interactive', () => {
+    const onSelect = vi.fn();
+    renderTile({ onSelect, isTarget: true });
+    const tile = screen.getByTestId('opponent-tile-p1');
+    expect(tile).toHaveAttribute('role', 'button');
+    expect(tile).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('is non-interactive when opponent is eliminated', () => {
+    const onSelect = vi.fn();
+    renderTile({
+      player: makePlayer({ alive: false }),
+      onSelect,
+    });
+    const tile = screen.getByTestId('opponent-tile-p1');
+    expect(tile).not.toHaveAttribute('role', 'button');
+    tile.click();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
 });

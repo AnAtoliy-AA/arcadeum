@@ -10,6 +10,12 @@ interface OpponentTileProps {
   player: CriticalPlayerTableState;
   isCurrentTurn: boolean;
   isTarget?: boolean;
+  /**
+   * Click handler invoked when the tile is activated (mouse, touch, Enter,
+   * or Space). Omitted when the tile isn't a valid attack target — e.g.
+   * eliminated players or when the local player is not on the clock.
+   */
+  onSelect?: () => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
 }
 
@@ -42,6 +48,7 @@ export function OpponentTile({
   player,
   isCurrentTurn,
   isTarget = false,
+  onSelect,
   resolveDisplayName,
 }: OpponentTileProps) {
   const { t } = useTranslation();
@@ -62,6 +69,15 @@ export function OpponentTile({
 
   const ringStyle = !alive ? 'dashed' : 'solid';
   const avatarSize = isMobile ? 36 : 48;
+  const interactive = alive && !!onSelect;
+  const handleKeyDown = interactive
+    ? (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect?.();
+        }
+      }
+    : undefined;
 
   return (
     <YStack
@@ -69,6 +85,16 @@ export function OpponentTile({
       data-alive={alive ? 'true' : 'false'}
       data-current-turn={isCurrentTurn ? 'true' : 'false'}
       data-target={isTarget ? 'true' : 'false'}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-pressed={interactive ? isTarget : undefined}
+      aria-label={
+        interactive ? `${displayName}${isTarget ? ' (target)' : ''}` : undefined
+      }
+      onPress={interactive ? onSelect : undefined}
+      onKeyDown={handleKeyDown}
+      cursor={interactive ? 'pointer' : 'default'}
+      hoverStyle={interactive ? { borderColor: TARGET_RING } : undefined}
       alignItems="center"
       gap="$1"
       paddingHorizontal="$2"

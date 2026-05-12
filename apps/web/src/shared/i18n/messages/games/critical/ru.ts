@@ -225,6 +225,7 @@ export const ruMessages = {
       pendingDraws: 'Осталось ходов',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Обезвреж.',
     },
     arena: {
       drawHint: 'Нажмите, чтобы взять карту и закончить ход',
@@ -249,7 +250,9 @@ export const ruMessages = {
         playTriple: 'Сыграть 3× {{name}} · назвать карту',
         playFiver: 'Сыграть 5 · взять из сброса',
         invalid: 'Недопустимое комбо',
+        pickTarget: 'Выберите цель',
       },
+      /* prettier-ignore */ cards: { toggleName: 'Название карты', toggleDescription: 'Описание карты' },
       extraTurns: '+{{count}} ход',
       extraTurnsPlural: '+{{count}} ходов',
       flash: {

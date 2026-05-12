@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.26] - 2026-05-12
+
+### Added
+- stamp targetId on targeted-action logs (ARC-645) (ARC-645)
+- emoji marks + colored keyword for HIT/MISS/SUNK (ARC-645) (ARC-645)
+- show attack target in action log (ARC-645) (ARC-645)
+- team-aware color in team mode (ARC-645) (ARC-645)
+- per-player color on player names (ARC-645) (ARC-645)
+- consistent per-player color (ARC-645) (ARC-645)
+
+### Fixed
+- make Hack / Favor (trade) playable in widget mode (ARC-645) (ARC-645)
+- plumb game-aware display-name resolver into chat (ARC-645) (ARC-645)
+- color OpponentTile per-player (ARC-645) (ARC-645)
+- force per-player color on name + add avatar ring (ARC-645) (ARC-645)
+- show who performed each action in the log (ARC-645) (ARC-645)
+- show whose message in in-game chat (ARC-645) (ARC-645)
+
+
 ## [1.13.25] - 2026-05-12
 
 ### Added

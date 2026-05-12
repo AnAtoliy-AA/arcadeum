@@ -258,48 +258,100 @@ export class SeaBattleBotService {
   private getSmartTarget(
     target: SeaBattlePlayer,
   ): { r: number; c: number } | null {
-    const hasUnsunkDamagedShip = target.ships.some(
-      (s: Ship) => s.hits > 0 && !s.sunk,
-    );
-    if (!hasUnsunkDamagedShip) {
-      return null;
+    // Cells of already-sunk ships are public info; exclude them so we focus
+    // on hits that still belong to damaged-but-unsunk ships.
+    const sunkCells = new Set<string>();
+    for (const ship of target.ships) {
+      if (!ship.sunk) continue;
+      for (const cell of ship.cells) {
+        sunkCells.add(`${cell.row},${cell.col}`);
+      }
     }
 
-    const candidates: { r: number; c: number }[] = [];
-    const seen = new Set<string>();
+    const activeHits: { row: number; col: number }[] = [];
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (target.board[r][c] !== CELL_STATE.HIT) continue;
+        if (sunkCells.has(`${r},${c}`)) continue;
+        activeHits.push({ row: r, col: c });
+      }
+    }
+
+    if (activeHits.length === 0) return null;
+
+    const isOpen = (r: number, c: number): boolean => {
+      if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) return false;
+      const cell = target.board[r][c];
+      return cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS;
+    };
+
+    // Line mode: if two adjacent active hits sit in a line (e.g. d3+d4),
+    // extend the line from either endpoint (d2 or d5).
+    const activeSet = new Set(activeHits.map((h) => `${h.row},${h.col}`));
+    const lineCandidates = new Map<string, { r: number; c: number }>();
+    const axes: [number, number][] = [
+      [0, 1],
+      [1, 0],
+    ];
+
+    for (const hit of activeHits) {
+      for (const [dr, dc] of axes) {
+        if (!activeSet.has(`${hit.row + dr},${hit.col + dc}`)) continue;
+
+        // Walk forward to the far end of the line.
+        let fr = hit.row;
+        let fc = hit.col;
+        while (activeSet.has(`${fr + dr},${fc + dc}`)) {
+          fr += dr;
+          fc += dc;
+        }
+        if (isOpen(fr + dr, fc + dc)) {
+          lineCandidates.set(`${fr + dr},${fc + dc}`, {
+            r: fr + dr,
+            c: fc + dc,
+          });
+        }
+
+        // Walk backward to the near end of the line.
+        let br = hit.row;
+        let bc = hit.col;
+        while (activeSet.has(`${br - dr},${bc - dc}`)) {
+          br -= dr;
+          bc -= dc;
+        }
+        if (isOpen(br - dr, bc - dc)) {
+          lineCandidates.set(`${br - dr},${bc - dc}`, {
+            r: br - dr,
+            c: bc - dc,
+          });
+        }
+      }
+    }
+
+    if (lineCandidates.size > 0) {
+      const arr = Array.from(lineCandidates.values());
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // Single-hit mode: probe a random orthogonal neighbour of any active hit.
+    const neighbours = new Map<string, { r: number; c: number }>();
     const directions: [number, number][] = [
       [-1, 0],
       [1, 0],
       [0, -1],
       [0, 1],
     ];
-
-    for (let r = 0; r < BOARD_SIZE; r++) {
-      for (let c = 0; c < BOARD_SIZE; c++) {
-        if (target.board[r][c] !== CELL_STATE.HIT) continue;
-
-        for (const [dr, dc] of directions) {
-          const nr = r + dr;
-          const nc = c + dc;
-          if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) {
-            continue;
-          }
-          const cell = target.board[nr][nc];
-          if (cell === CELL_STATE.HIT || cell === CELL_STATE.MISS) {
-            continue;
-          }
-          const key = `${nr},${nc}`;
-          if (seen.has(key)) continue;
-          seen.add(key);
-          candidates.push({ r: nr, c: nc });
-        }
+    for (const hit of activeHits) {
+      for (const [dr, dc] of directions) {
+        const nr = hit.row + dr;
+        const nc = hit.col + dc;
+        if (!isOpen(nr, nc)) continue;
+        neighbours.set(`${nr},${nc}`, { r: nr, c: nc });
       }
     }
 
-    if (candidates.length === 0) {
-      return null;
-    }
-
-    return candidates[Math.floor(Math.random() * candidates.length)];
+    if (neighbours.size === 0) return null;
+    const arr = Array.from(neighbours.values());
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 }

@@ -219,46 +219,66 @@
 }
 
 /* Optimistic "shot fired" state — shown until the server confirms the hit/miss.
+   Timeline (one-shot, then calm wait state):
+     0–250ms  : 🎯 snaps onto the cell (aim lock).
+     250–800ms: 🚀 streaks in from above-right, lands on the cell.
+     800ms+   : gentle "impact" pulse on 🎯 while the server reply lands.
    The board grid has overflow:hidden, so the rocket appears to fly in from the
-   "sky" above the cell and land on the targeted spot. */
-@keyframes sb-missile-drop {
+   "sky" above the targeted spot. */
+@keyframes sb-aim-snap {
   0% {
-    transform: translate(120%, -380%) rotate(135deg) scale(1.4);
+    opacity: 0;
+    transform: scale(2.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+@keyframes sb-missile-fly {
+  0% {
+    transform: translate(160%, -460%) rotate(135deg) scale(1.5);
     opacity: 0;
     filter: drop-shadow(0 0 6px rgba(255, 200, 80, 0));
   }
-  15% {
+  20% {
     opacity: 1;
     filter: drop-shadow(0 0 8px rgba(255, 200, 80, 0.85));
   }
   85% {
     transform: translate(0, 0) rotate(135deg) scale(1);
     opacity: 1;
-    filter: drop-shadow(0 0 8px rgba(255, 120, 60, 0.9));
+    filter: drop-shadow(0 0 10px rgba(255, 120, 60, 0.95));
   }
   100% {
-    transform: translate(0, 0) rotate(135deg) scale(0.6);
+    transform: translate(0, 0) rotate(135deg) scale(0.4);
     opacity: 0;
-    filter: drop-shadow(0 0 12px rgba(255, 80, 40, 1));
+    filter: drop-shadow(0 0 14px rgba(255, 80, 40, 1));
   }
 }
-@keyframes sb-target-lock {
+@keyframes sb-impact-pulse {
   0%,
   100% {
-    opacity: 0.4;
-    transform: scale(0.85);
+    opacity: 0.55;
+    transform: scale(0.95);
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.9;
     transform: scale(1.1);
   }
 }
 .sb-cell.sb-cell-pending {
   cursor: wait !important;
 }
-.sb-cell.sb-cell-pending .sb-missile {
-  animation: sb-missile-drop 0.8s cubic-bezier(0.45, 0, 0.9, 0.55) infinite;
+.sb-cell.sb-cell-pending .sb-aim {
+  animation:
+    sb-aim-snap 0.25s ease-out forwards,
+    sb-impact-pulse 1.4s ease-in-out 0.85s infinite;
 }
-.sb-cell.sb-cell-pending > .sb-icon-hit {
-  animation: sb-target-lock 1s ease-in-out infinite;
+.sb-cell.sb-cell-pending .sb-missile {
+  animation: sb-missile-fly 0.55s cubic-bezier(0.45, 0, 0.9, 0.55) 0.25s both;
 }

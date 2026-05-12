@@ -74,7 +74,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
             fontSize={11}
             pointerEvents="none"
             userSelect="none"
-            opacity={0.6}
+            className="sb-aim"
           >
             🎯
           </Text>

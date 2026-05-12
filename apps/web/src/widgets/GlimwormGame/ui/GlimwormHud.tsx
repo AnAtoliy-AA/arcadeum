@@ -157,53 +157,27 @@ export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | n
           position: 'absolute',
           top: 12,
           right: 12,
-          background: 'rgba(0,0,0,0.55)',
-          padding: '8px 12px',
-          borderRadius: 8,
-          fontSize: 13,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: 8,
           minWidth: 168,
-          backdropFilter: 'blur(4px)',
-          border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 6,
+            background: 'rgba(0,0,0,0.55)',
+            padding: '8px 12px',
+            borderRadius: 8,
+            fontSize: 13,
+            backdropFilter: 'blur(4px)',
+            border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <span style={{ fontWeight: 700, letterSpacing: 0.4 }}>
-            {t('games.glimworm_v1.hud.score')}
-          </span>
-          {isHost && onRestart && (
-            <button
-              type="button"
-              onClick={onRestart}
-              aria-label="Restart round"
-              title="Restart round"
-              style={{
-                pointerEvents: 'auto',
-                width: 22,
-                height: 22,
-                borderRadius: '50%',
-                background: 'rgba(177,94,255,0.25)',
-                color: '#e4c8ff',
-                border: '1px solid rgba(177,94,255,0.55)',
-                cursor: 'pointer',
-                fontSize: 12,
-                lineHeight: 1,
-                fontFamily: 'inherit',
-                padding: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              ↻
-            </button>
-          )}
+        <div
+          style={{ fontWeight: 700, letterSpacing: 0.4, marginBottom: 6 }}
+        >
+          {t('games.glimworm_v1.hud.score')}
         </div>
         {top5.map((w) => (
           <div
@@ -250,6 +224,38 @@ export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | n
             </span>
           </div>
         ))}
+        </div>
+        {isHost && onRestart && (
+          <button
+            type="button"
+            onClick={onRestart}
+            aria-label="Restart round"
+            title="Restart — drop back to the lobby"
+            style={{
+              pointerEvents: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '10px 14px',
+              borderRadius: 8,
+              background:
+                'linear-gradient(135deg, rgba(124,92,255,0.92) 0%, rgba(177,94,255,0.92) 100%)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.22)',
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 700,
+              fontFamily: 'inherit',
+              boxShadow: '0 6px 16px rgba(124,92,255,0.35)',
+              backdropFilter: 'blur(4px)',
+              letterSpacing: 0.3,
+            }}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1 }}>↻</span>
+            Restart
+          </button>
+        )}
       </div>
 
       {snapshot.powerupsEnabled && self?.inventoryPowerup && (

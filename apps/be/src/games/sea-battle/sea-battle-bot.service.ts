@@ -99,7 +99,7 @@ export class SeaBattleBotService {
     this.processing.set(lockKey, Date.now());
 
     try {
-      await this.sleep(1000 + Math.random() * 2000);
+      await this.sleep(500 + Math.random() * 1000);
 
       // Check current state before auto-placing
       let currentSession = await this.seaBattleService.findSessionByRoom(
@@ -122,7 +122,7 @@ export class SeaBattleBotService {
       // Auto place ships
       await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
 
-      await this.sleep(500 + Math.random() * 1000);
+      await this.sleep(250 + Math.random() * 500);
 
       // Check current state again before confirming
       currentSession = await this.seaBattleService.findSessionByRoom(
@@ -164,7 +164,7 @@ export class SeaBattleBotService {
       let currentSession = sessionSnapshot;
 
       while (isStillMyTurn) {
-        await this.sleep(1000 + Math.random() * 1500);
+        await this.sleep(500 + Math.random() * 750);
 
         const state = currentSession.state as unknown as SeaBattleState;
         const botPlayer = state.players.find(

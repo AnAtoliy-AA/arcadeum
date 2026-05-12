@@ -114,7 +114,8 @@ export default defineConfig({
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
         MONGODB_URI:
-          process.env.MONGODB_URI || 'mongodb://localhost:27017/arcadeum_test',
+          process.env.MONGODB_URI ||
+          getPort('../be/.env', 'MONGODB_URI', 'mongodb://localhost:27017/arcadeum_test'),
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
       },

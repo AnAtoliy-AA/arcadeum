@@ -73,6 +73,8 @@ export function TablePlayer({
   const showTurnRing = isCurrent && player.alive;
   const showEliminatedRing = !player.alive;
 
+  const playerColor = getPlayerColor(playerId);
+
   const initials = displayName
     .split(' ')
     .map((part) => part[0])
@@ -182,6 +184,18 @@ export function TablePlayer({
               }}
             />
           )}
+          {!showTurnRing && player.alive && (
+            <div
+              data-testid="player-color-ring"
+              style={{
+                position: 'absolute',
+                inset: -2,
+                borderRadius: '50%',
+                border: `2px solid ${playerColor}`,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           {showEliminatedRing && (
             <div
               data-testid="player-eliminated-ring"
@@ -224,7 +238,7 @@ export function TablePlayer({
 
         <PlayerName
           data-testid={`player-name-${playerId}`}
-          color={player.alive ? getPlayerColor(playerId) : undefined}
+          style={player.alive ? { color: playerColor } : undefined}
         >
           {displayName}
           {isPlayerIdle && <IdleBadge />}

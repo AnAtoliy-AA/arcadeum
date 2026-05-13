@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.31] - 2026-05-13
+
+### Added
+- web /shop page + UI primitives (ARC-650) (ARC-650)
+
+### Fixed
+- hard-navigate home after OAuth so cookie is picked up everywhere (ARC-650) (ARC-650)
+- refresh server components after login so header updates without reload (ARC-650) (ARC-650)
+- refresh layout once on socket connect (ARC-650) (ARC-650)
+- use server actions + useTransition instead of TanStack Query (ARC-650) (ARC-650)
+
+
 ## [1.13.30] - 2026-05-13
 
 ### Added

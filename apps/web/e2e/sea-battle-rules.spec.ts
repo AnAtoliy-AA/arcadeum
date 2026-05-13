@@ -102,8 +102,12 @@ test.describe('Sea Battle Rules Modal', () => {
       .or(page.getByTestId('view-rules-button'));
     await expect(rulesBtn).toBeVisible({});
 
-    // Click to open rules modal
-    await rulesBtn.click({ force: true });
+    // Ensure button is stable before clicking — Mobile Chrome can race past
+    // the click handler if we tap before paint completes.
+    await rulesBtn.waitFor({ state: 'visible' });
+    // dispatchEvent fires synchronously and skips the pointer-events check
+    // that flakes on slow mobile viewports.
+    await rulesBtn.dispatchEvent('click');
 
     // Check modal
     const modal = page.getByTestId('rules-modal');

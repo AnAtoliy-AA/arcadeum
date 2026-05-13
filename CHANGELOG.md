@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.29] - 2026-05-13
+
+### Documentation
+- incorporate review feedback (ARC-650) (ARC-650)
+- ARC-650 in-game shop design spec (ARC-650)
+
+
 ## [1.13.28] - 2026-05-13
 
 ### Added

@@ -14,24 +14,32 @@ class FakeUserModel {
       lean: () => Promise.resolve(this.ids.map((_id) => ({ _id }))),
     };
   }
+  estimatedDocumentCount() {
+    return Promise.resolve(this.ids.length);
+  }
 }
 
 class FakeInventoryModel {
   rows: Array<{ userId: Types.ObjectId; itemId: string; acquiredVia: string }> =
     [];
-  find(filter: { userId: Types.ObjectId; acquiredVia: string }) {
-    return {
-      lean: () =>
-        Promise.resolve(
-          this.rows
-            .filter(
-              (r) =>
-                r.userId.toString() === filter.userId.toString() &&
-                r.acquiredVia === filter.acquiredVia,
-            )
-            .map((r) => ({ itemId: r.itemId })),
-        ),
-    };
+
+  aggregate() {
+    // Mirrors the production aggregation: returns user ids whose starter rows
+    // cover the full starter set.
+    const starterIds = listStarterItems().map((s) => s.id);
+    const byUser = new Map<string, Set<string>>();
+    for (const row of this.rows) {
+      if (row.acquiredVia !== 'starter') continue;
+      if (!starterIds.includes(row.itemId)) continue;
+      const key = row.userId.toString();
+      const set = byUser.get(key) ?? new Set<string>();
+      set.add(row.itemId);
+      byUser.set(key, set);
+    }
+    const result = [...byUser.entries()]
+      .filter(([, items]) => items.size === starterIds.length)
+      .map(([userId]) => ({ _id: new Types.ObjectId(userId) }));
+    return Promise.resolve(result);
   }
 }
 
@@ -66,7 +74,7 @@ describe('ShopInventoryBootstrap', () => {
     const u1 = new Types.ObjectId();
     const u2 = new Types.ObjectId();
     userModel.ids = [u1, u2];
-    await bootstrap.onApplicationBootstrap();
+    await bootstrap.runBackfill();
     expect(inventory.grantStarter).toHaveBeenCalledTimes(2);
     expect(inventory.grantStarter).toHaveBeenCalledWith(u1.toString());
     expect(inventory.grantStarter).toHaveBeenCalledWith(u2.toString());
@@ -82,7 +90,7 @@ describe('ShopInventoryBootstrap', () => {
         acquiredVia: 'starter',
       });
     }
-    await bootstrap.onApplicationBootstrap();
+    await bootstrap.runBackfill();
     expect(inventory.grantStarter).not.toHaveBeenCalled();
   });
 
@@ -93,14 +101,14 @@ describe('ShopInventoryBootstrap', () => {
     inventory.grantStarter
       .mockRejectedValueOnce(new Error('boom'))
       .mockResolvedValueOnce(undefined);
-    await expect(bootstrap.onApplicationBootstrap()).resolves.toBeUndefined();
+    await expect(bootstrap.runBackfill()).resolves.toBeUndefined();
     expect(inventory.grantStarter).toHaveBeenCalledTimes(2);
   });
 
   it('is idempotent on repeated boot', async () => {
     const u1 = new Types.ObjectId();
     userModel.ids = [u1];
-    await bootstrap.onApplicationBootstrap();
+    await bootstrap.runBackfill();
     // After first boot we simulate that user now has starters
     for (const starter of listStarterItems()) {
       inventoryModel.rows.push({
@@ -110,7 +118,18 @@ describe('ShopInventoryBootstrap', () => {
       });
     }
     inventory.grantStarter.mockClear();
-    await bootstrap.onApplicationBootstrap();
+    await bootstrap.runBackfill();
     expect(inventory.grantStarter).not.toHaveBeenCalled();
+  });
+
+  it('onApplicationBootstrap returns immediately and schedules the backfill', async () => {
+    const u1 = new Types.ObjectId();
+    userModel.ids = [u1];
+    const spy = jest.spyOn(bootstrap, 'runBackfill');
+    bootstrap.onApplicationBootstrap();
+    // The deferred task has not run yet because we are still on the same tick.
+    expect(spy).not.toHaveBeenCalled();
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });

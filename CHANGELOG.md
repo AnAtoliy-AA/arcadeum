@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.30] - 2026-05-13
+
+### Added
+- REST API + module wiring + auth starter grant (ARC-650) (ARC-650)
+- catalog, inventory, shop services + bootstrap (ARC-650) (ARC-650)
+- foundation types, schemas, wallet reasons (ARC-650) (ARC-650)
+
+### Fixed
+- defer starter backfill so Nest binds HTTP immediately (ARC-650) (ARC-650)
+
+
 ## [1.13.29] - 2026-05-13
 
 ### Documentation

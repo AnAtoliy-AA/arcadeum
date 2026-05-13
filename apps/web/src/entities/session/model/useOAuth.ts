@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation } from '@/shared/hooks/useMutation';
 
 import {
@@ -175,6 +175,7 @@ export type UseOAuthResult = OAuthState & {
 };
 
 export function useOAuth(session: SessionTokensValue): UseOAuthResult {
+  const router = useRouter();
   const [state, setState] = useState<OAuthState>(defaultState);
   const searchParams = useSearchParams();
   const processingRef = useRef(false);
@@ -356,6 +357,10 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
             }
           }
         }
+        // Force Server Components to re-render with the new cookie so the
+        // header BalanceChip (and any other authed SSR data) shows immediately
+        // after OAuth callback.
+        router.refresh();
       } catch (callbackError) {
         setState((current) => ({
           ...current,
@@ -384,7 +389,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         }
       }
     },
-    [session, exchangeCodeMutation, loginSessionMutation],
+    [session, exchangeCodeMutation, loginSessionMutation, router],
   );
 
   const paramsKey = searchParams?.toString();

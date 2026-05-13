@@ -36,7 +36,6 @@
 
 ### Data fetching & state
 
-- **Web: use TanStack Query** for server data fetching — do not call `apiClient` directly inside components.
 - **Web: use Zustand stores** for global client state — do not prop-drill across more than two levels.
 - **Real-time: use the shared socket infrastructure** (`@/shared/lib/socket`) — do not create ad-hoc `socket.io-client` connections.
 

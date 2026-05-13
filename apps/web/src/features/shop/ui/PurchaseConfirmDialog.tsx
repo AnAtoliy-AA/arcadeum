@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Modal, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
-import { usePurchase } from '../hooks/useShopMutations';
+import { purchaseItemAction } from '../server/shop.actions';
 import type {
   EffectiveShopItem,
   WalletBalanceView,
@@ -48,6 +49,7 @@ export function PurchaseConfirmDialog({
   onSuccess,
   labels,
 }: PurchaseConfirmDialogProps) {
+  const router = useRouter();
   // Stable per-dialog UUID: regenerated whenever the dialog opens for a new
   // item, kept constant for the lifetime of that open state so React's
   // strict-mode double-render and any in-flight retries reuse the same id.
@@ -59,7 +61,7 @@ export function PurchaseConfirmDialog({
   }, [open, item]);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const purchase = usePurchase();
+  const [isPending, startTransition] = useTransition();
 
   if (!open || !item) return null;
 
@@ -70,28 +72,28 @@ export function PurchaseConfirmDialog({
     item.priceCurrency === 'coins' ? coinBalance : gemBalance;
   const hasFunds = balanceForCurrency >= item.priceAmount;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!hasFunds) {
       setErrorMsg(labels.errors.insufficientFunds);
       return;
     }
     setErrorMsg(null);
-    const result = await purchase.mutateAsync({
-      itemId: item.id,
-      purchaseId: purchaseIdRef.current,
+    startTransition(async () => {
+      const result = await purchaseItemAction(item.id, purchaseIdRef.current);
+      if (result.ok) {
+        router.refresh();
+        onSuccess();
+        onClose();
+        return;
+      }
+      if (result.error === 'insufficient_funds') {
+        setErrorMsg(labels.errors.insufficientFunds);
+      } else if (result.error === 'unavailable') {
+        setErrorMsg(labels.errors.unavailable);
+      } else {
+        setErrorMsg(labels.errors.generic);
+      }
     });
-    if (result.ok) {
-      onSuccess();
-      onClose();
-      return;
-    }
-    if (result.error === 'insufficient_funds') {
-      setErrorMsg(labels.errors.insufficientFunds);
-    } else if (result.error === 'unavailable') {
-      setErrorMsg(labels.errors.unavailable);
-    } else {
-      setErrorMsg(labels.errors.generic);
-    }
   };
 
   return (
@@ -126,16 +128,12 @@ export function PurchaseConfirmDialog({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button
-            variant="ghost"
-            onPress={onClose}
-            disabled={purchase.isPending}
-          >
+          <Button variant="ghost" onPress={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
             onPress={handleConfirm}
-            disabled={!hasFunds || purchase.isPending}
+            disabled={!hasFunds || isPending}
             data-testid="purchase-confirm-button"
           >
             {labels.buy}

@@ -1,13 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, ShopItemCard, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { useEquip, useUnequip } from '../hooks/useShopMutations';
+import { equipItemAction, unequipItemAction } from '../server/shop.actions';
 import type {
   EffectiveShopItem,
   EquippedView,
@@ -47,9 +48,9 @@ export function InventoryTab({
   gemToCoinRate,
   labels,
 }: InventoryTabProps) {
+  const router = useRouter();
   const { t } = useTranslation();
-  const equip = useEquip();
-  const unequip = useUnequip();
+  const [isPending, startTransition] = useTransition();
   const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
 
   const catalogById = useMemo(
@@ -58,6 +59,20 @@ export function InventoryTab({
   );
 
   const live = inventory.filter((row) => row.soldAt === null);
+
+  const onEquip = (itemId: string) => {
+    startTransition(async () => {
+      const result = await equipItemAction(itemId);
+      if (result.ok) router.refresh();
+    });
+  };
+
+  const onUnequip = (category: EffectiveShopItem['category']) => {
+    startTransition(async () => {
+      const result = await unequipItemAction(category);
+      if (result.ok) router.refresh();
+    });
+  };
 
   if (live.length === 0) {
     return (
@@ -101,8 +116,8 @@ export function InventoryTab({
                 {isEquipped ? (
                   <Button
                     variant="ghost"
-                    onPress={() => unequip.mutate({ category: item.category })}
-                    disabled={unequip.isPending}
+                    onPress={() => onUnequip(item.category)}
+                    disabled={isPending}
                     data-testid={`inventory-unequip-${item.id}`}
                   >
                     {labels.unequip}
@@ -110,8 +125,8 @@ export function InventoryTab({
                 ) : (
                   <Button
                     variant="primary"
-                    onPress={() => equip.mutate({ itemId: item.id })}
-                    disabled={equip.isPending}
+                    onPress={() => onEquip(item.id)}
+                    disabled={isPending}
                     data-testid={`inventory-equip-${item.id}`}
                   >
                     {labels.equip}
@@ -125,7 +140,7 @@ export function InventoryTab({
                   <Button
                     variant="danger"
                     onPress={() => setSellTarget(row)}
-                    disabled={isEquipped}
+                    disabled={isEquipped || isPending}
                     data-testid={`inventory-sell-${item.id}`}
                   >
                     {labels.sell}

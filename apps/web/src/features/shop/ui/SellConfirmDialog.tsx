@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Modal, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
-import { useSellBack } from '../hooks/useShopMutations';
+import { sellItemAction } from '../server/shop.actions';
 import type { InventoryItemView } from '../server/shop.types';
 
 export interface SellConfirmLabels {
@@ -36,30 +37,32 @@ export function SellConfirmDialog({
   onSuccess,
   labels,
 }: SellConfirmDialogProps) {
+  const router = useRouter();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const sellBack = useSellBack();
+  const [isPending, startTransition] = useTransition();
 
   if (!open || !inventoryItem) return null;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setErrorMsg(null);
-    const result = await sellBack.mutateAsync({
-      purchaseId: inventoryItem.purchaseId,
+    startTransition(async () => {
+      const result = await sellItemAction(inventoryItem.purchaseId);
+      if (result.ok) {
+        router.refresh();
+        onSuccess();
+        onClose();
+        return;
+      }
+      if (result.error === 'starter_not_sellable') {
+        setErrorMsg(labels.errors.starterNotSellable);
+      } else if (result.error === 'already_sold') {
+        setErrorMsg(labels.errors.alreadySold);
+      } else if (result.error === 'unequip_first') {
+        setErrorMsg(labels.errors.unequipFirst);
+      } else {
+        setErrorMsg(labels.errors.generic);
+      }
     });
-    if (result.ok) {
-      onSuccess();
-      onClose();
-      return;
-    }
-    if (result.error === 'starter_not_sellable') {
-      setErrorMsg(labels.errors.starterNotSellable);
-    } else if (result.error === 'already_sold') {
-      setErrorMsg(labels.errors.alreadySold);
-    } else if (result.error === 'unequip_first') {
-      setErrorMsg(labels.errors.unequipFirst);
-    } else {
-      setErrorMsg(labels.errors.generic);
-    }
   };
 
   return (
@@ -77,16 +80,12 @@ export function SellConfirmDialog({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button
-            variant="ghost"
-            onPress={onClose}
-            disabled={sellBack.isPending}
-          >
+          <Button variant="ghost" onPress={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
             onPress={handleConfirm}
-            disabled={sellBack.isPending}
+            disabled={isPending}
             data-testid="sell-confirm-button"
           >
             {labels.sell}

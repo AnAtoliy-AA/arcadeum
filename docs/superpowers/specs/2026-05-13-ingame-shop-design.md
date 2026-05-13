@@ -34,7 +34,7 @@ This unlocks gem demand beyond the existing convert-to-coins path and adds a per
 
 ### D1 — Static seed catalog + Mongo override
 
-**Decision:** The full catalog is a typed `Record<ShopItemId, ShopItemDef>` in `apps/be/src/shop/lib/shop-catalog.ts` (new). Each entry is the source of truth for id, category, rarity, asset URL, i18n keys, and default price. An admin-tunable `ShopItemOverride` Mongo doc per-item can override `available`, `priceAmount`, `priceCurrency` (read-through TTL cache, 60s, mirrors `EconomySettings`).
+**Decision:** The full catalog is a typed `Record<ShopItemId, ShopItemDef>` in `apps/be/src/shop/lib/shop-catalog.ts` (new). Each entry is the source of truth for id, category, rarity, asset URL, i18n keys, and default price. An admin-tunable `ShopItemOverride` Mongo doc per-item can override `available`, `priceAmount`, `priceCurrency` (per-key TTL cache, 60s, with synchronous `invalidate(itemId)` on writes — mirrors the cache pattern in `EconomySettingsService`).
 
 **Why split:** Adding an item is a code change (it ships an asset, an i18n key, and a price the team has discussed). Tuning availability or price is an ops change that must not require a deploy. Two layers cleanly split content from operations and mirror the existing `EconomySettings` pattern operators are already trained on.
 
@@ -58,14 +58,19 @@ This unlocks gem demand beyond the existing convert-to-coins path and adds a per
 
 ### D5 — Buy = atomic wallet debit + inventory insert + auto-equip
 
-**Decision:** A purchase request flows through `ShopService.purchase(userId, itemId, purchaseId)` and runs inside a single Mongo transaction that:
+**Decision:** A purchase request flows through `ShopService.purchase(userId, itemId, purchaseId)` which:
 
-1. Resolves the effective item (catalog + override + availability check).
-2. Calls `WalletService.debit(...)` with the existing `parentSession` extension.
-3. Inserts a `UserInventoryItem` row (`purchaseId`, `acquiredVia: priceCurrency`, `paidAmount`, `paidCurrency`).
-4. Sets the matching equip slot on `User` (`equippedAvatarId` or `equippedBadgeId`).
+0. **Pre-transaction short-circuit:** `InventoryService.findByUserAndPurchaseId(userId, purchaseId)` — if a row already exists, return it (with current balance + equipped). This makes retried clicks idempotent at the application layer; the wallet's own idempotency-recovery branch is bypassed under `parentSession` (see [WalletService internals](#wallet-emitaftercommit-contract)).
 
-A failure on any step rolls back all four. Auto-equip means the player immediately sees their new look (no "why didn't it change?" confusion).
+1. Otherwise, opens a Mongo transaction and:
+   a. Resolves the effective item (catalog + override + availability check).
+   b. Calls `WalletService.debit(...)` with the existing `parentSession` extension.
+   c. Inserts a `UserInventoryItem` row (`purchaseId`, `acquiredVia: priceCurrency`, `paidAmount`, `paidCurrency`).
+   d. Sets the matching equip slot on `User` (`equippedAvatarId` or `equippedBadgeId`).
+
+2. After the transaction commits, calls `WalletService.emitAfterCommit(userId, balance)` so the wallet socket gateway pushes the new balance to all connected clients (`WalletService.doWrite` gates the in-transaction emit on `isOwnSession`, so external-session callers MUST emit explicitly).
+
+A failure on any step inside (1) rolls back all four writes. Auto-equip means the player immediately sees their new look (no "why didn't it change?" confusion).
 
 **Why auto-equip:** A cosmetic the player can't see is a worse purchase confirmation than the modal itself. They can always swap back from their inventory tab.
 
@@ -73,38 +78,39 @@ A failure on any step rolls back all four. Auto-equip means the player immediate
 
 **Decision:** `ShopService.sellBack(userId, purchaseId)` runs inside one transaction:
 
-1. Loads the inventory row, asserts owner + not already sold + not a starter item + not currently equipped.
-2. Calculates refund: 50% of `paidAmount` (rounded down), in `coins`. **For gem-priced items, the refund is `floor(paidAmount * gem_to_coin_rate * 0.5)` coins** — paid via the existing gem-to-coin rate so there is no gem-laundering loop.
-3. Calls `WalletService.credit(...)` with `reason: 'shop_sell_refund'`.
+1. Loads the inventory row, asserts: row's `userId === JWT subject`, `soldAt === null`, the catalog item's `starter !== true` (the catalog flag is the source of truth — `acquiredVia === 'starter'` is descriptive, not authoritative), and the item is not currently equipped (`User.equipped{Category}Id !== itemId`). Reject with `shop.starterNotSellable` / `shop.alreadySold` / `shop.unequipFirst` / `shop.notOwned` as applicable.
+2. Calculates refund: 50% of `paidAmount` (rounded down), always paid in `coins`. **For gem-priced items, the refund is `floor(paidAmount * gem_to_coin_rate * 0.5)` coins** — denominated in coins so there is no gem-recycle loop (a player still recovers 50% of the gem-converted value, which is intended as a regret valve, not a refund).
+3. Calls `WalletService.credit(...)` with `reason: 'shop_sell_refund'` and `parentSession`.
 4. Marks the inventory row `soldAt: new Date()` (soft-delete; preserved for audit).
+5. After commit, calls `WalletService.emitAfterCommit(userId, balance)` for the same reason as purchase (D5).
 
 If the sold item was equipped (it must be unequipped first per the precondition), no slot mutation happens. Re-buying a sold item creates a brand-new inventory row with a new `purchaseId` — sell-back does not "undo" a purchase, it just exchanges it.
 
-**Why 50% coins (not gems):** A gem-in / gem-out loop with any positive refund gives gem-holders a free recycle on any cosmetic they regret. Paying refunds in coins, at half the post-conversion value, makes sell-back a coin-economy reset valve, not a gem speculation tool.
+**Why 50% coins (not gems):** A gem-in / gem-out loop with any positive refund gives gem-holders a free recycle on any cosmetic they regret. Paying refunds in coins, at half the post-conversion value, makes sell-back a coin-economy reset valve rather than a gem speculation tool. (Not "no laundering" — a player who buys a gem item and immediately sells back recovers 50% of the gem value as coins, which is a meaningful loss but not zero. The economic intent is "regret valve at a real cost," not perfect closure.)
 
 **Why require unequip first:** Two-step ("unequip ⇒ sell") is one more click than "sell which also unequips," but it forces a moment of pause on a destructive-feeling action and removes the edge case where the player has no fallback avatar/badge after a sell.
 
 ### D7 — Starter items: one free avatar + one free badge for new users
 
-**Decision:** Two items in the seed file are flagged `starter: true` with `defaultPriceAmount: 0` — `avatar-default-01` and `badge-newcomer`. A `ShopInventoryBootstrap` (OnApplicationBootstrap) idempotently inserts both rows for any user whose inventory doesn't contain them, and sets `equippedAvatarId`/`equippedBadgeId` if currently null. Future new users get them inline via `AuthService` on registration.
+**Decision:** Two items in the seed file are flagged `starter: true` with `defaultPriceAmount: 0` — `avatar-default-01` and `badge-newcomer`. A `ShopInventoryBootstrap` (OnApplicationBootstrap) idempotently inserts both rows for any user whose inventory doesn't contain them, and sets `equippedAvatarId`/`equippedBadgeId` if currently null. Future new users get them inline via `AuthService` — **both `register()` AND `getOrCreateOAuthUser()` call `InventoryService.grantStarter(userId, session)` inside the existing user-creation transaction**. Missing the OAuth path would leave Google-signup users without starters until the next bootstrap pass.
 
 **Why a backfill + inline grant:** Existing users on develop don't yet have inventory rows; the bootstrap closes that gap once. New users from this point forward get items at registration time so they never see a blank avatar even on first session.
 
 ### D8 — Purchase idempotency via client-supplied `purchaseId`
 
-**Decision:** The buy endpoint takes a client-generated `purchaseId` (UUID v4). Wallet idempotency key is `shop-buy-${purchaseId}`. The inventory row's unique index is on `{ userId, purchaseId }`. A retried request with the same `purchaseId` is a no-op (returns the prior row); two distinct buy clicks (two UUIDs) buy two copies of the same item — which is allowed and useful because **re-buying after a sell-back is a legitimate flow**.
+**Decision:** The buy endpoint takes a client-generated `purchaseId` (UUID v4). Wallet idempotency key is `shop-buy-${purchaseId}`. The inventory row's unique index is on `{ userId, purchaseId }`. A retried request with the same `purchaseId` returns the prior row — implemented by the application-layer short-circuit in `ShopService.purchase` (step 0 above), NOT by relying on the wallet's `recoverFromDuplicateKey` branch (which is gated on `!parentSession` in `WalletService.credit/debit` and so won't trigger inside the shop transaction). Two distinct buy clicks (two UUIDs) buy two copies of the same item — which is allowed and useful because **re-buying after a sell-back is a legitimate flow**.
 
 **Why client-generated, not server-side `${userId}-${itemId}-${nonce}`:** A nonce derived from "current sell-back count" would be a race condition under concurrent clicks. The client owns the click; let it own the dedup token.
 
 ### D9 — Admin grant is a separate, no-charge code path
 
-**Decision:** `POST /admin/shop/grant` takes `{ userId, itemId, reason }`. Inserts an inventory row with `acquiredVia: 'grant'`, `paidAmount: null`. Does not touch wallet. Does not auto-equip. Idempotency key: `shop-grant-${userId}-${itemId}-${nonce}` (admin-supplied or UUID); a second grant of the same item to the same user is allowed (admins may want to grant extras).
+**Decision:** `POST /admin/shop/grant` takes `{ userId, itemId, reason, nonce }`. The admin grant dialog (D-Admin) supplies a fresh UUID `nonce` on dialog open (stable for the lifetime of the dialog, so React-double-render is idempotent). Inserts an inventory row with `acquiredVia: 'grant'`, `paidAmount: null`. Does not touch wallet. Does not auto-equip. Idempotency key: `shop-grant-${userId}-${itemId}-${nonce}`; a second grant of the same item to the same user is allowed via a new dialog (new nonce). Re-submitting the same dialog (retry) is a no-op.
 
 **Why not auto-equip:** A grant is an admin action; the user should choose when/if to equip it. Different from a self-purchase where the player implicitly chose.
 
-### D10 — Equip / unequip is a pure User-document update
+### D10 — Equip / unequip is a guarded User-document update
 
-**Decision:** `ShopService.equip(userId, itemId)` verifies the user owns a non-sold inventory row for `itemId`, resolves the item's category, and sets `equipped{Category}Id = itemId`. Unequip sets it to `null`. Both are simple `$set` updates outside a transaction — no wallet, no inventory mutation.
+**Decision:** `ShopService.equip(userId, itemId)` runs as a single `findOneAndUpdate` on `User` keyed on `{ _id: userId, $expr: ... }` — or simpler, opens a tiny transactional session that (a) verifies a non-sold inventory row exists for `{userId, itemId}` via `findOne({userId, itemId, soldAt: null}, null, {session})` and (b) `$set`s the equip slot in the same session. Without the session, a concurrent sell-back can mark the row sold between the ownership check and the equip write — leading to "equipped a sold item." Unequip is an unconditional `$set: { equipped{Category}Id: null }` (no race to worry about). Both still bypass the wallet entirely.
 
 ### D11 — Wallet-write failures are surfaced to the client
 
@@ -156,7 +162,11 @@ class ShopItemOverride {
   @Prop({ type: Number, default: null, min: 0, max: 1_000_000 }) priceAmount?:
     | number
     | null;
-  @Prop({ type: String, default: null, enum: [...SHOP_PRICE_CURRENCIES, null] })
+  // Mongoose's string-enum validator rejects `null` even when listed in the
+  // enum array. Keep the enum a clean string[] and rely on the field being
+  // optional + nullable; Mongoose only runs enum validation on non-nullish
+  // values when `required: false`.
+  @Prop({ type: String, default: null, enum: SHOP_PRICE_CURRENCIES })
   priceCurrency?: ShopPriceCurrency | null;
   @Prop({ type: Types.ObjectId, ref: 'User', default: null })
   updatedBy?: Types.ObjectId | null;
@@ -171,7 +181,10 @@ class ShopItemOverride {
 // apps/be/src/shop/schemas/user-inventory-item.schema.ts
 @Schema({ timestamps: true, collection: 'user_inventory_items' })
 class UserInventoryItem {
-  @Prop({ required: true, index: true }) userId!: string;
+  // ObjectId + ref matches the convention in WalletTransaction so admin
+  // surfaces can `.populate('userId', 'username displayName')`.
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  userId!: Types.ObjectId;
   @Prop({ required: true, index: true }) itemId!: string;
   @Prop({ required: true }) purchaseId!: string;
   @Prop({
@@ -252,14 +265,15 @@ ShopModule
   imports:
     - forwardRef(() => AuthModule)            // user model, guards
     - WalletModule                            // WalletService for debit/credit
-    - JwtModule.registerAsync(...)            // matches WalletModule pattern, for any future gateway
     - MongooseModule.forFeature([User, ShopItemOverride, UserInventoryItem])
   controllers: [ShopController, AdminShopController]
   providers:   [CatalogService, InventoryService, ShopService, ShopInventoryBootstrap, RolesGuard]
   exports:     [InventoryService]             // AuthService consumes for new-user starter grant
 
-AuthModule.imports += [forwardRef(() => ShopModule)]   // grant starters on registration
+AuthModule.imports += [forwardRef(() => ShopModule)]   // grant starters on registration (both register and getOrCreateOAuthUser)
 ```
+
+No `JwtModule` registration here — unlike `WalletModule` (which needs it for `WalletGateway` socket-handshake validation), `ShopModule` has no gateway. `JwtAuthGuard` is supplied by `AuthModule` and works for the REST controllers without a local JwtModule.
 
 `WalletService` is already exported by `WalletModule` (ARC-615) and already accepts `parentSession` (ARC-616).
 
@@ -288,19 +302,25 @@ AuthModule.imports += [forwardRef(() => ShopModule)]   // grant starters on regi
 
 ### REST API
 
-| Method  | Route                           | Auth  | Body / Query                                   | Returns                                                                              |
-| ------- | ------------------------------- | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `GET`   | `/shop/catalog`                 | none  | `?category=avatar&rarity=epic`                 | `EffectiveShopItem[]`                                                                |
-| `GET`   | `/shop/inventory`               | jwt   | none                                           | `{ items: UserInventoryItem[], equipped: { avatar, badge, name_color, game_skin } }` |
-| `POST`  | `/shop/purchase`                | jwt   | `{ itemId, purchaseId }`                       | `{ inventoryItem, equipped, balance }`                                               |
-| `POST`  | `/shop/sell`                    | jwt   | `{ purchaseId }`                               | `{ refundAmount, refundCurrency, balance }`                                          |
-| `POST`  | `/shop/equip`                   | jwt   | `{ itemId }`                                   | `{ equipped }`                                                                       |
-| `POST`  | `/shop/unequip`                 | jwt   | `{ category }`                                 | `{ equipped }`                                                                       |
-| `GET`   | `/admin/shop/overrides`         | admin | none                                           | `ShopItemOverride[]`                                                                 |
-| `PATCH` | `/admin/shop/overrides/:itemId` | admin | `{ available?, priceAmount?, priceCurrency? }` | `ShopItemOverride`                                                                   |
-| `POST`  | `/admin/shop/grant`             | admin | `{ userId, itemId, reason }`                   | `UserInventoryItem`                                                                  |
+| Method  | Route                                 | Auth  | Body / Query                                   | Returns                                                                              |
+| ------- | ------------------------------------- | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `GET`   | `/shop/catalog`                       | none  | `?category=avatar&rarity=epic`                 | `EffectiveShopItem[]`                                                                |
+| `GET`   | `/shop/inventory`                     | jwt   | none                                           | `{ items: UserInventoryItem[], equipped: { avatar, badge, name_color, game_skin } }` |
+| `POST`  | `/shop/purchase`                      | jwt   | `{ itemId, purchaseId }`                       | `{ inventoryItem, equipped, balance }`                                               |
+| `POST`  | `/shop/sell`                          | jwt   | `{ purchaseId }`                               | `{ refundAmount, refundCurrency, balance }`                                          |
+| `POST`  | `/shop/equip`                         | jwt   | `{ itemId }`                                   | `{ equipped }`                                                                       |
+| `POST`  | `/shop/unequip`                       | jwt   | `{ category }`                                 | `{ equipped }`                                                                       |
+| `GET`   | `/admin/shop/overrides`               | admin | none                                           | `ShopItemOverride[]`                                                                 |
+| `PATCH` | `/admin/shop/overrides/:itemId`       | admin | `{ available?, priceAmount?, priceCurrency? }` | `ShopItemOverride`                                                                   |
+| `POST`  | `/admin/shop/grant`                   | admin | `{ userId, itemId, reason, nonce }`            | `UserInventoryItem`                                                                  |
+| `GET`   | `/admin/shop/users/:userId/inventory` | admin | none                                           | `{ items: UserInventoryItem[], equipped }`                                           |
+| `POST`  | `/admin/shop/inventory/:rowId/revoke` | admin | `{ reason }`                                   | `UserInventoryItem` (soft-deleted)                                                   |
 
 All public endpoints `@UseGuards(JwtAuthGuard)`. Admin endpoints `@UseGuards(JwtAuthGuard, RolesGuard) @Roles('admin')`. DTOs `class-validator`'d.
+
+**Revoke semantics:** `revoke` marks the inventory row `soldAt: new Date()` with an admin metadata field recording the actor and reason, and unequips the slot if currently equipped. Does NOT touch the wallet (admin grants didn't credit gems/coins, so there's nothing to debit back). Soft-delete preserves the audit trail.
+
+**Audit:** Override edits and admin grants/revokes each insert a row in a new `ShopAdminAudit` collection (mirrors `EconomySettingsAudit`): `{ adminUserId, action: 'override' | 'grant' | 'revoke', subjectItemId, subjectUserId?, fromValue?, toValue?, reason?, createdAt }`. The override doc's `updatedBy/updatedAt` remain for quick-glance reads, but historical change-over-time lives in audit. The admin sidebar gets a "Shop Audit" drawer (mirrors `AdminEconomyAuditDrawer`).
 
 ### Error semantics
 
@@ -318,6 +338,10 @@ All public endpoints `@UseGuards(JwtAuthGuard)`. Admin endpoints `@UseGuards(Jwt
 ### Public catalog endpoint behavior
 
 `/shop/catalog` is public (no auth required) and excludes overrides where `available === false`. The same payload shape powers both web (SSR + client) and mobile.
+
+### Wallet `emitAfterCommit` contract
+
+`WalletService.credit/debit` only emits the socket-side balance update when it owns the transaction session (the `isOwnSession` branch in `WalletService.doWrite`). When called with a `parentSession` — which is exactly the shop's pattern in D5 and D6 — the wallet writes its row inside the outer transaction but skips the socket emit, because the outer transaction may still abort. The shop service is responsible for calling `WalletService.emitAfterCommit(userId, newBalance)` after the outer transaction commits. Skipping this call leaves the client's wallet socket unaware of the new balance until the next manual refetch — a silent regression with no test failure on the BE side. The unit tests in `shop.service.spec.ts` MUST assert `emitAfterCommit` is called exactly once per successful purchase / sell-back, and zero times on rollback.
 
 ## Web UI
 
@@ -355,20 +379,24 @@ features/shop/
   index.ts
 ```
 
-### New `@arcadeum/ui` components
+### Reuse vs. add to `@arcadeum/ui`
 
-Catalog with `/check-ui-components` first. The catalog currently has no avatar primitive or rarity-bordered card. Add:
+`/check-ui-components` confirms these primitives **already exist** and must be reused, not duplicated:
 
-- **`Avatar`** — circular image with fallback (initials of `displayName`). Sizes: `sm | md | lg | xl`. Used everywhere a user image is currently rendered (chat sender, lobby roster, profile, header). Props: `src?: string | null; name: string; size?: AvatarSize`.
-- **`BadgeChip`** — small inline badge: icon + optional label. Sizes `sm | md`. Rendered next to display name in chat, leaderboards, lobby, profile header.
-- **`RarityBorder`** — wraps any child with a rarity-tinted border + soft glow. Colours come from existing Tamagui tokens; tier mapping: common = `$gray7`, rare = `$blue8`, epic = `$purple8`, legendary = `$yellow8`.
+- **`Avatar`** (`packages/ui/src/components/Avatar/Avatar.tsx`) — already takes `name`, `src`, `size: 'sm'|'md'|'lg'|'xl'` and renders initials when `src` is null. The shop uses it as-is; `equippedAvatarId` resolves to an asset URL via `CatalogService` and is passed as `src`.
+- **`CosmeticBadge`** (`packages/ui/src/components/CosmeticBadge/CosmeticBadge.tsx`) — already the badge-chip pattern. The shop uses it as-is; `equippedBadgeId` resolves to its asset/icon via the catalog.
+- **`Badge`** (`packages/ui/src/components/Badge/Badge.tsx`) — generic badge primitive available if needed for "Owned" / "Equipped" / rarity-tag chips on item cards.
+
+Only the following are genuinely new and must be added to `packages/ui` via `/new-ui-component`:
+
+- **`RarityBorder`** — wraps any child with a rarity-tinted border + soft glow. Tier mapping from Tamagui tokens: common = `$gray7`, rare = `$blue8`, epic = `$purple8`, legendary = `$yellow8`.
 - **`ShopItemCard`** — composite using `RarityBorder` + asset preview + price chip + owned/equipped indicator.
 
-The `Avatar` and `BadgeChip` primitives ship with v1 and are wired into the existing render sites (chat, leaderboards, lobby, profile) so equip changes are immediately visible. Inventory display today renders only `displayName`; this is the moment that changes.
+Wiring: every existing `Avatar` render site (chat sender header, lobby roster, profile header, app header chip) is updated to pass `src={equippedAvatarUrl}` derived from the session user's `equippedAvatarId`. Same for `CosmeticBadge` inline next to displayName. Sites that currently render `null` or initials continue to do so for users whose equip slot is null.
 
 ### Purchase confirm flow
 
-Mirrors the existing tournament-register confirm dialog (`apps/web/src/features/admin-tournaments/`). Modal shows: large item preview, name, description, rarity badge, **effective** price + currency, current balance for that currency, "Confirm" button (disabled if insufficient). On confirm: `usePurchase` generates a UUID `purchaseId` (stable for the lifetime of the dialog so React-double-render is idempotent), calls `/shop/purchase`. On success: optimistic balance update via the wallet socket gateway's existing balance push (no manual invalidation needed), inventory refetch, dialog closes, brief toast "Equipped." On 422: inline error + link to `/wallet`.
+Mirrors the existing tournament-register confirm dialog (`apps/web/src/features/admin-tournaments/`). Modal shows: large item preview, name, description, rarity badge, **effective** price + currency, current balance for that currency, "Confirm" button (disabled if insufficient). On confirm: `usePurchase` generates a UUID `purchaseId` (stable for the lifetime of the dialog so React-double-render is idempotent), calls `/shop/purchase`. On success: the new balance arrives via the wallet socket gateway's balance push (the BE service emits via `WalletService.emitAfterCommit` after the shop transaction commits — see D5); inventory query refetches, dialog closes, brief toast "Equipped." On 422: inline error + link to `/wallet`.
 
 ### Sell confirm flow
 
@@ -414,13 +442,16 @@ Add a "Shop" entry in the mobile tab bar.
 
 - Mirrors `/admin/economy` layout — table of every catalog item (rendered from the catalog + override join).
 - Per-row: id, category, rarity, name (i18n), default price, effective price (with badge if overridden), available toggle, "Edit" button (opens dialog with `priceAmount` + `priceCurrency` inputs and a "Reset" action).
-- Sidebar gets a "Shop" entry below "Economy".
+- Sidebar gets a "Shop" entry below "Economy". This requires:
+  - Adding `'shop'` to `AdminSidebarItem['id']` union in `apps/web/src/app/admin/_components/sidebarItems.ts` and appending `{ id: 'shop', href: '/admin/shop', enabled: true }` to `ADMIN_SIDEBAR_ITEMS`.
+  - Adding `nav.shop` to `AdminNavTranslations` in `apps/web/src/app/admin/AdminLayoutShell.tsx`.
+  - Adding the `pages.admin.nav.shop` key to all 5 web admin i18n locale files.
 - "Grant item" action button on the page → dialog: user picker (search by username/email, reuses the admin-users autocomplete) + item picker (search the catalog) + reason text. Posts to `/admin/shop/grant`.
 - Edit + grant actions write through server actions; audit log entries are written by the BE controller (mirrors `EconomySettings` audit, but we'll co-locate audit on the override doc as `updatedBy/updatedAt` since the override is small — no separate audit collection in v1).
 
 ## i18n
 
-Web (5 locales: en, ru, es, fr, by) — add `pages.shop` namespace under `apps/web/src/shared/i18n/messages/pages/shop/<locale>.ts`. Mobile (3 locales: en, es, fr) — equivalent path.
+Web (5 locales: en, ru, es, fr, by) — add `pages.shop` namespace under `apps/web/src/shared/i18n/messages/pages/shop/<locale>.ts` (one file per locale). Mobile (3 locales: en, es, fr) — add a SINGLE file `apps/mobile/lib/i18n/messages/shop.ts` containing all three locale blocks inline (matches the existing mobile pattern in `apps/mobile/lib/i18n/messages/wallet.ts`, NOT per-locale dirs).
 
 Required keys (sketch):
 
@@ -548,7 +579,8 @@ Required keys (sketch):
 | Buying an item the player already owns            | Allowed (creates a second row). Inventory UI groups by `itemId` with a "×N" count.                                                                                                                                                                                                                                                                       | Re-buy after sell is the primary use case; allowing duplicate ownership keeps the model simple. |
 | Equipping an item the player doesn't own          | Rejected (400 `shop.notOwned`).                                                                                                                                                                                                                                                                                                                          |                                                                                                 |
 | Equipping an item from a different category       | Rejected (400 `shop.categoryMismatch`).                                                                                                                                                                                                                                                                                                                  |                                                                                                 |
-| Concurrent admin price overrides                  | Last write wins; override doc is keyed on `itemId`.                                                                                                                                                                                                                                                                                                      | Cache version derived from max `updatedAt` invalidates all consumers within TTL.                |
+| Concurrent admin price overrides                  | Last write wins; override doc is keyed on `itemId`.                                                                                                                                                                                                                                                                                                      | `CatalogService.setOverride` synchronously invalidates the per-key cache entry on write.        |
+| Catalog item removed from seed while equipped     | Inventory row still resolves via `paidAmount` fallback. Equip-render site falls back to `Avatar` initials / no-badge state when `CatalogService.getEffective(itemId)` returns `null`. Equip state stays as-is (no auto-unequip; the player can manually swap).                                                                                           | `getEffectiveOrLegacy(itemId, fallback?)` helper centralises this.                              |
 | Catalog static seed grows large                   | Bound by deliberate content curation; tree-shakeable enum-style.                                                                                                                                                                                                                                                                                         | If catalog exceeds 200 items, revisit moving to a DB collection. Not v1.                        |
 | Image hosting / asset pipeline                    | Static assets in `apps/web/public/shop/` for v1.                                                                                                                                                                                                                                                                                                         | A CDN cutover is a follow-up infra ticket.                                                      |
 | Localized item names need translator workflow     | Item nameKeys use a flat path so missing translations fall back to the en value.                                                                                                                                                                                                                                                                         | Existing fallback machinery in `useTranslation` handles this.                                   |

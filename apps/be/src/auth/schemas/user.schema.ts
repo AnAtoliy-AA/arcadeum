@@ -49,6 +49,12 @@ export class User {
 
   @Prop({ type: Number, default: 0, min: 0 })
   gems!: number;
+
+  @Prop({ type: String, default: null })
+  equippedAvatarId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedBadgeId?: string | null;
 }
 
 export type UserDocument = User & Document;

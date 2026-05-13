@@ -14,5 +14,7 @@ export const WALLET_REASONS = [
   'referral_bonus',
   'referral_tier_bonus',
   'daily_reward',
+  'shop_purchase',
+  'shop_sell_refund',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

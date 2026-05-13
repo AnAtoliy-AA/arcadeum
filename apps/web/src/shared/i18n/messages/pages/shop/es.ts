@@ -1,0 +1,77 @@
+export const shopEs = {
+  meta: {
+    title: 'Tienda · Arcadeum',
+    description: 'Gasta tus monedas y gemas en avatares, insignias y más.',
+  },
+  title: 'Tienda',
+  subtitle: 'Avatares e insignias para personalizar tu perfil.',
+  sidebar: {
+    title: 'Filtros',
+    category: 'Categoría',
+    rarity: 'Rareza',
+    all: 'Todas',
+    categories: {
+      avatar: 'Avatares',
+      badge: 'Insignias',
+      name_color: 'Colores de nombre',
+      game_skin: 'Skins de juego',
+    },
+    rarities: {
+      common: 'Común',
+      rare: 'Raro',
+      epic: 'Épico',
+      legendary: 'Legendario',
+    },
+    tabs: { browse: 'Explorar', inventory: 'Inventario' },
+  },
+  grid: {
+    emptyCategory: 'Nada aún. Vuelve pronto.',
+    purchase: {
+      title: 'Confirmar compra',
+      buy: 'Comprar',
+      cancel: 'Cancelar',
+      yourBalance: 'Tienes {amount} {currency}.',
+      free: 'Gratis',
+      errors: {
+        insufficientFunds: 'No tienes suficiente para comprar esto.',
+        unavailable: 'Este artículo no está disponible ahora.',
+        generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
+      },
+    },
+  },
+  inventory: {
+    emptyInventory: 'Tu inventario está vacío. Visita la tienda para empezar.',
+    equip: 'Equipar',
+    unequip: 'Desequipar',
+    sell: 'Vender',
+    starterTag: 'Inicial',
+    sell_modal: {
+      title: 'Vender artículo',
+      sell: 'Vender por {amount} monedas',
+      cancel: 'Cancelar',
+      refund: 'Recibirás {amount} monedas.',
+      errors: {
+        starterNotSellable: 'Los artículos iniciales no se pueden vender.',
+        alreadySold: 'Este artículo ya fue vendido.',
+        unequipFirst: 'Desequipa el artículo antes de venderlo.',
+        generic: 'No se pudo vender el artículo. Inténtalo de nuevo.',
+      },
+    },
+  },
+  items: {
+    avatar: {
+      default01: { name: 'Avatar predeterminado', desc: 'El avatar inicial.' },
+      fox01: { name: 'Zorro', desc: 'Un zorro astuto.' },
+      cat01: { name: 'Gato', desc: 'Un gato curioso.' },
+      dragon01: { name: 'Dragón', desc: 'Un dragón feroz.' },
+      phoenix01: { name: 'Fénix', desc: 'Un fénix que renace.' },
+      cosmic01: { name: 'Cósmico', desc: 'Una leyenda cósmica.' },
+    },
+    badge: {
+      newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },
+      veteran: { name: 'Veterano', desc: 'Un jugador experimentado.' },
+      champion: { name: 'Campeón', desc: 'Un campeón probado.' },
+      legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
+    },
+  },
+};

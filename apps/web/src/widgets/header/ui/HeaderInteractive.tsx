@@ -44,6 +44,7 @@ export function HeaderInteractive() {
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
+      { href: routes.shop, label: t('navigation.shopTab') },
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },

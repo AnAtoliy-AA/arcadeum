@@ -50,6 +50,7 @@ export const routes = {
   rewards: '/rewards',
   tournaments: '/tournaments',
   wallet: '/wallet',
+  shop: '/shop',
   leaderboards: '/leaderboards',
   developers: '/developers',
 

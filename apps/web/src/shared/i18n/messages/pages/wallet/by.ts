@@ -45,6 +45,9 @@ export const walletBy: WalletI18n = {
     gem_to_coin_conversion_credit: 'Манеты з канвертацыі',
     referral_bonus: 'Бонус за запрашэнне',
     referral_tier_bonus: 'Бонус за ўзровень запрашэнняў',
+    daily_reward: 'Штодзённая ўзнагарода',
+    shop_purchase: 'Пакупка ў краме',
+    shop_sell_refund: 'Вяртанне за продаж',
   },
   errors: {
     insufficientFunds: 'Недастаткова сродкаў.',

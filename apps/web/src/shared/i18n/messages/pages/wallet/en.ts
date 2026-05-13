@@ -43,6 +43,9 @@ export const walletEn = {
     gem_to_coin_conversion_credit: 'Coins from conversion',
     referral_bonus: 'Referral bonus',
     referral_tier_bonus: 'Referral tier bonus',
+    daily_reward: 'Daily reward',
+    shop_purchase: 'Shop purchase',
+    shop_sell_refund: 'Shop sell refund',
   },
   errors: {
     insufficientFunds: 'Insufficient balance.',

@@ -45,6 +45,9 @@ export const walletEs: WalletI18n = {
     gem_to_coin_conversion_credit: 'Monedas de la conversión',
     referral_bonus: 'Bono por referido',
     referral_tier_bonus: 'Bono de nivel por referidos',
+    daily_reward: 'Recompensa diaria',
+    shop_purchase: 'Compra en tienda',
+    shop_sell_refund: 'Reembolso por venta',
   },
   errors: {
     insufficientFunds: 'Saldo insuficiente.',

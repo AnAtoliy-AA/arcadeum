@@ -6,6 +6,7 @@ import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
+import { shopRu } from './shop/ru';
 
 export const ru = {
   admin: {
@@ -21,6 +22,7 @@ export const ru = {
       announcements: 'Объявления',
       tournaments: 'Турниры',
       economy: 'Экономика',
+      shop: 'Магазин',
       comingSoon: 'Скоро',
     },
     error: {
@@ -480,4 +482,5 @@ export const ru = {
   adminGemPackages: adminGemPackagesRu,
   adminEconomy: adminEconomyRu,
   dailyRewards: dailyRewardsRu,
+  shop: shopRu,
 };

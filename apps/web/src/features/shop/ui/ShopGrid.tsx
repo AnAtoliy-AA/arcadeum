@@ -41,6 +41,7 @@ export function ShopGrid({
 }: ShopGridProps) {
   const category = useShopFiltersStore((s) => s.category);
   const rarities = useShopFiltersStore((s) => s.rarities);
+  const setTab = useShopFiltersStore((s) => s.setTab);
   const { t } = useTranslation();
   const [selectedItem, setSelectedItem] = useState<EffectiveShopItem | null>(
     null,
@@ -96,7 +97,17 @@ export function ShopGrid({
               priceCurrency={item.priceCurrency}
               owned={ownedIds.has(item.id)}
               equipped={equipped[item.category] === item.id}
-              onClick={() => setSelectedItem(item)}
+              onClick={() => {
+                // Already-owned items: route to Inventory instead of opening
+                // a purchase dialog. The spec allows re-buying after a sell-
+                // back, but a fresh duplicate buy of a still-owned item is
+                // almost always an accidental click.
+                if (ownedIds.has(item.id)) {
+                  setTab('inventory');
+                  return;
+                }
+                setSelectedItem(item);
+              }}
             />
           </YStack>
         ))}

@@ -30,14 +30,18 @@ export const shopRu = {
       title: 'Подтвердить покупку',
       buy: 'Купить',
       cancel: 'Отмена',
+      close: 'Закрыть',
       yourBalance: 'У вас {amount} {currency}.',
       free: 'Бесплатно',
+      successTitle: 'Экипировано',
+      successBody: '{name} теперь экипировано.',
       errors: {
         insufficientFunds: 'Недостаточно средств для покупки.',
         unavailable: 'Этот предмет сейчас недоступен.',
         generic: 'Не удалось завершить покупку. Попробуйте ещё раз.',
       },
     },
+    equipped: 'Экипировано',
   },
   inventory: {
     emptyInventory: 'Инвентарь пуст. Посетите магазин, чтобы начать.',

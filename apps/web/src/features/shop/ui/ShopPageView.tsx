@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Image from 'next/image';
 import { YStack, XStack } from '@arcadeum/ui';
 import { Text, YStack as Stack, styled } from 'tamagui';
 import { useShopFiltersStore } from '../store/shopFiltersStore';
@@ -16,6 +17,7 @@ import type {
 export interface ShopPageLabels {
   title: string;
   subtitle: string;
+  equipped?: string;
   sidebar: ShopSidebarLabels;
   grid: ShopGridLabels;
   inventory: InventoryTabLabels;
@@ -77,6 +79,17 @@ export function ShopPageView({
     [catalog],
   );
 
+  const catalogById = useMemo(
+    () => new Map(catalog.map((item) => [item.id, item])),
+    [catalog],
+  );
+  const equippedAvatar = inventory.equipped.avatar
+    ? (catalogById.get(inventory.equipped.avatar) ?? null)
+    : null;
+  const equippedBadge = inventory.equipped.badge
+    ? (catalogById.get(inventory.equipped.badge) ?? null)
+    : null;
+
   // Destructure to avoid the wallet-balance no-restricted-syntax guardrail.
   const { coins, gems } = balance;
 
@@ -103,7 +116,47 @@ export function ShopPageView({
             {labels.subtitle}
           </Text>
         </YStack>
-        <XStack gap="$2">
+        <XStack gap="$2" alignItems="center">
+          {equippedAvatar || equippedBadge ? (
+            <Stack
+              flexDirection="row"
+              alignItems="center"
+              gap={6}
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              borderRadius="$3"
+              borderWidth={1}
+              borderColor="rgba(16,185,129,0.35)"
+              backgroundColor="rgba(16,185,129,0.08)"
+              data-testid="shop-equipped-preview"
+            >
+              <Text fontSize="$1" letterSpacing={0.5} color="$green11">
+                {(labels.equipped ?? 'Equipped').toUpperCase()}
+              </Text>
+              {equippedAvatar ? (
+                <Image
+                  src={equippedAvatar.assetUrl}
+                  alt=""
+                  width={28}
+                  height={28}
+                  data-testid="shop-equipped-avatar"
+                  style={{ objectFit: 'contain' }}
+                  unoptimized
+                />
+              ) : null}
+              {equippedBadge ? (
+                <Image
+                  src={equippedBadge.assetUrl}
+                  alt=""
+                  width={24}
+                  height={24}
+                  data-testid="shop-equipped-badge"
+                  style={{ objectFit: 'contain' }}
+                  unoptimized
+                />
+              ) : null}
+            </Stack>
+          ) : null}
           <BalanceChip currency="coins" data-testid="shop-balance-coins">
             <Text fontSize={18}>🪙</Text>
             <Text fontSize="$4" fontWeight="700" color="#fbbf24">

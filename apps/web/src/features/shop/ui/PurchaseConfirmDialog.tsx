@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
@@ -20,8 +20,11 @@ export interface PurchaseConfirmLabels {
   title: string;
   buy: string;
   cancel: string;
+  close?: string;
   yourBalance: string;
   free: string;
+  successTitle?: string;
+  successBody?: string;
   errors: {
     insufficientFunds: string;
     unavailable: string;
@@ -40,7 +43,18 @@ export interface PurchaseConfirmDialogProps {
   labels: PurchaseConfirmLabels;
 }
 
-export function PurchaseConfirmDialog({
+export function PurchaseConfirmDialog(
+  props: PurchaseConfirmDialogProps,
+): React.JSX.Element | null {
+  if (!props.open || !props.item) return null;
+  // Parent gates `open`; we render a fresh inner component per open cycle so
+  // local state (UUID nonce, succeeded flag, error) resets without
+  // setState-in-effect. The inner key is the item id so opening a *different*
+  // item also remounts.
+  return <PurchaseConfirmDialogInner key={props.item.id} {...props} />;
+}
+
+function PurchaseConfirmDialogInner({
   item,
   itemName,
   itemDesc,
@@ -51,20 +65,16 @@ export function PurchaseConfirmDialog({
   labels,
 }: PurchaseConfirmDialogProps) {
   const router = useRouter();
-  // Stable per-dialog UUID: regenerated whenever the dialog opens for a new
-  // item, kept constant for the lifetime of that open state so React's
-  // strict-mode double-render and any in-flight retries reuse the same id.
-  const purchaseIdRef = useRef<string>('');
-  useEffect(() => {
-    if (open && item) {
-      purchaseIdRef.current = uuid();
-    }
-  }, [open, item]);
+  // Stable per-mount UUID — regenerated only when the outer key changes (new
+  // open / new item), so React's strict-mode double-render and any retries
+  // reuse the same id.
+  const purchaseIdRef = useRef<string>(uuid());
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [succeeded, setSucceeded] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  if (!open || !item) return null;
+  if (!item) return null;
 
   // Destructure to avoid the no-restricted-syntax wallet-balance member-access
   // guardrail (only direct property reads are restricted).
@@ -82,9 +92,9 @@ export function PurchaseConfirmDialog({
     startTransition(async () => {
       const result = await purchaseItemAction(item.id, purchaseIdRef.current);
       if (result.ok) {
+        setSucceeded(true);
         router.refresh();
         onSuccess();
-        onClose();
         return;
       }
       if (result.error === 'insufficient_funds') {
@@ -96,6 +106,32 @@ export function PurchaseConfirmDialog({
       }
     });
   };
+
+  if (succeeded) {
+    return (
+      <DialogShell
+        open={open}
+        onClose={onClose}
+        testId="purchase-confirm-dialog"
+      >
+        <YStack gap="$3" alignItems="center">
+          <Text fontSize={48}>✓</Text>
+          <Text fontSize="$6" fontWeight="700">
+            {labels.successTitle ?? 'Equipped'}
+          </Text>
+          <Text fontSize="$3" color="$colorPress" textAlign="center">
+            {(labels.successBody ?? '{name} is now equipped.').replace(
+              '{name}',
+              itemName,
+            )}
+          </Text>
+          <Button onPress={onClose} data-testid="purchase-success-close">
+            {labels.close ?? labels.cancel}
+          </Button>
+        </YStack>
+      </DialogShell>
+    );
+  }
 
   return (
     <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">

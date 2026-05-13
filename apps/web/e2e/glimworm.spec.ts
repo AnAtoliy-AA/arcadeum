@@ -28,10 +28,10 @@ test.describe('Glimworm — registry wiring', () => {
     });
   });
 
-  test('Glimworm appears on the games list page', async ({ page }) => {
-    await navigateTo(page, '/games');
-    await expect(page).toHaveURL(/\/games/);
-    // The Glimworm card should appear by name once the metadata loads.
+  test('Glimworm appears in the create-game catalog', async ({ page }) => {
+    await navigateTo(page, '/games/create');
+    await expect(page).toHaveURL(/\/games\/create/);
+    // The Glimworm tile should appear by name once the catalog renders.
     await expect(page.getByText(/Glimworm/i).first()).toBeVisible({
       timeout: 10_000,
     });

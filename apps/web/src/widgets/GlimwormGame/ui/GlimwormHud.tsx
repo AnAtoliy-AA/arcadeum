@@ -67,6 +67,18 @@ export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | n
     return () => clearInterval(id);
   }, []);
 
+  // Stable Bot 1, Bot 2, … indexing based on insertion order in the snapshot.
+  // Computed before the early return so the hook order is consistent.
+  const botIndexById = useMemo(() => {
+    const m = new Map<string, number>();
+    if (!snapshot) return m;
+    let i = 1;
+    for (const w of snapshot.worms) {
+      if (w.id.startsWith('bot-')) m.set(w.id, i++);
+    }
+    return m;
+  }, [snapshot]);
+
   if (!snapshot) return null;
 
   const self = snapshot.worms.find((w) => w.self);
@@ -78,16 +90,6 @@ export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | n
   const top5 = [...snapshot.worms]
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
-
-  // Stable Bot 1, Bot 2, … indexing based on insertion order in the snapshot.
-  const botIndexById = useMemo(() => {
-    const m = new Map<string, number>();
-    let i = 1;
-    for (const w of snapshot.worms) {
-      if (w.id.startsWith('bot-')) m.set(w.id, i++);
-    }
-    return m;
-  }, [snapshot.worms]);
 
   const handleUsePowerup = () => {
     setInput({ angle: localInput.angle, usePowerup: true });

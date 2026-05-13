@@ -50,5 +50,15 @@ export const frMessages = {
       reconnecting: 'Reconnexion…',
       slowConnection: 'Connexion lente',
     },
+    rules: {
+      objective:
+        'Survivez à tous les autres vers de l’arène. Mangez la nourriture lumineuse pour grandir et marquer des points.',
+      gameplay:
+        'Votre ver suit le curseur — maintenez et dirigez. L’arène est ouverte ; le danger, ce sont les traînées des autres. Toucher un mur ou un corps adverse vous tue.',
+      survive:
+        'Coupez la route des autres pour qu’ils heurtent votre traînée, puis ramassez la nourriture qu’ils laissent. Restez au bord du peloton, jamais coincé dans un angle.',
+      powerups:
+        'Bonus optionnels : sprint de 3 s, bouclier d’un coup, rétrécissement de 30% ou 2 s à travers les traînées.',
+    },
   },
 };

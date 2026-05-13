@@ -49,5 +49,15 @@ export const enMessages = {
       reconnecting: 'Reconnecting…',
       slowConnection: 'Slow connection',
     },
+    rules: {
+      objective:
+        'Outlast every other worm in the arena. Eat glowing food to grow longer and score points.',
+      gameplay:
+        'Your worm follows your cursor — hold and steer. The arena is wide-open; the danger is everyone else’s trail. Bump into a wall or any worm’s body and you die.',
+      survive:
+        'Cut other worms off so they hit your trail, then sweep up the food they drop. Stay close to the edge of the pack — never trapped in a corner.',
+      powerups:
+        'Optional pickups give a 3-second speed burst, a one-hit shield, a 30% shrink to escape, or 2 seconds of ghosting through trails.',
+    },
   },
 };

@@ -53,5 +53,15 @@ export const esMessages = {
       reconnecting: 'Reconectando…',
       slowConnection: 'Conexión lenta',
     },
+    rules: {
+      objective:
+        'Sobrevive más que el resto de gusanos. Come la comida brillante para crecer y sumar puntos.',
+      gameplay:
+        'Tu gusano sigue al cursor: mantén pulsado y dirige. La arena es amplia; el peligro son las estelas de los demás. Chocar con un muro o cualquier cuerpo te mata.',
+      survive:
+        'Corta a los rivales para que choquen contra tu estela y recoge la comida que sueltan. Mantente al borde del grupo, nunca atrapado en una esquina.',
+      powerups:
+        'Bonificaciones opcionales: ráfaga de 3 s, escudo de un golpe, encogimiento del 30% o 2 s atravesando estelas.',
+    },
   },
 };

@@ -162,6 +162,31 @@ export default function HomeGames() {
                 data-testid={`game-card-${game.id}`}
                 className="game-card-main"
               >
+                {game.isDemo && (
+                  <span
+                    data-testid={`game-demo-badge-${game.id}`}
+                    style={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      zIndex: 3,
+                      padding: '4px 10px',
+                      borderRadius: 999,
+                      fontSize: 10,
+                      fontWeight: 800,
+                      letterSpacing: 1.2,
+                      textTransform: 'uppercase',
+                      color: '#fff',
+                      background:
+                        'linear-gradient(135deg, #ffb05e 0%, #ff5e9c 100%)',
+                      boxShadow: '0 4px 12px rgba(255,94,156,0.45)',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {homeCopy.demoBadge ?? 'Demo'}
+                  </span>
+                )}
                 {/* Gradient hover overlay */}
                 <div
                   style={{

@@ -103,7 +103,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
   const teamMode = !!teamOpts.teamMode;
-  const teams = teamOpts.teams ?? [];
+  // Memoized so the `?? []` fallback doesn't return a fresh array reference
+  // each render and bust downstream useMemo deps.
+  const teams = React.useMemo(
+    () => teamOpts.teams ?? [],
+    [teamOpts.teams],
+  );
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
 
   // In team mode, the lobby cap is the sum of team target sizes (up to 8).

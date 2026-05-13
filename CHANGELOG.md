@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.33] - 2026-05-13
+
+### Added
+- prevent duplicate buys + clearer equip feedback (ARC-650) (ARC-650)
+- equipped avatar visible in header ProfileMenu (ARC-650) (ARC-650)
+
+
 ## [1.13.32] - 2026-05-13
 
 ### Added

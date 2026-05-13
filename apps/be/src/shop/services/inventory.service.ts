@@ -1,0 +1,233 @@
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Connection, Model, Types } from 'mongoose';
+import { User, type UserDocument } from '../../auth/schemas/user.schema';
+import { getCatalogItem, listStarterItems } from '../lib/shop-catalog';
+import { equipKeyFor, type ShopCategory } from '../lib/shop-types';
+import {
+  UserInventoryItem,
+  type UserInventoryItemDocument,
+} from '../schemas/user-inventory-item.schema';
+import type {
+  EquippedView,
+  InventoryItemView,
+  InventoryView,
+} from '../interfaces/shop-views';
+
+interface LeanInventoryRow {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  itemId: string;
+  purchaseId: string;
+  acquiredVia: 'coins' | 'gems' | 'grant' | 'starter';
+  paidAmount?: number | null;
+  paidCurrency?: 'coins' | 'gems' | null;
+  soldAt?: Date | null;
+  createdAt?: Date;
+}
+
+interface LeanUser {
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+}
+
+const STARTER_PURCHASE_PREFIX = 'starter';
+
+function starterPurchaseId(userId: string, itemId: string): string {
+  return `${STARTER_PURCHASE_PREFIX}-${userId}-${itemId}`;
+}
+
+@Injectable()
+export class InventoryService {
+  private readonly logger = new Logger(InventoryService.name);
+
+  constructor(
+    @InjectConnection() private readonly connection: Connection,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(UserInventoryItem.name)
+    private readonly inventoryModel: Model<UserInventoryItemDocument>,
+  ) {}
+
+  async listForUser(userId: string): Promise<InventoryView> {
+    const [rows, user] = await Promise.all([
+      this.inventoryModel
+        .find({ userId, soldAt: null })
+        .sort({ createdAt: -1 })
+        .lean<LeanInventoryRow[]>(),
+      this.userModel
+        .findById(userId, { equippedAvatarId: 1, equippedBadgeId: 1 })
+        .lean<LeanUser>(),
+    ]);
+    return {
+      items: rows.map(this.toView),
+      equipped: this.equippedFromUser(user),
+    };
+  }
+
+  async owns(
+    userId: string,
+    itemId: string,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const row = await this.inventoryModel
+      .findOne({ userId, itemId, soldAt: null }, null, { session })
+      .lean();
+    return row !== null;
+  }
+
+  async findByUserAndPurchaseId(
+    userId: string,
+    purchaseId: string,
+    session?: ClientSession,
+  ): Promise<LeanInventoryRow | null> {
+    return this.inventoryModel
+      .findOne({ userId, purchaseId }, null, { session })
+      .lean<LeanInventoryRow | null>();
+  }
+
+  async grantStarter(userId: string, session?: ClientSession): Promise<void> {
+    const starters = listStarterItems();
+    if (starters.length === 0) return;
+
+    for (const item of starters) {
+      const purchaseId = starterPurchaseId(userId, item.id);
+      try {
+        await this.inventoryModel.create(
+          [
+            {
+              userId: new Types.ObjectId(userId),
+              itemId: item.id,
+              purchaseId,
+              acquiredVia: 'starter',
+              paidAmount: null,
+              paidCurrency: null,
+            },
+          ],
+          { session },
+        );
+      } catch (err) {
+        if (this.isDuplicateKey(err)) {
+          continue; // already granted — idempotent
+        }
+        throw err;
+      }
+    }
+
+    // Set equip slots only if currently null. Use unconditional $set with a
+    // filter that targets only null/missing values so re-runs don't clobber a
+    // user's later equip choice.
+    const avatarStarter = starters.find((s) => s.category === 'avatar');
+    const badgeStarter = starters.find((s) => s.category === 'badge');
+    const userObjId = new Types.ObjectId(userId);
+    if (avatarStarter) {
+      await this.userModel.updateOne(
+        { _id: userObjId, equippedAvatarId: { $in: [null, undefined] } },
+        { $set: { equippedAvatarId: avatarStarter.id } },
+        { session },
+      );
+    }
+    if (badgeStarter) {
+      await this.userModel.updateOne(
+        { _id: userObjId, equippedBadgeId: { $in: [null, undefined] } },
+        { $set: { equippedBadgeId: badgeStarter.id } },
+        { session },
+      );
+    }
+  }
+
+  async equip(userId: string, itemId: string): Promise<EquippedView> {
+    const def = getCatalogItem(itemId);
+    if (!def) throw new BadRequestException('shop.unknownItem');
+    const equipKey = equipKeyFor(def.category);
+    if (!equipKey) throw new BadRequestException('shop.categoryNotEquippable');
+
+    let updatedUser: LeanUser | null = null;
+    await this.connection.transaction(async (session) => {
+      const owned = await this.owns(userId, itemId, session);
+      if (!owned) throw new BadRequestException('shop.notOwned');
+      const result = await this.userModel
+        .findOneAndUpdate(
+          { _id: userId },
+          { $set: { [equipKey]: itemId } },
+          {
+            session,
+            new: true,
+            projection: { equippedAvatarId: 1, equippedBadgeId: 1 },
+          },
+        )
+        .lean<LeanUser | null>();
+      if (!result) throw new NotFoundException('users.notFound');
+      updatedUser = result;
+    });
+    return this.equippedFromUser(updatedUser);
+  }
+
+  async unequip(userId: string, category: ShopCategory): Promise<EquippedView> {
+    const equipKey = equipKeyFor(category);
+    if (!equipKey) throw new BadRequestException('shop.categoryNotEquippable');
+    const result = await this.userModel
+      .findOneAndUpdate(
+        { _id: userId },
+        { $set: { [equipKey]: null } },
+        {
+          new: true,
+          projection: { equippedAvatarId: 1, equippedBadgeId: 1 },
+        },
+      )
+      .lean<LeanUser | null>();
+    if (!result) throw new NotFoundException('users.notFound');
+    return this.equippedFromUser(result);
+  }
+
+  /**
+   * Used by ShopService.revoke to clear an equip slot only when the slot
+   * currently points at the item being revoked. Runs inside an external txn.
+   */
+  async clearEquipIfPointsAt(
+    userId: string,
+    itemId: string,
+    category: ShopCategory,
+    session: ClientSession,
+  ): Promise<void> {
+    const equipKey = equipKeyFor(category);
+    if (!equipKey) return;
+    await this.userModel.updateOne(
+      { _id: userId, [equipKey]: itemId },
+      { $set: { [equipKey]: null } },
+      { session },
+    );
+  }
+
+  private equippedFromUser(user: LeanUser | null | undefined): EquippedView {
+    return {
+      avatar: user?.equippedAvatarId ?? null,
+      badge: user?.equippedBadgeId ?? null,
+      name_color: null,
+      game_skin: null,
+    };
+  }
+
+  private toView = (row: LeanInventoryRow): InventoryItemView => ({
+    rowId: row._id.toString(),
+    itemId: row.itemId,
+    purchaseId: row.purchaseId,
+    acquiredVia: row.acquiredVia,
+    paidAmount: row.paidAmount ?? null,
+    paidCurrency: row.paidCurrency ?? null,
+    soldAt: row.soldAt ? row.soldAt.toISOString() : null,
+    createdAt: row.createdAt
+      ? row.createdAt.toISOString()
+      : new Date(0).toISOString(),
+  });
+
+  private isDuplicateKey(err: unknown): boolean {
+    if (err === null || typeof err !== 'object') return false;
+    const e = err as { code?: number; codeName?: string };
+    return e.code === 11000 || e.codeName === 'DuplicateKey';
+  }
+}

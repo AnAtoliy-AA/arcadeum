@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.32] - 2026-05-13
+
+### Added
+- /admin/shop surface + AuthModule DI fix (ARC-650) (ARC-650)
+
+### Fixed
+- theme-aware colors so admin reads under light theme too (ARC-650) (ARC-650)
+- give dialogs a solid card background on dark theme (ARC-650) (ARC-650)
+
+
 ## [1.13.31] - 2026-05-13
 
 ### Added

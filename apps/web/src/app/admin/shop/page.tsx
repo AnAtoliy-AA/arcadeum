@@ -43,18 +43,25 @@ export default async function AdminShopPage() {
           style={{
             fontSize: 24,
             fontWeight: 700,
-            color: 'var(--color-text, #e4e4e7)',
+            color: 'var(--color, #e4e4e7)',
             marginBottom: 4,
           }}
         >
           {labels.title}
         </h1>
-        <p style={{ fontSize: 14, color: '#71717a' }}>{labels.subtitle}</p>
+        <p style={{ fontSize: 14, color: 'var(--colorPress, #71717a)' }}>
+          {labels.subtitle}
+        </p>
       </div>
 
       <Suspense
         fallback={
-          <div style={{ padding: '48px 16px', color: '#71717a' }}>
+          <div
+            style={{
+              padding: '48px 16px',
+              color: 'var(--colorPress, #71717a)',
+            }}
+          >
             {labels.loading}
           </div>
         }

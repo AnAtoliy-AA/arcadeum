@@ -59,7 +59,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
         style={{
           width: '100%',
           overflowX: 'auto',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid var(--borderColor)',
           borderRadius: 8,
         }}
       >
@@ -72,7 +72,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
           data-testid="admin-shop-table"
         >
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+            <tr style={{ background: 'var(--backgroundHover)' }}>
               <Th>{labels.columns.id}</Th>
               <Th>{labels.columns.category}</Th>
               <Th>{labels.columns.rarity}</Th>
@@ -90,7 +90,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                   key={item.id}
                   data-testid={`admin-shop-row-${item.id}`}
                   style={{
-                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    borderTop: '1px solid var(--borderColor)',
                   }}
                 >
                   <Td>
@@ -125,27 +125,23 @@ export function AdminShopTable({ catalog, labels }: Props) {
                     {item.available ? (
                       '✓'
                     ) : (
-                      <span style={{ color: '#71717a' }}>—</span>
+                      <span style={{ color: 'var(--colorPress)' }}>—</span>
                     )}
                   </Td>
                   <Td>
                     <XStack gap="$2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onPress={() => setEditing(item)}
+                      <RowActionButton
+                        onClick={() => setEditing(item)}
                         data-testid={`admin-shop-edit-${item.id}`}
                       >
                         {labels.buttons.edit}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onPress={() => openGrantForItem(item.id)}
+                      </RowActionButton>
+                      <RowActionButton
+                        onClick={() => openGrantForItem(item.id)}
                         data-testid={`admin-shop-grant-row-${item.id}`}
                       >
                         {labels.buttons.grant}
-                      </Button>
+                      </RowActionButton>
                     </XStack>
                   </Td>
                 </tr>
@@ -178,7 +174,7 @@ function Th({ children }: { children: React.ReactNode }) {
         textAlign: 'left',
         padding: '10px 12px',
         fontWeight: 700,
-        color: '#a1a1aa',
+        color: 'var(--colorPress)',
         fontSize: 12,
         textTransform: 'uppercase',
         letterSpacing: 0.6,
@@ -194,5 +190,40 @@ function Td({ children }: { children: React.ReactNode }) {
     <td style={{ padding: '10px 12px', verticalAlign: 'middle' }}>
       {children}
     </td>
+  );
+}
+
+interface RowActionButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  'data-testid'?: string;
+}
+
+function RowActionButton({
+  children,
+  onClick,
+  'data-testid': testId,
+}: RowActionButtonProps) {
+  // CSS custom properties from the active Tamagui theme so this button reads
+  // correctly under both dark and light themes.
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-testid={testId}
+      style={{
+        padding: '4px 12px',
+        borderRadius: 6,
+        border: '1px solid var(--borderColor)',
+        background: 'var(--backgroundFocus)',
+        color: 'var(--color)',
+        fontSize: 13,
+        fontWeight: 500,
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </button>
   );
 }

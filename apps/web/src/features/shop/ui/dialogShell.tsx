@@ -21,13 +21,17 @@ const OVERLAY_STYLE: CSSProperties = {
 };
 
 const DIALOG_STYLE: CSSProperties = {
-  background: '#1a1a2e',
-  border: '1px solid #444',
+  // Theme-aware so the dialog reads correctly under both dark and light
+  // Tamagui themes. The fallbacks preserve the dark-theme look for any
+  // legacy consumer that loads this without the theme provider.
+  background: 'var(--background, #1a1a2e)',
+  border: '1px solid var(--borderColor, #444)',
   borderRadius: 12,
   padding: 24,
   minWidth: 340,
   maxWidth: 480,
   width: '100%',
+  color: 'var(--color, inherit)',
 };
 
 interface DialogShellProps {

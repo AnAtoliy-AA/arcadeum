@@ -105,8 +105,8 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             data-testid="admin-shop-edit-price-amount"
             style={{
               padding: '8px 10px',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--backgroundFocus)',
+              border: '1px solid var(--borderColor)',
               borderRadius: 6,
               color: 'inherit',
               fontSize: 14,
@@ -126,8 +126,8 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             data-testid="admin-shop-edit-price-currency"
             style={{
               padding: '8px 10px',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--backgroundFocus)',
+              border: '1px solid var(--borderColor)',
               borderRadius: 6,
               color: 'inherit',
               fontSize: 14,

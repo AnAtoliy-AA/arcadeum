@@ -6,6 +6,7 @@ import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
 import { dailyRewardsFr } from './daily-rewards/fr';
+import { shopFr } from './shop/fr';
 
 export const fr = {
   admin: {
@@ -21,6 +22,7 @@ export const fr = {
       announcements: 'Annonces',
       tournaments: 'Tournois',
       economy: 'Économie',
+      shop: 'Boutique',
       comingSoon: 'Bientôt',
     },
     error: {
@@ -480,4 +482,5 @@ export const fr = {
   adminGemPackages: adminGemPackagesFr,
   adminEconomy: adminEconomyFr,
   dailyRewards: dailyRewardsFr,
+  shop: shopFr,
 };

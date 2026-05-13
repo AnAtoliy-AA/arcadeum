@@ -6,6 +6,7 @@ import { gemsBy } from './gems/by';
 import { adminGemPackagesBy } from './admin-gem-packages/by';
 import { adminEconomyBy } from './admin-economy/by';
 import { dailyRewardsBy } from './daily-rewards/by';
+import { shopBy } from './shop/by';
 
 export const by = {
   admin: {
@@ -21,6 +22,7 @@ export const by = {
       announcements: "Аб'явы",
       tournaments: 'Турніры',
       economy: 'Эканоміка',
+      shop: 'Крама',
       comingSoon: 'Хутка',
     },
     error: {
@@ -479,4 +481,5 @@ export const by = {
   adminGemPackages: adminGemPackagesBy,
   adminEconomy: adminEconomyBy,
   dailyRewards: dailyRewardsBy,
+  shop: shopBy,
 };

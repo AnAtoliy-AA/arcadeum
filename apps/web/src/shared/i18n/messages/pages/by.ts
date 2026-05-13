@@ -7,6 +7,7 @@ import { adminGemPackagesBy } from './admin-gem-packages/by';
 import { adminEconomyBy } from './admin-economy/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { shopBy } from './shop/by';
+import { adminShopBy } from './admin-shop/by';
 
 export const by = {
   admin: {
@@ -482,4 +483,5 @@ export const by = {
   adminEconomy: adminEconomyBy,
   dailyRewards: dailyRewardsBy,
   shop: shopBy,
+  adminShop: adminShopBy,
 };

@@ -7,6 +7,7 @@ import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
 import { dailyRewardsEn } from './daily-rewards/en';
 import { shopEn } from './shop/en';
+import { adminShopEn } from './admin-shop/en';
 
 export const en = {
   admin: {
@@ -479,4 +480,5 @@ export const en = {
   adminEconomy: adminEconomyEn,
   dailyRewards: dailyRewardsEn,
   shop: shopEn,
+  adminShop: adminShopEn,
 };

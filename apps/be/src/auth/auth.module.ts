@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { ReferralModule } from '../referrals/referral.module';
-import { ShopModule } from '../shop/shop.module';
 import {
   RefreshToken,
   RefreshTokenSchema,
@@ -23,7 +22,6 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 @Module({
   imports: [
     forwardRef(() => ReferralModule),
-    forwardRef(() => ShopModule),
     ConfigModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },

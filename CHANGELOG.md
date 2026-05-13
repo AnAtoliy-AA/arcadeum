@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.28] - 2026-05-13
+
+### Added
+- feature Glimworm on the home page with a Demo badge (ARC-555) (ARC-555)
+- one-click rematch with same settings (ARC-555) (ARC-555)
+- broadcast lobby snapshots so colors sync live (ARC-555) (ARC-555)
+- UX polish — countdown, result modal, "You" indicator (ARC-555) (ARC-555)
+- add Restart button (host-only) (ARC-555) (ARC-555)
+- add solo mode (host vs bots) (ARC-555) (ARC-555)
+- wire join/ready/start lobby flow (ARC-555) (ARC-555)
+- register glimworm_v1 in games registry (ARC-555) (ARC-555)
+- add widget entry component (ARC-555) (ARC-555)
+- add death overlay and lobby color picker (ARC-555) (ARC-555)
+- add HUD overlay component (ARC-555) (ARC-555)
+- add pixi lifecycle and render-loop hook (ARC-555) (ARC-555)
+- add cursor + touch controls hook (ARC-555) (ARC-555)
+- add socket hook with throttled input and reconnect (ARC-555) (ARC-555)
+- add pixi fx layer (ARC-555) (ARC-555)
+- add pixi food and power-up renderer (ARC-555) (ARC-555)
+- add pixi worm renderer with glow (ARC-555) (ARC-555)
+- add pixi arena renderer (ARC-555) (ARC-555)
+- add pixi application lifecycle (ARC-555) (ARC-555)
+- add pure snapshot interpolation utilities (ARC-555) (ARC-555)
+- add zustand store with snapshot rotation (ARC-555) (ARC-555)
+- add widget shared types (ARC-555) (ARC-555)
+- wire glimworm_v1 into shared game lib switches (ARC-555) (ARC-555)
+- add variant catalog for GameVariantSelector (ARC-555) (ARC-555)
+- add i18n bundles for 5 locales (ARC-555) (ARC-555)
+- add glimworm_v1 to GameSlug union (ARC-555) (ARC-555)
+- register glimworm services and gateway in games module (ARC-555) (ARC-555)
+- add socket gateway with input/start/color handlers (ARC-555) (ARC-555)
+- add greedy-food bot service (ARC-555) (ARC-555)
+- add service tick loop and session orchestration (ARC-555) (ARC-555)
+- add ghost power-up (ARC-555) (ARC-555)
+- add shrink power-up (ARC-555) (ARC-555)
+- add shield power-up (ARC-555) (ARC-555)
+- add power-up registry and speed power-up (ARC-555) (ARC-555)
+- add variant factory (ARC-555) (ARC-555)
+- add Lives + Heats variant (ARC-555) (ARC-555)
+- add Time-Attack variant (ARC-555) (ARC-555)
+- add variant strategy interface and Battle Royale (ARC-555) (ARC-555)
+- add in-memory session state store (ARC-555) (ARC-555)
+- add constants and shared types (ARC-555) (ARC-555)
+
+### Fixed
+- memoize teams to stabilize useMemo deps (ARC-555) (ARC-555)
+- hoist useMemo above the early return in GlimwormHud (ARC-555) (ARC-555)
+- demo badge no longer overlaps the help button (ARC-555) (ARC-555)
+- make bots steer away from walls predictively (ARC-555) (ARC-555)
+- make the in-game Restart button visible again (ARC-555) (ARC-555)
+- auto-ready everyone when host starts, so humans can play (ARC-555) (ARC-555)
+- honour the lobby bot-count selector (ARC-555) (ARC-555)
+- widget UI polish — scoreboard names, restart, food glow (ARC-555) (ARC-555)
+- initialize pixi when the canvas mounts after lobby (ARC-555) (ARC-555)
+- make bots survive longer (ARC-555) (ARC-555)
+- decrypt incoming snapshot/event payloads (ARC-555) (ARC-555)
+- emit plain socket events (not encrypted) (ARC-555) (ARC-555)
+- make Start more forgiving and surface BE errors (ARC-555) (ARC-555)
+- add glimworm_v1 to create-flow gamesCatalog (ARC-555) (ARC-555)
+- mark random ctor param as @Optional for NestJS DI (ARC-555) (ARC-555)
+
+### Refactored
+- use ReusableGameLobby for the lobby UI (ARC-555) (ARC-555)
+- make Lives + Heats initSession unconditional (ARC-555) (ARC-555)
+
+
 ## [1.13.27] - 2026-05-12
 
 ### Added

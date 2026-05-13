@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Modal, YStack, XStack } from '@arcadeum/ui';
+import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { DialogShell } from './dialogShell';
 import { purchaseItemAction } from '../server/shop.actions';
 import type {
   EffectiveShopItem,
@@ -97,8 +98,8 @@ export function PurchaseConfirmDialog({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <YStack gap="$3" padding="$4" data-testid="purchase-confirm-dialog">
+    <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">
+      <YStack gap="$3">
         <Text fontSize="$6" fontWeight="700">
           {labels.title}
         </Text>
@@ -140,6 +141,6 @@ export function PurchaseConfirmDialog({
           </Button>
         </XStack>
       </YStack>
-    </Modal>
+    </DialogShell>
   );
 }

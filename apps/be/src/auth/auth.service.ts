@@ -28,6 +28,7 @@ import type {
   UserRole,
 } from './lib/types';
 import { ReferralService } from '../referrals/referral.service';
+import { InventoryService } from '../shop/services/inventory.service';
 
 export type {
   OAuthTokenResponse,
@@ -45,6 +46,8 @@ export class AuthService {
     private readonly googleOAuth: GoogleOAuthService,
     @Inject(forwardRef(() => ReferralService))
     private readonly referralService: ReferralService,
+    @Inject(forwardRef(() => InventoryService))
+    private readonly inventoryService: InventoryService,
   ) {}
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -99,6 +102,20 @@ export class AuthService {
       } catch {
         // Non-critical — don't fail registration if referral tracking fails
       }
+    }
+
+    // Grant starter shop items. Un-sessioned — neither `register()` nor
+    // `getOrCreateOAuthUser()` open a Mongo transaction today, and forcing
+    // one purely for this side effect would reshape error semantics across
+    // the auth surface. A crash between user-insert and starter-grant is
+    // recovered by `ShopInventoryBootstrap` on next boot. Failure is
+    // non-critical to registration itself.
+    try {
+      await this.inventoryService.grantStarter(
+        (created as UserDocument).id as string,
+      );
+    } catch {
+      // Logged by InventoryService; bootstrap is the safety net.
     }
 
     return this.buildAuthUserProfile(created);
@@ -419,6 +436,16 @@ export class AuthService {
       usernameNormalized: normalized,
       displayName: profile.name?.trim() || undefined,
     });
+
+    // Grant starter shop items on first OAuth sign-up. Same un-sessioned
+    // approach as `register()`; bootstrap is the safety net.
+    try {
+      await this.inventoryService.grantStarter(
+        (created as UserDocument).id as string,
+      );
+    } catch {
+      // Logged by InventoryService.
+    }
 
     return created;
   }

@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Modal, YStack, XStack } from '@arcadeum/ui';
+import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { DialogShell } from '@/features/shop/ui/dialogShell';
 import { setShopOverrideAction } from '../server/admin-shop.actions';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
@@ -73,8 +74,8 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <YStack gap="$3" padding="$4" data-testid="admin-shop-edit-dialog">
+    <DialogShell open={open} onClose={onClose} testId="admin-shop-edit-dialog">
+      <YStack gap="$3">
         <Text fontSize="$6" fontWeight="700">
           {labels.editDialog.title.replace('{itemId}', item.id)}
         </Text>
@@ -91,7 +92,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
         </XStack>
 
         <YStack gap="$1">
-          <Text fontSize="$2" color="$gray11">
+          <Text fontSize="$2" color="$color">
             {labels.editDialog.priceAmount}
           </Text>
           <input
@@ -114,7 +115,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
         </YStack>
 
         <YStack gap="$1">
-          <Text fontSize="$2" color="$gray11">
+          <Text fontSize="$2" color="$color">
             {labels.editDialog.priceCurrency}
           </Text>
           <select
@@ -165,6 +166,6 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
           </XStack>
         </XStack>
       </YStack>
-    </Modal>
+    </DialogShell>
   );
 }

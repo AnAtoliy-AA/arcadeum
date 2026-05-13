@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Modal, YStack, XStack } from '@arcadeum/ui';
+import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { DialogShell } from './dialogShell';
 import { sellItemAction } from '../server/shop.actions';
 import type { InventoryItemView } from '../server/shop.types';
 
@@ -66,8 +67,8 @@ export function SellConfirmDialog({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <YStack gap="$3" padding="$4" data-testid="sell-confirm-dialog">
+    <DialogShell open={open} onClose={onClose} testId="sell-confirm-dialog">
+      <YStack gap="$3">
         <Text fontSize="$6" fontWeight="700">
           {labels.title}
         </Text>
@@ -92,6 +93,6 @@ export function SellConfirmDialog({
           </Button>
         </XStack>
       </YStack>
-    </Modal>
+    </DialogShell>
   );
 }

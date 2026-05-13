@@ -183,6 +183,8 @@ export const byMessages = {
       setup: 'Падрыхтоўка',
       placement: 'Размяшчэнне',
       battle: 'Бітва',
+      survive: 'Выжыванне',
+      powerups: 'Узмацненні',
     },
     category: {
       cardGame: 'Картачная гульня',

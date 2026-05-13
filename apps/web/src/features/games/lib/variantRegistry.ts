@@ -1,4 +1,5 @@
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
+import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { gameMetadata } from '@/features/games/registry';
 
@@ -39,10 +40,21 @@ const seaBattleResolver: ResolverFn = (options, baseName) => {
   };
 };
 
+const glimwormResolver: ResolverFn = (options, baseName) => {
+  const variantId = options?.variant as string | undefined;
+  if (!variantId) return { displayName: baseName };
+  const variant = GLIMWORM_VARIANTS.find((v) => v.id === variantId);
+  return {
+    displayName: variant ? `${baseName}: ${variant.name}` : baseName,
+    variantName: variant?.name,
+    gradient: variant?.gradient,
+  };
+};
+
 const REGISTRY: Record<string, ResolverFn> = {
   critical_v1: criticalResolver,
   sea_battle_v1: seaBattleResolver,
-  // Add future games here
+  glimworm_v1: glimwormResolver,
 };
 
 export function resolveGameDisplayInfo(

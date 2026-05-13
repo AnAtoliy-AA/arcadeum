@@ -6,6 +6,7 @@ export type GameType =
   | 'critical_v1'
   | 'texas_holdem_v1'
   | 'sea_battle_v1'
+  | 'glimworm_v1'
   | null;
 
 interface UseGameActionsOptions {

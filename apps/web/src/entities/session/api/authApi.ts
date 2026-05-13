@@ -8,6 +8,8 @@ export type AuthUserProfile = {
   username: string;
   displayName: string;
   role: UserRole;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 };
 
 export type LoginResponse = {

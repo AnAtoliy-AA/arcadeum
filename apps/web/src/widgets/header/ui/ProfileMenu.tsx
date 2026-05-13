@@ -20,6 +20,7 @@ import {
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { routes } from '@/shared/config/routes';
 import {
@@ -39,6 +40,10 @@ export default function ProfileMenu() {
     snapshot.displayName || snapshot.username || snapshot.email;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
+  const { avatarUrl: equippedAvatarUrl } = useEquippedCosmetics({
+    equippedAvatarId: snapshot.equippedAvatarId,
+    equippedBadgeId: snapshot.equippedBadgeId,
+  });
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -80,6 +85,7 @@ export default function ProfileMenu() {
       >
         <Avatar
           name={displayName}
+          src={equippedAvatarUrl ?? undefined}
           size="sm"
           borderWidth={
             role === 'admin' || role === 'vip' || role === 'premium'

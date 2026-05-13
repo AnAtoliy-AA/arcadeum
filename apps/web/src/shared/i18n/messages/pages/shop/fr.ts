@@ -31,14 +31,18 @@ export const shopFr = {
       title: "Confirmer l'achat",
       buy: 'Acheter',
       cancel: 'Annuler',
+      close: 'Fermer',
       yourBalance: 'Vous avez {amount} {currency}.',
       free: 'Gratuit',
+      successTitle: 'Équipé',
+      successBody: '{name} est maintenant équipé.',
       errors: {
         insufficientFunds: "Vous n'avez pas assez pour acheter ceci.",
         unavailable: "Cet article n'est pas disponible actuellement.",
         generic: "Impossible de terminer l'achat. Réessayez.",
       },
     },
+    equipped: 'Équipé',
   },
   inventory: {
     emptyInventory:

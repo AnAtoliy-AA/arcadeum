@@ -47,6 +47,10 @@ export interface AuthUserProfile {
   displayName: string;
   createdAt?: Date;
   role: UserRole;
+  /** Currently-equipped avatar item id, or null. */
+  equippedAvatarId?: string | null;
+  /** Currently-equipped badge item id, or null. */
+  equippedBadgeId?: string | null;
 }
 
 /**

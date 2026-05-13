@@ -30,14 +30,18 @@ export const shopEn = {
       title: 'Confirm purchase',
       buy: 'Buy',
       cancel: 'Cancel',
+      close: 'Close',
       yourBalance: 'You have {amount} {currency}.',
       free: 'Free',
+      successTitle: 'Equipped',
+      successBody: '{name} is now equipped.',
       errors: {
         insufficientFunds: "You don't have enough to buy this.",
         unavailable: "This item isn't available right now.",
         generic: "Couldn't complete the purchase. Try again.",
       },
     },
+    equipped: 'Equipped',
   },
   inventory: {
     emptyInventory: 'Your inventory is empty. Browse the shop to get started.',

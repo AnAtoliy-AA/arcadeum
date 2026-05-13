@@ -30,14 +30,18 @@ export const shopEs = {
       title: 'Confirmar compra',
       buy: 'Comprar',
       cancel: 'Cancelar',
+      close: 'Cerrar',
       yourBalance: 'Tienes {amount} {currency}.',
       free: 'Gratis',
+      successTitle: 'Equipado',
+      successBody: '{name} ahora está equipado.',
       errors: {
         insufficientFunds: 'No tienes suficiente para comprar esto.',
         unavailable: 'Este artículo no está disponible ahora.',
         generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
       },
     },
+    equipped: 'Equipado',
   },
   inventory: {
     emptyInventory: 'Tu inventario está vacío. Visita la tienda para empezar.',

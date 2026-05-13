@@ -30,14 +30,18 @@ export const shopBy = {
       title: 'Пацвердзіць пакупку',
       buy: 'Купіць',
       cancel: 'Адмена',
+      close: 'Закрыць',
       yourBalance: 'У вас {amount} {currency}.',
       free: 'Бясплатна',
+      successTitle: 'Экіпіравана',
+      successBody: '{name} цяпер экіпіравана.',
       errors: {
         insufficientFunds: 'Не хапае сродкаў на пакупку.',
         unavailable: 'Гэты прадмет цяпер недаступны.',
         generic: 'Не атрымалася завяршыць пакупку. Паспрабуйце зноў.',
       },
     },
+    equipped: 'Экіпіравана',
   },
   inventory: {
     emptyInventory: 'Інвентар пусты. Завітайце ў краму, каб пачаць.',

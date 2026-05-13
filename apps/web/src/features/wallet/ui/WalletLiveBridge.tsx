@@ -27,10 +27,28 @@ export function WalletLiveBridge({ authToken }: Props) {
   useEffect(() => {
     connectWalletSocket(authToken);
 
+    // Refresh Server Components once after the socket connects. SSR can race
+    // BE startup (BalanceChip swallows fetch errors and renders null); without
+    // this hook the chip stays null until the user manually reloads. Guarded
+    // by a ref so we only refresh on the FIRST connect of this mount, not on
+    // every reconnect.
+    let didInitialRefresh = false;
+    const onConnect = () => {
+      if (didInitialRefresh) return;
+      didInitialRefresh = true;
+      router.refresh();
+    };
     const onUpdate = () => router.refresh();
+
+    walletSocket.on('connect', onConnect);
     walletSocket.on('wallet:updated', onUpdate);
 
+    // If the socket was already connected before this effect ran (e.g.
+    // navigating back to the layout), fire the initial refresh immediately.
+    if (walletSocket.connected) onConnect();
+
     return () => {
+      walletSocket.off('connect', onConnect);
       walletSocket.off('wallet:updated', onUpdate);
       disconnectWalletSocket();
     };

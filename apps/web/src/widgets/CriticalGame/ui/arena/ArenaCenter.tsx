@@ -4,6 +4,7 @@ import { YStack } from 'tamagui';
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
+import { FlashHistory } from '../FlashHistory';
 import { HudStyles } from '../hudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
@@ -26,6 +27,11 @@ interface ArenaCenterProps {
   // Flash banner
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /**
+   * Resolves a log entry's `senderId` to its display name for the
+   * `FlashHistory` actor column. Passes through from `MatchWidget`.
+   */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
   /**
    * Phones: drop `minHeight` so the centre column doesn't burn 180px
    * of vertical real estate when content is just a turn pill. Passed
@@ -54,6 +60,7 @@ export function ArenaCenter({
   hiddenCount,
   logs,
   formatLogMessage,
+  resolveDisplayName,
   isNarrow = false,
 }: ArenaCenterProps) {
   return (
@@ -95,6 +102,16 @@ export function ArenaCenter({
         deck={deck}
         serverOverloadOdds={serverOverloadOdds}
         hiddenCount={hiddenCount}
+      />
+      {/* §4.7 — last-5 timeline strip beneath the threat strip. The
+          single-shot FlashBanner clears in 1.6s; this surfaces a
+          short history so players who were watching their hand can
+          still see what just happened. Each row carries the actor
+          name so it's obvious who did what. */}
+      <FlashHistory
+        logs={logs}
+        formatMessage={formatLogMessage}
+        resolveDisplayName={resolveDisplayName}
       />
     </YStack>
   );

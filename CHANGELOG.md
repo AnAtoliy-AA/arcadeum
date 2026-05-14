@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.39] - 2026-05-14
+
+### Added
+- widget parity pass against Critical.html preview (ARC-570) (ARC-570)
+
+### Fixed
+- PR #658 review follow-ups for widget parity (ARC-570) (ARC-570)
+
+
 ## [1.13.38] - 2026-05-14
 
 ### Added

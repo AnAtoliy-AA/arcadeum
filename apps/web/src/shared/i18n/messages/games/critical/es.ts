@@ -267,6 +267,11 @@ export const esMessages = {
       yourMove: 'Tu jugada',
       playerTurn: 'Turno de {{name}}',
       waitingFor: 'Esperando jugador...',
+      a11yState: {
+        eliminated: 'eliminado',
+        currentTurn: 'su turno actualmente',
+        armedTarget: 'seleccionado como objetivo',
+      },
     },
     status: {
       gameCompleted: 'Juego Completado',

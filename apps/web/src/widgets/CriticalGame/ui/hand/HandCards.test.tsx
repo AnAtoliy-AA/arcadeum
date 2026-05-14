@@ -157,6 +157,21 @@ describe('HandCards', () => {
     expect(card.textContent).not.toContain('⚔');
   });
 
+  it('links the card description via aria-describedby so screen readers hear it', () => {
+    // §3.1 — aria-label only carries the card name; the description
+    // (rules text) lives in a separate element. Connecting them via
+    // aria-describedby is what makes the description audible.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    const describedBy = card.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    const description = document.getElementById(describedBy!);
+    expect(description).not.toBeNull();
+    expect(description!.textContent).toBeTruthy();
+  });
+
   it('shows a duplicate-count badge only for cards with copies in hand', () => {
     renderCards({
       cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),

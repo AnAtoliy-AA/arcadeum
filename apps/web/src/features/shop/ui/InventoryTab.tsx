@@ -9,6 +9,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { equipItemAction, unequipItemAction } from '../server/shop.actions';
+import { syncEquippedToSession } from '../lib/syncEquippedToSession';
 import type {
   EffectiveShopItem,
   EquippedView,
@@ -63,14 +64,22 @@ export function InventoryTab({
   const onEquip = (itemId: string) => {
     startTransition(async () => {
       const result = await equipItemAction(itemId);
-      if (result.ok) router.refresh();
+      if (result.ok) {
+        // equipItemAction returns the EquippedView directly (matches the BE
+        // controller response shape — not wrapped in `{ equipped: ... }`).
+        syncEquippedToSession(result.data);
+        router.refresh();
+      }
     });
   };
 
   const onUnequip = (category: EffectiveShopItem['category']) => {
     startTransition(async () => {
       const result = await unequipItemAction(category);
-      if (result.ok) router.refresh();
+      if (result.ok) {
+        syncEquippedToSession(result.data);
+        router.refresh();
+      }
     });
   };
 
@@ -115,7 +124,7 @@ export function InventoryTab({
               <XStack gap="$2" justifyContent="space-between">
                 {isEquipped ? (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     onPress={() => onUnequip(item.category)}
                     disabled={isPending}
                     data-testid={`inventory-unequip-${item.id}`}

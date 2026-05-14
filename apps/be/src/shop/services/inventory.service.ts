@@ -54,9 +54,14 @@ export class InventoryService {
   ) {}
 
   async listForUser(userId: string): Promise<InventoryView> {
+    // Inventory rows store userId as a BSON ObjectId (see schema). Mongoose's
+    // string-to-ObjectId auto-cast on `find()` is unreliable here — observed
+    // empty results in the dev DB even with a valid 24-char hex. Explicit
+    // cast guarantees the match. Same pattern applied to every read path.
+    const userObjId = new Types.ObjectId(userId);
     const [rows, user] = await Promise.all([
       this.inventoryModel
-        .find({ userId, soldAt: null })
+        .find({ userId: userObjId, soldAt: null })
         .sort({ createdAt: -1 })
         .lean<LeanInventoryRow[]>(),
       this.userModel
@@ -74,8 +79,9 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<boolean> {
+    const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel
-      .findOne({ userId, itemId, soldAt: null }, null, { session })
+      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
       .lean();
     return row !== null;
   }
@@ -85,8 +91,9 @@ export class InventoryService {
     purchaseId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
-      .findOne({ userId, purchaseId }, null, { session })
+      .findOne({ userId: userObjId, purchaseId }, null, { session })
       .lean<LeanInventoryRow | null>();
   }
 

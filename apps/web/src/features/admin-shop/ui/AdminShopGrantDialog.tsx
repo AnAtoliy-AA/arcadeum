@@ -143,7 +143,7 @@ function AdminShopGrantDialogInner({
         ) : null}
 
         <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="ghost" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onPress={onClose} disabled={isPending}>
             {labels.grantDialog.cancel}
           </Button>
           <Button

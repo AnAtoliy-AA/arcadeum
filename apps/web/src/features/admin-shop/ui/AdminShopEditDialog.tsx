@@ -149,11 +149,11 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
         ) : null}
 
         <XStack gap="$3" justifyContent="space-between">
-          <Button variant="ghost" onPress={handleReset} disabled={isPending}>
+          <Button variant="outline" onPress={handleReset} disabled={isPending}>
             {labels.editDialog.reset}
           </Button>
           <XStack gap="$2">
-            <Button variant="ghost" onPress={onClose} disabled={isPending}>
+            <Button variant="outline" onPress={onClose} disabled={isPending}>
               {labels.editDialog.cancel}
             </Button>
             <Button

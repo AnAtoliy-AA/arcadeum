@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.41] - 2026-05-14
+
+### Fixed
+- widget a11y items §3.1–3.4 from PR #658 review (ARC-672) (ARC-672)
+
+
 ## [1.13.40] - 2026-05-14
 
 ### Fixed

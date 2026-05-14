@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.37] - 2026-05-14
+
+### Added
+- equipped cosmetics in game chat + dropped-commit CI guard (ARC-650) (ARC-650)
+
+
 ## [1.13.36] - 2026-05-14
 
 ### Added

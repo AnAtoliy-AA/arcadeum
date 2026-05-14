@@ -1,9 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { XStack } from 'tamagui';
 import { HandCard } from './HandCard';
-import { getFanTransform } from '../../lib/handLayout';
 import type { HandCardInstance } from '../../lib/combo';
 
 interface HandCardsProps {
@@ -83,20 +82,23 @@ export function HandCards({
       }}
     >
       {cards.map((card, i) => {
-        const fan = isFanned ? getFanTransform(i, cards.length) : null;
-        // Apply the fan via a wrapping div instead of HandCard's
-        // transform prop — HandCard already uses transform for the
-        // selected-state lift, so we keep the two concerns separated.
-        const fanStyle = fan
-          ? {
-              transform: `rotate(${fan.angle}deg) translateY(${fan.offsetY}px)`,
-              transformOrigin: 'bottom center',
-              display: 'inline-flex',
-              flexShrink: 0,
-            }
-          : { display: 'inline-flex', flexShrink: 0 };
+        // §4.4 — fan transform lives in CSS now (see `hudStyles.tsx`);
+        // we only set the index/count custom properties here. JS does
+        // not compute the transform per render. CSS reads `--hand-index`
+        // / `--hand-count` and produces the rotate + translateY.
+        // Browsers without `abs()` / `clamp()` (very old) fall through
+        // to no fan — cards still render in order, no broken state.
+        const wrapperStyle = {
+          '--hand-index': i,
+          '--hand-count': cards.length,
+        } as CSSProperties & Record<'--hand-index' | '--hand-count', number>;
         return (
-          <div key={card.uid} style={fanStyle}>
+          <div
+            key={card.uid}
+            className="hand-card-wrapper"
+            data-fan={isFanned ? 'true' : 'false'}
+            style={wrapperStyle}
+          >
             <HandCard
               card={card}
               isSelected={selected.has(card.uid)}

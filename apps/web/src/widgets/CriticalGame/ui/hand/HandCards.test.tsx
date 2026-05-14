@@ -114,6 +114,28 @@ describe('HandCards', () => {
     );
   });
 
+  it('exposes hand-index and hand-count as CSS custom properties for the fan', () => {
+    // §4.4 — the fan rotation is now CSS-driven; JS only sets
+    // --hand-index per card and --hand-count once. CSS reads these via
+    // `abs()` and `clamp()` to compute rotate/translate.
+    renderCards();
+    const wrappers = document.querySelectorAll<HTMLElement>(
+      '.hand-card-wrapper',
+    );
+    expect(wrappers.length).toBe(3);
+    wrappers.forEach((w, i) => {
+      expect(w.style.getPropertyValue('--hand-index')).toBe(String(i));
+      expect(w.style.getPropertyValue('--hand-count')).toBe('3');
+      expect(w.getAttribute('data-fan')).toBe('true');
+    });
+  });
+
+  it('flips data-fan to "false" when the row is unfanned (mobile)', () => {
+    renderCards({ isFanned: false });
+    const first = document.querySelector('.hand-card-wrapper');
+    expect(first?.getAttribute('data-fan')).toBe('false');
+  });
+
   it('keeps cell dimensions stable across selection so the fan does not shift', () => {
     // Regression for PR #658 review §1.2 — the selected-state size delta
     // (132×184 vs 124×172) pushed neighbours sideways because the row

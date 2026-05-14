@@ -11,6 +11,13 @@ export type ChatMessageProps = {
   contentNode?: React.ReactNode;
   senderName?: string;
   senderColor?: string;
+  /**
+   * Extra style applied to the sender-name Typography. Used to render
+   * gradient name-colors via `background-clip: text` — when present, takes
+   * precedence over `senderColor`. Plain (hex) colors should keep using
+   * `senderColor`.
+   */
+  senderNameStyle?: React.CSSProperties;
   targetName?: string;
   targetColor?: string;
   timestamp?: string;
@@ -121,6 +128,7 @@ export const ChatMessage = memo(function ChatMessage({
   contentNode,
   senderName,
   senderColor,
+  senderNameStyle,
   targetName,
   targetColor,
   timestamp,
@@ -145,6 +153,7 @@ export const ChatMessage = memo(function ChatMessage({
             uiSize="xs"
             weight="600"
             {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
             letterSpacing={0.5}
             textTransform="uppercase"
           >
@@ -178,6 +187,7 @@ export const ChatMessage = memo(function ChatMessage({
             uiSize="xs"
             weight="600"
             {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
             letterSpacing={0.5}
             textTransform="uppercase"
           >

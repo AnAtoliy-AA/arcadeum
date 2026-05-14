@@ -16,9 +16,10 @@ import type { EquippedView } from '../server/shop.types';
  */
 export function syncEquippedToSession(equipped: EquippedView): void {
   // `setTokens` merges its input into the existing snapshot; we only pass
-  // the two fields we care about so nothing else churns.
+  // the equipped fields so nothing else churns.
   void useSessionStore.getState().setTokens({
     equippedAvatarId: equipped.avatar,
     equippedBadgeId: equipped.badge,
+    equippedNameColorId: equipped.name_color,
   });
 }

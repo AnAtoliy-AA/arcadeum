@@ -17,6 +17,8 @@ export interface MessageView {
   senderEquippedAvatarId?: string | null;
   /** Sender's currently-equipped badge item id (resolved client-side). */
   senderEquippedBadgeId?: string | null;
+  /** Sender's currently-equipped name-color item id (resolved client-side). */
+  senderEquippedNameColorId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

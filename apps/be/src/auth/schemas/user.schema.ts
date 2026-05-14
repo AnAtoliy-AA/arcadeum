@@ -55,6 +55,9 @@ export class User {
 
   @Prop({ type: String, default: null })
   equippedBadgeId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedNameColorId?: string | null;
 }
 
 export type UserDocument = User & Document;

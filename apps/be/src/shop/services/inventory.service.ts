@@ -34,6 +34,7 @@ interface LeanInventoryRow {
 interface LeanUser {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 }
 
 const STARTER_PURCHASE_PREFIX = 'starter';
@@ -65,7 +66,11 @@ export class InventoryService {
         .sort({ createdAt: -1 })
         .lean<LeanInventoryRow[]>(),
       this.userModel
-        .findById(userId, { equippedAvatarId: 1, equippedBadgeId: 1 })
+        .findById(userId, {
+          equippedAvatarId: 1,
+          equippedBadgeId: 1,
+          equippedNameColorId: 1,
+        })
         .lean<LeanUser>(),
     ]);
     return {
@@ -176,7 +181,11 @@ export class InventoryService {
           {
             session,
             new: true,
-            projection: { equippedAvatarId: 1, equippedBadgeId: 1 },
+            projection: {
+              equippedAvatarId: 1,
+              equippedBadgeId: 1,
+              equippedNameColorId: 1,
+            },
           },
         )
         .lean<LeanUser | null>();
@@ -195,7 +204,11 @@ export class InventoryService {
         { $set: { [equipKey]: null } },
         {
           new: true,
-          projection: { equippedAvatarId: 1, equippedBadgeId: 1 },
+          projection: {
+            equippedAvatarId: 1,
+            equippedBadgeId: 1,
+            equippedNameColorId: 1,
+          },
         },
       )
       .lean<LeanUser | null>();
@@ -226,7 +239,7 @@ export class InventoryService {
     return {
       avatar: user?.equippedAvatarId ?? null,
       badge: user?.equippedBadgeId ?? null,
-      name_color: null,
+      name_color: user?.equippedNameColorId ?? null,
       game_skin: null,
     };
   }

@@ -72,4 +72,5 @@ export interface LeaderboardEntry {
   winRate: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 }

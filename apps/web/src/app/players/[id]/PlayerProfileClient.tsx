@@ -18,6 +18,7 @@ import type { PlayerProfile } from '@/entities/leaderboard/model/types';
 import { getPlayer } from '@/shared/api/leaderboard';
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 
 export default function PlayerProfileClient({
   id,
@@ -89,13 +90,21 @@ function Profile({
   eyebrow: string;
   placeholder: string;
 }) {
-  const { player, modeRanks, squad, equippedAvatarId, equippedBadgeId } =
-    profile;
-  const max = modeRanks[0]?.rating ?? player.rating;
-  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+  const {
+    player,
+    modeRanks,
+    squad,
     equippedAvatarId,
     equippedBadgeId,
+    equippedNameColorId,
+  } = profile;
+  const max = modeRanks[0]?.rating ?? player.rating;
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+    equippedAvatarId,
+    equippedBadgeId,
+    equippedNameColorId,
   });
+  const nameProps = nameColorRenderProps(nameColor);
   return (
     <YStack gap="$4" width="100%">
       <Text
@@ -115,7 +124,13 @@ function Profile({
         />
         <YStack gap="$1">
           <XStack alignItems="center" gap="$2" flexWrap="wrap">
-            <Text fontSize="$9" fontWeight="800" letterSpacing={-0.5}>
+            <Text
+              fontSize="$9"
+              fontWeight="800"
+              letterSpacing={-0.5}
+              {...(nameProps.color ? { color: nameProps.color } : {})}
+              {...(nameProps.style ? { style: nameProps.style } : {})}
+            >
               {player.name}
             </Text>
             {badgeUrl ? (

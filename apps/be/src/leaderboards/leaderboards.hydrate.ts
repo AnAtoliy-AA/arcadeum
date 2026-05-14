@@ -49,6 +49,7 @@ export type RealLeaderboardEntry = {
   winRate: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 function hashSeed(input: string): number {
@@ -141,6 +142,7 @@ export function hydratePlayer(
     gameTags: [],
     equippedAvatarId: real.equippedAvatarId ?? null,
     equippedBadgeId: real.equippedBadgeId ?? null,
+    equippedNameColorId: real.equippedNameColorId ?? null,
   };
 }
 

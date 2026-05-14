@@ -93,6 +93,7 @@ export function ShopGrid({
               }
               rarity={item.rarity}
               assetUrl={item.assetUrl}
+              colorValue={item.colorValue ?? null}
               priceAmount={item.priceAmount}
               priceCurrency={item.priceCurrency}
               owned={ownedIds.has(item.id)}

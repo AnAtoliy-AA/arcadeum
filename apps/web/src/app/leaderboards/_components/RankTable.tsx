@@ -11,6 +11,7 @@ import {
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 
 const Row = styled(XStack, {
   name: 'LbRow',
@@ -201,10 +202,12 @@ function RankRow({
 }) {
   const live = p.isInMatch ?? false;
   const flag = p.countryCode ? regionFlag(p.countryCode) : null;
-  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
     equippedAvatarId: p.equippedAvatarId,
     equippedBadgeId: p.equippedBadgeId,
+    equippedNameColorId: p.equippedNameColorId,
   });
+  const nameProps = nameColorRenderProps(nameColor);
   return (
     <Row
       testID={`leaderboard-row-${p.rank}`}
@@ -225,7 +228,12 @@ function RankRow({
               {flag}
             </Text>
           ) : null}
-          <Text fontWeight="700" numberOfLines={1}>
+          <Text
+            fontWeight="700"
+            numberOfLines={1}
+            {...(nameProps.color ? { color: nameProps.color } : {})}
+            {...(nameProps.style ? { style: nameProps.style } : {})}
+          >
             {p.name}
           </Text>
           {badgeUrl ? (

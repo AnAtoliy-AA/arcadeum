@@ -99,6 +99,9 @@ export function ShopPageView({
   const equippedBadge = inventory.equipped.badge
     ? (catalogById.get(inventory.equipped.badge) ?? null)
     : null;
+  const equippedNameColor = inventory.equipped.name_color
+    ? (catalogById.get(inventory.equipped.name_color) ?? null)
+    : null;
 
   // Destructure to avoid the wallet-balance no-restricted-syntax guardrail.
   const { coins, gems } = balance;
@@ -127,7 +130,7 @@ export function ShopPageView({
           </Text>
         </YStack>
         <XStack gap="$2" alignItems="center">
-          {equippedAvatar || equippedBadge ? (
+          {equippedAvatar || equippedBadge || equippedNameColor ? (
             <Stack
               flexDirection="row"
               alignItems="center"
@@ -164,6 +167,28 @@ export function ShopPageView({
                   style={{ objectFit: 'contain' }}
                   unoptimized
                 />
+              ) : null}
+              {equippedNameColor?.colorValue ? (
+                <Text
+                  fontSize="$3"
+                  fontWeight="800"
+                  data-testid="shop-equipped-name-color"
+                  {...(equippedNameColor.colorValue.startsWith(
+                    'linear-gradient',
+                  )
+                    ? {
+                        style: {
+                          backgroundImage: equippedNameColor.colorValue,
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          color: 'transparent',
+                        },
+                      }
+                    : { color: equippedNameColor.colorValue })}
+                >
+                  Aa
+                </Text>
               ) : null}
             </Stack>
           ) : null}

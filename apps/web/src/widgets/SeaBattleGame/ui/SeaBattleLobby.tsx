@@ -146,6 +146,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     displayName: m.displayName,
     equippedAvatarId: m.equippedAvatarId ?? null,
     equippedBadgeId: m.equippedBadgeId ?? null,
+    equippedNameColorId: m.equippedNameColorId ?? null,
   }));
 
   // Sync with room variant when it changes from server

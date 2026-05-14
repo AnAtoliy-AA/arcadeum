@@ -26,6 +26,8 @@ export interface ChatMessage {
   senderEquippedAvatarId?: string | null;
   /** Sender's currently-equipped shop badge id (resolved client-side). */
   senderEquippedBadgeId?: string | null;
+  /** Sender's currently-equipped shop name-color id (resolved client-side). */
+  senderEquippedNameColorId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

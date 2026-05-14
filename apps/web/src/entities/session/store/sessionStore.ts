@@ -25,6 +25,7 @@ const defaultSnapshot: SessionTokensSnapshot = {
   role: null,
   equippedAvatarId: null,
   equippedBadgeId: null,
+  equippedNameColorId: null,
 };
 
 interface SessionState {
@@ -77,6 +78,10 @@ function buildSnapshot(
       input.equippedBadgeId === undefined
         ? (current.equippedBadgeId ?? null)
         : input.equippedBadgeId,
+    equippedNameColorId:
+      input.equippedNameColorId === undefined
+        ? (current.equippedNameColorId ?? null)
+        : input.equippedNameColorId,
   };
 }
 
@@ -105,6 +110,10 @@ function enrichWithResponse(
       response.user?.equippedAvatarId ?? snapshot.equippedAvatarId ?? null,
     equippedBadgeId:
       response.user?.equippedBadgeId ?? snapshot.equippedBadgeId ?? null,
+    equippedNameColorId:
+      response.user?.equippedNameColorId ??
+      snapshot.equippedNameColorId ??
+      null,
   });
 }
 

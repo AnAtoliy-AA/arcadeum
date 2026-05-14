@@ -3,6 +3,7 @@
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import type { ChatScope } from '../store/gameChatStore';
 
 interface ChatMessageBubbleProps {
@@ -12,6 +13,8 @@ interface ChatMessageBubbleProps {
   senderEquippedAvatarId?: string | null;
   /** Sender's currently-equipped badge id (from chat message payload). */
   senderEquippedBadgeId?: string | null;
+  /** Sender's currently-equipped name-color id (from chat message payload). */
+  senderEquippedNameColorId?: string | null;
   message: string;
   type: 'system' | 'action' | 'message';
   scope?: ChatScope;
@@ -43,16 +46,19 @@ export function ChatMessageBubble({
   senderName,
   senderEquippedAvatarId,
   senderEquippedBadgeId,
+  senderEquippedNameColorId,
   message,
   type,
   isOwn,
 }: ChatMessageBubbleProps) {
   // Resolve sender's equipped cosmetics via the shop catalog. Cheap — module-
   // level cached map; safe to call even when the ids are null (returns nulls).
-  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
     equippedAvatarId: senderEquippedAvatarId,
     equippedBadgeId: senderEquippedBadgeId,
+    equippedNameColorId: senderEquippedNameColorId,
   });
+  const nameColorProps = nameColorRenderProps(nameColor);
 
   if (type === 'system' || type === 'action') {
     return (
@@ -117,7 +123,8 @@ export function ChatMessageBubble({
               fontSize="$2"
               fontWeight="600"
               textTransform="uppercase"
-              color="#a5b4fc"
+              color={nameColorProps.color ?? '#a5b4fc'}
+              style={nameColorProps.style}
               letterSpacing={0.5}
             >
               {senderName}

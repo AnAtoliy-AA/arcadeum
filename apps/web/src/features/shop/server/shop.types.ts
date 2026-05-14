@@ -13,6 +13,12 @@ export interface EffectiveShopItem {
   nameKey: string;
   descKey: string;
   assetUrl: string;
+  /**
+   * Category-specific value. For `name_color` items it carries a CSS color
+   * string (hex or linear-gradient) applied to the player's name; unused
+   * for other categories.
+   */
+  colorValue?: string | null;
   defaultPriceAmount: number;
   defaultPriceCurrency: ShopPriceCurrency;
   starter?: boolean;

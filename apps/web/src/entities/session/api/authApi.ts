@@ -10,6 +10,7 @@ export type AuthUserProfile = {
   role: UserRole;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type LoginResponse = {

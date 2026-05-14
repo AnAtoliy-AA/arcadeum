@@ -85,5 +85,19 @@ export const shopFr = {
       champion: { name: 'Champion', desc: 'Un champion confirmé.' },
       legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
     },
+    name_color: {
+      slate: { name: 'Ardoise', desc: 'Un gris calme et frais.' },
+      emerald: { name: 'Émeraude', desc: 'Un vert émeraude éclatant.' },
+      cyan: { name: 'Cyan', desc: 'Un cyan électrique.' },
+      violet: { name: 'Violet', desc: 'Un violet vif.' },
+      sunset: {
+        name: 'Coucher de soleil',
+        desc: 'Un dégradé chaud de coucher de soleil.',
+      },
+      aurora: {
+        name: 'Aurore',
+        desc: 'Un dégradé changeant d’aurore boréale.',
+      },
+    },
   },
 };

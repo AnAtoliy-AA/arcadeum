@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.43] - 2026-05-14
+
+### Improved
+- CSS-driven hand glow + fan §4.1 + §4.4 (ARC-674) (ARC-674)
+
+
 ## [1.13.42] - 2026-05-14
 
 ### Added

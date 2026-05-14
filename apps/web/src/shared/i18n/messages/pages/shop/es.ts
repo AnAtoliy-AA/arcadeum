@@ -5,6 +5,11 @@ export const shopEs = {
   },
   title: 'Tienda',
   subtitle: 'Avatares e insignias para personalizar tu perfil.',
+  signIn: {
+    title: 'Inicia sesión para comprar y equipar',
+    body: 'Puedes ver el catálogo como invitado, pero el inventario y las compras requieren una cuenta.',
+    cta: 'Iniciar sesión',
+  },
   sidebar: {
     title: 'Filtros',
     category: 'Categoría',

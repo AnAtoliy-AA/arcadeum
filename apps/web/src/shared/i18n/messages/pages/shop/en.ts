@@ -5,6 +5,11 @@ export const shopEn = {
   },
   title: 'Shop',
   subtitle: 'Avatars and badges to make your profile your own.',
+  signIn: {
+    title: 'Sign in to buy and equip items',
+    body: 'You can browse the catalog as a guest, but inventory and purchases require an account.',
+    cta: 'Sign in',
+  },
   sidebar: {
     title: 'Filters',
     category: 'Category',

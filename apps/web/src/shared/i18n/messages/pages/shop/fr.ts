@@ -6,6 +6,11 @@ export const shopFr = {
   },
   title: 'Boutique',
   subtitle: 'Avatars et badges pour personnaliser votre profil.',
+  signIn: {
+    title: 'Connectez-vous pour acheter et équiper',
+    body: 'Vous pouvez parcourir le catalogue en tant qu’invité, mais l’inventaire et les achats nécessitent un compte.',
+    cta: 'Se connecter',
+  },
   sidebar: {
     title: 'Filtres',
     category: 'Catégorie',

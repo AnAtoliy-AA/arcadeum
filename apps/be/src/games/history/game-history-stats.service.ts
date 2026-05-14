@@ -165,22 +165,39 @@ export class GameHistoryStatsService {
       userIds.length > 0
         ? await this.userModel
             .find({ _id: { $in: userIds } })
-            .select('username')
+            .select('username equippedAvatarId equippedBadgeId')
             .exec()
         : [];
 
-    const userMap = new Map(users.map((u) => [u._id.toString(), u.username]));
+    // Single batched User read covers username + equipped cosmetics for every
+    // row on the page. Bot rows (synthetic ids) get filtered above and fall
+    // through with null equipped IDs.
+    const userMap = new Map(
+      users.map((u) => [
+        u._id.toString(),
+        {
+          username: u.username,
+          equippedAvatarId: u.equippedAvatarId ?? null,
+          equippedBadgeId: u.equippedBadgeId ?? null,
+        },
+      ]),
+    );
 
     // 5. Build leaderboard with ranks
-    const entries = paginatedEntries.map((entry, index) => ({
-      rank: offset + index + 1,
-      playerId: entry.playerId,
-      username: userMap.get(entry.playerId) || 'Unknown',
-      totalGames: entry.totalGames,
-      wins: entry.wins,
-      losses: entry.totalGames - entry.wins,
-      winRate: entry.winRate,
-    }));
+    const entries = paginatedEntries.map((entry, index) => {
+      const userInfo = userMap.get(entry.playerId);
+      return {
+        rank: offset + index + 1,
+        playerId: entry.playerId,
+        username: userInfo?.username || 'Unknown',
+        totalGames: entry.totalGames,
+        wins: entry.wins,
+        losses: entry.totalGames - entry.wins,
+        winRate: entry.winRate,
+        equippedAvatarId: userInfo?.equippedAvatarId ?? null,
+        equippedBadgeId: userInfo?.equippedBadgeId ?? null,
+      };
+    });
 
     return { entries, hasMore, total };
   }

@@ -9,7 +9,7 @@ import { ComboHints } from './ComboHints';
 import type { CriticalCard } from '../types';
 
 describe('ComboHints', () => {
-  it('activates the pair chip when two combo cards match', () => {
+  it('marks the pair chip as possible when two combo cards match', () => {
     const hand: CriticalCard[] = [
       'collection_alpha',
       'collection_alpha',
@@ -17,20 +17,20 @@ describe('ComboHints', () => {
     ];
     render(<ComboHints hand={hand} allowActionCardCombos={false} />);
     expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
-      'data-active',
-      'true',
+      'data-state',
+      'possible',
     );
     expect(screen.getByTestId('combo-hint-triple')).toHaveAttribute(
-      'data-active',
-      'false',
+      'data-state',
+      'inactive',
     );
     expect(screen.getByTestId('combo-hint-fiver')).toHaveAttribute(
-      'data-active',
-      'false',
+      'data-state',
+      'inactive',
     );
   });
 
-  it('activates the triple chip when three combo cards match', () => {
+  it('marks the triple chip as possible when three combo cards match', () => {
     const hand: CriticalCard[] = [
       'collection_beta',
       'collection_beta',
@@ -38,16 +38,16 @@ describe('ComboHints', () => {
     ];
     render(<ComboHints hand={hand} allowActionCardCombos={false} />);
     expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
-      'data-active',
-      'true',
+      'data-state',
+      'possible',
     );
     expect(screen.getByTestId('combo-hint-triple')).toHaveAttribute(
-      'data-active',
-      'true',
+      'data-state',
+      'possible',
     );
   });
 
-  it('activates the fiver chip when hand has 5 distinct cards', () => {
+  it('marks the fiver chip as possible when hand has 5 distinct cards', () => {
     const hand: CriticalCard[] = [
       'strike',
       'evade',
@@ -57,8 +57,8 @@ describe('ComboHints', () => {
     ];
     render(<ComboHints hand={hand} allowActionCardCombos={false} />);
     expect(screen.getByTestId('combo-hint-fiver')).toHaveAttribute(
-      'data-active',
-      'true',
+      'data-state',
+      'possible',
     );
   });
 
@@ -66,8 +66,8 @@ describe('ComboHints', () => {
     const hand: CriticalCard[] = ['strike', 'strike'];
     render(<ComboHints hand={hand} allowActionCardCombos={false} />);
     expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
-      'data-active',
-      'false',
+      'data-state',
+      'inactive',
     );
   });
 
@@ -75,8 +75,35 @@ describe('ComboHints', () => {
     const hand: CriticalCard[] = ['strike', 'strike'];
     render(<ComboHints hand={hand} allowActionCardCombos={true} />);
     expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
+      'data-state',
+      'possible',
+    );
+  });
+
+  it('flips the matching chip to active when activeKind is supplied', () => {
+    const hand: CriticalCard[] = [
+      'collection_alpha',
+      'collection_alpha',
+      'strike',
+    ];
+    render(
+      <ComboHints
+        hand={hand}
+        allowActionCardCombos={false}
+        activeKind="pair"
+      />,
+    );
+    expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
+      'data-state',
+      'active',
+    );
+    expect(screen.getByTestId('combo-hint-pair')).toHaveAttribute(
       'data-active',
       'true',
+    );
+    expect(screen.getByTestId('combo-hint-triple')).toHaveAttribute(
+      'data-state',
+      'inactive',
     );
   });
 

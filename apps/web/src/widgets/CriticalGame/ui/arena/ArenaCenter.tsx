@@ -26,6 +26,12 @@ interface ArenaCenterProps {
   // Flash banner
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /**
+   * Phones: drop `minHeight` so the centre column doesn't burn 180px
+   * of vertical real estate when content is just a turn pill. Passed
+   * from `Arena` so the layout decision lives in one place.
+   */
+  isNarrow?: boolean;
 }
 
 /**
@@ -48,12 +54,13 @@ export function ArenaCenter({
   hiddenCount,
   logs,
   formatLogMessage,
+  isNarrow = false,
 }: ArenaCenterProps) {
   return (
     <YStack
       data-testid="arena-center"
       flex={1}
-      minHeight={180}
+      minHeight={isNarrow ? 0 : 180}
       alignItems="center"
       justifyContent="center"
       gap="$2"

@@ -13,17 +13,10 @@ interface TurnBannerProps {
   pendingDraws?: number;
 }
 
-const PULSE_KEYFRAMES_CSS = `
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes turnBannerDotPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.35); opacity: 0.6; }
-  }
-  [data-testid="turn-banner-dot"] {
-    animation: turnBannerDotPulse 1.5s ease-in-out infinite;
-  }
-}
-`;
+// `turnBannerDotPulse` keyframes live in `hudStyles.tsx`
+// (HUD_KEYFRAMES_CSS) — `ArenaCenter` mounts `<HudStyles />` once for
+// the whole widget, so the rule is already in the document by the time
+// this banner paints.
 
 function formatTimer(secondsRemaining: number | null): string {
   const s = secondsRemaining ?? 0;
@@ -89,12 +82,15 @@ export function TurnBanner({
     minWidth: 0,
   };
 
-  // Gradient border rendered via ::before-equivalent overlay using mask-composite
+  // Gradient border rendered via ::before-equivalent overlay using
+  // mask-composite. The radius mirrors the shell so the gradient mask
+  // tracks the rounded card on phones — without this it kept the full
+  // pill radius and clipped at the corners of the narrower layout.
   const borderOverlayStyle: CSSProperties = {
     content: '""',
     position: 'absolute',
     inset: 0,
-    borderRadius: 9999,
+    borderRadius: isNarrow ? 14 : 9999,
     padding: 2,
     background: palette.turnBannerBorderGradient,
     WebkitMask:
@@ -137,39 +133,36 @@ export function TurnBanner({
   };
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: PULSE_KEYFRAMES_CSS }} />
-      <div data-testid="turn-banner" style={shellStyle}>
-        <span aria-hidden style={borderOverlayStyle} />
-        <div style={headerRowStyle}>
-          <span data-testid="turn-banner-dot" style={dotStyle} />
-          <span style={labelStyle}>{label}</span>
-          {extraLabel && (
-            <span
-              data-testid="turn-banner-extra"
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                padding: '2px 8px',
-                borderRadius: 9999,
-                background: 'rgba(245, 158, 11, 0.18)',
-                color: '#fbbf24',
-                border: '1px solid rgba(245, 158, 11, 0.45)',
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: 0.4,
-                textTransform: 'uppercase',
-                fontVariantNumeric: 'tabular-nums',
-                flexShrink: 0,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {extraLabel}
-            </span>
-          )}
-        </div>
-        <span style={timerStyle}>{timer}</span>
+    <div data-testid="turn-banner" style={shellStyle}>
+      <span aria-hidden style={borderOverlayStyle} />
+      <div style={headerRowStyle}>
+        <span data-testid="turn-banner-dot" style={dotStyle} />
+        <span style={labelStyle}>{label}</span>
+        {extraLabel && (
+          <span
+            data-testid="turn-banner-extra"
+            style={{
+              position: 'relative',
+              zIndex: 1,
+              padding: '2px 8px',
+              borderRadius: 9999,
+              background: 'rgba(245, 158, 11, 0.18)',
+              color: '#fbbf24',
+              border: '1px solid rgba(245, 158, 11, 0.45)',
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: 0.4,
+              textTransform: 'uppercase',
+              fontVariantNumeric: 'tabular-nums',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {extraLabel}
+          </span>
+        )}
       </div>
-    </>
+      <span style={timerStyle}>{timer}</span>
+    </div>
   );
 }

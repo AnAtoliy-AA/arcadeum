@@ -159,7 +159,6 @@ export function OpponentTile({
           letterSpacing={0.3}
           numberOfLines={1}
           maxWidth={isMobile ? 80 : 100}
-          style={alive ? { color: playerColor } : undefined}
         >
           {displayName}
         </Text>

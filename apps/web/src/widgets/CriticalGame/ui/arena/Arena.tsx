@@ -1,10 +1,11 @@
 'use client';
 
-import { XStack, YStack, useMedia } from 'tamagui';
+import { XStack } from 'tamagui';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 import { DrawPile } from './DrawPile';
 import { DiscardPile } from './DiscardPile';
 import { ArenaCenter } from './ArenaCenter';
+import { useNarrowViewport } from '../../lib/useNarrowViewport';
 import type { ComboKind } from './ComboCard';
 
 interface ArenaProps {
@@ -50,90 +51,62 @@ export function Arena({
   serverOverloadOdds,
   hiddenCount,
 }: ArenaProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
-
-  const drawPile = (
-    <DrawPile
-      deck={deck}
-      count={deck.length}
-      disabled={!isMyTurn || isGameOver}
-      onDraw={onDrawAndEnd}
-      cardVariant={cardVariant}
-    />
-  );
-  const arenaCenter = (
-    <ArenaCenter
-      isMyTurn={isMyTurn}
-      currentPlayerName={currentPlayerName}
-      pendingDraws={pendingDraws}
-      hand={hand}
-      allowActionCardCombos={allowActionCardCombos}
-      combo={combo}
-      deck={deck}
-      logs={logs}
-      formatLogMessage={formatLogMessage}
-      serverOverloadOdds={serverOverloadOdds}
-      hiddenCount={hiddenCount}
-    />
-  );
-  const discardPileEl = (
-    <DiscardPile pile={discardPile} cardVariant={cardVariant} />
-  );
-
-  // Mobile: stack vertically so the center column gets full row width
-  // for the turn pill, combo chips, threat strip, and FlashBanner —
-  // otherwise the side piles squeeze it to a few pixels and the
-  // absolutely-positioned overlays collide with neighbours.
-  if (isMobile) {
-    return (
-      <YStack
-        data-testid="arena"
-        data-layout="mobile"
-        width="100%"
-        gap="$2"
-        paddingHorizontal="$2"
-        alignItems="stretch"
-      >
-        <XStack
-          width="100%"
-          alignItems="center"
-          justifyContent="space-around"
-          gap="$2"
-        >
-          {drawPile}
-          {discardPileEl}
-        </XStack>
-        {arenaCenter}
-      </YStack>
-    );
-  }
+  // Phones get smaller piles so the three-column row still fits at
+  // 390px; the layout otherwise stays identical so the threat strip,
+  // combo card, and FlashBanner don't fall down 200px below the piles.
+  const isNarrow = useNarrowViewport(480);
 
   return (
     <XStack
       data-testid="arena"
-      data-layout="desktop"
+      data-layout={isNarrow ? 'mobile' : 'desktop'}
       width="100%"
       alignItems="center"
       gap="$5"
       paddingHorizontal="$4"
       paddingVertical="$3"
-      borderRadius={18}
-      borderWidth={1}
+      borderRadius={isNarrow ? 0 : 18}
+      borderWidth={isNarrow ? 0 : 1}
       borderColor="rgba(255,255,255,0.06)"
-      backgroundColor="rgba(8,12,20,0.55)"
+      backgroundColor={isNarrow ? 'transparent' : 'rgba(8,12,20,0.55)'}
       // overflow: hidden keeps hover glows on the piles inside the
-      // rounded border and stops the FlashBanner overlay leaking out.
-      overflow="hidden"
+      // rounded border on desktop. On phones we drop the card chrome so
+      // the row reads as a strip and the FlashBanner overlay can extend
+      // past the arena bounds without clipping.
+      overflow={isNarrow ? 'visible' : 'hidden'}
       $sm={{
         gap: '$2',
         paddingHorizontal: '$2',
         paddingVertical: '$2',
       }}
     >
-      {drawPile}
-      {arenaCenter}
-      {discardPileEl}
+      <DrawPile
+        deck={deck}
+        count={deck.length}
+        disabled={!isMyTurn || isGameOver}
+        onDraw={onDrawAndEnd}
+        cardVariant={cardVariant}
+        isNarrow={isNarrow}
+      />
+      <ArenaCenter
+        isMyTurn={isMyTurn}
+        currentPlayerName={currentPlayerName}
+        pendingDraws={pendingDraws}
+        hand={hand}
+        allowActionCardCombos={allowActionCardCombos}
+        combo={combo}
+        deck={deck}
+        logs={logs}
+        formatLogMessage={formatLogMessage}
+        serverOverloadOdds={serverOverloadOdds}
+        hiddenCount={hiddenCount}
+        isNarrow={isNarrow}
+      />
+      <DiscardPile
+        pile={discardPile}
+        cardVariant={cardVariant}
+        isNarrow={isNarrow}
+      />
     </XStack>
   );
 }

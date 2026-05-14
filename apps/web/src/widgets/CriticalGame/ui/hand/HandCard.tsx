@@ -71,14 +71,14 @@ const SELECT_RING = '#34d399';
 const SELECT_GLOW = 'rgba(52, 211, 153, 0.55)';
 
 /**
- * Single-card cell for the widget-mode hand. Border colour + corner icon
- * come from the card's role family (`cardRoles.ts`). Selection lifts the
- * card and swaps the border to the accent green + glow.
- *
- * Card art is intentionally not pulled from the legacy `CardImage`
- * sprite — the widget aims for compact info density, not a faithful
- * reproduction of the table-mode card. The legacy `PlayerHand` keeps
- * the rich art on the flag-off path.
+ * Single-card cell for the widget-mode hand. Renders the variant's
+ * sprite via `<CardImage>` when available, with a role-keyed fallback
+ * glyph as the underlay for the unthemed "default" variant. Name +
+ * description overlay a bottom scrim so the artwork stays visible.
+ * Border colour comes from the card's role family (`cardRoles.ts`);
+ * selection lifts the cell and swaps the border to the accent green.
+ * The legacy `PlayerHand` keeps the rich table-mode card on the
+ * flag-off path.
  */
 export function HandCard({
   card,

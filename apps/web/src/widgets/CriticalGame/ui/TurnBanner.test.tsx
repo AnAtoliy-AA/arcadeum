@@ -87,18 +87,14 @@ describe('TurnBanner', () => {
     expect(screen.getByTestId('turn-banner-extra')).toHaveTextContent('+2');
   });
 
-  it('gates the pulsing dot animation behind prefers-reduced-motion: no-preference', () => {
+  it('attaches its pulse via the global hudStyles attribute selector, not inline', () => {
+    // Keyframes live in `hudStyles.tsx` (HUD_KEYFRAMES_CSS) and are
+    // mounted once by `ArenaCenter`. The banner itself should NOT emit
+    // a `<style>` tag and the dot's inline style must NOT carry an
+    // animation rule — the prefers-reduced-motion media gate inside
+    // hudStyles is what actually controls the pulse.
     const { container } = renderBanner({ isMyTurn: true });
-    // The animation must live inside a @media (prefers-reduced-motion: no-preference)
-    // block so that users with "reduce" set never receive the animation property.
-    const styleTag = container.querySelector('style');
-    expect(styleTag).not.toBeNull();
-    const css = styleTag?.innerHTML ?? '';
-    expect(css).toMatch(/prefers-reduced-motion:\s*no-preference/);
-    expect(css).toMatch(/animation:\s*turnBannerDotPulse/);
-
-    // The dot's inline style must not contain an animation rule — animation is
-    // only attached via the guarded @media CSS block.
+    expect(container.querySelector('style')).toBeNull();
     const dot = screen.getByTestId('turn-banner-dot');
     expect(dot.getAttribute('style') ?? '').not.toContain('animation');
   });

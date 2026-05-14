@@ -17,6 +17,13 @@ const HUD_KEYFRAMES_CSS = `
   [data-testid="threat-strip"][data-pulse="true"] {
     animation: threatPulse 1.4s ease-in-out infinite;
   }
+  @keyframes turnBannerDotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.35); opacity: 0.6; }
+  }
+  [data-testid="turn-banner-dot"] {
+    animation: turnBannerDotPulse 1.5s ease-in-out infinite;
+  }
 }
 @keyframes flashBannerIn {
   from { opacity: 0; transform: translateY(-4px); }

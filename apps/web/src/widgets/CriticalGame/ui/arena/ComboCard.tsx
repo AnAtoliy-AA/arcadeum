@@ -88,7 +88,17 @@ export function ComboCard({
       >
         {label}
       </Text>
-      <ComboHints hand={hand} allowActionCardCombos={allowActionCardCombos} />
+      {/* Hide the chip strip at idle — three "possible" chips read as
+          decorative clutter without a selection. Once the player picks
+          anything (kind !== 'none') the strip surfaces the active /
+          possible combo states. */}
+      {kind !== 'none' && (
+        <ComboHints
+          hand={hand}
+          allowActionCardCombos={allowActionCardCombos}
+          activeKind={kind}
+        />
+      )}
     </YStack>
   );
 }

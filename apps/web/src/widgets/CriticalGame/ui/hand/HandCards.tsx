@@ -57,11 +57,12 @@ export function HandCards({
       alignItems="flex-end"
       justifyContent="center"
       gap="$2"
-      // paddingTop reserves clearance for the selected-card lift
-      // (translateY: -8 / hover -10) so the lifted edge doesn't clip
-      // the arena above. paddingBottom keeps the scroll-track shadow
-      // from getting cropped.
-      paddingTop={16}
+      // paddingTop reserves clearance for the combined lift + fan
+      // bounding-box growth. The selected lift is -8 / hover -10, and
+      // `getFanTransform` adds quadratic offsetY up to ~7px at the
+      // edges; rotation grows the rotated rect further still. 24 covers
+      // both at a 7-card hand with selected lift on an outer card.
+      paddingTop={24}
       paddingBottom={12}
       paddingHorizontal="$2"
       width="100%"

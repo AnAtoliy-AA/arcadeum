@@ -147,6 +147,18 @@ export class InventoryService {
     }
   }
 
+  // Equip / unequip freshness contract:
+  //  - /chat (player-to-player): live — equipped IDs are read on every page
+  //    of messages via the chat helper's batched User lookup.
+  //  - Lobby roster (room.members): next room emit picks it up. We don't push
+  //    a refresh on equip because in-lobby equipping is rare and the join /
+  //    leave / options-change traffic already produces a fresh summary within
+  //    seconds. Adding a cross-module socket emit from Shop → Games would
+  //    invert a dependency for marginal UX gain.
+  //  - Leaderboards: stale up to 30s (LeaderboardsCacheService TTL). Same
+  //    trade-off — capture and the 30s timer refresh equipped state.
+  //  - Header / ProfileMenu / /shop / /players/[id]: live — these read the
+  //    session snapshot or refetch on every render.
   async equip(userId: string, itemId: string): Promise<EquippedView> {
     const def = getCatalogItem(itemId);
     if (!def) throw new BadRequestException('shop.unknownItem');

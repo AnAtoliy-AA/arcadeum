@@ -99,6 +99,22 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     [registeredResolver, fallbackResolver],
   );
 
+  const resolveEquipped = useCallback(
+    (id?: string | null) => {
+      if (!id) return null;
+      const member = room.members?.find((m) => m.id === id);
+      if (!member) return null;
+      return {
+        equippedAvatarId: member.equippedAvatarId ?? null,
+        equippedBadgeId: member.equippedBadgeId ?? null,
+      };
+    },
+    [room.members],
+  );
+
+  const popupSender = latestMessage
+    ? resolveEquipped(latestMessage.senderId ?? null)
+    : null;
   const popupSenderName = latestMessage
     ? (resolveDisplayName(latestMessage.senderId, latestMessage.senderName) ??
       latestMessage.senderName)
@@ -150,6 +166,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               onClose={() => setShowChat(false)}
               teamMode={teamMode}
               resolveDisplayName={resolveDisplayName}
+              resolveEquipped={resolveEquipped}
               currentUserId={userId}
             />
           </ChatPanel>
@@ -158,7 +175,10 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         {latestMessage && (
           <ChatMessagePopup
             key={latestMessage.id}
+            senderId={latestMessage.senderId ?? null}
             senderName={popupSenderName}
+            senderEquippedAvatarId={popupSender?.equippedAvatarId ?? null}
+            senderEquippedBadgeId={popupSender?.equippedBadgeId ?? null}
             message={latestMessage.message}
             visible={!!latestMessage}
             onDismiss={dismissPopup}

@@ -23,6 +23,7 @@ import {
 } from '../lib/combo';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { NarrowViewportProvider } from '../lib/useNarrowViewport';
+import { withViewTransition } from '../lib/viewTransition';
 import type { CriticalCard } from '../types';
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
@@ -253,7 +254,12 @@ export function MatchWidget({
 
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
-    actions.drawCard();
+    // §4.2 — wrap in a view transition so the new card animates into
+    // the hand instead of popping in. Falls through synchronously when
+    // the browser lacks startViewTransition.
+    withViewTransition(() => {
+      actions.drawCard();
+    });
   }, [actions, isMyTurn, isGameOver]);
 
   const canPlay = useMemo(() => {
@@ -277,33 +283,41 @@ export function MatchWidget({
 
   const handlePlay = useCallback(() => {
     if (!canPlay) return;
-    if (detected.kind === 'single') {
-      const cardId = detected.selected[0].id;
-      // Targeted singles bypass the legacy modal entirely — the widget
-      // already has an armed target, so pass it through to the server in
-      // one shot. The fall-through `handlePlayActionCard(id)` for
-      // un-targeted cards keeps the existing behaviour (sets +
-      // playActionCard / opens a non-target modal for stash, etc.).
-      if (isTargetedSingle(cardId)) {
-        if (!targetPlayerId) return;
-        // `trade` (Favor) has a dedicated socket on the BE — the generic
-        // play_action gateway rejects it via isSimpleActionCard. The rest
-        // of the targeted singles ride the play_action path.
-        if (cardId === 'trade') {
-          actions.playFavor(targetPlayerId);
+    // §4.2 — animate the play through View Transitions when supported.
+    // The browser cross-fades between selected-cards-in-hand and the
+    // post-play layout (cards gone, discard top updated). Fallback runs
+    // the body synchronously with no animation.
+    withViewTransition(() => {
+      if (detected.kind === 'single') {
+        const cardId = detected.selected[0].id;
+        // Targeted singles bypass the legacy modal entirely — the
+        // widget already has an armed target, so pass it through to
+        // the server in one shot. The fall-through
+        // `handlePlayActionCard(id)` for un-targeted cards keeps the
+        // existing behaviour (sets + playActionCard / opens a
+        // non-target modal for stash, etc.).
+        if (isTargetedSingle(cardId)) {
+          if (!targetPlayerId) return;
+          // `trade` (Favor) has a dedicated socket on the BE — the
+          // generic play_action gateway rejects it via
+          // isSimpleActionCard. The rest of the targeted singles ride
+          // the play_action path.
+          if (cardId === 'trade') {
+            actions.playFavor(targetPlayerId);
+          } else {
+            actions.playActionCard(cardId, { targetPlayerId });
+          }
         } else {
-          actions.playActionCard(cardId, { targetPlayerId });
+          handlePlayActionCard(cardId);
         }
-      } else {
-        handlePlayActionCard(cardId);
+      } else if (detected.kind === 'pair' || detected.kind === 'triple') {
+        handleOpenEventCombo(asComboCards(detected.selected), hand);
+      } else if (detected.kind === 'five') {
+        handleOpenFiverCombo();
       }
-    } else if (detected.kind === 'pair' || detected.kind === 'triple') {
-      handleOpenEventCombo(asComboCards(detected.selected), hand);
-    } else if (detected.kind === 'five') {
-      handleOpenFiverCombo();
-    }
-    setSelectedUids([]);
-    setTargetPlayerId(null);
+      setSelectedUids([]);
+      setTargetPlayerId(null);
+    });
   }, [
     canPlay,
     detected,

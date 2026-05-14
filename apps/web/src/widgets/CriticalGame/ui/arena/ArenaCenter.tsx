@@ -4,6 +4,7 @@ import { YStack } from 'tamagui';
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
+import { FlashHistory } from '../FlashHistory';
 import { HudStyles } from '../hudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
@@ -96,6 +97,11 @@ export function ArenaCenter({
         serverOverloadOdds={serverOverloadOdds}
         hiddenCount={hiddenCount}
       />
+      {/* §4.7 — last-5 timeline strip beneath the threat strip. The
+          single-shot FlashBanner clears in 1.6s; this surfaces a
+          short history so players who were watching their hand can
+          still see what just happened. */}
+      <FlashHistory logs={logs} formatMessage={formatLogMessage} />
     </YStack>
   );
 }

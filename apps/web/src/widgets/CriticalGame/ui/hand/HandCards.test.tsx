@@ -114,6 +114,49 @@ describe('HandCards', () => {
     );
   });
 
+  it('keeps cell dimensions stable across selection so the fan does not shift', () => {
+    // Regression for PR #658 review §1.2 — the selected-state size delta
+    // (132×184 vs 124×172) pushed neighbours sideways because the row
+    // uses `gap`, not absolute positioning. Lift/glow/border swap now
+    // signal selection without disturbing layout.
+    const { rerender, props } = renderCards();
+    const before = screen.getByTestId('hand-card-strike-0');
+    expect(before.className).toMatch(/_w-124px/);
+    expect(before.className).toMatch(/_h-172px/);
+    rerender(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+        <HandCards {...props} selectedUids={['strike-0']} />
+      </TamaguiProvider>,
+    );
+    const after = screen.getByTestId('hand-card-strike-0');
+    expect(after).toHaveAttribute('data-selected', 'true');
+    expect(after.className).toMatch(/_w-124px/);
+    expect(after.className).toMatch(/_h-172px/);
+  });
+
+  it('renders the role fallback glyph when the variant has no sprite art', () => {
+    // Regression for PR #658 review §1.1 — the glyph used to render
+    // beneath the sprite and bleed through. With no sprite for the
+    // default variant we should still see the role-keyed icon.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    // strike → attack role → ⚔ glyph
+    expect(card.textContent).toContain('⚔');
+  });
+
+  it('omits the fallback glyph when the variant ships sprite art for the card', () => {
+    // Regression for PR #658 review §1.1 — the glyph must NOT stack with
+    // the sprite. Crime variant has a sprite sheet; strike is mapped.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+      cardVariant: 'crime',
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    expect(card.textContent).not.toContain('⚔');
+  });
+
   it('shows a duplicate-count badge only for cards with copies in hand', () => {
     renderCards({
       cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),

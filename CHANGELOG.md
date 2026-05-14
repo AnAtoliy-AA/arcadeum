@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.36] - 2026-05-14
+
+### Added
+- equipped cosmetics in lobby + leaderboard, /shop signed-out CTA (ARC-650) (ARC-650)
+
+
 ## [1.13.35] - 2026-05-14
 
 ### Added

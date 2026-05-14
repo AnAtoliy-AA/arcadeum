@@ -30,6 +30,50 @@ const DEFUSE_CARDS: readonly CriticalCard[] = [
   'containment_field',
 ];
 
+type ToggleField = 'name' | 'description';
+
+/**
+ * Read a persisted hand-card toggle from localStorage. SSR-safe: returns
+ * the default on the server, and treats any localStorage failure (private
+ * browsing, quota, JSON corruption) as "use the default" so a bad cache
+ * entry never breaks the match.
+ */
+function readToggle(
+  key: string | null,
+  field: ToggleField,
+  fallback: boolean,
+): boolean {
+  if (!key || typeof window === 'undefined') return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw) as Partial<Record<ToggleField, boolean>>;
+    const value = parsed?.[field];
+    return typeof value === 'boolean' ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Write a persisted hand-card toggle. Failures are swallowed silently. */
+function writeToggle(
+  key: string | null,
+  field: ToggleField,
+  value: boolean,
+): void {
+  if (!key || typeof window === 'undefined') return;
+  try {
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw
+      ? ((JSON.parse(raw) as Partial<Record<ToggleField, boolean>>) ?? {})
+      : {};
+    parsed[field] = value;
+    window.localStorage.setItem(key, JSON.stringify(parsed));
+  } catch {
+    /* localStorage unavailable (Safari private mode, quota) — silent skip */
+  }
+}
+
 export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
   /**
    * Format a raw `CriticalLogEntry.message` for display. Comes from
@@ -83,11 +127,26 @@ export function MatchWidget({
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
-  // Per-session show/hide for the card name + description rows. Default
-  // both ON so first-time players see the rules text; experienced
-  // players can collapse to art-only via the rail toggles.
-  const [showCardName, setShowCardName] = useState(true);
-  const [showCardDescription, setShowCardDescription] = useState(true);
+  // Persist show/hide for the card name + description rows per user. New
+  // players see both rows by default (rules text helps them learn);
+  // experienced players who collapse to art-only stay collapsed across
+  // matches. Storage key is namespaced by user id so multiple accounts
+  // on the same browser don't share preferences.
+  const togglesStorageKey = currentUserId
+    ? `critical:hand-toggles:${currentUserId}`
+    : null;
+  const [showCardName, setShowCardName] = useState<boolean>(() =>
+    readToggle(togglesStorageKey, 'name', true),
+  );
+  const [showCardDescription, setShowCardDescription] = useState<boolean>(() =>
+    readToggle(togglesStorageKey, 'description', true),
+  );
+  useEffect(() => {
+    writeToggle(togglesStorageKey, 'name', showCardName);
+  }, [togglesStorageKey, showCardName]);
+  useEffect(() => {
+    writeToggle(togglesStorageKey, 'description', showCardDescription);
+  }, [togglesStorageKey, showCardDescription]);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
   const handleCloseRules = useCallback(() => setRulesOpen(false), []);
   const handleToggleCardName = useCallback(

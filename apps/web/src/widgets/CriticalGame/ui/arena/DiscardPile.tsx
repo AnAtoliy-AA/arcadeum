@@ -51,7 +51,15 @@ export function DiscardPile({
             context the hand cards do (name lives in CardNameContainer
             inside LastPlayedCardDisplay already). Bottom-anchored scrim
             so the artwork's top half stays visible. Hidden on phones
-            where the 80×112 slot can't accommodate readable text. */}
+            where the 80×112 slot can't accommodate readable text.
+
+            `zIndex: 20` deliberately sits above `LastPlayedCard`'s
+            `zIndex: 10` — without this the card painted on top of the
+            scrim and the description never showed.
+
+            `borderRadius` matches the card's so the scrim bottom
+            follows the rounded card edge instead of extending past it
+            with square corners. */}
         {!isNarrow && lastCard && description && (
           <div
             data-testid="arena-discard-pile-description"
@@ -64,9 +72,9 @@ export function DiscardPile({
               pointerEvents: 'none',
               background:
                 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
-              borderBottomLeftRadius: 'inherit',
-              borderBottomRightRadius: 'inherit',
-              zIndex: 2,
+              borderBottomLeftRadius: 14,
+              borderBottomRightRadius: 14,
+              zIndex: 20,
             }}
           >
             <span

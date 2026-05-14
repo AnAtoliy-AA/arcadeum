@@ -58,27 +58,35 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
-interface AriaLabelInput {
+interface OpponentTileState {
   alive: boolean;
   isCurrentTurn: boolean;
   isTarget: boolean;
-  eliminatedSuffix: string;
-  currentTurnSuffix: string;
-  targetSuffix: string;
 }
 
 /**
  * Builds the screen-reader label for an opponent tile by appending the
- * active state suffixes (eliminated / on the clock / armed target) in
- * parentheses. We keep all three states visible to AT users — the visual
- * ring colour conveys the same thing for sighted users.
+ * single active state suffix (eliminated / armed target / on the clock)
+ * in parentheses. Priority order matches the visual ring priority:
+ * dead beats target beats current-turn. Only one suffix is translated
+ * per render — three unconditional t() lookups was wasted work since
+ * the suffixes are mutually exclusive.
  */
-function composeAriaLabel(name: string, input: AriaLabelInput): string {
-  const parts: string[] = [name];
-  if (!input.alive) parts.push(`(${input.eliminatedSuffix})`);
-  if (input.alive && input.isCurrentTurn) parts.push(`(${input.currentTurnSuffix})`);
-  if (input.alive && input.isTarget) parts.push(`(${input.targetSuffix})`);
-  return parts.join(' ');
+function describeOpponentTile(
+  name: string,
+  t: (key: string) => string,
+  state: OpponentTileState,
+): string {
+  const suffixKey = !state.alive
+    ? 'eliminated'
+    : state.isTarget
+      ? 'armedTarget'
+      : state.isCurrentTurn
+        ? 'currentTurn'
+        : null;
+  if (!suffixKey) return name;
+  const suffix = t(`games.table.players.a11yState.${suffixKey}`);
+  return `${name} (${suffix})`;
 }
 
 /**
@@ -112,7 +120,13 @@ export function OpponentTile({
 
   const playerColor = getPlayerColor(player.playerId);
 
-  let ringColor: string = alive ? playerColor : 'rgba(255,255,255,0.10)';
+  // Tile border carries STATE (turn/target/dead). The avatar bubble below
+  // carries IDENTITY (the seat colour). Splitting these so the two never
+  // compete: the previous version painted seat colour on the tile border
+  // when alive/idle, which read as two different identifiers for the same
+  // person when the player was on the clock (border was green, avatar was
+  // their seat colour). The preview reserves the tile border for state.
+  let ringColor: string = 'rgba(255,255,255,0.10)';
   if (!alive) ringColor = ELIMINATED_RING;
   else if (isTarget) ringColor = TARGET_RING;
   else if (isCurrentTurn) ringColor = TURN_RING;
@@ -148,18 +162,17 @@ export function OpponentTile({
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-pressed={interactive ? isTarget : undefined}
-      // Compose the accessible name from the visible visual states so a
+      // Compose the accessible name from the visible visual state so a
       // screen-reader user hears the same context a sighted player sees
-      // (turn ring, target ring, dead/dashed). Falls back to the bare
-      // name for non-interactive tiles (alive but not currently armable).
-      aria-label={composeAriaLabel(displayName, {
-        alive,
-        isCurrentTurn,
-        isTarget,
-        eliminatedSuffix: t('games.table.players.a11yState.eliminated'),
-        currentTurnSuffix: t('games.table.players.a11yState.currentTurn'),
-        targetSuffix: t('games.table.players.a11yState.armedTarget'),
-      })}
+      // (turn ring, target ring, dead/dashed). State is mutually
+      // exclusive in the tile border, so we resolve a single suffix
+      // key per render — three unconditional `t()` lookups × 5 tiles
+      // every state push was wasteful telemetry noise.
+      aria-label={describeOpponentTile(
+        displayName,
+        t as unknown as (key: string) => string,
+        { alive, isCurrentTurn, isTarget },
+      )}
       onPress={interactive ? onSelect : undefined}
       onKeyDown={handleKeyDown}
       cursor={interactive ? 'pointer' : 'default'}

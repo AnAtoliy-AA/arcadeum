@@ -120,7 +120,7 @@ describe('HandCards', () => {
     // `abs()` and `clamp()` to compute rotate/translate.
     renderCards();
     const wrappers = document.querySelectorAll<HTMLElement>(
-      '.hand-card-wrapper',
+      '.crit-hand-card-wrapper',
     );
     expect(wrappers.length).toBe(3);
     wrappers.forEach((w, i) => {
@@ -132,7 +132,7 @@ describe('HandCards', () => {
 
   it('flips data-fan to "false" when the row is unfanned (mobile)', () => {
     renderCards({ isFanned: false });
-    const first = document.querySelector('.hand-card-wrapper');
+    const first = document.querySelector('.crit-hand-card-wrapper');
     expect(first?.getAttribute('data-fan')).toBe('false');
   });
 

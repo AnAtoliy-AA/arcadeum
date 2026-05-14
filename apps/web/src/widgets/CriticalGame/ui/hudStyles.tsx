@@ -1,12 +1,18 @@
 'use client';
 
 /**
- * Single mount-point for HUD keyframes used by ThreatStrip and FlashBanner.
- * Rendered once via MatchHud so we don't emit a fresh <style> tag every
- * time those components re-render.
+ * Single mount-point for HUD CSS — keyframes, the hand-card glow ::after,
+ * the CSS-driven hand fan, and the @property-based threat pulse. Mounted
+ * once by `ArenaCenter` (inside the widget's arena column) so a fresh
+ * `<style>` tag isn't emitted on every re-render of its consumers.
  *
- * The threatPulse animation is gated on prefers-reduced-motion: no-preference
- * so users with motion-reduce settings never receive the pulse.
+ * Re-mounting from another component would emit a duplicate `<style>`
+ * block — guard via `useId()` + dedupe if multiple mount points are ever
+ * needed.
+ *
+ * All motion-bearing rules are gated on
+ * `@media (prefers-reduced-motion: no-preference)` so users with
+ * motion-reduce settings never receive the pulse or the glow transition.
  */
 const HUD_KEYFRAMES_CSS = `
 @media (prefers-reduced-motion: no-preference) {
@@ -71,25 +77,30 @@ const HUD_KEYFRAMES_CSS = `
 /* §4.4 — Hand fan transform driven by CSS custom properties. JS only
    sets --hand-index and --hand-count on each card wrapper; the math
    lives in CSS so the fan re-paints without a React re-render when
-   another card is added/removed. Targets Chrome 116+, Firefox 118+,
-   Safari 17.4+ (abs() and clamp() with numeric args). Older browsers
-   gracefully fall through to no fan — cards still render in order.
+   another card is added/removed.
 
    --centre splits the row symmetrically; --offset is the per-card
    distance from centre. Angle steps 2deg from centre, clamped to ±14;
    offsetY grows quadratically (distance² × 0.8 px) so the fan arcs
-   upward at the edges. Matches the previous JS getFanTransform exactly. */
-.hand-card-wrapper {
+   upward at the edges. Matches the previous JS getFanTransform exactly.
+
+   Browser support: clamp() ships on Chrome 79+, Firefox 75+, Safari 13.1+
+   so the angle clamp works universally. The absolute-value step uses
+   max(x, -1 * x) instead of abs() for the same reason — abs() only
+   landed in Chrome 130 / Firefox 132 / Safari 18.4 (late 2024 / early
+   2025). The class is namespaced crit- to avoid colliding with host-app
+   classes; a previous unscoped .hand-card-wrapper was a foot-gun. */
+.crit-hand-card-wrapper {
   display: inline-flex;
   flex-shrink: 0;
   transform-origin: bottom center;
 }
-.hand-card-wrapper[data-fan="true"] {
+.crit-hand-card-wrapper[data-fan="true"] {
   --centre: calc((var(--hand-count, 1) - 1) / 2);
   --offset: calc(var(--hand-index, 0) - var(--centre));
   --raw-angle: calc(var(--offset) * 2);
   --angle: clamp(-14, var(--raw-angle), 14);
-  --abs-offset: abs(var(--offset));
+  --abs-offset: max(var(--offset), calc(-1 * var(--offset)));
   --offset-y: calc(var(--abs-offset) * var(--abs-offset) * 0.8);
   transform: rotate(calc(var(--angle) * 1deg))
              translateY(calc(var(--offset-y) * 1px));

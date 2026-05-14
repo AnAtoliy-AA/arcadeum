@@ -112,6 +112,12 @@ export function HandRail({
       // 144 (up from 128) so the Play button label can fit "Play 3× …"
       // on two lines without mid-word ellipsis. The hand track still has
       // ample room — 144px is ≤6% of the 1240px max-width grid.
+      //
+      // No `$sm` width override: tamagui's `$sm` fires at ≤800px, but
+      // `HandZone` already gates the rail on `useIsNarrow(480)` so the
+      // rail only renders on >480px viewports. The previous
+      // `$sm: { width: '100%' }` expanded the rail to fill the row at
+      // tablet portrait (481–800), pushing the hand track off-screen.
       width={144}
       gap="$2"
       paddingHorizontal="$2"
@@ -121,7 +127,6 @@ export function HandRail({
       borderColor={NEUTRAL_BORDER}
       backgroundColor="rgba(8, 12, 20, 0.7)"
       flexShrink={0}
-      $sm={{ width: '100%' }}
     >
       {/* Stats header */}
       <XStack alignItems="stretch" gap="$2">

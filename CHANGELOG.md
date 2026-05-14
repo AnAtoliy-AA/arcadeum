@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.34] - 2026-05-14
+
+### Added
+- show equipped shop badge in ProfileMenu (ARC-650) (ARC-650)
+- show equipped cosmetics on /players/[id] (ARC-650) (ARC-650)
+
+### Fixed
+- filter bot ids before User.find $in (ARC-650) (ARC-650)
+
+
 ## [1.13.33] - 2026-05-13
 
 ### Added

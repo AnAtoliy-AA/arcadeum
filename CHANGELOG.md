@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.38] - 2026-05-14
+
+### Added
+- name color category — third equippable surface (ARC-650) (ARC-650)
+
+
 ## [1.13.37] - 2026-05-14
 
 ### Added

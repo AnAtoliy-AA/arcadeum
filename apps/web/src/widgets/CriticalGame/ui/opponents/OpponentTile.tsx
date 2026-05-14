@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Text, useMedia } from 'tamagui';
+import { YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
@@ -11,6 +11,18 @@ interface OpponentTileProps {
   player: CriticalPlayerTableState;
   isCurrentTurn: boolean;
   isTarget?: boolean;
+  /**
+   * True when the row is in duel mode (one opponent). Used to scale the
+   * tile up so the focal opponent reads at viewport size rather than
+   * floating lost in the row.
+   */
+  isDuel?: boolean;
+  /**
+   * Mobile flag passed down from OpponentsRow so the row decides the
+   * breakpoint once and tiles inherit consistent sizing — useMedia in
+   * each tile fragmented the boundary across components.
+   */
+  isMobile?: boolean;
   /**
    * Click handler invoked when the tile is activated (mouse, touch, Enter,
    * or Space). Omitted when the tile isn't a valid attack target — e.g.
@@ -49,12 +61,12 @@ export function OpponentTile({
   player,
   isCurrentTurn,
   isTarget = false,
+  isDuel = false,
+  isMobile = false,
   onSelect,
   resolveDisplayName,
 }: OpponentTileProps) {
   const { t } = useTranslation();
-  const media = useMedia();
-  const isMobile = media.sm;
   const displayName = resolveDisplayName(
     player.playerId,
     `Player ${player.playerId.slice(0, 8)}`,
@@ -71,7 +83,12 @@ export function OpponentTile({
   else if (isCurrentTurn) ringColor = TURN_RING;
 
   const ringStyle = !alive ? 'dashed' : 'solid';
-  const avatarSize = isMobile ? 36 : 48;
+  // Duel mode pushes the lone opponent to focal size; FFA tiles are
+  // smaller because up to 5 share the row. Mobile knocks both down so
+  // they fit thumb-width.
+  let avatarSize: number;
+  if (isMobile) avatarSize = isDuel ? 64 : 36;
+  else avatarSize = isDuel ? 88 : 48;
   const interactive = alive && !!onSelect;
   const handleKeyDown = interactive
     ? (e: React.KeyboardEvent) => {
@@ -107,10 +124,18 @@ export function OpponentTile({
       borderStyle={ringStyle}
       borderColor={ringColor}
       backgroundColor="rgba(0,0,0,0.35)"
-      width={isMobile ? 96 : 120}
+      // FFA: flex-grow with a max so 2–5 tiles distribute evenly across
+      // the row. Duel: lock the lone tile to a focal width so the
+      // opponent reads as the primary subject, not space-betweened.
+      flex={isDuel ? 0 : 1}
+      width={isDuel ? (isMobile ? 180 : 240) : undefined}
+      maxWidth={isDuel ? (isMobile ? 180 : 240) : 180}
       minWidth={isMobile ? 96 : 120}
       flexShrink={0}
       opacity={alive ? 1 : 0.6}
+      // Scroll-snap on mobile: align each tile to the start of the
+      // scroll container so swipes don't strand a tile mid-row.
+      style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
     >
       <YStack
         width={avatarSize}
@@ -134,7 +159,6 @@ export function OpponentTile({
           letterSpacing={0.3}
           numberOfLines={1}
           maxWidth={isMobile ? 80 : 100}
-          style={alive ? { color: playerColor } : undefined}
         >
           {displayName}
         </Text>

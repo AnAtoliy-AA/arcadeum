@@ -63,10 +63,19 @@ describe('ComboCard', () => {
     },
   );
 
-  it('embeds ComboHints inside the card', () => {
+  it('hides ComboHints at idle (kind="none") so the placeholder reads clean', () => {
     renderCard({
       hand: ['strike'] as CriticalCard[],
       allowActionCardCombos: false,
+    });
+    expect(screen.queryByTestId('combo-hints')).not.toBeInTheDocument();
+  });
+
+  it('embeds ComboHints once a combo is detected', () => {
+    renderCard({
+      hand: ['strike', 'strike'] as CriticalCard[],
+      allowActionCardCombos: true,
+      combo: { kind: 'pair', label: 'pair' },
     });
     expect(screen.getByTestId('combo-hints')).toBeInTheDocument();
   });

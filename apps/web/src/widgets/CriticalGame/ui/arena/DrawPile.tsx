@@ -12,6 +12,12 @@ interface DrawPileProps {
   disabled: boolean;
   onDraw: () => void;
   cardVariant?: string;
+  /**
+   * When true, shrink the pile to ~80×112 so the three-column arena
+   * row still fits at 390px. Passed from `Arena` once per layout so
+   * piles don't each call the matchMedia hook.
+   */
+  isNarrow?: boolean;
 }
 
 export function DrawPile({
@@ -20,6 +26,7 @@ export function DrawPile({
   disabled,
   onDraw,
   cardVariant,
+  isNarrow = false,
 }: DrawPileProps) {
   const { t } = useTranslation();
   // DeckDisplay's `t` prop accepts the unparameterised string form used by
@@ -51,15 +58,15 @@ export function DrawPile({
       cursor={disabled ? 'default' : 'pointer'}
       hoverStyle={disabled ? undefined : { scale: 1.02 }}
       pressStyle={disabled ? undefined : { scale: 0.98 }}
+      flexShrink={0}
     >
-      {/* Override the legacy slot dimensions — the widget arena has
-          more vertical real-estate than the table-mode header, so the
-          pile cards can read larger. */}
+      {/* Desktop: 140×196 — the widget arena has more vertical real
+          estate than the table-mode header. Phones: 80×112 so the
+          three-column row still fits at 390px. */}
       <CardSlot
         $role="deck"
-        width={140}
-        height={196}
-        $sm={{ width: 96, height: 134 }}
+        width={isNarrow ? 80 : 140}
+        height={isNarrow ? 112 : 196}
       >
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>

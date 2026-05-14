@@ -1,7 +1,8 @@
 'use client';
 
-import { XStack, useMedia } from 'tamagui';
+import { XStack } from 'tamagui';
 import { OpponentTile } from './OpponentTile';
+import { useNarrowViewport } from '../../lib/useNarrowViewport';
 import type { CriticalPlayerTableState } from '../../types';
 
 interface OpponentsRowProps {
@@ -38,8 +39,9 @@ export function OpponentsRow({
   onSelectTarget,
   resolveDisplayName,
 }: OpponentsRowProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
+  // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
+  // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
+  const isMobile = useNarrowViewport(480);
   const isDuel = opponents.length <= 1;
 
   return (
@@ -48,13 +50,25 @@ export function OpponentsRow({
       data-mode={isDuel ? 'duel' : 'ffa'}
       data-count={opponents.length}
       width="100%"
-      gap="$2"
+      gap="$3"
       paddingHorizontal="$2"
       paddingVertical="$2"
-      justifyContent={isDuel ? 'center' : 'space-between'}
-      flexWrap={isMobile ? 'nowrap' : 'wrap'}
-      overflow={isMobile ? 'scroll' : 'visible'}
-      $sm={{ gap: '$1' }}
+      justifyContent="center"
+      flexWrap="nowrap"
+      // Mobile: horizontal scroll with scroll-snap so each tile lands on
+      // a fixed stop instead of free-floating. Desktop: tiles flex-grow
+      // evenly with a max width so 2-/3-/4-up rows look balanced rather
+      // than space-between-clumped.
+      style={
+        isMobile
+          ? {
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              scrollSnapType: 'x mandatory',
+            }
+          : { overflow: 'visible' }
+      }
+      $sm={{ gap: '$2' }}
     >
       {opponents.map((opponent) => (
         <OpponentTile
@@ -62,6 +76,8 @@ export function OpponentsRow({
           player={opponent}
           isCurrentTurn={opponent.playerId === currentTurnPlayerId}
           isTarget={!!targetPlayerId && opponent.playerId === targetPlayerId}
+          isDuel={isDuel}
+          isMobile={isMobile}
           onSelect={
             onSelectTarget && opponent.alive
               ? () => onSelectTarget(opponent.playerId)

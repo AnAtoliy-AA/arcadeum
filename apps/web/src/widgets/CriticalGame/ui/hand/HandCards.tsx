@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { XStack } from 'tamagui';
 import { HandCard } from './HandCard';
+import { getFanTransform } from '../../lib/handLayout';
 import type { HandCardInstance } from '../../lib/combo';
 
 interface HandCardsProps {
@@ -13,12 +14,23 @@ interface HandCardsProps {
   disabled?: boolean;
   showName?: boolean;
   showDescription?: boolean;
+  /**
+   * Apply per-card fan rotation around the centre of the row. Defaults to
+   * `true` for the desktop layout; the mobile bar disables it because
+   * cards already scroll horizontally and rotation eats horizontal space.
+   */
+  isFanned?: boolean;
 }
+
+const EDGE_FADE_MASK =
+  'linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%)';
 
 /**
  * Horizontal card track for the player's hand. Each cell is a `HandCard`
  * — selection state lives one level up in `MatchWidget` so the arena's
- * `ComboCard` can read it too.
+ * `ComboCard` can read it too. Desktop: single-row nowrap with horizontal
+ * scroll + edge fade + fan rotation. Mobile: single-row nowrap with
+ * horizontal scroll, no fan.
  */
 export function HandCards({
   cards,
@@ -28,6 +40,7 @@ export function HandCards({
   disabled = false,
   showName = true,
   showDescription = true,
+  isFanned = true,
 }: HandCardsProps) {
   const selected = useMemo(() => new Set(selectedUids), [selectedUids]);
   const countsById = useMemo(() => {
@@ -40,35 +53,61 @@ export function HandCards({
     <XStack
       data-testid="hand-cards"
       flex={1}
-      flexWrap="wrap"
+      flexWrap="nowrap"
+      alignItems="flex-end"
+      justifyContent="center"
       gap="$2"
-      padding="$2"
-      // On mobile the parent is a column with no fixed height — `flex: 1`
-      // inside a column collapses to 0px, hiding the cards entirely.
-      // Force an intrinsic height + horizontal scroll instead.
+      // paddingTop reserves clearance for the selected-card lift
+      // (translateY: -8 / hover -10) so the lifted edge doesn't clip
+      // the arena above. paddingBottom keeps the scroll-track shadow
+      // from getting cropped.
+      paddingTop={16}
+      paddingBottom={12}
+      paddingHorizontal="$2"
+      width="100%"
+      // Single horizontally scrolling row — never wraps to a second row.
+      style={{
+        overflowX: 'auto',
+        overflowY: 'visible',
+        WebkitMaskImage: EDGE_FADE_MASK,
+        maskImage: EDGE_FADE_MASK,
+      }}
       $sm={{
         flex: 0,
         flexBasis: 'auto',
-        flexWrap: 'nowrap',
-        overflowX: 'scroll',
-        overflowY: 'hidden',
         width: '100%',
-        minHeight: 230,
+        minHeight: 200,
+        justifyContent: 'flex-start',
       }}
     >
-      {cards.map((card) => (
-        <HandCard
-          key={card.uid}
-          card={card}
-          isSelected={selected.has(card.uid)}
-          disabled={disabled}
-          cardVariant={cardVariant}
-          count={countsById.get(card.id)}
-          showName={showName}
-          showDescription={showDescription}
-          onToggle={() => onToggleSelect(card.uid)}
-        />
-      ))}
+      {cards.map((card, i) => {
+        const fan = isFanned ? getFanTransform(i, cards.length) : null;
+        // Apply the fan via a wrapping div instead of HandCard's
+        // transform prop — HandCard already uses transform for the
+        // selected-state lift, so we keep the two concerns separated.
+        const fanStyle = fan
+          ? {
+              transform: `rotate(${fan.angle}deg) translateY(${fan.offsetY}px)`,
+              transformOrigin: 'bottom center',
+              display: 'inline-flex',
+              flexShrink: 0,
+            }
+          : { display: 'inline-flex', flexShrink: 0 };
+        return (
+          <div key={card.uid} style={fanStyle}>
+            <HandCard
+              card={card}
+              isSelected={selected.has(card.uid)}
+              disabled={disabled}
+              cardVariant={cardVariant}
+              count={countsById.get(card.id)}
+              showName={showName}
+              showDescription={showDescription}
+              onToggle={() => onToggleSelect(card.uid)}
+            />
+          </div>
+        );
+      })}
     </XStack>
   );
 }

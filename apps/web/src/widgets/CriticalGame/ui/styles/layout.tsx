@@ -116,6 +116,31 @@ export const TableArea = styled(BaseTableArea, {
   } as const,
 });
 
+/**
+ * Widget-mode grid: 3-row stack (opponents · arena · hand) with a max
+ * width and explicit gutters. Replaces the legacy `GameBoard` wrapper
+ * for `MatchWidget` so the rows don't span full bleed and the hand
+ * stays clear of the screen edges on wide monitors.
+ *
+ * `paddingBottom` on `$sm` reserves room for the sticky `MobileHandBar`
+ * which is portaled to body and thus outside this grid's flow.
+ */
+export const MatchWidgetGrid = styled(YStack, {
+  name: 'MatchWidgetGrid',
+  width: '100%',
+  maxWidth: 1240,
+  marginHorizontal: 'auto',
+  paddingHorizontal: '$3',
+  paddingVertical: '$3',
+  gap: '$3',
+
+  $sm: {
+    paddingHorizontal: '$2',
+    gap: '$2',
+    paddingBottom: 120,
+  },
+});
+
 export const HandSection = styled(YStack, {
   name: 'HandSection',
   gap: '$4',

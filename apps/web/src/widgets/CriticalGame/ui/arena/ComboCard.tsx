@@ -67,6 +67,16 @@ export function ComboCard({
       shadowColor={KIND_GLOW[kind]}
       shadowOpacity={kind === 'none' ? 0 : 1}
       shadowRadius={12}
+      shadowOffset={{ width: 0, height: 0 }}
+      // tamagui's RN-style shadow props translate inconsistently to web
+      // box-shadow; a filter-based drop-shadow guarantees the glow paints
+      // in every browser. `none` kind keeps the filter off so the card
+      // renders flat in the default state.
+      style={
+        kind === 'none'
+          ? undefined
+          : { filter: `drop-shadow(0 0 12px ${KIND_GLOW[kind]})` }
+      }
     >
       <Text
         data-testid="combo-card-label"

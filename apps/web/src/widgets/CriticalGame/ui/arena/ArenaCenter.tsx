@@ -53,7 +53,7 @@ export function ArenaCenter({
     <YStack
       data-testid="arena-center"
       flex={1}
-      minHeight={120}
+      minHeight={180}
       alignItems="center"
       justifyContent="center"
       gap="$2"
@@ -63,7 +63,7 @@ export function ArenaCenter({
       <YStack
         data-testid="arena-flash-slot"
         position="absolute"
-        top={-8}
+        top={8}
         left={0}
         right={0}
         alignItems="center"

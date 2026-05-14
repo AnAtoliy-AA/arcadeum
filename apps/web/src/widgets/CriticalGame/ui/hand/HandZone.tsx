@@ -1,9 +1,10 @@
 'use client';
 
-import { XStack, YStack, useMedia } from 'tamagui';
+import { XStack, YStack } from 'tamagui';
 import { HandCards } from './HandCards';
 import { HandRail } from './HandRail';
 import { MobileHandBar } from './MobileHandBar';
+import { useNarrowViewport } from '../../lib/useNarrowViewport';
 import type { HandCardInstance, ComboKind } from '../../lib/combo';
 
 interface HandZoneProps {
@@ -36,8 +37,10 @@ interface HandZoneProps {
  * 64` on `$sm` so cards aren't hidden behind the bar.
  */
 export function HandZone(props: HandZoneProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
+  // Tamagui's `sm` (≤800px) fires on tablet portrait where the desktop
+  // rail still has plenty of room. Use a strict ≤480px check so the
+  // sticky bar only takes over on phones, matching the preview spec.
+  const isMobile = useNarrowViewport(480);
 
   if (isMobile) {
     return (
@@ -48,7 +51,6 @@ export function HandZone(props: HandZoneProps) {
         gap="$2"
         paddingHorizontal="$2"
         paddingTop="$2"
-        paddingBottom={120}
       >
         <HandCards
           cards={props.cards}
@@ -57,6 +59,7 @@ export function HandZone(props: HandZoneProps) {
           cardVariant={props.cardVariant}
           showName={props.showCardName}
           showDescription={props.showCardDescription}
+          isFanned={false}
         />
         <MobileHandBar
           handCount={props.cards.length}

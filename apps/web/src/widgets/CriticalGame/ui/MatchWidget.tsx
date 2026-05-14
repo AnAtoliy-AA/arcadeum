@@ -9,7 +9,7 @@ import {
   type ComponentProps,
 } from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
-import { GameBoard, TableArea } from './styles/layout';
+import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
@@ -274,7 +274,7 @@ export function MatchWidget({
 
   return (
     <div data-testid="match-widget">
-      <GameBoard>
+      <MatchWidgetGrid data-testid="match-widget-grid">
         <OpponentsRow
           opponents={opponents}
           currentTurnPlayerId={turnPlayerId}
@@ -284,25 +284,23 @@ export function MatchWidget({
           }
           resolveDisplayName={tileResolveName}
         />
-        <TableArea>
-          <Arena
-            deck={snapshot.deck}
-            discardPile={snapshot.discardPile}
-            cardVariant={cardVariant}
-            isMyTurn={isMyTurn}
-            isGameOver={isGameOver}
-            onDrawAndEnd={handleDrawAndEnd}
-            hand={hand}
-            allowActionCardCombos={allowActionCardCombos}
-            combo={combo}
-            currentPlayerName={currentPlayerName}
-            pendingDraws={snapshot.pendingDraws}
-            logs={snapshot.logs ?? []}
-            formatLogMessage={formatLogMessage}
-            serverOverloadOdds={snapshot.overloadOdds}
-            hiddenCount={snapshot.hiddenCount}
-          />
-        </TableArea>
+        <Arena
+          deck={snapshot.deck}
+          discardPile={snapshot.discardPile}
+          cardVariant={cardVariant}
+          isMyTurn={isMyTurn}
+          isGameOver={isGameOver}
+          onDrawAndEnd={handleDrawAndEnd}
+          hand={hand}
+          allowActionCardCombos={allowActionCardCombos}
+          combo={combo}
+          currentPlayerName={currentPlayerName}
+          pendingDraws={snapshot.pendingDraws}
+          logs={snapshot.logs ?? []}
+          formatLogMessage={formatLogMessage}
+          serverOverloadOdds={snapshot.overloadOdds}
+          hiddenCount={snapshot.hiddenCount}
+        />
 
         {showHand && (
           <HandZone
@@ -327,7 +325,7 @@ export function MatchWidget({
             onToggleCardDescription={handleToggleCardDescription}
           />
         )}
-      </GameBoard>
+      </MatchWidgetGrid>
       <RulesModal
         isOpen={rulesOpen}
         onClose={handleCloseRules}

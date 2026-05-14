@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScenePalette } from './ScenePaletteContext';
+import { useNarrowViewport } from '../lib/useNarrowViewport';
 
 interface TurnBannerProps {
   isMyTurn: boolean;
@@ -40,6 +41,7 @@ export function TurnBanner({
 }: TurnBannerProps) {
   const palette = useScenePalette();
   const { t } = useTranslation();
+  const isNarrow = useNarrowViewport(480);
 
   const label = isMyTurn
     ? t('games.table.players.yourMove')
@@ -55,13 +57,17 @@ export function TurnBanner({
         : t('games.table.hud.extraTurnsPlural', { count: extra })
       : null;
 
+  // On narrow phones the dot+label+chip+timer row blows past the
+  // viewport. Stack vertically so each element gets its own line and the
+  // player-name truncates instead of pushing the timer off-screen.
   const shellStyle: CSSProperties = {
     position: 'relative',
     display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
+    flexDirection: isNarrow ? 'column' : 'row',
+    alignItems: isNarrow ? 'stretch' : 'center',
+    gap: isNarrow ? 4 : 10,
     padding: '8px 16px',
-    borderRadius: 9999,
+    borderRadius: isNarrow ? 14 : 9999,
     background: 'rgba(0, 0, 0, 0.45)',
     color: '#ffffff',
     fontWeight: 700,
@@ -71,6 +77,16 @@ export function TurnBanner({
     boxShadow: palette.turnBannerShadow,
     overflow: 'hidden',
     isolation: 'isolate',
+    maxWidth: '100%',
+  };
+
+  const headerRowStyle: CSSProperties = {
+    position: 'relative',
+    zIndex: 1,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
   };
 
   // Gradient border rendered via ::before-equivalent overlay using mask-composite
@@ -104,6 +120,11 @@ export function TurnBanner({
     position: 'relative',
     zIndex: 1,
     textTransform: 'uppercase',
+    minWidth: 0,
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   };
 
   const timerStyle: CSSProperties = {
@@ -111,7 +132,8 @@ export function TurnBanner({
     zIndex: 1,
     fontVariantNumeric: 'tabular-nums',
     opacity: 0.85,
-    marginLeft: 4,
+    marginLeft: isNarrow ? 0 : 4,
+    alignSelf: isNarrow ? 'flex-end' : 'auto',
   };
 
   return (
@@ -119,29 +141,33 @@ export function TurnBanner({
       <style dangerouslySetInnerHTML={{ __html: PULSE_KEYFRAMES_CSS }} />
       <div data-testid="turn-banner" style={shellStyle}>
         <span aria-hidden style={borderOverlayStyle} />
-        <span data-testid="turn-banner-dot" style={dotStyle} />
-        <span style={labelStyle}>{label}</span>
-        {extraLabel && (
-          <span
-            data-testid="turn-banner-extra"
-            style={{
-              position: 'relative',
-              zIndex: 1,
-              padding: '2px 8px',
-              borderRadius: 9999,
-              background: 'rgba(245, 158, 11, 0.18)',
-              color: '#fbbf24',
-              border: '1px solid rgba(245, 158, 11, 0.45)',
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: 0.4,
-              textTransform: 'uppercase',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
-            {extraLabel}
-          </span>
-        )}
+        <div style={headerRowStyle}>
+          <span data-testid="turn-banner-dot" style={dotStyle} />
+          <span style={labelStyle}>{label}</span>
+          {extraLabel && (
+            <span
+              data-testid="turn-banner-extra"
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                padding: '2px 8px',
+                borderRadius: 9999,
+                background: 'rgba(245, 158, 11, 0.18)',
+                color: '#fbbf24',
+                border: '1px solid rgba(245, 158, 11, 0.45)',
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: 0.4,
+                textTransform: 'uppercase',
+                fontVariantNumeric: 'tabular-nums',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {extraLabel}
+            </span>
+          )}
+        </div>
         <span style={timerStyle}>{timer}</span>
       </div>
     </>

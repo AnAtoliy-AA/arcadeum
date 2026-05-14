@@ -137,11 +137,8 @@ vi.mock('./RulesModal', () => ({
 }));
 
 vi.mock('./styles/layout', () => ({
-  GameBoard: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="game-board-stub">{children}</div>
-  ),
-  TableArea: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="table-area-stub">{children}</div>
+  MatchWidgetGrid: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="match-widget-grid-stub">{children}</div>
   ),
 }));
 

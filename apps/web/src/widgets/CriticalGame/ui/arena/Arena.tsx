@@ -115,9 +115,21 @@ export function Arena({
       data-layout="desktop"
       width="100%"
       alignItems="center"
-      justifyContent="space-between"
-      gap="$4"
-      paddingHorizontal="$3"
+      gap="$5"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
+      borderRadius={18}
+      borderWidth={1}
+      borderColor="rgba(255,255,255,0.06)"
+      backgroundColor="rgba(8,12,20,0.55)"
+      // overflow: hidden keeps hover glows on the piles inside the
+      // rounded border and stops the FlashBanner overlay leaking out.
+      overflow="hidden"
+      $sm={{
+        gap: '$2',
+        paddingHorizontal: '$2',
+        paddingVertical: '$2',
+      }}
     >
       {drawPile}
       {arenaCenter}

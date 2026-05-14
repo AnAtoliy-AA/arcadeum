@@ -4,7 +4,7 @@ import { XStack, YStack } from 'tamagui';
 import { HandCards } from './HandCards';
 import { HandRail } from './HandRail';
 import { MobileHandBar } from './MobileHandBar';
-import { useNarrowViewport } from '../../lib/useNarrowViewport';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
 import type { HandCardInstance, ComboKind } from '../../lib/combo';
 
 interface HandZoneProps {
@@ -38,9 +38,10 @@ interface HandZoneProps {
  */
 export function HandZone(props: HandZoneProps) {
   // Tamagui's `sm` (≤800px) fires on tablet portrait where the desktop
-  // rail still has plenty of room. Use a strict ≤480px check so the
-  // sticky bar only takes over on phones, matching the preview spec.
-  const isMobile = useNarrowViewport(480);
+  // rail still has plenty of room. Read the ≤480px value broadcast by
+  // `NarrowViewportProvider` at the widget root so HandZone, Arena, and
+  // OpponentsRow commit the same flip on the same React frame.
+  const isMobile = useIsNarrow(480);
 
   if (isMobile) {
     return (

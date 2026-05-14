@@ -22,6 +22,7 @@ import {
   type ComboKind,
 } from '../lib/combo';
 import { getCardTranslationKey } from '../lib/cardUtils';
+import { NarrowViewportProvider } from '../lib/useNarrowViewport';
 import type { CriticalCard } from '../types';
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
@@ -129,9 +130,14 @@ export function MatchWidget({
    * cascading-renders pattern the rule guards against.
    */
   useEffect(() => {
-    if (validSelectedUids.length !== selectedUids.length) {
-      setSelectedUids(validSelectedUids);
-    }
+    // Length-only check missed the same-length-different-uids case: when
+    // Nope clears the played card but a fresh draw lands on the same
+    // index and reuses the uid, the array length stays the same but the
+    // identities shift. Element-wise comparison catches that.
+    const drifted =
+      validSelectedUids.length !== selectedUids.length ||
+      validSelectedUids.some((uid, i) => uid !== selectedUids[i]);
+    if (drifted) setSelectedUids(validSelectedUids);
   }, [validSelectedUids, selectedUids]);
 
   const prevIsMyTurn = useRef(isMyTurn);
@@ -274,58 +280,60 @@ export function MatchWidget({
 
   return (
     <div data-testid="match-widget">
-      <MatchWidgetGrid data-testid="match-widget-grid">
-        <OpponentsRow
-          opponents={opponents}
-          currentTurnPlayerId={turnPlayerId}
-          targetPlayerId={targetPlayerId}
-          onSelectTarget={
-            isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
-          }
-          resolveDisplayName={tileResolveName}
-        />
-        <Arena
-          deck={snapshot.deck}
-          discardPile={snapshot.discardPile}
-          cardVariant={cardVariant}
-          isMyTurn={isMyTurn}
-          isGameOver={isGameOver}
-          onDrawAndEnd={handleDrawAndEnd}
-          hand={hand}
-          allowActionCardCombos={allowActionCardCombos}
-          combo={combo}
-          currentPlayerName={currentPlayerName}
-          pendingDraws={snapshot.pendingDraws}
-          logs={snapshot.logs ?? []}
-          formatLogMessage={formatLogMessage}
-          serverOverloadOdds={snapshot.overloadOdds}
-          hiddenCount={snapshot.hiddenCount}
-        />
-
-        {showHand && (
-          <HandZone
-            cards={handCards}
-            selectedUids={validSelectedUids}
-            onToggleSelect={handleToggleSelect}
-            combo={combo}
-            defuseCount={defuseCount}
-            canPlay={canPlay}
-            canDraw={isMyTurn && !isGameOver}
-            canNope={canPlayNope}
-            cardVariant={cardVariant}
-            isFullscreen={isFullscreen}
-            showCardName={showCardName}
-            showCardDescription={showCardDescription}
-            onPlay={handlePlay}
-            onDraw={handleDrawAndEnd}
-            onNope={actions.playNope}
-            onOpenRules={handleOpenRules}
-            onToggleFullscreen={toggleFullscreen}
-            onToggleCardName={handleToggleCardName}
-            onToggleCardDescription={handleToggleCardDescription}
+      <NarrowViewportProvider maxWidth={480}>
+        <MatchWidgetGrid data-testid="match-widget-grid">
+          <OpponentsRow
+            opponents={opponents}
+            currentTurnPlayerId={turnPlayerId}
+            targetPlayerId={targetPlayerId}
+            onSelectTarget={
+              isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
+            }
+            resolveDisplayName={tileResolveName}
           />
-        )}
-      </MatchWidgetGrid>
+          <Arena
+            deck={snapshot.deck}
+            discardPile={snapshot.discardPile}
+            cardVariant={cardVariant}
+            isMyTurn={isMyTurn}
+            isGameOver={isGameOver}
+            onDrawAndEnd={handleDrawAndEnd}
+            hand={hand}
+            allowActionCardCombos={allowActionCardCombos}
+            combo={combo}
+            currentPlayerName={currentPlayerName}
+            pendingDraws={snapshot.pendingDraws}
+            logs={snapshot.logs ?? []}
+            formatLogMessage={formatLogMessage}
+            serverOverloadOdds={snapshot.overloadOdds}
+            hiddenCount={snapshot.hiddenCount}
+          />
+
+          {showHand && (
+            <HandZone
+              cards={handCards}
+              selectedUids={validSelectedUids}
+              onToggleSelect={handleToggleSelect}
+              combo={combo}
+              defuseCount={defuseCount}
+              canPlay={canPlay}
+              canDraw={isMyTurn && !isGameOver}
+              canNope={canPlayNope}
+              cardVariant={cardVariant}
+              isFullscreen={isFullscreen}
+              showCardName={showCardName}
+              showCardDescription={showCardDescription}
+              onPlay={handlePlay}
+              onDraw={handleDrawAndEnd}
+              onNope={actions.playNope}
+              onOpenRules={handleOpenRules}
+              onToggleFullscreen={toggleFullscreen}
+              onToggleCardName={handleToggleCardName}
+              onToggleCardDescription={handleToggleCardDescription}
+            />
+          )}
+        </MatchWidgetGrid>
+      </NarrowViewportProvider>
       <RulesModal
         isOpen={rulesOpen}
         onClose={handleCloseRules}

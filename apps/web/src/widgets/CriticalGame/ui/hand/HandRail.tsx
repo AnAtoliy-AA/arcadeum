@@ -42,6 +42,23 @@ const NEUTRAL_BG_HOVER = 'rgba(255, 255, 255, 0.12)';
 const NEUTRAL_BORDER = 'rgba(255, 255, 255, 0.10)';
 const NOPE_COLOR = '#f59e0b';
 
+// Defuse-card pill shape lookup. Hoisted so the literal object isn't
+// rebuilt on every render — that re-allocation prevented tamagui from
+// memoizing the style hash, so the rendered class changed across renders
+// even when nothing visual moved.
+const DEFUSE_VARIANT = {
+  low: {
+    bg: 'rgba(239,68,68,0.10)',
+    border: 'rgba(239,68,68,0.45)',
+    color: '#ef4444',
+  },
+  ok: {
+    bg: NEUTRAL_BG,
+    border: NEUTRAL_BORDER,
+    color: ACCENT,
+  },
+} as const;
+
 interface RailSectionProps {
   children: React.ReactNode;
 }
@@ -86,12 +103,16 @@ export function HandRail({
   const { t } = useTranslation();
   const hasCardToggles = !!(onToggleCardName || onToggleCardDescription);
   const hasChrome = !!(onOpenRules || onToggleFullscreen);
-  const lowDefuse = defuseCount === 0;
+  const defuseVariant =
+    defuseCount === 0 ? DEFUSE_VARIANT.low : DEFUSE_VARIANT.ok;
 
   return (
     <YStack
       data-testid="hand-rail"
-      width={128}
+      // 144 (up from 128) so the Play button label can fit "Play 3× …"
+      // on two lines without mid-word ellipsis. The hand track still has
+      // ample room — 144px is ≤6% of the 1240px max-width grid.
+      width={144}
       gap="$2"
       paddingHorizontal="$2"
       paddingVertical="$2.5"
@@ -136,15 +157,15 @@ export function HandRail({
           paddingVertical={8}
           paddingHorizontal={6}
           borderRadius={10}
-          backgroundColor={lowDefuse ? 'rgba(239,68,68,0.10)' : NEUTRAL_BG}
+          backgroundColor={defuseVariant.bg}
           borderWidth={1}
-          borderColor={lowDefuse ? 'rgba(239,68,68,0.45)' : NEUTRAL_BORDER}
+          borderColor={defuseVariant.border}
         >
           <Text
             fontSize={18}
             fontWeight="800"
             letterSpacing={0.5}
-            color={lowDefuse ? '#ef4444' : ACCENT}
+            color={defuseVariant.color}
           >
             🛡 {defuseCount}
           </Text>
@@ -163,32 +184,41 @@ export function HandRail({
 
       {/* Primary actions */}
       <YStack gap="$1.5">
-        <Button
-          data-testid="hand-rail-play"
-          data-combo-kind={combo.kind}
-          size="$3"
-          height={48}
-          borderRadius={12}
-          paddingHorizontal={4}
-          disabled={!canPlay}
-          opacity={canPlay ? 1 : 0.45}
-          backgroundColor={canPlay ? ACCENT : NEUTRAL_BG}
-          hoverStyle={canPlay ? { backgroundColor: '#22c55e' } : undefined}
-          pressStyle={canPlay ? { scale: 0.98 } : undefined}
-          onPress={canPlay ? onPlay : undefined}
-        >
-          <Text
-            fontSize={12}
-            fontWeight="900"
-            letterSpacing={0.3}
-            textTransform="uppercase"
-            color={canPlay ? '#062317' : 'rgba(255,255,255,0.5)'}
-            numberOfLines={2}
-            textAlign="center"
+        {/* Native tooltip carries the full combo label so the user can
+            hover-confirm what 'Play 3× Targeted…' truncates to. The
+            arena's ComboCard is the canonical surface for the verbose
+            label — the rail is the action surface. Wrapper div is the
+            only place we can attach `title` since tamagui's Button
+            doesn't forward HTML title through. */}
+        <div title={combo.label}>
+          <Button
+            data-testid="hand-rail-play"
+            data-combo-kind={combo.kind}
+            size="$3"
+            height={48}
+            width="100%"
+            borderRadius={12}
+            paddingHorizontal={6}
+            disabled={!canPlay}
+            opacity={canPlay ? 1 : 0.45}
+            backgroundColor={canPlay ? ACCENT : NEUTRAL_BG}
+            hoverStyle={canPlay ? { backgroundColor: '#22c55e' } : undefined}
+            pressStyle={canPlay ? { scale: 0.98 } : undefined}
+            onPress={canPlay ? onPlay : undefined}
           >
-            {combo.label}
-          </Text>
-        </Button>
+            <Text
+              fontSize={12}
+              fontWeight="900"
+              letterSpacing={0.3}
+              textTransform="uppercase"
+              color={canPlay ? '#062317' : 'rgba(255,255,255,0.5)'}
+              numberOfLines={2}
+              textAlign="center"
+            >
+              {combo.label}
+            </Text>
+          </Button>
+        </div>
         <Button
           data-testid="hand-rail-draw"
           size="$2"

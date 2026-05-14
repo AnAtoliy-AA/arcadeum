@@ -51,6 +51,8 @@ export interface AuthUserProfile {
   equippedAvatarId?: string | null;
   /** Currently-equipped badge item id, or null. */
   equippedBadgeId?: string | null;
+  /** Currently-equipped name-color item id, or null. */
+  equippedNameColorId?: string | null;
 }
 
 /**

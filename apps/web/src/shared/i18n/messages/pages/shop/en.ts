@@ -82,6 +82,14 @@ export const shopEn = {
       champion: { name: 'Champion', desc: 'A proven champion.' },
       legend: { name: 'Legend', desc: 'A legendary player.' },
     },
+    name_color: {
+      slate: { name: 'Slate', desc: 'A calm, cool gray.' },
+      emerald: { name: 'Emerald', desc: 'A fresh emerald green.' },
+      cyan: { name: 'Cyan', desc: 'An electric cyan.' },
+      violet: { name: 'Violet', desc: 'A vivid violet.' },
+      sunset: { name: 'Sunset', desc: 'A warm sunset gradient.' },
+      aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
+    },
   },
 };
 

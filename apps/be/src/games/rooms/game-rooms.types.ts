@@ -8,6 +8,7 @@ export interface GameRoomMemberSummary {
   isHost: boolean;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 }
 
 export interface GameRoomSummary {

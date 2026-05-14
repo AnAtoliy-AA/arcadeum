@@ -109,6 +109,7 @@ export class ChatHelperService {
       {
         equippedAvatarId: string | null;
         equippedBadgeId: string | null;
+        equippedNameColorId: string | null;
       }
     >();
 
@@ -126,6 +127,7 @@ export class ChatHelperService {
               'displayName',
               'equippedAvatarId',
               'equippedBadgeId',
+              'equippedNameColorId',
             ])
             .exec()) as UserDocument[])
         : [];
@@ -146,6 +148,7 @@ export class ChatHelperService {
         equippedLookup.set(id, {
           equippedAvatarId: user.equippedAvatarId ?? null,
           equippedBadgeId: user.equippedBadgeId ?? null,
+          equippedNameColorId: user.equippedNameColorId ?? null,
         });
       }
     }
@@ -171,6 +174,7 @@ export class ChatHelperService {
           message.senderUsername ?? usernameLookup.get(senderId) ?? senderId,
         senderEquippedAvatarId: equipped?.equippedAvatarId ?? null,
         senderEquippedBadgeId: equipped?.equippedBadgeId ?? null,
+        senderEquippedNameColorId: equipped?.equippedNameColorId ?? null,
         receiverIds: Array.isArray(message.receiverIds)
           ? message.receiverIds.map((id): string =>
               typeof id === 'string'

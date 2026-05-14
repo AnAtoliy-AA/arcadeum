@@ -12,6 +12,12 @@ export interface ShopItemCardProps {
   name: string;
   rarity: ShopRarity;
   assetUrl: string;
+  /**
+   * Optional CSS color (hex or linear-gradient) for `name_color` items —
+   * rendered as a colored preview swatch in place of the image. Other
+   * categories should leave this unset and pass an asset URL instead.
+   */
+  colorValue?: string | null;
   priceAmount: number;
   priceCurrency: ShopItemCardPriceCurrency;
   owned?: boolean;
@@ -131,6 +137,7 @@ export const ShopItemCard = memo(function ShopItemCard({
   name,
   rarity,
   assetUrl,
+  colorValue,
   priceAmount,
   priceCurrency,
   owned,
@@ -154,22 +161,61 @@ export const ShopItemCard = memo(function ShopItemCard({
         data-testid={`shop-item-card-${itemId}`}
       >
         <PreviewSlot>
-          <img
-            src={assetUrl}
-            alt={name}
-            data-testid={`shop-item-image-${itemId}`}
-            style={{
-              width: '70%',
-              height: '70%',
-              objectFit: 'contain',
-              filter: equipped
-                ? 'drop-shadow(0 0 8px rgba(16,185,129,0.6))'
-                : undefined,
-            }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          {colorValue ? (
+            // Name-color items render the equippable color directly. The big
+            // sample text doubles as a legibility check — gradients that look
+            // great in the player's lobby may wash out at the chip level.
+            <div
+              data-testid={`shop-item-color-${itemId}`}
+              style={{
+                width: '70%',
+                height: '70%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 28,
+                fontWeight: 800,
+                letterSpacing: 1,
+                backgroundImage: colorValue.startsWith('linear-gradient')
+                  ? colorValue
+                  : undefined,
+                color: colorValue.startsWith('linear-gradient')
+                  ? 'transparent'
+                  : colorValue,
+                WebkitBackgroundClip: colorValue.startsWith('linear-gradient')
+                  ? 'text'
+                  : undefined,
+                backgroundClip: colorValue.startsWith('linear-gradient')
+                  ? 'text'
+                  : undefined,
+                WebkitTextFillColor: colorValue.startsWith('linear-gradient')
+                  ? 'transparent'
+                  : undefined,
+                filter: equipped
+                  ? 'drop-shadow(0 0 8px rgba(16,185,129,0.6))'
+                  : undefined,
+              }}
+            >
+              Aa
+            </div>
+          ) : (
+            <img
+              src={assetUrl}
+              alt={name}
+              data-testid={`shop-item-image-${itemId}`}
+              style={{
+                width: '70%',
+                height: '70%',
+                objectFit: 'contain',
+                filter: equipped
+                  ? 'drop-shadow(0 0 8px rgba(16,185,129,0.6))'
+                  : undefined,
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          )}
           <RarityBadge rarity={rarity}>{rarity}</RarityBadge>
         </PreviewSlot>
 

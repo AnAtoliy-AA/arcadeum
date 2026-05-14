@@ -36,6 +36,7 @@ interface LeanUser {
   gems?: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 }
 
 interface InventoryRowSnapshot {
@@ -129,9 +130,9 @@ export class ShopService {
       );
       inventoryRow = created[0] as unknown as InventoryRowSnapshot;
 
-      // 3. Equip slot for avatar / badge categories. name_color / game_skin
-      // are valid in the schema but not surfaced in v1 — equipKeyFor returns
-      // null for them, and we just skip the auto-equip in that case.
+      // 3. Equip slot for any equippable category (avatar, badge,
+      // name_color). game_skin remains schema-only — equipKeyFor returns
+      // null, and we just skip the auto-equip in that case.
       const equipKey = equipKeyFor(effective.category);
       if (equipKey) {
         const updated = await this.userModel
@@ -141,7 +142,11 @@ export class ShopService {
             {
               session,
               new: true,
-              projection: { equippedAvatarId: 1, equippedBadgeId: 1 },
+              projection: {
+                equippedAvatarId: 1,
+                equippedBadgeId: 1,
+                equippedNameColorId: 1,
+              },
             },
           )
           .lean<LeanUser | null>();
@@ -185,7 +190,11 @@ export class ShopService {
       const equipKey = equipKeyFor(def.category);
       if (equipKey) {
         const user = await this.userModel
-          .findById(userId, { equippedAvatarId: 1, equippedBadgeId: 1 })
+          .findById(userId, {
+            equippedAvatarId: 1,
+            equippedBadgeId: 1,
+            equippedNameColorId: 1,
+          })
           .lean<LeanUser | null>();
         if (!user) throw new NotFoundException('users.notFound');
         if (user[equipKey] === row.itemId) {
@@ -394,7 +403,11 @@ export class ShopService {
     const user = await this.userModel
       .findById(
         userId,
-        { equippedAvatarId: 1, equippedBadgeId: 1 },
+        {
+          equippedAvatarId: 1,
+          equippedBadgeId: 1,
+          equippedNameColorId: 1,
+        },
         { session },
       )
       .lean<LeanUser | null>();
@@ -405,7 +418,7 @@ export class ShopService {
     return {
       avatar: user?.equippedAvatarId ?? null,
       badge: user?.equippedBadgeId ?? null,
-      name_color: null,
+      name_color: user?.equippedNameColorId ?? null,
       game_skin: null,
     };
   }

@@ -14,12 +14,14 @@ import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
 export interface ResolvedEquipped {
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
+  equippedNameColorId?: string | null;
 }
 
 export type EquippedResolver = (id?: string | null) => ResolvedEquipped | null;
@@ -265,14 +267,20 @@ function GameChatRow({
   resolveEquipped?: EquippedResolver;
 }) {
   const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
-  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
     equippedAvatarId: resolved?.equippedAvatarId,
     equippedBadgeId: resolved?.equippedBadgeId,
+    equippedNameColorId: resolved?.equippedNameColorId,
   });
+  // Shop name-color overrides the per-match actor color when present —
+  // cosmetic personal choice wins over contextual game coloring.
+  const nameProps = nameColorRenderProps(nameColor);
+  const resolvedSenderColor = nameProps.color ?? senderColor;
   return (
     <ChatMessage
       senderName={senderName}
-      senderColor={senderColor}
+      senderColor={resolvedSenderColor}
+      senderNameStyle={nameProps.style}
       targetName={targetName}
       targetColor={targetColor}
       content={content}

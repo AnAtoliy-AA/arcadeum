@@ -23,6 +23,7 @@ import {
 import { useChatStore } from '@/features/chat/store/chatStore';
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { formatSafeTime } from '@/shared/lib/date';
 import { ScrollView } from 'tamagui';
 
@@ -229,15 +230,20 @@ function ChatMessageRow({
   isOwn: boolean;
   isEncrypted: boolean;
 }) {
-  const { avatarUrl } = useEquippedCosmetics({
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
     equippedAvatarId: msg.senderEquippedAvatarId,
     equippedBadgeId: msg.senderEquippedBadgeId,
+    equippedNameColorId: msg.senderEquippedNameColorId,
   });
+  const nameProps = nameColorRenderProps(nameColor);
   return (
     <ChatMessage
       content={msg.content || ''}
       senderName={msg.senderUsername}
+      senderColor={nameProps.color}
+      senderNameStyle={nameProps.style}
       avatarUrl={avatarUrl ?? undefined}
+      badgeUrl={badgeUrl ?? undefined}
       timestamp={formatSafeTime(msg.timestamp)}
       isOwn={isOwn}
       isEncrypted={isEncrypted}

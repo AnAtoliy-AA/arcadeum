@@ -7,6 +7,7 @@ interface ChatMessagePopupProps {
   senderName: string;
   senderEquippedAvatarId?: string | null;
   senderEquippedBadgeId?: string | null;
+  senderEquippedNameColorId?: string | null;
   message: string;
   visible: boolean;
   onDismiss: () => void;
@@ -18,6 +19,7 @@ export function ChatMessagePopup({
   senderName,
   senderEquippedAvatarId,
   senderEquippedBadgeId,
+  senderEquippedNameColorId,
   message,
   visible,
   onDismiss,
@@ -52,6 +54,7 @@ export function ChatMessagePopup({
         senderName={senderName}
         senderEquippedAvatarId={senderEquippedAvatarId ?? null}
         senderEquippedBadgeId={senderEquippedBadgeId ?? null}
+        senderEquippedNameColorId={senderEquippedNameColorId ?? null}
         message={message}
         type="message"
         isOwn={isOwn}

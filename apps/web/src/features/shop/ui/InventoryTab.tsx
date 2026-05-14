@@ -116,6 +116,7 @@ export function InventoryTab({
                 }
                 rarity={item.rarity}
                 assetUrl={item.assetUrl}
+                colorValue={item.colorValue ?? null}
                 priceAmount={row.paidAmount ?? item.priceAmount}
                 priceCurrency={row.paidCurrency ?? item.priceCurrency}
                 owned

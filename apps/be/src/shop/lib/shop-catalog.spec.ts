@@ -37,8 +37,15 @@ describe('SHOP_CATALOG', () => {
     }
   });
 
-  it('every assetUrl points under /shop/', () => {
+  it('every image-backed item has an assetUrl under /shop/', () => {
+    // name_color items render a CSS swatch from colorValue and intentionally
+    // have an empty assetUrl. Every other category must point to a static
+    // asset under /shop/.
     for (const item of Object.values(SHOP_CATALOG)) {
+      if (item.category === 'name_color') {
+        expect(item.colorValue).toBeTruthy();
+        continue;
+      }
       expect(item.assetUrl.startsWith('/shop/')).toBe(true);
     }
   });

@@ -13,6 +13,7 @@ import {
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import {
   emitAddBotToTeam,
   emitAssignTeam,
@@ -28,6 +29,7 @@ export interface TeamSlotsMember {
   avatarUrl?: string;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 }
 
 interface TeamSlotsBoardProps {
@@ -346,14 +348,21 @@ function TeamMemberIdentity({
   showBotBadge: boolean;
   botLabel: string;
 }) {
-  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
     equippedAvatarId: member?.equippedAvatarId,
     equippedBadgeId: member?.equippedBadgeId,
+    equippedNameColorId: member?.equippedNameColorId,
   });
+  const nameProps = nameColorRenderProps(nameColor);
   return (
     <XStack gap="$2" alignItems="center" flex={1}>
       <Avatar size="sm" name={display} src={avatarUrl ?? undefined} />
-      <Typography variant="body" uiSize="sm">
+      <Typography
+        variant="body"
+        uiSize="sm"
+        {...(nameProps.color ? { color: nameProps.color } : {})}
+        {...(nameProps.style ? { style: nameProps.style } : {})}
+      >
         {display}
       </Typography>
       {badgeUrl ? (

@@ -9,6 +9,14 @@ export interface EquippedCosmetics {
   avatarItem: EffectiveShopItem | null;
   badgeUrl: string | null;
   badgeItem: EffectiveShopItem | null;
+  /**
+   * Resolved CSS color for the equipped name color (hex or linear-gradient).
+   * Apply as `color={nameColor}` on plain hex, or as a `background` clip-text
+   * style on gradients — see `applyNameColor` in the name-color helper for
+   * the canonical render strategy.
+   */
+  nameColor: string | null;
+  nameColorItem: EffectiveShopItem | null;
 }
 
 const EMPTY_MAP: ReadonlyMap<string, EffectiveShopItem> = new Map();
@@ -25,8 +33,9 @@ const EMPTY_MAP: ReadonlyMap<string, EffectiveShopItem> = new Map();
 export function useEquippedCosmetics(args: {
   equippedAvatarId: string | null | undefined;
   equippedBadgeId: string | null | undefined;
+  equippedNameColorId?: string | null | undefined;
 }): EquippedCosmetics {
-  const { equippedAvatarId, equippedBadgeId } = args;
+  const { equippedAvatarId, equippedBadgeId, equippedNameColorId } = args;
   const [catalogMap, setCatalogMap] =
     useState<ReadonlyMap<string, EffectiveShopItem>>(EMPTY_MAP);
 
@@ -48,11 +57,16 @@ export function useEquippedCosmetics(args: {
     const badge = equippedBadgeId
       ? (catalogMap.get(equippedBadgeId) ?? null)
       : null;
+    const nameColor = equippedNameColorId
+      ? (catalogMap.get(equippedNameColorId) ?? null)
+      : null;
     return {
       avatarItem: avatar,
       avatarUrl: avatar?.assetUrl ?? null,
       badgeItem: badge,
       badgeUrl: badge?.assetUrl ?? null,
+      nameColorItem: nameColor,
+      nameColor: nameColor?.colorValue ?? null,
     };
-  }, [equippedAvatarId, equippedBadgeId, catalogMap]);
+  }, [equippedAvatarId, equippedBadgeId, equippedNameColorId, catalogMap]);
 }

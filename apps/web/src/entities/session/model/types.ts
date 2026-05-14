@@ -29,6 +29,7 @@ export type SessionTokensSnapshot = {
   role: UserRole | null;
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
+  equippedNameColorId: string | null;
 };
 
 export type SetSessionTokensInput = {
@@ -45,6 +46,7 @@ export type SetSessionTokensInput = {
   role?: UserRole | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type LocalAuthMode = 'login' | 'register';

@@ -22,6 +22,12 @@ export interface ShopItemDef {
   nameKey: string;
   descKey: string;
   assetUrl: string;
+  /**
+   * Category-specific value. For `name_color` items it carries a CSS color
+   * string (hex or linear-gradient) applied to the player's name across the
+   * site; unused for other categories.
+   */
+  colorValue?: string | null;
   defaultPriceAmount: number;
   defaultPriceCurrency: ShopPriceCurrency;
   starter?: boolean;
@@ -46,10 +52,14 @@ export function isShopPriceCurrency(value: string): value is ShopPriceCurrency {
   return (SHOP_PRICE_CURRENCIES as readonly string[]).includes(value);
 }
 
-export function equipKeyFor(
-  category: ShopCategory,
-): 'equippedAvatarId' | 'equippedBadgeId' | null {
+export type EquipKey =
+  | 'equippedAvatarId'
+  | 'equippedBadgeId'
+  | 'equippedNameColorId';
+
+export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'avatar') return 'equippedAvatarId';
   if (category === 'badge') return 'equippedBadgeId';
+  if (category === 'name_color') return 'equippedNameColorId';
   return null;
 }

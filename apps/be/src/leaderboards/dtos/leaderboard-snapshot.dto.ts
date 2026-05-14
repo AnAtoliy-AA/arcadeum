@@ -31,6 +31,7 @@ export type LeaderboardPlayerDto = {
    */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type MythicPlayerDto = LeaderboardPlayerDto & {
@@ -97,6 +98,7 @@ export type PlayerProfileDto = {
   /** Currently equipped cosmetics. Resolved client-side via the shop catalog. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type LeaderboardSnapshotDto = {

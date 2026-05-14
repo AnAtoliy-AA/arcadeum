@@ -224,16 +224,23 @@ export class LeaderboardsService {
     // fallback in <Avatar />.
     let equippedAvatarId: string | null = null;
     let equippedBadgeId: string | null = null;
+    let equippedNameColorId: string | null = null;
     if (Types.ObjectId.isValid(userId)) {
       const userDoc = await this.userModel
-        .findById(userId, { equippedAvatarId: 1, equippedBadgeId: 1 })
+        .findById(userId, {
+          equippedAvatarId: 1,
+          equippedBadgeId: 1,
+          equippedNameColorId: 1,
+        })
         .lean<{
           equippedAvatarId?: string | null;
           equippedBadgeId?: string | null;
+          equippedNameColorId?: string | null;
         } | null>();
       if (userDoc) {
         equippedAvatarId = userDoc.equippedAvatarId ?? null;
         equippedBadgeId = userDoc.equippedBadgeId ?? null;
+        equippedNameColorId = userDoc.equippedNameColorId ?? null;
       }
     }
 
@@ -243,6 +250,7 @@ export class LeaderboardsService {
       squad,
       equippedAvatarId,
       equippedBadgeId,
+      equippedNameColorId,
     };
   }
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.42] - 2026-05-14
+
+### Added
+- persist hand-card toggles to localStorage §4.6 (ARC-673) (ARC-673)
+
+
 ## [1.13.41] - 2026-05-14
 
 ### Fixed

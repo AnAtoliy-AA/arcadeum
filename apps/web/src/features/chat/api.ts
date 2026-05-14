@@ -22,6 +22,10 @@ export interface ChatMessage {
   chatId: string;
   senderId: string;
   senderUsername: string;
+  /** Sender's currently-equipped shop avatar id (resolved client-side). */
+  senderEquippedAvatarId?: string | null;
+  /** Sender's currently-equipped shop badge id (resolved client-side). */
+  senderEquippedBadgeId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

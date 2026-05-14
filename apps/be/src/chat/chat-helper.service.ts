@@ -92,25 +92,41 @@ export class ChatHelperService {
     const plainMessages = messageDocs.map((doc) =>
       doc.toObject<MessageDocumentObject>(),
     );
-    const missingSenderIds = new Set<string>();
 
+    // Collect every distinct sender id. We need a User lookup either way to
+    // resolve the sender's current equipped cosmetics — older messages may
+    // have a cached senderUsername but we still want the live equipped state
+    // (matches the "show current avatar/badge" UX in other chat apps). One
+    // batched query covers both username fallback and equipped resolution.
+    const senderIds = new Set<string>();
     for (const message of plainMessages) {
-      if (!message.senderUsername && message.senderId) {
-        missingSenderIds.add(message.senderId.toString());
-      }
+      if (message.senderId) senderIds.add(message.senderId.toString());
     }
 
     const usernameLookup = new Map<string, string>();
+    const equippedLookup = new Map<
+      string,
+      {
+        equippedAvatarId: string | null;
+        equippedBadgeId: string | null;
+      }
+    >();
 
-    if (missingSenderIds.size) {
-      const validIds = Array.from(missingSenderIds).filter((id) =>
+    if (senderIds.size) {
+      const validIds = Array.from(senderIds).filter((id) =>
         Types.ObjectId.isValid(id),
       );
 
       const users = validIds.length
         ? ((await this.userModel
             .find({ _id: { $in: validIds } })
-            .select(['username', 'email', 'displayName'])
+            .select([
+              'username',
+              'email',
+              'displayName',
+              'equippedAvatarId',
+              'equippedBadgeId',
+            ])
             .exec()) as UserDocument[])
         : [];
 
@@ -127,6 +143,10 @@ export class ChatHelperService {
           id,
         );
         usernameLookup.set(id, displayName);
+        equippedLookup.set(id, {
+          equippedAvatarId: user.equippedAvatarId ?? null,
+          equippedBadgeId: user.equippedBadgeId ?? null,
+        });
       }
     }
 
@@ -137,6 +157,7 @@ export class ChatHelperService {
         message.timestamp instanceof Date
           ? message.timestamp
           : new Date(message.timestamp);
+      const equipped = equippedLookup.get(senderId);
 
       return {
         id:
@@ -148,6 +169,8 @@ export class ChatHelperService {
         senderId,
         senderUsername:
           message.senderUsername ?? usernameLookup.get(senderId) ?? senderId,
+        senderEquippedAvatarId: equipped?.equippedAvatarId ?? null,
+        senderEquippedBadgeId: equipped?.equippedBadgeId ?? null,
         receiverIds: Array.isArray(message.receiverIds)
           ? message.receiverIds.map((id): string =>
               typeof id === 'string'

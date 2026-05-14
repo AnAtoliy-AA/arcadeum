@@ -16,6 +16,8 @@ export type ChatMessageProps = {
   timestamp?: string;
   isOwn?: boolean;
   avatarUrl?: string;
+  /** Sender's equipped shop badge URL — rendered inline next to the name. */
+  badgeUrl?: string;
   isEncrypted?: boolean;
   type?: 'system' | 'action' | 'message';
 };
@@ -124,6 +126,7 @@ export const ChatMessage = memo(function ChatMessage({
   timestamp,
   isOwn = false,
   avatarUrl,
+  badgeUrl,
   isEncrypted,
   type = 'message',
 }: ChatMessageProps) {
@@ -147,10 +150,30 @@ export const ChatMessage = memo(function ChatMessage({
           >
             {senderName}
           </Typography>
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
         </XStack>
       )}
       {isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
           <Typography
             uiSize="xs"
             weight="600"

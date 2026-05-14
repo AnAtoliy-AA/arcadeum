@@ -97,6 +97,9 @@ export type PlayerProfile = {
     rating: number;
   }>;
   squad?: Squad;
+  /** Equipped cosmetic ids from the shop; resolved via the catalog map. */
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 };
 
 export type LeaderboardSnapshot = {

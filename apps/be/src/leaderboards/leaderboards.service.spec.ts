@@ -7,6 +7,7 @@ import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
+import { User } from '../auth/schemas/user.schema';
 import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 
 function makeQuery<T>(result: T) {
@@ -48,6 +49,7 @@ describe('LeaderboardsService', () => {
   let cupModel: Record<string, jest.Mock>;
   let squadModel: Record<string, jest.Mock>;
   let tickerModel: Record<string, jest.Mock>;
+  let userModel: Record<string, jest.Mock>;
   let historyStats: { getLeaderboard: jest.Mock };
   let module: TestingModule;
 
@@ -56,6 +58,13 @@ describe('LeaderboardsService', () => {
     cupModel = { findOne: jest.fn() };
     squadModel = { find: jest.fn(), findOne: jest.fn() };
     tickerModel = { find: jest.fn() };
+    // findById returns null for the bot-id test fixtures; getPlayer falls
+    // back to null equipped IDs. Real-user cases set this explicitly.
+    userModel = {
+      findById: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue(null),
+      }),
+    };
     historyStats = {
       getLeaderboard: jest.fn().mockResolvedValue(realBoard),
     };
@@ -70,6 +79,7 @@ describe('LeaderboardsService', () => {
         { provide: getModelToken(Cup.name), useValue: cupModel },
         { provide: getModelToken(Squad.name), useValue: squadModel },
         { provide: getModelToken(TickerEvent.name), useValue: tickerModel },
+        { provide: getModelToken(User.name), useValue: userModel },
         {
           provide: LeaderboardsGateway,
           useValue: { emitCaptured: jest.fn(), emitEntryUpdated: jest.fn() },

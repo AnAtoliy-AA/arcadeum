@@ -88,6 +88,9 @@ export type PlayerProfileDto = {
     rating: number;
   }>;
   squad?: SquadDto;
+  /** Currently equipped cosmetics. Resolved client-side via the shop catalog. */
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 };
 
 export type LeaderboardSnapshotDto = {

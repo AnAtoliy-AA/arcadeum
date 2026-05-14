@@ -12,6 +12,7 @@ import {
   YStack,
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import {
   emitAddBotToTeam,
   emitAssignTeam,
@@ -25,6 +26,8 @@ export interface TeamSlotsMember {
   userId: string;
   displayName?: string;
   avatarUrl?: string;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 }
 
 interface TeamSlotsBoardProps {
@@ -196,6 +199,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                 const display = memberDisplayName(id, members, botLabel);
                 const isViewer = id === userId;
                 const memberIsBot = isBot(id);
+                const member = members.find((m) => m.userId === id);
 
                 return (
                   <XStack
@@ -205,17 +209,12 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                     justifyContent="space-between"
                     data-testid={`team-slot-${team.id}-${id}`}
                   >
-                    <XStack gap="$2" alignItems="center" flex={1}>
-                      <Avatar size="sm" name={display} />
-                      <Typography variant="body" uiSize="sm">
-                        {display}
-                      </Typography>
-                      {memberIsBot && (
-                        <Badge variant="neutral" size="sm">
-                          {botLabel}
-                        </Badge>
-                      )}
-                    </XStack>
+                    <TeamMemberIdentity
+                      member={member}
+                      display={display}
+                      showBotBadge={memberIsBot}
+                      botLabel={botLabel}
+                    />
 
                     {isHost && memberIsBot && (
                       <Button
@@ -332,6 +331,46 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
           </Card>
         );
       })}
+    </XStack>
+  );
+}
+
+function TeamMemberIdentity({
+  member,
+  display,
+  showBotBadge,
+  botLabel,
+}: {
+  member: TeamSlotsMember | undefined;
+  display: string;
+  showBotBadge: boolean;
+  botLabel: string;
+}) {
+  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+    equippedAvatarId: member?.equippedAvatarId,
+    equippedBadgeId: member?.equippedBadgeId,
+  });
+  return (
+    <XStack gap="$2" alignItems="center" flex={1}>
+      <Avatar size="sm" name={display} src={avatarUrl ?? undefined} />
+      <Typography variant="body" uiSize="sm">
+        {display}
+      </Typography>
+      {badgeUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={badgeUrl}
+          alt=""
+          width={16}
+          height={16}
+          style={{ objectFit: 'contain' }}
+        />
+      ) : null}
+      {showBotBadge ? (
+        <Badge variant="neutral" size="sm">
+          {botLabel}
+        </Badge>
+      ) : null}
     </XStack>
   );
 }

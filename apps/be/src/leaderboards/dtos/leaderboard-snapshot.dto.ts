@@ -25,6 +25,12 @@ export type LeaderboardPlayerDto = {
   isFriend?: boolean;
   isInMatch?: boolean;
   gameTags?: string[];
+  /**
+   * Cosmetic ids the player has currently equipped. Resolved client-side via
+   * the shop catalog. Null for bot rows and players who haven't equipped.
+   */
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 };
 
 export type MythicPlayerDto = LeaderboardPlayerDto & {

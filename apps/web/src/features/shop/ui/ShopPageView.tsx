@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react';
 import Image from 'next/image';
-import { YStack, XStack } from '@arcadeum/ui';
+import Link from 'next/link';
+import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text, YStack as Stack, styled } from 'tamagui';
 import { useShopFiltersStore } from '../store/shopFiltersStore';
 import { ShopSidebar, type ShopSidebarLabels } from './ShopSidebar';
@@ -14,10 +15,17 @@ import type {
   WalletBalanceView,
 } from '../server/shop.types';
 
+export interface ShopSignInLabels {
+  title: string;
+  body: string;
+  cta: string;
+}
+
 export interface ShopPageLabels {
   title: string;
   subtitle: string;
   equipped?: string;
+  signIn?: ShopSignInLabels;
   sidebar: ShopSidebarLabels;
   grid: ShopGridLabels;
   inventory: InventoryTabLabels;
@@ -28,6 +36,7 @@ export interface ShopPageViewProps {
   inventory: InventoryView;
   balance: WalletBalanceView;
   gemToCoinRate: number;
+  isAuthenticated?: boolean;
   labels: ShopPageLabels;
 }
 
@@ -70,6 +79,7 @@ export function ShopPageView({
   inventory,
   balance,
   gemToCoinRate,
+  isAuthenticated = true,
   labels,
 }: ShopPageViewProps) {
   const tab = useShopFiltersStore((s) => s.tab);
@@ -171,6 +181,33 @@ export function ShopPageView({
           </BalanceChip>
         </XStack>
       </XStack>
+
+      {!isAuthenticated && labels.signIn ? (
+        <Stack
+          flexDirection="column"
+          gap={6}
+          padding="$4"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="rgba(96,165,250,0.35)"
+          backgroundColor="rgba(59,130,246,0.08)"
+          data-testid="shop-signin-banner"
+        >
+          <Text fontSize="$5" fontWeight="700">
+            {labels.signIn.title}
+          </Text>
+          <Text fontSize="$3" color="$gray11">
+            {labels.signIn.body}
+          </Text>
+          <XStack>
+            <Link href="/auth">
+              <Button variant="primary" data-testid="shop-signin-cta">
+                {labels.signIn.cta}
+              </Button>
+            </Link>
+          </XStack>
+        </Stack>
+      ) : null}
 
       <XStack
         gap="$4"

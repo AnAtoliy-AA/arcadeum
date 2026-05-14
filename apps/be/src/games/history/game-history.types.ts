@@ -70,4 +70,6 @@ export interface LeaderboardEntry {
   wins: number;
   losses: number;
   winRate: number;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 }

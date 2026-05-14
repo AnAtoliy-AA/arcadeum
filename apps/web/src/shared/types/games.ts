@@ -4,6 +4,8 @@ export interface GameRoomMemberSummary {
   username?: string | null;
   email?: string | null;
   isHost: boolean;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
 }
 
 // Game Options Interface

@@ -57,6 +57,7 @@ export default async function ShopPage() {
       inventory={inventory}
       balance={balance}
       gemToCoinRate={gemToCoinRate}
+      isAuthenticated={Boolean(accessToken)}
       labels={labels}
     />
   );

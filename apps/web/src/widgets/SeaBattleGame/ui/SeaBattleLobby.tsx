@@ -105,10 +105,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const teamMode = !!teamOpts.teamMode;
   // Memoized so the `?? []` fallback doesn't return a fresh array reference
   // each render and bust downstream useMemo deps.
-  const teams = React.useMemo(
-    () => teamOpts.teams ?? [],
-    [teamOpts.teams],
-  );
+  const teams = React.useMemo(() => teamOpts.teams ?? [], [teamOpts.teams]);
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
 
   // In team mode, the lobby cap is the sum of team target sizes (up to 8).
@@ -147,6 +144,8 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const roomMembers = (room.members ?? []).map((m) => ({
     userId: m.id,
     displayName: m.displayName,
+    equippedAvatarId: m.equippedAvatarId ?? null,
+    equippedBadgeId: m.equippedBadgeId ?? null,
   }));
 
   // Sync with room variant when it changes from server

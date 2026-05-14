@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.40] - 2026-05-14
+
+### Fixed
+- widget parity follow-ups §1.3–1.8 + §2.1 + §2.3–2.6 (ARC-671) (ARC-671)
+- land §1.1 + §1.2 from PR #658 design review (ARC-570) (ARC-570)
+
+
 ## [1.13.39] - 2026-05-14
 
 ### Added

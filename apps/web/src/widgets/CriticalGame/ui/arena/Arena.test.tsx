@@ -110,4 +110,13 @@ describe('Arena', () => {
     expect(arena.querySelector('[data-area="center"]')).not.toBeNull();
     expect(arena.querySelector('[data-area="discard"]')).not.toBeNull();
   });
+
+  it('renders the top discard card description as an overlay', () => {
+    // Played card on the discard pile carries the same description hand
+    // cards do — name alone lost context for action cards like Hack /
+    // Targeted Strike. Mocked `t` echoes the i18n key.
+    renderArena({ discardPile: ['strike'] as CriticalCard[] });
+    const scrim = screen.getByTestId('arena-discard-pile-description');
+    expect(scrim.textContent).toMatch(/strike/);
+  });
 });

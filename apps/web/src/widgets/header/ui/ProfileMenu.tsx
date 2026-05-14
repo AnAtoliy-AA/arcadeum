@@ -40,10 +40,11 @@ export default function ProfileMenu() {
     snapshot.displayName || snapshot.username || snapshot.email;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
-  const { avatarUrl: equippedAvatarUrl } = useEquippedCosmetics({
-    equippedAvatarId: snapshot.equippedAvatarId,
-    equippedBadgeId: snapshot.equippedBadgeId,
-  });
+  const { avatarUrl: equippedAvatarUrl, badgeUrl: equippedBadgeUrl } =
+    useEquippedCosmetics({
+      equippedAvatarId: snapshot.equippedAvatarId,
+      equippedBadgeId: snapshot.equippedBadgeId,
+    });
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -110,6 +111,20 @@ export default function ProfileMenu() {
         <UserNameEllipsis data-testid="header-username">
           {displayName}
         </UserNameEllipsis>
+        {equippedBadgeUrl ? (
+          // Shop badges store asset URLs — render directly. The @arcadeum/ui
+          // CosmeticBadge primitive below is a badgeId→emoji lookup used for
+          // referral/role badges, not for shop badge assets.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={equippedBadgeUrl}
+            alt=""
+            width={20}
+            height={20}
+            data-testid="header-equipped-badge"
+            style={{ objectFit: 'contain' }}
+          />
+        ) : null}
         {role !== 'free' && (
           <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
         )}

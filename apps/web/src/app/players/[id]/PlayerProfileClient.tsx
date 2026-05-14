@@ -10,12 +10,14 @@ import {
   FormPips,
   EnergyBar,
   EmptyState,
+  Avatar,
 } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import type { PlayerProfile } from '@/entities/leaderboard/model/types';
 import { getPlayer } from '@/shared/api/leaderboard';
 import { useQuery } from '@/shared/hooks/useQuery';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 
 export default function PlayerProfileClient({
   id,
@@ -87,8 +89,13 @@ function Profile({
   eyebrow: string;
   placeholder: string;
 }) {
-  const { player, modeRanks, squad } = profile;
+  const { player, modeRanks, squad, equippedAvatarId, equippedBadgeId } =
+    profile;
   const max = modeRanks[0]?.rating ?? player.rating;
+  const { avatarUrl, badgeUrl } = useEquippedCosmetics({
+    equippedAvatarId,
+    equippedBadgeId,
+  });
   return (
     <YStack gap="$4" width="100%">
       <Text
@@ -100,13 +107,43 @@ function Profile({
         {eyebrow}
       </Text>
       <XStack alignItems="center" gap="$3" flexWrap="wrap">
-        <Text fontSize="$9" fontWeight="800" letterSpacing={-0.5}>
-          {player.name}
-        </Text>
-        <RankBadge tier={player.tier as never}>{`#${player.rank}`}</RankBadge>
-        {player.streak && player.streak >= 3 ? (
-          <Text fontSize="$3">🔥 {player.streak}</Text>
-        ) : null}
+        <Avatar
+          name={player.name}
+          src={avatarUrl ?? undefined}
+          size="xl"
+          data-testid="player-profile-avatar"
+        />
+        <YStack gap="$1">
+          <XStack alignItems="center" gap="$2" flexWrap="wrap">
+            <Text fontSize="$9" fontWeight="800" letterSpacing={-0.5}>
+              {player.name}
+            </Text>
+            {badgeUrl ? (
+              <View width={32} height={32} data-testid="player-profile-badge">
+                {/* Plain img — shop badges store asset URLs, not the badgeId
+                    lookup the @arcadeum/ui CosmeticBadge expects. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={badgeUrl}
+                  alt=""
+                  style={{
+                    width: 32,
+                    height: 32,
+                    objectFit: 'contain',
+                  }}
+                />
+              </View>
+            ) : null}
+          </XStack>
+          <XStack alignItems="center" gap="$2">
+            <RankBadge
+              tier={player.tier as never}
+            >{`#${player.rank}`}</RankBadge>
+            {player.streak && player.streak >= 3 ? (
+              <Text fontSize="$3">🔥 {player.streak}</Text>
+            ) : null}
+          </XStack>
+        </YStack>
       </XStack>
       <XStack gap="$3" flexWrap="wrap">
         <Stat label="Rating" value={player.rating.toLocaleString()} />

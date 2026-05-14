@@ -13,6 +13,7 @@ import {
 import { Cup, CupSchema } from './schemas/cup.schema';
 import { Squad, SquadSchema } from './schemas/squad.schema';
 import { TickerEvent, TickerEventSchema } from './schemas/ticker-event.schema';
+import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 import { GamesModule } from '../games/games.module';
 
@@ -23,6 +24,7 @@ import { GamesModule } from '../games/games.module';
       { name: Cup.name, schema: CupSchema },
       { name: Squad.name, schema: SquadSchema },
       { name: TickerEvent.name, schema: TickerEventSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     AuthModule,
     forwardRef(() => GamesModule),

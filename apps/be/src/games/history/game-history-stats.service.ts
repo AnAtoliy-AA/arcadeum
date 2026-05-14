@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -154,12 +154,20 @@ export class GameHistoryStatsService {
     const paginatedEntries = allEntries.slice(offset, offset + limit);
     const hasMore = offset + limit < total;
 
-    // 4. Fetch usernames
-    const userIds = paginatedEntries.map((e) => e.playerId);
-    const users = await this.userModel
-      .find({ _id: { $in: userIds } })
-      .select('username')
-      .exec();
+    // 4. Fetch usernames. Filter out non-ObjectId playerIds (bot rows use
+    // `bot-XXXXXX` synthetic ids and would crash the Mongoose ObjectId cast
+    // inside $in). Bot rows just won't have a User doc — the leaderboard
+    // builder downstream falls back to the entry's own username string.
+    const userIds = paginatedEntries
+      .map((e) => e.playerId)
+      .filter((id) => Types.ObjectId.isValid(id));
+    const users =
+      userIds.length > 0
+        ? await this.userModel
+            .find({ _id: { $in: userIds } })
+            .select('username')
+            .exec()
+        : [];
 
     const userMap = new Map(users.map((u) => [u._id.toString(), u.username]));
 

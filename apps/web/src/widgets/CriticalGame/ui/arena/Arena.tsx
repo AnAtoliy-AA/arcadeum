@@ -23,6 +23,8 @@ interface ArenaProps {
   pendingDraws: number;
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /** Resolves a log entry's senderId for the FlashHistory actor column. */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
   /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
   /** Cards the snapshot has hidden — folded into client-fallback odds. */
@@ -48,6 +50,7 @@ export function Arena({
   pendingDraws,
   logs,
   formatLogMessage,
+  resolveDisplayName,
   serverOverloadOdds,
   hiddenCount,
 }: ArenaProps) {
@@ -101,6 +104,7 @@ export function Arena({
         deck={deck}
         logs={logs}
         formatLogMessage={formatLogMessage}
+        resolveDisplayName={resolveDisplayName}
         serverOverloadOdds={serverOverloadOdds}
         hiddenCount={hiddenCount}
         isNarrow={isNarrow}

@@ -28,6 +28,11 @@ interface ArenaCenterProps {
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
   /**
+   * Resolves a log entry's `senderId` to its display name for the
+   * `FlashHistory` actor column. Passes through from `MatchWidget`.
+   */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
+  /**
    * Phones: drop `minHeight` so the centre column doesn't burn 180px
    * of vertical real estate when content is just a turn pill. Passed
    * from `Arena` so the layout decision lives in one place.
@@ -55,6 +60,7 @@ export function ArenaCenter({
   hiddenCount,
   logs,
   formatLogMessage,
+  resolveDisplayName,
   isNarrow = false,
 }: ArenaCenterProps) {
   return (
@@ -100,8 +106,13 @@ export function ArenaCenter({
       {/* §4.7 — last-5 timeline strip beneath the threat strip. The
           single-shot FlashBanner clears in 1.6s; this surfaces a
           short history so players who were watching their hand can
-          still see what just happened. */}
-      <FlashHistory logs={logs} formatMessage={formatLogMessage} />
+          still see what just happened. Each row carries the actor
+          name so it's obvious who did what. */}
+      <FlashHistory
+        logs={logs}
+        formatMessage={formatLogMessage}
+        resolveDisplayName={resolveDisplayName}
+      />
     </YStack>
   );
 }

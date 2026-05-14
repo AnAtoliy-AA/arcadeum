@@ -378,6 +378,7 @@ export function MatchWidget({
             pendingDraws={snapshot.pendingDraws}
             logs={snapshot.logs ?? []}
             formatLogMessage={formatLogMessage}
+            resolveDisplayName={tileResolveName}
             serverOverloadOdds={snapshot.overloadOdds}
             hiddenCount={snapshot.hiddenCount}
           />

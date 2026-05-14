@@ -6,6 +6,13 @@ import type { CriticalLogEntry } from '../types';
 interface FlashHistoryProps {
   logs: CriticalLogEntry[];
   formatMessage: (message?: string | null) => string;
+  /**
+   * Resolves a `senderId` to its display name. Same signature
+   * `OpponentsRow` uses — passes through from `MatchWidget`. Optional
+   * because system entries have no sender; when missing we fall back to
+   * the log entry's own `senderName` field.
+   */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
   /** Max rows to keep in the strip. Defaults to 5 (the spec from §4.7). */
   limit?: number;
 }
@@ -23,6 +30,7 @@ interface FlashHistoryProps {
 export function FlashHistory({
   logs,
   formatMessage,
+  resolveDisplayName,
   limit = 5,
 }: FlashHistoryProps) {
   const entries = logs
@@ -67,6 +75,15 @@ export function FlashHistory({
     textAlign: 'right',
   };
 
+  const actorStyle: CSSProperties = {
+    flexShrink: 0,
+    maxWidth: 96,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    color: 'rgba(226,232,240,0.95)',
+    fontWeight: 700,
+  };
+
   const textStyle: CSSProperties = {
     flex: 1,
     minWidth: 0,
@@ -85,14 +102,25 @@ export function FlashHistory({
       {entries.map((entry) => {
         const text = formatMessage(entry.message).trim();
         if (!text) return null;
+        const actor = resolveActor(entry, resolveDisplayName);
         return (
           <div
             key={entry.id}
             data-testid="flash-history-row"
             data-entry-id={entry.id}
+            data-actor={actor || undefined}
             style={rowStyle}
           >
             <span style={timeStyle}>{formatTimestamp(entry.createdAt)}</span>
+            {actor && (
+              <span
+                data-testid="flash-history-actor"
+                style={actorStyle}
+                title={actor}
+              >
+                {actor}
+              </span>
+            )}
             <span style={textStyle} title={text}>
               {text}
             </span>
@@ -101,6 +129,24 @@ export function FlashHistory({
       })}
     </div>
   );
+}
+
+/**
+ * Resolve the visible actor name for a row. Prefers the resolver
+ * (so renamed players display their fresh name), falls back to the
+ * `senderName` snapshot the log entry was tagged with at write time,
+ * and finally to empty when neither is available (system entries with
+ * no actor).
+ */
+function resolveActor(
+  entry: CriticalLogEntry,
+  resolveDisplayName?: (playerId: string, fallback: string) => string,
+): string {
+  if (entry.senderId && resolveDisplayName) {
+    const resolved = resolveDisplayName(entry.senderId, entry.senderName ?? '');
+    if (resolved) return resolved;
+  }
+  return entry.senderName ?? '';
 }
 
 /**

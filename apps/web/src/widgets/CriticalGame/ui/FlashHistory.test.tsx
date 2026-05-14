@@ -62,4 +62,61 @@ describe('FlashHistory', () => {
     render(<FlashHistory logs={logs} formatMessage={echo} limit={2} />);
     expect(screen.getAllByTestId('flash-history-row')).toHaveLength(2);
   });
+
+  it('prefixes each row with the actor name resolved from senderId', () => {
+    render(
+      <FlashHistory
+        logs={[
+          makeEntry({
+            id: 'a',
+            senderId: 'p1',
+            senderName: 'Alice (stale)',
+            message: 'Drew a card',
+          }),
+        ]}
+        formatMessage={echo}
+        // Resolver wins over the stale snapshot in senderName so renamed
+        // players display their current name.
+        resolveDisplayName={(id) => (id === 'p1' ? 'Alice' : '')}
+      />,
+    );
+    const row = screen.getByTestId('flash-history-row');
+    const actor = screen.getByTestId('flash-history-actor');
+    expect(actor).toHaveTextContent('Alice');
+    expect(row).toHaveAttribute('data-actor', 'Alice');
+    expect(row.textContent).toContain('Drew a card');
+  });
+
+  it('falls back to senderName when no resolver is provided', () => {
+    render(
+      <FlashHistory
+        logs={[
+          makeEntry({
+            id: 'a',
+            senderId: 'p1',
+            senderName: 'Bob',
+            message: 'Played a strike',
+          }),
+        ]}
+        formatMessage={echo}
+      />,
+    );
+    expect(screen.getByTestId('flash-history-actor')).toHaveTextContent('Bob');
+  });
+
+  it('omits the actor column when neither senderId nor senderName is present', () => {
+    render(
+      <FlashHistory
+        logs={[
+          makeEntry({
+            id: 'a',
+            type: 'system',
+            message: 'Game started',
+          }),
+        ]}
+        formatMessage={echo}
+      />,
+    );
+    expect(screen.queryByTestId('flash-history-actor')).not.toBeInTheDocument();
+  });
 });

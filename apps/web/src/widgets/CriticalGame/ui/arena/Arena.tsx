@@ -5,7 +5,7 @@ import type { CriticalCard, CriticalLogEntry } from '../../types';
 import { DrawPile } from './DrawPile';
 import { DiscardPile } from './DiscardPile';
 import { ArenaCenter } from './ArenaCenter';
-import { useNarrowViewport } from '../../lib/useNarrowViewport';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
 import type { ComboKind } from './ComboCard';
 
 interface ArenaProps {
@@ -54,7 +54,10 @@ export function Arena({
   // Phones get smaller piles so the three-column row still fits at
   // 390px; the layout otherwise stays identical so the threat strip,
   // combo card, and FlashBanner don't fall down 200px below the piles.
-  const isNarrow = useNarrowViewport(480);
+  // `useIsNarrow` reads the value broadcast by `NarrowViewportProvider`
+  // at the widget root so Arena / HandZone / OpponentsRow / TurnBanner
+  // all commit the same viewport flip on the same React frame.
+  const isNarrow = useIsNarrow(480);
 
   return (
     <XStack

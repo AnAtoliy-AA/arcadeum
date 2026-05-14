@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScenePalette } from './ScenePaletteContext';
-import { useNarrowViewport } from '../lib/useNarrowViewport';
+import { useIsNarrow } from '../lib/useNarrowViewport';
 
 interface TurnBannerProps {
   isMyTurn: boolean;
@@ -34,7 +34,7 @@ export function TurnBanner({
 }: TurnBannerProps) {
   const palette = useScenePalette();
   const { t } = useTranslation();
-  const isNarrow = useNarrowViewport(480);
+  const isNarrow = useIsNarrow(480);
 
   const label = isMyTurn
     ? t('games.table.players.yourMove')

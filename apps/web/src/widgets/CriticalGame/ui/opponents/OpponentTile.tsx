@@ -2,7 +2,6 @@
 
 import { YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
 import type { CriticalPlayerTableState } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
@@ -23,6 +22,19 @@ interface OpponentTileProps {
    * each tile fragmented the boundary across components.
    */
   isMobile?: boolean;
+  /**
+   * Computed avatar diameter from `OpponentsRow.getAvatarSize`. Scales
+   * with FFA opponent count so 5-up rows don't look avatar-dominated and
+   * 3-up rows don't look sparse. Optional — falls back to the legacy
+   * duel/non-duel branch if the parent forgot to thread it.
+   */
+  avatarSize?: number;
+  /**
+   * True when the player's id is in `gameStore.idlePlayers`. Lifted to
+   * `OpponentsRow` so the store subscription runs once instead of
+   * fan-out per tile (5 tiles × `.includes` scans on every state update).
+   */
+  isIdle?: boolean;
   /**
    * Click handler invoked when the tile is activated (mouse, touch, Enter,
    * or Space). Omitted when the tile isn't a valid attack target — e.g.
@@ -63,6 +75,8 @@ export function OpponentTile({
   isTarget = false,
   isDuel = false,
   isMobile = false,
+  avatarSize,
+  isIdle = false,
   onSelect,
   resolveDisplayName,
 }: OpponentTileProps) {
@@ -71,8 +85,6 @@ export function OpponentTile({
     player.playerId,
     `Player ${player.playerId.slice(0, 8)}`,
   );
-  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
-  const isIdle = idlePlayers.includes(player.playerId);
   const alive = player.alive;
 
   const playerColor = getPlayerColor(player.playerId);
@@ -85,10 +97,15 @@ export function OpponentTile({
   const ringStyle = !alive ? 'dashed' : 'solid';
   // Duel mode pushes the lone opponent to focal size; FFA tiles are
   // smaller because up to 5 share the row. Mobile knocks both down so
-  // they fit thumb-width.
-  let avatarSize: number;
-  if (isMobile) avatarSize = isDuel ? 64 : 36;
-  else avatarSize = isDuel ? 88 : 48;
+  // they fit thumb-width. Caller (OpponentsRow) scales by opponent count
+  // — fallback to the duel/non-duel branch for components rendered in
+  // isolation (tests / storybook).
+  const finalAvatarSize =
+    avatarSize ?? (isMobile ? (isDuel ? 64 : 36) : isDuel ? 88 : 48);
+  // Keep `playerColor` on the avatar border at low opacity when dead so
+  // the eliminated seat still reads as that player rather than a generic
+  // grey pill. `66` ≈ 40% alpha against the hex base.
+  const avatarBorderColor = alive ? playerColor : `${playerColor}66`;
   const interactive = alive && !!onSelect;
   const handleKeyDown = interactive
     ? (e: React.KeyboardEvent) => {
@@ -138,12 +155,12 @@ export function OpponentTile({
       style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
     >
       <YStack
-        width={avatarSize}
-        height={avatarSize}
+        width={finalAvatarSize}
+        height={finalAvatarSize}
         borderRadius={9999}
         backgroundColor="rgba(255,255,255,0.08)"
-        borderWidth={alive ? 2 : 0}
-        borderColor={alive ? playerColor : 'transparent'}
+        borderWidth={2}
+        borderColor={avatarBorderColor}
         alignItems="center"
         justifyContent="center"
       >

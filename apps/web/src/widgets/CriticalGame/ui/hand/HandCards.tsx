@@ -57,12 +57,13 @@ export function HandCards({
       alignItems="flex-end"
       justifyContent="center"
       gap="$2"
-      // paddingTop reserves clearance for the combined lift + fan
-      // bounding-box growth. The selected lift is -8 / hover -10, and
-      // `getFanTransform` adds quadratic offsetY up to ~7px at the
-      // edges; rotation grows the rotated rect further still. 24 covers
-      // both at a 7-card hand with selected lift on an outer card.
-      paddingTop={24}
+      // paddingTop reserves clearance for the lift + fan bounding-box
+      // growth. Fanned (desktop): -8 lift + ~7px quadratic offsetY +
+      // rotation growth → 24 covers it. Unfanned (mobile): no fan
+      // growth, only the lift + hairline cushion → 14 is enough. The
+      // extra 10px matters on phones where the sticky bar adds its own
+      // safe-area padding below.
+      paddingTop={isFanned ? 24 : 14}
       paddingBottom={12}
       paddingHorizontal="$2"
       width="100%"

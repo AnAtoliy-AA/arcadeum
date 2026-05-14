@@ -7,7 +7,7 @@ import {
   getCardDescriptionKey,
 } from '../../lib/cardUtils';
 import { getCardRole, type CardRole } from '../../lib/cardRoles';
-import { CardImage } from '../styles/card-image';
+import { CardImage, hasArtFor } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
 
 interface HandCardProps {
@@ -98,10 +98,12 @@ export function HandCard({
   const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
 
   // Fixed card silhouette (~3:4) regardless of which text rows show —
-  // text now overlays the art rather than pushing the cell taller. The
-  // selected state widens + grows the cell slightly so the lift reads.
-  const width = isSelected ? 132 : 124;
-  const height = isSelected ? 184 : 172;
+  // text overlays the art rather than pushing the cell taller. Cell
+  // dimensions stay constant across selection so the lift doesn't
+  // displace neighbouring cards in the fan; the translateY + border
+  // swap + glow are enough to read selection.
+  const width = 124;
+  const height = 172;
 
   return (
     <YStack
@@ -237,12 +239,13 @@ interface CardArtProps {
 }
 
 /**
- * Full-bleed art slot. Renders the variant's sprite if `CardImage` has
- * art for the card; otherwise falls back to a centered role glyph at
- * the silhouette's scale. The slot fills the whole cell so the name +
- * description overlay scrim sits cleanly on top of the artwork.
+ * Full-bleed art slot. Renders the variant's sprite when art is
+ * available for `(variant, cardId)`; otherwise the role-keyed fallback
+ * glyph. Never both — stacking them caused the glyph to bleed through
+ * the sprite as a centre smudge.
  */
 function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
+  const showArt = hasArtFor(cardVariant, cardId);
   return (
     <YStack
       data-testid={testId}
@@ -255,10 +258,13 @@ function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
       justifyContent="center"
       backgroundColor="rgba(0,0,0,0.45)"
     >
-      <Text fontSize={56} lineHeight={60} opacity={0.55}>
-        {ROLE_FALLBACK_GLYPH[role]}
-      </Text>
-      <CardImage variant={cardVariant ?? ''} cardType={cardId} />
+      {showArt ? (
+        <CardImage variant={cardVariant ?? ''} cardType={cardId} />
+      ) : (
+        <Text fontSize={56} lineHeight={60} opacity={0.55}>
+          {ROLE_FALLBACK_GLYPH[role]}
+        </Text>
+      )}
     </YStack>
   );
 }

@@ -40,16 +40,9 @@ const ROLE_BORDER: Record<CardRole, string> = {
   special: '#f472b6',
 };
 
-const ROLE_GLOW: Record<CardRole, string> = {
-  attack: 'rgba(239, 68, 68, 0.35)',
-  defuse: 'rgba(52, 211, 153, 0.35)',
-  skip: 'rgba(56, 189, 248, 0.35)',
-  nope: 'rgba(245, 158, 11, 0.35)',
-  favor: 'rgba(167, 139, 250, 0.35)',
-  see: 'rgba(34, 211, 238, 0.35)',
-  combo: 'rgba(250, 204, 21, 0.35)',
-  special: 'rgba(244, 114, 182, 0.40)',
-};
+// Glow colours are now CSS-attribute-keyed in `hudStyles.tsx` (§4.1) —
+// the ::after pseudo-element reads `data-role` and `data-selected` and
+// drives box-shadow + radius via custom properties. No JS payload.
 
 /**
  * Fallback glyph used when the active card variant has no sprite sheet
@@ -68,7 +61,6 @@ const ROLE_FALLBACK_GLYPH: Record<CardRole, string> = {
 };
 
 const SELECT_RING = '#34d399';
-const SELECT_GLOW = 'rgba(52, 211, 153, 0.55)';
 
 /**
  * Single-card cell for the widget-mode hand. Renders the variant's
@@ -95,7 +87,6 @@ export function HandCard({
   const name = t(getCardTranslationKey(card.id, cardVariant));
   const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
-  const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
   // Stable id so the outer button can `aria-describedby` the visible
   // description block. Screen readers otherwise stop at the aria-label
   // (card name) and never hear the rules text.
@@ -144,16 +135,15 @@ export function HandCard({
       transform={isSelected ? [{ translateY: -8 }] : undefined}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.7 : 1}
-      shadowColor={glow}
-      shadowRadius={isSelected ? 14 : 8}
-      shadowOpacity={1}
-      shadowOffset={{ width: 0, height: 0 }}
+      // Glow is driven by the `::after` rule in `hudStyles.tsx` keyed on
+      // `data-role` + `data-selected` (§4.1). No tamagui shadow props
+      // here so the glow doesn't double-paint and can animate via the
+      // compositor when selection toggles.
       hoverStyle={
         disabled
           ? undefined
           : {
               transform: [{ translateY: isSelected ? -10 : -4 }],
-              shadowRadius: isSelected ? 18 : 12,
             }
       }
       // Visible focus ring for keyboard users — the card is tabbable via

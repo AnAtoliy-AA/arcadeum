@@ -81,7 +81,7 @@ export function SellConfirmDialog({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="ghost" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onPress={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
@@ -89,7 +89,7 @@ export function SellConfirmDialog({
             disabled={isPending}
             data-testid="sell-confirm-button"
           >
-            {labels.sell}
+            {labels.sell.replace('{amount}', refundCoins.toLocaleString())}
           </Button>
         </XStack>
       </YStack>

@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import type {
   EquippedView,
@@ -54,6 +55,18 @@ function classifyError(status: number, body: string): ShopActionError {
   return 'generic';
 }
 
+/**
+ * Every shop mutation invalidates the /shop route + the root layout cache.
+ * /shop because that's where inventory + equipped state renders directly;
+ * the layout because the header BalanceChip + ProfileMenu avatar (Server-
+ * Component data) should also refresh. Pair with router.refresh() on the
+ * client to get an immediate visible update without a manual reload.
+ */
+function revalidateShopSurfaces(): void {
+  revalidatePath('/shop');
+  revalidatePath('/', 'layout');
+}
+
 export async function purchaseItemAction(
   itemId: string,
   purchaseId: string,
@@ -65,7 +78,9 @@ export async function purchaseItemAction(
   if (!res.ok) {
     return { ok: false, error: classifyError(res.status, await res.text()) };
   }
-  return { ok: true, data: (await res.json()) as PurchaseResult };
+  const data = (await res.json()) as PurchaseResult;
+  revalidateShopSurfaces();
+  return { ok: true, data };
 }
 
 export async function sellItemAction(
@@ -78,12 +93,16 @@ export async function sellItemAction(
   if (!res.ok) {
     return { ok: false, error: classifyError(res.status, await res.text()) };
   }
-  return { ok: true, data: (await res.json()) as SellResult };
+  const data = (await res.json()) as SellResult;
+  revalidateShopSurfaces();
+  return { ok: true, data };
 }
 
+// BE InventoryService.equip / unequip return the EquippedView directly
+// (not wrapped in `{ equipped: ... }`). The action result mirrors that.
 export async function equipItemAction(
   itemId: string,
-): Promise<ShopActionResult<{ equipped: EquippedView }>> {
+): Promise<ShopActionResult<EquippedView>> {
   const res = await authFetch('/shop/equip', {
     method: 'POST',
     body: JSON.stringify({ itemId }),
@@ -91,12 +110,14 @@ export async function equipItemAction(
   if (!res.ok) {
     return { ok: false, error: classifyError(res.status, await res.text()) };
   }
-  return { ok: true, data: (await res.json()) as { equipped: EquippedView } };
+  const data = (await res.json()) as EquippedView;
+  revalidateShopSurfaces();
+  return { ok: true, data };
 }
 
 export async function unequipItemAction(
   category: ShopCategory,
-): Promise<ShopActionResult<{ equipped: EquippedView }>> {
+): Promise<ShopActionResult<EquippedView>> {
   const res = await authFetch('/shop/unequip', {
     method: 'POST',
     body: JSON.stringify({ category }),
@@ -104,5 +125,7 @@ export async function unequipItemAction(
   if (!res.ok) {
     return { ok: false, error: classifyError(res.status, await res.text()) };
   }
-  return { ok: true, data: (await res.json()) as { equipped: EquippedView } };
+  const data = (await res.json()) as EquippedView;
+  revalidateShopSurfaces();
+  return { ok: true, data };
 }

@@ -6,6 +6,7 @@ import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
 import { DialogShell } from './dialogShell';
 import { purchaseItemAction } from '../server/shop.actions';
+import { syncEquippedToSession } from '../lib/syncEquippedToSession';
 import type {
   EffectiveShopItem,
   WalletBalanceView,
@@ -92,6 +93,10 @@ function PurchaseConfirmDialogInner({
     startTransition(async () => {
       const result = await purchaseItemAction(item.id, purchaseIdRef.current);
       if (result.ok) {
+        // BE auto-equips on purchase (spec D5); push new equipped state into
+        // the client session snapshot so the header avatar updates without
+        // a manual reload.
+        syncEquippedToSession(result.data.equipped);
         setSucceeded(true);
         router.refresh();
         onSuccess();
@@ -165,7 +170,7 @@ function PurchaseConfirmDialogInner({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="ghost" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onPress={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button

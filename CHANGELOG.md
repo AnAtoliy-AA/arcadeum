@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.35] - 2026-05-14
+
+### Added
+- show sender's equipped avatar + badge (ARC-650) (ARC-650)
+
+### Fixed
+- re-apply inventory cast + equip sync + dialog UX (ARC-650) (ARC-650)
+
+
 ## [1.13.34] - 2026-05-14
 
 ### Added

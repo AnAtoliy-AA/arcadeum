@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.44] - 2026-05-14
+
+### Added
+- View Transitions + 5-tick history strip §4.2 + §4.7 (ARC-675) (ARC-675)
+
+### Fixed
+- make discard description scrim visible above card (ARC-676) (ARC-676)
+- show card description on the discard pile (ARC-676) (ARC-676)
+- show actor name in FlashHistory rows (ARC-675) (ARC-675)
+
+### Refactored
+- CSS grid arena + @property threat pulse §4.3 + §4.5 (ARC-676) (ARC-676)
+
+
 ## [1.13.43] - 2026-05-14
 
 ### Improved

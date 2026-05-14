@@ -127,4 +127,34 @@ describe('OpponentTile', () => {
     tile.click();
     expect(onSelect).not.toHaveBeenCalled();
   });
+
+  it('exposes alive/turn/target state in the accessible name', () => {
+    // §3.2 — visual ring states (turn, target, eliminated) must be
+    // mirrored in the aria-label so screen-reader users get the same
+    // context as sighted players. Mocked `t` echoes the i18n key, so
+    // each suffix appears as its key path in the rendered label.
+    renderTile({
+      player: makePlayer({ playerId: 'alice' }),
+      resolveDisplayName: () => 'Alice',
+      isCurrentTurn: true,
+      isTarget: true,
+      onSelect: vi.fn(),
+    });
+    const tile = screen.getByTestId('opponent-tile-alice');
+    const label = tile.getAttribute('aria-label') ?? '';
+    expect(label).toContain('Alice');
+    expect(label).toContain('games.table.players.a11yState.currentTurn');
+    expect(label).toContain('games.table.players.a11yState.armedTarget');
+  });
+
+  it('includes the eliminated suffix in the aria-label for dead tiles', () => {
+    renderTile({
+      player: makePlayer({ playerId: 'bob', alive: false, hand: [] }),
+      resolveDisplayName: () => 'Bob',
+    });
+    const tile = screen.getByTestId('opponent-tile-bob');
+    const label = tile.getAttribute('aria-label') ?? '';
+    expect(label).toContain('Bob');
+    expect(label).toContain('games.table.players.a11yState.eliminated');
+  });
 });

@@ -268,6 +268,11 @@ export const enMessages = {
       yourMove: 'Your move',
       playerTurn: "{{name}}'s turn",
       waitingFor: 'Waiting for player...',
+      a11yState: {
+        eliminated: 'eliminated',
+        currentTurn: 'currently their turn',
+        armedTarget: 'armed as target',
+      },
     },
     status: {
       gameCompleted: 'Game Completed',

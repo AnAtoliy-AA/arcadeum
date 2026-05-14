@@ -262,6 +262,11 @@ export const frMessages = {
       yourMove: 'À vous de jouer',
       playerTurn: 'Tour de {{name}}',
       waitingFor: "En attente d'un joueur...",
+      a11yState: {
+        eliminated: 'éliminé',
+        currentTurn: 'tour en cours',
+        armedTarget: 'choisi comme cible',
+      },
     },
     status: {
       gameCompleted: 'Partie Terminée',

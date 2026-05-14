@@ -96,6 +96,11 @@ export function HandCard({
   const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
   const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
+  // Stable id so the outer button can `aria-describedby` the visible
+  // description block. Screen readers otherwise stop at the aria-label
+  // (card name) and never hear the rules text.
+  const descriptionId = `hand-card-description-${card.uid}`;
+  const linkDescription = showDescription && !!description;
 
   // Fixed card silhouette (~3:4) regardless of which text rows show —
   // text overlays the art rather than pushing the cell taller. Cell
@@ -116,6 +121,7 @@ export function HandCard({
       aria-pressed={isSelected}
       aria-disabled={disabled}
       aria-label={name}
+      aria-describedby={linkDescription ? descriptionId : undefined}
       onPress={disabled ? undefined : onToggle}
       onKeyDown={
         disabled
@@ -148,6 +154,19 @@ export function HandCard({
           : {
               transform: [{ translateY: isSelected ? -10 : -4 }],
               shadowRadius: isSelected ? 18 : 12,
+            }
+      }
+      // Visible focus ring for keyboard users — the card is tabbable via
+      // `tabIndex={0}` but had no `:focus-visible` style, so a keyboard
+      // tab through the hand previously gave no visual feedback at all.
+      focusStyle={
+        disabled
+          ? undefined
+          : {
+              outlineColor: SELECT_RING,
+              outlineWidth: 2,
+              outlineStyle: 'solid',
+              outlineOffset: 2,
             }
       }
       flexShrink={0}
@@ -194,7 +213,8 @@ export function HandCard({
           )}
           {showDescription && (
             <Text
-              data-testid={`hand-card-description-${card.uid}`}
+              id={descriptionId}
+              data-testid={descriptionId}
               fontSize={9}
               lineHeight={12}
               textAlign="center"

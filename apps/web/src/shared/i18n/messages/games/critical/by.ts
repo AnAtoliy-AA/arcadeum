@@ -272,6 +272,11 @@ export const byMessages = {
       yourMove: 'Ваш ход',
       playerTurn: 'Ход {{name}}',
       waitingFor: 'Чаканне гульца...',
+      a11yState: {
+        eliminated: 'выбыў',
+        currentTurn: 'зараз яго ход',
+        armedTarget: 'абраны як мэта',
+      },
     },
     status: {
       gameCompleted: 'Гульня завершана',

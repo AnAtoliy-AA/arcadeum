@@ -141,6 +141,11 @@ export function TurnBanner({
         {extraLabel && (
           <span
             data-testid="turn-banner-extra"
+            // Explicit aria-label so AT users hear the full phrase
+            // ("plus two turns coming after this one") rather than the
+            // raw "+2" which some screen readers strip the sign from
+            // and announce as "two" — no longer self-explanatory.
+            aria-label={extraLabel}
             style={{
               position: 'relative',
               zIndex: 1,

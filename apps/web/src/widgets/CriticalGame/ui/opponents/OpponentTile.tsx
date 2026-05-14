@@ -58,6 +58,29 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
+interface AriaLabelInput {
+  alive: boolean;
+  isCurrentTurn: boolean;
+  isTarget: boolean;
+  eliminatedSuffix: string;
+  currentTurnSuffix: string;
+  targetSuffix: string;
+}
+
+/**
+ * Builds the screen-reader label for an opponent tile by appending the
+ * active state suffixes (eliminated / on the clock / armed target) in
+ * parentheses. We keep all three states visible to AT users — the visual
+ * ring colour conveys the same thing for sighted users.
+ */
+function composeAriaLabel(name: string, input: AriaLabelInput): string {
+  const parts: string[] = [name];
+  if (!input.alive) parts.push(`(${input.eliminatedSuffix})`);
+  if (input.alive && input.isCurrentTurn) parts.push(`(${input.currentTurnSuffix})`);
+  if (input.alive && input.isTarget) parts.push(`(${input.targetSuffix})`);
+  return parts.join(' ');
+}
+
 /**
  * Single opponent in the widget-mode opponents row. Compact card with
  * avatar + name + hand count. Surfaces three ring states:
@@ -125,9 +148,18 @@ export function OpponentTile({
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-pressed={interactive ? isTarget : undefined}
-      aria-label={
-        interactive ? `${displayName}${isTarget ? ' (target)' : ''}` : undefined
-      }
+      // Compose the accessible name from the visible visual states so a
+      // screen-reader user hears the same context a sighted player sees
+      // (turn ring, target ring, dead/dashed). Falls back to the bare
+      // name for non-interactive tiles (alive but not currently armable).
+      aria-label={composeAriaLabel(displayName, {
+        alive,
+        isCurrentTurn,
+        isTarget,
+        eliminatedSuffix: t('games.table.players.a11yState.eliminated'),
+        currentTurnSuffix: t('games.table.players.a11yState.currentTurn'),
+        targetSuffix: t('games.table.players.a11yState.armedTarget'),
+      })}
       onPress={interactive ? onSelect : undefined}
       onKeyDown={handleKeyDown}
       cursor={interactive ? 'pointer' : 'default'}

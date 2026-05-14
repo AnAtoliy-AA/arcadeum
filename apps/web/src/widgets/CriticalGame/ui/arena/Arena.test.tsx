@@ -99,4 +99,15 @@ describe('Arena', () => {
       'true',
     );
   });
+
+  it('uses CSS grid with named areas for layout (§4.3)', () => {
+    // The layout (3-col desktop / re-stacked mobile) lives in CSS via
+    // .match-arena + data-area instead of a JS isNarrow branch.
+    renderArena();
+    const arena = screen.getByTestId('arena');
+    expect(arena).toHaveClass('match-arena');
+    expect(arena.querySelector('[data-area="draw"]')).not.toBeNull();
+    expect(arena.querySelector('[data-area="center"]')).not.toBeNull();
+    expect(arena.querySelector('[data-area="discard"]')).not.toBeNull();
+  });
 });

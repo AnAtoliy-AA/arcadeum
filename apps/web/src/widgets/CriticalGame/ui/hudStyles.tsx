@@ -10,13 +10,9 @@
  */
 const HUD_KEYFRAMES_CSS = `
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes threatPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    50%      { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.18); }
-  }
-  [data-testid="threat-strip"][data-pulse="true"] {
-    animation: threatPulse 1.4s ease-in-out infinite;
-  }
+  /* The old threatPulse keyframes used to live here; the @property
+     block below replaces them so the pulse value interpolates on the
+     compositor thread instead of re-rasterizing box-shadow each step. */
   @keyframes turnBannerDotPulse {
     0%, 100% { transform: scale(1); opacity: 1; }
     50%      { transform: scale(1.35); opacity: 0.6; }
@@ -97,6 +93,67 @@ const HUD_KEYFRAMES_CSS = `
   --offset-y: calc(var(--abs-offset) * var(--abs-offset) * 0.8);
   transform: rotate(calc(var(--angle) * 1deg))
              translateY(calc(var(--offset-y) * 1px));
+}
+
+/* §4.3 — Arena as CSS grid. Three-column row (draw · center · discard)
+   on desktop; on phones the centre column spans both tracks above
+   draw + discard via grid-template-areas. Eliminates the JS isNarrow
+   branch that previously toggled gap / padding / border / radius /
+   bg / overflow on the Arena root. Sub-components (piles, ArenaCenter)
+   still read isNarrow for their own internal layout — that prop stays. */
+.match-arena {
+  display: grid;
+  width: 100%;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background-color: rgba(8,12,20,0.55);
+  overflow: hidden;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "draw center discard";
+}
+.match-arena > [data-area="draw"]    { grid-area: draw; }
+.match-arena > [data-area="center"]  { grid-area: center; }
+.match-arena > [data-area="discard"] { grid-area: discard; }
+@media (max-width: 480px) {
+  .match-arena {
+    gap: 8px;
+    padding: 8px;
+    border-radius: 0;
+    border: 0;
+    background-color: transparent;
+    overflow: visible;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "center center"
+      "draw   discard";
+  }
+}
+
+/* §4.5 — Threat-strip pulse via @property + custom-property
+   interpolation. The old keyframes drove box-shadow directly which
+   re-rasterized on every step; @property tells the engine the value
+   is a number so the compositor can interpolate it on its own thread,
+   and we read it into box-shadow once. Falls back gracefully where
+   @property is unsupported (older Firefox) — the rule just doesn't
+   animate, no broken visual. */
+@property --threat-pulse {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-testid="threat-strip"][data-pulse="true"] {
+    animation: threatPulseProperty 1.4s ease-in-out infinite;
+    box-shadow: 0 0 calc(6px * var(--threat-pulse))
+                calc(2px * var(--threat-pulse)) rgba(239, 68, 68, 0.45);
+  }
+  @keyframes threatPulseProperty {
+    0%, 100% { --threat-pulse: 0; }
+    50%      { --threat-pulse: 1; }
+  }
 }
 `;
 

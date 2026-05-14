@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
@@ -61,6 +61,10 @@ vi.mock('./hand/HandZone', () => ({
     onOpenRules,
     onToggleFullscreen,
     isFullscreen,
+    showCardName,
+    showCardDescription,
+    onToggleCardName,
+    onToggleCardDescription,
   }: {
     combo: { kind: string; label: string };
     canPlay: boolean;
@@ -70,6 +74,10 @@ vi.mock('./hand/HandZone', () => ({
     onOpenRules?: () => void;
     onToggleFullscreen?: () => void;
     isFullscreen?: boolean;
+    showCardName?: boolean;
+    showCardDescription?: boolean;
+    onToggleCardName?: () => void;
+    onToggleCardDescription?: () => void;
   }) => (
     <div
       data-testid="hand-zone-stub"
@@ -78,6 +86,8 @@ vi.mock('./hand/HandZone', () => ({
       data-can-play={canPlay ? 'true' : 'false'}
       data-card-uids={cards.map((c) => c.uid).join(',')}
       data-is-fullscreen={isFullscreen ? 'true' : 'false'}
+      data-show-name={showCardName ? 'true' : 'false'}
+      data-show-description={showCardDescription ? 'true' : 'false'}
     >
       <button
         type="button"
@@ -111,6 +121,20 @@ vi.mock('./hand/HandZone', () => ({
           type="button"
           data-testid="hand-zone-stub-fullscreen"
           onClick={onToggleFullscreen}
+        />
+      )}
+      {onToggleCardName && (
+        <button
+          type="button"
+          data-testid="hand-zone-stub-toggle-name"
+          onClick={onToggleCardName}
+        />
+      )}
+      {onToggleCardDescription && (
+        <button
+          type="button"
+          data-testid="hand-zone-stub-toggle-description"
+          onClick={onToggleCardDescription}
         />
       )}
     </div>
@@ -205,11 +229,40 @@ function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
 }
 
 describe('MatchWidget (ARC-635)', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   it('renders the three-row layout: OpponentsRow + Arena + HandZone', () => {
     render(<MatchWidget {...makeProps()} />);
     expect(screen.getByTestId('opponents-row-stub')).toBeInTheDocument();
     expect(screen.getByTestId('arena-stub')).toBeInTheDocument();
     expect(screen.getByTestId('hand-zone-stub')).toBeInTheDocument();
+  });
+
+  it('restores persisted card-text toggles from localStorage on mount', () => {
+    // §4.6 — toggles are user preferences keyed per-userId, so a player
+    // who collapsed the description on match #5 keeps it collapsed on
+    // match #6 instead of having to re-collapse every game.
+    window.localStorage.setItem(
+      'critical:hand-toggles:p1',
+      JSON.stringify({ name: false, description: false }),
+    );
+    render(<MatchWidget {...makeProps()} />);
+    const handZone = screen.getByTestId('hand-zone-stub');
+    expect(handZone).toHaveAttribute('data-show-name', 'false');
+    expect(handZone).toHaveAttribute('data-show-description', 'false');
+  });
+
+  it('persists card-text toggles to localStorage when toggled', () => {
+    // §4.6 — the toggle round-trips through localStorage so reloading
+    // the page (or starting a fresh match) preserves the choice.
+    render(<MatchWidget {...makeProps()} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-toggle-name'));
+    const raw = window.localStorage.getItem('critical:hand-toggles:p1');
+    expect(raw).toBeTruthy();
+    const stored = JSON.parse(raw ?? '{}') as Record<string, boolean>;
+    expect(stored.name).toBe(false);
   });
 
   it('hides HandZone when the current player is eliminated', () => {

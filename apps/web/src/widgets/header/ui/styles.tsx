@@ -114,7 +114,7 @@ export const MobileNav = styled(YStack, {
   paddingTop: '$4',
   paddingBottom: '$4',
   gap: '$1',
-  height: `calc(100dvh - var(--header-height, ${HEADER_HEIGHT}px))`,
+  height: '100dvh',
   overflowY: 'auto',
 });
 

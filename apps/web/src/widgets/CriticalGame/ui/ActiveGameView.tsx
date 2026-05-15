@@ -21,13 +21,12 @@ import {
   useGameAutoplayIntegration,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
-import { GameModals } from './GameModals';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { ActiveGameContent } from './ActiveGameContent';
 import { MatchWidget } from './MatchWidget';
 import { CriticalGameHeader } from './CriticalGameHeader';
-import { MobileActionSheet } from './MobileActionSheet';
+import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
@@ -137,7 +136,6 @@ export function ActiveGameView({
     handleCloseEventComboModal,
     handleSelectComboCard,
     handleToggleFiverCard,
-    favorModal,
     handleOpenFavorModal,
     handleCloseFavorModal,
     handleConfirmFavor,
@@ -253,19 +251,6 @@ export function ActiveGameView({
     handlePlayActionCard,
   });
 
-  const modalPlayers = useMemo(
-    () =>
-      snapshot.players.map((p: CriticalPlayerState) => ({
-        playerId: p.playerId,
-        displayName: resolveDisplayName(
-          p.playerId,
-          `Player ${p.playerId.slice(0, 8)}`,
-        ),
-        alive: p.alive,
-      })),
-    [snapshot.players, resolveDisplayName],
-  );
-
   const buildSharedProps = () => ({
     room,
     snapshot,
@@ -360,133 +345,66 @@ export function ActiveGameView({
           <ActiveGameContent {...buildSharedProps()} />
         )}
       </YStack>
-
       {currentPlayer && (
         <GameStatusMessage
           currentPlayerAlive={currentPlayer.alive}
           isGameOver={!!isGameOver}
           t={t as (key: string) => string}
         />
-      )}
-
-      <GameModals
-        // Rematch Modal
-        showRematchModal={rematch.showRematchModal}
-        players={modalPlayers}
+      )}{' '}
+      <ActiveGameModals
         currentUserId={currentUserId}
-        rematchLoading={rematch.rematchLoading}
-        onCloseRematchModal={rematch.closeRematchModal}
-        onConfirmRematch={rematch.handleRematch}
-        // Rematch Invitation
-        invitation={rematch.invitation}
-        invitationTimeLeft={rematch.invitationTimeLeft}
-        onAcceptInvitation={rematch.handleAcceptInvitation}
-        onDeclineInvitation={rematch.handleDeclineInvitation}
-        onBlockRematch={rematch.handleBlockRematch}
-        onBlockUser={rematch.handleBlockUser}
-        isAcceptingInvitation={rematch.isAcceptingInvitation}
-        // Event Combo Modal
-        eventComboModal={eventComboModal}
-        onCloseEventComboModal={handleCloseEventComboModal}
-        selectedMode={selectedMode}
-        selectedTarget={selectedTarget}
-        selectedCard={selectedCard}
-        selectedIndex={selectedIndex}
-        selectedDiscardCard={selectedDiscardCard}
-        selectedFiverCards={selectedFiverCards}
-        aliveOpponents={aliveOpponents}
-        selfHand={currentPlayer?.hand ?? []}
-        discardPile={snapshot?.discardPile ?? []}
-        onSelectComboCard={handleSelectComboCard}
-        onSelectMode={setSelectedMode}
-        onSelectTarget={setSelectedTarget}
-        onSelectCard={setSelectedCard}
-        onSelectIndex={setSelectedIndex}
-        onSelectDiscardCard={setSelectedDiscardCard}
-        onToggleFiverCard={handleToggleFiverCard}
-        onConfirmEventCombo={handleConfirmEventCombo}
-        // See the Future Modal
-        seeTheFutureModal={seeTheFutureModal}
-        onCloseSeeTheFutureModal={handleCloseSeeTheFutureModal}
-        // Alter the Future
-        pendingAlter={snapshot?.pendingAlter ?? null}
-        onConfirmAlterFuture={handleConfirmAlterFuture}
-        // Targeted Attack Modal
-        targetedAttackModal={targetedAttackModal}
-        onCloseTargetedAttackModal={handleCloseTargetedAttackModal}
-        onConfirmTargetedAttack={handleConfirmTargetedAttack}
-        // Favor Modal
-        favorModal={favorModal}
-        onCloseFavorModal={handleCloseFavorModal}
-        onConfirmFavor={handleConfirmFavor}
-        // Defuse Modal
-        pendingDefuse={snapshot?.pendingDefuse ?? null}
-        onPlayDefuse={actions.playDefuse}
-        deck={snapshot?.deck ?? []}
-        // Give Favor Modal
-        pendingFavor={snapshot?.pendingFavor ?? null}
-        myHand={currentPlayer?.hand ?? []}
-        onGiveFavorCard={actions.giveFavorCard}
-        // Shared
-        resolveDisplayName={resolveDisplayName}
-        t={t as (key: string, params?: Record<string, unknown>) => string}
-        cardVariant={cardVariant}
-        // Theft Pack
-        stashModal={stashModal}
-        onCloseStashModal={handleCloseStashModal}
-        onConfirmStash={handleConfirmStash}
-        markModal={markModal}
-        onCloseMarkModal={handleCloseMarkModal}
-        onConfirmMark={handleConfirmMark}
-        onCloseStealDrawModal={handleCloseStealDrawModal}
-        onConfirmStealDraw={handleConfirmStealDraw}
-        smiteModal={smiteModal}
-        onCloseSmiteModal={handleCloseSmiteModal}
-        onConfirmSmite={handleConfirmSmite}
-        // Omniscience Modal
-        omniscienceModal={omniscienceModal}
-        onCloseOmniscienceModal={handleCloseOmniscienceModal}
-        stealDrawModal={stealDrawModal}
+        snapshot={snapshot}
         isMobile={isMobile}
+        cardVariant={cardVariant}
+        aliveOpponents={aliveOpponents}
+        currentPlayer={currentPlayer}
+        actions={actions}
+        rematch={rematch}
+        modals={{
+          eventComboModal,
+          selectedMode,
+          selectedTarget,
+          selectedCard,
+          selectedIndex,
+          selectedDiscardCard,
+          selectedFiverCards,
+          seeTheFutureModal,
+          stashModal,
+          markModal,
+          stealDrawModal,
+          smiteModal,
+          omniscienceModal,
+          targetedAttackModal,
+        }}
+        handlers={{
+          handleCloseEventComboModal,
+          handleSelectComboCard,
+          setSelectedMode,
+          setSelectedTarget,
+          setSelectedCard,
+          setSelectedIndex,
+          setSelectedDiscardCard,
+          handleToggleFiverCard,
+          handleConfirmEventCombo,
+          handleCloseSeeTheFutureModal,
+          handleConfirmAlterFuture,
+          handleCloseTargetedAttackModal,
+          handleConfirmTargetedAttack,
+          handleCloseFavorModal,
+          handleConfirmFavor,
+          handleCloseStashModal,
+          handleConfirmStash,
+          handleCloseMarkModal,
+          handleConfirmMark,
+          handleCloseStealDrawModal,
+          handleConfirmStealDraw,
+          handleCloseSmiteModal,
+          handleConfirmSmite,
+          handleCloseOmniscienceModal,
+        }}
+        resolveDisplayName={resolveDisplayName}
       />
-
-      {/* Mobile-only target pickers; desktop falls through to GameModals */}
-      {isMobile && (
-        <MobileActionSheet
-          isOpen={targetedAttackModal}
-          title={t('games.table.mobile.attack.title')}
-          description={t('games.table.mobile.attack.description')}
-          opponents={aliveOpponents}
-          resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.table.mobile.play')}
-          cancelLabel={t('games.table.mobile.cancel')}
-          onConfirm={(targetId) => {
-            actions.playActionCard('targeted_strike', {
-              targetPlayerId: targetId,
-            });
-            handleCloseTargetedAttackModal();
-          }}
-          onCancel={handleCloseTargetedAttackModal}
-        />
-      )}
-
-      {isMobile && (
-        <MobileActionSheet
-          isOpen={favorModal}
-          title={t('games.table.mobile.favor.title')}
-          description={t('games.table.mobile.favor.description')}
-          opponents={aliveOpponents}
-          resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.table.mobile.play')}
-          cancelLabel={t('games.table.mobile.cancel')}
-          onConfirm={(targetId) => {
-            actions.playFavor(targetId);
-            handleCloseFavorModal();
-          }}
-          onCancel={handleCloseFavorModal}
-        />
-      )}
-
       <GameResultModal
         isOpen={!!showResultModal}
         data-testid="game-result-modal"

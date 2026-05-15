@@ -13,21 +13,18 @@ import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useRematch } from '@/features/games/hooks';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import {
-  GameResultModal,
-  RematchModal,
-  RematchInvitationModal,
   GameWidgetContainer,
   type TurnStatusVariant,
 } from '@/features/games/ui';
 
-import { ShipPlacementBoard } from './ShipPlacementBoard';
-import { AttackBoard } from './AttackBoard';
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
-import { Card, Typography } from '@arcadeum/ui';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+
+import { SeaBattleModals } from './SeaBattleModals';
+import { SeaBattleBoards } from './SeaBattleBoards';
 
 import { RulesModal } from './RulesModal';
 import './styles/animations.css';
@@ -139,9 +136,9 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   // Auto-start a rematch with bots: host lands in a fresh lobby whose
   // gameOptions.autoStartWithBots was carried over from the previous game.
   const autoStartedRematchRef = useRef(false);
-  const autoStartBotCountRaw = (room?.gameOptions as
-    | { autoStartWithBots?: unknown }
-    | undefined)?.autoStartWithBots;
+  const autoStartBotCountRaw = (
+    room?.gameOptions as { autoStartWithBots?: unknown } | undefined
+  )?.autoStartWithBots;
   const autoStartBotCount =
     typeof autoStartBotCountRaw === 'number' ? autoStartBotCountRaw : 0;
   useEffect(() => {
@@ -178,9 +175,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   const rematchGameOptions = useMemo(
     () => ({
       ...(room?.gameOptions || {}),
-      ...(previousBotCount > 0
-        ? { autoStartWithBots: previousBotCount }
-        : {}),
+      ...(previousBotCount > 0 ? { autoStartWithBots: previousBotCount } : {}),
     }),
     [room?.gameOptions, previousBotCount],
   );
@@ -346,155 +341,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [currentVariant, headerTitle, room?.name, turnStatus],
   );
 
-  const boardContent = useMemo(
-    () => (
-      <>
-        {isPlacementPhase && (
-          <ShipPlacementBoard
-            key="placement-board"
-            currentPlayer={currentPlayer}
-            onPlaceShip={placeShip}
-            onConfirmPlacement={confirmPlacement}
-            onResetPlacement={resetPlacement}
-            isPlacementComplete={isPlacementComplete}
-            onAutoPlace={handleAutoPlace}
-          />
-        )}
-
-        {isBattlePhase && currentPlayer && !currentPlayer.alive && (
-          <Card
-            variant="error"
-            padding="md"
-            marginHorizontal="$3"
-            marginBottom="$3"
-          >
-            <Typography>
-              {t(
-                'games.sea_battle_v1.teamMode.banner.eliminatedSpectator' as TranslationKey,
-              )}
-            </Typography>
-          </Card>
-        )}
-
-        {isGameOver && teamMode && winnerTeam && (
-          <Card
-            variant="elevated"
-            padding="md"
-            marginHorizontal="$3"
-            marginBottom="$3"
-          >
-            <Typography>
-              {t(
-                'games.sea_battle_v1.teamMode.banner.teamWon' as TranslationKey,
-                { team: winnerTeam.name },
-              )}
-            </Typography>
-          </Card>
-        )}
-
-        {isBattlePhase && snapshot && (
-          <AttackBoard
-            key="attack-board"
-            players={snapshot.players}
-            currentUserId={currentUserId}
-            currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
-            isMyTurn={isMyTurn}
-            onAttack={attack}
-            resolveDisplayName={resolveDisplayNameBound}
-            teammateIds={teammateIds}
-            teams={teams}
-          />
-        )}
-      </>
-    ),
-    [
-      isPlacementPhase,
-      currentPlayer,
-      placeShip,
-      confirmPlacement,
-      resetPlacement,
-      isPlacementComplete,
-      handleAutoPlace,
-      isBattlePhase,
-      currentUserId,
-      currentTurnPlayer?.playerId,
-      isMyTurn,
-      attack,
-      resolveDisplayNameBound,
-      snapshot,
-      teammateIds,
-      isGameOver,
-      teamMode,
-      teams,
-      winnerTeam,
-      t,
-    ],
-  );
-
-  const modalsContent = useMemo(
-    () => (
-      <>
-        <RulesModal
-          isOpen={showRules || !!showRulesOpen}
-          onClose={() => {
-            setShowRules(false);
-            onShowRulesClose?.();
-          }}
-          t={t}
-        />
-        <GameResultModal
-          isOpen={isGameOver && !resultModalDismissed}
-          result={gameResult}
-          onRematch={handleRematchClick}
-          onClose={() => {
-            if (session?.id) setDismissedForSessionId(session.id);
-          }}
-          rematchLoading={rematchLoading}
-          t={t}
-        />
-
-        <RematchModal
-          isOpen={showRematchModal}
-          players={
-            snapshot?.players
-              .filter((p) => !p.playerId.startsWith('bot-'))
-              .map((p) => ({
-                playerId: p.playerId,
-                displayName: resolveDisplayNameBound(
-                  p.playerId,
-                  `Player ${p.playerId.slice(0, 4)} `,
-                ),
-                alive: p.alive,
-              })) || []
-          }
-          currentUserId={currentUserId}
-          rematchLoading={rematchLoading}
-          onClose={closeRematchModal}
-          onConfirm={handleRematch}
-          t={t}
-          cardVariant={cardVariant}
-        />
-
-        <RematchInvitationModal
-          isOpen={!!invitation}
-          senderName={invitation?.hostName || ''}
-          message={invitation?.message}
-          onAccept={handleAcceptInvitation}
-          onDecline={handleDeclineInvitation}
-          t={t}
-        />
-      </>
-    ),
-    [
-      showRules, showRulesOpen, onShowRulesClose, t,
-      isGameOver, resultModalDismissed, session?.id, gameResult,
-      handleRematchClick, rematchLoading, showRematchModal,
-      snapshot?.players, resolveDisplayNameBound, currentUserId,
-      closeRematchModal, handleRematch, cardVariant,
-      invitation, handleAcceptInvitation, handleDeclineInvitation,
-    ],
-  );
-
   if (!room) return null;
 
   // Lobby — early return before GameWidgetContainer
@@ -541,8 +387,54 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     <SeaBattleThemeProvider variant={cardVariant}>
       <GameWidgetContainer
         headerProps={headerProps}
-        board={boardContent}
-        modals={modalsContent}
+        board={
+          <SeaBattleBoards
+            isPlacementPhase={isPlacementPhase}
+            currentPlayer={currentPlayer}
+            placeShip={placeShip}
+            confirmPlacement={confirmPlacement}
+            resetPlacement={resetPlacement}
+            isPlacementComplete={isPlacementComplete}
+            handleAutoPlace={handleAutoPlace}
+            isBattlePhase={isBattlePhase}
+            isGameOver={isGameOver}
+            teamMode={teamMode}
+            winnerTeam={winnerTeam}
+            snapshot={snapshot}
+            currentUserId={currentUserId}
+            currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
+            isMyTurn={isMyTurn}
+            attack={attack}
+            resolveDisplayNameBound={resolveDisplayNameBound}
+            teammateIds={teammateIds}
+            teams={teams}
+          />
+        }
+        modals={
+          <SeaBattleModals
+            showRules={showRules}
+            showRulesOpen={showRulesOpen}
+            onShowRulesClose={onShowRulesClose}
+            setShowRules={setShowRules}
+            isGameOver={isGameOver}
+            resultModalDismissed={resultModalDismissed}
+            gameResult={gameResult}
+            handleRematchClick={handleRematchClick}
+            session={session}
+            setDismissedForSessionId={setDismissedForSessionId}
+            rematchLoading={rematchLoading}
+            showRematchModal={showRematchModal}
+            snapshot={snapshot}
+            resolveDisplayNameBound={resolveDisplayNameBound}
+            currentUserId={currentUserId}
+            closeRematchModal={closeRematchModal}
+            handleRematch={handleRematch}
+            cardVariant={cardVariant}
+            invitation={invitation}
+            handleAcceptInvitation={handleAcceptInvitation}
+            handleDeclineInvitation={handleDeclineInvitation}
+          />
+        }
         variant={cardVariant}
         isMyTurn={!!isMyTurn}
       />

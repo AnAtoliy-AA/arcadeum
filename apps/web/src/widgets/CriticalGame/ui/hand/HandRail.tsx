@@ -4,6 +4,7 @@ import { YStack, XStack, Text, Button } from 'tamagui';
 import {
   BookOpenIcon,
   CardsIcon,
+  HandIcon,
   MaximizeIcon,
   MinimizeIcon,
   ShieldIcon,
@@ -275,15 +276,18 @@ export function HandRail({
             pressStyle={{ scale: 0.98 }}
             onPress={onNope}
           >
-            <Text
-              fontSize={11}
-              fontWeight="900"
-              letterSpacing={0.3}
-              textTransform="uppercase"
-              color="#1c0f00"
-            >
-              ✋ {t('games.table.actions.playNope')}
-            </Text>
+            <XStack gap="$1.5" alignItems="center">
+              <HandIcon size={14} />
+              <Text
+                fontSize={11}
+                fontWeight="900"
+                letterSpacing={0.3}
+                textTransform="uppercase"
+                color="#1c0f00"
+              >
+                {t('games.table.actions.playNope')}
+              </Text>
+            </XStack>
           </Button>
         )}
       </YStack>
@@ -386,6 +390,7 @@ export function HandRail({
                     letterSpacing={0.6}
                     textTransform="uppercase"
                     opacity={0.85}
+                    numberOfLines={1}
                   >
                     {t('games.table.controlPanel.rules')}
                   </Text>
@@ -416,16 +421,21 @@ export function HandRail({
                   ) : (
                     <MaximizeIcon size={16} />
                   )}
+                  {/* Short label only — "ENTER FULLSCREEN" / "EXIT
+                      FULLSCREEN" overflowed the flex={1} rail button
+                      and ran into the Rules button text next door. The
+                      Maximize/Minimize icon already signals the state;
+                      the full action label lives in the aria-label
+                      above for assistive tech. */}
                   <Text
                     fontSize={9}
                     fontWeight="800"
                     letterSpacing={0.6}
                     textTransform="uppercase"
                     opacity={0.85}
+                    numberOfLines={1}
                   >
-                    {isFullscreen
-                      ? t('games.table.controlPanel.exitFullscreen')
-                      : t('games.table.controlPanel.enterFullscreen')}
+                    {t('games.table.controlPanel.fullscreen')}
                   </Text>
                 </YStack>
               </Button>

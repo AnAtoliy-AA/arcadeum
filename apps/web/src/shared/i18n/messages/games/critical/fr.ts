@@ -231,6 +231,8 @@ export const frMessages = {
           'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
         oddsTitleServer: 'Probabilité de piocher une carte Critique',
         defusesTitle: 'Cartes de Défuse en main',
+        remainingTitle: 'Cartes dangereuses encore dans la pioche',
+        remainingSuffix: 'restantes',
       },
       combo: {
         label: 'Combos',

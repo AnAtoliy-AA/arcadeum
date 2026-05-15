@@ -262,6 +262,14 @@ export interface CriticalSnapshot {
    */
   overloadOdds?: number | null;
   /**
+   * Raw count of dangerous cards remaining in the deck (same semantics
+   * as `overloadOdds`: counts `critical_event` always plus face-up
+   * `critical_implosion` when armed). Lets the ThreatStrip render the
+   * `△ N left` tail alongside the percentage. Optional for forward
+   * compat with older snapshots.
+   */
+  criticalsRemaining?: number | null;
+  /**
    * Count of deck cards the snapshot is masking from this client
    * (Tracker reveal, future-peek, etc.) that aren't already represented
    * as `'hidden'` entries inside `deck`. Folded into the ThreatStrip's

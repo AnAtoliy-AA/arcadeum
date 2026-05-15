@@ -26,6 +26,8 @@ interface ArenaProps {
   resolveDisplayName?: (playerId: string, fallback: string) => string;
   /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
+  /** Server-authoritative count of dangerous cards left. Drives `△ N left`. */
+  criticalsRemaining?: number | null;
   /** Cards the snapshot has hidden — folded into client-fallback odds. */
   hiddenCount?: number;
 }
@@ -57,6 +59,7 @@ export function Arena({
   formatLogMessage,
   resolveDisplayName,
   serverOverloadOdds,
+  criticalsRemaining,
   hiddenCount,
 }: ArenaProps) {
   const isNarrow = useIsNarrow(480);
@@ -90,6 +93,7 @@ export function Arena({
           formatLogMessage={formatLogMessage}
           resolveDisplayName={resolveDisplayName}
           serverOverloadOdds={serverOverloadOdds}
+          criticalsRemaining={criticalsRemaining}
           hiddenCount={hiddenCount}
         />
       </div>

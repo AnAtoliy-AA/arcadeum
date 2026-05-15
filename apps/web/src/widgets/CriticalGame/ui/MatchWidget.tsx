@@ -24,7 +24,16 @@ import {
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { NarrowViewportProvider } from '../lib/useNarrowViewport';
 import { withViewTransition } from '../lib/viewTransition';
+import { useUrlHashState } from '@/shared/hooks/useUrlHashState';
 import type { CriticalCard } from '../types';
+
+// Codec for `selectedUids` in the URL hash. CSV (not JSON) so a shared
+// link like `#sel=u1,u2,u3` stays readable; uids are short
+// alphanumerics so a delimiter collision is not possible.
+const SELECTED_UIDS_SERIALIZE = (uids: string[]): string | null =>
+  uids.length === 0 ? null : uids.join(',');
+const SELECTED_UIDS_DESERIALIZE = (raw: string | null): string[] =>
+  raw ? raw.split(',').filter(Boolean) : [];
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
   'neutralizer',
@@ -125,7 +134,13 @@ export function MatchWidget({
   isFullscreen,
   toggleFullscreen,
 }: MatchWidgetProps) {
-  const [selectedUids, setSelectedUids] = useState<string[]>([]);
+  // `selectedUids` lives in the URL hash so refresh restores the
+  // selection and shareable links carry it. Empty arrays serialize to
+  // `null`, keeping the URL clean at idle.
+  const [selectedUids, setSelectedUids] = useUrlHashState<string[]>('sel', [], {
+    serialize: SELECTED_UIDS_SERIALIZE,
+    deserialize: SELECTED_UIDS_DESERIALIZE,
+  });
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
   // Persist show/hide for the card name + description rows per user. New
@@ -228,7 +243,7 @@ export function MatchWidget({
       validSelectedUids.length !== selectedUids.length ||
       validSelectedUids.some((uid, i) => uid !== selectedUids[i]);
     if (drifted) setSelectedUids(validSelectedUids);
-  }, [validSelectedUids, selectedUids]);
+  }, [validSelectedUids, selectedUids, setSelectedUids]);
 
   const prevIsMyTurn = useRef(isMyTurn);
   useEffect(() => {
@@ -237,7 +252,7 @@ export function MatchWidget({
       setSelectedUids([]);
     }
     prevIsMyTurn.current = isMyTurn;
-  }, [isMyTurn]);
+  }, [isMyTurn, setSelectedUids]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSelectTarget = useCallback(
@@ -276,11 +291,14 @@ export function MatchWidget({
     label: comboLabel,
   };
 
-  const handleToggleSelect = useCallback((uid: string) => {
-    setSelectedUids((prev) =>
-      prev.includes(uid) ? prev.filter((x) => x !== uid) : [...prev, uid],
-    );
-  }, []);
+  const handleToggleSelect = useCallback(
+    (uid: string) => {
+      setSelectedUids((prev) =>
+        prev.includes(uid) ? prev.filter((x) => x !== uid) : [...prev, uid],
+      );
+    },
+    [setSelectedUids],
+  );
 
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
@@ -357,6 +375,7 @@ export function MatchWidget({
     handlePlayActionCard,
     handleOpenEventCombo,
     handleOpenFiverCombo,
+    setSelectedUids,
   ]);
 
   const defuseCount = useMemo(
@@ -410,6 +429,7 @@ export function MatchWidget({
             formatLogMessage={formatLogMessage}
             resolveDisplayName={tileResolveName}
             serverOverloadOdds={snapshot.overloadOdds}
+            criticalsRemaining={snapshot.criticalsRemaining}
             hiddenCount={snapshot.hiddenCount}
           />
 

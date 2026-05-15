@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.54] - 2026-05-15
+
+### Fixed
+- rework sign-in page for mobile (ARC-690) (ARC-690)
+
+### Refactored
+- reuse the shared InstallAppCta widget on /auth (ARC-690) (ARC-690)
+
+
 ## [1.13.53] - 2026-05-15
 
 ### Added

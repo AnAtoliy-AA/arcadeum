@@ -148,6 +148,8 @@ export function AuthFormPanel({
         form={form}
         auth={auth}
         onRequestMagicLink={(emailValue) => void requestMagicLink(emailValue)}
+        usernameAvailabilityMessages={labels.usernameAvailabilityMessages}
+        emailAvailabilityMessages={labels.emailAvailabilityMessages}
       />
     </GlassCard>
   );

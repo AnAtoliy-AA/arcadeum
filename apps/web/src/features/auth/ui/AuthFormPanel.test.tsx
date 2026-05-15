@@ -57,6 +57,16 @@ const labels = {
   sessionDetailLabels: { displayName: '' },
   emailLabel: '',
   usernameLabel: '',
+  usernameAvailabilityMessages: {
+    checking: 'Checking...',
+    available: 'Available',
+    taken: 'This username is already taken.',
+  },
+  emailAvailabilityMessages: {
+    checking: 'Checking...',
+    available: 'Available',
+    taken: 'This email is already registered.',
+  },
 } as unknown as AuthLabels;
 
 function makeAuth(

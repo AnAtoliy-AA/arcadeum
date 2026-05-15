@@ -12,16 +12,26 @@ import { isValidEmail } from '../lib/utils';
 import type { AuthFormLabels } from '../types';
 import { ArrowGlyph, MailGlyph } from './AuthProviderIcons';
 
+interface AvailabilityMessages {
+  checking: string;
+  available: string;
+  taken: string;
+}
+
 interface AuthFormCredentialsProps {
   form: AuthFormLabels;
   auth: UseAuthFormResult;
   onRequestMagicLink: (email: string) => void;
+  usernameAvailabilityMessages: AvailabilityMessages;
+  emailAvailabilityMessages: AvailabilityMessages;
 }
 
 export function AuthFormCredentials({
   form,
   auth,
   onRequestMagicLink,
+  usernameAvailabilityMessages,
+  emailAvailabilityMessages,
 }: AuthFormCredentialsProps) {
   const {
     isRegisterMode,
@@ -57,11 +67,25 @@ export function AuthFormCredentials({
     showInvalidEmail,
     isRegisterMode,
     emailAvailability,
+    emailAvailabilityMessages.taken,
   );
   const usernameErrorMessage = getUsernameError(
     showUsernameTooShort,
     usernameAvailability,
+    usernameAvailabilityMessages.taken,
   );
+  const emailDescription =
+    isRegisterMode && (emailAvailability === 'checking' || emailAvailability === 'available')
+      ? emailAvailability === 'checking'
+        ? emailAvailabilityMessages.checking
+        : emailAvailabilityMessages.available
+      : undefined;
+  const usernameDescription =
+    usernameAvailability === 'checking' || usernameAvailability === 'available'
+      ? usernameAvailability === 'checking'
+        ? usernameAvailabilityMessages.checking
+        : usernameAvailabilityMessages.available
+      : undefined;
 
   return (
     <form
@@ -73,7 +97,10 @@ export function AuthFormCredentials({
       data-testid="auth-credentials-form"
     >
       <YStack gap="$4">
-        <FieldWithMessage error={emailErrorMessage}>
+        <FieldWithMessage
+          error={emailErrorMessage}
+          description={emailDescription}
+        >
           <FloatingLabelInput
             id={emailFieldId}
             type="email"
@@ -122,7 +149,10 @@ export function AuthFormCredentials({
         </div>
 
         {isRegisterMode && (
-          <FieldWithMessage error={usernameErrorMessage}>
+          <FieldWithMessage
+            error={usernameErrorMessage}
+            description={usernameDescription}
+          >
             <FloatingLabelInput
               id={usernameFieldId}
               type="text"
@@ -259,19 +289,25 @@ export function AuthFormCredentials({
 
 function FieldWithMessage({
   error,
+  description,
   children,
 }: {
   error?: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
     <YStack gap="$1">
       {children}
-      {error && (
+      {error ? (
         <Typography variant="body" uiSize="xs" color="$danger">
           {error}
         </Typography>
-      )}
+      ) : description ? (
+        <Typography variant="body" uiSize="xs" color="$colorMuted">
+          {description}
+        </Typography>
+      ) : null}
     </YStack>
   );
 }
@@ -347,20 +383,20 @@ function getEmailError(
   showInvalidEmail: boolean,
   isRegisterMode: boolean,
   emailAvailability: string,
+  takenMessage: string,
 ): string | undefined {
   if (showInvalidEmail) return 'Please enter a valid email address.';
-  if (isRegisterMode && emailAvailability === 'taken')
-    return 'This email is already registered.';
+  if (isRegisterMode && emailAvailability === 'taken') return takenMessage;
   return undefined;
 }
 
 function getUsernameError(
   showUsernameTooShort: boolean,
   usernameAvailability: string,
+  takenMessage: string,
 ): string | undefined {
   if (showUsernameTooShort) return 'Username must be at least 3 characters.';
-  if (usernameAvailability === 'taken')
-    return 'This username is already taken.';
+  if (usernameAvailability === 'taken') return takenMessage;
   return undefined;
 }
 

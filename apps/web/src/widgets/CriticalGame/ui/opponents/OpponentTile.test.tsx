@@ -125,4 +125,48 @@ describe('OpponentTile', () => {
     tile.click();
     expect(onSelect).not.toHaveBeenCalled();
   });
+
+  it('exposes a single state suffix in the accessible name (target beats turn)', () => {
+    // §3.2 — visual ring states (turn, target, eliminated) are mirrored
+    // in the aria-label so screen-reader users get the same context as
+    // sighted players. Priority matches the visual ring: dead beats
+    // target beats current-turn. The tile border only paints one ring
+    // colour at a time; the label exposes one suffix at a time.
+    renderTile({
+      player: makePlayer({ playerId: 'alice' }),
+      resolveDisplayName: () => 'Alice',
+      isCurrentTurn: true,
+      isTarget: true,
+      onSelect: vi.fn(),
+    });
+    const tile = screen.getByTestId('player-card-alice');
+    const label = tile.getAttribute('aria-label') ?? '';
+    expect(label).toContain('Alice');
+    expect(label).toContain('games.table.players.a11yState.armedTarget');
+    expect(label).not.toContain('games.table.players.a11yState.currentTurn');
+  });
+
+  it('falls back to currentTurn suffix when not armed as a target', () => {
+    renderTile({
+      player: makePlayer({ playerId: 'alice' }),
+      resolveDisplayName: () => 'Alice',
+      isCurrentTurn: true,
+      onSelect: vi.fn(),
+    });
+    const tile = screen.getByTestId('player-card-alice');
+    expect(tile.getAttribute('aria-label')).toContain(
+      'games.table.players.a11yState.currentTurn',
+    );
+  });
+
+  it('includes the eliminated suffix in the aria-label for dead tiles', () => {
+    renderTile({
+      player: makePlayer({ playerId: 'bob', alive: false, hand: [] }),
+      resolveDisplayName: () => 'Bob',
+    });
+    const tile = screen.getByTestId('player-card-bob');
+    const label = tile.getAttribute('aria-label') ?? '';
+    expect(label).toContain('Bob');
+    expect(label).toContain('games.table.players.a11yState.eliminated');
+  });
 });

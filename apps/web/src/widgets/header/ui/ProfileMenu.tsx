@@ -20,6 +20,8 @@ import {
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { routes } from '@/shared/config/routes';
 import {
@@ -39,6 +41,16 @@ export default function ProfileMenu() {
     snapshot.displayName || snapshot.username || snapshot.email;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
+  const {
+    avatarUrl: equippedAvatarUrl,
+    badgeUrl: equippedBadgeUrl,
+    nameColor: equippedNameColor,
+  } = useEquippedCosmetics({
+    equippedAvatarId: snapshot.equippedAvatarId,
+    equippedBadgeId: snapshot.equippedBadgeId,
+    equippedNameColorId: snapshot.equippedNameColorId,
+  });
+  const nameColorProps = nameColorRenderProps(equippedNameColor);
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -80,6 +92,7 @@ export default function ProfileMenu() {
       >
         <Avatar
           name={displayName}
+          src={equippedAvatarUrl ?? undefined}
           size="sm"
           borderWidth={
             role === 'admin' || role === 'vip' || role === 'premium'
@@ -101,9 +114,27 @@ export default function ProfileMenu() {
                 : undefined
           }
         />
-        <UserNameEllipsis data-testid="header-username">
+        <UserNameEllipsis
+          data-testid="header-username"
+          {...(nameColorProps.color ? { color: nameColorProps.color } : {})}
+          {...(nameColorProps.style ? { style: nameColorProps.style } : {})}
+        >
           {displayName}
         </UserNameEllipsis>
+        {equippedBadgeUrl ? (
+          // Shop badges store asset URLs — render directly. The @arcadeum/ui
+          // CosmeticBadge primitive below is a badgeId→emoji lookup used for
+          // referral/role badges, not for shop badge assets.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={equippedBadgeUrl}
+            alt=""
+            width={20}
+            height={20}
+            data-testid="header-equipped-badge"
+            style={{ objectFit: 'contain' }}
+          />
+        ) : null}
         {role !== 'free' && (
           <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
         )}

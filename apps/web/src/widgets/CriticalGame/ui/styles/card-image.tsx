@@ -8,6 +8,23 @@ interface CardImageProps {
   faceDown?: boolean;
 }
 
+/**
+ * True when the given variant ships a sprite sheet AND the cardType has a
+ * mapped sprite index. Callers (e.g. `HandCard`) use this to choose between
+ * rendering the sprite and a role-keyed fallback glyph, so the two never
+ * stack and bleed through each other.
+ */
+export function hasArtFor(
+  variant: string | undefined,
+  cardType: string,
+): boolean {
+  const spriteUrl = getVariantStyles(variant).cards.getCardSpriteUrl?.(
+    variant ?? '',
+  );
+  if (!spriteUrl) return false;
+  return Object.prototype.hasOwnProperty.call(CARD_SPRITE_MAP, cardType);
+}
+
 export function CardImage({
   variant,
   cardType = '',

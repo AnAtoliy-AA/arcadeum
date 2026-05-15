@@ -414,4 +414,44 @@ export class GamesRealtimeService {
     // Also emit session snapshot to update all clients (handles both channels)
     await this.emitSessionSnapshot(session.roomId, session, sanitizer);
   }
+
+  /**
+   * Broadcast an arbitrary event to every socket in the room channel.
+   * Used by per-tick broadcasts in real-time games (e.g. Glimworm).
+   */
+  emitToRoom(roomId: string, event: string, payload: unknown): void {
+    if (!this.server) {
+      return;
+    }
+    this.server
+      .to(this.roomChannel(roomId))
+      .emit(event, maybeEncrypt(payload as Record<string, unknown>));
+  }
+
+  /**
+   * Broadcast an event to a specific client (by `userId`) within a room channel.
+   * Returns false if no such client was found. Used for personalised snapshots.
+   */
+  async emitToClientInRoom(
+    roomId: string,
+    userId: string,
+    event: string,
+    payload: unknown,
+  ): Promise<boolean> {
+    if (!this.server) {
+      return false;
+    }
+    const sockets = await this.server
+      .in(this.roomChannel(roomId))
+      .fetchSockets();
+    let delivered = false;
+    for (const socket of sockets) {
+      const data = socket.data as Record<string, unknown> | undefined;
+      if ((data?.userId as string | undefined) === userId) {
+        socket.emit(event, maybeEncrypt(payload as Record<string, unknown>));
+        delivered = true;
+      }
+    }
+    return delivered;
+  }
 }

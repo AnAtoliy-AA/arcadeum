@@ -1,5 +1,6 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ComboHints } from '../ComboHints';
@@ -33,13 +34,19 @@ const KIND_BORDER: Record<ComboKind, string> = {
   invalid: '#ef4444',
 };
 
-const KIND_GLOW: Record<ComboKind, string> = {
-  none: 'transparent',
-  single: 'rgba(34, 211, 238, 0.25)',
-  pair: 'rgba(245, 158, 11, 0.28)',
-  triple: 'rgba(167, 139, 250, 0.28)',
-  five: 'rgba(244, 114, 182, 0.28)',
-  invalid: 'rgba(239, 68, 68, 0.18)',
+// Pre-built filter strings keyed by kind so we don't rebuild the template
+// literal on every render. tamagui's RN-style `shadow*` props translate to
+// `box-shadow` on web; emitting both there and via `filter: drop-shadow`
+// painted the glow twice — we now drop the shadow props entirely and rely
+// on `filter` only, which is also the only path that paints consistently
+// across browsers for non-rectangular cards.
+const KIND_FILTER: Record<ComboKind, CSSProperties['filter']> = {
+  none: undefined,
+  single: 'drop-shadow(0 0 12px rgba(34,211,238,0.25))',
+  pair: 'drop-shadow(0 0 12px rgba(245,158,11,0.28))',
+  triple: 'drop-shadow(0 0 12px rgba(167,139,250,0.28))',
+  five: 'drop-shadow(0 0 12px rgba(244,114,182,0.28))',
+  invalid: 'drop-shadow(0 0 12px rgba(239,68,68,0.18))',
 };
 
 export function ComboCard({
@@ -64,9 +71,7 @@ export function ComboCard({
       borderColor={KIND_BORDER[kind]}
       backgroundColor="rgba(0,0,0,0.45)"
       opacity={kind === 'invalid' ? 0.65 : 1}
-      shadowColor={KIND_GLOW[kind]}
-      shadowOpacity={kind === 'none' ? 0 : 1}
-      shadowRadius={12}
+      style={{ filter: KIND_FILTER[kind] }}
     >
       <Text
         data-testid="combo-card-label"
@@ -78,7 +83,17 @@ export function ComboCard({
       >
         {label}
       </Text>
-      <ComboHints hand={hand} allowActionCardCombos={allowActionCardCombos} />
+      {/* Hide the chip strip at idle — three "possible" chips read as
+          decorative clutter without a selection. Once the player picks
+          anything (kind !== 'none') the strip surfaces the active /
+          possible combo states. */}
+      {kind !== 'none' && (
+        <ComboHints
+          hand={hand}
+          allowActionCardCombos={allowActionCardCombos}
+          activeKind={kind}
+        />
+      )}
     </YStack>
   );
 }

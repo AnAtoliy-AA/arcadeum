@@ -187,6 +187,8 @@ export const frMessages = {
       setup: 'Mise en place',
       placement: 'Placement',
       battle: 'Bataille',
+      survive: 'Survie',
+      powerups: 'Bonus',
     },
     category: {
       cardGame: 'Jeu de cartes',

@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScenePalette } from './ScenePaletteContext';
+import { useIsNarrow } from '../lib/useNarrowViewport';
 
 interface TurnBannerProps {
   isMyTurn: boolean;
@@ -12,17 +13,10 @@ interface TurnBannerProps {
   pendingDraws?: number;
 }
 
-const PULSE_KEYFRAMES_CSS = `
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes turnBannerDotPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.35); opacity: 0.6; }
-  }
-  [data-testid="turn-banner-dot"] {
-    animation: turnBannerDotPulse 1.5s ease-in-out infinite;
-  }
-}
-`;
+// `turnBannerDotPulse` keyframes live in `hudStyles.tsx`
+// (HUD_KEYFRAMES_CSS) — `ArenaCenter` mounts `<HudStyles />` once for
+// the whole widget, so the rule is already in the document by the time
+// this banner paints.
 
 function formatTimer(secondsRemaining: number | null): string {
   const s = secondsRemaining ?? 0;
@@ -40,6 +34,7 @@ export function TurnBanner({
 }: TurnBannerProps) {
   const palette = useScenePalette();
   const { t } = useTranslation();
+  const isNarrow = useIsNarrow(480);
 
   const label = isMyTurn
     ? t('games.table.players.yourMove')
@@ -55,13 +50,17 @@ export function TurnBanner({
         : t('games.table.hud.extraTurnsPlural', { count: extra })
       : null;
 
+  // On narrow phones the dot+label+chip+timer row blows past the
+  // viewport. Stack vertically so each element gets its own line and the
+  // player-name truncates instead of pushing the timer off-screen.
   const shellStyle: CSSProperties = {
     position: 'relative',
     display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
+    flexDirection: isNarrow ? 'column' : 'row',
+    alignItems: isNarrow ? 'stretch' : 'center',
+    gap: isNarrow ? 4 : 10,
     padding: '8px 16px',
-    borderRadius: 9999,
+    borderRadius: isNarrow ? 14 : 9999,
     background: 'rgba(0, 0, 0, 0.45)',
     color: '#ffffff',
     fontWeight: 700,
@@ -71,14 +70,27 @@ export function TurnBanner({
     boxShadow: palette.turnBannerShadow,
     overflow: 'hidden',
     isolation: 'isolate',
+    maxWidth: '100%',
   };
 
-  // Gradient border rendered via ::before-equivalent overlay using mask-composite
+  const headerRowStyle: CSSProperties = {
+    position: 'relative',
+    zIndex: 1,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+  };
+
+  // Gradient border rendered via ::before-equivalent overlay using
+  // mask-composite. The radius mirrors the shell so the gradient mask
+  // tracks the rounded card on phones — without this it kept the full
+  // pill radius and clipped at the corners of the narrower layout.
   const borderOverlayStyle: CSSProperties = {
     content: '""',
     position: 'absolute',
     inset: 0,
-    borderRadius: 9999,
+    borderRadius: isNarrow ? 14 : 9999,
     padding: 2,
     background: palette.turnBannerBorderGradient,
     WebkitMask:
@@ -104,6 +116,11 @@ export function TurnBanner({
     position: 'relative',
     zIndex: 1,
     textTransform: 'uppercase',
+    minWidth: 0,
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   };
 
   const timerStyle: CSSProperties = {
@@ -111,19 +128,24 @@ export function TurnBanner({
     zIndex: 1,
     fontVariantNumeric: 'tabular-nums',
     opacity: 0.85,
-    marginLeft: 4,
+    marginLeft: isNarrow ? 0 : 4,
+    alignSelf: isNarrow ? 'flex-end' : 'auto',
   };
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: PULSE_KEYFRAMES_CSS }} />
-      <div data-testid="turn-banner" style={shellStyle}>
-        <span aria-hidden style={borderOverlayStyle} />
+    <div data-testid="turn-banner" style={shellStyle}>
+      <span aria-hidden style={borderOverlayStyle} />
+      <div style={headerRowStyle}>
         <span data-testid="turn-banner-dot" style={dotStyle} />
         <span style={labelStyle}>{label}</span>
         {extraLabel && (
           <span
             data-testid="turn-banner-extra"
+            // Explicit aria-label so AT users hear the full phrase
+            // ("plus two turns coming after this one") rather than the
+            // raw "+2" which some screen readers strip the sign from
+            // and announce as "two" — no longer self-explanatory.
+            aria-label={extraLabel}
             style={{
               position: 'relative',
               zIndex: 1,
@@ -137,13 +159,15 @@ export function TurnBanner({
               letterSpacing: 0.4,
               textTransform: 'uppercase',
               fontVariantNumeric: 'tabular-nums',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
             }}
           >
             {extraLabel}
           </span>
         )}
-        <span style={timerStyle}>{timer}</span>
       </div>
-    </>
+      <span style={timerStyle}>{timer}</span>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { YStack } from 'tamagui';
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
+import { FlashHistory } from '../FlashHistory';
 import { HudStyles } from '../hudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
@@ -26,6 +27,11 @@ interface ArenaCenterProps {
   // Flash banner
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /**
+   * Resolves a log entry's `senderId` to its display name for the
+   * `FlashHistory` actor column. Passes through from `MatchWidget`.
+   */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
 }
 
 /**
@@ -48,12 +54,17 @@ export function ArenaCenter({
   hiddenCount,
   logs,
   formatLogMessage,
+  resolveDisplayName,
 }: ArenaCenterProps) {
   return (
     <YStack
       data-testid="arena-center"
       flex={1}
-      minHeight={120}
+      // No `minHeight` — the column should be content-sized so the
+      // arena card collapses around its actual content instead of
+      // reserving 180px of dead air below the threat strip at idle.
+      // The FlashBanner is absolutely positioned and doesn't push the
+      // stack, so the flow's natural height is the right floor.
       alignItems="center"
       justifyContent="center"
       gap="$2"
@@ -63,7 +74,7 @@ export function ArenaCenter({
       <YStack
         data-testid="arena-flash-slot"
         position="absolute"
-        top={-8}
+        top={8}
         left={0}
         right={0}
         alignItems="center"
@@ -88,6 +99,16 @@ export function ArenaCenter({
         deck={deck}
         serverOverloadOdds={serverOverloadOdds}
         hiddenCount={hiddenCount}
+      />
+      {/* §4.7 — last-5 timeline strip beneath the threat strip. The
+          single-shot FlashBanner clears in 1.6s; this surfaces a
+          short history so players who were watching their hand can
+          still see what just happened. Each row carries the actor
+          name so it's obvious who did what. */}
+      <FlashHistory
+        logs={logs}
+        formatMessage={formatLogMessage}
+        resolveDisplayName={resolveDisplayName}
       />
     </YStack>
   );

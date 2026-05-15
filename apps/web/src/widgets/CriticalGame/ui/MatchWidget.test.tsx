@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
@@ -61,6 +61,10 @@ vi.mock('./hand/HandZone', () => ({
     onOpenRules,
     onToggleFullscreen,
     isFullscreen,
+    showCardName,
+    showCardDescription,
+    onToggleCardName,
+    onToggleCardDescription,
   }: {
     combo: { kind: string; label: string };
     canPlay: boolean;
@@ -70,6 +74,10 @@ vi.mock('./hand/HandZone', () => ({
     onOpenRules?: () => void;
     onToggleFullscreen?: () => void;
     isFullscreen?: boolean;
+    showCardName?: boolean;
+    showCardDescription?: boolean;
+    onToggleCardName?: () => void;
+    onToggleCardDescription?: () => void;
   }) => (
     <div
       data-testid="hand-zone-stub"
@@ -78,6 +86,8 @@ vi.mock('./hand/HandZone', () => ({
       data-can-play={canPlay ? 'true' : 'false'}
       data-card-uids={cards.map((c) => c.uid).join(',')}
       data-is-fullscreen={isFullscreen ? 'true' : 'false'}
+      data-show-name={showCardName ? 'true' : 'false'}
+      data-show-description={showCardDescription ? 'true' : 'false'}
     >
       <button
         type="button"
@@ -113,6 +123,20 @@ vi.mock('./hand/HandZone', () => ({
           onClick={onToggleFullscreen}
         />
       )}
+      {onToggleCardName && (
+        <button
+          type="button"
+          data-testid="hand-zone-stub-toggle-name"
+          onClick={onToggleCardName}
+        />
+      )}
+      {onToggleCardDescription && (
+        <button
+          type="button"
+          data-testid="hand-zone-stub-toggle-description"
+          onClick={onToggleCardDescription}
+        />
+      )}
     </div>
   ),
 }));
@@ -137,82 +161,50 @@ vi.mock('./RulesModal', () => ({
 }));
 
 vi.mock('./styles/layout', () => ({
-  GameBoard: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="game-board-stub">{children}</div>
-  ),
-  TableArea: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="table-area-stub">{children}</div>
+  MatchWidgetGrid: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="match-widget-grid-stub">{children}</div>
   ),
 }));
 
 import { MatchWidget, type MatchWidgetProps } from './MatchWidget';
 import type { CriticalCard, CriticalPlayerState } from '../types';
-
-function makeProps(override: Partial<MatchWidgetProps> = {}): MatchWidgetProps {
-  const currentPlayer: CriticalPlayerState = {
-    playerId: 'p1',
-    hand: ['strike', 'strike', 'evade'] as CriticalCard[],
-    alive: true,
-  };
-  const baseSnapshot = {
-    deck: [] as CriticalCard[],
-    discardPile: [] as CriticalCard[],
-    playerOrder: ['p1'],
-    currentTurnIndex: 0,
-    pendingDraws: 1,
-    pendingDefuse: null,
-    pendingFavor: null,
-    pendingAlter: null,
-    pendingAction: null,
-    players: [currentPlayer],
-    logs: [],
-    allowActionCardCombos: true,
-  };
-  return {
-    room: { id: 'room' } as never,
-    snapshot: baseSnapshot,
-    currentUserId: 'p1',
-    currentPlayer,
-    cardVariant: 'cyberpunk',
-    isGameOver: false,
-    isMyTurn: true,
-    canAct: true,
-    canPlayNope: false,
-    actionBusy: null,
-    aliveOpponents: [],
-    handLayout: 'grid',
-    setHandLayout: vi.fn(),
-    resolveDisplayName: (_id?: string, fb?: string) => fb,
-    t: ((k: string) => k) as never,
-    actions: {
-      drawCard: vi.fn(),
-      playNope: vi.fn(),
-      playSeeTheFuture: vi.fn(),
-      playFavor: vi.fn(),
-      giveFavorCard: vi.fn(),
-      playDefuse: vi.fn(),
-      playActionCard: vi.fn(),
-    } as never,
-    idleTimerTriggered: false,
-    autoplayState: { setAllEnabled: vi.fn() },
-    handleUnstash: vi.fn(),
-    handlePlayActionCard: vi.fn(),
-    handleOpenFavorModal: vi.fn(),
-    handleOpenEventCombo: vi.fn(),
-    handleOpenFiverCombo: vi.fn(),
-    formatLogMessage: (m?: string | null) => m ?? '',
-    isFullscreen: false,
-    toggleFullscreen: vi.fn(),
-    ...override,
-  } as MatchWidgetProps;
-}
+import { makeProps } from './MatchWidget.test-fixtures';
 
 describe('MatchWidget (ARC-635)', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   it('renders the three-row layout: OpponentsRow + Arena + HandZone', () => {
     render(<MatchWidget {...makeProps()} />);
     expect(screen.getByTestId('opponents-row-stub')).toBeInTheDocument();
     expect(screen.getByTestId('arena-stub')).toBeInTheDocument();
     expect(screen.getByTestId('hand-zone-stub')).toBeInTheDocument();
+  });
+
+  it('restores persisted card-text toggles from localStorage on mount', () => {
+    // §4.6 — toggles are user preferences keyed per-userId, so a player
+    // who collapsed the description on match #5 keeps it collapsed on
+    // match #6 instead of having to re-collapse every game.
+    window.localStorage.setItem(
+      'critical:hand-toggles:p1',
+      JSON.stringify({ name: false, description: false }),
+    );
+    render(<MatchWidget {...makeProps()} />);
+    const handZone = screen.getByTestId('hand-zone-stub');
+    expect(handZone).toHaveAttribute('data-show-name', 'false');
+    expect(handZone).toHaveAttribute('data-show-description', 'false');
+  });
+
+  it('persists card-text toggles to localStorage when toggled', () => {
+    // §4.6 — the toggle round-trips through localStorage so reloading
+    // the page (or starting a fresh match) preserves the choice.
+    render(<MatchWidget {...makeProps()} />);
+    fireEvent.click(screen.getByTestId('hand-zone-stub-toggle-name'));
+    const raw = window.localStorage.getItem('critical:hand-toggles:p1');
+    expect(raw).toBeTruthy();
+    const stored = JSON.parse(raw ?? '{}') as Record<string, boolean>;
+    expect(stored.name).toBe(false);
   });
 
   it('hides HandZone when the current player is eliminated', () => {

@@ -1,9 +1,10 @@
 'use client';
 
-import { XStack, YStack, useMedia } from 'tamagui';
+import { XStack, YStack } from 'tamagui';
 import { HandCards } from './HandCards';
 import { HandRail } from './HandRail';
 import { MobileHandBar } from './MobileHandBar';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
 import type { HandCardInstance, ComboKind } from '../../lib/combo';
 
 interface HandZoneProps {
@@ -36,8 +37,11 @@ interface HandZoneProps {
  * 64` on `$sm` so cards aren't hidden behind the bar.
  */
 export function HandZone(props: HandZoneProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
+  // Tamagui's `sm` (≤800px) fires on tablet portrait where the desktop
+  // rail still has plenty of room. Read the ≤480px value broadcast by
+  // `NarrowViewportProvider` at the widget root so HandZone, Arena, and
+  // OpponentsRow commit the same flip on the same React frame.
+  const isMobile = useIsNarrow(480);
 
   if (isMobile) {
     return (
@@ -48,7 +52,6 @@ export function HandZone(props: HandZoneProps) {
         gap="$2"
         paddingHorizontal="$2"
         paddingTop="$2"
-        paddingBottom={120}
       >
         <HandCards
           cards={props.cards}
@@ -57,6 +60,7 @@ export function HandZone(props: HandZoneProps) {
           cardVariant={props.cardVariant}
           showName={props.showCardName}
           showDescription={props.showCardDescription}
+          isFanned={false}
         />
         <MobileHandBar
           handCount={props.cards.length}

@@ -1,7 +1,10 @@
 'use client';
 
-import { XStack, useMedia } from 'tamagui';
+import { useMemo } from 'react';
+import { XStack } from 'tamagui';
 import { OpponentTile } from './OpponentTile';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
+import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import type { CriticalPlayerTableState } from '../../types';
 
 interface OpponentsRowProps {
@@ -38,9 +41,17 @@ export function OpponentsRow({
   onSelectTarget,
   resolveDisplayName,
 }: OpponentsRowProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
+  // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
+  // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
+  // Value comes from `NarrowViewportProvider` at the widget root.
+  const isMobile = useIsNarrow(480);
   const isDuel = opponents.length <= 1;
+
+  // Idle players come from gameStore. Subscribing here once + memoizing a
+  // Set keeps the 5 tiles from each running `.includes` on every state
+  // update — at 5 opponents that's 5 subscriptions × O(n) scans per frame.
+  const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
+  const idleSet = useMemo(() => new Set(idlePlayers), [idlePlayers]);
 
   return (
     <XStack
@@ -48,13 +59,25 @@ export function OpponentsRow({
       data-mode={isDuel ? 'duel' : 'ffa'}
       data-count={opponents.length}
       width="100%"
-      gap="$2"
+      gap="$3"
       paddingHorizontal="$2"
       paddingVertical="$2"
-      justifyContent={isDuel ? 'center' : 'space-between'}
-      flexWrap={isMobile ? 'nowrap' : 'wrap'}
-      overflow={isMobile ? 'scroll' : 'visible'}
-      $sm={{ gap: '$1' }}
+      justifyContent="center"
+      flexWrap="nowrap"
+      // Mobile: horizontal scroll with scroll-snap so each tile lands on
+      // a fixed stop instead of free-floating. Desktop: tiles flex-grow
+      // evenly with a max width so 2-/3-/4-up rows look balanced rather
+      // than space-between-clumped.
+      style={
+        isMobile
+          ? {
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              scrollSnapType: 'x mandatory',
+            }
+          : { overflow: 'visible' }
+      }
+      $sm={{ gap: '$2' }}
     >
       {opponents.map((opponent) => (
         <OpponentTile
@@ -62,6 +85,10 @@ export function OpponentsRow({
           player={opponent}
           isCurrentTurn={opponent.playerId === currentTurnPlayerId}
           isTarget={!!targetPlayerId && opponent.playerId === targetPlayerId}
+          isDuel={isDuel}
+          isMobile={isMobile}
+          avatarSize={getAvatarSize(opponents.length, isDuel, isMobile)}
+          isIdle={idleSet.has(opponent.playerId)}
           onSelect={
             onSelectTarget && opponent.alive
               ? () => onSelectTarget(opponent.playerId)
@@ -72,4 +99,22 @@ export function OpponentsRow({
       ))}
     </XStack>
   );
+}
+
+/**
+ * Avatar diameter for a tile, scaled by FFA opponent count so a 5-up row
+ * doesn't look avatar-dominated and a 3-up row doesn't look sparse. Duel
+ * mode locks to the focal size — there's only one tile, no crowding to
+ * worry about. Mobile knocks both branches down so tiles fit thumb-width.
+ */
+function getAvatarSize(
+  count: number,
+  isDuel: boolean,
+  isMobile: boolean,
+): number {
+  if (isMobile) return isDuel ? 64 : 36;
+  if (isDuel) return 88;
+  if (count >= 5) return 40;
+  if (count === 4) return 44;
+  return 56;
 }

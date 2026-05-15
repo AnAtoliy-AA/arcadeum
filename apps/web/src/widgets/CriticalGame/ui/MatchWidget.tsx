@@ -9,7 +9,7 @@ import {
   type ComponentProps,
 } from 'react';
 import type { ActiveGameContent } from './ActiveGameContent';
-import { GameBoard, TableArea } from './styles/layout';
+import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
@@ -22,12 +22,58 @@ import {
   type ComboKind,
 } from '../lib/combo';
 import { getCardTranslationKey } from '../lib/cardUtils';
+import { NarrowViewportProvider } from '../lib/useNarrowViewport';
+import { withViewTransition } from '../lib/viewTransition';
 import type { CriticalCard } from '../types';
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
   'neutralizer',
   'containment_field',
 ];
+
+type ToggleField = 'name' | 'description';
+
+/**
+ * Read a persisted hand-card toggle from localStorage. SSR-safe: returns
+ * the default on the server, and treats any localStorage failure (private
+ * browsing, quota, JSON corruption) as "use the default" so a bad cache
+ * entry never breaks the match.
+ */
+function readToggle(
+  key: string | null,
+  field: ToggleField,
+  fallback: boolean,
+): boolean {
+  if (!key || typeof window === 'undefined') return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw) as Partial<Record<ToggleField, boolean>>;
+    const value = parsed?.[field];
+    return typeof value === 'boolean' ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Write a persisted hand-card toggle. Failures are swallowed silently. */
+function writeToggle(
+  key: string | null,
+  field: ToggleField,
+  value: boolean,
+): void {
+  if (!key || typeof window === 'undefined') return;
+  try {
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw
+      ? ((JSON.parse(raw) as Partial<Record<ToggleField, boolean>>) ?? {})
+      : {};
+    parsed[field] = value;
+    window.localStorage.setItem(key, JSON.stringify(parsed));
+  } catch {
+    /* localStorage unavailable (Safari private mode, quota) — silent skip */
+  }
+}
 
 export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
   /**
@@ -82,11 +128,56 @@ export function MatchWidget({
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
-  // Per-session show/hide for the card name + description rows. Default
-  // both ON so first-time players see the rules text; experienced
-  // players can collapse to art-only via the rail toggles.
-  const [showCardName, setShowCardName] = useState(true);
-  const [showCardDescription, setShowCardDescription] = useState(true);
+  // Persist show/hide for the card name + description rows per user. New
+  // players see both rows by default (rules text helps them learn);
+  // experienced players who collapse to art-only stay collapsed across
+  // matches. Storage key is namespaced by user id so multiple accounts
+  // on the same browser don't share preferences.
+  const togglesStorageKey = currentUserId
+    ? `critical:hand-toggles:${currentUserId}`
+    : null;
+  const [showCardName, setShowCardName] = useState<boolean>(() =>
+    readToggle(togglesStorageKey, 'name', true),
+  );
+  const [showCardDescription, setShowCardDescription] = useState<boolean>(() =>
+    readToggle(togglesStorageKey, 'description', true),
+  );
+  // Hydration guard for §4.6 + the review's §1.1 follow-up. The
+  // `useState` initializer only runs once on mount; if `currentUserId`
+  // wasn't available yet (e.g. auth bootstrap hasn't resolved by the
+  // time the widget paints), `togglesStorageKey` was `null` and the
+  // initializer fell back to the default `true`. This effect re-reads
+  // localStorage exactly once when the key transitions from null →
+  // string, so persisted preferences actually restore. After hydration
+  // the ref stays set so subsequent userId churn doesn't clobber an
+  // in-progress toggle. Also doubles as a dirty-flag for the write
+  // effects below — without this, a fresh-page write would echo the
+  // just-read value straight back into storage on every match start.
+  const hydratedFromStorage = useRef(false);
+  /* eslint-disable react-hooks/set-state-in-effect --
+   * One-shot hydration when `currentUserId` arrives async (auth bootstrap
+   * resolved after the widget mounted). This is the documented pattern
+   * for syncing local state to a value that wasn't available at mount —
+   * the rule guards against cascading renders, not external-event syncs.
+   * The `hydratedFromStorage` ref makes this exactly-once.
+   */
+  useEffect(() => {
+    if (!togglesStorageKey || hydratedFromStorage.current) return;
+    hydratedFromStorage.current = true;
+    const name = readToggle(togglesStorageKey, 'name', true);
+    const desc = readToggle(togglesStorageKey, 'description', true);
+    setShowCardName(name);
+    setShowCardDescription(desc);
+  }, [togglesStorageKey]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!hydratedFromStorage.current) return;
+    writeToggle(togglesStorageKey, 'name', showCardName);
+  }, [togglesStorageKey, showCardName]);
+  useEffect(() => {
+    if (!hydratedFromStorage.current) return;
+    writeToggle(togglesStorageKey, 'description', showCardDescription);
+  }, [togglesStorageKey, showCardDescription]);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
   const handleCloseRules = useCallback(() => setRulesOpen(false), []);
   const handleToggleCardName = useCallback(
@@ -129,9 +220,14 @@ export function MatchWidget({
    * cascading-renders pattern the rule guards against.
    */
   useEffect(() => {
-    if (validSelectedUids.length !== selectedUids.length) {
-      setSelectedUids(validSelectedUids);
-    }
+    // Length-only check missed the same-length-different-uids case: when
+    // Nope clears the played card but a fresh draw lands on the same
+    // index and reuses the uid, the array length stays the same but the
+    // identities shift. Element-wise comparison catches that.
+    const drifted =
+      validSelectedUids.length !== selectedUids.length ||
+      validSelectedUids.some((uid, i) => uid !== selectedUids[i]);
+    if (drifted) setSelectedUids(validSelectedUids);
   }, [validSelectedUids, selectedUids]);
 
   const prevIsMyTurn = useRef(isMyTurn);
@@ -188,7 +284,12 @@ export function MatchWidget({
 
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
-    actions.drawCard();
+    // §4.2 — wrap in a view transition so the new card animates into
+    // the hand instead of popping in. Falls through synchronously when
+    // the browser lacks startViewTransition.
+    withViewTransition(() => {
+      actions.drawCard();
+    });
   }, [actions, isMyTurn, isGameOver]);
 
   const canPlay = useMemo(() => {
@@ -212,33 +313,41 @@ export function MatchWidget({
 
   const handlePlay = useCallback(() => {
     if (!canPlay) return;
-    if (detected.kind === 'single') {
-      const cardId = detected.selected[0].id;
-      // Targeted singles bypass the legacy modal entirely — the widget
-      // already has an armed target, so pass it through to the server in
-      // one shot. The fall-through `handlePlayActionCard(id)` for
-      // un-targeted cards keeps the existing behaviour (sets +
-      // playActionCard / opens a non-target modal for stash, etc.).
-      if (isTargetedSingle(cardId)) {
-        if (!targetPlayerId) return;
-        // `trade` (Favor) has a dedicated socket on the BE — the generic
-        // play_action gateway rejects it via isSimpleActionCard. The rest
-        // of the targeted singles ride the play_action path.
-        if (cardId === 'trade') {
-          actions.playFavor(targetPlayerId);
+    // §4.2 — animate the play through View Transitions when supported.
+    // The browser cross-fades between selected-cards-in-hand and the
+    // post-play layout (cards gone, discard top updated). Fallback runs
+    // the body synchronously with no animation.
+    withViewTransition(() => {
+      if (detected.kind === 'single') {
+        const cardId = detected.selected[0].id;
+        // Targeted singles bypass the legacy modal entirely — the
+        // widget already has an armed target, so pass it through to
+        // the server in one shot. The fall-through
+        // `handlePlayActionCard(id)` for un-targeted cards keeps the
+        // existing behaviour (sets + playActionCard / opens a
+        // non-target modal for stash, etc.).
+        if (isTargetedSingle(cardId)) {
+          if (!targetPlayerId) return;
+          // `trade` (Favor) has a dedicated socket on the BE — the
+          // generic play_action gateway rejects it via
+          // isSimpleActionCard. The rest of the targeted singles ride
+          // the play_action path.
+          if (cardId === 'trade') {
+            actions.playFavor(targetPlayerId);
+          } else {
+            actions.playActionCard(cardId, { targetPlayerId });
+          }
         } else {
-          actions.playActionCard(cardId, { targetPlayerId });
+          handlePlayActionCard(cardId);
         }
-      } else {
-        handlePlayActionCard(cardId);
+      } else if (detected.kind === 'pair' || detected.kind === 'triple') {
+        handleOpenEventCombo(asComboCards(detected.selected), hand);
+      } else if (detected.kind === 'five') {
+        handleOpenFiverCombo();
       }
-    } else if (detected.kind === 'pair' || detected.kind === 'triple') {
-      handleOpenEventCombo(asComboCards(detected.selected), hand);
-    } else if (detected.kind === 'five') {
-      handleOpenFiverCombo();
-    }
-    setSelectedUids([]);
-    setTargetPlayerId(null);
+      setSelectedUids([]);
+      setTargetPlayerId(null);
+    });
   }, [
     canPlay,
     detected,
@@ -274,17 +383,17 @@ export function MatchWidget({
 
   return (
     <div data-testid="match-widget">
-      <GameBoard>
-        <OpponentsRow
-          opponents={opponents}
-          currentTurnPlayerId={turnPlayerId}
-          targetPlayerId={targetPlayerId}
-          onSelectTarget={
-            isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
-          }
-          resolveDisplayName={tileResolveName}
-        />
-        <TableArea>
+      <NarrowViewportProvider maxWidth={480}>
+        <MatchWidgetGrid data-testid="match-widget-grid">
+          <OpponentsRow
+            opponents={opponents}
+            currentTurnPlayerId={turnPlayerId}
+            targetPlayerId={targetPlayerId}
+            onSelectTarget={
+              isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
+            }
+            resolveDisplayName={tileResolveName}
+          />
           <Arena
             deck={snapshot.deck}
             discardPile={snapshot.discardPile}
@@ -299,35 +408,36 @@ export function MatchWidget({
             pendingDraws={snapshot.pendingDraws}
             logs={snapshot.logs ?? []}
             formatLogMessage={formatLogMessage}
+            resolveDisplayName={tileResolveName}
             serverOverloadOdds={snapshot.overloadOdds}
             hiddenCount={snapshot.hiddenCount}
           />
-        </TableArea>
 
-        {showHand && (
-          <HandZone
-            cards={handCards}
-            selectedUids={validSelectedUids}
-            onToggleSelect={handleToggleSelect}
-            combo={combo}
-            defuseCount={defuseCount}
-            canPlay={canPlay}
-            canDraw={isMyTurn && !isGameOver}
-            canNope={canPlayNope}
-            cardVariant={cardVariant}
-            isFullscreen={isFullscreen}
-            showCardName={showCardName}
-            showCardDescription={showCardDescription}
-            onPlay={handlePlay}
-            onDraw={handleDrawAndEnd}
-            onNope={actions.playNope}
-            onOpenRules={handleOpenRules}
-            onToggleFullscreen={toggleFullscreen}
-            onToggleCardName={handleToggleCardName}
-            onToggleCardDescription={handleToggleCardDescription}
-          />
-        )}
-      </GameBoard>
+          {showHand && (
+            <HandZone
+              cards={handCards}
+              selectedUids={validSelectedUids}
+              onToggleSelect={handleToggleSelect}
+              combo={combo}
+              defuseCount={defuseCount}
+              canPlay={canPlay}
+              canDraw={isMyTurn && !isGameOver}
+              canNope={canPlayNope}
+              cardVariant={cardVariant}
+              isFullscreen={isFullscreen}
+              showCardName={showCardName}
+              showCardDescription={showCardDescription}
+              onPlay={handlePlay}
+              onDraw={handleDrawAndEnd}
+              onNope={actions.playNope}
+              onOpenRules={handleOpenRules}
+              onToggleFullscreen={toggleFullscreen}
+              onToggleCardName={handleToggleCardName}
+              onToggleCardDescription={handleToggleCardDescription}
+            />
+          )}
+        </MatchWidgetGrid>
+      </NarrowViewportProvider>
       <RulesModal
         isOpen={rulesOpen}
         onClose={handleCloseRules}

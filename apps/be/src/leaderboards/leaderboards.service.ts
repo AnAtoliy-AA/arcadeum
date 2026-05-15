@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   LeaderboardEntry,
   type GameMode,
@@ -9,6 +9,7 @@ import {
 import { Cup } from './schemas/cup.schema';
 import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
+import { User } from '../auth/schemas/user.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardsCacheService } from './leaderboards.cache';
 import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
@@ -93,6 +94,7 @@ export class LeaderboardsService {
     @InjectModel(Squad.name) private readonly squadModel: Model<Squad>,
     @InjectModel(TickerEvent.name)
     private readonly tickerEventModel: Model<TickerEvent>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     @Inject(forwardRef(() => LeaderboardsGateway))
     private readonly gateway: LeaderboardsGateway,
     private readonly cache: LeaderboardsCacheService,
@@ -216,10 +218,39 @@ export class LeaderboardsService {
         }
       : undefined;
 
+    // Resolve equipped cosmetics. Single User read — same cost as the squad
+    // lookup above. Bot leaderboard rows (userId without a Mongo doc) just
+    // come back with null equipped IDs and the client renders the initials
+    // fallback in <Avatar />.
+    let equippedAvatarId: string | null = null;
+    let equippedBadgeId: string | null = null;
+    let equippedNameColorId: string | null = null;
+    if (Types.ObjectId.isValid(userId)) {
+      const userDoc = await this.userModel
+        .findById(userId, {
+          equippedAvatarId: 1,
+          equippedBadgeId: 1,
+          equippedNameColorId: 1,
+        })
+        .lean<{
+          equippedAvatarId?: string | null;
+          equippedBadgeId?: string | null;
+          equippedNameColorId?: string | null;
+        } | null>();
+      if (userDoc) {
+        equippedAvatarId = userDoc.equippedAvatarId ?? null;
+        equippedBadgeId = userDoc.equippedBadgeId ?? null;
+        equippedNameColorId = userDoc.equippedNameColorId ?? null;
+      }
+    }
+
     return {
       player: hydratePlayer(primary.entry),
       modeRanks,
       squad,
+      equippedAvatarId,
+      equippedBadgeId,
+      equippedNameColorId,
     };
   }
 

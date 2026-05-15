@@ -11,11 +11,20 @@ export type ChatMessageProps = {
   contentNode?: React.ReactNode;
   senderName?: string;
   senderColor?: string;
+  /**
+   * Extra style applied to the sender-name Typography. Used to render
+   * gradient name-colors via `background-clip: text` — when present, takes
+   * precedence over `senderColor`. Plain (hex) colors should keep using
+   * `senderColor`.
+   */
+  senderNameStyle?: React.CSSProperties;
   targetName?: string;
   targetColor?: string;
   timestamp?: string;
   isOwn?: boolean;
   avatarUrl?: string;
+  /** Sender's equipped shop badge URL — rendered inline next to the name. */
+  badgeUrl?: string;
   isEncrypted?: boolean;
   type?: 'system' | 'action' | 'message';
 };
@@ -119,11 +128,13 @@ export const ChatMessage = memo(function ChatMessage({
   contentNode,
   senderName,
   senderColor,
+  senderNameStyle,
   targetName,
   targetColor,
   timestamp,
   isOwn = false,
   avatarUrl,
+  badgeUrl,
   isEncrypted,
   type = 'message',
 }: ChatMessageProps) {
@@ -142,19 +153,41 @@ export const ChatMessage = memo(function ChatMessage({
             uiSize="xs"
             weight="600"
             {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
             letterSpacing={0.5}
             textTransform="uppercase"
           >
             {senderName}
           </Typography>
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
         </XStack>
       )}
       {isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
           <Typography
             uiSize="xs"
             weight="600"
             {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
             letterSpacing={0.5}
             textTransform="uppercase"
           >

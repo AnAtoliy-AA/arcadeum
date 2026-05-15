@@ -1,13 +1,24 @@
 'use client';
 
 import { YStack, Text } from 'tamagui';
+import {
+  CardsIcon,
+  EyeIcon,
+  FootprintsIcon,
+  HandIcon,
+  HandshakeIcon,
+  ShieldIcon,
+  SparklesIcon,
+  SwordsIcon,
+} from '@arcadeum/ui';
+import type { FC } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   getCardTranslationKey,
   getCardDescriptionKey,
 } from '../../lib/cardUtils';
 import { getCardRole, type CardRole } from '../../lib/cardRoles';
-import { CardImage } from '../styles/card-image';
+import { CardImage, hasArtFor } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
 
 interface HandCardProps {
@@ -40,45 +51,39 @@ const ROLE_BORDER: Record<CardRole, string> = {
   special: '#f472b6',
 };
 
-const ROLE_GLOW: Record<CardRole, string> = {
-  attack: 'rgba(239, 68, 68, 0.35)',
-  defuse: 'rgba(52, 211, 153, 0.35)',
-  skip: 'rgba(56, 189, 248, 0.35)',
-  nope: 'rgba(245, 158, 11, 0.35)',
-  favor: 'rgba(167, 139, 250, 0.35)',
-  see: 'rgba(34, 211, 238, 0.35)',
-  combo: 'rgba(250, 204, 21, 0.35)',
-  special: 'rgba(244, 114, 182, 0.40)',
-};
+// Glow colours are now CSS-attribute-keyed in `hudStyles.tsx` (§4.1) —
+// the ::after pseudo-element reads `data-role` and `data-selected` and
+// drives box-shadow + radius via custom properties. No JS payload.
 
 /**
- * Fallback glyph used when the active card variant has no sprite sheet
+ * Fallback icon used when the active card variant has no sprite sheet
  * (e.g. the unthemed "default" variant). Keyed by role so the icon at
- * least tracks the border colour.
+ * least tracks the border colour. SVG components render consistently
+ * across OSes — the prior emoji glyphs (⚔, 🛡, 🃏, …) were Windows /
+ * macOS / Android renderings apart.
  */
-const ROLE_FALLBACK_GLYPH: Record<CardRole, string> = {
-  attack: '⚔',
-  defuse: '🛡',
-  skip: '👟',
-  nope: '✋',
-  favor: '🤝',
-  see: '👁',
-  combo: '🃏',
-  special: '✨',
+const ROLE_FALLBACK_ICON: Record<CardRole, FC<{ size?: number }>> = {
+  attack: SwordsIcon,
+  defuse: ShieldIcon,
+  skip: FootprintsIcon,
+  nope: HandIcon,
+  favor: HandshakeIcon,
+  see: EyeIcon,
+  combo: CardsIcon,
+  special: SparklesIcon,
 };
 
 const SELECT_RING = '#34d399';
-const SELECT_GLOW = 'rgba(52, 211, 153, 0.55)';
 
 /**
- * Single-card cell for the widget-mode hand. Border colour + corner icon
- * come from the card's role family (`cardRoles.ts`). Selection lifts the
- * card and swaps the border to the accent green + glow.
- *
- * Card art is intentionally not pulled from the legacy `CardImage`
- * sprite — the widget aims for compact info density, not a faithful
- * reproduction of the table-mode card. The legacy `PlayerHand` keeps
- * the rich art on the flag-off path.
+ * Single-card cell for the widget-mode hand. Renders the variant's
+ * sprite via `<CardImage>` when available, with a role-keyed fallback
+ * glyph as the underlay for the unthemed "default" variant. Name +
+ * description overlay a bottom scrim so the artwork stays visible.
+ * Border colour comes from the card's role family (`cardRoles.ts`);
+ * selection lifts the cell and swaps the border to the accent green.
+ * The legacy `PlayerHand` keeps the rich table-mode card on the
+ * flag-off path.
  */
 export function HandCard({
   card,
@@ -95,12 +100,19 @@ export function HandCard({
   const name = t(getCardTranslationKey(card.id, cardVariant));
   const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
-  const glow = isSelected ? SELECT_GLOW : ROLE_GLOW[role];
+  // Stable id so the outer button can `aria-describedby` the visible
+  // description block. Screen readers otherwise stop at the aria-label
+  // (card name) and never hear the rules text.
+  const descriptionId = `hand-card-description-${card.uid}`;
+  const linkDescription = showDescription && !!description;
 
-  // Width stays fixed; height adapts to which text rows are visible so a
-  // hand of art-only cells doesn't waste vertical space.
-  const baseHeight = 160 + (showName ? 24 : 0) + (showDescription ? 56 : 0);
-  const selectedBoost = 12;
+  // Fixed card silhouette (~3:4) regardless of which text rows show —
+  // text overlays the art rather than pushing the cell taller. Cell
+  // dimensions stay constant across selection so the lift doesn't
+  // displace neighbouring cards in the fan; the translateY + border
+  // swap + glow are enough to read selection.
+  const width = 124;
+  const height = 172;
 
   return (
     <YStack
@@ -113,6 +125,7 @@ export function HandCard({
       aria-pressed={isSelected}
       aria-disabled={disabled}
       aria-label={name}
+      aria-describedby={linkDescription ? descriptionId : undefined}
       onPress={disabled ? undefined : onToggle}
       onKeyDown={
         disabled
@@ -124,80 +137,97 @@ export function HandCard({
               }
             }
       }
-      width={isSelected ? 140 : 132}
-      height={baseHeight + (isSelected ? selectedBoost : 0)}
+      width={width}
+      height={height}
       borderRadius={10}
       borderWidth={2}
       borderColor={borderColor}
       backgroundColor="rgba(8,12,20,0.85)"
+      overflow="hidden"
+      position="relative"
       transform={isSelected ? [{ translateY: -8 }] : undefined}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.7 : 1}
-      alignItems="stretch"
-      justifyContent="flex-start"
-      paddingHorizontal={6}
-      paddingVertical={8}
-      gap={4}
-      shadowColor={glow}
-      shadowRadius={isSelected ? 14 : 8}
-      shadowOpacity={1}
-      shadowOffset={{ width: 0, height: 0 }}
+      // Glow is driven by the `::after` rule in `hudStyles.tsx` keyed on
+      // `data-role` + `data-selected` (§4.1). No tamagui shadow props
+      // here so the glow doesn't double-paint and can animate via the
+      // compositor when selection toggles.
       hoverStyle={
         disabled
           ? undefined
           : {
               transform: [{ translateY: isSelected ? -10 : -4 }],
-              shadowRadius: isSelected ? 18 : 12,
+            }
+      }
+      // Visible focus ring for keyboard users — the card is tabbable via
+      // `tabIndex={0}` but had no `:focus-visible` style, so a keyboard
+      // tab through the hand previously gave no visual feedback at all.
+      focusStyle={
+        disabled
+          ? undefined
+          : {
+              outlineColor: SELECT_RING,
+              outlineWidth: 2,
+              outlineStyle: 'solid',
+              outlineOffset: 2,
             }
       }
       flexShrink={0}
     >
-      <YStack
-        data-testid={`hand-card-art-${card.uid}`}
-        position="relative"
-        width="100%"
-        flex={1}
-        minHeight={120}
-        borderRadius={6}
-        overflow="hidden"
-        backgroundColor="rgba(0,0,0,0.45)"
-        alignItems="center"
-        justifyContent="center"
-      >
-        {/* Role glyph sits underneath so it shows through when the
-            active variant has no sprite sheet (CardImage renders null).
-            When a sheet exists, the absolutely-positioned sprite layer
-            paints over the glyph. */}
-        <Text fontSize={44} lineHeight={48} opacity={0.6}>
-          {ROLE_FALLBACK_GLYPH[role]}
-        </Text>
-        <CardImage variant={cardVariant ?? ''} cardType={card.id} />
-      </YStack>
-      {showName && (
-        <Text
-          data-testid={`hand-card-name-${card.uid}`}
-          fontSize={11}
-          fontWeight="800"
-          letterSpacing={0.4}
-          textTransform="uppercase"
-          textAlign="center"
-          numberOfLines={2}
-          color={borderColor}
+      <CardArt
+        cardId={card.id}
+        cardVariant={cardVariant}
+        role={role}
+        testId={`hand-card-art-${card.uid}`}
+      />
+      {(showName || showDescription) && (
+        <YStack
+          data-testid={`hand-card-overlay-${card.uid}`}
+          position="absolute"
+          left={0}
+          right={0}
+          bottom={0}
+          paddingHorizontal={8}
+          paddingTop={14}
+          paddingBottom={8}
+          gap={2}
+          pointerEvents="none"
+          // Linear scrim so the text reads cleanly against the art
+          // without obscuring the upper half. Transparent at the top so
+          // the artwork stays visible.
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
+          }}
         >
-          {name}
-        </Text>
-      )}
-      {showDescription && (
-        <Text
-          data-testid={`hand-card-description-${card.uid}`}
-          fontSize={9}
-          lineHeight={12}
-          textAlign="center"
-          numberOfLines={4}
-          color="rgba(226, 232, 240, 0.78)"
-        >
-          {description}
-        </Text>
+          {showName && (
+            <Text
+              data-testid={`hand-card-name-${card.uid}`}
+              fontSize={11}
+              fontWeight="800"
+              letterSpacing={0.4}
+              textTransform="uppercase"
+              textAlign="center"
+              numberOfLines={1}
+              color={borderColor}
+            >
+              {name}
+            </Text>
+          )}
+          {showDescription && (
+            <Text
+              id={descriptionId}
+              data-testid={descriptionId}
+              fontSize={9}
+              lineHeight={12}
+              textAlign="center"
+              numberOfLines={2}
+              color="rgba(226, 232, 240, 0.88)"
+            >
+              {description}
+            </Text>
+          )}
+        </YStack>
       )}
       {!!count && count > 1 && (
         <YStack
@@ -219,6 +249,49 @@ export function HandCard({
             ×{count}
           </Text>
         </YStack>
+      )}
+    </YStack>
+  );
+}
+
+interface CardArtProps {
+  cardId: string;
+  cardVariant?: string;
+  role: CardRole;
+  testId: string;
+}
+
+/**
+ * Full-bleed art slot. Renders the variant's sprite when art is
+ * available for `(variant, cardId)`; otherwise the role-keyed fallback
+ * glyph. Never both — stacking them caused the glyph to bleed through
+ * the sprite as a centre smudge.
+ */
+function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
+  const showArt = hasArtFor(cardVariant, cardId);
+  return (
+    <YStack
+      data-testid={testId}
+      position="absolute"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      alignItems="center"
+      justifyContent="center"
+      backgroundColor="rgba(0,0,0,0.45)"
+    >
+      {showArt ? (
+        <CardImage variant={cardVariant ?? ''} cardType={cardId} />
+      ) : (
+        (() => {
+          const FallbackIcon = ROLE_FALLBACK_ICON[role];
+          return (
+            <YStack opacity={0.55} data-testid={`hand-card-fallback-${role}`}>
+              <FallbackIcon size={56} />
+            </YStack>
+          );
+        })()
       )}
     </YStack>
   );

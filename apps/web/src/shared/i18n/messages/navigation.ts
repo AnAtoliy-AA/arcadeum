@@ -7,6 +7,7 @@ export const en = {
   settingsTab: 'Settings',
   statsTab: 'Statistics',
   walletTab: 'Wallet',
+  shopTab: 'Shop',
   adminTab: 'Admin',
 };
 
@@ -17,6 +18,7 @@ export const es = {
   settingsTab: 'Configuración',
   statsTab: 'Estadísticas',
   walletTab: 'Cartera',
+  shopTab: 'Tienda',
   adminTab: 'Administración',
 };
 
@@ -27,6 +29,7 @@ export const fr = {
   settingsTab: 'Paramètres',
   statsTab: 'Statistiques',
   walletTab: 'Portefeuille',
+  shopTab: 'Boutique',
   adminTab: 'Administration',
 };
 
@@ -37,6 +40,7 @@ export const ru = {
   settingsTab: 'Настройки',
   statsTab: 'Статистика',
   walletTab: 'Кошелёк',
+  shopTab: 'Магазин',
   adminTab: 'Админ',
 };
 
@@ -47,6 +51,7 @@ export const by = {
   settingsTab: 'Налады',
   statsTab: 'Статыстыка',
   walletTab: 'Кашалёк',
+  shopTab: 'Крама',
   adminTab: 'Адмін',
 };
 

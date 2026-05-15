@@ -3,7 +3,11 @@
 import { ChatMessageBubble } from './ChatMessageBubble';
 
 interface ChatMessagePopupProps {
+  senderId?: string | null;
   senderName: string;
+  senderEquippedAvatarId?: string | null;
+  senderEquippedBadgeId?: string | null;
+  senderEquippedNameColorId?: string | null;
   message: string;
   visible: boolean;
   onDismiss: () => void;
@@ -11,7 +15,11 @@ interface ChatMessagePopupProps {
 }
 
 export function ChatMessagePopup({
+  senderId,
   senderName,
+  senderEquippedAvatarId,
+  senderEquippedBadgeId,
+  senderEquippedNameColorId,
   message,
   visible,
   onDismiss,
@@ -42,7 +50,11 @@ export function ChatMessagePopup({
       }}
     >
       <ChatMessageBubble
+        senderId={senderId ?? null}
         senderName={senderName}
+        senderEquippedAvatarId={senderEquippedAvatarId ?? null}
+        senderEquippedBadgeId={senderEquippedBadgeId ?? null}
+        senderEquippedNameColorId={senderEquippedNameColorId ?? null}
         message={message}
         type="message"
         isOwn={isOwn}

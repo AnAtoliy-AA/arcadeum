@@ -7,9 +7,260 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.51] - 2026-05-15
+
+### Added
+
+- scale mongoose pool and pool axios outbound for PayPal (ARC-685) (ARC-685)
+
+## [1.13.50] - 2026-05-15
+
+### Fixed
+
+- raise per-socket listener cap on games namespace (ARC-683) (ARC-683)
+
+## [1.13.49] - 2026-05-15
+
+### Fixed
+
+- fullscreen mode from control panel and widget (ARC-682) (ARC-682)
+
+## [1.13.48] - 2026-05-15
+
+### Added
+
+- replace emoji glyphs with SVG icons §3.2 (ARC-681) (ARC-681)
+
+## [1.13.47] - 2026-05-15
+
+## [1.13.46] - 2026-05-15
+
+### Added
+
+- fluid widget width + container queries §3.3 (ARC-679) (ARC-679)
+
+## [1.13.45] - 2026-05-15
+
+### Fixed
+
+- develop-branch review follow-ups §1.1–1.10 + §2.1, §2.3 (ARC-678) (ARC-678)
+
+### Refactored
+
+- extract MatchWidget test fixtures to satisfy 500-line limit (ARC-678) (ARC-678)
+
+## [1.13.44] - 2026-05-14
+
+### Added
+
+- View Transitions + 5-tick history strip §4.2 + §4.7 (ARC-675) (ARC-675)
+
+### Fixed
+
+- make discard description scrim visible above card (ARC-676) (ARC-676)
+- show card description on the discard pile (ARC-676) (ARC-676)
+- show actor name in FlashHistory rows (ARC-675) (ARC-675)
+
+### Refactored
+
+- CSS grid arena + @property threat pulse §4.3 + §4.5 (ARC-676) (ARC-676)
+
+## [1.13.43] - 2026-05-14
+
+### Improved
+
+- CSS-driven hand glow + fan §4.1 + §4.4 (ARC-674) (ARC-674)
+
+## [1.13.42] - 2026-05-14
+
+### Added
+
+- persist hand-card toggles to localStorage §4.6 (ARC-673) (ARC-673)
+
+## [1.13.41] - 2026-05-14
+
+### Fixed
+
+- widget a11y items §3.1–3.4 from PR #658 review (ARC-672) (ARC-672)
+
+## [1.13.40] - 2026-05-14
+
+### Fixed
+
+- widget parity follow-ups §1.3–1.8 + §2.1 + §2.3–2.6 (ARC-671) (ARC-671)
+- land §1.1 + §1.2 from PR #658 design review (ARC-570) (ARC-570)
+
+## [1.13.39] - 2026-05-14
+
+### Added
+
+- widget parity pass against Critical.html preview (ARC-570) (ARC-570)
+
+### Fixed
+
+- PR #658 review follow-ups for widget parity (ARC-570) (ARC-570)
+
+## [1.13.38] - 2026-05-14
+
+### Added
+
+- name color category — third equippable surface (ARC-650) (ARC-650)
+
+## [1.13.37] - 2026-05-14
+
+### Added
+
+- equipped cosmetics in game chat + dropped-commit CI guard (ARC-650) (ARC-650)
+
+## [1.13.36] - 2026-05-14
+
+### Added
+
+- equipped cosmetics in lobby + leaderboard, /shop signed-out CTA (ARC-650) (ARC-650)
+
+## [1.13.35] - 2026-05-14
+
+### Added
+
+- show sender's equipped avatar + badge (ARC-650) (ARC-650)
+
+### Fixed
+
+- re-apply inventory cast + equip sync + dialog UX (ARC-650) (ARC-650)
+
+## [1.13.34] - 2026-05-14
+
+### Added
+
+- show equipped shop badge in ProfileMenu (ARC-650) (ARC-650)
+- show equipped cosmetics on /players/[id] (ARC-650) (ARC-650)
+
+### Fixed
+
+- filter bot ids before User.find $in (ARC-650) (ARC-650)
+
+## [1.13.33] - 2026-05-13
+
+### Added
+
+- prevent duplicate buys + clearer equip feedback (ARC-650) (ARC-650)
+- equipped avatar visible in header ProfileMenu (ARC-650) (ARC-650)
+
+## [1.13.32] - 2026-05-13
+
+### Added
+
+- /admin/shop surface + AuthModule DI fix (ARC-650) (ARC-650)
+
+### Fixed
+
+- theme-aware colors so admin reads under light theme too (ARC-650) (ARC-650)
+- give dialogs a solid card background on dark theme (ARC-650) (ARC-650)
+
+## [1.13.31] - 2026-05-13
+
+### Added
+
+- web /shop page + UI primitives (ARC-650) (ARC-650)
+
+### Fixed
+
+- hard-navigate home after OAuth so cookie is picked up everywhere (ARC-650) (ARC-650)
+- refresh server components after login so header updates without reload (ARC-650) (ARC-650)
+- refresh layout once on socket connect (ARC-650) (ARC-650)
+- use server actions + useTransition instead of TanStack Query (ARC-650) (ARC-650)
+
+## [1.13.30] - 2026-05-13
+
+### Added
+
+- REST API + module wiring + auth starter grant (ARC-650) (ARC-650)
+- catalog, inventory, shop services + bootstrap (ARC-650) (ARC-650)
+- foundation types, schemas, wallet reasons (ARC-650) (ARC-650)
+
+### Fixed
+
+- defer starter backfill so Nest binds HTTP immediately (ARC-650) (ARC-650)
+
+## [1.13.29] - 2026-05-13
+
+### Documentation
+
+- incorporate review feedback (ARC-650) (ARC-650)
+- ARC-650 in-game shop design spec (ARC-650)
+
+## [1.13.28] - 2026-05-13
+
+### Added
+
+- feature Glimworm on the home page with a Demo badge (ARC-555) (ARC-555)
+- one-click rematch with same settings (ARC-555) (ARC-555)
+- broadcast lobby snapshots so colors sync live (ARC-555) (ARC-555)
+- UX polish — countdown, result modal, "You" indicator (ARC-555) (ARC-555)
+- add Restart button (host-only) (ARC-555) (ARC-555)
+- add solo mode (host vs bots) (ARC-555) (ARC-555)
+- wire join/ready/start lobby flow (ARC-555) (ARC-555)
+- register glimworm_v1 in games registry (ARC-555) (ARC-555)
+- add widget entry component (ARC-555) (ARC-555)
+- add death overlay and lobby color picker (ARC-555) (ARC-555)
+- add HUD overlay component (ARC-555) (ARC-555)
+- add pixi lifecycle and render-loop hook (ARC-555) (ARC-555)
+- add cursor + touch controls hook (ARC-555) (ARC-555)
+- add socket hook with throttled input and reconnect (ARC-555) (ARC-555)
+- add pixi fx layer (ARC-555) (ARC-555)
+- add pixi food and power-up renderer (ARC-555) (ARC-555)
+- add pixi worm renderer with glow (ARC-555) (ARC-555)
+- add pixi arena renderer (ARC-555) (ARC-555)
+- add pixi application lifecycle (ARC-555) (ARC-555)
+- add pure snapshot interpolation utilities (ARC-555) (ARC-555)
+- add zustand store with snapshot rotation (ARC-555) (ARC-555)
+- add widget shared types (ARC-555) (ARC-555)
+- wire glimworm_v1 into shared game lib switches (ARC-555) (ARC-555)
+- add variant catalog for GameVariantSelector (ARC-555) (ARC-555)
+- add i18n bundles for 5 locales (ARC-555) (ARC-555)
+- add glimworm_v1 to GameSlug union (ARC-555) (ARC-555)
+- register glimworm services and gateway in games module (ARC-555) (ARC-555)
+- add socket gateway with input/start/color handlers (ARC-555) (ARC-555)
+- add greedy-food bot service (ARC-555) (ARC-555)
+- add service tick loop and session orchestration (ARC-555) (ARC-555)
+- add ghost power-up (ARC-555) (ARC-555)
+- add shrink power-up (ARC-555) (ARC-555)
+- add shield power-up (ARC-555) (ARC-555)
+- add power-up registry and speed power-up (ARC-555) (ARC-555)
+- add variant factory (ARC-555) (ARC-555)
+- add Lives + Heats variant (ARC-555) (ARC-555)
+- add Time-Attack variant (ARC-555) (ARC-555)
+- add variant strategy interface and Battle Royale (ARC-555) (ARC-555)
+- add in-memory session state store (ARC-555) (ARC-555)
+- add constants and shared types (ARC-555) (ARC-555)
+
+### Fixed
+
+- memoize teams to stabilize useMemo deps (ARC-555) (ARC-555)
+- hoist useMemo above the early return in GlimwormHud (ARC-555) (ARC-555)
+- demo badge no longer overlaps the help button (ARC-555) (ARC-555)
+- make bots steer away from walls predictively (ARC-555) (ARC-555)
+- make the in-game Restart button visible again (ARC-555) (ARC-555)
+- auto-ready everyone when host starts, so humans can play (ARC-555) (ARC-555)
+- honour the lobby bot-count selector (ARC-555) (ARC-555)
+- widget UI polish — scoreboard names, restart, food glow (ARC-555) (ARC-555)
+- initialize pixi when the canvas mounts after lobby (ARC-555) (ARC-555)
+- make bots survive longer (ARC-555) (ARC-555)
+- decrypt incoming snapshot/event payloads (ARC-555) (ARC-555)
+- emit plain socket events (not encrypted) (ARC-555) (ARC-555)
+- make Start more forgiving and surface BE errors (ARC-555) (ARC-555)
+- add glimworm_v1 to create-flow gamesCatalog (ARC-555) (ARC-555)
+- mark random ctor param as @Optional for NestJS DI (ARC-555) (ARC-555)
+
+### Refactored
+
+- use ReusableGameLobby for the lobby UI (ARC-555) (ARC-555)
+- make Lives + Heats initSession unconditional (ARC-555) (ARC-555)
+
 ## [1.13.27] - 2026-05-12
 
 ### Added
+
 - let host remove unassigned bots from the pool (ARC-646) (ARC-646)
 - one-click rematch with the same bot count (ARC-646) (ARC-646)
 - aim → fire → wait sequence on pending cell (ARC-646) (ARC-646)
@@ -17,6 +268,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - optimistic cell feedback on attack click (ARC-646) (ARC-646)
 
 ### Fixed
+
 - distribute extra width as gaps so capped board grid fills the row (ARC-646) (ARC-646)
 - cap board column width so 8-player fullscreen fits without scroll (ARC-646) (ARC-646)
 - serialize per-room placement to stop concurrent-write race (ARC-646) (ARC-646)
@@ -44,17 +296,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - probe random neighbour after a hit instead of cheating (ARC-646) (ARC-646)
 
 ### Improved
+
 - drop redundant Mongo reads on attack broadcast (ARC-646) (ARC-646)
 - halve bot move delays for snappier gameplay (ARC-646) (ARC-646)
 
 ### Refactored
+
 - put theme list as a vertical column to the right of the preview (ARC-646) (ARC-646)
 - extract bot delay magic numbers into named constants (ARC-646) (ARC-646)
-
 
 ## [1.13.26] - 2026-05-12
 
 ### Added
+
 - stamp targetId on targeted-action logs (ARC-645) (ARC-645)
 - emoji marks + colored keyword for HIT/MISS/SUNK (ARC-645) (ARC-645)
 - show attack target in action log (ARC-645) (ARC-645)
@@ -63,6 +317,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - consistent per-player color (ARC-645) (ARC-645)
 
 ### Fixed
+
 - make Hack / Favor (trade) playable in widget mode (ARC-645) (ARC-645)
 - plumb game-aware display-name resolver into chat (ARC-645) (ARC-645)
 - color OpponentTile per-player (ARC-645) (ARC-645)
@@ -70,10 +325,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - show who performed each action in the log (ARC-645) (ARC-645)
 - show whose message in in-game chat (ARC-645) (ARC-645)
 
-
 ## [1.13.25] - 2026-05-12
 
 ### Added
+
 - redesign HandRail for legibility (ARC-639) (ARC-639)
 - stack count + defuse pills vertically (ARC-639) (ARC-639)
 - collapse MobileHandBar into a single row (ARC-639) (ARC-639)
@@ -84,77 +339,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - complete widget UX — target flow, hand visual, mobile bar (ARC-639) (ARC-639)
 
 ### Fixed
+
 - stack Arena vertically on mobile (ARC-639) (ARC-639)
 - portal MobileHandBar to document.body (ARC-639) (ARC-639)
 - show hand cards on mobile (ARC-639) (ARC-639)
 - contain Arena pile cards inside CardSlot (ARC-639) (ARC-639)
 - render real sprite art on hand cards (ARC-639) (ARC-639)
 
-
 ## [1.13.24] - 2026-05-11
 
 ### Added
-- server-authoritative overloadOdds on snapshot (ARC-638) (ARC-638)
 
+- server-authoritative overloadOdds on snapshot (ARC-638) (ARC-638)
 
 ## [1.13.23] - 2026-05-11
 
 ### Added
-- emit log.kind for HUD classification (ARC-637) (ARC-637)
 
+- emit log.kind for HUD classification (ARC-637) (ARC-637)
 
 ## [1.13.22] - 2026-05-11
 
 ### Added
-- drop header in widget mode; Rules + Fullscreen on HandRail (ARC-636) (ARC-636)
 
+- drop header in widget mode; Rules + Fullscreen on HandRail (ARC-636) (ARC-636)
 
 ## [1.13.21] - 2026-05-11
 
 ### Added
-- HandZone + selection-aware combo (ARC-635) (ARC-635)
 
+- HandZone + selection-aware combo (ARC-635) (ARC-635)
 
 ## [1.13.20] - 2026-05-11
 
 ### Added
-- OpponentsRow + OpponentTile (ARC-634) (ARC-634)
 
+- OpponentsRow + OpponentTile (ARC-634) (ARC-634)
 
 ## [1.13.19] - 2026-05-11
 
 ### Added
-- ArenaCenter + ComboCard inside Arena (ARC-633) (ARC-633)
 
+- ArenaCenter + ComboCard inside Arena (ARC-633) (ARC-633)
 
 ## [1.13.18] - 2026-05-11
 
 ### Added
-- Arena row inside MatchWidget (ARC-632) (ARC-632)
 
+- Arena row inside MatchWidget (ARC-632) (ARC-632)
 
 ## [1.13.17] - 2026-05-11
 
 ### Added
-- scaffold MatchWidget behind widget_mode flag (ARC-631) (ARC-631)
 
+- scaffold MatchWidget behind widget_mode flag (ARC-631) (ARC-631)
 
 ## [1.13.16] - 2026-05-11
 
 ### Added
+
 - add match HUD with threat strip, combo hints, flash banner (ARC-630) (ARC-630)
 
 ### Fixed
+
 - apply PR-631 review-2 §5 fixes (ARC-630) (ARC-630)
 - address PR-631 review feedback (ARC-630) (ARC-630)
 
-
 ## [1.13.15] - 2026-05-11
-
 
 ## [1.13.14] - 2026-05-11
 
 ### Added
+
 - Day 7 gem bonus on top of coin reward (ARC-621) (ARC-621)
 - compact chip on home page (ARC-621) (ARC-621)
 - mount DailyRewardCard on /wallet (ARC-621) (ARC-621)
@@ -169,13 +425,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - register daily_reward_day_1..7 keys (ARC-621) (ARC-621)
 
 ### Documentation
+
 - implementation plan for ARC-621 (ARC-621)
 - design spec for ARC-621 (ARC-621)
-
 
 ## [1.13.13] - 2026-05-11
 
 ### Added
+
 - stack coin/gem balance pills vertically on mobile (ARC-619) (ARC-619)
 - tighter layout on iPhone SE-class screens (ARC-619) (ARC-619)
 - show human-readable names and descriptions for keys (ARC-619) (ARC-619)
@@ -193,6 +450,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add typed economy key registry (ARC-619) (ARC-619)
 
 ### Fixed
+
 - drop GlassCard hoverStyle to eliminate Tamagui SSR hydration mismatch (ARC-619) (ARC-619)
 - swap Tamagui shell for plain CSS module to ensure mobile fill (ARC-619) (ARC-619)
 - widen admin Container to xl so it fills wider viewports (ARC-619) (ARC-619)
@@ -203,32 +461,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - read i18n from messages.pages.adminEconomy (ARC-619) (ARC-619)
 
 ### Refactored
+
 - read coin rewards from EconomySettings (ARC-619) (ARC-619)
 - read gem_to_coin_rate from EconomySettings; getRate now async (ARC-619) (ARC-619)
 - read game_win_coin_reward from EconomySettings (ARC-619) (ARC-619)
 
 ### Documentation
+
 - annotate env vars as overridable; document cache TTL (ARC-619) (ARC-619)
 - fold plan reviewer recommendations into ARC-619 plan (ARC-619)
 - add ARC-619 admin economy settings implementation plan (ARC-619)
 - fold spec reviewer recommendations into ARC-619 design (ARC-619)
 - add ARC-619 admin-tunable economy settings design (ARC-619)
 
-
 ## [1.13.12] - 2026-05-11
 
 ### Added
+
 - ARC-620 modern profile menu UI and UX polish (ARC-620)
 - [ARC-620] modernize profile menu styles and migrate to shared components (ARC-620)
 
 ### Fixed
+
 - restore missing logout test ID in ProfileMenu (N/A)
 - ARC-620 stabilize E2E tests and fix mobile layout overlaps (ARC-620)
-
 
 ## [1.13.11] - 2026-05-10
 
 ### Added
+
 - labels for referral_bonus and referral_tier_bonus (ARC-618) (ARC-618)
 - show coin rewards on referrals page (ARC-618) (ARC-618)
 - i18n keys for coin-reward copy in 5 locales (ARC-618) (ARC-618)
@@ -240,16 +501,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extend WalletReason with referral_bonus and referral_tier_bonus (ARC-618) (ARC-618)
 
 ### Documentation
+
 - document referral coin reward env vars (ARC-618) (ARC-618)
 - fold plan reviewer recommendations into ARC-618 plan (ARC-618)
 - add ARC-618 referral coin rewards implementation plan (ARC-618)
 - clarify aggregation key for future coinsEarned rollup (ARC-618) (ARC-618)
 - add ARC-618 referral coin rewards design spec (ARC-618)
 
-
 ## [1.13.10] - 2026-05-10
 
 ### Added
+
 - dedicated /payment/gem-cancel page + auto-cancel on return (ARC-617) (ARC-617)
 - add Wallet link to profile menu and mobile menu (ARC-617) (ARC-617)
 - route gem purchases to dedicated /payment/gem-success page (ARC-617) (ARC-617)
@@ -282,26 +544,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extend WalletReason with gem_purchase and conversion (ARC-617) (ARC-617)
 
 ### Fixed
+
 - split finalize into helper + action so the success page can render (ARC-617) (ARC-617)
 - capture APPROVED PayPal orders before crediting (ARC-617) (ARC-617)
 - align Buy buttons across gem package cards (ARC-617) (ARC-617)
 - set PayPal redirect env defaults in integration test (ARC-617) (ARC-617)
 
 ### Refactored
+
 - use PaypalGateway in createSession (ARC-617) (ARC-617)
 - expose MAX_TRANSACTION_AMOUNT for cross-module reuse (ARC-617) (ARC-617)
 
 ### Documentation
+
 - document GEM_TO_COIN_RATE env var (ARC-617) (ARC-617)
 - fix /wallet/conversion-rate routing in ARC-617 plan (ARC-617)
 - add ARC-617 implementation plan (ARC-617)
 - fold spec reviewer recommendations into ARC-617 design (ARC-617)
 - add ARC-617 gem top-up + conversion design spec (ARC-617)
 
-
 ## [1.13.9] - 2026-05-10
 
 ### Added
+
 - add new reason labels and tournament copy (ARC-616) (ARC-616)
 - add register confirm dialog (ARC-616) (ARC-616)
 - show entry fee and prize pool (ARC-616) (ARC-616)
@@ -324,22 +589,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add coin fields to DTOs and mark-complete DTO (ARC-616) (ARC-616)
 - add entryFeeCoins, prizePoolCoins, winnerUserId (ARC-616) (ARC-616)
 - support parentSession for cross-module transactions (ARC-616) (ARC-616)
-- extend WalletReason with game_win and tournament_* (ARC-616) (ARC-616)
+- extend WalletReason with game*win and tournament*\* (ARC-616) (ARC-616)
 
 ### Fixed
+
 - replace brittle snapshot with explicit assertions (ARC-616) (ARC-616)
 
 ### Documentation
+
 - document GAME_WIN_COIN_REWARD env var (ARC-616) (ARC-616)
 - fold plan reviewer recommendations into ARC-616 plan (ARC-616)
 - add ARC-616 implementation plan (ARC-616)
 - fold spec reviewer recommendations into ARC-616 design (ARC-616)
 - add ARC-616 earn/spend loop design spec (ARC-616)
 
-
 ## [1.13.8] - 2026-05-09
 
 ### Added
+
 - add mobile wallet i18n (en/es/fr) (ARC-615)
 - add wallet screen at /wallet route (ARC-615)
 - mount balance chip in mobile header (ARC-615)
@@ -372,34 +639,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add currency and reason type unions (ARC-615) (ARC-615)
 
 ### Fixed
+
 - BalanceChip swallows BE errors so SSR never cascades (ARC-615) (ARC-615)
 - unauthenticated /wallet renders empty state + sitemap entry (ARC-615) (ARC-615)
 - register JwtModule in WalletModule for gateway DI (ARC-615) (ARC-615)
 
 ### Documentation
+
 - split interfaces import in plan task 6 (ARC-615) (ARC-615)
 - fold plan reviewer recommendations into ARC-615 plan (ARC-615)
 - add ARC-615 implementation plan (ARC-615)
 - fold reviewer recommendations into spec (ARC-615) (ARC-615)
 - add foundation design spec (ARC-615) (ARC-615)
 
-
 ## [1.13.7] - 2026-05-09
 
 ### Added
+
 - FE admin + public surface, i18n, SEO regression (ARC-610) (ARC-610)
 - admin + public controllers + module wiring (ARC-610) (ARC-610)
 - add service with admin/public queries, transitions, and registration (ARC-610) (ARC-610)
 - add Tournament schema, interfaces, DTOs, helpers (ARC-610) (ARC-610)
 
 ### Documentation
+
 - add tournaments implementation plan (ARC-610) (ARC-610)
 - add tournaments design spec (ARC-610) (ARC-610)
-
 
 ## [1.13.6] - 2026-05-09
 
 ### Added
+
 - add i18n + SEO regression test (ARC-608) (ARC-608)
 - add /admin/announcements page + sidebar (ARC-608) (ARC-608)
 - api/hooks/UI components (ARC-608) (ARC-608)
@@ -414,17 +684,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Announcement schema and interfaces (ARC-608) (ARC-608)
 
 ### Fixed
+
 - register User schema in module so RolesGuard resolves (ARC-608) (ARC-608)
 
 ### Refactored
+
 - split layout into server shell + client sidebar (ARC-608) (ARC-608)
 
 ### Documentation
+
 - apply plan review fixes (ARC-608) (ARC-608)
 - add announcements implementation plan (ARC-608) (ARC-608)
 - apply spec review clarifications (ARC-608) (ARC-608)
 - add announcements design spec (ARC-608) (ARC-608)
-
 
 ## [1.13.5] - 2026-05-09
 

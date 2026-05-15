@@ -1,10 +1,10 @@
 'use client';
 
-import { XStack, YStack, useMedia } from 'tamagui';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 import { DrawPile } from './DrawPile';
 import { DiscardPile } from './DiscardPile';
 import { ArenaCenter } from './ArenaCenter';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
 import type { ComboKind } from './ComboCard';
 
 interface ArenaProps {
@@ -22,6 +22,8 @@ interface ArenaProps {
   pendingDraws: number;
   logs: CriticalLogEntry[];
   formatLogMessage: (message?: string | null) => string;
+  /** Resolves a log entry's senderId for the FlashHistory actor column. */
+  resolveDisplayName?: (playerId: string, fallback: string) => string;
   /** Server-authoritative overload odds (0-100). Forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
   /** Cards the snapshot has hidden — folded into client-fallback odds. */
@@ -32,6 +34,12 @@ interface ArenaProps {
  * Three-column arena row (draw · center · discard) — Row 2 of the §7
  * widget layout. The center column hosts the turn pill, combo intent
  * card, threat strip, and an absolutely-positioned flash banner.
+ *
+ * Layout lives in CSS now (`.match-arena` in `hudStyles.tsx`) — desktop
+ * is a 3-column grid, mobile re-stacks via `grid-template-areas` to
+ * `center / center` over `draw / discard`. The JS `isNarrow` flip
+ * stays only for the pile / center children whose internal layout
+ * still differs between desktop and phone.
  */
 export function Arena({
   deck,
@@ -47,81 +55,51 @@ export function Arena({
   pendingDraws,
   logs,
   formatLogMessage,
+  resolveDisplayName,
   serverOverloadOdds,
   hiddenCount,
 }: ArenaProps) {
-  const media = useMedia();
-  const isMobile = media.sm;
-
-  const drawPile = (
-    <DrawPile
-      deck={deck}
-      count={deck.length}
-      disabled={!isMyTurn || isGameOver}
-      onDraw={onDrawAndEnd}
-      cardVariant={cardVariant}
-    />
-  );
-  const arenaCenter = (
-    <ArenaCenter
-      isMyTurn={isMyTurn}
-      currentPlayerName={currentPlayerName}
-      pendingDraws={pendingDraws}
-      hand={hand}
-      allowActionCardCombos={allowActionCardCombos}
-      combo={combo}
-      deck={deck}
-      logs={logs}
-      formatLogMessage={formatLogMessage}
-      serverOverloadOdds={serverOverloadOdds}
-      hiddenCount={hiddenCount}
-    />
-  );
-  const discardPileEl = (
-    <DiscardPile pile={discardPile} cardVariant={cardVariant} />
-  );
-
-  // Mobile: stack vertically so the center column gets full row width
-  // for the turn pill, combo chips, threat strip, and FlashBanner —
-  // otherwise the side piles squeeze it to a few pixels and the
-  // absolutely-positioned overlays collide with neighbours.
-  if (isMobile) {
-    return (
-      <YStack
-        data-testid="arena"
-        data-layout="mobile"
-        width="100%"
-        gap="$2"
-        paddingHorizontal="$2"
-        alignItems="stretch"
-      >
-        <XStack
-          width="100%"
-          alignItems="center"
-          justifyContent="space-around"
-          gap="$2"
-        >
-          {drawPile}
-          {discardPileEl}
-        </XStack>
-        {arenaCenter}
-      </YStack>
-    );
-  }
+  const isNarrow = useIsNarrow(480);
 
   return (
-    <XStack
+    <div
+      className="match-arena"
       data-testid="arena"
-      data-layout="desktop"
-      width="100%"
-      alignItems="center"
-      justifyContent="space-between"
-      gap="$4"
-      paddingHorizontal="$3"
+      data-layout={isNarrow ? 'mobile' : 'desktop'}
     >
-      {drawPile}
-      {arenaCenter}
-      {discardPileEl}
-    </XStack>
+      <div data-area="draw">
+        <DrawPile
+          deck={deck}
+          count={deck.length}
+          disabled={!isMyTurn || isGameOver}
+          onDraw={onDrawAndEnd}
+          cardVariant={cardVariant}
+          isNarrow={isNarrow}
+        />
+      </div>
+      <div data-area="center">
+        <ArenaCenter
+          isMyTurn={isMyTurn}
+          currentPlayerName={currentPlayerName}
+          pendingDraws={pendingDraws}
+          hand={hand}
+          allowActionCardCombos={allowActionCardCombos}
+          combo={combo}
+          deck={deck}
+          logs={logs}
+          formatLogMessage={formatLogMessage}
+          resolveDisplayName={resolveDisplayName}
+          serverOverloadOdds={serverOverloadOdds}
+          hiddenCount={hiddenCount}
+        />
+      </div>
+      <div data-area="discard">
+        <DiscardPile
+          pile={discardPile}
+          cardVariant={cardVariant}
+          isNarrow={isNarrow}
+        />
+      </div>
+    </div>
   );
 }

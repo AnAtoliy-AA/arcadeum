@@ -13,11 +13,28 @@ import {
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
+export interface ResolvedEquipped {
+  equippedAvatarId: string | null;
+  equippedBadgeId: string | null;
+  equippedNameColorId?: string | null;
+}
+
+export type EquippedResolver = (id?: string | null) => ResolvedEquipped | null;
+
 interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
+  /**
+   * Maps a senderId to that user's currently-equipped shop cosmetics, used
+   * to render avatars and inline badges in chat rows. Caller is expected to
+   * derive this from the lobby's room.members payload (which now carries
+   * equippedAvatarId / equippedBadgeId per member).
+   */
+  resolveEquipped?: EquippedResolver;
   currentUserId?: string | null;
   onClose?: () => void;
   teamMode?: boolean;
@@ -64,6 +81,7 @@ function renderResultHighlights(message: string): ReactNode {
 
 export function GameChat({
   resolveDisplayName,
+  resolveEquipped,
   currentUserId,
   onClose,
   teamMode,
@@ -187,8 +205,9 @@ export function GameChat({
                   ? renderResultHighlights(log.message)
                   : undefined;
               return (
-                <ChatMessage
+                <GameChatRow
                   key={log.id}
+                  senderId={log.senderId ?? null}
                   senderName={log.senderId ? senderName : undefined}
                   senderColor={senderColor}
                   targetName={targetId ? targetName : undefined}
@@ -197,6 +216,7 @@ export function GameChat({
                   contentNode={contentNode}
                   type={log.type}
                   isOwn={isOwn}
+                  resolveEquipped={resolveEquipped}
                 />
               );
             })}
@@ -220,5 +240,55 @@ export function GameChat({
         }
       />
     </GlassCard>
+  );
+}
+
+function GameChatRow({
+  senderId,
+  senderName,
+  senderColor,
+  targetName,
+  targetColor,
+  content,
+  contentNode,
+  type,
+  isOwn,
+  resolveEquipped,
+}: {
+  senderId: string | null;
+  senderName?: string;
+  senderColor?: string;
+  targetName?: string;
+  targetColor?: string;
+  content: string;
+  contentNode?: ReactNode;
+  type: 'system' | 'action' | 'message';
+  isOwn: boolean;
+  resolveEquipped?: EquippedResolver;
+}) {
+  const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+    equippedAvatarId: resolved?.equippedAvatarId,
+    equippedBadgeId: resolved?.equippedBadgeId,
+    equippedNameColorId: resolved?.equippedNameColorId,
+  });
+  // Shop name-color overrides the per-match actor color when present —
+  // cosmetic personal choice wins over contextual game coloring.
+  const nameProps = nameColorRenderProps(nameColor);
+  const resolvedSenderColor = nameProps.color ?? senderColor;
+  return (
+    <ChatMessage
+      senderName={senderName}
+      senderColor={resolvedSenderColor}
+      senderNameStyle={nameProps.style}
+      targetName={targetName}
+      targetColor={targetColor}
+      content={content}
+      contentNode={contentNode}
+      type={type}
+      isOwn={isOwn}
+      avatarUrl={avatarUrl ?? undefined}
+      badgeUrl={badgeUrl ?? undefined}
+    />
   );
 }

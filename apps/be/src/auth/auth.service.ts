@@ -28,6 +28,8 @@ import type {
   UserRole,
 } from './lib/types';
 import { ReferralService } from '../referrals/referral.service';
+import { InventoryService } from '../shop/services/inventory.service';
+import { ModuleRef } from '@nestjs/core';
 
 export type {
   OAuthTokenResponse,
@@ -45,7 +47,19 @@ export class AuthService {
     private readonly googleOAuth: GoogleOAuthService,
     @Inject(forwardRef(() => ReferralService))
     private readonly referralService: ReferralService,
+    private readonly moduleRef: ModuleRef,
   ) {}
+
+  // Lazy ModuleRef lookup avoids the AuthModule <-> ShopModule constructor
+  // cycle (transient DI errors on cold start). Called post-bootstrap only.
+  private async grantStarterItems(userId: string): Promise<void> {
+    try {
+      const inv = this.moduleRef.get(InventoryService, { strict: false });
+      await inv.grantStarter(userId);
+    } catch {
+      // ShopInventoryBootstrap is the safety net.
+    }
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // OAuth Code Exchange (delegated to GoogleOAuthService)
@@ -100,6 +114,14 @@ export class AuthService {
         // Non-critical — don't fail registration if referral tracking fails
       }
     }
+
+    // Grant starter shop items. Un-sessioned — neither `register()` nor
+    // `getOrCreateOAuthUser()` open a Mongo transaction today, and forcing
+    // one purely for this side effect would reshape error semantics across
+    // the auth surface. A crash between user-insert and starter-grant is
+    // recovered by `ShopInventoryBootstrap` on next boot. Failure is
+    // non-critical to registration itself.
+    await this.grantStarterItems((created as UserDocument).id as string);
 
     return this.buildAuthUserProfile(created);
   }
@@ -420,6 +442,10 @@ export class AuthService {
       displayName: profile.name?.trim() || undefined,
     });
 
+    // Grant starter shop items on first OAuth sign-up. Same un-sessioned
+    // approach as `register()`; bootstrap is the safety net.
+    await this.grantStarterItems((created as UserDocument).id as string);
+
     return created;
   }
 
@@ -452,6 +478,9 @@ export class AuthService {
       username: user.username,
       displayName: this.resolveDisplayName(user),
       role: user.role ?? 'free',
+      equippedAvatarId: user.equippedAvatarId ?? null,
+      equippedBadgeId: user.equippedBadgeId ?? null,
+      equippedNameColorId: user.equippedNameColorId ?? null,
     };
 
     const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;

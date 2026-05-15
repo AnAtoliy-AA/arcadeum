@@ -114,6 +114,93 @@ describe('HandCards', () => {
     );
   });
 
+  it('exposes hand-index and hand-count as CSS custom properties for the fan', () => {
+    // §4.4 — the fan rotation is now CSS-driven; JS only sets
+    // --hand-index per card and --hand-count once. CSS reads these via
+    // `abs()` and `clamp()` to compute rotate/translate.
+    renderCards();
+    const wrappers = document.querySelectorAll<HTMLElement>(
+      '.crit-hand-card-wrapper',
+    );
+    expect(wrappers.length).toBe(3);
+    wrappers.forEach((w, i) => {
+      expect(w.style.getPropertyValue('--hand-index')).toBe(String(i));
+      expect(w.style.getPropertyValue('--hand-count')).toBe('3');
+      expect(w.getAttribute('data-fan')).toBe('true');
+    });
+  });
+
+  it('flips data-fan to "false" when the row is unfanned (mobile)', () => {
+    renderCards({ isFanned: false });
+    const first = document.querySelector('.crit-hand-card-wrapper');
+    expect(first?.getAttribute('data-fan')).toBe('false');
+  });
+
+  it('keeps cell dimensions stable across selection so the fan does not shift', () => {
+    // Regression for PR #658 review §1.2 — the selected-state size delta
+    // (132×184 vs 124×172) pushed neighbours sideways because the row
+    // uses `gap`, not absolute positioning. Lift/glow/border swap now
+    // signal selection without disturbing layout.
+    const { rerender, props } = renderCards();
+    const before = screen.getByTestId('hand-card-strike-0');
+    expect(before.className).toMatch(/_w-124px/);
+    expect(before.className).toMatch(/_h-172px/);
+    rerender(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+        <HandCards {...props} selectedUids={['strike-0']} />
+      </TamaguiProvider>,
+    );
+    const after = screen.getByTestId('hand-card-strike-0');
+    expect(after).toHaveAttribute('data-selected', 'true');
+    expect(after.className).toMatch(/_w-124px/);
+    expect(after.className).toMatch(/_h-172px/);
+  });
+
+  it('renders the role fallback icon when the variant has no sprite art', () => {
+    // Regression for PR #658 review §1.1 — the icon used to render
+    // beneath the sprite and bleed through. With no sprite for the
+    // default variant we should still see the role-keyed icon.
+    // §3.2: glyphs are SVG components now (data-testid="hand-card-
+    // fallback-<role>") rather than emoji text, so the assertion has
+    // moved from textContent to a testid lookup.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    // strike → attack role → SwordsIcon
+    expect(
+      card.querySelector('[data-testid="hand-card-fallback-attack"]'),
+    ).not.toBeNull();
+  });
+
+  it('omits the fallback icon when the variant ships sprite art for the card', () => {
+    // Regression for PR #658 review §1.1 — the icon must NOT stack with
+    // the sprite. Crime variant has a sprite sheet; strike is mapped.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+      cardVariant: 'crime',
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    expect(
+      card.querySelector('[data-testid="hand-card-fallback-attack"]'),
+    ).toBeNull();
+  });
+
+  it('links the card description via aria-describedby so screen readers hear it', () => {
+    // §3.1 — aria-label only carries the card name; the description
+    // (rules text) lives in a separate element. Connecting them via
+    // aria-describedby is what makes the description audible.
+    renderCards({
+      cards: handWithUids(['strike'] as CriticalCard[]),
+    });
+    const card = screen.getByTestId('hand-card-strike-0');
+    const describedBy = card.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    const description = document.getElementById(describedBy!);
+    expect(description).not.toBeNull();
+    expect(description!.textContent).toBeTruthy();
+  });
+
   it('shows a duplicate-count badge only for cards with copies in hand', () => {
     renderCards({
       cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),

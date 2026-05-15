@@ -45,6 +45,9 @@ export const walletFr: WalletI18n = {
     gem_to_coin_conversion_credit: 'Pièces issues de la conversion',
     referral_bonus: 'Bonus de parrainage',
     referral_tier_bonus: 'Bonus de palier de parrainage',
+    daily_reward: 'Récompense quotidienne',
+    shop_purchase: 'Achat boutique',
+    shop_sell_refund: 'Remboursement vente',
   },
   errors: {
     insufficientFunds: 'Solde insuffisant.',

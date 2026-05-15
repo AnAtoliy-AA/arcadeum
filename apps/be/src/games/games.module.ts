@@ -35,6 +35,10 @@ import { CriticalBotService } from './critical/critical-bot.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { SeaBattleBotService } from './sea-battle/sea-battle-bot.service';
+import { GlimwormGateway } from './glimworm.gateway';
+import { GlimwormService } from './glimworm/glimworm.service';
+import { GlimwormBotService } from './glimworm/glimworm-bot.service';
+import { GlimwormStateStore } from './glimworm/glimworm.state';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -79,6 +83,10 @@ import { EconomyModule } from '../economy/economy.module';
     TexasHoldemService,
     SeaBattleService,
     SeaBattleBotService,
+    // Glimworm
+    GlimwormStateStore,
+    GlimwormService,
+    GlimwormBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -91,6 +99,7 @@ import { EconomyModule } from '../economy/economy.module';
     CriticalActionsGateway,
     TexasHoldemGateway,
     SeaBattleGateway,
+    GlimwormGateway,
   ],
   exports: [GameHistoryStatsService],
 })

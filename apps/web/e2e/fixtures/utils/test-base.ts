@@ -36,8 +36,10 @@ export const test = base.extend({
           ) ||
           text.includes('was preloaded using link preload but not used') ||
           text.includes('webpack-hmr') ||
-          (/font|geist/i.test(text) &&
-            /(download failed|rejected|decode)/i.test(text))
+          (/font|geist|preload/i.test(text) &&
+            /(download failed|rejected|decode|preloaded with link preload was not used)/i.test(
+              text,
+            ))
         ) {
           return;
         }

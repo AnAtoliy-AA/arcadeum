@@ -1,7 +1,29 @@
 import { expect } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
+import { getMockLeaderboard } from '@/shared/api/leaderboard';
 
 test.describe('Leaderboards page', () => {
+  // The leaderboards UI is data-driven (ticker only renders with events,
+  // self row + jump-to-me only render when `data.self` is set, etc.). The
+  // app has a built-in `getMockLeaderboard` gated on NEXT_PUBLIC_E2E, but
+  // the env var doesn't reach a reused dev server, and the real BE either
+  // has no Mongo or no auto-seed in CI. Serve the same mock snapshot at
+  // the network layer so every project gets a deterministic dataset.
+  test.beforeEach(async ({ page }) => {
+    const snapshot = await getMockLeaderboard({ selfId: 'e2e-self' });
+    await page.route('**/leaderboards*', async (route) => {
+      const url = new URL(route.request().url());
+      if (!url.pathname.endsWith('/leaderboards')) {
+        return route.fallback();
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(snapshot),
+      });
+    });
+  });
+
   test('hero, ticker, cup, mythic spotlight, runner-ups, table all render', async ({
     page,
   }) => {

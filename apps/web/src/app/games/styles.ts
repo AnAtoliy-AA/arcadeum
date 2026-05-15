@@ -16,6 +16,7 @@ export const HeaderControls = styled(XStack, {
   name: 'HeaderControls',
   alignItems: 'center',
   gap: '1rem',
+  flexWrap: 'wrap',
 });
 
 // $sm = max-width:768px
@@ -33,6 +34,8 @@ export const Title = SharedPageTitle;
 
 export const Filters = styled(XStack, {
   name: 'Filters',
+  width: '100%',
+  maxWidth: '100%',
   columnGap: '1.5rem',
   rowGap: '1.25rem',
   flexWrap: 'wrap',
@@ -44,6 +47,9 @@ export const Filters = styled(XStack, {
   borderWidth: 1,
   borderColor: '$borderColor',
   alignItems: 'center',
+  $sm: {
+    paddingHorizontal: '$3',
+  },
 });
 
 export const SearchContainer = styled(XStack, {
@@ -59,6 +65,7 @@ export const FilterGroup = styled(YStack, {
   alignItems: 'flex-start',
   gap: '$1',
   minWidth: 150,
+  maxWidth: '100%',
   padding: '$1',
 });
 

@@ -202,6 +202,8 @@ export const CreateRoomLinkButton = (props: LinkButtonProps) => (
   <LinkButton
     variant="victory"
     size="lg"
+    $sm={{ $uiSize: 'md' }}
+    $short={{ $uiSize: 'sm' }}
     pulse
     jump
     showShimmer

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.49] - 2026-05-15
+
+### Fixed
+- fullscreen mode from control panel and widget (ARC-682) (ARC-682)
+
+
 ## [1.13.48] - 2026-05-15
 
 ### Added

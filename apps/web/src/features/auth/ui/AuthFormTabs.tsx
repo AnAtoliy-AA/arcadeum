@@ -26,7 +26,8 @@ export function AuthFormTabs({
     width: '50%',
     height: 2,
     borderRadius: 2,
-    background: 'linear-gradient(90deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%)',
+    background:
+      'linear-gradient(90deg, var(--accent, #38bdf8) 0%, #ff6af7 100%)',
     transform: isRegisterMode ? 'translateX(100%)' : 'translateX(0%)',
     transition: 'transform 250ms ease',
     pointerEvents: 'none',

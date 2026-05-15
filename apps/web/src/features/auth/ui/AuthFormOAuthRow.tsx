@@ -5,7 +5,6 @@ import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { AppleGlyph, DiscordGlyph, GoogleGlyph } from './AuthProviderIcons';
 import {
-  OAUTH_PROVIDERS,
   isOAuthProviderEnabled,
   type OAuthProvider,
 } from '../hooks/useAuthForm';
@@ -69,9 +68,6 @@ export function AuthFormOAuthRow({
           onClick={() => onSelect(p.id)}
         />
       ))}
-      {/* Provider order is fixed by OAUTH_PROVIDERS to keep storyboard/test
-        snapshots stable. */}
-      {void OAUTH_PROVIDERS}
     </XStack>
   );
 }
@@ -121,7 +117,7 @@ function ProviderButton({
         uiSize="sm"
         weight="600"
         display="none"
-        $gtMd={{ display: 'flex' }}
+        $gtLg={{ display: 'flex' }}
       >
         {provider.shortLabel}
       </Typography>

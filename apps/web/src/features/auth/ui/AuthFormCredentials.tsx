@@ -8,14 +8,21 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
 import { appConfig } from '@/shared/config/app-config';
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
+import { isValidEmail } from '../lib/utils';
 import type { AuthFormLabels } from '../types';
+import { ArrowGlyph, MailGlyph } from './AuthProviderIcons';
 
 interface AuthFormCredentialsProps {
   form: AuthFormLabels;
   auth: UseAuthFormResult;
+  onRequestMagicLink: (email: string) => void;
 }
 
-export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
+export function AuthFormCredentials({
+  form,
+  auth,
+  onRequestMagicLink,
+}: AuthFormCredentialsProps) {
   const {
     isRegisterMode,
     email,
@@ -45,6 +52,7 @@ export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const submitLabel = isRegisterMode ? form.submitRegister : form.submitSignIn;
+  const canSendMagicLink = isValidEmail(email);
 
   const emailErrorMessage = getEmailError(
     showInvalidEmail,
@@ -86,28 +94,8 @@ export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
           />
         </FieldWithMessage>
 
-        {isRegisterMode && (
-          <FieldWithMessage error={usernameErrorMessage}>
-            <FloatingLabelInput
-              id={usernameFieldId}
-              type="text"
-              label={form.handleLabel}
-              value={username}
-              onChange={(value) =>
-                handleUsernameChange({
-                  target: { value },
-                } as ChangeEvent<HTMLInputElement>)
-              }
-              onBlur={() => void handleUsernameBlur()}
-              disabled={localLoading}
-              error={Boolean(usernameErrorMessage)}
-              data-testid="auth-username-input"
-            />
-          </FieldWithMessage>
-        )}
-
         <FieldWithMessage
-          error={showPasswordMismatch ? form.passwordLabel : undefined}
+          error={showPasswordMismatch ? form.passwordMismatch : undefined}
         >
           <div style={{ position: 'relative' }}>
             <FloatingLabelInput
@@ -129,6 +117,7 @@ export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
             />
             <button
               type="button"
+              className="auth-pw-toggle"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? form.hidePassword : form.showPassword}
               data-testid="auth-password-toggle"
@@ -138,6 +127,26 @@ export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
             </button>
           </div>
         </FieldWithMessage>
+
+        {isRegisterMode && (
+          <FieldWithMessage error={usernameErrorMessage}>
+            <FloatingLabelInput
+              id={usernameFieldId}
+              type="text"
+              label={form.handleLabel}
+              value={username}
+              onChange={(value) =>
+                handleUsernameChange({
+                  target: { value },
+                } as ChangeEvent<HTMLInputElement>)
+              }
+              onBlur={() => void handleUsernameBlur()}
+              disabled={localLoading}
+              error={Boolean(usernameErrorMessage)}
+              data-testid="auth-username-input"
+            />
+          </FieldWithMessage>
+        )}
 
         {!isRegisterMode && (
           <XStack alignItems="center" justifyContent="space-between" gap="$3">
@@ -179,39 +188,76 @@ export function AuthFormCredentials({ form, auth }: AuthFormCredentialsProps) {
           data-testid="auth-submit-button"
           pill
         >
-          {submitLabel}
+          <XStack gap="$2" alignItems="center" justifyContent="center">
+            <Typography color="inherit" uiSize="md" weight="600">
+              {submitLabel}
+            </Typography>
+            <ArrowGlyph size={14} />
+          </XStack>
         </Button>
 
-        <Typography
-          variant="caption"
-          uiSize="xs"
-          color="$colorMuted"
-          textCenter
+        {!isRegisterMode && (
+          <XStack
+            alignItems="center"
+            justifyContent="center"
+            gap="$2"
+            flexWrap="wrap"
+            marginTop="$1"
+          >
+            <Typography variant="body" uiSize="sm" color="$colorMuted">
+              {form.magicLinkPrompt}
+            </Typography>
+            <button
+              type="button"
+              className="auth-magic-cta"
+              onClick={() => onRequestMagicLink(email)}
+              disabled={!canSendMagicLink}
+              data-testid="auth-magic-link-cta"
+              style={magicLinkCtaStyle}
+            >
+              <MailGlyph size={14} />
+              {form.magicLinkCta}
+            </button>
+          </XStack>
+        )}
+
+        <YStack
+          paddingTop="$4"
+          marginTop="$2"
+          borderTopWidth={1}
+          borderColor="$glassBorder"
         >
-          {form.legalPrefix.replace('{{appName}}', appConfig.appName)}
-          <Link href="/terms" style={{ textDecoration: 'underline' }}>
-            <Typography
-              variant="caption"
-              uiSize="xs"
-              color="$colorMuted"
-              weight="600"
-            >
-              {form.termsLink}
-            </Typography>
-          </Link>
-          {form.legalConjunction}
-          <Link href="/privacy" style={{ textDecoration: 'underline' }}>
-            <Typography
-              variant="caption"
-              uiSize="xs"
-              color="$colorMuted"
-              weight="600"
-            >
-              {form.privacyLink}
-            </Typography>
-          </Link>
-          {form.legalSuffix}
-        </Typography>
+          <Typography
+            variant="caption"
+            uiSize="xs"
+            color="$colorMuted"
+            textCenter
+          >
+            {form.legalPrefix.replace('{{appName}}', appConfig.appName)}
+            <Link href="/terms" style={{ textDecoration: 'underline' }}>
+              <Typography
+                variant="caption"
+                uiSize="xs"
+                color="$colorMuted"
+                weight="600"
+              >
+                {form.termsLink}
+              </Typography>
+            </Link>
+            {form.legalConjunction}
+            <Link href="/privacy" style={{ textDecoration: 'underline' }}>
+              <Typography
+                variant="caption"
+                uiSize="xs"
+                color="$colorMuted"
+                weight="600"
+              >
+                {form.privacyLink}
+              </Typography>
+            </Link>
+            {form.legalSuffix}
+          </Typography>
+        </YStack>
       </YStack>
     </form>
   );
@@ -327,15 +373,30 @@ function getUsernameError(
 const passwordToggleStyle: React.CSSProperties = {
   position: 'absolute',
   top: '50%',
-  right: 12,
+  right: 10,
   transform: 'translateY(-50%)',
   background: 'transparent',
   border: 'none',
-  color: 'var(--accent, #38bdf8)',
+  color: 'var(--color-muted, #94a3b8)',
   fontSize: 12,
   fontWeight: 600,
-  letterSpacing: '0.06em',
-  textTransform: 'uppercase',
   cursor: 'pointer',
-  padding: 6,
+  padding: '8px 10px',
+  borderRadius: 10,
+  transition: 'color 160ms ease, background-color 160ms ease',
+};
+
+const magicLinkCtaStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 6,
+  background: 'transparent',
+  border: 'none',
+  padding: '4px 8px',
+  borderRadius: 8,
+  color: 'var(--color, #ecefee)',
+  fontWeight: 600,
+  fontSize: 13,
+  cursor: 'pointer',
+  textDecoration: 'none',
 };

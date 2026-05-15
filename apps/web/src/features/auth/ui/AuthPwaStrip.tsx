@@ -2,10 +2,9 @@
 
 import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { Button } from '@arcadeum/ui/components/Button/Button';
 import { usePWAInstallProps } from '@/features/pwa/context';
 import type { AuthPwaLabels } from '../types';
-import { PhoneGlyph } from './AuthProviderIcons';
+import { ArrowGlyph, PhoneGlyph } from './AuthProviderIcons';
 
 interface AuthPwaStripProps {
   pwa: AuthPwaLabels;
@@ -51,15 +50,15 @@ export function AuthPwaStrip({ pwa, maxWidth = 432 }: AuthPwaStripProps) {
           {pwa.body}
         </Typography>
       </YStack>
-      <Button
-        variant="secondary"
-        size="sm"
+      <button
+        type="button"
+        className="auth-pwa-install"
         onClick={() => handleClick()}
-        pill
         data-testid="auth-pwa-install"
       >
-        {pwa.cta} →
-      </Button>
+        {pwa.cta}
+        <ArrowGlyph size={12} />
+      </button>
     </XStack>
   );
 }

@@ -216,4 +216,23 @@ describe('AuthFormPanel', () => {
     );
     expect(screen.getByTestId('auth-username-input')).toBeInTheDocument();
   });
+
+  it('renders the magic-link CTA inside the credentials form (sign-in only)', () => {
+    renderPanel(makeAuth({ isRegisterMode: false }));
+    const cta = screen.getByTestId('auth-magic-link-cta');
+    const form = screen.getByTestId('auth-credentials-form');
+    expect(form.contains(cta)).toBe(true);
+  });
+
+  it('does not render the magic-link CTA in register mode', () => {
+    renderPanel(makeAuth({ isRegisterMode: true }));
+    expect(screen.queryByTestId('auth-magic-link-cta')).toBeNull();
+  });
+
+  it('shows the passwordMismatch error label, not the password label, on mismatch', () => {
+    renderPanel(
+      makeAuth({ isRegisterMode: true, showPasswordMismatch: true }),
+    );
+    expect(screen.getByText("Passwords don't match.")).toBeInTheDocument();
+  });
 });

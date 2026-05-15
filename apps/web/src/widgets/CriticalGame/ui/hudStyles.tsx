@@ -166,6 +166,28 @@ const HUD_KEYFRAMES_CSS = `
     50%      { --threat-pulse: 1; }
   }
 }
+
+/* §3.3 — Fluid widget width + container query. The 1240px fixed cap
+   left ultrawide users staring at a slab of empty space when the host
+   app's chrome didn't fill the slot; min() trades the cap for a 24px
+   gutter on either side once the viewport exceeds 1288px. container-type
+   declares the widget as a containment context so the arena can respond
+   to the SLOT width rather than viewport — useful when the same widget
+   is embedded as a small lobby preview vs. a fullscreen match.
+   Container queries ship in Chrome 105+ / Firefox 110+ / Safari 16+
+   (Sep 2022). In unsupported browsers the @container rule is ignored;
+   the arena keeps its default 24px gap / 12px×16px padding, so no
+   broken visual — just no extra breathing room on ultrawide. */
+[data-testid="match-widget-grid"] {
+  max-width: min(1240px, calc(100vw - 48px));
+  container-type: inline-size;
+}
+@container (min-width: 1400px) {
+  .match-arena {
+    gap: 32px;
+    padding: 16px 24px;
+  }
+}
 `;
 
 export function HudStyles() {

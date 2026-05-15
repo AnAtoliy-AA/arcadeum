@@ -95,7 +95,10 @@ export const MobileMenuContainer = styled(XStack, {
 export const MobileNav = styled(YStack, {
   name: 'MobileNav',
   position: 'fixed',
-  top: HEADER_HEIGHT,
+  // Track the responsive header height defined in header-stable.css so the
+  // drawer always starts flush against the header (no transparent gap at
+  // <=480px when the header shrinks to 56px).
+  top: `var(--header-height, ${HEADER_HEIGHT}px)` as unknown as number,
   left: 0,
   right: 0,
   bottom: 0,
@@ -111,7 +114,7 @@ export const MobileNav = styled(YStack, {
   paddingTop: '$4',
   paddingBottom: '$4',
   gap: '$1',
-  height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
+  height: `calc(100dvh - var(--header-height, ${HEADER_HEIGHT}px))`,
   overflowY: 'auto',
 });
 

@@ -1,4 +1,8 @@
 /* Header Styles for stability and hydration safety */
+:root {
+  --header-height: 72px;
+}
+
 .header-outer {
   display: flex;
   flex-direction: column;
@@ -123,6 +127,9 @@
 }
 
 @media (max-width: 480px) {
+  :root {
+    --header-height: 56px;
+  }
   .header-inner {
     height: 56px;
     padding-left: 8px;

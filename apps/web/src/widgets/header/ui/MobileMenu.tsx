@@ -33,6 +33,7 @@ import {
   LogoutIcon,
   MailIcon,
   SettingsIcon,
+  SmartphoneIcon,
   SupportIcon,
   UserIcon,
   WalletIcon,
@@ -40,7 +41,7 @@ import {
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 import LanguagePills from './LanguagePills';
-import { InstallPWAButton } from '@/features/pwa/InstallPWA';
+import { usePWAOptional } from '@/features/pwa/context';
 
 interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
@@ -66,6 +67,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
   const { isAuthenticated, displayName } = useHeaderAuth();
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
+  const pwa = usePWAOptional();
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
@@ -218,12 +220,25 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         </YStack>
       )}
 
+      {pwa?.canInstall && (
+        <Button
+          variant="ghost"
+          size="md"
+          justifyContent="flex-start"
+          data-testid="mobile-install-pwa-button"
+          onClick={pwa.openModal}
+          icon={<SmartphoneIcon size={18} />}
+          gap="$3"
+        >
+          {t('pwa.install.button')}
+        </Button>
+      )}
+
       <YStack marginTop="$3" gap="$3" paddingHorizontal="$2">
         <LanguagePills data-testid="mobile-language-switcher" />
       </YStack>
 
       <MobileBottomBar>
-        <InstallPWAButton />
         <MobileVersionText marginTop={0} paddingVertical={0}>
           v{appConfig.appVersion}
         </MobileVersionText>

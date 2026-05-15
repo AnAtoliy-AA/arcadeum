@@ -221,17 +221,20 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
       )}
 
       {pwa?.canInstall && (
-        <Button
-          variant="ghost"
-          size="md"
-          justifyContent="flex-start"
-          data-testid="mobile-install-pwa-button"
-          onClick={pwa.openModal}
-          icon={<SmartphoneIcon size={18} />}
-          gap="$3"
-        >
-          {t('pwa.install.button')}
-        </Button>
+        <YStack marginTop="$3">
+          <Button
+            variant="secondary"
+            size="md"
+            fullWidth
+            justifyContent="flex-start"
+            data-testid="mobile-install-pwa-button"
+            onClick={pwa.openModal}
+            icon={<SmartphoneIcon size={18} />}
+            gap="$3"
+          >
+            {t('pwa.install.button')}
+          </Button>
+        </YStack>
       )}
 
       <YStack marginTop="$3" gap="$3" paddingHorizontal="$2">

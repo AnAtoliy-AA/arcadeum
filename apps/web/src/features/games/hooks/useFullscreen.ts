@@ -1,5 +1,15 @@
 import { useState, useCallback, useEffect, RefObject } from 'react';
 
+interface UseFullscreenOptions {
+  /**
+   * Register a global `f` / `Escape` keyboard shortcut. Multiple instances
+   * mounted in the same page each listen on `document` and would all fire
+   * on a single keypress, so only one instance per page should set this
+   * (typically the page-level toggle in `GamePageLayout`).
+   */
+  enableKeyboard?: boolean;
+}
+
 /**
  * CSS-based "expand to viewport" mode. Avoids the real Fullscreen API on
  * purpose: that API renders only the fullscreen element and its descendants,
@@ -7,7 +17,11 @@ import { useState, useCallback, useEffect, RefObject } from 'react';
  * (GameResultModal, RematchModal, etc.) ports through Dialog.Portal to body.
  * Toggling a class instead keeps the modal layer reachable.
  */
-export function useFullscreen(containerRef: RefObject<HTMLDivElement | null>) {
+export function useFullscreen(
+  containerRef: RefObject<HTMLDivElement | null>,
+  options: UseFullscreenOptions = {},
+) {
+  const { enableKeyboard = false } = options;
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = useCallback(() => {
@@ -28,6 +42,7 @@ export function useFullscreen(containerRef: RefObject<HTMLDivElement | null>) {
   }, [containerRef, isFullscreen]);
 
   useEffect(() => {
+    if (!enableKeyboard) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       const isTyping =
@@ -43,7 +58,7 @@ export function useFullscreen(containerRef: RefObject<HTMLDivElement | null>) {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [enableKeyboard]);
 
   return {
     isFullscreen,

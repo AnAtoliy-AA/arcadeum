@@ -64,7 +64,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const media = useMedia();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
-  const { isFullscreen, toggleFullscreen } = useFullscreen(gameContainerRef);
+  const { isFullscreen, toggleFullscreen } = useFullscreen(gameContainerRef, {
+    enableKeyboard: true,
+  });
 
   // Chat visibility — wide screens default visible, narrow hidden
   const [showChat, setShowChat] = useState(false);

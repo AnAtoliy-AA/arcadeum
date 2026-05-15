@@ -9,6 +9,26 @@ import { ActiveGameView } from './ActiveGameView';
 import { GameContainer } from './styles';
 import type { GameVariant } from '@arcadeum/ui';
 
+// Widget-only fullscreen CSS — expands just the Critical widget to fill
+// the viewport. Independent of the page-level toggle in `GamePageLayout`,
+// which expands [control panel + widget + chat] instead.
+const criticalWidgetFullscreenStyles = `
+  .critical-game-widget.is-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    border-width: 0 !important;
+    background: #151718 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    z-index: 1100;
+  }
+`;
+
 export default function CriticalGame({
   roomId,
   room: initialRoom,
@@ -16,13 +36,14 @@ export default function CriticalGame({
   currentUserId,
   isHost,
   accessToken,
-  isFullscreen: pageLevelFullscreen,
-  toggleFullscreen: pageLevelToggleFullscreen,
   showRulesOpen,
   onShowRulesClose,
 }: CriticalGameProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
+  // Widget-only fullscreen. Keyboard shortcut is owned by the page-level
+  // `useFullscreen` in `GamePageLayout` (single global listener), so this
+  // instance is mouse-only.
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
 
   const storeRoom = useGameStore((s: GameState) => s.room);
@@ -67,8 +88,8 @@ export default function CriticalGame({
         room={room}
         isHost={isHost}
         startBusy={startBusy}
-        isFullscreen={pageLevelFullscreen}
-        onToggleFullscreen={pageLevelToggleFullscreen}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
         onStartGame={actions.startCritical}
         onReorderPlayers={reorderParticipants}
         onReinvite={rematch.handleReinvite}
@@ -92,32 +113,36 @@ export default function CriticalGame({
 
   // Game in progress - show Active Game View
   return (
-    <GameContainer
-      ref={containerRef as React.RefObject<never>}
-      isFullscreen={isFullscreen}
-      $isMyTurn={!!isMyTurn}
-      $variant={cardVariant as GameVariant}
-    >
-      <ActiveGameView
-        currentUserId={currentUserId}
-        room={room}
-        snapshot={snapshot}
-        isHost={isHost}
+    <>
+      <style>{criticalWidgetFullscreenStyles}</style>
+      <GameContainer
+        ref={containerRef as React.RefObject<never>}
+        className="critical-game-widget"
         isFullscreen={isFullscreen}
-        toggleFullscreen={toggleFullscreen}
-        actionBusy={actionBusy}
-        actions={actions}
-        currentPlayer={currentPlayer}
-        currentTurnPlayer={currentTurnPlayer ?? undefined}
-        isMyTurn={!!isMyTurn}
-        canAct={!!canAct}
-        canPlayNope={!!canPlayNope}
-        aliveOpponents={aliveOpponents}
-        isGameOver={!!isGameOver}
-        rematch={rematch}
-        showRulesOpen={showRulesOpen}
-        onShowRulesClose={onShowRulesClose}
-      />
-    </GameContainer>
+        $isMyTurn={!!isMyTurn}
+        $variant={cardVariant as GameVariant}
+      >
+        <ActiveGameView
+          currentUserId={currentUserId}
+          room={room}
+          snapshot={snapshot}
+          isHost={isHost}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+          actionBusy={actionBusy}
+          actions={actions}
+          currentPlayer={currentPlayer}
+          currentTurnPlayer={currentTurnPlayer ?? undefined}
+          isMyTurn={!!isMyTurn}
+          canAct={!!canAct}
+          canPlayNope={!!canPlayNope}
+          aliveOpponents={aliveOpponents}
+          isGameOver={!!isGameOver}
+          rematch={rematch}
+          showRulesOpen={showRulesOpen}
+          onShowRulesClose={onShowRulesClose}
+        />
+      </GameContainer>
+    </>
   );
 }

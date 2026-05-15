@@ -36,7 +36,9 @@ export const Filters = styled(XStack, {
   columnGap: '1.5rem',
   rowGap: '1.25rem',
   flexWrap: 'wrap',
-  padding: '1.5rem 2.25rem',
+  paddingTop: '$5',
+  paddingBottom: '$5',
+  paddingHorizontal: '2.25rem',
   backgroundColor: '$background',
   borderRadius: 16,
   borderWidth: 1,
@@ -75,7 +77,9 @@ export const FilterLabel = styled(Text, {
 export const FilterChips = styled(XStack, {
   name: 'FilterChips',
   flexWrap: 'wrap',
-  gap: '0.4rem',
+  gap: '0.6rem',
+  paddingVertical: '$2',
+  paddingHorizontal: '$1',
 });
 
 export const Loading = styled(YStack, {

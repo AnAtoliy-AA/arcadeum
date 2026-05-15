@@ -176,10 +176,11 @@ export function AuthFormCredentials({
           type="submit"
           variant="primary"
           fullWidth
+          borderRadius={14}
+          className="auth-submit-btn"
           disabled={localSubmitDisabled}
           loading={localLoading}
           data-testid="auth-submit-button"
-          pill
         >
           <XStack gap="$2" alignItems="center" justifyContent="center">
             <Typography color="inherit" uiSize="md" weight="600">

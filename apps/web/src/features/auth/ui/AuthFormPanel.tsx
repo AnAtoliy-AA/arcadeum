@@ -85,8 +85,8 @@ export function AuthFormPanel({
         </YStack>
         <Button
           variant="secondary"
+          borderRadius={14}
           onClick={resetMagicLink}
-          pill
           data-testid="auth-magic-link-back"
         >
           ← {form.magicLinkBack}
@@ -123,7 +123,12 @@ export function AuthFormPanel({
       />
 
       <YStack gap="$2">
-        <Typography variant="heading" uiSize="xl" weight="700">
+        <Typography
+          variant="heading"
+          uiSize="2xl"
+          weight="700"
+          style={{ lineHeight: 1.1, letterSpacing: '-0.02em' }}
+        >
           {isRegisterMode ? form.headingRegister : form.headingSignIn}
         </Typography>
         <Typography variant="body" uiSize="sm" color="$colorMuted">
@@ -156,8 +161,8 @@ function OrDivider({ label }: { label: string }) {
         variant="caption"
         uiSize="xs"
         color="$colorMuted"
-        tracking="md"
-        style={{ textTransform: 'uppercase' }}
+        weight="600"
+        style={{ textTransform: 'uppercase', letterSpacing: '0.16em' }}
       >
         {label}
       </Typography>
@@ -226,9 +231,9 @@ function ActiveSessionCard({
       </YStack>
       <Button
         variant="secondary"
+        borderRadius={14}
         onClick={() => void logoutLocal()}
         disabled={localLoading}
-        pill
         alignSelf="flex-start"
       >
         {labels.signOutLabel}

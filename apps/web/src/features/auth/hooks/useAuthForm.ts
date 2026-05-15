@@ -231,7 +231,7 @@ export function useAuthForm() {
     !trimmedEmail ||
     !isEmailValid ||
     !password ||
-    (isRegisterMode && (!trimmedUsername || !confirmPassword)) ||
+    (isRegisterMode && !trimmedUsername) ||
     showPasswordMismatch ||
     showUsernameTooShort ||
     (isRegisterMode && usernameAvailability === 'taken') ||

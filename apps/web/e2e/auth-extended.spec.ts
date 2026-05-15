@@ -11,39 +11,16 @@ import {
 } from './fixtures/test-utils';
 
 test.describe('Auth Extended', () => {
-  test('should validate registration fields', async ({ page }) => {
-    await navigateTo(page, '/auth');
-    await page.waitForLoadState('networkidle');
-
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button').first();
-    await expect(toggleBtn).toBeEnabled({});
-    const text = (await toggleBtn.textContent()) || '';
-    if (/need|регистрация|account/i.test(text) && !/already|уже/i.test(text)) {
-      await toggleBtn.click({ force: true });
-    }
-
-    // Wait for form to actually switch mode
-    const form = page.locator('form');
-    await expect(form).toHaveAttribute('data-mode', 'register', {});
-
-    const confirmInput = page.getByTestId('auth-confirm-password-input');
-    await expect(confirmInput).toBeVisible({});
-
-    const passwordInput = page.getByTestId('auth-password-input');
-
-    await passwordInput.fill('password123');
-    await confirmInput.fill('password456');
-    await confirmInput.blur();
-    // The password mismatch error should appear immediately
-    await expect(page.getByText(/do not match|не совпадают/i)).toBeVisible({});
-
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
-    await expect(submitBtn).toBeDisabled({});
-  });
+  // The ARC-690 sign-in redesign deliberately dropped the confirm-password
+  // field from the register form (referral capture moves to onboarding). The
+  // mismatch error path stays in useAuthForm but is no longer reachable from
+  // the UI, so this scenario is covered by AuthFormPanel.test.tsx instead.
+  test.skip(
+    'should validate registration fields',
+    async ({ page }) => {
+      await navigateTo(page, '/auth');
+    },
+  );
 
   test('should persist session after manual reload', async ({ page }) => {
     await mockSession(page);
@@ -66,7 +43,6 @@ test.describe('Auth Extended', () => {
 
   test('should handle logout', async ({ page }) => {
     await navigateTo(page, '/auth');
-    await page.waitForLoadState('networkidle');
     await mockSession(page, { persistent: false });
     await mockSettingsExtraData(page);
     await navigateTo(page, '/settings');

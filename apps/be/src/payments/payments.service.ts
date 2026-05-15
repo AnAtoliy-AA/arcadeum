@@ -5,8 +5,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { randomUUID } from 'crypto';
+import { paypalHttp } from '../common/utils/paypal-http.util';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 
 import {
@@ -112,7 +112,7 @@ export class PaymentsService {
     let productId = this.getOptionalEnv('PAYPAL_PRODUCT_ID');
     if (!productId) {
       try {
-        const prodResp = await axios.post<{ id: string }>(
+        const prodResp = await paypalHttp.post<{ id: string }>(
           `${baseUrl}/v1/catalogs/products`,
           {
             name: `${brandName} Sponsorship`,
@@ -175,7 +175,7 @@ export class PaymentsService {
 
     let planId: string;
     try {
-      const planResp = await axios.post<PayPalPlanResponse>(
+      const planResp = await paypalHttp.post<PayPalPlanResponse>(
         `${baseUrl}/v1/billing/plans`,
         planPayload,
         {
@@ -209,7 +209,7 @@ export class PaymentsService {
     };
 
     try {
-      const subResp = await axios.post<PayPalSubscriptionResponse>(
+      const subResp = await paypalHttp.post<PayPalSubscriptionResponse>(
         `${baseUrl}/v1/billing/subscriptions`,
         subPayload,
         {

@@ -1,7 +1,10 @@
 import { Logger } from '@nestjs/common';
+import type { MongooseModuleOptions } from '@nestjs/mongoose';
 
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
+const DEFAULT_MAX_POOL_SIZE = 200;
+const MIN_MAX_POOL_SIZE = 1;
 
 /**
  * Resolve the Mongo connection string.
@@ -30,4 +33,30 @@ export function resolveMongoUri(): string {
       `Set MONGODB_URI in apps/be/.env to silence this.`,
   );
   return DEV_DEFAULT;
+}
+
+/**
+ * Resolve mongoose connection options.
+ *
+ * `maxPoolSize` defaults to 200 to handle bursty traffic from concurrent
+ * game sessions (each play_action / draw / attack hits the DB). The
+ * mongoose default of 100 queues at ~100 concurrent active players.
+ * Override via `MONGODB_MAX_POOL_SIZE` per environment — keep within
+ * the connection cap of the mongo deployment.
+ */
+export function resolveMongoOptions(): MongooseModuleOptions {
+  const raw = process.env.MONGODB_MAX_POOL_SIZE?.trim();
+  const parsed = raw ? Number.parseInt(raw, 10) : NaN;
+  const maxPoolSize =
+    Number.isFinite(parsed) && parsed >= MIN_MAX_POOL_SIZE
+      ? parsed
+      : DEFAULT_MAX_POOL_SIZE;
+
+  if (raw && maxPoolSize !== parsed) {
+    logger.warn(
+      `MONGODB_MAX_POOL_SIZE=${raw} is invalid; using default ${DEFAULT_MAX_POOL_SIZE}.`,
+    );
+  }
+
+  return { maxPoolSize };
 }

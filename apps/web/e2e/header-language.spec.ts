@@ -1,5 +1,27 @@
-import { expect } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
+
+/**
+ * Tamagui's Select trigger opens the dropdown on `mousedown`, but on
+ * webkit-desktop the first synthetic click occasionally fails to register
+ * — the dropdown stays closed and the option locator times out. Wait for
+ * `aria-expanded="true"` to confirm the dropdown actually opened, and
+ * retry once if it didn't. Other browsers see the same code path; the
+ * retry is a no-op there because the first click already succeeded.
+ */
+async function openLanguageSwitcher(switcher: Locator): Promise<void> {
+  await switcher.click();
+  try {
+    await expect(switcher).toHaveAttribute('aria-expanded', 'true', {
+      timeout: 2000,
+    });
+  } catch {
+    await switcher.click();
+    await expect(switcher).toHaveAttribute('aria-expanded', 'true', {
+      timeout: 5000,
+    });
+  }
+}
 
 test.describe('Header Language Switcher', () => {
   test.beforeEach(async ({ page }) => {
@@ -20,7 +42,7 @@ test.describe('Header Language Switcher', () => {
     await expect(languageSwitcher).toContainText('EN');
 
     // Change language to Spanish
-    await languageSwitcher.click();
+    await openLanguageSwitcher(languageSwitcher);
     await page.getByRole('option', { name: 'ES' }).click();
 
     // The value should be updated
@@ -55,7 +77,7 @@ test.describe('Header Language Switcher', () => {
     await expect(menuLanguageSwitcher).not.toBeVisible();
 
     // 4. Change language from header while menu is open
-    await headerLanguageSwitcher.click();
+    await openLanguageSwitcher(headerLanguageSwitcher);
     await page.getByRole('option', { name: 'FR' }).click();
 
     // Verify language changed (header text should update)

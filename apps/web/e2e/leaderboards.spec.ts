@@ -12,6 +12,12 @@ test.describe('Leaderboards page', () => {
   test.beforeEach(async ({ page }) => {
     const snapshot = await getMockLeaderboard({ selfId: 'e2e-self' });
     await page.route('**/leaderboards*', async (route) => {
+      // Don't intercept the page navigation — `**/leaderboards*` also matches
+      // the document request to /leaderboards on the web origin and would
+      // hand the browser JSON instead of HTML, breaking hydration.
+      if (route.request().resourceType() === 'document') {
+        return route.fallback();
+      }
       const url = new URL(route.request().url());
       if (!url.pathname.endsWith('/leaderboards')) {
         return route.fallback();

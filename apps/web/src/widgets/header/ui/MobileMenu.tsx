@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo, type ComponentType } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -9,8 +9,11 @@ import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBad
 import { routes } from '@/shared/config/routes';
 import { appConfig } from '@/shared/config/app-config';
 import {
+  MobileBottomBar,
   MobileNav,
-  MobileUserInfo,
+  MobileSection,
+  MobileSectionLabel,
+  MobileUserCard,
   MobileVersionText,
   NavMobileLink,
 } from './styles';
@@ -22,7 +25,14 @@ import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
 import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
 import {
+  BarChartIcon,
+  CardsIcon,
+  GiftIcon,
+  FileTextIcon,
+  LoginIcon,
   LogoutIcon,
+  MailIcon,
+  SettingsIcon,
   SupportIcon,
   UserIcon,
   WalletIcon,
@@ -35,6 +45,17 @@ import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
 }
+
+type IconComponent = ComponentType<{ size?: number }>;
+
+const NAV_ICON_BY_HREF: Record<string, IconComponent> = {
+  [routes.games]: CardsIcon,
+  [routes.shop]: GiftIcon,
+  [routes.chats]: MailIcon,
+  [routes.history]: FileTextIcon,
+  [routes.stats]: BarChartIcon,
+  [routes.settings]: SettingsIcon,
+};
 
 export default function MobileMenu({ navItems }: MobileMenuProps) {
   const pathname = usePathname();
@@ -51,69 +72,142 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
     window.location.replace('/');
   }, [clearTokens]);
 
+  const accountItems = useMemo(() => {
+    if (!isAuthenticated) return [];
+    const items: Array<{
+      href: string;
+      label: string;
+      Icon: IconComponent;
+      testId: string;
+    }> = [
+      {
+        href: routes.wallet,
+        label: t('navigation.walletTab'),
+        Icon: WalletIcon,
+        testId: 'mobile-wallet-link',
+      },
+    ];
+    if (role === 'admin') {
+      items.push({
+        href: routes.admin,
+        label: t('navigation.adminTab'),
+        Icon: UserIcon,
+        testId: 'mobile-admin-link',
+      });
+    }
+    return items;
+  }, [isAuthenticated, role, t]);
+
   if (!mounted) return null;
 
-  const content = (
+  return (
     <MobileNav data-mobile-menu data-testid="mobile-nav">
-      {navItems.map((item) => {
-        const isActive = pathname === item.href;
-        return (
-          <XStack key={item.href} width="100%" borderRadius="$4">
+      {isAuthenticated && displayName ? (
+        <MobileUserCard data-testid="mobile-user-card">
+          <Avatar name={displayName} size="md" />
+          <YStack flex={1} minWidth={120} gap="$1">
+            <XStack alignItems="center" gap="$2" flexWrap="wrap">
+              <UserNameEllipsis>{displayName}</UserNameEllipsis>
+              {role !== 'free' && (
+                <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
+              )}
+            </XStack>
+            {cosmeticBadges?.length ? (
+              <XStack gap="$1" flexWrap="wrap">
+                {cosmeticBadges.map((badgeId) => (
+                  <CosmeticBadge key={badgeId} badgeId={badgeId} />
+                ))}
+              </XStack>
+            ) : null}
+          </YStack>
+        </MobileUserCard>
+      ) : (
+        <LinkButton
+          href="/auth"
+          variant="primary"
+          size="md"
+          fullWidth
+          icon={<LoginIcon size={18} />}
+          gap="$2"
+          data-testid="mobile-login-button"
+        >
+          {t('common.actions.login')}
+        </LinkButton>
+      )}
+
+      <MobileSection>
+        <MobileSectionLabel>
+          {t('navigation.menuLabel') || 'MENU'}
+        </MobileSectionLabel>
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = NAV_ICON_BY_HREF[item.href];
+          return (
             <NavMobileLink
+              key={item.href}
               href={item.href}
               data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
               variant="ghost"
-              size="sm"
+              size="md"
               isActive={isActive}
               fullWidth
+              icon={Icon ? <Icon size={18} /> : undefined}
+              gap="$3"
             >
               {item.label}
             </NavMobileLink>
-          </XStack>
-        );
-      })}
+          );
+        })}
+      </MobileSection>
 
-      {isAuthenticated && displayName && (
-        <>
-          <MobileUserInfo>
-            <Avatar name={displayName} size="sm" />
-            <UserNameEllipsis>{displayName}</UserNameEllipsis>
-            {role !== 'free' && (
-              <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
-            )}
-            {cosmeticBadges?.map((badgeId) => (
-              <CosmeticBadge key={badgeId} badgeId={badgeId} />
-            ))}
-          </MobileUserInfo>
-          <LinkButton
-            href={routes.wallet}
-            variant="ghost"
-            size="sm"
-            gap="$2"
-            isActive={pathname === routes.wallet}
-            fullWidth
-            data-testid="mobile-wallet-link"
-          >
-            <WalletIcon size={18} />
-            {t('navigation.walletTab')}
-          </LinkButton>
-          {role === 'admin' && (
-            <LinkButton
-              href={routes.admin}
+      {accountItems.length > 0 && (
+        <MobileSection>
+          <MobileSectionLabel>
+            {t('navigation.accountLabel') || 'ACCOUNT'}
+          </MobileSectionLabel>
+          {accountItems.map(({ href, label, Icon, testId }) => (
+            <NavMobileLink
+              key={href}
+              href={href}
+              data-testid={testId}
               variant="ghost"
-              size="sm"
-              gap="$2"
-              isActive={pathname === routes.admin}
+              size="md"
+              isActive={pathname === href}
               fullWidth
-              data-testid="mobile-admin-link"
+              icon={<Icon size={18} />}
+              gap="$3"
             >
-              <UserIcon size={18} />
-              {t('navigation.adminTab')}
-            </LinkButton>
-          )}
+              {label}
+            </NavMobileLink>
+          ))}
+        </MobileSection>
+      )}
+
+      <MobileSection>
+        <MobileSectionLabel>
+          {t('navigation.helpLabel') || 'HELP'}
+        </MobileSectionLabel>
+        <NavMobileLink
+          href={routes.support}
+          variant="ghost"
+          size="md"
+          isActive={pathname === routes.support}
+          fullWidth
+          icon={<SupportIcon size={18} />}
+          gap="$3"
+        >
+          {t('common.actions.support')}
+        </NavMobileLink>
+      </MobileSection>
+
+      {isAuthenticated && (
+        <YStack marginTop="$3">
+          <Divider spacing="sm" />
           <Button
-            variant="listItem"
-            mt="$2"
+            variant="ghost"
+            size="md"
+            color="$danger"
+            justifyContent="flex-start"
             data-testid="mobile-logout-button"
             onClick={handleLogout}
             icon={<LogoutIcon size={18} />}
@@ -121,52 +215,18 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
           >
             {t('common.actions.logout')}
           </Button>
-        </>
-      )}
-
-      {!isAuthenticated && (
-        <YStack marginTop="$2" alignItems="center">
-          <LinkButton
-            href="/auth"
-            variant="ghost"
-            size="sm"
-            data-testid="mobile-login-button"
-          >
-            {t('common.actions.login')}
-          </LinkButton>
         </YStack>
       )}
 
-      <YStack marginTop="$4">
-        <Divider spacing="sm" />
-      </YStack>
-
-      <LinkButton
-        href={routes.support}
-        variant="ghost"
-        size="sm"
-        gap="$2"
-        isActive={pathname === routes.support}
-        fullWidth
-      >
-        <SupportIcon size={18} />
-        {t('common.actions.support')}
-      </LinkButton>
-
-      <XStack
-        marginTop="$2"
-        paddingHorizontal="$2"
-        alignItems="center"
-        gap="$3"
-        flexWrap="wrap"
-      >
-        <LanguageSwitcher data-testid="mobile-language-switcher" />
-        <InstallPWAButton />
-      </XStack>
-
-      <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
+      <MobileBottomBar>
+        <XStack alignItems="center" gap="$2">
+          <LanguageSwitcher data-testid="mobile-language-switcher" />
+          <InstallPWAButton />
+        </XStack>
+        <MobileVersionText marginTop={0} paddingVertical={0}>
+          v{appConfig.appVersion}
+        </MobileVersionText>
+      </MobileBottomBar>
     </MobileNav>
   );
-
-  return content;
 }

@@ -132,6 +132,45 @@ export const MobileUserInfo = styled(XStack, {
   flexWrap: 'wrap',
 });
 
+export const MobileUserCard = styled(XStack, {
+  name: 'MobileUserCard',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$3',
+  borderRadius: '$4',
+  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  borderWidth: 1,
+  borderColor: '$glassBorder',
+  flexWrap: 'wrap',
+});
+
+export const MobileSection = styled(YStack, {
+  name: 'MobileSection',
+  gap: '$1',
+});
+
+export const MobileSectionLabel = styled(Typography, {
+  name: 'MobileSectionLabel',
+  uiSize: 'xs',
+  weight: '700',
+  tracking: 'xl',
+  alpha: 'medium',
+  paddingHorizontal: '$4',
+  paddingTop: '$3',
+  paddingBottom: '$1',
+});
+
+export const MobileBottomBar = styled(XStack, {
+  name: 'MobileBottomBar',
+  marginTop: 'auto',
+  paddingVertical: '$3',
+  paddingHorizontal: '$2',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '$3',
+  flexWrap: 'wrap',
+});
+
 export const NavHeaderLink = styled(LinkButton, {
   name: 'NavHeaderLink',
   borderRadius: '$4',

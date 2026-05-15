@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { appConfig } from '@/shared/config/app-config';
 import type { AuthBrandLabels } from '../types';
 import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
 
@@ -65,61 +64,15 @@ function BrandHeader({
   brand: AuthBrandLabels;
   className?: string;
 }) {
-  const initial = appConfig.appName.slice(0, 1).toUpperCase();
   return (
     <XStack
       className={className}
       alignItems="center"
-      justifyContent="space-between"
       gap="$3"
+      width="100%"
+      maxWidth={680}
+      alignSelf="center"
     >
-      <Link href="/" style={{ textDecoration: 'none' }}>
-        <XStack alignItems="center" gap="$2">
-          <YStack
-            width={38}
-            height={38}
-            borderRadius={12}
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--accent, #38bdf8), color-mix(in srgb, var(--accent, #38bdf8) 35%, #ff6af7))',
-              boxShadow:
-                '0 10px 28px -10px color-mix(in srgb, var(--accent, #38bdf8) 60%, transparent)',
-            }}
-          >
-            <Typography
-              variant="heading"
-              uiSize="md"
-              weight="700"
-              style={{
-                color: '#06011b',
-                fontSize: 18,
-                letterSpacing: '-0.04em',
-              }}
-            >
-              {initial}
-            </Typography>
-            <YStack
-              position="absolute"
-              top={1}
-              left={1}
-              right={1}
-              bottom={1}
-              borderRadius={11}
-              pointerEvents="none"
-              style={{
-                background:
-                  'linear-gradient(180deg, rgba(255,255,255,0.18), transparent 40%)',
-              }}
-            />
-          </YStack>
-          <Typography variant="heading" uiSize="md" weight="700">
-            {appConfig.appName}
-          </Typography>
-        </XStack>
-      </Link>
       <XStack
         alignItems="center"
         gap="$2"
@@ -158,7 +111,13 @@ function BrandHero({
   className?: string;
 }) {
   return (
-    <YStack className={className} gap="$5" maxWidth={520}>
+    <YStack
+      className={className}
+      gap="$5"
+      maxWidth={680}
+      alignSelf="center"
+      width="100%"
+    >
       <XStack
         alignSelf="flex-start"
         alignItems="center"
@@ -321,7 +280,15 @@ function BrandFooterLinks({
     color: 'inherit',
   };
   return (
-    <XStack className={className} gap="$4" flexWrap="wrap" alignItems="center">
+    <XStack
+      className={className}
+      gap="$4"
+      flexWrap="wrap"
+      alignItems="center"
+      width="100%"
+      maxWidth={680}
+      alignSelf="center"
+    >
       <Link href="/" style={linkStyle} data-testid="auth-brand-home-link">
         <Typography variant="body" uiSize="sm" color="$colorMuted">
           {brand.footHome}

@@ -51,17 +51,28 @@ export function AuthBrandPanel({ brand, flex = 1.05 }: AuthBrandPanelProps) {
             'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.10) 70%, transparent 100%)',
         }}
       />
-      <BrandHeader brand={brand} />
-      <BrandHero brand={brand} />
-      <BrandFooterLinks brand={brand} />
+      <BrandHeader brand={brand} className="auth-fade-in-1" />
+      <BrandHero brand={brand} className="auth-fade-in-2" />
+      <BrandFooterLinks brand={brand} className="auth-fade-in-3" />
     </YStack>
   );
 }
 
-function BrandHeader({ brand }: { brand: AuthBrandLabels }) {
+function BrandHeader({
+  brand,
+  className,
+}: {
+  brand: AuthBrandLabels;
+  className?: string;
+}) {
   const initial = appConfig.appName.slice(0, 1).toUpperCase();
   return (
-    <XStack alignItems="center" justifyContent="space-between" gap="$3">
+    <XStack
+      className={className}
+      alignItems="center"
+      justifyContent="space-between"
+      gap="$3"
+    >
       <Link href="/" style={{ textDecoration: 'none' }}>
         <XStack alignItems="center" gap="$2">
           <YStack
@@ -139,9 +150,15 @@ function BrandHeader({ brand }: { brand: AuthBrandLabels }) {
   );
 }
 
-function BrandHero({ brand }: { brand: AuthBrandLabels }) {
+function BrandHero({
+  brand,
+  className,
+}: {
+  brand: AuthBrandLabels;
+  className?: string;
+}) {
   return (
-    <YStack gap="$5" maxWidth={520}>
+    <YStack className={className} gap="$5" maxWidth={520}>
       <XStack
         alignSelf="flex-start"
         alignItems="center"
@@ -294,7 +311,13 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   );
 }
 
-function BrandFooterLinks({ brand }: { brand: AuthBrandLabels }) {
+function BrandFooterLinks({
+  brand,
+  className,
+}: {
+  brand: AuthBrandLabels;
+  className?: string;
+}) {
   const linkStyle = {
     textDecoration: 'underline',
     textUnderlineOffset: 4,
@@ -302,7 +325,7 @@ function BrandFooterLinks({ brand }: { brand: AuthBrandLabels }) {
     color: 'inherit',
   };
   return (
-    <XStack gap="$4" flexWrap="wrap" alignItems="center">
+    <XStack className={className} gap="$4" flexWrap="wrap" alignItems="center">
       <Link href="/" style={linkStyle} data-testid="auth-brand-home-link">
         <Typography variant="body" uiSize="sm" color="$colorMuted">
           {brand.footHome}

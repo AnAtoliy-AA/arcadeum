@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.52] - 2026-05-15
+
+### Added
+- develop-branch review follow-ups §2.2 §3.2 §3.4 §3.5 (ARC-686) (ARC-686)
+
+### Fixed
+- back out §3.5 view-transition-name + shorten rail fullscreen label (ARC-686) (ARC-686)
+
+
 ## [1.13.51] - 2026-05-15
 
 ### Added

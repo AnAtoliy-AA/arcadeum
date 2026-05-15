@@ -6,6 +6,8 @@ import { useAuthLabels } from '../hooks/useAuthLabels';
 import { AuthBrandPanel } from './AuthBrandPanel';
 import { AuthFormPanel } from './AuthFormPanel';
 import { AuthPwaStrip } from './AuthPwaStrip';
+import { AuthPageBackground } from './AuthPageBackground';
+import './auth.css';
 
 export default function AuthPageContent() {
   const auth = useAuthForm();
@@ -15,10 +17,13 @@ export default function AuthPageContent() {
     <XStack
       minHeight="100vh"
       width="100%"
+      position="relative"
+      overflow="hidden"
       backgroundColor="$background"
       $md={{ flexDirection: 'column' }}
       data-testid="auth-page-root"
     >
+      <AuthPageBackground />
       <AuthBrandPanel brand={labels.brand} flex={1.05} />
       <YStack
         flex={1}

@@ -3,17 +3,23 @@ import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { appConfig } from '@/shared/config/app-config';
 import type { AuthBrandLabels } from '../types';
+import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
 
 interface AuthBrandPanelProps {
   brand: AuthBrandLabels;
   flex?: number;
 }
 
-const AVATAR_GRADIENTS = [
-  'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)',
-  'linear-gradient(135deg, #ec4899 0%, #f97316 100%)',
-  'linear-gradient(135deg, #22d3ee 0%, #14b8a6 100%)',
-  'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+interface AvatarEntry {
+  ch: string;
+  bg: string;
+}
+
+const AVATARS: AvatarEntry[] = [
+  { ch: 'M', bg: 'linear-gradient(135deg, #5eead4, #818cf8)' },
+  { ch: 'J', bg: 'linear-gradient(135deg, #fbbf24, #f87171)' },
+  { ch: 'A', bg: 'linear-gradient(135deg, #c084fc, #f472b6)' },
+  { ch: '+', bg: 'linear-gradient(135deg, #22d3ee, #a78bfa)' },
 ];
 
 export function AuthBrandPanel({ brand, flex = 1.05 }: AuthBrandPanelProps) {
@@ -23,19 +29,28 @@ export function AuthBrandPanel({ brand, flex = 1.05 }: AuthBrandPanelProps) {
       paddingHorizontal="$8"
       paddingVertical="$8"
       gap="$8"
-      backgroundColor="$backgroundHover"
-      borderRightWidth={1}
-      borderColor="$glassBorder"
+      position="relative"
       justifyContent="space-between"
       $md={{
-        borderRightWidth: 0,
-        borderBottomWidth: 1,
         paddingHorizontal: '$5',
         paddingVertical: '$6',
         gap: '$6',
       }}
       data-testid="auth-brand-panel"
     >
+      <YStack
+        position="absolute"
+        top="10%"
+        bottom="10%"
+        right={0}
+        width={1}
+        pointerEvents="none"
+        $md={{ display: 'none' }}
+        style={{
+          background:
+            'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.10) 70%, transparent 100%)',
+        }}
+      />
       <BrandHeader brand={brand} />
       <BrandHero brand={brand} />
       <BrandFooterLinks brand={brand} />
@@ -44,19 +59,51 @@ export function AuthBrandPanel({ brand, flex = 1.05 }: AuthBrandPanelProps) {
 }
 
 function BrandHeader({ brand }: { brand: AuthBrandLabels }) {
+  const initial = appConfig.appName.slice(0, 1).toUpperCase();
   return (
     <XStack alignItems="center" justifyContent="space-between" gap="$3">
       <Link href="/" style={{ textDecoration: 'none' }}>
         <XStack alignItems="center" gap="$2">
           <YStack
-            width={36}
-            height={36}
-            borderRadius={10}
+            width={38}
+            height={38}
+            borderRadius={12}
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
             style={{
               background:
-                'linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%)',
+                'linear-gradient(135deg, var(--accent, #38bdf8), color-mix(in srgb, var(--accent, #38bdf8) 35%, #ff6af7))',
+              boxShadow:
+                '0 10px 28px -10px color-mix(in srgb, var(--accent, #38bdf8) 60%, transparent)',
             }}
-          />
+          >
+            <Typography
+              variant="heading"
+              uiSize="md"
+              weight="700"
+              style={{
+                color: '#06011b',
+                fontSize: 18,
+                letterSpacing: '-0.04em',
+              }}
+            >
+              {initial}
+            </Typography>
+            <YStack
+              position="absolute"
+              top={1}
+              left={1}
+              right={1}
+              bottom={1}
+              borderRadius={11}
+              pointerEvents="none"
+              style={{
+                background:
+                  'linear-gradient(180deg, rgba(255,255,255,0.18), transparent 40%)',
+              }}
+            />
+          </YStack>
           <Typography variant="heading" uiSize="md" weight="700">
             {appConfig.appName}
           </Typography>
@@ -73,12 +120,18 @@ function BrandHeader({ brand }: { brand: AuthBrandLabels }) {
         backgroundColor="$glassBg"
       >
         <YStack
+          className="auth-status-dot"
           width={8}
           height={8}
           borderRadius={999}
           backgroundColor="#22c55e"
         />
-        <Typography variant="caption" uiSize="xs" color="$colorMuted">
+        <Typography
+          variant="caption"
+          uiSize="xs"
+          color="$colorMuted"
+          style={{ fontFamily: 'var(--font-mono, ui-monospace, monospace)' }}
+        >
           {brand.statusPill}
         </Typography>
       </XStack>
@@ -97,10 +150,26 @@ function BrandHero({ brand }: { brand: AuthBrandLabels }) {
         paddingVertical="$1.5"
         borderRadius={999}
         borderWidth={1}
-        borderColor="$glassBorder"
-        backgroundColor="$glassBg"
+        style={{
+          borderColor:
+            'color-mix(in srgb, var(--accent, #38bdf8) 25%, transparent)',
+          background:
+            'color-mix(in srgb, var(--accent, #38bdf8) 10%, transparent)',
+          color: 'var(--accent, #38bdf8)',
+        }}
       >
-        <Typography variant="caption" uiSize="xs" color="$accent" weight="600">
+        <SparkleGlyph size={10} />
+        <Typography
+          variant="caption"
+          uiSize="xs"
+          color="$accent"
+          weight="600"
+          style={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            fontFamily: 'var(--font-mono, ui-monospace, monospace)',
+          }}
+        >
           {brand.eyebrow}
         </Typography>
       </XStack>
@@ -117,7 +186,13 @@ function BrandHero({ brand }: { brand: AuthBrandLabels }) {
             variant="heading"
             uiSize="3xl"
             weight="700"
-            gradient="primary"
+            style={{
+              backgroundImage:
+                'linear-gradient(120deg, var(--accent, #38bdf8) 20%, #ff6af7 90%)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
           >
             {brand.headlineHighlight}
           </Typography>
@@ -134,17 +209,14 @@ function BrandHero({ brand }: { brand: AuthBrandLabels }) {
 
       <YStack gap="$3" marginTop="$2">
         <FeatureBullet
-          accent="🔑"
           title={brand.featureOauthTitle}
           detail={brand.featureOauthDetail}
         />
         <FeatureBullet
-          accent="✉️"
           title={brand.featureMagicTitle}
           detail={brand.featureMagicDetail}
         />
         <FeatureBullet
-          accent="🛡️"
           title={brand.featureProgressTitle}
           detail={brand.featureProgressDetail}
         />
@@ -152,27 +224,33 @@ function BrandHero({ brand }: { brand: AuthBrandLabels }) {
 
       <XStack alignItems="center" gap="$3" marginTop="$2">
         <XStack>
-          {AVATAR_GRADIENTS.map((bg, i) => (
+          {AVATARS.map((a, i) => (
             <YStack
-              key={bg}
-              width={32}
-              height={32}
+              key={a.ch}
+              width={34}
+              height={34}
               borderRadius={999}
               borderWidth={2}
               borderColor="$background"
               marginLeft={i === 0 ? 0 : -10}
-              style={{ background: bg }}
-            />
+              alignItems="center"
+              justifyContent="center"
+              style={{ background: a.bg }}
+            >
+              <Typography
+                variant="heading"
+                uiSize="xs"
+                weight="700"
+                style={{ color: '#06011b', fontSize: 12 }}
+              >
+                {a.ch}
+              </Typography>
+            </YStack>
           ))}
         </XStack>
         <Typography variant="body" uiSize="sm" color="$colorMuted" flex={1}>
           {brand.proofBefore}
-          <Typography
-            variant="body"
-            uiSize="sm"
-            weight="600"
-            color="$colorStrong"
-          >
+          <Typography variant="body" uiSize="sm" weight="600">
             {brand.proofCount}
           </Typography>
           {brand.proofAfter}
@@ -182,30 +260,27 @@ function BrandHero({ brand }: { brand: AuthBrandLabels }) {
   );
 }
 
-function FeatureBullet({
-  accent,
-  title,
-  detail,
-}: {
-  accent: string;
-  title: string;
-  detail: string;
-}) {
+function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   return (
     <XStack alignItems="flex-start" gap="$3">
       <YStack
-        width={28}
-        height={28}
-        borderRadius={8}
+        width={22}
+        height={22}
+        borderRadius={999}
         alignItems="center"
         justifyContent="center"
-        backgroundColor="$glassBg"
+        marginTop={1}
+        flexShrink={0}
         borderWidth={1}
-        borderColor="$glassBorder"
+        style={{
+          color: 'var(--accent, #38bdf8)',
+          background:
+            'color-mix(in srgb, var(--accent, #38bdf8) 18%, transparent)',
+          borderColor:
+            'color-mix(in srgb, var(--accent, #38bdf8) 35%, transparent)',
+        }}
       >
-        <Typography variant="body" uiSize="sm">
-          {accent}
-        </Typography>
+        <CheckGlyph size={12} />
       </YStack>
       <YStack flex={1} gap="$0.5">
         <Typography variant="body" uiSize="md" weight="600">

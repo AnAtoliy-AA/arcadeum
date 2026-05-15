@@ -102,14 +102,16 @@ export const MobileNav = styled(YStack, {
   width: '100%',
   maxWidth: '100vw',
   zIndex: '$1',
-  backgroundColor: 'rgba(12, 14, 15, 0.95)',
+  // Fully opaque so the page never shows through the empty gaps above the
+  // user card or below the last menu item.
+  backgroundColor: '$background',
   borderTopWidth: 1,
   borderTopColor: '$glassBorder',
   paddingHorizontal: '$5',
   paddingTop: '$4',
+  paddingBottom: '$4',
   gap: '$1',
   height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
-  backdropFilter: 'blur(32px) saturate(180%)',
   overflowY: 'auto',
 });
 

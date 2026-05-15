@@ -156,27 +156,32 @@ describe('HandCards', () => {
     expect(after.className).toMatch(/_h-172px/);
   });
 
-  it('renders the role fallback glyph when the variant has no sprite art', () => {
-    // Regression for PR #658 review §1.1 — the glyph used to render
+  it('renders the role fallback icon when the variant has no sprite art', () => {
+    // Regression for PR #658 review §1.1 — the icon used to render
     // beneath the sprite and bleed through. With no sprite for the
     // default variant we should still see the role-keyed icon.
+    // §3.2: glyphs are SVG components now (data-testid="hand-card-
+    // fallback-<role>") rather than emoji text, so the assertion has
+    // moved from textContent to a testid lookup.
     renderCards({
       cards: handWithUids(['strike'] as CriticalCard[]),
     });
     const card = screen.getByTestId('hand-card-strike-0');
-    // strike → attack role → ⚔ glyph
-    expect(card.textContent).toContain('⚔');
+    // strike → attack role → SwordsIcon
+    expect(card.querySelector('[data-testid="hand-card-fallback-attack"]'))
+      .not.toBeNull();
   });
 
-  it('omits the fallback glyph when the variant ships sprite art for the card', () => {
-    // Regression for PR #658 review §1.1 — the glyph must NOT stack with
+  it('omits the fallback icon when the variant ships sprite art for the card', () => {
+    // Regression for PR #658 review §1.1 — the icon must NOT stack with
     // the sprite. Crime variant has a sprite sheet; strike is mapped.
     renderCards({
       cards: handWithUids(['strike'] as CriticalCard[]),
       cardVariant: 'crime',
     });
     const card = screen.getByTestId('hand-card-strike-0');
-    expect(card.textContent).not.toContain('⚔');
+    expect(card.querySelector('[data-testid="hand-card-fallback-attack"]'))
+      .toBeNull();
   });
 
   it('links the card description via aria-describedby so screen readers hear it', () => {

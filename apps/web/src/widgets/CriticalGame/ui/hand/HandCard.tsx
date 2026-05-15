@@ -1,6 +1,17 @@
 'use client';
 
 import { YStack, Text } from 'tamagui';
+import {
+  CardsIcon,
+  EyeIcon,
+  FootprintsIcon,
+  HandIcon,
+  HandshakeIcon,
+  ShieldIcon,
+  SparklesIcon,
+  SwordsIcon,
+} from '@arcadeum/ui';
+import type { FC } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   getCardTranslationKey,
@@ -45,19 +56,21 @@ const ROLE_BORDER: Record<CardRole, string> = {
 // drives box-shadow + radius via custom properties. No JS payload.
 
 /**
- * Fallback glyph used when the active card variant has no sprite sheet
+ * Fallback icon used when the active card variant has no sprite sheet
  * (e.g. the unthemed "default" variant). Keyed by role so the icon at
- * least tracks the border colour.
+ * least tracks the border colour. SVG components render consistently
+ * across OSes — the prior emoji glyphs (⚔, 🛡, 🃏, …) were Windows /
+ * macOS / Android renderings apart.
  */
-const ROLE_FALLBACK_GLYPH: Record<CardRole, string> = {
-  attack: '⚔',
-  defuse: '🛡',
-  skip: '👟',
-  nope: '✋',
-  favor: '🤝',
-  see: '👁',
-  combo: '🃏',
-  special: '✨',
+const ROLE_FALLBACK_ICON: Record<CardRole, FC<{ size?: number }>> = {
+  attack: SwordsIcon,
+  defuse: ShieldIcon,
+  skip: FootprintsIcon,
+  nope: HandIcon,
+  favor: HandshakeIcon,
+  see: EyeIcon,
+  combo: CardsIcon,
+  special: SparklesIcon,
 };
 
 const SELECT_RING = '#34d399';
@@ -271,9 +284,14 @@ function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
       {showArt ? (
         <CardImage variant={cardVariant ?? ''} cardType={cardId} />
       ) : (
-        <Text fontSize={56} lineHeight={60} opacity={0.55}>
-          {ROLE_FALLBACK_GLYPH[role]}
-        </Text>
+        (() => {
+          const FallbackIcon = ROLE_FALLBACK_ICON[role];
+          return (
+            <YStack opacity={0.55} data-testid={`hand-card-fallback-${role}`}>
+              <FallbackIcon size={56} />
+            </YStack>
+          );
+        })()
       )}
     </YStack>
   );

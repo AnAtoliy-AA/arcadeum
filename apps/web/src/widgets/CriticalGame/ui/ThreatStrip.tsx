@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, type CSSProperties } from 'react';
+import { ShieldIcon } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../types';
 
@@ -160,7 +161,9 @@ export function ThreatStrip({
         style={defuseStyle}
         title={t('games.table.hud.threat.defusesTitle')}
       >
-        🛡 {defuseCount}
+        <ShieldIcon size={14} />
+        {' '}
+        {defuseCount}
       </span>
     </div>
   );

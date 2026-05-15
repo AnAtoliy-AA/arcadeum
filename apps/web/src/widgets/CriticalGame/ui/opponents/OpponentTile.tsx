@@ -1,6 +1,7 @@
 'use client';
 
 import { YStack, XStack, Text } from 'tamagui';
+import { CardsIcon, SkullIcon } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { IdleBadge } from '@/shared/ui';
 import type { CriticalPlayerTableState } from '../../types';
@@ -209,9 +210,13 @@ export function OpponentTile({
         alignItems="center"
         justifyContent="center"
       >
-        <Text fontSize={14} fontWeight="800" letterSpacing={0.5}>
-          {alive ? initialsOf(displayName) : '💀'}
-        </Text>
+        {alive ? (
+          <Text fontSize={14} fontWeight="800" letterSpacing={0.5}>
+            {initialsOf(displayName)}
+          </Text>
+        ) : (
+          <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
+        )}
       </YStack>
       <XStack alignItems="center" gap={4} maxWidth="100%">
         <Text
@@ -227,15 +232,17 @@ export function OpponentTile({
         {isIdle && <IdleBadge />}
       </XStack>
       {alive ? (
-        <Text
+        <XStack
           data-testid={`opponent-tile-count-${player.playerId}`}
-          fontSize={11}
-          fontWeight="800"
-          letterSpacing={0.4}
+          alignItems="center"
+          gap={4}
           opacity={0.85}
         >
-          🃏 {player.hand.length}
-        </Text>
+          <CardsIcon size={11} />
+          <Text fontSize={11} fontWeight="800" letterSpacing={0.4}>
+            {player.hand.length}
+          </Text>
+        </XStack>
       ) : (
         <Text
           data-testid={`opponent-tile-eliminated-${player.playerId}`}

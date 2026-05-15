@@ -1,6 +1,13 @@
 'use client';
 
 import { YStack, XStack, Text, Button } from 'tamagui';
+import {
+  BookOpenIcon,
+  CardsIcon,
+  MaximizeIcon,
+  MinimizeIcon,
+  ShieldIcon,
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ComboKind } from '../../lib/combo';
 
@@ -141,9 +148,12 @@ export function HandRail({
           borderWidth={1}
           borderColor={NEUTRAL_BORDER}
         >
-          <Text fontSize={18} fontWeight="800" letterSpacing={0.5}>
-            🃏 {handCount}
-          </Text>
+          <XStack alignItems="center" gap={6}>
+            <CardsIcon size={16} />
+            <Text fontSize={18} fontWeight="800" letterSpacing={0.5}>
+              {handCount}
+            </Text>
+          </XStack>
           <Text
             fontSize={9}
             fontWeight="700"
@@ -166,14 +176,19 @@ export function HandRail({
           borderWidth={1}
           borderColor={defuseVariant.border}
         >
-          <Text
-            fontSize={18}
-            fontWeight="800"
-            letterSpacing={0.5}
-            color={defuseVariant.color}
-          >
-            🛡 {defuseCount}
-          </Text>
+          <XStack alignItems="center" gap={6}>
+            <Text color={defuseVariant.color}>
+              <ShieldIcon size={16} />
+            </Text>
+            <Text
+              fontSize={18}
+              fontWeight="800"
+              letterSpacing={0.5}
+              color={defuseVariant.color}
+            >
+              {defuseCount}
+            </Text>
+          </XStack>
           <Text
             fontSize={9}
             fontWeight="700"
@@ -364,7 +379,7 @@ export function HandRail({
                 onPress={onOpenRules}
               >
                 <YStack alignItems="center" gap={2}>
-                  <Text fontSize={16}>📖</Text>
+                  <BookOpenIcon size={16} />
                   <Text
                     fontSize={9}
                     fontWeight="800"
@@ -396,7 +411,11 @@ export function HandRail({
                 )}
               >
                 <YStack alignItems="center" gap={2}>
-                  <Text fontSize={16}>{isFullscreen ? '⤡' : '⛶'}</Text>
+                  {isFullscreen ? (
+                    <MinimizeIcon size={16} />
+                  ) : (
+                    <MaximizeIcon size={16} />
+                  )}
                   <Text
                     fontSize={9}
                     fontWeight="800"

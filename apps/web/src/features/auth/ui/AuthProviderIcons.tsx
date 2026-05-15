@@ -82,6 +82,60 @@ export function MailGlyph({ size = 28 }: IconProps) {
   );
 }
 
+export function SparkleGlyph({ size = 10 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M8 0 L9.4 6.6 L16 8 L9.4 9.4 L8 16 L6.6 9.4 L0 8 L6.6 6.6 Z" />
+    </svg>
+  );
+}
+
+export function CheckGlyph({ size = 12 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <polyline points="3 8 7 12 13 4" />
+    </svg>
+  );
+}
+
+export function ArrowGlyph({ size = 14 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <line x1="3" y1="8" x2="13" y2="8" />
+      <polyline points="9 4 13 8 9 12" />
+    </svg>
+  );
+}
+
 export function PhoneGlyph({ size = 22 }: IconProps) {
   return (
     <svg

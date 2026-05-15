@@ -396,6 +396,10 @@ function buildFormLabels(
       copy.magicLinkSentBody ?? fallback.magicLinkSentBody ?? '',
     magicLinkBack:
       copy.magicLinkBack ?? fallback.magicLinkBack ?? 'Use a different method',
+    passwordMismatch:
+      copy.passwordMismatch ??
+      fallback.passwordMismatch ??
+      "Passwords don't match.",
     legalPrefix: legal.prefix,
     legalConjunction: legal.conjunction,
     legalSuffix: legal.suffix,

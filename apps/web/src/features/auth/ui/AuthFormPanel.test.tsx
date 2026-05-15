@@ -28,6 +28,7 @@ const baseFormLabels: AuthLabels['form'] = {
   magicLinkSentTitle: 'Check your inbox',
   magicLinkSentBody: 'We sent a sign-in link to {{email}}.',
   magicLinkBack: 'Use a different method',
+  passwordMismatch: "Passwords don't match.",
   legalPrefix: 'By continuing you agree to {{appName}}’s ',
   legalConjunction: ' and ',
   legalSuffix: '.',

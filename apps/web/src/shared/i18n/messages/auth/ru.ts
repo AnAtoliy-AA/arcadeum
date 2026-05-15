@@ -89,6 +89,7 @@ export const ru = {
     magicLinkSentBody:
       'Мы отправили ссылку для входа на {{email}}. Откройте её на этом устройстве, чтобы завершить вход.',
     magicLinkBack: 'Другой способ',
+    passwordMismatch: 'Пароли не совпадают.',
     legal:
       'Продолжая, вы принимаете {{termsLink}} и {{privacyLink}} {{appName}}.',
     termsLink: 'Условия',

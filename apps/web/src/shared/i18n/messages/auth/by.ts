@@ -89,6 +89,7 @@ export const by = {
     magicLinkSentBody:
       'Мы адправілі спасылку для ўваходу на {{email}}. Адкрыйце яе на гэтай прыладзе, каб завяршыць уваход.',
     magicLinkBack: 'Іншы спосаб',
+    passwordMismatch: 'Паролі не супадаюць.',
     legal:
       'Працягваючы, вы пагаджаецеся з {{termsLink}} і {{privacyLink}} {{appName}}.',
     termsLink: 'Умовамі',

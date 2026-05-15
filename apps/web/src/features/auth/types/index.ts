@@ -102,6 +102,7 @@ export interface AuthFormLabels {
   magicLinkSentTitle: string;
   magicLinkSentBody: string;
   magicLinkBack: string;
+  passwordMismatch: string;
   legalPrefix: string;
   legalConjunction: string;
   legalSuffix: string;

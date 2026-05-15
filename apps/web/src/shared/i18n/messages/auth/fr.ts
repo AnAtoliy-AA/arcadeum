@@ -90,6 +90,7 @@ export const fr = {
     magicLinkSentBody:
       'Nous avons envoyé un lien de connexion à {{email}}. Cliquez dessus depuis cet appareil pour terminer la connexion.',
     magicLinkBack: 'Utiliser une autre méthode',
+    passwordMismatch: 'Les mots de passe ne correspondent pas.',
     legal:
       'En continuant, vous acceptez les {{termsLink}} et la {{privacyLink}} de {{appName}}.',
     termsLink: 'Conditions',

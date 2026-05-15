@@ -96,6 +96,7 @@ export const en = {
     magicLinkSentBody:
       'We sent a sign-in link to {{email}}. Click it from this device to finish signing in.',
     magicLinkBack: 'Use a different method',
+    passwordMismatch: "Passwords don't match.",
     legal:
       "By continuing you agree to {{appName}}'s {{termsLink}} and {{privacyLink}}.",
     termsLink: 'Terms',

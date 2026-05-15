@@ -91,6 +91,7 @@ export const es = {
     magicLinkSentBody:
       'Enviamos un enlace de acceso a {{email}}. Haz clic en él desde este dispositivo para iniciar sesión.',
     magicLinkBack: 'Usar otro método',
+    passwordMismatch: 'Las contraseñas no coinciden.',
     legal:
       'Al continuar aceptas los {{termsLink}} y la {{privacyLink}} de {{appName}}.',
     termsLink: 'Términos',

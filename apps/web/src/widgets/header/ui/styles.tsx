@@ -79,6 +79,13 @@ export const DesktopOnly = styled(XStack, {
   $md: { display: 'none' },
 });
 
+// Hidden at narrow widths — used to move a header action into the mobile menu.
+export const HeaderMobileHidden = styled(XStack, {
+  name: 'HeaderMobileHidden',
+  alignItems: 'center',
+  $sm: { display: 'none' },
+});
+
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
 export const MobileMenuContainer = styled(XStack, {

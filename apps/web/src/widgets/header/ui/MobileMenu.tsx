@@ -29,6 +29,8 @@ import {
 } from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
+import LanguageSwitcher from './LanguageSwitcher';
+import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 interface MobileMenuProps {
   navItems: Array<{ href: string; label: string }>;
@@ -150,6 +152,17 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         <SupportIcon size={18} />
         {t('common.actions.support')}
       </LinkButton>
+
+      <XStack
+        marginTop="$2"
+        paddingHorizontal="$2"
+        alignItems="center"
+        gap="$3"
+        flexWrap="wrap"
+      >
+        <LanguageSwitcher data-testid="mobile-language-switcher" />
+        <InstallPWAButton />
+      </XStack>
 
       <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
     </MobileNav>

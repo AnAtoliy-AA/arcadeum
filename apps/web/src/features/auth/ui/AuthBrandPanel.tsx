@@ -3,7 +3,7 @@ import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { appConfig } from '@/shared/config/app-config';
 import type { AuthBrandLabels } from '../types';
-import { CheckGlyph, PlusGlyph } from './AuthProviderIcons';
+import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
 
 interface AuthBrandPanelProps {
   brand: AuthBrandLabels;
@@ -175,7 +175,7 @@ function BrandHero({
           color: 'var(--accent, #38bdf8)',
         }}
       >
-        <PlusGlyph size={12} />
+        <SparkleGlyph size={12} />
         <Typography
           variant="caption"
           uiSize="xs"
@@ -192,15 +192,21 @@ function BrandHero({
       </XStack>
 
       <YStack gap="$2">
-        <Typography variant="heading" uiSize="3xl" weight="700">
+        <Typography
+          variant="heading"
+          weight="800"
+          style={{ fontSize: 80, lineHeight: 84, letterSpacing: '-0.02em' }}
+        >
           {brand.headlinePrefix}{' '}
           <Typography
             variant="heading"
-            uiSize="3xl"
-            weight="700"
+            weight="800"
             style={{
+              fontSize: 80,
+              lineHeight: 84,
+              letterSpacing: '-0.02em',
               backgroundImage:
-                'linear-gradient(120deg, var(--accent, #38bdf8) 20%, #ff6af7 90%)',
+                'linear-gradient(120deg, #38bdf8 0%, #a78bfa 55%, #ff6af7 100%)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               color: 'transparent',
@@ -271,12 +277,12 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   return (
     <XStack alignItems="flex-start" gap="$3">
       <YStack
-        width={22}
-        height={22}
+        width={28}
+        height={28}
         borderRadius={999}
         alignItems="center"
         justifyContent="center"
-        marginTop={1}
+        marginTop={2}
         flexShrink={0}
         borderWidth={1}
         style={{
@@ -287,16 +293,16 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
             'color-mix(in srgb, var(--accent, #38bdf8) 35%, transparent)',
         }}
       >
-        <CheckGlyph size={12} />
+        <CheckGlyph size={14} />
       </YStack>
-      <YStack flex={1} gap="$0.5">
-        <Typography variant="body" uiSize="md" weight="600">
+      <Typography variant="body" uiSize="md" flex={1}>
+        <Typography variant="body" uiSize="md" weight="700">
           {title}
+        </Typography>{' '}
+        <Typography variant="body" uiSize="md" color="$colorMuted">
+          — {detail}
         </Typography>
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
-          {detail}
-        </Typography>
-      </YStack>
+      </Typography>
     </XStack>
   );
 }

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.51] - 2026-05-15
+
+### Added
+- scale mongoose pool and pool axios outbound for PayPal (ARC-685) (ARC-685)
+
+
 ## [1.13.50] - 2026-05-15
 
 ### Fixed

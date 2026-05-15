@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
-import { getMockLeaderboard } from '@/shared/api/leaderboard';
+import { getMockLeaderboard, getMockPlayer } from '@/shared/api/leaderboard';
 import type { GameMode } from '@/entities/leaderboard/model/types';
 
 test.describe('Leaderboards page', () => {
@@ -19,6 +19,23 @@ test.describe('Leaderboards page', () => {
         return route.fallback();
       }
       const url = new URL(route.request().url());
+
+      // /leaderboards/players/<id> — player profile lookup used by the
+      // mythic-challenge CTA tests. Without this the request hits the BE
+      // and 404s for synthetic ids like p_1.
+      const playerMatch = url.pathname.match(
+        /\/leaderboards\/players\/([^/]+)$/,
+      );
+      if (playerMatch) {
+        const id = decodeURIComponent(playerMatch[1] ?? '');
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(getMockPlayer(id)),
+        });
+        return;
+      }
+
       if (!url.pathname.endsWith('/leaderboards')) {
         return route.fallback();
       }

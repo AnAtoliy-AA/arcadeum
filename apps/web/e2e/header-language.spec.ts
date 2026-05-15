@@ -1,5 +1,5 @@
 import { expect, type Locator } from '@playwright/test';
-import { test, navigateTo } from './fixtures/test-utils';
+import { test, navigateTo, getIsMobile } from './fixtures/test-utils';
 
 /**
  * Tamagui's Select trigger opens the dropdown on `mousedown`, but on
@@ -28,25 +28,32 @@ test.describe('Header Language Switcher', () => {
     await navigateTo(page, '/');
   });
 
-  test('should display language switcher on header for all devices and change language', async ({
+  test('should expose a language switcher on every device and change language', async ({
     page,
   }) => {
-    const languageSwitcher = page
-      .locator('header')
-      .getByTestId('header-language-switcher');
+    if (getIsMobile(page)) {
+      // Mobile: the header trigger is hidden, the drawer carries inline pills.
+      await page.getByTestId('mobile-menu-button').click();
+      const mobileNav = page.getByTestId('mobile-nav');
+      await expect(mobileNav).toBeVisible();
 
-    // Wait for the trigger to be visible
-    await expect(languageSwitcher).toBeVisible();
+      const enPill = mobileNav.getByTestId('mobile-language-en');
+      await expect(enPill).toBeVisible();
+      await expect(enPill).toHaveAttribute('aria-pressed', 'true');
 
-    // Default language from text
-    await expect(languageSwitcher).toContainText('EN');
+      await mobileNav.getByTestId('mobile-language-es').click();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    } else {
+      const languageSwitcher = page
+        .locator('header')
+        .getByTestId('header-language-switcher');
+      await expect(languageSwitcher).toBeVisible();
+      await expect(languageSwitcher).toContainText('EN');
 
-    // Change language to Spanish
-    await openLanguageSwitcher(languageSwitcher);
-    await page.getByRole('option', { name: 'ES' }).click();
-
-    // The value should be updated
-    await expect(languageSwitcher).toContainText('ES', {});
+      await openLanguageSwitcher(languageSwitcher);
+      await page.getByRole('option', { name: 'ES' }).click();
+      await expect(languageSwitcher).toContainText('ES', {});
+    }
   });
 
   test('should hide language switcher in header and surface inline pills inside the mobile menu', async ({

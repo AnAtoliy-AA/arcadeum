@@ -15,12 +15,9 @@ test.describe('Auth Extended', () => {
   // field from the register form (referral capture moves to onboarding). The
   // mismatch error path stays in useAuthForm but is no longer reachable from
   // the UI, so this scenario is covered by AuthFormPanel.test.tsx instead.
-  test.skip(
-    'should validate registration fields',
-    async ({ page }) => {
-      await navigateTo(page, '/auth');
-    },
-  );
+  test.skip('should validate registration fields', async ({ page }) => {
+    await navigateTo(page, '/auth');
+  });
 
   test('should persist session after manual reload', async ({ page }) => {
     await mockSession(page);
@@ -65,6 +62,9 @@ test.describe('Auth Extended', () => {
     // Wait for button to be ready (especially on Mobile Safari where Zustand
     // rehydration + React reconciliation can take a moment)
     await expect(logoutBtn).toBeVisible({});
+    // The drawer's body is scrollable on mobile and the logout button sits
+    // below the fold for short viewports; nudge it into view before clicking.
+    await logoutBtn.scrollIntoViewIfNeeded();
 
     // 3. Verify session is cleared and redirected
     await Promise.all([

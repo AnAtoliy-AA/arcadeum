@@ -127,7 +127,7 @@ export function AuthFormPanel({
           variant="heading"
           uiSize="2xl"
           weight="700"
-          style={{ lineHeight: 1.1, letterSpacing: '-0.02em' }}
+          style={{ letterSpacing: '-0.02em' }}
         >
           {isRegisterMode ? form.headingRegister : form.headingSignIn}
         </Typography>

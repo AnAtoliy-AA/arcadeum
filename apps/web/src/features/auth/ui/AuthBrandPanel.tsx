@@ -192,12 +192,7 @@ function BrandHero({
       </XStack>
 
       <YStack gap="$2">
-        <Typography
-          variant="heading"
-          uiSize="3xl"
-          weight="700"
-          style={{ lineHeight: 1.05 }}
-        >
+        <Typography variant="heading" uiSize="3xl" weight="700">
           {brand.headlinePrefix}{' '}
           <Typography
             variant="heading"
@@ -214,12 +209,7 @@ function BrandHero({
             {brand.headlineHighlight}
           </Typography>
         </Typography>
-        <Typography
-          variant="body"
-          uiSize="lg"
-          color="$colorMuted"
-          style={{ lineHeight: 1.55 }}
-        >
+        <Typography variant="body" uiSize="lg" color="$colorMuted">
           {brand.subline}
         </Typography>
       </YStack>

@@ -19,7 +19,6 @@ export default function AuthPageContent() {
       width="100%"
       position="relative"
       overflow="hidden"
-      backgroundColor="$background"
       $md={{ flexDirection: 'column' }}
       data-testid="auth-page-root"
     >

@@ -130,12 +130,6 @@ export interface AuthBrandLabels {
   footHelp: string;
 }
 
-export interface AuthPwaLabels {
-  title: string;
-  body: string;
-  cta: string;
-}
-
 export interface AuthOAuthLabels {
   google: string;
   googleShort: string;

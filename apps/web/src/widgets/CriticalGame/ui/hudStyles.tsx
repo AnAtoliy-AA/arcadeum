@@ -189,27 +189,6 @@ const HUD_KEYFRAMES_CSS = `
   }
 }
 
-/* §3.5 — Per-element view transitions. The view-transition-name on
-   each hand-card wrapper (crit-card-<uid>) and the discard pile slot
-   (crit-discard-top) makes the browser capture each one's old/new
-   position separately when the DOM mutates. Suppressing the root
-   group's animation prevents the full-document cross-fade — only the
-   named elements animate. Without this every play would flash the
-   whole match, which felt fine on the first play of a session and
-   overstimulating on the 50th. Reduced-motion users skip the helper
-   entirely (see viewTransition.ts) so this rule never runs for them.
-   View Transitions ship in Chrome 111+ / Firefox 127+ / Safari 17.4+;
-   in unsupported browsers the helper calls fn() directly and these
-   pseudo-elements simply don't exist. */
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-group(root) {
-    animation-duration: 0s;
-  }
-  ::view-transition-group(crit-discard-top) {
-    animation-duration: 280ms;
-    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-}
 `;
 
 export function HudStyles() {

@@ -3,12 +3,18 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { PaypalGateway } from './paypal.gateway';
 
-jest.mock('axios');
+jest.mock('../../common/utils/paypal-http.util', () => ({
+  paypalHttp: { post: jest.fn(), get: jest.fn() },
+}));
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+import { paypalHttp } from '../../common/utils/paypal-http.util';
+
+const mockedAxios = paypalHttp as unknown as {
+  post: jest.MockedFunction<typeof paypalHttp.post>;
+  get: jest.MockedFunction<typeof paypalHttp.get>;
+};
 
 function makeConfig(
   overrides: Record<string, string | undefined> = {},

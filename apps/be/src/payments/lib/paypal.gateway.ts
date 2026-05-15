@@ -5,7 +5,8 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import { paypalHttp } from '../../common/utils/paypal-http.util';
 import { randomUUID } from 'crypto';
 
 interface PayPalAuthResponse {
@@ -61,7 +62,7 @@ export class PaypalGateway {
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     try {
-      const res = await axios.post<PayPalAuthResponse>(
+      const res = await paypalHttp.post<PayPalAuthResponse>(
         `${baseUrl}/v1/oauth2/token`,
         'grant_type=client_credentials',
         {
@@ -96,7 +97,7 @@ export class PaypalGateway {
 
     const valueUsd = (input.amountUsd / 100).toFixed(2);
     try {
-      const res = await axios.post<PayPalOrderResponse>(
+      const res = await paypalHttp.post<PayPalOrderResponse>(
         `${baseUrl}/v2/checkout/orders`,
         {
           intent: 'CAPTURE',
@@ -145,7 +146,7 @@ export class PaypalGateway {
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
     try {
-      const res = await axios.get<PayPalGetOrderResponse>(
+      const res = await paypalHttp.get<PayPalGetOrderResponse>(
         `${baseUrl}/v2/checkout/orders/${orderId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -172,7 +173,7 @@ export class PaypalGateway {
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
     try {
-      const res = await axios.post<PayPalGetOrderResponse>(
+      const res = await paypalHttp.post<PayPalGetOrderResponse>(
         `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
         {},
         {

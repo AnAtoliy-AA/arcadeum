@@ -301,12 +301,11 @@ export default function LeaderboardsPageContent({
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}
               </Text>
             </YStack>
-            <View testID="leaderboard-ticker">
-              <EventTicker
-                events={data?.tickerEvents ?? []}
-                liveLabel={tickerT.live ?? 'Live'}
-              />
-            </View>
+            <EventTicker
+              events={data?.tickerEvents ?? []}
+              liveLabel={tickerT.live ?? 'Live'}
+              testID="leaderboard-ticker"
+            />
           </HeroBackdrop>
 
           <FreshnessIndicator

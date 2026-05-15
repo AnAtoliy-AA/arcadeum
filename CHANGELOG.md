@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.46] - 2026-05-15
+
+### Added
+- fluid widget width + container queries §3.3 (ARC-679) (ARC-679)
+
+
 ## [1.13.45] - 2026-05-15
 
 ### Fixed

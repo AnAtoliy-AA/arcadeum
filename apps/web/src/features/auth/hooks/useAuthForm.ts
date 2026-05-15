@@ -72,13 +72,11 @@ export function useAuthForm() {
 
   const emailFieldId = useId();
   const passwordFieldId = useId();
-  const confirmFieldId = useId();
   const usernameFieldId = useId();
   const referralCodeFieldId = useId();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
@@ -126,7 +124,6 @@ export function useAuthForm() {
 
   useEffect(() => {
     if (isRegisterMode) return;
-    scheduleStateUpdate(() => setConfirmPassword(''));
     scheduleStateUpdate(() =>
       setUsername(storedUsername ? sanitizeUsername(storedUsername) : ''),
     );
@@ -135,7 +132,6 @@ export function useAuthForm() {
   useEffect(() => {
     if (!localAccessToken) return;
     scheduleStateUpdate(() => setPassword(''));
-    scheduleStateUpdate(() => setConfirmPassword(''));
   }, [localAccessToken]);
 
   // Handlers
@@ -147,13 +143,6 @@ export function useAuthForm() {
   const handlePasswordChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setPassword(e.target.value);
-    },
-    [],
-  );
-
-  const handleConfirmChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setConfirmPassword(e.target.value);
     },
     [],
   );
@@ -210,7 +199,6 @@ export function useAuthForm() {
   const handleToggleMode = useCallback(() => {
     toggleMode();
     setPassword('');
-    setConfirmPassword('');
     setUsername(storedUsername ? sanitizeUsername(storedUsername) : '');
   }, [toggleMode, storedUsername]);
 
@@ -219,10 +207,6 @@ export function useAuthForm() {
   const trimmedUsername = username.trim();
   const isEmailValid = EMAIL_REGEX.test(trimmedEmail);
   const showInvalidEmail = trimmedEmail.length > 0 && !isEmailValid;
-  const showPasswordMismatch =
-    isRegisterMode &&
-    confirmPassword.length > 0 &&
-    password !== confirmPassword;
   const showUsernameTooShort =
     isRegisterMode && trimmedUsername.length > 0 && trimmedUsername.length < 3;
 
@@ -232,7 +216,6 @@ export function useAuthForm() {
     !isEmailValid ||
     !password ||
     (isRegisterMode && !trimmedUsername) ||
-    showPasswordMismatch ||
     showUsernameTooShort ||
     (isRegisterMode && usernameAvailability === 'taken') ||
     (isRegisterMode && emailAvailability === 'taken');
@@ -323,7 +306,6 @@ export function useAuthForm() {
     // Form state
     email,
     password,
-    confirmPassword,
     username,
     referralCode,
     rememberMe,
@@ -334,7 +316,6 @@ export function useAuthForm() {
     // Field IDs
     emailFieldId,
     passwordFieldId,
-    confirmFieldId,
     usernameFieldId,
     referralCodeFieldId,
 
@@ -346,7 +327,6 @@ export function useAuthForm() {
     storedUsername,
     storedDisplayName,
     localSubmitDisabled,
-    showPasswordMismatch,
     showUsernameTooShort,
     showInvalidEmail,
     isEmailValid,
@@ -363,7 +343,6 @@ export function useAuthForm() {
     // Handlers
     handleEmailChange,
     handlePasswordChange,
-    handleConfirmChange,
     handleUsernameChange,
     handleReferralCodeChange,
     handleUsernameBlur,

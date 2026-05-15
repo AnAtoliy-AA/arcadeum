@@ -66,7 +66,6 @@ function makeAuth(
     isRegisterMode: false,
     email: '',
     password: '',
-    confirmPassword: '',
     username: '',
     referralCode: '',
     rememberMe: true,
@@ -75,7 +74,6 @@ function makeAuth(
     magicLinkEmail: '',
     emailFieldId: 'email',
     passwordFieldId: 'password',
-    confirmFieldId: 'confirm',
     usernameFieldId: 'username',
     referralCodeFieldId: 'ref',
     localLoading: false,
@@ -85,7 +83,6 @@ function makeAuth(
     storedUsername: null,
     storedDisplayName: null,
     localSubmitDisabled: true,
-    showPasswordMismatch: false,
     showUsernameTooShort: false,
     showInvalidEmail: false,
     isEmailValid: false,
@@ -98,7 +95,6 @@ function makeAuth(
     providerAccessToken: null,
     handleEmailChange: vi.fn(),
     handlePasswordChange: vi.fn(),
-    handleConfirmChange: vi.fn(),
     handleUsernameChange: vi.fn(),
     handleReferralCodeChange: vi.fn(),
     handleUsernameBlur: vi.fn(),
@@ -232,10 +228,4 @@ describe('AuthFormPanel', () => {
     expect(screen.queryByTestId('auth-magic-link-cta')).toBeNull();
   });
 
-  it('shows the passwordMismatch error label, not the password label, on mismatch', () => {
-    renderPanel(
-      makeAuth({ isRegisterMode: true, showPasswordMismatch: true }),
-    );
-    expect(screen.getByText("Passwords don't match.")).toBeInTheDocument();
-  });
 });

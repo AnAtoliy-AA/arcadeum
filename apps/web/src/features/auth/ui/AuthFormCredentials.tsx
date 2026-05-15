@@ -36,7 +36,6 @@ export function AuthFormCredentials({
     emailFieldId,
     passwordFieldId,
     usernameFieldId,
-    showPasswordMismatch,
     showUsernameTooShort,
     showInvalidEmail,
     emailAvailability,
@@ -94,39 +93,33 @@ export function AuthFormCredentials({
           />
         </FieldWithMessage>
 
-        <FieldWithMessage
-          error={showPasswordMismatch ? form.passwordMismatch : undefined}
-        >
-          <div style={{ position: 'relative' }}>
-            <FloatingLabelInput
-              id={passwordFieldId}
-              type={showPassword ? 'text' : 'password'}
-              autoComplete={
-                isRegisterMode ? 'new-password' : 'current-password'
-              }
-              label={form.passwordLabel}
-              value={password}
-              onChange={(value) =>
-                handlePasswordChange({
-                  target: { value },
-                } as ChangeEvent<HTMLInputElement>)
-              }
-              required
-              disabled={localLoading}
-              data-testid="auth-password-input"
-            />
-            <button
-              type="button"
-              className="auth-pw-toggle"
-              onClick={() => setShowPassword((s) => !s)}
-              aria-label={showPassword ? form.hidePassword : form.showPassword}
-              data-testid="auth-password-toggle"
-              style={passwordToggleStyle}
-            >
-              {showPassword ? form.hidePassword : form.showPassword}
-            </button>
-          </div>
-        </FieldWithMessage>
+        <div style={{ position: 'relative' }}>
+          <FloatingLabelInput
+            id={passwordFieldId}
+            type={showPassword ? 'text' : 'password'}
+            autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
+            label={form.passwordLabel}
+            value={password}
+            onChange={(value) =>
+              handlePasswordChange({
+                target: { value },
+              } as ChangeEvent<HTMLInputElement>)
+            }
+            required
+            disabled={localLoading}
+            data-testid="auth-password-input"
+          />
+          <button
+            type="button"
+            className="auth-pw-toggle"
+            onClick={() => setShowPassword((s) => !s)}
+            aria-label={showPassword ? form.hidePassword : form.showPassword}
+            data-testid="auth-password-toggle"
+            style={passwordToggleStyle}
+          >
+            {showPassword ? form.hidePassword : form.showPassword}
+          </button>
+        </div>
 
         {isRegisterMode && (
           <FieldWithMessage error={usernameErrorMessage}>

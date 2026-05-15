@@ -70,23 +70,25 @@
 .auth-pwa-install {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.04);
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
   color: var(--color, #ecefee);
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition:
     background-color 160ms ease,
-    color 160ms ease;
+    color 160ms ease,
+    border-color 160ms ease;
 }
 
 .auth-pwa-install:hover {
   background: var(--accent, #38bdf8);
+  border-color: var(--accent, #38bdf8);
   color: #06011b;
 }
 

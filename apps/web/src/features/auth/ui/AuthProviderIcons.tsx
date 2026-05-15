@@ -82,6 +82,25 @@ export function MailGlyph({ size = 28 }: IconProps) {
   );
 }
 
+export function PlusGlyph({ size = 12 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <line x1="8" y1="2" x2="8" y2="14" />
+      <line x1="2" y1="8" x2="14" y2="8" />
+    </svg>
+  );
+}
+
 export function SparkleGlyph({ size = 10 }: IconProps) {
   return (
     <svg

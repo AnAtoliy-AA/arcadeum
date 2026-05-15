@@ -105,20 +105,14 @@ function ProviderButton({
         background: 'rgba(255,255,255,0.04)',
         color: 'inherit',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.55 : 1,
+        opacity: disabled ? 0.78 : 1,
         transition: 'background-color 160ms ease, border-color 160ms ease',
       }}
     >
       <YStack alignItems="center" justifyContent="center">
         {provider.icon}
       </YStack>
-      <Typography
-        variant="body"
-        uiSize="sm"
-        weight="600"
-        display="none"
-        $gtLg={{ display: 'flex' }}
-      >
+      <Typography variant="body" uiSize="sm" weight="600">
         {provider.shortLabel}
       </Typography>
     </button>

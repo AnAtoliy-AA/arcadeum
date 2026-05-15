@@ -3,7 +3,7 @@ import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { appConfig } from '@/shared/config/app-config';
 import type { AuthBrandLabels } from '../types';
-import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
+import { CheckGlyph, PlusGlyph } from './AuthProviderIcons';
 
 interface AuthBrandPanelProps {
   brand: AuthBrandLabels;
@@ -22,7 +22,7 @@ const AVATARS: AvatarEntry[] = [
   { ch: '+', bg: 'linear-gradient(135deg, #22d3ee, #a78bfa)' },
 ];
 
-export function AuthBrandPanel({ brand, flex = 1.05 }: AuthBrandPanelProps) {
+export function AuthBrandPanel({ brand, flex = 1.55 }: AuthBrandPanelProps) {
   return (
     <YStack
       flex={flex}
@@ -175,7 +175,7 @@ function BrandHero({
           color: 'var(--accent, #38bdf8)',
         }}
       >
-        <SparkleGlyph size={10} />
+        <PlusGlyph size={12} />
         <Typography
           variant="caption"
           uiSize="xs"
@@ -290,7 +290,7 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
         flexShrink={0}
         borderWidth={1}
         style={{
-          color: 'var(--accent, #38bdf8)',
+          color: '#ffffff',
           background:
             'color-mix(in srgb, var(--accent, #38bdf8) 18%, transparent)',
           borderColor:

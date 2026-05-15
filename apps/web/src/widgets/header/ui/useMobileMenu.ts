@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { useClickOutside } from './useClickOutside';
 
@@ -25,26 +25,6 @@ export function useMobileMenu(): {
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   useClickOutside(close, isOpen);
-
-  // Lock body scroll while the drawer is open. Without this, scrolling the
-  // drawer's content chains to the page on mobile browsers, dragging the
-  // sticky header out of view and revealing the layout below the menu.
-  useEffect(() => {
-    if (!isOpen) return;
-    const html = document.documentElement;
-    const body = document.body;
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = body.style.overflow;
-    const prevOverscroll = body.style.overscrollBehavior;
-    html.style.overflow = 'hidden';
-    body.style.overflow = 'hidden';
-    body.style.overscrollBehavior = 'contain';
-    return () => {
-      html.style.overflow = prevHtmlOverflow;
-      body.style.overflow = prevBodyOverflow;
-      body.style.overscrollBehavior = prevOverscroll;
-    };
-  }, [isOpen]);
 
   return { isOpen, toggle, close };
 }

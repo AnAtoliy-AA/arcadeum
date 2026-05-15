@@ -49,38 +49,32 @@ test.describe('Header Language Switcher', () => {
     await expect(languageSwitcher).toContainText('ES', {});
   });
 
-  test('should display language switcher in header and not in mobile menu on mobile devices', async ({
+  test('should hide language switcher in header and surface inline pills inside the mobile menu', async ({
     page,
   }) => {
     // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
-    // 1. Check it's visible in the header
+    // 1. Header switcher is NOT visible on mobile — moved into the drawer.
     const headerLanguageSwitcher = page
       .locator('header')
       .getByTestId('header-language-switcher');
-    await expect(headerLanguageSwitcher).toBeVisible();
+    await expect(headerLanguageSwitcher).toBeHidden();
 
     // 2. Open mobile menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
     await menuButton.click();
 
-    // The mobile menu should be open
     const mobileNav = page.getByTestId('mobile-nav');
     await expect(mobileNav).toBeVisible();
 
-    // 3. Verify it's NOT in the mobile menu
-    const menuLanguageSwitcher = mobileNav.getByTestId(
-      'header-language-switcher',
-    );
-    await expect(menuLanguageSwitcher).not.toBeVisible();
+    // 3. Verify the inline language pill row lives inside the drawer.
+    const mobileSwitcher = mobileNav.getByTestId('mobile-language-switcher');
+    await expect(mobileSwitcher).toBeVisible();
 
-    // 4. Change language from header while menu is open
-    await openLanguageSwitcher(headerLanguageSwitcher);
-    await page.getByRole('option', { name: 'FR' }).click();
-
-    // Verify language changed (header text should update)
-    await expect(headerLanguageSwitcher).toContainText('FR', {});
+    // 4. Pick FR via the pill and verify the document language updates.
+    await mobileNav.getByTestId('mobile-language-fr').click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
 });

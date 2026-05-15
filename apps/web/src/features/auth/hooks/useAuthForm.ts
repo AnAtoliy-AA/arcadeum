@@ -19,6 +19,23 @@ import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export type OAuthProvider = 'google' | 'apple' | 'discord';
+
+export const OAUTH_PROVIDERS: readonly OAuthProvider[] = [
+  'google',
+  'apple',
+  'discord',
+] as const;
+
+// Providers other than Google still require BE wiring; render disabled buttons
+// with a "Coming soon" tooltip until the backend endpoints land.
+// TODO ARC-XXX wire apple/discord oauth
+const ENABLED_OAUTH_PROVIDERS: ReadonlySet<OAuthProvider> = new Set(['google']);
+
+export function isOAuthProviderEnabled(provider: OAuthProvider): boolean {
+  return ENABLED_OAUTH_PROVIDERS.has(provider);
+}
+
 export type UseAuthFormResult = ReturnType<typeof useAuthForm>;
 
 export function useAuthForm() {
@@ -64,6 +81,9 @@ export function useAuthForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [referralCode, setReferralCode] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [magicLinkEmail, setMagicLinkEmail] = useState('');
 
   const [usernameAvailability, setUsernameAvailability] = useState<
     'idle' | 'checking' | 'available' | 'taken'
@@ -222,6 +242,7 @@ export function useAuthForm() {
       event.preventDefault();
       if (localSubmitDisabled) return;
       if (isRegisterMode) {
+        // TODO ARC-XXX move referral capture to onboarding
         await registerLocal({
           email: trimmedEmail,
           password,
@@ -230,6 +251,7 @@ export function useAuthForm() {
         });
         return;
       }
+      // TODO ARC-XXX honor rememberMe in BE refresh-token TTL
       await loginLocal({ email: trimmedEmail, password });
     },
     [
@@ -244,9 +266,30 @@ export function useAuthForm() {
     ],
   );
 
-  const handleStartOAuth = useCallback(() => {
-    void startOAuth();
-  }, [startOAuth]);
+  const handleStartOAuth = useCallback(
+    (provider: OAuthProvider = 'google') => {
+      if (!isOAuthProviderEnabled(provider)) {
+        return;
+      }
+      // TODO ARC-XXX route to per-provider OAuth endpoint when apple/discord land
+      void startOAuth();
+    },
+    [startOAuth],
+  );
+
+  const requestMagicLink = useCallback(async (emailValue: string) => {
+    const trimmed = emailValue.trim();
+    if (!EMAIL_REGEX.test(trimmed)) return;
+    // TODO ARC-XXX wire POST /auth/magic-link; BE returns 200 for both existing
+    // and unknown emails to prevent account enumeration.
+    setMagicLinkEmail(trimmed);
+    setMagicLinkSent(true);
+  }, []);
+
+  const resetMagicLink = useCallback(() => {
+    setMagicLinkSent(false);
+    setMagicLinkEmail('');
+  }, []);
 
   const handleOAuthLogout = useCallback(async () => {
     await logoutOAuth();
@@ -283,6 +326,10 @@ export function useAuthForm() {
     confirmPassword,
     username,
     referralCode,
+    rememberMe,
+    setRememberMe,
+    magicLinkSent,
+    magicLinkEmail,
 
     // Field IDs
     emailFieldId,
@@ -327,5 +374,7 @@ export function useAuthForm() {
     handleOAuthLogout,
     handleSignOut,
     logoutLocal,
+    requestMagicLink,
+    resetMagicLink,
   };
 }

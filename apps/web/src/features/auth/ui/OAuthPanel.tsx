@@ -30,7 +30,7 @@ export function OAuthPanel({ auth }: { auth: UseAuthFormResult }) {
 
       <XStack gap="$3" flexWrap="wrap">
         <Button
-          onClick={handleStartOAuth}
+          onClick={() => handleStartOAuth('google')}
           disabled={oauthLoading}
           variant="primary"
           pill

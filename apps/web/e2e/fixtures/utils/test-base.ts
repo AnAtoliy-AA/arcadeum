@@ -53,6 +53,17 @@ export const test = base.extend({
           return;
         }
 
+        // Ignore intentional 4xx noise from wallet/gem flow tests that
+        // fulfill mocked error responses (422 insufficient funds, etc.)
+        // to assert inline error rendering.
+        if (
+          type === 'error' &&
+          /Failed to load resource.*status of 4\d{2}/i.test(text) &&
+          /\/wallet|\/payments|\/gems/.test(page.url())
+        ) {
+          return;
+        }
+
         // Ignore Next.js stack-frame CORS errors during aborts
         if (text.includes('__nextjs_original-stack-frames')) {
           return;

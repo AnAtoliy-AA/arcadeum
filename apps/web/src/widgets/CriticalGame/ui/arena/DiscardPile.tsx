@@ -37,10 +37,16 @@ export function DiscardPile({
           positioned slot it expands to fill the nearest positioned
           ancestor and dominates the arena. `CardSlot` is what the legacy
           table layout uses for the same component. */}
+      {/* §3.5 — name the slot so the discard's top-card morphs in/out
+          on play without the document doing a full cross-fade.
+          `view-transition-name` on the slot (not the inner card image)
+          keeps the morph stable even when the underlying card content
+          swaps. Paired with the root suppression in hudStyles.tsx. */}
       <CardSlot
         $role="lastPlayed"
         width={isNarrow ? 80 : 140}
         height={isNarrow ? 112 : 196}
+        style={{ viewTransitionName: 'crit-discard-top' }}
       >
         <LastPlayedCardDisplay
           discardPile={pile}

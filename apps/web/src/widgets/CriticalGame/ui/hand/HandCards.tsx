@@ -88,9 +88,19 @@ export function HandCards({
         // / `--hand-count` and produces the rotate + translateY.
         // Browsers without `abs()` / `clamp()` (very old) fall through
         // to no fan — cards still render in order, no broken state.
+        //
+        // §3.5 — `viewTransitionName` per uid lets the browser morph
+        // each surviving card's position smoothly when a sibling is
+        // played (the played card's name disappears from the next
+        // snapshot, but the others still exist and the browser
+        // interpolates their transform). The root group's cross-fade is
+        // suppressed in `hudStyles.tsx` so only the named elements
+        // animate. Names use a `crit-card-` prefix so they're valid
+        // CSS custom-idents regardless of how the uid starts.
         const wrapperStyle = {
           '--hand-index': i,
           '--hand-count': cards.length,
+          viewTransitionName: `crit-card-${card.uid}`,
         } as CSSProperties & Record<'--hand-index' | '--hand-count', number>;
         return (
           <div

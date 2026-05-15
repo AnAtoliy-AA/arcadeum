@@ -4,6 +4,7 @@ import { YStack, XStack, Text, Button } from 'tamagui';
 import {
   BookOpenIcon,
   CardsIcon,
+  HandIcon,
   MaximizeIcon,
   MinimizeIcon,
   ShieldIcon,
@@ -275,15 +276,18 @@ export function HandRail({
             pressStyle={{ scale: 0.98 }}
             onPress={onNope}
           >
-            <Text
-              fontSize={11}
-              fontWeight="900"
-              letterSpacing={0.3}
-              textTransform="uppercase"
-              color="#1c0f00"
-            >
-              ✋ {t('games.table.actions.playNope')}
-            </Text>
+            <XStack gap="$1.5" alignItems="center">
+              <HandIcon size={14} />
+              <Text
+                fontSize={11}
+                fontWeight="900"
+                letterSpacing={0.3}
+                textTransform="uppercase"
+                color="#1c0f00"
+              >
+                {t('games.table.actions.playNope')}
+              </Text>
+            </XStack>
           </Button>
         )}
       </YStack>

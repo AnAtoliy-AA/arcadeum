@@ -78,7 +78,7 @@ export default function AppFooter() {
   }
 
   return (
-    <View data-testid="app-footer" $sm={{ paddingHorizontal: '$4' }}>
+    <View data-testid="app-footer" $sm={{ paddingHorizontal: '$2' }}>
       <Footer
         appName={appName}
         socialLinks={socialLinks}

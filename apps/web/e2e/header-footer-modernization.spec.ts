@@ -31,7 +31,7 @@ test.describe('Header and Footer Modernization', () => {
   });
 
   test('footer should have glassmorphism effect', async ({ page }) => {
-    const footer = page.locator('footer.home-footer-root').first();
+    const footer = page.locator('footer').first();
     const backdropFilter = await footer.evaluate((el) => {
       const styles = window.getComputedStyle(el);
       // webkit uses -webkit-backdrop-filter; standard uses backdrop-filter

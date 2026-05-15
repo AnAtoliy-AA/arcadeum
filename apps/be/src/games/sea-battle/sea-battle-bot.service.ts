@@ -13,11 +13,36 @@ import {
 } from '../engines/sea-battle/sea-battle.constants';
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
+const LOCK_TIMEOUT_MS = 30000;
+
+// Randomised bot delays make matches feel human without dragging on.
+const PLACEMENT_DELAY_MS = { min: 500, max: 1500 };
+const PLACEMENT_CONFIRM_DELAY_MS = { min: 250, max: 750 };
+const ATTACK_DELAY_MS = { min: 500, max: 1250 };
+
 @Injectable()
 export class SeaBattleBotService {
   private readonly logger = new Logger(SeaBattleBotService.name);
   private readonly processing = new Map<string, number>(); // lockKey -> timestamp
-  private readonly LOCK_TIMEOUT_MS = 30000; // 30 seconds
+  // Per-room placement chain. When several bots auto-place at the same time
+  // each one was racing on session.state (read → clone → write), so the last
+  // save clobbered the others and the loser confirmed with 0/10 ships. This
+  // queues placement engine calls per room while leaving each bot's
+  // human-feeling delay in parallel.
+  private readonly placementChain = new Map<string, Promise<unknown>>();
+
+  private chainPlacement<T>(
+    roomId: string,
+    task: () => Promise<T>,
+  ): Promise<T> {
+    const prev = this.placementChain.get(roomId) ?? Promise.resolve();
+    const next = prev.catch(() => undefined).then(task);
+    this.placementChain.set(
+      roomId,
+      next.catch(() => undefined),
+    );
+    return next;
+  }
 
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
@@ -62,7 +87,7 @@ export class SeaBattleBotService {
         const lockTime = this.processing.get(lockKey);
         if (lockTime) {
           const age = Date.now() - lockTime;
-          if (age < this.LOCK_TIMEOUT_MS) {
+          if (age < LOCK_TIMEOUT_MS) {
             continue;
           } else {
             this.logger.warn(
@@ -94,12 +119,16 @@ export class SeaBattleBotService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private async randomDelay(range: { min: number; max: number }) {
+    await this.sleep(range.min + Math.random() * (range.max - range.min));
+  }
+
   private async handlePlacement(session: GameSessionSummary, botId: string) {
     const lockKey = `${session.roomId}:${botId}`;
     this.processing.set(lockKey, Date.now());
 
     try {
-      await this.sleep(1000 + Math.random() * 2000);
+      await this.randomDelay(PLACEMENT_DELAY_MS);
 
       // Check current state before auto-placing
       let currentSession = await this.seaBattleService.findSessionByRoom(
@@ -119,10 +148,13 @@ export class SeaBattleBotService {
         return;
       }
 
-      // Auto place ships
-      await this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId);
+      // Auto place ships — serialized per room so concurrent bots don't
+      // overwrite each other's freshly-placed ships.
+      await this.chainPlacement(session.roomId, () =>
+        this.seaBattleService.autoPlaceShipsByRoom(botId, session.roomId),
+      );
 
-      await this.sleep(500 + Math.random() * 1000);
+      await this.randomDelay(PLACEMENT_CONFIRM_DELAY_MS);
 
       // Check current state again before confirming
       currentSession = await this.seaBattleService.findSessionByRoom(
@@ -139,8 +171,11 @@ export class SeaBattleBotService {
         return;
       }
 
-      // Confirm placement
-      await this.seaBattleService.confirmPlacementByRoom(botId, session.roomId);
+      // Confirm placement — same per-room queue so the confirm only runs
+      // after this bot's autoPlace save has landed.
+      await this.chainPlacement(session.roomId, () =>
+        this.seaBattleService.confirmPlacementByRoom(botId, session.roomId),
+      );
     } finally {
       this.processing.delete(lockKey);
       // Re-trigger check in case battle phase started while we were locked
@@ -164,7 +199,7 @@ export class SeaBattleBotService {
       let currentSession = sessionSnapshot;
 
       while (isStillMyTurn) {
-        await this.sleep(1000 + Math.random() * 1500);
+        await this.randomDelay(ATTACK_DELAY_MS);
 
         const state = currentSession.state as unknown as SeaBattleState;
         const botPlayer = state.players.find(
@@ -258,20 +293,100 @@ export class SeaBattleBotService {
   private getSmartTarget(
     target: SeaBattlePlayer,
   ): { r: number; c: number } | null {
-    // Find a damaged but not sunk ship
-    const damagedShip = target.ships.find((s: Ship) => s.hits > 0 && !s.sunk);
-
-    if (damagedShip) {
-      // Pick the first cell of this ship that isn't hit yet
-      const nextCell = damagedShip.cells.find(
-        (c) => target.board[c.row][c.col] !== CELL_STATE.HIT,
-      );
-
-      if (nextCell) {
-        return { r: nextCell.row, c: nextCell.col };
+    // Cells of already-sunk ships are public info; exclude them so we focus
+    // on hits that still belong to damaged-but-unsunk ships.
+    const sunkCells = new Set<string>();
+    for (const ship of target.ships) {
+      if (!ship.sunk) continue;
+      for (const cell of ship.cells) {
+        sunkCells.add(`${cell.row},${cell.col}`);
       }
     }
 
-    return null;
+    const activeHits: { row: number; col: number }[] = [];
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (target.board[r][c] !== CELL_STATE.HIT) continue;
+        if (sunkCells.has(`${r},${c}`)) continue;
+        activeHits.push({ row: r, col: c });
+      }
+    }
+
+    if (activeHits.length === 0) return null;
+
+    const isOpen = (r: number, c: number): boolean => {
+      if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) return false;
+      const cell = target.board[r][c];
+      return cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS;
+    };
+
+    // Line mode: if two adjacent active hits sit in a line (e.g. d3+d4),
+    // extend the line from either endpoint (d2 or d5).
+    const activeSet = new Set(activeHits.map((h) => `${h.row},${h.col}`));
+    const lineCandidates = new Map<string, { r: number; c: number }>();
+    const axes: [number, number][] = [
+      [0, 1],
+      [1, 0],
+    ];
+
+    for (const hit of activeHits) {
+      for (const [dr, dc] of axes) {
+        if (!activeSet.has(`${hit.row + dr},${hit.col + dc}`)) continue;
+
+        // Walk forward to the far end of the line.
+        let fr = hit.row;
+        let fc = hit.col;
+        while (activeSet.has(`${fr + dr},${fc + dc}`)) {
+          fr += dr;
+          fc += dc;
+        }
+        if (isOpen(fr + dr, fc + dc)) {
+          lineCandidates.set(`${fr + dr},${fc + dc}`, {
+            r: fr + dr,
+            c: fc + dc,
+          });
+        }
+
+        // Walk backward to the near end of the line.
+        let br = hit.row;
+        let bc = hit.col;
+        while (activeSet.has(`${br - dr},${bc - dc}`)) {
+          br -= dr;
+          bc -= dc;
+        }
+        if (isOpen(br - dr, bc - dc)) {
+          lineCandidates.set(`${br - dr},${bc - dc}`, {
+            r: br - dr,
+            c: bc - dc,
+          });
+        }
+      }
+    }
+
+    if (lineCandidates.size > 0) {
+      const arr = Array.from(lineCandidates.values());
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // Single-hit mode: probe a random orthogonal neighbour of any active hit.
+    const neighbours = new Map<string, { r: number; c: number }>();
+    const directions: [number, number][] = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
+    for (const hit of activeHits) {
+      for (const [dr, dc] of directions) {
+        const nr = hit.row + dr;
+        const nc = hit.col + dc;
+        if (!isOpen(nr, nc)) continue;
+        neighbours.set(`${nr},${nc}`, { r: nr, c: nc });
+      }
+    }
+
+    if (neighbours.size === 0) return null;
+    const arr = Array.from(neighbours.values());
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 }

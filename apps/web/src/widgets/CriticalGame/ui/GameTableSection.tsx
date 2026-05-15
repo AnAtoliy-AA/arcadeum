@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { useMedia } from 'tamagui';
 import { TableStats } from './TableStats';
 import {
@@ -32,6 +32,12 @@ interface GameTableSectionProps {
   resolveDisplayName: (playerId: string, fallback: string) => string;
   t: (key: string) => string;
   cardVariant?: string;
+  /**
+   * Optional render override for the center of the table. When provided,
+   * replaces the legacy `CenterTableSection` on both desktop and mobile.
+   * Used by the new `MatchWidget` (widget_mode flag) to inject the Arena.
+   */
+  centerSlot?: ReactNode;
 }
 
 export function GameTableSection({
@@ -47,9 +53,18 @@ export function GameTableSection({
   resolveDisplayName,
   t,
   cardVariant,
+  centerSlot,
 }: GameTableSectionProps) {
   const media = useMedia();
   const isMobile = media.sm;
+  const center = centerSlot ?? (
+    <CenterTableSection
+      discardPile={discardPile}
+      deck={deck}
+      cardVariant={cardVariant}
+      t={t}
+    />
+  );
   const myIndex = playerOrder.findIndex((id) => id === currentUserId);
   const viewerIndex = myIndex >= 0 ? myIndex : 0; // Default to 0 if spectating
 
@@ -94,22 +109,10 @@ export function GameTableSection({
       ) : (
         <PlayersRing>
           {playerNodes}
-          <CenterTableSection
-            discardPile={discardPile}
-            deck={deck}
-            cardVariant={cardVariant}
-            t={t}
-          />
+          {center}
         </PlayersRing>
       )}
-      {isMobile && (
-        <CenterTableSection
-          discardPile={discardPile}
-          deck={deck}
-          cardVariant={cardVariant}
-          t={t}
-        />
-      )}
+      {isMobile && center}
       <TableStats
         deckCount={deck.length}
         discardPileCount={discardPileLength}

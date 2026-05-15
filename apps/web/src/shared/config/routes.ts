@@ -26,6 +26,10 @@ export const routes = {
   stats: '/stats',
   referrals: '/referrals',
 
+  // Admin (visible only to role==='admin')
+  admin: '/admin',
+  adminUsers: '/admin/users',
+
   // Support & Payments
   support: '/support',
   payment: '/payment',
@@ -45,6 +49,8 @@ export const routes = {
   community: '/community',
   rewards: '/rewards',
   tournaments: '/tournaments',
+  wallet: '/wallet',
+  shop: '/shop',
   leaderboards: '/leaderboards',
   developers: '/developers',
 

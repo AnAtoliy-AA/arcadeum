@@ -2,19 +2,21 @@ import * as shared from './shared/index';
 import * as critical from './critical/index';
 import * as texasHoldem from './texas-holdem';
 import * as seaBattle from './sea-battle/index';
+import * as glimworm from './glimworm/index';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = shared.SharedGamesMessages &
   critical.CriticalGamesMessages &
   texasHoldem.TexasHoldemGamesMessages &
-  seaBattle.SeaBattleGamesMessages;
+  seaBattle.SeaBattleGamesMessages &
+  glimworm.GlimwormGamesMessages;
 
 export const en = {
   ...shared.en,
   ...critical.en,
   ...texasHoldem.en,
   ...seaBattle.en,
-  glimworm_v1: { name: 'Glimworm' },
+  ...glimworm.en,
 };
 
 export const es = {
@@ -22,7 +24,7 @@ export const es = {
   ...critical.es,
   ...texasHoldem.es,
   ...seaBattle.es,
-  glimworm_v1: { name: 'Glimworm' },
+  ...glimworm.es,
 };
 
 export const fr = {
@@ -30,7 +32,7 @@ export const fr = {
   ...critical.fr,
   ...texasHoldem.fr,
   ...seaBattle.fr,
-  glimworm_v1: { name: 'Glimworm' },
+  ...glimworm.fr,
 };
 
 export const ru = {
@@ -38,7 +40,7 @@ export const ru = {
   ...critical.ru,
   ...texasHoldem.ru,
   ...seaBattle.ru,
-  glimworm_v1: { name: 'Глимворм' },
+  ...glimworm.ru,
 };
 
 export const by = {
@@ -46,7 +48,7 @@ export const by = {
   ...critical.by,
   ...texasHoldem.by,
   ...seaBattle.by,
-  glimworm_v1: { name: 'Глімворм' },
+  ...glimworm.by,
 };
 
 export const gamesMessages = {

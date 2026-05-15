@@ -1,5 +1,6 @@
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
+import { DailyRewardChip } from '@/features/daily-rewards/ui/DailyRewardChip';
 import dynamic from 'next/dynamic';
 
 // Single concatenated bundle of hero + footer + presentation styles.
@@ -23,6 +24,9 @@ export default function HomePage() {
   return (
     <PageLayout data-testid="page-layout">
       <HomeHero />
+      {/* Compact daily-reward CTA. Self-suppresses unless the user can claim
+          right now, keeping the marketing-heavy home page uncluttered. */}
+      <DailyRewardChip />
       <HomeGames />
       <HomeHowItWorks />
       <HomeFeatures />

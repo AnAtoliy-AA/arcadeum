@@ -19,6 +19,23 @@ import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export type OAuthProvider = 'google' | 'apple' | 'discord';
+
+export const OAUTH_PROVIDERS: readonly OAuthProvider[] = [
+  'google',
+  'apple',
+  'discord',
+] as const;
+
+// Providers other than Google still require BE wiring; render disabled buttons
+// with a "Coming soon" tooltip until the backend endpoints land.
+// TODO ARC-XXX wire apple/discord oauth
+const ENABLED_OAUTH_PROVIDERS: ReadonlySet<OAuthProvider> = new Set(['google']);
+
+export function isOAuthProviderEnabled(provider: OAuthProvider): boolean {
+  return ENABLED_OAUTH_PROVIDERS.has(provider);
+}
+
 export type UseAuthFormResult = ReturnType<typeof useAuthForm>;
 
 export function useAuthForm() {
@@ -55,15 +72,16 @@ export function useAuthForm() {
 
   const emailFieldId = useId();
   const passwordFieldId = useId();
-  const confirmFieldId = useId();
   const usernameFieldId = useId();
   const referralCodeFieldId = useId();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [referralCode, setReferralCode] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [magicLinkEmail, setMagicLinkEmail] = useState('');
 
   const [usernameAvailability, setUsernameAvailability] = useState<
     'idle' | 'checking' | 'available' | 'taken'
@@ -106,7 +124,6 @@ export function useAuthForm() {
 
   useEffect(() => {
     if (isRegisterMode) return;
-    scheduleStateUpdate(() => setConfirmPassword(''));
     scheduleStateUpdate(() =>
       setUsername(storedUsername ? sanitizeUsername(storedUsername) : ''),
     );
@@ -115,7 +132,6 @@ export function useAuthForm() {
   useEffect(() => {
     if (!localAccessToken) return;
     scheduleStateUpdate(() => setPassword(''));
-    scheduleStateUpdate(() => setConfirmPassword(''));
   }, [localAccessToken]);
 
   // Handlers
@@ -127,13 +143,6 @@ export function useAuthForm() {
   const handlePasswordChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setPassword(e.target.value);
-    },
-    [],
-  );
-
-  const handleConfirmChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setConfirmPassword(e.target.value);
     },
     [],
   );
@@ -190,7 +199,6 @@ export function useAuthForm() {
   const handleToggleMode = useCallback(() => {
     toggleMode();
     setPassword('');
-    setConfirmPassword('');
     setUsername(storedUsername ? sanitizeUsername(storedUsername) : '');
   }, [toggleMode, storedUsername]);
 
@@ -199,10 +207,6 @@ export function useAuthForm() {
   const trimmedUsername = username.trim();
   const isEmailValid = EMAIL_REGEX.test(trimmedEmail);
   const showInvalidEmail = trimmedEmail.length > 0 && !isEmailValid;
-  const showPasswordMismatch =
-    isRegisterMode &&
-    confirmPassword.length > 0 &&
-    password !== confirmPassword;
   const showUsernameTooShort =
     isRegisterMode && trimmedUsername.length > 0 && trimmedUsername.length < 3;
 
@@ -211,8 +215,7 @@ export function useAuthForm() {
     !trimmedEmail ||
     !isEmailValid ||
     !password ||
-    (isRegisterMode && (!trimmedUsername || !confirmPassword)) ||
-    showPasswordMismatch ||
+    (isRegisterMode && !trimmedUsername) ||
     showUsernameTooShort ||
     (isRegisterMode && usernameAvailability === 'taken') ||
     (isRegisterMode && emailAvailability === 'taken');
@@ -222,6 +225,7 @@ export function useAuthForm() {
       event.preventDefault();
       if (localSubmitDisabled) return;
       if (isRegisterMode) {
+        // TODO ARC-XXX move referral capture to onboarding
         await registerLocal({
           email: trimmedEmail,
           password,
@@ -230,6 +234,7 @@ export function useAuthForm() {
         });
         return;
       }
+      // TODO ARC-XXX honor rememberMe in BE refresh-token TTL
       await loginLocal({ email: trimmedEmail, password });
     },
     [
@@ -244,9 +249,30 @@ export function useAuthForm() {
     ],
   );
 
-  const handleStartOAuth = useCallback(() => {
-    void startOAuth();
-  }, [startOAuth]);
+  const handleStartOAuth = useCallback(
+    (provider: OAuthProvider = 'google') => {
+      if (!isOAuthProviderEnabled(provider)) {
+        return;
+      }
+      // TODO ARC-XXX route to per-provider OAuth endpoint when apple/discord land
+      void startOAuth();
+    },
+    [startOAuth],
+  );
+
+  const requestMagicLink = useCallback(async (emailValue: string) => {
+    const trimmed = emailValue.trim();
+    if (!EMAIL_REGEX.test(trimmed)) return;
+    // TODO ARC-XXX wire POST /auth/magic-link; BE returns 200 for both existing
+    // and unknown emails to prevent account enumeration.
+    setMagicLinkEmail(trimmed);
+    setMagicLinkSent(true);
+  }, []);
+
+  const resetMagicLink = useCallback(() => {
+    setMagicLinkSent(false);
+    setMagicLinkEmail('');
+  }, []);
 
   const handleOAuthLogout = useCallback(async () => {
     await logoutOAuth();
@@ -280,14 +306,16 @@ export function useAuthForm() {
     // Form state
     email,
     password,
-    confirmPassword,
     username,
     referralCode,
+    rememberMe,
+    setRememberMe,
+    magicLinkSent,
+    magicLinkEmail,
 
     // Field IDs
     emailFieldId,
     passwordFieldId,
-    confirmFieldId,
     usernameFieldId,
     referralCodeFieldId,
 
@@ -299,7 +327,6 @@ export function useAuthForm() {
     storedUsername,
     storedDisplayName,
     localSubmitDisabled,
-    showPasswordMismatch,
     showUsernameTooShort,
     showInvalidEmail,
     isEmailValid,
@@ -316,7 +343,6 @@ export function useAuthForm() {
     // Handlers
     handleEmailChange,
     handlePasswordChange,
-    handleConfirmChange,
     handleUsernameChange,
     handleReferralCodeChange,
     handleUsernameBlur,
@@ -327,5 +353,7 @@ export function useAuthForm() {
     handleOAuthLogout,
     handleSignOut,
     logoutLocal,
+    requestMagicLink,
+    resetMagicLink,
   };
 }

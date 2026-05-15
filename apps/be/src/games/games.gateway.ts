@@ -36,6 +36,26 @@ export class GamesGateway {
 
   afterInit(): void {
     this.realtime.registerServer(this.server);
+
+    // Six gateways share the `games` socket.io namespace
+    // (GamesGateway, CriticalGateway, CriticalActionsGateway,
+    // SeaBattleGateway, TexasHoldemGateway, GlimwormGateway). For each
+    // gateway, `@nestjs/websockets` unconditionally attaches a
+    // `disconnect` listener on every connecting client via
+    // `bindClientDisconnect` (see `getConnectionHandler` in
+    // `@nestjs/websockets/web-sockets-controller`), regardless of
+    // whether the gateway implements `OnGatewayDisconnect`. Combined
+    // with engine.io's own internal cleanup listeners, a healthy
+    // socket reaches ~8-11 listeners and trips Node's default
+    // 10-listener `EventEmitter` cap. Raise the per-socket cap via
+    // namespace middleware so the bump is in place before NestJS's
+    // connection handlers run.
+    const PER_SOCKET_LISTENER_CAP = 20;
+    this.server.use((socket, next) => {
+      socket.setMaxListeners(PER_SOCKET_LISTENER_CAP);
+      next();
+    });
+
     this.logger.debug('Games gateway initialized.');
   }
 

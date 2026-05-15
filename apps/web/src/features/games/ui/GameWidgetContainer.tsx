@@ -283,18 +283,19 @@ interface GameWidgetContainerProps {
 }
 
 const gameWidgetGlobalStyles = `
-  .game-widget-container:fullscreen,
-  .game-widget-container:-webkit-full-screen,
-  .game-widget-container:-moz-full-screen {
-    max-width: 100vw !important;
-    max-height: 100vh !important;
+  .game-widget-container.is-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
     border-radius: 0 !important;
     border-width: 0 !important;
     background: #151718 !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    z-index: 1100;
   }
 `;
 
@@ -309,6 +310,10 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   isMyTurn,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Widget-only fullscreen — independent of the page-level toggle in
+  // `GamePageLayout`. Page level expands [control panel + widget + chat];
+  // this expands only the widget. Keyboard disabled so the global `f`
+  // shortcut owned by the page-level instance doesn't toggle both at once.
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
 
   const renderedHeader =

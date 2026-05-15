@@ -49,6 +49,7 @@ export type GameSlug =
   | 'space_invaders_v1'
   | 'pong_v1'
   | 'snake_v1'
+  | 'glimworm_v1'
   | 'minecraft_v1'
   | 'among_us_v1'
   | 'fall_guys_v1'

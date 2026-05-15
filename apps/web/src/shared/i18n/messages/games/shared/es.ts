@@ -186,6 +186,8 @@ export const esMessages = {
       setup: 'Preparación',
       placement: 'Colocación',
       battle: 'Batalla',
+      survive: 'Sobrevivir',
+      powerups: 'Bonificaciones',
     },
     category: {
       cardGame: 'Juego de cartas',

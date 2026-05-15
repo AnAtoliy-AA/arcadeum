@@ -34,6 +34,8 @@ export * from './components/ErrorState/ErrorState';
 export * from './components/Skeleton/Skeleton';
 export * from './components/Progress/Progress';
 export * from './components/CosmeticBadge/CosmeticBadge';
+export * from './components/RarityBorder/RarityBorder';
+export * from './components/ShopItemCard/ShopItemCard';
 export * from './components/RoleBadge/RoleBadge';
 export * from './components/MobileLoginIndicator/MobileLoginIndicator';
 
@@ -70,5 +72,6 @@ export * from './components/EnergyBar';
 export * from './components/ModeTab';
 export * from './components/DeltaChip';
 export * from './components/TrendPill';
+export * from './components/ProfileMenu';
 
 export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

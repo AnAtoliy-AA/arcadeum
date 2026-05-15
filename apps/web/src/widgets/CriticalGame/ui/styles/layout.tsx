@@ -116,6 +116,38 @@ export const TableArea = styled(BaseTableArea, {
   } as const,
 });
 
+/**
+ * Widget-mode grid: 3-row stack (opponents · arena · hand) with a max
+ * width and explicit gutters. Replaces the legacy `GameBoard` wrapper
+ * for `MatchWidget` so the rows don't span full bleed and the hand
+ * stays clear of the screen edges on wide monitors.
+ *
+ * `paddingBottom` on `$sm` reserves room for the sticky `MobileHandBar`
+ * which is portaled to body and thus outside this grid's flow.
+ */
+// §3.3 — `maxWidth` is the upper bound; the actual constraint is the
+// `min(1240px, calc(100vw - 48px))` rule in hudStyles.tsx keyed off
+// `[data-testid="match-widget-grid"]`. Tamagui's styled prop only
+// accepts numeric pixel values, hence the split — keep this number in
+// sync with the CSS rule if it ever changes. The same selector also
+// sets `container-type: inline-size` so `.match-arena` can respond to
+// SLOT width via @container queries.
+export const MatchWidgetGrid = styled(YStack, {
+  name: 'MatchWidgetGrid',
+  width: '100%',
+  maxWidth: 1240,
+  marginHorizontal: 'auto',
+  paddingHorizontal: '$3',
+  paddingVertical: '$3',
+  gap: '$3',
+
+  $sm: {
+    paddingHorizontal: '$2',
+    gap: '$2',
+    paddingBottom: 120,
+  },
+});
+
 export const HandSection = styled(YStack, {
   name: 'HandSection',
   gap: '$4',

@@ -13,6 +13,12 @@ export interface MessageView {
   chatId: string;
   senderId: string;
   senderUsername: string;
+  /** Sender's currently-equipped avatar item id (resolved client-side). */
+  senderEquippedAvatarId?: string | null;
+  /** Sender's currently-equipped badge item id (resolved client-side). */
+  senderEquippedBadgeId?: string | null;
+  /** Sender's currently-equipped name-color item id (resolved client-side). */
+  senderEquippedNameColorId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

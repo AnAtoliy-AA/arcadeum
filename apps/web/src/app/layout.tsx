@@ -6,6 +6,7 @@ import './globals.css';
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { Header } from '@/widgets/header/ui/Header';
+import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/AnnouncementBanner';
 import { JsonLd } from '@/shared/ui/JsonLd';
 
 const geistSans = Geist({
@@ -85,6 +86,8 @@ import { Locale } from '@/shared/i18n';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
+import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 
 // Prime Tamagui config as early as possible on the server
 setupTamagui();
@@ -101,6 +104,11 @@ export default async function RootLayout({
     (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
     'dark';
   const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
+
+  // Read the auth token once at layout level. Passed into WalletLiveBridge so
+  // the socket only opens when the user is authenticated. No (authed) route
+  // group exists in this project, so the root layout is the single mount point.
+  const authToken = await getServerAccessToken();
 
   const jsonLd = [
     {
@@ -156,8 +164,10 @@ export default async function RootLayout({
           <LanguageProvider initialLocale={locale}>
             <PWAProvider>
               <BrowserRegistry>
+                <AnnouncementBanner />
                 <Header />
                 {children}
+                {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
               </BrowserRegistry>
             </PWAProvider>
           </LanguageProvider>

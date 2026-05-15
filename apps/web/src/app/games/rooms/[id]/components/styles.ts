@@ -1,18 +1,22 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
 import { Input as UIInput } from '@/shared/ui';
 
-// ─── Fullscreen CSS for Container ─────────────────────────────────────────────
+// Class-based fullscreen — useFullscreen toggles `.is-fullscreen` so the
+// page stays in the normal DOM tree and body-portaled modals
+// (GameResultModal, RematchModal, Dialog.Portal) remain reachable.
 export const fullscreenStyles = `
-  .games-room-container:fullscreen,
-  .games-room-container:-webkit-full-screen,
-  .games-room-container:-moz-full-screen {
-    max-width: 100% !important;
-    width: 100% !important;
-    height: 100% !important;
+  .games-room-container.is-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 1rem 1.5rem !important;
     background: #151718 !important;
-    padding: 1rem 2rem !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    z-index: 1000;
   }
 `;
 

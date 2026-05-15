@@ -1,4 +1,117 @@
+import { adminAnnouncementsFr } from './admin-announcements/fr';
+import { adminTournamentsFr } from './admin-tournaments/fr';
+import { walletFr } from './wallet/fr';
+import { adminWalletFr } from './admin-wallet/fr';
+import { gemsFr } from './gems/fr';
+import { adminGemPackagesFr } from './admin-gem-packages/fr';
+import { adminEconomyFr } from './admin-economy/fr';
+import { dailyRewardsFr } from './daily-rewards/fr';
+import { shopFr } from './shop/fr';
+import { adminShopFr } from './admin-shop/fr';
+
 export const fr = {
+  admin: {
+    title: 'Administration',
+    welcome: "Bienvenue dans l'espace administrateur",
+    welcomeBody:
+      'Les panneaux apparaîtront ici au fur et à mesure de leur publication. Utilisez la barre latérale pour naviguer.',
+    signedInAs: 'Connecté en tant que {username}',
+    nav: {
+      dashboard: 'Tableau de bord',
+      users: 'Utilisateurs',
+      payments: 'Paiements',
+      announcements: 'Annonces',
+      tournaments: 'Tournois',
+      economy: 'Économie',
+      shop: 'Boutique',
+      comingSoon: 'Bientôt',
+    },
+    error: {
+      title: "Une erreur s'est produite",
+      body: 'Une erreur est survenue lors du chargement de cette page.',
+      retry: 'Réessayer',
+    },
+    users: {
+      title: 'Utilisateurs',
+      search: {
+        placeholder: "Recherche par nom d'utilisateur, email ou nom",
+      },
+      filter: {
+        role: { all: 'Tous les rôles', placeholder: 'Filtrer par rôle' },
+      },
+      table: {
+        username: "Nom d'utilisateur",
+        email: 'Email',
+        role: 'Rôle',
+        createdAt: 'Créé le',
+        actions: 'Actions',
+      },
+      empty: {
+        noResults: 'Aucun utilisateur ne correspond aux filtres.',
+        noUsers: 'Aucun utilisateur pour le moment.',
+      },
+      pagination: {
+        prev: 'Précédent',
+        next: 'Suivant',
+        of: 'Page {current} sur {total}',
+      },
+      totalLabel: '{total} utilisateurs',
+      selfTooltip: 'Vous ne pouvez pas changer votre propre rôle.',
+      role: {
+        free: 'Gratuit',
+        premium: 'Premium',
+        vip: 'VIP',
+        supporter: 'Soutien',
+        moderator: 'Modérateur',
+        tester: 'Testeur',
+        developer: 'Développeur',
+        admin: 'Admin',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN:
+          'Vous ne pouvez pas changer votre propre rôle.',
+        LAST_ADMIN_PROTECTED:
+          'Impossible de rétrograder le dernier administrateur.',
+        USER_NOT_FOUND: 'Utilisateur introuvable.',
+        INVALID_USER_ID: 'Identifiant utilisateur invalide.',
+        generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
+      },
+    },
+    payments: {
+      title: 'Paiements',
+      search: { placeholder: 'Recherche par note, nom ou ID de transaction' },
+      filter: {
+        visibility: {
+          label: 'Visibilité',
+          all: 'Tous',
+          public: 'Publics seulement',
+          private: 'Privés seulement',
+        },
+      },
+      table: {
+        user: 'Utilisateur',
+        amount: 'Montant',
+        note: 'Note',
+        visibility: 'Visibilité',
+        createdAt: 'Créé le',
+        transactionId: 'Transaction',
+      },
+      chip: { public: 'Public', private: 'Privé', anonymous: 'Anonyme' },
+      empty: {
+        noResults: 'Aucun paiement ne correspond aux filtres.',
+        noNotes: 'Aucun paiement pour le moment.',
+      },
+      pagination: {
+        prev: 'Précédent',
+        next: 'Suivant',
+        of: 'Page {current} sur {total}',
+      },
+      totalLabel: '{total} notes',
+    },
+    announcements: adminAnnouncementsFr,
+    tournaments: adminTournamentsFr,
+    wallet: adminWalletFr,
+  },
   tournaments: {
     title: 'Tournois',
     subtitle: 'Affrontez les meilleurs joueurs du monde',
@@ -22,6 +135,50 @@ export const fr = {
       },
     ],
     comingSoon: "Le mode tournoi arrive bientôt. Restez à l'écoute !",
+    list: {
+      loading: 'Chargement des tournois…',
+      empty: 'Aucun tournoi pour le moment. Revenez bientôt !',
+      card: {
+        registered: 'Inscrits {count} / {max}',
+        prize: 'Prix',
+        entryFee: "Frais d'entrée",
+        prizePool: 'Cagnotte',
+        registerCta: "S'inscrire",
+        unregisterCta: 'Se désinscrire',
+        signInToRegister: 'Connectez-vous pour vous inscrire',
+        full: "Liste d'attente",
+        registrationClosed: 'Inscription fermée',
+        confirmRegister: {
+          title: 'Confirmer la participation',
+          body: 'Ce tournoi coûte {fee} pièces. Votre solde : {balance} pièces.',
+          confirm: "Payer et s'inscrire",
+          cancel: 'Annuler',
+        },
+        confirmUnregister: {
+          refund: 'Vous serez remboursé de {amount} pièces.',
+          title: "Annuler l'inscription",
+          body: 'Êtes-vous sûr ?',
+          confirm: 'Oui, annuler',
+          cancelButton: 'Non, rester',
+        },
+        errors: {
+          insufficientFunds: 'Pas assez de pièces pour participer.',
+        },
+        effectiveStatus: {
+          scheduled: 'Programmé',
+          registration_open: 'Inscription ouverte',
+          registration_closed: 'Inscription fermée',
+          live: 'En cours',
+          awaiting_results: 'Résultats à venir',
+          completed: 'Terminé',
+          cancelled: 'Annulé',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Bataille navale',
+        },
+      },
+    },
   },
   blog: {
     title: 'Blog de Jeux',
@@ -321,4 +478,11 @@ export const fr = {
     ],
     comingSoon: 'La boutique de récompenses arrive bientôt !',
   },
+  wallet: walletFr,
+  gems: gemsFr,
+  adminGemPackages: adminGemPackagesFr,
+  adminEconomy: adminEconomyFr,
+  dailyRewards: dailyRewardsFr,
+  shop: shopFr,
+  adminShop: adminShopFr,
 };

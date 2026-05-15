@@ -1,14 +1,30 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { XStack, YStack, styled, ThemeableStack, GetProps } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 import { Typography } from '../Typography/Typography';
 
 export type ChatMessageProps = {
   content: string;
+  /** Optional rich rendering of the message body — when provided, takes
+   * precedence over `content` for system/action rows. Used to inject
+   * inline colored spans (e.g. HIT/MISS/SUNK keywords). */
+  contentNode?: React.ReactNode;
   senderName?: string;
+  senderColor?: string;
+  /**
+   * Extra style applied to the sender-name Typography. Used to render
+   * gradient name-colors via `background-clip: text` — when present, takes
+   * precedence over `senderColor`. Plain (hex) colors should keep using
+   * `senderColor`.
+   */
+  senderNameStyle?: React.CSSProperties;
+  targetName?: string;
+  targetColor?: string;
   timestamp?: string;
   isOwn?: boolean;
   avatarUrl?: string;
+  /** Sender's equipped shop badge URL — rendered inline next to the name. */
+  badgeUrl?: string;
   isEncrypted?: boolean;
   type?: 'system' | 'action' | 'message';
 };
@@ -109,42 +125,119 @@ const MessageBubble = styled(YStack, {
 
 export const ChatMessage = memo(function ChatMessage({
   content,
+  contentNode,
   senderName,
+  senderColor,
+  senderNameStyle,
+  targetName,
+  targetColor,
   timestamp,
   isOwn = false,
   avatarUrl,
+  badgeUrl,
   isEncrypted,
   type = 'message',
 }: ChatMessageProps) {
   const isSystem = type === 'system' || type === 'action';
 
   return (
-    <MessageGroup 
-      isOwn={isOwn} 
+    <MessageGroup
+      isOwn={isOwn}
       type={type}
       enterStyle={{ opacity: 0, scale: 0.9, y: 15 }}
     >
       {!isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2">
           <Avatar name={senderName} size="sm" src={avatarUrl} />
-          <Typography uiSize="xs" weight="600" alpha="medium" letterSpacing={0.5} textTransform="uppercase">
+          <Typography
+            uiSize="xs"
+            weight="600"
+            {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
+            letterSpacing={0.5}
+            textTransform="uppercase"
+          >
             {senderName}
           </Typography>
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
+        </XStack>
+      )}
+      {isOwn && !isSystem && senderName && (
+        <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+            />
+          ) : null}
+          <Typography
+            uiSize="xs"
+            weight="600"
+            {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+            {...(senderNameStyle ? { style: senderNameStyle } : {})}
+            letterSpacing={0.5}
+            textTransform="uppercase"
+          >
+            {senderName}
+          </Typography>
+          <Avatar name={senderName} size="sm" src={avatarUrl} />
         </XStack>
       )}
       <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">
-        <Typography 
-          uiSize={isSystem ? 'xs' : 'sm'} 
+        <Typography
+          uiSize={isSystem ? 'xs' : 'sm'}
           color={isOwn && !isSystem ? 'white' : '$color'}
           textAlign={isSystem ? 'center' : 'left'}
           fontStyle={isSystem ? 'italic' : 'normal'}
         >
-          {isEncrypted ? '[Encrypted Message]' : content}
+          {isSystem && senderName && !isEncrypted ? (
+            <>
+              <Typography
+                uiSize="xs"
+                weight="700"
+                fontStyle="normal"
+                {...(senderColor ? { color: senderColor } : {})}
+              >
+                {senderName}
+              </Typography>
+              {targetName ? (
+                <>
+                  {' → '}
+                  <Typography
+                    uiSize="xs"
+                    weight="700"
+                    fontStyle="normal"
+                    {...(targetColor ? { color: targetColor } : {})}
+                  >
+                    {targetName}
+                  </Typography>
+                </>
+              ) : null}
+              {contentNode ? <> {contentNode}</> : ` ${content}`}
+            </>
+          ) : isEncrypted ? (
+            '[Encrypted Message]'
+          ) : (
+            (contentNode ?? content)
+          )}
         </Typography>
         {timestamp && !isSystem && (
-          <Typography 
-            uiSize="xs" 
-            alpha="low" 
+          <Typography
+            uiSize="xs"
+            alpha="low"
             color={isOwn ? 'white' : '$color'}
             mt="$1"
             opacity={0.7}

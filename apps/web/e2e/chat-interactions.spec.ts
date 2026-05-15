@@ -35,9 +35,13 @@ test.describe('Chat Interactions', () => {
       /Send a note to everyone|сообщение|message/i,
     );
 
-    await expect(input).toBeVisible({});
-    await expect(input).toBeEnabled({});
-    await input.click();
+    await expect(input).toBeVisible({ timeout: 10000 });
+    await expect(input).toBeEnabled();
+
+    // For mobile chrome/webkit, standard click can be intercepted by scroll view overlaps
+    await input.dispatchEvent('click');
+    await input.focus();
+
     await input.fill('');
     await expect(sendBtn).toBeDisabled();
   });

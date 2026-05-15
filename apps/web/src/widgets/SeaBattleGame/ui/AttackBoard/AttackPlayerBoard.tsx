@@ -1,5 +1,5 @@
 'use client';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Text, XStack } from 'tamagui';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, COL_LABELS, ROW_LABELS } from '../../types';
@@ -21,6 +21,7 @@ import { type TranslationKey } from '@/shared/lib/useTranslation';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;
@@ -56,6 +57,23 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const isAttackDisabled = disabled || isTeammate;
   const showTargeting = isMyTurn && !isTeammate;
 
+  // Optimistic "shot fired" state: instantly mark the clicked cell as pending
+  // so the player sees feedback without waiting for the server round-trip,
+  // and can't spam-click the same cell.
+  const [pendingCell, setPendingCell] = useState<{ r: number; c: number } | null>(
+    null,
+  );
+
+  // Derived: only treat the stored pending cell as "still pending" if it's
+  // my turn and the server hasn't yet resolved the cell to HIT/MISS.
+  // Stale state self-clears on the next click.
+  const activePendingCell = (() => {
+    if (!pendingCell || !isMyTurn) return null;
+    const s = player.board[pendingCell.r]?.[pendingCell.c];
+    if (s === CELL_STATE.HIT || s === CELL_STATE.MISS) return null;
+    return pendingCell;
+  })();
+
   const handleGridClick = useCallback(
     (e: React.MouseEvent) => {
       if (!isMyTurn || isAttackDisabled || !onAttack) return;
@@ -66,7 +84,10 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
       const row = cell.getAttribute('data-row');
       const col = cell.getAttribute('data-col');
       if (row !== null && col !== null) {
-        onAttack(player.playerId, parseInt(row), parseInt(col));
+        const r = parseInt(row);
+        const c = parseInt(col);
+        setPendingCell({ r, c });
+        onAttack(player.playerId, r, c);
       }
     },
     [isMyTurn, isAttackDisabled, onAttack, player.playerId],
@@ -93,12 +114,17 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               : !isMe && !isTeammate && cellState === CELL_STATE.SHIP
                 ? CELL_STATE.EMPTY
                 : cellState;
+          const isPending =
+            !isMe &&
+            activePendingCell?.r === rIndex &&
+            activePendingCell?.c === cIndex;
           const isAttackable =
             !isMe &&
             !isTeammate &&
             cellState !== CELL_STATE.HIT &&
             cellState !== CELL_STATE.MISS &&
-            !isSunk;
+            !isSunk &&
+            !isPending;
 
           return (
             <AttackBoardCell
@@ -107,6 +133,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               displayState={displayState}
               isSunk={isSunk}
               isAttackable={isAttackable}
+              isPending={isPending}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}
@@ -178,7 +205,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           className={isDefending ? 'sb-section-danger-breathe' : undefined}
           backdropFilter="blur(8px)"
         >
-          <PlayerName data-testid="player-board-name" color={theme.textColor}>
+          <PlayerName
+            data-testid="player-board-name"
+            color={theme.textColor}
+            style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
+          >
             {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
             {team && <TeamPill team={team} />}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
@@ -265,7 +296,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         className={isMyTurn && !team ? 'sb-breathe' : undefined}
         backdropFilter="blur(8px)"
       >
-        <PlayerName data-testid="player-board-name" color={theme.textColor}>
+        <PlayerName
+          data-testid="player-board-name"
+          color={theme.textColor}
+          style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
+        >
           {t(
             'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
           )}

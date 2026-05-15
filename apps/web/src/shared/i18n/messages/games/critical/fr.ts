@@ -1,5 +1,5 @@
 import { variants as cardVariants } from './fr-variants';
-
+import { modals } from './fr-modals';
 export const frMessages = {
   critical_v1: {
     name: 'Critique',
@@ -69,7 +69,6 @@ export const frMessages = {
       },
     },
   },
-
   table: {
     cards: {
       criticalEvent: 'Incident Critique',
@@ -124,36 +123,31 @@ export const frMessages = {
       rapture: 'Le Ravissement',
       descriptions: {
         criticalEvent: 'Vous devez le désamorcer ou vous explosez !',
-        neutralizer: 'Utilisez pour désamorcer un Incident Critique',
+        neutralizer: 'Désamorce un Incident Critique',
         strike: 'Fin du tour sans piocher, le joueur suivant joue 2 tours',
         evade: 'Terminez votre tour sans piocher de carte',
         trade: 'Forcez un autre joueur à vous donner une carte',
         reorder: 'Mélangez la pioche',
         insight: 'Regardez les 3 premières cartes du paquet',
         cancel: 'Annule toute action sauf Incident Critique ou Désamorcer',
-        collectionAlpha:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionBeta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionGamma:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionDelta:
-          'Collectez des modules identiques pour voler des cartes',
-        collectionEpsilon:
-          'Collectez des modules identiques pour voler des cartes',
+        collectionAlpha: 'Collectez des modules pour voler des cartes',
+        collectionBeta: 'Collectez des modules pour voler des cartes',
+        collectionGamma: 'Collectez des modules pour voler des cartes',
+        collectionDelta: 'Collectez des modules pour voler des cartes',
+        collectionEpsilon: 'Collectez des modules pour voler des cartes',
         // Future Pack descriptions
         seeFuture5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture3x: 'Réorganisez les 3 premières cartes',
         alterFuture5x: 'Réorganisez les 5 premières cartes',
         revealFuture3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         seeFuture_5x: 'Regardez les 5 premières cartes du paquet',
         alterFuture_3x: 'Réorganisez les 3 premières cartes',
         alterFuture_5x: 'Réorganisez les 5 premières cartes',
         revealFuture_3x: 'Révélez les 3 premières cartes à tout le monde',
         shareFuture_3x:
-          'Réorganisez les 3 premières cartes, puis montrez-les au joueur suivant',
+          'Réorganisez les 3 premières cartes, puis montrez-les au suivant',
         drawBottom: 'Piochez la carte du fond du paquet',
         swapTopBottom: 'Échangez la carte du dessus et du dessous du paquet',
         bury: 'Piochez la carte du dessus, puis enterrez-la dans le paquet',
@@ -173,10 +167,8 @@ export const frMessages = {
         // Chaos Pack descriptions
         criticalImplosion:
           'Si pioché face visible, explose immédiatement et ne peut pas être désamorcé',
-        containmentField:
-          'Permet de garder un Incident Critique en main sans exploser',
-        fission:
-          'Mélange les Incidents Critiques dans le paquet et termine le tour sans piocher',
+        containmentField: 'Tient une Critique en main sans exploser',
+        fission: 'Mélange les Critiques dans le paquet et termine le tour',
         tribute:
           'Tous les joueurs (vous inclus) mettent une carte de leur main sur le paquet',
         blackout: "Cible un joueur. Il jouera son prochain tour à l'aveugle",
@@ -225,7 +217,46 @@ export const frMessages = {
       discard: 'Défausse',
       pendingDraws: 'Pioches en attente',
       cards: 'cartes',
-      card: 'carte',
+      /* prettier-ignore */ card: 'carte',
+      defuses: 'Désamorc.',
+    },
+    arena: {
+      drawHint: 'Toucher pour piocher et terminer le tour',
+      drawAria: 'Piocher une carte et terminer le tour',
+    },
+    hud: {
+      threat: {
+        label: 'Menace',
+        oddsTitle:
+          'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
+        oddsTitleServer: 'Probabilité de piocher une carte Critique',
+        defusesTitle: 'Cartes de Défuse en main',
+        remainingTitle: 'Cartes dangereuses encore dans la pioche',
+        remainingSuffix: 'restantes',
+      },
+      combo: {
+        label: 'Combos',
+        pair: '2× paire',
+        triple: '3× triple',
+        fiver: '5 différentes',
+        placeholder: 'Sélectionnez des cartes pour un combo',
+        playSingle: 'Jouer {{name}}',
+        playPair: 'Jouer 2× {{name}} · voler',
+        playTriple: 'Jouer 3× {{name}} · nommer carte',
+        playFiver: 'Jouer 5 · choisir de la défausse',
+        invalid: 'Combo invalide',
+        pickTarget: 'Choisissez une cible',
+      },
+      /* prettier-ignore */ cards: { toggleName: 'Nom de la carte', toggleDescription: 'Description de la carte' },
+      extraTurns: '+{{count}} tour',
+      extraTurnsPlural: '+{{count}} tours',
+      flash: {
+        draw: '{{card}} piochée',
+        play: '{{card}} jouée',
+        defuse: 'Défusée — {{card}} replacée',
+        eliminated: '{{name}} éliminé',
+        critical: '⚠ Critique piochée',
+      },
     },
     players: {
       you: 'Vous',
@@ -235,6 +266,11 @@ export const frMessages = {
       yourMove: 'À vous de jouer',
       playerTurn: 'Tour de {{name}}',
       waitingFor: "En attente d'un joueur...",
+      a11yState: {
+        eliminated: 'éliminé',
+        currentTurn: 'tour en cours',
+        armedTarget: 'choisi comme cible',
+      },
     },
     status: {
       gameCompleted: 'Partie Terminée',
@@ -355,91 +391,7 @@ export const frMessages = {
       exit: 'Quitter le plein écran (Échap)',
       hint: 'Appuyez sur F pour le plein écran',
     },
-    modals: {
-      common: { cancel: 'Annuler', confirm: 'Confirmer', close: 'Fermer' },
-      omniscience: {
-        title: 'Omniscience',
-        subtitle: 'Vous voyez toutes les cartes en jeu !',
-        emptyHand: 'Pas de cartes en main.',
-      },
-      alterTheFuture: {
-        title: "Altérer l'Avenir",
-        description:
-          'Réorganisez les cartes du dessus du paquet. La carte du dessus (#1) sera piochée ensuite.',
-        confirm: 'Confirmer',
-      },
-      shareTheFuture: {
-        title: "Partager l'Avenir",
-      },
-      eventCombo: {
-        title: 'Jouer un Combo',
-        selectType: 'Sélectionner le type de Combo',
-        pairTrio: 'Paire/Trio',
-        selectComboCard: 'Sélectionner une carte',
-        fiver: 'Cinq',
-        anyFive: '5 cartes différentes',
-        selectMode: 'Sélectionner le mode de Combo',
-        pair: 'Paire',
-        pairDesc: 'Carte aléatoire de la cible',
-        trio: 'Trio',
-        trioDesc: 'Choisir une carte spécifique',
-        trioMode: '2-3 cartes',
-        selectTarget: 'Sélectionner le Joueur Cible',
-        selectCard: 'Sélectionner la Carte à Demander',
-        cardsCount: '{{count}} cartes',
-        confirm: 'Jouer le Combo',
-        stashCards: 'Sélectionner {{count}} cartes différentes',
-        pickDiscard: 'Choisir une carte dans la pile de défausse',
-        selectCardHint: 'Sélectionnez une carte ci-dessous',
-        pickCardBlind: "Choisissez une carte (à l'aveugle)",
-        cardLabel: 'Carte {{index}}',
-      },
-      seeTheFuture: { title: 'Cartes du Dessus', confirm: 'Compris !' },
-      targetedAttack: {
-        title: 'Attaque Ciblée',
-        selectPlayer: 'Sélectionner un Joueur',
-        description:
-          'Choisissez un joueur pour prendre 2 tours à la place du joueur suivant.',
-      },
-      favor: {
-        title: 'Demander une Faveur',
-        selectPlayer: 'Sélectionner un Joueur',
-        description:
-          'Le joueur sélectionné vous donnera une carte aléatoire de sa main.',
-        cardsCount: '{{count}} cartes',
-        confirm: 'Prendre Carte Aléatoire',
-      },
-      giveFavor: {
-        title: 'Donner une Carte',
-        description:
-          '{{player}} a demandé une faveur. Choisissez une carte à lui donner.',
-        confirm: 'Donner Carte',
-      },
-      defuse: {
-        title: "Désamorcer l'Incident Critique !",
-        description: "Choisissez où placer l'Incident Critique dans le paquet",
-        positionLabel: 'Position dans le paquet :',
-        confirm: 'Placer la Carte',
-      },
-      stash: {
-        title: 'Tour de Pouvoir',
-        description:
-          "Sélectionnez jusqu'à 3 cartes à protéger dans votre réserve. Les cartes cachées ne peuvent pas être volées ou données.",
-        confirm: 'Réserver Cartes',
-      },
-      mark: {
-        title: 'Marquer Joueur',
-        description:
-          "Choisissez un joueur à marquer. Une carte aléatoire de sa main sera marquée. S'il la joue ou la défausse, vous la volez !",
-        confirm: 'Marquer Joueur',
-      },
-      stealDraw: {
-        title: 'Je Prends Ça',
-        description:
-          "Choisissez un joueur. La prochaine carte qu'il piochera sera volée et ajoutée à votre main à la place !",
-        confirm: 'Confirmer le Vol',
-      },
-    },
+    modals,
     controlPanel: {
       spectating: 'Observation',
       fullscreen: 'Plein écran',

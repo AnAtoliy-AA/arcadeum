@@ -229,6 +229,10 @@ export const apiClient = {
     return this.fetch<T>(path, { ...options, method: 'PUT', data });
   },
 
+  patch<T>(path: string, data?: unknown, options?: ApiClientOptions) {
+    return this.fetch<T>(path, { ...options, method: 'PATCH', data });
+  },
+
   delete<T>(path: string, options?: ApiClientOptions) {
     return this.fetch<T>(path, { ...options, method: 'DELETE' });
   },

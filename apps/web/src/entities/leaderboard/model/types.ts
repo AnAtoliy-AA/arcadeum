@@ -33,6 +33,10 @@ export type LeaderboardPlayer = {
   isFriend?: boolean;
   isInMatch?: boolean;
   gameTags?: string[];
+  /** Cosmetic ids the player has equipped; resolved via the shop catalog. */
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type MythicPlayer = LeaderboardPlayer & {
@@ -97,6 +101,10 @@ export type PlayerProfile = {
     rating: number;
   }>;
   squad?: Squad;
+  /** Equipped cosmetic ids from the shop; resolved via the catalog map. */
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
 };
 
 export type LeaderboardSnapshot = {

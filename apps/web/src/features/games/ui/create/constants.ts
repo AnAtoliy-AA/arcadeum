@@ -181,4 +181,11 @@ export const gamesCatalog = [
     isPlayable: true,
     maxPlayers: 6,
   },
+  {
+    id: 'glimworm_v1',
+    name: 'Glimworm',
+    summary: 'A glow-in-the-dark snake battle for 2–10 players',
+    isPlayable: true,
+    maxPlayers: 10,
+  },
 ];

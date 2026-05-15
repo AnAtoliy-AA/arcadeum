@@ -134,6 +134,11 @@ export const sharedButtonVariants = {
     outline: {
       backgroundColor: 'transparent',
       borderColor: '$borderColor',
+      // Without an explicit color the Button's internal Typography (which
+      // uses color="inherit") falls back to Tamagui's default dark text —
+      // invisible against dark theme. Theme `$color` token resolves on both
+      // light and dark.
+      color: '$color',
       shadowColor: 'rgba(0,0,0,0.3)',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 1,

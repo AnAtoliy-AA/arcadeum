@@ -13,6 +13,12 @@ vi.mock('@/shared/lib/useTranslation', () => ({
         const name = params?.name ?? '';
         return `${name}'s turn`;
       }
+      if (
+        key === 'games.table.hud.extraTurns' ||
+        key === 'games.table.hud.extraTurnsPlural'
+      ) {
+        return `+${params?.count ?? 0} turn`;
+      }
       return key;
     },
   }),
@@ -26,6 +32,7 @@ interface RenderBannerProps {
   isMyTurn?: boolean;
   currentPlayerName?: string;
   secondsRemaining?: number | null;
+  pendingDraws?: number;
 }
 
 function renderBanner(props: RenderBannerProps = {}) {
@@ -33,6 +40,7 @@ function renderBanner(props: RenderBannerProps = {}) {
     isMyTurn = false,
     currentPlayerName = 'Player',
     secondsRemaining = 0,
+    pendingDraws,
   } = props;
   return render(
     <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
@@ -41,6 +49,7 @@ function renderBanner(props: RenderBannerProps = {}) {
           isMyTurn={isMyTurn}
           currentPlayerName={currentPlayerName}
           secondsRemaining={secondsRemaining}
+          pendingDraws={pendingDraws}
         />
       </ScenePaletteProvider>
     </TamaguiProvider>,
@@ -68,18 +77,24 @@ describe('TurnBanner', () => {
     expect(screen.getByTestId('turn-banner')).toHaveTextContent('0:00');
   });
 
-  it('gates the pulsing dot animation behind prefers-reduced-motion: no-preference', () => {
-    const { container } = renderBanner({ isMyTurn: true });
-    // The animation must live inside a @media (prefers-reduced-motion: no-preference)
-    // block so that users with "reduce" set never receive the animation property.
-    const styleTag = container.querySelector('style');
-    expect(styleTag).not.toBeNull();
-    const css = styleTag?.innerHTML ?? '';
-    expect(css).toMatch(/prefers-reduced-motion:\s*no-preference/);
-    expect(css).toMatch(/animation:\s*turnBannerDotPulse/);
+  it('hides the extra-turn chip when pendingDraws is 0 or 1', () => {
+    renderBanner({ pendingDraws: 1 });
+    expect(screen.queryByTestId('turn-banner-extra')).not.toBeInTheDocument();
+  });
 
-    // The dot's inline style must not contain an animation rule — animation is
-    // only attached via the guarded @media CSS block.
+  it('renders +N chip when pendingDraws > 1', () => {
+    renderBanner({ pendingDraws: 3 });
+    expect(screen.getByTestId('turn-banner-extra')).toHaveTextContent('+2');
+  });
+
+  it('attaches its pulse via the global hudStyles attribute selector, not inline', () => {
+    // Keyframes live in `hudStyles.tsx` (HUD_KEYFRAMES_CSS) and are
+    // mounted once by `ArenaCenter`. The banner itself should NOT emit
+    // a `<style>` tag and the dot's inline style must NOT carry an
+    // animation rule — the prefers-reduced-motion media gate inside
+    // hudStyles is what actually controls the pulse.
+    const { container } = renderBanner({ isMyTurn: true });
+    expect(container.querySelector('style')).toBeNull();
     const dot = screen.getByTestId('turn-banner-dot');
     expect(dot.getAttribute('style') ?? '').not.toContain('animation');
   });

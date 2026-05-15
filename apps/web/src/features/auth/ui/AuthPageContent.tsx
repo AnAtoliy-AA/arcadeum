@@ -1,40 +1,44 @@
 'use client';
 
-import { XStack } from 'tamagui';
-import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
-import { Container } from '@arcadeum/ui/components/Container/Container';
-import { HeroSection } from './HeroSection';
-import { LocalAuthPanel } from './LocalAuthPanel';
-import { OAuthPanel } from './OAuthPanel';
-import { SessionStatusPanel } from './SessionStatusPanel';
-import { DownloadSection } from './DownloadSection';
+import { XStack, YStack } from 'tamagui';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useAuthLabels } from '../hooks/useAuthLabels';
-import { appConfig } from '@/shared/config/app-config';
+import { AuthBrandPanel } from './AuthBrandPanel';
+import { AuthFormPanel } from './AuthFormPanel';
+import { AuthPwaStrip } from './AuthPwaStrip';
+import { AuthPageBackground } from './AuthPageBackground';
+import './auth.css';
 
 export default function AuthPageContent() {
   const auth = useAuthForm();
-  const { isRegisterMode } = auth;
-  const labels = useAuthLabels(isRegisterMode);
-
-  const config = {
-    hero: {
-      primaryActionHref: appConfig.supportCta.href,
-      secondaryActionHref: appConfig.primaryCta.href,
-    },
-  };
+  const labels = useAuthLabels(auth.isRegisterMode);
 
   return (
-    <PageLayout>
-      <Container size="lg">
-        <HeroSection labels={labels} config={config.hero} />
-        <XStack gap="$5" marginTop="$8" flexWrap="wrap" justifyContent="center">
-          <LocalAuthPanel labels={labels} auth={auth} />
-          <OAuthPanel auth={auth} />
-          <SessionStatusPanel auth={auth} />
-        </XStack>
-        <DownloadSection labels={labels} />
-      </Container>
-    </PageLayout>
+    <XStack
+      minHeight="100vh"
+      width="100%"
+      position="relative"
+      overflow="hidden"
+      $md={{ flexDirection: 'column' }}
+      data-testid="auth-page-root"
+    >
+      <AuthPageBackground />
+      <AuthBrandPanel brand={labels.brand} flex={1.05} />
+      <YStack
+        flex={1}
+        alignItems="center"
+        justifyContent="center"
+        paddingHorizontal="$8"
+        paddingVertical="$8"
+        gap="$5"
+        $md={{
+          paddingHorizontal: '$5',
+          paddingVertical: '$6',
+        }}
+      >
+        <AuthFormPanel labels={labels} auth={auth} />
+        <AuthPwaStrip pwa={labels.pwa} />
+      </YStack>
+    </XStack>
   );
 }

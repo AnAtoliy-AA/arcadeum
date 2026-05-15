@@ -33,6 +33,13 @@ const eslintConfig = defineConfig([
         caughtErrorsIgnorePattern: '^_',
         destructuredArrayIgnorePattern: '^_'
       }],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "MemberExpression[property.name=/^(coins|gems)$/]",
+          message: 'Direct access to wallet balance fields is forbidden. Use the wallet API.',
+        },
+      ],
     },
   },
   {

@@ -17,6 +17,7 @@ import { useMedia, Text } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 export interface TablePlayerProps {
   player: CriticalPlayerTableState;
@@ -71,6 +72,8 @@ export function TablePlayer({
 
   const showTurnRing = isCurrent && player.alive;
   const showEliminatedRing = !player.alive;
+
+  const playerColor = getPlayerColor(playerId);
 
   const initials = displayName
     .split(' ')
@@ -181,6 +184,18 @@ export function TablePlayer({
               }}
             />
           )}
+          {!showTurnRing && player.alive && (
+            <div
+              data-testid="player-color-ring"
+              style={{
+                position: 'absolute',
+                inset: -2,
+                borderRadius: '50%',
+                border: `2px solid ${playerColor}`,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           {showEliminatedRing && (
             <div
               data-testid="player-eliminated-ring"
@@ -221,7 +236,10 @@ export function TablePlayer({
           </PlayerAvatar>
         </div>
 
-        <PlayerName data-testid={`player-name-${playerId}`}>
+        <PlayerName
+          data-testid={`player-name-${playerId}`}
+          style={player.alive ? { color: playerColor } : undefined}
+        >
           {displayName}
           {isPlayerIdle && <IdleBadge />}
         </PlayerName>

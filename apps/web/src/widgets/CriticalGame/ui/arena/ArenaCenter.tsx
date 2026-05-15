@@ -32,12 +32,6 @@ interface ArenaCenterProps {
    * `FlashHistory` actor column. Passes through from `MatchWidget`.
    */
   resolveDisplayName?: (playerId: string, fallback: string) => string;
-  /**
-   * Phones: drop `minHeight` so the centre column doesn't burn 180px
-   * of vertical real estate when content is just a turn pill. Passed
-   * from `Arena` so the layout decision lives in one place.
-   */
-  isNarrow?: boolean;
 }
 
 /**
@@ -61,13 +55,16 @@ export function ArenaCenter({
   logs,
   formatLogMessage,
   resolveDisplayName,
-  isNarrow = false,
 }: ArenaCenterProps) {
   return (
     <YStack
       data-testid="arena-center"
       flex={1}
-      minHeight={isNarrow ? 0 : 180}
+      // No `minHeight` — the column should be content-sized so the
+      // arena card collapses around its actual content instead of
+      // reserving 180px of dead air below the threat strip at idle.
+      // The FlashBanner is absolutely positioned and doesn't push the
+      // stack, so the flow's natural height is the right floor.
       alignItems="center"
       justifyContent="center"
       gap="$2"

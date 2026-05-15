@@ -51,6 +51,11 @@ export function FlashHistory({
     fontWeight: 600,
     letterSpacing: 0.3,
     color: 'rgba(226,232,240,0.7)',
+    // The wrapper itself stays passthrough so clicks fall through to the
+    // arena underneath. Individual rows re-enable pointer events below so
+    // the native `title` tooltip on truncated text actually fires —
+    // `pointer-events: none` was previously inherited and killed the
+    // hover that triggers the tooltip.
     pointerEvents: 'none',
   };
 
@@ -66,6 +71,7 @@ export function FlashHistory({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     fontVariantNumeric: 'tabular-nums',
+    pointerEvents: 'auto',
   };
 
   const timeStyle: CSSProperties = {
@@ -99,13 +105,17 @@ export function FlashHistory({
       aria-label="Recent match events"
       style={wrapperStyle}
     >
-      {entries.map((entry) => {
+      {entries.map((entry, idx) => {
         const text = formatMessage(entry.message).trim();
         if (!text) return null;
         const actor = resolveActor(entry, resolveDisplayName);
         return (
+          // `${entry.id}-${idx}` defends against the rare case where the
+          // server snapshot yields two entries with the same `id`
+          // (optimistic + authoritative double-tick, replay buffer
+          // churn). React would otherwise warn and reuse rows wrong.
           <div
-            key={entry.id}
+            key={`${entry.id}-${idx}`}
             data-testid="flash-history-row"
             data-entry-id={entry.id}
             data-actor={actor || undefined}

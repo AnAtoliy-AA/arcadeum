@@ -95,7 +95,7 @@ export function HandCards({
         return (
           <div
             key={card.uid}
-            className="hand-card-wrapper"
+            className="crit-hand-card-wrapper"
             data-fan={isFanned ? 'true' : 'false'}
             style={wrapperStyle}
           >

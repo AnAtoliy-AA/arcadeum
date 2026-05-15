@@ -142,10 +142,40 @@ export function MatchWidget({
   const [showCardDescription, setShowCardDescription] = useState<boolean>(() =>
     readToggle(togglesStorageKey, 'description', true),
   );
+  // Hydration guard for §4.6 + the review's §1.1 follow-up. The
+  // `useState` initializer only runs once on mount; if `currentUserId`
+  // wasn't available yet (e.g. auth bootstrap hasn't resolved by the
+  // time the widget paints), `togglesStorageKey` was `null` and the
+  // initializer fell back to the default `true`. This effect re-reads
+  // localStorage exactly once when the key transitions from null →
+  // string, so persisted preferences actually restore. After hydration
+  // the ref stays set so subsequent userId churn doesn't clobber an
+  // in-progress toggle. Also doubles as a dirty-flag for the write
+  // effects below — without this, a fresh-page write would echo the
+  // just-read value straight back into storage on every match start.
+  const hydratedFromStorage = useRef(false);
+  /* eslint-disable react-hooks/set-state-in-effect --
+   * One-shot hydration when `currentUserId` arrives async (auth bootstrap
+   * resolved after the widget mounted). This is the documented pattern
+   * for syncing local state to a value that wasn't available at mount —
+   * the rule guards against cascading renders, not external-event syncs.
+   * The `hydratedFromStorage` ref makes this exactly-once.
+   */
   useEffect(() => {
+    if (!togglesStorageKey || hydratedFromStorage.current) return;
+    hydratedFromStorage.current = true;
+    const name = readToggle(togglesStorageKey, 'name', true);
+    const desc = readToggle(togglesStorageKey, 'description', true);
+    setShowCardName(name);
+    setShowCardDescription(desc);
+  }, [togglesStorageKey]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!hydratedFromStorage.current) return;
     writeToggle(togglesStorageKey, 'name', showCardName);
   }, [togglesStorageKey, showCardName]);
   useEffect(() => {
+    if (!hydratedFromStorage.current) return;
     writeToggle(togglesStorageKey, 'description', showCardDescription);
   }, [togglesStorageKey, showCardDescription]);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);

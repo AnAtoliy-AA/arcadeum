@@ -91,7 +91,6 @@ export function Arena({
           resolveDisplayName={resolveDisplayName}
           serverOverloadOdds={serverOverloadOdds}
           hiddenCount={hiddenCount}
-          isNarrow={isNarrow}
         />
       </div>
       <div data-area="discard">

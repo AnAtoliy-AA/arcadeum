@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
 import { getMockLeaderboard } from '@/shared/api/leaderboard';
+import type { GameMode } from '@/entities/leaderboard/model/types';
 
 test.describe('Leaderboards page', () => {
   // The leaderboards UI is data-driven (ticker only renders with events,
@@ -10,7 +11,6 @@ test.describe('Leaderboards page', () => {
   // has no Mongo or no auto-seed in CI. Serve the same mock snapshot at
   // the network layer so every project gets a deterministic dataset.
   test.beforeEach(async ({ page }) => {
-    const snapshot = await getMockLeaderboard({ selfId: 'e2e-self' });
     await page.route('**/leaderboards*', async (route) => {
       // Don't intercept the page navigation — `**/leaderboards*` also matches
       // the document request to /leaderboards on the web origin and would
@@ -22,6 +22,20 @@ test.describe('Leaderboards page', () => {
       if (!url.pathname.endsWith('/leaderboards')) {
         return route.fallback();
       }
+      // Compute the snapshot per request so `mode` and `q` (search) actually
+      // affect the rows — the "switching mode" and "search filters" tests
+      // both rely on the response changing when the query string changes.
+      const mode = url.searchParams.get('mode') ?? 'all';
+      const page_ = Number(url.searchParams.get('page') ?? '1') || 1;
+      const pageSize = Number(url.searchParams.get('pageSize') ?? '50') || 50;
+      const q = url.searchParams.get('q') ?? '';
+      const snapshot = await getMockLeaderboard({
+        mode: mode as GameMode,
+        page: page_,
+        pageSize,
+        q,
+        selfId: 'e2e-self',
+      });
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

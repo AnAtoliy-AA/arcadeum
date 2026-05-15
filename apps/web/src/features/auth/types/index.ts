@@ -138,7 +138,10 @@ export interface AuthPwaLabels {
 
 export interface AuthOAuthLabels {
   google: string;
+  googleShort: string;
   apple: string;
+  appleShort: string;
   discord: string;
+  discordShort: string;
   comingSoon: string;
 }

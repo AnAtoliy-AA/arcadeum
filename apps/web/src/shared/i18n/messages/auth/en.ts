@@ -69,8 +69,11 @@ export const en = {
     accessTokenLabel: 'Google access token',
     authorizationCodeLabel: 'Authorization code',
     google: 'Continue with Google',
+    googleShort: 'Google',
     apple: 'Continue with Apple',
+    appleShort: 'Apple',
     discord: 'Continue with Discord',
+    discordShort: 'Discord',
     comingSoon: 'Coming soon',
   },
   form: {

@@ -465,8 +465,11 @@ function buildProvidersLabels(
 ): AuthOAuthLabels {
   return {
     google: copy.google ?? fallback.google ?? 'Continue with Google',
+    googleShort: copy.googleShort ?? fallback.googleShort ?? 'Google',
     apple: copy.apple ?? fallback.apple ?? 'Continue with Apple',
+    appleShort: copy.appleShort ?? fallback.appleShort ?? 'Apple',
     discord: copy.discord ?? fallback.discord ?? 'Continue with Discord',
+    discordShort: copy.discordShort ?? fallback.discordShort ?? 'Discord',
     comingSoon: copy.comingSoon ?? fallback.comingSoon ?? 'Coming soon',
   };
 }

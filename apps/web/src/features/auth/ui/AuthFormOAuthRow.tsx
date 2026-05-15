@@ -33,19 +33,19 @@ export function AuthFormOAuthRow({
       id: 'google',
       icon: <GoogleGlyph />,
       label: providers.google,
-      shortLabel: 'Google',
+      shortLabel: providers.googleShort,
     },
     {
       id: 'apple',
       icon: <AppleGlyph />,
       label: providers.apple,
-      shortLabel: 'Apple',
+      shortLabel: providers.appleShort,
     },
     {
       id: 'discord',
       icon: <DiscordGlyph />,
       label: providers.discord,
-      shortLabel: 'Discord',
+      shortLabel: providers.discordShort,
     },
   ];
 

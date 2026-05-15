@@ -62,8 +62,11 @@ export const ru = {
     accessTokenLabel: 'Google access token',
     authorizationCodeLabel: 'Код авторизации',
     google: 'Продолжить с Google',
+    googleShort: 'Google',
     apple: 'Продолжить с Apple',
+    appleShort: 'Apple',
     discord: 'Продолжить с Discord',
+    discordShort: 'Discord',
     comingSoon: 'Скоро',
   },
   form: {

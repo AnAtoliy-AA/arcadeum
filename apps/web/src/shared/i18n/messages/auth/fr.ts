@@ -63,8 +63,11 @@ export const fr = {
     accessTokenLabel: "Jeton d'accès Google",
     authorizationCodeLabel: "Code d'autorisation",
     google: 'Continuer avec Google',
+    googleShort: 'Google',
     apple: 'Continuer avec Apple',
+    appleShort: 'Apple',
     discord: 'Continuer avec Discord',
+    discordShort: 'Discord',
     comingSoon: 'Bientôt disponible',
   },
   form: {

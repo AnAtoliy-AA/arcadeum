@@ -57,6 +57,7 @@ interface ActiveGameModalsProps {
     smiteModal: boolean;
     omniscienceModal: OmniscienceModalState | null;
     targetedAttackModal: boolean;
+    favorModal: boolean;
   };
   handlers: {
     handleCloseEventComboModal: () => void;
@@ -73,7 +74,7 @@ interface ActiveGameModalsProps {
     handleCloseTargetedAttackModal: () => void;
     handleConfirmTargetedAttack: (targetId?: string) => void;
     handleCloseFavorModal: () => void;
-    handleConfirmFavor: (card: CriticalCard) => void;
+    handleConfirmFavor: () => void;
     handleCloseStashModal: () => void;
     handleConfirmStash: (cards: CriticalCard[]) => void;
     handleCloseMarkModal: () => void;
@@ -162,11 +163,9 @@ export function ActiveGameModals({
           )
         }
         // Favor Modal
-        favorModal={
-          modals.targetedAttackModal ? false : !!handlers.handleCloseFavorModal
-        }
+        favorModal={modals.favorModal}
         onCloseFavorModal={handlers.handleCloseFavorModal}
-        onConfirmFavor={() => {}}
+        onConfirmFavor={handlers.handleConfirmFavor}
         // Defuse Modal
         pendingDefuse={snapshot?.pendingDefuse ?? null}
         onPlayDefuse={actions.playDefuse}
@@ -235,7 +234,7 @@ export function ActiveGameModals({
 
       {isMobile && !modals.targetedAttackModal && (
         <MobileActionSheet
-          isOpen={!!handlers.handleCloseFavorModal}
+          isOpen={modals.favorModal}
           title={t('games.table.mobile.favor.title' as TranslationKey)}
           description={t(
             'games.table.mobile.favor.description' as TranslationKey,

@@ -49,7 +49,7 @@ describe('OpponentsRow', () => {
     const row = screen.getByTestId('opponents-row');
     expect(row).toHaveAttribute('data-mode', 'duel');
     expect(row).toHaveAttribute('data-count', '1');
-    expect(screen.getByTestId('opponent-tile-p1')).toBeInTheDocument();
+    expect(screen.getByTestId('player-card-p1')).toBeInTheDocument();
   });
 
   it('uses FFA mode for 2+ opponents', () => {
@@ -67,7 +67,7 @@ describe('OpponentsRow', () => {
   it('renders all five tiles in a full FFA lobby', () => {
     renderRow({ opponents: makePlayers(5) });
     for (let i = 1; i <= 5; i += 1) {
-      expect(screen.getByTestId(`opponent-tile-p${i}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`player-card-p${i}`)).toBeInTheDocument();
     }
   });
 
@@ -76,11 +76,11 @@ describe('OpponentsRow', () => {
       opponents: makePlayers(3),
       currentTurnPlayerId: 'p2',
     });
-    expect(screen.getByTestId('opponent-tile-p1')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p1')).toHaveAttribute(
       'data-current-turn',
       'false',
     );
-    expect(screen.getByTestId('opponent-tile-p2')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p2')).toHaveAttribute(
       'data-current-turn',
       'true',
     );
@@ -91,11 +91,11 @@ describe('OpponentsRow', () => {
       opponents: makePlayers(3),
       targetPlayerId: 'p3',
     });
-    expect(screen.getByTestId('opponent-tile-p1')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p1')).toHaveAttribute(
       'data-target',
       'false',
     );
-    expect(screen.getByTestId('opponent-tile-p3')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p3')).toHaveAttribute(
       'data-target',
       'true',
     );
@@ -104,7 +104,7 @@ describe('OpponentsRow', () => {
   it('forwards onSelectTarget calls with the clicked opponent id', () => {
     const onSelectTarget = vi.fn();
     renderRow({ opponents: makePlayers(2), onSelectTarget });
-    screen.getByTestId('opponent-tile-p2').click();
+    screen.getByTestId('player-card-p2').click();
     expect(onSelectTarget).toHaveBeenCalledWith('p2');
   });
 
@@ -115,7 +115,7 @@ describe('OpponentsRow', () => {
       { playerId: 'p2', alive: false, hand: [] as CriticalCard[] },
     ];
     renderRow({ opponents, onSelectTarget });
-    screen.getByTestId('opponent-tile-p2').click();
+    screen.getByTestId('player-card-p2').click();
     expect(onSelectTarget).not.toHaveBeenCalled();
   });
 });

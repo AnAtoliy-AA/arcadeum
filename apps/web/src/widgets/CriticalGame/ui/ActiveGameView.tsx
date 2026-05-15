@@ -109,6 +109,8 @@ export function ActiveGameView({
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
+
+  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
 
   // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
@@ -116,6 +118,7 @@ export function ActiveGameView({
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
   }
+
   const showResultModal = isGameOver && !modalDismissed;
   useWebGameHaptics(isMyTurn);
 
@@ -142,6 +145,7 @@ export function ActiveGameView({
     targetedAttackModal,
     setTargetedAttackModal,
     seeTheFutureModal,
+    setSeeTheFutureModal,
     handleCloseSeeTheFutureModal,
     stashModal,
     handleCloseStashModal,
@@ -152,25 +156,25 @@ export function ActiveGameView({
     smiteModal,
     handleCloseSmiteModal,
     omniscienceModal,
+    setOmniscienceModal,
     handleCloseOmniscienceModal,
+    handleConfirmEventCombo,
+    favorModal,
   } = useCriticalModals({
     playFavor: actions.playFavor,
+    playEventCombo: actions.playEventCombo,
   });
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setSeeTheFutureModal: (_val: unknown) => {
-      // Compatibility if needed, but useCriticalModals should handle it
-    },
+    setSeeTheFutureModal,
   });
   useOmniscienceFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setOmniscienceModal: (_val: unknown) => {
-      // Compatibility
-    },
+    setOmniscienceModal,
   });
 
   const youLabel = t('games.table.players.you');
@@ -193,8 +197,6 @@ export function ActiveGameView({
     actions.postHistoryNote,
     resolveDisplayName,
   );
-  // (No registered actor-color resolver in Critical — GameChat falls back
-  // to the shared getPlayerColor(id), which is exactly what we want for FFA.)
 
   const gameHandlers = useGameHandlers({
     selectedMode,
@@ -219,7 +221,6 @@ export function ActiveGameView({
   });
 
   const {
-    handleConfirmEventCombo,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,
@@ -284,8 +285,6 @@ export function ActiveGameView({
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
       <YStack flex={1} className="animate-entrance">
-        {/* Flag-off: legacy header sits above the match. Widget mode hoists */}
-        {/* Rules / Fullscreen into a small menu inside HandRail (ARC-636). */}
         {!widgetMode && (
           <CriticalGameHeader
             room={room}
@@ -309,8 +308,6 @@ export function ActiveGameView({
             toggleFullscreen={toggleFullscreen}
           />
         )}
-        {/* Flag-off: legacy top-of-page TurnBanner + MatchHud. In widget */}
-        {/* mode these move inside the Arena's center column (ARC-633). */}
         {!widgetMode && (
           <>
             <XStack justifyContent="center">
@@ -376,6 +373,7 @@ export function ActiveGameView({
           smiteModal,
           omniscienceModal,
           targetedAttackModal,
+          favorModal,
         }}
         handlers={{
           handleCloseEventComboModal,

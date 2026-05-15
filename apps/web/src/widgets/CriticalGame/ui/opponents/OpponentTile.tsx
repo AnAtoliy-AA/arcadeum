@@ -11,11 +11,6 @@ interface OpponentTileProps {
   player: CriticalPlayerTableState;
   isCurrentTurn: boolean;
   isTarget?: boolean;
-  /**
-   * Click handler invoked when the tile is activated (mouse, touch, Enter,
-   * or Space). Omitted when the tile isn't a valid attack target — e.g.
-   * eliminated players or when the local player is not on the clock.
-   */
   onSelect?: () => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
 }
@@ -34,17 +29,6 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
-/**
- * Single opponent in the widget-mode opponents row. Compact card with
- * avatar + name + hand count. Surfaces three ring states:
- *   - turn ring (green): this player is currently on the clock
- *   - eliminated ring (red dashed): out of the game
- *   - target ring (pink): armed-for-attack indicator
- *
- * Defuse counts are deliberately NOT shown — `CriticalPlayerState` from
- * the server doesn't expose them, and revealing them would give away
- * attack calculus for free (see PR #631 review §2).
- */
 export function OpponentTile({
   player,
   isCurrentTurn,
@@ -84,7 +68,7 @@ export function OpponentTile({
 
   return (
     <YStack
-      data-testid={`opponent-tile-${player.playerId}`}
+      data-testid={`player-card-${player.playerId}`}
       data-alive={alive ? 'true' : 'false'}
       data-current-turn={isCurrentTurn ? 'true' : 'false'}
       data-target={isTarget ? 'true' : 'false'}
@@ -128,7 +112,7 @@ export function OpponentTile({
       </YStack>
       <XStack alignItems="center" gap={4} maxWidth="100%">
         <Text
-          data-testid={`opponent-tile-name-${player.playerId}`}
+          data-testid={`player-name-${player.playerId}`}
           fontSize={12}
           fontWeight="700"
           letterSpacing={0.3}
@@ -142,7 +126,7 @@ export function OpponentTile({
       </XStack>
       {alive ? (
         <Text
-          data-testid={`opponent-tile-count-${player.playerId}`}
+          data-testid={`player-stats-count-${player.playerId}`}
           fontSize={11}
           fontWeight="800"
           letterSpacing={0.4}
@@ -152,7 +136,7 @@ export function OpponentTile({
         </Text>
       ) : (
         <Text
-          data-testid={`opponent-tile-eliminated-${player.playerId}`}
+          data-testid={`player-eliminated-label-${player.playerId}`}
           fontSize={10}
           fontWeight="800"
           letterSpacing={1}

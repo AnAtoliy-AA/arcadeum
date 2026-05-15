@@ -1,11 +1,11 @@
 'use client';
 
 import { XStack, YStack } from 'tamagui';
+import { InstallAppCta } from '@/widgets/install-app';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useAuthLabels } from '../hooks/useAuthLabels';
 import { AuthBrandPanel } from './AuthBrandPanel';
 import { AuthFormPanel } from './AuthFormPanel';
-import { AuthPwaStrip } from './AuthPwaStrip';
 import { AuthPageBackground } from './AuthPageBackground';
 import './auth.css';
 
@@ -37,7 +37,7 @@ export default function AuthPageContent() {
         }}
       >
         <AuthFormPanel labels={labels} auth={auth} />
-        <AuthPwaStrip pwa={labels.pwa} />
+        <InstallAppCta />
       </YStack>
     </XStack>
   );

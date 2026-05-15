@@ -9,7 +9,6 @@ import type {
   SessionDetailLabels,
   AuthFormLabels,
   AuthBrandLabels,
-  AuthPwaLabels,
   AuthOAuthLabels,
 } from '../types';
 
@@ -54,7 +53,6 @@ export interface AuthLabels
   // Redesigned auth UI label groups
   form: AuthFormLabels;
   brand: AuthBrandLabels;
-  pwa: AuthPwaLabels;
   providers: AuthOAuthLabels;
 }
 
@@ -122,10 +120,8 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
   const defaultAuthLocalAvailability = defaultAuthLocal.availability ?? {};
   const defaultAuthForm = defaultAuth.form ?? {};
   const defaultAuthBrand = defaultAuth.brand ?? {};
-  const defaultAuthPwa = defaultAuth.pwa ?? {};
   const authForm = authCopy.form ?? {};
   const authBrand = authCopy.brand ?? {};
-  const authPwa = authCopy.pwa ?? {};
   const authOauth = authCopy.oauth ?? {};
 
   const logoutLabel = commonActions.logout ?? defaultCommonActions.logout ?? '';
@@ -351,7 +347,6 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
 
     form: buildFormLabels(authForm, defaultAuthForm),
     brand: buildBrandLabels(authBrand, defaultAuthBrand),
-    pwa: buildPwaLabels(authPwa, defaultAuthPwa),
     providers: buildProvidersLabels(authOauth, defaultAuthOauth),
   };
 }
@@ -441,19 +436,6 @@ function buildBrandLabels(
     footHome: copy.footHome ?? fallback.footHome ?? '',
     footGames: copy.footGames ?? fallback.footGames ?? '',
     footHelp: copy.footHelp ?? fallback.footHelp ?? '',
-  };
-}
-
-type AuthPwaCopy = NonNullable<AuthMessages['pwa']>;
-
-function buildPwaLabels(
-  copy: Partial<AuthPwaCopy>,
-  fallback: Partial<AuthPwaCopy>,
-): AuthPwaLabels {
-  return {
-    title: copy.title ?? fallback.title ?? 'Get the app.',
-    body: copy.body ?? fallback.body ?? '',
-    cta: copy.cta ?? fallback.cta ?? 'Install',
   };
 }
 

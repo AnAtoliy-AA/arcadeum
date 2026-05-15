@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.45] - 2026-05-15
+
+### Fixed
+- develop-branch review follow-ups §1.1–1.10 + §2.1, §2.3 (ARC-678) (ARC-678)
+
+### Refactored
+- extract MatchWidget test fixtures to satisfy 500-line limit (ARC-678) (ARC-678)
+
+
 ## [1.13.44] - 2026-05-14
 
 ### Added

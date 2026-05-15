@@ -62,9 +62,16 @@ test.describe('Auth Extended', () => {
     // Wait for button to be ready (especially on Mobile Safari where Zustand
     // rehydration + React reconciliation can take a moment)
     await expect(logoutBtn).toBeVisible({});
-    // The drawer's body is scrollable on mobile and the logout button sits
-    // below the fold for short viewports; nudge it into view before clicking.
-    await logoutBtn.scrollIntoViewIfNeeded();
+    if (getIsMobile(page)) {
+      // The drawer is the scroll container on mobile (overflow-y: auto) and
+      // the logout button sits below the fold on short viewports.
+      // `scrollIntoViewIfNeeded` doesn't always reach the inner scroller, so
+      // scroll the drawer body to the bottom directly to guarantee the
+      // button lands inside the viewport before the click.
+      await page
+        .getByTestId('mobile-nav')
+        .evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+    }
 
     // 3. Verify session is cleared and redirected
     await Promise.all([

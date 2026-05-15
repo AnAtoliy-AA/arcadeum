@@ -39,7 +39,11 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  // CI hits transient dev-server slowness (especially on Mobile Safari, which
+  // runs last and warms up against an already-busy Next.js dev server). One
+  // retry clears those flakes without masking real regressions — failing
+  // tests still need to fail twice in a row to mark the run red.
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI
     ? 1
     : process.env.PLAYWRIGHT_WORKERS

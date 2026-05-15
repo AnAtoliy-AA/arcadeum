@@ -10,6 +10,7 @@ import {
   YouTubeIcon,
 } from '@arcadeum/ui';
 import { Footer, type SocialLink } from '@arcadeum/ui/components/Footer/Footer';
+import { View } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
@@ -77,7 +78,7 @@ export default function AppFooter() {
   }
 
   return (
-    <div data-testid="app-footer">
+    <View data-testid="app-footer" $sm={{ paddingHorizontal: '$4' }}>
       <Footer
         appName={appName}
         socialLinks={socialLinks}
@@ -92,6 +93,6 @@ export default function AppFooter() {
         stableReleaseLabel={t('home.footerStableRelease')}
         craftedWithLoveLabel={t('home.footerCraftedWithLove')}
       />
-    </div>
+    </View>
   );
 }

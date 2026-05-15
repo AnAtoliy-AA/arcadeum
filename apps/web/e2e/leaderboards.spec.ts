@@ -11,8 +11,12 @@ test.describe('Leaderboards page', () => {
   // has no Mongo or no auto-seed in CI. Serve the same mock snapshot at
   // the network layer so every project gets a deterministic dataset.
   test.beforeEach(async ({ page }) => {
-    await page.route('**/leaderboards*', async (route) => {
-      // Don't intercept the page navigation — `**/leaderboards*` also matches
+    // Regex covers both the index (`/leaderboards`) and nested
+    // (`/leaderboards/players/<id>`). The `**/leaderboards*` glob only
+    // matched within the last path segment, so the player-detail URL
+    // slipped through to the BE.
+    await page.route(/\/leaderboards(\/.*)?(\?.*)?$/, async (route) => {
+      // Don't intercept the page navigation — the same regex also matches
       // the document request to /leaderboards on the web origin and would
       // hand the browser JSON instead of HTML, breaking hydration.
       if (route.request().resourceType() === 'document') {

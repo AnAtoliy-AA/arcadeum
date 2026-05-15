@@ -109,6 +109,12 @@
   display: none;
 }
 
+/* Contain overscroll inside the drawer so iOS/Android don't rubber-band
+   the page underneath when the drawer's content reaches a scroll edge. */
+[data-mobile-menu] {
+  overscroll-behavior: contain;
+}
+
 @media (max-width: 1150px) {
   .header-inner {
     padding-left: 16px;

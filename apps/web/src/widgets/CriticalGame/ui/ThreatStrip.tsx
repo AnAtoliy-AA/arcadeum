@@ -21,6 +21,13 @@ interface ThreatStripProps {
    * Falls back to the visible-deck approximation when undefined.
    */
   serverOverloadOdds?: number | null;
+  /**
+   * Server-authoritative count of dangerous cards left in the deck.
+   * When provided, the strip renders a `△ N left` tail so players see
+   * both the percentage and the absolute count. Omitted (no tail) when
+   * undefined — keeps older snapshots backward-compatible.
+   */
+  criticalsRemaining?: number | null;
 }
 
 const DEFUSE_CARDS: readonly CriticalCard[] = [
@@ -74,6 +81,7 @@ export function ThreatStrip({
   deck,
   hiddenCount = 0,
   serverOverloadOdds,
+  criticalsRemaining,
 }: ThreatStripProps) {
   const { t } = useTranslation();
   const defuseCount = useMemo(() => countDefuses(hand), [hand]);
@@ -88,9 +96,13 @@ export function ThreatStrip({
   const noDefuses = defuseCount === 0;
 
   const shouldPulse = noDefuses || oddsLevel === 'danger';
+  const showRemaining =
+    criticalsRemaining !== undefined && criticalsRemaining !== null;
   const containerStyle: CSSProperties = {
     display: 'inline-grid',
-    gridTemplateColumns: 'auto 1fr auto',
+    // Last column collapses to 0fr when `criticalsRemaining` isn't
+    // supplied so older snapshots keep their 3-col layout.
+    gridTemplateColumns: showRemaining ? 'auto 1fr auto auto' : 'auto 1fr auto',
     alignItems: 'center',
     gap: 10,
     padding: '6px 14px',
@@ -163,6 +175,18 @@ export function ThreatStrip({
       >
         <ShieldIcon size={14} /> {defuseCount}
       </span>
+      {showRemaining && (
+        <span
+          data-testid="threat-strip-remaining"
+          style={{
+            color: LEVEL_COLOR[oddsLevel],
+            fontVariantNumeric: 'tabular-nums',
+          }}
+          title={t('games.table.hud.threat.remainingTitle')}
+        >
+          {`△ ${criticalsRemaining} ${t('games.table.hud.threat.remainingSuffix')}`}
+        </span>
+      )}
     </div>
   );
 }

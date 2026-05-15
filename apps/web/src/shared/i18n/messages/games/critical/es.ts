@@ -207,6 +207,8 @@ export const esMessages = {
           'Probabilidad mínima de robar una carta Crítica (solo cartas visibles — las ocultas pueden aumentarla)',
         oddsTitleServer: 'Probabilidad de robar una carta Crítica',
         defusesTitle: 'Cartas de Defusa que tienes',
+        remainingTitle: 'Cartas peligrosas que quedan en el mazo',
+        remainingSuffix: 'restantes',
       },
       combo: {
         label: 'Combos',

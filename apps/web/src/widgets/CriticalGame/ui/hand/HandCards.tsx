@@ -88,6 +88,15 @@ export function HandCards({
         // / `--hand-count` and produces the rotate + translateY.
         // Browsers without `abs()` / `clamp()` (very old) fall through
         // to no fan — cards still render in order, no broken state.
+        //
+        // Note: per-card `viewTransitionName` was tried in ARC-686 but
+        // backed out. The View Transitions API renders pseudo-element
+        // snapshots in a top-layer overlay above the document; with one
+        // name per card, the overlay briefly showed every old + new card
+        // position simultaneously, overlapping the widget for the
+        // animation duration. The discard pile still gets a name (see
+        // `DiscardPile.tsx`) so the played-card landing animation
+        // remains localized.
         const wrapperStyle = {
           '--hand-index': i,
           '--hand-count': cards.length,

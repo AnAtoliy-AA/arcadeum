@@ -22,6 +22,8 @@ interface ArenaCenterProps {
   deck: CriticalCard[];
   /** Server-authoritative overload odds; forwarded to ThreatStrip. */
   serverOverloadOdds?: number | null;
+  /** Raw dangerous-card count; forwarded to ThreatStrip for `△ N left`. */
+  criticalsRemaining?: number | null;
   /** Cards the snapshot has hidden — folded into client-fallback odds. */
   hiddenCount?: number;
   // Flash banner
@@ -51,6 +53,7 @@ export function ArenaCenter({
   combo,
   deck,
   serverOverloadOdds,
+  criticalsRemaining,
   hiddenCount,
   logs,
   formatLogMessage,
@@ -98,6 +101,7 @@ export function ArenaCenter({
         hand={hand}
         deck={deck}
         serverOverloadOdds={serverOverloadOdds}
+        criticalsRemaining={criticalsRemaining}
         hiddenCount={hiddenCount}
       />
       {/* §4.7 — last-5 timeline strip beneath the threat strip. The

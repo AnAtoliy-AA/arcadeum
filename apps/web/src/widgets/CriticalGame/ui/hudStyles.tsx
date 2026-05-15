@@ -188,6 +188,7 @@ const HUD_KEYFRAMES_CSS = `
     padding: 16px 24px;
   }
 }
+
 `;
 
 export function HudStyles() {

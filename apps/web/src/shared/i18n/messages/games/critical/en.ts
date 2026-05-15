@@ -204,6 +204,8 @@ export const enMessages = {
           'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
         oddsTitleServer: 'Chance the next draw is a Critical card',
         defusesTitle: 'Defuses you hold',
+        remainingTitle: 'Dangerous cards still in the deck',
+        remainingSuffix: 'left',
       },
       combo: {
         label: 'Combos',

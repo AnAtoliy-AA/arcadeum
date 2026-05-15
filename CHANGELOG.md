@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.53] - 2026-05-15
+
+### Added
+
+- switch /auth route to two-column redesign (ARC-690) (ARC-690)
+- add brand, form, and pwa panels for redesigned sign-in (ARC-690) (ARC-690)
+- extend hooks with remember-me, magic link, multi-provider OAuth (ARC-690) (ARC-690)
+- add i18n keys for sign-in redesign (ARC-690) (ARC-690)
+
+### Fixed
+
+- restore availability status text below email + username fields (ARC-690) (ARC-690)
+- center brand column on shared 680px track + drop logo wordmark (ARC-690) (ARC-690)
+- scale brand headline + inline feature bullets to match mockup (ARC-690) (ARC-690)
+- drop bogus lineHeight multipliers that collapsed wrapped text (ARC-690) (ARC-690)
+- close visual gap to the v2 mockup (ARC-690) (ARC-690)
+- round-3 form polish — rect submit + glow, heading, divider (ARC-690) (ARC-690)
+- paint ambient background via document order (ARC-690) (ARC-690)
+- magic-link disabled visual + staggered brand entry (ARC-690) (ARC-690)
+- localize OAuth provider short labels (ARC-690) (ARC-690)
+- paint ambient background by dropping the opaque page surface (ARC-690) (ARC-690)
+- align e2e specs with redesigned sign-in + unblock register submit (ARC-690) (ARC-690)
+- polish form panel + pwa strip per design review (ARC-690) (ARC-690)
+- polish brand panel + page chrome per design review (ARC-690) (ARC-690)
+
+### Refactored
+
+- strip dead confirm-password surface from useAuthForm (ARC-690) (ARC-690)
+
+## [1.13.52] - 2026-05-15
+
+### Added
+
+- develop-branch review follow-ups §2.2 §3.2 §3.4 §3.5 (ARC-686) (ARC-686)
+
+### Fixed
+
+- back out §3.5 view-transition-name + shorten rail fullscreen label (ARC-686) (ARC-686)
+
 ## [1.13.51] - 2026-05-15
 
 ### Added

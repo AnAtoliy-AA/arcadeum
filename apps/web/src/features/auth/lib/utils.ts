@@ -16,22 +16,30 @@ export function formatDateTime(value: string | null): string | null {
   }
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function isValidEmail(value: string): boolean {
+  return EMAIL_REGEX.test(value.trim());
+}
+
 /**
  * Sanitizes username to only allow alphanumeric, underscore, and hyphen
  */
 export function sanitizeUsername(value: string): string {
-  return value.replace(/[^a-zA-Z0-9_-]/g, "");
+  return value.replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
 /**
  * Schedules a state update using queueMicrotask (with Promise fallback)
  */
 export function scheduleStateUpdate(action: () => void): void {
-  if (typeof queueMicrotask === "function") {
+  if (typeof queueMicrotask === 'function') {
     queueMicrotask(action);
     return;
   }
-  Promise.resolve().then(action).catch(() => {
-    // ignore scheduling errors
-  });
+  Promise.resolve()
+    .then(action)
+    .catch(() => {
+      // ignore scheduling errors
+    });
 }

@@ -170,10 +170,23 @@ import { MatchWidget, type MatchWidgetProps } from './MatchWidget';
 import type { CriticalCard, CriticalPlayerState } from '../types';
 import { makeProps } from './MatchWidget.test-fixtures';
 
+// `useUrlHashState` reads `selectedUids` from `window.location.hash` on
+// mount; stale hash from a previous test (e.g. `#sel=uid0`) would seed
+// the next render and break selection-state assertions. Clearing the
+// hash between tests keeps each one starting from a clean URL.
+function clearTestEnvironment(): void {
+  window.localStorage.clear();
+  if (window.location.hash) {
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}`,
+    );
+  }
+}
+
 describe('MatchWidget (ARC-635)', () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-  });
+  beforeEach(clearTestEnvironment);
 
   it('renders the three-row layout: OpponentsRow + Arena + HandZone', () => {
     render(<MatchWidget {...makeProps()} />);
@@ -307,6 +320,8 @@ describe('MatchWidget (ARC-635)', () => {
 });
 
 describe('MatchWidget target selection (ARC-637/638)', () => {
+  beforeEach(clearTestEnvironment);
+
   function makeTargetProps(
     overrides: Partial<MatchWidgetProps> = {},
   ): MatchWidgetProps {

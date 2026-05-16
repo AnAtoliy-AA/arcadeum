@@ -170,15 +170,37 @@ test.describe('Game Lobby - Room Info Display', () => {
   test('should have a Watch Room link with specatating mode', async ({
     page,
   }) => {
+    // Override the empty-rooms mock from beforeEach with a single room so the
+    // assertion below has something to read. The earlier isVisible() / then
+    // getAttribute() pattern was flaky on Mobile Safari because the page never
+    // actually rendered a watch link with the empty-rooms response and the
+    // probe was racing the locator's eventual emptiness.
+    await page.route('**/games/rooms*', async (route) => {
+      if (route.request().method() !== 'GET') {
+        await route.continue();
+        return;
+      }
+      await handleRoute(route, {
+        rooms: [
+          {
+            id: 'e2e-watch-room',
+            gameId: 'critical_v1',
+            name: 'E2E watch-link room',
+            hostId: 'e2e-host',
+            visibility: 'public',
+            playerCount: 1,
+            maxPlayers: 4,
+            createdAt: new Date(0).toISOString(),
+            status: 'lobby',
+          },
+        ],
+        total: 1,
+      });
+    });
+
     await navigateTo(page, '/games');
 
-    // Find any room card and check for the watch link
     const watchLink = page.getByRole('link', { name: /watch/i }).first();
-
-    const exists = await watchLink.isVisible().catch(() => false);
-    if (exists) {
-      const href = await watchLink.getAttribute('href');
-      expect(href).toContain('?mode=watch');
-    }
+    await expect(watchLink).toHaveAttribute('href', /\?mode=watch$/);
   });
 });

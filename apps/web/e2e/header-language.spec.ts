@@ -1,5 +1,5 @@
 import { expect, type Locator } from '@playwright/test';
-import { test, navigateTo } from './fixtures/test-utils';
+import { test, navigateTo, getIsMobile } from './fixtures/test-utils';
 
 /**
  * Tamagui's Select trigger opens the dropdown on `mousedown`, but on
@@ -28,59 +28,60 @@ test.describe('Header Language Switcher', () => {
     await navigateTo(page, '/');
   });
 
-  test('should display language switcher on header for all devices and change language', async ({
+  test('should expose a language switcher on every device and change language', async ({
     page,
   }) => {
-    const languageSwitcher = page
-      .locator('header')
-      .getByTestId('header-language-switcher');
+    if (getIsMobile(page)) {
+      // Mobile: the header trigger is hidden, the drawer carries inline pills.
+      await page.getByTestId('mobile-menu-button').click();
+      const mobileNav = page.getByTestId('mobile-nav');
+      await expect(mobileNav).toBeVisible();
 
-    // Wait for the trigger to be visible
-    await expect(languageSwitcher).toBeVisible();
+      const enPill = mobileNav.getByTestId('mobile-language-en');
+      await expect(enPill).toBeVisible();
+      await expect(enPill).toHaveAttribute('aria-pressed', 'true');
 
-    // Default language from text
-    await expect(languageSwitcher).toContainText('EN');
+      await mobileNav.getByTestId('mobile-language-es').click();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    } else {
+      const languageSwitcher = page
+        .locator('header')
+        .getByTestId('header-language-switcher');
+      await expect(languageSwitcher).toBeVisible();
+      await expect(languageSwitcher).toContainText('EN');
 
-    // Change language to Spanish
-    await openLanguageSwitcher(languageSwitcher);
-    await page.getByRole('option', { name: 'ES' }).click();
-
-    // The value should be updated
-    await expect(languageSwitcher).toContainText('ES', {});
+      await openLanguageSwitcher(languageSwitcher);
+      await page.getByRole('option', { name: 'ES' }).click();
+      await expect(languageSwitcher).toContainText('ES', {});
+    }
   });
 
-  test('should display language switcher in header and not in mobile menu on mobile devices', async ({
+  test('should hide language switcher in header and surface inline pills inside the mobile menu', async ({
     page,
   }) => {
     // Resize to mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
-    // 1. Check it's visible in the header
+    // 1. Header switcher is NOT visible on mobile — moved into the drawer.
     const headerLanguageSwitcher = page
       .locator('header')
       .getByTestId('header-language-switcher');
-    await expect(headerLanguageSwitcher).toBeVisible();
+    await expect(headerLanguageSwitcher).toBeHidden();
 
     // 2. Open mobile menu
     const menuButton = page.getByTestId('mobile-menu-button');
     await expect(menuButton).toBeVisible();
     await menuButton.click();
 
-    // The mobile menu should be open
     const mobileNav = page.getByTestId('mobile-nav');
     await expect(mobileNav).toBeVisible();
 
-    // 3. Verify it's NOT in the mobile menu
-    const menuLanguageSwitcher = mobileNav.getByTestId(
-      'header-language-switcher',
-    );
-    await expect(menuLanguageSwitcher).not.toBeVisible();
+    // 3. Verify the inline language pill row lives inside the drawer.
+    const mobileSwitcher = mobileNav.getByTestId('mobile-language-switcher');
+    await expect(mobileSwitcher).toBeVisible();
 
-    // 4. Change language from header while menu is open
-    await openLanguageSwitcher(headerLanguageSwitcher);
-    await page.getByRole('option', { name: 'FR' }).click();
-
-    // Verify language changed (header text should update)
-    await expect(headerLanguageSwitcher).toContainText('FR', {});
+    // 4. Pick FR via the pill and verify the document language updates.
+    await mobileNav.getByTestId('mobile-language-fr').click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
 });

@@ -7,6 +7,13 @@ import type {
   WalletCurrency,
 } from './wallet.types';
 
+export class WalletUnauthorizedError extends Error {
+  constructor() {
+    super('Wallet fetch unauthorized (401)');
+    this.name = 'WalletUnauthorizedError';
+  }
+}
+
 async function fetchWithAuth<T>(path: string, init?: RequestInit): Promise<T> {
   const cookieJar = await cookies();
   // Cookie name confirmed from apps/web/src/entities/session/api/serverTokens.ts
@@ -24,6 +31,9 @@ async function fetchWithAuth<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new WalletUnauthorizedError();
+    }
     const body = await res.text();
     throw new Error(`Wallet fetch failed: ${res.status} ${body}`);
   }

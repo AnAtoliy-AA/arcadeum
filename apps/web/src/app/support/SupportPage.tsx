@@ -14,7 +14,6 @@ import type {
   SupportActionKey,
   SupportMessages,
 } from '@/shared/i18n/messages/support';
-import { AppFooter } from '@/widgets/footer';
 import {
   ActionDescription,
   ActionHeader,
@@ -234,7 +233,6 @@ export function SupportPage({
           <Thanks>{resolvedThanks}</Thanks>
         </ContentWrapper>
       </Page>
-      <AppFooter />
     </>
   );
 }

@@ -33,7 +33,6 @@ import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
 import { InstallAppCta } from '@/widgets/install-app';
-import AppFooter from '@/widgets/footer/ui/AppFooter';
 
 type DownloadConfig = {
   title: string;
@@ -355,7 +354,6 @@ export default function SettingsContent({
           <InstallAppCta />
         </Container>
       </PageLayout>
-      <AppFooter />
     </>
   );
 }

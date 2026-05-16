@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.56] - 2026-05-16
+
+### Fixed
+- treat stale wallet token as anonymous on SSR (ARC-692) (ARC-692)
+- allow 127.0.0.1 as a Next.js dev origin (ARC-692) (ARC-692)
+- stop shop mobile footer rendering over content (ARC-692) (ARC-692)
+- drop dynamic({ssr:false}) for AppFooter to avoid ChunkLoadError (ARC-692) (ARC-692)
+- don't let leaderboards mock route intercept page navigation (ARC-692) (ARC-692)
+- make leaderboard live-chip + ticker reliably observable in e2e (ARC-692) (ARC-692)
+- filter bot ids out of GameUtilities user queries (ARC-692) (ARC-692)
+- set mobile drawer height to 100dvh (ARC-692) (ARC-692)
+- lock body scroll + contain drawer overscroll on mobile (ARC-692) (ARC-692)
+- close mobile menu's transparent gap above the drawer (ARC-692) (ARC-692)
+- make mobile menu drawer fully opaque (ARC-692) (ARC-692)
+- make install-PWA button stand out in dark mode mobile menu (ARC-692) (ARC-692)
+- label the install-PWA action inside the mobile menu (ARC-692) (ARC-692)
+- use inline language pills in mobile menu instead of Select (ARC-692) (ARC-692)
+- keep mobile menu open while a portaled popover is active (ARC-692) (ARC-692)
+- redesign mobile menu for clearer hierarchy and consistency (ARC-692) (ARC-692)
+- trim mobile header to logo + wallet + menu (ARC-692) (ARC-692)
+- keep games filter + Create Room button inside their cards on mobile (ARC-692) (ARC-692)
+- split Filters padding so vertical breathing room actually applies (ARC-692) (ARC-692)
+- add small horizontal padding to PageLayout + footer on mobile (ARC-692) (ARC-692)
+- add horizontal margins to footer on mobile breakpoints (ARC-692) (ARC-692)
+- drop stray support icon from footer when socials configured (ARC-692) (ARC-692)
+- client-only render the layout footer to avoid hydration mismatch (ARC-692) (ARC-692)
+- restore theme-aware @arcadeum/ui Footer for shared widget (ARC-692) (ARC-692)
+
+### Refactored
+- unify footer across all non-paginated pages (ARC-692) (ARC-692)
+
+
+## [1.13.55] - 2026-05-16
+
+### Documentation
+- correct mobile dev port (Metro 8081, not legacy expo-cli 19000) (N/A)
+- fix outdated paths, ports, and broken links in root README (N/A)
+
+
+## [1.13.54] - 2026-05-15
+
+### Fixed
+- rework sign-in page for mobile (ARC-690) (ARC-690)
+
+### Refactored
+- reuse the shared InstallAppCta widget on /auth (ARC-690) (ARC-690)
+
+
 ## [1.13.53] - 2026-05-15
 
 ### Added

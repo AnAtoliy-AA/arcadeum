@@ -1,7 +1,70 @@
 import { expect } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
+import { getMockLeaderboard, getMockPlayer } from '@/shared/api/leaderboard';
+import type { GameMode } from '@/entities/leaderboard/model/types';
 
 test.describe('Leaderboards page', () => {
+  // The leaderboards UI is data-driven (ticker only renders with events,
+  // self row + jump-to-me only render when `data.self` is set, etc.). The
+  // app has a built-in `getMockLeaderboard` gated on NEXT_PUBLIC_E2E, but
+  // the env var doesn't reach a reused dev server, and the real BE either
+  // has no Mongo or no auto-seed in CI. Serve the same mock snapshot at
+  // the network layer so every project gets a deterministic dataset.
+  test.beforeEach(async ({ page }) => {
+    // Regex covers both the index (`/leaderboards`) and nested
+    // (`/leaderboards/players/<id>`). The `**/leaderboards*` glob only
+    // matched within the last path segment, so the player-detail URL
+    // slipped through to the BE.
+    await page.route(/\/leaderboards(\/.*)?(\?.*)?$/, async (route) => {
+      // Don't intercept the page navigation — the same regex also matches
+      // the document request to /leaderboards on the web origin and would
+      // hand the browser JSON instead of HTML, breaking hydration.
+      if (route.request().resourceType() === 'document') {
+        return route.fallback();
+      }
+      const url = new URL(route.request().url());
+
+      // /leaderboards/players/<id> — player profile lookup used by the
+      // mythic-challenge CTA tests. Without this the request hits the BE
+      // and 404s for synthetic ids like p_1.
+      const playerMatch = url.pathname.match(
+        /\/leaderboards\/players\/([^/]+)$/,
+      );
+      if (playerMatch) {
+        const id = decodeURIComponent(playerMatch[1] ?? '');
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(getMockPlayer(id)),
+        });
+        return;
+      }
+
+      if (!url.pathname.endsWith('/leaderboards')) {
+        return route.fallback();
+      }
+      // Compute the snapshot per request so `mode` and `q` (search) actually
+      // affect the rows — the "switching mode" and "search filters" tests
+      // both rely on the response changing when the query string changes.
+      const mode = url.searchParams.get('mode') ?? 'all';
+      const page_ = Number(url.searchParams.get('page') ?? '1') || 1;
+      const pageSize = Number(url.searchParams.get('pageSize') ?? '50') || 50;
+      const q = url.searchParams.get('q') ?? '';
+      const snapshot = await getMockLeaderboard({
+        mode: mode as GameMode,
+        page: page_,
+        pageSize,
+        q,
+        selfId: 'e2e-self',
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(snapshot),
+      });
+    });
+  });
+
   test('hero, ticker, cup, mythic spotlight, runner-ups, table all render', async ({
     page,
   }) => {

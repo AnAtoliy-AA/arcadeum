@@ -80,8 +80,12 @@ test.describe('Navigation', () => {
 
   test('should navigate to auth page', async ({ page }) => {
     if (getIsMobile(page)) {
-      // On mobile, use the specific login indicator
-      const loginLink = page.getByTestId('mobile-login-indicator').first();
+      // On mobile, login lives inside the drawer (the header indicator is
+      // hidden at $sm). Open the menu and click the drawer login CTA.
+      await page.getByTestId('mobile-menu-button').click();
+      const loginLink = page
+        .getByTestId('mobile-nav')
+        .getByTestId('mobile-login-button');
       await expect(loginLink).toBeVisible();
       await loginLink.click();
       await expect(page).toHaveURL(/\/auth/);

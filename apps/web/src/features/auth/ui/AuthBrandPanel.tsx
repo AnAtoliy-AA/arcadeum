@@ -30,11 +30,7 @@ export function AuthBrandPanel({ brand, flex = 1.55 }: AuthBrandPanelProps) {
       gap="$8"
       position="relative"
       justifyContent="space-between"
-      $md={{
-        paddingHorizontal: '$5',
-        paddingVertical: '$6',
-        gap: '$6',
-      }}
+      $md={{ display: 'none' }}
       data-testid="auth-brand-panel"
     >
       <YStack

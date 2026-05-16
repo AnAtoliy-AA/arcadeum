@@ -50,7 +50,6 @@ const labels = {
   form: baseFormLabels,
   providers: baseProviders,
   brand: {} as AuthLabels['brand'],
-  pwa: {} as AuthLabels['pwa'],
   statusActiveMessage: '',
   statusDescription: '',
   signOutLabel: '',

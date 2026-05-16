@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.55] - 2026-05-16
+
+### Documentation
+- correct mobile dev port (Metro 8081, not legacy expo-cli 19000) (N/A)
+- fix outdated paths, ports, and broken links in root README (N/A)
+
+
 ## [1.13.54] - 2026-05-15
 
 ### Fixed

@@ -3,16 +3,19 @@
  *
  * Infrastructure note
  * -------------------
- * The /wallet and /games/create pages are gated by Server Components that call
- * `requireAuth()` from within the Next.js Node process. Playwright's `page.route()`
- * only intercepts browser-originated requests, so it cannot mock that server-side
- * fetch. We CAN drive the client-side coin balance check via mocked API routes
- * after bypassing the server-side gate via `mockSession`.
+ * Playwright's `page.route()` only intercepts browser-originated requests, so
+ * it cannot mock Next.js Server Component fetches. We drive the client-side
+ * coin balance check via mocked API routes after seeding the session with
+ * `mockSession`.
  *
  * The game-session-complete → wallet-credit flow that requires a live backend,
  * a running game engine, and seeded users is captured in the skip-annotated test
  * at the bottom of this file — it will be enabled once the e2e infrastructure
  * provides a seeded test DB.
+ *
+ * /wallet reachability is guarded in apps/web/e2e/wallet.spec.ts (no duplicate
+ * here — the 15s actionTimeout isn't enough headroom for a dev-server cold
+ * compile, and the same probe already lives in the dedicated wallet suite).
  */
 
 import { expect } from '@playwright/test';
@@ -57,18 +60,6 @@ test.describe('Game-win payout — mocked', () => {
     await page.route('**/wallet/transactions**', async (route) => {
       await handleRoute(route, { items: [], nextCursor: null });
     });
-  });
-
-  test('/wallet route is reachable (non-5xx)', async ({ page }) => {
-    const res = await page.request.get('/wallet');
-    // 401/302 redirect is expected without a real session — guards against 5xx
-    expect(res.status()).toBeLessThan(500);
-  });
-
-  test('/games/create route is reachable (non-5xx)', async ({ page }) => {
-    const res = await page.request.get('/games/create');
-    // 401/302 redirect or 404 is expected without a live game module — guards against 5xx
-    expect(res.status()).toBeLessThan(500);
   });
 
   test('game session complete endpoint accepts payload and returns non-5xx', async ({

@@ -68,7 +68,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
     This will start all applications in parallel:
 
     - Web app on `http://localhost:3000`
-    - Mobile app on `http://localhost:19000`
+    - Mobile (Expo Metro bundler) on `http://localhost:8081`
     - Backend API on `http://localhost:4000`
 
 4.  **Specific App Development**:
@@ -140,7 +140,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
 ## Troubleshooting
 
 - **"Module not found" errors**: Run `pnpm install` and restart dev server
-- **Port conflicts**: Kill processes on ports 3000 (web), 4000 (backend), or 19000 (mobile)
+- **Port conflicts**: Kill processes on ports 3000 (web), 4000 (backend), or 8081 (mobile Metro bundler)
 - **TypeScript errors**: Run `pnpm build` to see detailed type errors
 - **Cache issues**: Clear Turborepo cache with `pnpm turbo clean`
 - **Husky hooks failing**: Run `npx husky add .husky/pre-commit "pnpm lint && pnpm format"` to reinstall

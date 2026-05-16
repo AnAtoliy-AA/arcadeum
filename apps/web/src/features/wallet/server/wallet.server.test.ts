@@ -22,7 +22,11 @@ vi.mock('@/shared/lib/api-base', () => ({
   resolveApiUrl: (path: string) => `http://localhost:4000${path}`,
 }));
 
-import { getWalletBalance, getWalletTransactions } from './wallet.server';
+import {
+  WalletUnauthorizedError,
+  getWalletBalance,
+  getWalletTransactions,
+} from './wallet.server';
 
 function makeOkResponse(body: unknown): Response {
   return {
@@ -87,11 +91,21 @@ describe('getWalletBalance', () => {
     ).toBeUndefined();
   });
 
-  it('throws on non-OK response', async () => {
+  it('throws WalletUnauthorizedError on 401', async () => {
     mockFetch.mockResolvedValueOnce(makeErrorResponse(401, 'Unauthorized'));
 
+    await expect(getWalletBalance()).rejects.toBeInstanceOf(
+      WalletUnauthorizedError,
+    );
+  });
+
+  it('throws generic error on other non-OK responses', async () => {
+    mockFetch.mockResolvedValueOnce(
+      makeErrorResponse(500, 'Internal Server Error'),
+    );
+
     await expect(getWalletBalance()).rejects.toThrow(
-      'Wallet fetch failed: 401',
+      'Wallet fetch failed: 500',
     );
   });
 });

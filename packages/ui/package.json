@@ -21,17 +21,17 @@
     "@tamagui/font-inter": "2.0.0-rc.23"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^5.0.0",
-    "@storybook/addon-a11y": "10.2.17",
-    "@storybook/addon-docs": "10.2.17",
-    "@storybook/addon-onboarding": "10.2.17",
-    "@storybook/nextjs-vite": "10.2.17",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-a11y": "10.4.0",
+    "@storybook/addon-docs": "10.4.0",
+    "@storybook/addon-onboarding": "10.4.0",
+    "@storybook/nextjs-vite": "10.4.0",
     "next": "16.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.0",
     "jsdom": "^27.4.0",
-    "storybook": "10.2.17",
+    "storybook": "10.4.0",
     "typescript": "^5",
     "vitest": "^4.0.16"
   }

@@ -55,17 +55,21 @@ export default defineConfig({
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
   reporter: process.env.CI ? 'list' : 'html',
-  timeout: 120000,
+  // 60s is the hard ceiling for any single test. Tests that need longer are
+  // usually masking dev-server compile flake or a real perf regression — surface
+  // them rather than hiding under a 2-minute budget. Slow Safari variants get
+  // a project-level retry below to absorb the cold-compile first attempt.
+  timeout: 60000,
   expect: {
-    timeout: 30000,
+    timeout: 15000,
   },
 
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    actionTimeout: 20000,
-    navigationTimeout: 60000,
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
   },
 
   projects: [
@@ -92,6 +96,10 @@ export default defineConfig({
     },
     {
       name: 'webkit',
+      // Safari + Next.js dev server cold compile is reliably slow on the first
+      // navigation. A second attempt against the now-warm cache passes — same
+      // pattern as the CI-wide retries=1.
+      retries: 1,
       use: { ...devices['Desktop Safari'] },
     },
     {
@@ -100,10 +108,12 @@ export default defineConfig({
     },
     {
       name: 'Mobile Safari',
+      retries: 1,
       use: { ...devices['iPhone 12'] },
     },
     {
       name: 'Tablet Safari',
+      retries: 1,
       use: { ...devices['iPad Pro 11'] },
     },
   ],
@@ -122,6 +132,11 @@ export default defineConfig({
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
+        // Capture loop hits a real MongoDB cluster every 60s. In e2e it's both
+        // noise (background errors when the in-memory replset is the target)
+        // and a flake source (Atlas timeouts surfacing through
+        // checkNoBackendErrors). Disable for the whole e2e webServer.
+        LEADERBOARDS_CAPTURE_DISABLED: 'true',
         // MONGODB_URI intentionally omitted — globalSetup writes it to
         // process.env (after the in-memory replset starts), and Playwright
         // inherits process.env into the child, so the BE picks it up at

@@ -53,14 +53,17 @@ export const test = base.extend({
           return;
         }
 
-        // Ignore intentional 4xx noise from wallet/gem flow tests and
-        // games-creation specs that fulfill mocked error responses (422
-        // insufficient funds, 400 invalid room payloads, etc.) to assert
-        // inline error rendering.
+        // Ignore intentional 4xx noise from flows that mock-fulfill error
+        // responses or auth-gated specs where mockSession is in effect but the
+        // BE rejects the fake bearer token (BalanceChip/auth-blocked/etc fire
+        // header calls on every page). Allowlist by the page URL the noise
+        // emits from: wallet/payments/gems/games (mocked error UX), auth/
+        // settings (mocked-session pages), and the homepage root.
         if (
           type === 'error' &&
           /Failed to load resource.*status of 4\d{2}/i.test(text) &&
-          /\/wallet|\/payments|\/gems|\/games/.test(page.url())
+          (/\/(?:wallet|payments|gems|games|auth|settings)/.test(page.url()) ||
+            /^https?:\/\/[^/]+\/?$/.test(page.url()))
         ) {
           return;
         }

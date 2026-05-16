@@ -106,7 +106,11 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
     streak: rng() > 0.7 ? 3 + Math.floor(rng() * 9) : 0,
     isOnline: rng() > 0.6,
     isFriend: rng() > 0.92,
-    isInMatch: false,
+    // Mark a deterministic slice of high-rank rows as in-match so the
+    // RankTable always renders at least one live chip — the leaderboards
+    // e2e checks for `row-live-chip` and the previous all-false flag made
+    // it impossible to satisfy.
+    isInMatch: rank <= 5,
     gameTags,
   };
 }

@@ -79,6 +79,13 @@ export const DesktopOnly = styled(XStack, {
   $md: { display: 'none' },
 });
 
+// Hidden at narrow widths — used to move a header action into the mobile menu.
+export const HeaderMobileHidden = styled(XStack, {
+  name: 'HeaderMobileHidden',
+  alignItems: 'center',
+  $sm: { display: 'none' },
+});
+
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
 export const MobileMenuContainer = styled(XStack, {
@@ -88,21 +95,26 @@ export const MobileMenuContainer = styled(XStack, {
 export const MobileNav = styled(YStack, {
   name: 'MobileNav',
   position: 'fixed',
-  top: HEADER_HEIGHT,
+  // Track the responsive header height defined in header-stable.css so the
+  // drawer always starts flush against the header (no transparent gap at
+  // <=480px when the header shrinks to 56px).
+  top: `var(--header-height, ${HEADER_HEIGHT}px)` as unknown as number,
   left: 0,
   right: 0,
   bottom: 0,
   width: '100%',
   maxWidth: '100vw',
   zIndex: '$1',
-  backgroundColor: 'rgba(12, 14, 15, 0.95)',
+  // Fully opaque so the page never shows through the empty gaps above the
+  // user card or below the last menu item.
+  backgroundColor: '$background',
   borderTopWidth: 1,
   borderTopColor: '$glassBorder',
   paddingHorizontal: '$5',
   paddingTop: '$4',
+  paddingBottom: '$4',
   gap: '$1',
-  height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
-  backdropFilter: 'blur(32px) saturate(180%)',
+  height: '100dvh',
   overflowY: 'auto',
 });
 
@@ -121,6 +133,45 @@ export const MobileUserInfo = styled(XStack, {
   paddingVertical: '$4',
   paddingHorizontal: '$2',
   alignItems: 'center',
+  gap: '$3',
+  flexWrap: 'wrap',
+});
+
+export const MobileUserCard = styled(XStack, {
+  name: 'MobileUserCard',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$3',
+  borderRadius: '$4',
+  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  borderWidth: 1,
+  borderColor: '$glassBorder',
+  flexWrap: 'wrap',
+});
+
+export const MobileSection = styled(YStack, {
+  name: 'MobileSection',
+  gap: '$1',
+});
+
+export const MobileSectionLabel = styled(Typography, {
+  name: 'MobileSectionLabel',
+  uiSize: 'xs',
+  weight: '700',
+  tracking: 'xl',
+  alpha: 'medium',
+  paddingHorizontal: '$4',
+  paddingTop: '$3',
+  paddingBottom: '$1',
+});
+
+export const MobileBottomBar = styled(XStack, {
+  name: 'MobileBottomBar',
+  marginTop: 'auto',
+  paddingVertical: '$3',
+  paddingHorizontal: '$2',
+  alignItems: 'center',
+  justifyContent: 'space-between',
   gap: '$3',
   flexWrap: 'wrap',
 });

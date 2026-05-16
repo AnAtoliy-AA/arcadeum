@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { getTranslations } from '@/shared/i18n/server';
 import {
+  WalletUnauthorizedError,
   getWalletBalance,
   getWalletTransactions,
 } from '@/features/wallet/server/wallet.server';
@@ -99,9 +100,12 @@ export default async function WalletPage({
       getWalletTransactions({ currency, cursor, limit: 20 }),
     ]);
   } catch (err) {
-    // If the BE call fails (auth expired, transient network, etc.), keep the
-    // page renderable in a safe empty state rather than throwing a 500.
-    console.error('Failed to load wallet during SSR:', err);
+    // A stale/invalid token (401) is expected — e.g. after logout, expiry, or
+    // an e2e reload — so fall through to the empty state without logging.
+    // Other failures (network, 5xx) are still worth surfacing.
+    if (!(err instanceof WalletUnauthorizedError)) {
+      console.error('Failed to load wallet during SSR:', err);
+    }
   }
 
   const { gems: currentGems } = balance;

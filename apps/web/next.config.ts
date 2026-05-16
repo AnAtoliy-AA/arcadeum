@@ -194,6 +194,11 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
+  // Playwright drives the dev server over 127.0.0.1 while Next.js considers
+  // localhost its canonical dev origin, which triggers the dev-mode "Cross
+  // origin request detected" warning on every /_next/* request. Allow both
+  // loopback hosts so e2e logs stay clean.
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: false,
   compiler: {
     styledComponents: {

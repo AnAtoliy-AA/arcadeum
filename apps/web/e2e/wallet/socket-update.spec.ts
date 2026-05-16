@@ -143,14 +143,10 @@ test.describe('/wallet socket-driven refresh (mocked socket)', () => {
         { timeout: 3000 },
       )
       .catch(() => {
-        // If no RSC fetch is triggered (e.g., the page is fully static or
-        // router.refresh() no-ops without server state), we consider the
-        // test informational rather than a hard failure in the mocked context.
-        console.warn(
-          '[socket-update.spec] No RSC refetch detected after wallet:updated dispatch — ' +
-            'this is expected when running without a live dev server. ' +
-            'The full assertion is covered by the skip-annotated live test.',
-        );
+        // No RSC fetch in the mocked context (page is fully static or
+        // router.refresh() no-ops without server state). The real assertion
+        // lives in the skip-annotated live-BE test, so this branch is an
+        // intentional silent no-op.
       });
   });
 

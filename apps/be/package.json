@@ -1,6 +1,6 @@
 {
   "name": "be",
-  "version": "1.12.10",
+  "version": "1.13.56",
   "description": "",
   "author": "",
   "private": true,
@@ -57,6 +57,7 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
+    "mongodb-memory-server": "^11.1.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
@@ -74,7 +75,7 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "testRegex": ".*\\.(spec|integration-spec)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

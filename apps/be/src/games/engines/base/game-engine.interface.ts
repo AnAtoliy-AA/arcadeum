@@ -23,11 +23,23 @@ export type ChatScope = 'all' | 'players' | 'private' | 'team';
 export interface GameLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  /**
+   * Game-specific structured event kind for client HUD classification
+   * (e.g. Critical's FlashBanner). Optional and untyped at this layer so
+   * each game can define its own union (see `CriticalLogKind`).
+   */
+  kind?: string;
   message: string;
   createdAt: string;
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  /**
+   * Optional id of the player this action is targeting. Surfaced in chat so
+   * viewers can see e.g. "Bob → Alice attacked F10 - HIT!" without parsing
+   * out raw ids. Free-text messages and most system events leave this null.
+   */
+  targetId?: string | null;
 }
 
 export interface BaseGameState {
@@ -70,6 +82,14 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
     playerIds: string[],
     config?: Record<string, unknown>,
   ): TState;
+
+  /**
+   * Optional self-heal hook. Engines may implement this to repair persisted
+   * states that have drifted into an invalid-but-recoverable shape (e.g. a
+   * shooter pointer left on a dead player). Called once before validate +
+   * execute on every action. Must be idempotent.
+   */
+  normalizeState?(state: TState): TState;
 
   /**
    * Validate a player action

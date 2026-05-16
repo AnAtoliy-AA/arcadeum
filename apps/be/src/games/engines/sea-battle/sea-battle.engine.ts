@@ -38,7 +38,10 @@ import {
   advanceTeamRotationOnMiss,
   countAliveTeams,
   getActiveShooterId,
+  getActiveTeam,
+  healStuckTeamRotation,
   isTeamAlive,
+  normalizeTeamShooterAfterDeath,
 } from './team-rotation.utils';
 import {
   runPlaceShip,
@@ -147,6 +150,16 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     }
   }
 
+  normalizeState(state: SeaBattleState): SeaBattleState {
+    // Heal team rotations that may have drifted (e.g. a team's shooter pointer
+    // left on a dead player by a pre-ARC-646 server). Mutates in place and
+    // returns the same reference. Idempotent on healthy state.
+    if (state.phase === GAME_PHASE.BATTLE && state.teams) {
+      healStuckTeamRotation(state);
+    }
+    return state;
+  }
+
   executeAction(
     state: SeaBattleState,
     action: string,
@@ -247,8 +260,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
           markSurroundingCellsAsMiss(target, hitShip);
           state.logs.push(
-            this.createLogEntry('action', `sunk ${shipName}!`, {
+            this.createLogEntry('action', `☠️ sunk ${shipName}!`, {
               senderId: player.playerId,
+              targetId: target.playerId,
+              kind: 'sb.sunk-ship',
             }),
           );
         }
@@ -259,6 +274,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         state.logs.push(
           this.createLogEntry('system', 'A player has been eliminated!'),
         );
+        // In team mode, make sure the eliminated player isn't left as their
+        // team's active shooter — otherwise their team's next turn deadlocks
+        // on a dead player.
+        normalizeTeamShooterAfterDeath(state, target.playerId);
         this.checkAndSetWinner(state);
       }
     } else {
@@ -275,12 +294,20 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       shipName,
     };
 
+    const resultMark =
+      result === ATTACK_RESULT.HIT
+        ? '💥'
+        : result === ATTACK_RESULT.SUNK
+          ? '☠️'
+          : '🌊';
     state.logs.push(
       this.createLogEntry(
         'action',
-        `attacked ${cellLabel} - ${result.toUpperCase()}!`,
+        `attacked ${cellLabel} — ${resultMark} ${result.toUpperCase()}!`,
         {
           senderId: player.playerId,
+          targetId: target.playerId,
+          kind: `sb.attack-${result}`,
         },
       ),
     );
@@ -380,12 +407,25 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
     const player = newState.players.find((p) => p.playerId === playerId);
-    if (player) {
-      player.alive = false;
-      newState.logs.push(
-        this.createLogEntry('system', 'A player has left the game'),
-      );
-      if (newState.teams) {
+    if (!player) {
+      return this.successResult(newState);
+    }
+
+    player.alive = false;
+    newState.logs.push(
+      this.createLogEntry('system', 'A player has left the game'),
+    );
+
+    if (newState.teams) {
+      const wasActiveShooter = getActiveShooterId(newState) === playerId;
+
+      if (wasActiveShooter) {
+        // Active shooter forfeits the turn — advance like a miss so the
+        // next team plays and the leaver's team rotates to the next teammate.
+        advanceTeamRotationOnMiss(newState);
+      } else {
+        // Otherwise, only patch up the leaver's own team shooter pointer so
+        // a live teammate is queued up when their team plays again.
         const team = newState.teams.find((t) => t.playerIds.includes(playerId));
         if (team && team.playerIds[team.currentShooterIndex] === playerId) {
           const n = team.playerIds.length;
@@ -402,8 +442,22 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
           }
         }
       }
-      this.checkAndSetWinner(newState);
+
+      // Keep currentTurnIndex in sync with the active shooter so consumers
+      // that read playerOrder[currentTurnIndex] (e.g. the bot service) match.
+      const activeTeam = getActiveTeam(newState);
+      if (activeTeam) {
+        const shooter = getActiveShooterId(newState);
+        if (shooter) {
+          const idx = newState.playerOrder.indexOf(shooter);
+          if (idx >= 0) newState.currentTurnIndex = idx;
+        }
+      }
+    } else if (newState.playerOrder[newState.currentTurnIndex] === playerId) {
+      this.advanceToNextPlayer(newState);
     }
+
+    this.checkAndSetWinner(newState);
     return this.successResult(newState);
   }
 

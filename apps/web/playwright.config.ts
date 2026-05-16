@@ -37,26 +37,39 @@ process.env.BE_PORT = BE_PORT;
  */
 export default defineConfig({
   testDir: './e2e',
+  // Boots an in-memory MongoMemoryReplSet and exports MONGODB_URI on
+  // process.env before the BE webServer is spawned, so e2e doesn't depend on
+  // a local mongod. Honors an external MONGODB_URI when one is set.
+  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalTeardown: require.resolve('./e2e/global-teardown.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  // CI hits transient dev-server slowness (especially on Mobile Safari, which
+  // runs last and warms up against an already-busy Next.js dev server). One
+  // retry clears those flakes without masking real regressions — failing
+  // tests still need to fail twice in a row to mark the run red.
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI
     ? 1
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
-  reporter: process.env.CI ? 'list' : 'html',
-  timeout: 120000,
+  reporter: 'list',
+  // 60s is the hard ceiling for any single test. Tests that need longer are
+  // usually masking dev-server compile flake or a real perf regression — surface
+  // them rather than hiding under a 2-minute budget. Slow Safari variants get
+  // a project-level retry below to absorb the cold-compile first attempt.
+  timeout: 60000,
   expect: {
-    timeout: 30000,
+    timeout: 15000,
   },
 
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    actionTimeout: 20000,
-    navigationTimeout: 60000,
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
   },
 
   projects: [
@@ -83,6 +96,10 @@ export default defineConfig({
     },
     {
       name: 'webkit',
+      // Safari + Next.js dev server cold compile is reliably slow on the first
+      // navigation. A second attempt against the now-warm cache passes — same
+      // pattern as the CI-wide retries=1.
+      retries: 1,
       use: { ...devices['Desktop Safari'] },
     },
     {
@@ -91,10 +108,12 @@ export default defineConfig({
     },
     {
       name: 'Mobile Safari',
+      retries: 1,
       use: { ...devices['iPhone 12'] },
     },
     {
       name: 'Tablet Safari',
+      retries: 1,
       use: { ...devices['iPad Pro 11'] },
     },
   ],
@@ -113,8 +132,16 @@ export default defineConfig({
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
-        MONGODB_URI:
-          process.env.MONGODB_URI || 'mongodb://localhost:27017/arcadeum_test',
+        // Capture loop hits a real MongoDB cluster every 60s. In e2e it's both
+        // noise (background errors when the in-memory replset is the target)
+        // and a flake source (Atlas timeouts surfacing through
+        // checkNoBackendErrors). Disable for the whole e2e webServer.
+        LEADERBOARDS_CAPTURE_DISABLED: 'true',
+        // MONGODB_URI intentionally omitted — globalSetup writes it to
+        // process.env (after the in-memory replset starts), and Playwright
+        // inherits process.env into the child, so the BE picks it up at
+        // spawn time. Setting it statically here would freeze the value at
+        // config-load, before globalSetup runs.
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
       },

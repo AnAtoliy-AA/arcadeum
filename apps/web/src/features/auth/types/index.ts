@@ -79,3 +79,63 @@ export interface DownloadSectionLabels {
   downloadsIosLabel: string;
   downloadsAndroidLabel: string;
 }
+
+export interface AuthFormLabels {
+  tabSignIn: string;
+  tabRegister: string;
+  headingSignIn: string;
+  headingRegister: string;
+  subSignIn: string;
+  subRegister: string;
+  orWithEmail: string;
+  emailLabel: string;
+  passwordLabel: string;
+  handleLabel: string;
+  rememberMe: string;
+  forgotPassword: string;
+  showPassword: string;
+  hidePassword: string;
+  submitSignIn: string;
+  submitRegister: string;
+  magicLinkPrompt: string;
+  magicLinkCta: string;
+  magicLinkSentTitle: string;
+  magicLinkSentBody: string;
+  magicLinkBack: string;
+  passwordMismatch: string;
+  legalPrefix: string;
+  legalConjunction: string;
+  legalSuffix: string;
+  termsLink: string;
+  privacyLink: string;
+}
+
+export interface AuthBrandLabels {
+  statusPill: string;
+  eyebrow: string;
+  headlinePrefix: string;
+  headlineHighlight: string;
+  subline: string;
+  featureOauthTitle: string;
+  featureOauthDetail: string;
+  featureMagicTitle: string;
+  featureMagicDetail: string;
+  featureProgressTitle: string;
+  featureProgressDetail: string;
+  proofBefore: string;
+  proofAfter: string;
+  proofCount: string;
+  footHome: string;
+  footGames: string;
+  footHelp: string;
+}
+
+export interface AuthOAuthLabels {
+  google: string;
+  googleShort: string;
+  apple: string;
+  appleShort: string;
+  discord: string;
+  discordShort: string;
+  comingSoon: string;
+}

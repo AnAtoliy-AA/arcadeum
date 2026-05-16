@@ -2,11 +2,19 @@
 
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import type { ChatScope } from '../store/gameChatStore';
 
 interface ChatMessageBubbleProps {
   senderId?: string | null;
   senderName?: string | null;
+  /** Sender's currently-equipped avatar id (from chat message payload). */
+  senderEquippedAvatarId?: string | null;
+  /** Sender's currently-equipped badge id (from chat message payload). */
+  senderEquippedBadgeId?: string | null;
+  /** Sender's currently-equipped name-color id (from chat message payload). */
+  senderEquippedNameColorId?: string | null;
   message: string;
   type: 'system' | 'action' | 'message';
   scope?: ChatScope;
@@ -36,10 +44,22 @@ const getUserColor = (id: string) => {
 export function ChatMessageBubble({
   senderId,
   senderName,
+  senderEquippedAvatarId,
+  senderEquippedBadgeId,
+  senderEquippedNameColorId,
   message,
   type,
   isOwn,
 }: ChatMessageBubbleProps) {
+  // Resolve sender's equipped cosmetics via the shop catalog. Cheap — module-
+  // level cached map; safe to call even when the ids are null (returns nulls).
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+    equippedAvatarId: senderEquippedAvatarId,
+    equippedBadgeId: senderEquippedBadgeId,
+    equippedNameColorId: senderEquippedNameColorId,
+  });
+  const nameColorProps = nameColorRenderProps(nameColor);
+
   if (type === 'system' || type === 'action') {
     return (
       <XStack paddingVertical="$2" paddingHorizontal="$3" opacity={0.7}>
@@ -65,14 +85,27 @@ export function ChatMessageBubble({
         width={38}
         height={38}
         borderRadius="$3"
-        backgroundColor={avatarColor}
+        backgroundColor={avatarUrl ? 'rgba(0,0,0,0.2)' : avatarColor}
         alignItems="center"
         justifyContent="center"
         flexShrink={0}
+        overflow="hidden"
       >
-        <Text fontSize="$4" fontWeight="700" color="white">
-          {initial}
-        </Text>
+        {avatarUrl ? (
+          // Equipped shop avatar (asset URL). Plain <img> on purpose — Avatar
+          // primitive is square-aware but designed for the header chip; here
+          // we want the existing 38x38 rounded slot.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt=""
+            style={{ width: 38, height: 38, objectFit: 'cover' }}
+          />
+        ) : (
+          <Text fontSize="$4" fontWeight="700" color="white">
+            {initial}
+          </Text>
+        )}
       </View>
       <YStack
         flex={1}
@@ -85,15 +118,28 @@ export function ChatMessageBubble({
         paddingVertical="$2"
       >
         {senderName && (
-          <Text
-            fontSize="$2"
-            fontWeight="600"
-            textTransform="uppercase"
-            color="#a5b4fc"
-            letterSpacing={0.5}
-          >
-            {senderName}
-          </Text>
+          <XStack alignItems="center" gap="$2">
+            <Text
+              fontSize="$2"
+              fontWeight="600"
+              textTransform="uppercase"
+              color={nameColorProps.color ?? '#a5b4fc'}
+              style={nameColorProps.style}
+              letterSpacing={0.5}
+            >
+              {senderName}
+            </Text>
+            {badgeUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={badgeUrl}
+                alt=""
+                width={16}
+                height={16}
+                style={{ objectFit: 'contain' }}
+              />
+            ) : null}
+          </XStack>
         )}
         <Text fontSize="$4" color="$color">
           {message}

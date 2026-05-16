@@ -1,6 +1,7 @@
 'use client';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
 import {
+  Avatar,
   RankBadge,
   FormPips,
   TrendPill,
@@ -9,6 +10,8 @@ import {
 } from '@arcadeum/ui';
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 
 const Row = styled(XStack, {
   name: 'LbRow',
@@ -170,77 +173,125 @@ export function RankTable({
               />
             </Row>
           ))
-        : rows.map((p) => {
-            const live = p.isInMatch ?? false;
-            const flag = p.countryCode ? regionFlag(p.countryCode) : null;
-            const isSelf = !!selfId && p.id === selfId;
-            return (
-              <Row
-                key={p.id}
-                testID={`leaderboard-row-${p.rank}`}
-                {...(isSelf ? { 'data-self': 'true' } : {})}
-              >
-                <View width={56}>
-                  <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
-                </View>
-                <YStack flex={1} gap={2}>
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                    {flag ? (
-                      <Text fontSize="$3" aria-label={p.countryCode}>
-                        {flag}
-                      </Text>
-                    ) : null}
-                    <Text fontWeight="700" numberOfLines={1}>
-                      {p.name}
-                    </Text>
-                    {p.isOnline ? (
-                      <View
-                        width={8}
-                        height={8}
-                        borderRadius={4}
-                        backgroundColor="$success"
-                      />
-                    ) : null}
-                    {p.streak && p.streak >= 3 ? (
-                      <Text fontSize="$2">🔥 {p.streak}</Text>
-                    ) : null}
-                    {live ? (
-                      <View testID="row-live-chip">
-                        <LiveChip label={liveLabel} />
-                      </View>
-                    ) : null}
-                    {p.elo ? (
-                      <Text fontSize="$1" opacity={0.5} letterSpacing={1}>
-                        {p.elo} ELO
-                      </Text>
-                    ) : null}
-                  </XStack>
-                </YStack>
-                <Text width={80} fontSize="$2" opacity={0.8} numberOfLines={1}>
-                  {regionLabels[p.region] ?? p.region.toUpperCase()}
-                </Text>
-                <View width={240} $sm={{ display: 'none' }}>
-                  <EnergyBar value={p.rating} max={max} />
-                </View>
-                <View width={140} $sm={{ display: 'none' }}>
-                  <FormPips results={p.recentForm} max={8} variant="letter" />
-                </View>
-                <YStack width={120} gap={4} $md={{ display: 'none' }}>
-                  {(p.gameTags ?? []).slice(0, 2).map((tag) => (
-                    <TagPill key={tag}>
-                      <Text fontSize="$1" opacity={0.85}>
-                        {tag}
-                      </Text>
-                    </TagPill>
-                  ))}
-                </YStack>
-                <View width={72}>
-                  <TrendPill rank={p.rank} prevRank={p.prevRank} />
-                </View>
-              </Row>
-            );
-          })}
+        : rows.map((p) => (
+            <RankRow
+              key={p.id}
+              player={p}
+              liveLabel={liveLabel}
+              regionLabels={regionLabels}
+              max={max}
+              isSelf={!!selfId && p.id === selfId}
+            />
+          ))}
     </YStack>
+  );
+}
+
+function RankRow({
+  player: p,
+  liveLabel,
+  regionLabels,
+  max,
+  isSelf,
+}: {
+  player: LeaderboardPlayer;
+  liveLabel: string;
+  regionLabels: Record<string, string>;
+  max: number;
+  isSelf: boolean;
+}) {
+  const live = p.isInMatch ?? false;
+  const flag = p.countryCode ? regionFlag(p.countryCode) : null;
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+    equippedAvatarId: p.equippedAvatarId,
+    equippedBadgeId: p.equippedBadgeId,
+    equippedNameColorId: p.equippedNameColorId,
+  });
+  const nameProps = nameColorRenderProps(nameColor);
+  return (
+    <Row
+      testID={`leaderboard-row-${p.rank}`}
+      {...(isSelf ? { 'data-self': 'true' } : {})}
+    >
+      <View width={56}>
+        <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
+      </View>
+      <YStack flex={1} gap={2}>
+        <XStack gap="$2" alignItems="center" flexWrap="wrap">
+          <Avatar
+            size="sm"
+            name={p.name}
+            src={avatarUrl ?? p.avatarUrl ?? undefined}
+          />
+          {flag ? (
+            <Text fontSize="$3" aria-label={p.countryCode}>
+              {flag}
+            </Text>
+          ) : null}
+          <Text
+            fontWeight="700"
+            numberOfLines={1}
+            {...(nameProps.color ? { color: nameProps.color } : {})}
+            {...(nameProps.style ? { style: nameProps.style } : {})}
+          >
+            {p.name}
+          </Text>
+          {badgeUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={badgeUrl}
+              alt=""
+              width={16}
+              height={16}
+              style={{ objectFit: 'contain' }}
+              data-testid={`leaderboard-row-${p.rank}-badge`}
+            />
+          ) : null}
+          {p.isOnline ? (
+            <View
+              width={8}
+              height={8}
+              borderRadius={4}
+              backgroundColor="$success"
+            />
+          ) : null}
+          {p.streak && p.streak >= 3 ? (
+            <Text fontSize="$2">🔥 {p.streak}</Text>
+          ) : null}
+          {live ? (
+            <View testID="row-live-chip">
+              <LiveChip label={liveLabel} />
+            </View>
+          ) : null}
+          {p.elo ? (
+            <Text fontSize="$1" opacity={0.5} letterSpacing={1}>
+              {p.elo} ELO
+            </Text>
+          ) : null}
+        </XStack>
+      </YStack>
+      <Text width={80} fontSize="$2" opacity={0.8} numberOfLines={1}>
+        {regionLabels[p.region] ?? p.region.toUpperCase()}
+      </Text>
+      <View width={240} $sm={{ display: 'none' }}>
+        <EnergyBar value={p.rating} max={max} />
+      </View>
+      <View width={140} $sm={{ display: 'none' }}>
+        <FormPips results={p.recentForm} max={8} variant="letter" />
+      </View>
+      <YStack width={120} gap={4} $md={{ display: 'none' }}>
+        {(p.gameTags ?? []).slice(0, 2).map((tag) => (
+          <TagPill key={tag}>
+            <Text fontSize="$1" opacity={0.85}>
+              {tag}
+            </Text>
+          </TagPill>
+        ))}
+      </YStack>
+      <View width={72}>
+        <TrendPill rank={p.rank} prevRank={p.prevRank} />
+      </View>
+    </Row>
   );
 }
 

@@ -9,6 +9,7 @@ import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { SeaBattleGrids } from './SeaBattleGrids';
 import { ShipsLeft } from './ShipsLeft';
 import { SeaBattlePlayerState, CELL_STATE, type SeaBattleTeam } from '../types';
+import { getPlayerColor } from '@/shared/lib/playerColors';
 
 const CELL_COLORS: Record<number, string> = {
   [CELL_STATE.EMPTY]: 'rgba(255, 255, 255, 0.05)',
@@ -81,7 +82,11 @@ function PlayerRow({
           </Badge>
         </XStack>
       )}
-      <Text fontSize={19} fontWeight="600" color="white">
+      <Text
+        fontSize={19}
+        fontWeight="600"
+        style={{ color: teamColor ?? getPlayerColor(player.playerId) }}
+      >
         {resolveDisplayName(player.playerId, 'Player')}{' '}
         {isMe
           ? `(${t('games.sea_battle_v1.table.players.you' as TranslationKey)})`
@@ -140,6 +145,12 @@ export function SeaBattleTable({
 
   const teamMode = !!teams && teams.length > 0;
   const playerById = new Map(players.map((p) => [p.playerId, p]));
+  const activePlayerTeam = activePlayer
+    ? teams?.find((tm) => tm.playerIds.includes(activePlayer.playerId))
+    : undefined;
+  const activePlayerColor = activePlayer
+    ? (activePlayerTeam?.color ?? getPlayerColor(activePlayer.playerId))
+    : undefined;
 
   return (
     <YStack
@@ -176,7 +187,11 @@ export function SeaBattleTable({
                   { player: activeName },
                 )}
           </Text>
-          <Text fontSize={17} fontWeight="800">
+          <Text
+            fontSize={17}
+            fontWeight="800"
+            style={activePlayerColor ? { color: activePlayerColor } : undefined}
+          >
             {isMyTurn
               ? t(
                   'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,

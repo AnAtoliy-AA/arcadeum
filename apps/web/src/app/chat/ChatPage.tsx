@@ -22,6 +22,8 @@ import {
 } from '@/features/chat/api';
 import { useChatStore } from '@/features/chat/store/chatStore';
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { formatSafeTime } from '@/shared/lib/date';
 import { ScrollView } from 'tamagui';
 
@@ -187,11 +189,9 @@ export default function ChatPage() {
                   const isOwn = msg.senderId === snapshot.userId;
 
                   return (
-                    <ChatMessage
+                    <ChatMessageRow
                       key={msg.id}
-                      content={msg.content || ''}
-                      senderName={msg.senderUsername}
-                      timestamp={formatSafeTime(msg.timestamp)}
+                      msg={msg}
                       isOwn={isOwn}
                       isEncrypted={isEncrypted}
                     />
@@ -213,5 +213,40 @@ export default function ChatPage() {
         </GlassCard>
       </Container>
     </PageLayout>
+  );
+}
+
+/**
+ * Per-message wrapper so we can call useEquippedCosmetics inside the .map.
+ * The hook reads from a module-level catalog cache, so spawning one per
+ * message is cheap (no duplicate fetches).
+ */
+function ChatMessageRow({
+  msg,
+  isOwn,
+  isEncrypted,
+}: {
+  msg: ChatMessageData;
+  isOwn: boolean;
+  isEncrypted: boolean;
+}) {
+  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+    equippedAvatarId: msg.senderEquippedAvatarId,
+    equippedBadgeId: msg.senderEquippedBadgeId,
+    equippedNameColorId: msg.senderEquippedNameColorId,
+  });
+  const nameProps = nameColorRenderProps(nameColor);
+  return (
+    <ChatMessage
+      content={msg.content || ''}
+      senderName={msg.senderUsername}
+      senderColor={nameProps.color}
+      senderNameStyle={nameProps.style}
+      avatarUrl={avatarUrl ?? undefined}
+      badgeUrl={badgeUrl ?? undefined}
+      timestamp={formatSafeTime(msg.timestamp)}
+      isOwn={isOwn}
+      isEncrypted={isEncrypted}
+    />
   );
 }

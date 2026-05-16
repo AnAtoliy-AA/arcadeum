@@ -79,124 +79,12 @@ export const DesktopOnly = styled(XStack, {
   $md: { display: 'none' },
 });
 
-// ─── Profile Menu ─────────────────────────────────────────────────────────────
-
-export const ProfileMenuContainer = styled(YStack, {
-  name: 'ProfileMenuContainer',
-  position: 'relative',
-  $md: { display: 'none' },
+// Hidden at narrow widths — used to move a header action into the mobile menu.
+export const HeaderMobileHidden = styled(XStack, {
+  name: 'HeaderMobileHidden',
+  alignItems: 'center',
+  $sm: { display: 'none' },
 });
-
-export const UserName = styled(Typography, {
-  name: 'UserName',
-  uiSize: 'sm',
-  weight: '500',
-  maxWidth: 140,
-});
-
-export const UserNameEllipsis = styled(UserName, {
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-
-export const ProfileDropdown = styled(YStack, {
-  name: 'ProfileDropdown',
-  position: 'absolute',
-  right: 0,
-  minWidth: 220,
-  backgroundColor: '$glassBg',
-  borderColor: '$glassBorder',
-  borderWidth: 1,
-  borderRadius: '$4',
-  overflow: 'hidden',
-  zIndex: 1000,
-  top: 'calc(100% + 12px)',
-  backdropFilter: 'blur(20px) saturate(160%)',
-  boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-  transformOrigin: 'right top',
-
-  variants: {
-    isOpen: {
-      true: {
-        opacity: 1,
-        pointerEvents: 'auto',
-        visibility: 'visible',
-        transform: 'translateY(0) scale(1)',
-      },
-      false: {
-        opacity: 0,
-        pointerEvents: 'none',
-        visibility: 'hidden',
-        transform: 'translateY(-10px) scale(0.96)',
-      },
-    },
-  } as const,
-});
-
-export const ProfileDropdownWrapper = ProfileDropdown.styleable(
-  ({ isOpen, children, onPress, onClick, ...props }, ref) => {
-    return (
-      <ProfileDropdown
-        ref={ref}
-        isOpen={isOpen}
-        {...props}
-        onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
-      >
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          height={1}
-          pointerEvents="none"
-          background="linear-gradient(90deg, transparent, color-mix(in srgb, var(--primaryGradientStart) 25%, transparent), transparent)"
-        />
-        {children}
-      </ProfileDropdown>
-    );
-  },
-);
-
-export function DropdownLink({
-  href,
-  onClick,
-  children,
-}: {
-  href: string;
-  onClick?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      prefetch={false}
-      className="link-no-decoration"
-      onClick={onClick}
-    >
-      <XStack
-        alignItems="center"
-        gap="$3"
-        height={44}
-        paddingHorizontal="$4"
-        cursor="pointer"
-        hoverStyle={{ backgroundColor: '$glassBgHover' }}
-        transition="background-color 0.2s ease"
-      >
-        <Typography
-          uiSize="sm"
-          weight="500"
-          color="$color"
-          flexDirection="row"
-          alignItems="center"
-          gap={12}
-        >
-          {children}
-        </Typography>
-      </XStack>
-    </Link>
-  );
-}
 
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
@@ -207,21 +95,26 @@ export const MobileMenuContainer = styled(XStack, {
 export const MobileNav = styled(YStack, {
   name: 'MobileNav',
   position: 'fixed',
-  top: HEADER_HEIGHT,
+  // Track the responsive header height defined in header-stable.css so the
+  // drawer always starts flush against the header (no transparent gap at
+  // <=480px when the header shrinks to 56px).
+  top: `var(--header-height, ${HEADER_HEIGHT}px)` as unknown as number,
   left: 0,
   right: 0,
   bottom: 0,
   width: '100%',
   maxWidth: '100vw',
   zIndex: '$1',
+  // Fully opaque so the page never shows through the empty gaps above the
+  // user card or below the last menu item.
   backgroundColor: '$background',
   borderTopWidth: 1,
-  borderTopColor: '$borderColor',
+  borderTopColor: '$glassBorder',
   paddingHorizontal: '$5',
   paddingTop: '$4',
+  paddingBottom: '$4',
   gap: '$1',
-  height: `calc(100dvh - ${HEADER_HEIGHT}px)`,
-  backdropFilter: 'blur(32px) saturate(180%)',
+  height: '100dvh',
   overflowY: 'auto',
 });
 
@@ -237,15 +130,49 @@ export const MobileVersionText = styled(Typography, {
 
 export const MobileUserInfo = styled(XStack, {
   name: 'MobileUserInfo',
-  paddingVertical: 14,
-  paddingHorizontal: '$4',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  marginVertical: '$1',
+  paddingVertical: '$4',
+  paddingHorizontal: '$2',
   alignItems: 'center',
-  gap: '$2',
+  gap: '$3',
+  flexWrap: 'wrap',
+});
+
+export const MobileUserCard = styled(XStack, {
+  name: 'MobileUserCard',
+  alignItems: 'center',
+  gap: '$3',
+  padding: '$3',
+  borderRadius: '$4',
+  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  borderWidth: 1,
+  borderColor: '$glassBorder',
+  flexWrap: 'wrap',
+});
+
+export const MobileSection = styled(YStack, {
+  name: 'MobileSection',
+  gap: '$1',
+});
+
+export const MobileSectionLabel = styled(Typography, {
+  name: 'MobileSectionLabel',
+  uiSize: 'xs',
+  weight: '700',
+  tracking: 'xl',
+  alpha: 'medium',
+  paddingHorizontal: '$4',
+  paddingTop: '$3',
+  paddingBottom: '$1',
+});
+
+export const MobileBottomBar = styled(XStack, {
+  name: 'MobileBottomBar',
+  marginTop: 'auto',
+  paddingVertical: '$3',
+  paddingHorizontal: '$2',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '$3',
   flexWrap: 'wrap',
 });
 
@@ -275,10 +202,13 @@ export const NavMobileLink = styled(LinkButton, {
   paddingVertical: '$3',
   paddingHorizontal: '$4',
   justifyContent: 'flex-start',
+  hoverStyle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
   variants: {
     isActive: {
       true: {
-        backgroundColor: '$backgroundPress',
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
         color: '$primary',
       },
     },

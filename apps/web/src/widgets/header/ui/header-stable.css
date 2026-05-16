@@ -1,4 +1,8 @@
 /* Header Styles for stability and hydration safety */
+:root {
+  --header-height: 72px;
+}
+
 .header-outer {
   display: flex;
   flex-direction: column;
@@ -119,5 +123,38 @@
   }
   .header-inner .mobile-menu-container {
     display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: 56px;
+  }
+  .header-inner {
+    height: 56px;
+    padding-left: 8px;
+    padding-right: 8px;
+    gap: 4px;
+  }
+  .header-inner .actions-styled {
+    gap: 6px;
+  }
+  .header-language-switcher {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .header-language-globe {
+    display: none;
+  }
+  /* Keep coin/gem pills side-by-side and compact them */
+  .wallet-balance-chip {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .wallet-balance-pill {
+    padding: 2px 8px !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
   }
 }

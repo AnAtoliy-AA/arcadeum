@@ -43,6 +43,21 @@ export class User {
 
   @Prop({ type: String, default: null })
   referredBy?: string | null;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  coins!: number;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  gems!: number;
+
+  @Prop({ type: String, default: null })
+  equippedAvatarId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedBadgeId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedNameColorId?: string | null;
 }
 
 export type UserDocument = User & Document;

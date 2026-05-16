@@ -1161,6 +1161,13 @@
   align-items: stretch;
 }
 
+@media (max-width: 800px) {
+  .page-layout-base {
+    padding-left: var(--t-space-2);
+    padding-right: var(--t-space-2);
+  }
+}
+
 .animate-shimmer-mid,
 .is-hydrated .kicker-hydration-shimmer {
   position: relative;

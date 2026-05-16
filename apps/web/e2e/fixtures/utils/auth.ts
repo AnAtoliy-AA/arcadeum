@@ -3,6 +3,16 @@ import { handleRoute } from './network';
 
 export interface MockSessionOptions {
   persistent?: boolean;
+  role?:
+    | 'free'
+    | 'admin'
+    | 'developer'
+    | 'moderator'
+    | 'tester'
+    | 'premium'
+    | 'vip'
+    | 'supporter'
+    | null;
 }
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
@@ -26,7 +36,7 @@ export async function mockSession(
     email: 'test@example.com',
     username: 'testuser',
     displayName: 'Test User',
-    role: null,
+    role: options.role ?? null,
   };
 
   const setSession = (s: typeof snapshot) => {

@@ -8,14 +8,16 @@ interface SeaBattleGridsProps {
 
 const MIN_BOARD_WIDTH_DESKTOP = 280;
 const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 220;
+// Cap so boards don't blow up on very wide viewports (e.g. fullscreen on a
+// 1080p+ screen with 4 columns), where a single 10×10 board would otherwise
+// take ~480px and two rows wouldn't fit vertically.
+const MAX_BOARD_WIDTH_DESKTOP = 360;
 
 function idealCols(count: number): number {
   if (count <= 1) return 1;
   if (count === 2) return 2;
   if (count === 3) return 3;
-  if (count <= 4) return 2; // 2x2
-  if (count <= 6) return 3; // 3xN
-  return 4; // up to 8 → 4 wide
+  return 4; // 4–8 → 4 wide so the layout never needs more than two rows
 }
 
 /**
@@ -87,6 +89,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     );
   }
 
+  // On desktop layouts, clamp each column's max width so two-row arrangements
+  // (5–8 players) keep both rows visible without vertical scroll, even in
+  // fullscreen on wide displays. Mobile / short viewports keep their 1fr
+  // behaviour since the cap is bigger than they have width for anyway.
+  const desktopColumnTemplate = `repeat(${cols}, minmax(0, ${MAX_BOARD_WIDTH_DESKTOP}px))`;
+  const flexColumnTemplate = `repeat(${cols}, minmax(0, 1fr))`;
+  const gridTemplateColumns =
+    !isMobilePortrait && !media.short ? desktopColumnTemplate : flexColumnTemplate;
+
   return (
     <div
       ref={containerRef}
@@ -94,7 +105,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       className="sb-grids-container"
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        gridTemplateColumns,
         gridAutoRows: 'min-content',
         gap: media.short ? 10 : media.sm ? 12 : 16,
         width: '100%',
@@ -106,6 +117,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         alignItems: 'stretch',
         justifyItems: 'stretch',
         alignContent: 'start',
+        // Tracks are capped at MAX_BOARD_WIDTH_DESKTOP so on wide / fullscreen
+        // displays the row would otherwise leave a large blank strip on the
+        // right of the rightmost board. Use space-evenly to redistribute that
+        // slack as extra inter-board gaps, so the layout fills the row.
+        justifyContent: 'space-evenly',
         flexGrow: 1,
       }}
     >

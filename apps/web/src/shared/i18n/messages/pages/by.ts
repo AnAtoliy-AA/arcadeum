@@ -1,4 +1,117 @@
+import { adminAnnouncementsBy } from './admin-announcements/by';
+import { adminTournamentsBy } from './admin-tournaments/by';
+import { walletBy } from './wallet/by';
+import { adminWalletBy } from './admin-wallet/by';
+import { gemsBy } from './gems/by';
+import { adminGemPackagesBy } from './admin-gem-packages/by';
+import { adminEconomyBy } from './admin-economy/by';
+import { dailyRewardsBy } from './daily-rewards/by';
+import { shopBy } from './shop/by';
+import { adminShopBy } from './admin-shop/by';
+
 export const by = {
+  admin: {
+    title: 'Адмін',
+    welcome: 'Сардэчна запрашаем у панэль адміністратара',
+    welcomeBody:
+      "Панэлі функцый будуць з'яўляцца тут па меры гатоўнасці. Выкарыстоўвайце бакавое меню для навігацыі.",
+    signedInAs: 'Вы ўвайшлі як {username}',
+    nav: {
+      dashboard: 'Панэль',
+      users: 'Карыстальнікі',
+      payments: 'Плацяжы',
+      announcements: "Аб'явы",
+      tournaments: 'Турніры',
+      economy: 'Эканоміка',
+      shop: 'Крама',
+      comingSoon: 'Хутка',
+    },
+    error: {
+      title: 'Нешта пайшло не так',
+      body: 'Адбылася памылка пры загрузцы гэтай старонкі.',
+      retry: 'Паўтарыць',
+    },
+    users: {
+      title: 'Карыстальнікі',
+      search: { placeholder: 'Пошук па імі, email або псеўданіме' },
+      filter: {
+        role: { all: 'Усе ролі', placeholder: 'Фільтр па ролі' },
+      },
+      table: {
+        username: 'Імя карыстальніка',
+        email: 'Email',
+        role: 'Роля',
+        createdAt: 'Створаны',
+        actions: 'Дзеянні',
+      },
+      empty: {
+        noResults: 'Няма карыстальнікаў па фільтру.',
+        noUsers: 'Карыстальнікаў пакуль няма.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Наперад',
+        of: 'Старонка {current} з {total}',
+      },
+      totalLabel: '{total} карыстальнікаў',
+      selfTooltip: 'Вы не можаце змяніць сваю ўласную ролю.',
+      role: {
+        free: 'Бясплатны',
+        premium: 'Прэміум',
+        vip: 'VIP',
+        supporter: 'Спонсар',
+        moderator: 'Мадэратар',
+        tester: 'Тэстар',
+        developer: 'Распрацоўшчык',
+        admin: 'Адмін',
+      },
+      errors: {
+        SELF_ROLE_CHANGE_FORBIDDEN: 'Вы не можаце змяніць сваю ўласную ролю.',
+        LAST_ADMIN_PROTECTED: 'Нельга паніжаць апошняга адміністратара.',
+        USER_NOT_FOUND: 'Карыстальнік не знойдзены.',
+        INVALID_USER_ID: 'Няправільны ідэнтыфікатар карыстальніка.',
+        generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
+      },
+    },
+    payments: {
+      title: 'Плацяжы',
+      search: { placeholder: 'Пошук па нататцы, імі або ID транзакцыі' },
+      filter: {
+        visibility: {
+          label: 'Бачнасць',
+          all: 'Усе',
+          public: 'Толькі публічныя',
+          private: 'Толькі прыватныя',
+        },
+      },
+      table: {
+        user: 'Карыстальнік',
+        amount: 'Сума',
+        note: 'Нататка',
+        visibility: 'Бачнасць',
+        createdAt: 'Створана',
+        transactionId: 'Транзакцыя',
+      },
+      chip: {
+        public: 'Публічная',
+        private: 'Прыватная',
+        anonymous: 'Ананімны',
+      },
+      empty: {
+        noResults: 'Няма плацяжоў па фільтру.',
+        noNotes: 'Плацяжоў пакуль няма.',
+      },
+      pagination: {
+        prev: 'Назад',
+        next: 'Наперад',
+        of: 'Старонка {current} з {total}',
+      },
+      totalLabel: '{total} плацяжоў',
+    },
+    announcements: adminAnnouncementsBy,
+    tournaments: adminTournamentsBy,
+    wallet: adminWalletBy,
+  },
   tournaments: {
     title: 'Турніры',
     subtitle: 'Змагайцеся з лепшымі гульцамі свету',
@@ -22,6 +135,50 @@ export const by = {
       },
     ],
     comingSoon: "Рэжым турніраў хутка з'явіцца. Сачыце за абнаўленнямі!",
+    list: {
+      loading: 'Загрузка турніраў…',
+      empty: 'Турніраў пакуль няма. Зазірніце пазней!',
+      card: {
+        registered: 'Запісана {count} / {max}',
+        prize: 'Прыз',
+        entryFee: 'Узнос',
+        prizePool: 'Прызавы фонд',
+        registerCta: 'Запісацца',
+        unregisterCta: 'Адмяніць запіс',
+        signInToRegister: 'Увайдзіце, каб запісацца',
+        full: 'У спіс чакання',
+        registrationClosed: 'Рэгістрацыя закрыта',
+        confirmRegister: {
+          title: 'Пацвердзіць удзел',
+          body: 'Гэты турнір каштуе {fee} манет. Ваш баланс: {balance} манет.',
+          confirm: 'Аплаціць і запісацца',
+          cancel: 'Адмена',
+        },
+        confirmUnregister: {
+          refund: 'Вам будзе вернута {amount} манет.',
+          title: 'Адмена рэгістрацыі',
+          body: 'Вы ўпэўнены?',
+          confirm: 'Так, адмяніць',
+          cancelButton: 'Не, застацца',
+        },
+        errors: {
+          insufficientFunds: 'Недастаткова манет для ўдзелу.',
+        },
+        effectiveStatus: {
+          scheduled: 'Запланаваны',
+          registration_open: 'Рэгістрацыя адкрыта',
+          registration_closed: 'Рэгістрацыя закрыта',
+          live: 'Ідзе',
+          awaiting_results: 'Чакаем вынікі',
+          completed: 'Завершаны',
+          cancelled: 'Адменены',
+        },
+        gameType: {
+          critical_v1: 'Critical',
+          sea_battle_v1: 'Марскі бой',
+        },
+      },
+    },
   },
   blog: {
     title: 'Гульнявы блог',
@@ -320,4 +477,11 @@ export const by = {
     ],
     comingSoon: 'Крама ўзнагарод хутка адкрыецца!',
   },
+  wallet: walletBy,
+  gems: gemsBy,
+  adminGemPackages: adminGemPackagesBy,
+  adminEconomy: adminEconomyBy,
+  dailyRewards: dailyRewardsBy,
+  shop: shopBy,
+  adminShop: adminShopBy,
 };

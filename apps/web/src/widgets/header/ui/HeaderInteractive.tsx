@@ -19,6 +19,7 @@ import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 import {
   DesktopOnly,
+  HeaderMobileHidden,
   MobileMenuContainer,
   NavLinkWrapper,
   NavHeaderLink,
@@ -44,6 +45,7 @@ export function HeaderInteractive() {
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
+      { href: routes.shop, label: t('navigation.shopTab') },
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
@@ -78,7 +80,9 @@ export function HeaderInteractive() {
       <div className="actions-styled">
         {isMounted && (
           <>
-            <InstallPWAButton />
+            <HeaderMobileHidden>
+              <InstallPWAButton />
+            </HeaderMobileHidden>
 
             <DesktopOnly>
               <LinkButton
@@ -93,12 +97,18 @@ export function HeaderInteractive() {
               </LinkButton>
             </DesktopOnly>
 
-            <LanguageSwitcher
-              data-testid="header-language-switcher"
-              className="header-language-switcher"
-            />
+            <HeaderMobileHidden>
+              <LanguageSwitcher
+                data-testid="header-language-switcher"
+                className="header-language-switcher"
+              />
+            </HeaderMobileHidden>
 
-            {isAuthenticated && displayName && <ProfileMenu />}
+            {isAuthenticated && displayName && (
+              <HeaderMobileHidden>
+                <ProfileMenu />
+              </HeaderMobileHidden>
+            )}
 
             {!isAuthenticated && (
               <DesktopOnly>
@@ -113,14 +123,16 @@ export function HeaderInteractive() {
               </DesktopOnly>
             )}
 
-            <MobileLoginIndicator
-              href={isAuthenticated ? routes.settings : routes.auth}
-              isAuthenticated={isAuthenticated}
-              title={
-                isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
-              }
-              data-testid="mobile-login-indicator"
-            />
+            <HeaderMobileHidden>
+              <MobileLoginIndicator
+                href={isAuthenticated ? routes.settings : routes.auth}
+                isAuthenticated={isAuthenticated}
+                title={
+                  isAuthenticated ? displayName || 'Logged in' : 'Not logged in'
+                }
+                data-testid="mobile-login-indicator"
+              />
+            </HeaderMobileHidden>
 
             <MobileMenuContainer className="mobile-menu-container">
               <Button

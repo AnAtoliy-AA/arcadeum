@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.12.10",
+  "version": "1.13.56",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -36,6 +36,8 @@
     "@tamagui/next-plugin": "2.0.0-rc.23",
     "@tamagui/shorthands": "2.0.0-rc.23",
     "next": "16.1.0",
+    "pixi-filters": "^6",
+    "pixi.js": "^8",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.0",
@@ -67,6 +69,7 @@
     "eslint-config-next": "16.1.0",
     "eslint-plugin-storybook": "^10.2.1",
     "jsdom": "^27.4.0",
+    "mongodb-memory-server": "^11.1.0",
     "playwright": "^1.58.0",
     "storybook": "^10.2.1",
     "typescript": "^5.9.3",

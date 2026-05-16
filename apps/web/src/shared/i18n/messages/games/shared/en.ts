@@ -183,6 +183,8 @@ export const enMessages = {
       setup: 'Setup',
       placement: 'Placement',
       battle: 'Battle',
+      survive: 'Survive',
+      powerups: 'Power-ups',
     },
     category: {
       cardGame: 'Card Game',

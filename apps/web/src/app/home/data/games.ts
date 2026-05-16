@@ -8,6 +8,8 @@ export interface FeaturedGame {
   gradient: string;
   tags: string[];
   isPlayable: boolean;
+  /** Marks the card with a "DEMO" badge — early preview, not feature-complete. */
+  isDemo?: boolean;
   route: string;
   type: 'card' | 'board';
   rulesPrefix: string;
@@ -18,6 +20,7 @@ export interface FeaturedGame {
 
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
+import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -57,6 +60,25 @@ export const featuredGames: FeaturedGame[] = [
     variants: SEA_BATTLE_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'glimworm_v1',
+    nameKey: 'games.glimworm_v1.name' as TranslationKey,
+    descriptionKey: 'games.glimworm_v1.description' as TranslationKey,
+    emoji: '🐛',
+    gradient: 'linear-gradient(135deg, #7c5cff 0%, #5ee0ff 100%)',
+    tags: ['Arcade', '2-10 Players', '90s Match', 'Real-time'],
+    isPlayable: true,
+    isDemo: true,
+    route: '/games',
+    type: 'board',
+    rulesPrefix: 'games.glimworm_v1.rules',
+    rulesKeys: ['objective', 'gameplay', 'survive', 'powerups'],
+    variants: GLIMWORM_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+      disabled: v.disabled,
     })),
   },
 ];

@@ -7,6 +7,9 @@ import type {
   LocalAuthPanelLabels,
   DownloadSectionLabels,
   SessionDetailLabels,
+  AuthFormLabels,
+  AuthBrandLabels,
+  AuthOAuthLabels,
 } from '../types';
 
 const DEFAULT_TRANSLATIONS = getMessages(DEFAULT_LOCALE);
@@ -46,6 +49,46 @@ export interface AuthLabels
 
   // Session details
   sessionDetailLabels: SessionDetailLabels;
+
+  // Redesigned auth UI label groups
+  form: AuthFormLabels;
+  brand: AuthBrandLabels;
+  providers: AuthOAuthLabels;
+}
+
+function splitLegalCopy(template: string): {
+  prefix: string;
+  conjunction: string;
+  suffix: string;
+} {
+  // Template: "By continuing you agree to {{appName}}'s {{termsLink}} and {{privacyLink}}."
+  // We split it into the three text fragments around the link placeholders so
+  // the UI can render the links as React nodes.
+  const TERMS = '{{termsLink}}';
+  const PRIVACY = '{{privacyLink}}';
+  const termsIdx = template.indexOf(TERMS);
+  const privacyIdx = template.indexOf(PRIVACY);
+  if (termsIdx < 0 || privacyIdx < 0) {
+    return { prefix: template, conjunction: ' ', suffix: '' };
+  }
+  return {
+    prefix: template.slice(0, termsIdx),
+    conjunction: template.slice(termsIdx + TERMS.length, privacyIdx),
+    suffix: template.slice(privacyIdx + PRIVACY.length),
+  };
+}
+
+function splitProofCopy(template: string): {
+  before: string;
+  after: string;
+} {
+  const COUNT = '{{count}}';
+  const idx = template.indexOf(COUNT);
+  if (idx < 0) return { before: template, after: '' };
+  return {
+    before: template.slice(0, idx),
+    after: template.slice(idx + COUNT.length),
+  };
 }
 
 export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
@@ -75,6 +118,11 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
   const defaultStatusCard = defaultAuth.statusCard ?? {};
   const defaultStatusDetails = defaultStatusCard.details ?? {};
   const defaultAuthLocalAvailability = defaultAuthLocal.availability ?? {};
+  const defaultAuthForm = defaultAuth.form ?? {};
+  const defaultAuthBrand = defaultAuth.brand ?? {};
+  const authForm = authCopy.form ?? {};
+  const authBrand = authCopy.brand ?? {};
+  const authOauth = authCopy.oauth ?? {};
 
   const logoutLabel = commonActions.logout ?? defaultCommonActions.logout ?? '';
 
@@ -296,5 +344,114 @@ export function useAuthLabels(isRegisterMode: boolean): AuthLabels {
         defaultAuthLocalErrors.emailTaken ??
         'This email is already registered.',
     },
+
+    form: buildFormLabels(authForm, defaultAuthForm),
+    brand: buildBrandLabels(authBrand, defaultAuthBrand),
+    providers: buildProvidersLabels(authOauth, defaultAuthOauth),
+  };
+}
+
+type AuthFormCopy = NonNullable<AuthMessages['form']>;
+
+function buildFormLabels(
+  copy: Partial<AuthFormCopy>,
+  fallback: Partial<AuthFormCopy>,
+): AuthFormLabels {
+  const legalTemplate = copy.legal ?? fallback.legal ?? '';
+  const legal = splitLegalCopy(legalTemplate);
+  return {
+    tabSignIn: copy.tabSignIn ?? fallback.tabSignIn ?? 'Sign in',
+    tabRegister: copy.tabRegister ?? fallback.tabRegister ?? 'Create account',
+    headingSignIn:
+      copy.headingSignIn ?? fallback.headingSignIn ?? 'Welcome back.',
+    headingRegister:
+      copy.headingRegister ?? fallback.headingRegister ?? 'Make it official.',
+    subSignIn: copy.subSignIn ?? fallback.subSignIn ?? '',
+    subRegister: copy.subRegister ?? fallback.subRegister ?? '',
+    orWithEmail: copy.orWithEmail ?? fallback.orWithEmail ?? 'or with email',
+    emailLabel: copy.emailLabel ?? fallback.emailLabel ?? 'Email address',
+    passwordLabel: copy.passwordLabel ?? fallback.passwordLabel ?? 'Password',
+    handleLabel: copy.handleLabel ?? fallback.handleLabel ?? 'Player handle',
+    rememberMe: copy.rememberMe ?? fallback.rememberMe ?? 'Trust this device',
+    forgotPassword:
+      copy.forgotPassword ?? fallback.forgotPassword ?? 'Forgot password?',
+    showPassword: copy.showPassword ?? fallback.showPassword ?? 'Show',
+    hidePassword: copy.hidePassword ?? fallback.hidePassword ?? 'Hide',
+    submitSignIn: copy.submitSignIn ?? fallback.submitSignIn ?? 'Sign in',
+    submitRegister:
+      copy.submitRegister ?? fallback.submitRegister ?? 'Create account',
+    magicLinkPrompt: copy.magicLinkPrompt ?? fallback.magicLinkPrompt ?? '',
+    magicLinkCta:
+      copy.magicLinkCta ?? fallback.magicLinkCta ?? 'Email me a sign-in link',
+    magicLinkSentTitle:
+      copy.magicLinkSentTitle ??
+      fallback.magicLinkSentTitle ??
+      'Check your inbox',
+    magicLinkSentBody:
+      copy.magicLinkSentBody ?? fallback.magicLinkSentBody ?? '',
+    magicLinkBack:
+      copy.magicLinkBack ?? fallback.magicLinkBack ?? 'Use a different method',
+    passwordMismatch:
+      copy.passwordMismatch ??
+      fallback.passwordMismatch ??
+      "Passwords don't match.",
+    legalPrefix: legal.prefix,
+    legalConjunction: legal.conjunction,
+    legalSuffix: legal.suffix,
+    termsLink: copy.termsLink ?? fallback.termsLink ?? 'Terms',
+    privacyLink: copy.privacyLink ?? fallback.privacyLink ?? 'Privacy Policy',
+  };
+}
+
+type AuthBrandCopy = NonNullable<AuthMessages['brand']>;
+
+function buildBrandLabels(
+  copy: Partial<AuthBrandCopy>,
+  fallback: Partial<AuthBrandCopy>,
+): AuthBrandLabels {
+  const proofTemplate = copy.proof ?? fallback.proof ?? '';
+  const proof = splitProofCopy(proofTemplate);
+  return {
+    statusPill: copy.statusPill ?? fallback.statusPill ?? '',
+    eyebrow: copy.eyebrow ?? fallback.eyebrow ?? '',
+    headlinePrefix: copy.headlinePrefix ?? fallback.headlinePrefix ?? '',
+    headlineHighlight:
+      copy.headlineHighlight ?? fallback.headlineHighlight ?? '',
+    subline: copy.subline ?? fallback.subline ?? '',
+    featureOauthTitle:
+      copy.featureOauthTitle ?? fallback.featureOauthTitle ?? '',
+    featureOauthDetail:
+      copy.featureOauthDetail ?? fallback.featureOauthDetail ?? '',
+    featureMagicTitle:
+      copy.featureMagicTitle ?? fallback.featureMagicTitle ?? '',
+    featureMagicDetail:
+      copy.featureMagicDetail ?? fallback.featureMagicDetail ?? '',
+    featureProgressTitle:
+      copy.featureProgressTitle ?? fallback.featureProgressTitle ?? '',
+    featureProgressDetail:
+      copy.featureProgressDetail ?? fallback.featureProgressDetail ?? '',
+    proofBefore: proof.before,
+    proofAfter: proof.after,
+    proofCount: copy.proofCount ?? fallback.proofCount ?? '',
+    footHome: copy.footHome ?? fallback.footHome ?? '',
+    footGames: copy.footGames ?? fallback.footGames ?? '',
+    footHelp: copy.footHelp ?? fallback.footHelp ?? '',
+  };
+}
+
+type AuthOauthCopy = NonNullable<AuthMessages['oauth']>;
+
+function buildProvidersLabels(
+  copy: Partial<AuthOauthCopy>,
+  fallback: Partial<AuthOauthCopy>,
+): AuthOAuthLabels {
+  return {
+    google: copy.google ?? fallback.google ?? 'Continue with Google',
+    googleShort: copy.googleShort ?? fallback.googleShort ?? 'Google',
+    apple: copy.apple ?? fallback.apple ?? 'Continue with Apple',
+    appleShort: copy.appleShort ?? fallback.appleShort ?? 'Apple',
+    discord: copy.discord ?? fallback.discord ?? 'Continue with Discord',
+    discordShort: copy.discordShort ?? fallback.discordShort ?? 'Discord',
+    comingSoon: copy.comingSoon ?? fallback.comingSoon ?? 'Coming soon',
   };
 }

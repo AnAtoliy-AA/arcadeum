@@ -1,4 +1,5 @@
 import { variants as cardVariants } from './ru-variants';
+import { modals } from './ru-modals';
 
 export const ruMessages = {
   critical_v1: {
@@ -225,6 +226,45 @@ export const ruMessages = {
       pendingDraws: 'Осталось ходов',
       cards: 'карт',
       card: 'карта',
+      defuses: 'Обезвреж.',
+    },
+    arena: {
+      drawHint: 'Нажмите, чтобы взять карту и закончить ход',
+      drawAria: 'Взять карту и закончить ход',
+    },
+    hud: {
+      threat: {
+        label: 'Угроза',
+        oddsTitle:
+          'Минимальный шанс вытянуть Критическую карту (только видимые карты — скрытые могут увеличить шанс)',
+        oddsTitleServer: 'Шанс, что следующая карта — Критическая',
+        defusesTitle: 'Защитные карты у вас',
+        remainingTitle: 'Опасных карт ещё в колоде',
+        remainingSuffix: 'осталось',
+      },
+      combo: {
+        label: 'Комбо',
+        pair: '2× пара',
+        triple: '3× тройка',
+        fiver: '5 разных',
+        placeholder: 'Выберите карты для комбо',
+        playSingle: 'Сыграть {{name}}',
+        playPair: 'Сыграть 2× {{name}} · украсть',
+        playTriple: 'Сыграть 3× {{name}} · назвать карту',
+        playFiver: 'Сыграть 5 · взять из сброса',
+        invalid: 'Недопустимое комбо',
+        pickTarget: 'Выберите цель',
+      },
+      /* prettier-ignore */ cards: { toggleName: 'Название карты', toggleDescription: 'Описание карты' },
+      extraTurns: '+{{count}} ход',
+      extraTurnsPlural: '+{{count}} ходов',
+      flash: {
+        draw: 'Взято: {{card}}',
+        play: 'Сыграно: {{card}}',
+        defuse: 'Обезврежено — {{card}} возвращена',
+        eliminated: '{{name}} выбыл',
+        critical: '⚠ Тянет Критическую',
+      },
     },
     players: {
       you: 'Вы',
@@ -234,6 +274,11 @@ export const ruMessages = {
       yourMove: 'Ваш ход',
       playerTurn: 'Ход {{name}}',
       waitingFor: 'Ожидание игрока...',
+      a11yState: {
+        eliminated: 'выбыл',
+        currentTurn: 'сейчас его ход',
+        armedTarget: 'выбран как цель',
+      },
     },
     status: {
       gameCompleted: 'Игра завершена',
@@ -344,90 +389,7 @@ export const ruMessages = {
       exit: 'Выйти из полноэкранного режима (Esc)',
       hint: 'Нажмите F для переключения полноэкранного режима',
     },
-    modals: {
-      common: { cancel: 'Отмена', confirm: 'Подтвердить', close: 'Закрыть' },
-      omniscience: {
-        title: 'Всеведение',
-        subtitle: 'Вы видите все карты в игре!',
-        emptyHand: 'В руке нет карт.',
-      },
-      targetedAttack: {
-        title: 'Целевая атака',
-        selectPlayer: 'Выберите цель',
-        description:
-          'Выберите игрока, который сделает 2 хода вместо следующего.',
-      },
-      eventCombo: {
-        title: 'Сыграть комбо',
-        selectType: 'Выберите тип комбо',
-        pairTrio: 'Пара/Тройка',
-        selectComboCard: 'Выберите карту',
-        fiver: 'Пятерка',
-        anyFive: 'Любые 5 разных карт',
-        selectMode: 'Выберите тип комбо',
-        pair: 'Пара',
-        pairDesc: 'Случайная карта у цели',
-        trio: 'Тройка',
-        trioDesc: 'Выбрать конкретную карту',
-        trioMode: '2-3 карты',
-        selectTarget: 'Выберите цель',
-        selectCard: 'Выберите карту для запроса',
-        cardsCount: '{{count}} карт',
-        confirm: 'Сыграть комбо',
-        stashCards: 'Выберите {{count}} разных карт',
-        pickDiscard: 'Выберите карту из стопки сброса',
-        selectCardHint: 'Выберите карту ниже',
-        pickCardBlind: 'Выберите карту (вслепую)',
-        cardLabel: 'Карта {{index}}',
-      },
-      seeTheFuture: { title: 'Верхние карты', confirm: 'Понятно!' },
-      alterTheFuture: {
-        title: 'Изменить будущее',
-        description:
-          'Переставьте верхние карты колоды. Верхняя карта (#1) будет вытянута следующей.',
-        confirm: 'Применить порядок',
-      },
-      shareTheFuture: {
-        title: 'Поделиться будущим',
-      },
-      favor: {
-        title: 'Запросить одолжение',
-        selectPlayer: 'Выберите игрока',
-        description: 'Выберите игрока — он выберет, какую карту вам отдать.',
-        cardsCount: '{{count}} карт',
-        confirm: 'Запросить одолжение',
-      },
-      giveFavor: {
-        title: 'Отдать карту',
-        description:
-          '{{player}} попросил одолжение. Выберите карту, которую отдадите ему.',
-        confirm: 'Отдать карту',
-      },
-      defuse: {
-        title: 'Обезвредить Критическую!',
-        description: 'Выберите, куда вернуть Критическую карту в колоду',
-        positionLabel: 'Позиция в колоде:',
-        confirm: 'Положить карту',
-      },
-      stash: {
-        title: 'Башня силы',
-        description:
-          'Выберите до 3 карт для защиты в хранилище. Их нельзя украсть или выменять.',
-        confirm: 'Спрятать карты',
-      },
-      mark: {
-        title: 'Пометить игрока',
-        description:
-          'Выберите игрока для метки. Случайная карта в его руке будет помечена. Если он её сыграет или сбросит, вы её украдете!',
-        confirm: 'Пометить игрока',
-      },
-      stealDraw: {
-        title: 'Я это заберу',
-        description:
-          'Выберите игрока. Следующая карта, которую он вытянет, будет украдена и попадет в вашу руку!',
-        confirm: 'Подтвердить кражу',
-      },
-    },
+    modals,
     controlPanel: {
       spectating: 'Наблюдение',
       fullscreen: 'Полноэкранный режим',

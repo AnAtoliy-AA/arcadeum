@@ -210,6 +210,15 @@ describe('apiClient', () => {
       expect.objectContaining({ method: 'PUT' }),
     );
 
+    await apiClient.patch('/update', { foo: 'bar' });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ foo: 'bar' }),
+      }),
+    );
+
     await apiClient.delete('/remove');
     expect(fetch).toHaveBeenCalledWith(
       expect.any(String),

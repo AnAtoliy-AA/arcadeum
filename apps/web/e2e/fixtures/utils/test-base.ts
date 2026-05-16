@@ -36,8 +36,10 @@ export const test = base.extend({
           ) ||
           text.includes('was preloaded using link preload but not used') ||
           text.includes('webpack-hmr') ||
-          (/font|geist/i.test(text) &&
-            /(download failed|rejected|decode)/i.test(text))
+          (/font|geist|preload/i.test(text) &&
+            /(download failed|rejected|decode|preloaded with link preload was not used)/i.test(
+              text,
+            ))
         ) {
           return;
         }
@@ -47,6 +49,39 @@ export const test = base.extend({
           type === 'error' &&
           text.includes('500') &&
           page.url().includes('/notes')
+        ) {
+          return;
+        }
+
+        // Ignore intentional 4xx noise from flows that mock-fulfill error
+        // responses or auth-gated specs where mockSession is in effect but the
+        // BE rejects the fake bearer token (BalanceChip/auth-blocked/etc fire
+        // header calls on every page). Allowlist by the page URL the noise
+        // emits from: wallet/payments/gems/games (mocked error UX), auth/
+        // settings (mocked-session pages), and the homepage root.
+        if (
+          type === 'error' &&
+          /Failed to load resource.*status of 4\d{2}/i.test(text) &&
+          (/\/(?:wallet|payments|gems|games|auth|settings)/.test(page.url()) ||
+            /^https?:\/\/[^/]+\/?$/.test(page.url()))
+        ) {
+          return;
+        }
+
+        // Ignore BE socket.io websocket handshake failures. Many specs don't
+        // mock the socket gateway and just navigate through pages that
+        // initialize a socket.io client; the unauthenticated handshake then
+        // logs identical noise across every browser ("Firefox can't establish
+        // a connection…", "WebSocket connection to … failed: WebSocket is
+        // closed before the connection is established", etc.). Firefox uses
+        // a Unicode right-single-quote in "can't", so we match a stable
+        // substring instead of the contraction.
+        if (
+          /(?:WebSocket connection to .* failed|establish a connection.*server.*ws:\/\/|WebSocket is closed before)/i.test(
+            text,
+          ) &&
+          /socket\.io\//.test(text) &&
+          /(?:localhost|127\.0\.0\.1):4000/.test(text)
         ) {
           return;
         }

@@ -10,22 +10,16 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for username field in register mode', async ({
     page,
   }) => {
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForLoadState('networkidle');
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({});
-    const text = (await toggleBtn.textContent()) || '';
-    if (!/already|уже/i.test(text)) {
-      await toggleBtn.click({ force: true });
-    }
+    const registerTab = page.getByTestId('auth-tab-register');
+    await expect(registerTab).toBeVisible({});
+    await registerTab.click({ force: true });
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
       {},
     );
 
-    const usernameInput = page.locator('input[placeholder*="username" i]');
+    const usernameInput = page.getByTestId('auth-username-input');
     await expect(usernameInput).toBeVisible();
 
     await usernameInput.fill('testuser123unique');
@@ -44,21 +38,16 @@ test.describe('Auth Availability Checking', () => {
   test('should show availability status for email field in register mode', async ({
     page,
   }) => {
-    await page.waitForLoadState('networkidle');
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({});
-    const text = (await toggleBtn.textContent()) || '';
-    if (!/already|уже/i.test(text)) {
-      await toggleBtn.click({ force: true });
-    }
+    const registerTab = page.getByTestId('auth-tab-register');
+    await expect(registerTab).toBeVisible({});
+    await registerTab.click({ force: true });
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
       {},
     );
 
-    const emailInput = page.locator('input[type="email"]');
+    const emailInput = page.getByTestId('auth-email-input');
     await expect(emailInput).toBeVisible();
 
     await emailInput.fill('unique_test_email_xyz@example.com');
@@ -77,14 +66,9 @@ test.describe('Auth Availability Checking', () => {
   test('should display user-friendly error when registering with taken username', async ({
     page,
   }) => {
-    await page.waitForLoadState('networkidle');
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({});
-    const text = (await toggleBtn.textContent()) || '';
-    if (!/already|уже/i.test(text)) {
-      await toggleBtn.click({ force: true });
-    }
+    const registerTab = page.getByTestId('auth-tab-register');
+    await expect(registerTab).toBeVisible({});
+    await registerTab.click({ force: true });
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'register',
@@ -96,19 +80,13 @@ test.describe('Auth Availability Checking', () => {
       await handleRoute(route, { available: false });
     });
 
-    const emailInput = page.locator('input[type="email"]');
-    const passwordInput = page.locator('input[type="password"]').first();
-    const confirmInput = page.locator('input[placeholder*="confirm" i]');
-    const usernameInput = page.locator('input[placeholder*="username" i]');
-    const submitBtn = page
-      .getByRole('button', {
-        name: /create account|register|sign up|зарегистрироваться/i,
-      })
-      .first();
+    const emailInput = page.getByTestId('auth-email-input');
+    const passwordInput = page.getByTestId('auth-password-input');
+    const usernameInput = page.getByTestId('auth-username-input');
+    const submitBtn = page.getByTestId('auth-submit-button');
 
     await emailInput.fill('test_unique_email_xyz@example.com');
     await passwordInput.fill('TestPassword123!');
-    await confirmInput.fill('TestPassword123!');
     await usernameInput.fill('testexisting');
     await usernameInput.blur();
 
@@ -116,28 +94,22 @@ test.describe('Auth Availability Checking', () => {
       /already taken|уже занято|déjà pris|ya está en uso|ўжо занята/i,
     );
     if (await takenText.isVisible()) {
-      await expect(submitBtn).toBeDisabled();
+      // Tamagui Button uses aria-disabled rather than the disabled attribute.
+      await expect(submitBtn).toHaveAttribute('aria-disabled', 'true');
     }
   });
 
   test('should not show availability checking in login mode', async ({
     page,
   }) => {
-    await page.waitForLoadState('networkidle');
-    const toggleBtn = page.getByTestId('auth-toggle-mode-button');
-    await toggleBtn.scrollIntoViewIfNeeded();
-    await expect(toggleBtn).toBeVisible({});
-    const text = (await toggleBtn.textContent()) || '';
-    if (/already|уже/i.test(text)) {
-      await toggleBtn.click({ force: true });
-    }
+    // Sign-in tab is selected by default on /auth.
     await expect(page.locator('form')).toHaveAttribute(
       'data-mode',
       'login',
       {},
     );
 
-    const emailInput = page.locator('input[type="email"]');
+    const emailInput = page.getByTestId('auth-email-input');
     await emailInput.fill('test@example.com');
     await emailInput.blur();
 

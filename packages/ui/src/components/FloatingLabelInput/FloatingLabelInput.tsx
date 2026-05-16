@@ -17,6 +17,7 @@ export type FloatingLabelInputProps = {
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
   required?: boolean;
   disabled?: boolean;
   autoComplete?: string;
@@ -86,6 +87,7 @@ export const FloatingLabelInput = forwardRef<
     value: valueProp,
     defaultValue,
     onChange,
+    onBlur,
     required,
     disabled,
     autoComplete,
@@ -144,7 +146,10 @@ export const FloatingLabelInput = forwardRef<
         value={value ?? ''}
         onChange={handleChange as never}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false);
+          onBlur?.();
+        }}
         required={required}
         disabled={disabled}
         autoComplete={autoComplete}

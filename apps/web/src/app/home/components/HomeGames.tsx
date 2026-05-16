@@ -203,6 +203,28 @@ export default function HomeGames() {
                     >
                       {t(game.nameKey)}
                     </h3>
+                    {game.isDemo && (
+                      <span
+                        data-testid={`game-demo-badge-${game.id}`}
+                        style={{
+                          padding: '3px 9px',
+                          borderRadius: 999,
+                          fontSize: 10,
+                          fontWeight: 800,
+                          letterSpacing: 1.2,
+                          textTransform: 'uppercase',
+                          color: '#fff',
+                          background:
+                            'linear-gradient(135deg, #ffb05e 0%, #ff5e9c 100%)',
+                          boxShadow: '0 3px 10px rgba(255,94,156,0.4)',
+                          border: '1px solid rgba(255,255,255,0.25)',
+                          flexShrink: 0,
+                          alignSelf: 'center',
+                        }}
+                      >
+                        {homeCopy.demoBadge ?? 'Demo'}
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={handleHelpClick(game.id)}

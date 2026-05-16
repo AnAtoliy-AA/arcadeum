@@ -22,9 +22,24 @@ export interface CriticalPlayerState {
   [key: string]: unknown;
 }
 
+/**
+ * Structured event kind for HUD feedback (FlashBanner classifier). Mirrors
+ * the same union on the web client (`CriticalLogKind`). Optional for
+ * backward compatibility — clients fall back to message string-matching
+ * when absent.
+ */
+export type CriticalLogKind =
+  | 'play'
+  | 'draw'
+  | 'defuse'
+  | 'eliminated'
+  | 'critical'
+  | 'system';
+
 export interface CriticalLogEntry {
   id: string;
   type: 'system' | 'action' | 'message';
+  kind?: CriticalLogKind;
   message: string;
   createdAt: string;
   scope?: ChatScope;
@@ -72,6 +87,22 @@ export interface CriticalState {
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  /**
+   * Server-authoritative draw-elimination odds, populated on sanitize so
+   * the web ThreatStrip can show an exact percentage instead of its
+   * "min odds (visible cards only)" approximation. Computed as
+   * (criticals_remaining / deck.length) × 100; null when the deck is
+   * empty. Omitted on raw `CriticalState` (only set by `sanitize`).
+   */
+  overloadOdds?: number | null;
+  /**
+   * Raw count of dangerous cards left in the deck, populated alongside
+   * `overloadOdds`. Same semantics: counts `critical_event` always plus
+   * face-up `critical_implosion` when armed. Web ThreatStrip surfaces
+   * this as the `△ N left` tail so players see both the percentage and
+   * the absolute count. Null when the deck is empty.
+   */
+  criticalsRemaining?: number | null;
   [key: string]: unknown;
 }
 
@@ -398,62 +429,7 @@ export function createInitialCriticalState(
   };
 }
 
-export function sanitizeCriticalStateForPlayer(
-  state: CriticalState,
-  playerId: string,
-): Partial<CriticalState> {
-  const sanitized = JSON.parse(JSON.stringify(state)) as CriticalState;
-
-  // Check if player is an actual game participant
-  const isPlayer = sanitized.players.some((p) => p.playerId === playerId);
-
-  // Hide other players' hands OR hide own hand if blind (Blackout)
-  sanitized.players = sanitized.players.map((p) => {
-    if (p.playerId === playerId && !p.isBlind) {
-      return p; // Show full hand to the player
-    }
-    return {
-      ...p,
-      hand: p.hand.map(() => 'hidden' as CriticalCard), // Hide hand cards
-      stash: p.stash.map(() => 'hidden' as CriticalCard), // Hide stashed cards
-    };
-  });
-
-  // Filter logs based on scope and player status
-  sanitized.logs = sanitized.logs.filter((log) => {
-    // Public messages visible to everyone (players + spectators)
-    if (log.scope === 'all' || log.scope === undefined) return true;
-    // Player-only messages visible only to game participants
-    if (log.scope === 'players' && isPlayer) return true;
-    // Private messages only visible to sender
-    if (log.scope === 'private' && log.senderId === playerId) return true;
-    return false;
-  });
-
-  // Partially hide deck (show count only)
-  // If pendingAlter, show the top N cards to the active player
-  if (state.pendingAlter && state.pendingAlter.playerId === playerId) {
-    const count = state.pendingAlter.count;
-    sanitized.deck = [
-      ...state.deck.slice(0, count),
-      ...new Array<CriticalCard>(Math.max(0, state.deck.length - count)).fill(
-        'hidden' as CriticalCard,
-      ),
-    ];
-  } else {
-    sanitized.deck = new Array<CriticalCard>(state.deck.length).fill(
-      'hidden' as CriticalCard,
-    );
-
-    // If Critical Implosion is face up, reveal its position in the deck
-    if (state.implosionState?.isFaceUp) {
-      state.deck.forEach((card, index) => {
-        if (card === 'critical_implosion' && index < sanitized.deck.length) {
-          sanitized.deck[index] = 'critical_implosion';
-        }
-      });
-    }
-  }
-
-  return sanitized;
-}
+// `sanitizeCriticalStateForPlayer` lives in `./critical.sanitize` to keep
+// this file under the 500-line cap. Re-export for backwards compatibility
+// with existing imports.
+export { sanitizeCriticalStateForPlayer } from './critical.sanitize';

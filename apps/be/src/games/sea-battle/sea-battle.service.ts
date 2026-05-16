@@ -124,15 +124,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     await this.realtimeService.emitSessionSnapshot(
       session.roomId,
       session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
+      // Use the in-memory session — sanitizeSummaryForPlayer is a pure
+      // engine transform, no DB read. Wrapped in Promise.resolve to fit the
+      // async sanitizer signature.
+      (s, pId) => {
+        const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
         if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
+          return Promise.resolve({
+            ...s,
+            state: sanitized as Record<string, unknown>,
+          });
         }
-        return s;
+        return Promise.resolve(s);
       },
     );
   }

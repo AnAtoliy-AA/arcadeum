@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { XStack, YStack, Text } from 'tamagui';
+import { XStack, YStack, Text, useMedia } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -71,8 +71,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
-  const [showAllVariants, setShowAllVariants] = React.useState(false);
   const { snapshot } = useSessionTokens();
+  const media = useMedia();
+  // gtSm = wide enough for side-by-side preview + vertical list. Below that
+  // (web mobile / narrow tablets) we flip to a horizontal scrollable list
+  // sitting above the preview so the field doesn't get squeezed.
+  const themeListHorizontal = !media.gtSm;
 
   const { mutate: persistVariant } = useMutation({
     mutationFn: async (newVariant: string) => {
@@ -99,8 +103,30 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
   const teamMode = !!teamOpts.teamMode;
-  const teams = teamOpts.teams ?? [];
+  // Memoized so the `?? []` fallback doesn't return a fresh array reference
+  // each render and bust downstream useMemo deps.
+  const teams = React.useMemo(() => teamOpts.teams ?? [], [teamOpts.teams]);
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
+
+  // In team mode, the lobby cap is the sum of team target sizes (up to 8).
+  // The persisted room.maxPlayers can lag behind this (e.g. when a small FFA
+  // room is rematched into a larger team setup), so we override it locally so
+  // the lobby reads "8 / 8" instead of "8 / 6".
+  const teamCap = React.useMemo(
+    () =>
+      teams.reduce(
+        (sum, t) => sum + (typeof t.targetSize === 'number' ? t.targetSize : 0),
+        0,
+      ),
+    [teams],
+  );
+  const effectiveRoom = React.useMemo(
+    () =>
+      teamMode && teamCap > (room.maxPlayers ?? 0)
+        ? { ...room, maxPlayers: teamCap }
+        : room,
+    [room, teamMode, teamCap],
+  );
 
   const allTeamsFull =
     teams.length >= 2 &&
@@ -118,18 +144,15 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const roomMembers = (room.members ?? []).map((m) => ({
     userId: m.id,
     displayName: m.displayName,
+    equippedAvatarId: m.equippedAvatarId ?? null,
+    equippedBadgeId: m.equippedBadgeId ?? null,
+    equippedNameColorId: m.equippedNameColorId ?? null,
   }));
 
   // Sync with room variant when it changes from server
   React.useEffect(() => {
     setSelectedVariant(roomVariant);
   }, [roomVariant]);
-
-  const VISIBLE_COUNT = 4;
-  const visibleVariants = showAllVariants
-    ? SEA_BATTLE_VARIANTS
-    : SEA_BATTLE_VARIANTS.slice(0, VISIBLE_COUNT);
-  const hiddenCount = SEA_BATTLE_VARIANTS.length - VISIBLE_COUNT;
 
   const theme = getSeaBattleTheme(selectedVariant);
   const variantInfo = getVariantInfo(selectedVariant);
@@ -146,80 +169,94 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Theme picker + preview only — team mode controls now live in the
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
+  const renderThemeChip = (variant: (typeof SEA_BATTLE_VARIANTS)[number]) => (
+    <XStack
+      key={variant.id}
+      alignItems="center"
+      gap="$2"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      borderRadius={12}
+      borderWidth={1.5}
+      cursor="pointer"
+      flexShrink={0}
+      onClick={() => handleVariantSelect(variant.id)}
+      borderColor={
+        selectedVariant === variant.id
+          ? 'rgba(96,165,250,0.6)'
+          : 'rgba(255,255,255,0.1)'
+      }
+      backgroundColor={
+        selectedVariant === variant.id
+          ? 'rgba(96,165,250,0.12)'
+          : 'rgba(255,255,255,0.03)'
+      }
+    >
+      <Text fontSize={14}>{variant.emoji}</Text>
+      <Text
+        fontSize={12}
+        fontWeight="500"
+        color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
+      >
+        {t(variant.name as TranslationKey)}
+      </Text>
+    </XStack>
+  );
+
+  const themeLabel = (
+    <Text
+      fontSize={10}
+      color="rgba(148,163,184,0.6)"
+      letterSpacing={2}
+      textTransform="uppercase"
+    >
+      {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
+    </Text>
+  );
+
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      <XStack
-        gap="$4"
-        flexWrap="wrap"
-        alignItems="flex-start"
-        $md={{ flexDirection: 'column', gap: '$3' }}
-      >
-        <YStack gap="$2">
-          <Text
-            fontSize={10}
-            color="rgba(148,163,184,0.6)"
-            letterSpacing={2}
-            textTransform="uppercase"
-          >
-            {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-          </Text>
-          <XStack gap="$2" flexWrap="wrap">
-            {visibleVariants.map((variant) => (
-              <XStack
-                key={variant.id}
-                alignItems="center"
-                gap="$1"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius={20}
-                borderWidth={1.5}
-                cursor="pointer"
-                onClick={() => handleVariantSelect(variant.id)}
-                borderColor={
-                  selectedVariant === variant.id
-                    ? 'rgba(96,165,250,0.6)'
-                    : 'rgba(255,255,255,0.1)'
-                }
-                backgroundColor={
-                  selectedVariant === variant.id
-                    ? 'rgba(96,165,250,0.12)'
-                    : 'rgba(255,255,255,0.03)'
-                }
-              >
-                <Text fontSize={14}>{variant.emoji}</Text>
-                <Text
-                  fontSize={11}
-                  fontWeight="500"
-                  color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
-                >
-                  {t(variant.name as TranslationKey)}
-                </Text>
-              </XStack>
-            ))}
-            {!showAllVariants && hiddenCount > 0 && (
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius={20}
-                borderWidth={1}
-                borderColor="rgba(255,255,255,0.1)"
-                cursor="pointer"
-                onClick={() => setShowAllVariants(true)}
-                aria-label="Show all themes"
-              >
-                <Text fontSize={11} color="rgba(148,163,184,0.5)">
-                  + {hiddenCount} more ▾
-                </Text>
-              </XStack>
-            )}
-          </XStack>
+      themeListHorizontal ? (
+        // Narrow viewport: horizontal scrollable list ABOVE the preview so
+        // neither the field nor the chip labels get squeezed.
+        <YStack gap="$3" width="100%" minWidth={0}>
+          <YStack gap="$2" width="100%" minWidth={0}>
+            {themeLabel}
+            <XStack
+              gap="$2"
+              width="100%"
+              minWidth={0}
+              overflow="scroll"
+              paddingBottom="$1"
+            >
+              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+            </XStack>
+          </YStack>
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
         </YStack>
-
-        <SeaBattleThemeProvider variant={selectedVariant}>
-          <SeaBattleThemePreview selectedVariant={selectedVariant} />
-        </SeaBattleThemeProvider>
-      </XStack>
+      ) : (
+        // Wide viewport: preview on the left, vertical list on the right,
+        // list bounded to preview height and scrollable.
+        <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
+          <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
+            {themeLabel}
+            <YStack
+              gap="$2"
+              flex={1}
+              minHeight={0}
+              overflow="scroll"
+              paddingRight="$1"
+            >
+              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+            </YStack>
+          </YStack>
+        </XStack>
+      )
     ) : null;
 
   const headerActionsSlot = (
@@ -272,7 +309,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       )}
       <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
         <ReusableGameLobby
-          room={room}
+          room={effectiveRoom}
           isHost={isHost}
           startBusy={startBusy}
           startDisabled={teamStartBlocked}

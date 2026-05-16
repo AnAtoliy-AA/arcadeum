@@ -1,0 +1,75 @@
+name: No dropped commits
+
+# Detects force-pushes on feature branches that *remove* commits — the failure
+# mode behind PR #651, where a force-push rewrote history and the subsequent
+# merge silently dropped 5 of 7 commits from develop. A non-force-push (push
+# with new commits on top) is always safe: the previous tip remains reachable
+# from the new tip. A force-push that drops commits leaves the previous tip
+# unreachable from the new tip — `git merge-base --is-ancestor` catches that.
+#
+# Skipped on main/develop (those are protected and shouldn't see force-pushes
+# at all), and on the initial-push case where `before` is all zeros.
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  detect-dropped-commits:
+    name: Verify push preserves history
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check whether the previous tip is still reachable
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+          REF: ${{ github.ref }}
+        run: |
+          if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+            echo "Initial push of $REF — nothing to compare. OK."
+            exit 0
+          fi
+          if [[ "$AFTER"  == "0000000000000000000000000000000000000000" ]]; then
+            echo "Branch deletion of $REF — nothing to compare. OK."
+            exit 0
+          fi
+
+      - name: Checkout enough history to walk both tips
+        uses: actions/checkout@v4
+        if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
+        with:
+          fetch-depth: 0
+
+      - name: Fail if the force-push removed commits
+        if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+          REF: ${{ github.ref }}
+        run: |
+          # Make sure both tips are actually fetched. checkout@v4 with
+          # fetch-depth: 0 normally covers this, but be explicit.
+          git fetch --no-tags --quiet origin "$BEFORE" || true
+          git fetch --no-tags --quiet origin "$AFTER"  || true
+
+          if git merge-base --is-ancestor "$BEFORE" "$AFTER"; then
+            echo "Push to $REF is a fast-forward — all previous commits preserved. OK."
+            exit 0
+          fi
+
+          echo "::error::Push to $REF dropped commits."
+          echo "Previous tip $BEFORE is no longer reachable from new tip $AFTER."
+          echo ""
+          echo "Commits that existed on $REF before this push and are now gone:"
+          git log --oneline "$AFTER..$BEFORE" || true
+          echo ""
+          echo "If this was intentional (e.g. rebase, squash), open a PR from"
+          echo "the new branch instead of force-pushing over an existing branch"
+          echo "with an open PR — the merge will otherwise silently drop the"
+          echo "missing commits when GitHub merges."
+          exit 1

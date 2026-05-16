@@ -8,6 +8,7 @@ import { Colors, type ThemePalette } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from '@/lib/i18n';
 import { platformShadow } from '@/lib/platformShadow';
+import { BalanceChip } from '@/features/wallet/ui/BalanceChip';
 
 interface AppHeaderProps {
   title: string;
@@ -16,6 +17,7 @@ interface AppHeaderProps {
   onSettingsPress: () => void;
   settingsDisabled?: boolean;
   settingsActive?: boolean;
+  showBalanceChip?: boolean;
 }
 
 export function AppHeader({
@@ -25,6 +27,7 @@ export function AppHeader({
   onSettingsPress,
   settingsDisabled = false,
   settingsActive = false,
+  showBalanceChip = false,
 }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
   const { colorScheme, isDarkLike } = useColorScheme();
@@ -121,6 +124,11 @@ export function AppHeader({
           />
         </Pressable>
       </View>
+      {showBalanceChip ? (
+        <View style={styles.chipRow}>
+          <BalanceChip />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -160,5 +168,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 17,
     fontWeight: '600',
+  },
+  chipRow: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 });

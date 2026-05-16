@@ -11,9 +11,11 @@ import {
 import { CriticalLogic } from './critical-logic.utils';
 
 export interface LogEntryOptions {
+  kind?: string;
   scope?: ChatScope;
   senderId?: string | null;
   senderName?: string | null;
+  targetId?: string | null;
 }
 
 export interface EngineHelpers {
@@ -329,6 +331,7 @@ export function executeDrawBottom(
       helpers.addLog(
         state,
         helpers.createLogEntry('system', `Player exploded from bottom draw!`, {
+          kind: 'eliminated',
           scope: 'all',
           senderId: playerId,
         }),

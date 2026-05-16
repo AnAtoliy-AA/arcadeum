@@ -11,6 +11,7 @@ import {
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
 import { type SessionTokensValue } from '@/entities/session/model/useSessionTokens';
+import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import type {
   LocalAuthMode,
@@ -86,6 +87,7 @@ function mergeSnapshot(
 }
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
+  const router = useRouter();
   const { mode, setMode } = useSessionStore();
   const [state, setState] = useState<Omit<LocalAuthState, 'mode'>>(() => ({
     loading: false,
@@ -183,6 +185,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         );
         persistEmail(trimmedEmail);
         applySnapshot(snapshot);
+        // Force Server Components to re-render with the new cookie so the
+        // header BalanceChip (and any other authed SSR data) shows immediately.
+        router.refresh();
       } catch (error) {
         const rawMessage =
           error instanceof Error ? error.message : String(error);
@@ -194,7 +199,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         }));
       }
     },
-    [applySnapshot, session, loginMutation],
+    [applySnapshot, session, loginMutation, router],
   );
 
   const logout = useCallback(async () => {
@@ -246,6 +251,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             profile.username ??
             profile.email ??
             baseSnapshot.displayName,
+          role: profile.role ?? baseSnapshot.role,
         });
         applySnapshot(merged);
       } catch (profileError) {
@@ -270,6 +276,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
               profile.username ??
               profile.email ??
               refreshed.displayName,
+            role: profile.role ?? refreshed.role,
           });
           applySnapshot(merged);
         } catch (retryError) {

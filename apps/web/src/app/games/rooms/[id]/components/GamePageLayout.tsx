@@ -64,7 +64,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const media = useMedia();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
-  const { isFullscreen, toggleFullscreen } = useFullscreen(gameContainerRef);
+  const { isFullscreen, toggleFullscreen } = useFullscreen(gameContainerRef, {
+    enableKeyboard: true,
+  });
 
   // Chat visibility — wide screens default visible, narrow hidden
   const [showChat, setShowChat] = useState(false);
@@ -78,7 +80,48 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   // Chat message popup — reads from global store written by game widgets
   const logs = useGameChatStore((s) => s.logs);
+  const registeredResolver = useGameChatStore((s) => s.resolveDisplayName);
   const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(logs);
+
+  const fallbackResolver = useCallback(
+    (id?: string, fallback?: string) => {
+      if (id && userId && id === userId) return t('chat.you');
+      const member = room.members?.find((m) => m.id === id);
+      return member?.displayName ?? fallback ?? id;
+    },
+    [room.members, userId, t],
+  );
+
+  const resolveDisplayName = useCallback(
+    (id?: string, fallback?: string) => {
+      const fromGame = registeredResolver?.(id, fallback);
+      if (fromGame && fromGame !== 'Unknown') return fromGame;
+      return fallbackResolver(id, fallback);
+    },
+    [registeredResolver, fallbackResolver],
+  );
+
+  const resolveEquipped = useCallback(
+    (id?: string | null) => {
+      if (!id) return null;
+      const member = room.members?.find((m) => m.id === id);
+      if (!member) return null;
+      return {
+        equippedAvatarId: member.equippedAvatarId ?? null,
+        equippedBadgeId: member.equippedBadgeId ?? null,
+        equippedNameColorId: member.equippedNameColorId ?? null,
+      };
+    },
+    [room.members],
+  );
+
+  const popupSender = latestMessage
+    ? resolveEquipped(latestMessage.senderId ?? null)
+    : null;
+  const popupSenderName = latestMessage
+    ? (resolveDisplayName(latestMessage.senderId, latestMessage.senderName) ??
+      latestMessage.senderName)
+    : '';
 
   return (
     <>
@@ -122,14 +165,24 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           {children({ isFullscreen, toggleFullscreen })}
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
-            <GameChat onClose={() => setShowChat(false)} teamMode={teamMode} />
+            <GameChat
+              onClose={() => setShowChat(false)}
+              teamMode={teamMode}
+              resolveDisplayName={resolveDisplayName}
+              resolveEquipped={resolveEquipped}
+              currentUserId={userId}
+            />
           </ChatPanel>
         </GameRow>
 
         {latestMessage && (
           <ChatMessagePopup
             key={latestMessage.id}
-            senderName={latestMessage.senderName}
+            senderId={latestMessage.senderId ?? null}
+            senderName={popupSenderName}
+            senderEquippedAvatarId={popupSender?.equippedAvatarId ?? null}
+            senderEquippedBadgeId={popupSender?.equippedBadgeId ?? null}
+            senderEquippedNameColorId={popupSender?.equippedNameColorId ?? null}
             message={latestMessage.message}
             visible={!!latestMessage}
             onDismiss={dismissPopup}

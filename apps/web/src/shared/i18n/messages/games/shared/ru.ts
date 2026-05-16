@@ -183,6 +183,8 @@ export const ruMessages = {
       setup: 'Подготовка',
       placement: 'Размещение',
       battle: 'Битва',
+      survive: 'Выживание',
+      powerups: 'Усиления',
     },
     category: {
       cardGame: 'Карточная игра',

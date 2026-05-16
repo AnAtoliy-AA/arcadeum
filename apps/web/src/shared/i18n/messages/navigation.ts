@@ -6,6 +6,12 @@ export const en = {
   historyTab: 'History',
   settingsTab: 'Settings',
   statsTab: 'Statistics',
+  walletTab: 'Wallet',
+  shopTab: 'Shop',
+  adminTab: 'Admin',
+  menuLabel: 'Menu',
+  accountLabel: 'Account',
+  helpLabel: 'Help',
 };
 
 export const es = {
@@ -14,6 +20,12 @@ export const es = {
   historyTab: 'Historial',
   settingsTab: 'Configuración',
   statsTab: 'Estadísticas',
+  walletTab: 'Cartera',
+  shopTab: 'Tienda',
+  adminTab: 'Administración',
+  menuLabel: 'Menú',
+  accountLabel: 'Cuenta',
+  helpLabel: 'Ayuda',
 };
 
 export const fr = {
@@ -22,6 +34,12 @@ export const fr = {
   historyTab: 'Historique',
   settingsTab: 'Paramètres',
   statsTab: 'Statistiques',
+  walletTab: 'Portefeuille',
+  shopTab: 'Boutique',
+  adminTab: 'Administration',
+  menuLabel: 'Menu',
+  accountLabel: 'Compte',
+  helpLabel: 'Aide',
 };
 
 export const ru = {
@@ -30,6 +48,12 @@ export const ru = {
   historyTab: 'История',
   settingsTab: 'Настройки',
   statsTab: 'Статистика',
+  walletTab: 'Кошелёк',
+  shopTab: 'Магазин',
+  adminTab: 'Админ',
+  menuLabel: 'Меню',
+  accountLabel: 'Аккаунт',
+  helpLabel: 'Помощь',
 };
 
 export const by = {
@@ -38,6 +62,12 @@ export const by = {
   historyTab: 'Гісторыя',
   settingsTab: 'Налады',
   statsTab: 'Статыстыка',
+  walletTab: 'Кашалёк',
+  shopTab: 'Крама',
+  adminTab: 'Адмін',
+  menuLabel: 'Меню',
+  accountLabel: 'Уліковы запіс',
+  helpLabel: 'Дапамога',
 };
 
 export const navigationMessages = {

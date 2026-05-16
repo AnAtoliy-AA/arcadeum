@@ -54,7 +54,7 @@ export default defineConfig({
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
       : undefined,
-  reporter: process.env.CI ? 'list' : 'html',
+  reporter: 'list',
   // 60s is the hard ceiling for any single test. Tests that need longer are
   // usually masking dev-server compile flake or a real perf regression — surface
   // them rather than hiding under a 2-minute budget. Slow Safari variants get

@@ -37,6 +37,11 @@ process.env.BE_PORT = BE_PORT;
  */
 export default defineConfig({
   testDir: './e2e',
+  // Boots an in-memory MongoMemoryReplSet and exports MONGODB_URI on
+  // process.env before the BE webServer is spawned, so e2e doesn't depend on
+  // a local mongod. Honors an external MONGODB_URI when one is set.
+  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalTeardown: require.resolve('./e2e/global-teardown.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   // CI hits transient dev-server slowness (especially on Mobile Safari, which
@@ -117,8 +122,11 @@ export default defineConfig({
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
-        MONGODB_URI:
-          process.env.MONGODB_URI || 'mongodb://localhost:27017/arcadeum_test',
+        // MONGODB_URI intentionally omitted — globalSetup writes it to
+        // process.env (after the in-memory replset starts), and Playwright
+        // inherits process.env into the child, so the BE picks it up at
+        // spawn time. Setting it statically here would freeze the value at
+        // config-load, before globalSetup runs.
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
       },

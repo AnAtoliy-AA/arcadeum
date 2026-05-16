@@ -53,13 +53,32 @@ export const test = base.extend({
           return;
         }
 
-        // Ignore intentional 4xx noise from wallet/gem flow tests that
-        // fulfill mocked error responses (422 insufficient funds, etc.)
-        // to assert inline error rendering.
+        // Ignore intentional 4xx noise from wallet/gem flow tests and
+        // games-creation specs that fulfill mocked error responses (422
+        // insufficient funds, 400 invalid room payloads, etc.) to assert
+        // inline error rendering.
         if (
           type === 'error' &&
           /Failed to load resource.*status of 4\d{2}/i.test(text) &&
-          /\/wallet|\/payments|\/gems/.test(page.url())
+          /\/wallet|\/payments|\/gems|\/games/.test(page.url())
+        ) {
+          return;
+        }
+
+        // Ignore BE socket.io websocket handshake failures. Many specs don't
+        // mock the socket gateway and just navigate through pages that
+        // initialize a socket.io client; the unauthenticated handshake then
+        // logs identical noise across every browser ("Firefox can't establish
+        // a connection…", "WebSocket connection to … failed: WebSocket is
+        // closed before the connection is established", etc.). Firefox uses
+        // a Unicode right-single-quote in "can't", so we match a stable
+        // substring instead of the contraction.
+        if (
+          /(?:WebSocket connection to .* failed|establish a connection.*server.*ws:\/\/|WebSocket is closed before)/i.test(
+            text,
+          ) &&
+          /socket\.io\//.test(text) &&
+          /(?:localhost|127\.0\.0\.1):4000/.test(text)
         ) {
           return;
         }

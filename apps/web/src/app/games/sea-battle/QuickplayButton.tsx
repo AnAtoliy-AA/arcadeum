@@ -18,15 +18,15 @@ export function QuickplayButton({ gameId, label }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
-    if (!snapshot.accessToken) {
-      router.push(routes.auth);
-      return;
-    }
-
     setLoading(true);
     try {
+      // The /games/quickplay endpoint accepts anonymous users via the
+      // x-anonymous-id header that apiClient attaches automatically, so
+      // we don't gate on accessToken — visitors arriving from search
+      // play immediately. We still forward the bearer token when one
+      // exists so logged-in users get their real userId, not anonymous.
       const { room } = await gamesApi.quickplay(gameId, {
-        token: snapshot.accessToken,
+        token: snapshot.accessToken || undefined,
       });
       router.push(routes.gameRoom(room.id));
     } catch (err) {

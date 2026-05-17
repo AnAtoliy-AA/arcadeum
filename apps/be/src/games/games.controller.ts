@@ -62,13 +62,16 @@ export class GamesController {
     return { room };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('quickplay')
   async quickplay(
     @Req() req: Request,
     @Body() dto: QuickplayGameDto,
   ): Promise<{ room: Awaited<ReturnType<GamesService['quickplay']>> }> {
-    const user = req.user as AuthenticatedUser;
+    const user = req.user as AuthenticatedUser | null;
+    if (!user) {
+      throw new BadRequestException('Missing user context');
+    }
     const room = await this.gamesService.quickplay(user.userId, dto.gameId);
     return { room };
   }

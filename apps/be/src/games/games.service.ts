@@ -61,9 +61,6 @@ export class GamesService {
 
   // ========== Room Operations ==========
 
-  /**
-   * Create a new game room
-   */
   async createRoom(userId: string, dto: CreateGameRoomDto) {
     const room = await this.roomsService.createRoom(userId, dto);
 

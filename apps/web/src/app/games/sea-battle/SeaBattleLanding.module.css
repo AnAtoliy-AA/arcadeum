@@ -8,6 +8,13 @@
 .page {
   position: relative;
   isolation: isolate;
+  /* Hero gradient stops — overridable per theme (see [data-theme='light'] below). */
+  --heroTitleFrom: var(--color-strong, #fff);
+  --heroTitleTo: var(--accent, #38bdf8);
+}
+[data-theme='light'] .page {
+  --heroTitleFrom: var(--primary, #06b6d4);
+  --heroTitleTo: var(--accent, #38bdf8);
 }
 .page::before {
   content: '';
@@ -165,8 +172,8 @@
   margin: 1.25rem 0 0;
   background: linear-gradient(
     135deg,
-    var(--color-strong, #fff) 30%,
-    var(--accent, #38bdf8) 95%
+    var(--heroTitleFrom) 30%,
+    var(--heroTitleTo) 95%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -178,14 +185,14 @@
   margin: 1rem 0 0;
   font-weight: 500;
   line-height: 1.4;
-  max-width: 32rem;
+  max-width: 34rem;
 }
 .heroIntro {
   color: var(--color-muted);
   font-size: 0.9375rem;
   line-height: 1.65;
   margin: 0.875rem 0 0;
-  max-width: 34rem;
+  max-width: 36rem;
 }
 .heroCtas {
   display: flex;
@@ -226,8 +233,20 @@
   width: 100%;
   max-width: 460px;
   justify-self: end;
-  padding: 1.75rem 1.5rem 1.5rem 1.75rem;
+  /* Single source of truth for board padding — rails + sweep reuse these. */
+  --boardPadTop: 1.75rem;
+  --boardPadRight: 1.5rem;
+  --boardPadBottom: 1.5rem;
+  --boardPadLeft: 1.75rem;
+  /* Hit-flare colors — overridable per theme; default to canonical red. */
+  --hitFlareCore: #fecaca;
+  --hitFlareEdge: #dc2626;
+  --hitFlareGlow: #ef4444;
+  --hitFlareGlowAlt: #f87171;
+  padding: var(--boardPadTop) var(--boardPadRight) var(--boardPadBottom)
+    var(--boardPadLeft);
   border-radius: 20px;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
   background: linear-gradient(
     180deg,
     rgba(8, 47, 73, 0.65),
@@ -277,16 +296,16 @@
 }
 .boardCoordsTop {
   top: 0.4rem;
-  left: 1.75rem;
-  right: 0.4rem;
+  left: var(--boardPadLeft);
+  right: var(--boardPadRight);
   height: 1rem;
   grid-template-columns: repeat(10, 1fr);
   align-items: center;
   justify-items: center;
 }
 .boardCoordsSide {
-  top: 1.75rem;
-  bottom: 0.4rem;
+  top: var(--boardPadTop);
+  bottom: var(--boardPadBottom);
   left: 0.35rem;
   width: 1rem;
   grid-template-rows: repeat(10, 1fr);
@@ -321,9 +340,13 @@
   position: absolute;
   inset: 18%;
   border-radius: 999px;
-  background: radial-gradient(circle, #fecaca 10%, #dc2626 70%);
+  background: radial-gradient(
+    circle,
+    var(--hitFlareCore) 10%,
+    var(--hitFlareEdge) 70%
+  );
   box-shadow:
-    0 0 8px #ef4444,
+    0 0 8px var(--hitFlareGlow),
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   animation: hitFlare 2.4s ease-in-out infinite;
 }
@@ -331,12 +354,12 @@
   0%,
   100% {
     box-shadow:
-      0 0 8px #ef4444,
+      0 0 8px var(--hitFlareGlow),
       inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   }
   50% {
     box-shadow:
-      0 0 16px #f87171,
+      0 0 16px var(--hitFlareGlowAlt),
       inset 0 0 0 1px rgba(255, 255, 255, 0.7);
   }
 }
@@ -351,7 +374,8 @@
 
 .sonarSweep {
   position: absolute;
-  inset: 1.75rem 1.5rem 1.5rem 1.75rem;
+  inset: var(--boardPadTop) var(--boardPadRight) var(--boardPadBottom)
+    var(--boardPadLeft);
   border-radius: 6px;
   pointer-events: none;
   overflow: hidden;
@@ -802,10 +826,23 @@
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  /* Subtle "console tilted on the desk" rest state; flattens on hero hover. */
+  .boardWrap {
+    transform: perspective(1200px) rotateX(2deg) rotateY(-4deg);
+  }
+  .hero:hover .boardWrap {
+    transform: perspective(1200px) rotateX(0) rotateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sonarSweep::before,
   .heroEyebrow::before,
   .boardCell.hit::after {
     animation: none;
+  }
+  .boardWrap {
+    transition: none;
   }
 }

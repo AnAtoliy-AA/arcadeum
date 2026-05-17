@@ -237,6 +237,7 @@ export const frMessages = {
           'La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur Arcadeum, vous pouvez jouer à la Bataille Navale directement dans votre navigateur — sans téléchargement, sans inscription — avec des amis, des inconnus ou des bots IA.',
         ctaPlay: 'Créer une salle de Bataille Navale',
         ctaRooms: 'Voir les salles ouvertes',
+        ctaGroupLabel: 'Démarrage rapide de Bataille Navale',
         eyebrow: 'Gratuit · 2–4 joueurs · Sans inscription',
         chips: [
           'Dans le navigateur',
@@ -327,6 +328,11 @@ export const frMessages = {
               'Chaque joueur place secrètement une flotte sur une grille 10×10, puis les joueurs tirent à tour de rôle sur une case de la grille de chaque adversaire. Les touches sont marquées en rouge, les ratés en blanc. Quand toutes les cases d’un navire sont touchées, il coule. Le dernier joueur avec au moins un navire à flot gagne.',
           },
         },
+      },
+      finalCta: {
+        title: 'Prêt à jouer ?',
+        subtitle:
+          'Ouvrez une salle et partagez le lien — votre flotte vous attend.',
       },
       breadcrumb: {
         home: 'Accueil',

@@ -89,7 +89,10 @@ function ThemeChip({ theme }: { theme: ThemePreview }) {
     <div className={styles.themeChip} style={style}>
       <div className={styles.themeChipBoard}>
         {theme.cells.map((kind, idx) => (
-          <span key={idx} className={kind ? styles[kind] : undefined} />
+          <span
+            key={`${theme.key}-${idx}-${kind || 'empty'}`}
+            className={kind ? styles[kind] : undefined}
+          />
         ))}
       </div>
       <span className={styles.themeChipName}>{theme.name}</span>
@@ -174,7 +177,11 @@ export default function SeaBattleLanding({
               <p className={styles.heroTagline}>{landing.hero.tagline}</p>
               <p className={styles.heroIntro}>{landing.hero.intro}</p>
 
-              <div className={styles.heroCtas}>
+              <div
+                className={styles.heroCtas}
+                role="group"
+                aria-label={landing.hero.ctaGroupLabel}
+              >
                 <LinkButton href={createRoomHref} variant="primary" size="lg">
                   {landing.hero.ctaPlay}
                 </LinkButton>
@@ -316,8 +323,12 @@ export default function SeaBattleLanding({
 
           {/* Final CTA */}
           <section className={styles.finalCta}>
-            <h2 className={styles.finalCtaTitle}>{landing.hero.title}</h2>
-            <p className={styles.finalCtaSub}>{landing.hero.tagline}</p>
+            <h2 className={styles.finalCtaTitle}>
+              {landing.finalCta?.title ?? landing.hero.title}
+            </h2>
+            <p className={styles.finalCtaSub}>
+              {landing.finalCta?.subtitle ?? landing.hero.tagline}
+            </p>
             <LinkButton href={createRoomHref} variant="primary" size="lg">
               {landing.hero.ctaPlay}
             </LinkButton>

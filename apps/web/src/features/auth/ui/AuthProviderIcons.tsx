@@ -154,4 +154,3 @@ export function ArrowGlyph({ size = 14 }: IconProps) {
     </svg>
   );
 }
-

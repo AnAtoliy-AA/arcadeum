@@ -52,7 +52,9 @@ describe('FlashHistory', () => {
     );
     const rows = screen.getAllByTestId('flash-history-row');
     expect(rows).toHaveLength(2);
-    expect(rows.map((r) => r.textContent).join('|')).not.toContain('hi everyone');
+    expect(rows.map((r) => r.textContent).join('|')).not.toContain(
+      'hi everyone',
+    );
   });
 
   it('honours an explicit limit prop', () => {

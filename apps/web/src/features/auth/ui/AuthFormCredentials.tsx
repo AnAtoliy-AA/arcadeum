@@ -75,7 +75,8 @@ export function AuthFormCredentials({
     usernameAvailabilityMessages.taken,
   );
   const emailDescription =
-    isRegisterMode && (emailAvailability === 'checking' || emailAvailability === 'available')
+    isRegisterMode &&
+    (emailAvailability === 'checking' || emailAvailability === 'available')
       ? emailAvailability === 'checking'
         ? emailAvailabilityMessages.checking
         : emailAvailabilityMessages.available

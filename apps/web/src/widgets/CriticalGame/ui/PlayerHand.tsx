@@ -46,6 +46,8 @@ import {
   HandTitle,
 } from './styles';
 
+import { type GameVariant } from '@arcadeum/ui';
+
 interface PlayerHandProps {
   currentPlayer: CriticalPlayerState;
   onUnstashCard?: (card: CriticalCard) => void;
@@ -80,8 +82,6 @@ interface PlayerHandProps {
   handLayout?: HandLayoutMode;
   setHandLayout?: (layout: HandLayoutMode) => void;
 }
-
-import { type GameVariant } from '@arcadeum/ui';
 
 export function PlayerHand({
   currentPlayer,
@@ -125,16 +125,16 @@ export function PlayerHand({
   const scene = useScenePalette();
   const media = useMedia();
   const isMobile = media.sm;
+  const isXs = media.xs;
   const handSize = isMobile ? 'mobileFlat' : 'desktopFan';
   const isFanned = !isMobile && handLayout === 'grid';
-  const effectiveLayout: HandLayoutMode = isMobile ? 'linear' : handLayout;
+  const effectiveLayout: HandLayoutMode = isXs ? 'linear' : handLayout;
 
-  // Treat selectedCardId as active only if the card is still in hand.
   const activeSelectedCardId =
     selectedCardId && currentPlayer.hand.includes(selectedCardId)
       ? selectedCardId
       : null;
-  // Group current hand by card type/count for rendering logic
+
   const groupedHand = useMemo(() => {
     const counts = new Map<CriticalCard, number>();
     currentPlayer.hand.forEach((card: CriticalCard) =>
@@ -165,20 +165,15 @@ export function PlayerHand({
   );
   const { flippingCardType, showBack } = useCardFlip(distinctCardTypes);
 
-  // Handle clicking on a card in hand
   const handleCardClick = useCallback(
     (card: CriticalCard, count: number) => {
-      // Check if it's the player's turn and they can act
       if (!isMyTurn || isGameOver || !canAct) return;
 
-      // On mobile, tap a card to open the popover; the popover dispatches the
-      // actual action via its own buttons. Tapping the same card again closes.
       if (isMobile) {
         setSelectedCardId((prev) => (prev === card ? null : card));
         return;
       }
 
-      // Special handling for certain cards
       if (card === 'insight') {
         onPlaySeeTheFuture();
         return;
@@ -192,7 +187,6 @@ export function PlayerHand({
         return;
       }
 
-      // Check if card can be played as a combo (2+ copies)
       const isComboCard = COMBO_CARDS.includes(card as CriticalComboCard);
       const isComboableCard = allowActionCardCombos
         ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
@@ -203,7 +197,6 @@ export function PlayerHand({
         return;
       }
 
-      // Check if it's a playable action card
       if (PLAYABLE_ACTION_CARDS.includes(card)) {
         onPlayActionCard(card);
         return;
@@ -225,16 +218,13 @@ export function PlayerHand({
     ],
   );
 
-  // Determine if a card is clickable
   const isCardClickable = useCallback(
     (card: CriticalCard, count: number): boolean => {
       if (!isMyTurn || isGameOver || !canAct) return false;
 
-      // Special cards have specific handlers
       if (card === 'insight' || card === 'trade' || card === 'cancel')
         return true;
 
-      // Combo cards with 2+ copies
       const isComboCard = COMBO_CARDS.includes(card as CriticalComboCard);
       const isComboableCard = allowActionCardCombos
         ? !SPECIAL_CARDS.includes(card as (typeof SPECIAL_CARDS)[number])
@@ -243,7 +233,6 @@ export function PlayerHand({
       if (isComboableCard && count >= 2 && aliveOpponents.length > 0)
         return true;
 
-      // Action cards
       if (PLAYABLE_ACTION_CARDS.includes(card)) return true;
 
       return false;
@@ -281,7 +270,6 @@ export function PlayerHand({
         />
       )}
 
-      {/* Show Nope button on other turns when there's a pending action */}
       {!isMyTurn && !isGameOver && canPlayNope && !isMobile && (
         <InfoCard>
           <InfoTitle>{t('games.table.actions.start') || 'Actions'}</InfoTitle>
@@ -313,14 +301,13 @@ export function PlayerHand({
               handLayout={handLayout}
               setShowNames={setShowNames}
               setShowDescriptions={setShowDescriptions}
-              setHandLayout={isMobile ? undefined : setHandLayout}
+              setHandLayout={isXs ? undefined : setHandLayout}
               cardVariant={cardVariant}
               t={t}
             />
           </HandHeader>
 
           <CardsGrid data-testid="hand-grid" $layout={effectiveLayout}>
-            {/* Render Stash first if any */}
             {stashItems.map(({ card, count, id }, idx) => (
               <StashedCard
                 key={id}
@@ -441,33 +428,32 @@ export function PlayerHand({
               );
             })}
           </CardsGrid>
-
-          {isMobile && (
-            <MobileHandPopover
-              selectedCard={activeSelectedCardId}
-              count={
-                activeSelectedCardId
-                  ? (groupedHand.find(
-                      ({ card }) => card === activeSelectedCardId,
-                    )?.count ?? 0)
-                  : 0
-              }
-              isMyTurn={isMyTurn}
-              canAct={canAct}
-              allowActionCardCombos={allowActionCardCombos}
-              hasOpponents={aliveOpponents.length > 0}
-              cardVariant={cardVariant}
-              hand={currentPlayer.hand}
-              t={t}
-              onPlaySeeTheFuture={onPlaySeeTheFuture}
-              onOpenFavorModal={onOpenFavorModal}
-              onPlayNope={onPlayNope}
-              onPlayActionCard={onPlayActionCard}
-              onOpenEventCombo={onOpenEventCombo}
-              onClose={() => setSelectedCardId(null)}
-            />
-          )}
         </InfoCard>
+
+        {isMobile && (
+          <MobileHandPopover
+            selectedCard={activeSelectedCardId}
+            count={
+              activeSelectedCardId
+                ? (groupedHand.find(({ card }) => card === activeSelectedCardId)
+                    ?.count ?? 0)
+                : 0
+            }
+            isMyTurn={isMyTurn}
+            canAct={canAct}
+            allowActionCardCombos={allowActionCardCombos}
+            hasOpponents={aliveOpponents.length > 0}
+            cardVariant={cardVariant}
+            hand={currentPlayer.hand}
+            t={t}
+            onPlaySeeTheFuture={onPlaySeeTheFuture}
+            onOpenFavorModal={onOpenFavorModal}
+            onPlayNope={onPlayNope}
+            onPlayActionCard={onPlayActionCard}
+            onOpenEventCombo={onOpenEventCombo}
+            onClose={() => setSelectedCardId(null)}
+          />
+        )}
       </HandContainer>
 
       <MobileActionBar

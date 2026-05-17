@@ -60,10 +60,8 @@ describe('OpponentTile', () => {
       }),
       resolveDisplayName: () => 'Alice',
     });
-    expect(screen.getByTestId('opponent-tile-name-alice')).toHaveTextContent(
-      'Alice',
-    );
-    expect(screen.getByTestId('opponent-tile-count-alice')).toHaveTextContent(
+    expect(screen.getByTestId('player-name-alice')).toHaveTextContent('Alice');
+    expect(screen.getByTestId('player-stats-count-alice')).toHaveTextContent(
       '3',
     );
   });
@@ -73,12 +71,12 @@ describe('OpponentTile', () => {
       player: makePlayer({ playerId: 'p1', alive: false, hand: [] }),
     });
     expect(
-      screen.getByTestId('opponent-tile-eliminated-p1'),
+      screen.getByTestId('player-eliminated-label-p1'),
     ).toBeInTheDocument();
     expect(
-      screen.queryByTestId('opponent-tile-count-p1'),
+      screen.queryByTestId('player-stats-count-p1'),
     ).not.toBeInTheDocument();
-    expect(screen.getByTestId('opponent-tile-p1')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p1')).toHaveAttribute(
       'data-alive',
       'false',
     );
@@ -86,7 +84,7 @@ describe('OpponentTile', () => {
 
   it('flags the current turn via data-current-turn', () => {
     renderTile({ isCurrentTurn: true });
-    expect(screen.getByTestId('opponent-tile-p1')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p1')).toHaveAttribute(
       'data-current-turn',
       'true',
     );
@@ -94,7 +92,7 @@ describe('OpponentTile', () => {
 
   it('flags the armed target via data-target', () => {
     renderTile({ isTarget: true });
-    expect(screen.getByTestId('opponent-tile-p1')).toHaveAttribute(
+    expect(screen.getByTestId('player-card-p1')).toHaveAttribute(
       'data-target',
       'true',
     );
@@ -104,14 +102,14 @@ describe('OpponentTile', () => {
     const onSelect = vi.fn();
     renderTile({ onSelect });
     // Tamagui maps `onPress` to a `click` listener on the web.
-    screen.getByTestId('opponent-tile-p1').click();
+    screen.getByTestId('player-card-p1').click();
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 
   it('exposes role=button and aria-pressed when interactive', () => {
     const onSelect = vi.fn();
     renderTile({ onSelect, isTarget: true });
-    const tile = screen.getByTestId('opponent-tile-p1');
+    const tile = screen.getByTestId('player-card-p1');
     expect(tile).toHaveAttribute('role', 'button');
     expect(tile).toHaveAttribute('aria-pressed', 'true');
   });
@@ -122,7 +120,7 @@ describe('OpponentTile', () => {
       player: makePlayer({ alive: false }),
       onSelect,
     });
-    const tile = screen.getByTestId('opponent-tile-p1');
+    const tile = screen.getByTestId('player-card-p1');
     expect(tile).not.toHaveAttribute('role', 'button');
     tile.click();
     expect(onSelect).not.toHaveBeenCalled();
@@ -141,7 +139,7 @@ describe('OpponentTile', () => {
       isTarget: true,
       onSelect: vi.fn(),
     });
-    const tile = screen.getByTestId('opponent-tile-alice');
+    const tile = screen.getByTestId('player-card-alice');
     const label = tile.getAttribute('aria-label') ?? '';
     expect(label).toContain('Alice');
     expect(label).toContain('games.table.players.a11yState.armedTarget');
@@ -155,7 +153,7 @@ describe('OpponentTile', () => {
       isCurrentTurn: true,
       onSelect: vi.fn(),
     });
-    const tile = screen.getByTestId('opponent-tile-alice');
+    const tile = screen.getByTestId('player-card-alice');
     expect(tile.getAttribute('aria-label')).toContain(
       'games.table.players.a11yState.currentTurn',
     );
@@ -166,7 +164,7 @@ describe('OpponentTile', () => {
       player: makePlayer({ playerId: 'bob', alive: false, hand: [] }),
       resolveDisplayName: () => 'Bob',
     });
-    const tile = screen.getByTestId('opponent-tile-bob');
+    const tile = screen.getByTestId('player-card-bob');
     const label = tile.getAttribute('aria-label') ?? '';
     expect(label).toContain('Bob');
     expect(label).toContain('games.table.players.a11yState.eliminated');

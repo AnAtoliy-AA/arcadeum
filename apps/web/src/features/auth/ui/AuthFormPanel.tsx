@@ -66,20 +66,10 @@ export function AuthFormPanel({
           <MailGlyph size={30} />
         </YStack>
         <YStack gap="$2" alignItems="center">
-          <Typography
-            variant="heading"
-            uiSize="lg"
-            weight="700"
-            textCenter
-          >
+          <Typography variant="heading" uiSize="lg" weight="700" textCenter>
             {form.magicLinkSentTitle}
           </Typography>
-          <Typography
-            variant="body"
-            uiSize="sm"
-            color="$colorMuted"
-            textCenter
-          >
+          <Typography variant="body" uiSize="sm" color="$colorMuted" textCenter>
             {form.magicLinkSentBody.replace('{{email}}', magicLinkEmail)}
           </Typography>
         </YStack>
@@ -96,7 +86,9 @@ export function AuthFormPanel({
   }
 
   if (localAccessToken) {
-    return <ActiveSessionCard labels={labels} auth={auth} maxWidth={maxWidth} />;
+    return (
+      <ActiveSessionCard labels={labels} auth={auth} maxWidth={maxWidth} />
+    );
   }
 
   return (

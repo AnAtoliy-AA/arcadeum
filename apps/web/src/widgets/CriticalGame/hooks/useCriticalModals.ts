@@ -6,21 +6,27 @@ import type { CriticalCard } from '../types';
 
 interface UseCriticalModalsOptions {
   playFavor?: (targetId: string) => void;
+  playEventCombo?: (
+    card: string | null,
+    mode: string,
+    targetPlayerId?: string,
+    desiredCard?: string,
+    selectedIndex?: number,
+    requestedDiscardCard?: string,
+    cards?: string[],
+  ) => void;
 }
 
 /**
  * Hook for managing game modals and chat state
  */
-export function useCriticalModals({ playFavor }: UseCriticalModalsOptions) {
+export function useCriticalModals({
+  playFavor,
+  playEventCombo,
+}: UseCriticalModalsOptions = {}) {
   const store = useCriticalGameStore();
 
-  // Destructure for easier usage, but keep store prefix or similar if needed?
-  // Actually, returning 'store' directly or checking differences.
-  // The original hook returns a flat object. We can mimic that.
-
   // Listen for See the Future response
-  // This logic ties socket events to store updates.
-  // Ideally this should be in the store or a "SocketController", but keeping it here for now is fine since it's a hook used in the Game component.
   useEffect(() => {
     const handleSeeTheFuture = (data: { topCards: string[] }) => {
       if (data.topCards) {
@@ -40,7 +46,28 @@ export function useCriticalModals({ playFavor }: UseCriticalModalsOptions) {
     return () => {
       gameSocket.off('games.session.see_the_future.played', wrappedHandler);
     };
-  }, [store.setSeeTheFutureModal, store]);
+  }, [store]);
+
+  const handleConfirmEventCombo = useCallback(() => {
+    if (!playEventCombo) return;
+    if (store.selectedMode === 'pair') {
+      playEventCombo(
+        store.selectedCard,
+        'pair',
+        store.selectedTarget ?? undefined,
+        undefined,
+        store.selectedIndex ?? undefined,
+      );
+    } else if (store.selectedMode === 'trio') {
+      playEventCombo(
+        store.selectedCard,
+        'triple',
+        store.selectedTarget ?? undefined,
+        store.selectedCard ?? undefined, // desiredCard
+      );
+    }
+    store.closeEventComboModal();
+  }, [store, playEventCombo]);
 
   return {
     // Event combo modal
@@ -56,6 +83,7 @@ export function useCriticalModals({ playFavor }: UseCriticalModalsOptions) {
     handleOpenEventCombo: store.openEventCombo,
     handleCloseEventComboModal: store.closeEventComboModal,
     handleSelectComboCard: store.selectComboCard,
+    handleConfirmEventCombo,
 
     // Fiver mode state
     selectedDiscardCard: store.selectedDiscardCard,

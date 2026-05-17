@@ -4,8 +4,10 @@ import { YStack, XStack, Text } from 'tamagui';
 import { CardsIcon, SkullIcon } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { IdleBadge } from '@/shared/ui';
-import type { CriticalPlayerTableState } from '../../types';
+import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+import { ChatBubble } from '../ChatBubble';
+import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
 
 interface OpponentTileProps {
   player: CriticalPlayerTableState;
@@ -43,6 +45,7 @@ interface OpponentTileProps {
    */
   onSelect?: () => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
+  logs?: CriticalLogEntry[];
 }
 
 const TURN_RING = '#34d399';
@@ -57,6 +60,12 @@ function initialsOf(name: string): string {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+}
+
+function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
+  return logs.findLast(
+    (log) => log.type === 'message' && log.senderId === playerId,
+  );
 }
 
 interface OpponentTileState {
@@ -111,6 +120,7 @@ export function OpponentTile({
   isIdle = false,
   onSelect,
   resolveDisplayName,
+  logs = [],
 }: OpponentTileProps) {
   const { t } = useTranslation();
   const displayName = resolveDisplayName(
@@ -118,6 +128,8 @@ export function OpponentTile({
     `Player ${player.playerId.slice(0, 8)}`,
   );
   const alive = player.alive;
+
+  const latestMessage = findLastMessage(logs, player.playerId);
 
   const playerColor = getPlayerColor(player.playerId);
 
@@ -156,6 +168,7 @@ export function OpponentTile({
 
   return (
     <YStack
+      position="relative"
       data-testid={`player-card-${player.playerId}`}
       data-alive={alive ? 'true' : 'false'}
       data-current-turn={isCurrentTurn ? 'true' : 'false'}
@@ -200,6 +213,22 @@ export function OpponentTile({
       // scroll container so swipes don't strand a tile mid-row.
       style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
     >
+      {latestMessage && (
+        <>
+          <ChatBubble
+            key={`bubble-${latestMessage.id}`}
+            message={latestMessage.message}
+            position="bottom"
+          />
+          <SeaBattlePopup
+            key={`popup-${latestMessage.id}`}
+            playerId={player.playerId}
+            playerName={displayName}
+            visible={true}
+            position="bottom"
+          />
+        </>
+      )}
       <YStack
         width={finalAvatarSize}
         height={finalAvatarSize}

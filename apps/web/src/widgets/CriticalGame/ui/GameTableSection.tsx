@@ -87,6 +87,7 @@ export function GameTableSection({
           player={player}
           isCurrentTurn={playerId === currentTurnPlayerId}
           resolveDisplayName={resolveDisplayName}
+          logs={logs}
         />
       );
     }

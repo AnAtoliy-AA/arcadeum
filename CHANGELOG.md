@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.1] - 2026-05-17
+
+### Added
+- complete steampunk and zen sprites and update spritesheets (N/A)
+- add missing steampunk sprites and update spritesheet (N/A)
+- finalize western sprites and update spritesheet (N/A)
+- add western aegis and blight sprites and update spritesheet (N/A)
+- finalize fantasy sprites and update spritesheet (N/A)
+- finalize egypt sprites and update spritesheet (N/A)
+- complete galaxy sprites and update thematic sprite sheets (N/A)
+- finish galaxy sprites with realistic 4k images (N/A)
+- upgrade Critical Game sprites to realistic 4k (Egypt, Fantasy, Western, Steampunk) (N/A)
+- integrate 17 new card illustrations and refactor views to stay under line limit (N/A)
+- completed fantasy chaos pack and western chaos pack (N/A)
+- completed deity pack for all variants and started chaos pack (N/A)
+- deity and chaos pack expansion for several variants (N/A)
+- partial deity pack for fantasy variant (N/A)
+- complete galaxy collection and deity packs for egypt, steampunk, zen (N/A)
+- complete future utilities and fantasy/western collection packs (N/A)
+- fill missing future and theft sprites for egypt and steampunk (N/A)
+- complete galaxy thematic sprites (N/A)
+- complete fantasy and western thematic sprites (N/A)
+- expand zen and fantasy pack sprites (N/A)
+- expand steampunk future pack sprites (N/A)
+- expand thematic card sprites for fantasy, western, steampunk, and zen variants (N/A)
+- expand egypt variant with 23 additional thematic card sprites (N/A)
+- implement high-quality thematic sprites for egypt, steampunk, and zen variants (N/A)
+- implement thematic sprite sheets for Galaxy and Fantasy variants (N/A)
+- integrate 6 new thematic variants and resolve literal string type mismatches (N/A)
+
+### Fixed
+- restore chat bubble and sea battle popup on mobile opponent tiles (N/A)
+- ARC-590: stabilize critical mobile interactions and game layouts (ARC-590)
+
+
 ## [1.14.0] - 2026-05-16
 
 ## [1.13.56] - 2026-05-16

@@ -1,4 +1,10 @@
-import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Inject,
+  forwardRef,
+  BadRequestException,
+} from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import {
@@ -17,6 +23,7 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { StartGameSessionResult } from './games.types';
 import { ListRoomsFilters } from './rooms/game-rooms.types';
 import { GamesRematchService } from './games.rematch.service';
+import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
@@ -42,6 +49,7 @@ export class GamesService {
     private readonly utilities: GameUtilitiesService,
     private readonly authService: AuthService,
     private readonly rematchService: GamesRematchService,
+    private readonly roomsQuickplayService: GameRoomsQuickplayService,
     @Inject(forwardRef(() => SeaBattleService))
     private readonly seaBattleService: SeaBattleService,
     @Inject(forwardRef(() => CriticalService))
@@ -62,6 +70,18 @@ export class GamesService {
     // Emit real-time event
     this.realtimeService.emitRoomCreated(room);
 
+    return room;
+  }
+
+  async quickplay(userId: string, gameId: string) {
+    if (gameId !== 'sea_battle_v1') {
+      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
+    }
+    const room = await this.roomsQuickplayService.createQuickplayRoom(
+      userId,
+      gameId,
+    );
+    this.realtimeService.emitRoomCreated(room);
     return room;
   }
 

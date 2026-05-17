@@ -7,6 +7,7 @@ import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { AuthService } from '../auth/auth.service';
 import { GamesRematchService } from './games.rematch.service';
+import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
@@ -19,6 +20,7 @@ import { GameSessionSummary } from './sessions/game-sessions.service';
 describe('GamesService', () => {
   let service: GamesService;
   let roomsService: jest.Mocked<GameRoomsService>;
+  let roomsQuickplayService: jest.Mocked<GameRoomsQuickplayService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let realtimeService: jest.Mocked<GamesRealtimeService>;
   let walletService: jest.Mocked<WalletService>;
@@ -35,6 +37,10 @@ describe('GamesService', () => {
       getRoomParticipants: jest.fn(),
       updateRoomStatus: jest.fn(),
       ensureParticipant: jest.fn(),
+    };
+
+    const mockRoomsQuickplayService = {
+      createQuickplayRoom: jest.fn(),
     };
 
     const mockSessionsService = {
@@ -95,6 +101,10 @@ describe('GamesService', () => {
         { provide: GameUtilitiesService, useValue: mockUtilities },
         { provide: AuthService, useValue: mockAuthService },
         { provide: GamesRematchService, useValue: mockRematchService },
+        {
+          provide: GameRoomsQuickplayService,
+          useValue: mockRoomsQuickplayService,
+        },
         { provide: SeaBattleService, useValue: mockSeaBattleService },
         { provide: CriticalService, useValue: mockCriticalService },
         {
@@ -108,6 +118,7 @@ describe('GamesService', () => {
 
     service = module.get<GamesService>(GamesService);
     roomsService = module.get(GameRoomsService);
+    roomsQuickplayService = module.get(GameRoomsQuickplayService);
     sessionsService = module.get(GameSessionsService);
     realtimeService = module.get(GamesRealtimeService);
     walletService = module.get(WalletService);
@@ -141,6 +152,33 @@ describe('GamesService', () => {
       expect(roomsService.createRoom).toHaveBeenCalledWith(userId, dto);
       expect(realtimeService.emitRoomCreated).toHaveBeenCalledWith(createdRoom);
       expect(result).toEqual(createdRoom);
+    });
+  });
+
+  describe('quickplay', () => {
+    it('creates a quickplay room for sea_battle_v1 and emits the event', async () => {
+      const userId = 'user1';
+      const createdRoom = { id: 'room1', gameId: 'sea_battle_v1' };
+      roomsQuickplayService.createQuickplayRoom.mockResolvedValue(
+        createdRoom as unknown as GameRoomSummary,
+      );
+      realtimeService.emitRoomCreated.mockImplementation(() => {});
+
+      const result = await service.quickplay(userId, 'sea_battle_v1');
+
+      expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
+        userId,
+        'sea_battle_v1',
+      );
+      expect(realtimeService.emitRoomCreated).toHaveBeenCalledWith(createdRoom);
+      expect(result).toEqual(createdRoom);
+    });
+
+    it('rejects unsupported game ids', async () => {
+      await expect(service.quickplay('user1', 'critical_v1')).rejects.toThrow(
+        /Quickplay not supported/,
+      );
+      expect(roomsQuickplayService.createQuickplayRoom).not.toHaveBeenCalled();
     });
   });
 

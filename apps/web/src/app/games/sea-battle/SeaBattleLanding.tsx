@@ -5,6 +5,9 @@ import { Container, PageLayout, LinkButton } from '@/shared/ui';
 import styles from './SeaBattleLanding.module.css';
 import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
 import { THEME_PREVIEWS, type ThemePreview } from './themePreviews';
+import { QuickplayButton } from './QuickplayButton';
+
+const SEA_BATTLE_GAME_ID = 'sea_battle_v1';
 
 type Landing = SeaBattleGamesMessages['sea_battle_v1']['landing'];
 type Rules = SeaBattleGamesMessages['sea_battle_v1']['rules'];
@@ -182,7 +185,11 @@ export default function SeaBattleLanding({
                 role="group"
                 aria-label={landing.hero.ctaGroupLabel}
               >
-                <LinkButton href={createRoomHref} variant="primary" size="lg">
+                <QuickplayButton
+                  gameId={SEA_BATTLE_GAME_ID}
+                  label={landing.hero.ctaQuickplay}
+                />
+                <LinkButton href={createRoomHref} variant="secondary" size="lg">
                   {landing.hero.ctaPlay}
                 </LinkButton>
                 <LinkButton href={roomsHref} variant="secondary" size="lg">

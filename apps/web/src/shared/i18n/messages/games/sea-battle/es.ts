@@ -237,6 +237,7 @@ export const esMessages = {
           'Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En Arcadeum puedes jugar a Batalla Naval directamente en el navegador — sin descargas ni registros — con amigos, desconocidos o contra bots de IA.',
         ctaPlay: 'Crear una sala de Batalla Naval',
         ctaRooms: 'Ver salas abiertas',
+        ctaQuickplay: 'Jugar contra IA ahora',
         ctaGroupLabel: 'Inicio rápido de Batalla Naval',
         eyebrow: 'Gratis · 2–4 jugadores · Sin registro',
         chips: [

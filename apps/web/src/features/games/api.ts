@@ -179,6 +179,17 @@ export const gamesApi = {
     return apiClient.post<CreateRoomResponse>('/games/rooms', payload, options);
   },
 
+  quickplay: async (
+    gameId: string,
+    options?: ApiClientOptions,
+  ): Promise<CreateRoomResponse> => {
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId },
+      options,
+    );
+  },
+
   updateRoomOptions: async (
     roomId: string,
     optionsPayload: Record<string, unknown>,

@@ -19,6 +19,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
+import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
@@ -68,6 +69,7 @@ import { EconomyModule } from '../economy/economy.module';
     GameRoomsService,
     GameRoomsMapper,
     GameRoomsRematchService,
+    GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
     GameHistoryService,

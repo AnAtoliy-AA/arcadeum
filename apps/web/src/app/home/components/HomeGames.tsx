@@ -274,9 +274,11 @@ export default function HomeGames() {
                   <div className="game-card-footer-main">
                     <Link
                       href={
-                        game.isPlayable
-                          ? `${routes.gameCreate}?gameId=${game.id}`
-                          : '#'
+                        !game.isPlayable
+                          ? '#'
+                          : game.route && game.route !== '/games'
+                            ? game.route
+                            : `${routes.gameCreate}?gameId=${game.id}`
                       }
                       style={{ width: '100%' }}
                       className="home-link-button home-link-button-primary"

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { findAssetByPrefix } = require('./spritesheet/find-asset');
+const { findAssetByPrefix } = require('./find-asset');
 
 const variants = [
   'cyberpunk',
@@ -16,7 +16,7 @@ const variants = [
   'steampunk',
   'zen',
 ];
-const cardArtDir = path.join(__dirname, '../assets/card-art');
+const cardArtDir = path.join(__dirname, '../../assets/card-art');
 
 const CARD_SPRITE_MAP = {
   card_back: 0,

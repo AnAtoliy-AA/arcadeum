@@ -3,9 +3,9 @@ const path = require('path');
 
 const CONSTANTS_PATH = path.resolve(
   __dirname,
-  '../apps/web/src/widgets/CriticalGame/lib/constants.ts',
+  '../../apps/web/src/widgets/CriticalGame/lib/constants.ts',
 );
-const ASSETS_DIR = path.resolve(__dirname, '../assets/card-art');
+const ASSETS_DIR = path.resolve(__dirname, '../../assets/card-art');
 
 function getCardSpriteMap() {
   const content = fs.readFileSync(CONSTANTS_PATH, 'utf8');

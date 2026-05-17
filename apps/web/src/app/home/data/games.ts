@@ -53,7 +53,7 @@ export const featuredGames: FeaturedGame[] = [
     gradient: 'linear-gradient(135deg, #3498db 0%, #1abc9c 100%)',
     tags: ['Board Game', '2-6 Players', '10m Match', 'Strategy'],
     isPlayable: true,
-    route: '/games',
+    route: '/games/sea-battle',
     type: 'board',
     rulesPrefix: 'games.sea_battle_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'placement', 'battle'],

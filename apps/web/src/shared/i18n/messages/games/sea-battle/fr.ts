@@ -218,5 +218,101 @@ export const frMessages = {
         teamWon: 'Victoire de {{team}} !',
       },
     },
+    landing: {
+      meta: {
+        title:
+          'Bataille Navale — Jouez en ligne gratuitement avec vos amis | Arcadeum',
+        description:
+          'Jouez à Bataille Navale en ligne gratuitement. Combat naval classique pour 2 à 4 joueurs, avec bots IA, mode équipes et plus de 10 thèmes. Sans téléchargement ni inscription — créez une salle et partagez le lien.',
+        ogTitle: 'Bataille Navale en ligne — Multijoueur gratuit (Battleship)',
+        ogDescription:
+          'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez dans votre navigateur avec des amis ou contre l’IA.',
+        keywords:
+          'bataille navale, bataille navale en ligne, jouer bataille navale, battleship en ligne, bataille navale multijoueur',
+      },
+      hero: {
+        title: 'Bataille Navale',
+        tagline: 'Jouez à la Bataille Navale en ligne — gratuit et multijoueur',
+        intro:
+          'La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur Arcadeum, vous pouvez jouer à la Bataille Navale directement dans votre navigateur — sans téléchargement, sans inscription — avec des amis, des inconnus ou des bots IA.',
+        ctaPlay: 'Créer une salle de Bataille Navale',
+        ctaRooms: 'Voir les salles ouvertes',
+      },
+      highlights: {
+        title: 'Pourquoi jouer à la Bataille Navale sur Arcadeum',
+        players: {
+          title: '2 à 4 joueurs',
+          body: 'Duels en tête-à-tête ou mêlée jusqu’à quatre amiraux par salle.',
+        },
+        teams: {
+          title: 'Mode équipes',
+          body: 'Jusqu’à quatre équipes avec plateaux partagés, chat d’équipe privé et option navires cachés.',
+        },
+        themes: {
+          title: 'Plus de 10 thèmes',
+          body: 'Classique, moderne, pixel-art, cyberpunk, nébuleuse, vintage, coucher de soleil et plus.',
+        },
+        free: {
+          title: 'Gratuit et instantané',
+          body: 'Aucune installation, aucun paywall. Ouvrez une salle et partagez le lien.',
+        },
+      },
+      howToPlay: {
+        title: 'Comment jouer à la Bataille Navale',
+        steps: {
+          create: {
+            title: '1. Créez une salle',
+            body: 'Choisissez un thème, invitez des amis ou ajoutez des bots IA, et choisissez le duel ou le mode équipes.',
+          },
+          place: {
+            title: '2. Placez votre flotte',
+            body: 'Glissez vos cinq navires sur votre grille 10×10. Les navires ne peuvent pas se chevaucher ni se toucher.',
+          },
+          fire: {
+            title: '3. Tirez sur l’ennemi',
+            body: 'À tour de rôle, choisissez une case sur la grille de chaque adversaire. Touches en rouge, ratés en blanc.',
+          },
+          win: {
+            title: '4. Coulez-les tous',
+            body: 'Le dernier amiral avec au moins un navire à flot remporte la bataille.',
+          },
+        },
+      },
+      faq: {
+        title: 'Questions fréquentes',
+        items: {
+          free: {
+            question: 'La Bataille Navale est-elle gratuite ?',
+            answer:
+              'Oui. La Bataille Navale sur Arcadeum est entièrement gratuite et se joue dans le navigateur sans téléchargement.',
+          },
+          players: {
+            question: 'Combien de joueurs peuvent jouer ?',
+            answer:
+              'De deux à quatre joueurs par salle. Le mode équipes permet jusqu’à quatre équipes de deux joueurs ou plus.',
+          },
+          ai: {
+            question: 'Puis-je jouer contre l’ordinateur ?',
+            answer:
+              'Oui. Vous pouvez remplir n’importe quelle place vide avec un bot IA pour vous entraîner seul ou compléter un petit groupe.',
+          },
+          duration: {
+            question: 'Combien de temps dure une partie ?',
+            answer:
+              'Une partie typique dure environ 20 minutes, selon le nombre de joueurs et la vitesse des tirs.',
+          },
+          rules: {
+            question: 'Quelles sont les règles de la Bataille Navale ?',
+            answer:
+              'Chaque joueur place secrètement une flotte sur une grille 10×10, puis les joueurs tirent à tour de rôle sur une case de la grille de chaque adversaire. Les touches sont marquées en rouge, les ratés en blanc. Quand toutes les cases d’un navire sont touchées, il coule. Le dernier joueur avec au moins un navire à flot gagne.',
+          },
+        },
+      },
+      breadcrumb: {
+        home: 'Accueil',
+        games: 'Jeux',
+        seaBattle: 'Bataille Navale',
+      },
+    },
   },
 };

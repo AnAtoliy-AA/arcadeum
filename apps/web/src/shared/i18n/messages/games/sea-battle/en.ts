@@ -235,6 +235,26 @@ export const enMessages = {
           'Sea Battle is the timeless naval-combat game where two or more admirals secretly place fleets on a 10×10 grid and trade salvos until only one fleet is left afloat. On Arcadeum you can play Sea Battle right in your browser — no download, no signup wall — with friends, strangers, or AI bots.',
         ctaPlay: 'Create a Sea Battle room',
         ctaRooms: 'Browse open rooms',
+        eyebrow: 'Free · 2–4 players · No signup',
+        chips: [
+          'Browser-based',
+          'Play with AI bots',
+          'Team mode',
+          '10+ themes',
+        ],
+      },
+      sections: {
+        highlightsKicker: 'Why Arcadeum',
+        howToKicker: 'Four steps · ~20 minutes',
+        themesKicker: 'Choose your fleet',
+        themesTitle: '10+ themes, one game',
+        themesLead:
+          'Every room lets you pick a board skin — from a sleek classic look to deep-space nebula and pixel-art retro.',
+        rulesKicker: 'Reference',
+        faqKicker: 'FAQ',
+      },
+      board: {
+        label: 'Live · Sonar',
       },
       highlights: {
         title: 'Why play Sea Battle on Arcadeum',

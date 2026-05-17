@@ -41,6 +41,7 @@ describe('GamesService', () => {
 
     const mockRoomsQuickplayService = {
       createQuickplayRoom: jest.fn(),
+      findHumanMatch: jest.fn(),
     };
 
     const mockSessionsService = {
@@ -156,22 +157,19 @@ describe('GamesService', () => {
   });
 
   describe('quickplay', () => {
-    it('creates a quickplay room for sea_battle_v1 and emits the event', async () => {
-      const userId = 'user1';
-      const createdRoom = { id: 'room1', gameId: 'sea_battle_v1' };
+    it('delegates to the quickplay service for sea_battle_v1', async () => {
+      const room = { id: 'room1', gameId: 'sea_battle_v1' };
       roomsQuickplayService.createQuickplayRoom.mockResolvedValue(
-        createdRoom as unknown as GameRoomSummary,
+        room as unknown as GameRoomSummary,
       );
-      realtimeService.emitRoomCreated.mockImplementation(() => {});
 
-      const result = await service.quickplay(userId, 'sea_battle_v1');
+      const result = await service.quickplay('user1', 'sea_battle_v1');
 
       expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
-        userId,
+        'user1',
         'sea_battle_v1',
       );
-      expect(realtimeService.emitRoomCreated).toHaveBeenCalledWith(createdRoom);
-      expect(result).toEqual(createdRoom);
+      expect(result).toEqual(room);
     });
 
     it('rejects unsupported game ids', async () => {
@@ -179,6 +177,30 @@ describe('GamesService', () => {
         /Quickplay not supported/,
       );
       expect(roomsQuickplayService.createQuickplayRoom).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findHumanMatch', () => {
+    it('delegates to the quickplay service for sea_battle_v1', async () => {
+      const room = { id: 'room2', gameId: 'sea_battle_v1' };
+      roomsQuickplayService.findHumanMatch.mockResolvedValue(
+        room as unknown as GameRoomSummary,
+      );
+
+      const result = await service.findHumanMatch('user1', 'sea_battle_v1');
+
+      expect(roomsQuickplayService.findHumanMatch).toHaveBeenCalledWith(
+        'user1',
+        'sea_battle_v1',
+      );
+      expect(result).toEqual(room);
+    });
+
+    it('rejects unsupported game ids', async () => {
+      await expect(
+        service.findHumanMatch('user1', 'critical_v1'),
+      ).rejects.toThrow(/Matchmaking not supported/);
+      expect(roomsQuickplayService.findHumanMatch).not.toHaveBeenCalled();
     });
   });
 

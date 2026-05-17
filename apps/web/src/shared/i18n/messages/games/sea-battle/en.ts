@@ -236,6 +236,7 @@ export const enMessages = {
         ctaPlay: 'Create a Sea Battle room',
         ctaRooms: 'Browse open rooms',
         ctaQuickplay: 'Play vs AI now',
+        ctaPlayHuman: 'Find a human opponent',
         ctaGroupLabel: 'Sea Battle quick start',
         eyebrow: 'Free · 2–4 players · No signup',
         chips: [

@@ -30,13 +30,6 @@ import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { WalletService } from '../wallet/wallet.service';
 import { EconomySettingsService } from '../economy/economy-settings.service';
 
-/**
- * Games Service Facade
- * Coordinates between specialized services and provides a unified API
- *
- * This is the main service that controllers and gateways should use.
- * It delegates to specialized services for specific operations.
- */
 @Injectable()
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
@@ -74,12 +67,14 @@ export class GamesService {
     if (gameId !== 'sea_battle_v1') {
       throw new BadRequestException(`Quickplay not supported for ${gameId}`);
     }
-    const room = await this.roomsQuickplayService.createQuickplayRoom(
-      userId,
-      gameId,
-    );
-    this.realtimeService.emitRoomCreated(room);
-    return room;
+    return this.roomsQuickplayService.createQuickplayRoom(userId, gameId);
+  }
+
+  async findHumanMatch(userId: string, gameId: string) {
+    if (gameId !== 'sea_battle_v1') {
+      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
+    }
+    return this.roomsQuickplayService.findHumanMatch(userId, gameId);
   }
 
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {

@@ -236,6 +236,7 @@ export const byMessages = {
         ctaPlay: 'Стварыць пакой Марскога бою',
         ctaRooms: 'Адкрытыя пакоі',
         ctaQuickplay: 'Гуляць з ІІ зараз',
+        ctaPlayHuman: 'Знайсці суперніка',
         ctaGroupLabel: 'Хуткі старт Марскога бою',
         eyebrow: 'Бясплатна · 2–4 гульцы · Без рэгістрацыі',
         chips: [

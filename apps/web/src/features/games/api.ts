@@ -185,7 +185,18 @@ export const gamesApi = {
   ): Promise<CreateRoomResponse> => {
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId },
+      { gameId, mode: 'ai' },
+      options,
+    );
+  },
+
+  findHumanMatch: async (
+    gameId: string,
+    options?: ApiClientOptions,
+  ): Promise<CreateRoomResponse> => {
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId, mode: 'human' },
       options,
     );
   },

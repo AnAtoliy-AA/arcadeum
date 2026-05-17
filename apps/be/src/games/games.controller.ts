@@ -64,15 +64,15 @@ export class GamesController {
 
   @UseGuards(JwtOptionalAuthGuard)
   @Post('quickplay')
-  async quickplay(
-    @Req() req: Request,
-    @Body() dto: QuickplayGameDto,
-  ): Promise<{ room: Awaited<ReturnType<GamesService['quickplay']>> }> {
+  async quickplay(@Req() req: Request, @Body() dto: QuickplayGameDto) {
     const user = req.user as AuthenticatedUser | null;
     if (!user) {
       throw new BadRequestException('Missing user context');
     }
-    const room = await this.gamesService.quickplay(user.userId, dto.gameId);
+    const room =
+      dto.mode === 'human'
+        ? await this.gamesService.findHumanMatch(user.userId, dto.gameId)
+        : await this.gamesService.quickplay(user.userId, dto.gameId);
     return { room };
   }
 

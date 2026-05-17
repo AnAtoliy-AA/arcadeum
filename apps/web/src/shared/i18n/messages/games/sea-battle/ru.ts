@@ -236,6 +236,7 @@ export const ruMessages = {
         ctaPlay: 'Создать комнату Морского боя',
         ctaRooms: 'Открытые комнаты',
         ctaQuickplay: 'Сыграть с ИИ сейчас',
+        ctaPlayHuman: 'Найти соперника',
         ctaGroupLabel: 'Быстрый старт Морского боя',
         eyebrow: 'Бесплатно · 2–4 игрока · Без регистрации',
         chips: [

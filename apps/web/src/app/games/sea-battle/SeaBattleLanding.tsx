@@ -187,7 +187,14 @@ export default function SeaBattleLanding({
               >
                 <QuickplayButton
                   gameId={SEA_BATTLE_GAME_ID}
+                  mode="ai"
                   label={landing.hero.ctaQuickplay}
+                />
+                <QuickplayButton
+                  gameId={SEA_BATTLE_GAME_ID}
+                  mode="human"
+                  variant="secondary"
+                  label={landing.hero.ctaPlayHuman}
                 />
                 <LinkButton href={createRoomHref} variant="secondary" size="lg">
                   {landing.hero.ctaPlay}

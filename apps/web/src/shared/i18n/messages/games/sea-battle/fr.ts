@@ -238,6 +238,7 @@ export const frMessages = {
         ctaPlay: 'Créer une salle de Bataille Navale',
         ctaRooms: 'Voir les salles ouvertes',
         ctaQuickplay: 'Jouer contre l’IA maintenant',
+        ctaPlayHuman: 'Trouver un adversaire',
         ctaGroupLabel: 'Démarrage rapide de Bataille Navale',
         eyebrow: 'Gratuit · 2–4 joueurs · Sans inscription',
         chips: [

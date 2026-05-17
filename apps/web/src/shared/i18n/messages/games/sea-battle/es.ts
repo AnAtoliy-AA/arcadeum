@@ -238,6 +238,7 @@ export const esMessages = {
         ctaPlay: 'Crear una sala de Batalla Naval',
         ctaRooms: 'Ver salas abiertas',
         ctaQuickplay: 'Jugar contra IA ahora',
+        ctaPlayHuman: 'Buscar oponente humano',
         ctaGroupLabel: 'Inicio rápido de Batalla Naval',
         eyebrow: 'Gratis · 2–4 jugadores · Sin registro',
         chips: [

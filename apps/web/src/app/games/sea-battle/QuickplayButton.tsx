@@ -3,16 +3,26 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui';
+import type { ButtonProps } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { routes } from '@/shared/config/routes';
 
+type Mode = 'ai' | 'human';
+
 interface Props {
   gameId: string;
   label: string;
+  mode: Mode;
+  variant?: ButtonProps['variant'];
 }
 
-export function QuickplayButton({ gameId, label }: Props) {
+export function QuickplayButton({
+  gameId,
+  label,
+  mode,
+  variant = 'primary',
+}: Props) {
   const router = useRouter();
   const { snapshot } = useSessionTokens();
   const [loading, setLoading] = useState(false);
@@ -20,28 +30,29 @@ export function QuickplayButton({ gameId, label }: Props) {
   const handleClick = async () => {
     setLoading(true);
     try {
-      // The /games/quickplay endpoint accepts anonymous users via the
-      // x-anonymous-id header that apiClient attaches automatically, so
-      // we don't gate on accessToken — visitors arriving from search
-      // play immediately. We still forward the bearer token when one
-      // exists so logged-in users get their real userId, not anonymous.
-      const { room } = await gamesApi.quickplay(gameId, {
-        token: snapshot.accessToken || undefined,
-      });
+      // Both endpoints accept anonymous users via x-anonymous-id (attached
+      // automatically by apiClient), so SEO visitors play without sign-in.
+      // The bearer token is still forwarded when present so logged-in
+      // users' rooms are owned by their real userId.
+      const options = { token: snapshot.accessToken || undefined };
+      const { room } =
+        mode === 'ai'
+          ? await gamesApi.quickplay(gameId, options)
+          : await gamesApi.findHumanMatch(gameId, options);
       router.push(routes.gameRoom(room.id));
     } catch (err) {
-      console.error('Quickplay failed:', err);
+      console.error(`Quickplay (${mode}) failed:`, err);
       setLoading(false);
     }
   };
 
   return (
     <Button
-      variant="primary"
+      variant={variant}
       size="lg"
       onClick={handleClick}
       loading={loading}
-      data-testid="sea-battle-quickplay-button"
+      data-testid={`sea-battle-quickplay-${mode}-button`}
     >
       {label}
     </Button>

@@ -9,6 +9,7 @@ A monorepo for the Arcadeum gaming platform, featuring a mobile app, web applica
 Refer to the individual app READMEs for detailed setup and configuration instructions:
 
 - [Contributing Guidelines](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
 - [Mobile App README](apps/mobile/README.md)
 - [Web App README](apps/web/README.md)
 - [Backend API README](apps/be/README.md)
@@ -16,8 +17,7 @@ Refer to the individual app READMEs for detailed setup and configuration instruc
 
 ### Translation Type Safety
 
-- [Comprehensive Guide](docs/TRANSLATION_TYPE_SAFETY.md): Detailed explanation of the type-safe translation system
-- [Implementation Summary](docs/TRANSLATION_TYPE_SAFETY.md): Summary of the implementation process and verification checklist
+- [Translation Type Safety Guide](docs/TRANSLATION_TYPE_SAFETY.md): Detailed explanation of the type-safe translation system and implementation verification checklist
 
 ### Architecture Documentation
 
@@ -31,17 +31,17 @@ This Turborepo workspace is managed with `pnpm` and contains:
 - **`apps/mobile`**: Expo React Native app (iOS/Android)
 - **`apps/web`**: Next.js web application
 - **`apps/be`**: NestJS API server
-- **`apps/shared`**: Shared utilities and components (if any)
+- **`packages/ui`**: Shared `@arcadeum/ui` component library (Tamagui)
 - **`docs`**: Comprehensive project documentation
 - **`scripts`**: Maintenance and build scripts
 
 ## Prerequisites
 
 - **Node.js**: v18+ recommended
-- **pnpm**: v9+ (Corepack enabled or installed globally)
+- **pnpm**: v9.15.0+ (Corepack enabled or installed globally — see `packageManager` in `package.json`)
 - **Git**: For version control
 - **MongoDB**: For backend development (local or cloud)
-- **Expo CLI**: For mobile development (`npm install -g expo-cli`)
+- **Expo**: For mobile development — invoked via `npx expo` (no global install needed; the legacy `expo-cli` package is deprecated)
 
 ## Quick Start
 
@@ -68,7 +68,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
     This will start all applications in parallel:
 
     - Web app on `http://localhost:3000`
-    - Mobile app on `http://localhost:19000`
+    - Mobile (Expo Metro bundler) on `http://localhost:8081`
     - Backend API on `http://localhost:4000`
 
 4.  **Specific App Development**:
@@ -140,7 +140,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
 ## Troubleshooting
 
 - **"Module not found" errors**: Run `pnpm install` and restart dev server
-- **Port conflicts**: Kill processes on ports 3000 (web), 3333 (backend), or 19000 (mobile)
+- **Port conflicts**: Kill processes on ports 3000 (web), 4000 (backend), or 8081 (mobile Metro bundler)
 - **TypeScript errors**: Run `pnpm build` to see detailed type errors
 - **Cache issues**: Clear Turborepo cache with `pnpm turbo clean`
 - **Husky hooks failing**: Run `npx husky add .husky/pre-commit "pnpm lint && pnpm format"` to reinstall

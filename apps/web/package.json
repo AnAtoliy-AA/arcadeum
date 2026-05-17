@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.13.53",
+  "version": "1.14.0",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -69,6 +69,7 @@
     "eslint-config-next": "16.1.0",
     "eslint-plugin-storybook": "^10.2.1",
     "jsdom": "^27.4.0",
+    "mongodb-memory-server": "^11.1.0",
     "playwright": "^1.58.0",
     "storybook": "^10.2.1",
     "typescript": "^5.9.3",

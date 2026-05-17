@@ -154,23 +154,3 @@ export function ArrowGlyph({ size = 14 }: IconProps) {
     </svg>
   );
 }
-
-export function PhoneGlyph({ size = 22 }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <rect x="7" y="3" width="10" height="18" rx="2.5" />
-      <path d="M11 18h2" />
-    </svg>
-  );
-}

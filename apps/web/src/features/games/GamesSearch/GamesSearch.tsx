@@ -52,6 +52,7 @@ export function GamesSearch({
       maxWidth={450}
       gap="$2"
       alignItems="center"
+      $sm={{ minWidth: 0, width: '100%' }}
     >
       <Input
         placeholder={placeholder}

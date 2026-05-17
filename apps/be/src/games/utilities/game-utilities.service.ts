@@ -4,7 +4,7 @@ import {
   GroupedHistorySummary,
 } from '../history/game-history.types';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 
@@ -35,11 +35,19 @@ export class GameUtilitiesService {
     userIds: string[],
   ): Promise<Map<string, UserSummary>> {
     const uniqueUserIds = Array.from(new Set(userIds));
+    // Bot rows use synthetic `bot-XXXXXX` ids that aren't real ObjectIds;
+    // passing them straight into a `$in` cast crashes Mongoose. Filter them
+    // out for the query — they fall through to the placeholder loop below.
+    const validUserIds = uniqueUserIds.filter((id) =>
+      Types.ObjectId.isValid(id),
+    );
 
-    const users = await this.userModel
-      .find({ _id: { $in: uniqueUserIds } })
-      .select('username email')
-      .exec();
+    const users = validUserIds.length
+      ? await this.userModel
+          .find({ _id: { $in: validUserIds } })
+          .select('username email')
+          .exec()
+      : [];
 
     const userMap = new Map<string, UserSummary>();
 
@@ -72,6 +80,9 @@ export class GameUtilitiesService {
    * Get display name for a user
    */
   async getUserDisplayName(userId: string): Promise<string> {
+    if (!Types.ObjectId.isValid(userId)) {
+      return 'Unknown User';
+    }
     const user = await this.userModel
       .findById(userId)
       .select('username email')
@@ -89,6 +100,11 @@ export class GameUtilitiesService {
    */
   async validateUserIds(userIds: string[]): Promise<boolean> {
     const uniqueUserIds = Array.from(new Set(userIds));
+    // Reject any non-ObjectId ids up front (e.g. synthetic bot ids); they
+    // can't exist in the User collection.
+    if (uniqueUserIds.some((id) => !Types.ObjectId.isValid(id))) {
+      return false;
+    }
 
     const count = await this.userModel
       .countDocuments({ _id: { $in: uniqueUserIds } })

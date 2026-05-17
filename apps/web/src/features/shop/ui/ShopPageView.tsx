@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button, YStack, XStack } from '@arcadeum/ui';
+import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Text, YStack as Stack, styled } from 'tamagui';
 import { useShopFiltersStore } from '../store/shopFiltersStore';
 import { ShopSidebar, type ShopSidebarLabels } from './ShopSidebar';
@@ -107,164 +108,166 @@ export function ShopPageView({
   const { coins, gems } = balance;
 
   return (
-    <YStack
-      maxWidth={1280}
-      marginHorizontal="auto"
-      paddingHorizontal="$4"
-      paddingVertical="$5"
-      gap="$5"
-      width="100%"
-    >
-      <XStack
-        justifyContent="space-between"
-        alignItems="flex-end"
-        flexWrap="wrap"
-        gap="$3"
+    <PageLayout>
+      <YStack
+        maxWidth={1280}
+        marginHorizontal="auto"
+        paddingHorizontal="$4"
+        paddingVertical="$5"
+        gap="$5"
+        width="100%"
       >
-        <YStack gap="$1">
-          <Text fontSize="$10" fontWeight="800" letterSpacing={-0.5}>
-            {labels.title}
-          </Text>
-          <Text fontSize="$3" color="$gray11">
-            {labels.subtitle}
-          </Text>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
-          {equippedAvatar || equippedBadge || equippedNameColor ? (
-            <Stack
-              flexDirection="row"
-              alignItems="center"
-              gap={6}
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              borderRadius="$3"
-              borderWidth={1}
-              borderColor="rgba(16,185,129,0.35)"
-              backgroundColor="rgba(16,185,129,0.08)"
-              data-testid="shop-equipped-preview"
-            >
-              <Text fontSize="$1" letterSpacing={0.5} color="$green11">
-                {(labels.equipped ?? 'Equipped').toUpperCase()}
-              </Text>
-              {equippedAvatar ? (
-                <Image
-                  src={equippedAvatar.assetUrl}
-                  alt=""
-                  width={28}
-                  height={28}
-                  data-testid="shop-equipped-avatar"
-                  style={{ objectFit: 'contain' }}
-                  unoptimized
-                />
-              ) : null}
-              {equippedBadge ? (
-                <Image
-                  src={equippedBadge.assetUrl}
-                  alt=""
-                  width={24}
-                  height={24}
-                  data-testid="shop-equipped-badge"
-                  style={{ objectFit: 'contain' }}
-                  unoptimized
-                />
-              ) : null}
-              {equippedNameColor?.colorValue ? (
-                <Text
-                  fontSize="$3"
-                  fontWeight="800"
-                  data-testid="shop-equipped-name-color"
-                  {...(equippedNameColor.colorValue.startsWith(
-                    'linear-gradient',
-                  )
-                    ? {
-                        style: {
-                          backgroundImage: equippedNameColor.colorValue,
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          color: 'transparent',
-                        },
-                      }
-                    : { color: equippedNameColor.colorValue })}
-                >
-                  Aa
-                </Text>
-              ) : null}
-            </Stack>
-          ) : null}
-          <BalanceChip currency="coins" data-testid="shop-balance-coins">
-            <Text fontSize={18}>🪙</Text>
-            <Text fontSize="$4" fontWeight="700" color="#fbbf24">
-              {coins.toLocaleString()}
-            </Text>
-          </BalanceChip>
-          <BalanceChip currency="gems" data-testid="shop-balance-gems">
-            <Text fontSize={18}>💎</Text>
-            <Text fontSize="$4" fontWeight="700" color="#a78bfa">
-              {gems.toLocaleString()}
-            </Text>
-          </BalanceChip>
-        </XStack>
-      </XStack>
-
-      {!isAuthenticated && labels.signIn ? (
-        <Stack
-          flexDirection="column"
-          gap={6}
-          padding="$4"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="rgba(96,165,250,0.35)"
-          backgroundColor="rgba(59,130,246,0.08)"
-          data-testid="shop-signin-banner"
+        <XStack
+          justifyContent="space-between"
+          alignItems="flex-end"
+          flexWrap="wrap"
+          gap="$3"
         >
-          <Text fontSize="$5" fontWeight="700">
-            {labels.signIn.title}
-          </Text>
-          <Text fontSize="$3" color="$gray11">
-            {labels.signIn.body}
-          </Text>
-          <XStack>
-            <Link href="/auth">
-              <Button variant="primary" data-testid="shop-signin-cta">
-                {labels.signIn.cta}
-              </Button>
-            </Link>
+          <YStack gap="$1">
+            <Text fontSize="$10" fontWeight="800" letterSpacing={-0.5}>
+              {labels.title}
+            </Text>
+            <Text fontSize="$3" color="$gray11">
+              {labels.subtitle}
+            </Text>
+          </YStack>
+          <XStack gap="$2" alignItems="center">
+            {equippedAvatar || equippedBadge || equippedNameColor ? (
+              <Stack
+                flexDirection="row"
+                alignItems="center"
+                gap={6}
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderRadius="$3"
+                borderWidth={1}
+                borderColor="rgba(16,185,129,0.35)"
+                backgroundColor="rgba(16,185,129,0.08)"
+                data-testid="shop-equipped-preview"
+              >
+                <Text fontSize="$1" letterSpacing={0.5} color="$green11">
+                  {(labels.equipped ?? 'Equipped').toUpperCase()}
+                </Text>
+                {equippedAvatar ? (
+                  <Image
+                    src={equippedAvatar.assetUrl}
+                    alt=""
+                    width={28}
+                    height={28}
+                    data-testid="shop-equipped-avatar"
+                    style={{ objectFit: 'contain' }}
+                    unoptimized
+                  />
+                ) : null}
+                {equippedBadge ? (
+                  <Image
+                    src={equippedBadge.assetUrl}
+                    alt=""
+                    width={24}
+                    height={24}
+                    data-testid="shop-equipped-badge"
+                    style={{ objectFit: 'contain' }}
+                    unoptimized
+                  />
+                ) : null}
+                {equippedNameColor?.colorValue ? (
+                  <Text
+                    fontSize="$3"
+                    fontWeight="800"
+                    data-testid="shop-equipped-name-color"
+                    {...(equippedNameColor.colorValue.startsWith(
+                      'linear-gradient',
+                    )
+                      ? {
+                          style: {
+                            backgroundImage: equippedNameColor.colorValue,
+                            WebkitBackgroundClip: 'text',
+                            backgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            color: 'transparent',
+                          },
+                        }
+                      : { color: equippedNameColor.colorValue })}
+                  >
+                    Aa
+                  </Text>
+                ) : null}
+              </Stack>
+            ) : null}
+            <BalanceChip currency="coins" data-testid="shop-balance-coins">
+              <Text fontSize={18}>🪙</Text>
+              <Text fontSize="$4" fontWeight="700" color="#fbbf24">
+                {coins.toLocaleString()}
+              </Text>
+            </BalanceChip>
+            <BalanceChip currency="gems" data-testid="shop-balance-gems">
+              <Text fontSize={18}>💎</Text>
+              <Text fontSize="$4" fontWeight="700" color="#a78bfa">
+                {gems.toLocaleString()}
+              </Text>
+            </BalanceChip>
           </XStack>
-        </Stack>
-      ) : null}
+        </XStack>
 
-      <XStack
-        gap="$4"
-        flexDirection="row"
-        $sm={{ flexDirection: 'column' }}
-        alignItems="flex-start"
-      >
-        <SidebarPanel>
-          <ShopSidebar labels={labels.sidebar} />
-        </SidebarPanel>
+        {!isAuthenticated && labels.signIn ? (
+          <Stack
+            flexDirection="column"
+            gap={6}
+            padding="$4"
+            borderRadius="$4"
+            borderWidth={1}
+            borderColor="rgba(96,165,250,0.35)"
+            backgroundColor="rgba(59,130,246,0.08)"
+            data-testid="shop-signin-banner"
+          >
+            <Text fontSize="$5" fontWeight="700">
+              {labels.signIn.title}
+            </Text>
+            <Text fontSize="$3" color="$gray11">
+              {labels.signIn.body}
+            </Text>
+            <XStack>
+              <Link href="/auth">
+                <Button variant="primary" data-testid="shop-signin-cta">
+                  {labels.signIn.cta}
+                </Button>
+              </Link>
+            </XStack>
+          </Stack>
+        ) : null}
 
-        <YStack flex={1} width="100%">
-          {tab === 'browse' ? (
-            <ShopGrid
-              catalog={liveCatalog}
-              inventory={inventory.items}
-              equipped={inventory.equipped}
-              balance={balance}
-              labels={labels.grid}
-            />
-          ) : (
-            <InventoryTab
-              catalog={liveCatalog}
-              inventory={inventory.items}
-              equipped={inventory.equipped}
-              balance={balance}
-              gemToCoinRate={gemToCoinRate}
-              labels={labels.inventory}
-            />
-          )}
-        </YStack>
-      </XStack>
-    </YStack>
+        <XStack
+          gap="$4"
+          flexDirection="row"
+          $sm={{ flexDirection: 'column' }}
+          alignItems="flex-start"
+        >
+          <SidebarPanel>
+            <ShopSidebar labels={labels.sidebar} />
+          </SidebarPanel>
+
+          <YStack $gtSm={{ flex: 1 }} width="100%">
+            {tab === 'browse' ? (
+              <ShopGrid
+                catalog={liveCatalog}
+                inventory={inventory.items}
+                equipped={inventory.equipped}
+                balance={balance}
+                labels={labels.grid}
+              />
+            ) : (
+              <InventoryTab
+                catalog={liveCatalog}
+                inventory={inventory.items}
+                equipped={inventory.equipped}
+                balance={balance}
+                gemToCoinRate={gemToCoinRate}
+                labels={labels.inventory}
+              />
+            )}
+          </YStack>
+        </XStack>
+      </YStack>
+    </PageLayout>
   );
 }

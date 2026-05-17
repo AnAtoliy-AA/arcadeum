@@ -47,6 +47,10 @@ export class LeaderboardsCaptureService
       return;
     }
     if (process.env.NODE_ENV === 'test') return;
+    if (process.env.E2E === 'true') {
+      this.logger.log('Capture loop disabled in e2e (E2E=true).');
+      return;
+    }
     const interval = readIntervalMs();
     this.logger.log(`Capture loop scheduled every ${interval}ms.`);
     this.timer = setInterval(() => {

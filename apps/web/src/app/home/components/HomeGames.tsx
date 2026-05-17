@@ -190,19 +190,32 @@ export default function HomeGames() {
                   }}
                 >
                   <div className="game-header-main">
-                    <span className="game-icon-main">{game.emoji}</span>
-                    <h3
-                      data-testid={`game-title-${game.id}`}
+                    <Link
+                      href={game.route}
+                      data-testid={`game-title-link-${game.id}`}
                       style={{
-                        background: game.gradient,
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 'var(--t-space-2)',
+                        textDecoration: 'none',
+                        color: 'inherit',
                       }}
-                      className="game-title-main"
                     >
-                      {t(game.nameKey)}
-                    </h3>
+                      <span className="game-icon-main">{game.emoji}</span>
+                      <h3
+                        data-testid={`game-title-${game.id}`}
+                        style={{
+                          background: game.gradient,
+                          backgroundClip: 'text',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          margin: 0,
+                        }}
+                        className="game-title-main"
+                      >
+                        {t(game.nameKey)}
+                      </h3>
+                    </Link>
                     {game.isDemo && (
                       <span
                         data-testid={`game-demo-badge-${game.id}`}

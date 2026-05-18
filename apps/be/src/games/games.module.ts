@@ -44,6 +44,7 @@ import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
+import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
 // start/end; LeaderboardsService.getSnapshot now reads stats from
@@ -62,6 +63,7 @@ import { EconomyModule } from '../economy/economy.module';
     forwardRef(() => LeaderboardsModule),
     WalletModule,
     EconomyModule,
+    GameVisibilityModule,
   ],
   controllers: [GamesController],
   providers: [

@@ -38,6 +38,9 @@ import {
 
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
+import { GAME_CATALOG } from './games.catalog';
 
 @Controller('games')
 export class GamesController {
@@ -45,7 +48,30 @@ export class GamesController {
     private readonly gamesService: GamesService,
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
+    private readonly visibility: GameVisibilityService,
+    private readonly roleResolver: UserRoleResolver,
   ) {}
+
+  @UseGuards(JwtOptionalAuthGuard)
+  @Get('catalog')
+  async getCatalog(@Req() req: Request): Promise<{
+    games: Array<{ gameId: string; variants: string[] }>;
+  }> {
+    const user = req.user as AuthenticatedUser | undefined | null;
+    const role = await this.roleResolver.resolveRole(user?.userId);
+    const games: Array<{ gameId: string; variants: string[] }> = [];
+    for (const entry of GAME_CATALOG) {
+      if (!(await this.visibility.canSee(role, entry.gameId))) continue;
+      const variants: string[] = [];
+      for (const v of entry.variants) {
+        if (await this.visibility.canSee(role, entry.gameId, v)) {
+          variants.push(v);
+        }
+      }
+      games.push({ gameId: entry.gameId, variants });
+    }
+    return { games };
+  }
 
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms')

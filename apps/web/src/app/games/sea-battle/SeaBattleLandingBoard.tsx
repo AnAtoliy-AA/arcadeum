@@ -48,7 +48,7 @@ export function SeaBattleLandingBoard({ initialVariant = 'classic' }: Props) {
         data-testid="sea-battle-landing-board"
       >
         <SeaBattleThemeProvider variant={variant}>
-          <SeaBattleThemePreview selectedVariant={variant} />
+          <SeaBattleThemePreview selectedVariant={variant} cellSize={36} />
         </SeaBattleThemeProvider>
       </button>
     </div>

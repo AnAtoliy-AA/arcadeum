@@ -18,12 +18,25 @@ const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 interface SeaBattleThemePreviewProps {
   selectedVariant: string;
+  /** Cell width/height in px. Labels + glyphs scale proportionally. */
+  cellSize?: number;
 }
 
 export function SeaBattleThemePreview({
   selectedVariant,
+  cellSize = 20,
 }: SeaBattleThemePreviewProps) {
   const theme = useSeaBattleTheme();
+
+  // Proportional sizing — keeps the lobby preview pixel-identical at the
+  // default 20px cell, but lets bigger consumers (e.g. the SEO landing
+  // hero) scale up cells, labels, and the miss/hit glyphs without
+  // resorting to CSS transform.
+  const labelFontSize = Math.max(8, Math.round(cellSize * 0.4));
+  const colLabelOffset = Math.round(cellSize * 0.8);
+  const rowLabelWidth = Math.max(12, Math.round(cellSize * 0.7));
+  const hitFontSize = Math.round(cellSize * 0.5);
+  const missDotSize = Math.round(cellSize * 0.4);
 
   function getCellColor(state: number): string {
     switch (state) {
@@ -51,13 +64,13 @@ export function SeaBattleThemePreview({
       style={{ background: theme.boardBackground } as React.CSSProperties}
     >
       {/* Column labels */}
-      <XStack marginLeft={16} gap={2}>
+      <XStack marginLeft={colLabelOffset} gap={2}>
         {COL_LABELS.map((l) => (
           <Text
             key={l}
-            fontSize={8}
+            fontSize={labelFontSize}
             color={theme.textSecondaryColor}
-            width={20}
+            width={cellSize}
             textAlign="center"
           >
             {l}
@@ -69,9 +82,9 @@ export function SeaBattleThemePreview({
       {Array.from({ length: 10 }, (_, rIndex) => (
         <XStack key={rIndex} gap={2} alignItems="center">
           <Text
-            fontSize={8}
+            fontSize={labelFontSize}
             color={theme.textSecondaryColor}
-            width={14}
+            width={rowLabelWidth}
             textAlign="right"
           >
             {ROW_LABELS[rIndex]}
@@ -92,8 +105,8 @@ export function SeaBattleThemePreview({
             return (
               <YStack
                 key={cIndex}
-                width={20}
-                height={20}
+                width={cellSize}
+                height={cellSize}
                 borderRadius={parseInt(theme.borderRadius) || 3}
                 borderWidth={1}
                 borderColor={theme.cellBorder}
@@ -104,7 +117,7 @@ export function SeaBattleThemePreview({
               >
                 {state === CELL_STATE.HIT && (
                   <Text
-                    fontSize={10}
+                    fontSize={hitFontSize}
                     style={{ pointerEvents: 'none' } as React.CSSProperties}
                   >
                     🔥
@@ -112,8 +125,8 @@ export function SeaBattleThemePreview({
                 )}
                 {state === CELL_STATE.MISS && (
                   <YStack
-                    width={8}
-                    height={8}
+                    width={missDotSize}
+                    height={missDotSize}
                     borderRadius={100}
                     backgroundColor="rgba(255,255,255,0.55)"
                   />

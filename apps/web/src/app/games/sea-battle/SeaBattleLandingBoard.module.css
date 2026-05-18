@@ -3,7 +3,7 @@
   justify-self: end;
   display: grid;
   place-items: center;
-  padding: 2rem;
+  padding: 0.75rem;
   border-radius: 24px;
   background: linear-gradient(
     180deg,
@@ -35,7 +35,7 @@
 @media (max-width: 880px) {
   .frame {
     justify-self: center;
-    padding: 1.25rem;
+    padding: 0.5rem;
   }
 }
 

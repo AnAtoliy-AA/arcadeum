@@ -97,7 +97,13 @@ export const shopEn = {
       viewAll: 'View all',
     },
   },
-  card: { owned: 'Owned', equipped: 'Equipped', buyEquip: 'Buy & equip' },
+  card: {
+    owned: 'Owned',
+    equipped: 'Equipped',
+    buyEquip: 'Buy & equip',
+    equip: 'Equip',
+    unequip: 'Unequip',
+  },
   rarities: {
     common: 'Common',
     rare: 'Rare',

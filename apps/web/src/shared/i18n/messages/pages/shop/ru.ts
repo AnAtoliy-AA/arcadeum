@@ -101,6 +101,8 @@ export const shopRu = {
     owned: 'У вас есть',
     equipped: 'Экипировано',
     buyEquip: 'Купить и экипировать',
+    equip: 'Экипировать',
+    unequip: 'Снять',
   },
   rarities: {
     common: 'Обычный',

@@ -173,7 +173,6 @@ export function ShopPageView({
             gemToCoinRate={gemToCoinRate}
             labels={labels.mannequin}
             sellLabels={labels.sell}
-            onPurchaseFallback={(item) => setPurchaseTarget(item)}
           />
 
           <YStack flex={1} width="100%" gap="$5" minWidth={0}>
@@ -193,7 +192,8 @@ export function ShopPageView({
               equipped={inventory.equipped}
               labels={labels.row.avatars}
               cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
+              balance={balance}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
               id="row-badges"
@@ -203,7 +203,8 @@ export function ShopPageView({
               equipped={inventory.equipped}
               labels={labels.row.badges}
               cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
+              balance={balance}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
               id="row-colors"
@@ -214,7 +215,8 @@ export function ShopPageView({
               small
               labels={labels.row.colors}
               cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
+              balance={balance}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
               id="row-skins"
@@ -224,7 +226,8 @@ export function ShopPageView({
               equipped={inventory.equipped}
               labels={labels.row.skins}
               cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
+              balance={balance}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
               id="row-legendary"
@@ -234,7 +237,8 @@ export function ShopPageView({
               highlight
               labels={labels.row.legendary}
               cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
+              balance={balance}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
           </YStack>
         </XStack>

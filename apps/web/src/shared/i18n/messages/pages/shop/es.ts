@@ -101,6 +101,8 @@ export const shopEs = {
     owned: 'Tuyo',
     equipped: 'Equipado',
     buyEquip: 'Comprar y equipar',
+    equip: 'Equipar',
+    unequip: 'Desequipar',
   },
   rarities: {
     common: 'Común',

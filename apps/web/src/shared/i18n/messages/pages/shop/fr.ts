@@ -101,6 +101,8 @@ export const shopFr = {
     owned: 'Possédé',
     equipped: 'Équipé',
     buyEquip: 'Acheter et équiper',
+    equip: 'Équiper',
+    unequip: 'Déséquiper',
   },
   rarities: {
     common: 'Commun',

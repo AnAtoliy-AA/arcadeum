@@ -10,6 +10,7 @@ import type {
   EquippedView,
   InventoryItemView,
   ShopCategory,
+  WalletBalanceView,
 } from '../server/shop.types';
 
 export interface ShopRowLabels {
@@ -24,11 +25,12 @@ export interface ShopRowProps {
   items: EffectiveShopItem[];
   inventory: InventoryItemView[];
   equipped: EquippedView;
+  balance: WalletBalanceView;
   small?: boolean;
   highlight?: boolean;
   labels: ShopRowLabels;
   cardLabels: ShopCardLabels;
-  onPurchase: (item: EffectiveShopItem) => void;
+  onPurchaseFallback: (item: EffectiveShopItem) => void;
 }
 
 const RowHost = styled(Stack, {
@@ -73,11 +75,12 @@ export function ShopRow({
   items,
   inventory,
   equipped,
+  balance,
   small,
   highlight,
   labels,
   cardLabels,
-  onPurchase,
+  onPurchaseFallback,
 }: ShopRowProps) {
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
 
@@ -141,9 +144,10 @@ export function ShopRow({
               item={item}
               owned={ownedIds.has(item.id)}
               equipped={equipped[item.category] === item.id}
+              balance={balance}
               small={small}
               labels={cardLabels}
-              onPurchase={onPurchase}
+              onPurchaseFallback={onPurchaseFallback}
             />
           ))}
         </Scroller>

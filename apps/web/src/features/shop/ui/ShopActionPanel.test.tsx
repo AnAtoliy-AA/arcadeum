@@ -1,24 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import config from '../../../shared/config/tamagui.config';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
 }));
-vi.mock('../server/shop.actions', () => ({
-  equipItemAction: vi.fn(),
-  unequipItemAction: vi.fn(),
-  purchaseItemAction: vi.fn(),
-}));
-vi.mock('../lib/syncEquippedToSession', () => ({
-  syncEquippedToSession: vi.fn(),
-}));
 
 import { ShopActionPanel, type ShopActionLabels } from './ShopActionPanel';
 import type {
   EffectiveShopItem,
-  InventoryItemView,
   ShopCategory,
   WalletBalanceView,
 } from '../server/shop.types';
@@ -36,9 +27,6 @@ const actionLabels: ShopActionLabels = {
   equippedEyebrow: 'Equipped',
   idleTitle: 'Hover an item to try it on',
   idleBody: 'Or tap a slot to filter.',
-  buyEquip: 'Buy & equip',
-  equip: 'Equip',
-  unequip: 'Unequip',
   sell: 'Sell · 50%',
   clear: 'Clear',
   slotEmpty: 'Empty',
@@ -72,7 +60,7 @@ const EMPTY_PREVIEW = {
   game_skin: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
-const BALANCE: WalletBalanceView = { coins: 1000, gems: 50 };
+const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };
 
 function item(overrides: Partial<EffectiveShopItem> = {}): EffectiveShopItem {
   return {
@@ -92,21 +80,11 @@ function item(overrides: Partial<EffectiveShopItem> = {}): EffectiveShopItem {
   };
 }
 
-const EMPTY_EQUIPPED: Record<ShopCategory, string | null> = {
-  avatar: null,
-  badge: null,
-  name_color: null,
-  game_skin: null,
-};
-
 function renderPanel(overrides: {
   hoverItem?: EffectiveShopItem | null;
   activeSlot?: ShopCategory | null;
   preview?: Record<ShopCategory, EffectiveShopItem | null | undefined>;
-  equippedIds?: Record<ShopCategory, string | null>;
-  inventory?: InventoryItemView[];
   balance?: WalletBalanceView;
-  onPurchaseFallback?: (item: EffectiveShopItem) => void;
 }) {
   return render(
     <Wrapper>
@@ -114,8 +92,7 @@ function renderPanel(overrides: {
         hoverItem={overrides.hoverItem ?? null}
         activeSlot={overrides.activeSlot ?? null}
         preview={overrides.preview ?? EMPTY_PREVIEW}
-        equippedIds={overrides.equippedIds ?? EMPTY_EQUIPPED}
-        inventory={overrides.inventory ?? []}
+        inventory={[]}
         balance={overrides.balance ?? BALANCE}
         gemToCoinRate={100}
         nextGemPack={null}
@@ -123,7 +100,6 @@ function renderPanel(overrides: {
         actionLabels={actionLabels}
         walletLabels={walletLabels}
         sellLabels={sellLabels}
-        onPurchaseFallback={overrides.onPurchaseFallback ?? (() => {})}
       />
     </Wrapper>,
   );
@@ -153,80 +129,18 @@ describe('ShopActionPanel', () => {
     );
   });
 
-  it('flips into slot mode when a slot is selected and nothing is hovered', () => {
+  it('preview mode is display-only — no Buy/Equip/Unequip buttons (those live on the card)', () => {
+    const { queryByTestId } = renderPanel({ hoverItem: item() });
+    expect(queryByTestId('shop-action-buy-equip')).toBeNull();
+    expect(queryByTestId('shop-action-equip')).toBeNull();
+    expect(queryByTestId('shop-action-unequip')).toBeNull();
+  });
+
+  it('slot mode renders Selected slot eyebrow and Clear control', () => {
     const { getByTestId } = renderPanel({ activeSlot: 'badge' });
     const panel = getByTestId('shop-action-panel');
     expect(panel.getAttribute('data-mode')).toBe('slot');
     expect(panel.getAttribute('aria-label')).toBe('Selected slot');
-  });
-
-  it('flags affordable=false when the user lacks the price currency', () => {
-    const { getByTestId } = renderPanel({
-      hoverItem: item({ priceCurrency: 'gems', priceAmount: 1000 }),
-      balance: { coins: 5_000, gems: 5 },
-    });
-    expect(
-      getByTestId('shop-action-buy-equip').getAttribute('data-affordable'),
-    ).toBe('false');
-  });
-
-  it('routes the buy click through the fallback when un-affordable', () => {
-    const fallback = vi.fn();
-    const expensive = item({ priceCurrency: 'gems', priceAmount: 1000 });
-    const { getByTestId } = renderPanel({
-      hoverItem: expensive,
-      balance: { coins: 0, gems: 5 },
-      onPurchaseFallback: fallback,
-    });
-    fireEvent.click(getByTestId('shop-action-buy-equip'));
-    expect(fallback).toHaveBeenCalledWith(expensive);
-  });
-
-  it('owned + equipped hover renders Unequip', () => {
-    const equipped = item({ id: 'avatar-equipped' });
-    const { getByTestId } = renderPanel({
-      hoverItem: equipped,
-      preview: { ...EMPTY_PREVIEW, avatar: equipped },
-      equippedIds: { ...EMPTY_EQUIPPED, avatar: equipped.id },
-      inventory: [
-        {
-          rowId: 'r1',
-          itemId: equipped.id,
-          purchaseId: 'p1',
-          acquiredVia: 'coins',
-          paidAmount: 100,
-          paidCurrency: 'coins',
-          soldAt: null,
-          createdAt: '2026-01-01',
-        },
-      ],
-    });
-    expect(getByTestId('shop-action-unequip')).toBeInTheDocument();
-  });
-
-  it('owned + not equipped hover renders Equip (preview overlays do NOT count as equipped)', () => {
-    const owned = item({ id: 'avatar-other' });
-    const { getByTestId, queryByTestId } = renderPanel({
-      hoverItem: owned,
-      // preview has the hover overlaid — this used to make the panel
-      // wrongly think the item was equipped. Real equipped state is the
-      // empty record, so we expect Equip not Unequip.
-      preview: { ...EMPTY_PREVIEW, avatar: owned },
-      equippedIds: EMPTY_EQUIPPED,
-      inventory: [
-        {
-          rowId: 'r2',
-          itemId: owned.id,
-          purchaseId: 'p2',
-          acquiredVia: 'coins',
-          paidAmount: 100,
-          paidCurrency: 'coins',
-          soldAt: null,
-          createdAt: '2026-01-01',
-        },
-      ],
-    });
-    expect(getByTestId('shop-action-equip')).toBeInTheDocument();
-    expect(queryByTestId('shop-action-unequip')).toBeNull();
+    expect(getByTestId('shop-action-clear')).toBeInTheDocument();
   });
 });

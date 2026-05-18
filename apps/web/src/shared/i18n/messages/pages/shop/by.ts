@@ -101,6 +101,8 @@ export const shopBy = {
     owned: 'Маецца',
     equipped: 'Экіпіравана',
     buyEquip: 'Купіць і апрануць',
+    equip: 'Апрануць',
+    unequip: 'Зняць',
   },
   rarities: {
     common: 'Звычайны',

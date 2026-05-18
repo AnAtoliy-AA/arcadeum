@@ -39,7 +39,6 @@ export interface ShopMannequinRailProps {
   gemToCoinRate: number;
   labels: ShopMannequinLabels;
   sellLabels: SellConfirmLabels;
-  onPurchaseFallback: (item: EffectiveShopItem) => void;
 }
 
 const RailHost = styled(Stack, {
@@ -82,7 +81,6 @@ export function ShopMannequinRail({
   gemToCoinRate,
   labels,
   sellLabels,
-  onPurchaseFallback,
 }: ShopMannequinRailProps) {
   const { hoverItem, activeSlot, setActiveSlot } = useShopPreviewStore();
 
@@ -156,7 +154,6 @@ export function ShopMannequinRail({
           hoverItem={hoverItem}
           activeSlot={activeSlot}
           preview={preview}
-          equippedIds={inventory.equipped}
           inventory={inventory.items}
           balance={balance}
           gemToCoinRate={gemToCoinRate}
@@ -165,7 +162,6 @@ export function ShopMannequinRail({
           actionLabels={labels.action}
           walletLabels={labels.wallet}
           sellLabels={sellLabels}
-          onPurchaseFallback={onPurchaseFallback}
         />
       </YStack>
     </RailHost>

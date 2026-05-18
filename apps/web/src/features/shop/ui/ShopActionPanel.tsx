@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
@@ -11,12 +11,6 @@ import {
 import { track } from '@/shared/lib/analytics';
 import { RARITY_COLOR } from '../lib/rarity';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
-import {
-  equipItemAction,
-  unequipItemAction,
-  purchaseItemAction,
-} from '../server/shop.actions';
-import { syncEquippedToSession } from '../lib/syncEquippedToSession';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { WalletRail, type WalletRailLabels } from './WalletRail';
 import { SellConfirmDialog, type SellConfirmLabels } from './SellConfirmDialog';
@@ -28,6 +22,12 @@ import type {
   WalletBalanceView,
 } from '../server/shop.types';
 
+// The panel's preview mode is now display-only: name, description,
+// rarity, price. The actual Buy & equip / Equip / Unequip action lives on
+// the card itself (much closer to the cursor — no traversal across the
+// page to hit a button). Slot mode keeps its Sell button because Sell
+// doesn't have a card-side equivalent.
+
 export interface ShopActionLabels {
   previewingEyebrow: string;
   selectedSlotEyebrow: string;
@@ -35,9 +35,6 @@ export interface ShopActionLabels {
   equippedEyebrow: string;
   idleTitle: string;
   idleBody: string;
-  buyEquip: string;
-  equip: string;
-  unequip: string;
   sell: string;
   clear: string;
   slotEmpty: string;
@@ -47,13 +44,6 @@ export interface ShopActionPanelProps {
   hoverItem: EffectiveShopItem | null;
   activeSlot: ShopCategory | null;
   preview: Record<ShopCategory, EffectiveShopItem | null | undefined>;
-  /**
-   * The user's actual equipped item per slot, BEFORE the hover overlay is
-   * applied. Needed to distinguish "Equip" (owned but not equipped — the
-   * hovered item is overlaid into `preview` but isn't really equipped) from
-   * "Unequip" (the hovered item is currently in the live equipped set).
-   */
-  equippedIds: Record<ShopCategory, string | null>;
   inventory: InventoryItemView[];
   balance: WalletBalanceView;
   gemToCoinRate: number;
@@ -62,13 +52,6 @@ export interface ShopActionPanelProps {
   actionLabels: ShopActionLabels;
   walletLabels: WalletRailLabels;
   sellLabels: SellConfirmLabels;
-  /**
-   * Fallback handler invoked only when the panel's own direct-buy path can't
-   * be used (insufficient funds, or the optimistic action returned an error
-   * that wants a confirmation dialog). For affordable items the panel
-   * commits the purchase itself.
-   */
-  onPurchaseFallback: (item: EffectiveShopItem) => void;
 }
 
 const PanelFrame = styled(Stack, {
@@ -97,17 +80,12 @@ function refundForRow(row: InventoryItemView, gemToCoinRate: number): number {
   return Math.floor(row.paidAmount * gemToCoinRate * 0.5);
 }
 
-function uuid(): string {
-  return globalThis.crypto.randomUUID();
-}
-
 type ActionMode = 'preview' | 'slot' | 'idle';
 
 export function ShopActionPanel({
   hoverItem,
   activeSlot,
   preview,
-  equippedIds,
   inventory,
   balance,
   gemToCoinRate,
@@ -116,94 +94,12 @@ export function ShopActionPanel({
   actionLabels,
   walletLabels,
   sellLabels,
-  onPurchaseFallback,
 }: ShopActionPanelProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
   const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
   const clearActiveSlot = useShopPreviewStore((s) => s.clearActiveSlot);
-  const setHover = useShopPreviewStore((s) => s.setHover);
-  const cancelClear = useShopPreviewStore((s) => s.cancelClear);
-
-  // Keep the preview alive when the cursor crosses from card → panel button.
-  // Card's `onPointerLeave` schedules a clear via `scheduleClear`; this
-  // cancels it so the user can actually press Buy / Equip / Unequip.
-  const handlePanelEnter = () => cancelClear();
-  // …and on real exit (mouse left the panel entirely), clear immediately.
-  const handlePanelLeave = () => setHover(null);
-
-  // Per-purchase idempotency nonce. Reset whenever the hovered item changes
-  // so the next purchase gets a fresh id; resetting on success would race
-  // with React strict-mode double-fires of the action.
-  const purchaseNonceRef = useRef<string>(uuid());
-  const hoverId = hoverItem?.id ?? null;
-  useEffect(() => {
-    if (hoverId) {
-      purchaseNonceRef.current = uuid();
-    }
-  }, [hoverId]);
-
-  const ownedIds = useMemo(
-    () =>
-      new Set(
-        inventory.filter((row) => row.soldAt === null).map((row) => row.itemId),
-      ),
-    [inventory],
-  );
-
-  const onEquip = (itemId: string, category: ShopCategory) => {
-    track('shop.equip', { itemId, source: 'panel' });
-    startTransition(async () => {
-      const result = await equipItemAction(itemId);
-      if (result.ok) {
-        syncEquippedToSession(result.data);
-        router.refresh();
-      }
-      void category;
-    });
-  };
-
-  const onUnequip = (category: ShopCategory) => {
-    track('shop.unequip', { category, source: 'panel' });
-    startTransition(async () => {
-      const result = await unequipItemAction(category);
-      if (result.ok) {
-        syncEquippedToSession(result.data);
-        router.refresh();
-      }
-    });
-  };
-
-  const onBuyDirect = (item: EffectiveShopItem) => {
-    track('shop.purchase.click', {
-      itemId: item.id,
-      currency: item.priceCurrency,
-      amount: item.priceAmount,
-      source: 'panel',
-    });
-    const nonce = purchaseNonceRef.current;
-    startTransition(async () => {
-      const result = await purchaseItemAction(item.id, nonce);
-      if (result.ok) {
-        syncEquippedToSession(result.data.equipped);
-        track('shop.purchase.success', {
-          itemId: item.id,
-          currency: item.priceCurrency,
-          amount: item.priceAmount,
-        });
-        router.refresh();
-        // Fresh nonce for the next purchase of the same item, if the user
-        // keeps hovering it.
-        purchaseNonceRef.current = uuid();
-        return;
-      }
-      track('shop.purchase.failure', { itemId: item.id, reason: result.error });
-      // BE already returned the error — let the confirmation dialog surface
-      // the message with its richer copy + retry affordance.
-      onPurchaseFallback(item);
-    });
-  };
 
   const mode: ActionMode = hoverItem ? 'preview' : activeSlot ? 'slot' : 'idle';
   const ariaLabel =
@@ -213,20 +109,11 @@ export function ShopActionPanel({
         ? actionLabels.selectedSlotEyebrow
         : actionLabels.loadoutEyebrow;
 
-  // — Previewing state (hover takes priority)
+  // — Previewing state: details only, no buttons. The card has the action.
   if (hoverItem) {
-    const owned = ownedIds.has(hoverItem.id);
-    // Check against the raw equipped record, NOT `preview` — `preview`
-    // already places `hoverItem` in its slot, so every hovered item would
-    // look equipped if we compared against it.
-    const equipped =
-      owned && equippedIds[hoverItem.category] === hoverItem.id;
     const accent = RARITY_COLOR[hoverItem.rarity];
     const name = String(t(`pages.shop.${hoverItem.nameKey}` as TranslationKey));
     const desc = String(t(`pages.shop.${hoverItem.descKey}` as TranslationKey));
-    const { coins, gems } = balance;
-    const balanceFor = hoverItem.priceCurrency === 'coins' ? coins : gems;
-    const affordable = balanceFor >= hoverItem.priceAmount;
 
     return (
       <PanelFrame
@@ -235,15 +122,13 @@ export function ShopActionPanel({
         role="region"
         aria-live="polite"
         aria-label={ariaLabel}
-        onPointerEnter={handlePanelEnter}
-        onPointerLeave={handlePanelLeave}
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
         <YStack gap={4}>
           <Text fontSize="$5" fontWeight="800" color="$white">
             {name}
           </Text>
-          <Text fontSize="$2" color="$gray11" numberOfLines={3}>
+          <Text fontSize="$2" color="$gray11" numberOfLines={4}>
             {desc}
           </Text>
         </YStack>
@@ -286,50 +171,11 @@ export function ShopActionPanel({
             </Text>
           </XStack>
         </XStack>
-
-        {equipped ? (
-          <Button
-            variant="outline"
-            onPress={() => onUnequip(hoverItem.category)}
-            disabled={isPending}
-            data-testid="shop-action-unequip"
-          >
-            {actionLabels.unequip}
-          </Button>
-        ) : owned ? (
-          <Button
-            onPress={() => onEquip(hoverItem.id, hoverItem.category)}
-            disabled={isPending}
-            data-testid="shop-action-equip"
-          >
-            {actionLabels.equip}
-          </Button>
-        ) : (
-          <Button
-            onPress={() =>
-              affordable
-                ? onBuyDirect(hoverItem)
-                : onPurchaseFallback(hoverItem)
-            }
-            disabled={isPending}
-            data-testid="shop-action-buy-equip"
-            data-affordable={affordable ? 'true' : 'false'}
-            style={{
-              backgroundImage: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
-              borderColor: accent,
-              opacity: affordable ? 1 : 0.7,
-            }}
-          >
-            <Text fontSize="$3" fontWeight="800" color="#0a0a0a">
-              {actionLabels.buyEquip}
-            </Text>
-          </Button>
-        )}
       </PanelFrame>
     );
   }
 
-  // — Selected slot state
+  // — Selected slot state — still owns Sell because there's no per-card sell.
   if (activeSlot) {
     const slot = slotLabels[activeSlot];
     const equippedItem = preview[activeSlot] ?? null;
@@ -351,8 +197,6 @@ export function ShopActionPanel({
         role="region"
         aria-live="polite"
         aria-label={ariaLabel}
-        onPointerEnter={handlePanelEnter}
-        onPointerLeave={handlePanelLeave}
       >
         <XStack justifyContent="space-between" alignItems="center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
@@ -399,6 +243,11 @@ export function ShopActionPanel({
                 refundCoins: refundForRow(equippedRow, gemToCoinRate),
               });
               setSellTarget(equippedRow);
+              startTransition(() => {
+                // hook into useTransition for parity with the rest of the
+                // panel's async-style affordances; the actual sell happens
+                // inside SellConfirmDialog
+              });
             }}
             disabled={isPending}
             data-testid="shop-action-sell"
@@ -412,14 +261,17 @@ export function ShopActionPanel({
           refundCoins={sellTarget ? refundForRow(sellTarget, gemToCoinRate) : 0}
           open={sellTarget !== null}
           onClose={() => setSellTarget(null)}
-          onSuccess={() => setSellTarget(null)}
+          onSuccess={() => {
+            setSellTarget(null);
+            router.refresh();
+          }}
           labels={sellLabels}
         />
       </PanelFrame>
     );
   }
 
-  // — Idle state
+  // — Idle state.
   return (
     <PanelFrame
       data-testid="shop-action-panel"

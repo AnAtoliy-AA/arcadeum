@@ -1,10 +1,27 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import config from '../../../shared/config/tamagui.config';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
+vi.mock('../server/shop.actions', () => ({
+  equipItemAction: vi.fn(),
+  unequipItemAction: vi.fn(),
+  purchaseItemAction: vi.fn(),
+}));
+vi.mock('../lib/syncEquippedToSession', () => ({
+  syncEquippedToSession: vi.fn(),
+}));
+
 import { ShopRow } from './ShopRow';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
-import type { EffectiveShopItem, EquippedView } from '../server/shop.types';
+import type {
+  EffectiveShopItem,
+  EquippedView,
+  WalletBalanceView,
+} from '../server/shop.types';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">
@@ -12,7 +29,13 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
   </TamaguiProvider>
 );
 
-const cardLabels = { owned: 'Owned', equipped: 'Equipped', buyEquip: 'Buy' };
+const cardLabels = {
+  owned: 'Owned',
+  equipped: 'Equipped',
+  buyEquip: 'Buy',
+  equip: 'Equip',
+  unequip: 'Unequip',
+};
 const rowLabels = {
   title: 'Avatars',
   eyebrow: '{count} items',
@@ -25,6 +48,8 @@ const EQUIPPED_EMPTY: EquippedView = {
   name_color: null,
   game_skin: null,
 };
+
+const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };
 
 function item(id: string): EffectiveShopItem {
   return {
@@ -56,9 +81,10 @@ describe('ShopRow', () => {
           items={[]}
           inventory={[]}
           equipped={EQUIPPED_EMPTY}
+          balance={BALANCE}
           labels={rowLabels}
           cardLabels={cardLabels}
-          onPurchase={() => {}}
+          onPurchaseFallback={() => {}}
         />
       </Wrapper>,
     );
@@ -77,9 +103,10 @@ describe('ShopRow', () => {
           items={[item('a'), item('b')]}
           inventory={[]}
           equipped={EQUIPPED_EMPTY}
+          balance={BALANCE}
           labels={rowLabels}
           cardLabels={cardLabels}
-          onPurchase={() => {}}
+          onPurchaseFallback={() => {}}
         />
       </Wrapper>,
     );
@@ -98,9 +125,10 @@ describe('ShopRow', () => {
           items={[item('a')]}
           inventory={[]}
           equipped={EQUIPPED_EMPTY}
+          balance={BALANCE}
           labels={rowLabels}
           cardLabels={cardLabels}
-          onPurchase={() => {}}
+          onPurchaseFallback={() => {}}
         />
       </Wrapper>,
     );

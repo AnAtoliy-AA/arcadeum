@@ -201,51 +201,69 @@
   gap: 0.75rem;
   margin-top: 1.75rem;
 }
-.heroCtaDivider {
-  display: inline-block;
-  width: 1px;
-  height: 24px;
-  background: var(--glass-border, rgba(255, 255, 255, 0.1));
-  margin: 0 0.25rem;
-}
+/* Tertiary CTA pills: same hover affordance as the primary/secondary
+   buttons, but quieter visual weight — outline only, transparent bg.
+   Sits under the two Quickplay buttons in the hero. */
 .heroCtaLink {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.625rem 0.25rem;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  background: transparent;
   font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-muted);
-  text-decoration: underline;
-  text-decoration-color: color-mix(
-    in srgb,
-    var(--color-muted) 35%,
-    transparent
-  );
-  text-underline-offset: 4px;
+  text-decoration: none;
   transition:
+    background 0.15s ease,
     color 0.15s ease,
-    text-decoration-color 0.15s ease;
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 .heroCtaLink:hover {
+  background: color-mix(in srgb, var(--accent, #38bdf8) 8%, transparent);
   color: var(--color-strong);
-  text-decoration-color: var(--accent, #38bdf8);
+  border-color: color-mix(
+    in srgb,
+    var(--accent, #38bdf8) 35%,
+    var(--glass-border, rgba(255, 255, 255, 0.1))
+  );
+  transform: translateY(-1px);
+}
+.heroCtaLink:focus-visible {
+  outline: 2px solid var(--accent, #38bdf8);
+  outline-offset: 2px;
 }
 .heroCtaLink::after {
   content: '→';
   font-size: 0.875rem;
+  opacity: 0.6;
   transition: transform 0.15s ease;
 }
 .heroCtaLink:hover::after {
-  transform: translateX(2px);
+  transform: translateX(3px);
+  opacity: 1;
+}
+/* Divider no longer needed now that the tertiaries read as their own
+   pills — but kept as a hidden span so the JSX doesn't need a branch. */
+.heroCtaDivider {
+  display: none;
 }
 @media (max-width: 540px) {
-  .heroCtaDivider {
-    display: none;
-  }
   .heroCtaLink {
-    padding: 0.5rem 0;
+    padding: 0.5rem 0.875rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroCtaLink,
+  .heroCtaLink:hover,
+  .heroCtaLink::after,
+  .heroCtaLink:hover::after {
+    transition: none;
+    transform: none;
   }
 }
 .heroChips {

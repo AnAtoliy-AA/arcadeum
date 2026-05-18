@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.6] - 2026-05-18
+
+### Added
+- translated route slugs, per-locale OG image, JSON-LD, sitemap polish (ARC-706) (ARC-706)
+
+
 ## [1.14.5] - 2026-05-18
 
 ### Added

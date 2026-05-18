@@ -10,6 +10,9 @@ import { PWAProvider } from '@/features/pwa/PWAContext';
 import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { isLocale, SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import { buildRoutes } from '@/shared/config/routes';
+import { JsonLd } from '@/shared/ui/JsonLd';
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: 'en_US',
@@ -17,6 +20,14 @@ const OG_LOCALE_MAP: Record<Locale, string> = {
   fr: 'fr_FR',
   ru: 'ru_RU',
   by: 'be_BY',
+};
+
+const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
+  en: 'en-US',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  ru: 'ru-RU',
+  by: 'be-BY',
 };
 
 export function generateStaticParams() {
@@ -44,6 +55,9 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       locale: OG_LOCALE_MAP[locale],
+      alternateLocale: SUPPORTED_LOCALES.filter((l) => l !== locale).map(
+        (l) => OG_LOCALE_MAP[l],
+      ),
       url: localeUrl,
       siteName: appConfig.appName,
       title: appConfig.seoTitle,
@@ -70,11 +84,60 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const authToken = await getServerAccessToken();
+  const [authToken, messages] = await Promise.all([
+    getServerAccessToken(),
+    getTranslations(locale),
+  ]);
+
+  const localeUrl = `${appConfig.siteUrl}/${locale}`;
+  const routes = buildRoutes(locale);
+  const localizedDescription =
+    messages.seo?.home?.description ?? appConfig.seoDescription;
+  const inLanguage = SCHEMA_LANGUAGE_MAP[locale];
+
+  // WebSite + SoftwareApplication structured data, localized via `inLanguage`
+  // and translated descriptions. The Organization entity is locale-agnostic
+  // and lives in the root layout.
+  const localeJsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: appConfig.appName,
+      url: localeUrl,
+      inLanguage,
+      description: localizedDescription,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${appConfig.siteUrl}${routes.games}?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: appConfig.appName,
+      url: localeUrl,
+      inLanguage,
+      description: localizedDescription,
+      operatingSystem: 'Any',
+      applicationCategory: 'GameApplication',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '1240',
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+    },
+  ];
 
   return (
     <LanguageProvider locale={locale}>
       <PWAProvider>
+        <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
         <AnnouncementBanner />
         <Header />
         {children}

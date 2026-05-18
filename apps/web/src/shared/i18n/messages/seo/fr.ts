@@ -129,4 +129,12 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Admin · ${APP}`,
     description: `Contrôles administratifs de ${APP}.`,
   },
+  playerProfile: {
+    title: `Profil du joueur · ${APP}`,
+    description: `Consultez le rang, les statistiques et les parties récentes de ce joueur sur ${APP}.`,
+  },
+  notFound: {
+    title: `Page introuvable · ${APP}`,
+    description: `La page recherchée n'existe pas sur ${APP}. Parcourez nos jeux ou retournez à l'accueil.`,
+  },
 };

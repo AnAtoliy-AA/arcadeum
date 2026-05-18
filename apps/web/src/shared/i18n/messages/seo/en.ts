@@ -127,6 +127,14 @@ export const en = {
     title: `Admin · ${APP}`,
     description: `Administrative controls for ${APP}.`,
   },
+  playerProfile: {
+    title: `Player profile · ${APP}`,
+    description: `View this player's ${APP} rank, stats, and recent matches.`,
+  },
+  notFound: {
+    title: `Page not found · ${APP}`,
+    description: `The page you're looking for doesn't exist on ${APP}. Browse our games or head back home.`,
+  },
 };
 
 export type SeoMessages = typeof en;

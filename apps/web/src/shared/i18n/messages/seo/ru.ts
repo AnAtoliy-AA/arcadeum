@@ -129,4 +129,12 @@ export const ru: DeepPartial<SeoMessages> = {
     title: `Админ · ${APP}`,
     description: `Административные настройки ${APP}.`,
   },
+  playerProfile: {
+    title: `Профиль игрока · ${APP}`,
+    description: `Посмотрите рейтинг, статистику и недавние матчи этого игрока на ${APP}.`,
+  },
+  notFound: {
+    title: `Страница не найдена · ${APP}`,
+    description: `Запрошенная страница не существует на ${APP}. Перейдите к играм или вернитесь на главную.`,
+  },
 };

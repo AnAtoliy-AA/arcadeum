@@ -61,6 +61,10 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   community: (r) => r.community,
   developers: (r) => r.developers,
   admin: (r) => r.admin,
+  // playerProfile is dynamic — callers must pass `pathFor`, but we map it
+  // here to the locale root so hreflang at least covers all locales.
+  playerProfile: (r) => r.home,
+  notFound: (r) => r.home,
 };
 
 export interface BuildPageMetadataOptions {
@@ -144,6 +148,12 @@ export async function buildPageMetadata({
     openGraph: {
       type: 'website',
       locale: OG_LOCALE_MAP[locale],
+      // og:locale:alternate — Facebook/Discord use these to pick the right
+      // unfurl when the same URL is shared in a different locale context.
+      // Complements `alternates.languages` (hreflang).
+      alternateLocale: SUPPORTED_LOCALES.filter((l) => l !== locale).map(
+        (l) => OG_LOCALE_MAP[l],
+      ),
       siteName: appConfig.appName,
       title,
       description,

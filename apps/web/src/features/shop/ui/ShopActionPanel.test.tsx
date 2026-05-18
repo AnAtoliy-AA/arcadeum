@@ -92,10 +92,18 @@ function item(overrides: Partial<EffectiveShopItem> = {}): EffectiveShopItem {
   };
 }
 
+const EMPTY_EQUIPPED: Record<ShopCategory, string | null> = {
+  avatar: null,
+  badge: null,
+  name_color: null,
+  game_skin: null,
+};
+
 function renderPanel(overrides: {
   hoverItem?: EffectiveShopItem | null;
   activeSlot?: ShopCategory | null;
   preview?: Record<ShopCategory, EffectiveShopItem | null | undefined>;
+  equippedIds?: Record<ShopCategory, string | null>;
   inventory?: InventoryItemView[];
   balance?: WalletBalanceView;
   onPurchaseFallback?: (item: EffectiveShopItem) => void;
@@ -106,6 +114,7 @@ function renderPanel(overrides: {
         hoverItem={overrides.hoverItem ?? null}
         activeSlot={overrides.activeSlot ?? null}
         preview={overrides.preview ?? EMPTY_PREVIEW}
+        equippedIds={overrides.equippedIds ?? EMPTY_EQUIPPED}
         inventory={overrides.inventory ?? []}
         balance={overrides.balance ?? BALANCE}
         gemToCoinRate={100}
@@ -178,6 +187,7 @@ describe('ShopActionPanel', () => {
     const { getByTestId } = renderPanel({
       hoverItem: equipped,
       preview: { ...EMPTY_PREVIEW, avatar: equipped },
+      equippedIds: { ...EMPTY_EQUIPPED, avatar: equipped.id },
       inventory: [
         {
           rowId: 'r1',
@@ -194,11 +204,15 @@ describe('ShopActionPanel', () => {
     expect(getByTestId('shop-action-unequip')).toBeInTheDocument();
   });
 
-  it('owned + not equipped hover renders Equip', () => {
+  it('owned + not equipped hover renders Equip (preview overlays do NOT count as equipped)', () => {
     const owned = item({ id: 'avatar-other' });
-    const { getByTestId } = renderPanel({
+    const { getByTestId, queryByTestId } = renderPanel({
       hoverItem: owned,
-      preview: EMPTY_PREVIEW,
+      // preview has the hover overlaid — this used to make the panel
+      // wrongly think the item was equipped. Real equipped state is the
+      // empty record, so we expect Equip not Unequip.
+      preview: { ...EMPTY_PREVIEW, avatar: owned },
+      equippedIds: EMPTY_EQUIPPED,
       inventory: [
         {
           rowId: 'r2',
@@ -213,5 +227,6 @@ describe('ShopActionPanel', () => {
       ],
     });
     expect(getByTestId('shop-action-equip')).toBeInTheDocument();
+    expect(queryByTestId('shop-action-unequip')).toBeNull();
   });
 });

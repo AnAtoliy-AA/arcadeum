@@ -47,6 +47,13 @@ export interface ShopActionPanelProps {
   hoverItem: EffectiveShopItem | null;
   activeSlot: ShopCategory | null;
   preview: Record<ShopCategory, EffectiveShopItem | null | undefined>;
+  /**
+   * The user's actual equipped item per slot, BEFORE the hover overlay is
+   * applied. Needed to distinguish "Equip" (owned but not equipped — the
+   * hovered item is overlaid into `preview` but isn't really equipped) from
+   * "Unequip" (the hovered item is currently in the live equipped set).
+   */
+  equippedIds: Record<ShopCategory, string | null>;
   inventory: InventoryItemView[];
   balance: WalletBalanceView;
   gemToCoinRate: number;
@@ -100,6 +107,7 @@ export function ShopActionPanel({
   hoverItem,
   activeSlot,
   preview,
+  equippedIds,
   inventory,
   balance,
   gemToCoinRate,
@@ -115,6 +123,15 @@ export function ShopActionPanel({
   const [isPending, startTransition] = useTransition();
   const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
   const clearActiveSlot = useShopPreviewStore((s) => s.clearActiveSlot);
+  const setHover = useShopPreviewStore((s) => s.setHover);
+  const cancelClear = useShopPreviewStore((s) => s.cancelClear);
+
+  // Keep the preview alive when the cursor crosses from card → panel button.
+  // Card's `onPointerLeave` schedules a clear via `scheduleClear`; this
+  // cancels it so the user can actually press Buy / Equip / Unequip.
+  const handlePanelEnter = () => cancelClear();
+  // …and on real exit (mouse left the panel entirely), clear immediately.
+  const handlePanelLeave = () => setHover(null);
 
   // Per-purchase idempotency nonce. Reset whenever the hovered item changes
   // so the next purchase gets a fresh id; resetting on success would race
@@ -199,7 +216,11 @@ export function ShopActionPanel({
   // — Previewing state (hover takes priority)
   if (hoverItem) {
     const owned = ownedIds.has(hoverItem.id);
-    const equipped = preview[hoverItem.category]?.id === hoverItem.id && owned;
+    // Check against the raw equipped record, NOT `preview` — `preview`
+    // already places `hoverItem` in its slot, so every hovered item would
+    // look equipped if we compared against it.
+    const equipped =
+      owned && equippedIds[hoverItem.category] === hoverItem.id;
     const accent = RARITY_COLOR[hoverItem.rarity];
     const name = String(t(`pages.shop.${hoverItem.nameKey}` as TranslationKey));
     const desc = String(t(`pages.shop.${hoverItem.descKey}` as TranslationKey));
@@ -214,6 +235,8 @@ export function ShopActionPanel({
         role="region"
         aria-live="polite"
         aria-label={ariaLabel}
+        onPointerEnter={handlePanelEnter}
+        onPointerLeave={handlePanelLeave}
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
         <YStack gap={4}>
@@ -328,6 +351,8 @@ export function ShopActionPanel({
         role="region"
         aria-live="polite"
         aria-label={ariaLabel}
+        onPointerEnter={handlePanelEnter}
+        onPointerLeave={handlePanelLeave}
       >
         <XStack justifyContent="space-between" alignItems="center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>

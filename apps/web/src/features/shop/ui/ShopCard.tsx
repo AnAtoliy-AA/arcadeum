@@ -94,6 +94,7 @@ export function ShopCard({
 }: ShopCardProps) {
   const { t } = useTranslation();
   const setHover = useShopPreviewStore((s) => s.setHover);
+  const scheduleClear = useShopPreviewStore((s) => s.scheduleClear);
   const [hovered, setHovered] = useState(false);
   const hoverRef = useRef(false);
 
@@ -119,9 +120,12 @@ export function ShopCard({
   const handleLeave = useCallback(() => {
     if (!hoverRef.current) return;
     hoverRef.current = false;
-    setHover(null);
+    // Don't clear immediately — give the user a short window to move the
+    // cursor into the action panel and press Buy / Equip / Unequip.
+    // Panel's onPointerEnter cancels this timer.
+    scheduleClear();
     setHovered(false);
-  }, [setHover]);
+  }, [scheduleClear]);
 
   const handleClick = useCallback(() => {
     if (owned) return;

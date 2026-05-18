@@ -156,6 +156,7 @@ export function ShopMannequinRail({
           hoverItem={hoverItem}
           activeSlot={activeSlot}
           preview={preview}
+          equippedIds={inventory.equipped}
           inventory={inventory.items}
           balance={balance}
           gemToCoinRate={gemToCoinRate}

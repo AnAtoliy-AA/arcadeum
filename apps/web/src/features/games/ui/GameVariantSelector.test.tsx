@@ -13,6 +13,14 @@ vi.mock('../api', () => ({
   },
 }));
 
+// Mock Next.js navigation hooks so LanguageProvider can mount in a
+// non-App-Router test environment.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => '/en',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 interface MockSelectProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -85,7 +93,7 @@ vi.mock('@/shared/hooks/useMutation', () => ({
 
 const render = (ui: React.ReactElement) => {
   return rtlRender(
-    <LanguageProvider>
+    <LanguageProvider locale="en">
       <TamaguiProvider config={config} defaultTheme="dark">
         {ui}
       </TamaguiProvider>

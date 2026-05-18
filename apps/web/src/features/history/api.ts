@@ -1,7 +1,10 @@
 import { apiClient, ApiClientOptions } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
 import { PAGINATION } from '@/shared/config/constants';
-import type { HistorySummary, HistoryDetail } from '@/app/history/types';
+import type {
+  HistorySummary,
+  HistoryDetail,
+} from '@/app/[locale]/history/types';
 
 interface GetHistoryParams {
   search?: string;

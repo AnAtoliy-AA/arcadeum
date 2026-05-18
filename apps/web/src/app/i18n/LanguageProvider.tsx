@@ -2,15 +2,17 @@
 
 import {
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useState,
   useSyncExternalStore,
 } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { useLanguageStore } from './store/languageStore';
 import {
   DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
   Locale,
   TranslationBundle,
   formatMessage,
@@ -27,51 +29,64 @@ const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
+function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
+  const segments = pathname.split('/');
+  if (
+    segments.length > 1 &&
+    (SUPPORTED_LOCALES as readonly string[]).includes(segments[1])
+  ) {
+    segments[1] = nextLocale;
+    return segments.join('/') || `/${nextLocale}`;
+  }
+  return `/${nextLocale}${pathname === '/' ? '' : pathname}`;
+}
+
 export function LanguageProvider({
   children,
-  initialLocale,
+  locale,
 }: {
   children: ReactNode;
-  initialLocale?: Locale;
+  locale: Locale;
 }) {
-  const locale = useLanguageStore((state) => state.locale);
-  const setLocale = useLanguageStore((state) => state.setLocale);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isReady = useSyncExternalStore(
     emptySubscribe,
     getClientSnapshot,
     getServerSnapshot,
   );
 
-  // Initialize with messages for the initial locale (usually 'en' which is statically loaded)
   const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(() =>
-    getMessages(initialLocale || DEFAULT_LOCALE),
+    getMessages(locale ?? DEFAULT_LOCALE),
   );
 
   useEffect(() => {
-    if (typeof document === 'undefined') {
-      return;
-    }
-
+    if (typeof document === 'undefined') return;
     document.documentElement.setAttribute('lang', locale);
     document.documentElement.setAttribute('data-hydrated', 'true');
     document.documentElement.setAttribute('data-app-ready', 'true');
 
-    // Sync to cookie
-    const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
-    document.cookie = `app-language=${locale}; ${cookieOptions}`;
+    document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
-    // Dynamically load the messages for the new locale
-    let isMounted = true;
+    let mounted = true;
     loadMessages(locale).then((msgs) => {
-      if (isMounted) {
-        setLoadedMessages(msgs);
-      }
+      if (mounted) setLoadedMessages(msgs);
     });
-
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, [locale]);
+
+  const setLocale = useCallback(
+    (next: Locale) => {
+      if (next === locale) return;
+      const nextPath = swapLocaleInPath(pathname ?? `/${locale}`, next);
+      const query = searchParams?.toString();
+      router.replace(query ? `${nextPath}?${query}` : nextPath);
+    },
+    [locale, pathname, searchParams, router],
+  );
 
   const value = useMemo<LanguageContextValue>(
     () => ({
@@ -79,9 +94,9 @@ export function LanguageProvider({
       setLocale,
       messages: loadedMessages,
       isReady,
-      initialLocale,
+      initialLocale: locale,
     }),
-    [locale, setLocale, loadedMessages, isReady, initialLocale],
+    [locale, setLocale, loadedMessages, isReady],
   );
 
   return (

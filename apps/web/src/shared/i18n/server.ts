@@ -1,26 +1,32 @@
 import { cookies } from 'next/headers';
 import {
   loadMessages,
+  isLocale,
   DEFAULT_LOCALE,
   type Locale,
   type TranslationBundle,
 } from './index';
 
 /**
- * Server-side utility to get translations based on the 'app-language' cookie.
- * This can only be used in Server Components or Server Actions.
+ * Server-side utility to load translations.
+ *
+ * Prefer passing a locale (typically from `params.locale` on a page in the
+ * `[locale]` segment). If omitted, falls back to the `app-language` cookie,
+ * then the default locale.
  */
-export async function getTranslations(): Promise<TranslationBundle> {
-  const cookieStore = await cookies();
-  const locale =
-    (cookieStore.get('app-language')?.value as Locale) || DEFAULT_LOCALE;
-  return loadMessages(locale);
+export async function getTranslations(
+  locale?: Locale,
+): Promise<TranslationBundle> {
+  return loadMessages(locale ?? (await getServerLocale()));
 }
 
 /**
- * Get the current locale from cookies on the server.
+ * Read the current locale on the server. Pages in the `[locale]` segment
+ * should pass `params.locale` directly to `getTranslations`; this helper
+ * is for top-level layouts and standalone server routes.
  */
 export async function getServerLocale(): Promise<Locale> {
   const cookieStore = await cookies();
-  return (cookieStore.get('app-language')?.value as Locale) || DEFAULT_LOCALE;
+  const raw = cookieStore.get('app-language')?.value;
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
 }

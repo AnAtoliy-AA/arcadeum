@@ -179,7 +179,9 @@ export class GlimwormService implements OnModuleDestroy {
     }
 
     if (opts.fillWithBots) {
-      const humans = Object.values(session.worms).filter((w) => !w.isBot).length;
+      const humans = Object.values(session.worms).filter(
+        (w) => !w.isBot,
+      ).length;
       // Caller-requested bot count, clamped. With no botCount, fall back to
       // SOLO_FILL_TARGET (3 total worms — 1 human + 2 bots).
       const requested =

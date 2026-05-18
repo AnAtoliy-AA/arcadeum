@@ -1,52 +1,33 @@
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
 import { Container, PageLayout, LinkButton } from '@/shared/ui';
 import styles from './SeaBattleLanding.module.css';
 import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
-import { THEME_PREVIEWS, type ThemePreview } from './themePreviews';
 import { QuickplayButton } from './QuickplayButton';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
+import { SeaBattleThemesGrid } from './SeaBattleThemesGrid';
 
 const SEA_BATTLE_GAME_ID = 'sea_battle_v1';
 
-type Landing = SeaBattleGamesMessages['sea_battle_v1']['landing'];
-type Rules = SeaBattleGamesMessages['sea_battle_v1']['rules'];
+type SeaBattleMessages = SeaBattleGamesMessages['sea_battle_v1'];
+type Landing = SeaBattleMessages['landing'];
+type Rules = SeaBattleMessages['rules'];
+type Variants = SeaBattleMessages['variants'];
 
 interface Props {
   landing?: Landing;
   rulesT?: Rules;
+  variantsT?: Variants;
   createRoomHref: string;
   roomsHref: string;
   homeHref: string;
   gamesHref: string;
 }
 
-function ThemeChip({ theme }: { theme: ThemePreview }) {
-  const style = {
-    ['--cellGrid' as never]: theme.grid,
-    ['--cellBg' as never]: theme.cellBg,
-    ['--cellShip' as never]: theme.ship,
-    ['--cellHit' as never]: theme.hit,
-  } as CSSProperties;
-  return (
-    <div className={styles.themeChip} style={style}>
-      <div className={styles.themeChipBoard}>
-        {theme.cells.map((kind, idx) => (
-          <span
-            key={`${theme.key}-${idx}-${kind || 'empty'}`}
-            className={kind ? styles[kind] : undefined}
-          />
-        ))}
-      </div>
-      <span className={styles.themeChipName}>{theme.name}</span>
-    </div>
-  );
-}
-
 export default function SeaBattleLanding({
   landing,
   rulesT,
+  variantsT,
   createRoomHref,
   roomsHref,
   homeHref,
@@ -223,11 +204,20 @@ export default function SeaBattleLanding({
                 </p>
               </div>
             </header>
-            <div className={styles.themeStrip}>
-              {THEME_PREVIEWS.map((t) => (
-                <ThemeChip key={t.key} theme={t} />
-              ))}
-            </div>
+            <SeaBattleThemesGrid
+              names={{
+                classic: variantsT?.classic?.name,
+                modern: variantsT?.modern?.name,
+                pixel: variantsT?.pixel?.name,
+                cartoon: variantsT?.cartoon?.name,
+                cyber: variantsT?.cyber?.name,
+                vintage: variantsT?.vintage?.name,
+                nebula: variantsT?.nebula?.name,
+                forest: variantsT?.forest?.name,
+                sunset: variantsT?.sunset?.name,
+                monochrome: variantsT?.monochrome?.name,
+              }}
+            />
           </section>
 
           {/* Rules */}

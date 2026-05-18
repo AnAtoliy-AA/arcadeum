@@ -128,6 +128,7 @@ export default async function SeaBattleLandingRoute() {
         homeHref={routes.home}
         gamesHref={routes.games}
         rulesT={messages.games?.sea_battle_v1?.rules}
+        variantsT={messages.games?.sea_battle_v1?.variants}
       />
     </>
   );

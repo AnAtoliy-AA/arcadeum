@@ -64,8 +64,10 @@ export class GlimwormBotService {
     //    bots react before they're already at the edge. The emergency zone
     //    has its own weight so food/trails can't pull a bot through a wall.
     const arena = session.arena;
-    const aheadX = head.x + Math.cos(bot.heading) * bot.speed * WALL_LOOKAHEAD_SEC;
-    const aheadY = head.y + Math.sin(bot.heading) * bot.speed * WALL_LOOKAHEAD_SEC;
+    const aheadX =
+      head.x + Math.cos(bot.heading) * bot.speed * WALL_LOOKAHEAD_SEC;
+    const aheadY =
+      head.y + Math.sin(bot.heading) * bot.speed * WALL_LOOKAHEAD_SEC;
     const wallContribution = (
       distNow: number,
       distFuture: number,

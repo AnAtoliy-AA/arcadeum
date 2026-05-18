@@ -400,60 +400,6 @@
   margin: 0;
 }
 
-/* ---------- Theme strip ---------- */
-.themeStrip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.75rem;
-}
-.themeChip {
-  padding: 0.875rem;
-  border-radius: 14px;
-  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
-  background: var(--glass-bg, rgba(15, 17, 18, 0.72));
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-.themeChip:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--accent, #38bdf8) 35%,
-    var(--glass-border, rgba(255, 255, 255, 0.1))
-  );
-  transform: translateY(-2px);
-}
-.themeChipBoard {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 2px;
-  aspect-ratio: 3 / 2;
-  border-radius: 5px;
-  padding: 3px;
-  background: var(--cellGrid, rgba(255, 255, 255, 0.06));
-}
-.themeChipBoard > span {
-  background: var(--cellBg, rgba(255, 255, 255, 0.05));
-  border-radius: 1px;
-}
-.themeChipBoard > span.ship {
-  background: var(--cellShip, #64748b);
-}
-.themeChipBoard > span.hit {
-  background: var(--cellHit, #ef4444);
-  box-shadow: 0 0 4px var(--cellHit, #ef4444);
-}
-.themeChipName {
-  font-family: var(--font-heading, 'Space Grotesk', sans-serif);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-strong);
-}
-
 /* ---------- Rules ---------- */
 .rulesGrid {
   display: grid;

@@ -60,17 +60,20 @@ export class GameRoomsQuickplayService {
     userId: string,
     gameId: string,
   ): Promise<GameRoomSummary> {
-    // Fetch a few oldest open public lobbies the user isn't in, then
-    // pick the first one with a free seat. The "not full" check is
-    // intentionally done in JS rather than via $expr/$size — those
-    // interact badly with Mongoose schema casting and silently
-    // returned zero rows on some Mongo versions in dev.
+    // Oldest open public lobby the user isn't already in AND that has
+    // no AI bot. Excluding rooms with bot participants is what keeps
+    // matchmaking from "matching" the second human into an already-
+    // running 1v1-vs-AI room. The "not full" check stays in JS to
+    // sidestep $expr/$size casting edge cases with Mongoose.
     const candidates = await this.gameRoomModel
       .find({
         gameId,
         visibility: 'public',
         status: 'lobby',
-        'participants.userId': { $ne: userId },
+        $and: [
+          { 'participants.userId': { $ne: userId } },
+          { 'participants.userId': { $not: /^bot-/ } },
+        ],
       })
       .sort({ createdAt: 1 })
       .limit(MATCHMAKING_CANDIDATE_LIMIT)
@@ -84,7 +87,7 @@ export class GameRoomsQuickplayService {
 
     if (candidate) {
       this.logger.log(
-        `Matchmaking: ${userId} joining existing room ${String(candidate._id)} (${candidates.length} candidates scanned)`,
+        `Matchmaking: ${userId} joining room ${String(candidate._id)} (${candidates.length} candidates scanned)`,
       );
       const joined = await this.gameRoomsService.joinRoom(
         { roomId: String(candidate._id) },
@@ -95,7 +98,7 @@ export class GameRoomsQuickplayService {
     }
 
     this.logger.log(
-      `Matchmaking: no open room for ${gameId} (${candidates.length} candidates scanned), creating new for ${userId}`,
+      `Matchmaking: no open room for ${gameId} (${candidates.length} scanned), creating new for ${userId}`,
     );
     const room = await this.gameRoomsService.createRoom(userId, {
       gameId,

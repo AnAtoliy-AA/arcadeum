@@ -236,6 +236,12 @@ export const esMessages = {
       loading: 'Enviando...',
       noPlayers: 'No hay otros jugadores disponibles para la revancha',
       messagePlaceholder: 'Añade un mensaje amistoso (opcional)',
+      invitation: {
+        title: 'Invitación a la revancha',
+        message: '{{name}} te invita a jugar otra vez.',
+        decline: 'Rechazar',
+        accept: 'Aceptar',
+      },
     },
   },
 };

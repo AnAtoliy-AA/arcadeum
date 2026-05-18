@@ -385,6 +385,12 @@ export const byMessages = {
       joining: 'Уваход...',
       blockThisRematch: 'Блакаваць толькі гэты рэванш',
       blockInvitations: 'Блакаваць усе запрашэнні ад гэтага гульца',
+      invitation: {
+        title: 'Запрашэнне на рэванш',
+        message: '{{name}} запрашае вас згуляць яшчэ раз.',
+        decline: 'Адхіліць',
+        accept: 'Прыняць',
+      },
     },
     fullscreen: {
       enter: 'На ўвесь экран (F)',

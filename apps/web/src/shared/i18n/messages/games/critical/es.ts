@@ -384,6 +384,12 @@ export const esMessages = {
       joining: 'Uniéndose...',
       blockThisRematch: 'Bloquear solo esta revancha',
       blockInvitations: 'Bloquear todas las invitaciones de este jugador',
+      invitation: {
+        title: 'Invitación a la revancha',
+        message: '{{name}} te invita a jugar otra vez.',
+        decline: 'Rechazar',
+        accept: 'Aceptar',
+      },
     },
     fullscreen: {
       enter: 'Pantalla completa (F)',

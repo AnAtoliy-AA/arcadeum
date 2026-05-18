@@ -232,6 +232,12 @@ export const enMessages = {
       loading: 'Sending...',
       noPlayers: 'No other players available for a rematch',
       messagePlaceholder: 'Add a friendly message (optional)',
+      invitation: {
+        title: 'Rematch invitation',
+        message: '{{name}} invited you to play again.',
+        decline: 'Decline',
+        accept: 'Accept',
+      },
     },
   },
 };

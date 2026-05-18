@@ -232,6 +232,12 @@ export const ruMessages = {
       loading: 'Отправка...',
       noPlayers: 'Нет других игроков для реванша',
       messagePlaceholder: 'Добавьте дружеское сообщение (необязательно)',
+      invitation: {
+        title: 'Приглашение на реванш',
+        message: '{{name}} приглашает вас сыграть ещё раз.',
+        decline: 'Отклонить',
+        accept: 'Принять',
+      },
     },
   },
 };

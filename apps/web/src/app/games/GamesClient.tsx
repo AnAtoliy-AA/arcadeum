@@ -13,4 +13,6 @@ function GamesClient(props: GamesClientProps) {
   return <GamesPageDynamic {...props} />;
 }
 
+export type { GamesClientProps };
+
 export default GamesClient;

@@ -58,6 +58,23 @@ const CELL_BG: Record<string, string> = {
   empty: 'rgba(120, 180, 230, 0.04)',
 };
 
+type CellMarker = { size: number; background: string; boxShadow?: string };
+
+function markerForCell(state: string, isTarget: boolean): CellMarker | null {
+  if (isTarget) {
+    return {
+      size: 18,
+      background: 'white',
+      boxShadow: '0 0 12px rgba(255, 255, 255, 0.9)',
+    };
+  }
+  if (state === 'hit') return { size: 14, background: 'white' };
+  if (state === 'miss') {
+    return { size: 8, background: 'rgba(255, 255, 255, 0.55)' };
+  }
+  return null;
+}
+
 export function renderSeaBattleOgImage(): ImageResponse {
   const BOARD_PAD = 18;
   const targetX = BOARD_PAD + TARGET.col * CELL + CELL / 2;
@@ -201,6 +218,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
               {Array.from({ length: COLS }).map((_, col) => {
                 const state = cellState(col, row);
                 const isTarget = col === TARGET.col && row === TARGET.row;
+                const marker = markerForCell(state, isTarget);
                 return (
                   <div
                     key={col}
@@ -217,32 +235,14 @@ export function renderSeaBattleOgImage(): ImageResponse {
                         : 'none',
                     }}
                   >
-                    {isTarget ? (
+                    {marker ? (
                       <div
                         style={{
-                          width: 18,
-                          height: 18,
-                          borderRadius: 9,
-                          background: 'white',
-                          boxShadow: '0 0 12px rgba(255, 255, 255, 0.9)',
-                        }}
-                      />
-                    ) : state === 'hit' ? (
-                      <div
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 7,
-                          background: 'white',
-                        }}
-                      />
-                    ) : state === 'miss' ? (
-                      <div
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: 4,
-                          background: 'rgba(255, 255, 255, 0.55)',
+                          width: marker.size,
+                          height: marker.size,
+                          borderRadius: marker.size / 2,
+                          background: marker.background,
+                          boxShadow: marker.boxShadow ?? 'none',
                         }}
                       />
                     ) : null}

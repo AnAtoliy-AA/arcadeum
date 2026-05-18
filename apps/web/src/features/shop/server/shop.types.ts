@@ -80,3 +80,15 @@ export const EMPTY_INVENTORY: InventoryView = {
   items: [],
   equipped: EMPTY_EQUIPPED,
 };
+
+// ─── FE-only view models (derived on the server, not BE-shared) ──────────────
+
+export interface NextGemPackView {
+  label: string;
+  target: number;
+}
+
+export interface FeaturedDropView {
+  itemId: string;
+  endsAtIso: string | null;
+}

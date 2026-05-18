@@ -1,70 +1,144 @@
 export const shopRu = {
   meta: {
     title: 'Магазин · Arcadeum',
-    description: 'Тратьте монеты и гемы на аватары, значки и другое.',
+    description: 'Аватары, значки, цвета имени и скины игр.',
   },
-  title: 'Магазин',
-  subtitle: 'Аватары и значки, чтобы выделиться в профиле.',
+  topBar: {
+    eyebrow: 'Магазин косметики',
+    title: 'Магазин',
+    nav: {
+      shop: 'Магазин',
+      featured: 'Избранное',
+      inventory: 'Инвентарь',
+      wallet: 'Кошелёк',
+    },
+    topUp: 'Пополнить',
+  },
   signIn: {
     title: 'Войдите, чтобы покупать и экипировать',
     body: 'Каталог доступен гостям, но для инвентаря и покупок нужен аккаунт.',
     cta: 'Войти',
   },
-  sidebar: {
-    title: 'Фильтры',
-    category: 'Категория',
-    rarity: 'Редкость',
-    all: 'Все',
-    categories: {
-      avatar: 'Аватары',
-      badge: 'Значки',
-      name_color: 'Цвета имени',
-      game_skin: 'Скины игр',
-    },
-    rarities: {
-      common: 'Обычный',
-      rare: 'Редкий',
-      epic: 'Эпический',
-      legendary: 'Легендарный',
-    },
-    tabs: { browse: 'Витрина', inventory: 'Инвентарь' },
+  hero: {
+    tag: 'Лимитированный дроп',
+    ends: 'Закончится через {time}',
+    tryOn: 'Примерить',
+    buyNow: 'Купить',
+    bodySuffix: 'Видно в лобби, чате и во время матчей.',
   },
-  grid: {
-    emptyCategory: 'Здесь пока пусто. Загляните позже.',
-    purchase: {
-      title: 'Подтвердить покупку',
-      buy: 'Купить',
-      cancel: 'Отмена',
-      close: 'Закрыть',
-      yourBalance: 'У вас {amount} {currency}.',
-      free: 'Бесплатно',
-      successTitle: 'Экипировано',
-      successBody: '{name} теперь экипировано.',
-      errors: {
-        insufficientFunds: 'Недостаточно средств для покупки.',
-        unavailable: 'Этот предмет сейчас недоступен.',
-        generic: 'Не удалось завершить покупку. Попробуйте ещё раз.',
+  mannequin: {
+    tryOn: 'Примерка',
+    stage: { level: 'УР {level} · Онлайн' },
+    slots: {
+      avatar: {
+        label: 'Аватар',
+        desc: 'Портрет профиля в лобби и чате.',
+        empty: 'Пусто',
+      },
+      badge: {
+        label: 'Значок',
+        desc: 'Маленькая иконка рядом с именем.',
+        empty: 'Пусто',
+      },
+      name_color: {
+        label: 'Цвет имени',
+        desc: 'Цвет или градиент вашего ника.',
+        empty: 'Пусто',
+      },
+      game_skin: {
+        label: 'Скин игры',
+        desc: 'Визуальная тема внутри матчей.',
+        empty: 'Пусто',
       },
     },
+    action: {
+      previewingEyebrow: 'Примерка',
+      selectedSlotEyebrow: 'Выбранный слот',
+      loadoutEyebrow: 'Ваш набор',
+      equippedEyebrow: 'Экипировано',
+      idleTitle: 'Наведите на предмет, чтобы примерить',
+      idleBody:
+        'Или нажмите на слот выше, чтобы отфильтровать каталог. Продажа возвращает 50% монетами.',
+      buyEquip: 'Купить и экипировать',
+      equip: 'Экипировать',
+      unequip: 'Снять',
+      sell: 'Продать · 50%',
+      clear: 'Сбросить выбор',
+      slotEmpty: 'Пусто',
+    },
+    wallet: {
+      nextPack: 'Следующий пак · {label}',
+      ofTarget: '{current}/{target}',
+    },
+  },
+  row: {
+    avatars: {
+      title: 'Аватары',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+    },
+    badges: {
+      title: 'Значки',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+    },
+    colors: {
+      title: 'Цвета имени',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+    },
+    skins: {
+      title: 'Скины игр',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+    },
+    legendary: {
+      title: 'Легендарные',
+      eyebrow: 'Высший ранг',
+      viewAll: 'Все',
+    },
+    newdrops: {
+      title: 'Новые дропы',
+      eyebrow: 'На этой неделе',
+      viewAll: 'Все',
+    },
+  },
+  card: {
+    owned: 'У вас есть',
     equipped: 'Экипировано',
+    buyEquip: 'Купить и экипировать',
   },
-  inventory: {
-    emptyInventory: 'Инвентарь пуст. Посетите магазин, чтобы начать.',
-    equip: 'Экипировать',
-    unequip: 'Снять',
-    sell: 'Продать',
-    starterTag: 'Стартовый',
-    sell_modal: {
-      title: 'Продать предмет',
-      sell: 'Продать за {amount} монет',
-      cancel: 'Отмена',
-      refund: 'Вы получите {amount} монет.',
-      errors: {
-        starterNotSellable: 'Стартовые предметы нельзя продать.',
-        alreadySold: 'Этот предмет уже продан.',
-        unequipFirst: 'Снимите предмет перед продажей.',
-        generic: 'Не удалось продать предмет. Попробуйте ещё раз.',
-      },
+  rarities: {
+    common: 'Обычный',
+    rare: 'Редкий',
+    epic: 'Эпический',
+    legendary: 'Легендарный',
+  },
+  purchase: {
+    title: 'Подтвердить покупку',
+    buy: 'Купить',
+    cancel: 'Отмена',
+    close: 'Закрыть',
+    yourBalance: 'У вас {amount} {currency}.',
+    free: 'Бесплатно',
+    successTitle: 'Экипировано',
+    successBody: '{name} теперь экипировано.',
+    errors: {
+      insufficientFunds: 'Недостаточно средств для покупки.',
+      unavailable: 'Этот предмет сейчас недоступен.',
+      generic: 'Не удалось завершить покупку. Попробуйте ещё раз.',
+    },
+  },
+  sell: {
+    title: 'Продать предмет',
+    sell: 'Продать за {amount} монет',
+    cancel: 'Отмена',
+    refund: 'Вы получите {amount} монет.',
+    errors: {
+      starterNotSellable: 'Стартовые предметы нельзя продать.',
+      alreadySold: 'Этот предмет уже продан.',
+      unequipFirst: 'Снимите предмет перед продажей.',
+      generic: 'Не удалось продать предмет. Попробуйте ещё раз.',
     },
   },
   items: {

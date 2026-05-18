@@ -1,70 +1,144 @@
 export const shopEs = {
   meta: {
     title: 'Tienda · Arcadeum',
-    description: 'Gasta tus monedas y gemas en avatares, insignias y más.',
+    description: 'Avatares, insignias, colores de nombre y skins de juego.',
   },
-  title: 'Tienda',
-  subtitle: 'Avatares e insignias para personalizar tu perfil.',
+  topBar: {
+    eyebrow: 'Mercado de cosméticos',
+    title: 'Tienda',
+    nav: {
+      shop: 'Tienda',
+      featured: 'Destacados',
+      inventory: 'Inventario',
+      wallet: 'Cartera',
+    },
+    topUp: 'Recargar',
+  },
   signIn: {
     title: 'Inicia sesión para comprar y equipar',
     body: 'Puedes ver el catálogo como invitado, pero el inventario y las compras requieren una cuenta.',
     cta: 'Iniciar sesión',
   },
-  sidebar: {
-    title: 'Filtros',
-    category: 'Categoría',
-    rarity: 'Rareza',
-    all: 'Todas',
-    categories: {
-      avatar: 'Avatares',
-      badge: 'Insignias',
-      name_color: 'Colores de nombre',
-      game_skin: 'Skins de juego',
-    },
-    rarities: {
-      common: 'Común',
-      rare: 'Raro',
-      epic: 'Épico',
-      legendary: 'Legendario',
-    },
-    tabs: { browse: 'Explorar', inventory: 'Inventario' },
+  hero: {
+    tag: 'Drop limitado',
+    ends: 'Termina en {time}',
+    tryOn: 'Probar',
+    buyNow: 'Comprar',
+    bodySuffix: 'Visible en lobby, chat y durante las partidas.',
   },
-  grid: {
-    emptyCategory: 'Nada aún. Vuelve pronto.',
-    purchase: {
-      title: 'Confirmar compra',
-      buy: 'Comprar',
-      cancel: 'Cancelar',
-      close: 'Cerrar',
-      yourBalance: 'Tienes {amount} {currency}.',
-      free: 'Gratis',
-      successTitle: 'Equipado',
-      successBody: '{name} ahora está equipado.',
-      errors: {
-        insufficientFunds: 'No tienes suficiente para comprar esto.',
-        unavailable: 'Este artículo no está disponible ahora.',
-        generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
+  mannequin: {
+    tryOn: 'Probando',
+    stage: { level: 'NIV {level} · En línea' },
+    slots: {
+      avatar: {
+        label: 'Avatar',
+        desc: 'Retrato del perfil mostrado en lobby y chat.',
+        empty: 'Vacío',
+      },
+      badge: {
+        label: 'Insignia',
+        desc: 'Pequeño icono junto a tu nombre en las listas.',
+        empty: 'Vacío',
+      },
+      name_color: {
+        label: 'Color de nombre',
+        desc: 'Color o degradado aplicado a tu nombre.',
+        empty: 'Vacío',
+      },
+      game_skin: {
+        label: 'Skin de juego',
+        desc: 'Tema visual dentro de las partidas.',
+        empty: 'Vacío',
       },
     },
+    action: {
+      previewingEyebrow: 'Probando',
+      selectedSlotEyebrow: 'Slot seleccionado',
+      loadoutEyebrow: 'Tu equipo',
+      equippedEyebrow: 'Equipado',
+      idleTitle: 'Pasa el cursor por un artículo para probártelo',
+      idleBody:
+        'O toca un slot arriba para filtrar el catálogo. Vender reembolsa el 50% en monedas.',
+      buyEquip: 'Comprar y equipar',
+      equip: 'Equipar',
+      unequip: 'Desequipar',
+      sell: 'Vender · 50%',
+      clear: 'Quitar selección',
+      slotEmpty: 'Vacío',
+    },
+    wallet: {
+      nextPack: 'Siguiente pack · {label}',
+      ofTarget: '{current}/{target}',
+    },
+  },
+  row: {
+    avatars: {
+      title: 'Avatares',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    badges: {
+      title: 'Insignias',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    colors: {
+      title: 'Colores de nombre',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    skins: {
+      title: 'Skins de juego',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    legendary: {
+      title: 'Legendarios',
+      eyebrow: 'Máxima rareza',
+      viewAll: 'Ver todo',
+    },
+    newdrops: {
+      title: 'Nuevos drops',
+      eyebrow: 'Esta semana',
+      viewAll: 'Ver todo',
+    },
+  },
+  card: {
+    owned: 'Tuyo',
     equipped: 'Equipado',
+    buyEquip: 'Comprar y equipar',
   },
-  inventory: {
-    emptyInventory: 'Tu inventario está vacío. Visita la tienda para empezar.',
-    equip: 'Equipar',
-    unequip: 'Desequipar',
-    sell: 'Vender',
-    starterTag: 'Inicial',
-    sell_modal: {
-      title: 'Vender artículo',
-      sell: 'Vender por {amount} monedas',
-      cancel: 'Cancelar',
-      refund: 'Recibirás {amount} monedas.',
-      errors: {
-        starterNotSellable: 'Los artículos iniciales no se pueden vender.',
-        alreadySold: 'Este artículo ya fue vendido.',
-        unequipFirst: 'Desequipa el artículo antes de venderlo.',
-        generic: 'No se pudo vender el artículo. Inténtalo de nuevo.',
-      },
+  rarities: {
+    common: 'Común',
+    rare: 'Raro',
+    epic: 'Épico',
+    legendary: 'Legendario',
+  },
+  purchase: {
+    title: 'Confirmar compra',
+    buy: 'Comprar',
+    cancel: 'Cancelar',
+    close: 'Cerrar',
+    yourBalance: 'Tienes {amount} {currency}.',
+    free: 'Gratis',
+    successTitle: 'Equipado',
+    successBody: '{name} ahora está equipado.',
+    errors: {
+      insufficientFunds: 'No tienes suficiente para comprar esto.',
+      unavailable: 'Este artículo no está disponible ahora.',
+      generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
+    },
+  },
+  sell: {
+    title: 'Vender artículo',
+    sell: 'Vender por {amount} monedas',
+    cancel: 'Cancelar',
+    refund: 'Recibirás {amount} monedas.',
+    errors: {
+      starterNotSellable: 'Los artículos iniciales no se pueden vender.',
+      alreadySold: 'Este artículo ya fue vendido.',
+      unequipFirst: 'Desequipa el artículo antes de venderlo.',
+      generic: 'No se pudo vender el artículo. Inténtalo de nuevo.',
     },
   },
   items: {

@@ -1,18 +1,32 @@
 'use client';
 
-import { useMemo } from 'react';
-import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Button, YStack, XStack } from '@arcadeum/ui';
+import { Button, XStack, YStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
-import { Text, YStack as Stack, styled } from 'tamagui';
-import { useShopFiltersStore } from '../store/shopFiltersStore';
-import { ShopSidebar, type ShopSidebarLabels } from './ShopSidebar';
-import { ShopGrid, type ShopGridLabels } from './ShopGrid';
-import { InventoryTab, type InventoryTabLabels } from './InventoryTab';
+import { Text, YStack as Stack } from 'tamagui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import { ShopTopBar, type ShopTopBarLabels } from './ShopTopBar';
+import { ShopHero, type ShopHeroLabels } from './ShopHero';
+import { ShopRow, type ShopRowLabels } from './ShopRow';
+import {
+  ShopMannequinRail,
+  type ShopMannequinLabels,
+} from './ShopMannequinRail';
+import {
+  PurchaseConfirmDialog,
+  type PurchaseConfirmLabels,
+} from './PurchaseConfirmDialog';
+import type { ShopCardLabels } from './ShopCard';
+import type { SellConfirmLabels } from './SellConfirmDialog';
 import type {
   EffectiveShopItem,
+  FeaturedDropView,
   InventoryView,
+  NextGemPackView,
   WalletBalanceView,
 } from '../server/shop.types';
 
@@ -23,89 +37,93 @@ export interface ShopSignInLabels {
 }
 
 export interface ShopPageLabels {
-  title: string;
-  subtitle: string;
-  equipped?: string;
-  signIn?: ShopSignInLabels;
-  sidebar: ShopSidebarLabels;
-  grid: ShopGridLabels;
-  inventory: InventoryTabLabels;
+  meta: { title: string; description: string };
+  topBar: ShopTopBarLabels;
+  signIn: ShopSignInLabels;
+  hero: ShopHeroLabels;
+  mannequin: ShopMannequinLabels;
+  row: {
+    avatars: ShopRowLabels;
+    badges: ShopRowLabels;
+    colors: ShopRowLabels;
+    skins: ShopRowLabels;
+    legendary: ShopRowLabels;
+    newdrops: ShopRowLabels;
+  };
+  card: ShopCardLabels;
+  rarities: Record<string, string>;
+  purchase: PurchaseConfirmLabels;
+  sell: SellConfirmLabels;
 }
 
 export interface ShopPageViewProps {
   catalog: EffectiveShopItem[];
   inventory: InventoryView;
   balance: WalletBalanceView;
+  nextGemPack: NextGemPackView | null;
+  featuredDrop: FeaturedDropView | null;
   gemToCoinRate: number;
   isAuthenticated?: boolean;
   labels: ShopPageLabels;
 }
 
-const BalanceChip = styled(Stack, {
-  name: 'ShopBalanceChip',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
-
-  variants: {
-    currency: {
-      coins: {
-        backgroundColor: 'rgba(251,191,36,0.08)',
-        borderColor: 'rgba(251,191,36,0.25)',
-      },
-      gems: {
-        backgroundColor: 'rgba(167,139,250,0.08)',
-        borderColor: 'rgba(167,139,250,0.25)',
-      },
-    },
-  } as const,
-});
-
-const SidebarPanel = styled(Stack, {
-  name: 'ShopSidebarPanel',
-  width: 240,
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.06)',
-  $sm: { width: '100%' },
-});
-
 export function ShopPageView({
   catalog,
   inventory,
   balance,
+  nextGemPack,
+  featuredDrop,
   gemToCoinRate,
   isAuthenticated = true,
   labels,
 }: ShopPageViewProps) {
-  const tab = useShopFiltersStore((s) => s.tab);
+  const { t } = useTranslation();
+  const [purchaseTarget, setPurchaseTarget] =
+    useState<EffectiveShopItem | null>(null);
 
   const liveCatalog = useMemo(
     () => catalog.filter((item) => item.available),
     [catalog],
   );
 
-  const catalogById = useMemo(
-    () => new Map(catalog.map((item) => [item.id, item])),
-    [catalog],
+  const avatars = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'avatar'),
+    [liveCatalog],
   );
-  const equippedAvatar = inventory.equipped.avatar
-    ? (catalogById.get(inventory.equipped.avatar) ?? null)
-    : null;
-  const equippedBadge = inventory.equipped.badge
-    ? (catalogById.get(inventory.equipped.badge) ?? null)
-    : null;
-  const equippedNameColor = inventory.equipped.name_color
-    ? (catalogById.get(inventory.equipped.name_color) ?? null)
+  const badges = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'badge'),
+    [liveCatalog],
+  );
+  const nameColors = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'name_color'),
+    [liveCatalog],
+  );
+  const skins = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'game_skin'),
+    [liveCatalog],
+  );
+  const legendaries = useMemo(
+    () => liveCatalog.filter((c) => c.rarity === 'legendary'),
+    [liveCatalog],
+  );
+  const newDrops = useMemo(
+    () =>
+      liveCatalog
+        .filter((c) => c.rarity === 'epic' || c.rarity === 'legendary')
+        .slice(0, 10),
+    [liveCatalog],
+  );
+
+  const featuredItem = featuredDrop
+    ? (catalog.find((c) => c.id === featuredDrop.itemId) ?? null)
     : null;
 
-  // Destructure to avoid the wallet-balance no-restricted-syntax guardrail.
-  const { coins, gems } = balance;
+  const purchaseName = purchaseTarget
+    ? String(t(`pages.shop.${purchaseTarget.nameKey}` as TranslationKey))
+    : '';
+  const purchaseDesc = purchaseTarget
+    ? String(t(`pages.shop.${purchaseTarget.descKey}` as TranslationKey))
+    : '';
 
   return (
     <PageLayout>
@@ -117,99 +135,9 @@ export function ShopPageView({
         gap="$5"
         width="100%"
       >
-        <XStack
-          justifyContent="space-between"
-          alignItems="flex-end"
-          flexWrap="wrap"
-          gap="$3"
-        >
-          <YStack gap="$1">
-            <Text fontSize="$10" fontWeight="800" letterSpacing={-0.5}>
-              {labels.title}
-            </Text>
-            <Text fontSize="$3" color="$gray11">
-              {labels.subtitle}
-            </Text>
-          </YStack>
-          <XStack gap="$2" alignItems="center">
-            {equippedAvatar || equippedBadge || equippedNameColor ? (
-              <Stack
-                flexDirection="row"
-                alignItems="center"
-                gap={6}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius="$3"
-                borderWidth={1}
-                borderColor="rgba(16,185,129,0.35)"
-                backgroundColor="rgba(16,185,129,0.08)"
-                data-testid="shop-equipped-preview"
-              >
-                <Text fontSize="$1" letterSpacing={0.5} color="$green11">
-                  {(labels.equipped ?? 'Equipped').toUpperCase()}
-                </Text>
-                {equippedAvatar ? (
-                  <Image
-                    src={equippedAvatar.assetUrl}
-                    alt=""
-                    width={28}
-                    height={28}
-                    data-testid="shop-equipped-avatar"
-                    style={{ objectFit: 'contain' }}
-                    unoptimized
-                  />
-                ) : null}
-                {equippedBadge ? (
-                  <Image
-                    src={equippedBadge.assetUrl}
-                    alt=""
-                    width={24}
-                    height={24}
-                    data-testid="shop-equipped-badge"
-                    style={{ objectFit: 'contain' }}
-                    unoptimized
-                  />
-                ) : null}
-                {equippedNameColor?.colorValue ? (
-                  <Text
-                    fontSize="$3"
-                    fontWeight="800"
-                    data-testid="shop-equipped-name-color"
-                    {...(equippedNameColor.colorValue.startsWith(
-                      'linear-gradient',
-                    )
-                      ? {
-                          style: {
-                            backgroundImage: equippedNameColor.colorValue,
-                            WebkitBackgroundClip: 'text',
-                            backgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            color: 'transparent',
-                          },
-                        }
-                      : { color: equippedNameColor.colorValue })}
-                  >
-                    Aa
-                  </Text>
-                ) : null}
-              </Stack>
-            ) : null}
-            <BalanceChip currency="coins" data-testid="shop-balance-coins">
-              <Text fontSize={18}>🪙</Text>
-              <Text fontSize="$4" fontWeight="700" color="#fbbf24">
-                {coins.toLocaleString()}
-              </Text>
-            </BalanceChip>
-            <BalanceChip currency="gems" data-testid="shop-balance-gems">
-              <Text fontSize={18}>💎</Text>
-              <Text fontSize="$4" fontWeight="700" color="#a78bfa">
-                {gems.toLocaleString()}
-              </Text>
-            </BalanceChip>
-          </XStack>
-        </XStack>
+        <ShopTopBar balance={balance} labels={labels.topBar} />
 
-        {!isAuthenticated && labels.signIn ? (
+        {!isAuthenticated ? (
           <Stack
             flexDirection="column"
             gap={6}
@@ -237,36 +165,105 @@ export function ShopPageView({
         ) : null}
 
         <XStack
-          gap="$4"
-          flexDirection="row"
-          $sm={{ flexDirection: 'column' }}
+          gap="$5"
+          width="100%"
           alignItems="flex-start"
+          $sm={{ flexDirection: 'column' }}
         >
-          <SidebarPanel>
-            <ShopSidebar labels={labels.sidebar} />
-          </SidebarPanel>
+          <ShopMannequinRail
+            catalog={catalog}
+            inventory={inventory}
+            balance={balance}
+            nextGemPack={nextGemPack}
+            gemToCoinRate={gemToCoinRate}
+            labels={labels.mannequin}
+            sellLabels={labels.sell}
+            onPurchase={(item) => setPurchaseTarget(item)}
+          />
 
-          <YStack $gtSm={{ flex: 1 }} width="100%">
-            {tab === 'browse' ? (
-              <ShopGrid
-                catalog={liveCatalog}
-                inventory={inventory.items}
-                equipped={inventory.equipped}
-                balance={balance}
-                labels={labels.grid}
+          <YStack flex={1} width="100%" gap="$5" minWidth={0}>
+            {featuredItem ? (
+              <ShopHero
+                item={featuredItem}
+                endsAtIso={featuredDrop?.endsAtIso ?? null}
+                labels={labels.hero}
+                onBuyClick={(item) => setPurchaseTarget(item)}
               />
-            ) : (
-              <InventoryTab
-                catalog={liveCatalog}
-                inventory={inventory.items}
-                equipped={inventory.equipped}
-                balance={balance}
-                gemToCoinRate={gemToCoinRate}
-                labels={labels.inventory}
-              />
-            )}
+            ) : null}
+
+            <ShopRow
+              id="row-avatars"
+              sectionKey="avatar"
+              items={avatars}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.avatars}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-badges"
+              sectionKey="badge"
+              items={badges}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.badges}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-colors"
+              sectionKey="name_color"
+              items={nameColors}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              small
+              labels={labels.row.colors}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-skins"
+              sectionKey="game_skin"
+              items={skins}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.skins}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-legendary"
+              items={legendaries}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              highlight
+              labels={labels.row.legendary}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-newdrops"
+              items={newDrops}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.newdrops}
+              cardLabels={labels.card}
+              onPurchase={(item) => setPurchaseTarget(item)}
+            />
           </YStack>
         </XStack>
+
+        <PurchaseConfirmDialog
+          item={purchaseTarget}
+          itemName={purchaseName}
+          itemDesc={purchaseDesc}
+          balance={balance}
+          open={purchaseTarget !== null}
+          onClose={() => setPurchaseTarget(null)}
+          onSuccess={() => setPurchaseTarget(null)}
+          labels={labels.purchase}
+        />
       </YStack>
     </PageLayout>
   );

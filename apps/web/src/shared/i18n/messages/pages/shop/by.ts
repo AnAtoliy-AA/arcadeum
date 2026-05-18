@@ -1,70 +1,144 @@
 export const shopBy = {
   meta: {
     title: 'Крама · Arcadeum',
-    description: 'Трацьце манеты і самацветы на аватары, значкі і іншае.',
+    description: 'Аватары, значкі, колеры імя і скіны гульняў.',
   },
-  title: 'Крама',
-  subtitle: 'Аватары і значкі, каб зрабіць профіль непаўторным.',
+  topBar: {
+    eyebrow: 'Крама касметыкі',
+    title: 'Крама',
+    nav: {
+      shop: 'Крама',
+      featured: 'Выбранае',
+      inventory: 'Інвентар',
+      wallet: 'Кашалёк',
+    },
+    topUp: 'Папоўніць',
+  },
   signIn: {
     title: 'Увайдзіце, каб купляць і экіпіраваць',
     body: 'Каталог даступны гасцям, але для інвентара і пакупак патрэбен акаўнт.',
     cta: 'Увайсці',
   },
-  sidebar: {
-    title: 'Фільтры',
-    category: 'Катэгорыя',
-    rarity: 'Рэдкасць',
-    all: 'Усе',
-    categories: {
-      avatar: 'Аватары',
-      badge: 'Значкі',
-      name_color: 'Колеры імя',
-      game_skin: 'Скіны гульняў',
-    },
-    rarities: {
-      common: 'Звычайны',
-      rare: 'Рэдкі',
-      epic: 'Эпічны',
-      legendary: 'Легендарны',
-    },
-    tabs: { browse: 'Вітрына', inventory: 'Інвентар' },
+  hero: {
+    tag: 'Лімітаваны дроп',
+    ends: 'Скончыцца праз {time}',
+    tryOn: 'Прымераць',
+    buyNow: 'Купіць',
+    bodySuffix: 'Бачна ў лобі, чаце і падчас матчаў.',
   },
-  grid: {
-    emptyCategory: 'Тут пакуль пуста. Завітайце пазней.',
-    purchase: {
-      title: 'Пацвердзіць пакупку',
-      buy: 'Купіць',
-      cancel: 'Адмена',
-      close: 'Закрыць',
-      yourBalance: 'У вас {amount} {currency}.',
-      free: 'Бясплатна',
-      successTitle: 'Экіпіравана',
-      successBody: '{name} цяпер экіпіравана.',
-      errors: {
-        insufficientFunds: 'Не хапае сродкаў на пакупку.',
-        unavailable: 'Гэты прадмет цяпер недаступны.',
-        generic: 'Не атрымалася завяршыць пакупку. Паспрабуйце зноў.',
+  mannequin: {
+    tryOn: 'Прымерка',
+    stage: { level: 'УЗР {level} · Анлайн' },
+    slots: {
+      avatar: {
+        label: 'Аватар',
+        desc: 'Партрэт профілю ў лобі і чаце.',
+        empty: 'Пуста',
+      },
+      badge: {
+        label: 'Значок',
+        desc: 'Маленькі значок побач з імем у спісах.',
+        empty: 'Пуста',
+      },
+      name_color: {
+        label: 'Колер імя',
+        desc: 'Колер або градыент вашага імя.',
+        empty: 'Пуста',
+      },
+      game_skin: {
+        label: 'Скін гульні',
+        desc: 'Візуальная тэма ўнутры матчаў.',
+        empty: 'Пуста',
       },
     },
+    action: {
+      previewingEyebrow: 'Прымерка',
+      selectedSlotEyebrow: 'Абраны слот',
+      loadoutEyebrow: 'Ваш набор',
+      equippedEyebrow: 'Экіпіравана',
+      idleTitle: 'Навядзіце на прадмет, каб прымераць',
+      idleBody:
+        'Або націсніце слот вышэй, каб адфільтраваць каталог. Продаж вяртае 50% манетамі.',
+      buyEquip: 'Купіць і апрануць',
+      equip: 'Апрануць',
+      unequip: 'Зняць',
+      sell: 'Прадаць · 50%',
+      clear: 'Зняць выбар',
+      slotEmpty: 'Пуста',
+    },
+    wallet: {
+      nextPack: 'Наступны пак · {label}',
+      ofTarget: '{current}/{target}',
+    },
+  },
+  row: {
+    avatars: {
+      title: 'Аватары',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+    },
+    badges: {
+      title: 'Значкі',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+    },
+    colors: {
+      title: 'Колеры імя',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+    },
+    skins: {
+      title: 'Скіны гульняў',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+    },
+    legendary: {
+      title: 'Легендарныя',
+      eyebrow: 'Вышэйшы ўзровень',
+      viewAll: 'Усе',
+    },
+    newdrops: {
+      title: 'Новыя дропы',
+      eyebrow: 'На гэтым тыдні',
+      viewAll: 'Усе',
+    },
+  },
+  card: {
+    owned: 'Маецца',
     equipped: 'Экіпіравана',
+    buyEquip: 'Купіць і апрануць',
   },
-  inventory: {
-    emptyInventory: 'Інвентар пусты. Завітайце ў краму, каб пачаць.',
-    equip: 'Апрануць',
-    unequip: 'Зняць',
-    sell: 'Прадаць',
-    starterTag: 'Стартавы',
-    sell_modal: {
-      title: 'Прадаць прадмет',
-      sell: 'Прадаць за {amount} манет',
-      cancel: 'Адмена',
-      refund: 'Вы атрымаеце {amount} манет.',
-      errors: {
-        starterNotSellable: 'Стартавыя прадметы нельга прадаць.',
-        alreadySold: 'Гэты прадмет ужо прададзены.',
-        unequipFirst: 'Зніміце прадмет перад продажам.',
-        generic: 'Не атрымалася прадаць прадмет. Паспрабуйце зноў.',
-      },
+  rarities: {
+    common: 'Звычайны',
+    rare: 'Рэдкі',
+    epic: 'Эпічны',
+    legendary: 'Легендарны',
+  },
+  purchase: {
+    title: 'Пацвердзіць пакупку',
+    buy: 'Купіць',
+    cancel: 'Адмена',
+    close: 'Закрыць',
+    yourBalance: 'У вас {amount} {currency}.',
+    free: 'Бясплатна',
+    successTitle: 'Экіпіравана',
+    successBody: '{name} цяпер экіпіравана.',
+    errors: {
+      insufficientFunds: 'Не хапае сродкаў на пакупку.',
+      unavailable: 'Гэты прадмет цяпер недаступны.',
+      generic: 'Не атрымалася завяршыць пакупку. Паспрабуйце зноў.',
+    },
+  },
+  sell: {
+    title: 'Прадаць прадмет',
+    sell: 'Прадаць за {amount} манет',
+    cancel: 'Адмена',
+    refund: 'Вы атрымаеце {amount} манет.',
+    errors: {
+      starterNotSellable: 'Стартавыя прадметы нельга прадаць.',
+      alreadySold: 'Гэты прадмет ужо прададзены.',
+      unequipFirst: 'Зніміце прадмет перад продажам.',
+      generic: 'Не атрымалася прадаць прадмет. Паспрабуйце зноў.',
     },
   },
   items: {

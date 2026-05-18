@@ -2,9 +2,14 @@ import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { getTranslations } from '@/shared/i18n/server';
 import { getWalletBalance } from '@/features/wallet/server/wallet.server';
-import { getConversionRate } from '@/features/gems/server/gems.server';
+import {
+  getActivePackages,
+  getConversionRate,
+} from '@/features/gems/server/gems.server';
 import { getCatalog, getInventory } from '@/features/shop/server/shop.server';
 import { ShopPageView } from '@/features/shop/ui/ShopPageView';
+import { pickNextGemPack } from '@/features/shop/lib/nextGemPack';
+import { pickFeaturedDrop } from '@/features/shop/lib/featuredDrop';
 import { shopEn } from '@/shared/i18n/messages/pages/shop/en';
 import {
   EMPTY_INVENTORY,
@@ -18,8 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t?.meta?.title ?? 'Shop · Arcadeum',
     description:
-      t?.meta?.description ??
-      'Spend your coins and gems on avatars, badges, and more.',
+      t?.meta?.description ?? 'Avatars, badges, name colors and game skins.',
     alternates: { canonical: '/shop' },
   };
 }
@@ -48,6 +52,11 @@ export default async function ShopPage() {
     // fall back to the default rate
   }
 
+  const gemPacks = await getActivePackages().catch(() => []);
+  const { gems: balanceGems } = balance;
+  const nextGemPack = pickNextGemPack(balanceGems, gemPacks);
+  const featuredDrop = pickFeaturedDrop(catalog, gemToCoinRate);
+
   const messages = await getTranslations();
   const labels = (messages.pages?.shop ?? shopEn) as typeof shopEn;
 
@@ -56,6 +65,8 @@ export default async function ShopPage() {
       catalog={catalog}
       inventory={inventory}
       balance={balance}
+      nextGemPack={nextGemPack}
+      featuredDrop={featuredDrop}
       gemToCoinRate={gemToCoinRate}
       isAuthenticated={Boolean(accessToken)}
       labels={labels}

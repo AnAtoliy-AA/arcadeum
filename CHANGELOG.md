@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.2] - 2026-05-18
+
+### Added
+- /games/<id> uses the full lounge UI scoped to one game (N/A)
+- polish sea-battle landing for indexability (N/A)
+- quickplay — persist the chosen variant into room.gameOptions (N/A)
+- sea-battle landing — patches 1-7 (CTA hierarchy, a11y board, error UX) (N/A)
+- show real theme colors in the landing's themes strip (N/A)
+- make theme preview cell-size configurable, enlarge on landing (N/A)
+- use the real game board on /games/sea-battle landing hero (N/A)
+- matchmaking — skip rooms whose host has already left (N/A)
+- add Find-a-human-opponent matchmaking on Sea Battle landing (N/A)
+- add quickplay vs AI button on Sea Battle landing (N/A)
+- redesign Sea Battle landing — sonar hero, themes strip, FAQ accordion (N/A)
+- add Sea Battle SEO landing page at /games/sea-battle (N/A)
+
+### Fixed
+- StartButton — wrap in plain <div> so the glow class actually applies (N/A)
+- StartButton animation — bolder + raised specificity + !important (N/A)
+- StartButton — actual pulse/shimmer animations via CSS keyframes (N/A)
+- quickplay DTO — accept optional \`variant\` from the landing (N/A)
+- QuickplayButton — console.warn on caught failure, not error (N/A)
+- cycle-hint pill no longer covers the caption (N/A)
+- sea-battle landing board — let it sit inside the hero card (N/A)
+- sea-battle landing board — drop scale + aspect-ratio so it fits (N/A)
+- RematchInvitationModal — return null when no inviter message (N/A)
+- add missing rematch.invitation keys across all 5 locales (N/A)
+- tighten matchmaking pool, switch to \$elemMatch, log candidates (N/A)
+- matchmaking — exclude rooms that already contain an AI bot (N/A)
+- matchmaking — drop \$expr, log candidate scans (N/A)
+- make quickplay anonymous-friendly, drop /auth redirect (N/A)
+- point Sea Battle "Play Now" button to the SEO landing (N/A)
+- wire featured-game card title to FeaturedGame.route (N/A)
+
+### Refactored
+- apply v2 review polish to Sea Battle landing (N/A)
+- split HomeGames into card + slider hook, replace route ternary (N/A)
+
+
 ## [1.14.1] - 2026-05-17
 
 ### Added

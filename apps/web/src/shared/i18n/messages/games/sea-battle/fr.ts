@@ -238,6 +238,7 @@ export const frMessages = {
         ctaPlay: 'Créer une salle de Bataille Navale',
         ctaRooms: 'Voir les salles ouvertes',
         ctaQuickplay: 'Jouer contre l’IA maintenant',
+        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         ctaPlayHuman: 'Trouver un adversaire',
         ctaGroupLabel: 'Démarrage rapide de Bataille Navale',
         eyebrow: 'Gratuit · 2–4 joueurs · Sans inscription',
@@ -254,12 +255,14 @@ export const frMessages = {
         themesKicker: 'Choisissez votre flotte',
         themesTitle: '10+ thèmes, un seul jeu',
         themesLead:
-          'Chaque salle laisse choisir l’apparence du plateau — du classique élégant à la nébuleuse spatiale et au pixel-art rétro.',
+          'Dix styles de plateau, à vous de choisir. Même jeu, ambiance différente — changez à tout moment dans le lobby.',
         rulesKicker: 'Référence',
         faqKicker: 'FAQ',
       },
       board: {
-        label: 'Sonar · En direct',
+        label: 'Aperçu en direct',
+        cycleHint: 'Cliquez pour changer de thème',
+        cycleAriaLabel: 'Changer l’aperçu du thème, actuellement {{variant}}',
       },
       highlights: {
         title: 'Pourquoi jouer à la Bataille Navale sur Arcadeum',

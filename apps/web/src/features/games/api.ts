@@ -181,23 +181,25 @@ export const gamesApi = {
 
   quickplay: async (
     gameId: string,
-    options?: ApiClientOptions,
+    options?: ApiClientOptions & { variant?: string },
   ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'ai' },
-      options,
+      { gameId, mode: 'ai', variant },
+      rest,
     );
   },
 
   findHumanMatch: async (
     gameId: string,
-    options?: ApiClientOptions,
+    options?: ApiClientOptions & { variant?: string },
   ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'human' },
-      options,
+      { gameId, mode: 'human', variant },
+      rest,
     );
   },
 

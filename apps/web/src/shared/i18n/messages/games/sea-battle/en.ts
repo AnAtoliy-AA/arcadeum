@@ -236,6 +236,7 @@ export const enMessages = {
         ctaPlay: 'Create a Sea Battle room',
         ctaRooms: 'Browse open rooms',
         ctaQuickplay: 'Play vs AI now',
+        ctaQuickplayError: 'Couldn’t start a game — try again',
         ctaPlayHuman: 'Find a human opponent',
         ctaGroupLabel: 'Sea Battle quick start',
         eyebrow: 'Free · 2–4 players · No signup',
@@ -256,12 +257,14 @@ export const enMessages = {
         themesKicker: 'Choose your fleet',
         themesTitle: '10+ themes, one game',
         themesLead:
-          'Every room lets you pick a board skin — from a sleek classic look to deep-space nebula and pixel-art retro.',
+          'Ten board styles, your pick. Same game, different vibe — switch any time in the lobby.',
         rulesKicker: 'Reference',
         faqKicker: 'FAQ',
       },
       board: {
-        label: 'Live · Sonar',
+        label: 'Live preview',
+        cycleHint: 'Click to change theme',
+        cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
       },
       highlights: {
         title: 'Why play Sea Battle on Arcadeum',

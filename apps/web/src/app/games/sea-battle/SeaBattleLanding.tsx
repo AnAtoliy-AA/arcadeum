@@ -1,6 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
-import { Container, PageLayout, LinkButton } from '@/shared/ui';
+import { Container, PageLayout } from '@/shared/ui';
 import styles from './SeaBattleLanding.module.css';
 import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
 import { QuickplayButton } from './QuickplayButton';
@@ -33,6 +36,8 @@ export default function SeaBattleLanding({
   homeHref,
   gamesHref,
 }: Props) {
+  const [heroVariant, setHeroVariant] = useState<string>('classic');
+
   if (!landing) return null;
 
   const highlightCards = [
@@ -107,23 +112,31 @@ export default function SeaBattleLanding({
                 role="group"
                 aria-label={landing.hero.ctaGroupLabel}
               >
+                {/* Primary: one-click play vs AI — frictionless conversion. */}
                 <QuickplayButton
                   gameId={SEA_BATTLE_GAME_ID}
                   mode="ai"
                   label={landing.hero.ctaQuickplay}
+                  errorLabel={landing.hero.ctaQuickplayError}
+                  variant={heroVariant}
                 />
+                {/* Secondary: matchmaking for users who want humans. */}
                 <QuickplayButton
                   gameId={SEA_BATTLE_GAME_ID}
                   mode="human"
-                  variant="secondary"
+                  buttonVariant="secondary"
                   label={landing.hero.ctaPlayHuman}
+                  errorLabel={landing.hero.ctaQuickplayError}
+                  variant={heroVariant}
                 />
-                <LinkButton href={createRoomHref} variant="secondary" size="lg">
+                {/* Tertiary text links: power-user paths. */}
+                <span className={styles.heroCtaDivider} aria-hidden="true" />
+                <Link href={createRoomHref} className={styles.heroCtaLink}>
                   {landing.hero.ctaPlay}
-                </LinkButton>
-                <LinkButton href={roomsHref} variant="secondary" size="lg">
+                </Link>
+                <Link href={roomsHref} className={styles.heroCtaLink}>
                   {landing.hero.ctaRooms}
-                </LinkButton>
+                </Link>
               </div>
 
               <ul className={styles.heroChips}>
@@ -135,7 +148,20 @@ export default function SeaBattleLanding({
                 ))}
               </ul>
             </div>
-            <SeaBattleLandingBoard />
+            <SeaBattleLandingBoard
+              variantNames={{
+                classic: variantsT?.classic?.name,
+                modern: variantsT?.modern?.name,
+                cyber: variantsT?.cyber?.name,
+                nebula: variantsT?.nebula?.name,
+                pixel: variantsT?.pixel?.name,
+                vintage: variantsT?.vintage?.name,
+              }}
+              label={landing.board.label}
+              cycleHint={landing.board.cycleHint}
+              cycleAriaLabel={landing.board.cycleAriaLabel}
+              onVariantChange={setHeroVariant}
+            />
           </section>
 
           {/* Highlights */}
@@ -266,7 +292,8 @@ export default function SeaBattleLanding({
             </div>
           </section>
 
-          {/* Final CTA */}
+          {/* Final CTA — mirrors the hero pair so conversion intent is
+              consistent top vs bottom of the page. */}
           <section className={styles.finalCta}>
             <h2 className={styles.finalCtaTitle}>
               {landing.finalCta?.title ?? landing.hero.title}
@@ -274,9 +301,27 @@ export default function SeaBattleLanding({
             <p className={styles.finalCtaSub}>
               {landing.finalCta?.subtitle ?? landing.hero.tagline}
             </p>
-            <LinkButton href={createRoomHref} variant="primary" size="lg">
-              {landing.hero.ctaPlay}
-            </LinkButton>
+            <div
+              className={styles.finalCtaButtons}
+              role="group"
+              aria-label={landing.hero.ctaGroupLabel}
+            >
+              <QuickplayButton
+                gameId={SEA_BATTLE_GAME_ID}
+                mode="ai"
+                label={landing.hero.ctaQuickplay}
+                errorLabel={landing.hero.ctaQuickplayError}
+                variant={heroVariant}
+              />
+              <QuickplayButton
+                gameId={SEA_BATTLE_GAME_ID}
+                mode="human"
+                buttonVariant="secondary"
+                label={landing.hero.ctaPlayHuman}
+                errorLabel={landing.hero.ctaQuickplayError}
+                variant={heroVariant}
+              />
+            </div>
           </section>
         </div>
       </Container>

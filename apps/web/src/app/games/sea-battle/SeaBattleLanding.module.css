@@ -197,8 +197,56 @@
 .heroCtas {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
   margin-top: 1.75rem;
+}
+.heroCtaDivider {
+  display: inline-block;
+  width: 1px;
+  height: 24px;
+  background: var(--glass-border, rgba(255, 255, 255, 0.1));
+  margin: 0 0.25rem;
+}
+.heroCtaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.625rem 0.25rem;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-muted) 35%,
+    transparent
+  );
+  text-underline-offset: 4px;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+}
+.heroCtaLink:hover {
+  color: var(--color-strong);
+  text-decoration-color: var(--accent, #38bdf8);
+}
+.heroCtaLink::after {
+  content: '→';
+  font-size: 0.875rem;
+  transition: transform 0.15s ease;
+}
+.heroCtaLink:hover::after {
+  transform: translateX(2px);
+}
+@media (max-width: 540px) {
+  .heroCtaDivider {
+    display: none;
+  }
+  .heroCtaLink {
+    padding: 0.5rem 0;
+  }
 }
 .heroChips {
   display: flex;
@@ -546,6 +594,12 @@
   color: var(--color-muted);
   margin: 0 auto 1.75rem;
   max-width: 36rem;
+}
+.finalCtaButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
 }
 
 /* ---------- Responsive ---------- */

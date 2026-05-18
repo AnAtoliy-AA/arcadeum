@@ -4,6 +4,8 @@
   display: grid;
   place-items: center;
   padding: 1rem;
+  max-width: 480px;
+  width: 100%;
   border-radius: 24px;
   background: linear-gradient(
     180deg,
@@ -32,6 +34,81 @@
   transform: scale(1.03);
 }
 
+.scaler:focus-visible {
+  outline: 2px solid var(--accent, #38bdf8);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* Caption: glow dot + "Live preview" + theme name. Aria-hidden because
+   the button's own aria-label covers the same info more accessibly. */
+.caption {
+  margin: 0.75rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+.captionName {
+  color: var(--color-strong);
+  letter-spacing: -0.01em;
+  font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.captionDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent, #38bdf8);
+  box-shadow: 0 0 6px var(--accent, #38bdf8);
+  flex-shrink: 0;
+}
+
+/* Hover/focus pill prompting the click-to-cycle interaction. */
+.cycleHint {
+  position: absolute;
+  bottom: -0.625rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-strong);
+  background: color-mix(
+    in srgb,
+    var(--accent, #38bdf8) 22%,
+    var(--bg-elev, #1c1f20)
+  );
+  border: 1px solid color-mix(in srgb, var(--accent, #38bdf8) 40%, transparent);
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 12px -4px var(--accent, #38bdf8);
+}
+
+.frame:hover .cycleHint,
+.scaler:focus-visible ~ .cycleHint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @media (max-width: 880px) {
   .frame {
     justify-self: center;
@@ -41,7 +118,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .scaler,
-  .scaler:hover {
+  .scaler:hover,
+  .cycleHint {
     transition: none;
     transform: none;
   }

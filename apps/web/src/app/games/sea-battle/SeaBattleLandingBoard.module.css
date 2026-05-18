@@ -1,12 +1,9 @@
 .frame {
   position: relative;
-  width: 100%;
-  max-width: 460px;
   justify-self: end;
-  aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
-  padding: 1.25rem;
+  padding: 2rem;
   border-radius: 24px;
   background: linear-gradient(
     180deg,
@@ -22,33 +19,23 @@
   box-shadow:
     inset 0 0 60px color-mix(in srgb, var(--accent, #38bdf8) 8%, transparent),
     0 30px 80px -30px rgba(0, 0, 0, 0.6);
-  overflow: hidden;
 }
 
 .scaler {
   all: unset;
   display: inline-block;
   cursor: pointer;
-  transform: scale(1.6);
-  transform-origin: center center;
   transition: transform 240ms ease;
 }
 
 .scaler:hover {
-  transform: scale(1.65);
+  transform: scale(1.03);
 }
 
 @media (max-width: 880px) {
   .frame {
-    max-width: 360px;
-    margin: 0 auto;
-    justify-self: stretch;
-  }
-  .scaler {
-    transform: scale(1.4);
-  }
-  .scaler:hover {
-    transform: scale(1.45);
+    justify-self: center;
+    padding: 1.25rem;
   }
 }
 
@@ -56,5 +43,6 @@
   .scaler,
   .scaler:hover {
     transition: none;
+    transform: none;
   }
 }

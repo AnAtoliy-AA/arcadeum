@@ -84,10 +84,9 @@ export const StartButton = ({
   children,
   testId,
   width = '100%',
-  pulse = true,
-  showShimmer = true,
+  className,
   ...props
-}: ButtonProps) => (
+}: ButtonProps & { className?: string }) => (
   <Button
     variant="primary"
     size="lg"
@@ -103,8 +102,6 @@ export const StartButton = ({
     shadowColor="rgba(199, 170, 47, 0.55)"
     shadowRadius={28}
     shadowOffset={{ width: 0, height: 6 }}
-    pulse={pulse}
-    showShimmer={showShimmer}
     hoverStyle={{
       y: -2,
       shadowRadius: 36,
@@ -115,6 +112,12 @@ export const StartButton = ({
       opacity: 0.5,
       shadowRadius: 16,
     }}
+    // CSS class drives the actual pulse + shimmer (keyframes in
+    // apps/web/src/app/styles/animations.css). The Tamagui `pulse` /
+    // `showShimmer` props were no-ops here: the 'pulse' Tamagui
+    // animation isn't defined in tamagui.config, and the Shimmer
+    // styled component sits at x: -100% with no looping animation.
+    className={['start-button-glow', className].filter(Boolean).join(' ')}
     data-testid={testId || props['data-testid']}
     {...props}
   >

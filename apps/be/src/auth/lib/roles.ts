@@ -152,3 +152,16 @@ export function getRolesByPriority(): UserRole[] {
     (a, b) => ROLE_INFO[b].priority - ROLE_INFO[a].priority,
   );
 }
+
+export const VISIBILITY_TIERS = ['all', 'premium_plus', 'vip_plus'] as const;
+export type VisibilityTier = (typeof VISIBILITY_TIERS)[number];
+
+const TIER_MIN_PRIORITY: Record<VisibilityTier, number> = {
+  all: 0,
+  premium_plus: ROLE_INFO.premium.priority,
+  vip_plus: ROLE_INFO.vip.priority,
+};
+
+export function canSeeAtTier(role: UserRole, tier: VisibilityTier): boolean {
+  return ROLE_INFO[role].priority >= TIER_MIN_PRIORITY[tier];
+}

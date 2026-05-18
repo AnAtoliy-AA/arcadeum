@@ -80,4 +80,18 @@ describe('GamesController.getCatalog', () => {
     const res = await controller.getCatalog(reqWithUser(undefined));
     expect(res.games.find((g) => g.gameId === 'glimworm_v1')).toBeUndefined();
   });
+
+  it('treats synthetic anon_ users as anonymous (resolveRole receives the raw id; resolver short-circuits in real life)', async () => {
+    const resolveRole = jest.fn().mockResolvedValue('free');
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+    } as unknown as GameVisibilityService;
+    const resolver = { resolveRole } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+    await controller.getCatalog({
+      user: { userId: 'anon_abcd' },
+    } as unknown as Request);
+    expect(resolveRole).toHaveBeenCalledWith('anon_abcd');
+    // The unit test passes the raw id; the resolver (tested separately) short-circuits to 'free'.
+  });
 });

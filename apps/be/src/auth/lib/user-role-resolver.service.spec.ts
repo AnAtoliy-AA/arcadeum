@@ -33,7 +33,9 @@ describe('UserRoleResolver', () => {
       ],
     }).compile();
     const svc = moduleRef.get(UserRoleResolver);
-    await expect(svc.resolveRole('u-1')).resolves.toBe('vip');
+    await expect(svc.resolveRole('507f1f77bcf86cd799439012')).resolves.toBe(
+      'vip',
+    );
   });
 
   it('returns "free" if user not found', async () => {
@@ -51,6 +53,47 @@ describe('UserRoleResolver', () => {
       ],
     }).compile();
     const svc = moduleRef.get(UserRoleResolver);
-    await expect(svc.resolveRole('ghost')).resolves.toBe('free');
+    await expect(svc.resolveRole('507f1f77bcf86cd799439011')).resolves.toBe(
+      'free',
+    );
+  });
+
+  it('treats anon_* userId as anonymous (does not call findById)', async () => {
+    const model = { findById: jest.fn() };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        UserRoleResolver,
+        { provide: getModelToken(User.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(UserRoleResolver);
+    await expect(svc.resolveRole('anon_abc123')).resolves.toBe('free');
+    expect(model.findById).not.toHaveBeenCalled();
+  });
+
+  it('treats bot_* userId as anonymous (does not call findById)', async () => {
+    const model = { findById: jest.fn() };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        UserRoleResolver,
+        { provide: getModelToken(User.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(UserRoleResolver);
+    await expect(svc.resolveRole('bot_xyz')).resolves.toBe('free');
+    expect(model.findById).not.toHaveBeenCalled();
+  });
+
+  it('treats invalid ObjectId as anonymous (does not call findById)', async () => {
+    const model = { findById: jest.fn() };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        UserRoleResolver,
+        { provide: getModelToken(User.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(UserRoleResolver);
+    await expect(svc.resolveRole('not-an-object-id')).resolves.toBe('free');
+    expect(model.findById).not.toHaveBeenCalled();
   });
 });

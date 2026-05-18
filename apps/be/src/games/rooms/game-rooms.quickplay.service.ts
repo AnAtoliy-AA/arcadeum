@@ -9,6 +9,10 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import type { GameRoomSummary } from './game-rooms.types';
 
 const MATCHMAKING_CANDIDATE_LIMIT = 20;
+// Rooms younger than this are accepted without a socket-presence
+// check — the host may still be in the middle of router-push'ing to
+// the lobby URL when a second matchmaker hits the endpoint.
+const PRESENCE_GRACE_MS = 30_000;
 
 /**
  * One-tap entry into a game from SEO landing pages.
@@ -81,30 +85,51 @@ export class GameRoomsQuickplayService {
       .limit(MATCHMAKING_CANDIDATE_LIMIT)
       .exec();
 
-    const candidate = candidates.find(
-      (r) =>
-        typeof r.maxPlayers === 'number' &&
-        r.participants.length < r.maxPlayers,
-    );
+    // Walk newest-first, taking the first not-full room whose host is
+    // still connected (or whose room is too young to have wired up
+    // sockets yet). Skipping abandoned lobbies is what stops the
+    // second matchmaker from joining a tab the first one already
+    // closed.
+    const now = Date.now();
+    let picked: (typeof candidates)[number] | null = null;
+    let pickedReason: 'fresh' | 'present' | null = null;
+    const skipped: Array<{ id: string; reason: string }> = [];
 
-    // One-shot diagnostic so we can see *why* matchmaking decided what
-    // it did. Cheap (only logs once per request) and worth keeping
-    // until two-browser matchmaking is verified in staging.
+    for (const c of candidates) {
+      const notFull =
+        typeof c.maxPlayers === 'number' &&
+        c.participants.length < c.maxPlayers;
+      if (!notFull) {
+        skipped.push({ id: String(c._id), reason: 'full' });
+        continue;
+      }
+      const age = now - new Date(c.createdAt).getTime();
+      if (age < PRESENCE_GRACE_MS) {
+        picked = c;
+        pickedReason = 'fresh';
+        break;
+      }
+      const hostPresent = await this.realtimeService.isUserPresentInRoom(
+        String(c._id),
+        c.hostId,
+      );
+      if (hostPresent) {
+        picked = c;
+        pickedReason = 'present';
+        break;
+      }
+      skipped.push({ id: String(c._id), reason: 'host-absent' });
+    }
+
     this.logger.log(
-      `Matchmaking[${userId}] gameId=${gameId} candidates=${candidates.length} ` +
-        `summary=${JSON.stringify(
-          candidates.map((c) => ({
-            id: String(c._id),
-            n: c.participants.length,
-            max: c.maxPlayers,
-            host: c.hostId,
-          })),
-        )} picked=${candidate ? String(candidate._id) : 'none'}`,
+      `Matchmaking[${userId}] gameId=${gameId} scanned=${candidates.length} ` +
+        `skipped=${JSON.stringify(skipped)} ` +
+        `picked=${picked ? `${String(picked._id)}(${pickedReason})` : 'none'}`,
     );
 
-    if (candidate) {
+    if (picked) {
       const joined = await this.gameRoomsService.joinRoom(
-        { roomId: String(candidate._id) },
+        { roomId: String(picked._id) },
         userId,
       );
       this.realtimeService.emitPlayerJoined(joined.room, userId);

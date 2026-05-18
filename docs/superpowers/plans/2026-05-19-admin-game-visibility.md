@@ -562,15 +562,13 @@ export class GameVisibilityService {
     if (this.map && Date.now() - this.loadedAt < CACHE_TTL_MS) {
       return this.map;
     }
-    const rows = await this.model
-      .find()
-      .lean<
-        Array<{
-          gameId: string;
-          variantId: string | null;
-          tier: VisibilityTier;
-        }>
-      >();
+    const rows = await this.model.find().lean<
+      Array<{
+        gameId: string;
+        variantId: string | null;
+        tier: VisibilityTier;
+      }>
+    >();
     const fresh = new Map<string, VisibilityTier>();
     for (const r of rows) {
       const k = r.variantId ? variantKey(r.gameId, r.variantId) : r.gameId;
@@ -1348,6 +1346,8 @@ git commit -m "feat(admin): GET /games/catalog returns role-filtered list (ARC-7
 - Modify: existing `games.controller.spec.ts` or add new spec
 
 - [ ] **Step 1: Write the failing tests**
+
+> **Note for the implementer:** the real `GamesController` constructor has more injected services than the snippets show (`CriticalService`, `TexasHoldemService`, etc., and possibly others added since this plan was written). Mirror the current constructor signature when instantiating in tests; pass `{} as any` for any service the test doesn't exercise. Same applies to Task 10 and Task 12.
 
 ```ts
 describe('createRoom visibility gate', () => {

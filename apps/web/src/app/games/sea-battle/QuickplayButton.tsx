@@ -60,7 +60,10 @@ export function QuickplayButton({
           : await gamesApi.findHumanMatch(gameId, options);
       router.push(routes.gameRoom(room.id));
     } catch (err) {
-      console.error(`Quickplay (${mode}) failed:`, err);
+      // warn, not error — the button surfaces this to the user via the
+      // `errored` state + danger variant. Using console.error here
+      // pops the Next.js dev overlay on top of our own UX.
+      console.warn(`Quickplay (${mode}) failed:`, err);
       setErrored(true);
       setLoading(false);
     }

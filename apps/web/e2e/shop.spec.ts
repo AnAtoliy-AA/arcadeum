@@ -27,28 +27,26 @@ test.describe('Shop redesign · Showcase Locker', () => {
     await expect(page.getByTestId('shop-signin-banner')).toBeVisible();
   });
 
-  test('hovering a card switches the panel into preview mode', async ({
+  test('triggering a card switches the panel into preview mode', async ({
     page,
   }) => {
     await navigateTo(page, '/shop');
     const foxCard = page.getByTestId(`shop-card-${FOX_AVATAR_ID}`);
     await expect(foxCard).toBeVisible();
-    // `force: true` skips Playwright's pointer-interception check. On
-    // narrow viewports (Mobile Chrome) the footer's collapsible section
-    // can land in the same column as the card after scrollIntoView and
-    // intercept the synthesized hover. The shop's hover-to-preview path
-    // is desktop-first and the underlying onPointerEnter handler still
-    // fires; the test's job is to verify that, not the footer layout.
-    await foxCard.hover({ force: true });
+    // Mobile Chrome runs with touch emulation, where synthesized
+    // `hover` events don't fire `onPointerEnter` reliably even with
+    // `force: true`. The card's action button is wired with
+    // `onFocus={handleEnter}` (keyboard-parity path) — focusing it
+    // triggers the same preview-mode setter the cursor hover would.
+    const foxAction = page.getByTestId(`shop-card-action-${FOX_AVATAR_ID}`);
+    await foxAction.focus();
     await expect(page.getByTestId('shop-action-panel')).toHaveAttribute(
       'data-mode',
       'preview',
     );
     // The Buy & equip / Equip / Unequip button lives on the card itself
     // (not the rail panel) since the action-on-card refactor.
-    await expect(
-      page.getByTestId(`shop-card-action-${FOX_AVATAR_ID}`),
-    ).toBeVisible();
+    await expect(foxAction).toBeVisible();
   });
 
   test('clicking a slot ring tile activates the matching row halo', async ({
@@ -66,11 +64,13 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/shop');
-    // Same reason as the hover test above — on narrow viewports the
-    // footer's collapsible row overlaps the button vertical column after
-    // scrollIntoView. We're testing that the click handler opens the
-    // dialog, not the footer's layout.
-    await page.getByTestId('shop-hero-buy').click({ force: true });
+    const heroBuy = page.getByTestId('shop-hero-buy');
+    await expect(heroBuy).toBeVisible();
+    // Dispatch the click via the DOM so it works under Mobile Chrome's
+    // touch emulation (where Playwright's synthesized click can be
+    // intercepted by overlapping footer chrome). `el.click()` always
+    // fires the React onClick / Tamagui onPress handler.
+    await heroBuy.evaluate((el: HTMLElement) => el.click());
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
   });
 });

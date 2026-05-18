@@ -1669,22 +1669,18 @@
 
 /* StartButton glow pulse — keeps the "start the game" CTA breathing so
    it's hard to miss in the lobby after a one-tap landing handoff.
-   Selector is doubled (.start-button-glow.start-button-glow) to outweigh
-   Tamagui's atomic single-class selectors that set transition/transform
-   on the same element. */
+   Orange-tinted to match the home Play-Now palette. */
 @keyframes start-button-pulse {
   0%,
   100% {
     box-shadow:
-      0 4px 16px rgba(199, 170, 47, 0.45),
-      0 0 0 0 rgba(199, 170, 47, 0.55);
-    transform: scale(1);
+      0 4px 16px rgba(255, 165, 0, 0.55),
+      0 0 0 0 rgba(255, 165, 0, 0.5);
   }
   50% {
     box-shadow:
-      0 8px 40px rgba(199, 170, 47, 0.9),
-      0 0 0 12px rgba(199, 170, 47, 0);
-    transform: scale(1.025);
+      0 6px 32px rgba(255, 165, 0, 0.85),
+      0 0 0 14px rgba(255, 165, 0, 0);
   }
 }
 
@@ -1698,10 +1694,10 @@
 }
 
 .start-button-glow.start-button-glow {
-  animation: start-button-pulse 2s ease-in-out infinite !important;
+  animation: start-button-pulse 3.6s ease-in-out infinite;
   position: relative;
   overflow: hidden;
-  will-change: transform, box-shadow;
+  will-change: box-shadow;
 }
 
 .start-button-glow.start-button-glow::after {
@@ -1717,7 +1713,7 @@
     rgba(255, 255, 255, 0.55) 50%,
     transparent 100%
   );
-  animation: start-button-shimmer 2.6s ease-in-out infinite !important;
+  animation: start-button-shimmer 5s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }

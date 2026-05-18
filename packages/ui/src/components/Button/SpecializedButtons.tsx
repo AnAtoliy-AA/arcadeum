@@ -107,24 +107,30 @@ export const StartButton = ({
       $sm={{ $uiSize: 'md', borderRadius: 8 }}
       $short={{ $uiSize: 'sm', borderRadius: 8 }}
       width="100%"
-      fontWeight="700"
+      fontWeight="800"
       fontSize={18}
-      letterSpacing={0.5}
+      letterSpacing={0.3}
       borderRadius={12}
-      backgroundColor="#c7aa2f"
-      color="#1a1a2e"
-      shadowColor="rgba(199, 170, 47, 0.55)"
-      shadowRadius={28}
-      shadowOffset={{ width: 0, height: 6 }}
+      color="#1a1a1a"
+      // Match the home Play Now button: yellow-to-orange gradient,
+      // orange glow. Solid backgroundColor is the fallback for any
+      // Tamagui consumer that doesn't pick up `background`.
+      backgroundColor="#ff9500"
+      style={{
+        background: 'linear-gradient(160deg, #ffe866 0%, #ff9500 100%)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.35)',
+      }}
+      shadowColor="rgba(255, 165, 0, 0.7)"
+      shadowRadius={20}
+      shadowOffset={{ width: 0, height: 4 }}
       hoverStyle={{
         y: -2,
-        shadowRadius: 36,
-        shadowColor: 'rgba(199, 170, 47, 0.7)',
-        backgroundColor: '#d6b933',
+        shadowRadius: 28,
+        shadowColor: 'rgba(255, 165, 0, 0.85)',
       }}
       disabledStyle={{
         opacity: 0.5,
-        shadowRadius: 16,
+        shadowRadius: 12,
       }}
       data-testid={testId || props['data-testid']}
       {...props}

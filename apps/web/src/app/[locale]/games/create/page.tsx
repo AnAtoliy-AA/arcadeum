@@ -1,10 +1,18 @@
 import CreateGameRoomClient from './CreateGameRoomClient';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Create Game Room',
-  description: 'Create a new game room and invite your friends.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'gameCreate' })
+    : {};
+}
 
 export default function CreateGameRoomRoute() {
   return <CreateGameRoomClient />;

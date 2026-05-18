@@ -1,12 +1,19 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import HelpClient from './HelpClient';
 
-export const metadata: Metadata = {
-  title: 'Help Center',
-  description:
-    'Find answers to common questions and learn how to use the platform.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'help' })
+    : {};
+}
 
 /**
  * Help Page

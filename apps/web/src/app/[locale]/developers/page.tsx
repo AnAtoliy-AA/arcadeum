@@ -1,11 +1,19 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import DevelopersClient from './DevelopersClient';
 
-export const metadata: Metadata = {
-  title: 'Developers',
-  description: 'API documentation and developer resources.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'developers' })
+    : {};
+}
 
 /**
  * Developers Page

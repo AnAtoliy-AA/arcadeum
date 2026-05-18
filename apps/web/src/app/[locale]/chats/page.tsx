@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { chatApi } from '@/features/chat/api';
@@ -12,10 +14,16 @@ import ChatsLoading from './loading';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Chats',
-  description: 'Manage your direct conversations and messages.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'chats' })
+    : {};
+}
 
 export default function ChatsRoute() {
   return (

@@ -1,11 +1,19 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import CookiePolicyClient from './CookiePolicyClient';
 
-export const metadata: Metadata = {
-  title: 'Cookie Policy',
-  description: 'How we use cookies to improve your experience.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'cookies' })
+    : {};
+}
 
 /**
  * Cookie Policy Page

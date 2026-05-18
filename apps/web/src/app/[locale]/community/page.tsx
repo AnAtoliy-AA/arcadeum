@@ -1,11 +1,19 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import CommunityClient from './CommunityClient';
 
-export const metadata: Metadata = {
-  title: 'Community',
-  description: 'Connect with other players in the Arcadeum community.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'community' })
+    : {};
+}
 
 /**
  * Community Page

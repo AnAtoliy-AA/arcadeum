@@ -4,6 +4,7 @@ import { buildRoutes } from '@/shared/config/routes';
 import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import SeaBattleLanding from './SeaBattleLanding';
 
 const SEA_BATTLE_SLUG = 'sea_battle_v1';
@@ -28,27 +29,34 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const routes = buildRoutes(locale);
-  const pageUrl = `${appConfig.siteUrl}${routes.seaBattleLanding}`;
   const messages = await getTranslations(locale);
   const t = messages.games?.sea_battle_v1?.landing?.meta;
 
-  return {
+  // The Sea Battle landing keeps its richer in-game metadata (keywords,
+  // distinct OG title/description from the games namespace), wrapped in
+  // the shared `buildPageMetadata` so hreflang + alternates stay correct.
+  const base = await buildPageMetadata({
+    locale,
+    page: 'seaBattleLanding',
     title: t?.title,
     description: t?.description,
+  });
+
+  return {
+    ...base,
     keywords: t?.keywords,
-    alternates: { canonical: pageUrl },
     openGraph: {
-      title: t?.ogTitle ?? t?.title,
-      description: t?.ogDescription ?? t?.description,
-      url: pageUrl,
-      siteName: appConfig.appName,
-      type: 'website',
+      ...base.openGraph,
+      title: t?.ogTitle ?? t?.title ?? base.openGraph?.title,
+      description:
+        t?.ogDescription ?? t?.description ?? base.openGraph?.description,
     },
     twitter: {
+      ...base.twitter,
       card: 'summary_large_image',
-      title: t?.ogTitle ?? t?.title,
-      description: t?.ogDescription ?? t?.description,
+      title: t?.ogTitle ?? t?.title ?? base.twitter?.title,
+      description:
+        t?.ogDescription ?? t?.description ?? base.twitter?.description,
     },
   };
 }

@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 
-export const metadata: Metadata = {
-  title: 'Sign In | Auth',
-  description: 'Sign in to your account or register for a new one.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'auth' }) : {};
+}
 
 export default function AuthLayout({
   children,

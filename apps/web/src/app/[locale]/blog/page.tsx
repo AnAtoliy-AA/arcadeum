@@ -1,11 +1,19 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import BlogClient from './BlogClient';
 
-export const metadata: Metadata = {
-  title: 'Blog',
-  description: 'Latest news and updates from Arcadeum.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'blog' })
+    : {};
+}
 
 /**
  * Blog Page

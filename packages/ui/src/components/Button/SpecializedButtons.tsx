@@ -84,6 +84,8 @@ export const StartButton = ({
   children,
   testId,
   width = '100%',
+  pulse = true,
+  showShimmer = true,
   ...props
 }: ButtonProps) => (
   <Button
@@ -92,17 +94,22 @@ export const StartButton = ({
     $sm={{ $uiSize: 'md', borderRadius: 8 }}
     $short={{ $uiSize: 'sm', borderRadius: 8 }}
     width={width}
-    fontWeight="600"
+    fontWeight="700"
+    fontSize={18}
+    letterSpacing={0.5}
     borderRadius={12}
     backgroundColor="#c7aa2f"
     color="#1a1a2e"
-    shadowColor="rgba(199, 170, 47, 0.3)"
-    shadowRadius={16}
-    shadowOffset={{ width: 0, height: 4 }}
+    shadowColor="rgba(199, 170, 47, 0.55)"
+    shadowRadius={28}
+    shadowOffset={{ width: 0, height: 6 }}
+    pulse={pulse}
+    showShimmer={showShimmer}
     hoverStyle={{
       y: -2,
-      shadowRadius: 24,
-      shadowColor: 'rgba(199, 170, 47, 0.4)',
+      shadowRadius: 36,
+      shadowColor: 'rgba(199, 170, 47, 0.7)',
+      backgroundColor: '#d6b933',
     }}
     disabledStyle={{
       opacity: 0.5,

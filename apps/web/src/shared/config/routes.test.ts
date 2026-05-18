@@ -1,17 +1,33 @@
 import { describe, it, expect } from 'vitest';
-import { routes } from './routes';
+import { routes, buildRoutes } from './routes';
 
 describe('routes config', () => {
-  it('has correct static routes', () => {
-    expect(routes.home).toBe('/');
-    expect(routes.auth).toBe('/auth');
-    expect(routes.settings).toBe('/settings');
-    expect(routes.chat).toBe('/chat');
+  it('default-locale routes are en-prefixed', () => {
+    expect(routes.home).toBe('/en');
+    expect(routes.auth).toBe('/en/auth');
+    expect(routes.settings).toBe('/en/settings');
+    expect(routes.chat).toBe('/en/chat');
   });
 
-  it('generates dynamic routes correctly', () => {
-    expect(routes.gameDetail('123')).toBe('/games/123');
-    expect(routes.gameRoom('abc')).toBe('/games/rooms/abc');
-    expect(routes.chatDetail('chat-1')).toBe('/chat/chat-1');
+  it('default-locale dynamic routes are en-prefixed', () => {
+    expect(routes.gameDetail('123')).toBe('/en/games/123');
+    expect(routes.gameRoom('abc')).toBe('/en/games/rooms/abc');
+    expect(routes.chatDetail('chat-1')).toBe('/en/chat/chat-1');
+  });
+
+  it('buildRoutes(locale) prefixes paths with the given locale', () => {
+    const fr = buildRoutes('fr');
+    expect(fr.home).toBe('/fr');
+    expect(fr.games).toBe('/fr/games');
+    expect(fr.gameDetail('99')).toBe('/fr/games/99');
+
+    const ru = buildRoutes('ru');
+    expect(ru.settings).toBe('/ru/settings');
+    expect(ru.gameRoom('abc')).toBe('/ru/games/rooms/abc');
+  });
+
+  it('offline route stays locale-free', () => {
+    expect(routes.offline).toBe('/offline');
+    expect(buildRoutes('fr').offline).toBe('/offline');
   });
 });

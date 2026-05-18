@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { routes } from '@/shared/config/routes';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
@@ -39,6 +39,7 @@ export function HeaderInteractive() {
   } = useHeaderAuth();
   const isAuthenticated = hydrated ? authStatus : false;
   const { t } = useTranslation();
+  const routes = useRoutes();
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
 
@@ -51,7 +52,7 @@ export function HeaderInteractive() {
       { href: routes.stats, label: t('navigation.statsTab') },
       { href: routes.settings, label: t('navigation.settingsTab') },
     ],
-    [t],
+    [t, routes],
   );
 
   return (
@@ -65,7 +66,7 @@ export function HeaderInteractive() {
                 variant="ghost"
                 size="sm"
                 isActive={pathname === item.href}
-                data-testid={`nav-${item.href.replace('/', '') || 'home'}`}
+                data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
               >
                 {item.label}
               </NavHeaderLink>

@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
@@ -7,6 +7,8 @@ import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsService } from './game-rooms.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import type { GameRoomSummary } from './game-rooms.types';
+
+const MATCHMAKING_CANDIDATE_LIMIT = 20;
 
 /**
  * One-tap entry into a game from SEO landing pages.
@@ -18,6 +20,8 @@ import type { GameRoomSummary } from './game-rooms.types';
  */
 @Injectable()
 export class GameRoomsQuickplayService {
+  private readonly logger = new Logger(GameRoomsQuickplayService.name);
+
   constructor(
     @InjectModel(GameRoom.name)
     private readonly gameRoomModel: Model<GameRoom>,
@@ -56,19 +60,32 @@ export class GameRoomsQuickplayService {
     userId: string,
     gameId: string,
   ): Promise<GameRoomSummary> {
-    // Oldest open public lobby with a free seat the user isn't in.
-    const candidate = await this.gameRoomModel
-      .findOne({
+    // Fetch a few oldest open public lobbies the user isn't in, then
+    // pick the first one with a free seat. The "not full" check is
+    // intentionally done in JS rather than via $expr/$size — those
+    // interact badly with Mongoose schema casting and silently
+    // returned zero rows on some Mongo versions in dev.
+    const candidates = await this.gameRoomModel
+      .find({
         gameId,
         visibility: 'public',
         status: 'lobby',
         'participants.userId': { $ne: userId },
-        $expr: { $lt: [{ $size: '$participants' }, '$maxPlayers'] },
       })
       .sort({ createdAt: 1 })
+      .limit(MATCHMAKING_CANDIDATE_LIMIT)
       .exec();
 
+    const candidate = candidates.find(
+      (r) =>
+        typeof r.maxPlayers === 'number' &&
+        r.participants.length < r.maxPlayers,
+    );
+
     if (candidate) {
+      this.logger.log(
+        `Matchmaking: ${userId} joining existing room ${String(candidate._id)} (${candidates.length} candidates scanned)`,
+      );
       const joined = await this.gameRoomsService.joinRoom(
         { roomId: String(candidate._id) },
         userId,
@@ -77,6 +94,9 @@ export class GameRoomsQuickplayService {
       return joined.room;
     }
 
+    this.logger.log(
+      `Matchmaking: no open room for ${gameId} (${candidates.length} candidates scanned), creating new for ${userId}`,
+    );
     const room = await this.gameRoomsService.createRoom(userId, {
       gameId,
       name: 'Open Match',

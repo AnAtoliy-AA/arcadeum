@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatDateTime } from '@/shared/i18n/formatters';
 import { historyApi } from '@/features/history/api';
 import { useHistoryStore } from '../store/historyStore';
 import type {
@@ -32,6 +34,7 @@ export function useHistoryDetail({
   accessToken,
 }: UseHistoryDetailOptions): UseHistoryDetailResult {
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const { selectedEntry, selectEntry } = useHistoryStore();
 
   // UI-specific error state if we want to manually set errors (e.g. auth check)
@@ -153,11 +156,11 @@ export function useHistoryDetail({
     [participantReplacements],
   );
 
-  const formatDate = useCallback((dateString: string | null | undefined) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return !isNaN(date.getTime()) ? date.toLocaleString() : '-';
-  }, []);
+  const formatDate = useCallback(
+    (dateString: string | null | undefined) =>
+      formatDateTime(dateString, locale, undefined, '-'),
+    [locale],
+  );
 
   return {
     selectedEntry,

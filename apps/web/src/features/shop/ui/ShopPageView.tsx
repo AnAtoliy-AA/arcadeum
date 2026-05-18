@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Text, YStack as Stack, styled } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { useShopFiltersStore } from '../store/shopFiltersStore';
 import { ShopSidebar, type ShopSidebarLabels } from './ShopSidebar';
 import { ShopGrid, type ShopGridLabels } from './ShopGrid';
@@ -84,6 +86,7 @@ export function ShopPageView({
   labels,
 }: ShopPageViewProps) {
   const tab = useShopFiltersStore((s) => s.tab);
+  const { locale } = useLanguage();
 
   const liveCatalog = useMemo(
     () => catalog.filter((item) => item.available),
@@ -197,13 +200,13 @@ export function ShopPageView({
             <BalanceChip currency="coins" data-testid="shop-balance-coins">
               <Text fontSize={18}>🪙</Text>
               <Text fontSize="$4" fontWeight="700" color="#fbbf24">
-                {coins.toLocaleString()}
+                {formatNumber(coins, locale)}
               </Text>
             </BalanceChip>
             <BalanceChip currency="gems" data-testid="shop-balance-gems">
               <Text fontSize={18}>💎</Text>
               <Text fontSize="$4" fontWeight="700" color="#a78bfa">
-                {gems.toLocaleString()}
+                {formatNumber(gems, locale)}
               </Text>
             </BalanceChip>
           </XStack>

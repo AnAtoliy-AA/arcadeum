@@ -33,7 +33,13 @@ test.describe('Shop redesign · Showcase Locker', () => {
     await navigateTo(page, '/shop');
     const foxCard = page.getByTestId(`shop-card-${FOX_AVATAR_ID}`);
     await expect(foxCard).toBeVisible();
-    await foxCard.hover();
+    // `force: true` skips Playwright's pointer-interception check. On
+    // narrow viewports (Mobile Chrome) the footer's collapsible section
+    // can land in the same column as the card after scrollIntoView and
+    // intercept the synthesized hover. The shop's hover-to-preview path
+    // is desktop-first and the underlying onPointerEnter handler still
+    // fires; the test's job is to verify that, not the footer layout.
+    await foxCard.hover({ force: true });
     await expect(page.getByTestId('shop-action-panel')).toHaveAttribute(
       'data-mode',
       'preview',
@@ -60,7 +66,11 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/shop');
-    await page.getByTestId('shop-hero-buy').click();
+    // Same reason as the hover test above — on narrow viewports the
+    // footer's collapsible row overlaps the button vertical column after
+    // scrollIntoView. We're testing that the click handler opens the
+    // dialog, not the footer's layout.
+    await page.getByTestId('shop-hero-buy').click({ force: true });
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
   });
 });

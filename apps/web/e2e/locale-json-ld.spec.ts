@@ -14,9 +14,8 @@ type Schema = { '@type'?: string | string[]; inLanguage?: string } & Record<
 async function collectJsonLd(
   page: import('@playwright/test').Page,
 ): Promise<Schema[]> {
-  const blobs = await page.$$eval(
-    'script[type="application/ld+json"]',
-    (els) => els.map((el) => el.textContent ?? ''),
+  const blobs = await page.$$eval('script[type="application/ld+json"]', (els) =>
+    els.map((el) => el.textContent ?? ''),
   );
   const out: Schema[] = [];
   for (const blob of blobs) {

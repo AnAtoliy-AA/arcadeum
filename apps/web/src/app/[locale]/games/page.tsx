@@ -21,9 +21,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale)
-    ? buildPageMetadata({ locale, page: 'games' })
-    : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'games' }) : {};
 }
 
 interface PageProps {
@@ -54,8 +52,7 @@ export default async function GamesRoute({ params, searchParams }: PageProps) {
     .map((g) => {
       const name = gamesNamespace?.[g.id]?.name ?? g.id;
       const description =
-        gamesNamespace?.[g.id]?.description ??
-        gamesNamespace?.[g.id]?.summary;
+        gamesNamespace?.[g.id]?.description ?? gamesNamespace?.[g.id]?.summary;
       const url = g.landingHref
         ? `/${locale}${g.landingHref}`
         : routes.gameDetail(g.id);

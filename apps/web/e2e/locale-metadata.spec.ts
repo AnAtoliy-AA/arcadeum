@@ -11,13 +11,11 @@ interface LinkAttrs {
 }
 
 async function collectAlternates(page: import('@playwright/test').Page) {
-  return page.$$eval(
-    'link[rel="alternate"][hreflang]',
-    (els): LinkAttrs[] =>
-      els.map((el) => ({
-        hreflang: el.getAttribute('hreflang'),
-        href: el.getAttribute('href'),
-      })),
+  return page.$$eval('link[rel="alternate"][hreflang]', (els): LinkAttrs[] =>
+    els.map((el) => ({
+      hreflang: el.getAttribute('hreflang'),
+      href: el.getAttribute('href'),
+    })),
   );
 }
 
@@ -50,9 +48,7 @@ test.describe('Locale metadata — hreflang & canonical', () => {
     expect(canonical).toMatch(/\/fr$/);
   });
 
-  test('games page canonical reflects the localized slug', async ({
-    page,
-  }) => {
+  test('games page canonical reflects the localized slug', async ({ page }) => {
     await page.goto('/fr/jeux', { waitUntil: 'domcontentloaded' });
     const canonical = await getCanonical(page);
     expect(canonical).toMatch(/\/fr\/jeux$/);
@@ -72,17 +68,13 @@ test.describe('Locale metadata — hreflang & canonical', () => {
     expect(byLang['by']).toMatch(/\/by\/hulni$/);
   });
 
-  test('og:locale matches the active locale (en → en_US)', async ({
-    page,
-  }) => {
+  test('og:locale matches the active locale (en → en_US)', async ({ page }) => {
     await page.goto('/en', { waitUntil: 'domcontentloaded' });
     const ogLocale = await getMeta(page, 'og:locale');
     expect(ogLocale).toBe('en_US');
   });
 
-  test('og:locale matches the active locale (fr → fr_FR)', async ({
-    page,
-  }) => {
+  test('og:locale matches the active locale (fr → fr_FR)', async ({ page }) => {
     await page.goto('/fr', { waitUntil: 'domcontentloaded' });
     const ogLocale = await getMeta(page, 'og:locale');
     expect(ogLocale).toBe('fr_FR');

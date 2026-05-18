@@ -25,9 +25,7 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
 
-  test('switching EN → RU on /en/games lands on /ru/igry', async ({
-    page,
-  }) => {
+  test('switching EN → RU on /en/games lands on /ru/igry', async ({ page }) => {
     await page.goto('/en/games', { waitUntil: 'domcontentloaded' });
 
     const ruButton = page.getByTestId('lang-btn-ru');

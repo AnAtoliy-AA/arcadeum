@@ -259,7 +259,44 @@ export const enMessages = {
         themesLead:
           'Ten board styles, your pick. Same game, different vibe — switch any time in the lobby.',
         rulesKicker: 'Reference',
+        strategyKicker: 'Sharpen your aim',
+        aboutKicker: 'About the game',
         faqKicker: 'FAQ',
+      },
+      strategy: {
+        title: 'Sea Battle strategy: how to win more games',
+        intro:
+          'Sea Battle (Battleship) is a game of probability and process of elimination. A handful of habits separate casual players from the admirals who consistently sink first.',
+        tips: {
+          hunt: {
+            title: 'Hunt-and-target your hits',
+            body: 'After landing a hit, fire at adjacent cells in one of four directions until the ship sinks. The moment it goes down, return to your search pattern — confirmation of a sinking tells you which neighbouring cells are now safe to ignore.',
+          },
+          parity: {
+            title: 'Search in a checkerboard',
+            body: 'The shortest ship is two cells long, so firing in a checkerboard pattern guarantees you will eventually touch every ship without scanning every cell. This roughly halves the cells you need to try before the first hit.',
+          },
+          edges: {
+            title: 'Avoid edges and obvious lines',
+            body: 'Hugging the board edge feels safe, but human opponents sweep the perimeter first because edge-placed ships have fewer escape directions. Float your fleet a cell or two off the rim.',
+          },
+          spread: {
+            title: 'Spread, do not cluster',
+            body: 'Put each ship in its own quadrant when you can. Clustered fleets cascade — a single lucky hit hands the opponent two or three quick sinkings in a row.',
+          },
+          memory: {
+            title: 'Track misses, not just hits',
+            body: 'Misses are information. Mentally mark the dead zones and you cut the remaining search space in half by the mid-game. Most theme boards on Arcadeum already show miss markers for you.',
+          },
+        },
+      },
+      about: {
+        title: 'About Sea Battle',
+        paragraphs: [
+          'Sea Battle, known internationally as Battleship, is one of the oldest grid-based strategy games still played today. Players first sketched the rules on lined notebooks long before any plastic board existed — two opponents, two secret 10×10 grids, and the simple thrill of calling out coordinates one at a time.',
+          'The game made the jump from paper to plastic in the mid-20th century, becoming a fixture of family game nights, and from there to screens — pocket electronic versions, computer game adaptations, and now browser-native multiplayer.',
+          'Arcadeum keeps the original 10×10 grid and the five-ship fleet intact, then adds what the paper version never had: instant matchmaking, AI opponents, team mode, ten visual themes, and shareable lobby links. Whether you are looking for a quick game vs the computer or a longer match against a human, the rules are the same ones admirals have been arguing over for a century.',
+        ],
       },
       board: {
         label: 'Live preview',

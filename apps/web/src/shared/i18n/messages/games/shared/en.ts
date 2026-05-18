@@ -5,6 +5,7 @@ export const enMessages = {
   lounge: {
     activeTitle: 'Game Rooms',
     emptyTitle: 'No rooms found. Create one to get started!',
+    emptyFeaturedLink: 'Or jump into Sea Battle vs AI →',
     loadingRooms: 'Loading rooms...',
     searchPlaceholder: 'Search games...',
     searchButton: 'Search',

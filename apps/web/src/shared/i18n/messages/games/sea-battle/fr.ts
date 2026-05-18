@@ -257,7 +257,44 @@ export const frMessages = {
         themesLead:
           'Dix styles de plateau, à vous de choisir. Même jeu, ambiance différente — changez à tout moment dans le lobby.',
         rulesKicker: 'Référence',
+        strategyKicker: 'Affûtez votre visée',
+        aboutKicker: 'À propos du jeu',
         faqKicker: 'FAQ',
+      },
+      strategy: {
+        title: 'Stratégie de Bataille Navale : comment gagner plus souvent',
+        intro:
+          'La Bataille Navale (Battleship) est un jeu de probabilités et d’élimination progressive. Quelques habitudes séparent le joueur occasionnel de l’amiral qui coule en premier, partie après partie.',
+        tips: {
+          hunt: {
+            title: 'Traquez puis achevez vos touches',
+            body: 'Après une touche, tirez sur les cases adjacentes dans l’une des quatre directions jusqu’à couler le navire. Dès qu’il sombre, reprenez votre schéma de recherche : la confirmation du naufrage indique quelles cases voisines peuvent être ignorées.',
+          },
+          parity: {
+            title: 'Cherchez en damier',
+            body: 'Le navire le plus court mesure deux cases ; tirer en damier garantit donc de toucher chaque navire sans inspecter toutes les cases. Cela divise presque par deux le nombre d’essais avant la première touche.',
+          },
+          edges: {
+            title: 'Évitez les bords et les lignes évidentes',
+            body: 'Coller au bord paraît sûr, mais les adversaires humains ratissent le périmètre d’abord car les navires y ont moins de directions de fuite. Décollez votre flotte d’une ou deux cases du cadre.',
+          },
+          spread: {
+            title: 'Dispersez, ne groupez pas',
+            body: 'Placez chaque navire dans son propre quadrant quand vous le pouvez. Une flotte serrée s’effondre en chaîne : une seule touche heureuse offre à l’adversaire deux ou trois naufrages d’affilée.',
+          },
+          memory: {
+            title: 'Notez les tirs manqués, pas seulement les touches',
+            body: 'Les manqués sont des informations. Mémorisez les zones mortes et l’espace de recherche se réduit de moitié à mi-partie. La plupart des thèmes Arcadeum affichent déjà les marqueurs de tirs ratés.',
+          },
+        },
+      },
+      about: {
+        title: 'À propos de la Bataille Navale',
+        paragraphs: [
+          'La Bataille Navale, connue dans le monde sous le nom de Battleship, est l’un des plus anciens jeux de stratégie sur grille encore joués. Bien avant les plateaux en plastique, les règles se dessinaient sur des cahiers à carreaux : deux adversaires, deux grilles secrètes de 10×10, et le simple frisson d’annoncer une coordonnée à la fois.',
+          'Au milieu du XXᵉ siècle, le jeu est passé du papier au plastique et est devenu un classique des soirées familiales, avant de migrer sur les écrans — versions électroniques de poche, adaptations PC, et désormais multijoueur natif au navigateur.',
+          'Arcadeum conserve la grille originale de 10×10 et la flotte de cinq navires, puis ajoute ce que la version papier n’a jamais eu : matchmaking instantané, adversaires IA, mode équipe, dix thèmes visuels et liens de lobby partageables. Que vous cherchiez une partie rapide contre l’ordinateur ou un duel plus long contre un humain, les règles restent celles que les amiraux discutent depuis un siècle.',
+        ],
       },
       board: {
         label: 'Aperçu en direct',

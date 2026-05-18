@@ -5,6 +5,7 @@ export const esMessages = {
   lounge: {
     activeTitle: 'Salas de Juego',
     emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
+    emptyFeaturedLink: 'O entra a Batalla Naval contra la IA →',
     loadingRooms: 'Cargando salas...',
     searchPlaceholder: 'Buscar juegos...',
     searchButton: 'Buscar',

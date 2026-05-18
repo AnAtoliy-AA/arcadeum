@@ -11,7 +11,10 @@ const SEA_BATTLE_MAX_PLAYERS = 4;
 const SEA_BATTLE_GENRE = 'Strategy';
 const PAGE_PATH = routes.seaBattleLanding;
 const PAGE_URL = `${appConfig.siteUrl}${PAGE_PATH}`;
-const OG_IMAGE = `${appConfig.siteUrl}/logo.png`;
+// Image URL for JSON-LD only — for OG/Twitter unfurls we let Next's
+// file-based opengraph-image.tsx / twitter-image.tsx generate a real
+// 1200×630 game-themed preview at build/request time.
+const JSON_LD_IMAGE = `${appConfig.siteUrl}/logo.png`;
 
 export async function generateMetadata(): Promise<Metadata> {
   const messages = await getTranslations();
@@ -21,27 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t?.title,
     description: t?.description,
     keywords: t?.keywords,
-    alternates: { canonical: PAGE_PATH },
+    alternates: { canonical: PAGE_URL },
     openGraph: {
       title: t?.ogTitle ?? t?.title,
       description: t?.ogDescription ?? t?.description,
       url: PAGE_URL,
       siteName: appConfig.appName,
       type: 'website',
-      images: [
-        {
-          url: OG_IMAGE,
-          width: 1200,
-          height: 630,
-          alt: t?.ogTitle ?? 'Sea Battle on Arcadeum',
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: t?.ogTitle ?? t?.title,
       description: t?.ogDescription ?? t?.description,
-      images: [OG_IMAGE],
     },
   };
 }
@@ -58,7 +52,7 @@ export default async function SeaBattleLandingRoute() {
       alternateName: ['Battleship', 'Sea Battle Online'],
       description: landing?.meta?.description,
       url: PAGE_URL,
-      image: OG_IMAGE,
+      image: JSON_LD_IMAGE,
       genre: SEA_BATTLE_GENRE,
       gamePlatform: ['Web Browser'],
       operatingSystem: 'Any',

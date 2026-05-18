@@ -4,7 +4,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 
 const GAME_LANDINGS: Array<{ path: string; lastUpdated?: string }> = [
-  { path: routes.seaBattleLanding, lastUpdated: '2026-05-17' },
+  { path: routes.seaBattleLanding, lastUpdated: '2026-05-18' },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

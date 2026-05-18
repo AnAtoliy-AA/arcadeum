@@ -5,6 +5,7 @@ export const ruMessages = {
   lounge: {
     activeTitle: 'Игровые залы',
     emptyTitle: 'Залы не найдены. Создайте первый, чтобы начать!',
+    emptyFeaturedLink: 'Или сыграйте в Морской бой против ИИ →',
     loadingRooms: 'Загрузка залов...',
     searchPlaceholder: 'Поиск игр...',
     searchButton: 'Поиск',

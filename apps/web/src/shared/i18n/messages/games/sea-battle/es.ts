@@ -257,7 +257,44 @@ export const esMessages = {
         themesLead:
           'Diez estilos de tablero, tú eliges. Mismo juego, distinto ambiente — cámbialo cuando quieras en el lobby.',
         rulesKicker: 'Referencia',
+        strategyKicker: 'Afina tu puntería',
+        aboutKicker: 'Sobre el juego',
         faqKicker: 'FAQ',
+      },
+      strategy: {
+        title: 'Estrategia de Batalla Naval: cómo ganar más partidas',
+        intro:
+          'La Batalla Naval (Battleship) es un juego de probabilidades y eliminación progresiva. Unos pocos hábitos separan al jugador casual del almirante que hunde primero una y otra vez.',
+        tips: {
+          hunt: {
+            title: 'Caza y remata tras un impacto',
+            body: 'Después de un impacto, dispara a las casillas adyacentes en una de las cuatro direcciones hasta que el barco se hunda. En cuanto caiga, vuelve a tu patrón de búsqueda: la confirmación del hundimiento te indica qué casillas vecinas puedes ignorar.',
+          },
+          parity: {
+            title: 'Busca en patrón de damero',
+            body: 'El barco más corto ocupa dos casillas, así que disparar en damero garantiza tocar cada barco sin revisar todas las casillas. Reduce casi a la mitad lo que necesitas probar antes del primer impacto.',
+          },
+          edges: {
+            title: 'Evita los bordes y las líneas obvias',
+            body: 'Pegarse al borde parece seguro, pero los rivales humanos peinan primero el perímetro porque allí los barcos tienen menos huida posible. Aleja tu flota uno o dos espacios del margen.',
+          },
+          spread: {
+            title: 'Distribuye, no agrupes',
+            body: 'Pon cada barco en su propio cuadrante cuando puedas. Una flota agrupada se desploma en cadena: un solo impacto afortunado le regala al rival dos o tres hundimientos seguidos.',
+          },
+          memory: {
+            title: 'Recuerda los fallos, no solo los impactos',
+            body: 'Los fallos también informan. Marca mentalmente las zonas muertas y, a mitad de partida, habrás reducido a la mitad el espacio de búsqueda. La mayoría de los temas de Arcadeum ya marcan los fallos por ti.',
+          },
+        },
+      },
+      about: {
+        title: 'Sobre la Batalla Naval',
+        paragraphs: [
+          'La Batalla Naval, conocida internacionalmente como Battleship, es uno de los juegos de estrategia sobre cuadrícula más antiguos que aún se juegan. Mucho antes de los tableros de plástico, las reglas se dibujaban en hojas a cuadros: dos rivales, dos rejillas secretas de 10×10 y la emoción de cantar coordenadas una a una.',
+          'A mediados del siglo XX la partida saltó del papel al plástico y se convirtió en clásico de las noches en familia, antes de pasar a las pantallas — versiones electrónicas de bolsillo, adaptaciones de PC y, ahora, multijugador nativo en el navegador.',
+          'Arcadeum conserva la rejilla original de 10×10 y la flota de cinco barcos, pero añade lo que la versión en papel nunca tuvo: emparejamiento instantáneo, oponentes con IA, modo en equipos, diez temas visuales y enlaces de lobby que puedes compartir. Tanto si buscas una partida rápida contra el ordenador como una más larga contra otra persona, las reglas son las mismas que llevan un siglo discutiendo los almirantes.',
+        ],
       },
       board: {
         label: 'Vista previa en vivo',

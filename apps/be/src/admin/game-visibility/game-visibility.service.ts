@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -10,6 +15,7 @@ import {
   type UserRole,
   type VisibilityTier,
 } from '../../auth/lib/roles';
+import { getCatalogEntry, hasVariant } from '../../games/games.catalog';
 
 const TIER_RANK: Record<VisibilityTier, number> = {
   all: 0,
@@ -79,6 +85,43 @@ export class GameVisibilityService {
       if (await this.canSee(role, gameId, variantId)) out.push(item);
     }
     return out;
+  }
+
+  async setGameTier(
+    gameId: string,
+    tier: VisibilityTier,
+    adminId: string,
+  ): Promise<void> {
+    if (!getCatalogEntry(gameId)) {
+      throw new BadRequestException(`unknown gameId: ${gameId}`);
+    }
+    await this.model
+      .findOneAndUpdate(
+        { gameId, variantId: null },
+        { $set: { tier, updatedBy: adminId } },
+        { upsert: true, new: true },
+      )
+      .lean();
+    this.invalidateCache();
+  }
+
+  async setVariantTier(
+    gameId: string,
+    variantId: string,
+    tier: VisibilityTier,
+    adminId: string,
+  ): Promise<void> {
+    if (!hasVariant(gameId, variantId)) {
+      throw new BadRequestException(`unknown variant: ${gameId}/${variantId}`);
+    }
+    await this.model
+      .findOneAndUpdate(
+        { gameId, variantId },
+        { $set: { tier, updatedBy: adminId } },
+        { upsert: true, new: true },
+      )
+      .lean();
+    this.invalidateCache();
   }
 
   private async getMap(): Promise<Map<string, VisibilityTier>> {

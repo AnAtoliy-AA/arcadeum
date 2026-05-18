@@ -111,3 +111,52 @@ describe('GameVisibilityService (read paths)', () => {
     );
   });
 });
+
+describe('GameVisibilityService (write paths)', () => {
+  it('setGameTier upserts and invalidates cache', async () => {
+    const upsertMock = jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue({}),
+    });
+    const model = {
+      find: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue([]),
+      }),
+      findOneAndUpdate: upsertMock,
+    };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        GameVisibilityService,
+        { provide: getModelToken(GameVisibility.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(GameVisibilityService);
+    await svc.setGameTier('glimworm_v1', 'vip_plus', 'admin-1');
+    expect(upsertMock).toHaveBeenCalledWith(
+      { gameId: 'glimworm_v1', variantId: null },
+      { $set: { tier: 'vip_plus', updatedBy: 'admin-1' } },
+      { upsert: true, new: true },
+    );
+    // After write, next read forces re-query
+    await svc.getEffectiveTier('glimworm_v1');
+    expect(model.find).toHaveBeenCalledTimes(1); // map was reloaded
+  });
+
+  it('setVariantTier rejects unknown variant', async () => {
+    const model = {
+      find: jest
+        .fn()
+        .mockReturnValue({ lean: jest.fn().mockResolvedValue([]) }),
+      findOneAndUpdate: jest.fn(),
+    };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        GameVisibilityService,
+        { provide: getModelToken(GameVisibility.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(GameVisibilityService);
+    await expect(
+      svc.setVariantTier('glimworm_v1', 'bogus', 'vip_plus', 'admin-1'),
+    ).rejects.toThrow(/unknown variant/i);
+  });
+});

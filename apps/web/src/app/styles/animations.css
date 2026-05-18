@@ -1668,51 +1668,58 @@
 }
 
 /* StartButton glow pulse — keeps the "start the game" CTA breathing so
-   it's hard to miss in the lobby after a one-tap landing handoff. */
+   it's hard to miss in the lobby after a one-tap landing handoff.
+   Selector is doubled (.start-button-glow.start-button-glow) to outweigh
+   Tamagui's atomic single-class selectors that set transition/transform
+   on the same element. */
 @keyframes start-button-pulse {
   0%,
   100% {
     box-shadow:
-      0 4px 16px rgba(199, 170, 47, 0.35),
-      0 0 0 0 rgba(199, 170, 47, 0.45);
+      0 4px 16px rgba(199, 170, 47, 0.45),
+      0 0 0 0 rgba(199, 170, 47, 0.55);
+    transform: scale(1);
   }
   50% {
     box-shadow:
-      0 6px 32px rgba(199, 170, 47, 0.75),
-      0 0 0 8px rgba(199, 170, 47, 0);
+      0 8px 40px rgba(199, 170, 47, 0.9),
+      0 0 0 12px rgba(199, 170, 47, 0);
+    transform: scale(1.025);
   }
 }
 
 @keyframes start-button-shimmer {
   0% {
-    transform: translateX(-120%) skewX(-12deg);
+    transform: translateX(-130%) skewX(-15deg);
   }
   100% {
-    transform: translateX(220%) skewX(-12deg);
+    transform: translateX(260%) skewX(-15deg);
   }
 }
 
-.start-button-glow {
-  animation: start-button-pulse 2.4s ease-in-out infinite;
+.start-button-glow.start-button-glow {
+  animation: start-button-pulse 2s ease-in-out infinite !important;
   position: relative;
   overflow: hidden;
+  will-change: transform, box-shadow;
 }
 
-.start-button-glow::after {
+.start-button-glow.start-button-glow::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 40%;
+  width: 50%;
   height: 100%;
   background: linear-gradient(
     100deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.55) 50%,
     transparent 100%
   );
-  animation: start-button-shimmer 3.2s ease-in-out infinite;
+  animation: start-button-shimmer 2.6s ease-in-out infinite !important;
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Respect prefers-reduced-motion: collapse every keyframe animation to a

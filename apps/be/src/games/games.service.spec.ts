@@ -168,6 +168,7 @@ describe('GamesService', () => {
       expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
         'user1',
         'sea_battle_v1',
+        undefined,
       );
       expect(result).toEqual(room);
     });
@@ -192,6 +193,7 @@ describe('GamesService', () => {
       expect(roomsQuickplayService.findHumanMatch).toHaveBeenCalledWith(
         'user1',
         'sea_battle_v1',
+        undefined,
       );
       expect(result).toEqual(room);
     });

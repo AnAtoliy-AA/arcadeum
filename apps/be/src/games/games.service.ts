@@ -63,18 +63,22 @@ export class GamesService {
     return room;
   }
 
-  async quickplay(userId: string, gameId: string) {
+  async quickplay(userId: string, gameId: string, variant?: string) {
     if (gameId !== 'sea_battle_v1') {
       throw new BadRequestException(`Quickplay not supported for ${gameId}`);
     }
-    return this.roomsQuickplayService.createQuickplayRoom(userId, gameId);
+    return this.roomsQuickplayService.createQuickplayRoom(
+      userId,
+      gameId,
+      variant,
+    );
   }
 
-  async findHumanMatch(userId: string, gameId: string) {
+  async findHumanMatch(userId: string, gameId: string, variant?: string) {
     if (gameId !== 'sea_battle_v1') {
       throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
     }
-    return this.roomsQuickplayService.findHumanMatch(userId, gameId);
+    return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {

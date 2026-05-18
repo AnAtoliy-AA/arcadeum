@@ -71,8 +71,16 @@ export class GamesController {
     }
     const room =
       dto.mode === 'human'
-        ? await this.gamesService.findHumanMatch(user.userId, dto.gameId)
-        : await this.gamesService.quickplay(user.userId, dto.gameId);
+        ? await this.gamesService.findHumanMatch(
+            user.userId,
+            dto.gameId,
+            dto.variant,
+          )
+        : await this.gamesService.quickplay(
+            user.userId,
+            dto.gameId,
+            dto.variant,
+          );
     return { room };
   }
 

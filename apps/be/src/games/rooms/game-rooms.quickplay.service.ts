@@ -37,6 +37,7 @@ export class GameRoomsQuickplayService {
   async createQuickplayRoom(
     userId: string,
     gameId: string,
+    variant?: string,
   ): Promise<GameRoomSummary> {
     const botId = `bot-${randomBytes(5).toString('hex')}`;
     const now = new Date();
@@ -51,7 +52,7 @@ export class GameRoomsQuickplayService {
         { userId: botId, joinedAt: now },
       ],
       status: 'lobby',
-      gameOptions: {},
+      gameOptions: variant ? { variant } : {},
       createdAt: now,
       updatedAt: now,
     });
@@ -63,6 +64,7 @@ export class GameRoomsQuickplayService {
   async findHumanMatch(
     userId: string,
     gameId: string,
+    variant?: string,
   ): Promise<GameRoomSummary> {
     // Tight pool: only matchmaking-created rooms ("Open Match"), and
     // only those that don't already contain an AI bot. Sorted
@@ -141,6 +143,7 @@ export class GameRoomsQuickplayService {
       name: 'Open Match',
       visibility: 'public',
       maxPlayers: 2,
+      gameOptions: variant ? { variant } : undefined,
     });
     this.realtimeService.emitRoomCreated(room);
     return room;

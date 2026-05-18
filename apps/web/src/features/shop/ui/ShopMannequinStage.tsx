@@ -11,17 +11,19 @@ import { nameColorRenderProps } from '../lib/nameColor';
 import { RARITY_GLOW } from '../lib/rarity';
 import { ItemAsset } from './ItemAsset';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
+import stageStyles from './ShopMannequinStage.module.css';
 
 export interface ShopMannequinStageLabels {
   tryOn: string;
-  stage: { level: string };
+  stage: { level: string; online: string };
 }
 
 export interface ShopMannequinStageProps {
   preview: Record<ShopCategory, EffectiveShopItem | null | undefined>;
   hoverItem: EffectiveShopItem | null;
   displayName: string;
-  level: number;
+  /** When null/undefined (e.g. no BE level data yet) the badge shows just "Online". */
+  level: number | null;
   labels: ShopMannequinStageLabels;
 }
 
@@ -99,7 +101,6 @@ export function ShopMannequinStage({
   const raysBg = useMemo<React.CSSProperties>(
     () => ({
       backgroundImage: `conic-gradient(from 0deg at 50% 60%, transparent 0deg, ${accentGlow} 30deg, transparent 60deg, ${accentGlow} 120deg, transparent 150deg, ${accentGlow} 210deg, transparent 240deg, ${accentGlow} 300deg, transparent 360deg)`,
-      animation: 'shopRaysSpin 28s linear infinite',
     }),
     [accentGlow],
   );
@@ -116,9 +117,14 @@ export function ShopMannequinStage({
     ? String(t(`pages.shop.${skin.nameKey}` as TranslationKey))
     : '';
 
+  const presenceLine =
+    level !== null && level !== undefined && Number.isFinite(level)
+      ? labels.stage.level.replace('{level}', String(level))
+      : labels.stage.online;
+
   return (
     <StageFrame data-testid="shop-stage">
-      <RaysLayer style={raysBg} />
+      <RaysLayer className={stageStyles.rays} style={raysBg} />
 
       {hoverItem ? (
         <TryOnTag>
@@ -216,13 +222,12 @@ export function ShopMannequinStage({
             textTransform="uppercase"
             color="$gray11"
             fontWeight="700"
+            data-testid="shop-stage-presence"
           >
-            {labels.stage.level.replace('{level}', String(level))}
+            {presenceLine}
           </Text>
         </YStack>
       </YStack>
-
-      <style>{`@keyframes shopRaysSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @media (prefers-reduced-motion: reduce) { [data-testid="shop-stage"] > div:first-child { animation: none !important; } }`}</style>
     </StageFrame>
   );
 }

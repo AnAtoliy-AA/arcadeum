@@ -1,0 +1,18 @@
+@keyframes shopRaysSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rays {
+  animation: shopRaysSpin 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays {
+    animation: none !important;
+  }
+}

@@ -21,14 +21,13 @@ export const shopEn = {
   },
   hero: {
     tag: 'Limited drop',
-    ends: 'Ends in {time}',
     tryOn: 'Try on',
     buyNow: 'Buy now',
     bodySuffix: 'Visible in lobby, chat, and during matches.',
   },
   mannequin: {
     tryOn: 'Try-on',
-    stage: { level: 'LVL {level} · Online' },
+    stage: { level: 'LVL {level} · Online', online: 'Online' },
     slots: {
       avatar: {
         label: 'Avatar',
@@ -97,11 +96,6 @@ export const shopEn = {
       eyebrow: 'Top rarity',
       viewAll: 'View all',
     },
-    newdrops: {
-      title: 'New drops',
-      eyebrow: 'This week',
-      viewAll: 'View all',
-    },
   },
   card: { owned: 'Owned', equipped: 'Equipped', buyEquip: 'Buy & equip' },
   rarities: {
@@ -109,6 +103,10 @@ export const shopEn = {
     rare: 'Rare',
     epic: 'Epic',
     legendary: 'Legendary',
+  },
+  empty: {
+    title: 'Shop is unavailable right now',
+    body: "We're working on it. Try again in a minute.",
   },
   purchase: {
     title: 'Confirm purchase',

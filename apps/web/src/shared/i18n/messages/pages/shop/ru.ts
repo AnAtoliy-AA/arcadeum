@@ -21,14 +21,13 @@ export const shopRu = {
   },
   hero: {
     tag: 'Лимитированный дроп',
-    ends: 'Закончится через {time}',
     tryOn: 'Примерить',
     buyNow: 'Купить',
     bodySuffix: 'Видно в лобби, чате и во время матчей.',
   },
   mannequin: {
     tryOn: 'Примерка',
-    stage: { level: 'УР {level} · Онлайн' },
+    stage: { level: 'УР {level} · Онлайн', online: 'Онлайн' },
     slots: {
       avatar: {
         label: 'Аватар',
@@ -97,11 +96,6 @@ export const shopRu = {
       eyebrow: 'Высший ранг',
       viewAll: 'Все',
     },
-    newdrops: {
-      title: 'Новые дропы',
-      eyebrow: 'На этой неделе',
-      viewAll: 'Все',
-    },
   },
   card: {
     owned: 'У вас есть',
@@ -113,6 +107,10 @@ export const shopRu = {
     rare: 'Редкий',
     epic: 'Эпический',
     legendary: 'Легендарный',
+  },
+  empty: {
+    title: 'Магазин временно недоступен',
+    body: 'Мы уже работаем над этим. Попробуйте через минуту.',
   },
   purchase: {
     title: 'Подтвердить покупку',

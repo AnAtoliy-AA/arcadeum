@@ -7,6 +7,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { RARITY_COLOR, RARITY_GLOW } from '../lib/rarity';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
@@ -43,6 +44,15 @@ const CardFrame = styled(Stack, {
     borderColor: 'rgba(255,255,255,0.22)',
     backgroundColor: 'rgba(255,255,255,0.04)',
     y: -2,
+  },
+  // `focusStyle` maps to `:focus-visible` in Tamagui's CSS plugin — gives
+  // keyboard users an obvious cue without surprising mouse users on click.
+  focusStyle: {
+    borderColor: 'rgba(125,211,252,0.7)',
+    outlineColor: 'rgba(125,211,252,0.45)',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+    outlineOffset: 2,
   },
 
   variants: {
@@ -99,6 +109,11 @@ export function ShopCard({
     hoverRef.current = true;
     setHover(item);
     setHovered(true);
+    track('shop.preview.hover', {
+      itemId: item.id,
+      rarity: item.rarity,
+      category: item.category,
+    });
   }, [item, setHover]);
 
   const handleLeave = useCallback(() => {
@@ -110,6 +125,12 @@ export function ShopCard({
 
   const handleClick = useCallback(() => {
     if (owned) return;
+    track('shop.purchase.click', {
+      itemId: item.id,
+      currency: item.priceCurrency,
+      amount: item.priceAmount,
+      source: 'card',
+    });
     onPurchase(item);
   }, [owned, item, onPurchase]);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
@@ -8,9 +8,14 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { track } from '@/shared/lib/analytics';
 import { RARITY_COLOR } from '../lib/rarity';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
-import { equipItemAction, unequipItemAction } from '../server/shop.actions';
+import {
+  equipItemAction,
+  unequipItemAction,
+  purchaseItemAction,
+} from '../server/shop.actions';
 import { syncEquippedToSession } from '../lib/syncEquippedToSession';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { WalletRail, type WalletRailLabels } from './WalletRail';
@@ -50,7 +55,13 @@ export interface ShopActionPanelProps {
   actionLabels: ShopActionLabels;
   walletLabels: WalletRailLabels;
   sellLabels: SellConfirmLabels;
-  onPurchase: (item: EffectiveShopItem) => void;
+  /**
+   * Fallback handler invoked only when the panel's own direct-buy path can't
+   * be used (insufficient funds, or the optimistic action returned an error
+   * that wants a confirmation dialog). For affordable items the panel
+   * commits the purchase itself.
+   */
+  onPurchaseFallback: (item: EffectiveShopItem) => void;
 }
 
 const PanelFrame = styled(Stack, {
@@ -79,6 +90,12 @@ function refundForRow(row: InventoryItemView, gemToCoinRate: number): number {
   return Math.floor(row.paidAmount * gemToCoinRate * 0.5);
 }
 
+function uuid(): string {
+  return globalThis.crypto.randomUUID();
+}
+
+type ActionMode = 'preview' | 'slot' | 'idle';
+
 export function ShopActionPanel({
   hoverItem,
   activeSlot,
@@ -91,7 +108,7 @@ export function ShopActionPanel({
   actionLabels,
   walletLabels,
   sellLabels,
-  onPurchase,
+  onPurchaseFallback,
 }: ShopActionPanelProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -99,21 +116,39 @@ export function ShopActionPanel({
   const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
   const clearActiveSlot = useShopPreviewStore((s) => s.clearActiveSlot);
 
-  const ownedIds = new Set(
-    inventory.filter((row) => row.soldAt === null).map((row) => row.itemId),
+  // Per-purchase idempotency nonce. Reset whenever the hovered item changes
+  // so the next purchase gets a fresh id; resetting on success would race
+  // with React strict-mode double-fires of the action.
+  const purchaseNonceRef = useRef<string>(uuid());
+  const hoverId = hoverItem?.id ?? null;
+  useEffect(() => {
+    if (hoverId) {
+      purchaseNonceRef.current = uuid();
+    }
+  }, [hoverId]);
+
+  const ownedIds = useMemo(
+    () =>
+      new Set(
+        inventory.filter((row) => row.soldAt === null).map((row) => row.itemId),
+      ),
+    [inventory],
   );
 
-  const onEquip = (itemId: string) => {
+  const onEquip = (itemId: string, category: ShopCategory) => {
+    track('shop.equip', { itemId, source: 'panel' });
     startTransition(async () => {
       const result = await equipItemAction(itemId);
       if (result.ok) {
         syncEquippedToSession(result.data);
         router.refresh();
       }
+      void category;
     });
   };
 
   const onUnequip = (category: ShopCategory) => {
+    track('shop.unequip', { category, source: 'panel' });
     startTransition(async () => {
       const result = await unequipItemAction(category);
       if (result.ok) {
@@ -122,6 +157,44 @@ export function ShopActionPanel({
       }
     });
   };
+
+  const onBuyDirect = (item: EffectiveShopItem) => {
+    track('shop.purchase.click', {
+      itemId: item.id,
+      currency: item.priceCurrency,
+      amount: item.priceAmount,
+      source: 'panel',
+    });
+    const nonce = purchaseNonceRef.current;
+    startTransition(async () => {
+      const result = await purchaseItemAction(item.id, nonce);
+      if (result.ok) {
+        syncEquippedToSession(result.data.equipped);
+        track('shop.purchase.success', {
+          itemId: item.id,
+          currency: item.priceCurrency,
+          amount: item.priceAmount,
+        });
+        router.refresh();
+        // Fresh nonce for the next purchase of the same item, if the user
+        // keeps hovering it.
+        purchaseNonceRef.current = uuid();
+        return;
+      }
+      track('shop.purchase.failure', { itemId: item.id, reason: result.error });
+      // BE already returned the error — let the confirmation dialog surface
+      // the message with its richer copy + retry affordance.
+      onPurchaseFallback(item);
+    });
+  };
+
+  const mode: ActionMode = hoverItem ? 'preview' : activeSlot ? 'slot' : 'idle';
+  const ariaLabel =
+    mode === 'preview'
+      ? actionLabels.previewingEyebrow
+      : mode === 'slot'
+        ? actionLabels.selectedSlotEyebrow
+        : actionLabels.loadoutEyebrow;
 
   // — Previewing state (hover takes priority)
   if (hoverItem) {
@@ -135,7 +208,13 @@ export function ShopActionPanel({
     const affordable = balanceFor >= hoverItem.priceAmount;
 
     return (
-      <PanelFrame data-testid="shop-action-panel" data-mode="preview">
+      <PanelFrame
+        data-testid="shop-action-panel"
+        data-mode={mode}
+        role="region"
+        aria-live="polite"
+        aria-label={ariaLabel}
+      >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
         <YStack gap={4}>
           <Text fontSize="$5" fontWeight="800" color="$white">
@@ -196,7 +275,7 @@ export function ShopActionPanel({
           </Button>
         ) : owned ? (
           <Button
-            onPress={() => onEquip(hoverItem.id)}
+            onPress={() => onEquip(hoverItem.id, hoverItem.category)}
             disabled={isPending}
             data-testid="shop-action-equip"
           >
@@ -204,7 +283,11 @@ export function ShopActionPanel({
           </Button>
         ) : (
           <Button
-            onPress={() => onPurchase(hoverItem)}
+            onPress={() =>
+              affordable
+                ? onBuyDirect(hoverItem)
+                : onPurchaseFallback(hoverItem)
+            }
             disabled={isPending}
             data-testid="shop-action-buy-equip"
             data-affordable={affordable ? 'true' : 'false'}
@@ -239,7 +322,13 @@ export function ShopActionPanel({
       equippedRow !== null && equippedItem !== null && !equippedItem.starter;
 
     return (
-      <PanelFrame data-testid="shop-action-panel" data-mode="slot">
+      <PanelFrame
+        data-testid="shop-action-panel"
+        data-mode={mode}
+        role="region"
+        aria-live="polite"
+        aria-label={ariaLabel}
+      >
         <XStack justifyContent="space-between" alignItems="center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
           <Text
@@ -279,7 +368,13 @@ export function ShopActionPanel({
         {canSell && equippedRow ? (
           <Button
             variant="danger"
-            onPress={() => setSellTarget(equippedRow)}
+            onPress={() => {
+              track('shop.sell.click', {
+                itemId: equippedRow.itemId,
+                refundCoins: refundForRow(equippedRow, gemToCoinRate),
+              });
+              setSellTarget(equippedRow);
+            }}
             disabled={isPending}
             data-testid="shop-action-sell"
           >
@@ -301,7 +396,13 @@ export function ShopActionPanel({
 
   // — Idle state
   return (
-    <PanelFrame data-testid="shop-action-panel" data-mode="idle">
+    <PanelFrame
+      data-testid="shop-action-panel"
+      data-mode={mode}
+      role="region"
+      aria-live="polite"
+      aria-label={ariaLabel}
+    >
       <Eyebrow>{actionLabels.loadoutEyebrow}</Eyebrow>
       <YStack gap={4}>
         <Text fontSize="$5" fontWeight="800" color="$white">

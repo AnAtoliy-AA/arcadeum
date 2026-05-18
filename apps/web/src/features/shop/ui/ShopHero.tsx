@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button, XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
@@ -8,15 +8,20 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { RARITY_COLOR, RARITY_GLOW } from '../lib/rarity';
 import { CURRENCY_GLYPH } from '../lib/currency';
 import { ItemAsset } from './ItemAsset';
 import type { EffectiveShopItem } from '../server/shop.types';
 
+// `endsAtIso` was on this component to drive a countdown, but the BE has no
+// scheduled-drop concept yet — every featured drop comes back with `endsAtIso:
+// null`. Half-shipped UI that we know never lights up is worse than no UI, so
+// the countdown and its prop are gone until BE adds an `endsAt` on shop items.
+
 export interface ShopHeroLabels {
   tag: string;
-  ends: string;
   tryOn: string;
   buyNow: string;
   bodySuffix: string;
@@ -24,7 +29,6 @@ export interface ShopHeroLabels {
 
 export interface ShopHeroProps {
   item: EffectiveShopItem;
-  endsAtIso: string | null;
   labels: ShopHeroLabels;
   onBuyClick?: (item: EffectiveShopItem) => void;
 }
@@ -53,31 +57,9 @@ const HeroTag = styled(Stack, {
   alignSelf: 'flex-start',
 });
 
-function formatCountdown(targetIso: string, now: number): string {
-  const target = new Date(targetIso).getTime();
-  const remaining = Math.max(0, target - now);
-  const d = Math.floor(remaining / 86_400_000);
-  const h = Math.floor((remaining / 3_600_000) % 24);
-  const m = Math.floor((remaining / 60_000) % 60);
-  if (d > 0) return `${d}d ${h}h`;
-  return `${h}h ${m.toString().padStart(2, '0')}min`;
-}
-
-export function ShopHero({
-  item,
-  endsAtIso,
-  labels,
-  onBuyClick,
-}: ShopHeroProps) {
+export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
   const { t } = useTranslation();
   const setHover = useShopPreviewStore((s) => s.setHover);
-
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!endsAtIso) return;
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [endsAtIso]);
 
   const itemName = String(
     t(`pages.shop.${item.nameKey}` as TranslationKey),
@@ -96,8 +78,26 @@ export function ShopHero({
     [glow],
   );
 
-  const handleHoverOn = () => setHover(item);
+  const handleHoverOn = () => {
+    setHover(item);
+    track('shop.preview.try_on', {
+      itemId: item.id,
+      rarity: item.rarity,
+      category: item.category,
+      source: 'hero',
+    });
+  };
   const handleHoverOff = () => setHover(null);
+
+  const handleBuyClick = () => {
+    track('shop.purchase.click', {
+      itemId: item.id,
+      currency: item.priceCurrency,
+      amount: item.priceAmount,
+      source: 'hero',
+    });
+    onBuyClick?.(item);
+  };
 
   return (
     <YStack
@@ -147,15 +147,6 @@ export function ShopHero({
               >
                 {labels.tag}
               </Text>
-              {endsAtIso ? (
-                <Text fontSize={11} color="$gray11" letterSpacing={0.5}>
-                  ·{' '}
-                  {labels.ends.replace(
-                    '{time}',
-                    formatCountdown(endsAtIso, now),
-                  )}
-                </Text>
-              ) : null}
             </HeroTag>
 
             <YStack gap="$1">
@@ -180,7 +171,7 @@ export function ShopHero({
 
             <XStack gap="$3" alignItems="center" flexWrap="wrap">
               <Button
-                onPress={() => onBuyClick?.(item)}
+                onPress={handleBuyClick}
                 data-testid="shop-hero-buy"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${accent}, ${accent}cc)`,

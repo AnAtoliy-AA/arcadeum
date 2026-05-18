@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { YStack } from '@arcadeum/ui';
 import { styled, YStack as Stack } from 'tamagui';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
+import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopMannequinStage } from './ShopMannequinStage';
 import {
@@ -24,7 +25,7 @@ import type {
 
 export interface ShopMannequinLabels {
   tryOn: string;
-  stage: { level: string };
+  stage: { level: string; online: string };
   slots: Record<ShopCategory, ShopSlotLabels>;
   action: ShopActionLabels;
   wallet: WalletRailLabels;
@@ -38,7 +39,7 @@ export interface ShopMannequinRailProps {
   gemToCoinRate: number;
   labels: ShopMannequinLabels;
   sellLabels: SellConfirmLabels;
-  onPurchase: (item: EffectiveShopItem) => void;
+  onPurchaseFallback: (item: EffectiveShopItem) => void;
 }
 
 const RailHost = styled(Stack, {
@@ -49,6 +50,11 @@ const RailHost = styled(Stack, {
   top: 16,
   alignSelf: 'flex-start',
   flexShrink: 0,
+
+  // 901-1023px (Tamagui $md & $lg with $gtSm semantics) — shrink to 280 to
+  // give the storefront column breathing room. Matches the leaderboard
+  // variants' 280px sidebars in the design project.
+  $md: { width: 280 },
 
   $sm: {
     width: '100%',
@@ -64,6 +70,10 @@ const SLOT_TO_ROW: Record<ShopCategory, string> = {
   game_skin: 'row-skins',
 };
 
+// Approximate sticky-header + breathing-room offset. ShopRow also sets
+// `scrollMarginTop` as a CSS fallback in case the sticky chrome changes.
+const SCROLL_OFFSET = 80;
+
 export function ShopMannequinRail({
   catalog,
   inventory,
@@ -72,13 +82,18 @@ export function ShopMannequinRail({
   gemToCoinRate,
   labels,
   sellLabels,
-  onPurchase,
+  onPurchaseFallback,
 }: ShopMannequinRailProps) {
   const { hoverItem, activeSlot, setActiveSlot } = useShopPreviewStore();
 
   const displayName = useSessionStore(
     (s) => s.snapshot.displayName ?? s.snapshot.username ?? 'Player',
   );
+
+  // BE has no user-level field yet. When it surfaces in the session snapshot
+  // we'll read it here and the stage will switch from "Online" to
+  // "LVL N · Online" automatically.
+  const level: number | null = null;
 
   const catalogById = useMemo(
     () => new Map(catalog.map((c) => [c.id, c])),
@@ -108,11 +123,16 @@ export function ShopMannequinRail({
 
   const onSlotClick = (slot: ShopCategory) => {
     setActiveSlot(slot);
-    if (typeof document !== 'undefined') {
-      document
-        .getElementById(SLOT_TO_ROW[slot])
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    track('shop.slot.click', { slot, hadPreview: hoverItem !== null });
+    if (typeof window === 'undefined') return;
+    // `scrollIntoView` is forbidden in this codebase — and would fight
+    // `PageLayout`'s scroll container anyway. Manual window-relative offset
+    // keeps the target row clear of the sticky top bar.
+    const target = document.getElementById(SLOT_TO_ROW[slot]);
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const top = rect.top + window.scrollY - SCROLL_OFFSET;
+    window.scrollTo({ top, behavior: 'smooth' });
   };
 
   return (
@@ -121,7 +141,7 @@ export function ShopMannequinRail({
         preview={preview}
         hoverItem={hoverItem}
         displayName={displayName}
-        level={1}
+        level={level}
         labels={{ tryOn: labels.tryOn, stage: labels.stage }}
       />
       <ShopSlotRing
@@ -144,7 +164,7 @@ export function ShopMannequinRail({
           actionLabels={labels.action}
           walletLabels={labels.wallet}
           sellLabels={sellLabels}
-          onPurchase={onPurchase}
+          onPurchaseFallback={onPurchaseFallback}
         />
       </YStack>
     </RailHost>

@@ -21,14 +21,13 @@ export const shopFr = {
   },
   hero: {
     tag: 'Drop limité',
-    ends: 'Se termine dans {time}',
     tryOn: 'Essayer',
     buyNow: 'Acheter',
     bodySuffix: 'Visible dans le lobby, le chat et pendant les matchs.',
   },
   mannequin: {
     tryOn: 'Essai',
-    stage: { level: 'NIV {level} · En ligne' },
+    stage: { level: 'NIV {level} · En ligne', online: 'En ligne' },
     slots: {
       avatar: {
         label: 'Avatar',
@@ -97,11 +96,6 @@ export const shopFr = {
       eyebrow: 'Rareté max',
       viewAll: 'Tout voir',
     },
-    newdrops: {
-      title: 'Nouveaux drops',
-      eyebrow: 'Cette semaine',
-      viewAll: 'Tout voir',
-    },
   },
   card: {
     owned: 'Possédé',
@@ -113,6 +107,10 @@ export const shopFr = {
     rare: 'Rare',
     epic: 'Épique',
     legendary: 'Légendaire',
+  },
+  empty: {
+    title: 'La boutique est indisponible',
+    body: 'On y travaille. Réessayez dans une minute.',
   },
   purchase: {
     title: "Confirmer l'achat",

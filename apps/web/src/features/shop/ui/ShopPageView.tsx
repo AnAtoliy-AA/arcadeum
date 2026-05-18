@@ -1,14 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { Button, XStack, YStack } from '@arcadeum/ui';
+import { useEffect, useMemo, useState } from 'react';
+import { XStack, YStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
-import { Text, YStack as Stack } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopTopBar, type ShopTopBarLabels } from './ShopTopBar';
 import { ShopHero, type ShopHeroLabels } from './ShopHero';
 import { ShopRow, type ShopRowLabels } from './ShopRow';
@@ -20,6 +19,14 @@ import {
   PurchaseConfirmDialog,
   type PurchaseConfirmLabels,
 } from './PurchaseConfirmDialog';
+import {
+  ShopSignInBanner,
+  type ShopSignInBannerLabels,
+} from './ShopSignInBanner';
+import {
+  ShopCatalogEmpty,
+  type ShopCatalogEmptyLabels,
+} from './ShopCatalogEmpty';
 import type { ShopCardLabels } from './ShopCard';
 import type { SellConfirmLabels } from './SellConfirmDialog';
 import type {
@@ -30,16 +37,10 @@ import type {
   WalletBalanceView,
 } from '../server/shop.types';
 
-export interface ShopSignInLabels {
-  title: string;
-  body: string;
-  cta: string;
-}
-
 export interface ShopPageLabels {
   meta: { title: string; description: string };
   topBar: ShopTopBarLabels;
-  signIn: ShopSignInLabels;
+  signIn: ShopSignInBannerLabels;
   hero: ShopHeroLabels;
   mannequin: ShopMannequinLabels;
   row: {
@@ -48,12 +49,12 @@ export interface ShopPageLabels {
     colors: ShopRowLabels;
     skins: ShopRowLabels;
     legendary: ShopRowLabels;
-    newdrops: ShopRowLabels;
   };
   card: ShopCardLabels;
   rarities: Record<string, string>;
   purchase: PurchaseConfirmLabels;
   sell: SellConfirmLabels;
+  empty: ShopCatalogEmptyLabels;
 }
 
 export interface ShopPageViewProps {
@@ -81,11 +82,26 @@ export function ShopPageView({
   const [purchaseTarget, setPurchaseTarget] =
     useState<EffectiveShopItem | null>(null);
 
+  // The preview store is module-level (Zustand singleton). Without an unmount
+  // reset, a user who hovers a card here, navigates to /profile, and comes
+  // back lands on a rail still previewing a stale item. Clear hover and
+  // active-slot on unmount so each shop visit starts from idle.
+  useEffect(() => {
+    return () => {
+      const store = useShopPreviewStore.getState();
+      store.setHover(null);
+      store.clearActiveSlot();
+    };
+  }, []);
+
   const liveCatalog = useMemo(
     () => catalog.filter((item) => item.available),
     [catalog],
   );
 
+  // Each category list intentionally still contains items that also appear
+  // in the Legendary row — Legendary is a curated cross-cut, not a dedup of
+  // categories. Don't fold these together.
   const avatars = useMemo(
     () => liveCatalog.filter((c) => c.category === 'avatar'),
     [liveCatalog],
@@ -106,13 +122,13 @@ export function ShopPageView({
     () => liveCatalog.filter((c) => c.rarity === 'legendary'),
     [liveCatalog],
   );
-  const newDrops = useMemo(
-    () =>
-      liveCatalog
-        .filter((c) => c.rarity === 'epic' || c.rarity === 'legendary')
-        .slice(0, 10),
-    [liveCatalog],
-  );
+
+  // The previous build also rendered a "New drops · This week" row keyed on
+  // `rarity === 'epic' || 'legendary'`. That selector was a Legendary alias
+  // (same items shown twice) and the "this week" claim is impossible without
+  // a real createdAt on shop items. The BE catalog is hardcoded today, so
+  // the row is gone until BE surfaces a real timestamp or admin-curated drop
+  // flag. See PR-689 follow-ups doc §1a / §6c.
 
   const featuredItem = featuredDrop
     ? (catalog.find((c) => c.id === featuredDrop.itemId) ?? null)
@@ -137,31 +153,10 @@ export function ShopPageView({
       >
         <ShopTopBar balance={balance} labels={labels.topBar} />
 
-        {!isAuthenticated ? (
-          <Stack
-            flexDirection="column"
-            gap={6}
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="rgba(96,165,250,0.35)"
-            backgroundColor="rgba(59,130,246,0.08)"
-            data-testid="shop-signin-banner"
-          >
-            <Text fontSize="$5" fontWeight="700">
-              {labels.signIn.title}
-            </Text>
-            <Text fontSize="$3" color="$gray11">
-              {labels.signIn.body}
-            </Text>
-            <XStack>
-              <Link href="/auth">
-                <Button variant="primary" data-testid="shop-signin-cta">
-                  {labels.signIn.cta}
-                </Button>
-              </Link>
-            </XStack>
-          </Stack>
+        {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
+
+        {liveCatalog.length === 0 ? (
+          <ShopCatalogEmpty labels={labels.empty} />
         ) : null}
 
         <XStack
@@ -178,14 +173,13 @@ export function ShopPageView({
             gemToCoinRate={gemToCoinRate}
             labels={labels.mannequin}
             sellLabels={labels.sell}
-            onPurchase={(item) => setPurchaseTarget(item)}
+            onPurchaseFallback={(item) => setPurchaseTarget(item)}
           />
 
           <YStack flex={1} width="100%" gap="$5" minWidth={0}>
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}
-                endsAtIso={featuredDrop?.endsAtIso ?? null}
                 labels={labels.hero}
                 onBuyClick={(item) => setPurchaseTarget(item)}
               />
@@ -239,15 +233,6 @@ export function ShopPageView({
               equipped={inventory.equipped}
               highlight
               labels={labels.row.legendary}
-              cardLabels={labels.card}
-              onPurchase={(item) => setPurchaseTarget(item)}
-            />
-            <ShopRow
-              id="row-newdrops"
-              items={newDrops}
-              inventory={inventory.items}
-              equipped={inventory.equipped}
-              labels={labels.row.newdrops}
               cardLabels={labels.card}
               onPurchase={(item) => setPurchaseTarget(item)}
             />

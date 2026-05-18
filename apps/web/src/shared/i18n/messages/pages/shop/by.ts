@@ -21,14 +21,13 @@ export const shopBy = {
   },
   hero: {
     tag: 'Лімітаваны дроп',
-    ends: 'Скончыцца праз {time}',
     tryOn: 'Прымераць',
     buyNow: 'Купіць',
     bodySuffix: 'Бачна ў лобі, чаце і падчас матчаў.',
   },
   mannequin: {
     tryOn: 'Прымерка',
-    stage: { level: 'УЗР {level} · Анлайн' },
+    stage: { level: 'УЗР {level} · Анлайн', online: 'Анлайн' },
     slots: {
       avatar: {
         label: 'Аватар',
@@ -97,11 +96,6 @@ export const shopBy = {
       eyebrow: 'Вышэйшы ўзровень',
       viewAll: 'Усе',
     },
-    newdrops: {
-      title: 'Новыя дропы',
-      eyebrow: 'На гэтым тыдні',
-      viewAll: 'Усе',
-    },
   },
   card: {
     owned: 'Маецца',
@@ -113,6 +107,10 @@ export const shopBy = {
     rare: 'Рэдкі',
     epic: 'Эпічны',
     legendary: 'Легендарны',
+  },
+  empty: {
+    title: 'Крама зараз недаступная',
+    body: 'Ужо працуем над гэтым. Паспрабуйце праз хвіліну.',
   },
   purchase: {
     title: 'Пацвердзіць пакупку',

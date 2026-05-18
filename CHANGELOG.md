@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.3] - 2026-05-18
+
+### Added
+- global [locale] URL prefix (N/A)
+
+### Fixed
+- update tests for [locale] URL prefix (ARC-702) (ARC-702)
+
+
 ## [1.14.2] - 2026-05-18
 
 ### Added

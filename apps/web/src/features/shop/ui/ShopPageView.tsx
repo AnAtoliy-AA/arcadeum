@@ -205,6 +205,7 @@ export function ShopPageView({
               labels={labels.row.badges}
               cardLabels={labels.card}
               balance={balance}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
@@ -217,6 +218,7 @@ export function ShopPageView({
               labels={labels.row.colors}
               cardLabels={labels.card}
               balance={balance}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
@@ -228,6 +230,7 @@ export function ShopPageView({
               labels={labels.row.skins}
               cardLabels={labels.card}
               balance={balance}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
@@ -239,6 +242,7 @@ export function ShopPageView({
               labels={labels.row.legendary}
               cardLabels={labels.card}
               balance={balance}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
           </YStack>

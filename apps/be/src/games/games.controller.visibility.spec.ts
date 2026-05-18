@@ -213,3 +213,63 @@ describe('quickplay visibility gate', () => {
     expect(games.findHumanMatch).toHaveBeenCalled();
   });
 });
+
+describe('listRooms visibility filter', () => {
+  it('listRooms filters out rooms the caller cannot see', async () => {
+    const canSee = jest.fn(
+      (_role: string, gameId: string, variantId?: string) =>
+        Promise.resolve(
+          !(gameId === 'glimworm_v1' && variantId === 'time_attack'),
+        ),
+    );
+    const filterVisible = jest.fn(
+      async <T>(
+        role: string,
+        items: T[],
+        key: (t: T) => { gameId: string; variantId?: string },
+      ) => {
+        const out: T[] = [];
+        for (const item of items) {
+          const { gameId, variantId } = key(item);
+          if (await canSee(role, gameId, variantId)) out.push(item);
+        }
+        return out;
+      },
+    );
+    const vis = {
+      canSee,
+      filterVisible,
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const games = {
+      listRooms: jest.fn().mockResolvedValue({
+        rooms: [
+          {
+            id: 'r-1',
+            gameId: 'glimworm_v1',
+            gameOptions: { variant: 'time_attack' },
+          },
+          {
+            id: 'r-2',
+            gameId: 'glimworm_v1',
+            gameOptions: { variant: 'battle_royale' },
+          },
+          { id: 'r-3', gameId: 'critical_v1' },
+        ],
+        total: 3,
+        page: 0,
+        limit: 12,
+        hasMore: false,
+      }),
+    } as unknown as GamesService;
+    const controller = buildController(games, vis, resolver);
+    const res = await controller.listRooms({
+      user: undefined,
+    } as unknown as Request);
+    expect(
+      (res as { rooms: Array<{ id: string }> }).rooms.map((r) => r.id),
+    ).toEqual(['r-2', 'r-3']);
+  });
+});

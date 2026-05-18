@@ -187,7 +187,7 @@ export class GamesController {
     const pageNum = page ? parseInt(page, 10) : 0;
     const limitNum = limit ? parseInt(limit, 10) : 12;
 
-    return this.gamesService.listRooms({
+    const result = await this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
       search: search?.trim(),
@@ -197,6 +197,23 @@ export class GamesController {
       page: pageNum,
       limit: limitNum,
     });
+
+    const role = await this.roleResolver.resolveRole(user?.userId);
+    const filtered = await this.visibility.filterVisible(
+      role,
+      result.rooms,
+      (r) => {
+        const variantOpt =
+          r.gameOptions && typeof r.gameOptions === 'object'
+            ? r.gameOptions.variant
+            : undefined;
+        return {
+          gameId: r.gameId,
+          variantId: typeof variantOpt === 'string' ? variantOpt : undefined,
+        };
+      },
+    );
+    return { ...result, rooms: filtered };
   }
 
   @UseGuards(JwtOptionalAuthGuard)

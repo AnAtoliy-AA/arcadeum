@@ -8,7 +8,13 @@
 }
 
 .rays {
+  /* Anchor the rotation to the gradient's own center (matches the
+   * conic-gradient's `at 50% 60%` in ShopMannequinStage.tsx). Otherwise
+   * the rays orbit the element's geometric center and visibly wobble
+   * because the stage isn't square (taller than wide). */
+  transform-origin: 50% 60%;
   animation: shopRaysSpin 28s linear infinite;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {

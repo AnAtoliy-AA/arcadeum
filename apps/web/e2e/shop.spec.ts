@@ -1,117 +1,48 @@
 import { expect } from '@playwright/test';
-import { test, navigateTo, handleRoute } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
-const CATALOG = [
-  {
-    id: 'fox01',
-    category: 'avatar',
-    rarity: 'rare',
-    nameKey: 'items.avatar.fox01.name',
-    descKey: 'items.avatar.fox01.desc',
-    assetUrl: '/test-fox.png',
-    defaultPriceAmount: 100,
-    defaultPriceCurrency: 'coins',
-    available: true,
-    priceAmount: 100,
-    priceCurrency: 'coins',
-    overridden: false,
-  },
-  {
-    id: 'champion',
-    category: 'badge',
-    rarity: 'epic',
-    nameKey: 'items.badge.champion.name',
-    descKey: 'items.badge.champion.desc',
-    assetUrl: '/test-champion.png',
-    defaultPriceAmount: 200,
-    defaultPriceCurrency: 'coins',
-    available: true,
-    priceAmount: 200,
-    priceCurrency: 'coins',
-    overridden: false,
-  },
-  {
-    id: 'cosmic01',
-    category: 'avatar',
-    rarity: 'legendary',
-    nameKey: 'items.avatar.cosmic01.name',
-    descKey: 'items.avatar.cosmic01.desc',
-    assetUrl: '/test-cosmic.png',
-    defaultPriceAmount: 50,
-    defaultPriceCurrency: 'gems',
-    available: true,
-    priceAmount: 50,
-    priceCurrency: 'gems',
-    overridden: false,
-  },
-];
+// The shop page fetches catalog / inventory / wallet from a Server
+// Component (`apps/web/src/app/[locale]/shop/page.tsx`), so the request
+// goes Next-server → BE and `page.route` mocks (which only intercept
+// browser fetches) never fire. CI runs a real BE behind the dev server,
+// so these tests rely on the BE's seeded catalog (see
+// `apps/be/src/shop/lib/shop-catalog.ts`) and run unauthenticated —
+// catalog renders, balance defaults to 0/0, sign-in banner shows.
+
+const FOX_AVATAR_ID = 'avatar-fox-01';
 
 test.describe('Shop redesign · Showcase Locker', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.route('**/shop/catalog**', (route) =>
-      handleRoute(route, CATALOG),
-    );
-    await page.route('**/shop/inventory', (route) =>
-      handleRoute(route, {
-        items: [],
-        equipped: {
-          avatar: null,
-          badge: null,
-          name_color: null,
-          game_skin: null,
-        },
-      }),
-    );
-    await page.route('**/wallet/balance', (route) =>
-      handleRoute(route, { coins: 500, gems: 25 }),
-    );
-    await page.route('**/wallet/conversion-rate', (route) =>
-      handleRoute(route, { rate: 100 }),
-    );
-    await page.route('**/payments/gems/packages', (route) =>
-      handleRoute(route, [
-        {
-          id: 'starter',
-          name: 'Starter',
-          gems: 100,
-          bonusGems: 0,
-          priceUsdCents: 199,
-          displayOrder: 1,
-        },
-        {
-          id: 'bundle',
-          name: 'Bundle',
-          gems: 500,
-          bonusGems: 50,
-          priceUsdCents: 999,
-          displayOrder: 2,
-        },
-      ]),
-    );
-  });
-
-  test('renders the top bar, hero, and mannequin rail', async ({ page }) => {
+  test('renders the top bar, rail, hero, and sign-in banner anonymously', async ({
+    page,
+  }) => {
     await navigateTo(page, '/shop');
     await expect(page.getByTestId('shop-top-bar')).toBeVisible();
     await expect(page.getByTestId('shop-rail')).toBeVisible();
     await expect(page.getByTestId('shop-stage')).toBeVisible();
     await expect(page.getByTestId('shop-hero')).toBeVisible();
-    await expect(page.getByTestId('shop-balance-coins')).toContainText('500');
-    await expect(page.getByTestId('shop-balance-gems')).toContainText('25');
+    // Anonymous: no auth, wallet skipped server-side → balance chips
+    // render with the default zero values, sign-in banner visible.
+    await expect(page.getByTestId('shop-balance-coins')).toBeVisible();
+    await expect(page.getByTestId('shop-balance-gems')).toBeVisible();
+    await expect(page.getByTestId('shop-signin-banner')).toBeVisible();
   });
 
-  test('hovering a card switches the mannequin into try-on mode', async ({
+  test('hovering a card switches the panel into preview mode', async ({
     page,
   }) => {
     await navigateTo(page, '/shop');
-    const foxCard = page.getByTestId('shop-card-fox01');
+    const foxCard = page.getByTestId(`shop-card-${FOX_AVATAR_ID}`);
     await expect(foxCard).toBeVisible();
     await foxCard.hover();
     await expect(page.getByTestId('shop-action-panel')).toHaveAttribute(
       'data-mode',
       'preview',
     );
-    await expect(page.getByTestId('shop-action-buy-equip')).toBeVisible();
+    // The Buy & equip / Equip / Unequip button lives on the card itself
+    // (not the rail panel) since the action-on-card refactor.
+    await expect(
+      page.getByTestId(`shop-card-action-${FOX_AVATAR_ID}`),
+    ).toBeVisible();
   });
 
   test('clicking a slot ring tile activates the matching row halo', async ({

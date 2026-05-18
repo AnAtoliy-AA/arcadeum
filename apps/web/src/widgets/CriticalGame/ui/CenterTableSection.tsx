@@ -35,7 +35,7 @@ export function CenterTableSection({
         </CardSlot>
       </CenterTable>
 
-      <CenterTableRow data-testid="center-table-row">
+      <CenterTableRow>
         <YStack alignItems="center" gap="$1">
           <CardSlot $role="deck">
             <DeckDisplay deck={deck} t={t} cardVariant={cardVariant} />

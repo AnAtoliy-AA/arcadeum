@@ -1,4 +1,6 @@
-export const variants = {
+import { extraVariants } from './variants/en-extra';
+
+export const variants: Record<string, Record<string, string>> = {
   cyberpunk: {
     name: 'The Short Circuit',
     description: 'Cyberpunk hackers preventing system overload',
@@ -286,6 +288,11 @@ export const variants = {
     miracle: 'Rescue Chopper',
     smite: 'Thunderclap',
     rapture: 'Blizzard',
+  },
+  ...extraVariants,
+  random: {
+    name: 'Random Theme',
+    description: 'Surprise me with a random theme!',
   },
   default: {
     critical_event: 'Unstable Critical',

@@ -5,10 +5,13 @@ import './globals.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
-import { Header } from '@/widgets/header/ui/Header';
-import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/AnnouncementBanner';
-import { LayoutFooter } from '@/widgets/footer';
 import { JsonLd } from '@/shared/ui/JsonLd';
+
+import BrowserRegistry from './BrowserRegistry';
+import { setupTamagui } from '@/shared/config/tamagui.config';
+import { ThemeName, ThemePreference } from '@/shared/config/theme';
+import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
+import { AppThemeProvider } from '@/app/theme/ThemeContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,22 +31,6 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.png',
     apple: '/icon-192x192.png',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: appConfig.siteUrl,
-    siteName: appConfig.appName,
-    title: appConfig.seoTitle,
-    description: appConfig.seoDescription,
-    images: [
-      {
-        url: '/logo.png',
-        width: 1200,
-        height: 630,
-        alt: appConfig.appName,
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -78,18 +65,6 @@ export const viewport: Viewport = {
   themeColor: '#151718',
 };
 
-import BrowserRegistry from './BrowserRegistry';
-import { setupTamagui } from '@/shared/config/tamagui.config';
-import { ThemeName, ThemePreference } from '@/shared/config/theme';
-import { Locale } from '@/shared/i18n';
-
-// Provider Imports (Hoisted)
-import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import { PWAProvider } from '@/features/pwa/PWAContext';
-import { AppThemeProvider } from '@/app/theme/ThemeContext';
-import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
-import { getServerAccessToken } from '@/entities/session/api/serverTokens';
-
 // Prime Tamagui config as early as possible on the server
 setupTamagui();
 
@@ -104,13 +79,12 @@ export default async function RootLayout({
   const themePreference =
     (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
     'dark';
-  const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
+  const cookieLocale = cookieStore.get('app-language')?.value;
+  const htmlLang = isLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE;
 
-  // Read the auth token once at layout level. Passed into WalletLiveBridge so
-  // the socket only opens when the user is authenticated. No (authed) route
-  // group exists in this project, so the root layout is the single mount point.
-  const authToken = await getServerAccessToken();
-
+  // Organization is locale-agnostic — same legal entity across languages.
+  // WebSite and SoftwareApplication schemas live in [locale]/layout where
+  // they can carry `inLanguage` + localized description.
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -120,39 +94,11 @@ export default async function RootLayout({
       logo: `${appConfig.siteUrl}/logo.png`,
       sameAs: Object.values(appConfig.social).filter(Boolean),
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: appConfig.appName,
-      url: appConfig.siteUrl,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${appConfig.siteUrl}/games?q={search_term_string}`,
-        'query-input': 'required name=search_term_string',
-      },
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: appConfig.appName,
-      operatingSystem: 'Any',
-      applicationCategory: 'GameApplication',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '1240',
-      },
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
-    },
   ];
 
   return (
     <html
-      lang={locale}
+      lang={htmlLang}
       className={`t_${theme}`}
       data-theme={theme}
       data-theme-preference={themePreference}
@@ -162,17 +108,7 @@ export default async function RootLayout({
       </head>
       <body className={fontClassName}>
         <AppThemeProvider initialTheme={theme}>
-          <LanguageProvider initialLocale={locale}>
-            <PWAProvider>
-              <BrowserRegistry>
-                <AnnouncementBanner />
-                <Header />
-                {children}
-                <LayoutFooter />
-                {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
-              </BrowserRegistry>
-            </PWAProvider>
-          </LanguageProvider>
+          <BrowserRegistry>{children}</BrowserRegistry>
         </AppThemeProvider>
       </body>
     </html>

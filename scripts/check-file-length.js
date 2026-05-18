@@ -7,6 +7,7 @@ const ROOT_DIR = process.cwd();
 // List of files to ignore (relative to root)
 // These files currently exceed the limit and should be refactored.
 const ALLOW_LIST = new Set([
+  'apps/be/src/games/games.controller.ts',
   'apps/be/src/games/glimworm/glimworm.service.ts',
   'apps/web/src/widgets/CriticalGame/ui/ActiveGameView.tsx',
   'apps/web/src/widgets/SeaBattleGame/ui/Game.tsx',

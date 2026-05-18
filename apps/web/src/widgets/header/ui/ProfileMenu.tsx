@@ -23,7 +23,7 @@ import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges'
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
-import { routes } from '@/shared/config/routes';
+import { useRoutes } from '@/shared/config/useRoutes';
 import {
   ProfileMenuContainer,
   UserNameEllipsis,
@@ -35,6 +35,7 @@ import {
 export default function ProfileMenu() {
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
+  const routes = useRoutes();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const displayName =
@@ -57,8 +58,8 @@ export default function ProfileMenu() {
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
-    window.location.replace('/');
-  }, [clearTokens]);
+    window.location.replace(routes.home);
+  }, [clearTokens, routes.home]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,7 +170,7 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <DropdownLink
-          href="/settings"
+          href={routes.settings}
           onClick={closeMenu}
           icon={<SettingsIcon size={18} />}
         >

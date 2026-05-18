@@ -11,7 +11,7 @@ interface UseRematchOptions {
   gameOptions?: GameOptions;
 }
 
-interface RematchInvitation {
+export interface RematchInvitation {
   newRoomId: string;
   hostId: string;
   hostName: string;

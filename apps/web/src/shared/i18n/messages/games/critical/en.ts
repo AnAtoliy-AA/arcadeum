@@ -38,36 +38,7 @@ export const enMessages = {
       setup:
         'Each player starts with a Defuse card and a hand of random cards. The deck contains some Unstable cards... beware!',
     },
-    variants: {
-      cyberpunk: {
-        name: 'The Short Circuit',
-        description: 'Cyberpunk hackers preventing system overload',
-      },
-      underwater: {
-        name: 'Deep Sea Pressure',
-        description: 'Underwater horror in a leaking submarine',
-      },
-      crime: {
-        name: 'The Heist',
-        description: 'Crime noir theme with police raids and getaways',
-      },
-      horror: {
-        name: 'The Cursed Banquet',
-        description: 'Social horror theme at a dark sorcerer party',
-      },
-      adventure: {
-        name: 'The Ancient Temple',
-        description: 'Survival adventure in a mysterious temple',
-      },
-      'high-altitude-hike': {
-        name: 'High-Altitude Hike',
-        description: 'Survival adventure escaping an avalanche',
-      },
-      random: {
-        name: 'Random Theme',
-        description: 'Surprise me with a random theme!',
-      },
-    },
+    variants: cardVariants,
   },
 
   table: {

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { type ReactNode } from 'react';
-import { useMedia } from 'tamagui';
+import { useMedia, XStack } from 'tamagui';
 import { TableStats } from './TableStats';
 import {
   GameTable,
@@ -18,6 +20,7 @@ import type {
   CriticalPlayerTableState,
 } from '../types';
 import { TablePlayer } from './TablePlayer';
+import { OpponentTile } from './opponents/OpponentTile';
 
 interface GameTableSectionProps {
   players: CriticalPlayerTableState[];
@@ -32,11 +35,6 @@ interface GameTableSectionProps {
   resolveDisplayName: (playerId: string, fallback: string) => string;
   t: (key: string) => string;
   cardVariant?: string;
-  /**
-   * Optional render override for the center of the table. When provided,
-   * replaces the legacy `CenterTableSection` on both desktop and mobile.
-   * Used by the new `MatchWidget` (widget_mode flag) to inject the Arena.
-   */
   centerSlot?: ReactNode;
 }
 
@@ -58,25 +56,41 @@ export function GameTableSection({
   const media = useMedia();
   const isMobile = media.sm;
   const center = centerSlot ?? (
-    <CenterTableSection
-      discardPile={discardPile}
-      deck={deck}
-      cardVariant={cardVariant}
-      t={t}
-    />
+    <XStack data-testid="center-table-row">
+      <CenterTableSection
+        discardPile={discardPile}
+        deck={deck}
+        cardVariant={cardVariant}
+        t={t}
+      />
+    </XStack>
   );
   const myIndex = playerOrder.findIndex((id) => id === currentUserId);
-  const viewerIndex = myIndex >= 0 ? myIndex : 0; // Default to 0 if spectating
+  const viewerIndex = myIndex >= 0 ? myIndex : 0;
 
-  // On mobile, exclude the viewer from the chip strip — their stats live in
-  // the hand zone. On desktop, render every seat around the table circle.
+  // On mobile, use the dedicated OpponentTile component in the strip.
+  // On desktop, continue using the TablePlayer positioned in the ring.
   const visibleOrder = isMobile
     ? playerOrder.filter((id) => id !== currentUserId)
     : playerOrder;
 
+  const currentTurnPlayerId = playerOrder[currentTurnIndex] ?? null;
+
   const playerNodes = visibleOrder.map((playerId) => {
     const player = players.find((p) => p.playerId === playerId);
     if (!player) return null;
+
+    if (isMobile) {
+      return (
+        <OpponentTile
+          key={playerId}
+          player={player}
+          isCurrentTurn={playerId === currentTurnPlayerId}
+          resolveDisplayName={resolveDisplayName}
+          logs={logs}
+        />
+      );
+    }
 
     const fullIndex = playerOrder.indexOf(playerId);
     const relativeIndex =

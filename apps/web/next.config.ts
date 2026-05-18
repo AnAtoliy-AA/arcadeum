@@ -173,11 +173,12 @@ const nextConfig: NextConfig = {
       },
       ...[
         '/',
-        '/games/:path*',
-        '/chats/:path*',
-        '/history/:path*',
-        '/stats/:path*',
-        '/settings/:path*',
+        '/:locale',
+        '/:locale/games/:path*',
+        '/:locale/chats/:path*',
+        '/:locale/history/:path*',
+        '/:locale/stats/:path*',
+        '/:locale/settings/:path*',
       ].map((source) => ({
         source,
         headers: [
@@ -241,8 +242,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/home',
-        destination: '/',
+        source: '/:locale/home',
+        destination: '/:locale',
         permanent: true,
       },
     ];

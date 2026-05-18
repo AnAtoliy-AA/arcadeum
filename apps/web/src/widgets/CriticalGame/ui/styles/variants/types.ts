@@ -124,6 +124,7 @@ export interface VariantScenePalette {
   particleColors: string[];
   ambientGlowColorA: string;
   ambientGlowColorB: string;
+  sceneBackgroundImage?: string;
 
   // Turn banner
   turnBannerBorderGradient: string;

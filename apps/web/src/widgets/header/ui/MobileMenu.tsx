@@ -6,7 +6,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
-import { routes } from '@/shared/config/routes';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { appConfig } from '@/shared/config/app-config';
 import {
   MobileBottomBar,
@@ -49,20 +49,26 @@ interface MobileMenuProps {
 
 type IconComponent = ComponentType<{ size?: number }>;
 
-const NAV_ICON_BY_HREF: Record<string, IconComponent> = {
-  [routes.games]: CardsIcon,
-  [routes.shop]: GiftIcon,
-  [routes.chats]: MailIcon,
-  [routes.history]: FileTextIcon,
-  [routes.stats]: BarChartIcon,
-  [routes.settings]: SettingsIcon,
+const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
+  games: CardsIcon,
+  shop: GiftIcon,
+  chats: MailIcon,
+  history: FileTextIcon,
+  stats: BarChartIcon,
+  settings: SettingsIcon,
 };
+
+function iconForHref(href: string): IconComponent | undefined {
+  const last = href.split('/').filter(Boolean).pop();
+  return last ? NAV_ICON_BY_SLUG[last] : undefined;
+}
 
 export default function MobileMenu({ navItems }: MobileMenuProps) {
   const pathname = usePathname();
   // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
+  const routes = useRoutes();
   const mounted = useIsMounted();
   const { isAuthenticated, displayName } = useHeaderAuth();
   const role = snapshot.role || 'free';
@@ -71,8 +77,8 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
-    window.location.replace('/');
-  }, [clearTokens]);
+    window.location.replace(routes.home);
+  }, [clearTokens, routes.home]);
 
   const accountItems = useMemo(() => {
     if (!isAuthenticated) return [];
@@ -98,7 +104,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
       });
     }
     return items;
-  }, [isAuthenticated, role, t]);
+  }, [isAuthenticated, role, t, routes]);
 
   if (!mounted) return null;
 
@@ -125,7 +131,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         </MobileUserCard>
       ) : (
         <LinkButton
-          href="/auth"
+          href={routes.auth}
           variant="primary"
           size="md"
           fullWidth
@@ -143,12 +149,12 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         </MobileSectionLabel>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-          const Icon = NAV_ICON_BY_HREF[item.href];
+          const Icon = iconForHref(item.href);
           return (
             <NavMobileLink
               key={item.href}
               href={item.href}
-              data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+              data-testid={`mobile-nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
               variant="ghost"
               size="md"
               isActive={isActive}

@@ -34,7 +34,7 @@ const SeaBattleCreationConfig = dynamic(
 );
 import { GameCreationConfigProps } from '@/features/games/types';
 
-import { routes } from '@/shared/config/routes';
+import { useRoutes } from '@/shared/config/useRoutes';
 
 import {
   FormContainer,
@@ -66,6 +66,7 @@ const GAME_CONFIGS: Record<
 export default function CreateGameRoomPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const routes = useRoutes();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
@@ -157,7 +158,7 @@ export default function CreateGameRoomPage() {
         scroll: false,
       });
     },
-    [router, searchParams],
+    [router, searchParams, routes.games],
   );
 
   const handleGameChange = useCallback(

@@ -15,7 +15,12 @@ import {
   type UserRole,
   type VisibilityTier,
 } from '../../auth/lib/roles';
-import { getCatalogEntry, hasVariant } from '../../games/games.catalog';
+import {
+  GAME_CATALOG,
+  getCatalogEntry,
+  hasVariant,
+} from '../../games/games.catalog';
+import type { AdminGameVisibilityRow } from './game-visibility.types';
 
 const TIER_RANK: Record<VisibilityTier, number> = {
   all: 0,
@@ -103,6 +108,18 @@ export class GameVisibilityService {
       )
       .lean();
     this.invalidateCache();
+  }
+
+  async listForAdmin(): Promise<AdminGameVisibilityRow[]> {
+    const map = await this.getMap();
+    return GAME_CATALOG.map((g) => ({
+      gameId: g.gameId,
+      tier: map.get(g.gameId) ?? 'all',
+      variants: g.variants.map((variantId) => ({
+        variantId,
+        tier: map.get(variantKey(g.gameId, variantId)) ?? 'all',
+      })),
+    }));
   }
 
   async setVariantTier(

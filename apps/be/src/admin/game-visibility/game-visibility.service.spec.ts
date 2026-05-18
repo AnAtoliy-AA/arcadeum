@@ -160,3 +160,35 @@ describe('GameVisibilityService (write paths)', () => {
     ).rejects.toThrow(/unknown variant/i);
   });
 });
+
+it('listForAdmin returns the full catalog joined with tiers (defaults to all)', async () => {
+  const model = {
+    find: jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue([
+        { gameId: 'glimworm_v1', variantId: null, tier: 'premium_plus' },
+        { gameId: 'glimworm_v1', variantId: 'time_attack', tier: 'vip_plus' },
+      ]),
+    }),
+    findOneAndUpdate: jest.fn(),
+  };
+  const moduleRef = await Test.createTestingModule({
+    providers: [
+      GameVisibilityService,
+      { provide: getModelToken(GameVisibility.name), useValue: model },
+    ],
+  }).compile();
+  const svc = moduleRef.get(GameVisibilityService);
+  const rows = await svc.listForAdmin();
+  const glim = rows.find((r) => r.gameId === 'glimworm_v1');
+  expect(glim?.tier).toBe('premium_plus');
+  expect(glim?.variants).toEqual(
+    expect.arrayContaining([
+      { variantId: 'battle_royale', tier: 'all' },
+      { variantId: 'time_attack', tier: 'vip_plus' },
+      { variantId: 'lives_heats', tier: 'all' },
+    ]),
+  );
+  const critical = rows.find((r) => r.gameId === 'critical_v1');
+  expect(critical?.tier).toBe('all');
+  expect(critical?.variants).toEqual([]);
+});

@@ -193,6 +193,7 @@ export function ShopPageView({
               labels={labels.row.avatars}
               cardLabels={labels.card}
               balance={balance}
+              priorityCount={3}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow

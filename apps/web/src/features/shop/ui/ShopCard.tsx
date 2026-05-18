@@ -38,6 +38,12 @@ export interface ShopCardProps {
   equipped: boolean;
   balance: WalletBalanceView;
   small?: boolean;
+  /**
+   * Mark this card's image as eager-loaded — set true for the first few cards
+   * of the first catalog row so an above-the-fold card asset never becomes
+   * the LCP target with `loading="lazy"`.
+   */
+  priority?: boolean;
   labels: ShopCardLabels;
   /**
    * Used when Buy & equip can't run inline — insufficient funds, or the BE
@@ -162,6 +168,7 @@ export function ShopCard({
   equipped,
   balance,
   small,
+  priority = false,
   labels,
   onPurchaseFallback,
 }: ShopCardProps) {
@@ -299,7 +306,7 @@ export function ShopCard({
           backgroundImage: `radial-gradient(120% 80% at 50% 0%, ${glow}, transparent 70%)`,
         }}
       >
-        <ItemAsset item={item} size={small ? 64 : 96} />
+        <ItemAsset item={item} size={small ? 64 : 96} priority={priority} />
 
         <XStack
           position="absolute"

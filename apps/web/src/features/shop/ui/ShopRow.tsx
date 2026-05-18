@@ -28,6 +28,13 @@ export interface ShopRowProps {
   balance: WalletBalanceView;
   small?: boolean;
   highlight?: boolean;
+  /**
+   * Eager-load the first N card images in this row. Set on the first
+   * catalog row only — its leading cards sit just below the hero and can
+   * become LCP on tall viewports; lazy loading them triggers a Next/Image
+   * "loading=eager" warning.
+   */
+  priorityCount?: number;
   labels: ShopRowLabels;
   cardLabels: ShopCardLabels;
   onPurchaseFallback: (item: EffectiveShopItem) => void;
@@ -78,6 +85,7 @@ export function ShopRow({
   balance,
   small,
   highlight,
+  priorityCount = 0,
   labels,
   cardLabels,
   onPurchaseFallback,
@@ -138,7 +146,7 @@ export function ShopRow({
         </XStack>
 
         <Scroller>
-          {items.map((item) => (
+          {items.map((item, index) => (
             <ShopCard
               key={item.id}
               item={item}
@@ -146,6 +154,7 @@ export function ShopRow({
               equipped={equipped[item.category] === item.id}
               balance={balance}
               small={small}
+              priority={index < priorityCount}
               labels={cardLabels}
               onPurchaseFallback={onPurchaseFallback}
             />

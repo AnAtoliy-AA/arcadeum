@@ -84,6 +84,14 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
+    const role = await this.roleResolver.resolveRole(user.userId);
+    const variantOpt =
+      dto.gameOptions && typeof dto.gameOptions === 'object'
+        ? dto.gameOptions.variant
+        : undefined;
+    const variant = typeof variantOpt === 'string' ? variantOpt : undefined;
+    await this.visibility.assertVisible(role, dto.gameId, variant);
+
     const room = await this.gamesService.createRoom(user.userId, dto);
     return { room };
   }
@@ -95,6 +103,8 @@ export class GamesController {
     if (!user) {
       throw new BadRequestException('Missing user context');
     }
+    const role = await this.roleResolver.resolveRole(user.userId);
+    await this.visibility.assertVisible(role, dto.gameId, dto.variant);
     const room =
       dto.mode === 'human'
         ? await this.gamesService.findHumanMatch(

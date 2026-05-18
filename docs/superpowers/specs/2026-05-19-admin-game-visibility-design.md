@@ -90,6 +90,8 @@ class GameVisibility {
 
 **Why:** Intuitive admin model — hiding the parent hides the children; variant rule only kicks in when stricter than the game rule.
 
+**Edge case:** If a variant row exists but the parent game row does not, the parent defaults to `all` (per D3), so the variant rule takes effect on its own. `max(all, vip_plus) = vip_plus`.
+
 ### D7 — Enforcement: filter on read, assert on write
 
 **Decision:** Three enforcement points:
@@ -180,6 +182,10 @@ export function canSeeAtTier(role: UserRole, tier: VisibilityTier): boolean {
 
 Anonymous callers are treated as `free` at the call site (controller resolves `req.user?.role ?? 'free'`).
 
+### Where `VisibilityTier` lives for the web
+
+The web admin page also needs the `VisibilityTier` literal union (for the dropdown, for typed API payloads). Since the BE is not a publishable shared package, the web duplicates the literal union and the array (`['all', 'premium_plus', 'vip_plus']`) in `apps/web/src/features/admin-games/types.ts`. The values are wire-format strings — no behavior change risk on drift, and we keep web build independent of BE source. Same convention used by other admin-\* features today.
+
 ### Registry shim on BE
 
 The BE today doesn't import the web's registry. We add a thin `apps/be/src/games/games.catalog.ts` that exports the same `(gameId, variantId[])` pairs the web uses, hard-coded. This is the canonical list the catalog endpoint iterates and the admin page renders. Game-name display strings stay on the web via i18n.
@@ -260,6 +266,10 @@ Tier labels in i18n: `all` → "All players", `premium_plus` → "Premium+", `vi
 - Wherever the lobby/picker currently consumes `gameMetadata` from `registry.ts` directly, switch to `GET /games/catalog`. Server components fetch on the server and pass results down; client components use the existing api client.
 - Glimworm's variant picker filters its `['battle_royale', 'time_attack', 'lives_heats']` list against the catalog response's variants for `glimworm_v1`.
 - Game name/description/thumbnail still come from the in-code registry — the catalog only narrows the list of `(gameId, variantId)` pairs. The web does a hash lookup against `gameMetadata` for display.
+
+**Call-site audit:** before switching to the catalog, the plan must enumerate every current consumer of `gameMetadata`, `gameLoaders`, and direct `GameSlug`-driven lists across `apps/web/src/features/games/`, `apps/web/src/widgets/`, the lobby pages, and any homepage card grid. Each becomes either (a) a catalog consumer that filters before display, or (b) untouched if it only renders by `gameId` after the catalog already filtered. The plan should list these explicitly so nothing is missed.
+
+**Note on `assertVisible` vs `filterVisible`:** room/session create paths use `assertVisible` (single-item, throws). The `listRooms` filter uses `filterVisible` (multi-item, prunes silently). They are not interchangeable — confusing one for the other in `listRooms` would surface 403s to free users who only browsed the lobby.
 
 ## Data flow
 

@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
@@ -24,16 +25,21 @@ export async function generateMetadata({
 }
 
 interface PageProps {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function Statistics({ searchParams }: PageProps) {
+export default async function Statistics({ params, searchParams }: PageProps) {
+  const { locale } = await params;
   const resolvedSearchParams = await searchParams;
 
   return (
-    <Suspense fallback={<StatsLoading />}>
-      <StatsDataFetcher searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageBreadcrumb locale={locale} page="stats" />
+      <Suspense fallback={<StatsLoading />}>
+        <StatsDataFetcher searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }
 

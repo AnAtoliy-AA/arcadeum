@@ -1,5 +1,6 @@
 import { paymentApi } from '@/features/payment/api';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import type { Metadata } from 'next';
@@ -35,6 +36,16 @@ async function NotesDataFetcher() {
   );
 }
 
-export default function Page() {
-  return <NotesDataFetcher />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return (
+    <>
+      <PageBreadcrumb locale={locale} page="notes" />
+      <NotesDataFetcher />
+    </>
+  );
 }

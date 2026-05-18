@@ -119,12 +119,20 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         $sm={{ display: 'none' }}
         data-testid="shop-top-bar-nav"
       >
-        <NavLink color="$white">{labels.nav.shop}</NavLink>
+        <Link href="/shop" style={{ textDecoration: 'none' }}>
+          <NavLink color="$white">{labels.nav.shop}</NavLink>
+        </Link>
         <Link href="#shop-featured" style={{ textDecoration: 'none' }}>
           <NavLink>{labels.nav.featured}</NavLink>
         </Link>
-        <NavLink>{labels.nav.inventory}</NavLink>
-        <NavLink>{labels.nav.wallet}</NavLink>
+        {/* Inventory was folded into the mannequin rail — the link
+            scroll-jumps to the rail rather than opening a separate page. */}
+        <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
+          <NavLink>{labels.nav.inventory}</NavLink>
+        </Link>
+        <Link href="/wallet" style={{ textDecoration: 'none' }}>
+          <NavLink>{labels.nav.wallet}</NavLink>
+        </Link>
       </XStack>
 
       <XStack gap="$2" alignItems="center">

@@ -9,6 +9,12 @@ import type { EffectiveShopItem } from '../server/shop.types';
 export interface ItemAssetProps {
   item: EffectiveShopItem;
   size: number;
+  /**
+   * Set on the hero / mannequin stage where the asset is above the fold —
+   * forwards to next/image's `priority`, which sets `loading="eager"` and
+   * pre-warms LCP. Default `false` so the catalog cards stay lazy.
+   */
+  priority?: boolean;
 }
 
 // Every non-name_color catalog entry ships with an `assetUrl` today (audited
@@ -17,7 +23,7 @@ export interface ItemAssetProps {
 // should see an empty tile in QA and fix the seed data rather than ship a
 // placeholder that looks intentional.
 
-export function ItemAsset({ item, size }: ItemAssetProps) {
+export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
   if (item.category === 'name_color') {
     const props = nameColorRenderProps(item.colorValue ?? null);
     return (
@@ -55,6 +61,7 @@ export function ItemAsset({ item, size }: ItemAssetProps) {
         width={size}
         height={size}
         style={{ objectFit: 'contain' }}
+        priority={priority}
         unoptimized
       />
     </YStack>

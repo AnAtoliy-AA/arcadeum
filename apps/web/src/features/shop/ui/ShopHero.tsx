@@ -124,7 +124,7 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
             borderColor={`${accent}66`}
             style={{ boxShadow: `0 0 48px ${glow}` }}
           >
-            <ItemAsset item={item} size={108} />
+            <ItemAsset item={item} size={108} priority />
           </Stack>
 
           <YStack flex={1} gap="$3" minWidth={0}>

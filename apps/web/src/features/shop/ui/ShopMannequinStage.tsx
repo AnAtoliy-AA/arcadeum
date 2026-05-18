@@ -194,7 +194,7 @@ export function ShopMannequinStage({
           data-testid="shop-stage-avatar"
         >
           {avatar ? (
-            <ItemAsset item={avatar} size={108} />
+            <ItemAsset item={avatar} size={108} priority />
           ) : (
             <Text fontSize={64} color="$gray10">
               ◉
@@ -216,7 +216,7 @@ export function ShopMannequinStage({
               borderColor="rgba(255,255,255,0.20)"
               data-testid="shop-stage-badge"
             >
-              <ItemAsset item={badge} size={28} />
+              <ItemAsset item={badge} size={28} priority />
             </Stack>
           ) : null}
         </Stack>

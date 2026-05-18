@@ -4,6 +4,36 @@ import withPWAInit from '@ducanh2912/next-pwa';
 import { withTamagui } from '@tamagui/next-plugin';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import packageJson from './package.json';
+import {
+  LOCALE_SLUGS,
+  EN_SLUGS,
+  SUPPORTED_LOCALES,
+} from './src/shared/config/locale-slugs';
+
+// Build rewrite rules that map localized URLs (`/fr/jeux/...`) to the
+// English filesystem directories Next.js actually serves
+// (`/fr/games/...`). One pair per (locale, slug) where the localized
+// slug differs from the canonical English one.
+function buildLocaleRewrites() {
+  const rules: Array<{ source: string; destination: string }> = [];
+  for (const locale of SUPPORTED_LOCALES) {
+    if (locale === 'en') continue;
+    const map = LOCALE_SLUGS[locale];
+    for (const [key, englishSlug] of Object.entries(EN_SLUGS)) {
+      const localizedSlug = map[key as keyof typeof EN_SLUGS];
+      if (localizedSlug === englishSlug) continue;
+      rules.push({
+        source: `/${locale}/${localizedSlug}/:path*`,
+        destination: `/${locale}/${englishSlug}/:path*`,
+      });
+      rules.push({
+        source: `/${locale}/${localizedSlug}`,
+        destination: `/${locale}/${englishSlug}`,
+      });
+    }
+  }
+  return rules;
+}
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -171,25 +201,32 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      ...[
-        '/',
-        '/:locale',
-        '/:locale/games/:path*',
-        '/:locale/chats/:path*',
-        '/:locale/history/:path*',
-        '/:locale/stats/:path*',
-        '/:locale/settings/:path*',
-      ].map((source) => ({
-        source,
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: isDev
-              ? 'no-cache, no-store, must-revalidate'
-              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
-          },
-        ],
-      })),
+      // Cache-Control on dynamic top-level pages. Expand the
+      // `games|chats|history|stats|settings` set across every locale's
+      // canonical slug so /fr/jeux, /es/juegos, etc. inherit the same
+      // SWR policy as their English equivalents.
+      ...(() => {
+        const slugKeys = ['games', 'chats', 'history', 'stats', 'settings'] as const;
+        const sources = ['/', '/:locale'];
+        for (const locale of SUPPORTED_LOCALES) {
+          for (const key of slugKeys) {
+            const slug = LOCALE_SLUGS[locale][key];
+            sources.push(`/${locale}/${slug}/:path*`);
+            sources.push(`/${locale}/${slug}`);
+          }
+        }
+        return sources.map((source) => ({
+          source,
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: isDev
+                ? 'no-cache, no-store, must-revalidate'
+                : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
+            },
+          ],
+        }));
+      })(),
     ];
   },
   env: {
@@ -247,6 +284,15 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
+  },
+  async rewrites() {
+    return {
+      // Run BEFORE Next.js route matching so /fr/jeux is served by the
+      // /fr/games filesystem directory.
+      beforeFiles: buildLocaleRewrites(),
+      afterFiles: [],
+      fallback: [],
+    };
   },
   images: {
     formats: ['image/avif', 'image/webp'],

@@ -1,6 +1,7 @@
 import type { DeepPartial } from '../base-types';
 
 export const en = {
+  homeTab: 'Home',
   chatsTab: 'Chats',
   gamesTab: 'Games',
   historyTab: 'History',
@@ -15,6 +16,7 @@ export const en = {
 };
 
 export const es = {
+  homeTab: 'Inicio',
   chatsTab: 'Chats',
   gamesTab: 'Juegos',
   historyTab: 'Historial',
@@ -29,6 +31,7 @@ export const es = {
 };
 
 export const fr = {
+  homeTab: 'Accueil',
   chatsTab: 'Discussions',
   gamesTab: 'Jeux',
   historyTab: 'Historique',
@@ -43,6 +46,7 @@ export const fr = {
 };
 
 export const ru = {
+  homeTab: 'Главная',
   chatsTab: 'Чаты',
   gamesTab: 'Игры',
   historyTab: 'История',
@@ -57,6 +61,7 @@ export const ru = {
 };
 
 export const by = {
+  homeTab: 'Галоўная',
   chatsTab: 'Чаты',
   gamesTab: 'Гульні',
   historyTab: 'Гісторыя',

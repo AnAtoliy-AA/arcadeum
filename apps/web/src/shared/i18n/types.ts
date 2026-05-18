@@ -1,11 +1,17 @@
 import type { DeepPartial } from './base-types';
 
-export const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'ru', 'by'] as const;
+// Single source of truth lives in `@/shared/config/locale-slugs` — it
+// has no i18n dependencies, so it's safe to import from app-config and
+// routes without creating a cycle. Re-exported here so existing
+// `@/shared/i18n` imports keep working.
+export {
+  SUPPORTED_LOCALES,
+  DEFAULT_LOCALE,
+  type Locale,
+} from '@/shared/config/locale-slugs';
+import type { Locale } from '@/shared/config/locale-slugs';
 
-export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export type LanguagePreference = Locale;
-
-export const DEFAULT_LOCALE: Locale = 'en';
 
 export type { DeepPartial };
 

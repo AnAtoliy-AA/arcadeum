@@ -1,80 +1,82 @@
-// Note: this module is imported by `app-config.ts`. To avoid a circular
-// import with the i18n message bundles (which depend on `app-config`),
-// the locale type is defined locally rather than imported from
-// `@/shared/i18n`. Keep in sync with `src/shared/i18n/types.ts`.
-type Locale = 'en' | 'es' | 'fr' | 'ru' | 'by';
-const DEFAULT_LOCALE: Locale = 'en';
+import { DEFAULT_LOCALE, slugFor, type Locale } from './locale-slugs';
 
 /**
- * Locale-aware route builder. Every URL in the app carries the locale prefix
- * (e.g. `/en/games`, `/fr/settings`). Use `useRoutes()` in client components
- * and `buildRoutes(locale)` in server components / metadata.
+ * Locale-aware route builder. Every URL carries the locale prefix and a
+ * locale-specific top-level slug (e.g. `/en/games`, `/fr/jeux`,
+ * `/es/juegos`). Use `useRoutes()` in client components and
+ * `buildRoutes(locale)` in server components / metadata.
  */
-export const buildRoutes = (locale: Locale) => ({
-  // Main pages
-  home: `/${locale}`,
-  auth: `/${locale}/auth`,
-  authCallback: `/${locale}/auth/callback`,
+export const buildRoutes = (locale: Locale) => {
+  const s = (key: Parameters<typeof slugFor>[1]) => slugFor(locale, key);
 
-  // Games
-  games: `/${locale}/games`,
-  gameDetail: (id: string) => `/${locale}/games/${id}`,
-  gameCreate: `/${locale}/games/create`,
-  gameRoom: (id: string) => `/${locale}/games/rooms/${id}`,
-  seaBattleLanding: `/${locale}/games/sea-battle`,
+  return {
+    // Main pages
+    home: `/${locale}`,
+    auth: `/${locale}/${s('auth')}`,
+    authCallback: `/${locale}/${s('auth')}/callback`,
 
-  // Chat
-  chats: `/${locale}/chats`,
-  chat: `/${locale}/chat`,
-  chatDetail: (id: string) => `/${locale}/chat/${id}`,
+    // Games (top-level segment is translated; nested segments stay in
+    // English to keep the diff scoped to the SEO-relevant keyword).
+    games: `/${locale}/${s('games')}`,
+    gameDetail: (id: string) => `/${locale}/${s('games')}/${id}`,
+    gameCreate: `/${locale}/${s('games')}/create`,
+    gameRoom: (id: string) => `/${locale}/${s('games')}/rooms/${id}`,
+    seaBattleLanding: `/${locale}/${s('games')}/sea-battle`,
 
-  // User
-  settings: `/${locale}/settings`,
-  history: `/${locale}/history`,
-  stats: `/${locale}/stats`,
-  referrals: `/${locale}/referrals`,
+    // Chat
+    chats: `/${locale}/${s('chats')}`,
+    chat: `/${locale}/${s('chat')}`,
+    chatDetail: (id: string) => `/${locale}/${s('chat')}/${id}`,
 
-  // Admin
-  admin: `/${locale}/admin`,
-  adminUsers: `/${locale}/admin/users`,
+    // User
+    settings: `/${locale}/${s('settings')}`,
+    history: `/${locale}/${s('history')}`,
+    stats: `/${locale}/${s('stats')}`,
+    referrals: `/${locale}/${s('referrals')}`,
 
-  // Support & Payments
-  support: `/${locale}/support`,
-  payment: `/${locale}/payment`,
-  paymentSuccess: `/${locale}/payment/success`,
-  paymentCancel: `/${locale}/payment/cancel`,
-  notes: `/${locale}/notes`,
+    // Admin
+    admin: `/${locale}/${s('admin')}`,
+    adminUsers: `/${locale}/${s('admin')}/users`,
 
-  // Legal
-  terms: `/${locale}/terms`,
-  privacy: `/${locale}/privacy`,
-  contact: `/${locale}/contact`,
-  cookies: `/${locale}/cookies`,
-  help: `/${locale}/help`,
+    // Support & Payments
+    support: `/${locale}/${s('support')}`,
+    payment: `/${locale}/${s('payment')}`,
+    paymentSuccess: `/${locale}/${s('payment')}/success`,
+    paymentCancel: `/${locale}/${s('payment')}/cancel`,
+    notes: `/${locale}/${s('notes')}`,
 
-  // Community & Content
-  blog: `/${locale}/blog`,
-  community: `/${locale}/community`,
-  rewards: `/${locale}/rewards`,
-  tournaments: `/${locale}/tournaments`,
-  wallet: `/${locale}/wallet`,
-  shop: `/${locale}/shop`,
-  leaderboards: `/${locale}/leaderboards`,
-  developers: `/${locale}/developers`,
+    // Legal
+    terms: `/${locale}/${s('terms')}`,
+    privacy: `/${locale}/${s('privacy')}`,
+    contact: `/${locale}/${s('contact')}`,
+    cookies: `/${locale}/${s('cookies')}`,
+    help: `/${locale}/${s('help')}`,
 
-  // System (locale-free)
-  offline: '/offline',
-  testCrash: `/${locale}/test-crash`,
-});
+    // Community & Content
+    blog: `/${locale}/${s('blog')}`,
+    community: `/${locale}/${s('community')}`,
+    rewards: `/${locale}/${s('rewards')}`,
+    tournaments: `/${locale}/${s('tournaments')}`,
+    wallet: `/${locale}/${s('wallet')}`,
+    shop: `/${locale}/${s('shop')}`,
+    leaderboards: `/${locale}/${s('leaderboards')}`,
+    developers: `/${locale}/${s('developers')}`,
+
+    // System (locale-free)
+    offline: '/offline',
+    testCrash: `/${locale}/test-crash`,
+  };
+};
 
 export type Routes = ReturnType<typeof buildRoutes>;
 
 /**
- * Default-locale routes — used in static contexts where we cannot read
- * the active locale (sitemap, e2e seed data, server modules without
- * params). Middleware will redirect client-side navigation that lands
- * on these to the user's preferred locale.
+ * Default-locale (English) routes — used in static contexts where we
+ * cannot read the active locale (sitemap fallbacks, e2e seed data,
+ * server modules without params). Middleware redirects client-side
+ * navigation that lands on these to the user's preferred locale.
  */
 export const routes: Routes = buildRoutes(DEFAULT_LOCALE);
 
 export type RoutePath = string;
+export type { Locale };

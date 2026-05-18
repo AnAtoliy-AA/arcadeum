@@ -1,12 +1,20 @@
 import { paymentApi } from '@/features/payment/api';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import type { Metadata } from 'next';
 import NotesClient from './NotesClient';
 
-export const metadata: Metadata = {
-  title: 'Patch Notes',
-  description: 'Latest changes and updates to the platform.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'notes' })
+    : {};
+}
 
 export const dynamic = 'force-dynamic';
 

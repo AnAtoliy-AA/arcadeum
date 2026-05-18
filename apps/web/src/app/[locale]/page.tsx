@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import HomePage from './home/HomePage';
 import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 import type { Metadata } from 'next';
-import { buildRoutes } from '@/shared/config/routes';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { isLocale } from '@/shared/i18n';
 
 export async function generateMetadata({
@@ -11,12 +11,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  if (!isLocale(locale)) return {};
-  return {
-    alternates: {
-      canonical: buildRoutes(locale).home,
-    },
-  };
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'home' }) : {};
 }
 
 export default function HomeRoute() {

@@ -1,4 +1,7 @@
 import { Suspense } from 'react';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
+import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import {
   historyApi,
@@ -9,10 +12,16 @@ import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import StatsClient from './StatsClient';
 import StatsLoading from './loading';
 
-export const metadata = {
-  title: 'Player Statistics - Arcadeum',
-  description: 'View your game performance and statistics',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'stats' })
+    : {};
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

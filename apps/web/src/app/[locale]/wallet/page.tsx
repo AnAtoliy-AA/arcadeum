@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
-import { getTranslations } from '@/shared/i18n/server';
 import {
   WalletUnauthorizedError,
   getWalletBalance,
@@ -17,19 +16,21 @@ import { GemStore } from '@/features/gems/ui/GemStore';
 import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import { getConversionRate } from '@/features/gems/server/gems.server';
 import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
 
-export async function generateMetadata(): Promise<Metadata> {
-  const messages = await getTranslations();
-  const t = messages.pages?.wallet;
-  return {
-    title: t?.meta?.title ?? 'Wallet · Arcadeum',
-    description:
-      t?.meta?.description ?? 'View your coins, gems, and transaction history.',
-    alternates: { canonical: '/wallet' },
-  };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'wallet' })
+    : {};
 }
 
 interface SearchParams {

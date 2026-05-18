@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import ReferralsClient from './ReferralsClient';
 
-export const metadata: Metadata = {
-  title: 'Invite Friends | Earn Rewards',
-  description:
-    'Invite friends and earn cosmetic badges, early access to upcoming game decks like The Heist and The Cursed Banquet.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'referrals' })
+    : {};
+}
 
 export default function ReferralsPage() {
   return <ReferralsClient />;

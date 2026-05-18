@@ -2,23 +2,27 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
-import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  return {
-    title: `Game Room | ${appConfig.appName}`,
-    description: `Join game room ${resolvedParams.id} on ${appConfig.appName}.`,
-  };
+  const { locale, id } = await params;
+  if (!isLocale(locale)) return {};
+  return buildPageMetadata({
+    locale,
+    page: 'gameRoom',
+    pathFor: (r) => r.gameRoom(id),
+  });
 }
 
 export default async function GameRoomRoute({ params }: PageProps) {

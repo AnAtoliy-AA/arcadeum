@@ -1,4 +1,6 @@
 import { Suspense } from 'react';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { historyApi } from '@/features/history/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
@@ -8,10 +10,16 @@ import HistoryClient from './HistoryClient';
 import HistoryLoading from './loading';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Game History',
-  description: 'Review your past games and results.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'history' })
+    : {};
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -1,4 +1,6 @@
-import { appConfig } from '@/shared/config/app-config';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
+import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import ContactView from './ContactView';
 
@@ -7,9 +9,16 @@ const SUPPORT_EMAIL =
 const WORKING_HOURS =
   process.env.NEXT_PUBLIC_WORKING_HOURS ?? 'Mon – Fri, 10:00 – 18:00 (GMT+4)';
 
-export const metadata = {
-  title: `Contact Us - ${appConfig.appName}`,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'contact' })
+    : {};
+}
 
 export default async function ContactPage() {
   const messages = await getTranslations();

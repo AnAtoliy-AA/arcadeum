@@ -1,4 +1,6 @@
-import { appConfig } from '@/shared/config/app-config';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
+import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import TermsClient from './TermsClient';
 
@@ -12,9 +14,16 @@ const WORKING_HOURS =
   process.env.NEXT_PUBLIC_WORKING_HOURS ??
   'Monday – Friday, 10:00 – 18:00 (GMT+4)';
 
-export const metadata = {
-  title: `Terms of Service - ${appConfig.appName}`,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'terms' })
+    : {};
+}
 
 export default async function TermsPage() {
   const messages = await getTranslations();

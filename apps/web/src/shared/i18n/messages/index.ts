@@ -14,6 +14,7 @@ import { en as paymentsEn } from './payments';
 import { en as pwaEn } from './pwa';
 import { en as settingsEn } from './settings';
 import { en as referralsEn } from './referrals';
+import { en as seoEn } from './seo';
 import { en as statsEn } from './stats';
 import { en as supportEn } from './support';
 
@@ -39,6 +40,7 @@ export const translations = {
     stats: statsEn,
     pwa: pwaEn,
     referrals: referralsEn,
+    seo: seoEn,
   },
 } as const;
 
@@ -67,6 +69,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     pwa,
     settings,
     referrals,
+    seo,
     stats,
     support,
   ] = await Promise.all([
@@ -83,6 +86,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./pwa'),
     import('./settings'),
     import('./referrals'),
+    import('./seo'),
     import('./stats'),
     import('./support'),
   ]);
@@ -105,5 +109,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     stats: stats[locale],
     pwa: pwa[locale],
     referrals: referrals[locale],
+    seo: seo[locale],
   };
 }

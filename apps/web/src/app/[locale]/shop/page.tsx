@@ -6,22 +6,21 @@ import { getConversionRate } from '@/features/gems/server/gems.server';
 import { getCatalog, getInventory } from '@/features/shop/server/shop.server';
 import { ShopPageView } from '@/features/shop/ui/ShopPageView';
 import { shopEn } from '@/shared/i18n/messages/pages/shop/en';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import {
   EMPTY_INVENTORY,
   type InventoryView,
   type WalletBalanceView,
 } from '@/features/shop/server/shop.types';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const messages = await getTranslations();
-  const t = messages.pages?.shop;
-  return {
-    title: t?.meta?.title ?? 'Shop · Arcadeum',
-    description:
-      t?.meta?.description ??
-      'Spend your coins and gems on avatars, badges, and more.',
-    alternates: { canonical: '/shop' },
-  };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'shop' }) : {};
 }
 
 const EMPTY_BALANCE: WalletBalanceView = { coins: 0, gems: 0 };

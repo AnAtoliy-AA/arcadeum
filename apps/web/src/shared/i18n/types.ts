@@ -24,6 +24,7 @@ import type { PagesMessages } from './messages/pages';
 import type { StatsMessages } from './messages/stats';
 import type { PwaMessages } from './messages/pwa';
 import type { ReferralsMessages } from './messages/referrals';
+import type { SeoMessages } from './messages/seo';
 
 // Re-export them
 export type {
@@ -42,6 +43,7 @@ export type {
   StatsMessages,
   PwaMessages,
   ReferralsMessages,
+  SeoMessages,
 };
 
 // Export legal types for easier access
@@ -98,5 +100,6 @@ export type TranslationBundle = {
   stats?: StatsMessages;
   pwa?: PwaMessages;
   referrals?: ReferralsMessages;
+  seo?: SeoMessages;
   legal?: import('./messages/legal/types').LegalMessages;
 };

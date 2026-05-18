@@ -1,16 +1,24 @@
 import { Suspense } from 'react';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
-import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
+import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 
-export const metadata: Metadata = {
-  title: 'Games',
-  description: `Explore the library of available board games on ${appConfig.appName}. Join or create a room to play with friends.`,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'games' })
+    : {};
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

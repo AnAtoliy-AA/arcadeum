@@ -1,4 +1,7 @@
 import { getTranslations } from '@/shared/i18n/server';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
+import type { Metadata } from 'next';
 import SupportClient from './client';
 import { appConfig } from '@/shared/config/app-config';
 import type {
@@ -6,10 +9,16 @@ import type {
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
-export const metadata = {
-  title: 'Support the developers',
-  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'support' })
+    : {};
+}
 
 const TEAM_MEMBERS: SupportTeamMember[] = [
   {

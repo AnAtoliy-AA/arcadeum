@@ -62,7 +62,7 @@ export function SeaBattleLandingBoard({
         data-testid="sea-battle-landing-board"
       >
         <SeaBattleThemeProvider variant={variant}>
-          <SeaBattleThemePreview selectedVariant={variant} cellSize={36} />
+          <SeaBattleThemePreview selectedVariant={variant} cellSize={28} />
         </SeaBattleThemeProvider>
       </button>
       <p className={styles.caption} aria-hidden="true">

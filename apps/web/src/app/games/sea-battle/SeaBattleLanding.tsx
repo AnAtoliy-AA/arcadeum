@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import type { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties } from 'react';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
 import { Container, PageLayout, LinkButton } from '@/shared/ui';
 import styles from './SeaBattleLanding.module.css';
 import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
 import { THEME_PREVIEWS, type ThemePreview } from './themePreviews';
 import { QuickplayButton } from './QuickplayButton';
+import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
 
 const SEA_BATTLE_GAME_ID = 'sea_battle_v1';
 
@@ -19,66 +20,6 @@ interface Props {
   roomsHref: string;
   homeHref: string;
   gamesHref: string;
-}
-
-/* ------------------------------------------------------------------ */
-/* Visual: animated 10×10 sonar board with ships, hits, misses        */
-/* ------------------------------------------------------------------ */
-
-const SHIPS: ReadonlyArray<readonly [number, number]> = [
-  [1, 2],
-  [1, 3],
-  [1, 4],
-  [4, 7],
-  [5, 7],
-  [6, 7],
-  [7, 7],
-  [7, 1],
-  [7, 2],
-];
-const HITS = new Set(['4-7', '5-7', '7-2']);
-const MISSES = new Set(['2-6', '3-3', '8-5', '5-2', '6-9']);
-const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
-function SonarBoard({ label }: { label: string }) {
-  const cells: ReactElement[] = [];
-  for (let r = 0; r < 10; r += 1) {
-    for (let c = 0; c < 10; c += 1) {
-      const key = `${r}-${c}`;
-      const isShip = SHIPS.some(([sr, sc]) => sr === r && sc === c);
-      const isHit = HITS.has(key);
-      const isMiss = MISSES.has(key);
-      const className = [
-        styles.boardCell,
-        isShip && !isHit ? styles.ship : '',
-        isHit ? `${styles.ship} ${styles.hit}` : '',
-        isMiss ? styles.miss : '',
-      ]
-        .filter(Boolean)
-        .join(' ');
-      cells.push(<div key={key} className={className} />);
-    }
-  }
-
-  return (
-    <div className={styles.boardWrap} aria-hidden="true">
-      <span className={styles.boardLabel}>{label}</span>
-      <div className={styles.boardCoordsTop}>
-        {COL_LABELS.map((c) => (
-          <span key={c}>{c}</span>
-        ))}
-      </div>
-      <div className={styles.boardCoordsSide}>
-        {ROW_LABELS.map((r) => (
-          <span key={r}>{r}</span>
-        ))}
-      </div>
-      <div className={styles.board}>{cells}</div>
-      <div className={styles.sonarSweep} />
-      <div className={styles.sonarCenter} />
-    </div>
-  );
 }
 
 function ThemeChip({ theme }: { theme: ThemePreview }) {
@@ -213,7 +154,7 @@ export default function SeaBattleLanding({
                 ))}
               </ul>
             </div>
-            <SonarBoard label={landing.board.label} />
+            <SeaBattleLandingBoard />
           </section>
 
           {/* Highlights */}

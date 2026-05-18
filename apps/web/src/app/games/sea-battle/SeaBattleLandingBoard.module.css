@@ -64,10 +64,11 @@
   flex-shrink: 0;
 }
 
-/* Hover/focus pill prompting the click-to-cycle interaction. */
+/* Hover/focus pill prompting the click-to-cycle interaction. Sits
+   well below the caption so the two don't visually overlap. */
 .cycleHint {
   position: absolute;
-  bottom: -0.625rem;
+  bottom: -2.75rem;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
   padding: 0.25rem 0.75rem;

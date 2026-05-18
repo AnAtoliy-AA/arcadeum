@@ -28,6 +28,7 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
+import { QuickplayGameDto } from './dtos/quickplay-game.dto';
 import {
   GAME_ROOM_STATUS_VALUES,
   GAME_ROOM_VISIBILITY_VALUES,
@@ -58,6 +59,28 @@ export class GamesController {
     }
 
     const room = await this.gamesService.createRoom(user.userId, dto);
+    return { room };
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
+  @Post('quickplay')
+  async quickplay(@Req() req: Request, @Body() dto: QuickplayGameDto) {
+    const user = req.user as AuthenticatedUser | null;
+    if (!user) {
+      throw new BadRequestException('Missing user context');
+    }
+    const room =
+      dto.mode === 'human'
+        ? await this.gamesService.findHumanMatch(
+            user.userId,
+            dto.gameId,
+            dto.variant,
+          )
+        : await this.gamesService.quickplay(
+            user.userId,
+            dto.gameId,
+            dto.variant,
+          );
     return { room };
   }
 

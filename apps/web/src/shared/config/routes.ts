@@ -14,6 +14,7 @@ export const routes = {
   gameDetail: (id: string) => `/games/${id}`,
   gameCreate: '/games/create',
   gameRoom: (id: string) => `/games/rooms/${id}`,
+  seaBattleLanding: '/games/sea-battle',
 
   // Chat
   chats: '/chats',

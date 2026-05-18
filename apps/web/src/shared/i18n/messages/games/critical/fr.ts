@@ -385,6 +385,12 @@ export const frMessages = {
       joining: 'Rejoindre...',
       blockThisRematch: 'Bloquer cette revanche uniquement',
       blockInvitations: 'Bloquer toutes les invitations de ce joueur',
+      invitation: {
+        title: 'Invitation à la revanche',
+        message: '{{name}} vous invite à rejouer.',
+        decline: 'Refuser',
+        accept: 'Accepter',
+      },
     },
     fullscreen: {
       enter: 'Plein écran (F)',

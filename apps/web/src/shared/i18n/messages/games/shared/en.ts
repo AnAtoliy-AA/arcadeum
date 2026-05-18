@@ -5,6 +5,7 @@ export const enMessages = {
   lounge: {
     activeTitle: 'Game Rooms',
     emptyTitle: 'No rooms found. Create one to get started!',
+    emptyFeaturedLink: 'Or jump into Sea Battle vs AI →',
     loadingRooms: 'Loading rooms...',
     searchPlaceholder: 'Search games...',
     searchButton: 'Search',
@@ -232,6 +233,12 @@ export const enMessages = {
       loading: 'Sending...',
       noPlayers: 'No other players available for a rematch',
       messagePlaceholder: 'Add a friendly message (optional)',
+      invitation: {
+        title: 'Rematch invitation',
+        message: '{{name}} invited you to play again.',
+        decline: 'Decline',
+        accept: 'Accept',
+      },
     },
   },
 };

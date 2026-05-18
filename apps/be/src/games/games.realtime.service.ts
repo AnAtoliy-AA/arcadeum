@@ -57,6 +57,23 @@ export class GamesRealtimeService {
   }
 
   /**
+   * Returns true if a socket with data.userId === userId is currently
+   * inside the room channel. Used by matchmaking to skip lobbies whose
+   * host has already closed the tab. Returns false if the gateway
+   * server isn't registered yet (best-effort signal).
+   */
+  async isUserPresentInRoom(roomId: string, userId: string): Promise<boolean> {
+    if (!this.server) return false;
+    const sockets = await this.server
+      .in(this.roomChannel(roomId))
+      .fetchSockets();
+    return sockets.some((s) => {
+      const data = s.data as Record<string, unknown> | undefined;
+      return data?.userId === userId;
+    });
+  }
+
+  /**
    * Filter session state for spectator-safe broadcast.
    * Removes logs that are not visible to spectators (non-'all' scope).
    */

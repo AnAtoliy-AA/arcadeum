@@ -5,6 +5,7 @@ export const frMessages = {
   lounge: {
     activeTitle: 'Salles de Jeu',
     emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
+    emptyFeaturedLink: 'Ou lancez une Bataille Navale contre l’IA →',
     loadingRooms: 'Chargement des salles...',
     searchPlaceholder: 'Rechercher des jeux...',
     searchButton: 'Rechercher',
@@ -238,6 +239,12 @@ export const frMessages = {
       loading: 'Envoi...',
       noPlayers: 'Aucun autre joueur disponible pour une revanche',
       messagePlaceholder: 'Ajouter un message amical (optionnel)',
+      invitation: {
+        title: 'Invitation à la revanche',
+        message: '{{name}} vous invite à rejouer.',
+        decline: 'Refuser',
+        accept: 'Accepter',
+      },
     },
   },
 };

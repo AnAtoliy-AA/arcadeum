@@ -179,6 +179,30 @@ export const gamesApi = {
     return apiClient.post<CreateRoomResponse>('/games/rooms', payload, options);
   },
 
+  quickplay: async (
+    gameId: string,
+    options?: ApiClientOptions & { variant?: string },
+  ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId, mode: 'ai', variant },
+      rest,
+    );
+  },
+
+  findHumanMatch: async (
+    gameId: string,
+    options?: ApiClientOptions & { variant?: string },
+  ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId, mode: 'human', variant },
+      rest,
+    );
+  },
+
   updateRoomOptions: async (
     roomId: string,
     optionsPayload: Record<string, unknown>,

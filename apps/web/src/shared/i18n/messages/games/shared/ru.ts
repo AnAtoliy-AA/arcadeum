@@ -5,6 +5,7 @@ export const ruMessages = {
   lounge: {
     activeTitle: 'Игровые залы',
     emptyTitle: 'Залы не найдены. Создайте первый, чтобы начать!',
+    emptyFeaturedLink: 'Или сыграйте в Морской бой против ИИ →',
     loadingRooms: 'Загрузка залов...',
     searchPlaceholder: 'Поиск игр...',
     searchButton: 'Поиск',
@@ -232,6 +233,12 @@ export const ruMessages = {
       loading: 'Отправка...',
       noPlayers: 'Нет других игроков для реванша',
       messagePlaceholder: 'Добавьте дружеское сообщение (необязательно)',
+      invitation: {
+        title: 'Приглашение на реванш',
+        message: '{{name}} приглашает вас сыграть ещё раз.',
+        decline: 'Отклонить',
+        accept: 'Принять',
+      },
     },
   },
 };

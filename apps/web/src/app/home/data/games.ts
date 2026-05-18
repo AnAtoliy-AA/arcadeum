@@ -10,7 +10,12 @@ export interface FeaturedGame {
   isPlayable: boolean;
   /** Marks the card with a "DEMO" badge — early preview, not feature-complete. */
   isDemo?: boolean;
-  route: string;
+  /**
+   * URL of the game's SEO landing page (e.g. /games/sea-battle).
+   * When set, the home card's title and "Play Now" button deep-link to
+   * the landing instead of going straight to room creation.
+   */
+  landingHref?: string;
   type: 'card' | 'board';
   rulesPrefix: string;
   rulesKeys: string[];
@@ -31,7 +36,6 @@ export const featuredGames: FeaturedGame[] = [
     gradient: 'linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%)',
     tags: ['Card Game', '3-5 Players', '15m Match', 'Strategy'],
     isPlayable: true,
-    route: '/games',
     type: 'card',
     rulesPrefix: 'games.critical_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'combos', 'setup'],
@@ -53,7 +57,7 @@ export const featuredGames: FeaturedGame[] = [
     gradient: 'linear-gradient(135deg, #3498db 0%, #1abc9c 100%)',
     tags: ['Board Game', '2-6 Players', '10m Match', 'Strategy'],
     isPlayable: true,
-    route: '/games',
+    landingHref: '/games/sea-battle',
     type: 'board',
     rulesPrefix: 'games.sea_battle_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'placement', 'battle'],
@@ -71,7 +75,6 @@ export const featuredGames: FeaturedGame[] = [
     tags: ['Arcade', '2-10 Players', '90s Match', 'Real-time'],
     isPlayable: true,
     isDemo: true,
-    route: '/games',
     type: 'board',
     rulesPrefix: 'games.glimworm_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'survive', 'powerups'],

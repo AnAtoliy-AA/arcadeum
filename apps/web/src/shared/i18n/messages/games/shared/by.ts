@@ -5,6 +5,7 @@ export const byMessages = {
   lounge: {
     activeTitle: 'Гульнявыя залы',
     emptyTitle: 'Залы не знойдзены. Стварыце першы, каб пачаць!',
+    emptyFeaturedLink: 'Або сыграйце ў Марскі бой супраць ШI →',
     loadingRooms: 'Загрузка залаў...',
     searchPlaceholder: 'Пошук гульняў...',
     searchButton: 'Пошук',
@@ -232,6 +233,12 @@ export const byMessages = {
       loading: 'Адпраўка...',
       noPlayers: 'Няма іншых гульцоў для рэваншу',
       messagePlaceholder: 'Дадайце прыязнае паведамленне (неабавязкова)',
+      invitation: {
+        title: 'Запрашэнне на рэванш',
+        message: '{{name}} запрашае вас згуляць яшчэ раз.',
+        decline: 'Адхіліць',
+        accept: 'Прыняць',
+      },
     },
   },
 };

@@ -352,6 +352,12 @@ export const enMessages = {
       joining: 'Joining...',
       blockThisRematch: 'Block this rematch only',
       blockInvitations: 'Block all invitations from this player',
+      invitation: {
+        title: 'Rematch invitation',
+        message: '{{name}} invited you to play again.',
+        decline: 'Decline',
+        accept: 'Accept',
+      },
     },
     fullscreen: {
       enter: 'Enter fullscreen (F)',

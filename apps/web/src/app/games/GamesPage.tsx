@@ -34,9 +34,15 @@ const PAGE_SIZE = 12;
 
 interface GamesPageProps {
   initialData: GetRoomsResponse | null;
+  gameId?: string;
+  pageTitle?: string;
 }
 
-export default function GamesPage({ initialData }: GamesPageProps) {
+export default function GamesPage({
+  initialData,
+  gameId,
+  pageTitle,
+}: GamesPageProps) {
   const { snapshot, hydrated } = useSessionTokens();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -162,6 +168,7 @@ export default function GamesPage({ initialData }: GamesPageProps) {
       statusFilter,
       participationFilter,
       deferredSearchQuery,
+      gameId ?? null,
       snapshot.accessToken,
     ],
     queryFn: async ({ pageParam = 0 }) => {
@@ -172,6 +179,7 @@ export default function GamesPage({ initialData }: GamesPageProps) {
           search: deferredSearchQuery || undefined,
           page: pageParam as number,
           limit: PAGE_SIZE,
+          gameId,
         },
         { token: snapshot.accessToken || undefined },
       );
@@ -246,7 +254,12 @@ export default function GamesPage({ initialData }: GamesPageProps) {
         />
 
         <GlassCard padding="$6">
-          <GamesHeader viewMode={viewMode} onViewModeChange={setViewMode} />
+          <GamesHeader
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            title={pageTitle}
+            createRoomGameId={gameId}
+          />
 
           <div
             className={`${styles.roomsContainer}${

@@ -8,16 +8,30 @@ import type { GamesViewMode } from '../types';
 interface GamesHeaderProps {
   viewMode: GamesViewMode;
   onViewModeChange: (mode: GamesViewMode) => void;
+  // Override for the lounge title — used when the page is scoped to one
+  // game (e.g. "Sea Battle rooms" on /games/sea_battle_v1).
+  title?: string;
+  // When set, the Create Room button pre-selects this game id.
+  createRoomGameId?: string;
 }
 
-export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
+export function GamesHeader({
+  viewMode,
+  onViewModeChange,
+  title,
+  createRoomGameId,
+}: GamesHeaderProps) {
   const { t } = useTranslation();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+  const createRoomHref = createRoomGameId
+    ? `/games/create?gameId=${encodeURIComponent(createRoomGameId)}`
+    : '/games/create';
 
   return (
     <Header>
       <Title size="xl" gradient>
-        {t('games.lounge.activeTitle')}
+        {title || t('games.lounge.activeTitle')}
       </Title>
       <HeaderControls>
         <ViewToggle>
@@ -49,7 +63,7 @@ export function GamesHeader({ viewMode, onViewModeChange }: GamesHeaderProps) {
         >
           {t('games.common.joinByCode') || 'Join by Code'}
         </Button>
-        <CreateRoomLinkButton href="/games/create">
+        <CreateRoomLinkButton href={createRoomHref}>
           {t('games.common.createRoom')}
         </CreateRoomLinkButton>
       </HeaderControls>

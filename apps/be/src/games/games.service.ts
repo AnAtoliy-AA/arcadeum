@@ -1,4 +1,10 @@
-import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Inject,
+  forwardRef,
+  BadRequestException,
+} from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import {
@@ -17,19 +23,13 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { StartGameSessionResult } from './games.types';
 import { ListRoomsFilters } from './rooms/game-rooms.types';
 import { GamesRematchService } from './games.rematch.service';
+import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { WalletService } from '../wallet/wallet.service';
 import { EconomySettingsService } from '../economy/economy-settings.service';
 
-/**
- * Games Service Facade
- * Coordinates between specialized services and provides a unified API
- *
- * This is the main service that controllers and gateways should use.
- * It delegates to specialized services for specific operations.
- */
 @Injectable()
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
@@ -42,6 +42,7 @@ export class GamesService {
     private readonly utilities: GameUtilitiesService,
     private readonly authService: AuthService,
     private readonly rematchService: GamesRematchService,
+    private readonly roomsQuickplayService: GameRoomsQuickplayService,
     @Inject(forwardRef(() => SeaBattleService))
     private readonly seaBattleService: SeaBattleService,
     @Inject(forwardRef(() => CriticalService))
@@ -53,9 +54,6 @@ export class GamesService {
 
   // ========== Room Operations ==========
 
-  /**
-   * Create a new game room
-   */
   async createRoom(userId: string, dto: CreateGameRoomDto) {
     const room = await this.roomsService.createRoom(userId, dto);
 
@@ -63,6 +61,24 @@ export class GamesService {
     this.realtimeService.emitRoomCreated(room);
 
     return room;
+  }
+
+  async quickplay(userId: string, gameId: string, variant?: string) {
+    if (gameId !== 'sea_battle_v1') {
+      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
+    }
+    return this.roomsQuickplayService.createQuickplayRoom(
+      userId,
+      gameId,
+      variant,
+    );
+  }
+
+  async findHumanMatch(userId: string, gameId: string, variant?: string) {
+    if (gameId !== 'sea_battle_v1') {
+      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
+    }
+    return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {

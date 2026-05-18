@@ -383,6 +383,12 @@ export const ruMessages = {
       joining: 'Вход...',
       blockThisRematch: 'Блокировать только этот реванш',
       blockInvitations: 'Блокировать все приглашения от этого игрока',
+      invitation: {
+        title: 'Приглашение на реванш',
+        message: '{{name}} приглашает вас сыграть ещё раз.',
+        decline: 'Отклонить',
+        accept: 'Принять',
+      },
     },
     fullscreen: {
       enter: 'На весь экран (F)',

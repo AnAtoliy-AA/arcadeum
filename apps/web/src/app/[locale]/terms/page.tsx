@@ -1,4 +1,5 @@
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
@@ -20,22 +21,28 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale)
-    ? buildPageMetadata({ locale, page: 'terms' })
-    : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'terms' }) : {};
 }
 
-export default async function TermsPage() {
+export default async function TermsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const messages = await getTranslations();
 
   return (
-    <TermsClient
-      t={messages.legal?.terms}
-      contactT={messages.legal?.contact}
-      LEGAL_NAME={LEGAL_NAME}
-      ID_CODE={ID_CODE}
-      SUPPORT_EMAIL={SUPPORT_EMAIL}
-      WORKING_HOURS={WORKING_HOURS}
-    />
+    <>
+      <PageBreadcrumb locale={locale} page="terms" />
+      <TermsClient
+        t={messages.legal?.terms}
+        contactT={messages.legal?.contact}
+        LEGAL_NAME={LEGAL_NAME}
+        ID_CODE={ID_CODE}
+        SUPPORT_EMAIL={SUPPORT_EMAIL}
+        WORKING_HOURS={WORKING_HOURS}
+      />
+    </>
   );
 }

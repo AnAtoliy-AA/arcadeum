@@ -19,6 +19,7 @@ import {
   getMessages,
   loadMessages,
 } from '@/shared/i18n';
+import { LOCALE_SLUGS, type SlugKey } from '@/shared/config/locale-slugs';
 
 import {
   LanguageContext,
@@ -29,16 +30,50 @@ const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
+const LOCALIZED_SLUG_TO_KEY: Record<
+  Locale,
+  Record<string, SlugKey>
+> = Object.fromEntries(
+  SUPPORTED_LOCALES.map((locale) => [
+    locale,
+    Object.fromEntries(
+      Object.entries(LOCALE_SLUGS[locale]).map(([key, slug]) => [
+        slug,
+        key as SlugKey,
+      ]),
+    ),
+  ]),
+) as Record<Locale, Record<string, SlugKey>>;
+
+/**
+ * Swap both the locale prefix AND the localized first slug when the
+ * user changes language. `/fr/jeux/create` -> `/ru/igry/create`.
+ */
 function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
-  const segments = pathname.split('/');
-  if (
-    segments.length > 1 &&
-    (SUPPORTED_LOCALES as readonly string[]).includes(segments[1])
-  ) {
-    segments[1] = nextLocale;
-    return segments.join('/') || `/${nextLocale}`;
+  const segments = pathname.split('/').filter(Boolean);
+  const currentLocale = segments[0];
+  const isLocale =
+    !!currentLocale &&
+    (SUPPORTED_LOCALES as readonly string[]).includes(currentLocale);
+
+  if (!isLocale) {
+    return `/${nextLocale}${pathname === '/' ? '' : pathname}`;
   }
-  return `/${nextLocale}${pathname === '/' ? '' : pathname}`;
+
+  segments[0] = nextLocale;
+
+  // Translate the second segment if it's a recognized localized slug
+  // under the current locale (`LOCALIZED_SLUG_TO_KEY['en']` is just the
+  // identity map since English slugs equal their keys).
+  const secondSegment = segments[1];
+  if (secondSegment) {
+    const key = LOCALIZED_SLUG_TO_KEY[currentLocale as Locale]?.[secondSegment];
+    if (key) {
+      segments[1] = LOCALE_SLUGS[nextLocale][key];
+    }
+  }
+
+  return '/' + segments.join('/');
 }
 
 export function LanguageProvider({

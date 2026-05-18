@@ -99,7 +99,9 @@ describe('LanguageProvider', () => {
       screen.getByText('Change Locale').click();
     });
 
-    expect(mockReplace).toHaveBeenCalledWith('/ru/games');
+    // setLocale should swap both the locale prefix AND the localized
+    // first-segment slug — `/en/games` becomes `/ru/igry`.
+    expect(mockReplace).toHaveBeenCalledWith('/ru/igry');
   });
 
   it('falls back to default locale when useLanguage is used outside provider', () => {

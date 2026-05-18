@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
@@ -20,16 +21,22 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale)
-    ? buildPageMetadata({ locale, page: 'chats' })
-    : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'chats' }) : {};
 }
 
-export default function ChatsRoute() {
+export default async function ChatsRoute({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   return (
-    <React.Suspense fallback={<ChatsLoading />}>
-      <ChatDataFetcher />
-    </React.Suspense>
+    <>
+      <PageBreadcrumb locale={locale} page="chats" />
+      <React.Suspense fallback={<ChatsLoading />}>
+        <ChatDataFetcher />
+      </React.Suspense>
+    </>
   );
 }
 

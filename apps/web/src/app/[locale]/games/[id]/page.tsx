@@ -6,7 +6,9 @@ import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { isLocale } from '@/shared/i18n';
+import { JsonLd } from '@/shared/ui/JsonLd';
 import GamesClient from '../GamesClient';
 import GamesLoading from '../loading';
 
@@ -51,14 +53,47 @@ export default async function GameDetailRoute({
   const locale = isLocale(rawLocale) ? rawLocale : 'en';
   const resolvedSearchParams = await searchParams;
 
+  // Skip the sea-battle landing — it has its own richer VideoGame +
+  // FAQPage schema at /games/sea-battle.
+  const includeJsonLd = gameId !== 'sea_battle_v1';
+
+  let jsonLd: Record<string, unknown>[] | null = null;
+  if (includeJsonLd) {
+    const messages = await getTranslations(locale);
+    const games = messages.games as
+      | Record<
+          string,
+          { name?: string; description?: string; summary?: string } | undefined
+        >
+      | undefined;
+    const game = games?.[gameId];
+    const gameName = game?.name ?? gameId;
+    const description = game?.description ?? game?.summary;
+
+    jsonLd = buildVideoGameJsonLd({
+      gameId,
+      gameName,
+      description,
+      locale,
+      breadcrumb: {
+        home: messages.navigation?.homeTab ?? 'Home',
+        games: messages.navigation?.gamesTab ?? 'Games',
+        game: gameName,
+      },
+    });
+  }
+
   return (
-    <Suspense fallback={<GamesLoading />}>
-      <GameDetailDataFetcher
-        locale={locale}
-        gameId={gameId}
-        searchParams={resolvedSearchParams}
-      />
-    </Suspense>
+    <>
+      {jsonLd ? <JsonLd id={`json-ld-game-${gameId}`} data={jsonLd} /> : null}
+      <Suspense fallback={<GamesLoading />}>
+        <GameDetailDataFetcher
+          locale={locale}
+          gameId={gameId}
+          searchParams={resolvedSearchParams}
+        />
+      </Suspense>
+    </>
   );
 }
 

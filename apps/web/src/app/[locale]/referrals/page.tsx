@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import ReferralsClient from './ReferralsClient';
 
@@ -14,6 +15,16 @@ export async function generateMetadata({
     : {};
 }
 
-export default function ReferralsPage() {
-  return <ReferralsClient />;
+export default async function ReferralsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return (
+    <>
+      <PageBreadcrumb locale={locale} page="referrals" />
+      <ReferralsClient />
+    </>
+  );
 }

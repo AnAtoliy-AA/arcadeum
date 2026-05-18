@@ -98,12 +98,28 @@ export function ShopMannequinStage({
     return focus ? RARITY_GLOW[focus.rarity] : 'rgba(96,165,250,0.25)';
   }, [hoverItem, avatar, badge, skin, nameColor]);
 
-  const raysBg = useMemo<React.CSSProperties>(
-    () => ({
-      backgroundImage: `conic-gradient(from 0deg at 50% 60%, transparent 0deg, ${accentGlow} 30deg, transparent 60deg, ${accentGlow} 120deg, transparent 150deg, ${accentGlow} 210deg, transparent 240deg, ${accentGlow} 300deg, transparent 360deg)`,
-    }),
-    [accentGlow],
-  );
+  const raysBg = useMemo<React.CSSProperties>(() => {
+    // 12 narrow rays evenly spaced every 30°. The previous 4-wide-spike
+    // layout read as a rotating X / square corners; a 12-spike halo reads
+    // as a soft shimmer, with no obvious "shape" rotating.
+    //
+    // Anchor: `50% 41%` — the avatar circle's vertical center inside a
+    // 280-tall stage (content stack is ~188 tall, centered → avatar
+    // center sits ~115 px from the top). Conic, mask, and transform-origin
+    // share this anchor so the rotation orbit is centered on the avatar.
+    const stops: string[] = [];
+    const steps = 12;
+    for (let i = 0; i < steps; i++) {
+      const peak = (i * 360) / steps;
+      const valley = peak + 360 / steps / 2;
+      stops.push(`${accentGlow} ${peak}deg`);
+      stops.push(`transparent ${valley}deg`);
+    }
+    stops.push(`${accentGlow} 360deg`);
+    return {
+      backgroundImage: `conic-gradient(from 0deg at 50% 41%, ${stops.join(', ')})`,
+    };
+  }, [accentGlow]);
 
   const nameProps = nameColor
     ? nameColorRenderProps(nameColor.colorValue ?? null)

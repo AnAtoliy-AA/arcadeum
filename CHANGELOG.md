@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.7] - 2026-05-18
+
+### Added
+- BreadcrumbList everywhere, CollectionPage on catalogs, ProfilePage for /players/[id] (ARC-707) (ARC-707)
+
+
 ## [1.14.6] - 2026-05-18
 
 ### Added

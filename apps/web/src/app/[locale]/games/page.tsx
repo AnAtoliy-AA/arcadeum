@@ -1,11 +1,17 @@
 import { Suspense } from 'react';
-import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
-import { SSR_TIMEOUT } from '@/shared/config/app-config';
+import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
+import { buildCollectionPageJsonLd } from '@/shared/seo/collectionPageJsonLd';
+import { buildRoutes } from '@/shared/config/routes';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import { featuredGames } from '../home/data/games';
+import { JsonLd } from '@/shared/ui/JsonLd';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 
@@ -21,16 +27,72 @@ export async function generateMetadata({
 }
 
 interface PageProps {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function GamesRoute({ searchParams }: PageProps) {
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
+}
+
+export default async function GamesRoute({ params, searchParams }: PageProps) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const resolvedSearchParams = await searchParams;
+  const messages = await getTranslations(locale);
+  const routes = buildRoutes(locale);
+
+  const gamesNamespace = messages.games as
+    | Record<
+        string,
+        { name?: string; description?: string; summary?: string } | undefined
+      >
+    | undefined;
+
+  const collectionItems = featuredGames
+    .filter((g) => g.isPlayable)
+    .map((g) => {
+      const name = gamesNamespace?.[g.id]?.name ?? g.id;
+      const description =
+        gamesNamespace?.[g.id]?.description ??
+        gamesNamespace?.[g.id]?.summary;
+      const url = g.landingHref
+        ? `/${locale}${g.landingHref}`
+        : routes.gameDetail(g.id);
+      return { name, url, description };
+    });
+
+  const collectionPage = buildCollectionPageJsonLd({
+    locale,
+    pageUrl: routes.games,
+    name:
+      messages.seo?.games?.title ??
+      `${messages.navigation?.gamesTab ?? 'Games'} · ${appConfig.appName}`,
+    description: messages.seo?.games?.description,
+    items: collectionItems,
+  });
+
+  const breadcrumb = buildBreadcrumbJsonLd({
+    locale,
+    homeLabel: messages.navigation?.homeTab ?? 'Home',
+    trail: [
+      {
+        name: messages.navigation?.gamesTab ?? 'Games',
+        url: routes.games,
+      },
+    ],
+  });
 
   return (
-    <Suspense fallback={<GamesLoading />}>
-      <GamesDataFetcher searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <JsonLd
+        id={`json-ld-games-${locale}`}
+        data={[collectionPage, breadcrumb]}
+      />
+      <Suspense fallback={<GamesLoading />}>
+        <GamesDataFetcher searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }
 

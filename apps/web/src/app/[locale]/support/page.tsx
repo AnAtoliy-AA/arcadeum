@@ -1,5 +1,6 @@
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import SupportClient from './client';
@@ -84,17 +85,25 @@ function buildActions(): SupportAction[] {
   return actions;
 }
 
-export default async function SupportRoute() {
+export default async function SupportRoute({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const messages = await getTranslations();
   const supportT = messages.support;
   const actions = buildActions();
 
   return (
-    <SupportClient
-      appName={appConfig.appName}
-      supportT={supportT}
-      teamMembers={TEAM_MEMBERS}
-      actions={actions}
-    />
+    <>
+      <PageBreadcrumb locale={locale} page="support" />
+      <SupportClient
+        appName={appConfig.appName}
+        supportT={supportT}
+        teamMembers={TEAM_MEMBERS}
+        actions={actions}
+      />
+    </>
   );
 }

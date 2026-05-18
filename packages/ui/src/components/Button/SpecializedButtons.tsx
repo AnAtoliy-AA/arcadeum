@@ -87,42 +87,51 @@ export const StartButton = ({
   className,
   ...props
 }: ButtonProps & { className?: string }) => (
-  <Button
-    variant="primary"
-    size="lg"
-    $sm={{ $uiSize: 'md', borderRadius: 8 }}
-    $short={{ $uiSize: 'sm', borderRadius: 8 }}
-    width={width}
-    fontWeight="700"
-    fontSize={18}
-    letterSpacing={0.5}
-    borderRadius={12}
-    backgroundColor="#c7aa2f"
-    color="#1a1a2e"
-    shadowColor="rgba(199, 170, 47, 0.55)"
-    shadowRadius={28}
-    shadowOffset={{ width: 0, height: 6 }}
-    hoverStyle={{
-      y: -2,
-      shadowRadius: 36,
-      shadowColor: 'rgba(199, 170, 47, 0.7)',
-      backgroundColor: '#d6b933',
-    }}
-    disabledStyle={{
-      opacity: 0.5,
-      shadowRadius: 16,
-    }}
-    // CSS class drives the actual pulse + shimmer (keyframes in
-    // apps/web/src/app/styles/animations.css). The Tamagui `pulse` /
-    // `showShimmer` props were no-ops here: the 'pulse' Tamagui
-    // animation isn't defined in tamagui.config, and the Shimmer
-    // styled component sits at x: -100% with no looping animation.
+  // The pulse + shimmer live on a wrapper because Tamagui's styled
+  // components drop unknown classNames from the prop chain (verified
+  // in the rendered DOM — only Tamagui's atomic _bg-* / _pos-* etc.
+  // survive). Wrapping in a plain <div> keeps the animation styles
+  // outside Tamagui's prop system entirely, and the button itself
+  // stays a normal Tamagui Button.
+  <div
     className={['start-button-glow', className].filter(Boolean).join(' ')}
-    data-testid={testId || props['data-testid']}
-    {...props}
+    style={{
+      display: 'inline-block',
+      borderRadius: 12,
+      width: width as string | number,
+    }}
   >
-    {children}
-  </Button>
+    <Button
+      variant="primary"
+      size="lg"
+      $sm={{ $uiSize: 'md', borderRadius: 8 }}
+      $short={{ $uiSize: 'sm', borderRadius: 8 }}
+      width="100%"
+      fontWeight="700"
+      fontSize={18}
+      letterSpacing={0.5}
+      borderRadius={12}
+      backgroundColor="#c7aa2f"
+      color="#1a1a2e"
+      shadowColor="rgba(199, 170, 47, 0.55)"
+      shadowRadius={28}
+      shadowOffset={{ width: 0, height: 6 }}
+      hoverStyle={{
+        y: -2,
+        shadowRadius: 36,
+        shadowColor: 'rgba(199, 170, 47, 0.7)',
+        backgroundColor: '#d6b933',
+      }}
+      disabledStyle={{
+        opacity: 0.5,
+        shadowRadius: 16,
+      }}
+      data-testid={testId || props['data-testid']}
+      {...props}
+    >
+      {children}
+    </Button>
+  </div>
 );
 
 export const IconButton = ({

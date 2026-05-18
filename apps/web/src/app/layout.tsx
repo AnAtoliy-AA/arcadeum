@@ -82,6 +82,9 @@ export default async function RootLayout({
   const cookieLocale = cookieStore.get('app-language')?.value;
   const htmlLang = isLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE;
 
+  // Organization is locale-agnostic — same legal entity across languages.
+  // WebSite and SoftwareApplication schemas live in [locale]/layout where
+  // they can carry `inLanguage` + localized description.
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -90,34 +93,6 @@ export default async function RootLayout({
       url: appConfig.siteUrl,
       logo: `${appConfig.siteUrl}/logo.png`,
       sameAs: Object.values(appConfig.social).filter(Boolean),
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: appConfig.appName,
-      url: appConfig.siteUrl,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${appConfig.siteUrl}/${htmlLang}/games?q={search_term_string}`,
-        'query-input': 'required name=search_term_string',
-      },
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: appConfig.appName,
-      operatingSystem: 'Any',
-      applicationCategory: 'GameApplication',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '1240',
-      },
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
     },
   ];
 

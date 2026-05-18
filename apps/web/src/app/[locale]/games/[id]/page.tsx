@@ -32,11 +32,13 @@ export async function generateMetadata({
   const { locale, id } = await params;
   if (!isLocale(locale)) return {};
   const gameName = await getGameName(id, locale);
+  // Title is per-game so the SERP entry is distinctive; description falls
+  // back to the localized `seo.games.description` for a coherent
+  // per-locale snippet across the catalog.
   return buildPageMetadata({
     locale,
     page: 'games',
     title: `${gameName} · ${appConfig.appName}`,
-    description: `Browse open ${gameName} rooms on ${appConfig.appName} — join an existing match or start your own.`,
     pathFor: (r) => r.gameDetail(id),
   });
 }

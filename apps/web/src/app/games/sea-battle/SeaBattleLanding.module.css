@@ -427,10 +427,10 @@
 }
 .stepNumber {
   position: absolute;
-  top: -0.5rem;
-  right: 0.875rem;
+  top: 0.5rem;
+  right: 1.5rem;
   font-family: var(--font-heading, 'Space Grotesk', sans-serif);
-  font-size: 5.5rem;
+  font-size: 4.5rem;
   font-weight: 700;
   line-height: 1;
   color: color-mix(in srgb, var(--accent, #38bdf8) 16%, transparent);
@@ -641,7 +641,8 @@
     margin-top: 3rem;
   }
   .stepNumber {
-    font-size: 4rem;
+    font-size: 3.25rem;
+    right: 1rem;
   }
 }
 

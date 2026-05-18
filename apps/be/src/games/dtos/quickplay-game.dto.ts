@@ -24,4 +24,15 @@ export class QuickplayGameDto {
   @IsOptional()
   @IsIn(QUICKPLAY_MODES)
   mode?: QuickplayMode;
+
+  /**
+   * Theme variant the visitor cycled to in the landing hero
+   * (e.g. 'classic', 'cyber'). Accepted but not yet used — once the
+   * SB engine supports opening a room in a chosen theme, this is
+   * where the room creator will read it from.
+   */
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  variant?: string;
 }

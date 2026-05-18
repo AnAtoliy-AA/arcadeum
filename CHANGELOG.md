@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.5] - 2026-05-18
+
+### Added
+- per-locale JSON-LD, og:locale:alternate, 404, dynamic pages (ARC-705) (ARC-705)
+
+
 ## [1.14.4] - 2026-05-18
 
 ### Added

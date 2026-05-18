@@ -60,22 +60,24 @@ export class GameRoomsQuickplayService {
     userId: string,
     gameId: string,
   ): Promise<GameRoomSummary> {
-    // Oldest open public lobby the user isn't already in AND that has
-    // no AI bot. Excluding rooms with bot participants is what keeps
-    // matchmaking from "matching" the second human into an already-
-    // running 1v1-vs-AI room. The "not full" check stays in JS to
-    // sidestep $expr/$size casting edge cases with Mongoose.
+    // Tight pool: only matchmaking-created rooms ("Open Match"), and
+    // only those that don't already contain an AI bot. Sorted
+    // newest-first so a room just created by another matchmaker sits
+    // at the top of the candidate list. The not-full check stays in
+    // JS — $expr/$size + Mongoose schema casting silently dropped
+    // rows in earlier attempts.
     const candidates = await this.gameRoomModel
       .find({
         gameId,
+        name: 'Open Match',
         visibility: 'public',
         status: 'lobby',
-        $and: [
-          { 'participants.userId': { $ne: userId } },
-          { 'participants.userId': { $not: /^bot-/ } },
-        ],
+        'participants.userId': { $ne: userId },
+        participants: {
+          $not: { $elemMatch: { userId: { $regex: '^bot-' } } },
+        },
       })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(MATCHMAKING_CANDIDATE_LIMIT)
       .exec();
 
@@ -85,10 +87,22 @@ export class GameRoomsQuickplayService {
         r.participants.length < r.maxPlayers,
     );
 
+    // One-shot diagnostic so we can see *why* matchmaking decided what
+    // it did. Cheap (only logs once per request) and worth keeping
+    // until two-browser matchmaking is verified in staging.
+    this.logger.log(
+      `Matchmaking[${userId}] gameId=${gameId} candidates=${candidates.length} ` +
+        `summary=${JSON.stringify(
+          candidates.map((c) => ({
+            id: String(c._id),
+            n: c.participants.length,
+            max: c.maxPlayers,
+            host: c.hostId,
+          })),
+        )} picked=${candidate ? String(candidate._id) : 'none'}`,
+    );
+
     if (candidate) {
-      this.logger.log(
-        `Matchmaking: ${userId} joining room ${String(candidate._id)} (${candidates.length} candidates scanned)`,
-      );
       const joined = await this.gameRoomsService.joinRoom(
         { roomId: String(candidate._id) },
         userId,
@@ -97,9 +111,6 @@ export class GameRoomsQuickplayService {
       return joined.room;
     }
 
-    this.logger.log(
-      `Matchmaking: no open room for ${gameId} (${candidates.length} scanned), creating new for ${userId}`,
-    );
     const room = await this.gameRoomsService.createRoom(userId, {
       gameId,
       name: 'Open Match',

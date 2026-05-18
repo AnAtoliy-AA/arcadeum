@@ -12,7 +12,7 @@ test.describe('Home Page', () => {
   });
 
   test('should load successfully', async ({ page }) => {
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL(/\/(en|es|fr|ru|by)\/?$/);
   });
 
   test('should render hero section', async ({ page }) => {

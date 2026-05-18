@@ -154,7 +154,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
             <NavMobileLink
               key={item.href}
               href={item.href}
-              data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+              data-testid={`mobile-nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
               variant="ghost"
               size="md"
               isActive={isActive}

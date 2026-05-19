@@ -23,10 +23,11 @@ Extend the `VISIBILITY_TIERS` set from 3 → 5 values by adding `developers_plus
 - In-room `VariantSelector` rendering for `none` variants. The room is already created — the createRoom gate is upstream of this UI. Mid-room theme-change is out of scope (known gap from ARC-710).
 - Reconciling Critical's two `CARD_VARIANTS` constants. Still out.
 - i18n for variant IDs in the admin UI. Raw IDs remain acceptable for an admin tool.
+- Hiding `none` games from the featured-games carousel at [apps/web/src/app/[locale]/home/components/HomeGames.tsx](../../../apps/web/src/app/[locale]/home/components/HomeGames.tsx). That component imports a static `featuredGames` data array — it is NOT catalog-driven. A whole game set to `none` will still appear in the carousel. The createRoom gate still rejects, so users cannot start a session, but the card will be visible until the static list is refactored to consume `getCatalog`. Tracked as a known UX gap.
 
 ## Key decisions
 
-### D1 — Tier ladder extended in `roles.ts`
+### D1 — Tier ladder extended in `roles.ts` and `TIER_RANK` in the service
 
 Append `'developers_plus'` and `'none'` to `VISIBILITY_TIERS`. Extend `TIER_MIN_PRIORITY`:
 
@@ -41,6 +42,20 @@ const TIER_MIN_PRIORITY: Record<VisibilityTier, number> = {
 ```
 
 `canSeeAtTier(role, tier)` keeps its existing `role.priority >= TIER_MIN_PRIORITY[tier]` formula. The `Number.POSITIVE_INFINITY` value naturally evaluates to `false` for every role including admin (100 < Infinity).
+
+**Also extend `TIER_RANK` in [apps/be/src/admin/game-visibility/game-visibility.service.ts:25-29](../../../apps/be/src/admin/game-visibility/game-visibility.service.ts):**
+
+```ts
+const TIER_RANK: Record<VisibilityTier, number> = {
+  all: 0,
+  premium_plus: 1,
+  vip_plus: 2,
+  developers_plus: 3,
+  none: 4,
+};
+```
+
+This shadow-duplicate ranking drives `getEffectiveTier`'s `max(gameTier, variantTier)` selection. Without the new keys, TypeScript will fail to compile the `Record<VisibilityTier, number>` (good — it forces this edit). Semantically the ranks must monotonically increase so `max()` always picks the stricter tier. Examples after the change: `getEffectiveTier(game='developers_plus', variant='none')` → `'none'` (rank 4 > 3); `getEffectiveTier(game='none', variant='all')` → `'none'` (rank 4 > 0).
 
 **Why:** Reusing the priority ladder means `assertVisible`, `filterVisible`, `canSee`, the Glimworm WS gateway gate, and quickplay all pick up the new tiers with no logic change. Only the `getCatalog` walk needs new code, because it's the one site that *intentionally* surfaces a non-visible variant (as coming-soon).
 
@@ -64,7 +79,15 @@ Whole-game `none`: `canSee(role, gameId)` is false → game omitted from the res
 
 **Why:** Pickers need to know which variants to render as disabled tiles. A second endpoint or a hard-coded `none` list on the client would drift. Adding one boolean is the smallest change.
 
-This is a breaking shape change to the catalog response, but it's typed end-to-end and there's only one consumer per game (the three pickers + the admin types mirror). Caught at the typecheck.
+This is a breaking shape change to the catalog response. Concrete consumers that must be updated in lockstep:
+
+- BE: [apps/be/src/games/games.controller.ts](../../../apps/be/src/games/games.controller.ts) — `getCatalog` builder + the return type of its handler.
+- BE tests: [apps/be/src/games/games.catalog-endpoint.spec.ts](../../../apps/be/src/games/games.catalog-endpoint.spec.ts) — assertions like `variants.toContain('battle_royale')` become `variants.map(v => v.id).toContain('battle_royale')` (or use `expect.arrayContaining([{ id: 'battle_royale', comingSoon: false }])`).
+- Web API client: [apps/web/src/features/games/api.ts:225-231](../../../apps/web/src/features/games/api.ts) — `Promise<{ games: Array<{ gameId: string; variants: string[] }> }>` typed return updates to the new variant shape.
+- Web tests: [apps/web/src/widgets/CriticalGame/ui/CreationConfig.visibility.test.tsx](../../../apps/web/src/widgets/CriticalGame/ui/CreationConfig.visibility.test.tsx) and [apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.visibility.test.tsx](../../../apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.visibility.test.tsx) — `getCatalog` mocks return strings today; switch them to `{ id, comingSoon: false }` objects, and add new assertions for `comingSoon: true` cases.
+- Web pickers: the three files listed under D3.
+
+Caught at the typecheck end-to-end.
 
 ### D3 — Variant pickers: render coming-soon as disabled tile
 
@@ -115,13 +138,23 @@ Tile styling reuses whatever the existing "disabled" state looks like in each pi
 
 The save path goes through the existing `setGameTierAction` / `setVariantTierAction`. BE service validates against `VISIBILITY_TIERS` already, so the new strings round-trip without further work.
 
+The `TierLabels` interface declared inline in `GameVisibilityRow.tsx:14-18` (one key per tier) also needs the two new keys, **or** the plan should switch it to a derived `Record<VisibilityTier, string>` so future additions don't require a third edit site. Plan should pick the latter for hygiene.
+
 ### D5 — i18n
 
-Three new keys, in all five locales (en, ru, es, fr, by):
+Three new keys, in all five concrete locale files:
 
-- `adminGames.tier.developers_plus` — proposed: "Developers & admins" (en) / equivalents
-- `adminGames.tier.none` — proposed: "Hidden (coming soon)" (en) / equivalents
-- A coming-soon string usable by the three pickers — proposed: place at the lowest common namespace, e.g. an existing `common.*` or pick per-picker if existing convention dictates. Plan should decide based on grep of existing usage.
+- [apps/web/src/shared/i18n/messages/pages/admin-games/en.ts](../../../apps/web/src/shared/i18n/messages/pages/admin-games/en.ts)
+- [apps/web/src/shared/i18n/messages/pages/admin-games/ru.ts](../../../apps/web/src/shared/i18n/messages/pages/admin-games/ru.ts)
+- [apps/web/src/shared/i18n/messages/pages/admin-games/es.ts](../../../apps/web/src/shared/i18n/messages/pages/admin-games/es.ts)
+- [apps/web/src/shared/i18n/messages/pages/admin-games/fr.ts](../../../apps/web/src/shared/i18n/messages/pages/admin-games/fr.ts)
+- [apps/web/src/shared/i18n/messages/pages/admin-games/by.ts](../../../apps/web/src/shared/i18n/messages/pages/admin-games/by.ts)
+
+Keys to add:
+
+- `tier.developers_plus` — proposed (en): "Developers & admins"
+- `tier.none` — proposed (en): "Hidden (coming soon)"
+- A coming-soon string usable by the three pickers — proposed: place at the lowest common namespace. Plan should grep existing usage of "comingSoon" / "coming_soon" across `shared/i18n/messages` and reuse if found; otherwise add to the same `admin-games` namespace under e.g. `tier.comingSoonLabel` or to a shared `common` namespace. The plan picks the exact location after the grep.
 
 ## Architecture (delta from ARC-710 + color variants)
 
@@ -182,6 +215,10 @@ ADMIN WRITE (try createRoom with cardVariant: 'crime' set to 'none'):
   - Variant set to `none` appears as `{ id, comingSoon: true }` for an admin caller (no bypass)
   - Variant set to `developers_plus` is omitted for free; included with `comingSoon: false` for developer
   - Whole-game set to `none` → game omitted entirely from response
+- `game-visibility.service.spec.ts`: `getEffectiveTier` with mixed new+old tiers
+  - game=`developers_plus`, variant=`none` → returns `'none'` (verifies TIER_RANK 4 > 3)
+  - game=`none`, variant=`all` → returns `'none'` (verifies TIER_RANK 4 > 0)
+  - game=`all`, variant=`developers_plus` → returns `'developers_plus'` (verifies TIER_RANK 3 > 0)
 
 ### Web unit (Vitest)
 - Critical `CreationConfig`: mock `gamesApi.getCatalog()` to return `crime` with `comingSoon: true` and `cyberpunk` with `comingSoon: false`; assert `cyberpunk` renders interactive and `crime` renders disabled with the "Coming soon" badge; clicking `crime` is a no-op.

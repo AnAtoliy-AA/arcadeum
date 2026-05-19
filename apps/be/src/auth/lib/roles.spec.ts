@@ -26,6 +26,30 @@ describe('canSeeAtTier', () => {
   });
 
   it('exposes the canonical tier list', () => {
-    expect(VISIBILITY_TIERS).toEqual(['all', 'premium_plus', 'vip_plus']);
+    expect(VISIBILITY_TIERS).toEqual([
+      'all',
+      'premium_plus',
+      'vip_plus',
+      'developers_plus',
+      'none',
+    ]);
+  });
+});
+
+describe('canSeeAtTier (new tiers)', () => {
+  it('developers_plus admits developer and admin only', () => {
+    expect(canSeeAtTier('developer', 'developers_plus')).toBe(true);
+    expect(canSeeAtTier('admin', 'developers_plus')).toBe(true);
+    expect(canSeeAtTier('moderator', 'developers_plus')).toBe(false);
+    expect(canSeeAtTier('tester', 'developers_plus')).toBe(false);
+    expect(canSeeAtTier('vip', 'developers_plus')).toBe(false);
+    expect(canSeeAtTier('free', 'developers_plus')).toBe(false);
+  });
+
+  it('none admits nobody', () => {
+    expect(canSeeAtTier('admin', 'none')).toBe(false);
+    expect(canSeeAtTier('developer', 'none')).toBe(false);
+    expect(canSeeAtTier('vip', 'none')).toBe(false);
+    expect(canSeeAtTier('free', 'none')).toBe(false);
   });
 });

@@ -112,6 +112,63 @@ describe('GameVisibilityService (read paths)', () => {
   });
 });
 
+describe('GameVisibilityService (new tier interactions)', () => {
+  it('returns the stricter of game/variant when mixing new and old tiers (developers_plus < none)', async () => {
+    const model = makeModelMock([
+      { gameId: 'glimworm_v1', variantId: null, tier: 'developers_plus' },
+      { gameId: 'glimworm_v1', variantId: 'time_attack', tier: 'none' },
+    ]);
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        GameVisibilityService,
+        { provide: getModelToken(GameVisibility.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(GameVisibilityService);
+    await expect(
+      svc.getEffectiveTier('glimworm_v1', 'time_attack'),
+    ).resolves.toBe('none');
+  });
+
+  it('whole-game none beats any variant tier', async () => {
+    const model = makeModelMock([
+      { gameId: 'glimworm_v1', variantId: null, tier: 'none' },
+      { gameId: 'glimworm_v1', variantId: 'time_attack', tier: 'all' },
+    ]);
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        GameVisibilityService,
+        { provide: getModelToken(GameVisibility.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(GameVisibilityService);
+    await expect(
+      svc.getEffectiveTier('glimworm_v1', 'time_attack'),
+    ).resolves.toBe('none');
+  });
+
+  it('developers_plus on variant beats all on game', async () => {
+    const model = makeModelMock([
+      { gameId: 'glimworm_v1', variantId: null, tier: 'all' },
+      {
+        gameId: 'glimworm_v1',
+        variantId: 'time_attack',
+        tier: 'developers_plus',
+      },
+    ]);
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        GameVisibilityService,
+        { provide: getModelToken(GameVisibility.name), useValue: model },
+      ],
+    }).compile();
+    const svc = moduleRef.get(GameVisibilityService);
+    await expect(
+      svc.getEffectiveTier('glimworm_v1', 'time_attack'),
+    ).resolves.toBe('developers_plus');
+  });
+});
+
 describe('GameVisibilityService (write paths)', () => {
   it('setGameTier upserts and invalidates cache', async () => {
     const upsertMock = jest.fn().mockReturnValue({

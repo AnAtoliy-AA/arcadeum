@@ -26,6 +26,8 @@ const TIER_RANK: Record<VisibilityTier, number> = {
   all: 0,
   premium_plus: 1,
   vip_plus: 2,
+  developers_plus: 3,
+  none: 4,
 };
 const CACHE_TTL_MS = 30_000;
 

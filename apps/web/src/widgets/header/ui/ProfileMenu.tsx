@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
+import Image from 'next/image';
 import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
+import { View } from 'tamagui';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
 import {
   SettingsIcon,
@@ -123,18 +125,16 @@ export default function ProfileMenu() {
           {displayName}
         </UserNameEllipsis>
         {equippedBadgeUrl ? (
-          // Shop badges store asset URLs — render directly. The @arcadeum/ui
-          // CosmeticBadge primitive below is a badgeId→emoji lookup used for
-          // referral/role badges, not for shop badge assets.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={equippedBadgeUrl}
-            alt=""
-            width={20}
-            height={20}
-            data-testid="header-equipped-badge"
-            style={{ objectFit: 'contain' }}
-          />
+          <View width={20} height={20}>
+            <Image
+              src={equippedBadgeUrl}
+              alt=""
+              width={20}
+              height={20}
+              data-testid="header-equipped-badge"
+              unoptimized
+            />
+          </View>
         ) : null}
         {role !== 'free' && (
           <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>

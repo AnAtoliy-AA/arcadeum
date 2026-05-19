@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.11] - 2026-05-19
+
+### Added
+- shop images and badges redesign (N/A)
+
+### Refactored
+- replace standard img with optimized next/image components (N/A)
+
+
 ## [1.14.10] - 2026-05-19
 
 ### Added

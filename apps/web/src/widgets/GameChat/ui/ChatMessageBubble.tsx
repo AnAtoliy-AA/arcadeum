@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
@@ -84,22 +85,19 @@ export function ChatMessageBubble({
       <View
         width={38}
         height={38}
-        borderRadius="$3"
-        backgroundColor={avatarUrl ? 'rgba(0,0,0,0.2)' : avatarColor}
+        borderRadius={avatarUrl ? 19 : '$3'}
+        backgroundColor={avatarUrl ? 'transparent' : avatarColor}
         alignItems="center"
         justifyContent="center"
         flexShrink={0}
-        overflow="hidden"
       >
         {avatarUrl ? (
-          // Equipped shop avatar (asset URL). Plain <img> on purpose — Avatar
-          // primitive is square-aware but designed for the header chip; here
-          // we want the existing 38x38 rounded slot.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={avatarUrl}
             alt=""
-            style={{ width: 38, height: 38, objectFit: 'cover' }}
+            width={38}
+            height={38}
+            unoptimized
           />
         ) : (
           <Text fontSize="$4" fontWeight="700" color="white">
@@ -130,14 +128,15 @@ export function ChatMessageBubble({
               {senderName}
             </Text>
             {badgeUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={badgeUrl}
-                alt=""
-                width={16}
-                height={16}
-                style={{ objectFit: 'contain' }}
-              />
+              <View width={16} height={16}>
+                <Image
+                  src={badgeUrl}
+                  alt=""
+                  width={16}
+                  height={16}
+                  unoptimized
+                />
+              </View>
             ) : null}
           </XStack>
         )}

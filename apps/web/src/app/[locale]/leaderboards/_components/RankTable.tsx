@@ -1,5 +1,6 @@
 'use client';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
+import Image from 'next/image';
 import {
   Avatar,
   RankBadge,
@@ -237,15 +238,16 @@ function RankRow({
             {p.name}
           </Text>
           {badgeUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={badgeUrl}
-              alt=""
-              width={16}
-              height={16}
-              style={{ objectFit: 'contain' }}
-              data-testid={`leaderboard-row-${p.rank}-badge`}
-            />
+            <View width={16} height={16}>
+              <Image
+                src={badgeUrl}
+                alt=""
+                width={16}
+                height={16}
+                data-testid={`leaderboard-row-${p.rank}-badge`}
+                unoptimized
+              />
+            </View>
           ) : null}
           {p.isOnline ? (
             <View

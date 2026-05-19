@@ -59,6 +59,7 @@ export const buildRoutes = (locale: Locale) => {
     tournaments: `/${locale}/${s('tournaments')}`,
     wallet: `/${locale}/${s('wallet')}`,
     shop: `/${locale}/${s('shop')}`,
+    shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
     developers: `/${locale}/${s('developers')}`,
 

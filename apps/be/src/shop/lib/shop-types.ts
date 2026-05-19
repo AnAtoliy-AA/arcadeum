@@ -3,6 +3,9 @@ export const SHOP_CATEGORIES = [
   'badge',
   'name_color',
   'game_skin',
+  'banner',
+  'aura',
+  'frame',
 ] as const;
 export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
 
@@ -55,11 +58,17 @@ export function isShopPriceCurrency(value: string): value is ShopPriceCurrency {
 export type EquipKey =
   | 'equippedAvatarId'
   | 'equippedBadgeId'
-  | 'equippedNameColorId';
+  | 'equippedNameColorId'
+  | 'equippedBannerId'
+  | 'equippedAuraId'
+  | 'equippedFrameId';
 
 export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'avatar') return 'equippedAvatarId';
   if (category === 'badge') return 'equippedBadgeId';
   if (category === 'name_color') return 'equippedNameColorId';
+  if (category === 'banner') return 'equippedBannerId';
+  if (category === 'aura') return 'equippedAuraId';
+  if (category === 'frame') return 'equippedFrameId';
   return null;
 }

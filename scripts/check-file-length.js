@@ -11,6 +11,7 @@ const ALLOW_LIST = new Set([
   'apps/be/src/games/glimworm/glimworm.service.ts',
   'apps/web/src/widgets/CriticalGame/ui/ActiveGameView.tsx',
   'apps/web/src/widgets/SeaBattleGame/ui/Game.tsx',
+  'apps/web/src/app/[locale]/payment/gem-success/page.tsx',
 ]);
 
 const IGNORE_DIRS = new Set([

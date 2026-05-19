@@ -8,7 +8,6 @@ export const shopEn = {
     title: 'Shop',
     nav: {
       shop: 'Shop',
-      featured: 'Featured',
       inventory: 'Inventory',
       wallet: 'Wallet',
     },
@@ -49,6 +48,21 @@ export const shopEn = {
         desc: 'Visual theme inside matches.',
         empty: 'Empty',
       },
+      banner: {
+        label: 'Banner',
+        desc: 'Full backdrop panel of your profile and lobby stage.',
+        empty: 'Empty',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Shining rays that orbit your avatar in lobby and during matches.',
+        empty: 'Empty',
+      },
+      frame: {
+        label: 'Frame',
+        desc: 'Decorative ring wrapped around your avatar.',
+        empty: 'Empty',
+      },
     },
     action: {
       previewingEyebrow: 'Previewing',
@@ -75,26 +89,49 @@ export const shopEn = {
       title: 'Avatars',
       eyebrow: '{count} items',
       viewAll: 'View all',
+      collapse: 'Collapse',
     },
     badges: {
       title: 'Badges',
       eyebrow: '{count} items',
       viewAll: 'View all',
+      collapse: 'Collapse',
     },
     colors: {
       title: 'Name colors',
       eyebrow: '{count} items',
       viewAll: 'View all',
+      collapse: 'Collapse',
     },
     skins: {
       title: 'Game skins',
       eyebrow: '{count} items',
       viewAll: 'View all',
+      collapse: 'Collapse',
+    },
+    banners: {
+      title: 'Banners',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+      collapse: 'Collapse',
+    },
+    auras: {
+      title: 'Auras',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+      collapse: 'Collapse',
+    },
+    frames: {
+      title: 'Frames',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+      collapse: 'Collapse',
     },
     legendary: {
       title: 'Legendary',
       eyebrow: 'Top rarity',
       viewAll: 'View all',
+      collapse: 'Collapse',
     },
   },
   card: {
@@ -103,6 +140,12 @@ export const shopEn = {
     buyEquip: 'Buy & equip',
     equip: 'Equip',
     unequip: 'Unequip',
+    sell: 'Sell · 50%',
+  },
+  inventory: {
+    title: 'Inventory',
+    eyebrow: '{count} owned',
+    empty: 'You don’t own anything yet.',
   },
   rarities: {
     common: 'Common',
@@ -157,12 +200,37 @@ export const shopEn = {
       legend: { name: 'Legend', desc: 'A legendary player.' },
     },
     name_color: {
+      default: { name: 'Default', desc: 'The starter name color.' },
       slate: { name: 'Slate', desc: 'A calm, cool gray.' },
       emerald: { name: 'Emerald', desc: 'A fresh emerald green.' },
       cyan: { name: 'Cyan', desc: 'An electric cyan.' },
       violet: { name: 'Violet', desc: 'A vivid violet.' },
       sunset: { name: 'Sunset', desc: 'A warm sunset gradient.' },
       aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
+    },
+    game_skin: {
+      default: { name: 'Default', desc: 'The starter game theme.' },
+    },
+    banner: {
+      default: { name: 'Default', desc: 'The starter backdrop.' },
+      slate: { name: 'Slate', desc: 'A muted dark-slate backdrop.' },
+      tide: { name: 'Tide', desc: 'A cool teal-to-cyan wash.' },
+      twilight: { name: 'Twilight', desc: 'Indigo melting into hot pink.' },
+      nebula: { name: 'Nebula', desc: 'A cosmic multi-color gradient.' },
+    },
+    aura: {
+      default: { name: 'Default', desc: 'The starter aura.' },
+      silver: { name: 'Silver Aura', desc: 'A subtle silver halo.' },
+      cyan: { name: 'Cyan Aura', desc: 'A crisp electric glow.' },
+      violet: { name: 'Violet Aura', desc: 'A rich violet shine.' },
+      prism: { name: 'Prism Aura', desc: 'A shifting prism radiance.' },
+    },
+    frame: {
+      default: { name: 'Default', desc: 'The starter frame.' },
+      silver: { name: 'Silver Frame', desc: 'A clean brushed-silver ring.' },
+      emerald: { name: 'Emerald Frame', desc: 'A vivid emerald ring.' },
+      violet: { name: 'Violet Frame', desc: 'A polished violet ring.' },
+      prism: { name: 'Prism Frame', desc: 'A shifting prism ring.' },
     },
   },
 };

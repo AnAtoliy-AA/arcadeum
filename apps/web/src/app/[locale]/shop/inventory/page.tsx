@@ -7,13 +7,11 @@ import {
   getConversionRate,
 } from '@/features/gems/server/gems.server';
 import { getCatalog, getInventory } from '@/features/shop/server/shop.server';
-import { ShopPageView } from '@/features/shop/ui/ShopPageView';
+import { InventoryPageView } from '@/features/shop/ui/InventoryPageView';
 import { pickNextGemPack } from '@/features/shop/lib/nextGemPack';
-import { pickFeaturedDrop } from '@/features/shop/lib/featuredDrop';
 import { shopEn } from '@/shared/i18n/messages/pages/shop/en';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
-import { buildCollectionPageJsonLd } from '@/shared/seo/collectionPageJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -29,12 +27,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  // Shop metadata is reused here — there is no dedicated `inventory` SEO
+  // page entry yet, and the route is gated behind auth so it never serves
+  // anonymous crawlers anyway.
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'shop' }) : {};
 }
 
 const EMPTY_BALANCE: WalletBalanceView = { coins: 0, gems: 0 };
 
-export default async function ShopPage({
+export default async function ShopInventoryPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -65,33 +66,13 @@ export default async function ShopPage({
   const gemPacks = await getActivePackages().catch(() => []);
   const { gems: balanceGems } = balance;
   const nextGemPack = pickNextGemPack(balanceGems, gemPacks);
-  // Limited-drop hero filters out items the user already owns and rotates
-  // by UTC day across the remaining tier — see pickFeaturedDrop's
-  // selection cascade for the legendary → epic → null fallback chain.
-  const ownedItemIds = new Set(
-    inventory.items
-      .filter((row) => row.soldAt === null)
-      .map((row) => row.itemId),
-  );
-  const featuredDrop = pickFeaturedDrop(catalog, gemToCoinRate, {
-    ownedItemIds,
-  });
 
   const messages = await getTranslations(locale);
   const labels = (messages.pages?.shop ?? shopEn) as typeof shopEn;
   const routes = buildRoutes(locale);
 
-  // Shop items use translation keys (`nameKey`) for their display
-  // names — emitting a CollectionPage shell (no per-item enumeration)
-  // keeps the schema valid without requiring extra translation lookups
-  // for every catalog entry.
-  const collectionPage = buildCollectionPageJsonLd({
-    locale,
-    pageUrl: routes.shop,
-    name: messages.seo?.shop?.title ?? 'Shop',
-    description: messages.seo?.shop?.description,
-    items: [],
-  });
+  // Reuse the shop breadcrumb crumbs and append Inventory as the leaf so
+  // crawlers see /shop → /shop/inventory rather than a flat single entry.
   const breadcrumb = buildBreadcrumbJsonLd({
     locale,
     homeLabel: messages.navigation?.homeTab ?? 'Home',
@@ -100,21 +81,21 @@ export default async function ShopPage({
         name: messages.navigation?.shopTab ?? 'Shop',
         url: routes.shop,
       },
+      {
+        name: labels.inventory.title,
+        url: routes.shopInventory,
+      },
     ],
   });
 
   return (
     <>
-      <JsonLd
-        id={`json-ld-shop-${locale}`}
-        data={[collectionPage, breadcrumb]}
-      />
-      <ShopPageView
+      <JsonLd id={`json-ld-shop-inventory-${locale}`} data={[breadcrumb]} />
+      <InventoryPageView
         catalog={catalog}
         inventory={inventory}
         balance={balance}
         nextGemPack={nextGemPack}
-        featuredDrop={featuredDrop}
         gemToCoinRate={gemToCoinRate}
         isAuthenticated={Boolean(accessToken)}
         labels={labels}

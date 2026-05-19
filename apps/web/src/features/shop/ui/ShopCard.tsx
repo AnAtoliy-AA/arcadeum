@@ -32,7 +32,12 @@ export interface ShopCardLabels {
   buyEquip: string;
   equip: string;
   unequip: string;
+  sell: string;
 }
+
+export type ShopCardMode = 'shop' | 'inventory';
+
+import type { InventoryItemView } from '../server/shop.types';
 
 export interface ShopCardProps {
   item: EffectiveShopItem;
@@ -46,6 +51,17 @@ export interface ShopCardProps {
    * the LCP target with `loading="lazy"`.
    */
   priority?: boolean;
+  /**
+   * 'shop' (default) renders the catalog affordance (Buy / Equip / Unequip).
+   * 'inventory' adds a secondary Sell button under the primary action so
+   * the same card layout serves the owned-items grid.
+   */
+  mode?: ShopCardMode;
+  /**
+   * Required in inventory mode — the live inventory row backing this item.
+   * Used to pass purchaseId + paidAmount/Currency into SellConfirmDialog.
+   */
+  inventoryRow?: InventoryItemView | null;
   labels: ShopCardLabels;
   /**
    * Used when Buy & equip can't run inline — insufficient funds, or the BE
@@ -53,6 +69,11 @@ export interface ShopCardProps {
    * richer copy + retry affordance.
    */
   onPurchaseFallback: (item: EffectiveShopItem) => void;
+  /**
+   * Inventory mode only — invoked when the user clicks Sell on a card.
+   * Parent owns the SellConfirmDialog state and refund calculation.
+   */
+  onSellRequest?: (row: InventoryItemView) => void;
 }
 
 const CardFrame = styled(Stack, {
@@ -171,8 +192,11 @@ export function ShopCard({
   balance,
   small,
   priority = false,
+  mode = 'shop',
+  inventoryRow = null,
   labels,
   onPurchaseFallback,
+  onSellRequest,
 }: ShopCardProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -422,6 +446,40 @@ export function ShopCard({
             {actionLabel}
           </Text>
         </ActionButton>
+
+        {/* Inventory-mode secondary action. Hidden in catalog (shop) mode.
+            Also hidden when the row is missing, the item is a starter
+            (BE rejects with shop.starterNotSellable), or it's currently
+            equipped (BE rejects with shop.unequipFirst — user must
+            Unequip first). Click hands the inventory row up to the page
+            which owns the SellConfirmDialog. */}
+        {mode === 'inventory' &&
+        inventoryRow &&
+        !item.starter &&
+        !equipped &&
+        onSellRequest ? (
+          <Text
+            fontSize={10}
+            letterSpacing={1}
+            textTransform="uppercase"
+            fontWeight="700"
+            color="$gray11"
+            cursor="pointer"
+            paddingVertical="$1"
+            textAlign="center"
+            hoverStyle={{ color: '$red11' }}
+            onPress={() => {
+              track('shop.sell.click', {
+                itemId: item.id,
+                source: 'card',
+              });
+              onSellRequest(inventoryRow);
+            }}
+            data-testid={`shop-card-sell-${item.id}`}
+          >
+            {labels.sell}
+          </Text>
+        ) : null}
       </YStack>
     </CardFrame>
   );

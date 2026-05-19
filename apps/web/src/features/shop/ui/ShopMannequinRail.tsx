@@ -67,6 +67,9 @@ const SLOT_TO_ROW: Record<ShopCategory, string> = {
   badge: 'row-badges',
   name_color: 'row-colors',
   game_skin: 'row-skins',
+  banner: 'row-banners',
+  aura: 'row-auras',
+  frame: 'row-frames',
 };
 
 // Approximate sticky-header + breathing-room offset. ShopRow also sets
@@ -110,6 +113,15 @@ export function ShopMannequinRail({
   const equippedSkin = inventory.equipped.game_skin
     ? (catalogById.get(inventory.equipped.game_skin) ?? null)
     : null;
+  const equippedBanner = inventory.equipped.banner
+    ? (catalogById.get(inventory.equipped.banner) ?? null)
+    : null;
+  const equippedAura = inventory.equipped.aura
+    ? (catalogById.get(inventory.equipped.aura) ?? null)
+    : null;
+  const equippedFrame = inventory.equipped.frame
+    ? (catalogById.get(inventory.equipped.frame) ?? null)
+    : null;
 
   const preview: Record<ShopCategory, EffectiveShopItem | null | undefined> = {
     avatar: hoverItem?.category === 'avatar' ? hoverItem : equippedAvatar,
@@ -117,6 +129,9 @@ export function ShopMannequinRail({
     name_color:
       hoverItem?.category === 'name_color' ? hoverItem : equippedNameColor,
     game_skin: hoverItem?.category === 'game_skin' ? hoverItem : equippedSkin,
+    banner: hoverItem?.category === 'banner' ? hoverItem : equippedBanner,
+    aura: hoverItem?.category === 'aura' ? hoverItem : equippedAura,
+    frame: hoverItem?.category === 'frame' ? hoverItem : equippedFrame,
   };
 
   const onSlotClick = (slot: ShopCategory) => {

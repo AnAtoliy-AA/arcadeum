@@ -35,11 +35,13 @@ const cardLabels = {
   buyEquip: 'Buy',
   equip: 'Equip',
   unequip: 'Unequip',
+  sell: 'Sell',
 };
 const rowLabels = {
   title: 'Avatars',
   eyebrow: '{count} items',
   viewAll: 'All',
+  collapse: 'Collapse',
 };
 
 const EQUIPPED_EMPTY: EquippedView = {
@@ -47,6 +49,9 @@ const EQUIPPED_EMPTY: EquippedView = {
   badge: null,
   name_color: null,
   game_skin: null,
+  banner: null,
+  aura: null,
+  frame: null,
 };
 
 const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };

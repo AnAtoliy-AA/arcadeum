@@ -31,16 +31,34 @@ describe('GAME_CATALOG', () => {
 describe('GAME_CATALOG color variants', () => {
   it('lists all 13 Critical card-back themes including high-altitude-hike and random', () => {
     expect(getCatalogEntry('critical_v1')?.variants).toEqual([
-      'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
-      'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
-      'steampunk', 'zen', 'random',
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'adventure',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+      'random',
     ]);
   });
 
   it('lists all 10 Sea Battle visual themes', () => {
     expect(getCatalogEntry('sea_battle_v1')?.variants).toEqual([
-      'classic', 'modern', 'pixel', 'cartoon', 'cyber',
-      'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
     ]);
   });
 

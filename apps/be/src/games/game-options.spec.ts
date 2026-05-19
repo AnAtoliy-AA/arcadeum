@@ -8,7 +8,9 @@ describe('extractVariantFromOptions', () => {
   it('returns undefined when options is not an object', () => {
     // The DTO types gameOptions as Record<string, unknown> | undefined,
     // but defensively guard against non-object runtime values.
-    expect(extractVariantFromOptions(null as unknown as undefined)).toBeUndefined();
+    expect(
+      extractVariantFromOptions(null as unknown as undefined),
+    ).toBeUndefined();
   });
 
   it('reads opts.variant when present (Glimworm/Sea Battle convention)', () => {
@@ -33,7 +35,10 @@ describe('extractVariantFromOptions', () => {
       extractVariantFromOptions({ variant: 42 } as Record<string, unknown>),
     ).toBeUndefined();
     expect(
-      extractVariantFromOptions({ cardVariant: null } as Record<string, unknown>),
+      extractVariantFromOptions({ cardVariant: null } as Record<
+        string,
+        unknown
+      >),
     ).toBeUndefined();
   });
 });

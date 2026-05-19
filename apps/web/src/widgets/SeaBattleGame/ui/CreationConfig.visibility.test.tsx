@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  within,
+} from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import tamaguiConfig from '@/shared/config/tamagui.config';
 import CreationConfig from './CreationConfig';
@@ -63,5 +69,51 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
         screen.getByText(/games\.sea_battle_v1\.variants\.cyber\.name/),
       ).toBeInTheDocument();
     });
+  });
+
+  it('renders a coming-soon variant as a disabled tile with a "Coming soon" badge', async () => {
+    const onChangeSpy = vi.fn();
+
+    vi.mocked(gamesApi.getCatalog).mockResolvedValue({
+      games: [
+        {
+          gameId: 'sea_battle_v1',
+          variants: [
+            { id: 'classic', comingSoon: false },
+            { id: 'cyber', comingSoon: true },
+          ],
+        },
+      ],
+    });
+
+    render(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+        <CreationConfig
+          options={{ variant: 'classic' } as never}
+          onChange={onChangeSpy}
+        />
+      </TamaguiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-tile-classic')).toBeInTheDocument();
+    });
+
+    // classic: interactive
+    const classicTile = screen.getByTestId('variant-tile-classic');
+    expect(classicTile).not.toHaveAttribute('aria-disabled', 'true');
+
+    // cyber: disabled with badge
+    const cyberTile = screen.getByTestId('variant-tile-cyber');
+    expect(cyberTile).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      within(cyberTile).getByTestId('coming-soon-badge'),
+    ).toBeInTheDocument();
+
+    // Click is a no-op
+    fireEvent.click(cyberTile);
+    expect(onChangeSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ variant: 'cyber' }),
+    );
   });
 });

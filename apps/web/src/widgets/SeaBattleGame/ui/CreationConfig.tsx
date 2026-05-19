@@ -18,6 +18,7 @@ import {
   ThemeHeader,
   GameTileItem,
   GameTileContainer,
+  ComingSoonBadge,
 } from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
@@ -58,10 +59,14 @@ export default function SeaBattleCreationConfig({
 
   const visibleVariants =
     allowedVariants === null
-      ? SEA_BATTLE_VARIANTS
+      ? SEA_BATTLE_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
       : SEA_BATTLE_VARIANTS.filter((v) =>
           allowedVariants.some((a) => a.id === v.id),
-        );
+        ).map((v) => ({
+          ...v,
+          comingSoon:
+            allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+        }));
 
   useEffect(() => {
     if (!options.variant) {
@@ -86,26 +91,48 @@ export default function SeaBattleCreationConfig({
           </Button>
         </ThemeHeader>
         <GameSelector>
-          {visibleVariants.map((variant) => (
-            <GameTileContainer
-              key={variant.id}
-              onClick={() => onChange({ ...options, variant: variant.id })}
-            >
-              <GameTileItem active={options.variant === variant.id}>
-                <SelectionIndicator active={options.variant === variant.id} />
-                <GameTileIcon
-                  background={variant.gradient || undefined}
-                  className={variant.gradient ? 'text-gradient' : undefined}
+          {visibleVariants.map((variant) => {
+            const isComingSoon = variant.comingSoon;
+            return (
+              <GameTileContainer
+                key={variant.id}
+                data-testid={`variant-tile-${variant.id}`}
+                aria-disabled={isComingSoon || undefined}
+                disabled={isComingSoon}
+                onClick={() =>
+                  !isComingSoon && onChange({ ...options, variant: variant.id })
+                }
+              >
+                <GameTileItem
+                  active={options.variant === variant.id}
+                  disabled={isComingSoon}
                 >
-                  {variant.emoji}
-                </GameTileIcon>
-                <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
-                <GameTileSummary>
-                  {t(variant.description as TranslationKey)}
-                </GameTileSummary>
-              </GameTileItem>
-            </GameTileContainer>
-          ))}
+                  {!isComingSoon && (
+                    <SelectionIndicator
+                      active={options.variant === variant.id}
+                    />
+                  )}
+                  {isComingSoon && (
+                    <ComingSoonBadge data-testid="coming-soon-badge">
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                  <GameTileIcon
+                    background={variant.gradient || undefined}
+                    className={variant.gradient ? 'text-gradient' : undefined}
+                  >
+                    {variant.emoji}
+                  </GameTileIcon>
+                  <GameTileName>
+                    {t(variant.name as TranslationKey)}
+                  </GameTileName>
+                  <GameTileSummary>
+                    {t(variant.description as TranslationKey)}
+                  </GameTileSummary>
+                </GameTileItem>
+              </GameTileContainer>
+            );
+          })}
         </GameSelector>
       </Section>
 

@@ -135,9 +135,6 @@ function Profile({
             </Text>
             {badgeUrl ? (
               <View width={32} height={32} data-testid="player-profile-badge">
-                {/* Plain img — shop badges store asset URLs, not the badgeId
-                    lookup the @arcadeum/ui CosmeticBadge expects. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={badgeUrl}
                   alt=""

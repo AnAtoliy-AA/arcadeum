@@ -12,6 +12,7 @@ import {
   YStack,
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import {
@@ -366,14 +367,15 @@ function TeamMemberIdentity({
         {display}
       </Typography>
       {badgeUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={badgeUrl}
-          alt=""
-          width={16}
-          height={16}
-          style={{ objectFit: 'contain' }}
-        />
+        <View width={16} height={16}>
+          <img
+            src={badgeUrl}
+            alt=""
+            width={16}
+            height={16}
+            style={{ objectFit: 'contain' }}
+          />
+        </View>
       ) : null}
       {showBotBadge ? (
         <Badge variant="neutral" size="sm">

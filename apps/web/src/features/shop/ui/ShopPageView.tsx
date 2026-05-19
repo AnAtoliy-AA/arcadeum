@@ -20,6 +20,46 @@ import {
   type PurchaseConfirmLabels,
 } from './PurchaseConfirmDialog';
 import {
+  SellConfirmDialog,
+  type SellConfirmLabels,
+} from './SellConfirmDialog';
+import { Text } from 'tamagui';
+
+// Map ShopCategory → labels.row.* slice key. The shop catalog rows hardcode
+// each pairing (e.g. `labels.row.colors` for name_color), but the inventory
+// section iterates over categories dynamically so it needs this lookup. Keys
+// must stay in sync with ShopPageLabels.row.
+type ShopRowLabelKey =
+  | 'avatars'
+  | 'badges'
+  | 'colors'
+  | 'skins'
+  | 'banners'
+  | 'auras'
+  | 'frames';
+const CATEGORY_TO_ROW_LABEL_KEY: Record<ShopCategory, ShopRowLabelKey> = {
+  avatar: 'avatars',
+  badge: 'badges',
+  name_color: 'colors',
+  game_skin: 'skins',
+  banner: 'banners',
+  aura: 'auras',
+  frame: 'frames',
+};
+
+// Refund formula mirrors ShopActionPanel.refundForRow — kept duplicated
+// rather than shared because the function is tiny and each surface owns
+// its own sell flow; pulling it into a lib would create a one-call-site
+// helper and a circular-feeling import from ui/ → lib/ for a 3-liner.
+function refundForRow(
+  row: InventoryItemView,
+  gemToCoinRate: number,
+): number {
+  if (row.paidAmount === null || row.paidCurrency === null) return 0;
+  if (row.paidCurrency === 'coins') return Math.floor(row.paidAmount * 0.5);
+  return Math.floor(row.paidAmount * gemToCoinRate * 0.5);
+}
+import {
   ShopSignInBanner,
   type ShopSignInBannerLabels,
 } from './ShopSignInBanner';
@@ -28,12 +68,13 @@ import {
   type ShopCatalogEmptyLabels,
 } from './ShopCatalogEmpty';
 import type { ShopCardLabels } from './ShopCard';
-import type { SellConfirmLabels } from './SellConfirmDialog';
 import type {
   EffectiveShopItem,
   FeaturedDropView,
+  InventoryItemView,
   InventoryView,
   NextGemPackView,
+  ShopCategory,
   WalletBalanceView,
 } from '../server/shop.types';
 
@@ -45,6 +86,12 @@ type ShopPageHeroLabels = Omit<
   ShopHeroLabels,
   'equip' | 'unequip' | 'equipped'
 >;
+
+export interface ShopInventorySectionLabels {
+  title: string;
+  eyebrow: string;
+  empty: string;
+}
 
 export interface ShopPageLabels {
   meta: { title: string; description: string };
@@ -64,6 +111,7 @@ export interface ShopPageLabels {
   };
   card: ShopCardLabels;
   rarities: Record<string, string>;
+  inventory: ShopInventorySectionLabels;
   purchase: PurchaseConfirmLabels;
   sell: SellConfirmLabels;
   empty: ShopCatalogEmptyLabels;
@@ -93,6 +141,7 @@ export function ShopPageView({
   const { t } = useTranslation();
   const [purchaseTarget, setPurchaseTarget] =
     useState<EffectiveShopItem | null>(null);
+  const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
 
   // The preview store is module-level (Zustand singleton). Without an unmount
   // reset, a user who hovers a card here, navigates to /profile, and comes
@@ -146,6 +195,35 @@ export function ShopPageView({
     () => liveCatalog.filter((c) => c.rarity === 'legendary'),
     [liveCatalog],
   );
+
+  // Owned-items derivation for the Inventory section. Build a Set of owned
+  // itemIds from live inventory rows, then filter the catalog per category
+  // to only those entries. Reusing the catalog keeps the card visuals
+  // identical to the shop rows — the inventory section is the same UI
+  // showing a different slice, not a separate component tree.
+  const ownedItemIds = useMemo(
+    () =>
+      new Set(
+        inventory.items
+          .filter((row) => row.soldAt === null)
+          .map((row) => row.itemId),
+      ),
+    [inventory.items],
+  );
+  const inventoryByCategory = useMemo(() => {
+    const filterOwned = (cat: ShopCategory) =>
+      catalog.filter((c) => c.category === cat && ownedItemIds.has(c.id));
+    return {
+      avatar: filterOwned('avatar'),
+      badge: filterOwned('badge'),
+      name_color: filterOwned('name_color'),
+      game_skin: filterOwned('game_skin'),
+      banner: filterOwned('banner'),
+      aura: filterOwned('aura'),
+      frame: filterOwned('frame'),
+    } satisfies Record<ShopCategory, EffectiveShopItem[]>;
+  }, [catalog, ownedItemIds]);
+  const totalOwned = ownedItemIds.size;
 
   // The previous build also rendered a "New drops · This week" row keyed on
   // `rarity === 'epic' || 'legendary'`. That selector was a Legendary alias
@@ -229,6 +307,50 @@ export function ShopPageView({
                 labels={heroLabels}
                 onBuyClick={(item) => setPurchaseTarget(item)}
               />
+            ) : null}
+
+            {/* Inventory block — same row/card layout as the shop, but
+                filtered to items the user owns. The Inventory nav link
+                in ShopTopBar scrolls to the id below. Hidden when the
+                user owns nothing so the empty section doesn't push the
+                catalog down. */}
+            {isAuthenticated && totalOwned > 0 ? (
+              <YStack id="shop-inventory" gap="$3" style={{ scrollMarginTop: 32 }}>
+                <YStack gap={2}>
+                  <Text
+                    fontSize={10}
+                    letterSpacing={2}
+                    textTransform="uppercase"
+                    color="$gray11"
+                  >
+                    {labels.inventory.eyebrow.replace(
+                      '{count}',
+                      String(totalOwned),
+                    )}
+                  </Text>
+                  <Text fontSize="$8" fontWeight="900" letterSpacing={-0.4}>
+                    {labels.inventory.title}
+                  </Text>
+                </YStack>
+                {(Object.keys(inventoryByCategory) as ShopCategory[])
+                  .filter((cat) => inventoryByCategory[cat].length > 0)
+                  .map((cat) => (
+                    <ShopRow
+                      key={`inv-${cat}`}
+                      id={`row-inv-${cat}`}
+                      sectionKey={cat}
+                      mode="inventory"
+                      items={inventoryByCategory[cat]}
+                      inventory={inventory.items}
+                      equipped={inventory.equipped}
+                      labels={labels.row[CATEGORY_TO_ROW_LABEL_KEY[cat]]}
+                      cardLabels={labels.card}
+                      balance={balance}
+                      onPurchaseFallback={(item) => setPurchaseTarget(item)}
+                      onSellRequest={(row) => setSellTarget(row)}
+                    />
+                  ))}
+              </YStack>
             ) : null}
 
             <ShopRow
@@ -340,6 +462,19 @@ export function ShopPageView({
           onClose={() => setPurchaseTarget(null)}
           onSuccess={() => setPurchaseTarget(null)}
           labels={labels.purchase}
+        />
+
+        {/* Page-level sell dialog driven by the inventory cards. The
+            mannequin-rail sell flow uses its own dialog instance inside
+            ShopActionPanel — kept separate so each surface controls its
+            own open/close lifecycle without shared state. */}
+        <SellConfirmDialog
+          inventoryItem={sellTarget}
+          refundCoins={sellTarget ? refundForRow(sellTarget, gemToCoinRate) : 0}
+          open={sellTarget !== null}
+          onClose={() => setSellTarget(null)}
+          onSuccess={() => setSellTarget(null)}
+          labels={labels.sell}
         />
       </YStack>
     </PageLayout>

@@ -35,6 +35,7 @@ const cardLabels = {
   buyEquip: 'Buy',
   equip: 'Equip',
   unequip: 'Unequip',
+  sell: 'Sell',
 };
 const rowLabels = {
   title: 'Avatars',

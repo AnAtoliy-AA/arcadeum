@@ -5,7 +5,7 @@ import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
-import { ShopCard, type ShopCardLabels } from './ShopCard';
+import { ShopCard, type ShopCardLabels, type ShopCardMode } from './ShopCard';
 import type {
   EffectiveShopItem,
   EquippedView,
@@ -37,9 +37,17 @@ export interface ShopRowProps {
    * "loading=eager" warning.
    */
   priorityCount?: number;
+  /**
+   * 'shop' (default) renders the full catalog with Buy/Equip affordances.
+   * 'inventory' is used by the owned-items section — cards render Sell as a
+   * secondary action and the upstream caller is expected to feed only items
+   * the user owns.
+   */
+  mode?: ShopCardMode;
   labels: ShopRowLabels;
   cardLabels: ShopCardLabels;
   onPurchaseFallback: (item: EffectiveShopItem) => void;
+  onSellRequest?: (row: InventoryItemView) => void;
 }
 
 const RowHost = styled(Stack, {
@@ -100,9 +108,11 @@ export function ShopRow({
   small,
   highlight,
   priorityCount = 0,
+  mode = 'shop',
   labels,
   cardLabels,
   onPurchaseFallback,
+  onSellRequest,
 }: ShopRowProps) {
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
   const [expanded, setExpanded] = useState(false);
@@ -111,6 +121,18 @@ export function ShopRow({
     () =>
       new Set(
         inventory.filter((row) => row.soldAt === null).map((row) => row.itemId),
+      ),
+    [inventory],
+  );
+
+  // Map itemId → live inventory row so the inventory-mode Sell button can
+  // pass the right purchaseId into SellConfirmDialog without a per-card
+  // scan. Falls back to null when not in inventory mode (catalog cards
+  // ignore the prop).
+  const liveRowByItemId = useMemo(
+    () =>
+      new Map(
+        inventory.filter((row) => row.soldAt === null).map((row) => [row.itemId, row]),
       ),
     [inventory],
   );
@@ -198,8 +220,15 @@ export function ShopRow({
               balance={balance}
               small={small}
               priority={index < priorityCount}
+              mode={mode}
+              inventoryRow={
+                mode === 'inventory'
+                  ? (liveRowByItemId.get(item.id) ?? null)
+                  : null
+              }
               labels={cardLabels}
               onPurchaseFallback={onPurchaseFallback}
+              onSellRequest={onSellRequest}
             />
           ))}
         </Scroller>

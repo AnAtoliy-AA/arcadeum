@@ -8,7 +8,6 @@ export const shopFr = {
     title: 'Boutique',
     nav: {
       shop: 'Boutique',
-      featured: 'En vedette',
       inventory: 'Inventaire',
       wallet: 'Portefeuille',
     },
@@ -141,6 +140,12 @@ export const shopFr = {
     buyEquip: 'Acheter et équiper',
     equip: 'Équiper',
     unequip: 'Déséquiper',
+    sell: 'Vendre · 50%',
+  },
+  inventory: {
+    title: 'Inventaire',
+    eyebrow: '{count} articles',
+    empty: 'Vous ne possédez encore rien.',
   },
   rarities: {
     common: 'Commun',

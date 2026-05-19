@@ -15,7 +15,7 @@ const { coins: COIN_COLOR, gems: GEM_COLOR } = CURRENCY_COLOR;
 export interface ShopTopBarLabels {
   eyebrow: string;
   title: string;
-  nav: { shop: string; featured: string; inventory: string; wallet: string };
+  nav: { shop: string; inventory: string; wallet: string };
   topUp: string;
 }
 
@@ -80,6 +80,10 @@ const TopUpBtn = styled(Stack, {
   },
 });
 
+// Sticky-chrome breathing room — matches ShopMannequinRail.SCROLL_OFFSET so
+// the inventory rail isn't tucked under the top bar after the jump.
+const SCROLL_OFFSET = 80;
+
 export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
   const router = useRouter();
   const { locale } = useLanguage();
@@ -92,6 +96,36 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
     }
     router.push('/wallet');
   };
+
+  // Anchor-style <Link href="#x"> doesn't scroll inside PageLayout's
+  // custom scroll container — same constraint that drives
+  // ShopMannequinRail.onSlotClick to use window.scrollTo directly.
+  const scrollToTop = () => {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToInventory = () => {
+    if (typeof window === 'undefined') return;
+    // Falls back to the mannequin rail (#shop-rail) if the inventory
+    // section isn't on the page — e.g. the user is signed out, or hasn't
+    // bought anything yet so ShopPageView elides the block.
+    const target =
+      document.getElementById('shop-inventory') ??
+      document.getElementById('shop-rail');
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const top = rect.top + window.scrollY - SCROLL_OFFSET;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
+
+  const onNavKey =
+    (handler: () => void) => (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handler();
+      }
+    };
 
   return (
     <XStack
@@ -122,19 +156,35 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         $sm={{ display: 'none' }}
         data-testid="shop-top-bar-nav"
       >
-        <Link href="/shop" style={{ textDecoration: 'none' }}>
-          <NavLink color="$white">{labels.nav.shop}</NavLink>
-        </Link>
-        <Link href="#shop-featured" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.featured}</NavLink>
-        </Link>
+        <NavLink
+          color="$white"
+          cursor="pointer"
+          role="button"
+          tabIndex={0}
+          onPress={scrollToTop}
+          onKeyDown={onNavKey(scrollToTop)}
+          data-testid="shop-nav-shop"
+        >
+          {labels.nav.shop}
+        </NavLink>
         {/* Inventory was folded into the mannequin rail — the link
-            scroll-jumps to the rail rather than opening a separate page. */}
-        <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.inventory}</NavLink>
-        </Link>
+            scroll-jumps to the rail rather than opening a separate page.
+            Manual scroll is required because PageLayout's scroll container
+            ignores browser anchor-link defaults (same reason
+            ShopMannequinRail.onSlotClick uses window.scrollTo for its
+            slot jumps). */}
+        <NavLink
+          cursor="pointer"
+          role="button"
+          tabIndex={0}
+          onPress={scrollToInventory}
+          onKeyDown={onNavKey(scrollToInventory)}
+          data-testid="shop-nav-inventory"
+        >
+          {labels.nav.inventory}
+        </NavLink>
         <Link href="/wallet" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.wallet}</NavLink>
+          <NavLink data-testid="shop-nav-wallet">{labels.nav.wallet}</NavLink>
         </Link>
       </XStack>
 

@@ -8,7 +8,6 @@ export const shopBy = {
     title: 'Крама',
     nav: {
       shop: 'Крама',
-      featured: 'Выбранае',
       inventory: 'Інвентар',
       wallet: 'Кашалёк',
     },
@@ -141,6 +140,12 @@ export const shopBy = {
     buyEquip: 'Купіць і апрануць',
     equip: 'Апрануць',
     unequip: 'Зняць',
+    sell: 'Прадаць · 50%',
+  },
+  inventory: {
+    title: 'Інвентар',
+    eyebrow: '{count} прадметаў',
+    empty: 'У вас пакуль нічога няма.',
   },
   rarities: {
     common: 'Звычайны',

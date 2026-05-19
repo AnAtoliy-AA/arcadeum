@@ -8,7 +8,6 @@ export const shopEn = {
     title: 'Shop',
     nav: {
       shop: 'Shop',
-      featured: 'Featured',
       inventory: 'Inventory',
       wallet: 'Wallet',
     },
@@ -141,6 +140,12 @@ export const shopEn = {
     buyEquip: 'Buy & equip',
     equip: 'Equip',
     unequip: 'Unequip',
+    sell: 'Sell · 50%',
+  },
+  inventory: {
+    title: 'Inventory',
+    eyebrow: '{count} owned',
+    empty: 'You don’t own anything yet.',
   },
   rarities: {
     common: 'Common',

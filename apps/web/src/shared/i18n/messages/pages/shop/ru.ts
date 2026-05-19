@@ -8,7 +8,6 @@ export const shopRu = {
     title: 'Магазин',
     nav: {
       shop: 'Магазин',
-      featured: 'Избранное',
       inventory: 'Инвентарь',
       wallet: 'Кошелёк',
     },
@@ -141,6 +140,12 @@ export const shopRu = {
     buyEquip: 'Купить и экипировать',
     equip: 'Экипировать',
     unequip: 'Снять',
+    sell: 'Продать · 50%',
+  },
+  inventory: {
+    title: 'Инвентарь',
+    eyebrow: '{count} предметов',
+    empty: 'У вас пока ничего нет.',
   },
   rarities: {
     common: 'Обычный',

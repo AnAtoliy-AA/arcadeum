@@ -187,6 +187,7 @@ export const shopFr = {
       legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
     },
     name_color: {
+      default: { name: 'Par défaut', desc: 'La couleur de nom initiale.' },
       slate: { name: 'Ardoise', desc: 'Un gris calme et frais.' },
       emerald: { name: 'Émeraude', desc: 'Un vert émeraude éclatant.' },
       cyan: { name: 'Cyan', desc: 'Un cyan électrique.' },
@@ -200,19 +201,25 @@ export const shopFr = {
         desc: 'Un dégradé changeant d’aurore boréale.',
       },
     },
+    game_skin: {
+      default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
+    },
     banner: {
+      default: { name: 'Par défaut', desc: 'L’arrière-plan initial.' },
       slate: { name: 'Ardoise', desc: 'Un arrière-plan gris ardoise sobre.' },
       tide: { name: 'Marée', desc: 'Un dégradé frais turquoise vers cyan.' },
       twilight: { name: 'Crépuscule', desc: 'Indigo fondu dans un rose intense.' },
       nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolore.' },
     },
     aura: {
+      default: { name: 'Par défaut', desc: 'L’aura initiale.' },
       silver: { name: 'Aura argentée', desc: 'Un halo argenté subtil.' },
       cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
       violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
       prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
     },
     frame: {
+      default: { name: 'Par défaut', desc: 'Le cadre initial.' },
       silver: { name: 'Cadre argenté', desc: 'Un anneau argenté brossé.' },
       emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
       violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },

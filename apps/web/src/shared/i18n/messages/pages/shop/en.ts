@@ -187,6 +187,7 @@ export const shopEn = {
       legend: { name: 'Legend', desc: 'A legendary player.' },
     },
     name_color: {
+      default: { name: 'Default', desc: 'The starter name color.' },
       slate: { name: 'Slate', desc: 'A calm, cool gray.' },
       emerald: { name: 'Emerald', desc: 'A fresh emerald green.' },
       cyan: { name: 'Cyan', desc: 'An electric cyan.' },
@@ -194,19 +195,25 @@ export const shopEn = {
       sunset: { name: 'Sunset', desc: 'A warm sunset gradient.' },
       aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
     },
+    game_skin: {
+      default: { name: 'Default', desc: 'The starter game theme.' },
+    },
     banner: {
+      default: { name: 'Default', desc: 'The starter backdrop.' },
       slate: { name: 'Slate', desc: 'A muted dark-slate backdrop.' },
       tide: { name: 'Tide', desc: 'A cool teal-to-cyan wash.' },
       twilight: { name: 'Twilight', desc: 'Indigo melting into hot pink.' },
       nebula: { name: 'Nebula', desc: 'A cosmic multi-color gradient.' },
     },
     aura: {
+      default: { name: 'Default', desc: 'The starter aura.' },
       silver: { name: 'Silver Aura', desc: 'A subtle silver halo.' },
       cyan: { name: 'Cyan Aura', desc: 'A crisp electric glow.' },
       violet: { name: 'Violet Aura', desc: 'A rich violet shine.' },
       prism: { name: 'Prism Aura', desc: 'A shifting prism radiance.' },
     },
     frame: {
+      default: { name: 'Default', desc: 'The starter frame.' },
       silver: { name: 'Silver Frame', desc: 'A clean brushed-silver ring.' },
       emerald: { name: 'Emerald Frame', desc: 'A vivid emerald ring.' },
       violet: { name: 'Violet Frame', desc: 'A polished violet ring.' },

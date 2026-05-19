@@ -147,23 +147,18 @@ export class InventoryService {
       }
     }
 
-    // Set equip slots only if currently null. Use unconditional $set with a
-    // filter that targets only null/missing values so re-runs don't clobber a
-    // user's later equip choice.
-    const avatarStarter = starters.find((s) => s.category === 'avatar');
-    const badgeStarter = starters.find((s) => s.category === 'badge');
+    // Auto-equip every starter whose category has an equip slot. Filter on
+    // null/undefined so re-runs (bootstrap back-fill, multi-tab races) never
+    // clobber a slot the user has since equipped themselves. Iterating over
+    // starters + equipKeyFor keeps this honest as new equippable categories
+    // land — no need to remember to add another if-block here.
     const userObjId = new Types.ObjectId(userId);
-    if (avatarStarter) {
+    for (const starter of starters) {
+      const equipKey = equipKeyFor(starter.category);
+      if (!equipKey) continue;
       await this.userModel.updateOne(
-        { _id: userObjId, equippedAvatarId: { $in: [null, undefined] } },
-        { $set: { equippedAvatarId: avatarStarter.id } },
-        { session },
-      );
-    }
-    if (badgeStarter) {
-      await this.userModel.updateOne(
-        { _id: userObjId, equippedBadgeId: { $in: [null, undefined] } },
-        { $set: { equippedBadgeId: badgeStarter.id } },
+        { _id: userObjId, [equipKey]: { $in: [null, undefined] } },
+        { $set: { [equipKey]: starter.id } },
         { session },
       );
     }

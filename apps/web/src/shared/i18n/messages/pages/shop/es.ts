@@ -187,6 +187,7 @@ export const shopEs = {
       legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
     },
     name_color: {
+      default: { name: 'Predeterminado', desc: 'El color de nombre inicial.' },
       slate: { name: 'Pizarra', desc: 'Un gris fresco y tranquilo.' },
       emerald: { name: 'Esmeralda', desc: 'Un verde esmeralda fresco.' },
       cyan: { name: 'Cian', desc: 'Un cian eléctrico.' },
@@ -194,19 +195,25 @@ export const shopEs = {
       sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
       aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
     },
+    game_skin: {
+      default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
+    },
     banner: {
+      default: { name: 'Predeterminado', desc: 'El fondo inicial.' },
       slate: { name: 'Pizarra', desc: 'Un fondo gris oscuro discreto.' },
       tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
       twilight: { name: 'Crepúsculo', desc: 'Índigo que se funde en rosa intenso.' },
       nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
     },
     aura: {
+      default: { name: 'Predeterminada', desc: 'El aura inicial.' },
       silver: { name: 'Aura plateada', desc: 'Un halo plateado sutil.' },
       cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
       violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
       prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
     },
     frame: {
+      default: { name: 'Predeterminado', desc: 'El marco inicial.' },
       silver: { name: 'Marco plateado', desc: 'Un anillo plateado cepillado.' },
       emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
       violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },

@@ -120,6 +120,18 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
   // Name colors. `assetUrl` is empty — the player-facing previews render a
   // color swatch from `colorValue` instead of an image. A `colorValue` may be
   // a hex string or a linear-gradient CSS expression for higher rarities.
+  'name-color-default': {
+    id: 'name-color-default',
+    category: 'name_color',
+    rarity: 'common',
+    nameKey: 'items.name_color.default.name',
+    descKey: 'items.name_color.default.desc',
+    assetUrl: '',
+    colorValue: '#e2e8f0',
+    defaultPriceAmount: 0,
+    defaultPriceCurrency: 'coins',
+    starter: true,
+  },
   'name-color-slate': {
     id: 'name-color-slate',
     category: 'name_color',
@@ -187,10 +199,38 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
     defaultPriceCurrency: 'gems',
   },
 
+  // Game skins — the in-match visual theme. No equip slot today (game_skin
+  // is schema-only) but the catalog row + a free starter still ship so the
+  // surface isn't empty and the player has something owned in the category.
+  'game-skin-default': {
+    id: 'game-skin-default',
+    category: 'game_skin',
+    rarity: 'common',
+    nameKey: 'items.game_skin.default.name',
+    descKey: 'items.game_skin.default.desc',
+    assetUrl: '',
+    colorValue: '#1e293b',
+    defaultPriceAmount: 0,
+    defaultPriceCurrency: 'coins',
+    starter: true,
+  },
+
   // Banners — backdrop panel behind the avatar in profile / lobby surfaces.
   // Same swatch render path as name_color: `assetUrl` is empty and
   // `colorValue` holds the CSS (solid or linear-gradient). ItemAsset renders
   // a wide gradient tile from this value.
+  'banner-default': {
+    id: 'banner-default',
+    category: 'banner',
+    rarity: 'common',
+    nameKey: 'items.banner.default.name',
+    descKey: 'items.banner.default.desc',
+    assetUrl: '',
+    colorValue: '#0f172a',
+    defaultPriceAmount: 0,
+    defaultPriceCurrency: 'coins',
+    starter: true,
+  },
   'banner-slate': {
     id: 'banner-slate',
     category: 'banner',
@@ -240,6 +280,18 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
   // Auras — animated glow around the player's name. Reuses the colorValue
   // swatch pattern; the CSS animation hook lives in ItemAsset (catalog +
   // slot preview only — full live-name aura rendering ships in a follow-up).
+  'aura-default': {
+    id: 'aura-default',
+    category: 'aura',
+    rarity: 'common',
+    nameKey: 'items.aura.default.name',
+    descKey: 'items.aura.default.desc',
+    assetUrl: '',
+    colorValue: '#94a3b8',
+    defaultPriceAmount: 0,
+    defaultPriceCurrency: 'coins',
+    starter: true,
+  },
   'aura-silver': {
     id: 'aura-silver',
     category: 'aura',
@@ -289,6 +341,18 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
   // the ring stroke color and the catalog tile's donut shape. Solid hex or
   // gradient string accepted; for the mannequin disc the gradient is used
   // as the disc background and the solid hex as a border accent.
+  'frame-default': {
+    id: 'frame-default',
+    category: 'frame',
+    rarity: 'common',
+    nameKey: 'items.frame.default.name',
+    descKey: 'items.frame.default.desc',
+    assetUrl: '',
+    colorValue: '#475569',
+    defaultPriceAmount: 0,
+    defaultPriceCurrency: 'coins',
+    starter: true,
+  },
   'frame-silver': {
     id: 'frame-silver',
     category: 'frame',

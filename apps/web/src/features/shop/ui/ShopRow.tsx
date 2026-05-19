@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
+import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopCard, type ShopCardLabels } from './ShopCard';
 import type {
@@ -17,6 +18,7 @@ export interface ShopRowLabels {
   title: string;
   eyebrow: string;
   viewAll: string;
+  collapse: string;
 }
 
 export interface ShopRowProps {
@@ -74,6 +76,18 @@ const Scroller = styled(Stack, {
   width: '100%',
   overflow: 'scroll',
   paddingVertical: 4,
+
+  variants: {
+    expanded: {
+      // Wrap the cards into a grid that fills the row width so every item
+      // is visible without horizontal scrolling. Scroll mode is the default
+      // (compact, leaves room for many rows on the page).
+      true: {
+        flexWrap: 'wrap',
+        overflow: 'visible',
+      },
+    },
+  } as const,
 });
 
 export function ShopRow({
@@ -91,6 +105,7 @@ export function ShopRow({
   onPurchaseFallback,
 }: ShopRowProps) {
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
+  const [expanded, setExpanded] = useState(false);
 
   const ownedIds = useMemo(
     () =>
@@ -103,6 +118,20 @@ export function ShopRow({
   if (items.length === 0) return null;
 
   const isActive = Boolean(sectionKey && activeSlot === sectionKey);
+
+  const toggleExpanded = () => {
+    setExpanded((prev) => {
+      const next = !prev;
+      track('shop.row.viewAll', {
+        rowId: id,
+        section: sectionKey ?? null,
+        expanded: next,
+      });
+      return next;
+    });
+  };
+
+  const expandLabel = expanded ? labels.collapse : labels.viewAll;
 
   return (
     <YStack
@@ -140,12 +169,26 @@ export function ShopRow({
             textTransform="uppercase"
             fontWeight="700"
             color="$gray11"
+            cursor="pointer"
+            role="button"
+            tabIndex={0}
+            aria-expanded={expanded}
+            onPress={toggleExpanded}
+            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleExpanded();
+              }
+            }}
+            hoverStyle={{ color: '$white' }}
+            data-testid={`shop-row-${id}-toggle`}
+            data-expanded={expanded ? 'true' : 'false'}
           >
-            {labels.viewAll}
+            {expandLabel}
           </Text>
         </XStack>
 
-        <Scroller>
+        <Scroller expanded={expanded}>
           {items.map((item, index) => (
             <ShopCard
               key={item.id}

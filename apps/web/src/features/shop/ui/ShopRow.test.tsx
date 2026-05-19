@@ -40,6 +40,7 @@ const rowLabels = {
   title: 'Avatars',
   eyebrow: '{count} items',
   viewAll: 'All',
+  collapse: 'Collapse',
 };
 
 const EQUIPPED_EMPTY: EquippedView = {

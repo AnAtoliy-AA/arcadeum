@@ -80,6 +80,16 @@ const SkinChip = styled(Stack, {
   backgroundColor: 'rgba(0,0,0,0.4)',
 });
 
+// Extract a single representative color from a colorValue (hex or
+// linear-gradient string). The rays/halo need a solid CSS color, not a
+// gradient, so for gradient values we pluck the first hex and use that.
+function pickSwatchColor(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const match = value.match(/#[0-9a-fA-F]{3,8}/);
+  if (match) return match[0];
+  return value.includes('gradient') ? null : value;
+}
+
 export function ShopMannequinStage({
   preview,
   hoverItem,
@@ -92,11 +102,55 @@ export function ShopMannequinStage({
   const badge = preview.badge ?? null;
   const nameColor = preview.name_color ?? null;
   const skin = preview.game_skin ?? null;
+  const banner = preview.banner ?? null;
+  const aura = preview.aura ?? null;
+  const frame = preview.frame ?? null;
 
+  // Aura wins over rarity-derived glow when equipped/hovered. Falls back to
+  // the focused item's rarity glow when no aura is selected so the stage
+  // still feels alive (matches the old behavior).
   const accentGlow = useMemo(() => {
+    const auraColor = pickSwatchColor(aura?.colorValue ?? null);
+    if (auraColor) return auraColor;
     const focus = hoverItem ?? avatar ?? badge ?? skin ?? nameColor;
     return focus ? RARITY_GLOW[focus.rarity] : 'rgba(96,165,250,0.25)';
-  }, [hoverItem, avatar, badge, skin, nameColor]);
+  }, [aura, hoverItem, avatar, badge, skin, nameColor]);
+
+  // Banner drives the full stage backdrop. Solid colorValue → backgroundColor;
+  // a linear-gradient value → backgroundImage. Fallback preserves the
+  // default dark-navy wash so the stage doesn't look broken bare.
+  const stageBg = useMemo<React.CSSProperties>(() => {
+    const value = banner?.colorValue;
+    if (!value) return { backgroundColor: 'rgba(15,23,42,0.55)' };
+    return value.includes('gradient')
+      ? { backgroundImage: value }
+      : { backgroundColor: value };
+  }, [banner]);
+
+  // Frame drives the avatar disc as a ring, not a full-strength colored
+  // backdrop — a fully opaque disc fills the circle and competes with the
+  // avatar image. Solid hex → low-alpha tint on the fill (≈20%) with a
+  // full-strength border so the ring carries the identity. Gradient → keep
+  // the gradient visible but composite a dark wash on top so it reads as
+  // a subtle backdrop; border picks up the first color from the gradient.
+  // Without a frame the disc stays its old translucent-white wash so the
+  // stage degrades gracefully.
+  const frameStyle = useMemo<React.CSSProperties>(() => {
+    const value = frame?.colorValue;
+    if (!value) {
+      return {
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderColor: 'rgba(255,255,255,0.18)',
+      };
+    }
+    if (value.includes('gradient')) {
+      const wash = 'linear-gradient(rgba(15,23,42,0.55), rgba(15,23,42,0.55))';
+      const borderColor =
+        pickSwatchColor(value) ?? 'rgba(255,255,255,0.35)';
+      return { backgroundImage: `${wash}, ${value}`, borderColor };
+    }
+    return { backgroundColor: `${value}33`, borderColor: value };
+  }, [frame]);
 
   const raysBg = useMemo<React.CSSProperties>(() => {
     // 12 narrow rays evenly spaced every 30°. The previous 4-wide-spike
@@ -139,7 +193,11 @@ export function ShopMannequinStage({
       : labels.stage.online;
 
   return (
-    <StageFrame data-testid="shop-stage">
+    <StageFrame
+      data-testid="shop-stage"
+      data-banner={banner?.id ?? ''}
+      style={stageBg}
+    >
       <RaysLayer className={stageStyles.rays} style={raysBg} />
 
       {hoverItem ? (
@@ -186,12 +244,15 @@ export function ShopMannequinStage({
           borderRadius={70}
           alignItems="center"
           justifyContent="center"
-          backgroundColor="rgba(255,255,255,0.04)"
           borderWidth={2}
-          borderColor="rgba(255,255,255,0.18)"
           position="relative"
-          style={{ boxShadow: `0 0 56px ${accentGlow}` }}
+          style={{
+            ...frameStyle,
+            boxShadow: `0 0 56px ${accentGlow}`,
+          }}
           data-testid="shop-stage-avatar"
+          data-frame={frame?.id ?? ''}
+          data-aura={aura?.id ?? ''}
         >
           {avatar ? (
             <ItemAsset item={avatar} size={108} priority />

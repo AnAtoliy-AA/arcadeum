@@ -19,6 +19,7 @@ import {
   PurchaseConfirmDialog,
   type PurchaseConfirmLabels,
 } from './PurchaseConfirmDialog';
+import type { SellConfirmLabels } from './SellConfirmDialog';
 import {
   ShopSignInBanner,
   type ShopSignInBannerLabels,
@@ -28,7 +29,6 @@ import {
   type ShopCatalogEmptyLabels,
 } from './ShopCatalogEmpty';
 import type { ShopCardLabels } from './ShopCard';
-import type { SellConfirmLabels } from './SellConfirmDialog';
 import type {
   EffectiveShopItem,
   FeaturedDropView,
@@ -37,21 +37,40 @@ import type {
   WalletBalanceView,
 } from '../server/shop.types';
 
+// The page-level `hero` slice comes straight from i18n (`pages.shop.hero`)
+// and only carries the hero's own strings. The Equip/Unequip/Equipped strings
+// reuse the existing `card.*` keys (same affordance), so the full
+// `ShopHeroLabels` is composed below in ShopPageView, not declared here.
+type ShopPageHeroLabels = Omit<
+  ShopHeroLabels,
+  'equip' | 'unequip' | 'equipped'
+>;
+
+export interface ShopInventorySectionLabels {
+  title: string;
+  eyebrow: string;
+  empty: string;
+}
+
 export interface ShopPageLabels {
   meta: { title: string; description: string };
   topBar: ShopTopBarLabels;
   signIn: ShopSignInBannerLabels;
-  hero: ShopHeroLabels;
+  hero: ShopPageHeroLabels;
   mannequin: ShopMannequinLabels;
   row: {
     avatars: ShopRowLabels;
     badges: ShopRowLabels;
     colors: ShopRowLabels;
     skins: ShopRowLabels;
+    banners: ShopRowLabels;
+    auras: ShopRowLabels;
+    frames: ShopRowLabels;
     legendary: ShopRowLabels;
   };
   card: ShopCardLabels;
   rarities: Record<string, string>;
+  inventory: ShopInventorySectionLabels;
   purchase: PurchaseConfirmLabels;
   sell: SellConfirmLabels;
   empty: ShopCatalogEmptyLabels;
@@ -118,6 +137,18 @@ export function ShopPageView({
     () => liveCatalog.filter((c) => c.category === 'game_skin'),
     [liveCatalog],
   );
+  const banners = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'banner'),
+    [liveCatalog],
+  );
+  const auras = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'aura'),
+    [liveCatalog],
+  );
+  const frames = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'frame'),
+    [liveCatalog],
+  );
   const legendaries = useMemo(
     () => liveCatalog.filter((c) => c.rarity === 'legendary'),
     [liveCatalog],
@@ -133,6 +164,27 @@ export function ShopPageView({
   const featuredItem = featuredDrop
     ? (catalog.find((c) => c.id === featuredDrop.itemId) ?? null)
     : null;
+
+  const featuredOwned = featuredItem
+    ? inventory.items.some(
+        (row) => row.itemId === featuredItem.id && row.soldAt === null,
+      )
+    : false;
+  const featuredEquipped =
+    featuredItem !== null &&
+    inventory.equipped[featuredItem.category] === featuredItem.id;
+
+  // The hero reuses card.equip / card.unequip / card.equipped to avoid
+  // adding parallel translation entries — same affordance, different layout.
+  const heroLabels = useMemo(
+    () => ({
+      ...labels.hero,
+      equip: labels.card.equip,
+      unequip: labels.card.unequip,
+      equipped: labels.card.equipped,
+    }),
+    [labels.hero, labels.card],
+  );
 
   const purchaseName = purchaseTarget
     ? String(t(`pages.shop.${purchaseTarget.nameKey}` as TranslationKey))
@@ -179,11 +231,25 @@ export function ShopPageView({
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}
-                labels={labels.hero}
+                owned={featuredOwned}
+                equipped={featuredEquipped}
+                labels={heroLabels}
                 onBuyClick={(item) => setPurchaseTarget(item)}
               />
             ) : null}
 
+            <ShopRow
+              id="row-legendary"
+              items={legendaries}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              highlight
+              labels={labels.row.legendary}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={3}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
             <ShopRow
               id="row-avatars"
               sectionKey="avatar"
@@ -193,7 +259,19 @@ export function ShopPageView({
               labels={labels.row.avatars}
               cardLabels={labels.card}
               balance={balance}
-              priorityCount={3}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-frames"
+              sectionKey="frame"
+              items={frames}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.frames}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
@@ -203,6 +281,30 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.badges}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-banners"
+              sectionKey="banner"
+              items={banners}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.banners}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-auras"
+              sectionKey="aura"
+              items={auras}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.auras}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}
@@ -228,18 +330,6 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.skins}
-              cardLabels={labels.card}
-              balance={balance}
-              priorityCount={2}
-              onPurchaseFallback={(item) => setPurchaseTarget(item)}
-            />
-            <ShopRow
-              id="row-legendary"
-              items={legendaries}
-              inventory={inventory.items}
-              equipped={inventory.equipped}
-              highlight
-              labels={labels.row.legendary}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}

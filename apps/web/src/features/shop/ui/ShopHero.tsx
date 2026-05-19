@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button, XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
 import {
@@ -14,6 +15,8 @@ import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { RARITY_COLOR, RARITY_GLOW } from '../lib/rarity';
 import { CURRENCY_GLYPH } from '../lib/currency';
+import { equipItemAction, unequipItemAction } from '../server/shop.actions';
+import { syncEquippedToSession } from '../lib/syncEquippedToSession';
 import { ItemAsset } from './ItemAsset';
 import type { EffectiveShopItem } from '../server/shop.types';
 
@@ -27,10 +30,15 @@ export interface ShopHeroLabels {
   tryOn: string;
   buyNow: string;
   bodySuffix: string;
+  equip: string;
+  unequip: string;
+  equipped: string;
 }
 
 export interface ShopHeroProps {
   item: EffectiveShopItem;
+  owned: boolean;
+  equipped: boolean;
   labels: ShopHeroLabels;
   onBuyClick?: (item: EffectiveShopItem) => void;
 }
@@ -59,10 +67,20 @@ const HeroTag = styled(Stack, {
   alignSelf: 'flex-start',
 });
 
-export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
+type HeroAction = 'buy' | 'equip' | 'unequip';
+
+export function ShopHero({
+  item,
+  owned,
+  equipped,
+  labels,
+  onBuyClick,
+}: ShopHeroProps) {
+  const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLanguage();
   const setHover = useShopPreviewStore((s) => s.setHover);
+  const [isPending, startTransition] = useTransition();
 
   const itemName = String(
     t(`pages.shop.${item.nameKey}` as TranslationKey),
@@ -92,7 +110,14 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
   };
   const handleHoverOff = () => setHover(null);
 
-  const handleBuyClick = () => {
+  // Action mapping mirrors ShopCard: equipped → Unequip, owned-but-not
+  // → Equip, otherwise → Buy now. Without this, the Buy button on the
+  // featured drop always opens the purchase dialog for an item the user
+  // already owns, and the BE's defensive short-circuit silently no-ops
+  // the click — the user has no idea why nothing visible changed.
+  const action: HeroAction = equipped ? 'unequip' : owned ? 'equip' : 'buy';
+
+  const handleBuy = () => {
     track('shop.purchase.click', {
       itemId: item.id,
       currency: item.priceCurrency,
@@ -102,11 +127,58 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
     onBuyClick?.(item);
   };
 
+  const handleEquip = () => {
+    if (isPending) return;
+    track('shop.equip', { itemId: item.id, source: 'hero' });
+    startTransition(async () => {
+      const result = await equipItemAction(item.id);
+      if (result.ok) {
+        syncEquippedToSession(result.data);
+        router.refresh();
+      }
+    });
+  };
+
+  const handleUnequip = () => {
+    if (isPending) return;
+    track('shop.unequip', { category: item.category, source: 'hero' });
+    startTransition(async () => {
+      const result = await unequipItemAction(item.category);
+      if (result.ok) {
+        syncEquippedToSession(result.data);
+        router.refresh();
+      }
+    });
+  };
+
+  const handleActionPress = () => {
+    if (action === 'unequip') handleUnequip();
+    else if (action === 'equip') handleEquip();
+    else handleBuy();
+  };
+
+  const actionLabel =
+    action === 'unequip'
+      ? labels.unequip
+      : action === 'equip'
+        ? labels.equip
+        : labels.buyNow;
+
+  const actionTestId =
+    action === 'unequip'
+      ? 'shop-hero-unequip'
+      : action === 'equip'
+        ? 'shop-hero-equip'
+        : 'shop-hero-buy';
+
   return (
     <YStack
       id="shop-featured"
       data-testid="shop-hero"
       data-rarity={item.rarity}
+      data-owned={owned ? 'true' : 'false'}
+      data-equipped={equipped ? 'true' : 'false'}
+      data-action={action}
       onPointerEnter={handleHoverOn}
       onPointerLeave={handleHoverOff}
     >
@@ -131,26 +203,45 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
           </Stack>
 
           <YStack flex={1} gap="$3" minWidth={0}>
-            <HeroTag
-              backgroundColor={`${accent}1a`}
-              borderColor={`${accent}55`}
-            >
-              <Stack
-                width={6}
-                height={6}
-                borderRadius={3}
-                backgroundColor={accent}
-              />
-              <Text
-                fontSize={11}
-                letterSpacing={1.5}
-                textTransform="uppercase"
-                fontWeight="800"
-                color={accent}
+            <XStack gap="$2" alignItems="center" flexWrap="wrap">
+              <HeroTag
+                backgroundColor={`${accent}1a`}
+                borderColor={`${accent}55`}
               >
-                {labels.tag}
-              </Text>
-            </HeroTag>
+                <Stack
+                  width={6}
+                  height={6}
+                  borderRadius={3}
+                  backgroundColor={accent}
+                />
+                <Text
+                  fontSize={11}
+                  letterSpacing={1.5}
+                  textTransform="uppercase"
+                  fontWeight="800"
+                  color={accent}
+                >
+                  {labels.tag}
+                </Text>
+              </HeroTag>
+              {equipped ? (
+                <HeroTag
+                  backgroundColor={`${accent}1a`}
+                  borderColor={`${accent}55`}
+                  data-testid="shop-hero-equipped-chip"
+                >
+                  <Text
+                    fontSize={11}
+                    letterSpacing={1.5}
+                    textTransform="uppercase"
+                    fontWeight="800"
+                    color={accent}
+                  >
+                    {labels.equipped}
+                  </Text>
+                </HeroTag>
+              ) : null}
+            </XStack>
 
             <YStack gap="$1">
               <Text
@@ -174,20 +265,31 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
 
             <XStack gap="$3" alignItems="center" flexWrap="wrap">
               <Button
-                onPress={handleBuyClick}
-                data-testid="shop-hero-buy"
+                onPress={handleActionPress}
+                disabled={isPending}
+                data-testid={actionTestId}
+                data-action={action}
                 style={{
-                  backgroundImage: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
+                  backgroundImage:
+                    action === 'buy'
+                      ? `linear-gradient(135deg, ${accent}, ${accent}cc)`
+                      : undefined,
                   borderColor: accent,
                 }}
               >
-                <Text fontSize="$4" fontWeight="800" color="#0a0a0a">
-                  {labels.buyNow}
+                <Text
+                  fontSize="$4"
+                  fontWeight="800"
+                  color={action === 'buy' ? '#0a0a0a' : '$white'}
+                >
+                  {actionLabel}
                 </Text>
-                <Text fontSize="$3" fontWeight="700" color="#0a0a0a">
-                  · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
-                  {formatNumber(item.priceAmount, locale)}
-                </Text>
+                {action === 'buy' ? (
+                  <Text fontSize="$3" fontWeight="700" color="#0a0a0a">
+                    · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
+                    {formatNumber(item.priceAmount, locale)}
+                  </Text>
+                ) : null}
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
                 <Stack

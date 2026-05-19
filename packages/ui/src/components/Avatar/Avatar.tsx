@@ -98,12 +98,17 @@ export const Avatar = memo(function Avatar({
       borderColor={borderColor}
       boxShadow={boxShadow}
       borderWidth={borderWidth}
+      overflow={src ? 'visible' : 'hidden'}
     >
       {src ? (
         <img
           src={src}
           alt={alt ?? name}
-          style={{ width: sizeValue, height: sizeValue, objectFit: 'cover', borderRadius: '50%' }}
+          style={{
+            width: sizeValue,
+            height: sizeValue,
+            objectFit: 'contain',
+          }}
           onError={(e) => {
             e.currentTarget.style.display = 'none';
           }}

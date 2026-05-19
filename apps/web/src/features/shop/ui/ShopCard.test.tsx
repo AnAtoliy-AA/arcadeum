@@ -35,6 +35,7 @@ const labels: ShopCardLabels = {
   buyEquip: 'Buy & equip',
   equip: 'Equip',
   unequip: 'Unequip',
+  sell: 'Sell',
 };
 
 const BALANCE: WalletBalanceView = { coins: 5_000, gems: 200 };

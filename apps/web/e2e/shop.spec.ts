@@ -16,7 +16,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/shop');
-    await expect(page.getByTestId('shop-top-bar')).toBeVisible();
+    await expect(page.getByTestId('shop-top-bar').first()).toBeVisible();
     await expect(page.getByTestId('shop-rail')).toBeVisible();
     await expect(page.getByTestId('shop-stage')).toBeVisible();
     await expect(page.getByTestId('shop-hero')).toBeVisible();
@@ -40,7 +40,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     // triggers the same preview-mode setter the cursor hover would.
     const foxAction = page.getByTestId(`shop-card-action-${FOX_AVATAR_ID}`);
     await foxAction.focus();
-    await expect(page.getByTestId('shop-action-panel')).toHaveAttribute(
+    await expect(page.getByTestId('shop-action-panel').first()).toHaveAttribute(
       'data-mode',
       'preview',
     );
@@ -53,7 +53,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/shop');
-    await page.getByTestId('shop-slot-badge').click();
+    await page.getByTestId('shop-slot-badge').first().click();
     await expect(page.getByTestId('shop-row-row-badges')).toHaveAttribute(
       'data-active',
       'true',
@@ -72,5 +72,18 @@ test.describe('Shop redesign · Showcase Locker', () => {
     // fires the React onClick / Tamagui onPress handler.
     await heroBuy.evaluate((el: HTMLElement) => el.click());
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
+  });
+
+  test('renders user avatar container with a circular boundary', async ({ page }) => {
+    await navigateTo(page, '/leaderboards');
+    const avatarContainer = page.locator('[class*="AvatarContainer"]').first();
+    await expect(avatarContainer).toBeVisible();
+
+    const borderRadius = await avatarContainer.evaluate((el) => {
+      return window.getComputedStyle(el).borderRadius;
+    });
+    // Should be rounded (e.g. '9999px' or similar, definitely not '0px')
+    expect(borderRadius).not.toBe('0px');
+    expect(borderRadius).not.toBe('');
   });
 });

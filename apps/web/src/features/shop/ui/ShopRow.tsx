@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
+import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
-import { ShopCard, type ShopCardLabels } from './ShopCard';
+import { ShopCard, type ShopCardLabels, type ShopCardMode } from './ShopCard';
 import type {
   EffectiveShopItem,
   EquippedView,
@@ -17,6 +18,7 @@ export interface ShopRowLabels {
   title: string;
   eyebrow: string;
   viewAll: string;
+  collapse: string;
 }
 
 export interface ShopRowProps {
@@ -35,9 +37,17 @@ export interface ShopRowProps {
    * "loading=eager" warning.
    */
   priorityCount?: number;
+  /**
+   * 'shop' (default) renders the full catalog with Buy/Equip affordances.
+   * 'inventory' is used by the owned-items section — cards render Sell as a
+   * secondary action and the upstream caller is expected to feed only items
+   * the user owns.
+   */
+  mode?: ShopCardMode;
   labels: ShopRowLabels;
   cardLabels: ShopCardLabels;
   onPurchaseFallback: (item: EffectiveShopItem) => void;
+  onSellRequest?: (row: InventoryItemView) => void;
 }
 
 const RowHost = styled(Stack, {
@@ -74,6 +84,18 @@ const Scroller = styled(Stack, {
   width: '100%',
   overflow: 'scroll',
   paddingVertical: 4,
+
+  variants: {
+    expanded: {
+      // Wrap the cards into a grid that fills the row width so every item
+      // is visible without horizontal scrolling. Scroll mode is the default
+      // (compact, leaves room for many rows on the page).
+      true: {
+        flexWrap: 'wrap',
+        overflow: 'visible',
+      },
+    },
+  } as const,
 });
 
 export function ShopRow({
@@ -86,11 +108,14 @@ export function ShopRow({
   small,
   highlight,
   priorityCount = 0,
+  mode = 'shop',
   labels,
   cardLabels,
   onPurchaseFallback,
+  onSellRequest,
 }: ShopRowProps) {
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
+  const [expanded, setExpanded] = useState(false);
 
   const ownedIds = useMemo(
     () =>
@@ -100,9 +125,35 @@ export function ShopRow({
     [inventory],
   );
 
+  // Map itemId → live inventory row so the inventory-mode Sell button can
+  // pass the right purchaseId into SellConfirmDialog without a per-card
+  // scan. Falls back to null when not in inventory mode (catalog cards
+  // ignore the prop).
+  const liveRowByItemId = useMemo(
+    () =>
+      new Map(
+        inventory.filter((row) => row.soldAt === null).map((row) => [row.itemId, row]),
+      ),
+    [inventory],
+  );
+
   if (items.length === 0) return null;
 
   const isActive = Boolean(sectionKey && activeSlot === sectionKey);
+
+  const toggleExpanded = () => {
+    setExpanded((prev) => {
+      const next = !prev;
+      track('shop.row.viewAll', {
+        rowId: id,
+        section: sectionKey ?? null,
+        expanded: next,
+      });
+      return next;
+    });
+  };
+
+  const expandLabel = expanded ? labels.collapse : labels.viewAll;
 
   return (
     <YStack
@@ -140,12 +191,26 @@ export function ShopRow({
             textTransform="uppercase"
             fontWeight="700"
             color="$gray11"
+            cursor="pointer"
+            role="button"
+            tabIndex={0}
+            aria-expanded={expanded}
+            onPress={toggleExpanded}
+            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleExpanded();
+              }
+            }}
+            hoverStyle={{ color: '$white' }}
+            data-testid={`shop-row-${id}-toggle`}
+            data-expanded={expanded ? 'true' : 'false'}
           >
-            {labels.viewAll}
+            {expandLabel}
           </Text>
         </XStack>
 
-        <Scroller>
+        <Scroller expanded={expanded}>
           {items.map((item, index) => (
             <ShopCard
               key={item.id}
@@ -155,8 +220,15 @@ export function ShopRow({
               balance={balance}
               small={small}
               priority={index < priorityCount}
+              mode={mode}
+              inventoryRow={
+                mode === 'inventory'
+                  ? (liveRowByItemId.get(item.id) ?? null)
+                  : null
+              }
               labels={cardLabels}
               onPurchaseFallback={onPurchaseFallback}
+              onSellRequest={onSellRequest}
             />
           ))}
         </Scroller>

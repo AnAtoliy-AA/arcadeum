@@ -8,7 +8,6 @@ export const shopBy = {
     title: 'Крама',
     nav: {
       shop: 'Крама',
-      featured: 'Выбранае',
       inventory: 'Інвентар',
       wallet: 'Кашалёк',
     },
@@ -49,6 +48,21 @@ export const shopBy = {
         desc: 'Візуальная тэма ўнутры матчаў.',
         empty: 'Пуста',
       },
+      banner: {
+        label: 'Банер',
+        desc: 'Поўны фон сцэны вашага профілю і лобі.',
+        empty: 'Пуста',
+      },
+      aura: {
+        label: 'Аўра',
+        desc: 'Зіхатлівыя промні, што кружаць вакол аватара ў лобі і матчах.',
+        empty: 'Пуста',
+      },
+      frame: {
+        label: 'Рамка',
+        desc: 'Дэкаратыўнае кальцо вакол вашага аватара.',
+        empty: 'Пуста',
+      },
     },
     action: {
       previewingEyebrow: 'Прымерка',
@@ -75,26 +89,49 @@ export const shopBy = {
       title: 'Аватары',
       eyebrow: '{count} прадметаў',
       viewAll: 'Усе',
+      collapse: 'Згарнуць',
     },
     badges: {
       title: 'Значкі',
       eyebrow: '{count} прадметаў',
       viewAll: 'Усе',
+      collapse: 'Згарнуць',
     },
     colors: {
       title: 'Колеры імя',
       eyebrow: '{count} прадметаў',
       viewAll: 'Усе',
+      collapse: 'Згарнуць',
     },
     skins: {
       title: 'Скіны гульняў',
       eyebrow: '{count} прадметаў',
       viewAll: 'Усе',
+      collapse: 'Згарнуць',
+    },
+    banners: {
+      title: 'Банеры',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+      collapse: 'Згарнуць',
+    },
+    auras: {
+      title: 'Аўры',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+      collapse: 'Згарнуць',
+    },
+    frames: {
+      title: 'Рамкі',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+      collapse: 'Згарнуць',
     },
     legendary: {
       title: 'Легендарныя',
       eyebrow: 'Вышэйшы ўзровень',
       viewAll: 'Усе',
+      collapse: 'Згарнуць',
     },
   },
   card: {
@@ -103,6 +140,12 @@ export const shopBy = {
     buyEquip: 'Купіць і апрануць',
     equip: 'Апрануць',
     unequip: 'Зняць',
+    sell: 'Прадаць · 50%',
+  },
+  inventory: {
+    title: 'Інвентар',
+    eyebrow: '{count} прадметаў',
+    empty: 'У вас пакуль нічога няма.',
   },
   rarities: {
     common: 'Звычайны',
@@ -157,12 +200,37 @@ export const shopBy = {
       legend: { name: 'Легенда', desc: 'Легендарны гулец.' },
     },
     name_color: {
+      default: { name: 'Стандартны', desc: 'Стартавы колер імя.' },
       slate: { name: 'Сланец', desc: 'Спакойны халаднаваты шэры.' },
       emerald: { name: 'Смарагд', desc: 'Свежы смарагдава-зялёны.' },
       cyan: { name: 'Цыян', desc: 'Электрычны цыян.' },
       violet: { name: 'Фіялка', desc: 'Яркі фіялетавы.' },
       sunset: { name: 'Захад', desc: 'Цёплы градыент захаду.' },
       aurora: { name: 'Аўрора', desc: 'Пераліўны градыент палярнага ззяння.' },
+    },
+    game_skin: {
+      default: { name: 'Стандартная', desc: 'Стартавая тэма матчаў.' },
+    },
+    banner: {
+      default: { name: 'Стандартны', desc: 'Стартавы фон.' },
+      slate: { name: 'Сланец', desc: 'Стрыманы цёмна-шэры фон.' },
+      tide: { name: 'Прыліў', desc: 'Прахалодны бірузова-блакітны градыент.' },
+      twilight: { name: 'Прыцемкі', desc: 'Індыга пераходзіць у гарачы ружовы.' },
+      nebula: { name: 'Туманнасць', desc: 'Касмічны шматколерны градыент.' },
+    },
+    aura: {
+      default: { name: 'Стандартная', desc: 'Стартавая аўра.' },
+      silver: { name: 'Срэбраная аўра', desc: 'Тонкае срэбнае ззянне.' },
+      cyan: { name: 'Цыянавая аўра', desc: 'Выразнае электрычнае ззянне.' },
+      violet: { name: 'Фіялетавая аўра', desc: 'Глыбокае фіялетавае ззянне.' },
+      prism: { name: 'Прызматычная аўра', desc: 'Пераліўная прызматычная радыяцыя.' },
+    },
+    frame: {
+      default: { name: 'Стандартная', desc: 'Стартавая рамка.' },
+      silver: { name: 'Срэбраная рамка', desc: 'Акуратнае матава-срэбранае кальцо.' },
+      emerald: { name: 'Смарагдавая рамка', desc: 'Яркае смарагдавае кальцо.' },
+      violet: { name: 'Фіялетавая рамка', desc: 'Глыбокае фіялетавае кальцо.' },
+      prism: { name: 'Прызматычная рамка', desc: 'Пераліўнае прызматычнае кальцо.' },
     },
   },
 };

@@ -8,7 +8,6 @@ export const shopFr = {
     title: 'Boutique',
     nav: {
       shop: 'Boutique',
-      featured: 'En vedette',
       inventory: 'Inventaire',
       wallet: 'Portefeuille',
     },
@@ -49,6 +48,21 @@ export const shopFr = {
         desc: 'Thème visuel dans les matchs.',
         empty: 'Vide',
       },
+      banner: {
+        label: 'Bannière',
+        desc: 'Arrière-plan complet de votre scène de profil et de lobby.',
+        empty: 'Vide',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Rayons scintillants qui orbitent autour de votre avatar dans le lobby et les matchs.',
+        empty: 'Vide',
+      },
+      frame: {
+        label: 'Cadre',
+        desc: 'Anneau décoratif qui entoure votre avatar.',
+        empty: 'Vide',
+      },
     },
     action: {
       previewingEyebrow: 'Aperçu',
@@ -75,26 +89,49 @@ export const shopFr = {
       title: 'Avatars',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
+      collapse: 'Réduire',
     },
     badges: {
       title: 'Badges',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
+      collapse: 'Réduire',
     },
     colors: {
       title: 'Couleurs de nom',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
+      collapse: 'Réduire',
     },
     skins: {
       title: 'Skins de jeu',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
+      collapse: 'Réduire',
+    },
+    banners: {
+      title: 'Bannières',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+      collapse: 'Réduire',
+    },
+    auras: {
+      title: 'Auras',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+      collapse: 'Réduire',
+    },
+    frames: {
+      title: 'Cadres',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+      collapse: 'Réduire',
     },
     legendary: {
       title: 'Légendaires',
       eyebrow: 'Rareté max',
       viewAll: 'Tout voir',
+      collapse: 'Réduire',
     },
   },
   card: {
@@ -103,6 +140,12 @@ export const shopFr = {
     buyEquip: 'Acheter et équiper',
     equip: 'Équiper',
     unequip: 'Déséquiper',
+    sell: 'Vendre · 50%',
+  },
+  inventory: {
+    title: 'Inventaire',
+    eyebrow: '{count} articles',
+    empty: 'Vous ne possédez encore rien.',
   },
   rarities: {
     common: 'Commun',
@@ -157,6 +200,7 @@ export const shopFr = {
       legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
     },
     name_color: {
+      default: { name: 'Par défaut', desc: 'La couleur de nom initiale.' },
       slate: { name: 'Ardoise', desc: 'Un gris calme et frais.' },
       emerald: { name: 'Émeraude', desc: 'Un vert émeraude éclatant.' },
       cyan: { name: 'Cyan', desc: 'Un cyan électrique.' },
@@ -169,6 +213,30 @@ export const shopFr = {
         name: 'Aurore',
         desc: 'Un dégradé changeant d’aurore boréale.',
       },
+    },
+    game_skin: {
+      default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
+    },
+    banner: {
+      default: { name: 'Par défaut', desc: 'L’arrière-plan initial.' },
+      slate: { name: 'Ardoise', desc: 'Un arrière-plan gris ardoise sobre.' },
+      tide: { name: 'Marée', desc: 'Un dégradé frais turquoise vers cyan.' },
+      twilight: { name: 'Crépuscule', desc: 'Indigo fondu dans un rose intense.' },
+      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolore.' },
+    },
+    aura: {
+      default: { name: 'Par défaut', desc: 'L’aura initiale.' },
+      silver: { name: 'Aura argentée', desc: 'Un halo argenté subtil.' },
+      cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
+      violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
+      prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
+    },
+    frame: {
+      default: { name: 'Par défaut', desc: 'Le cadre initial.' },
+      silver: { name: 'Cadre argenté', desc: 'Un anneau argenté brossé.' },
+      emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
+      violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },
+      prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
     },
   },
 };

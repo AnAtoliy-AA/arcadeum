@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
+import { buildRoutes } from '@/shared/config/routes';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
 import type { WalletBalanceView } from '../server/shop.types';
 
@@ -15,7 +16,7 @@ const { coins: COIN_COLOR, gems: GEM_COLOR } = CURRENCY_COLOR;
 export interface ShopTopBarLabels {
   eyebrow: string;
   title: string;
-  nav: { shop: string; featured: string; inventory: string; wallet: string };
+  nav: { shop: string; inventory: string; wallet: string };
   topUp: string;
 }
 
@@ -82,7 +83,9 @@ const TopUpBtn = styled(Stack, {
 
 export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
   const router = useRouter();
+  const pathname = usePathname() ?? '';
   const { locale } = useLanguage();
+  const routes = buildRoutes(locale);
   const { coins, gems } = balance;
 
   const handleTopUp = () => {
@@ -90,8 +93,16 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
       onTopUp();
       return;
     }
-    router.push('/wallet');
+    router.push(routes.wallet);
   };
+
+  // Active-state highlight: SHOP lights up on /shop (but not on the
+  // inventory sub-route), INVENTORY on /shop/inventory. Compared by
+  // suffix so the locale prefix doesn't have to be threaded in.
+  const isInventory = pathname.endsWith('/shop/inventory');
+  const isShop =
+    !isInventory &&
+    (pathname.endsWith('/shop') || pathname.includes('/shop/'));
 
   return (
     <XStack
@@ -122,19 +133,26 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         $sm={{ display: 'none' }}
         data-testid="shop-top-bar-nav"
       >
-        <Link href="/shop" style={{ textDecoration: 'none' }}>
-          <NavLink color="$white">{labels.nav.shop}</NavLink>
+        <Link href={routes.shop} style={{ textDecoration: 'none' }}>
+          <NavLink
+            color={isShop ? '$white' : '$gray11'}
+            data-testid="shop-nav-shop"
+            data-active={isShop ? 'true' : 'false'}
+          >
+            {labels.nav.shop}
+          </NavLink>
         </Link>
-        <Link href="#shop-featured" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.featured}</NavLink>
+        <Link href={routes.shopInventory} style={{ textDecoration: 'none' }}>
+          <NavLink
+            color={isInventory ? '$white' : '$gray11'}
+            data-testid="shop-nav-inventory"
+            data-active={isInventory ? 'true' : 'false'}
+          >
+            {labels.nav.inventory}
+          </NavLink>
         </Link>
-        {/* Inventory was folded into the mannequin rail — the link
-            scroll-jumps to the rail rather than opening a separate page. */}
-        <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.inventory}</NavLink>
-        </Link>
-        <Link href="/wallet" style={{ textDecoration: 'none' }}>
-          <NavLink>{labels.nav.wallet}</NavLink>
+        <Link href={routes.wallet} style={{ textDecoration: 'none' }}>
+          <NavLink data-testid="shop-nav-wallet">{labels.nav.wallet}</NavLink>
         </Link>
       </XStack>
 

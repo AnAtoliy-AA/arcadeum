@@ -8,7 +8,6 @@ export const shopEs = {
     title: 'Tienda',
     nav: {
       shop: 'Tienda',
-      featured: 'Destacados',
       inventory: 'Inventario',
       wallet: 'Cartera',
     },
@@ -49,6 +48,21 @@ export const shopEs = {
         desc: 'Tema visual dentro de las partidas.',
         empty: 'Vacío',
       },
+      banner: {
+        label: 'Banner',
+        desc: 'Fondo completo del escenario de tu perfil y lobby.',
+        empty: 'Vacío',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Rayos brillantes que orbitan tu avatar en el lobby y las partidas.',
+        empty: 'Vacío',
+      },
+      frame: {
+        label: 'Marco',
+        desc: 'Anillo decorativo que rodea tu avatar.',
+        empty: 'Vacío',
+      },
     },
     action: {
       previewingEyebrow: 'Probando',
@@ -75,26 +89,49 @@ export const shopEs = {
       title: 'Avatares',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
+      collapse: 'Contraer',
     },
     badges: {
       title: 'Insignias',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
+      collapse: 'Contraer',
     },
     colors: {
       title: 'Colores de nombre',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
+      collapse: 'Contraer',
     },
     skins: {
       title: 'Skins de juego',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
+      collapse: 'Contraer',
+    },
+    banners: {
+      title: 'Banners',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+      collapse: 'Contraer',
+    },
+    auras: {
+      title: 'Auras',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+      collapse: 'Contraer',
+    },
+    frames: {
+      title: 'Marcos',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+      collapse: 'Contraer',
     },
     legendary: {
       title: 'Legendarios',
       eyebrow: 'Máxima rareza',
       viewAll: 'Ver todo',
+      collapse: 'Contraer',
     },
   },
   card: {
@@ -103,6 +140,12 @@ export const shopEs = {
     buyEquip: 'Comprar y equipar',
     equip: 'Equipar',
     unequip: 'Desequipar',
+    sell: 'Vender · 50%',
+  },
+  inventory: {
+    title: 'Inventario',
+    eyebrow: '{count} artículos',
+    empty: 'Aún no tienes nada.',
   },
   rarities: {
     common: 'Común',
@@ -157,12 +200,37 @@ export const shopEs = {
       legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
     },
     name_color: {
+      default: { name: 'Predeterminado', desc: 'El color de nombre inicial.' },
       slate: { name: 'Pizarra', desc: 'Un gris fresco y tranquilo.' },
       emerald: { name: 'Esmeralda', desc: 'Un verde esmeralda fresco.' },
       cyan: { name: 'Cian', desc: 'Un cian eléctrico.' },
       violet: { name: 'Violeta', desc: 'Un violeta vivo.' },
       sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
       aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
+    },
+    game_skin: {
+      default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
+    },
+    banner: {
+      default: { name: 'Predeterminado', desc: 'El fondo inicial.' },
+      slate: { name: 'Pizarra', desc: 'Un fondo gris oscuro discreto.' },
+      tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
+      twilight: { name: 'Crepúsculo', desc: 'Índigo que se funde en rosa intenso.' },
+      nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
+    },
+    aura: {
+      default: { name: 'Predeterminada', desc: 'El aura inicial.' },
+      silver: { name: 'Aura plateada', desc: 'Un halo plateado sutil.' },
+      cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
+      violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
+      prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
+    },
+    frame: {
+      default: { name: 'Predeterminado', desc: 'El marco inicial.' },
+      silver: { name: 'Marco plateado', desc: 'Un anillo plateado cepillado.' },
+      emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
+      violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
+      prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
     },
   },
 };

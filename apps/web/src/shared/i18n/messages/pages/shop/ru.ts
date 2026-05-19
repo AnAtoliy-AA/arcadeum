@@ -8,7 +8,6 @@ export const shopRu = {
     title: 'Магазин',
     nav: {
       shop: 'Магазин',
-      featured: 'Избранное',
       inventory: 'Инвентарь',
       wallet: 'Кошелёк',
     },
@@ -49,6 +48,21 @@ export const shopRu = {
         desc: 'Визуальная тема внутри матчей.',
         empty: 'Пусто',
       },
+      banner: {
+        label: 'Баннер',
+        desc: 'Фон всей сцены профиля и лобби.',
+        empty: 'Пусто',
+      },
+      aura: {
+        label: 'Аура',
+        desc: 'Сияющие лучи, кружащие вокруг аватара в лобби и матчах.',
+        empty: 'Пусто',
+      },
+      frame: {
+        label: 'Рамка',
+        desc: 'Декоративное кольцо вокруг вашего аватара.',
+        empty: 'Пусто',
+      },
     },
     action: {
       previewingEyebrow: 'Примерка',
@@ -75,26 +89,49 @@ export const shopRu = {
       title: 'Аватары',
       eyebrow: '{count} предметов',
       viewAll: 'Все',
+      collapse: 'Свернуть',
     },
     badges: {
       title: 'Значки',
       eyebrow: '{count} предметов',
       viewAll: 'Все',
+      collapse: 'Свернуть',
     },
     colors: {
       title: 'Цвета имени',
       eyebrow: '{count} предметов',
       viewAll: 'Все',
+      collapse: 'Свернуть',
     },
     skins: {
       title: 'Скины игр',
       eyebrow: '{count} предметов',
       viewAll: 'Все',
+      collapse: 'Свернуть',
+    },
+    banners: {
+      title: 'Баннеры',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+      collapse: 'Свернуть',
+    },
+    auras: {
+      title: 'Ауры',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+      collapse: 'Свернуть',
+    },
+    frames: {
+      title: 'Рамки',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+      collapse: 'Свернуть',
     },
     legendary: {
       title: 'Легендарные',
       eyebrow: 'Высший ранг',
       viewAll: 'Все',
+      collapse: 'Свернуть',
     },
   },
   card: {
@@ -103,6 +140,12 @@ export const shopRu = {
     buyEquip: 'Купить и экипировать',
     equip: 'Экипировать',
     unequip: 'Снять',
+    sell: 'Продать · 50%',
+  },
+  inventory: {
+    title: 'Инвентарь',
+    eyebrow: '{count} предметов',
+    empty: 'У вас пока ничего нет.',
   },
   rarities: {
     common: 'Обычный',
@@ -157,6 +200,7 @@ export const shopRu = {
       legend: { name: 'Легенда', desc: 'Легендарный игрок.' },
     },
     name_color: {
+      default: { name: 'Стандартный', desc: 'Стартовый цвет имени.' },
       slate: { name: 'Сланец', desc: 'Спокойный прохладный серый.' },
       emerald: { name: 'Изумруд', desc: 'Свежий изумрудно-зелёный.' },
       cyan: { name: 'Циан', desc: 'Электрический циан.' },
@@ -166,6 +210,30 @@ export const shopRu = {
         name: 'Аврора',
         desc: 'Переливающийся градиент полярного сияния.',
       },
+    },
+    game_skin: {
+      default: { name: 'Стандартная', desc: 'Стартовая тема матчей.' },
+    },
+    banner: {
+      default: { name: 'Стандартный', desc: 'Стартовый фон.' },
+      slate: { name: 'Сланец', desc: 'Сдержанный тёмно-серый фон.' },
+      tide: { name: 'Прибой', desc: 'Прохладный бирюзово-голубой градиент.' },
+      twilight: { name: 'Сумерки', desc: 'Индиго, переходящий в горячую розовую.' },
+      nebula: { name: 'Туманность', desc: 'Космический многоцветный градиент.' },
+    },
+    aura: {
+      default: { name: 'Стандартная', desc: 'Стартовая аура.' },
+      silver: { name: 'Серебряная аура', desc: 'Тонкое серебристое свечение.' },
+      cyan: { name: 'Циановая аура', desc: 'Чёткое электрическое свечение.' },
+      violet: { name: 'Фиолетовая аура', desc: 'Глубокое фиолетовое сияние.' },
+      prism: { name: 'Призматическая аура', desc: 'Переливающееся призматическое сияние.' },
+    },
+    frame: {
+      default: { name: 'Стандартная', desc: 'Стартовая рамка.' },
+      silver: { name: 'Серебряная рамка', desc: 'Аккуратное матово-серебряное кольцо.' },
+      emerald: { name: 'Изумрудная рамка', desc: 'Яркое изумрудное кольцо.' },
+      violet: { name: 'Фиолетовая рамка', desc: 'Глубокое фиолетовое кольцо.' },
+      prism: { name: 'Призматическая рамка', desc: 'Переливающееся призматическое кольцо.' },
     },
   },
 };

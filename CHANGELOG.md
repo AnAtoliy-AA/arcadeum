@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.12] - 2026-05-19
+
+### Added
+- limited-drop hero rotates unowned legendaries (N/A)
+- split Inventory into its own page (/shop/inventory) (N/A)
+- real Inventory section + working top-bar nav (N/A)
+- make 'View all' actually expand the row (N/A)
+- free starter item in every category + generic auto-equip (N/A)
+- reframe banner as the stage backdrop + add Frame category (N/A)
+- banner fills the avatar disc, aura drives the orbiting rays (N/A)
+- add Banner + Aura categories end-to-end (N/A)
+- hoist Legendary row to the top of the catalog rail (N/A)
+- idempotent purchase + hero owned-state awareness (N/A)
+
+### Fixed
+- define missing $gray10/11/12, $green11, $red11, $blue11 tokens (N/A)
+- render game_skin items as a swatch instead of next/image (N/A)
+- soften the frame on the avatar disc (N/A)
+- drop overflow:hidden on the avatar disc so the badge isn't clipped (N/A)
+- complete EquippedView literal in purchase() happy path (N/A)
+
+
+## [1.14.11] - 2026-05-19
+
+### Added
+- shop images and badges redesign (N/A)
+
+### Refactored
+- replace standard img with optimized next/image components (N/A)
+
+
 ## [1.14.10] - 2026-05-19
 
 ### Added

@@ -47,8 +47,21 @@ const tokens = createTokens({
     placeholderColor: '#8e9196',
     neutral: '#8e9196',
     red10: '#dc2626',
+    red11: '#ef4444',
     blue10: '#0284c7',
+    blue11: '#3b82f6',
     purple10: '#7c3aed',
+    // Radix-style neutral scale used across the app for muted secondary
+    // text (gray11), supporting surfaces (gray10), and high-contrast
+    // foreground (gray12). Values follow the Tailwind slate scale —
+    // slate-500/400/300 — to match the existing silverAccent
+    // (#94a3b8) and neutral palette. Without these, 30+ components
+    // that reference $gray11 et al. fell through to the default
+    // off-white theme color, triggering Tamagui's missing-token warning.
+    gray10: '#6b7280',
+    gray11: '#94a3b8',
+    gray12: '#cbd5e1',
+    green11: '#10b981',
     overlayBg: 'rgba(0, 0, 0, 0.5)',
     shadowColor: 'rgba(0, 0, 0, 0.2)',
     gold: '#FFD700',

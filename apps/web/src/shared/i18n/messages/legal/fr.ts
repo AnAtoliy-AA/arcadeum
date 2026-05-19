@@ -280,6 +280,7 @@ export const fr: LegalMessages = {
         successBody:
           'Réponse attendue sous 4 heures. Une copie a été envoyée sur votre email.',
         sendAnother: 'Envoyer un autre',
+        openMail: 'Ouvrir dans votre messagerie',
         success:
           '✓ Merci ! Votre message a été envoyé. Nous vous répondrons bientôt.',
       },

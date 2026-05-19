@@ -278,6 +278,7 @@ export const es: LegalMessages = {
         successBody:
           'Espera una respuesta en menos de 4 horas. Te enviamos una copia a tu email.',
         sendAnother: 'Enviar otro',
+        openMail: 'Abrir en tu app de correo',
         success:
           '✓ ¡Gracias! Su mensaje ha sido enviado. Nos pondremos en contacto pronto.',
       },

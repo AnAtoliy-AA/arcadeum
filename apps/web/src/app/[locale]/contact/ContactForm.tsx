@@ -12,11 +12,11 @@ import { XStack, YStack } from 'tamagui';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
 import { submitContactAction, type ContactActionState } from './actions';
-
-const initialContactActionState: ContactActionState = { status: 'idle' };
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type FormCopy = NonNullable<NonNullable<ContactMessages['sections']>['form']>;
+
+const initialContactActionState: ContactActionState = { status: 'idle' };
 
 export type ContactFormProps = {
   form?: FormCopy;
@@ -60,8 +60,10 @@ export function ContactForm({ form }: ContactFormProps) {
 
   const fieldErrors =
     actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
-  const showSuccess =
-    actionState.status === 'ok' && actionState !== dismissedState;
+  const successState =
+    actionState.status === 'ok' && actionState !== dismissedState
+      ? actionState
+      : null;
 
   const reset = () => {
     setDismissedState(actionState);
@@ -88,7 +90,7 @@ export function ContactForm({ form }: ContactFormProps) {
           </XStack>
         </div>
         <hr style={s.ruleStyle} aria-hidden="true" />
-        {showSuccess ? (
+        {successState ? (
           <Card variant="glass" data-testid="contact-success-message">
             <div style={s.successCardStyle}>
               <div aria-hidden="true" style={s.burstStyle}>
@@ -101,7 +103,14 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.successBody ??
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
-              <YStack alignItems="center" marginTop="$4">
+              <YStack alignItems="center" gap="$3" marginTop="$4">
+                <a
+                  href={successState.mailto}
+                  style={s.helpLinkStyle}
+                  data-testid="contact-open-mail-link"
+                >
+                  {form?.openMail ?? 'Open in your mail app'}
+                </a>
                 <button type="button" onClick={reset} style={s.helpLinkStyle}>
                   {form?.sendAnother ?? 'Send another'}
                 </button>

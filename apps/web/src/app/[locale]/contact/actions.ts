@@ -4,6 +4,7 @@ const NAME_MAX = 120;
 const SUBJECT_MAX = 200;
 const MESSAGE_MAX = 1200;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const FALLBACK_SUPPORT_EMAIL = 'arcadeum.care@gmail.com';
 
 export type ContactFieldErrors = Partial<
   Record<'name' | 'email' | 'subject' | 'message', string>
@@ -11,7 +12,7 @@ export type ContactFieldErrors = Partial<
 
 export type ContactActionState =
   | { status: 'idle' }
-  | { status: 'ok' }
+  | { status: 'ok'; mailto: string }
   | { status: 'invalid'; fieldErrors: ContactFieldErrors }
   | { status: 'error'; message: string };
 
@@ -48,16 +49,12 @@ export async function submitContactAction(
     return { status: 'invalid', fieldErrors };
   }
 
-  try {
-    // BE module not yet wired (ARC-575 follow-up). Until then we treat a
-    // valid submission as a no-op success. When apps/be exposes
-    // POST /support/contact, replace this block with the fetch call and
-    // surface upstream failures as { status: 'error', message }.
-    return { status: 'ok' };
-  } catch (e) {
-    return {
-      status: 'error',
-      message: e instanceof Error ? e.message : 'unknown',
-    };
-  }
+  const supportEmail =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? FALLBACK_SUPPORT_EMAIL;
+  const body = `From: ${name} <${email}>\n\n${message}`;
+  const mailto = `mailto:${supportEmail}?subject=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(body)}`;
+
+  return { status: 'ok', mailto };
 }

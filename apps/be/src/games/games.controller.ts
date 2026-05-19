@@ -17,11 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { GamesService } from './games.service';
-import {
-  GAME_ROOM_PARTICIPATION_FILTERS,
-  type GameRoomParticipationFilter,
-  type StartCriticalSessionResult,
-} from './games.types';
+import { type StartCriticalSessionResult } from './games.types';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
@@ -29,12 +25,12 @@ import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
+import { type GameRoomStatus } from './schemas/game-room.schema';
 import {
-  GAME_ROOM_STATUS_VALUES,
-  GAME_ROOM_VISIBILITY_VALUES,
-  type GameRoomStatus,
-  type GameRoomVisibility,
-} from './schemas/game-room.schema';
+  parseStatusFilters,
+  parseVisibilityFilters,
+  parseParticipationFilter,
+} from './games.query-parsers';
 
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
@@ -133,56 +129,9 @@ export class GamesController {
     @Query('limit') limit?: string,
   ): Promise<Awaited<ReturnType<GamesService['listRooms']>>> {
     const user = req.user as AuthenticatedUser | undefined | null;
-    const parseList = (value?: string): string[] => {
-      if (!value) {
-        return [];
-      }
-      return value
-        .split(',')
-        .map((entry) => entry.trim())
-        .filter((entry) => entry.length > 0);
-    };
-
-    const statusFilters = parseList(statusParam).reduce<GameRoomStatus[]>(
-      (acc, value) => {
-        if (
-          GAME_ROOM_STATUS_VALUES.includes(value as GameRoomStatus) &&
-          !acc.includes(value as GameRoomStatus)
-        ) {
-          acc.push(value as GameRoomStatus);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    const visibilityFilters = parseList(visibilityParam).reduce<
-      GameRoomVisibility[]
-    >((acc, value) => {
-      if (
-        GAME_ROOM_VISIBILITY_VALUES.includes(value as GameRoomVisibility) &&
-        !acc.includes(value as GameRoomVisibility)
-      ) {
-        acc.push(value as GameRoomVisibility);
-      }
-      return acc;
-    }, []);
-
-    let participationFilter: GameRoomParticipationFilter | undefined;
-    if (typeof participationParam === 'string') {
-      const trimmed = participationParam.trim();
-      if (
-        GAME_ROOM_PARTICIPATION_FILTERS.includes(
-          trimmed as GameRoomParticipationFilter,
-        )
-      ) {
-        participationFilter = trimmed as GameRoomParticipationFilter;
-      }
-    }
-
-    if (participationFilter === 'all') {
-      participationFilter = undefined;
-    }
+    const statusFilters = parseStatusFilters(statusParam);
+    const visibilityFilters = parseVisibilityFilters(visibilityParam);
+    const participationFilter = parseParticipationFilter(participationParam);
 
     const pageNum = page ? parseInt(page, 10) : 0;
     const limitNum = limit ? parseInt(limit, 10) : 12;

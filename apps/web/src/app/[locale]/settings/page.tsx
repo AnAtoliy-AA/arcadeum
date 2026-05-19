@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { getTranslations } from '@/shared/i18n/server';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import SettingsClient from './SettingsClient';
@@ -29,11 +30,14 @@ export default async function SettingsRoute({
     `Manage your appearance, language, and download preferences for the ${appConfig.appName} web experience.`;
 
   return (
-    <SettingsClient
-      appName={appConfig.appName}
-      downloads={appConfig.downloads}
-      supportCta={appConfig.supportCta}
-      description={description}
-    />
+    <>
+      <PageBreadcrumb locale={locale} page="settings" />
+      <SettingsClient
+        appName={appConfig.appName}
+        downloads={appConfig.downloads}
+        supportCta={appConfig.supportCta}
+        description={description}
+      />
+    </>
   );
 }

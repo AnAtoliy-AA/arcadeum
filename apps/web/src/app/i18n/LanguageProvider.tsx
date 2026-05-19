@@ -19,10 +19,7 @@ import {
   getMessages,
   loadMessages,
 } from '@/shared/i18n';
-import {
-  LOCALE_SLUGS,
-  type SlugKey,
-} from '@/shared/config/locale-slugs';
+import { LOCALE_SLUGS, type SlugKey } from '@/shared/config/locale-slugs';
 
 import {
   LanguageContext,
@@ -33,18 +30,20 @@ const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
-const LOCALIZED_SLUG_TO_KEY: Record<Locale, Record<string, SlugKey>> =
-  Object.fromEntries(
-    SUPPORTED_LOCALES.map((locale) => [
-      locale,
-      Object.fromEntries(
-        Object.entries(LOCALE_SLUGS[locale]).map(([key, slug]) => [
-          slug,
-          key as SlugKey,
-        ]),
-      ),
-    ]),
-  ) as Record<Locale, Record<string, SlugKey>>;
+const LOCALIZED_SLUG_TO_KEY: Record<
+  Locale,
+  Record<string, SlugKey>
+> = Object.fromEntries(
+  SUPPORTED_LOCALES.map((locale) => [
+    locale,
+    Object.fromEntries(
+      Object.entries(LOCALE_SLUGS[locale]).map(([key, slug]) => [
+        slug,
+        key as SlugKey,
+      ]),
+    ),
+  ]),
+) as Record<Locale, Record<string, SlugKey>>;
 
 /**
  * Swap both the locale prefix AND the localized first slug when the
@@ -68,9 +67,7 @@ function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
   // identity map since English slugs equal their keys).
   const secondSegment = segments[1];
   if (secondSegment) {
-    const key = LOCALIZED_SLUG_TO_KEY[currentLocale as Locale]?.[
-      secondSegment
-    ];
+    const key = LOCALIZED_SLUG_TO_KEY[currentLocale as Locale]?.[secondSegment];
     if (key) {
       segments[1] = LOCALE_SLUGS[nextLocale][key];
     }

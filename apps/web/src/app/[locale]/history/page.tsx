@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { historyApi } from '@/features/history/api';
@@ -16,22 +17,28 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale)
-    ? buildPageMetadata({ locale, page: 'history' })
-    : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'history' }) : {};
 }
 
 interface PageProps {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function HistoryRoute({ searchParams }: PageProps) {
+export default async function HistoryRoute({
+  params,
+  searchParams,
+}: PageProps) {
+  const { locale } = await params;
   const resolvedSearchParams = await searchParams;
 
   return (
-    <Suspense fallback={<HistoryLoading />}>
-      <HistoryDataFetcher searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageBreadcrumb locale={locale} page="history" />
+      <Suspense fallback={<HistoryLoading />}>
+        <HistoryDataFetcher searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }
 

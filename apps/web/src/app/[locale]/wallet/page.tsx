@@ -17,6 +17,7 @@ import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import { getConversionRate } from '@/features/gems/server/gems.server';
 import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
@@ -28,9 +29,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale)
-    ? buildPageMetadata({ locale, page: 'wallet' })
-    : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'wallet' }) : {};
 }
 
 interface SearchParams {
@@ -46,10 +45,13 @@ const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0 };
 const EMPTY_PAGE: PaginatedWalletTransactions = { items: [], nextCursor: null };
 
 export default async function WalletPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<SearchParams>;
 }) {
+  const { locale } = await params;
   const sp = await searchParams;
   const currency = parseCurrency(sp.currency);
   const cursor = sp.cursor;
@@ -71,10 +73,12 @@ export default async function WalletPage({
   if (!accessToken) {
     return (
       <div>
+        <PageBreadcrumb locale={locale} page="wallet" />
         <WalletPageView
           balance={EMPTY_BALANCE}
           page={EMPTY_PAGE}
           currency={currency}
+          locale={isLocale(locale) ? locale : undefined}
         />
         <div
           style={{
@@ -113,13 +117,19 @@ export default async function WalletPage({
 
   return (
     <div>
+      <PageBreadcrumb locale={locale} page="wallet" />
       {/* Daily reward CTA. Rendered above the wallet view so the claim flow is
           the first thing a returning player sees. The card self-suppresses
           (returns null) when the BE call fails — same defensive pattern as
           BalanceChip — so it never blocks the page from rendering. */}
       <DailyRewardCard />
 
-      <WalletPageView balance={balance} page={page} currency={currency} />
+      <WalletPageView
+        balance={balance}
+        page={page}
+        currency={currency}
+        locale={isLocale(locale) ? locale : undefined}
+      />
 
       {/* Gem sections: pending purchases banner, gem store, and conversion form */}
       <div

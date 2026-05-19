@@ -7,36 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.10] - 2026-05-19
+
+### Added
+- locale-aware formatters + completeness audit + LCP polish (N/A)
+
+
+## [1.14.9] - 2026-05-18
+
+### Added
+
+- Showcase Locker redesign with live try-on rail (N/A)
+
+### Fixed
+
+- switch locale-routing cookie fixture to domain+path to satisfy addCookies (N/A)
+- hide the rotating rectangle + recenter rays around the avatar (N/A)
+- stop mannequin rays wobbling — align transform-origin with gradient anchor (N/A)
+- action-panel — keep preview alive on card→panel hop, fix Unequip showing for owned-but-not-equipped items (N/A)
+- wire the top-bar nav links to real destinations (N/A)
+
+### Improved
+
+- priority-load first cards across every catalog row to silence repeat LCP warnings (N/A)
+- eager-load the first avatar-row cards so catalog asset can't become a lazy LCP (N/A)
+- mark above-the-fold ItemAssets as priority so LCP isn't lazy (N/A)
+
+### Refactored
+
+- move the action button onto the card, panel becomes display-only (N/A)
+- address PR #689 review — blockers, a11y, direct-buy, instrumentation (N/A)
+- extract listRooms query parsers to keep controller under 500 lines (N/A)
+
+## [1.14.8] - 2026-05-18
+
+## [1.14.7] - 2026-05-18
+
+### Added
+
+- BreadcrumbList everywhere, CollectionPage on catalogs, ProfilePage for /players/[id] (ARC-707) (ARC-707)
+
 ## [1.14.6] - 2026-05-18
 
 ### Added
-- translated route slugs, per-locale OG image, JSON-LD, sitemap polish (ARC-706) (ARC-706)
 
+- translated route slugs, per-locale OG image, JSON-LD, sitemap polish (ARC-706) (ARC-706)
 
 ## [1.14.5] - 2026-05-18
 
 ### Added
-- per-locale JSON-LD, og:locale:alternate, 404, dynamic pages (ARC-705) (ARC-705)
 
+- per-locale JSON-LD, og:locale:alternate, 404, dynamic pages (ARC-705) (ARC-705)
 
 ## [1.14.4] - 2026-05-18
 
 ### Added
-- per-page localized metadata (ARC-703) (ARC-703)
 
+- per-page localized metadata (ARC-703) (ARC-703)
 
 ## [1.14.3] - 2026-05-18
 
 ### Added
+
 - global [locale] URL prefix (N/A)
 
 ### Fixed
-- update tests for [locale] URL prefix (ARC-702) (ARC-702)
 
+- update tests for [locale] URL prefix (ARC-702) (ARC-702)
 
 ## [1.14.2] - 2026-05-18
 
 ### Added
+
 - /games/<id> uses the full lounge UI scoped to one game (N/A)
 - polish sea-battle landing for indexability (N/A)
 - quickplay — persist the chosen variant into room.gameOptions (N/A)
@@ -51,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Sea Battle SEO landing page at /games/sea-battle (N/A)
 
 ### Fixed
+
 - StartButton — wrap in plain <div> so the glow class actually applies (N/A)
 - StartButton animation — bolder + raised specificity + !important (N/A)
 - StartButton — actual pulse/shimmer animations via CSS keyframes (N/A)
@@ -69,13 +112,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wire featured-game card title to FeaturedGame.route (N/A)
 
 ### Refactored
+
 - apply v2 review polish to Sea Battle landing (N/A)
 - split HomeGames into card + slider hook, replace route ternary (N/A)
-
 
 ## [1.14.1] - 2026-05-17
 
 ### Added
+
 - complete steampunk and zen sprites and update spritesheets (N/A)
 - add missing steampunk sprites and update spritesheet (N/A)
 - finalize western sprites and update spritesheet (N/A)
@@ -104,9 +148,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - integrate 6 new thematic variants and resolve literal string type mismatches (N/A)
 
 ### Fixed
+
 - restore chat bubble and sea battle popup on mobile opponent tiles (N/A)
 - ARC-590: stabilize critical mobile interactions and game layouts (ARC-590)
-
 
 ## [1.14.0] - 2026-05-16
 

@@ -206,7 +206,13 @@ const nextConfig: NextConfig = {
       // canonical slug so /fr/jeux, /es/juegos, etc. inherit the same
       // SWR policy as their English equivalents.
       ...(() => {
-        const slugKeys = ['games', 'chats', 'history', 'stats', 'settings'] as const;
+        const slugKeys = [
+          'games',
+          'chats',
+          'history',
+          'stats',
+          'settings',
+        ] as const;
         const sources = ['/', '/:locale'];
         for (const locale of SUPPORTED_LOCALES) {
           for (const key of slugKeys) {

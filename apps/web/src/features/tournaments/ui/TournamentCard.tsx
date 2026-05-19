@@ -2,6 +2,7 @@
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
 import { useLanguage } from '@/shared/i18n/context';
+import { formatDateTime, formatNumber } from '@/shared/i18n/formatters';
 import {
   type EffectiveTournamentStatus,
   type PublicTournamentItem,
@@ -54,18 +55,6 @@ const STATUS_BG: Record<EffectiveTournamentStatus, string> = {
   completed: '$gray4',
   cancelled: '$errorBgSoft',
 };
-
-function formatDateTime(iso: string, locale: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return new Intl.DateTimeFormat(locale, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-}
 
 export function TournamentCard({
   item,
@@ -131,7 +120,13 @@ export function TournamentCard({
           </Text>
           <Text fontSize="$1" opacity={0.7}>
             {labels.gameType[item.gameType]} ·{' '}
-            {formatDateTime(item.scheduledAt, locale)}
+            {formatDateTime(item.scheduledAt, locale, {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
           </Text>
         </YStack>
         <XStack
@@ -163,13 +158,13 @@ export function TournamentCard({
           {item.entryFeeCoins > 0 && (
             <Text fontSize="$2" data-testid={`entry-fee-${item.id}`}>
               <Text fontWeight="700">{labels.entryFee}:</Text>{' '}
-              {item.entryFeeCoins.toLocaleString()}
+              {formatNumber(item.entryFeeCoins, locale)}
             </Text>
           )}
           {item.prizePoolCoins > 0 && (
             <Text fontSize="$2" data-testid={`prize-pool-${item.id}`}>
               <Text fontWeight="700">{labels.prizePool}:</Text>{' '}
-              {item.prizePoolCoins.toLocaleString()}
+              {formatNumber(item.prizePoolCoins, locale)}
             </Text>
           )}
         </XStack>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 
 export async function generateMetadata({
@@ -11,10 +12,18 @@ export async function generateMetadata({
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'auth' }) : {};
 }
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  return <>{children}</>;
+  const { locale } = await params;
+  return (
+    <>
+      <PageBreadcrumb locale={locale} page="auth" />
+      {children}
+    </>
+  );
 }

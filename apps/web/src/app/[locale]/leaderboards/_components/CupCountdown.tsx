@@ -3,6 +3,8 @@ import { XStack, YStack, Text, View } from 'tamagui';
 import { CountdownClock, LiveChip } from '@arcadeum/ui';
 import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
 
 // Temporary: tournaments aren't live yet. Flip to `true` to render the
 // real cup UI (prize pool / countdown / qualified pills) defined below.
@@ -16,6 +18,7 @@ export function CupCountdown({
   t?: PageTranslations;
 }) {
   const tt = (t?.cup ?? {}) as Record<string, string>;
+  const { locale } = useLanguage();
 
   if (!TOURNAMENTS_ENABLED) {
     return (
@@ -90,12 +93,14 @@ export function CupCountdown({
           <XStack gap="$5" flexWrap="wrap">
             <Stat
               label={tt.prizePool ?? 'Prize pool'}
-              value={`$${cup.prizePoolUSD.toLocaleString()}`}
+              value={formatCurrency(cup.prizePoolUSD, locale, 'USD', {
+                maximumFractionDigits: 0,
+              })}
               accent
             />
             <Stat
               label={tt.participants ?? 'Participants'}
-              value={cup.participantCount.toLocaleString()}
+              value={formatNumber(cup.participantCount, locale)}
             />
           </XStack>
         </YStack>

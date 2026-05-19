@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.14.6",
+  "version": "1.14.10",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -23,7 +23,9 @@
     "test:e2e:headed": "playwright test --headed",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "i18n:audit": "vitest run src/shared/i18n/messages/completeness.test.ts",
+    "i18n:audit:update": "vitest run src/shared/i18n/messages/completeness.test.ts -u"
   },
   "dependencies": {
     "@arcadeum/ui": "workspace:*",

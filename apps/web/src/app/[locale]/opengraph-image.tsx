@@ -1,11 +1,23 @@
 import { ImageResponse } from 'next/og';
 import { appConfig } from '@/shared/config/app-config';
-import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  isLocale,
+  type Locale,
+} from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt = appConfig.appName;
+
+// Static-render one OG image per locale at build time. Without this, each
+// social-card request would re-run ImageResponse on the fly.
+export const dynamic = 'force-static';
+export function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
 
 interface Props {
   params: { locale: string };
@@ -16,33 +28,30 @@ interface Props {
 const PALETTE: Record<Locale, { accent: string; gradient: string }> = {
   en: {
     accent: '#3aa0ff',
-    gradient:
-      'linear-gradient(135deg, #0a1530 0%, #0e2950 45%, #1a3d6e 100%)',
+    gradient: 'linear-gradient(135deg, #0a1530 0%, #0e2950 45%, #1a3d6e 100%)',
   },
   es: {
     accent: '#ffb547',
-    gradient:
-      'linear-gradient(135deg, #2a0e1e 0%, #441832 45%, #6e2a4a 100%)',
+    gradient: 'linear-gradient(135deg, #2a0e1e 0%, #441832 45%, #6e2a4a 100%)',
   },
   fr: {
     accent: '#7d9bff',
-    gradient:
-      'linear-gradient(135deg, #0d1138 0%, #1a205c 45%, #2c3590 100%)',
+    gradient: 'linear-gradient(135deg, #0d1138 0%, #1a205c 45%, #2c3590 100%)',
   },
   ru: {
     accent: '#ff7d5c',
-    gradient:
-      'linear-gradient(135deg, #1f0d2a 0%, #371547 45%, #5a2270 100%)',
+    gradient: 'linear-gradient(135deg, #1f0d2a 0%, #371547 45%, #5a2270 100%)',
   },
   by: {
     accent: '#43d9a6',
-    gradient:
-      'linear-gradient(135deg, #0a2a1e 0%, #11402e 45%, #1a5e44 100%)',
+    gradient: 'linear-gradient(135deg, #0a2a1e 0%, #11402e 45%, #1a5e44 100%)',
   },
 };
 
 export default async function OpengraphImage({ params }: Props) {
-  const locale: Locale = isLocale(params.locale) ? params.locale : DEFAULT_LOCALE;
+  const locale: Locale = isLocale(params.locale)
+    ? params.locale
+    : DEFAULT_LOCALE;
   const messages = await getTranslations(locale);
   const seo = messages.seo?.home;
 

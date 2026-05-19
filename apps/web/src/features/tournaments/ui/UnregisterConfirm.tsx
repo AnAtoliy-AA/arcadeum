@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import type { TournamentStatus } from '@/features/admin-tournaments/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -47,6 +49,7 @@ export function UnregisterConfirm({
   onUnregister,
   labels,
 }: UnregisterConfirmProps) {
+  const { locale } = useLanguage();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -55,7 +58,7 @@ export function UnregisterConfirm({
   const showRefund = willRefund(status, entryFeeCoins);
   const refundText = labels.refund.replace(
     '{amount}',
-    entryFeeCoins.toLocaleString(),
+    formatNumber(entryFeeCoins, locale),
   );
 
   const handleConfirm = () => {

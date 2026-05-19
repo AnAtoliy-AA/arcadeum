@@ -19,6 +19,8 @@ import { getPlayer } from '@/shared/api/leaderboard';
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 
 export default function PlayerProfileClient({
   id,
@@ -90,6 +92,7 @@ function Profile({
   eyebrow: string;
   placeholder: string;
 }) {
+  const { locale } = useLanguage();
   const {
     player,
     modeRanks,
@@ -161,11 +164,11 @@ function Profile({
         </YStack>
       </XStack>
       <XStack gap="$3" flexWrap="wrap">
-        <Stat label="Rating" value={player.rating.toLocaleString()} />
+        <Stat label="Rating" value={formatNumber(player.rating, locale)} />
         <Stat label="Wins" value={String(player.wins)} />
         <Stat label="Winrate" value={`${Math.round(player.winrate * 100)}%`} />
         {player.elo ? (
-          <Stat label="ELO" value={player.elo.toLocaleString()} />
+          <Stat label="ELO" value={formatNumber(player.elo, locale)} />
         ) : null}
         <Stat label="Region" value={player.region.toUpperCase()} />
       </XStack>
@@ -245,7 +248,7 @@ function Profile({
               #{squad.rank}
             </Text>
             <Text fontSize="$2" opacity={0.85} letterSpacing={1}>
-              {squad.rating.toLocaleString()}
+              {formatNumber(squad.rating, locale)}
             </Text>
           </XStack>
         </YStack>

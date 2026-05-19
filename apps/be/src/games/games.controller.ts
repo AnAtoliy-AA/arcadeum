@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
@@ -28,9 +27,7 @@ import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
-import { HistoryRematchDto } from './dtos/history-rematch.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
-import { type GameRoomStatus } from './schemas/game-room.schema';
 import {
   parseStatusFilters,
   parseVisibilityFilters,
@@ -202,39 +199,6 @@ export class GamesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('history')
-  async listHistory(
-    @Req() req: Request,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-  ): Promise<{
-    entries: Awaited<ReturnType<GamesService['listHistoryForUser']>>['entries'];
-    total: number;
-    page: number;
-    limit: number;
-    hasMore: boolean;
-  }> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    const pageNum = page ? parseInt(page, 10) : 0;
-    const limitNum = limit ? parseInt(limit, 10) : 20;
-
-    const result = await this.gamesService.listHistoryForUser(user.userId, {
-      page: pageNum,
-      limit: limitNum,
-      search: search?.trim(),
-      status: status as GameRoomStatus | undefined,
-    });
-
-    return result;
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('stats')
   async listStats(@Req() req: Request) {
     const user = req.user as AuthenticatedUser | undefined;
@@ -258,58 +222,6 @@ export class GamesController {
       offsetNum,
       gameId || undefined,
     );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('history/:roomId')
-  async getHistoryEntry(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-  ): Promise<Awaited<ReturnType<GamesService['getHistoryEntry']>>> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    return this.gamesService.getHistoryEntry(user.userId, roomId);
-  }
-
-  @UseGuards(JwtOptionalAuthGuard)
-  @Post('history/:roomId/rematch')
-  async requestRematch(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-    @Body() dto: HistoryRematchDto,
-  ): Promise<{
-    room: Awaited<ReturnType<GamesService['createRematchFromHistory']>>;
-  }> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    const participantIds = Array.isArray(dto.participantIds)
-      ? dto.participantIds
-      : [];
-
-    const room = await this.gamesService.createRematchFromHistory(
-      user.userId,
-      roomId,
-      participantIds,
-      {
-        gameId: dto.gameId,
-        name: dto.name,
-        visibility: dto.visibility,
-        gameOptions: dto.gameOptions,
-        message: dto.message,
-      },
-    );
-
-    // Note: GamesService handles socket emission internally for rematch
-    // So we just return the new room ID
-    const newRoomId = room;
-
-    return { room: newRoomId };
   }
 
   @UseGuards(JwtOptionalAuthGuard)
@@ -364,21 +276,6 @@ export class GamesController {
     }
 
     await this.gamesService.reinvitePlayers(roomId, user.userId, dto.userIds);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete('history/:roomId')
-  @HttpCode(204)
-  async removeHistoryEntry(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-  ): Promise<void> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    await this.gamesService.hideHistoryEntry(user.userId, roomId);
   }
 
   @UseGuards(JwtOptionalAuthGuard)

@@ -15,6 +15,7 @@
 ## Task 1: Extend the BE tier ladder (`roles.ts` + `TIER_RANK`)
 
 **Files:**
+
 - Modify: `apps/be/src/auth/lib/roles.ts:156-167`
 - Modify: `apps/be/src/admin/game-visibility/game-visibility.service.ts:25-29`
 - Test: `apps/be/src/auth/lib/roles.spec.ts` (existing file)
@@ -110,7 +111,11 @@ it('whole-game none beats any variant', async () => {
 it('developers_plus on variant beats all on game', async () => {
   const model = makeModelMock([
     { gameId: 'glimworm_v1', variantId: null, tier: 'all' },
-    { gameId: 'glimworm_v1', variantId: 'time_attack', tier: 'developers_plus' },
+    {
+      gameId: 'glimworm_v1',
+      variantId: 'time_attack',
+      tier: 'developers_plus',
+    },
   ]);
   const svc = await build(model);
   await expect(
@@ -155,6 +160,7 @@ git commit -m "feat(admin): add developers_plus and none visibility tiers (ARC-7
 ## Task 2: `getCatalog` shape change + `comingSoon` walk
 
 **Files:**
+
 - Modify: `apps/be/src/games/games.controller.ts` — `getCatalog` handler and its return type
 - Test: `apps/be/src/games/games.catalog-endpoint.spec.ts` (existing — extend)
 
@@ -286,6 +292,7 @@ git commit -m "feat(admin): catalog endpoint returns comingSoon flag per variant
 ## Task 3: Web `gamesApi` typed return + admin types mirror + `TierLabels` refactor
 
 **Files:**
+
 - Modify: `apps/web/src/features/games/api.ts:225-231` — `getCatalog` return type
 - Modify: `apps/web/src/features/admin-games/types.ts` — extend `VISIBILITY_TIERS`
 - Modify: `apps/web/src/features/admin-games/ui/GameVisibilityRow.tsx:14-18` — refactor `TierLabels` interface to `Record<VisibilityTier, string>`
@@ -353,6 +360,7 @@ Hold the staged changes through Task 4 and commit at the end of Task 4.
 ## Task 4: i18n — three new keys in five locale files (commits Task 3 + Task 4 together)
 
 **Files:**
+
 - Modify: `apps/web/src/shared/i18n/messages/pages/admin-games/en.ts`
 - Modify: `apps/web/src/shared/i18n/messages/pages/admin-games/ru.ts`
 - Modify: `apps/web/src/shared/i18n/messages/pages/admin-games/es.ts`
@@ -372,6 +380,7 @@ If a `games.common.comingSoon` (or equivalent shared namespace) already exists, 
 - [ ] **Step 2: Add `tier.developers_plus` and `tier.none` to all five admin-games locale files**
 
 `en.ts`:
+
 ```ts
   tiers: {
     all: 'All players',
@@ -383,24 +392,28 @@ If a `games.common.comingSoon` (or equivalent shared namespace) already exists, 
 ```
 
 `ru.ts`:
+
 ```ts
     developers_plus: 'Разработчики и админы',
     none: 'Скрыто (скоро)',
 ```
 
 `es.ts`:
+
 ```ts
     developers_plus: 'Desarrolladores y administradores',
     none: 'Oculto (próximamente)',
 ```
 
 `fr.ts`:
+
 ```ts
     developers_plus: 'Développeurs et admins',
     none: 'Masqué (bientôt disponible)',
 ```
 
 `by.ts`:
+
 ```ts
     developers_plus: 'Распрацоўшчыкі і адміны',
     none: 'Схавана (хутка)',
@@ -411,6 +424,7 @@ If a `games.common.comingSoon` (or equivalent shared namespace) already exists, 
 - [ ] **Step 3: Add the coming-soon badge string in the location chosen in Step 1**
 
 Add one string per locale. Suggested values:
+
 - en: `'Coming soon'`
 - ru: `'Скоро'`
 - es: `'Próximamente'`
@@ -442,6 +456,7 @@ git commit -m "feat(admin-games): mirror new tiers + localize developers_plus an
 ## Task 5: Critical CreationConfig — render coming-soon variant as disabled tile
 
 **Files:**
+
 - Modify: `apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx`
 - Test: `apps/web/src/widgets/CriticalGame/ui/CreationConfig.visibility.test.tsx`
 
@@ -468,7 +483,10 @@ it('renders a coming-soon variant as a disabled tile with a badge', async () => 
   await waitFor(() => {
     // cyberpunk: present and clickable
     expect(screen.getByTestId('variant-tile-cyberpunk')).toBeInTheDocument();
-    expect(screen.getByTestId('variant-tile-cyberpunk')).not.toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByTestId('variant-tile-cyberpunk')).not.toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
 
     // crime: present but disabled with badge
     const crimeTile = screen.getByTestId('variant-tile-crime');
@@ -478,7 +496,9 @@ it('renders a coming-soon variant as a disabled tile with a badge', async () => 
 
   // Clicking the disabled tile is a no-op (handleUpdate not called)
   fireEvent.click(screen.getByTestId('variant-tile-crime'));
-  expect(onChangeMock).not.toHaveBeenCalledWith(expect.objectContaining({ cardVariant: 'crime' }));
+  expect(onChangeMock).not.toHaveBeenCalledWith(
+    expect.objectContaining({ cardVariant: 'crime' }),
+  );
 });
 ```
 
@@ -505,47 +525,48 @@ In `apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx`:
 const visibleVariants =
   allowedVariants === null
     ? CARD_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
-    : CARD_VARIANTS
-        .filter((v) => allowedVariants.some((a) => a.id === v.id))
-        .map((v) => ({
-          ...v,
-          comingSoon: allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
-        }));
+    : CARD_VARIANTS.filter((v) =>
+        allowedVariants.some((a) => a.id === v.id),
+      ).map((v) => ({
+        ...v,
+        comingSoon:
+          allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+      }));
 ```
 
 4. In the JSX iteration (around line 115), add a `comingSoon` branch alongside `disabled`:
 
 ```tsx
-{visibleVariants.map((variant) => {
-  const isComingSoon = variant.comingSoon;
-  const isDisabled = variant.disabled || isComingSoon;
-  return (
-    <ItemWrapper
-      key={variant.id}
-      data-testid={`variant-tile-${variant.id}`}
-      aria-disabled={isDisabled || undefined}
-      disabled={isDisabled}
-      onClick={() =>
-        !isDisabled && handleUpdate({ cardVariant: variant.id })
-      }
-    >
-      <GameTileItem
-        active={options.cardVariant === variant.id}
+{
+  visibleVariants.map((variant) => {
+    const isComingSoon = variant.comingSoon;
+    const isDisabled = variant.disabled || isComingSoon;
+    return (
+      <ItemWrapper
+        key={variant.id}
+        data-testid={`variant-tile-${variant.id}`}
+        aria-disabled={isDisabled || undefined}
         disabled={isDisabled}
+        onClick={() => !isDisabled && handleUpdate({ cardVariant: variant.id })}
       >
-        {/* existing children */}
-        {isComingSoon && (
-          <span
+        <GameTileItem
+          active={options.cardVariant === variant.id}
+          disabled={isDisabled}
+        >
+          {/* existing children */}
+          {isComingSoon && (
+            <span
             // small badge — match the existing visual language for disabled state
             // use the localized coming-soon string from t('<chosen key>')
-          >
-            {t('<comingSoon i18n key chosen in Task 4>')}
-          </span>
-        )}
-      </GameTileItem>
-    </ItemWrapper>
-  );
-})}
+            >
+              {t('<comingSoon i18n key chosen in Task 4>')}
+            </span>
+          )}
+        </GameTileItem>
+      </ItemWrapper>
+    );
+  });
+}
 ```
 
 (Reuse the existing `disabled` styling — don't introduce a parallel visual treatment. The badge can be a small Tamagui `<Paragraph size="$1">` or whatever matches the existing tile design.)
@@ -567,6 +588,7 @@ git commit -m "feat(admin-games): Critical CreationConfig renders coming-soon va
 ## Task 6: Sea Battle CreationConfig — same coming-soon treatment
 
 **Files:**
+
 - Modify: `apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.tsx`
 - Test: `apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.visibility.test.tsx`
 
@@ -637,6 +659,7 @@ git commit -m "feat(admin-games): Sea Battle CreationConfig renders coming-soon 
 ## Task 7: Glimworm Lobby — same coming-soon treatment
 
 **Files:**
+
 - Modify: `apps/web/src/widgets/GlimwormGame/ui/GlimwormLobby.tsx` (variant tile rendering around lines 175-205)
 - Create: `apps/web/src/widgets/GlimwormGame/ui/GlimwormLobby.visibility.test.tsx` (verified: no `*.test.tsx` files exist in this directory today)
 
@@ -657,61 +680,74 @@ Expected: FAIL.
 Reading lines 63-90 (current effect + state) and 175-205 (current tile rendering):
 
 ```tsx
-const [allowedVariants, setAllowedVariants] = useState<
-  Array<{ id: string; comingSoon: boolean }> | null
->(null);
+const [allowedVariants, setAllowedVariants] = useState<Array<{
+  id: string;
+  comingSoon: boolean;
+}> | null>(null);
 
 useEffect(() => {
   let cancelled = false;
-  gamesApi.getCatalog().then((res) => {
-    if (cancelled) return;
-    const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
-    setAllowedVariants(glim?.variants ?? null);
-  }).catch(() => { if (!cancelled) setAllowedVariants(null); });
-  return () => { cancelled = true; };
+  gamesApi
+    .getCatalog()
+    .then((res) => {
+      if (cancelled) return;
+      const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
+      setAllowedVariants(glim?.variants ?? null);
+    })
+    .catch(() => {
+      if (!cancelled) setAllowedVariants(null);
+    });
+  return () => {
+    cancelled = true;
+  };
 }, []);
 
 const visibleVariants =
   allowedVariants === null
     ? GLIMWORM_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
-    : GLIMWORM_VARIANTS
-        .filter((v) => allowedVariants.some((a) => a.id === v.id))
-        .map((v) => ({
-          ...v,
-          comingSoon: allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
-        }));
+    : GLIMWORM_VARIANTS.filter((v) =>
+        allowedVariants.some((a) => a.id === v.id),
+      ).map((v) => ({
+        ...v,
+        comingSoon:
+          allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+      }));
 ```
 
 In the tile rendering loop:
 
 ```tsx
-{visibleVariants.map((v) => {
-  const active = variant === v.id;
-  const isComingSoon = v.comingSoon;
-  const interactionAllowed = isHost && !isComingSoon;
-  return (
-    <button
-      key={v.id}
-      type="button"
-      data-testid={`variant-tile-${v.id}`}
-      aria-disabled={isComingSoon || undefined}
-      disabled={!interactionAllowed}
-      onClick={() => interactionAllowed && setVariant(v.id as GlimwormVariant)}
-      style={{
-        // existing styles
-        opacity: isComingSoon ? 0.4 : (isHost || active ? 1 : 0.5),
-        cursor: interactionAllowed ? 'pointer' : 'default',
-      }}
-    >
-      {v.emoji} {t(v.name as TranslationKey)}
-      {isComingSoon && (
-        <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.8 }}>
-          {t('<comingSoon key>')}
-        </span>
-      )}
-    </button>
-  );
-})}
+{
+  visibleVariants.map((v) => {
+    const active = variant === v.id;
+    const isComingSoon = v.comingSoon;
+    const interactionAllowed = isHost && !isComingSoon;
+    return (
+      <button
+        key={v.id}
+        type="button"
+        data-testid={`variant-tile-${v.id}`}
+        aria-disabled={isComingSoon || undefined}
+        disabled={!interactionAllowed}
+        onClick={() =>
+          interactionAllowed && setVariant(v.id as GlimwormVariant)
+        }
+        style={{
+          // existing styles
+          opacity: isComingSoon ? 0.4 : isHost || active ? 1 : 0.5,
+          cursor: interactionAllowed ? 'pointer' : 'default',
+        }}
+      >
+        {v.emoji} {t(v.name as TranslationKey)}
+        {isComingSoon && (
+          <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.8 }}>
+            {t('<comingSoon key>')}
+          </span>
+        )}
+      </button>
+    );
+  });
+}
 ```
 
 - [ ] **Step 4: Run the test to verify it passes**
@@ -743,6 +779,7 @@ Expected: ALL PASS.
 - [ ] **Step 3: Run lint, file-length, translations**
 
 Run in parallel:
+
 - `pnpm lint`
 - `pnpm check-file-length`
 - `pnpm check-translations`
@@ -782,5 +819,6 @@ EOF
 ## Notes on file size
 
 The Critical and Glimworm pickers are already large. Track line counts during Tasks 5 and 7:
+
 - If a file would exceed 500 lines (the project's `check-file-length` threshold), extract the new rendering branch into a small helper component (e.g., `ComingSoonBadge.tsx`) co-located with the picker.
 - Don't pre-extract if you stay under the threshold — adds churn without benefit.

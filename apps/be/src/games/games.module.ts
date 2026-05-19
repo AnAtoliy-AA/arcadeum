@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GamesController } from './games.controller';
+import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
 import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
@@ -65,7 +66,7 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     EconomyModule,
     GameVisibilityModule,
   ],
-  controllers: [GamesController],
+  controllers: [GamesController, GamesHistoryController],
   providers: [
     // Core services
     GameRoomsService,

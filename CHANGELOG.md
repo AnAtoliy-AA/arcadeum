@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.14.13] - 2026-05-19
 
 ### Added
+
 - render coming-soon games as disabled and gate Create button (ARC-704)
 - catalog surfaces all variants with comingSoon flag (ARC-710) (ARC-710)
 - wire catalog comingSoon flag to home featured-games carousel (ARC-704) (ARC-704)
@@ -47,16 +48,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tier helper for visibility (ARC-710) (ARC-710)
 
 ### Fixed
+
 - drop dynamic+ssr:false wrapper for CreateGameRoomPage (N/A)
 - guard buildComingSoonMaps against malformed catalog (ARC-710) (ARC-710)
 - brighten Game Rules link button to readable accent color (ARC-710) (ARC-710)
 - update listForAdmin test after catalog populated (ARC-710) (ARC-710)
-- resolver short-circuits anon_/bot_/non-ObjectId callers (ARC-710) (ARC-710)
+- resolver short-circuits anon*/bot*/non-ObjectId callers (ARC-710) (ARC-710)
 
 ### Improved
+
 - add priority prop for eager-load + high fetchpriority (N/A)
 
 ### Refactored
+
 - extract GameSelectorSection to satisfy file-length cap (ARC-710) (ARC-710)
 - extract web CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
 - extract CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
@@ -64,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - split gem-success page presentational components (N/A)
 
 ### Documentation
+
 - address plan review on visibility tiers (ARC-710) (ARC-710)
 - implementation plan for none + developers_plus tiers (ARC-710) (ARC-710)
 - address spec review on visibility tiers (ARC-710) (ARC-710)
@@ -78,10 +83,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fold spec-review clarifications into ARC-710 design (ARC-710)
 - design for admin-controlled game/variant visibility (ARC-710) (ARC-710)
 
-
 ## [1.14.12] - 2026-05-19
 
 ### Added
+
 - limited-drop hero rotates unowned legendaries (N/A)
 - split Inventory into its own page (/shop/inventory) (N/A)
 - real Inventory section + working top-bar nav (N/A)
@@ -94,27 +99,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - idempotent purchase + hero owned-state awareness (N/A)
 
 ### Fixed
+
 - define missing $gray10/11/12, $green11, $red11, $blue11 tokens (N/A)
 - render game_skin items as a swatch instead of next/image (N/A)
 - soften the frame on the avatar disc (N/A)
 - drop overflow:hidden on the avatar disc so the badge isn't clipped (N/A)
 - complete EquippedView literal in purchase() happy path (N/A)
 
-
 ## [1.14.11] - 2026-05-19
 
 ### Added
+
 - shop images and badges redesign (N/A)
 
 ### Refactored
-- replace standard img with optimized next/image components (N/A)
 
+- replace standard img with optimized next/image components (N/A)
 
 ## [1.14.10] - 2026-05-19
 
 ### Added
-- locale-aware formatters + completeness audit + LCP polish (N/A)
 
+- locale-aware formatters + completeness audit + LCP polish (N/A)
 
 ## [1.14.9] - 2026-05-18
 

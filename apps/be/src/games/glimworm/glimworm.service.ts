@@ -3,10 +3,8 @@ import {
   GLIMWORM_BASE_SPEED,
   GLIMWORM_COUNTDOWN_MS,
   GLIMWORM_INPUT_RATE_LIMIT_HZ,
-  GLIMWORM_START_LENGTH,
   GLIMWORM_TICK_MS,
 } from './glimworm.constants';
-// Single-tick displacement equals speed * dt (used for segment seeding).
 import { GlimwormStateStore } from './glimworm.state';
 import { GlimwormBotService } from './glimworm-bot.service';
 import { GamesRealtimeService } from '../games.realtime.service';
@@ -21,25 +19,21 @@ import {
   type VariantStrategy,
 } from './variants/variant.strategy';
 import {
-  advanceHeads,
   buildSnapshotForViewer,
-  expireActivePowerups,
   fillWithBots,
-  findSpawnPosition,
   nextFreeColor,
-  resolveCollisions,
-  resolvePickups,
-  spawnItems,
-  trimSegments,
   type RandomFn,
-  type TickContext,
 } from './glimworm.service.tick';
+import {
+  resetWormsForLobby,
+  runGameTick,
+  seedWormSpawns,
+} from './glimworm.service.lifecycle';
 import type {
   GlimwormDiscreteEvent,
   GlimwormInputPayload,
   GlimwormSession,
   GlimwormVariant,
-  Vec2,
   Worm,
   WormId,
 } from './glimworm.types';
@@ -214,33 +208,7 @@ export class GlimwormService implements OnModuleDestroy {
       fillWithBots: opts.fillWithBots,
       botCount: opts.botCount,
     };
-    const center: Vec2 = {
-      x: session.arena.width / 2,
-      y: session.arena.height / 2,
-    };
-
-    for (const worm of Object.values(session.worms)) {
-      const head = findSpawnPosition(session, this.random);
-      const heading = Math.atan2(center.y - head.y, center.x - head.x);
-      // Seed segments along the *opposite* of the heading so the worm starts
-      // already extended behind the head — avoids spurious self-collision on
-      // tick 1 when stacked segments would overlap the new head AABB.
-      const stepX =
-        -Math.cos(heading) * (GLIMWORM_BASE_SPEED * (GLIMWORM_TICK_MS / 1000));
-      const stepY =
-        -Math.sin(heading) * (GLIMWORM_BASE_SPEED * (GLIMWORM_TICK_MS / 1000));
-      const segments: Vec2[] = [];
-      for (let i = 0; i < GLIMWORM_START_LENGTH; i++) {
-        segments.push({ x: head.x + stepX * i, y: head.y + stepY * i });
-      }
-      worm.segments = segments;
-      worm.heading = heading;
-      worm.alive = true;
-      worm.score = 0;
-      worm.activePowerup = null;
-      worm.inventoryPowerup = null;
-      worm.speed = GLIMWORM_BASE_SPEED;
-    }
+    seedWormSpawns(session, this.random);
 
     const strategy = createVariantStrategy(opts.variant);
     session.startedAt = Date.now();
@@ -375,17 +343,7 @@ export class GlimwormService implements OnModuleDestroy {
     session.lastPowerupSpawnAt = 0;
     delete session.arena.safeZone;
 
-    for (const worm of Object.values(session.worms)) {
-      worm.segments = [];
-      worm.alive = true;
-      worm.score = 0;
-      worm.livesLeft = 1;
-      worm.activePowerup = null;
-      worm.inventoryPowerup = null;
-      delete worm.respawnAt;
-      delete worm.disconnected;
-      delete worm.disconnectedAt;
-    }
+    resetWormsForLobby(session);
 
     // Push a fresh snapshot so clients see the lobby state.
     this.emitSnapshots(session);
@@ -449,77 +407,26 @@ export class GlimwormService implements OnModuleDestroy {
   tick(roomId: string): void {
     const session = this.stateStore.get(roomId);
     if (!session) return;
-    if (session.status !== 'playing' && session.status !== 'countdown') return;
-    // During countdown: keep emitting snapshots so the client can render the
-    // 3-2-1 overlay, but skip simulation. The transition to 'playing' is
-    // scheduled by startTickLoop.
-    if (session.status === 'countdown') {
-      this.emitSnapshots(session);
-      return;
-    }
 
-    session.tickNum += 1;
-    const now = Date.now();
-    const growthTargets =
-      this.growthTargets.get(roomId) ?? new Map<WormId, number>();
-    if (!this.growthTargets.has(roomId)) {
+    let growthTargets = this.growthTargets.get(roomId);
+    if (!growthTargets) {
+      growthTargets = new Map<WormId, number>();
       this.growthTargets.set(roomId, growthTargets);
     }
 
-    const events: GlimwormDiscreteEvent[] = [];
-    const ctx: TickContext = {
+    const result = runGameTick({
       session,
       growthTargets,
-      events,
-      now,
+      strategy: this.strategies.get(roomId),
       random: this.random,
-    };
-
-    // Phase 1: apply inputs (humans set heading via submitInput; bots decide here).
-    for (const worm of Object.values(session.worms)) {
-      if (worm.isBot && worm.alive && !worm.disconnected) {
-        worm.heading = this.botService.pickAngle(session, worm);
-      }
-      if (!Number.isFinite(worm.heading)) worm.heading = 0;
-    }
-
-    // Phase 2: advance heads
-    advanceHeads(session);
-
-    // Phase 3: pickups
-    resolvePickups(ctx);
-
-    // Phase 4: collisions
-    const strategy = this.strategies.get(roomId);
-    resolveCollisions(ctx, (victim, killer) => {
-      if (strategy) strategy.onWormDeath(session, victim, killer);
-      else victim.alive = false;
+      pickBotAngle: (s, w) => this.botService.pickAngle(s, w),
+      emitEvents: (events) => this.emitEvents(roomId, events),
+      emitSnapshots: (s) => this.emitSnapshots(s),
     });
 
-    // Phase 5: trim
-    trimSegments(session, growthTargets);
-
-    // Phase 6: spawn items
-    spawnItems(ctx);
-
-    // Phase 7: expire active power-ups
-    expireActivePowerups(session, now);
-
-    // Phase 7b: variant tickHook + end check
-    if (strategy) {
-      if (strategy.tickHook) strategy.tickHook(session, now);
-      const winner = strategy.checkEndCondition(session);
-      if (winner !== null && session.status === 'playing') {
-        // Emit collected events first so listeners see deaths before round_ended
-        if (events.length > 0) this.emitEvents(roomId, events);
-        this.endSession(roomId, winner);
-        return;
-      }
+    if (result.ended) {
+      this.endSession(roomId, result.winner);
     }
-
-    // Phase 8: snapshots + events
-    if (events.length > 0) this.emitEvents(roomId, events);
-    this.emitSnapshots(session);
   }
 
   private emitSnapshots(session: GlimwormSession): void {

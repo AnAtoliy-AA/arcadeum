@@ -32,17 +32,44 @@ Append Critical's 13 and Sea Battle's 10 variant IDs to the existing `GAME_CATAL
 
 ```ts
 export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
-  { gameId: 'critical_v1', variants: [
-    'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
-    'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
-    'steampunk', 'zen', 'random',
-  ] },
-  { gameId: 'sea_battle_v1', variants: [
-    'classic', 'modern', 'pixel', 'cartoon', 'cyber',
-    'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
-  ] },
+  {
+    gameId: 'critical_v1',
+    variants: [
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'adventure',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+      'random',
+    ],
+  },
+  {
+    gameId: 'sea_battle_v1',
+    variants: [
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
+    ],
+  },
   { gameId: 'texas_holdem_v1', variants: [] },
-  { gameId: 'glimworm_v1', variants: ['battle_royale', 'time_attack', 'lives_heats'] },
+  {
+    gameId: 'glimworm_v1',
+    variants: ['battle_royale', 'time_attack', 'lives_heats'],
+  },
 ];
 ```
 
@@ -63,6 +90,7 @@ function extractVariantFromOptions(
 ```
 
 Use the helper at:
+
 - `createRoom` (replaces T11's inline 3-line extraction).
 - `listRooms` `filterVisible` key extractor (replaces T12's inline extraction).
 
@@ -103,7 +131,7 @@ Critical has **two** `CARD_VARIANTS` constants today, but only one is on the roo
 
 The two `CARD_VARIANTS` are content duplicates and a real footgun, but reconciling them is out of scope. The plan should add a one-line comment in the filtered file noting the other.
 
-**In-room variant selectors (`widgets/CriticalGame/ui/VariantSelector.tsx`, `widgets/SeaBattleGame/ui/VariantSelector.tsx`) are deliberately NOT filtered.** They operate on already-created rooms; the createRoom gate (D2) already prevented restricted variants from landing in those rooms in the first place. If an admin restricts a variant *after* a room exists, the live room's option-update path is a separate concern (today's `updateRoomOptions` endpoint has no visibility gate; that's a known gap from ARC-710 and stays out of scope here).
+**In-room variant selectors (`widgets/CriticalGame/ui/VariantSelector.tsx`, `widgets/SeaBattleGame/ui/VariantSelector.tsx`) are deliberately NOT filtered.** They operate on already-created rooms; the createRoom gate (D2) already prevented restricted variants from landing in those rooms in the first place. If an admin restricts a variant _after_ a room exists, the live room's option-update path is a separate concern (today's `updateRoomOptions` endpoint has no visibility gate; that's a known gap from ARC-710 and stays out of scope here).
 
 ## Architecture (delta)
 
@@ -133,15 +161,18 @@ USER WRITE (createRoom, Critical theme = 'crime'):
 ## Testing
 
 ### BE unit
+
 - `games.catalog.spec.ts`: assert `getCatalogEntry('critical_v1').variants` contains all 13 IDs (including `high-altitude-hike` to lock the hyphen); `hasVariant('critical_v1', 'cyberpunk')` is true, `hasVariant('critical_v1', 'bogus')` is false. Same for `sea_battle_v1`.
 - `games.controller.visibility.spec.ts`: add a createRoom test where `gameOptions.cardVariant: 'crime'` is restricted — asserts `assertVisible` is called with `('free', 'critical_v1', 'crime')` and `gamesService.createRoom` is not called.
 - `games.controller.visibility.spec.ts`: confirm `gameOptions.variant` still takes precedence when both keys are present (defensive — pin contract).
 
 ### Web unit (Vitest)
+
 - Critical `CreationConfig`: mock `gamesApi.getCatalog()` to return `critical_v1.variants` without `cyberpunk`; assert the rendered list excludes the cyberpunk tile.
 - Sea Battle `CreationConfig`: same pattern.
 
 ### Manual smoke (post-deploy)
+
 1. Admin → `/admin/games` → expand Critical → set `crime` to `vip_plus`.
 2. Free user opens Critical's lobby (or quickplay create flow) → `crime` tile is not visible. Direct `POST /games/rooms { gameId: 'critical_v1', gameOptions: { cardVariant: 'crime' } }` returns 403.
 3. VIP user sees and can use `crime`.

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { finalizeGemPurchase } from '@/features/gems/server/gems.actions';
 import { getServerLocale } from '@/shared/i18n/server';
-import { formatNumber } from '@/shared/i18n/formatters';
 import {
   Actions,
   BalanceCard,
@@ -14,6 +13,7 @@ import {
   Title,
   TokenChip,
 } from './_components';
+import { formatNumber } from '@/shared/i18n/formatters';
 
 export const metadata: Metadata = {
   title: 'Gem Purchase · Arcadeum',

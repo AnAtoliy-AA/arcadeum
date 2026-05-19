@@ -72,6 +72,7 @@ Six bite-sized tasks, each ends in a commit. Test commands:
 ### Task 1: Extend BE catalog with Critical + Sea Battle variants
 
 **Files:**
+
 - Modify: `apps/be/src/games/games.catalog.ts`
 - Modify: `apps/be/src/games/games.catalog.spec.ts`
 
@@ -83,16 +84,34 @@ Append to [apps/be/src/games/games.catalog.spec.ts](../../../apps/be/src/games/g
 describe('GAME_CATALOG color variants', () => {
   it('lists all 13 Critical card-back themes including high-altitude-hike and random', () => {
     expect(getCatalogEntry('critical_v1')?.variants).toEqual([
-      'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
-      'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
-      'steampunk', 'zen', 'random',
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'adventure',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+      'random',
     ]);
   });
 
   it('lists all 10 Sea Battle visual themes', () => {
     expect(getCatalogEntry('sea_battle_v1')?.variants).toEqual([
-      'classic', 'modern', 'pixel', 'cartoon', 'cyber',
-      'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
     ]);
   });
 
@@ -119,16 +138,34 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'critical_v1',
     variants: [
-      'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
-      'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
-      'steampunk', 'zen', 'random',
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'adventure',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+      'random',
     ],
   },
   {
     gameId: 'sea_battle_v1',
     variants: [
-      'classic', 'modern', 'pixel', 'cartoon', 'cyber',
-      'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
     ],
   },
   { gameId: 'texas_holdem_v1', variants: [] },
@@ -159,6 +196,7 @@ git commit -m "feat(admin): extend catalog with Critical + Sea Battle variants (
 ### Task 2: `extractVariantFromOptions` helper module
 
 **Files:**
+
 - Create: `apps/be/src/games/game-options.ts`
 - Create: `apps/be/src/games/game-options.spec.ts`
 
@@ -177,7 +215,9 @@ describe('extractVariantFromOptions', () => {
   it('returns undefined when options is not an object', () => {
     // The DTO types gameOptions as Record<string, unknown> | undefined,
     // but defensively guard against non-object runtime values.
-    expect(extractVariantFromOptions(null as unknown as undefined)).toBeUndefined();
+    expect(
+      extractVariantFromOptions(null as unknown as undefined),
+    ).toBeUndefined();
   });
 
   it('reads opts.variant when present (Glimworm/Sea Battle convention)', () => {
@@ -202,7 +242,10 @@ describe('extractVariantFromOptions', () => {
       extractVariantFromOptions({ variant: 42 } as Record<string, unknown>),
     ).toBeUndefined();
     expect(
-      extractVariantFromOptions({ cardVariant: null } as Record<string, unknown>),
+      extractVariantFromOptions({ cardVariant: null } as Record<
+        string,
+        unknown
+      >),
     ).toBeUndefined();
   });
 });
@@ -260,6 +303,7 @@ git commit -m "feat(admin): extractVariantFromOptions helper (ARC-710)" --no-ver
 ### Task 3: Rewire `createRoom` and `listRooms` to use the helper
 
 **Files:**
+
 - Modify: `apps/be/src/games/games.controller.ts`
 - Modify: `apps/be/src/games/games.controller.visibility.spec.ts`
 
@@ -270,8 +314,12 @@ Append to `apps/be/src/games/games.controller.visibility.spec.ts` inside the `de
 ```ts
 it('extracts variant from gameOptions.cardVariant (Critical convention)', async () => {
   const vis = makeVisibility({ canSee: true });
-  const resolver = { resolveRole: jest.fn().mockResolvedValue('free') } as unknown as UserRoleResolver;
-  const games = { createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }) } as unknown as GamesService;
+  const resolver = {
+    resolveRole: jest.fn().mockResolvedValue('free'),
+  } as unknown as UserRoleResolver;
+  const games = {
+    createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
+  } as unknown as GamesService;
   const controller = buildController(games, vis, resolver);
   await controller.createRoom(
     { user: { userId: 'u-1' } } as unknown as Request,
@@ -282,13 +330,21 @@ it('extracts variant from gameOptions.cardVariant (Critical convention)', async 
       gameOptions: { cardVariant: 'crime' },
     } as unknown as CreateGameRoomDto,
   );
-  expect(vis.assertVisible).toHaveBeenCalledWith('free', 'critical_v1', 'crime');
+  expect(vis.assertVisible).toHaveBeenCalledWith(
+    'free',
+    'critical_v1',
+    'crime',
+  );
 });
 
 it('prefers gameOptions.variant over gameOptions.cardVariant', async () => {
   const vis = makeVisibility({ canSee: true });
-  const resolver = { resolveRole: jest.fn().mockResolvedValue('free') } as unknown as UserRoleResolver;
-  const games = { createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }) } as unknown as GamesService;
+  const resolver = {
+    resolveRole: jest.fn().mockResolvedValue('free'),
+  } as unknown as UserRoleResolver;
+  const games = {
+    createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
+  } as unknown as GamesService;
   const controller = buildController(games, vis, resolver);
   await controller.createRoom(
     { user: { userId: 'u-1' } } as unknown as Request,
@@ -299,7 +355,11 @@ it('prefers gameOptions.variant over gameOptions.cardVariant', async () => {
       gameOptions: { variant: 'classic', cardVariant: 'should-be-ignored' },
     } as unknown as CreateGameRoomDto,
   );
-  expect(vis.assertVisible).toHaveBeenCalledWith('free', 'sea_battle_v1', 'classic');
+  expect(vis.assertVisible).toHaveBeenCalledWith(
+    'free',
+    'sea_battle_v1',
+    'classic',
+  );
 });
 ```
 
@@ -312,9 +372,11 @@ function makeVisibility(overrides: { canSee?: boolean } = {}) {
     canSee: jest.fn().mockResolvedValue(canSee),
     assertVisible: canSee
       ? jest.fn().mockResolvedValue(undefined)
-      : jest.fn().mockRejectedValue(
-          Object.assign(new Error('denied'), { status: 403 }),
-        ),
+      : jest
+          .fn()
+          .mockRejectedValue(
+            Object.assign(new Error('denied'), { status: 403 }),
+          ),
   } as unknown as GameVisibilityService;
 }
 ```
@@ -334,6 +396,7 @@ Expected: the new "extracts variant from gameOptions.cardVariant" test fails bec
 In `apps/be/src/games/games.controller.ts`, find the `createRoom` block. Replace the inline extractor (lines roughly 84-88, the block that sets `variantOpt` and `variant`):
 
 Before:
+
 ```ts
 const variantOpt =
   dto.gameOptions && typeof dto.gameOptions === 'object'
@@ -344,6 +407,7 @@ await this.visibility.assertVisible(role, dto.gameId, variant);
 ```
 
 After:
+
 ```ts
 const variant = extractVariantFromOptions(dto.gameOptions);
 await this.visibility.assertVisible(role, dto.gameId, variant);
@@ -360,6 +424,7 @@ import { extractVariantFromOptions } from './game-options';
 In the same file, find the `listRooms` block (roughly lines 155-161). Replace the inline `filterVisible` key extractor:
 
 Before:
+
 ```ts
 const filtered = await this.visibility.filterVisible(
   role,
@@ -376,6 +441,7 @@ const filtered = await this.visibility.filterVisible(
 ```
 
 After:
+
 ```ts
 const filtered = await this.visibility.filterVisible(
   role,
@@ -417,6 +483,7 @@ git commit -m "feat(admin): createRoom + listRooms read both variant keys (ARC-7
 ### Task 4: Critical CreationConfig filters via catalog
 
 **Files:**
+
 - Modify: `apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx`
 - Create: `apps/web/src/widgets/CriticalGame/ui/CreationConfig.visibility.test.tsx`
 
@@ -459,9 +526,13 @@ describe('Critical CreationConfig — variant visibility filter', () => {
     // While the catalog is in-flight, render the full list (failsafe).
     // After resolution, restricted variants disappear.
     await waitFor(() => {
-      expect(screen.queryByText(/games\.critical_v1\.variants\.crime\.name/)).toBeNull();
+      expect(
+        screen.queryByText(/games\.critical_v1\.variants\.crime\.name/),
+      ).toBeNull();
     });
-    expect(screen.getByText(/games\.critical_v1\.variants\.cyberpunk\.name/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/games\.critical_v1\.variants\.cyberpunk\.name/),
+    ).toBeInTheDocument();
   });
 
   it('renders the full list when the catalog fetch fails (silent failure)', async () => {
@@ -501,6 +572,7 @@ Expected: tests fail because the component currently maps over the full `CARD_VA
 In `apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx`:
 
 Add imports at the top:
+
 ```ts
 import { gamesApi } from '@/features/games/api';
 ```
@@ -556,6 +628,7 @@ git commit -m "feat(admin-games): Critical CreationConfig filters via catalog (A
 ### Task 5: Sea Battle CreationConfig filters via catalog
 
 **Files:**
+
 - Modify: `apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.tsx`
 - Create: `apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.visibility.test.tsx`
 
@@ -596,9 +669,13 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText(/games\.sea_battle_v1\.variants\.cyber\.name/)).toBeNull();
+      expect(
+        screen.queryByText(/games\.sea_battle_v1\.variants\.cyber\.name/),
+      ).toBeNull();
     });
-    expect(screen.getByText(/games\.sea_battle_v1\.variants\.classic\.name/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/games\.sea_battle_v1\.variants\.classic\.name/),
+    ).toBeInTheDocument();
   });
 
   it('renders the full list when the catalog fetch fails (silent failure)', async () => {
@@ -717,6 +794,7 @@ pnpm dev
 ```
 
 Then:
+
 1. Log in as admin → `/admin/games` → expand Critical → set `crime` to `vip_plus` → Save.
 2. Log in as a free user → open Critical's creation config (e.g. via `/games/create?gameId=critical_v1`) → `crime` tile is NOT visible.
 3. `curl -X POST` directly to `/games/rooms` with `{ gameId:'critical_v1', gameOptions:{ cardVariant:'crime' } }` as the free user → expect HTTP 403 with payload `{ code: 'GAME_VISIBILITY_DENIED', gameId:'critical_v1', variantId:'crime' }`.

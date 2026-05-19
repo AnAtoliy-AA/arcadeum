@@ -34,9 +34,9 @@ Append `'developers_plus'` and `'none'` to `VISIBILITY_TIERS`. Extend `TIER_MIN_
 ```ts
 const TIER_MIN_PRIORITY: Record<VisibilityTier, number> = {
   all: 0,
-  premium_plus: ROLE_INFO.premium.priority,         // 10
-  vip_plus: ROLE_INFO.vip.priority,                 // 20
-  developers_plus: ROLE_INFO.developer.priority,    // 80
+  premium_plus: ROLE_INFO.premium.priority, // 10
+  vip_plus: ROLE_INFO.vip.priority, // 20
+  developers_plus: ROLE_INFO.developer.priority, // 80
   none: Number.POSITIVE_INFINITY,
 };
 ```
@@ -57,7 +57,7 @@ const TIER_RANK: Record<VisibilityTier, number> = {
 
 This shadow-duplicate ranking drives `getEffectiveTier`'s `max(gameTier, variantTier)` selection. Without the new keys, TypeScript will fail to compile the `Record<VisibilityTier, number>` (good — it forces this edit). Semantically the ranks must monotonically increase so `max()` always picks the stricter tier. Examples after the change: `getEffectiveTier(game='developers_plus', variant='none')` → `'none'` (rank 4 > 3); `getEffectiveTier(game='none', variant='all')` → `'none'` (rank 4 > 0).
 
-**Why:** Reusing the priority ladder means `assertVisible`, `filterVisible`, `canSee`, the Glimworm WS gateway gate, and quickplay all pick up the new tiers with no logic change. Only the `getCatalog` walk needs new code, because it's the one site that *intentionally* surfaces a non-visible variant (as coming-soon).
+**Why:** Reusing the priority ladder means `assertVisible`, `filterVisible`, `canSee`, the Glimworm WS gateway gate, and quickplay all pick up the new tiers with no logic change. Only the `getCatalog` walk needs new code, because it's the one site that _intentionally_ surfaces a non-visible variant (as coming-soon).
 
 ### D2 — Catalog response shape: `variants: { id: string; comingSoon: boolean }[]`
 
@@ -69,7 +69,7 @@ type CatalogGame = { gameId: string; variants: CatalogVariant[] };
 type CatalogResponse = { games: CatalogGame[] };
 ```
 
-Per-variant inclusion rule inside an *otherwise-visible* game (`canSee(role, gameId)` is true):
+Per-variant inclusion rule inside an _otherwise-visible_ game (`canSee(role, gameId)` is true):
 
 - effective tier is `none` → include `{ id, comingSoon: true }`
 - `canSee(role, gameId, variantId)` → include `{ id, comingSoon: false }`
@@ -100,27 +100,37 @@ For each of:
 Update the existing catalog-fetch effect to track `comingSoon` per variant:
 
 ```ts
-const [allowedVariants, setAllowedVariants] = useState<CatalogVariant[] | null>(null);
+const [allowedVariants, setAllowedVariants] = useState<CatalogVariant[] | null>(
+  null,
+);
 
 useEffect(() => {
   let cancelled = false;
-  gamesApi.getCatalog().then((res) => {
-    if (cancelled) return;
-    const entry = res.games.find((g) => g.gameId === '<gameId>');
-    setAllowedVariants(entry?.variants ?? null);
-  }).catch(() => { if (!cancelled) setAllowedVariants(null); });
-  return () => { cancelled = true; };
+  gamesApi
+    .getCatalog()
+    .then((res) => {
+      if (cancelled) return;
+      const entry = res.games.find((g) => g.gameId === '<gameId>');
+      setAllowedVariants(entry?.variants ?? null);
+    })
+    .catch(() => {
+      if (!cancelled) setAllowedVariants(null);
+    });
+  return () => {
+    cancelled = true;
+  };
 }, []);
 
 const visibleVariants =
   allowedVariants === null
     ? FULL_LIST.map((v) => ({ ...v, comingSoon: false }))
-    : FULL_LIST
-        .filter((v) => allowedVariants.some((a) => a.id === v.id))
-        .map((v) => ({
+    : FULL_LIST.filter((v) => allowedVariants.some((a) => a.id === v.id)).map(
+        (v) => ({
           ...v,
-          comingSoon: allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
-        }));
+          comingSoon:
+            allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+        }),
+      );
 ```
 
 When rendering each tile, branch on `comingSoon`:
@@ -203,6 +213,7 @@ ADMIN WRITE (try createRoom with cardVariant: 'crime' set to 'none'):
 ## Testing
 
 ### BE unit
+
 - `roles.test.ts` (or wherever `canSeeAtTier` lives): add cases proving
   - `canSeeAtTier('developer', 'developers_plus')` → true
   - `canSeeAtTier('admin', 'developers_plus')` → true
@@ -221,11 +232,13 @@ ADMIN WRITE (try createRoom with cardVariant: 'crime' set to 'none'):
   - game=`all`, variant=`developers_plus` → returns `'developers_plus'` (verifies TIER_RANK 3 > 0)
 
 ### Web unit (Vitest)
+
 - Critical `CreationConfig`: mock `gamesApi.getCatalog()` to return `crime` with `comingSoon: true` and `cyberpunk` with `comingSoon: false`; assert `cyberpunk` renders interactive and `crime` renders disabled with the "Coming soon" badge; clicking `crime` is a no-op.
 - Sea Battle `CreationConfig`: same pattern, different variant IDs.
 - Glimworm `GlimwormLobby` (or wherever the variant tiles live): same pattern.
 
 ### Manual smoke (post-deploy)
+
 1. Admin → `/admin/games` → set `crime` to `none`. Free user opens Critical's create flow → `crime` tile is shown but disabled with "Coming soon". Direct POST with `cardVariant: 'crime'` returns 403. Admin user: same.
 2. Admin sets a whole game to `none`. The game disappears from the games landing page entirely (no coming-soon card, per the Q2 scope).
 3. Admin sets a variant to `developers_plus`. Free user does not see the tile. Developer user sees it as a normal interactive tile.

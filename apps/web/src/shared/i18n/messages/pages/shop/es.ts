@@ -49,6 +49,16 @@ export const shopEs = {
         desc: 'Tema visual dentro de las partidas.',
         empty: 'Vacío',
       },
+      banner: {
+        label: 'Banner',
+        desc: 'Panel de fondo mostrado detrás de tu avatar en el perfil y el lobby.',
+        empty: 'Vacío',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Brillo animado que rodea tu nombre en el chat y las listas.',
+        empty: 'Vacío',
+      },
     },
     action: {
       previewingEyebrow: 'Probando',
@@ -88,6 +98,16 @@ export const shopEs = {
     },
     skins: {
       title: 'Skins de juego',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    banners: {
+      title: 'Banners',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    auras: {
+      title: 'Auras',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
     },
@@ -163,6 +183,18 @@ export const shopEs = {
       violet: { name: 'Violeta', desc: 'Un violeta vivo.' },
       sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
       aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
+    },
+    banner: {
+      slate: { name: 'Pizarra', desc: 'Un fondo gris oscuro discreto.' },
+      tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
+      twilight: { name: 'Crepúsculo', desc: 'Índigo que se funde en rosa intenso.' },
+      nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
+    },
+    aura: {
+      silver: { name: 'Aura plateada', desc: 'Un halo plateado sutil.' },
+      cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
+      violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
+      prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
     },
   },
 };

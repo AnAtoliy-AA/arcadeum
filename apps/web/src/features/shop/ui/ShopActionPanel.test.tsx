@@ -37,6 +37,8 @@ const slotLabels: Record<ShopCategory, { label: string; desc: string }> = {
   badge: { label: 'Badge', desc: '' },
   name_color: { label: 'Name color', desc: '' },
   game_skin: { label: 'Game skin', desc: '' },
+  banner: { label: 'Banner', desc: '' },
+  aura: { label: 'Aura', desc: '' },
 };
 
 const walletLabels = { nextPack: '', ofTarget: '' };
@@ -58,6 +60,8 @@ const EMPTY_PREVIEW = {
   badge: null,
   name_color: null,
   game_skin: null,
+  banner: null,
+  aura: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
 const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };

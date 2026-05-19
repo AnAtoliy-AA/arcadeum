@@ -93,6 +93,8 @@ describe('ShopHero', () => {
         badge: null,
         name_color: null,
         game_skin: null,
+        banner: null,
+        aura: null,
       },
     });
     const item = makeItem();
@@ -126,6 +128,8 @@ describe('ShopHero', () => {
         badge: null,
         name_color: null,
         game_skin: null,
+        banner: null,
+        aura: null,
       },
     });
     const item = makeItem();

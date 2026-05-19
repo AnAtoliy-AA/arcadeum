@@ -57,6 +57,8 @@ export interface ShopPageLabels {
     badges: ShopRowLabels;
     colors: ShopRowLabels;
     skins: ShopRowLabels;
+    banners: ShopRowLabels;
+    auras: ShopRowLabels;
     legendary: ShopRowLabels;
   };
   card: ShopCardLabels;
@@ -125,6 +127,14 @@ export function ShopPageView({
   );
   const skins = useMemo(
     () => liveCatalog.filter((c) => c.category === 'game_skin'),
+    [liveCatalog],
+  );
+  const banners = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'banner'),
+    [liveCatalog],
+  );
+  const auras = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'aura'),
     [liveCatalog],
   );
   const legendaries = useMemo(
@@ -247,6 +257,30 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.badges}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-banners"
+              sectionKey="banner"
+              items={banners}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.banners}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-auras"
+              sectionKey="aura"
+              items={auras}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.auras}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}

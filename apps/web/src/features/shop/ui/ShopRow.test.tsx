@@ -47,6 +47,8 @@ const EQUIPPED_EMPTY: EquippedView = {
   badge: null,
   name_color: null,
   game_skin: null,
+  banner: null,
+  aura: null,
 };
 
 const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };

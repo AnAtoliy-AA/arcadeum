@@ -186,6 +186,104 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
     defaultPriceAmount: 40,
     defaultPriceCurrency: 'gems',
   },
+
+  // Banners — backdrop panel behind the avatar in profile / lobby surfaces.
+  // Same swatch render path as name_color: `assetUrl` is empty and
+  // `colorValue` holds the CSS (solid or linear-gradient). ItemAsset renders
+  // a wide gradient tile from this value.
+  'banner-slate': {
+    id: 'banner-slate',
+    category: 'banner',
+    rarity: 'common',
+    nameKey: 'items.banner.slate.name',
+    descKey: 'items.banner.slate.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+    defaultPriceAmount: 250,
+    defaultPriceCurrency: 'coins',
+  },
+  'banner-tide': {
+    id: 'banner-tide',
+    category: 'banner',
+    rarity: 'rare',
+    nameKey: 'items.banner.tide.name',
+    descKey: 'items.banner.tide.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%)',
+    defaultPriceAmount: 3,
+    defaultPriceCurrency: 'gems',
+  },
+  'banner-twilight': {
+    id: 'banner-twilight',
+    category: 'banner',
+    rarity: 'epic',
+    nameKey: 'items.banner.twilight.name',
+    descKey: 'items.banner.twilight.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+    defaultPriceAmount: 12,
+    defaultPriceCurrency: 'gems',
+  },
+  'banner-nebula': {
+    id: 'banner-nebula',
+    category: 'banner',
+    rarity: 'legendary',
+    nameKey: 'items.banner.nebula.name',
+    descKey: 'items.banner.nebula.desc',
+    assetUrl: '',
+    colorValue:
+      'linear-gradient(135deg, #1e1b4b 0%, #6366f1 35%, #ec4899 70%, #f59e0b 100%)',
+    defaultPriceAmount: 45,
+    defaultPriceCurrency: 'gems',
+  },
+
+  // Auras — animated glow around the player's name. Reuses the colorValue
+  // swatch pattern; the CSS animation hook lives in ItemAsset (catalog +
+  // slot preview only — full live-name aura rendering ships in a follow-up).
+  'aura-silver': {
+    id: 'aura-silver',
+    category: 'aura',
+    rarity: 'common',
+    nameKey: 'items.aura.silver.name',
+    descKey: 'items.aura.silver.desc',
+    assetUrl: '',
+    colorValue: '#cbd5e1',
+    defaultPriceAmount: 350,
+    defaultPriceCurrency: 'coins',
+  },
+  'aura-cyan': {
+    id: 'aura-cyan',
+    category: 'aura',
+    rarity: 'rare',
+    nameKey: 'items.aura.cyan.name',
+    descKey: 'items.aura.cyan.desc',
+    assetUrl: '',
+    colorValue: '#22d3ee',
+    defaultPriceAmount: 4,
+    defaultPriceCurrency: 'gems',
+  },
+  'aura-violet': {
+    id: 'aura-violet',
+    category: 'aura',
+    rarity: 'epic',
+    nameKey: 'items.aura.violet.name',
+    descKey: 'items.aura.violet.desc',
+    assetUrl: '',
+    colorValue: '#a78bfa',
+    defaultPriceAmount: 14,
+    defaultPriceCurrency: 'gems',
+  },
+  'aura-prism': {
+    id: 'aura-prism',
+    category: 'aura',
+    rarity: 'legendary',
+    nameKey: 'items.aura.prism.name',
+    descKey: 'items.aura.prism.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(90deg, #22d3ee 0%, #a78bfa 50%, #ec4899 100%)',
+    defaultPriceAmount: 55,
+    defaultPriceCurrency: 'gems',
+  },
 };
 
 export const SHOP_CATALOG_IDS = Object.keys(SHOP_CATALOG);

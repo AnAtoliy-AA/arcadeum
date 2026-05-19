@@ -49,6 +49,16 @@ export const shopEn = {
         desc: 'Visual theme inside matches.',
         empty: 'Empty',
       },
+      banner: {
+        label: 'Banner',
+        desc: 'Backdrop panel shown behind your avatar on profile and lobby cards.',
+        empty: 'Empty',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Animated glow that wraps your name in chat and rosters.',
+        empty: 'Empty',
+      },
     },
     action: {
       previewingEyebrow: 'Previewing',
@@ -88,6 +98,16 @@ export const shopEn = {
     },
     skins: {
       title: 'Game skins',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+    },
+    banners: {
+      title: 'Banners',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+    },
+    auras: {
+      title: 'Auras',
       eyebrow: '{count} items',
       viewAll: 'View all',
     },
@@ -163,6 +183,18 @@ export const shopEn = {
       violet: { name: 'Violet', desc: 'A vivid violet.' },
       sunset: { name: 'Sunset', desc: 'A warm sunset gradient.' },
       aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
+    },
+    banner: {
+      slate: { name: 'Slate', desc: 'A muted dark-slate backdrop.' },
+      tide: { name: 'Tide', desc: 'A cool teal-to-cyan wash.' },
+      twilight: { name: 'Twilight', desc: 'Indigo melting into hot pink.' },
+      nebula: { name: 'Nebula', desc: 'A cosmic multi-color gradient.' },
+    },
+    aura: {
+      silver: { name: 'Silver Aura', desc: 'A subtle silver halo.' },
+      cyan: { name: 'Cyan Aura', desc: 'A crisp electric glow.' },
+      violet: { name: 'Violet Aura', desc: 'A rich violet shine.' },
+      prism: { name: 'Prism Aura', desc: 'A shifting prism radiance.' },
     },
   },
 };

@@ -62,6 +62,8 @@ export const adminShopBy = {
     badge: 'Badge',
     name_color: 'Name color',
     game_skin: 'Game skin',
+    banner: 'Banner',
+    aura: 'Aura',
   },
   rarity: {
     common: 'Common',

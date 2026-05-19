@@ -1,7 +1,13 @@
 // Mirrors apps/be/src/shop/interfaces/shop-views.ts. Kept in sync by code review;
 // a future ticket may auto-generate or share via a workspace package.
 
-export type ShopCategory = 'avatar' | 'badge' | 'name_color' | 'game_skin';
+export type ShopCategory =
+  | 'avatar'
+  | 'badge'
+  | 'name_color'
+  | 'game_skin'
+  | 'banner'
+  | 'aura';
 export type ShopRarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type ShopPriceCurrency = 'coins' | 'gems';
 export type ShopAcquiredVia = 'coins' | 'gems' | 'grant' | 'starter';
@@ -74,6 +80,8 @@ export const EMPTY_EQUIPPED: EquippedView = {
   badge: null,
   name_color: null,
   game_skin: null,
+  banner: null,
+  aura: null,
 };
 
 export const EMPTY_INVENTORY: InventoryView = {

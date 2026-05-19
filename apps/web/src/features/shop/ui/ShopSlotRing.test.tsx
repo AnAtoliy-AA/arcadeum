@@ -16,6 +16,8 @@ const labels: ShopSlotRingLabels = {
   badge: { label: 'Badge', desc: '', empty: 'Empty' },
   name_color: { label: 'Color', desc: '', empty: 'Empty' },
   game_skin: { label: 'Skin', desc: '', empty: 'Empty' },
+  banner: { label: 'Banner', desc: '', empty: 'Empty' },
+  aura: { label: 'Aura', desc: '', empty: 'Empty' },
 };
 
 function makeItem(
@@ -43,6 +45,8 @@ const EMPTY_PREVIEW = {
   badge: null,
   name_color: null,
   game_skin: null,
+  banner: null,
+  aura: null,
 };
 
 describe('ShopSlotRing', () => {

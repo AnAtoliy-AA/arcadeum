@@ -49,6 +49,16 @@ export const shopFr = {
         desc: 'Thème visuel dans les matchs.',
         empty: 'Vide',
       },
+      banner: {
+        label: 'Bannière',
+        desc: 'Panneau d’arrière-plan affiché derrière votre avatar dans le profil et le lobby.',
+        empty: 'Vide',
+      },
+      aura: {
+        label: 'Aura',
+        desc: 'Halo animé qui entoure votre nom dans le chat et les listes.',
+        empty: 'Vide',
+      },
     },
     action: {
       previewingEyebrow: 'Aperçu',
@@ -88,6 +98,16 @@ export const shopFr = {
     },
     skins: {
       title: 'Skins de jeu',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+    },
+    banners: {
+      title: 'Bannières',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+    },
+    auras: {
+      title: 'Auras',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
     },
@@ -169,6 +189,18 @@ export const shopFr = {
         name: 'Aurore',
         desc: 'Un dégradé changeant d’aurore boréale.',
       },
+    },
+    banner: {
+      slate: { name: 'Ardoise', desc: 'Un arrière-plan gris ardoise sobre.' },
+      tide: { name: 'Marée', desc: 'Un dégradé frais turquoise vers cyan.' },
+      twilight: { name: 'Crépuscule', desc: 'Indigo fondu dans un rose intense.' },
+      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolore.' },
+    },
+    aura: {
+      silver: { name: 'Aura argentée', desc: 'Un halo argenté subtil.' },
+      cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
+      violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
+      prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
     },
   },
 };

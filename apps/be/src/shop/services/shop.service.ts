@@ -37,6 +37,8 @@ interface LeanUser {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedBannerId?: string | null;
+  equippedAuraId?: string | null;
 }
 
 interface InventoryRowSnapshot {
@@ -188,6 +190,8 @@ export class ShopService {
             equippedAvatarId: 1,
             equippedBadgeId: 1,
             equippedNameColorId: 1,
+            equippedBannerId: 1,
+            equippedAuraId: 1,
           })
           .lean<LeanUser | null>();
         if (!user) throw new NotFoundException('users.notFound');
@@ -416,6 +420,8 @@ export class ShopService {
             equippedAvatarId: 1,
             equippedBadgeId: 1,
             equippedNameColorId: 1,
+            equippedBannerId: 1,
+            equippedAuraId: 1,
           },
         },
       )
@@ -435,6 +441,8 @@ export class ShopService {
           equippedAvatarId: 1,
           equippedBadgeId: 1,
           equippedNameColorId: 1,
+          equippedBannerId: 1,
+          equippedAuraId: 1,
         },
         { session },
       )
@@ -448,6 +456,8 @@ export class ShopService {
       badge: user?.equippedBadgeId ?? null,
       name_color: user?.equippedNameColorId ?? null,
       game_skin: null,
+      banner: user?.equippedBannerId ?? null,
+      aura: user?.equippedAuraId ?? null,
     };
   }
 

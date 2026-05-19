@@ -8,6 +8,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { RARITY_COLOR, RARITY_GLOW } from '../lib/rarity';
@@ -59,6 +61,7 @@ const HeroTag = styled(Stack, {
 
 export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const setHover = useShopPreviewStore((s) => s.setHover);
 
   const itemName = String(
@@ -183,7 +186,7 @@ export function ShopHero({ item, labels, onBuyClick }: ShopHeroProps) {
                 </Text>
                 <Text fontSize="$3" fontWeight="700" color="#0a0a0a">
                   · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
-                  {item.priceAmount.toLocaleString()}
+                  {formatNumber(item.priceAmount, locale)}
                 </Text>
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>

@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { formatNumber } from '@/shared/i18n/formatters';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import type {
   WalletBalance,
   WalletCurrency,
@@ -10,6 +12,7 @@ interface Props {
   balance: WalletBalance;
   page: PaginatedWalletTransactions;
   currency?: WalletCurrency;
+  locale?: Locale;
 }
 
 const PILL_BASE: React.CSSProperties = {
@@ -40,11 +43,16 @@ const FILTER_INACTIVE: React.CSSProperties = {
   color: '#a1a1aa',
 };
 
-export function WalletPageView({ balance, page, currency }: Props) {
+export function WalletPageView({
+  balance,
+  page,
+  currency,
+  locale = DEFAULT_LOCALE,
+}: Props) {
   // Destructure to avoid the no-restricted-syntax member-access rule for
   // .coins / .gems.
   const { coins, gems } = balance;
-  const fmt = new Intl.NumberFormat();
+  const fmt = (n: number) => formatNumber(n, locale);
   const { items, nextCursor } = page;
 
   // Currency filter links reset the cursor when changing filter.
@@ -108,7 +116,7 @@ export function WalletPageView({ balance, page, currency }: Props) {
             style={{ fontSize: '28px', fontWeight: 700, color: '#fbbf24' }}
             data-testid="balance-coins-value"
           >
-            {fmt.format(coins)}
+            {fmt(coins)}
           </div>
         </div>
 
@@ -131,7 +139,7 @@ export function WalletPageView({ balance, page, currency }: Props) {
             style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
             data-testid="balance-gems-value"
           >
-            {fmt.format(gems)}
+            {fmt(gems)}
           </div>
         </div>
       </section>
@@ -235,7 +243,7 @@ export function WalletPageView({ balance, page, currency }: Props) {
             </thead>
             <tbody>
               {items.map((tx) => (
-                <TransactionRow key={tx.id} tx={tx} />
+                <TransactionRow key={tx.id} tx={tx} locale={locale} />
               ))}
             </tbody>
           </table>

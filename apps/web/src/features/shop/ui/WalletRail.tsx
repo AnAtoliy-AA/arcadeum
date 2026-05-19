@@ -2,6 +2,8 @@
 
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
 import type { NextGemPackView, WalletBalanceView } from '../server/shop.types';
 
@@ -31,7 +33,9 @@ const Tile = styled(Stack, {
 });
 
 export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
+  const { locale } = useLanguage();
   const { coins, gems } = balance;
+  const fmt = (n: number) => formatNumber(n, locale);
   const pct = nextGemPack
     ? Math.min(100, Math.round((gems / nextGemPack.target) * 100))
     : 0;
@@ -54,7 +58,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
         >
           <Text fontSize={16}>{COIN_GLYPH}</Text>
           <Text fontSize="$4" fontWeight="800" color={COIN_COLOR}>
-            {coins.toLocaleString()}
+            {fmt(coins)}
           </Text>
         </Tile>
         <Tile
@@ -64,7 +68,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
         >
           <Text fontSize={16}>{GEM_GLYPH}</Text>
           <Text fontSize="$4" fontWeight="800" color={GEM_COLOR}>
-            {gems.toLocaleString()}
+            {fmt(gems)}
           </Text>
         </Tile>
       </XStack>
@@ -83,8 +87,8 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
             </Text>
             <Text fontSize={11} fontWeight="700" color="$white">
               {labels.ofTarget
-                .replace('{current}', gems.toLocaleString())
-                .replace('{target}', nextGemPack.target.toLocaleString())}
+                .replace('{current}', fmt(gems))
+                .replace('{target}', fmt(nextGemPack.target))}
             </Text>
           </XStack>
           <Stack

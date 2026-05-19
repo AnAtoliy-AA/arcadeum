@@ -1,11 +1,23 @@
 import { ImageResponse } from 'next/og';
 import { appConfig } from '@/shared/config/app-config';
-import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  isLocale,
+  type Locale,
+} from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt = appConfig.appName;
+
+// Static-render one OG image per locale at build time. Without this, each
+// social-card request would re-run ImageResponse on the fly.
+export const dynamic = 'force-static';
+export function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
 
 interface Props {
   params: { locale: string };

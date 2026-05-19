@@ -13,29 +13,13 @@ import {
   Skeleton,
 } from '@/shared/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatCurrency, formatDate } from '@/shared/i18n/formatters';
 import {
   paymentApi,
   PaymentNote,
   PaginatedNotes,
 } from '@/features/payment/api';
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-function formatAmount(amount: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
 const NOTES_PER_PAGE = 12;
 
@@ -45,6 +29,7 @@ interface NotesPageProps {
 
 export default function NotesPage({ initialData }: NotesPageProps) {
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const loadTriggerRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
@@ -162,7 +147,11 @@ export default function NotesPage({ initialData }: NotesPageProps) {
                         </Text>
                       )}
                       <Text color="rgba(236,239,238,0.45)" fontSize="$2">
-                        {formatDate(note.createdAt)}
+                        {formatDate(note.createdAt, locale, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
                       </Text>
                     </YStack>
                     <XStack
@@ -179,7 +168,10 @@ export default function NotesPage({ initialData }: NotesPageProps) {
                         fontSize="$3"
                         fontWeight="600"
                       >
-                        {formatAmount(note.amount, note.currency)}
+                        {formatCurrency(note.amount, locale, note.currency, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 2,
+                        })}
                       </Text>
                     </XStack>
                   </XStack>

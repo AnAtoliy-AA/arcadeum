@@ -77,6 +77,7 @@ export default function HomePresentation() {
               alt="Arcadeum Trailer Illustration"
               fill
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
               data-testid="video-thumbnail"
               style={{ objectFit: 'cover', opacity: 0.85 }}
             />

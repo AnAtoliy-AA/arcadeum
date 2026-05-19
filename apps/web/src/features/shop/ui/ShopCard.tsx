@@ -8,6 +8,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { RARITY_COLOR, RARITY_GLOW } from '../lib/rarity';
@@ -174,6 +176,7 @@ export function ShopCard({
 }: ShopCardProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const setHover = useShopPreviewStore((s) => s.setHover);
   const scheduleClear = useShopPreviewStore((s) => s.scheduleClear);
   const [hovered, setHovered] = useState(false);
@@ -390,7 +393,7 @@ export function ShopCard({
               fontWeight="800"
               color={CURRENCY_COLOR[item.priceCurrency]}
             >
-              {item.priceAmount.toLocaleString()}
+              {formatNumber(item.priceAmount, locale)}
             </Text>
           </XStack>
         </XStack>

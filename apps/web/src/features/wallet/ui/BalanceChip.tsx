@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
-import { getTranslations } from '@/shared/i18n/server';
+import { getTranslations, getServerLocale } from '@/shared/i18n/server';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { getWalletBalance } from '../server/wallet.server';
 
 // UI-component audit (packages/ui/src/components):
@@ -15,7 +16,8 @@ import { getWalletBalance } from '../server/wallet.server';
 //   of this chip.
 
 async function BalanceChipInner() {
-  const messages = await getTranslations();
+  const locale = await getServerLocale();
+  const messages = await getTranslations(locale);
   const t = messages.pages?.wallet;
 
   // Header is rendered on every page. If the BE is unreachable or the token
@@ -34,7 +36,7 @@ async function BalanceChipInner() {
     // Auth expired, BE unreachable, or any transient failure — render nothing.
     return null;
   }
-  const fmt = new Intl.NumberFormat();
+  const fmt = (n: number) => formatNumber(n, locale);
 
   return (
     <div
@@ -59,7 +61,7 @@ async function BalanceChipInner() {
           whiteSpace: 'nowrap',
         }}
       >
-        {'🪙'} {fmt.format(coins)}
+        {'🪙'} {fmt(coins)}
       </span>
       <span
         className="wallet-balance-pill"
@@ -78,7 +80,7 @@ async function BalanceChipInner() {
           whiteSpace: 'nowrap',
         }}
       >
-        {'💎'} {fmt.format(gems)}
+        {'💎'} {fmt(gems)}
       </span>
     </div>
   );

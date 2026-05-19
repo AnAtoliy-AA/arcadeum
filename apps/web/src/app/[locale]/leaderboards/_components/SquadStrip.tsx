@@ -2,6 +2,8 @@
 import { XStack, YStack, Text, View } from 'tamagui';
 import type { Squad } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 
 export function SquadStrip({
   squads,
@@ -10,6 +12,7 @@ export function SquadStrip({
   squads: Squad[];
   t?: PageTranslations;
 }) {
+  const { locale } = useLanguage();
   if (!squads.length) return null;
   const tt = (t?.squads ?? {}) as { title?: string; members?: string };
   const membersTpl = tt.members ?? '{count} members';
@@ -73,7 +76,7 @@ export function SquadStrip({
               #{s.rank}
             </Text>
             <Text fontSize="$2" letterSpacing={1} opacity={0.85}>
-              {s.rating.toLocaleString()}
+              {formatNumber(s.rating, locale)}
             </Text>
           </XStack>
         ))}

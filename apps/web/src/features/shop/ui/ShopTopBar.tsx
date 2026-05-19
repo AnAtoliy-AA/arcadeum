@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
 import type { WalletBalanceView } from '../server/shop.types';
 
@@ -80,6 +82,7 @@ const TopUpBtn = styled(Stack, {
 
 export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
   const router = useRouter();
+  const { locale } = useLanguage();
   const { coins, gems } = balance;
 
   const handleTopUp = () => {
@@ -139,13 +142,13 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         <BalanceChip currency="coins" data-testid="shop-balance-coins">
           <Text fontSize={16}>{COIN_GLYPH}</Text>
           <Text fontSize="$4" fontWeight="700" color={COIN_COLOR}>
-            {coins.toLocaleString()}
+            {formatNumber(coins, locale)}
           </Text>
         </BalanceChip>
         <BalanceChip currency="gems" data-testid="shop-balance-gems">
           <Text fontSize={16}>{GEM_GLYPH}</Text>
           <Text fontSize="$4" fontWeight="700" color={GEM_COLOR}>
-            {gems.toLocaleString()}
+            {formatNumber(gems, locale)}
           </Text>
         </BalanceChip>
         <TopUpBtn onPress={handleTopUp} role="button" data-testid="shop-top-up">

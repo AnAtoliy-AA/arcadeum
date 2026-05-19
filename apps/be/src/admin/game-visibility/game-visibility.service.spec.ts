@@ -188,7 +188,8 @@ it('listForAdmin returns the full catalog joined with tiers (defaults to all)', 
       { variantId: 'lives_heats', tier: 'all' },
     ]),
   );
-  const critical = rows.find((r) => r.gameId === 'critical_v1');
-  expect(critical?.tier).toBe('all');
-  expect(critical?.variants).toEqual([]);
+  // texas_holdem_v1 is the only game without variants in GAME_CATALOG today.
+  const texas = rows.find((r) => r.gameId === 'texas_holdem_v1');
+  expect(texas?.tier).toBe('all');
+  expect(texas?.variants).toEqual([]);
 });

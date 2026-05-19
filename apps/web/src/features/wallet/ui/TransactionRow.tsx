@@ -1,3 +1,9 @@
+import {
+  formatNumber,
+  formatRelative,
+  formatDateTime,
+} from '@/shared/i18n/formatters';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import type {
   WalletTransactionView,
   WalletReason,
@@ -22,25 +28,17 @@ interface Props {
   tx: WalletTransactionView;
   /** Translated reason labels from the wallet i18n namespace (optional). */
   reasonLabels?: Partial<Record<WalletReason, string>>;
+  locale?: Locale;
 }
 
-function formatRelativeDate(iso: string): string {
-  const date = new Date(iso);
-  const now = Date.now();
-  const diffMs = now - date.getTime();
-  const diffDays = Math.floor(diffMs / 86_400_000);
-
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 30) return `${diffDays}d ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
-  return `${Math.floor(diffDays / 365)}y ago`;
-}
-
-export function TransactionRow({ tx, reasonLabels }: Props) {
+export function TransactionRow({
+  tx,
+  reasonLabels,
+  locale = DEFAULT_LOCALE,
+}: Props) {
   const { currency, delta, balanceAfter, reason, createdAt } = tx;
   const isPositive = delta > 0;
-  const fmt = new Intl.NumberFormat();
+  const fmt = (n: number) => formatNumber(n, locale);
 
   const deltaColor = isPositive ? '#4ade80' : '#f87171';
   const deltaSign = isPositive ? '+' : '';
@@ -75,7 +73,7 @@ export function TransactionRow({ tx, reasonLabels }: Props) {
         data-testid="tx-delta"
       >
         {currencyIcon} {deltaSign}
-        {fmt.format(Math.abs(delta))}
+        {fmt(Math.abs(delta))}
       </td>
       <td
         style={{
@@ -86,7 +84,7 @@ export function TransactionRow({ tx, reasonLabels }: Props) {
         }}
         data-testid="tx-balance-after"
       >
-        {fmt.format(balanceAfter)}
+        {fmt(balanceAfter)}
       </td>
       <td
         style={{
@@ -95,9 +93,9 @@ export function TransactionRow({ tx, reasonLabels }: Props) {
           color: 'var(--color-text-secondary, #71717a)',
           whiteSpace: 'nowrap',
         }}
-        title={new Date(createdAt).toLocaleString()}
+        title={formatDateTime(createdAt, locale)}
       >
-        {formatRelativeDate(createdAt)}
+        {formatRelative(createdAt, locale)}
       </td>
     </tr>
   );

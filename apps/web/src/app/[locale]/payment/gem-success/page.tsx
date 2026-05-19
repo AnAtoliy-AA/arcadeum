@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { finalizeGemPurchase } from '@/features/gems/server/gems.actions';
+import { getServerLocale } from '@/shared/i18n/server';
+import { formatNumber } from '@/shared/i18n/formatters';
+import type { Locale } from '@/shared/config/locale-slugs';
 
 export const metadata: Metadata = {
   title: 'Gem Purchase · Arcadeum',
@@ -53,7 +56,7 @@ export default async function GemPurchaseSuccessPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const sp = await searchParams;
+  const [sp, locale] = await Promise.all([searchParams, getServerLocale()]);
   const orderId = sp.token;
 
   if (!orderId || typeof orderId !== 'string') {
@@ -86,15 +89,15 @@ export default async function GemPurchaseSuccessPage({
         <Lede>
           {credited > 0 ? (
             <>
-              <PurpleAmount>+{credited.toLocaleString()}</PurpleAmount> gems
-              landed in your wallet.
+              <PurpleAmount>+{formatNumber(credited, locale)}</PurpleAmount>{' '}
+              gems landed in your wallet.
             </>
           ) : (
             'This purchase was already credited to your wallet.'
           )}
         </Lede>
 
-        <BalanceCard coins={newCoins} gems={newGems} />
+        <BalanceCard coins={newCoins} gems={newGems} locale={locale} />
 
         <Actions>
           <PrimaryLink href="/wallet">Open wallet</PrimaryLink>
@@ -285,7 +288,15 @@ function PurpleAmount({ children }: { children: React.ReactNode }) {
   );
 }
 
-function BalanceCard({ coins, gems }: { coins: number; gems: number }) {
+function BalanceCard({
+  coins,
+  gems,
+  locale,
+}: {
+  coins: number;
+  gems: number;
+  locale: Locale;
+}) {
   return (
     <div
       style={{
@@ -301,14 +312,14 @@ function BalanceCard({ coins, gems }: { coins: number; gems: number }) {
       <BalanceCell
         icon="🪙"
         label="Coins"
-        value={coins.toLocaleString()}
+        value={formatNumber(coins, locale)}
         color="#fbbf24"
       />
       <Divider />
       <BalanceCell
         icon="💎"
         label="Gems"
-        value={gems.toLocaleString()}
+        value={formatNumber(gems, locale)}
         color="#a78bfa"
       />
     </div>

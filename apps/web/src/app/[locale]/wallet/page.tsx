@@ -78,6 +78,7 @@ export default async function WalletPage({
           balance={EMPTY_BALANCE}
           page={EMPTY_PAGE}
           currency={currency}
+          locale={isLocale(locale) ? locale : undefined}
         />
         <div
           style={{
@@ -123,7 +124,12 @@ export default async function WalletPage({
           BalanceChip — so it never blocks the page from rendering. */}
       <DailyRewardCard />
 
-      <WalletPageView balance={balance} page={page} currency={currency} />
+      <WalletPageView
+        balance={balance}
+        page={page}
+        currency={currency}
+        locale={isLocale(locale) ? locale : undefined}
+      />
 
       {/* Gem sections: pending purchases banner, gem store, and conversion form */}
       <div

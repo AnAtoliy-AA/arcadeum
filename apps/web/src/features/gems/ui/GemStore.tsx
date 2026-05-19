@@ -1,8 +1,12 @@
+import { getServerLocale } from '@/shared/i18n/server';
 import { getActivePackages } from '../server/gems.server';
 import { GemPackageCard } from './GemPackageCard';
 
 export async function GemStore() {
-  const packages = await getActivePackages();
+  const [packages, locale] = await Promise.all([
+    getActivePackages(),
+    getServerLocale(),
+  ]);
 
   if (packages.length === 0) {
     return (
@@ -47,7 +51,7 @@ export async function GemStore() {
         }}
       >
         {packages.map((pkg) => (
-          <GemPackageCard key={pkg.id} pkg={pkg} />
+          <GemPackageCard key={pkg.id} pkg={pkg} locale={locale} />
         ))}
       </div>
     </section>

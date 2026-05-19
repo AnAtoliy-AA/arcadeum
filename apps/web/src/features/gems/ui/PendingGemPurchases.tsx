@@ -1,8 +1,15 @@
+import { getServerLocale } from '@/shared/i18n/server';
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+} from '@/shared/i18n/formatters';
 import { getPendingPurchases } from '../server/gems.server';
 import { CancelGemPurchaseButton } from './CancelGemPurchaseButton';
 import { VerifyGemPurchaseButton } from './VerifyGemPurchaseButton';
 
 export async function PendingGemPurchases() {
+  const locale = await getServerLocale();
   let pending = [];
   try {
     pending = await getPendingPurchases();
@@ -42,8 +49,12 @@ export async function PendingGemPurchases() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {pending.map((purchase) => {
-          const date = new Date(purchase.createdAt).toLocaleDateString();
-          const priceDisplay = `$${(purchase.amountUsdCents / 100).toFixed(2)}`;
+          const date = formatDate(purchase.createdAt, locale);
+          const priceDisplay = formatCurrency(
+            purchase.amountUsdCents / 100,
+            locale,
+            'USD',
+          );
 
           return (
             <div
@@ -58,7 +69,7 @@ export async function PendingGemPurchases() {
             >
               <div style={{ flex: 1, minWidth: '200px' }}>
                 <span style={{ fontSize: '14px', color: '#e4e4e7' }}>
-                  {purchase['gems'].toLocaleString()} gems
+                  {formatNumber(purchase['gems'], locale)} gems
                 </span>
                 <span
                   style={{

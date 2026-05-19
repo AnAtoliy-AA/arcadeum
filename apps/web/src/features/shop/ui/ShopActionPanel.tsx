@@ -8,6 +8,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { track } from '@/shared/lib/analytics';
 import { RARITY_COLOR } from '../lib/rarity';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
@@ -97,6 +99,7 @@ export function ShopActionPanel({
 }: ShopActionPanelProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [sellTarget, setSellTarget] = useState<InventoryItemView | null>(null);
   const clearActiveSlot = useShopPreviewStore((s) => s.clearActiveSlot);
@@ -167,7 +170,7 @@ export function ShopActionPanel({
               fontWeight="800"
               color={CURRENCY_COLOR[hoverItem.priceCurrency]}
             >
-              {hoverItem.priceAmount.toLocaleString()}
+              {formatNumber(hoverItem.priceAmount, locale)}
             </Text>
           </XStack>
         </XStack>

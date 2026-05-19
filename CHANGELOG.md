@@ -7,12 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.10] - 2026-05-19
+
+### Added
+- locale-aware formatters + completeness audit + LCP polish (N/A)
+
+
 ## [1.14.9] - 2026-05-18
 
 ### Added
+
 - Showcase Locker redesign with live try-on rail (N/A)
 
 ### Fixed
+
 - switch locale-routing cookie fixture to domain+path to satisfy addCookies (N/A)
 - hide the rotating rectangle + recenter rays around the avatar (N/A)
 - stop mannequin rays wobbling — align transform-origin with gradient anchor (N/A)
@@ -20,15 +28,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wire the top-bar nav links to real destinations (N/A)
 
 ### Improved
+
 - priority-load first cards across every catalog row to silence repeat LCP warnings (N/A)
 - eager-load the first avatar-row cards so catalog asset can't become a lazy LCP (N/A)
 - mark above-the-fold ItemAssets as priority so LCP isn't lazy (N/A)
 
 ### Refactored
+
 - move the action button onto the card, panel becomes display-only (N/A)
 - address PR #689 review — blockers, a11y, direct-buy, instrumentation (N/A)
 - extract listRooms query parsers to keep controller under 500 lines (N/A)
-
 
 ## [1.14.8] - 2026-05-18
 

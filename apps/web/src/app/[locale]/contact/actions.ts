@@ -80,9 +80,19 @@ export async function submitContactAction(
   }
 
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    // Shared secret with the BE: lets OriginGuard accept this fetch even
+    // though Next.js server actions are server-to-server (no Origin
+    // header). Empty in local dev when no token is set — BE then falls
+    // back to origin check, which still permits localhost.
+    const token = process.env.SUPPORT_INTERNAL_TOKEN;
+    if (token) headers['X-Internal-Token'] = token;
+
     const res = await fetch(resolveApiUrl('/support/contact'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ name, email, subject, message, submittedAt }),
       cache: 'no-store',
     });

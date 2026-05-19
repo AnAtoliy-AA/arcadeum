@@ -33,15 +33,27 @@ test.describe('Contact Form', () => {
     await expect(page.locator('form')).toBeVisible({});
   });
 
-  test('should show success message on valid submission', async ({ page }) => {
+  test('should show success message on valid submission', async ({
+    page,
+  }, testInfo) => {
     await navigateTo(page, '/contact');
 
+    // BE dedupes identical submissions (ip + email + subject + message) for
+    // an hour. Project name + retry index keep messages unique across
+    // chromium/firefox/webkit and across retry runs in the same window.
+    const nonce = `${testInfo.project.name}-${testInfo.retry}-${Date.now()}`;
     await page.getByTestId('contact-name-input').fill('John Doe');
-    await page.getByTestId('contact-email-input').fill('john@example.com');
+    await page
+      .getByTestId('contact-email-input')
+      .fill(`john+${nonce}@example.com`);
     await page.getByTestId('contact-subject-input').fill('Hello');
     await page
       .getByTestId('contact-message-textarea')
-      .fill('This is a great app!');
+      .fill(`This is a great app! Run ${nonce}`);
+
+    // BE rejects submissions arriving < 2s after the form mount as bot
+    // pace. Wait past that bar before submitting.
+    await page.waitForTimeout(2200);
 
     const submitBtn = page.getByTestId('contact-submit-button');
     await submitBtn.scrollIntoViewIfNeeded();

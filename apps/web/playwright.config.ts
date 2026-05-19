@@ -27,9 +27,16 @@ const BE_PORT = getPort('../be/.env', 'BE_PORT', '4000');
 const BASE_URL = `http://127.0.0.1:${WEB_PORT}`;
 const BE_URL = `http://127.0.0.1:${BE_PORT}`;
 
+// Shared secret the web server action sends to the BE so OriginGuard
+// accepts server-to-server submissions. Both BE and web servers below
+// must see the same value.
+const SUPPORT_INTERNAL_TOKEN =
+  process.env.SUPPORT_INTERNAL_TOKEN ?? 'e2e_shared_support_token';
+
 // Export for use in tests/fixtures
 process.env.WEB_PORT = WEB_PORT;
 process.env.BE_PORT = BE_PORT;
+process.env.SUPPORT_INTERNAL_TOKEN = SUPPORT_INTERNAL_TOKEN;
 
 /**
  * Playwright configuration for e2e tests
@@ -149,6 +156,7 @@ export default defineConfig({
         // config-load, before globalSetup runs.
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
+        SUPPORT_INTERNAL_TOKEN,
       },
     },
     {
@@ -164,6 +172,7 @@ export default defineConfig({
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
+        SUPPORT_INTERNAL_TOKEN,
       },
     },
   ],

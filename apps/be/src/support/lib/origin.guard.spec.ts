@@ -20,6 +20,7 @@ describe('OriginGuard', () => {
       NODE_ENV: 'development',
       WEB_PORT: '3000',
       ALLOWED_ORIGINS: 'https://arcadeum.games',
+      SUPPORT_INTERNAL_TOKEN: 'shared-secret-xyz',
     };
   });
 
@@ -61,6 +62,26 @@ describe('OriginGuard', () => {
       guard.canActivate(
         buildCtx({ referer: 'https://evil.example/?u=https://arcadeum.games' }),
       ),
+    ).toThrow(ForbiddenException);
+  });
+
+  it('allows requests with a matching X-Internal-Token even without Origin', () => {
+    expect(
+      guard.canActivate(buildCtx({ 'x-internal-token': 'shared-secret-xyz' })),
+    ).toBe(true);
+  });
+
+  it('rejects requests with a wrong X-Internal-Token and no Origin', () => {
+    expect(() =>
+      guard.canActivate(buildCtx({ 'x-internal-token': 'guess' })),
+    ).toThrow(ForbiddenException);
+  });
+
+  it('ignores X-Internal-Token when SUPPORT_INTERNAL_TOKEN is unset', () => {
+    delete process.env.SUPPORT_INTERNAL_TOKEN;
+    guard = new OriginGuard();
+    expect(() =>
+      guard.canActivate(buildCtx({ 'x-internal-token': 'anything' })),
     ).toThrow(ForbiddenException);
   });
 });

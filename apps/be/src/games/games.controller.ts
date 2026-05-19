@@ -17,7 +17,12 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { GamesService } from './games.service';
-import { type StartCriticalSessionResult } from './games.types';
+import {
+  type StartCriticalSessionResult,
+  type CatalogResponse,
+  type CatalogGame,
+  type CatalogVariant,
+} from './games.types';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
@@ -51,21 +56,13 @@ export class GamesController {
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
-  async getCatalog(@Req() req: Request): Promise<{
-    games: Array<{
-      gameId: string;
-      variants: Array<{ id: string; comingSoon: boolean }>;
-    }>;
-  }> {
+  async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const role = await this.roleResolver.resolveRole(user?.userId);
-    const games: Array<{
-      gameId: string;
-      variants: Array<{ id: string; comingSoon: boolean }>;
-    }> = [];
+    const games: CatalogGame[] = [];
     for (const entry of GAME_CATALOG) {
       if (!(await this.visibility.canSee(role, entry.gameId))) continue;
-      const variants: Array<{ id: string; comingSoon: boolean }> = [];
+      const variants: CatalogVariant[] = [];
       for (const v of entry.variants) {
         const effective = await this.visibility.getEffectiveTier(
           entry.gameId,

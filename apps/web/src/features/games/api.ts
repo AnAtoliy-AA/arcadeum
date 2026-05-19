@@ -221,4 +221,12 @@ export const gamesApi = {
   ): Promise<void> => {
     return apiClient.post<void>('/games/rooms/delete', { roomId }, options);
   },
+
+  getCatalog: async (
+    options?: ApiClientOptions,
+  ): Promise<{ games: Array<{ gameId: string; variants: string[] }> }> => {
+    return apiClient.get<{
+      games: Array<{ gameId: string; variants: string[] }>;
+    }>('/games/catalog', options);
+  },
 };

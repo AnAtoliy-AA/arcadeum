@@ -72,6 +72,7 @@ export type AvatarProps = {
   borderColor?: string;
   boxShadow?: string;
   borderWidth?: number;
+  priority?: boolean;
 };
 
 export const Avatar = memo(function Avatar({
@@ -85,6 +86,7 @@ export const Avatar = memo(function Avatar({
   borderColor,
   boxShadow,
   borderWidth,
+  priority = false,
 }: AvatarProps): ReactElement {
   const initials = useMemo(() => getInitials(name), [name]);
   const sizeValue = sizeMap[size];
@@ -104,6 +106,8 @@ export const Avatar = memo(function Avatar({
         <img
           src={src}
           alt={alt ?? name}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
           style={{
             width: sizeValue,
             height: sizeValue,

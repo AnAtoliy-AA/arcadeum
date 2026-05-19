@@ -119,6 +119,8 @@ export class ShopService {
       badge: null,
       name_color: null,
       game_skin: null,
+      banner: null,
+      aura: null,
     };
 
     await this.connection.transaction(async (session) => {

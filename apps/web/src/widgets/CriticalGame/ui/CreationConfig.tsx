@@ -69,8 +69,14 @@ export default function CriticalCreationConfig({
 
   const visibleVariants =
     allowedVariants === null
-      ? CARD_VARIANTS
-      : CARD_VARIANTS.filter((v) => allowedVariants.some((a) => a.id === v.id));
+      ? CARD_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
+      : CARD_VARIANTS.filter((v) =>
+          allowedVariants.some((a) => a.id === v.id),
+        ).map((v) => ({
+          ...v,
+          comingSoon:
+            allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+        }));
 
   // Initialize defaults if empty
   useEffect(() => {
@@ -115,41 +121,49 @@ export default function CriticalCreationConfig({
           </Button>
         </ThemeHeader>
         <GameSelector>
-          {visibleVariants.map((variant) => (
-            <GameTileContainer
-              key={variant.id}
-              disabled={variant.disabled}
-              onClick={() =>
-                !variant.disabled && handleUpdate({ cardVariant: variant.id })
-              }
-            >
-              <GameTileItem
-                active={options.cardVariant === variant.id}
-                disabled={variant.disabled}
+          {visibleVariants.map((variant) => {
+            const isComingSoon = variant.comingSoon;
+            const isDisabled = variant.disabled || isComingSoon;
+            return (
+              <GameTileContainer
+                key={variant.id}
+                data-testid={`variant-tile-${variant.id}`}
+                aria-disabled={isDisabled || undefined}
+                disabled={isDisabled}
+                onClick={() =>
+                  !isDisabled && handleUpdate({ cardVariant: variant.id })
+                }
               >
-                {!variant.disabled && (
-                  <SelectionIndicator
-                    active={options.cardVariant === variant.id}
-                  />
-                )}
-                {variant.disabled && (
-                  <ComingSoonBadge>
-                    {t('games.create.comingSoon') || 'Coming Soon'}
-                  </ComingSoonBadge>
-                )}
-                <GameTileIcon
-                  background={variant.gradient || undefined}
-                  className={variant.gradient ? 'text-gradient' : undefined}
+                <GameTileItem
+                  active={options.cardVariant === variant.id}
+                  disabled={isDisabled}
                 >
-                  {variant.emoji}
-                </GameTileIcon>
-                <GameTileName>{t(variant.name as TranslationKey)}</GameTileName>
-                <GameTileSummary>
-                  {t(variant.description as TranslationKey)}
-                </GameTileSummary>
-              </GameTileItem>
-            </GameTileContainer>
-          ))}
+                  {!isDisabled && (
+                    <SelectionIndicator
+                      active={options.cardVariant === variant.id}
+                    />
+                  )}
+                  {isDisabled && (
+                    <ComingSoonBadge data-testid="coming-soon-badge">
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                  <GameTileIcon
+                    background={variant.gradient || undefined}
+                    className={variant.gradient ? 'text-gradient' : undefined}
+                  >
+                    {variant.emoji}
+                  </GameTileIcon>
+                  <GameTileName>
+                    {t(variant.name as TranslationKey)}
+                  </GameTileName>
+                  <GameTileSummary>
+                    {t(variant.description as TranslationKey)}
+                  </GameTileSummary>
+                </GameTileItem>
+              </GameTileContainer>
+            );
+          })}
         </GameSelector>
       </Section>
 

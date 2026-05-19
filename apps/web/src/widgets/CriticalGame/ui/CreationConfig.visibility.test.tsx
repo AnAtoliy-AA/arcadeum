@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  within,
+} from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import tamaguiConfig from '@/shared/config/tamagui.config';
 import CreationConfig from './CreationConfig';
@@ -63,5 +69,53 @@ describe('Critical CreationConfig — variant visibility filter', () => {
         screen.getByText(/games\.critical_v1\.variants\.crime\.name/),
       ).toBeInTheDocument();
     });
+  });
+
+  it('renders a coming-soon variant as a disabled tile with a "Coming soon" badge', async () => {
+    const onChangeSpy = vi.fn();
+
+    vi.mocked(gamesApi.getCatalog).mockResolvedValueOnce({
+      games: [
+        {
+          gameId: 'critical_v1',
+          variants: [
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'crime', comingSoon: true },
+          ],
+        },
+      ],
+    });
+
+    render(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+        <CreationConfig
+          options={{ cardVariant: 'cyberpunk' } as never}
+          onChange={onChangeSpy}
+        />
+      </TamaguiProvider>,
+    );
+
+    // Wait for the catalog effect to settle and cyberpunk tile to appear
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-tile-cyberpunk')).toBeInTheDocument();
+    });
+
+    // cyberpunk: interactive (not aria-disabled)
+    const cyberpunkTile = screen.getByTestId('variant-tile-cyberpunk');
+    expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
+
+    // crime: disabled with a coming-soon badge
+    const crimeTile = screen.getByTestId('variant-tile-crime');
+    expect(crimeTile).toHaveAttribute('aria-disabled', 'true');
+    // The identity t() mock returns the key itself; the key used for the badge is games.create.comingSoon
+    expect(
+      within(crimeTile).getByTestId('coming-soon-badge'),
+    ).toBeInTheDocument();
+
+    // Clicking crime is a no-op — onChange is not called with crime as cardVariant
+    fireEvent.click(crimeTile);
+    expect(onChangeSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ cardVariant: 'crime' }),
+    );
   });
 });

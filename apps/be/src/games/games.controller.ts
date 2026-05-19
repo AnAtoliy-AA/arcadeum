@@ -150,11 +150,7 @@ export class GamesController {
       result.rooms,
       (r) => ({
         gameId: r.gameId,
-        // gameOptions on GameRoomSummary may be more narrowly typed than
-        // Record<string, unknown>; cast for the helper's runtime guards.
-        variantId: extractVariantFromOptions(
-          r.gameOptions as Record<string, unknown> | undefined,
-        ),
+        variantId: extractVariantFromOptions(r.gameOptions),
       }),
     );
     return { ...result, rooms: filtered };

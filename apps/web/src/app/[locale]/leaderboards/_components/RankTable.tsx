@@ -174,7 +174,7 @@ export function RankTable({
               />
             </Row>
           ))
-        : rows.map((p) => (
+        : rows.map((p, i) => (
             <RankRow
               key={p.id}
               player={p}
@@ -182,6 +182,7 @@ export function RankTable({
               regionLabels={regionLabels}
               max={max}
               isSelf={!!selfId && p.id === selfId}
+              priority={i === 0}
             />
           ))}
     </YStack>
@@ -194,12 +195,14 @@ function RankRow({
   regionLabels,
   max,
   isSelf,
+  priority = false,
 }: {
   player: LeaderboardPlayer;
   liveLabel: string;
   regionLabels: Record<string, string>;
   max: number;
   isSelf: boolean;
+  priority?: boolean;
 }) {
   const live = p.isInMatch ?? false;
   const flag = p.countryCode ? regionFlag(p.countryCode) : null;
@@ -223,6 +226,7 @@ function RankRow({
             size="sm"
             name={p.name}
             src={avatarUrl ?? p.avatarUrl ?? undefined}
+            priority={priority}
           />
           {flag ? (
             <Text fontSize="$3" aria-label={p.countryCode}>

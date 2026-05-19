@@ -6,7 +6,8 @@ export interface AdminSidebarItem {
     | 'announcements'
     | 'tournaments'
     | 'economy'
-    | 'shop';
+    | 'shop'
+    | 'games';
   href: string | null;
   enabled: boolean;
 }
@@ -19,4 +20,5 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'tournaments', href: '/admin/tournaments', enabled: true },
   { id: 'economy', href: '/admin/economy', enabled: true },
   { id: 'shop', href: '/admin/shop', enabled: true },
+  { id: 'games', href: '/admin/games', enabled: true },
 ];

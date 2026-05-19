@@ -1,15 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
-
-const CreateGameRoomPage = dynamic(
-  () => import('@/features/games/ui/create/CreateGameRoomPage'),
-  {
-    ssr: false,
-    loading: () => <PageLoading />,
-  },
-);
+import CreateGameRoomPage from '@/features/games/ui/create/CreateGameRoomPage';
 
 export default function CreateGameRoomClient() {
   return <CreateGameRoomPage />;

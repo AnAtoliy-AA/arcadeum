@@ -8,6 +8,7 @@ import { adminEconomyRu } from './admin-economy/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { shopRu } from './shop/ru';
 import { adminShopRu } from './admin-shop/ru';
+import { adminGamesRu } from './admin-games/ru';
 
 export const ru = {
   admin: {
@@ -24,6 +25,7 @@ export const ru = {
       tournaments: 'Турниры',
       economy: 'Экономика',
       shop: 'Магазин',
+      games: 'Игры',
       comingSoon: 'Скоро',
     },
     error: {
@@ -485,4 +487,5 @@ export const ru = {
   dailyRewards: dailyRewardsRu,
   shop: shopRu,
   adminShop: adminShopRu,
+  adminGames: adminGamesRu,
 };

@@ -8,6 +8,7 @@ import { adminEconomyBy } from './admin-economy/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { shopBy } from './shop/by';
 import { adminShopBy } from './admin-shop/by';
+import { adminGamesBy } from './admin-games/by';
 
 export const by = {
   admin: {
@@ -24,6 +25,7 @@ export const by = {
       tournaments: 'Турніры',
       economy: 'Эканоміка',
       shop: 'Крама',
+      games: 'Гульні',
       comingSoon: 'Хутка',
     },
     error: {
@@ -484,4 +486,5 @@ export const by = {
   dailyRewards: dailyRewardsBy,
   shop: shopBy,
   adminShop: adminShopBy,
+  adminGames: adminGamesBy,
 };

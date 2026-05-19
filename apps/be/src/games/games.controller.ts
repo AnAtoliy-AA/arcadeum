@@ -17,7 +17,12 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { GamesService } from './games.service';
-import { type StartCriticalSessionResult } from './games.types';
+import {
+  type StartCriticalSessionResult,
+  type CatalogResponse,
+  type CatalogGame,
+  type CatalogVariant,
+} from './games.types';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
@@ -34,6 +39,10 @@ import {
 
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
+import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
+import { GAME_CATALOG } from './games.catalog';
+import { extractVariantFromOptions } from './game-options';
 
 @Controller('games')
 export class GamesController {
@@ -41,7 +50,42 @@ export class GamesController {
     private readonly gamesService: GamesService,
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
+    private readonly visibility: GameVisibilityService,
+    private readonly roleResolver: UserRoleResolver,
   ) {}
+
+  @UseGuards(JwtOptionalAuthGuard)
+  @Get('catalog')
+  async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
+    const user = req.user as AuthenticatedUser | undefined | null;
+    const role = await this.roleResolver.resolveRole(user?.userId);
+    const games: CatalogGame[] = [];
+    for (const entry of GAME_CATALOG) {
+      const visible = await this.visibility.canSee(role, entry.gameId);
+      if (!visible) {
+        // Game restricted for this caller — include as coming-soon, no variants surfaced
+        games.push({
+          gameId: entry.gameId,
+          comingSoon: true,
+          variants: [],
+        });
+        continue;
+      }
+
+      const variants: CatalogVariant[] = [];
+      for (const v of entry.variants) {
+        const visible = await this.visibility.canSee(role, entry.gameId, v);
+        variants.push({ id: v, comingSoon: !visible });
+      }
+
+      games.push({
+        gameId: entry.gameId,
+        comingSoon: false,
+        variants,
+      });
+    }
+    return { games };
+  }
 
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms')
@@ -54,6 +98,10 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
+    const role = await this.roleResolver.resolveRole(user.userId);
+    const variant = extractVariantFromOptions(dto.gameOptions);
+    await this.visibility.assertVisible(role, dto.gameId, variant);
+
     const room = await this.gamesService.createRoom(user.userId, dto);
     return { room };
   }
@@ -65,6 +113,8 @@ export class GamesController {
     if (!user) {
       throw new BadRequestException('Missing user context');
     }
+    const role = await this.roleResolver.resolveRole(user.userId);
+    await this.visibility.assertVisible(role, dto.gameId, dto.variant);
     const room =
       dto.mode === 'human'
         ? await this.gamesService.findHumanMatch(
@@ -100,7 +150,7 @@ export class GamesController {
     const pageNum = page ? parseInt(page, 10) : 0;
     const limitNum = limit ? parseInt(limit, 10) : 12;
 
-    return this.gamesService.listRooms({
+    const result = await this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
       search: search?.trim(),
@@ -110,6 +160,17 @@ export class GamesController {
       page: pageNum,
       limit: limitNum,
     });
+
+    const role = await this.roleResolver.resolveRole(user?.userId);
+    const filtered = await this.visibility.filterVisible(
+      role,
+      result.rooms,
+      (r) => ({
+        gameId: r.gameId,
+        variantId: extractVariantFromOptions(r.gameOptions),
+      }),
+    );
+    return { ...result, rooms: filtered };
   }
 
   @UseGuards(JwtOptionalAuthGuard)

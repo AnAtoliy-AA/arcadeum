@@ -17,23 +17,35 @@ interface Props {
   game: FeaturedGame;
   homeCopy: HomeCopy;
   onOpenDetails: (gameId: string) => void;
+  comingSoon?: boolean;
 }
 
 function getCardLinkHref(game: FeaturedGame, routes: Routes): string {
   return game.landingHref ?? routes.games;
 }
 
-function getPlayHref(game: FeaturedGame, routes: Routes): string {
-  if (!game.isPlayable) return '#';
+function getPlayHref(
+  game: FeaturedGame,
+  routes: Routes,
+  comingSoon: boolean,
+): string {
+  if (!game.isPlayable || comingSoon) return '#';
   if (game.landingHref) return game.landingHref;
   return `${routes.gameCreate}?gameId=${game.id}`;
 }
 
-export function HomeGameCard({ game, homeCopy, onOpenDetails }: Props) {
+export function HomeGameCard({
+  game,
+  homeCopy,
+  onOpenDetails,
+  comingSoon = false,
+}: Props) {
   const { t } = useTranslation();
   const routes = useRoutes();
 
-  const playLabel = game.isPlayable
+  const isDisabled = comingSoon || !game.isPlayable;
+
+  const playLabel = !isDisabled
     ? (homeCopy.gamePlayButton ?? 'Play Now')
     : (homeCopy.gameComingSoon ?? 'Coming Soon');
 
@@ -113,6 +125,27 @@ export function HomeGameCard({ game, homeCopy, onOpenDetails }: Props) {
               {homeCopy.demoBadge ?? 'Demo'}
             </span>
           ) : null}
+          {comingSoon ? (
+            <span
+              data-testid="home-game-coming-soon-badge"
+              style={{
+                padding: '3px 9px',
+                borderRadius: 999,
+                fontSize: 10,
+                fontWeight: 800,
+                letterSpacing: 1.2,
+                textTransform: 'uppercase',
+                color: '#fff',
+                background: 'linear-gradient(135deg, #6e7191 0%, #4a4e69 100%)',
+                boxShadow: '0 3px 10px rgba(74,78,105,0.4)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                flexShrink: 0,
+                alignSelf: 'center',
+              }}
+            >
+              {t('games.create.comingSoon') || 'Coming Soon'}
+            </span>
+          ) : null}
           <button
             type="button"
             onClick={() => onOpenDetails(game.id)}
@@ -145,10 +178,11 @@ export function HomeGameCard({ game, homeCopy, onOpenDetails }: Props) {
 
         <div className="game-card-footer-main">
           <Link
-            href={getPlayHref(game, routes)}
+            href={getPlayHref(game, routes, comingSoon)}
             style={{ width: '100%' }}
             className="home-link-button home-link-button-primary"
             data-testid="game-play-button"
+            aria-disabled={isDisabled ? 'true' : undefined}
             aria-label={`${playLabel} ${t(game.nameKey)}`}
           >
             {playLabel}

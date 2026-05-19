@@ -96,10 +96,13 @@ export default defineConfig({
     },
     {
       name: 'webkit',
-      // Safari + Next.js dev server cold compile is reliably slow on the first
-      // navigation. A second attempt against the now-warm cache passes — same
-      // pattern as the CI-wide retries=1.
+      // Safari + Next.js 16 dev server cold compile is reliably slow on the
+      // first navigation. A second attempt against the now-warm cache passes
+      // — same pattern as the CI-wide retries=1. Bumping the per-test timeout
+      // gives the cold compile enough headroom that the retry isn't burnt on
+      // first-hit compilation either.
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['Desktop Safari'] },
     },
     {
@@ -109,11 +112,13 @@ export default defineConfig({
     {
       name: 'Mobile Safari',
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['iPhone 12'] },
     },
     {
       name: 'Tablet Safari',
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['iPad Pro 11'] },
     },
   ],

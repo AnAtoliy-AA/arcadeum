@@ -239,7 +239,6 @@ export function ShopMannequinStage({
           justifyContent="center"
           borderWidth={2}
           position="relative"
-          overflow="hidden"
           style={{
             ...frameStyle,
             boxShadow: `0 0 56px ${accentGlow}`,

@@ -5,6 +5,7 @@ import {
   ExpansionId,
   CARD_VARIANTS,
 } from '@/features/games/ui/create/constants';
+import { gamesApi } from '@/features/games/api';
 import { ExpansionPacksSection } from '@/features/games/ui/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
@@ -41,6 +42,32 @@ export default function CriticalCreationConfig({
 }: GameCreationConfigProps<CriticalGameOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
+  const [allowedVariants, setAllowedVariants] = useState<string[] | null>(null);
+
+  // One-shot catalog fetch on mount to filter the variant picker by what
+  // the caller's role can actually see (ARC-710). Failure is silent: the
+  // full list is shown and the BE will reject any restricted creation.
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const entry = res.games.find((g) => g.gameId === 'critical_v1');
+        setAllowedVariants(entry?.variants ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setAllowedVariants(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const visibleVariants =
+    allowedVariants === null
+      ? CARD_VARIANTS
+      : CARD_VARIANTS.filter((v) => allowedVariants.includes(v.id));
 
   // Initialize defaults if empty
   useEffect(() => {
@@ -85,7 +112,7 @@ export default function CriticalCreationConfig({
           </Button>
         </ThemeHeader>
         <GameSelector>
-          {CARD_VARIANTS.map((variant) => (
+          {visibleVariants.map((variant) => (
             <GameTileContainer
               key={variant.id}
               disabled={variant.disabled}

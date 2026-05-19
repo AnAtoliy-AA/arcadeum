@@ -91,6 +91,17 @@ export class InventoryService {
     return row !== null;
   }
 
+  async findLiveByItem(
+    userId: string,
+    itemId: string,
+    session?: ClientSession,
+  ): Promise<LeanInventoryRow | null> {
+    const userObjId = new Types.ObjectId(userId);
+    return this.inventoryModel
+      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .lean<LeanInventoryRow | null>();
+  }
+
   async findByUserAndPurchaseId(
     userId: string,
     purchaseId: string,

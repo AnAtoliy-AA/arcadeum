@@ -37,11 +37,20 @@ import type {
   WalletBalanceView,
 } from '../server/shop.types';
 
+// The page-level `hero` slice comes straight from i18n (`pages.shop.hero`)
+// and only carries the hero's own strings. The Equip/Unequip/Equipped strings
+// reuse the existing `card.*` keys (same affordance), so the full
+// `ShopHeroLabels` is composed below in ShopPageView, not declared here.
+type ShopPageHeroLabels = Omit<
+  ShopHeroLabels,
+  'equip' | 'unequip' | 'equipped'
+>;
+
 export interface ShopPageLabels {
   meta: { title: string; description: string };
   topBar: ShopTopBarLabels;
   signIn: ShopSignInBannerLabels;
-  hero: ShopHeroLabels;
+  hero: ShopPageHeroLabels;
   mannequin: ShopMannequinLabels;
   row: {
     avatars: ShopRowLabels;
@@ -134,6 +143,27 @@ export function ShopPageView({
     ? (catalog.find((c) => c.id === featuredDrop.itemId) ?? null)
     : null;
 
+  const featuredOwned = featuredItem
+    ? inventory.items.some(
+        (row) => row.itemId === featuredItem.id && row.soldAt === null,
+      )
+    : false;
+  const featuredEquipped =
+    featuredItem !== null &&
+    inventory.equipped[featuredItem.category] === featuredItem.id;
+
+  // The hero reuses card.equip / card.unequip / card.equipped to avoid
+  // adding parallel translation entries — same affordance, different layout.
+  const heroLabels = useMemo(
+    () => ({
+      ...labels.hero,
+      equip: labels.card.equip,
+      unequip: labels.card.unequip,
+      equipped: labels.card.equipped,
+    }),
+    [labels.hero, labels.card],
+  );
+
   const purchaseName = purchaseTarget
     ? String(t(`pages.shop.${purchaseTarget.nameKey}` as TranslationKey))
     : '';
@@ -179,7 +209,9 @@ export function ShopPageView({
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}
-                labels={labels.hero}
+                owned={featuredOwned}
+                equipped={featuredEquipped}
+                labels={heroLabels}
                 onBuyClick={(item) => setPurchaseTarget(item)}
               />
             ) : null}

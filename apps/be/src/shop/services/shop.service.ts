@@ -94,6 +94,23 @@ export class ShopService {
     if (!effective) throw new NotFoundException('shop.unknownItem');
     if (!effective.available) throw new BadRequestException('shop.unavailable');
 
+    // Ownership short-circuit: the per-purchaseId dedup above only catches
+    // exact retries of the same client nonce. Without this second check a
+    // fresh nonce — new click, new tab, racing requests — would debit again
+    // and create a duplicate live row. Idempotent no-op: skip debit, ensure
+    // the item is equipped (matches the card-side "Buy & equip" semantic),
+    // return the existing row.
+    const existing = await this.inventory.findLiveByItem(userId, effective.id);
+    if (existing) {
+      const equipped = await this.ensureEquipped(userId, effective);
+      const balance = await this.wallet.getBalance(userId);
+      return {
+        inventoryItem: this.toInventoryItemView(existing),
+        equipped,
+        balance,
+      };
+    }
+
     let inventoryRow!: InventoryRowSnapshot;
     let equipped: EquippedView = {
       avatar: null,
@@ -130,31 +147,8 @@ export class ShopService {
       );
       inventoryRow = created[0] as unknown as InventoryRowSnapshot;
 
-      // 3. Equip slot for any equippable category (avatar, badge,
-      // name_color). game_skin remains schema-only — equipKeyFor returns
-      // null, and we just skip the auto-equip in that case.
-      const equipKey = equipKeyFor(effective.category);
-      if (equipKey) {
-        const updated = await this.userModel
-          .findOneAndUpdate(
-            { _id: userId },
-            { $set: { [equipKey]: effective.id } },
-            {
-              session,
-              new: true,
-              projection: {
-                equippedAvatarId: 1,
-                equippedBadgeId: 1,
-                equippedNameColorId: 1,
-              },
-            },
-          )
-          .lean<LeanUser | null>();
-        if (!updated) throw new NotFoundException('users.notFound');
-        equipped = this.equippedFromUser(updated);
-      } else {
-        equipped = await this.loadEquipped(userId, session);
-      }
+      // 3. Equip slot for any equippable category.
+      equipped = await this.ensureEquipped(userId, effective, session);
     });
 
     const balance = await this.wallet.getBalance(userId);
@@ -394,6 +388,40 @@ export class ShopService {
       },
     });
     return { override: after };
+  }
+
+  // Shared by the purchase happy-path and the already-owned short-circuit.
+  // For equippable categories (avatar / badge / name_color) sets the slot to
+  // this item; for game_skin (no equip slot) just returns the current loadout.
+  private async ensureEquipped(
+    userId: string,
+    effective: {
+      id: string;
+      category: import('../lib/shop-types').ShopCategory;
+    },
+    session?: ClientSession,
+  ): Promise<EquippedView> {
+    const equipKey = equipKeyFor(effective.category);
+    if (!equipKey) {
+      return this.loadEquipped(userId, session);
+    }
+    const updated = await this.userModel
+      .findOneAndUpdate(
+        { _id: userId },
+        { $set: { [equipKey]: effective.id } },
+        {
+          session,
+          new: true,
+          projection: {
+            equippedAvatarId: 1,
+            equippedBadgeId: 1,
+            equippedNameColorId: 1,
+          },
+        },
+      )
+      .lean<LeanUser | null>();
+    if (!updated) throw new NotFoundException('users.notFound');
+    return this.equippedFromUser(updated);
   }
 
   private async loadEquipped(

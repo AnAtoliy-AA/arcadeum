@@ -62,6 +62,38 @@ describe('ShopService.purchase', () => {
     expect(result.inventoryItem.rowId).toBe(priorId.toString());
   });
 
+  it('short-circuits when user already owns a live row — no debit, no new row, ensures equipped', async () => {
+    const existingId = new Types.ObjectId();
+    h.catalog.getEffective.mockResolvedValue(effectiveItem());
+    h.inventory.findLiveByItem.mockResolvedValue({
+      _id: existingId,
+      userId: new Types.ObjectId(h.userId),
+      itemId: 'avatar-fox-01',
+      purchaseId: 'earlier-purchase',
+      acquiredVia: 'coins',
+      paidAmount: 200,
+      paidCurrency: 'coins',
+      createdAt: new Date(),
+    });
+    h.wallet.getBalance.mockResolvedValue({ coins: 800, gems: 50 });
+
+    const result = await h.service.purchase(
+      h.userId,
+      'avatar-fox-01',
+      '22222222-2222-2222-2222-222222222222',
+    );
+
+    expect(h.wallet.debit).not.toHaveBeenCalled();
+    expect(h.inventoryModel.rows.length).toBe(0);
+    expect(h.wallet.emitAfterCommit).not.toHaveBeenCalled();
+    expect(result.inventoryItem.rowId).toBe(existingId.toString());
+    expect(h.userModel.users.get(h.userId)!.equippedAvatarId).toBe(
+      'avatar-fox-01',
+    );
+    expect(result.equipped.avatar).toBe('avatar-fox-01');
+    expect(result.balance).toEqual({ coins: 800, gems: 50 });
+  });
+
   it('rejects unknown item with 404', async () => {
     h.catalog.getEffective.mockResolvedValue(null);
     await expect(

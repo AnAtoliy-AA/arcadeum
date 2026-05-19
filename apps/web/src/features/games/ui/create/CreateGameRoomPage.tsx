@@ -6,10 +6,7 @@ import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { gamesApi, type CatalogResponse } from '@/features/games/api';
 import { buildComingSoonMaps, isCreateBlocked } from './createPageState';
@@ -39,15 +36,10 @@ import { useRoutes } from '@/shared/config/useRoutes';
 
 import {
   FormContainer,
-  GameSelector,
-  GameTileItem,
-  GameTileContainer,
-  GameTileName,
-  GameTileSummary,
-  ComingSoonBadge,
   Row,
   StickyMobileCta,
 } from '@/features/games/ui/create/styles';
+import { GameSelectorSection } from './GameSelectorSection';
 import { YStack, XStack, Text } from 'tamagui';
 
 // Filter out hidden games for display
@@ -311,44 +303,12 @@ export default function CreateGameRoomPage() {
         </PageTitle>
         <form onSubmit={handleSubmit}>
           <FormContainer>
-            <Section title={t('games.create.sectionGame') || 'Select Game'}>
-              <GameSelector>
-                {visibleGames.map((game) => {
-                  const csGame = gameComingSoon.get(game.id) ?? false;
-                  const disabled = !game.isPlayable || csGame;
-                  return (
-                    <GameTileContainer
-                      key={game.id}
-                      disabled={disabled}
-                      onClick={() => !disabled && handleGameChange(game.id)}
-                      data-testid={`game-tile-${game.id}`}
-                    >
-                      <GameTileItem
-                        active={gameId === game.id}
-                        disabled={disabled}
-                      >
-                        {csGame && (
-                          <ComingSoonBadge
-                            data-testid={`coming-soon-badge-${game.id}`}
-                          >
-                            {t('games.create.comingSoon') || 'Coming Soon'}
-                          </ComingSoonBadge>
-                        )}
-                        <GameTileName>
-                          {t(`games.${game.id}.name` as TranslationKey) ||
-                            game.name}
-                        </GameTileName>
-                        <GameTileSummary>
-                          {t(
-                            `games.${game.id}.description` as TranslationKey,
-                          ) || game.summary}
-                        </GameTileSummary>
-                      </GameTileItem>
-                    </GameTileContainer>
-                  );
-                })}
-              </GameSelector>
-            </Section>
+            <GameSelectorSection
+              games={visibleGames}
+              selectedId={gameId}
+              gameComingSoon={gameComingSoon}
+              onSelect={handleGameChange}
+            />
 
             {GameConfigComponent && (
               <GameConfigComponent

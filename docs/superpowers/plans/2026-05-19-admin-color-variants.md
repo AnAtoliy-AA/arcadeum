@@ -389,7 +389,7 @@ const filtered = await this.visibility.filterVisible(
 );
 ```
 
-(Cast is required because `GameRoomSummary.gameOptions` may be more narrowly typed than `Record<string, unknown>`. Use `as Record<string, unknown> | undefined` and rely on the helper's runtime guards.)
+(Cast is required because `GameRoomSummary.gameOptions` may be more narrowly typed than `Record<string, unknown>`. Use `as Record<string, unknown> | undefined` and rely on the helper's runtime guards. Leave a one-line comment in `games.controller.ts` next to the cast explaining why — the project bans `any` and discourages bare `as` casts without a comment.)
 
 - [ ] **Step 5: Verify all tests pass**
 
@@ -453,7 +453,6 @@ describe('Critical CreationConfig — variant visibility filter', () => {
       <CreationConfig
         options={{ cardVariant: 'cyberpunk' } as never}
         onChange={vi.fn()}
-        onSubmit={vi.fn()}
       />,
     );
 
@@ -472,7 +471,6 @@ describe('Critical CreationConfig — variant visibility filter', () => {
       <CreationConfig
         options={{ cardVariant: 'cyberpunk' } as never}
         onChange={vi.fn()}
-        onSubmit={vi.fn()}
       />,
     );
 

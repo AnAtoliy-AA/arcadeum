@@ -65,6 +65,7 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
       games: [
         {
           gameId: 'glimworm_v1',
+          comingSoon: false,
           variants: [
             { id: 'battle_royale', comingSoon: false },
             { id: 'time_attack', comingSoon: false },
@@ -94,6 +95,7 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
       games: [
         {
           gameId: 'glimworm_v1',
+          comingSoon: false,
           variants: [
             { id: 'battle_royale', comingSoon: false },
             { id: 'time_attack', comingSoon: true },

@@ -39,6 +39,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
       games: [
         {
           gameId: 'sea_battle_v1',
+          comingSoon: false,
           variants: [
             { id: 'classic', comingSoon: false },
             { id: 'pixel', comingSoon: false },
@@ -78,6 +79,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
       games: [
         {
           gameId: 'sea_battle_v1',
+          comingSoon: false,
           variants: [
             { id: 'classic', comingSoon: false },
             { id: 'cyber', comingSoon: true },

@@ -39,6 +39,7 @@ describe('Critical CreationConfig — variant visibility filter', () => {
       games: [
         {
           gameId: 'critical_v1',
+          comingSoon: false,
           variants: [
             { id: 'cyberpunk', comingSoon: false },
             { id: 'galaxy', comingSoon: false },
@@ -78,6 +79,7 @@ describe('Critical CreationConfig — variant visibility filter', () => {
       games: [
         {
           gameId: 'critical_v1',
+          comingSoon: false,
           variants: [
             { id: 'cyberpunk', comingSoon: false },
             { id: 'crime', comingSoon: true },

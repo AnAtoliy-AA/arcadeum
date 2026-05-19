@@ -14,7 +14,7 @@ Extend the `game_visibility` overlay from ARC-710 to also cover Critical's 13 ca
 1. Admins can gate any of Critical's 13 card-back themes or Sea Battle's 10 visual themes from `/[locale]/admin/games`.
 2. The BE rejects `createRoom` calls whose `gameOptions.variant` or `gameOptions.cardVariant` is restricted for the caller's role.
 3. `listRooms` hides rooms whose stored color variant is restricted for the caller.
-4. The web variant pickers in Critical's `CreationConfig` and Sea Battle's `VariantSelector` filter their option lists by what the caller's role can see.
+4. The web room-creation pickers in Critical's `CreationConfig` and Sea Battle's `CreationConfig` filter their option lists by what the caller's role can see.
 5. No data migration. Day-one rollout is a no-op (absence of a row = `all`, inherited from ARC-710).
 
 ## Non-goals
@@ -50,7 +50,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
 
 ### D2 — Normalize `gameOptions.variant` and `gameOptions.cardVariant` at the gate
 
-Critical stores its theme under `gameOptions.cardVariant`; Glimworm and Sea Battle use `gameOptions.variant` (Sea Battle's `variantRegistry` also accepts `cardVariant` as a legacy fallback). Introduce a small helper at [apps/be/src/games/games.controller.ts](../../../apps/be/src/games/games.controller.ts) (or a new `apps/be/src/games/game-options.ts` if preferred):
+Critical stores its theme under `gameOptions.cardVariant`; Glimworm and Sea Battle use `gameOptions.variant` (Sea Battle's `variantRegistry` also accepts `cardVariant` as a legacy fallback). Introduce a small helper in a new module `apps/be/src/games/game-options.ts` (separate file, easy to unit-test in isolation, importable from both controller and any future caller):
 
 ```ts
 function extractVariantFromOptions(
@@ -68,11 +68,13 @@ Use the helper at:
 
 **Why:** Picking up `cardVariant` is the only way Critical visibility checks fire today. The helper centralizes the dual-key knowledge in one place; future extraction sites consume the same helper.
 
-The Glimworm WS gateway (T13) is unaffected — it reads a typed `variant` payload field, not `gameOptions`.
+The Glimworm WS gateway is unaffected — it reads a typed `variant` payload field, not `gameOptions`.
+
+`quickplay` (in `games.controller.ts`) is also unaffected: it already takes a top-level `dto.variant: string | undefined` (typed by `QuickplayGameDto`), not a `gameOptions` blob, and the existing `assertVisible(role, dto.gameId, dto.variant)` already covers it. Do not rewrite that call site.
 
 ### D3 — Web pickers do one-shot catalog fetch (T21 pattern)
 
-For each of Critical's [CreationConfig.tsx](../../../apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx) and Sea Battle's [VariantSelector.tsx](../../../apps/web/src/widgets/SeaBattleGame/ui/VariantSelector.tsx):
+For each of Critical's [CreationConfig.tsx](../../../apps/web/src/widgets/CriticalGame/ui/CreationConfig.tsx) and Sea Battle's [CreationConfig.tsx](../../../apps/web/src/widgets/SeaBattleGame/ui/CreationConfig.tsx):
 
 ```ts
 const [allowedVariants, setAllowedVariants] = useState<string[] | null>(null);
@@ -94,7 +96,14 @@ const visibleVariants =
 
 **Why:** Identical shape to Glimworm's T21. Failure is silent; the BE rejects on submit. Render full list during the in-flight fetch to avoid flicker.
 
-Critical has **two** `CARD_VARIANTS` constants today — one in `apps/web/src/features/games/lib/criticalVariants.ts` (used by HomeHero) and one in `apps/web/src/widgets/CriticalGame/lib/constants.ts` (used by `CreationConfig` and `CriticalLobby`). Filter the second one (the picker's source); the first one only feeds the marketing hero rotation and doesn't gate room creation. Reconciling the duplication is out of scope.
+Critical has **two** `CARD_VARIANTS` constants today, but only one is on the room-creation path:
+
+- [apps/web/src/features/games/lib/criticalVariants.ts](../../../apps/web/src/features/games/lib/criticalVariants.ts) — 13 entries in one array (incl. `random`). Imported by `CreationConfig.tsx` via the re-export at `apps/web/src/features/games/ui/create/constants.ts:160` (`export { CARD_VARIANTS } from '@/features/games/lib/criticalVariants'`). **This is the array `CreationConfig` actually maps over** and the one to filter.
+- [apps/web/src/widgets/CriticalGame/lib/constants/variants.ts](../../../apps/web/src/widgets/CriticalGame/lib/constants/variants.ts) — 12 entries plus a separate `RANDOM_VARIANT` const; `CRITICAL_VARIANTS = [...CARD_VARIANTS, RANDOM_VARIANT]`. Used by the in-room `VariantSelector.tsx` only. Not on the creation path. Leave it alone.
+
+The two `CARD_VARIANTS` are content duplicates and a real footgun, but reconciling them is out of scope. The plan should add a one-line comment in the filtered file noting the other.
+
+**In-room variant selectors (`widgets/CriticalGame/ui/VariantSelector.tsx`, `widgets/SeaBattleGame/ui/VariantSelector.tsx`) are deliberately NOT filtered.** They operate on already-created rooms; the createRoom gate (D2) already prevented restricted variants from landing in those rooms in the first place. If an admin restricts a variant *after* a room exists, the live room's option-update path is a separate concern (today's `updateRoomOptions` endpoint has no visibility gate; that's a known gap from ARC-710 and stays out of scope here).
 
 ## Architecture (delta)
 

@@ -8,6 +8,7 @@ import { adminEconomyEn } from './admin-economy/en';
 import { dailyRewardsEn } from './daily-rewards/en';
 import { shopEn } from './shop/en';
 import { adminShopEn } from './admin-shop/en';
+import { adminGamesEn } from './admin-games/en';
 
 export const en = {
   admin: {
@@ -24,6 +25,7 @@ export const en = {
       tournaments: 'Tournaments',
       economy: 'Economy',
       shop: 'Shop',
+      games: 'Games',
       comingSoon: 'Coming soon',
     },
     error: {
@@ -481,4 +483,5 @@ export const en = {
   dailyRewards: dailyRewardsEn,
   shop: shopEn,
   adminShop: adminShopEn,
+  adminGames: adminGamesEn,
 };

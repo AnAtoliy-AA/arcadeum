@@ -74,15 +74,8 @@ export class GamesController {
 
       const variants: CatalogVariant[] = [];
       for (const v of entry.variants) {
-        const effective = await this.visibility.getEffectiveTier(
-          entry.gameId,
-          v,
-        );
-        if (effective === 'none') {
-          variants.push({ id: v, comingSoon: true });
-        } else if (await this.visibility.canSee(role, entry.gameId, v)) {
-          variants.push({ id: v, comingSoon: false });
-        }
+        const visible = await this.visibility.canSee(role, entry.gameId, v);
+        variants.push({ id: v, comingSoon: !visible });
       }
 
       games.push({

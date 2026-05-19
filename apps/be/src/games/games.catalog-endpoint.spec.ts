@@ -45,7 +45,7 @@ describe('GamesController.getCatalog', () => {
     );
   });
 
-  it('filters out games and variants the caller cannot see', async () => {
+  it('includes a restricted variant (vip_plus) as comingSoon=true for a free caller', async () => {
     const vis = {
       canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
         if (gameId === 'glimworm_v1' && variantId === 'time_attack') {
@@ -65,9 +65,15 @@ describe('GamesController.getCatalog', () => {
 
     const res = await controller.getCatalog(reqWithUser(undefined));
     const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
-    expect(glim?.variants.map((v) => v.id)).not.toContain('time_attack');
-    expect(glim?.variants.map((v) => v.id)).toEqual(
-      expect.arrayContaining(['battle_royale', 'lives_heats']),
+    expect(glim?.variants).toContainEqual({
+      id: 'time_attack',
+      comingSoon: true,
+    });
+    expect(glim?.variants).toContainEqual(
+      expect.objectContaining({ id: 'battle_royale', comingSoon: false }),
+    );
+    expect(glim?.variants).toContainEqual(
+      expect.objectContaining({ id: 'lives_heats', comingSoon: false }),
     );
   });
 
@@ -161,7 +167,7 @@ describe('getCatalog (comingSoon + new tiers)', () => {
     expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: true });
   });
 
-  it('omits a developers_plus variant entirely for a free caller', async () => {
+  it('includes a developers_plus variant with comingSoon: true for a free caller', async () => {
     const vis = {
       canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
         if (gameId === 'critical_v1' && variantId === 'crime') {
@@ -182,8 +188,7 @@ describe('getCatalog (comingSoon + new tiers)', () => {
     const res = await controller.getCatalog(reqWithUser('user-1'));
     const game = res.games.find((g) => g.gameId === 'critical_v1');
     expect(game).toBeDefined();
-    const crimeVariant = game?.variants.find((v) => v.id === 'crime');
-    expect(crimeVariant).toBeUndefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: true });
   });
 
   it('includes a developers_plus variant with comingSoon=false for a developer caller', async () => {
@@ -274,5 +279,54 @@ describe('getCatalog (comingSoon + new tiers)', () => {
     expect(game).toBeDefined();
     expect(game).toMatchObject({ gameId: 'critical_v1', comingSoon: false });
     expect(game?.variants.length).toBeGreaterThan(0);
+  });
+
+  it('includes a vip_plus variant with comingSoon: true for a free caller (non-VIP)', async () => {
+    // arrange: critical_v1 game tier 'all', variant 'crime' tier 'vip_plus'
+    const vis = {
+      canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+        if (gameId === 'critical_v1' && variantId === 'crime') {
+          return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+      }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('vip_plus');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    // act: role 'free'
+    const res = await controller.getCatalog(reqWithUser('user-1'));
+    // assert: critical entry's variants contains { id: 'crime', comingSoon: true }
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: true });
+  });
+
+  it('includes a vip_plus variant with comingSoon: false for a vip caller', async () => {
+    // arrange: critical_v1 game tier 'all', variant 'crime' tier 'vip_plus'
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('vip_plus');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('vip'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    // act: role 'vip'
+    const res = await controller.getCatalog(reqWithUser('vip-1'));
+    // assert: critical entry's variants contains { id: 'crime', comingSoon: false }
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: false });
   });
 });

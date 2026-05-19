@@ -37,6 +37,7 @@ import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 import { GAME_CATALOG } from './games.catalog';
+import { extractVariantFromOptions } from './game-options';
 
 @Controller('games')
 export class GamesController {
@@ -81,11 +82,7 @@ export class GamesController {
     }
 
     const role = await this.roleResolver.resolveRole(user.userId);
-    const variantOpt =
-      dto.gameOptions && typeof dto.gameOptions === 'object'
-        ? dto.gameOptions.variant
-        : undefined;
-    const variant = typeof variantOpt === 'string' ? variantOpt : undefined;
+    const variant = extractVariantFromOptions(dto.gameOptions);
     await this.visibility.assertVisible(role, dto.gameId, variant);
 
     const room = await this.gamesService.createRoom(user.userId, dto);
@@ -151,16 +148,14 @@ export class GamesController {
     const filtered = await this.visibility.filterVisible(
       role,
       result.rooms,
-      (r) => {
-        const variantOpt =
-          r.gameOptions && typeof r.gameOptions === 'object'
-            ? r.gameOptions.variant
-            : undefined;
-        return {
-          gameId: r.gameId,
-          variantId: typeof variantOpt === 'string' ? variantOpt : undefined,
-        };
-      },
+      (r) => ({
+        gameId: r.gameId,
+        // gameOptions on GameRoomSummary may be more narrowly typed than
+        // Record<string, unknown>; cast for the helper's runtime guards.
+        variantId: extractVariantFromOptions(
+          r.gameOptions as Record<string, unknown> | undefined,
+        ),
+      }),
     );
     return { ...result, rooms: filtered };
   }

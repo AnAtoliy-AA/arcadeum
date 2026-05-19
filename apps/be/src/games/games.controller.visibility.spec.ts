@@ -131,6 +131,62 @@ describe('createRoom visibility gate', () => {
       undefined,
     );
   });
+
+  it('extracts variant from gameOptions.cardVariant (Critical convention)', async () => {
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+      assertVisible: jest.fn().mockResolvedValue(undefined),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const games = {
+      createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
+    } as unknown as GamesService;
+    const controller = buildController(games, vis, resolver);
+    await controller.createRoom(
+      { user: { userId: 'u-1' } } as unknown as Request,
+      {
+        gameId: 'critical_v1',
+        name: 'x',
+        visibility: 'public',
+        gameOptions: { cardVariant: 'crime' },
+      } as unknown as CreateGameRoomDto,
+    );
+    expect(vis.assertVisible).toHaveBeenCalledWith(
+      'free',
+      'critical_v1',
+      'crime',
+    );
+  });
+
+  it('prefers gameOptions.variant over gameOptions.cardVariant', async () => {
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+      assertVisible: jest.fn().mockResolvedValue(undefined),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const games = {
+      createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
+    } as unknown as GamesService;
+    const controller = buildController(games, vis, resolver);
+    await controller.createRoom(
+      { user: { userId: 'u-1' } } as unknown as Request,
+      {
+        gameId: 'sea_battle_v1',
+        name: 'x',
+        visibility: 'public',
+        gameOptions: { variant: 'classic', cardVariant: 'should-be-ignored' },
+      } as unknown as CreateGameRoomDto,
+    );
+    expect(vis.assertVisible).toHaveBeenCalledWith(
+      'free',
+      'sea_battle_v1',
+      'classic',
+    );
+  });
 });
 
 describe('quickplay visibility gate', () => {

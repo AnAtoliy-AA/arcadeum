@@ -29,6 +29,7 @@ describe('GamesController.getCatalog', () => {
   it('returns the full catalog for an admin', async () => {
     const vis = {
       canSee: jest.fn().mockResolvedValue(true),
+      getEffectiveTier: jest.fn().mockResolvedValue('all'),
     } as unknown as GameVisibilityService;
     const resolver = {
       resolveRole: jest.fn().mockResolvedValue('admin'),
@@ -39,7 +40,7 @@ describe('GamesController.getCatalog', () => {
     const ids = res.games.map((g) => g.gameId);
     expect(ids).toEqual(expect.arrayContaining(['glimworm_v1', 'critical_v1']));
     const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
-    expect(glim?.variants).toEqual(
+    expect(glim?.variants.map((v) => v.id)).toEqual(
       expect.arrayContaining(['battle_royale', 'time_attack', 'lives_heats']),
     );
   });
@@ -52,6 +53,10 @@ describe('GamesController.getCatalog', () => {
         }
         return Promise.resolve(true);
       }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'time_attack') return Promise.resolve('vip_plus');
+        return Promise.resolve('all');
+      }),
     } as unknown as GameVisibilityService;
     const resolver = {
       resolveRole: jest.fn().mockResolvedValue('free'),
@@ -60,8 +65,8 @@ describe('GamesController.getCatalog', () => {
 
     const res = await controller.getCatalog(reqWithUser(undefined));
     const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
-    expect(glim?.variants).not.toContain('time_attack');
-    expect(glim?.variants).toEqual(
+    expect(glim?.variants.map((v) => v.id)).not.toContain('time_attack');
+    expect(glim?.variants.map((v) => v.id)).toEqual(
       expect.arrayContaining(['battle_royale', 'lives_heats']),
     );
   });
@@ -71,6 +76,7 @@ describe('GamesController.getCatalog', () => {
       canSee: jest.fn((_role: string, gameId: string) =>
         Promise.resolve(gameId !== 'glimworm_v1'),
       ),
+      getEffectiveTier: jest.fn().mockResolvedValue('all'),
     } as unknown as GameVisibilityService;
     const resolver = {
       resolveRole: jest.fn().mockResolvedValue('free'),
@@ -85,6 +91,7 @@ describe('GamesController.getCatalog', () => {
     const resolveRole = jest.fn().mockResolvedValue('free');
     const vis = {
       canSee: jest.fn().mockResolvedValue(true),
+      getEffectiveTier: jest.fn().mockResolvedValue('all'),
     } as unknown as GameVisibilityService;
     const resolver = { resolveRole } as unknown as UserRoleResolver;
     const controller = buildController(vis, resolver);
@@ -93,5 +100,124 @@ describe('GamesController.getCatalog', () => {
     } as unknown as Request);
     expect(resolveRole).toHaveBeenCalledWith('anon_abcd');
     // The unit test passes the raw id; the resolver (tested separately) short-circuits to 'free'.
+  });
+});
+
+describe('getCatalog (comingSoon + new tiers)', () => {
+  it('includes a none-tier variant with comingSoon=true for a free caller', async () => {
+    const vis = {
+      canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+        if (gameId === 'critical_v1' && variantId === 'crime') {
+          return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+      }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('none');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('user-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: true });
+    expect(game?.variants).toContainEqual(
+      expect.objectContaining({ id: 'cyberpunk', comingSoon: false }),
+    );
+  });
+
+  it('includes a none-tier variant with comingSoon=true for an admin caller (no bypass)', async () => {
+    const vis = {
+      canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+        if (gameId === 'critical_v1' && variantId === 'crime') {
+          return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+      }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('none');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('admin'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('admin-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: true });
+  });
+
+  it('omits a developers_plus variant entirely for a free caller', async () => {
+    const vis = {
+      canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+        if (gameId === 'critical_v1' && variantId === 'crime') {
+          return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+      }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('developers_plus');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('free'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('user-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    const crimeVariant = game?.variants.find((v) => v.id === 'crime');
+    expect(crimeVariant).toBeUndefined();
+  });
+
+  it('includes a developers_plus variant with comingSoon=false for a developer caller', async () => {
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (variantId === 'crime') return Promise.resolve('developers_plus');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('developer'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('dev-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: false });
+  });
+
+  it('omits a whole game entirely when its tier is none, even for admin', async () => {
+    const vis = {
+      canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+        if (gameId === 'critical_v1' && variantId === undefined) {
+          return Promise.resolve(false);
+        }
+        return Promise.resolve(true);
+      }),
+      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
+        if (!variantId) return Promise.resolve('none');
+        return Promise.resolve('all');
+      }),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('admin'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('admin-1'));
+    expect(res.games.find((g) => g.gameId === 'critical_v1')).toBeUndefined();
   });
 });

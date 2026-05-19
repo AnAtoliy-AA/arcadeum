@@ -52,17 +52,29 @@ export class GamesController {
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<{
-    games: Array<{ gameId: string; variants: string[] }>;
+    games: Array<{
+      gameId: string;
+      variants: Array<{ id: string; comingSoon: boolean }>;
+    }>;
   }> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const role = await this.roleResolver.resolveRole(user?.userId);
-    const games: Array<{ gameId: string; variants: string[] }> = [];
+    const games: Array<{
+      gameId: string;
+      variants: Array<{ id: string; comingSoon: boolean }>;
+    }> = [];
     for (const entry of GAME_CATALOG) {
       if (!(await this.visibility.canSee(role, entry.gameId))) continue;
-      const variants: string[] = [];
+      const variants: Array<{ id: string; comingSoon: boolean }> = [];
       for (const v of entry.variants) {
-        if (await this.visibility.canSee(role, entry.gameId, v)) {
-          variants.push(v);
+        const effective = await this.visibility.getEffectiveTier(
+          entry.gameId,
+          v,
+        );
+        if (effective === 'none') {
+          variants.push({ id: v, comingSoon: true });
+        } else if (await this.visibility.canSee(role, entry.gameId, v)) {
+          variants.push({ id: v, comingSoon: false });
         }
       }
       games.push({ gameId: entry.gameId, variants });

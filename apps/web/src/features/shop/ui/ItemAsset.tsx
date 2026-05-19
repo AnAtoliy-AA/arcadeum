@@ -115,6 +115,43 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     );
   }
 
+  if (item.category === 'game_skin') {
+    // Game skin preview: a rounded square swatch with the colorValue,
+    // styled like a mini "game panel" with a thin top stripe to suggest
+    // a window chrome. game_skin has no live render path yet (schema-
+    // only), so the catalog tile is the only place it surfaces and a
+    // plain colored panel reads clearly.
+    const value = item.colorValue ?? '#1e293b';
+    const isGradient = value.includes('gradient');
+    return (
+      <YStack
+        width={size}
+        height={size}
+        alignItems="center"
+        justifyContent="center"
+        data-testid={`shop-asset-${item.id}`}
+      >
+        <YStack
+          width={size}
+          height={size}
+          borderRadius={Math.round(size * 0.16)}
+          borderWidth={1}
+          borderColor="rgba(255,255,255,0.18)"
+          style={
+            isGradient ? { backgroundImage: value } : { backgroundColor: value }
+          }
+          overflow="hidden"
+        >
+          <YStack
+            width="100%"
+            height={Math.round(size * 0.16)}
+            backgroundColor="rgba(0,0,0,0.35)"
+          />
+        </YStack>
+      </YStack>
+    );
+  }
+
   if (item.category === 'aura') {
     // Aura preview: a soft glow ring driven by colorValue. Solid hex
     // becomes a radial halo; a gradient is rendered behind a translucent

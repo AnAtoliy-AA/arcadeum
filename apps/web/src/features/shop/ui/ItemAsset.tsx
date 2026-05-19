@@ -52,7 +52,6 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
       height={size}
       alignItems="center"
       justifyContent="center"
-      overflow="hidden"
       data-testid={`shop-asset-${item.id}`}
     >
       <Image

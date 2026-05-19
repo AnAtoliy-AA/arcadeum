@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { XStack, YStack, styled, ThemeableStack, GetProps } from 'tamagui';
+import { XStack, YStack, styled, ThemeableStack, GetProps, View } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 import { Typography } from '../Typography/Typography';
 
@@ -160,28 +160,30 @@ export const ChatMessage = memo(function ChatMessage({
             {senderName}
           </Typography>
           {badgeUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={badgeUrl}
-              alt=""
-              width={16}
-              height={16}
-              style={{ objectFit: 'contain' }}
-            />
+            <View width={16} height={16}>
+              <img
+                src={badgeUrl}
+                alt=""
+                width={16}
+                height={16}
+                style={{ objectFit: 'contain' }}
+              />
+            </View>
           ) : null}
         </XStack>
       )}
       {isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
           {badgeUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={badgeUrl}
-              alt=""
-              width={16}
-              height={16}
-              style={{ objectFit: 'contain' }}
-            />
+            <View width={16} height={16}>
+              <img
+                src={badgeUrl}
+                alt=""
+                width={16}
+                height={16}
+                style={{ objectFit: 'contain' }}
+              />
+            </View>
           ) : null}
           <Typography
             uiSize="xs"

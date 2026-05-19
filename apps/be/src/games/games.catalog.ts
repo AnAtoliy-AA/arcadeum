@@ -4,8 +4,21 @@ export interface GameCatalogEntry {
 }
 
 export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
-  { gameId: 'critical_v1', variants: [] },
-  { gameId: 'sea_battle_v1', variants: [] },
+  {
+    gameId: 'critical_v1',
+    variants: [
+      'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
+      'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
+      'steampunk', 'zen', 'random',
+    ],
+  },
+  {
+    gameId: 'sea_battle_v1',
+    variants: [
+      'classic', 'modern', 'pixel', 'cartoon', 'cyber',
+      'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
+    ],
+  },
   { gameId: 'texas_holdem_v1', variants: [] },
   {
     gameId: 'glimworm_v1',

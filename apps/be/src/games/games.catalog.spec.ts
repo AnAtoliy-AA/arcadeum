@@ -11,9 +11,7 @@ describe('GAME_CATALOG', () => {
     ]);
   });
 
-  it('includes critical, sea-battle, texas-holdem without variants', () => {
-    expect(getCatalogEntry('critical_v1')?.variants).toEqual([]);
-    expect(getCatalogEntry('sea_battle_v1')?.variants).toEqual([]);
+  it('includes texas-holdem without variants', () => {
     expect(getCatalogEntry('texas_holdem_v1')?.variants).toEqual([]);
   });
 
@@ -27,5 +25,26 @@ describe('GAME_CATALOG', () => {
   it('GAME_CATALOG entries are unique by gameId', () => {
     const ids = GAME_CATALOG.map((g) => g.gameId);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe('GAME_CATALOG color variants', () => {
+  it('lists all 13 Critical card-back themes including high-altitude-hike and random', () => {
+    expect(getCatalogEntry('critical_v1')?.variants).toEqual([
+      'cyberpunk', 'underwater', 'crime', 'horror', 'adventure',
+      'high-altitude-hike', 'galaxy', 'fantasy', 'western', 'egypt',
+      'steampunk', 'zen', 'random',
+    ]);
+  });
+
+  it('lists all 10 Sea Battle visual themes', () => {
+    expect(getCatalogEntry('sea_battle_v1')?.variants).toEqual([
+      'classic', 'modern', 'pixel', 'cartoon', 'cyber',
+      'vintage', 'nebula', 'forest', 'sunset', 'monochrome',
+    ]);
+  });
+
+  it('hasVariant accepts hyphenated ids', () => {
+    expect(hasVariant('critical_v1', 'high-altitude-hike')).toBe(true);
   });
 });

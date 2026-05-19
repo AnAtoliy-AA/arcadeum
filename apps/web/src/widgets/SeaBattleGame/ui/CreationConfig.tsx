@@ -85,6 +85,7 @@ export default function SeaBattleCreationConfig({
             size="sm"
             mb="$4"
             type="button"
+            color="$accent"
             onClick={() => setShowRules(true)}
           >
             📖 {t('games.rules.button') || 'View Game Rules'}

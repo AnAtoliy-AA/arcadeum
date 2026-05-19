@@ -114,6 +114,7 @@ export default function CriticalCreationConfig({
             size="sm"
             mb="$4"
             type="button"
+            color="$accent"
             onClick={() => setShowRules(true)}
             data-testid="view-rules-button"
           >

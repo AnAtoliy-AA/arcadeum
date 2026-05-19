@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
+import Image from 'next/image';
 import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
@@ -125,13 +126,13 @@ export default function ProfileMenu() {
         </UserNameEllipsis>
         {equippedBadgeUrl ? (
           <View width={20} height={20}>
-            <img
+            <Image
               src={equippedBadgeUrl}
               alt=""
               width={20}
               height={20}
               data-testid="header-equipped-badge"
-              style={{ objectFit: 'contain' }}
+              unoptimized
             />
           </View>
         ) : null}

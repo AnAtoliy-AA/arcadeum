@@ -1,5 +1,6 @@
 'use client';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
+import Image from 'next/image';
 import {
   Avatar,
   RankBadge,
@@ -238,13 +239,13 @@ function RankRow({
           </Text>
           {badgeUrl ? (
             <View width={16} height={16}>
-              <img
+              <Image
                 src={badgeUrl}
                 alt=""
                 width={16}
                 height={16}
-                style={{ objectFit: 'contain' }}
                 data-testid={`leaderboard-row-${p.rank}-badge`}
+                unoptimized
               />
             </View>
           ) : null}

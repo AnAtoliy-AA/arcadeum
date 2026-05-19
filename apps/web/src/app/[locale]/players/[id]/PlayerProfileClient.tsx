@@ -1,5 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   PageLayout,
   Container,
@@ -138,14 +139,12 @@ function Profile({
             </Text>
             {badgeUrl ? (
               <View width={32} height={32} data-testid="player-profile-badge">
-                <img
+                <Image
                   src={badgeUrl}
                   alt=""
-                  style={{
-                    width: 32,
-                    height: 32,
-                    objectFit: 'contain',
-                  }}
+                  width={32}
+                  height={32}
+                  unoptimized
                 />
               </View>
             ) : null}

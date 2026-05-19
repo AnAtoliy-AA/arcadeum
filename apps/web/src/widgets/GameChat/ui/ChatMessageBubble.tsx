@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { XStack, YStack } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
@@ -91,10 +92,12 @@ export function ChatMessageBubble({
         flexShrink={0}
       >
         {avatarUrl ? (
-          <img
+          <Image
             src={avatarUrl}
             alt=""
-            style={{ width: 38, height: 38, objectFit: 'contain' }}
+            width={38}
+            height={38}
+            unoptimized
           />
         ) : (
           <Text fontSize="$4" fontWeight="700" color="white">
@@ -126,12 +129,12 @@ export function ChatMessageBubble({
             </Text>
             {badgeUrl ? (
               <View width={16} height={16}>
-                <img
+                <Image
                   src={badgeUrl}
                   alt=""
                   width={16}
                   height={16}
-                  style={{ objectFit: 'contain' }}
+                  unoptimized
                 />
               </View>
             ) : null}

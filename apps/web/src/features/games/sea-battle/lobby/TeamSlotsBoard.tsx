@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import {
   Avatar,
   Badge,
@@ -368,12 +369,12 @@ function TeamMemberIdentity({
       </Typography>
       {badgeUrl ? (
         <View width={16} height={16}>
-          <img
+          <Image
             src={badgeUrl}
             alt=""
             width={16}
             height={16}
-            style={{ objectFit: 'contain' }}
+            unoptimized
           />
         </View>
       ) : null}

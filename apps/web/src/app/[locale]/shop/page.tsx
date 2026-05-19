@@ -65,7 +65,17 @@ export default async function ShopPage({
   const gemPacks = await getActivePackages().catch(() => []);
   const { gems: balanceGems } = balance;
   const nextGemPack = pickNextGemPack(balanceGems, gemPacks);
-  const featuredDrop = pickFeaturedDrop(catalog, gemToCoinRate);
+  // Limited-drop hero filters out items the user already owns and rotates
+  // by UTC day across the remaining tier — see pickFeaturedDrop's
+  // selection cascade for the legendary → epic → null fallback chain.
+  const ownedItemIds = new Set(
+    inventory.items
+      .filter((row) => row.soldAt === null)
+      .map((row) => row.itemId),
+  );
+  const featuredDrop = pickFeaturedDrop(catalog, gemToCoinRate, {
+    ownedItemIds,
+  });
 
   const messages = await getTranslations(locale);
   const labels = (messages.pages?.shop ?? shopEn) as typeof shopEn;

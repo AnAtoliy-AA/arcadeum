@@ -139,7 +139,7 @@ USER WRITE (createRoom, Critical theme = 'crime'):
 
 ### Web unit (Vitest)
 - Critical `CreationConfig`: mock `gamesApi.getCatalog()` to return `critical_v1.variants` without `cyberpunk`; assert the rendered list excludes the cyberpunk tile.
-- Sea Battle `VariantSelector`: same pattern.
+- Sea Battle `CreationConfig`: same pattern.
 
 ### Manual smoke (post-deploy)
 1. Admin → `/admin/games` → expand Critical → set `crime` to `vip_plus`.

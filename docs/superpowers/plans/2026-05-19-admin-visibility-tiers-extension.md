@@ -17,7 +17,7 @@
 **Files:**
 - Modify: `apps/be/src/auth/lib/roles.ts:156-167`
 - Modify: `apps/be/src/admin/game-visibility/game-visibility.service.ts:25-29`
-- Test: `apps/be/src/auth/lib/roles.test.ts` (or wherever `canSeeAtTier` is currently tested — `grep -rn "canSeeAtTier" apps/be/src` if unclear; create `roles.test.ts` if no test file covers it)
+- Test: `apps/be/src/auth/lib/roles.spec.ts` (existing file)
 - Test: `apps/be/src/admin/game-visibility/game-visibility.service.spec.ts` (existing — extend it)
 
 - [ ] **Step 1: Write the failing `canSeeAtTier` test cases**
@@ -46,7 +46,7 @@ describe('canSeeAtTier (new tiers)', () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.test.ts`
+Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.spec.ts`
 Expected: TypeScript or runtime errors — `'developers_plus'`/`'none'` not in `VisibilityTier` union.
 
 - [ ] **Step 3: Extend `VISIBILITY_TIERS` and `TIER_MIN_PRIORITY` in `roles.ts`**
@@ -74,7 +74,7 @@ const TIER_MIN_PRIORITY: Record<VisibilityTier, number> = {
 
 - [ ] **Step 4: Verify `roles` tests now pass; verify `game-visibility.service.spec.ts` fails on `TIER_RANK`**
 
-Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.test.ts`
+Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.spec.ts`
 Expected: PASS.
 
 Run: `cd apps/be && pnpm jest --runTestsByPath src/admin/game-visibility/game-visibility.service.spec.ts`
@@ -135,7 +135,7 @@ const TIER_RANK: Record<VisibilityTier, number> = {
 
 - [ ] **Step 7: Verify both BE test files pass**
 
-Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.test.ts src/admin/game-visibility/game-visibility.service.spec.ts`
+Run: `cd apps/be && pnpm jest --runTestsByPath src/auth/lib/roles.spec.ts src/admin/game-visibility/game-visibility.service.spec.ts`
 Expected: ALL PASS.
 
 - [ ] **Step 8: Run full BE suite to catch any other typecheck breaks**
@@ -146,7 +146,7 @@ Expected: ALL PASS. (TypeScript compiles, no test regressions.)
 - [ ] **Step 9: Commit**
 
 ```bash
-git add apps/be/src/auth/lib/roles.ts apps/be/src/auth/lib/roles.test.ts apps/be/src/admin/game-visibility/game-visibility.service.ts apps/be/src/admin/game-visibility/game-visibility.service.spec.ts
+git add apps/be/src/auth/lib/roles.ts apps/be/src/auth/lib/roles.spec.ts apps/be/src/admin/game-visibility/game-visibility.service.ts apps/be/src/admin/game-visibility/game-visibility.service.spec.ts
 git commit -m "feat(admin): add developers_plus and none visibility tiers (ARC-710)"
 ```
 
@@ -339,19 +339,18 @@ This now derives from `VisibilityTier`. Future tier additions stop needing this 
 
 - [ ] **Step 4: Run typecheck**
 
-Run: `cd apps/web && pnpm typecheck 2>&1 | tail -30` (or `pnpm tsc --noEmit` — whichever the project uses; check `package.json` scripts).
+Run: `cd apps/web && pnpm type-check 2>&1 | tail -30`
 Expected: errors flagging missing `developers_plus` and `none` entries in the locale files' `tiers` objects (covered in Task 4). No other typecheck failures.
 
-- [ ] **Step 5: Commit**
+**Note:** Do NOT commit yet — Task 3 + Task 4 must commit together because the mirror + `TierLabels` refactor breaks typecheck until the locale files have the new keys. The "commit" step at the end of Task 4 covers both.
 
-```bash
-git add apps/web/src/features/games/api.ts apps/web/src/features/admin-games/types.ts apps/web/src/features/admin-games/ui/GameVisibilityRow.tsx
-git commit -m "feat(admin-games): mirror new tiers in web types + derive TierLabels (ARC-710)"
-```
+- [ ] **Step 5: Do NOT commit yet**
+
+Hold the staged changes through Task 4 and commit at the end of Task 4.
 
 ---
 
-## Task 4: i18n — three new keys in five locale files
+## Task 4: i18n — three new keys in five locale files (commits Task 3 + Task 4 together)
 
 **Files:**
 - Modify: `apps/web/src/shared/i18n/messages/pages/admin-games/en.ts`
@@ -425,14 +424,17 @@ Expected: clean.
 
 - [ ] **Step 5: Run typecheck**
 
-Run: `cd apps/web && pnpm typecheck 2>&1 | tail -20`
+Run: `cd apps/web && pnpm type-check 2>&1 | tail -20`
 Expected: clean (all five `tiers` objects now satisfy `Record<VisibilityTier, string>`).
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Commit (Task 3 + Task 4 together)**
 
 ```bash
-git add apps/web/src/shared/i18n/messages/
-git commit -m "feat(admin-games): localize developers_plus + none tiers and coming-soon label (ARC-710)"
+git add apps/web/src/features/games/api.ts \
+  apps/web/src/features/admin-games/types.ts \
+  apps/web/src/features/admin-games/ui/GameVisibilityRow.tsx \
+  apps/web/src/shared/i18n/messages/
+git commit -m "feat(admin-games): mirror new tiers + localize developers_plus and none (ARC-710)"
 ```
 
 ---
@@ -636,28 +638,21 @@ git commit -m "feat(admin-games): Sea Battle CreationConfig renders coming-soon 
 
 **Files:**
 - Modify: `apps/web/src/widgets/GlimwormGame/ui/GlimwormLobby.tsx` (variant tile rendering around lines 175-205)
-- Test: New file `apps/web/src/widgets/GlimwormGame/ui/GlimwormLobby.visibility.test.tsx` if no existing visibility test exists; otherwise extend.
+- Create: `apps/web/src/widgets/GlimwormGame/ui/GlimwormLobby.visibility.test.tsx` (verified: no `*.test.tsx` files exist in this directory today)
 
-- [ ] **Step 1: Check for existing visibility test**
+- [ ] **Step 1: Create the new test file with failing cases**
 
-Run: `ls apps/web/src/widgets/GlimwormGame/ui/*.test.tsx 2>/dev/null`
+Model on `apps/web/src/widgets/CriticalGame/ui/CreationConfig.visibility.test.tsx` (same TamaguiProvider wrapper, same `gamesApi.getCatalog` mock strategy). Two cases:
 
-If a visibility test already exists from the ARC-710 T21 work, extend it. If not, create a new file modeled on `CreationConfig.visibility.test.tsx` from Critical.
+1. Catalog returns `battle_royale` with `comingSoon: false` → tile is interactive; clicking sets `variant` state.
+2. Catalog returns `time_attack` with `comingSoon: true` → tile is rendered, has `aria-disabled="true"`, contains a "Coming soon" badge, and clicking does NOT set `variant` state.
 
-- [ ] **Step 2: Write the failing test**
+- [ ] **Step 2: Run the test to verify it fails**
 
-Same pattern as Task 5 step 1, but for Glimworm variant IDs (`battle_royale`, `time_attack`, `lives_heats`) and the Glimworm lobby's rendering structure.
-
-- [ ] **Step 3: Migrate existing mock payloads (if any) to the new shape**
-
-Search the file for `variants:` mocks and update to `{ id, comingSoon }` shape.
-
-- [ ] **Step 4: Run the test to verify it fails**
-
-Run: `cd apps/web && pnpm vitest run src/widgets/GlimwormGame/ui/<test-file>`
+Run: `cd apps/web && pnpm vitest run src/widgets/GlimwormGame/ui/GlimwormLobby.visibility.test.tsx`
 Expected: FAIL.
 
-- [ ] **Step 5: Update `GlimwormLobby.tsx` rendering**
+- [ ] **Step 3: Update `GlimwormLobby.tsx` rendering**
 
 Reading lines 63-90 (current effect + state) and 175-205 (current tile rendering):
 
@@ -719,12 +714,12 @@ In the tile rendering loop:
 })}
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd apps/web && pnpm vitest run src/widgets/GlimwormGame/ui/<test-file>`
+Run: `cd apps/web && pnpm vitest run src/widgets/GlimwormGame/ui/GlimwormLobby.visibility.test.tsx`
 Expected: ALL PASS.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add apps/web/src/widgets/GlimwormGame/

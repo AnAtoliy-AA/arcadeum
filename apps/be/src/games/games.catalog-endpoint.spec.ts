@@ -71,7 +71,7 @@ describe('GamesController.getCatalog', () => {
     );
   });
 
-  it('drops the whole game if not visible', async () => {
+  it('includes a non-visible game with comingSoon=true', async () => {
     const vis = {
       canSee: jest.fn((_role: string, gameId: string) =>
         Promise.resolve(gameId !== 'glimworm_v1'),
@@ -84,7 +84,13 @@ describe('GamesController.getCatalog', () => {
     const controller = buildController(vis, resolver);
 
     const res = await controller.getCatalog(reqWithUser(undefined));
-    expect(res.games.find((g) => g.gameId === 'glimworm_v1')).toBeUndefined();
+    const game = res.games.find((g) => g.gameId === 'glimworm_v1');
+    expect(game).toBeDefined();
+    expect(game).toEqual({
+      gameId: 'glimworm_v1',
+      comingSoon: true,
+      variants: [],
+    });
   });
 
   it('treats synthetic anon_ users as anonymous (resolveRole receives the raw id; resolver short-circuits in real life)', async () => {
@@ -199,7 +205,36 @@ describe('getCatalog (comingSoon + new tiers)', () => {
     expect(game?.variants).toContainEqual({ id: 'crime', comingSoon: false });
   });
 
-  it('omits a whole game entirely when its tier is none, even for admin', async () => {
+  it('includes a whole-game none with comingSoon: true at the game level (for any role)', async () => {
+    const makeVis = () =>
+      ({
+        canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
+          if (gameId === 'critical_v1' && variantId === undefined) {
+            return Promise.resolve(false);
+          }
+          return Promise.resolve(true);
+        }),
+        getEffectiveTier: jest.fn().mockResolvedValue('all'),
+      }) as unknown as GameVisibilityService;
+
+    for (const role of ['free', 'admin'] as const) {
+      const resolver = {
+        resolveRole: jest.fn().mockResolvedValue(role),
+      } as unknown as UserRoleResolver;
+      const controller = buildController(makeVis(), resolver);
+
+      const res = await controller.getCatalog(reqWithUser('user-1'));
+      const game = res.games.find((g) => g.gameId === 'critical_v1');
+      expect(game).toBeDefined();
+      expect(game).toEqual({
+        gameId: 'critical_v1',
+        comingSoon: true,
+        variants: [],
+      });
+    }
+  });
+
+  it('includes a whole-game developers_plus with comingSoon: true at the game level for a free caller', async () => {
     const vis = {
       canSee: jest.fn((_role: string, gameId: string, variantId?: string) => {
         if (gameId === 'critical_v1' && variantId === undefined) {
@@ -207,17 +242,37 @@ describe('getCatalog (comingSoon + new tiers)', () => {
         }
         return Promise.resolve(true);
       }),
-      getEffectiveTier: jest.fn((_gameId: string, variantId?: string) => {
-        if (!variantId) return Promise.resolve('none');
-        return Promise.resolve('all');
-      }),
+      getEffectiveTier: jest.fn().mockResolvedValue('all'),
     } as unknown as GameVisibilityService;
     const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('admin'),
+      resolveRole: jest.fn().mockResolvedValue('free'),
     } as unknown as UserRoleResolver;
     const controller = buildController(vis, resolver);
 
-    const res = await controller.getCatalog(reqWithUser('admin-1'));
-    expect(res.games.find((g) => g.gameId === 'critical_v1')).toBeUndefined();
+    const res = await controller.getCatalog(reqWithUser('user-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game).toMatchObject({
+      gameId: 'critical_v1',
+      comingSoon: true,
+      variants: [],
+    });
+  });
+
+  it('includes a whole-game developers_plus with comingSoon: false for a developer caller', async () => {
+    const vis = {
+      canSee: jest.fn().mockResolvedValue(true),
+      getEffectiveTier: jest.fn().mockResolvedValue('all'),
+    } as unknown as GameVisibilityService;
+    const resolver = {
+      resolveRole: jest.fn().mockResolvedValue('developer'),
+    } as unknown as UserRoleResolver;
+    const controller = buildController(vis, resolver);
+
+    const res = await controller.getCatalog(reqWithUser('dev-1'));
+    const game = res.games.find((g) => g.gameId === 'critical_v1');
+    expect(game).toBeDefined();
+    expect(game).toMatchObject({ gameId: 'critical_v1', comingSoon: false });
+    expect(game?.variants.length).toBeGreaterThan(0);
   });
 });

@@ -61,7 +61,17 @@ export class GamesController {
     const role = await this.roleResolver.resolveRole(user?.userId);
     const games: CatalogGame[] = [];
     for (const entry of GAME_CATALOG) {
-      if (!(await this.visibility.canSee(role, entry.gameId))) continue;
+      const visible = await this.visibility.canSee(role, entry.gameId);
+      if (!visible) {
+        // Game restricted for this caller — include as coming-soon, no variants surfaced
+        games.push({
+          gameId: entry.gameId,
+          comingSoon: true,
+          variants: [],
+        });
+        continue;
+      }
+
       const variants: CatalogVariant[] = [];
       for (const v of entry.variants) {
         const effective = await this.visibility.getEffectiveTier(
@@ -74,7 +84,12 @@ export class GamesController {
           variants.push({ id: v, comingSoon: false });
         }
       }
-      games.push({ gameId: entry.gameId, variants });
+
+      games.push({
+        gameId: entry.gameId,
+        comingSoon: false,
+        variants,
+      });
     }
     return { games };
   }

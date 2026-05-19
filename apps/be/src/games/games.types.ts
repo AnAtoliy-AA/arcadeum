@@ -70,6 +70,7 @@ export interface CatalogVariant {
 
 export interface CatalogGame {
   gameId: string;
+  comingSoon: boolean;
   variants: CatalogVariant[];
 }
 

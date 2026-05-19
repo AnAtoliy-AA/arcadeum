@@ -5,6 +5,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { SupportController } from './support.controller';
 import { SupportService } from './support.service';
+import { OriginGuard } from './lib/origin.guard';
 
 type ServerHandle = Parameters<typeof request>[0];
 
@@ -21,6 +22,8 @@ describe('SupportController (integration)', () => {
       providers: [{ provide: SupportService, useValue: support }],
     })
       .overrideGuard(ThrottlerGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(OriginGuard)
       .useValue({ canActivate: () => true })
       .compile();
 
@@ -47,7 +50,8 @@ describe('SupportController (integration)', () => {
     name: 'Alice',
     email: 'alice@example.com',
     subject: 'Help',
-    message: 'A real message.',
+    message: 'A real message long enough to pass.',
+    submittedAt: Date.now() - 5000,
   };
 
   it('accepts a valid submission and calls the service', async () => {
@@ -105,6 +109,36 @@ describe('SupportController (integration)', () => {
     const res = await request(server())
       .post('/support/contact')
       .send({ ...valid, message: 'x'.repeat(1201) });
+    expect(res.status).toBe(400);
+    expect(support.submit).not.toHaveBeenCalled();
+  });
+
+  it('rejects messages shorter than 10 chars', async () => {
+    const res = await request(server())
+      .post('/support/contact')
+      .send({ ...valid, message: 'too short' });
+    expect(res.status).toBe(400);
+    expect(support.submit).not.toHaveBeenCalled();
+  });
+
+  it('rejects messages with >2 URLs (link-spam cap)', async () => {
+    const res = await request(server())
+      .post('/support/contact')
+      .send({
+        ...valid,
+        message:
+          'Check https://a.com and https://b.com and https://c.com please',
+      });
+    expect(res.status).toBe(400);
+    expect(support.submit).not.toHaveBeenCalled();
+  });
+
+  it('rejects when submittedAt is missing', async () => {
+    const { submittedAt: _drop, ...withoutTs } = valid;
+    void _drop;
+    const res = await request(server())
+      .post('/support/contact')
+      .send(withoutTs);
     expect(res.status).toBe(400);
     expect(support.submit).not.toHaveBeenCalled();
   });

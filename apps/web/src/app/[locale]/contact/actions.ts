@@ -4,8 +4,11 @@ import { resolveApiUrl } from '@/shared/lib/api-base';
 
 const NAME_MAX = 120;
 const SUBJECT_MAX = 200;
+const MESSAGE_MIN = 10;
 const MESSAGE_MAX = 1200;
+const MESSAGE_MAX_URLS = 2;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_RE = /\bhttps?:\/\/\S+/gi;
 const FALLBACK_SUPPORT_EMAIL = 'arcadeum.care@gmail.com';
 
 export type ContactFieldErrors = Partial<
@@ -46,6 +49,7 @@ export async function submitContactAction(
   const subject = readField(formData, 'subject');
   const message = readField(formData, 'message');
   const website = readField(formData, 'website'); // honeypot
+  const submittedAt = Number(readField(formData, 'formMountedAt'));
 
   const fieldErrors: ContactFieldErrors = {};
   if (!name) fieldErrors.name = 'required';
@@ -59,8 +63,12 @@ export async function submitContactAction(
     fieldErrors.subject = `max ${SUBJECT_MAX}`;
 
   if (!message) fieldErrors.message = 'required';
+  else if (message.length < MESSAGE_MIN)
+    fieldErrors.message = `min ${MESSAGE_MIN}`;
   else if (message.length > MESSAGE_MAX)
     fieldErrors.message = `max ${MESSAGE_MAX}`;
+  else if ((message.match(URL_RE)?.length ?? 0) > MESSAGE_MAX_URLS)
+    fieldErrors.message = `max ${MESSAGE_MAX_URLS} links`;
 
   if (Object.keys(fieldErrors).length > 0) {
     return { status: 'invalid', fieldErrors };
@@ -75,7 +83,7 @@ export async function submitContactAction(
     const res = await fetch(resolveApiUrl('/support/contact'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, subject, message }),
+      body: JSON.stringify({ name, email, subject, message, submittedAt }),
       cache: 'no-store',
     });
 

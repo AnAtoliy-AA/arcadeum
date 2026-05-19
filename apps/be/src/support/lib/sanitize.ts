@@ -11,3 +11,10 @@ export function stripNewlines(value: string): string {
 export function escapeDiscordMarkdown(value: string): string {
   return value.replace(/([\\`*_~|>[\]()])/g, '\\$1');
 }
+
+// Count http/https URLs in a string. Used to cap link-spam in contact
+// messages — real users rarely paste 3+ links, bots paste many.
+export function countUrls(value: string): number {
+  const matches = value.match(/\bhttps?:\/\/\S+/gi);
+  return matches ? matches.length : 0;
+}

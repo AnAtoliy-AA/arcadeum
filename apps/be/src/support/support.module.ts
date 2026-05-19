@@ -8,6 +8,7 @@ import { SupportController } from './support.controller';
 import { SupportService } from './support.service';
 import { DiscordNotifierService } from './lib/discord-notifier.service';
 import { MailerService } from './lib/mailer.service';
+import { OriginGuard } from './lib/origin.guard';
 
 @Module({
   imports: [
@@ -16,6 +17,11 @@ import { MailerService } from './lib/mailer.service';
     ]),
   ],
   controllers: [SupportController],
-  providers: [SupportService, DiscordNotifierService, MailerService],
+  providers: [
+    SupportService,
+    DiscordNotifierService,
+    MailerService,
+    OriginGuard,
+  ],
 })
 export class SupportModule {}

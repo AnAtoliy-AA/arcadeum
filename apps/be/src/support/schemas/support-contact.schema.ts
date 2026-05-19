@@ -49,6 +49,11 @@ export class SupportContact {
   @Prop({ maxlength: 64 })
   ip?: string;
 
+  // sha256(ip|email|subject|message) — used to dedupe identical submissions
+  // from the same IP within a short window.
+  @Prop({ index: true })
+  dedupeHash?: string;
+
   @Prop({ type: SupportDeliveryStatusSchema, required: true })
   status!: SupportDeliveryStatus;
 
@@ -58,3 +63,6 @@ export class SupportContact {
 
 export const SupportContactSchema =
   SchemaFactory.createForClass(SupportContact);
+
+// Compound index to make the "duplicate in last hour" lookup cheap.
+SupportContactSchema.index({ dedupeHash: 1, createdAt: -1 });

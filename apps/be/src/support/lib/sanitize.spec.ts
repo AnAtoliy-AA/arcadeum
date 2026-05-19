@@ -1,4 +1,4 @@
-import { escapeDiscordMarkdown, stripNewlines } from './sanitize';
+import { countUrls, escapeDiscordMarkdown, stripNewlines } from './sanitize';
 
 describe('stripNewlines', () => {
   it('replaces CR/LF runs with a single space', () => {
@@ -29,5 +29,21 @@ describe('escapeDiscordMarkdown', () => {
 
   it('escapes backticks so user content cannot break out of code blocks', () => {
     expect(escapeDiscordMarkdown('end```start')).toBe('end\\`\\`\\`start');
+  });
+});
+
+describe('countUrls', () => {
+  it('counts http and https URLs', () => {
+    expect(
+      countUrls('see https://a.com and http://b.org and https://c.io'),
+    ).toBe(3);
+  });
+
+  it('returns 0 for plain text', () => {
+    expect(countUrls('I have a question, no links.')).toBe(0);
+  });
+
+  it('does not count bare domains (only http/https)', () => {
+    expect(countUrls('check arcadeum.games for details')).toBe(0);
   });
 });

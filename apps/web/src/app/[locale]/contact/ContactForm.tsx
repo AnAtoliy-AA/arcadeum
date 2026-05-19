@@ -62,6 +62,11 @@ export function ContactForm({ form }: ContactFormProps) {
 
   const [formKey, setFormKey] = useState(0);
 
+  // Captured once per form mount (and re-captured when formKey bumps for
+  // "Send another"). BE uses this to reject instant-submit bots — real
+  // users take seconds to fill the form, bots POST immediately.
+  const [formMountedAt] = useState(() => Date.now());
+
   const fieldErrors =
     actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
   const showSuccess =
@@ -192,6 +197,11 @@ export function ContactForm({ form }: ContactFormProps) {
                   defaultValue=""
                 />
               </div>
+              <input
+                type="hidden"
+                name="formMountedAt"
+                value={String(formMountedAt)}
+              />
               <div style={s.submitRowStyle}>
                 <span style={s.privacyStyle}>
                   <span aria-hidden="true">🔒</span>

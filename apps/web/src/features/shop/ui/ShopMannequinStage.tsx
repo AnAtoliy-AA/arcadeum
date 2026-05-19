@@ -127,10 +127,14 @@ export function ShopMannequinStage({
       : { backgroundColor: value };
   }, [banner]);
 
-  // Frame drives the avatar disc. Solid hex → both fill and a stronger
-  // border accent; gradient → fill only (border falls back to the
-  // translucent default). Without a frame the disc stays its old
-  // translucent-white wash so the stage degrades gracefully.
+  // Frame drives the avatar disc as a ring, not a full-strength colored
+  // backdrop — a fully opaque disc fills the circle and competes with the
+  // avatar image. Solid hex → low-alpha tint on the fill (≈20%) with a
+  // full-strength border so the ring carries the identity. Gradient → keep
+  // the gradient visible but composite a dark wash on top so it reads as
+  // a subtle backdrop; border picks up the first color from the gradient.
+  // Without a frame the disc stays its old translucent-white wash so the
+  // stage degrades gracefully.
   const frameStyle = useMemo<React.CSSProperties>(() => {
     const value = frame?.colorValue;
     if (!value) {
@@ -140,9 +144,12 @@ export function ShopMannequinStage({
       };
     }
     if (value.includes('gradient')) {
-      return { backgroundImage: value };
+      const wash = 'linear-gradient(rgba(15,23,42,0.55), rgba(15,23,42,0.55))';
+      const borderColor =
+        pickSwatchColor(value) ?? 'rgba(255,255,255,0.35)';
+      return { backgroundImage: `${wash}, ${value}`, borderColor };
     }
-    return { backgroundColor: value, borderColor: value };
+    return { backgroundColor: `${value}33`, borderColor: value };
   }, [frame]);
 
   const raysBg = useMemo<React.CSSProperties>(() => {

@@ -14,12 +14,16 @@ export function buildComingSoonMaps(catalog: CatalogResponse | null): {
   const gameComingSoon = new Map<string, boolean>();
   const variantComingSoon = new Map<string, boolean>();
 
-  if (!catalog) return { gameComingSoon, variantComingSoon };
+  if (!catalog || !Array.isArray(catalog.games)) {
+    return { gameComingSoon, variantComingSoon };
+  }
 
   for (const g of catalog.games) {
     gameComingSoon.set(g.gameId, g.comingSoon);
-    for (const v of g.variants) {
-      variantComingSoon.set(`${g.gameId}::${v.id}`, v.comingSoon);
+    if (Array.isArray(g.variants)) {
+      for (const v of g.variants) {
+        variantComingSoon.set(`${g.gameId}::${v.id}`, v.comingSoon);
+      }
     }
   }
 

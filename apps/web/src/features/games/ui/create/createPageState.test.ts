@@ -16,6 +16,23 @@ describe('buildComingSoonMaps', () => {
     expect(variantComingSoon.size).toBe(0);
   });
 
+  it('does not throw when catalog is malformed (no games array)', () => {
+    // e2e mocks return `{}` for catch-all /games/* routes; the page must not crash.
+    const { gameComingSoon, variantComingSoon } = buildComingSoonMaps(
+      {} as unknown as CatalogResponse,
+    );
+    expect(gameComingSoon.size).toBe(0);
+    expect(variantComingSoon.size).toBe(0);
+  });
+
+  it('does not throw when a game entry has no variants array', () => {
+    const { gameComingSoon, variantComingSoon } = buildComingSoonMaps({
+      games: [{ gameId: 'x', comingSoon: false }],
+    } as unknown as CatalogResponse);
+    expect(gameComingSoon.get('x')).toBe(false);
+    expect(variantComingSoon.size).toBe(0);
+  });
+
   it('maps game comingSoon flags correctly', () => {
     const catalog: CatalogResponse = {
       games: [

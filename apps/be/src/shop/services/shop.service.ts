@@ -39,6 +39,7 @@ interface LeanUser {
   equippedNameColorId?: string | null;
   equippedBannerId?: string | null;
   equippedAuraId?: string | null;
+  equippedFrameId?: string | null;
 }
 
 interface InventoryRowSnapshot {
@@ -121,6 +122,7 @@ export class ShopService {
       game_skin: null,
       banner: null,
       aura: null,
+      frame: null,
     };
 
     await this.connection.transaction(async (session) => {
@@ -194,6 +196,7 @@ export class ShopService {
             equippedNameColorId: 1,
             equippedBannerId: 1,
             equippedAuraId: 1,
+            equippedFrameId: 1,
           })
           .lean<LeanUser | null>();
         if (!user) throw new NotFoundException('users.notFound');
@@ -424,6 +427,7 @@ export class ShopService {
             equippedNameColorId: 1,
             equippedBannerId: 1,
             equippedAuraId: 1,
+            equippedFrameId: 1,
           },
         },
       )
@@ -445,6 +449,7 @@ export class ShopService {
           equippedNameColorId: 1,
           equippedBannerId: 1,
           equippedAuraId: 1,
+          equippedFrameId: 1,
         },
         { session },
       )
@@ -460,6 +465,7 @@ export class ShopService {
       game_skin: null,
       banner: user?.equippedBannerId ?? null,
       aura: user?.equippedAuraId ?? null,
+      frame: user?.equippedFrameId ?? null,
     };
   }
 

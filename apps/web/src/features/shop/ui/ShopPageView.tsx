@@ -59,6 +59,7 @@ export interface ShopPageLabels {
     skins: ShopRowLabels;
     banners: ShopRowLabels;
     auras: ShopRowLabels;
+    frames: ShopRowLabels;
     legendary: ShopRowLabels;
   };
   card: ShopCardLabels;
@@ -135,6 +136,10 @@ export function ShopPageView({
   );
   const auras = useMemo(
     () => liveCatalog.filter((c) => c.category === 'aura'),
+    [liveCatalog],
+  );
+  const frames = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'frame'),
     [liveCatalog],
   );
   const legendaries = useMemo(
@@ -245,6 +250,18 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.avatars}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-frames"
+              sectionKey="frame"
+              items={frames}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.frames}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}

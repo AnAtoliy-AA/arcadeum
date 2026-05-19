@@ -95,6 +95,7 @@ describe('ShopHero', () => {
         game_skin: null,
         banner: null,
         aura: null,
+        frame: null,
       },
     });
     const item = makeItem();
@@ -130,6 +131,7 @@ describe('ShopHero', () => {
         game_skin: null,
         banner: null,
         aura: null,
+        frame: null,
       },
     });
     const item = makeItem();

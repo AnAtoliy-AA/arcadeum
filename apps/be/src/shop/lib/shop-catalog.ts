@@ -284,6 +284,56 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
     defaultPriceAmount: 55,
     defaultPriceCurrency: 'gems',
   },
+
+  // Frames — decorative ring around the avatar disc. colorValue drives both
+  // the ring stroke color and the catalog tile's donut shape. Solid hex or
+  // gradient string accepted; for the mannequin disc the gradient is used
+  // as the disc background and the solid hex as a border accent.
+  'frame-silver': {
+    id: 'frame-silver',
+    category: 'frame',
+    rarity: 'common',
+    nameKey: 'items.frame.silver.name',
+    descKey: 'items.frame.silver.desc',
+    assetUrl: '',
+    colorValue: '#94a3b8',
+    defaultPriceAmount: 300,
+    defaultPriceCurrency: 'coins',
+  },
+  'frame-emerald': {
+    id: 'frame-emerald',
+    category: 'frame',
+    rarity: 'rare',
+    nameKey: 'items.frame.emerald.name',
+    descKey: 'items.frame.emerald.desc',
+    assetUrl: '',
+    colorValue: '#10b981',
+    defaultPriceAmount: 3,
+    defaultPriceCurrency: 'gems',
+  },
+  'frame-violet': {
+    id: 'frame-violet',
+    category: 'frame',
+    rarity: 'epic',
+    nameKey: 'items.frame.violet.name',
+    descKey: 'items.frame.violet.desc',
+    assetUrl: '',
+    colorValue: '#a78bfa',
+    defaultPriceAmount: 12,
+    defaultPriceCurrency: 'gems',
+  },
+  'frame-prism': {
+    id: 'frame-prism',
+    category: 'frame',
+    rarity: 'legendary',
+    nameKey: 'items.frame.prism.name',
+    descKey: 'items.frame.prism.desc',
+    assetUrl: '',
+    colorValue:
+      'linear-gradient(135deg, #22d3ee 0%, #a78bfa 50%, #ec4899 100%)',
+    defaultPriceAmount: 50,
+    defaultPriceCurrency: 'gems',
+  },
 };
 
 export const SHOP_CATALOG_IDS = Object.keys(SHOP_CATALOG);

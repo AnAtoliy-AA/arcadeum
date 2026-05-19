@@ -51,12 +51,17 @@ export const shopEs = {
       },
       banner: {
         label: 'Banner',
-        desc: 'Panel de fondo mostrado detrás de tu avatar en el perfil y el lobby.',
+        desc: 'Fondo completo del escenario de tu perfil y lobby.',
         empty: 'Vacío',
       },
       aura: {
         label: 'Aura',
         desc: 'Rayos brillantes que orbitan tu avatar en el lobby y las partidas.',
+        empty: 'Vacío',
+      },
+      frame: {
+        label: 'Marco',
+        desc: 'Anillo decorativo que rodea tu avatar.',
         empty: 'Vacío',
       },
     },
@@ -108,6 +113,11 @@ export const shopEs = {
     },
     auras: {
       title: 'Auras',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+    },
+    frames: {
+      title: 'Marcos',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
     },
@@ -195,6 +205,12 @@ export const shopEs = {
       cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
       violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
       prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
+    },
+    frame: {
+      silver: { name: 'Marco plateado', desc: 'Un anillo plateado cepillado.' },
+      emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
+      violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
+      prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
     },
   },
 };

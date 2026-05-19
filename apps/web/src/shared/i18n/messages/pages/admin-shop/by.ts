@@ -64,6 +64,7 @@ export const adminShopBy = {
     game_skin: 'Game skin',
     banner: 'Banner',
     aura: 'Aura',
+    frame: 'Frame',
   },
   rarity: {
     common: 'Common',

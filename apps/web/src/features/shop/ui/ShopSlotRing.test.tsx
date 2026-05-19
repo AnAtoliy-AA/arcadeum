@@ -18,6 +18,7 @@ const labels: ShopSlotRingLabels = {
   game_skin: { label: 'Skin', desc: '', empty: 'Empty' },
   banner: { label: 'Banner', desc: '', empty: 'Empty' },
   aura: { label: 'Aura', desc: '', empty: 'Empty' },
+  frame: { label: 'Frame', desc: '', empty: 'Empty' },
 };
 
 function makeItem(
@@ -47,6 +48,7 @@ const EMPTY_PREVIEW = {
   game_skin: null,
   banner: null,
   aura: null,
+  frame: null,
 };
 
 describe('ShopSlotRing', () => {

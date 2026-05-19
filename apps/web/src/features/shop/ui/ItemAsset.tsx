@@ -49,9 +49,10 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
   }
 
   if (item.category === 'banner') {
-    // Banner preview: a circular swatch — banners drive the disc behind the
-    // mannequin avatar, so a circle reads more accurately than a wide tile.
-    // Solid hex → backgroundColor; gradient string → backgroundImage.
+    // Banner preview: a wide rounded panel — banners now fill the full
+    // mannequin stage backdrop, so the catalog tile mirrors that shape
+    // rather than the avatar disc. Solid hex → backgroundColor;
+    // gradient string → backgroundImage.
     const value = item.colorValue ?? '#1e293b';
     const isGradient = value.includes('gradient');
     return (
@@ -64,13 +65,51 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
       >
         <YStack
           width={size}
-          height={size}
-          borderRadius={size / 2}
+          height={Math.round(size * 0.62)}
+          borderRadius={Math.round(size * 0.12)}
           borderWidth={1}
-          borderColor="rgba(255,255,255,0.20)"
+          borderColor="rgba(255,255,255,0.18)"
           style={
             isGradient ? { backgroundImage: value } : { backgroundColor: value }
           }
+        />
+      </YStack>
+    );
+  }
+
+  if (item.category === 'frame') {
+    // Frame preview: a donut/ring — frames wrap the avatar disc on the
+    // mannequin stage. Outer circle picks up the colorValue, inner circle
+    // punches out a dark hole so the ring reads as a border, not a fill.
+    const value = item.colorValue ?? '#94a3b8';
+    const isGradient = value.includes('gradient');
+    return (
+      <YStack
+        width={size}
+        height={size}
+        alignItems="center"
+        justifyContent="center"
+        data-testid={`shop-asset-${item.id}`}
+        style={{ position: 'relative' }}
+      >
+        <YStack
+          width={size}
+          height={size}
+          borderRadius={size / 2}
+          style={{
+            ...(isGradient
+              ? { backgroundImage: value }
+              : { backgroundColor: value }),
+            position: 'absolute',
+            inset: 0,
+          }}
+        />
+        <YStack
+          width={Math.round(size * 0.7)}
+          height={Math.round(size * 0.7)}
+          borderRadius={Math.round(size * 0.7) / 2}
+          backgroundColor="rgba(15,23,42,0.95)"
+          style={{ position: 'relative', zIndex: 1 }}
         />
       </YStack>
     );

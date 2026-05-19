@@ -51,12 +51,17 @@ export const shopEn = {
       },
       banner: {
         label: 'Banner',
-        desc: 'Backdrop panel shown behind your avatar on profile and lobby cards.',
+        desc: 'Full backdrop panel of your profile and lobby stage.',
         empty: 'Empty',
       },
       aura: {
         label: 'Aura',
         desc: 'Shining rays that orbit your avatar in lobby and during matches.',
+        empty: 'Empty',
+      },
+      frame: {
+        label: 'Frame',
+        desc: 'Decorative ring wrapped around your avatar.',
         empty: 'Empty',
       },
     },
@@ -108,6 +113,11 @@ export const shopEn = {
     },
     auras: {
       title: 'Auras',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+    },
+    frames: {
+      title: 'Frames',
       eyebrow: '{count} items',
       viewAll: 'View all',
     },
@@ -195,6 +205,12 @@ export const shopEn = {
       cyan: { name: 'Cyan Aura', desc: 'A crisp electric glow.' },
       violet: { name: 'Violet Aura', desc: 'A rich violet shine.' },
       prism: { name: 'Prism Aura', desc: 'A shifting prism radiance.' },
+    },
+    frame: {
+      silver: { name: 'Silver Frame', desc: 'A clean brushed-silver ring.' },
+      emerald: { name: 'Emerald Frame', desc: 'A vivid emerald ring.' },
+      violet: { name: 'Violet Frame', desc: 'A polished violet ring.' },
+      prism: { name: 'Prism Frame', desc: 'A shifting prism ring.' },
     },
   },
 };

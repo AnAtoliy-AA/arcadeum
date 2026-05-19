@@ -26,6 +26,7 @@ const EMPTY = {
   game_skin: null,
   banner: null,
   aura: null,
+  frame: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
 function item(

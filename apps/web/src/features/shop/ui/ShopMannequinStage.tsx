@@ -104,6 +104,7 @@ export function ShopMannequinStage({
   const skin = preview.game_skin ?? null;
   const banner = preview.banner ?? null;
   const aura = preview.aura ?? null;
+  const frame = preview.frame ?? null;
 
   // Aura wins over rarity-derived glow when equipped/hovered. Falls back to
   // the focused item's rarity glow when no aura is selected so the stage
@@ -115,17 +116,34 @@ export function ShopMannequinStage({
     return focus ? RARITY_GLOW[focus.rarity] : 'rgba(96,165,250,0.25)';
   }, [aura, hoverItem, avatar, badge, skin, nameColor]);
 
-  // Banner drives the avatar disc fill. Solid colorValue → backgroundColor;
-  // a linear-gradient value → backgroundImage. The fallback preserves the
-  // pre-banner translucent white wash so the stage doesn't look broken
-  // when no banner is equipped.
-  const bannerBg = useMemo<React.CSSProperties>(() => {
+  // Banner drives the full stage backdrop. Solid colorValue → backgroundColor;
+  // a linear-gradient value → backgroundImage. Fallback preserves the
+  // default dark-navy wash so the stage doesn't look broken bare.
+  const stageBg = useMemo<React.CSSProperties>(() => {
     const value = banner?.colorValue;
-    if (!value) return { backgroundColor: 'rgba(255,255,255,0.04)' };
+    if (!value) return { backgroundColor: 'rgba(15,23,42,0.55)' };
     return value.includes('gradient')
       ? { backgroundImage: value }
       : { backgroundColor: value };
   }, [banner]);
+
+  // Frame drives the avatar disc. Solid hex → both fill and a stronger
+  // border accent; gradient → fill only (border falls back to the
+  // translucent default). Without a frame the disc stays its old
+  // translucent-white wash so the stage degrades gracefully.
+  const frameStyle = useMemo<React.CSSProperties>(() => {
+    const value = frame?.colorValue;
+    if (!value) {
+      return {
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderColor: 'rgba(255,255,255,0.18)',
+      };
+    }
+    if (value.includes('gradient')) {
+      return { backgroundImage: value };
+    }
+    return { backgroundColor: value, borderColor: value };
+  }, [frame]);
 
   const raysBg = useMemo<React.CSSProperties>(() => {
     // 12 narrow rays evenly spaced every 30°. The previous 4-wide-spike
@@ -168,7 +186,11 @@ export function ShopMannequinStage({
       : labels.stage.online;
 
   return (
-    <StageFrame data-testid="shop-stage">
+    <StageFrame
+      data-testid="shop-stage"
+      data-banner={banner?.id ?? ''}
+      style={stageBg}
+    >
       <RaysLayer className={stageStyles.rays} style={raysBg} />
 
       {hoverItem ? (
@@ -216,15 +238,14 @@ export function ShopMannequinStage({
           alignItems="center"
           justifyContent="center"
           borderWidth={2}
-          borderColor="rgba(255,255,255,0.18)"
           position="relative"
           overflow="hidden"
           style={{
-            ...bannerBg,
+            ...frameStyle,
             boxShadow: `0 0 56px ${accentGlow}`,
           }}
           data-testid="shop-stage-avatar"
-          data-banner={banner?.id ?? ''}
+          data-frame={frame?.id ?? ''}
           data-aura={aura?.id ?? ''}
         >
           {avatar ? (

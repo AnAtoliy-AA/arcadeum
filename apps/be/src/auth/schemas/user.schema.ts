@@ -64,6 +64,9 @@ export class User {
 
   @Prop({ type: String, default: null })
   equippedAuraId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedFrameId?: string | null;
 }
 
 export type UserDocument = User & Document;

@@ -51,12 +51,17 @@ export const shopFr = {
       },
       banner: {
         label: 'Bannière',
-        desc: 'Panneau d’arrière-plan affiché derrière votre avatar dans le profil et le lobby.',
+        desc: 'Arrière-plan complet de votre scène de profil et de lobby.',
         empty: 'Vide',
       },
       aura: {
         label: 'Aura',
         desc: 'Rayons scintillants qui orbitent autour de votre avatar dans le lobby et les matchs.',
+        empty: 'Vide',
+      },
+      frame: {
+        label: 'Cadre',
+        desc: 'Anneau décoratif qui entoure votre avatar.',
         empty: 'Vide',
       },
     },
@@ -108,6 +113,11 @@ export const shopFr = {
     },
     auras: {
       title: 'Auras',
+      eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+    },
+    frames: {
+      title: 'Cadres',
       eyebrow: '{count} articles',
       viewAll: 'Tout voir',
     },
@@ -201,6 +211,12 @@ export const shopFr = {
       cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
       violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
       prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
+    },
+    frame: {
+      silver: { name: 'Cadre argenté', desc: 'Un anneau argenté brossé.' },
+      emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
+      violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },
+      prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
     },
   },
 };

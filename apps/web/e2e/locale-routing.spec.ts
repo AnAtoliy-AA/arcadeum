@@ -34,11 +34,16 @@ test.describe('Locale routing — middleware redirects', () => {
     page,
     context,
   }) => {
+    // Playwright's addCookies wants EITHER `url` (alone) OR
+    // `domain` + `path` — combining `url` and `path` errors with
+    // "Cookie should have either url or path". The dev server runs
+    // on 127.0.0.1 (see playwright.config.ts `BASE_URL`), so anchor
+    // the cookie to that host explicitly.
     await context.addCookies([
       {
         name: 'app-language',
         value: 'fr',
-        url: page.url() === 'about:blank' ? 'http://127.0.0.1' : page.url(),
+        domain: '127.0.0.1',
         path: '/',
       },
     ]);

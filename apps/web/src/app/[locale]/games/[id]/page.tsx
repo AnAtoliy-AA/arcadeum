@@ -85,9 +85,7 @@ export default async function GameDetailRoute({
 
   return (
     <>
-      {jsonLd ? (
-        <JsonLd id={`json-ld-game-${gameId}`} data={jsonLd} />
-      ) : null}
+      {jsonLd ? <JsonLd id={`json-ld-game-${gameId}`} data={jsonLd} /> : null}
       <Suspense fallback={<GamesLoading />}>
         <GameDetailDataFetcher
           locale={locale}

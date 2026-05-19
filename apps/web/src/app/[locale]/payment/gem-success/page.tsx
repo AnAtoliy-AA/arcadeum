@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { finalizeGemPurchase } from '@/features/gems/server/gems.actions';
 import { getServerLocale } from '@/shared/i18n/server';
 import { formatNumber } from '@/shared/i18n/formatters';
+import type { Locale } from '@/shared/config/locale-slugs';
 
 export const metadata: Metadata = {
   title: 'Gem Purchase · Arcadeum',
@@ -287,7 +288,6 @@ function PurpleAmount({ children }: { children: React.ReactNode }) {
   );
 }
 
-type Loc = import('@/shared/config/locale-slugs').Locale;
 function BalanceCard({
   coins,
   gems,
@@ -295,7 +295,7 @@ function BalanceCard({
 }: {
   coins: number;
   gems: number;
-  locale: Loc;
+  locale: Locale;
 }) {
   return (
     <div

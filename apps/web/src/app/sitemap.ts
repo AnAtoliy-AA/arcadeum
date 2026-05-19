@@ -71,7 +71,9 @@ const ROUTE_KEYS: RouteKey[] = Object.keys(PAGE_LAST_MODIFIED).filter(
 
 const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding'];
 
-const PAGE_CHANGE_FREQ: Partial<Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>> = {
+const PAGE_CHANGE_FREQ: Partial<
+  Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>
+> = {
   home: 'daily',
   games: 'daily',
   leaderboards: 'daily',

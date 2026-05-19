@@ -41,7 +41,10 @@ test.describe('Contact Form', () => {
     // BE dedupes identical submissions (ip + email + subject + message) for
     // an hour. Project name + retry index keep messages unique across
     // chromium/firefox/webkit and across retry runs in the same window.
-    const nonce = `${testInfo.project.name}-${testInfo.retry}-${Date.now()}`;
+    // Project names contain spaces ("Mobile Chrome"), which would make
+    // an invalid email local-part — collapse to dashes.
+    const projectSlug = testInfo.project.name.replace(/\s+/g, '-');
+    const nonce = `${projectSlug}-${testInfo.retry}-${Date.now()}`;
     await page.getByTestId('contact-name-input').fill('John Doe');
     await page
       .getByTestId('contact-email-input')

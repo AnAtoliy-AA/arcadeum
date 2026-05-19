@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { escapeDiscordMarkdown } from './sanitize';
+import { isE2EMode } from './e2e-mode';
 
 export type DiscordNotifyInput = {
   name: string;
@@ -31,6 +32,10 @@ export class DiscordNotifierService {
   }
 
   async notify(input: DiscordNotifyInput): Promise<DiscordNotifyResult> {
+    if (isE2EMode()) {
+      this.logger.debug('E2E mode — skipping real Discord webhook');
+      return { status: 'unconfigured' };
+    }
     if (!this.webhookUrl) {
       this.logger.warn(
         'Discord webhook not configured — skipping channel ping',

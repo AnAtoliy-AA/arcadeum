@@ -9,6 +9,7 @@ import { SupportService } from './support.service';
 import { DiscordNotifierService } from './lib/discord-notifier.service';
 import { MailerService } from './lib/mailer.service';
 import { OriginGuard } from './lib/origin.guard';
+import { SupportThrottlerGuard } from './lib/support-throttler.guard';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OriginGuard } from './lib/origin.guard';
     DiscordNotifierService,
     MailerService,
     OriginGuard,
+    SupportThrottlerGuard,
   ],
 })
 export class SupportModule {}

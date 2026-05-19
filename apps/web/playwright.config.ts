@@ -157,6 +157,19 @@ export default defineConfig({
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
         SUPPORT_INTERNAL_TOKEN,
+        // E2E: never deliver to a real inbox or Discord channel. Blanking
+        // these makes MailerService + DiscordNotifierService report
+        // 'unconfigured' instead of dispatching. The success path is still
+        // exercised end-to-end; the wire formats have their own unit tests.
+        // NOTE: this only takes effect when Playwright spawns its own BE.
+        // If you have `pnpm --filter be dev` running in another terminal,
+        // `reuseExistingServer: !CI` will reuse that process with its
+        // existing apps/be/.env — stop it first or set CI=1 to force a
+        // fresh spawn.
+        SMTP_HOST: '',
+        SMTP_PASS: '',
+        SUPPORT_EMAIL: '',
+        DISCORD_SUPPORT_WEBHOOK_URL: '',
       },
     },
     {

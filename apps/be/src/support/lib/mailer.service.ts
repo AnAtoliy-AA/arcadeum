@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, type Transporter } from 'nodemailer';
 import { stripNewlines } from './sanitize';
+import { isE2EMode } from './e2e-mode';
 
 export type MailerSendInput = {
   name: string;
@@ -44,6 +45,10 @@ export class MailerService {
   }
 
   async send(input: MailerSendInput): Promise<MailerSendResult> {
+    if (isE2EMode()) {
+      this.logger.debug('E2E mode — skipping real email delivery');
+      return { status: 'unconfigured' };
+    }
     if (!this.transporter || !this.to || !this.from) {
       this.logger.warn('SMTP not configured — skipping email delivery');
       return { status: 'unconfigured' };

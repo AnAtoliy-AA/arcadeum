@@ -7,17 +7,18 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { SupportService } from './support.service';
 import { SubmitContactDto } from './dto/submit-contact.dto';
 import { OriginGuard } from './lib/origin.guard';
+import { SupportThrottlerGuard } from './lib/support-throttler.guard';
 
 @Controller('support')
 // OriginGuard rejects requests whose Origin/Referer don't match the web
 // app's allowed origins — blocks direct curl/server-to-server POSTs that
-// bypass CORS. ThrottlerGuard enforces the per-IP rate limit declared
-// below.
-@UseGuards(OriginGuard, ThrottlerGuard)
+// bypass CORS. SupportThrottlerGuard enforces the per-IP rate limit
+// declared below (skipped under E2E=true).
+@UseGuards(OriginGuard, SupportThrottlerGuard)
 export class SupportController {
   constructor(private readonly support: SupportService) {}
 

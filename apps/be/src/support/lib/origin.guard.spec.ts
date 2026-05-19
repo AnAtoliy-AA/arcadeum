@@ -80,8 +80,39 @@ describe('OriginGuard', () => {
   it('ignores X-Internal-Token when SUPPORT_INTERNAL_TOKEN is unset', () => {
     delete process.env.SUPPORT_INTERNAL_TOKEN;
     guard = new OriginGuard();
+    // No token, but with a foreign Origin — still rejected.
     expect(() =>
-      guard.canActivate(buildCtx({ 'x-internal-token': 'anything' })),
+      guard.canActivate(
+        buildCtx({
+          'x-internal-token': 'anything',
+          origin: 'https://evil.example',
+        }),
+      ),
     ).toThrow(ForbiddenException);
+  });
+
+  describe('dev convenience fallback', () => {
+    it('allows no-Origin/no-Referer requests in dev when token is unset', () => {
+      delete process.env.SUPPORT_INTERNAL_TOKEN;
+      process.env.NODE_ENV = 'development';
+      guard = new OriginGuard();
+      expect(guard.canActivate(buildCtx({}))).toBe(true);
+    });
+
+    it('still rejects no-Origin requests in production when token is unset', () => {
+      delete process.env.SUPPORT_INTERNAL_TOKEN;
+      process.env.NODE_ENV = 'production';
+      guard = new OriginGuard();
+      expect(() => guard.canActivate(buildCtx({}))).toThrow(ForbiddenException);
+    });
+
+    it('does not take the fallback when a foreign Origin is present', () => {
+      delete process.env.SUPPORT_INTERNAL_TOKEN;
+      process.env.NODE_ENV = 'development';
+      guard = new OriginGuard();
+      expect(() =>
+        guard.canActivate(buildCtx({ origin: 'https://evil.example' })),
+      ).toThrow(ForbiddenException);
+    });
   });
 });

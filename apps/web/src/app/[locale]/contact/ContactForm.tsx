@@ -18,6 +18,17 @@ type FormCopy = NonNullable<NonNullable<ContactMessages['sections']>['form']>;
 
 const initialContactActionState: ContactActionState = { status: 'idle' };
 
+// Off-screen but still in the DOM so bots see and fill it.
+// Avoid `display: none` — some bots skip those.
+const honeypotStyle = {
+  position: 'absolute' as const,
+  left: '-9999px',
+  width: '1px',
+  height: '1px',
+  opacity: 0,
+  pointerEvents: 'none' as const,
+};
+
 export type ContactFormProps = {
   form?: FormCopy;
 };
@@ -45,23 +56,18 @@ export function ContactForm({ form }: ContactFormProps) {
     initialContactActionState,
   );
 
-  // Identity-tracked dismissal: every successful submit produces a fresh
-  // state object, so the "Send another" reset stays per-submit without
-  // needing a setState-in-effect.
   const [dismissedState, setDismissedState] = useState<
     typeof actionState | null
   >(null);
 
-  // Bumping this key remounts the form subtree on "Send another", which
-  // clears DOM values and FloatingLabelInput's internal filled-state
-  // without us having to mirror every field in React state. We never bump
-  // it on validation failures, so failed submits preserve typed values.
   const [formKey, setFormKey] = useState(0);
 
   const fieldErrors =
     actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
-  const successState =
-    actionState.status === 'ok' && actionState !== dismissedState
+  const showSuccess =
+    actionState.status === 'ok' && actionState !== dismissedState;
+  const errorState =
+    actionState.status === 'error' && actionState !== dismissedState
       ? actionState
       : null;
 
@@ -90,7 +96,7 @@ export function ContactForm({ form }: ContactFormProps) {
           </XStack>
         </div>
         <hr style={s.ruleStyle} aria-hidden="true" />
-        {successState ? (
+        {showSuccess ? (
           <Card variant="glass" data-testid="contact-success-message">
             <div style={s.successCardStyle}>
               <div aria-hidden="true" style={s.burstStyle}>
@@ -103,16 +109,33 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.successBody ??
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
+              <YStack alignItems="center" marginTop="$4">
+                <button type="button" onClick={reset} style={s.helpLinkStyle}>
+                  {form?.sendAnother ?? 'Send another'}
+                </button>
+              </YStack>
+            </div>
+          </Card>
+        ) : errorState ? (
+          <Card variant="glass" data-testid="contact-error-message">
+            <div style={s.successCardStyle}>
+              <Typography variant="heading" uiSize="lg">
+                {form?.errorTitle ?? "We couldn't send your message"}
+              </Typography>
+              <Typography variant="body" alpha="medium" marginTop="$2">
+                {form?.errorBody ??
+                  'Something went wrong on our end. You can try again, or open your mail app to send directly.'}
+              </Typography>
               <YStack alignItems="center" gap="$3" marginTop="$4">
                 <a
-                  href={successState.mailto}
+                  href={errorState.fallbackMailto}
                   style={s.helpLinkStyle}
-                  data-testid="contact-open-mail-link"
+                  data-testid="contact-fallback-mailto"
                 >
                   {form?.openMail ?? 'Open in your mail app'}
                 </a>
                 <button type="button" onClick={reset} style={s.helpLinkStyle}>
-                  {form?.sendAnother ?? 'Send another'}
+                  {form?.tryAgain ?? 'Try again'}
                 </button>
               </YStack>
             </div>
@@ -158,6 +181,17 @@ export function ContactForm({ form }: ContactFormProps) {
                 error={!!fieldErrors?.message}
                 data-testid="contact-message-textarea"
               />
+              <div aria-hidden="true" style={honeypotStyle}>
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
               <div style={s.submitRowStyle}>
                 <span style={s.privacyStyle}>
                   <span aria-hidden="true">🔒</span>

@@ -281,6 +281,10 @@ export const fr: LegalMessages = {
           'Réponse attendue sous 4 heures. Une copie a été envoyée sur votre email.',
         sendAnother: 'Envoyer un autre',
         openMail: 'Ouvrir dans votre messagerie',
+        errorTitle: "Impossible d'envoyer votre message",
+        errorBody:
+          'Quelque chose a mal tourné de notre côté. Réessayez ou ouvrez votre messagerie pour envoyer directement.',
+        tryAgain: 'Réessayer',
         success:
           '✓ Merci ! Votre message a été envoyé. Nous vous répondrons bientôt.',
       },

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.14] - 2026-05-19
+
+### Added
+- clear file length allow list (N/A)
+
+
 ## [1.14.13] - 2026-05-19
 
 ### Added

@@ -6,6 +6,7 @@ import {
   CARD_VARIANTS,
 } from '@/features/games/ui/create/constants';
 import { gamesApi } from '@/features/games/api';
+import type { CatalogVariant } from '@/features/games/api';
 import { ExpansionPacksSection } from '@/features/games/ui/create/ExpansionPacksSection';
 import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
@@ -42,10 +43,9 @@ export default function CriticalCreationConfig({
 }: GameCreationConfigProps<CriticalGameOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
-  const [allowedVariants, setAllowedVariants] = useState<Array<{
-    id: string;
-    comingSoon: boolean;
-  }> | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<
+    CatalogVariant[] | null
+  >(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the

@@ -6,6 +6,7 @@ import {
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { gamesApi } from '@/features/games/api';
+import type { CatalogVariant } from '@/features/games/api';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
@@ -31,10 +32,9 @@ export default function SeaBattleCreationConfig({
 }: GameCreationConfigProps<SeaBattleOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
-  const [allowedVariants, setAllowedVariants] = useState<Array<{
-    id: string;
-    comingSoon: boolean;
-  }> | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<
+    CatalogVariant[] | null
+  >(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the

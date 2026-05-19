@@ -6,6 +6,20 @@ import type {
   GameSessionSummary,
 } from '@/shared/types/games';
 
+export interface CatalogVariant {
+  id: string;
+  comingSoon: boolean;
+}
+
+export interface CatalogGame {
+  gameId: string;
+  variants: CatalogVariant[];
+}
+
+export interface CatalogResponse {
+  games: CatalogGame[];
+}
+
 interface GetRoomsParams {
   status?: string;
   participation?: string;
@@ -222,19 +236,7 @@ export const gamesApi = {
     return apiClient.post<void>('/games/rooms/delete', { roomId }, options);
   },
 
-  getCatalog: async (
-    options?: ApiClientOptions,
-  ): Promise<{
-    games: Array<{
-      gameId: string;
-      variants: Array<{ id: string; comingSoon: boolean }>;
-    }>;
-  }> => {
-    return apiClient.get<{
-      games: Array<{
-        gameId: string;
-        variants: Array<{ id: string; comingSoon: boolean }>;
-      }>;
-    }>('/games/catalog', options);
+  getCatalog: async (options?: ApiClientOptions): Promise<CatalogResponse> => {
+    return apiClient.get<CatalogResponse>('/games/catalog', options);
   },
 };

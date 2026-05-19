@@ -12,6 +12,7 @@ import {
 import { gameSocket } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { gamesApi } from '@/features/games/api';
+import type { CatalogVariant } from '@/features/games/api';
 import { useGlimwormStore } from '../store/glimwormStore';
 import type { GameRoomSummary } from '@/shared/types/games';
 import type { GlimwormVariant } from '../types';
@@ -64,10 +65,9 @@ export function GlimwormLobby({
   const [powerupsEnabled, setPowerupsEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [allowedVariants, setAllowedVariants] = useState<Array<{
-    id: string;
-    comingSoon: boolean;
-  }> | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<
+    CatalogVariant[] | null
+  >(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the

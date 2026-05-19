@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.13] - 2026-05-19
+
+### Added
+- render coming-soon games as disabled and gate Create button (ARC-704)
+- catalog surfaces all variants with comingSoon flag (ARC-710) (ARC-710)
+- wire catalog comingSoon flag to home featured-games carousel (ARC-704) (ARC-704)
+- catalog returns game-level comingSoon for restricted games (ARC-710) (ARC-710)
+- Glimworm lobby renders coming-soon variants (ARC-710) (ARC-710)
+- Sea Battle CreationConfig renders coming-soon variants (ARC-710) (ARC-710)
+- Critical CreationConfig renders coming-soon variants (ARC-710) (ARC-710)
+- mirror new tiers + localize developers_plus and none (ARC-710) (ARC-710)
+- catalog endpoint returns comingSoon flag per variant (ARC-710) (ARC-710)
+- add developers_plus and none visibility tiers (ARC-710) (ARC-710)
+- Sea Battle CreationConfig filters via catalog (ARC-710) (ARC-710)
+- Critical CreationConfig filters via catalog (ARC-710) (ARC-710)
+- createRoom + listRooms read both variant keys (ARC-710) (ARC-710)
+- extractVariantFromOptions helper (ARC-710) (ARC-710)
+- extend catalog with Critical + Sea Battle variants (ARC-710) (ARC-710)
+- glimworm lobby honors visibility (ARC-710) (ARC-710)
+- web client for /games/catalog (ARC-710) (ARC-710)
+- admin page (ARC-710) (ARC-710)
+- table UI (ARC-710) (ARC-710)
+- sidebar entry (ARC-710) (ARC-710)
+- i18n for visibility page (ARC-710) (ARC-710)
+- server actions for tier updates (ARC-710) (ARC-710)
+- server-side fetcher (ARC-710) (ARC-710)
+- glimworm gateway honors visibility (ARC-710) (ARC-710)
+- hide restricted rooms in listRooms (ARC-710) (ARC-710)
+- block room/quickplay for restricted games (ARC-710) (ARC-710)
+- GET /games/catalog returns role-filtered list (ARC-710) (ARC-710)
+- UserRoleResolver helper for tier checks (ARC-710) (ARC-710)
+- admin endpoints for game visibility (ARC-710) (ARC-710)
+- listForAdmin joins catalog with tiers (ARC-710) (ARC-710)
+- visibility service write paths with catalog validation (ARC-710) (ARC-710)
+- GameVisibilityService with TTL cache (ARC-710) (ARC-710)
+- game_visibility schema (ARC-710) (ARC-710)
+- BE-side game catalog shim (ARC-710) (ARC-710)
+- tier helper for visibility (ARC-710) (ARC-710)
+
+### Fixed
+- drop dynamic+ssr:false wrapper for CreateGameRoomPage (N/A)
+- guard buildComingSoonMaps against malformed catalog (ARC-710) (ARC-710)
+- brighten Game Rules link button to readable accent color (ARC-710) (ARC-710)
+- update listForAdmin test after catalog populated (ARC-710) (ARC-710)
+- resolver short-circuits anon_/bot_/non-ObjectId callers (ARC-710) (ARC-710)
+
+### Improved
+- add priority prop for eager-load + high fetchpriority (N/A)
+
+### Refactored
+- extract GameSelectorSection to satisfy file-length cap (ARC-710) (ARC-710)
+- extract web CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
+- extract CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
+- drop unnecessary cast in listRooms key extractor (ARC-710) (ARC-710)
+- split gem-success page presentational components (N/A)
+
+### Documentation
+- address plan review on visibility tiers (ARC-710) (ARC-710)
+- implementation plan for none + developers_plus tiers (ARC-710) (ARC-710)
+- address spec review on visibility tiers (ARC-710) (ARC-710)
+- spec for none + developers_plus visibility tiers (ARC-710) (ARC-710)
+- plan review polish for color variants (ARC-710) (ARC-710)
+- implementation plan for color-variant visibility (ARC-710) (ARC-710)
+- align test bullet file name (ARC-710) (ARC-710)
+- fold spec-review fixes into color-variants design (ARC-710) (ARC-710)
+- design for admin-controlled color-variant visibility (ARC-710) (ARC-710)
+- note evolving GamesController constructor signature in plan (N/A)
+- implementation plan for ARC-710 game/variant visibility (ARC-710)
+- fold spec-review clarifications into ARC-710 design (ARC-710)
+- design for admin-controlled game/variant visibility (ARC-710) (ARC-710)
+
+
 ## [1.14.12] - 2026-05-19
 
 ### Added

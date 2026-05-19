@@ -217,6 +217,18 @@ export function ShopPageView({
             ) : null}
 
             <ShopRow
+              id="row-legendary"
+              items={legendaries}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              highlight
+              labels={labels.row.legendary}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={3}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
               id="row-avatars"
               sectionKey="avatar"
               items={avatars}
@@ -225,7 +237,7 @@ export function ShopPageView({
               labels={labels.row.avatars}
               cardLabels={labels.card}
               balance={balance}
-              priorityCount={3}
+              priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
             <ShopRow
@@ -260,18 +272,6 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.skins}
-              cardLabels={labels.card}
-              balance={balance}
-              priorityCount={2}
-              onPurchaseFallback={(item) => setPurchaseTarget(item)}
-            />
-            <ShopRow
-              id="row-legendary"
-              items={legendaries}
-              inventory={inventory.items}
-              equipped={inventory.equipped}
-              highlight
-              labels={labels.row.legendary}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}

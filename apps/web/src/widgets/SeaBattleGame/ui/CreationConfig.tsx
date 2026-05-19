@@ -31,7 +31,10 @@ export default function SeaBattleCreationConfig({
 }: GameCreationConfigProps<SeaBattleOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
-  const [allowedVariants, setAllowedVariants] = useState<string[] | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<Array<{
+    id: string;
+    comingSoon: boolean;
+  }> | null>(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the
@@ -56,7 +59,9 @@ export default function SeaBattleCreationConfig({
   const visibleVariants =
     allowedVariants === null
       ? SEA_BATTLE_VARIANTS
-      : SEA_BATTLE_VARIANTS.filter((v) => allowedVariants.includes(v.id));
+      : SEA_BATTLE_VARIANTS.filter((v) =>
+          allowedVariants.some((a) => a.id === v.id),
+        );
 
   useEffect(() => {
     if (!options.variant) {

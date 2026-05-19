@@ -31,7 +31,13 @@ describe('Critical CreationConfig — variant visibility filter', () => {
   it('hides variants not present in /games/catalog', async () => {
     vi.mocked(gamesApi.getCatalog).mockResolvedValueOnce({
       games: [
-        { gameId: 'critical_v1', variants: ['cyberpunk', 'galaxy'] }, // crime hidden
+        {
+          gameId: 'critical_v1',
+          variants: [
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'galaxy', comingSoon: false },
+          ],
+        }, // crime hidden
       ],
     });
 

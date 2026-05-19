@@ -42,7 +42,10 @@ export default function CriticalCreationConfig({
 }: GameCreationConfigProps<CriticalGameOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
-  const [allowedVariants, setAllowedVariants] = useState<string[] | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<Array<{
+    id: string;
+    comingSoon: boolean;
+  }> | null>(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the
@@ -67,7 +70,7 @@ export default function CriticalCreationConfig({
   const visibleVariants =
     allowedVariants === null
       ? CARD_VARIANTS
-      : CARD_VARIANTS.filter((v) => allowedVariants.includes(v.id));
+      : CARD_VARIANTS.filter((v) => allowedVariants.some((a) => a.id === v.id));
 
   // Initialize defaults if empty
   useEffect(() => {

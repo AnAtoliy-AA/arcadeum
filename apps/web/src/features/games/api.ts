@@ -224,9 +224,17 @@ export const gamesApi = {
 
   getCatalog: async (
     options?: ApiClientOptions,
-  ): Promise<{ games: Array<{ gameId: string; variants: string[] }> }> => {
+  ): Promise<{
+    games: Array<{
+      gameId: string;
+      variants: Array<{ id: string; comingSoon: boolean }>;
+    }>;
+  }> => {
     return apiClient.get<{
-      games: Array<{ gameId: string; variants: string[] }>;
+      games: Array<{
+        gameId: string;
+        variants: Array<{ id: string; comingSoon: boolean }>;
+      }>;
     }>('/games/catalog', options);
   },
 };

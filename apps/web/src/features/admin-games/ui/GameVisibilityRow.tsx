@@ -11,11 +11,7 @@ import {
   type VisibilityTier,
 } from '../types';
 
-interface TierLabels {
-  all: string;
-  premium_plus: string;
-  vip_plus: string;
-}
+type TierLabels = Record<VisibilityTier, string>;
 
 interface RowLabels {
   game: string;
@@ -105,9 +101,7 @@ export function GameVisibilityRow({
                 borderTop: '1px solid rgba(255,255,255,0.04)',
               }}
             >
-              <span
-                style={{ fontSize: 13, color: '#d4d4d8', flex: 1 }}
-              >
+              <span style={{ fontSize: 13, color: '#d4d4d8', flex: 1 }}>
                 {v.variantId}
               </span>
               <TierControl

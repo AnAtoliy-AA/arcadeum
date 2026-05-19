@@ -17,5 +17,8 @@ export const adminGamesRu: AdminGamesMessages = {
     all: 'Все игроки',
     premium_plus: 'Premium+',
     vip_plus: 'VIP+',
+    developers_plus: 'Разработчики и админы',
+    none: 'Скрыто (скоро)',
   },
+  comingSoonBadge: 'Скоро',
 };

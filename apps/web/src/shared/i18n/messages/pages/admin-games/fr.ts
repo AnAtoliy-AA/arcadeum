@@ -3,7 +3,7 @@ import type { AdminGamesMessages } from './en';
 export const adminGamesFr: AdminGamesMessages = {
   title: 'Visibilité des jeux et variantes',
   subtitle:
-    "Restreignez qui peut voir et jouer à chaque jeu ou variante intégrée. Les changements prennent effet en 30 secondes.",
+    'Restreignez qui peut voir et jouer à chaque jeu ou variante intégrée. Les changements prennent effet en 30 secondes.',
   loading: 'Chargement…',
   empty: 'Aucun jeu enregistré.',
   game: 'Jeu',
@@ -17,5 +17,8 @@ export const adminGamesFr: AdminGamesMessages = {
     all: 'Tous les joueurs',
     premium_plus: 'Premium+',
     vip_plus: 'VIP+',
+    developers_plus: 'Développeurs et admins',
+    none: 'Masqué (bientôt disponible)',
   },
+  comingSoonBadge: 'Bientôt disponible',
 };

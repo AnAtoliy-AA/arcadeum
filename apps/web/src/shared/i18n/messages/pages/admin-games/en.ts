@@ -15,7 +15,10 @@ export const adminGamesEn = {
     all: 'All players',
     premium_plus: 'Premium+',
     vip_plus: 'VIP+',
+    developers_plus: 'Developers & admins',
+    none: 'Hidden (coming soon)',
   },
+  comingSoonBadge: 'Coming soon',
 };
 
 export type AdminGamesMessages = typeof adminGamesEn;

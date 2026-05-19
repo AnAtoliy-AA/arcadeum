@@ -17,5 +17,8 @@ export const adminGamesEs: AdminGamesMessages = {
     all: 'Todos los jugadores',
     premium_plus: 'Premium+',
     vip_plus: 'VIP+',
+    developers_plus: 'Desarrolladores y administradores',
+    none: 'Oculto (próximamente)',
   },
+  comingSoonBadge: 'Próximamente',
 };

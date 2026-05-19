@@ -31,7 +31,13 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
   it('hides variants not present in /games/catalog', async () => {
     vi.mocked(gamesApi.getCatalog).mockResolvedValueOnce({
       games: [
-        { gameId: 'sea_battle_v1', variants: ['classic', 'pixel'] }, // cyber hidden
+        {
+          gameId: 'sea_battle_v1',
+          variants: [
+            { id: 'classic', comingSoon: false },
+            { id: 'pixel', comingSoon: false },
+          ],
+        }, // cyber hidden
       ],
     });
 

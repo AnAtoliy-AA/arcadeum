@@ -17,5 +17,8 @@ export const adminGamesBy: AdminGamesMessages = {
     all: 'Усе гульцы',
     premium_plus: 'Premium+',
     vip_plus: 'VIP+',
+    developers_plus: 'Распрацоўшчыкі і адміны',
+    none: 'Схавана (хутка)',
   },
+  comingSoonBadge: 'Хутка',
 };

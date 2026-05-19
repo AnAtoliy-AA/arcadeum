@@ -64,7 +64,10 @@ export function GlimwormLobby({
   const [powerupsEnabled, setPowerupsEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [allowedVariants, setAllowedVariants] = useState<string[] | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<Array<{
+    id: string;
+    comingSoon: boolean;
+  }> | null>(null);
 
   // One-shot catalog fetch on mount to filter the variant picker by what
   // the caller's role can actually see (ARC-710). Failure is silent: the
@@ -89,7 +92,9 @@ export function GlimwormLobby({
   const visibleVariants =
     allowedVariants === null
       ? GLIMWORM_VARIANTS
-      : GLIMWORM_VARIANTS.filter((v) => allowedVariants.includes(v.id));
+      : GLIMWORM_VARIANTS.filter((v) =>
+          allowedVariants.some((a) => a.id === v.id),
+        );
 
   // Read which colors are claimed by which player. The BE pushes a fresh
   // snapshot on join/leave/color-pick, so this reflects the live lobby state.

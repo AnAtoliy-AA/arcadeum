@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { featuredGames } from '../data/games';
 import { HomeGameCard } from './HomeGameCard';
 import { HomeGameDetailsModal } from './modals/HomeGameDetailsModal';
 import { useHomeGamesSlider } from './useHomeGamesSlider';
+import { gamesApi } from '@/features/games/api';
 
 interface DetailsState {
   gameId: string | null;
@@ -17,6 +18,30 @@ export default function HomeGames() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const sectionRef = useScrollReveal<HTMLElement>();
+
+  const [comingSoonMap, setComingSoonMap] = useState<Map<string, boolean>>(
+    new Map(),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const map = new Map<string, boolean>();
+        for (const g of res.games) {
+          map.set(g.gameId, g.comingSoon);
+        }
+        setComingSoonMap(map);
+      })
+      .catch(() => {
+        if (!cancelled) setComingSoonMap(new Map());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const {
     sliderRef,
@@ -79,6 +104,7 @@ export default function HomeGames() {
                 game={game}
                 homeCopy={homeCopy}
                 onOpenDetails={openDetails}
+                comingSoon={comingSoonMap.get(game.id) ?? false}
               />
             </div>
           ))}

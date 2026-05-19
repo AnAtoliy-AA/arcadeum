@@ -12,6 +12,10 @@ import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { GlimwormService } from './glimworm/glimworm.service';
 import type { GlimwormVariant } from './glimworm/glimworm.types';
+import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
+
+const GLIMWORM_GAME_ID = 'glimworm_v1';
 
 interface GlimwormInputBody {
   roomId: string;
@@ -66,7 +70,19 @@ const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
 export class GlimwormGateway {
   private readonly logger = new Logger(GlimwormGateway.name);
 
-  constructor(private readonly glimwormService: GlimwormService) {}
+  constructor(
+    private readonly glimwormService: GlimwormService,
+    private readonly visibility: GameVisibilityService,
+    private readonly roleResolver: UserRoleResolver,
+  ) {}
+
+  private async assertCanSee(
+    userId: string | undefined,
+    variant?: string,
+  ): Promise<void> {
+    const role = await this.roleResolver.resolveRole(userId);
+    await this.visibility.assertVisible(role, GLIMWORM_GAME_ID, variant);
+  }
 
   private handleException(params: {
     error: unknown;
@@ -163,10 +179,10 @@ export class GlimwormGateway {
   }
 
   @SubscribeMessage('glimworm.start')
-  handleStart(
+  async handleStart(
     @MessageBody() payload: GlimwormStartBody,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
@@ -177,6 +193,7 @@ export class GlimwormGateway {
         throw new Error(`Invalid variant: ${variantRaw}`);
       }
       const variant = variantRaw as GlimwormVariant;
+      await this.assertCanSee(userId, variant);
       const powerupsEnabled = payload.powerupsEnabled === true;
       const fillWithBots = payload.fillWithBots === true;
       const botCount =

@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
-import { gamesApi } from '@/features/games/api';
+import { gamesApi, type CatalogResponse } from '@/features/games/api';
+import { buildComingSoonMaps, isCreateBlocked } from './createPageState';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -38,14 +36,10 @@ import { useRoutes } from '@/shared/config/useRoutes';
 
 import {
   FormContainer,
-  GameSelector,
-  GameTileItem,
-  GameTileContainer,
-  GameTileName,
-  GameTileSummary,
   Row,
   StickyMobileCta,
 } from '@/features/games/ui/create/styles';
+import { GameSelectorSection } from './GameSelectorSection';
 import { YStack, XStack, Text } from 'tamagui';
 
 // Filter out hidden games for display
@@ -70,6 +64,24 @@ export default function CreateGameRoomPage() {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
+
+  const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((d) => {
+        if (!cancelled) setCatalog(d);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const { gameComingSoon, variantComingSoon } = useMemo(
+    () => buildComingSoonMaps(catalog),
+    [catalog],
+  );
 
   // 1. Source of Truth: URL
   const gameId = searchParams?.get('gameId') || visibleGames[0].id;
@@ -135,6 +147,13 @@ export default function CreateGameRoomPage() {
   if (pendingVariant !== null && urlVariant === pendingVariant) {
     setPendingVariant(null);
   }
+
+  const createBlocked = isCreateBlocked(
+    gameComingSoon,
+    variantComingSoon,
+    gameId,
+    pendingVariant || urlVariant,
+  );
 
   // 4. State Update Handlers
   const updateUrl = useCallback(
@@ -253,7 +272,7 @@ export default function CreateGameRoomPage() {
     (e?: React.FormEvent) => {
       e?.preventDefault();
 
-      if (!name.trim() || loading) {
+      if (!name.trim() || loading || createBlocked) {
         return;
       }
 
@@ -271,7 +290,7 @@ export default function CreateGameRoomPage() {
 
       createRoom({});
     },
-    [name, maxPlayers, gameId, createRoom, loading],
+    [name, maxPlayers, gameId, createRoom, loading, createBlocked],
   );
 
   const GameConfigComponent = GAME_CONFIGS[gameId];
@@ -284,32 +303,12 @@ export default function CreateGameRoomPage() {
         </PageTitle>
         <form onSubmit={handleSubmit}>
           <FormContainer>
-            <Section title={t('games.create.sectionGame') || 'Select Game'}>
-              <GameSelector>
-                {visibleGames.map((game) => (
-                  <GameTileContainer
-                    key={game.id}
-                    disabled={!game.isPlayable}
-                    onClick={() => game.isPlayable && handleGameChange(game.id)}
-                    data-testid={`game-tile-${game.id}`}
-                  >
-                    <GameTileItem
-                      active={gameId === game.id}
-                      disabled={!game.isPlayable}
-                    >
-                      <GameTileName>
-                        {t(`games.${game.id}.name` as TranslationKey) ||
-                          game.name}
-                      </GameTileName>
-                      <GameTileSummary>
-                        {t(`games.${game.id}.description` as TranslationKey) ||
-                          game.summary}
-                      </GameTileSummary>
-                    </GameTileItem>
-                  </GameTileContainer>
-                ))}
-              </GameSelector>
-            </Section>
+            <GameSelectorSection
+              games={visibleGames}
+              selectedId={gameId}
+              gameComingSoon={gameComingSoon}
+              onSelect={handleGameChange}
+            />
 
             {GameConfigComponent && (
               <GameConfigComponent
@@ -455,13 +454,15 @@ export default function CreateGameRoomPage() {
             <StickyMobileCta>
               <CreateRoomButton
                 type="submit"
-                disabled={loading}
+                disabled={loading || createBlocked}
                 fullWidth
                 data-testid="create-room-button"
               >
-                {loading
-                  ? t('games.create.submitCreating') || 'Creating...'
-                  : t('games.common.createRoom') || 'Create Room'}
+                {createBlocked
+                  ? t('games.create.comingSoon') || 'Coming Soon'
+                  : loading
+                    ? t('games.create.submitCreating') || 'Creating...'
+                    : t('games.common.createRoom') || 'Create Room'}
               </CreateRoomButton>
             </StickyMobileCta>
           </FormContainer>

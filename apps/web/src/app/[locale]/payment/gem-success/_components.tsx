@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { formatNumber } from '@/shared/i18n/formatters';
 import type { Locale } from '@/shared/config/locale-slugs';
 
-export const GEM_SUCCESS_ANIMATIONS = `
+// ── Animations ───────────────────────────────────────────────────────────────
+export const ANIMATIONS = `
   @keyframes gem-fade-in {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -37,18 +38,18 @@ export const GEM_SUCCESS_ANIMATIONS = `
   }
 `;
 
-export type GemSuccessVariant = 'success' | 'warning' | 'neutral';
+export type Variant = 'success' | 'warning' | 'neutral';
 
 export function Shell({
   children,
   variant,
 }: {
   children: React.ReactNode;
-  variant: GemSuccessVariant;
+  variant: Variant;
 }) {
   return (
     <>
-      <style>{GEM_SUCCESS_ANIMATIONS}</style>
+      <style>{ANIMATIONS}</style>
       {variant === 'success' ? <SparkleField /> : null}
       <main
         style={{
@@ -92,10 +93,10 @@ export function Icon({
   variant,
 }: {
   children: React.ReactNode;
-  variant: GemSuccessVariant;
+  variant: Variant;
 }) {
   const palette: Record<
-    GemSuccessVariant,
+    Variant,
     { bg: string; border: string; color: string }
   > = {
     success: {
@@ -358,6 +359,8 @@ export function SecondaryLink({
   );
 }
 
+// Subtle sparkles dotted around the success view — fixed positions so they
+// look deliberate (not random noise), and they fade in/out independently.
 function SparkleField() {
   const sparkles = [
     { top: '12%', left: '8%', size: 6, delay: 0 },

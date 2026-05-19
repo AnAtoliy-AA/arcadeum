@@ -17,6 +17,7 @@ import {
   RefreshTokenService,
   GoogleOAuthService,
 } from './services';
+import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 
 @Module({
@@ -45,7 +46,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     OAuthClientService,
     RefreshTokenService,
     GoogleOAuthService,
+    UserRoleResolver,
   ],
-  exports: [AuthService],
+  exports: [AuthService, UserRoleResolver],
 })
 export class AuthModule {}

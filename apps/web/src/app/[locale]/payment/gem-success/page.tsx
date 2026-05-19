@@ -12,7 +12,7 @@ import {
   Shell,
   Title,
   TokenChip,
-} from './GemSuccessComponents';
+} from './_components';
 import { formatNumber } from '@/shared/i18n/formatters';
 
 export const metadata: Metadata = {

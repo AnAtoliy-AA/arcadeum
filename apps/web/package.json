@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.14.12",
+  "version": "1.14.13",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -37,7 +37,7 @@
     "@tamagui/config": "2.0.0-rc.23",
     "@tamagui/next-plugin": "2.0.0-rc.23",
     "@tamagui/shorthands": "2.0.0-rc.23",
-    "next": "16.1.0",
+    "next": "16.1.7",
     "pixi-filters": "^6",
     "pixi.js": "^8",
     "react": "19.1.0",

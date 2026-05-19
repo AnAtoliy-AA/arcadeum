@@ -49,10 +49,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
   }
 
   if (item.category === 'banner') {
-    // Banner preview: a wide rounded tile filled with the colorValue
-    // gradient/solid. Matches the panel-behind-avatar shape so the catalog
-    // tile reads as "this is the backdrop".
-    const fill = item.colorValue ?? '#1e293b';
+    // Banner preview: a circular swatch — banners drive the disc behind the
+    // mannequin avatar, so a circle reads more accurately than a wide tile.
+    // Solid hex → backgroundColor; gradient string → backgroundImage.
+    const value = item.colorValue ?? '#1e293b';
+    const isGradient = value.includes('gradient');
     return (
       <YStack
         width={size}
@@ -63,11 +64,13 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
       >
         <YStack
           width={size}
-          height={Math.round(size * 0.62)}
-          borderRadius={Math.round(size * 0.12)}
+          height={size}
+          borderRadius={size / 2}
           borderWidth={1}
-          borderColor="rgba(255,255,255,0.18)"
-          style={{ backgroundImage: fill, backgroundColor: fill }}
+          borderColor="rgba(255,255,255,0.20)"
+          style={
+            isGradient ? { backgroundImage: value } : { backgroundColor: value }
+          }
         />
       </YStack>
     );

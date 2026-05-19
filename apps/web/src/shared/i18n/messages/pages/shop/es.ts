@@ -56,7 +56,7 @@ export const shopEs = {
       },
       aura: {
         label: 'Aura',
-        desc: 'Brillo animado que rodea tu nombre en el chat y las listas.',
+        desc: 'Rayos brillantes que orbitan tu avatar en el lobby y las partidas.',
         empty: 'Vacío',
       },
     },

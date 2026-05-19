@@ -80,6 +80,16 @@ const SkinChip = styled(Stack, {
   backgroundColor: 'rgba(0,0,0,0.4)',
 });
 
+// Extract a single representative color from a colorValue (hex or
+// linear-gradient string). The rays/halo need a solid CSS color, not a
+// gradient, so for gradient values we pluck the first hex and use that.
+function pickSwatchColor(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const match = value.match(/#[0-9a-fA-F]{3,8}/);
+  if (match) return match[0];
+  return value.includes('gradient') ? null : value;
+}
+
 export function ShopMannequinStage({
   preview,
   hoverItem,
@@ -92,11 +102,30 @@ export function ShopMannequinStage({
   const badge = preview.badge ?? null;
   const nameColor = preview.name_color ?? null;
   const skin = preview.game_skin ?? null;
+  const banner = preview.banner ?? null;
+  const aura = preview.aura ?? null;
 
+  // Aura wins over rarity-derived glow when equipped/hovered. Falls back to
+  // the focused item's rarity glow when no aura is selected so the stage
+  // still feels alive (matches the old behavior).
   const accentGlow = useMemo(() => {
+    const auraColor = pickSwatchColor(aura?.colorValue ?? null);
+    if (auraColor) return auraColor;
     const focus = hoverItem ?? avatar ?? badge ?? skin ?? nameColor;
     return focus ? RARITY_GLOW[focus.rarity] : 'rgba(96,165,250,0.25)';
-  }, [hoverItem, avatar, badge, skin, nameColor]);
+  }, [aura, hoverItem, avatar, badge, skin, nameColor]);
+
+  // Banner drives the avatar disc fill. Solid colorValue → backgroundColor;
+  // a linear-gradient value → backgroundImage. The fallback preserves the
+  // pre-banner translucent white wash so the stage doesn't look broken
+  // when no banner is equipped.
+  const bannerBg = useMemo<React.CSSProperties>(() => {
+    const value = banner?.colorValue;
+    if (!value) return { backgroundColor: 'rgba(255,255,255,0.04)' };
+    return value.includes('gradient')
+      ? { backgroundImage: value }
+      : { backgroundColor: value };
+  }, [banner]);
 
   const raysBg = useMemo<React.CSSProperties>(() => {
     // 12 narrow rays evenly spaced every 30°. The previous 4-wide-spike
@@ -186,12 +215,17 @@ export function ShopMannequinStage({
           borderRadius={70}
           alignItems="center"
           justifyContent="center"
-          backgroundColor="rgba(255,255,255,0.04)"
           borderWidth={2}
           borderColor="rgba(255,255,255,0.18)"
           position="relative"
-          style={{ boxShadow: `0 0 56px ${accentGlow}` }}
+          overflow="hidden"
+          style={{
+            ...bannerBg,
+            boxShadow: `0 0 56px ${accentGlow}`,
+          }}
           data-testid="shop-stage-avatar"
+          data-banner={banner?.id ?? ''}
+          data-aura={aura?.id ?? ''}
         >
           {avatar ? (
             <ItemAsset item={avatar} size={108} priority />

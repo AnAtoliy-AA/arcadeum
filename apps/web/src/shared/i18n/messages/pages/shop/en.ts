@@ -56,7 +56,7 @@ export const shopEn = {
       },
       aura: {
         label: 'Aura',
-        desc: 'Animated glow that wraps your name in chat and rosters.',
+        desc: 'Shining rays that orbit your avatar in lobby and during matches.',
         empty: 'Empty',
       },
     },

@@ -56,7 +56,7 @@ export const shopFr = {
       },
       aura: {
         label: 'Aura',
-        desc: 'Halo animé qui entoure votre nom dans le chat et les listes.',
+        desc: 'Rayons scintillants qui orbitent autour de votre avatar dans le lobby et les matchs.',
         empty: 'Vide',
       },
     },

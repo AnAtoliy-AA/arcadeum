@@ -19,6 +19,12 @@ export interface MessageView {
   senderEquippedBadgeId?: string | null;
   /** Sender's currently-equipped name-color item id (resolved client-side). */
   senderEquippedNameColorId?: string | null;
+  /** Sender's currently-equipped frame item id (resolved client-side). */
+  senderEquippedFrameId?: string | null;
+  /** Sender's currently-equipped aura item id (resolved client-side). */
+  senderEquippedAuraId?: string | null;
+  /** Sender's currently-equipped banner item id (resolved client-side). */
+  senderEquippedBannerId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

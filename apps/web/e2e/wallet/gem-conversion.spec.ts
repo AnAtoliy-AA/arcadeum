@@ -75,6 +75,10 @@ test.describe('Gem conversion flow (mocked)', () => {
   test('convert endpoint returns 422 insufficient-funds → inline error renders', async ({
     page,
   }) => {
+    // /wallet cold-compile on Mobile Safari (slowest project) regularly
+    // exceeds the default 60s suite timeout. 120s gives the compile room
+    // without masking real regressions.
+    test.setTimeout(120_000);
     await page.route('**/wallet/conversion-rate', async (route) => {
       await handleRoute(route, MOCK_CONVERSION_RATE);
     });

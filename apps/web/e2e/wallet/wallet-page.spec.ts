@@ -201,7 +201,12 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
       return;
     }
     await navigateTo(page, '/wallet');
-    const allFilter = page.getByTestId('filter-all');
+    // Mobile viewports occasionally show two filter-all elements in DOM for
+    // a single tick during the SSR → client-hydration handoff (the post-
+    // navigation snapshot consistently shows just one). `.first()` makes the
+    // test tolerant of that transient without weakening intent — the test's
+    // job is to verify the All-filter link exists and points at /wallet.
+    const allFilter = page.getByTestId('filter-all').first();
     await expect(allFilter).toBeVisible();
     await expect(allFilter).toHaveAttribute('href', '/wallet');
   });

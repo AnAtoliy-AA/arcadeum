@@ -70,8 +70,13 @@ test.describe('Profile Menu Modernization', () => {
 
     // Now mock as a regular user
     await mockSession(page, { role: 'free' });
-    await page.reload();
-    await page.locator('[data-profile-menu] button').first().click();
+    // navigateTo waits on the hydration markers — page.reload() does not,
+    // so the profile-menu trigger (gated on displayName from the rehydrated
+    // session) wasn't guaranteed to be in the DOM by the time we clicked.
+    await navigateTo(page, '/');
+    const triggerAfter = page.locator('[data-profile-menu] button').first();
+    await expect(triggerAfter).toBeVisible();
+    await triggerAfter.click();
     await expect(page.getByTestId('header-admin-link')).not.toBeVisible();
   });
 });

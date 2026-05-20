@@ -6,7 +6,12 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
-import { MenuIcon, CloseIcon } from '@arcadeum/ui/components/Icons/index';
+import {
+  MenuIcon,
+  CloseIcon,
+  SupportIcon,
+  GiftIcon,
+} from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
@@ -41,14 +46,21 @@ export function HeaderInteractive() {
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
-      { href: routes.shop, label: t('navigation.shopTab') },
+      {
+        href: routes.shop,
+        label: t('navigation.shopTab'),
+        icon: <GiftIcon size={16} />,
+        accent: true,
+      },
     ],
     [t, routes],
   );
 
   const mobileNavItems = useMemo(
     () => [
-      ...navItems,
+      // Strip desktop-only emphasis (icon/accent) from mobile — mobile drawer
+      // already styles items uniformly with icons.
+      ...navItems.map(({ href, label }) => ({ href, label })),
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
@@ -67,6 +79,9 @@ export function HeaderInteractive() {
                 variant="ghost"
                 size="sm"
                 isActive={pathname === item.href}
+                accent={item.accent}
+                icon={item.icon}
+                gap="$2"
                 data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
                 data-active={pathname === item.href ? 'true' : undefined}
               >
@@ -79,6 +94,18 @@ export function HeaderInteractive() {
       <div className="actions-styled">
         {isMounted && (
           <>
+            <HeaderMobileHidden>
+              <LinkButton
+                href={routes.support}
+                variant="icon"
+                size="md"
+                aria-label={t('common.actions.support')}
+                data-testid="header-support-button"
+              >
+                <SupportIcon size={18} />
+              </LinkButton>
+            </HeaderMobileHidden>
+
             <HeaderMobileHidden>
               <LanguageSwitcher
                 data-testid="header-language-switcher"

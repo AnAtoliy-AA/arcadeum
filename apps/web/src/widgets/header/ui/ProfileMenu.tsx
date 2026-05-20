@@ -17,7 +17,6 @@ import {
   ChevronIcon,
   UserIcon,
   WalletIcon,
-  SupportIcon,
   SmartphoneIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -236,25 +235,18 @@ export default function ProfileMenu() {
         <Divider spacing="sm" />
 
         {showInstallApp && (
-          <DropdownButton
-            data-testid="header-install-pwa-button"
-            onClick={handleInstallApp}
-            icon={<SmartphoneIcon size={18} />}
-          >
-            {t('pwa.install.button')}
-          </DropdownButton>
+          <>
+            <DropdownButton
+              data-testid="header-install-pwa-button"
+              onClick={handleInstallApp}
+              icon={<SmartphoneIcon size={18} />}
+            >
+              {t('pwa.install.button')}
+            </DropdownButton>
+
+            <Divider spacing="sm" />
+          </>
         )}
-
-        <DropdownLink
-          href={routes.support}
-          onClick={closeMenu}
-          data-testid="header-support-link"
-          icon={<SupportIcon size={18} />}
-        >
-          {t('common.actions.support')}
-        </DropdownLink>
-
-        <Divider spacing="sm" />
 
         <DropdownLink
           href={routes.terms}

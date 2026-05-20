@@ -168,6 +168,14 @@ export const NavHeaderLink = styled(LinkButton, {
         fontWeight: '700',
       },
     },
+    // Emphasis treatment for monetization-driver entries (e.g. Shop):
+    // primary color + bolder weight, even when not the active route.
+    accent: {
+      true: {
+        color: '$primary',
+        fontWeight: '700',
+      },
+    },
   } as const,
 });
 

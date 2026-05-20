@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { Text, View, YStack } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 
-export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'card';
+export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'lg' | 'card';
 
 export interface PlayerAvatarProps {
   name: string;
@@ -26,18 +26,21 @@ const DISC_SIZE: Record<PlayerAvatarSize, number> = {
   icon: 28,
   sm: 40,
   md: 72,
+  lg: 140,
   card: 140,
 };
 const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
   icon: 0,
   sm: 14,
   md: 24,
+  lg: 36,
   card: 36,
 };
 const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   icon: 0,
   sm: 2,
   md: 3,
+  lg: 3,
   card: 3,
 };
 

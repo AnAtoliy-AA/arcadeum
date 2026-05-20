@@ -332,7 +332,7 @@ export default function LeaderboardsPageContent({
                   portrait={
                     <EquippedPlayerAvatar
                       name={mythic.name}
-                      size="card"
+                      size="lg"
                       equippedAvatarId={mythic.equippedAvatarId}
                       equippedBadgeId={mythic.equippedBadgeId}
                       equippedNameColorId={mythic.equippedNameColorId}

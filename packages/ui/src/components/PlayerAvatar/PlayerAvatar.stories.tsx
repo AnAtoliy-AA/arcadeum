@@ -7,7 +7,7 @@ const meta: Meta<typeof PlayerAvatar> = {
   argTypes: {
     size: {
       control: 'select',
-      options: ['icon', 'sm', 'md', 'card'],
+      options: ['icon', 'sm', 'md', 'lg', 'card'],
     },
   },
 };

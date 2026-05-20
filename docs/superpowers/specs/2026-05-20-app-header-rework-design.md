@@ -7,10 +7,10 @@ The app header is visually overloaded on desktop. The right-side cluster current
 ## Goals
 
 - Reduce the desktop right cluster to **three primary controls** (Language, Profile, Login-when-logged-out).
-- Reduce primary nav from 6 → 5 by dropping the duplicate `Settings` entry.
+- Reduce desktop primary nav to **three engagement-driver entries**: `Games · Leaderboards · Shop`. Communication/review entries (`Chats`, `History`, `Stats`, `Settings`) collapse into the profile dropdown.
 - Surface Install-PWA and Support without losing functionality, by moving them inside the profile dropdown (where they belong as utility/help actions).
 - Modernize visuals: tighter spacing, calmer border, single active-nav treatment.
-- No regressions on mobile — the mobile menu drawer already groups things well; it stays.
+- Mobile drawer keeps the full nav list (Games, Leaderboards, Shop, Chats, History, Stats) — mobile has space and users reach everything via one tap on the hamburger.
 
 ## Non-goals
 
@@ -23,9 +23,11 @@ The app header is visually overloaded on desktop. The right-side cluster current
 ### Desktop primary nav (HeaderInteractive)
 
 From: `Games · Shop · Chats · History · Stats · Settings`
-To: `Games · Shop · Chats · History · Stats`
+To: `Games · Leaderboards · Shop`
 
-`Settings` is removed from the top nav. It remains reachable via the profile dropdown, where it already lives.
+Rationale: these three are the _engagement-driver_ surfaces — play, compete, monetize. Communication (`Chats`), review (`History`, `Stats`), and configuration (`Settings`) are all _secondary_ surfaces that collapse into the profile dropdown. The mobile drawer (opened via hamburger) still shows the full six-item nav, because mobile has space.
+
+Routes used: `routes.games`, `routes.leaderboards`, `routes.shop`. Mobile-only additions in the drawer: `routes.chats`, `routes.history`, `routes.stats`.
 
 ### Desktop right cluster (HeaderInteractive)
 
@@ -64,6 +66,8 @@ Add a compact identity card at the top:
 [Admin link if admin]
 [Wallet]
 [Settings]
+[Chats]      ← moved from top nav
+[History]    ← moved from top nav
 [Stats]
 [Referrals]
 ─────────────
@@ -85,15 +89,18 @@ Add a compact identity card at the top:
 
 ### Mobile
 
-No structural changes. Install-PWA and Support already live in the mobile drawer. Mobile drawer keeps its current sections.
+Mobile drawer receives the full six-item nav list (Games, Leaderboards, Shop, Chats, History, Stats) — desktop slims, mobile stays comprehensive. `HeaderInteractive` computes a separate `mobileNavItems` and passes it to `MobileMenu`. `MobileMenu`'s `NAV_ICON_BY_SLUG` gets a `leaderboards: TrophyIcon` entry. Install-PWA, Support, and Logout still live in the mobile drawer as today.
 
 ## Files touched
 
-- `apps/web/src/widgets/header/ui/HeaderInteractive.tsx` — slim nav, remove InstallPWA+Support, drop `NavLinkIndicator` usage
-- `apps/web/src/widgets/header/ui/ProfileMenu.tsx` — compact chip, add identity card, add Install-PWA + Support dropdown items
+- `apps/web/src/widgets/header/ui/HeaderInteractive.tsx` — desktop nav slim to 3, build `mobileNavItems` list of 6 and pass to MobileMenu, remove InstallPWA+Support, drop `NavLinkIndicator` usage
+- `apps/web/src/widgets/header/ui/ProfileMenu.tsx` — compact chip, add identity card, add Chats + History + Install-PWA + Support dropdown items
+- `apps/web/src/widgets/header/ui/MobileMenu.tsx` — add `leaderboards: TrophyIcon` to icon map
 - `apps/web/src/widgets/header/ui/LanguageSwitcher.tsx` — drop standalone GlobeIcon
 - `apps/web/src/widgets/header/ui/styles.tsx` — add identity-card styled component; can leave NavLinkIndicator exported (unused) or remove
 - `apps/web/src/widgets/header/ui/header-stable.css` — calmer border, tighter actions gap
+- `apps/web/src/shared/i18n/messages/navigation.ts` — add `leaderboardsTab` in 5 locales
+- `packages/ui/src/components/Icons/GameIcons.tsx` — add `TrophyIcon` (lucide trophy path)
 
 ## Testing
 

@@ -40,12 +40,20 @@ export function HeaderInteractive() {
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
+      { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
       { href: routes.shop, label: t('navigation.shopTab') },
+    ],
+    [t, routes],
+  );
+
+  const mobileNavItems = useMemo(
+    () => [
+      ...navItems,
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
     ],
-    [t, routes],
+    [navItems, t, routes],
   );
 
   return (
@@ -129,7 +137,7 @@ export function HeaderInteractive() {
         )}
       </div>
 
-      {isMobileMenuOpen && <MobileMenu navItems={navItems} />}
+      {isMobileMenuOpen && <MobileMenu navItems={mobileNavItems} />}
     </>
   );
 }

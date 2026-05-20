@@ -199,8 +199,27 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <DropdownLink
+          href={routes.chats}
+          onClick={closeMenu}
+          data-testid="header-chats-link"
+          icon={<MailIcon size={18} />}
+        >
+          {t('navigation.chatsTab')}
+        </DropdownLink>
+
+        <DropdownLink
+          href={routes.history}
+          onClick={closeMenu}
+          data-testid="header-history-link"
+          icon={<FileTextIcon size={18} />}
+        >
+          {t('navigation.historyTab')}
+        </DropdownLink>
+
+        <DropdownLink
           href={routes.stats}
           onClick={closeMenu}
+          data-testid="header-stats-link"
           icon={<BarChartIcon size={18} />}
         >
           {t('navigation.statsTab')}

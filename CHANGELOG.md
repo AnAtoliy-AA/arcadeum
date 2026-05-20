@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.16] - 2026-05-20
+
+### Added
+- PlayerAvatar 'lg' size — full composition without card chrome (ARC-730) (ARC-730)
+- MythicSpotlight + RunnerUpCard show equipped cosmetics (ARC-730) (ARC-730)
+- ChatMessage adds optional senderAvatar slot (ARC-730) (ARC-730)
+- EquippedPlayerAvatar resolves equipped ids and renders PlayerAvatar (ARC-730) (ARC-730)
+- PlayerAvatar composes frame/aura/badge/banner/name across 4 sizes (ARC-730) (ARC-730)
+- useEquippedCosmetics resolves frame/aura/banner colors (ARC-730) (ARC-730)
+- session + leaderboard + game types carry equipped frame/aura/banner (ARC-730) (ARC-730)
+- leaderboard payload exposes equipped frame/aura/banner (ARC-730) (ARC-730)
+- game history player payload exposes equipped frame/aura/banner (ARC-730) (ARC-730)
+- room member payload exposes equipped frame/aura/banner (ARC-730) (ARC-730)
+- chat sender payload exposes equipped frame/aura/banner (ARC-730) (ARC-730)
+- expose equipped frame/aura/banner ids on AuthUserProfile (ARC-730) (ARC-730)
+
+### Refactored
+- history modal + stats leaderboard use EquippedPlayerAvatar (ARC-730) (ARC-730)
+- chat list search result uses EquippedPlayerAvatar (ARC-730) (ARC-730)
+- profile + mobile menu use EquippedPlayerAvatar (ARC-730) (ARC-730)
+- profile hero uses EquippedPlayerAvatar (ARC-730) (ARC-730)
+- use EquippedPlayerAvatar in RankTable (ARC-730) (ARC-730)
+- in-game chat uses EquippedPlayerAvatar (ARC-730) (ARC-730)
+- use EquippedPlayerAvatar in locale chat (ARC-730) (ARC-730)
+
+### Documentation
+- PlayerAvatar implementation plan (ARC-730) (ARC-730)
+- PlayerAvatar component design (ARC-730) (ARC-730)
+
+
 ## [1.14.15] - 2026-05-20
 
 ### Added

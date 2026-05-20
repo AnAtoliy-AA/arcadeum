@@ -26,7 +26,8 @@ import {
   MetaValue,
   MetaListContainer,
 } from './room-card.styles';
-import { LinkButton, Avatar } from '@arcadeum/ui';
+import { LinkButton } from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { XStack, YStack } from 'tamagui';
 
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -164,7 +165,16 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                       className={cardStyles.avatarOverlap}
                       title={formatMemberLabel(member)}
                     >
-                      <Avatar name={formatMemberLabel(member)} size="sm" />
+                      <EquippedPlayerAvatar
+                        name={formatMemberLabel(member)}
+                        size="icon"
+                        equippedAvatarId={member.equippedAvatarId ?? null}
+                        equippedBadgeId={member.equippedBadgeId ?? null}
+                        equippedNameColorId={member.equippedNameColorId}
+                        equippedFrameId={member.equippedFrameId}
+                        equippedAuraId={member.equippedAuraId}
+                        equippedBannerId={member.equippedBannerId}
+                      />
                     </div>
                   ))}
                 {room.members.length > MAX_VISIBLE_PARTICIPANTS && (

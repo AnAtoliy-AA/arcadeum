@@ -1,12 +1,19 @@
 'use client';
 
-import { Avatar, Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
+import { Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { SeaBattleTeam } from './team-mode.types';
 
 export interface UnassignedPoolMember {
   userId: string;
   displayName?: string;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 interface UnassignedPoolProps {
@@ -50,7 +57,16 @@ export function UnassignedPool(props: UnassignedPoolProps) {
                   alignItems="center"
                   data-testid={`unassigned-${m.userId}`}
                 >
-                  <Avatar size="sm" name={display} />
+                  <EquippedPlayerAvatar
+                    size="icon"
+                    name={display}
+                    equippedAvatarId={m.equippedAvatarId ?? null}
+                    equippedBadgeId={m.equippedBadgeId ?? null}
+                    equippedNameColorId={m.equippedNameColorId}
+                    equippedFrameId={m.equippedFrameId}
+                    equippedAuraId={m.equippedAuraId}
+                    equippedBannerId={m.equippedBannerId}
+                  />
                   <Typography variant="body" uiSize="sm">
                     {display}
                   </Typography>

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.15] - 2026-05-20
+
+### Added
+- harden contact form against spam/abuse (ARC-725) (ARC-725)
+- support module — Discord webhook + Gmail SMTP delivery (ARC-725) (ARC-725)
+
+### Fixed
+- E2E bypass for Mailer/Discord/Throttler + dev OriginGuard fallback (ARC-725) (ARC-725)
+- OriginGuard accepts server-action via shared token + e2e fixes (ARC-725) (ARC-725)
+- contact form delivers to NEXT_PUBLIC_SUPPORT_EMAIL (ARC-725) (ARC-725)
+
+
 ## [1.14.14] - 2026-05-19
 
 ### Added

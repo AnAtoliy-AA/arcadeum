@@ -114,6 +114,10 @@ test.describe('Referral Dashboard', () => {
   });
 
   test('should show invite friends link in profile menu', async ({ page }) => {
+    // /referrals first-visit cold-compile can run past 60s in dev mode under
+    // load (consistently flaky on webkit). Bump test budget so the compile
+    // has headroom; doesn't change behavior for warm runs.
+    test.setTimeout(120_000);
     await navigateTo(page, '/referrals');
 
     const profileMenu = page.locator('[data-profile-menu]');

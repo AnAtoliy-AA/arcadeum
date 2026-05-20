@@ -123,7 +123,11 @@ test.describe('Game Room Creation', () => {
 
     const maxInput = page.getByPlaceholder('Auto');
     await maxInput.click();
-    await maxInput.fill('7');
+    // pressSequentially fires per-keystroke input events, which propagate
+    // reliably to React's controlled-input state. `fill()` on number
+    // inputs occasionally lands the value in the DOM without triggering
+    // React's onChange in Firefox, leaving the maxPlayers state at ''.
+    await maxInput.pressSequentially('7');
     await expect(maxInput).toHaveValue('7');
 
     const submitBtn = page.getByRole('button', { name: /create room/i });
@@ -131,7 +135,8 @@ test.describe('Game Room Creation', () => {
     await expect(page).toHaveURL(/\/games\/create/);
 
     await maxInput.click();
-    await maxInput.fill('6');
+    await maxInput.fill('');
+    await maxInput.pressSequentially('6');
     await expect(maxInput).toHaveValue('6');
     await submitBtn.dispatchEvent('click');
 
@@ -145,7 +150,10 @@ test.describe('Game Room Creation', () => {
     const maxInput = page.getByPlaceholder('Auto');
     await expect(maxInput).toBeVisible();
     await maxInput.click();
-    await maxInput.fill('5');
+    // pressSequentially — see comment in 'should validate maximum players
+    // limit' above. Necessary for the Auto button to render, which is
+    // conditional on `maxPlayers` truthy in the React state.
+    await maxInput.pressSequentially('5');
     await expect(maxInput).toHaveValue('5');
 
     const autoBtn = page.getByTestId('auto-max-players-button');

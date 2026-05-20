@@ -12,11 +12,22 @@ import { XStack, YStack } from 'tamagui';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
 import { submitContactAction, type ContactActionState } from './actions';
-
-const initialContactActionState: ContactActionState = { status: 'idle' };
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type FormCopy = NonNullable<NonNullable<ContactMessages['sections']>['form']>;
+
+const initialContactActionState: ContactActionState = { status: 'idle' };
+
+// Off-screen but still in the DOM so bots see and fill it.
+// Avoid `display: none` — some bots skip those.
+const honeypotStyle = {
+  position: 'absolute' as const,
+  left: '-9999px',
+  width: '1px',
+  height: '1px',
+  opacity: 0,
+  pointerEvents: 'none' as const,
+};
 
 export type ContactFormProps = {
   form?: FormCopy;
@@ -45,23 +56,25 @@ export function ContactForm({ form }: ContactFormProps) {
     initialContactActionState,
   );
 
-  // Identity-tracked dismissal: every successful submit produces a fresh
-  // state object, so the "Send another" reset stays per-submit without
-  // needing a setState-in-effect.
   const [dismissedState, setDismissedState] = useState<
     typeof actionState | null
   >(null);
 
-  // Bumping this key remounts the form subtree on "Send another", which
-  // clears DOM values and FloatingLabelInput's internal filled-state
-  // without us having to mirror every field in React state. We never bump
-  // it on validation failures, so failed submits preserve typed values.
   const [formKey, setFormKey] = useState(0);
+
+  // Captured once per form mount (and re-captured when formKey bumps for
+  // "Send another"). BE uses this to reject instant-submit bots — real
+  // users take seconds to fill the form, bots POST immediately.
+  const [formMountedAt] = useState(() => Date.now());
 
   const fieldErrors =
     actionState.status === 'invalid' ? actionState.fieldErrors : undefined;
   const showSuccess =
     actionState.status === 'ok' && actionState !== dismissedState;
+  const errorState =
+    actionState.status === 'error' && actionState !== dismissedState
+      ? actionState
+      : null;
 
   const reset = () => {
     setDismissedState(actionState);
@@ -108,6 +121,30 @@ export function ContactForm({ form }: ContactFormProps) {
               </YStack>
             </div>
           </Card>
+        ) : errorState ? (
+          <Card variant="glass" data-testid="contact-error-message">
+            <div style={s.successCardStyle}>
+              <Typography variant="heading" uiSize="lg">
+                {form?.errorTitle ?? "We couldn't send your message"}
+              </Typography>
+              <Typography variant="body" alpha="medium" marginTop="$2">
+                {form?.errorBody ??
+                  'Something went wrong on our end. You can try again, or open your mail app to send directly.'}
+              </Typography>
+              <YStack alignItems="center" gap="$3" marginTop="$4">
+                <a
+                  href={errorState.fallbackMailto}
+                  style={s.helpLinkStyle}
+                  data-testid="contact-fallback-mailto"
+                >
+                  {form?.openMail ?? 'Open in your mail app'}
+                </a>
+                <button type="button" onClick={reset} style={s.helpLinkStyle}>
+                  {form?.tryAgain ?? 'Try again'}
+                </button>
+              </YStack>
+            </div>
+          </Card>
         ) : (
           <form key={formKey} action={formAction}>
             <YStack gap="$4">
@@ -148,6 +185,22 @@ export function ContactForm({ form }: ContactFormProps) {
                 maxLength={1200}
                 error={!!fieldErrors?.message}
                 data-testid="contact-message-textarea"
+              />
+              <div aria-hidden="true" style={honeypotStyle}>
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
+              <input
+                type="hidden"
+                name="formMountedAt"
+                value={String(formMountedAt)}
               />
               <div style={s.submitRowStyle}>
                 <span style={s.privacyStyle}>

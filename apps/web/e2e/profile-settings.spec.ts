@@ -33,6 +33,11 @@ test.describe('Profile and Settings', () => {
   });
 
   test('should allow toggling notification settings', async ({ page }) => {
+    // /settings is a heavy route; in dev mode the first cold-compile + hydrate
+    // can exceed the default 60s suite-wide timeout, especially when this test
+    // runs first in its file. 120s gives the compile enough headroom on
+    // chromium without masking real regressions in already-warm projects.
+    test.setTimeout(120_000);
     await navigateTo(page, '/settings');
     const notifyToggle = page
       .getByRole('checkbox', { name: /notification|уведомления/i })

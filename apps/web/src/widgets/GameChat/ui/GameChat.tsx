@@ -15,6 +15,7 @@ import { scrollbarStyles } from '@/shared/lib/styles';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope } from '../store/gameChatStore';
 
@@ -22,6 +23,9 @@ export interface ResolvedEquipped {
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 export type EquippedResolver = (id?: string | null) => ResolvedEquipped | null;
@@ -267,10 +271,15 @@ function GameChatRow({
   resolveEquipped?: EquippedResolver;
 }) {
   const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
-  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+  // The hook resolves name-color (used on the sender label outside the
+  // avatar slot). Avatar/badge/frame/aura now come through PlayerAvatar.
+  const { nameColor } = useEquippedCosmetics({
     equippedAvatarId: resolved?.equippedAvatarId,
     equippedBadgeId: resolved?.equippedBadgeId,
     equippedNameColorId: resolved?.equippedNameColorId,
+    equippedFrameId: resolved?.equippedFrameId,
+    equippedAuraId: resolved?.equippedAuraId,
+    equippedBannerId: resolved?.equippedBannerId,
   });
   // Shop name-color overrides the per-match actor color when present —
   // cosmetic personal choice wins over contextual game coloring.
@@ -287,8 +296,20 @@ function GameChatRow({
       contentNode={contentNode}
       type={type}
       isOwn={isOwn}
-      avatarUrl={avatarUrl ?? undefined}
-      badgeUrl={badgeUrl ?? undefined}
+      senderAvatar={
+        senderName ? (
+          <EquippedPlayerAvatar
+            name={senderName}
+            size="sm"
+            equippedAvatarId={resolved?.equippedAvatarId ?? null}
+            equippedBadgeId={resolved?.equippedBadgeId ?? null}
+            equippedNameColorId={resolved?.equippedNameColorId}
+            equippedFrameId={resolved?.equippedFrameId}
+            equippedAuraId={resolved?.equippedAuraId}
+            equippedBannerId={resolved?.equippedBannerId}
+          />
+        ) : undefined
+      }
     />
   );
 }

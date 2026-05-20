@@ -24,6 +24,7 @@ import { useChatStore } from '@/features/chat/store/chatStore';
 import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { formatSafeTime } from '@/shared/lib/date';
 import { ScrollView } from 'tamagui';
 
@@ -230,10 +231,15 @@ function ChatMessageRow({
   isOwn: boolean;
   isEncrypted: boolean;
 }) {
-  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+  // The hook resolves name-color (used in the sender label outside the
+  // avatar slot). Avatar/badge/frame/aura come back through PlayerAvatar.
+  const { nameColor } = useEquippedCosmetics({
     equippedAvatarId: msg.senderEquippedAvatarId,
     equippedBadgeId: msg.senderEquippedBadgeId,
     equippedNameColorId: msg.senderEquippedNameColorId,
+    equippedFrameId: msg.senderEquippedFrameId,
+    equippedAuraId: msg.senderEquippedAuraId,
+    equippedBannerId: msg.senderEquippedBannerId,
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
@@ -242,8 +248,18 @@ function ChatMessageRow({
       senderName={msg.senderUsername}
       senderColor={nameProps.color}
       senderNameStyle={nameProps.style}
-      avatarUrl={avatarUrl ?? undefined}
-      badgeUrl={badgeUrl ?? undefined}
+      senderAvatar={
+        <EquippedPlayerAvatar
+          name={msg.senderUsername}
+          size="sm"
+          equippedAvatarId={msg.senderEquippedAvatarId}
+          equippedBadgeId={msg.senderEquippedBadgeId}
+          equippedNameColorId={msg.senderEquippedNameColorId}
+          equippedFrameId={msg.senderEquippedFrameId}
+          equippedAuraId={msg.senderEquippedAuraId}
+          equippedBannerId={msg.senderEquippedBannerId}
+        />
+      }
       timestamp={formatSafeTime(msg.timestamp)}
       isOwn={isOwn}
       isEncrypted={isEncrypted}

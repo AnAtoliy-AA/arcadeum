@@ -110,6 +110,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         equippedAvatarId: member.equippedAvatarId ?? null,
         equippedBadgeId: member.equippedBadgeId ?? null,
         equippedNameColorId: member.equippedNameColorId ?? null,
+        equippedFrameId: member.equippedFrameId ?? null,
+        equippedAuraId: member.equippedAuraId ?? null,
+        equippedBannerId: member.equippedBannerId ?? null,
       };
     },
     [room.members],
@@ -183,6 +186,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             senderEquippedAvatarId={popupSender?.equippedAvatarId ?? null}
             senderEquippedBadgeId={popupSender?.equippedBadgeId ?? null}
             senderEquippedNameColorId={popupSender?.equippedNameColorId ?? null}
+            senderEquippedFrameId={popupSender?.equippedFrameId ?? null}
+            senderEquippedAuraId={popupSender?.equippedAuraId ?? null}
+            senderEquippedBannerId={popupSender?.equippedBannerId ?? null}
             message={latestMessage.message}
             visible={!!latestMessage}
             onDismiss={dismissPopup}

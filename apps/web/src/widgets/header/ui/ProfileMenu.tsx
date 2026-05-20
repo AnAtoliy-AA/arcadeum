@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
-import Image from 'next/image';
-import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
-import { View } from 'tamagui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
 import {
   SettingsIcon,
@@ -44,14 +42,13 @@ export default function ProfileMenu() {
     snapshot.displayName || snapshot.username || snapshot.email;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
-  const {
-    avatarUrl: equippedAvatarUrl,
-    badgeUrl: equippedBadgeUrl,
-    nameColor: equippedNameColor,
-  } = useEquippedCosmetics({
+  const { nameColor: equippedNameColor } = useEquippedCosmetics({
     equippedAvatarId: snapshot.equippedAvatarId,
     equippedBadgeId: snapshot.equippedBadgeId,
     equippedNameColorId: snapshot.equippedNameColorId,
+    equippedFrameId: snapshot.equippedFrameId,
+    equippedAuraId: snapshot.equippedAuraId,
+    equippedBannerId: snapshot.equippedBannerId,
   });
   const nameColorProps = nameColorRenderProps(equippedNameColor);
 
@@ -93,29 +90,16 @@ export default function ProfileMenu() {
         pressStyle={{ scale: 0.98 }}
         style={{ transition: 'all 0.2s ease' }}
       >
-        <Avatar
+        <EquippedPlayerAvatar
           name={displayName}
-          src={equippedAvatarUrl ?? undefined}
           size="sm"
-          borderWidth={
-            role === 'admin' || role === 'vip' || role === 'premium'
-              ? 1
-              : undefined
-          }
-          borderColor={
-            role === 'admin'
-              ? 'var(--danger)'
-              : role === 'vip' || role === 'premium'
-                ? 'var(--roleVip)'
-                : undefined
-          }
-          boxShadow={
-            role === 'admin'
-              ? '0 0 8px color-mix(in srgb, var(--danger) 50%, transparent)'
-              : role === 'vip' || role === 'premium'
-                ? '0 0 8px color-mix(in srgb, var(--roleVip) 50%, transparent)'
-                : undefined
-          }
+          equippedAvatarId={snapshot.equippedAvatarId}
+          equippedBadgeId={snapshot.equippedBadgeId}
+          equippedNameColorId={snapshot.equippedNameColorId}
+          equippedFrameId={snapshot.equippedFrameId}
+          equippedAuraId={snapshot.equippedAuraId}
+          equippedBannerId={snapshot.equippedBannerId}
+          data-testid="header-equipped-avatar"
         />
         <UserNameEllipsis
           data-testid="header-username"
@@ -124,18 +108,6 @@ export default function ProfileMenu() {
         >
           {displayName}
         </UserNameEllipsis>
-        {equippedBadgeUrl ? (
-          <View width={20} height={20}>
-            <Image
-              src={equippedBadgeUrl}
-              alt=""
-              width={20}
-              height={20}
-              data-testid="header-equipped-badge"
-              unoptimized
-            />
-          </View>
-        ) : null}
         {role !== 'free' && (
           <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
         )}

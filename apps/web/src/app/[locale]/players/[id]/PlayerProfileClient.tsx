@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import {
   PageLayout,
   Container,
@@ -11,9 +10,9 @@ import {
   FormPips,
   EnergyBar,
   EmptyState,
-  Avatar,
 } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import type { PlayerProfile } from '@/entities/leaderboard/model/types';
 import { getPlayer } from '@/shared/api/leaderboard';
@@ -101,12 +100,20 @@ function Profile({
     equippedAvatarId,
     equippedBadgeId,
     equippedNameColorId,
+    equippedFrameId,
+    equippedAuraId,
+    equippedBannerId,
   } = profile;
   const max = modeRanks[0]?.rating ?? player.rating;
-  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+  // PlayerAvatar renders the avatar disc + badge corner + frame + aura.
+  // The name color still drives the surrounding name `<Text>` below.
+  const { nameColor } = useEquippedCosmetics({
     equippedAvatarId,
     equippedBadgeId,
     equippedNameColorId,
+    equippedFrameId,
+    equippedAuraId,
+    equippedBannerId,
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
@@ -120,10 +127,16 @@ function Profile({
         {eyebrow}
       </Text>
       <XStack alignItems="center" gap="$3" flexWrap="wrap">
-        <Avatar
+        <EquippedPlayerAvatar
           name={player.name}
-          src={avatarUrl ?? undefined}
-          size="xl"
+          size="md"
+          equippedAvatarId={equippedAvatarId}
+          equippedBadgeId={equippedBadgeId}
+          equippedNameColorId={equippedNameColorId}
+          equippedFrameId={equippedFrameId}
+          equippedAuraId={equippedAuraId}
+          equippedBannerId={equippedBannerId}
+          fallbackAvatarUrl={player.avatarUrl}
           data-testid="player-profile-avatar"
         />
         <YStack gap="$1">
@@ -137,17 +150,6 @@ function Profile({
             >
               {player.name}
             </Text>
-            {badgeUrl ? (
-              <View width={32} height={32} data-testid="player-profile-badge">
-                <Image
-                  src={badgeUrl}
-                  alt=""
-                  width={32}
-                  height={32}
-                  unoptimized
-                />
-              </View>
-            ) : null}
           </XStack>
           <XStack alignItems="center" gap="$2">
             <RankBadge

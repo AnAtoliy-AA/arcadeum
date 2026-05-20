@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import {
-  Avatar,
   Badge,
   Button,
   Card,
@@ -12,8 +10,8 @@ import {
   XStack,
   YStack,
 } from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import {
@@ -32,6 +30,9 @@ export interface TeamSlotsMember {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 interface TeamSlotsBoardProps {
@@ -350,15 +351,28 @@ function TeamMemberIdentity({
   showBotBadge: boolean;
   botLabel: string;
 }) {
-  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+  const { nameColor } = useEquippedCosmetics({
     equippedAvatarId: member?.equippedAvatarId,
     equippedBadgeId: member?.equippedBadgeId,
     equippedNameColorId: member?.equippedNameColorId,
+    equippedFrameId: member?.equippedFrameId,
+    equippedAuraId: member?.equippedAuraId,
+    equippedBannerId: member?.equippedBannerId,
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
     <XStack gap="$2" alignItems="center" flex={1}>
-      <Avatar size="sm" name={display} src={avatarUrl ?? undefined} />
+      <EquippedPlayerAvatar
+        size="sm"
+        name={display}
+        equippedAvatarId={member?.equippedAvatarId ?? null}
+        equippedBadgeId={member?.equippedBadgeId ?? null}
+        equippedNameColorId={member?.equippedNameColorId}
+        equippedFrameId={member?.equippedFrameId}
+        equippedAuraId={member?.equippedAuraId}
+        equippedBannerId={member?.equippedBannerId}
+        fallbackAvatarUrl={member?.avatarUrl}
+      />
       <Typography
         variant="body"
         uiSize="sm"
@@ -367,17 +381,6 @@ function TeamMemberIdentity({
       >
         {display}
       </Typography>
-      {badgeUrl ? (
-        <View width={16} height={16}>
-          <Image
-            src={badgeUrl}
-            alt=""
-            width={16}
-            height={16}
-            unoptimized
-          />
-        </View>
-      ) : null}
       {showBotBadge ? (
         <Badge variant="neutral" size="sm">
           {botLabel}

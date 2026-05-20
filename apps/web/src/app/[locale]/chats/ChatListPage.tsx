@@ -21,6 +21,7 @@ import {
   Spinner,
   EmptyState,
 } from '@/shared/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
 import { DEBOUNCE } from '@/shared/config/constants';
@@ -151,10 +152,11 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                     isLast={index === displaySearchResults.length - 1}
                     onClick={() => handleSelectUser(result)}
                   >
-                    <Avatar
+                    <EquippedPlayerAvatar
                       name={result.displayName || result.username}
-                      size="sm"
-                      alt=""
+                      size="icon"
+                      equippedAvatarId={null}
+                      equippedBadgeId={null}
                     />
                     <YStack>
                       <Text fontWeight="600">

@@ -22,6 +22,7 @@ import {
   RunnerUpCard,
 } from '@arcadeum/ui';
 import { Text, View } from 'tamagui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useLeaderboard } from '@/entities/leaderboard/model/useLeaderboard';
 import type {
   GameMode,
@@ -328,6 +329,20 @@ export default function LeaderboardsPageContent({
                     regionLabels[mythic.region] ?? mythic.region.toUpperCase()
                   }
                   recentForm={mythic.recentForm}
+                  portrait={
+                    <EquippedPlayerAvatar
+                      name={mythic.name}
+                      size="lg"
+                      equippedAvatarId={mythic.equippedAvatarId}
+                      equippedBadgeId={mythic.equippedBadgeId}
+                      equippedNameColorId={mythic.equippedNameColorId}
+                      equippedFrameId={mythic.equippedFrameId}
+                      equippedAuraId={mythic.equippedAuraId}
+                      equippedBannerId={mythic.equippedBannerId}
+                      fallbackAvatarUrl={mythic.avatarUrl}
+                      priority
+                    />
+                  }
                   streakLabel={(
                     mythicLabels.streak ?? '{count}-game streak'
                   ).replace('{count}', String(mythic.streak))}
@@ -356,6 +371,19 @@ export default function LeaderboardsPageContent({
                       regionLabels[second.region] ?? second.region.toUpperCase()
                     }
                     placeLabel={mythicLabels.runnerUp ?? 'Runner · Up'}
+                    avatar={
+                      <EquippedPlayerAvatar
+                        name={second.name}
+                        size="sm"
+                        equippedAvatarId={second.equippedAvatarId}
+                        equippedBadgeId={second.equippedBadgeId}
+                        equippedNameColorId={second.equippedNameColorId}
+                        equippedFrameId={second.equippedFrameId}
+                        equippedAuraId={second.equippedAuraId}
+                        equippedBannerId={second.equippedBannerId}
+                        fallbackAvatarUrl={second.avatarUrl}
+                      />
+                    }
                   />
                   {third ? (
                     <RunnerUpCard
@@ -368,6 +396,19 @@ export default function LeaderboardsPageContent({
                         regionLabels[third.region] ?? third.region.toUpperCase()
                       }
                       placeLabel={mythicLabels.thirdPlace ?? '3rd · Place'}
+                      avatar={
+                        <EquippedPlayerAvatar
+                          name={third.name}
+                          size="sm"
+                          equippedAvatarId={third.equippedAvatarId}
+                          equippedBadgeId={third.equippedBadgeId}
+                          equippedNameColorId={third.equippedNameColorId}
+                          equippedFrameId={third.equippedFrameId}
+                          equippedAuraId={third.equippedAuraId}
+                          equippedBannerId={third.equippedBannerId}
+                          fallbackAvatarUrl={third.avatarUrl}
+                        />
+                      }
                     />
                   ) : null}
                 </YStack>

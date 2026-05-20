@@ -1,14 +1,13 @@
 'use client';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
-import Image from 'next/image';
 import {
-  Avatar,
   RankBadge,
   FormPips,
   TrendPill,
   EnergyBar,
   LiveChip,
 } from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
@@ -206,10 +205,13 @@ function RankRow({
 }) {
   const live = p.isInMatch ?? false;
   const flag = p.countryCode ? regionFlag(p.countryCode) : null;
-  const { avatarUrl, badgeUrl, nameColor } = useEquippedCosmetics({
+  const { nameColor } = useEquippedCosmetics({
     equippedAvatarId: p.equippedAvatarId,
     equippedBadgeId: p.equippedBadgeId,
     equippedNameColorId: p.equippedNameColorId,
+    equippedFrameId: p.equippedFrameId,
+    equippedAuraId: p.equippedAuraId,
+    equippedBannerId: p.equippedBannerId,
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
@@ -222,11 +224,18 @@ function RankRow({
       </View>
       <YStack flex={1} gap={2}>
         <XStack gap="$2" alignItems="center" flexWrap="wrap">
-          <Avatar
+          <EquippedPlayerAvatar
             size="sm"
             name={p.name}
-            src={avatarUrl ?? p.avatarUrl ?? undefined}
+            equippedAvatarId={p.equippedAvatarId}
+            equippedBadgeId={p.equippedBadgeId}
+            equippedNameColorId={p.equippedNameColorId}
+            equippedFrameId={p.equippedFrameId}
+            equippedAuraId={p.equippedAuraId}
+            equippedBannerId={p.equippedBannerId}
+            fallbackAvatarUrl={p.avatarUrl}
             priority={priority}
+            data-testid={`leaderboard-row-${p.rank}-avatar`}
           />
           {flag ? (
             <Text fontSize="$3" aria-label={p.countryCode}>
@@ -241,18 +250,6 @@ function RankRow({
           >
             {p.name}
           </Text>
-          {badgeUrl ? (
-            <View width={16} height={16}>
-              <Image
-                src={badgeUrl}
-                alt=""
-                width={16}
-                height={16}
-                data-testid={`leaderboard-row-${p.rank}-badge`}
-                unoptimized
-              />
-            </View>
-          ) : null}
           {p.isOnline ? (
             <View
               width={8}

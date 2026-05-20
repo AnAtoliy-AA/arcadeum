@@ -2,7 +2,8 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import type { LeaderboardEntry } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Avatar, Badge, Section, EmptyState } from '@/shared/ui';
+import { Badge, Section, EmptyState } from '@/shared/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { SkeletonCircle, SkeletonText, ProgressBar } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui';
 
@@ -195,7 +196,16 @@ export function Leaderboard({
             >
               <RankDisplay rank={entry.rank} />
               <PlayerInfo>
-                <Avatar name={entry.username} size="lg" alt="" />
+                <EquippedPlayerAvatar
+                  name={entry.username}
+                  size="md"
+                  equippedAvatarId={entry.equippedAvatarId ?? null}
+                  equippedBadgeId={entry.equippedBadgeId ?? null}
+                  equippedNameColorId={entry.equippedNameColorId}
+                  equippedFrameId={entry.equippedFrameId}
+                  equippedAuraId={entry.equippedAuraId}
+                  equippedBannerId={entry.equippedBannerId}
+                />
                 <PlayerName>
                   <Text>{entry.username}</Text>
                   {entry.playerId === currentUserId && (

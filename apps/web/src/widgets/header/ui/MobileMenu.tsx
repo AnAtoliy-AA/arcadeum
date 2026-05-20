@@ -23,7 +23,7 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
-import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import {
   BarChartIcon,
   CardsIcon,
@@ -112,7 +112,16 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
     <MobileNav data-mobile-menu data-testid="mobile-nav">
       {isAuthenticated && displayName ? (
         <MobileUserCard data-testid="mobile-user-card">
-          <Avatar name={displayName} size="md" />
+          <EquippedPlayerAvatar
+            name={displayName}
+            size="md"
+            equippedAvatarId={snapshot.equippedAvatarId}
+            equippedBadgeId={snapshot.equippedBadgeId}
+            equippedNameColorId={snapshot.equippedNameColorId}
+            equippedFrameId={snapshot.equippedFrameId}
+            equippedAuraId={snapshot.equippedAuraId}
+            equippedBannerId={snapshot.equippedBannerId}
+          />
           <YStack flex={1} minWidth={120} gap="$1">
             <XStack alignItems="center" gap="$2" flexWrap="wrap">
               <UserNameEllipsis>{displayName}</UserNameEllipsis>

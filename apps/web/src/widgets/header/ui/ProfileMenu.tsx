@@ -97,8 +97,16 @@ export default function ProfileMenu() {
         variant="chip"
         size="md"
         gap="$3"
-        paddingVertical="$2"
+        // `chip` variant hard-codes height: 28 — override per-instance so the
+        // header chip can host the md (48px) avatar with breathing room.
+        // 56px sits comfortably below the 72px header.
+        height={56}
+        paddingVertical={4}
         paddingHorizontal="$3"
+        // Equipped avatars render aura/frame overlays that extend slightly
+        // outside the 48px avatar box; keep overflow visible so they aren't
+        // clipped by the chip's rounded edges.
+        overflow="visible"
         onClick={toggleMenu}
         hoverStyle={{
           backgroundColor: 'rgba(255, 255, 255, 0.08)',

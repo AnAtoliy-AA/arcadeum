@@ -45,33 +45,6 @@ export const NavLinkWrapper = styled(XStack, {
   height: 72,
 });
 
-export const NavLinkIndicator = styled(XStack, {
-  name: 'NavLinkIndicator',
-  position: 'absolute',
-  // Center is 36, button is 36. Top of button is 18, bottom is 54.
-  top: 18,
-  height: 36,
-  left: 0,
-  right: 0,
-  borderRadius: '$4',
-  borderBottomWidth: 3,
-  borderBottomColor: '#57c3ff',
-  pointerEvents: 'none',
-  zIndex: 10,
-  opacity: 0,
-  style: {
-    transition: 'all 0.2s ease-in-out',
-  },
-
-  variants: {
-    active: {
-      true: {
-        opacity: 1,
-      },
-    },
-  } as const,
-});
-
 export const DesktopOnly = styled(XStack, {
   name: 'DesktopOnly',
   alignItems: 'center',
@@ -190,8 +163,17 @@ export const NavHeaderLink = styled(LinkButton, {
   variants: {
     isActive: {
       true: {
-        backgroundColor: '$backgroundPress',
-        color: '$color',
+        backgroundColor: 'rgba(87, 195, 255, 0.12)',
+        color: '$primary',
+        fontWeight: '700',
+      },
+    },
+    // Emphasis treatment for monetization-driver entries (e.g. Shop):
+    // primary color + bolder weight, even when not the active route.
+    accent: {
+      true: {
+        color: '$primary',
+        fontWeight: '700',
       },
     },
   } as const,

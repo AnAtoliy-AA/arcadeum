@@ -1,21 +1,22 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
-  SupportIcon,
   MenuIcon,
   CloseIcon,
+  SupportIcon,
+  GiftIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
-import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 import {
   DesktopOnly,
@@ -23,7 +24,6 @@ import {
   MobileMenuContainer,
   NavLinkWrapper,
   NavHeaderLink,
-  NavLinkIndicator,
 } from './styles';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
@@ -46,13 +46,27 @@ export function HeaderInteractive() {
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
-      { href: routes.shop, label: t('navigation.shopTab') },
+      { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
+      {
+        href: routes.shop,
+        label: t('navigation.shopTab'),
+        icon: <GiftIcon size={16} />,
+        accent: true,
+      },
+    ],
+    [t, routes],
+  );
+
+  const mobileNavItems = useMemo(
+    () => [
+      // Strip desktop-only emphasis (icon/accent) from mobile — mobile drawer
+      // already styles items uniformly with icons.
+      ...navItems.map(({ href, label }) => ({ href, label })),
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
-      { href: routes.settings, label: t('navigation.settingsTab') },
     ],
-    [t, routes],
+    [navItems, t, routes],
   );
 
   return (
@@ -66,14 +80,14 @@ export function HeaderInteractive() {
                 variant="ghost"
                 size="sm"
                 isActive={pathname === item.href}
+                accent={item.accent}
+                icon={item.icon}
+                gap="$2"
                 data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
+                data-active={pathname === item.href ? 'true' : undefined}
               >
                 {item.label}
               </NavHeaderLink>
-              <NavLinkIndicator
-                active={pathname === item.href}
-                data-testid="nav-link-indicator"
-              />
             </NavLinkWrapper>
           ))}
       </nav>
@@ -82,21 +96,29 @@ export function HeaderInteractive() {
         {isMounted && (
           <>
             <HeaderMobileHidden>
-              <InstallPWAButton />
-            </HeaderMobileHidden>
-
-            <DesktopOnly>
-              <LinkButton
+              <Link
                 href={routes.support}
-                variant="secondary"
-                size="sm"
-                gap="$3"
+                prefetch={false}
                 aria-label={t('common.actions.support')}
+                style={{ textDecoration: 'none', display: 'inline-flex' }}
+                data-testid="header-support-button"
               >
-                <SupportIcon size={18} />
-                {t('common.actions.support')}
-              </LinkButton>
-            </DesktopOnly>
+                <Button
+                  variant="icon"
+                  size="md"
+                  aria-label={t('common.actions.support')}
+                  tabIndex={-1}
+                  hoverStyle={{
+                    y: -2,
+                    transform: 'scale(1.1)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                  }}
+                >
+                  <SupportIcon size={20} />
+                </Button>
+              </Link>
+            </HeaderMobileHidden>
 
             <HeaderMobileHidden>
               <LanguageSwitcher
@@ -156,7 +178,7 @@ export function HeaderInteractive() {
         )}
       </div>
 
-      {isMobileMenuOpen && <MobileMenu navItems={navItems} />}
+      {isMobileMenuOpen && <MobileMenu navItems={mobileNavItems} />}
     </>
   );
 }

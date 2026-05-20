@@ -35,6 +35,7 @@ import {
   SettingsIcon,
   SmartphoneIcon,
   SupportIcon,
+  TrophyIcon,
   UserIcon,
   WalletIcon,
 } from '@arcadeum/ui/components/Icons/index';
@@ -51,6 +52,7 @@ type IconComponent = ComponentType<{ size?: number }>;
 
 const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
   games: CardsIcon,
+  leaderboards: TrophyIcon,
   shop: GiftIcon,
   chats: MailIcon,
   history: FileTextIcon,

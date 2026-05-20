@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.17] - 2026-05-20
+
+### Added
+- taller profile chip — more breathable avatar section (ARC-726) (ARC-726)
+- friendlier profile chip — first-name only + outlined role badge (ARC-726) (ARC-726)
+- scrollable profile dropdown + Support icon + Shop emphasis (ARC-726) (ARC-726)
+
+### Fixed
+- profile chip honors size override (56px, no clipping) (ARC-726) (ARC-726)
+- Support icon button — render via Button+Link, no spin on hover (ARC-726) (ARC-726)
+
+### Refactored
+- slim desktop nav to Games + Leaderboards + Shop (ARC-726) (ARC-726)
+- slim desktop nav, compact profile chip + language switcher (ARC-726) (ARC-726)
+
+### Documentation
+- app header rework design spec (ARC-726) (ARC-726)
+
+
 ## [1.14.16] - 2026-05-20
 
 ### Added

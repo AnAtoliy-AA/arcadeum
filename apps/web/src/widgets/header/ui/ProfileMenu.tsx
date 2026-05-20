@@ -44,6 +44,9 @@ export default function ProfileMenu() {
 
   const displayName =
     snapshot.displayName || snapshot.username || snapshot.email;
+  // Chip shows just the first token of the display name so it never truncates
+  // awkwardly. The full name lives in the dropdown identity card on click.
+  const chipName = displayName?.trim().split(/\s+/)[0] ?? displayName;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
   const { nameColor: equippedNameColor } = useEquippedCosmetics({
@@ -118,10 +121,12 @@ export default function ProfileMenu() {
           {...(nameColorProps.color ? { color: nameColorProps.color } : {})}
           {...(nameColorProps.style ? { style: nameColorProps.style } : {})}
         >
-          {displayName}
+          {chipName}
         </UserNameEllipsis>
         {role !== 'free' && (
-          <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
+          <RoleBadge role={role} variant="outlined">
+            {t(`common.roles.${role}`)}
+          </RoleBadge>
         )}
         <ChevronIcon isOpen={isOpen} />
       </Button>

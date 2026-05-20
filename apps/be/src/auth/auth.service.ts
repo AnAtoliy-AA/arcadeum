@@ -481,6 +481,9 @@ export class AuthService {
       equippedAvatarId: user.equippedAvatarId ?? null,
       equippedBadgeId: user.equippedBadgeId ?? null,
       equippedNameColorId: user.equippedNameColorId ?? null,
+      equippedFrameId: user.equippedFrameId ?? null,
+      equippedAuraId: user.equippedAuraId ?? null,
+      equippedBannerId: user.equippedBannerId ?? null,
     };
 
     const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;

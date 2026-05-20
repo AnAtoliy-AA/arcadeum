@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -95,15 +96,28 @@ export function HeaderInteractive() {
         {isMounted && (
           <>
             <HeaderMobileHidden>
-              <LinkButton
+              <Link
                 href={routes.support}
-                variant="icon"
-                size="md"
+                prefetch={false}
                 aria-label={t('common.actions.support')}
+                style={{ textDecoration: 'none', display: 'inline-flex' }}
                 data-testid="header-support-button"
               >
-                <SupportIcon size={18} />
-              </LinkButton>
+                <Button
+                  variant="icon"
+                  size="md"
+                  aria-label={t('common.actions.support')}
+                  tabIndex={-1}
+                  hoverStyle={{
+                    y: -2,
+                    transform: 'scale(1.1)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    borderColor: 'rgba(255, 255, 255, 0.25)',
+                  }}
+                >
+                  <SupportIcon size={20} />
+                </Button>
+              </Link>
             </HeaderMobileHidden>
 
             <HeaderMobileHidden>

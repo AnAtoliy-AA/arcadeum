@@ -95,8 +95,10 @@ export default function ProfileMenu() {
     <ProfileMenuContainer data-profile-menu data-testid="profile-menu">
       <Button
         variant="chip"
-        size="sm"
-        gap="$2"
+        size="md"
+        gap="$3"
+        paddingVertical="$2"
+        paddingHorizontal="$3"
         onClick={toggleMenu}
         hoverStyle={{
           backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -107,7 +109,7 @@ export default function ProfileMenu() {
       >
         <EquippedPlayerAvatar
           name={displayName}
-          size="sm"
+          size="md"
           equippedAvatarId={snapshot.equippedAvatarId}
           equippedBadgeId={snapshot.equippedBadgeId}
           equippedNameColorId={snapshot.equippedNameColorId}

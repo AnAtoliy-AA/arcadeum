@@ -6,16 +6,11 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
-import {
-  SupportIcon,
-  MenuIcon,
-  CloseIcon,
-} from '@arcadeum/ui/components/Icons/index';
+import { MenuIcon, CloseIcon } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
-import { InstallPWAButton } from '@/features/pwa/InstallPWA';
 
 import {
   DesktopOnly,
@@ -23,7 +18,6 @@ import {
   MobileMenuContainer,
   NavLinkWrapper,
   NavHeaderLink,
-  NavLinkIndicator,
 } from './styles';
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
@@ -50,7 +44,6 @@ export function HeaderInteractive() {
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
-      { href: routes.settings, label: t('navigation.settingsTab') },
     ],
     [t, routes],
   );
@@ -67,13 +60,10 @@ export function HeaderInteractive() {
                 size="sm"
                 isActive={pathname === item.href}
                 data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
+                data-active={pathname === item.href ? 'true' : undefined}
               >
                 {item.label}
               </NavHeaderLink>
-              <NavLinkIndicator
-                active={pathname === item.href}
-                data-testid="nav-link-indicator"
-              />
             </NavLinkWrapper>
           ))}
       </nav>
@@ -81,23 +71,6 @@ export function HeaderInteractive() {
       <div className="actions-styled">
         {isMounted && (
           <>
-            <HeaderMobileHidden>
-              <InstallPWAButton />
-            </HeaderMobileHidden>
-
-            <DesktopOnly>
-              <LinkButton
-                href={routes.support}
-                variant="secondary"
-                size="sm"
-                gap="$3"
-                aria-label={t('common.actions.support')}
-              >
-                <SupportIcon size={18} />
-                {t('common.actions.support')}
-              </LinkButton>
-            </DesktopOnly>
-
             <HeaderMobileHidden>
               <LanguageSwitcher
                 data-testid="header-language-switcher"

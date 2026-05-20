@@ -50,6 +50,12 @@ export interface LeaderboardEntry {
   wins: number;
   losses: number;
   winRate: number;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 export interface LeaderboardResponse {

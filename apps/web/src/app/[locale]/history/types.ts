@@ -5,6 +5,12 @@ export interface HistoryParticipant {
   username: string;
   email: string | null;
   isHost: boolean;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 export interface HistorySummary {

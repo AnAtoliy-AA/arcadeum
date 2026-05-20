@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  Button,
-  Avatar,
-  Badge,
-  Card,
-  ArrowLeftIcon,
-  XStack,
-} from '@arcadeum/ui';
+import { Button, Badge, Card, ArrowLeftIcon, XStack } from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Modal,
@@ -158,10 +152,15 @@ export function HistoryDetailModal({
                 {detail.summary.participants.map((participant) => (
                   <ParticipantRow key={participant.id}>
                     <ParticipantInfo>
-                      <Avatar
+                      <EquippedPlayerAvatar
                         name={formatParticipantName(participant)}
                         size="sm"
-                        alt=""
+                        equippedAvatarId={participant.equippedAvatarId ?? null}
+                        equippedBadgeId={participant.equippedBadgeId ?? null}
+                        equippedNameColorId={participant.equippedNameColorId}
+                        equippedFrameId={participant.equippedFrameId}
+                        equippedAuraId={participant.equippedAuraId}
+                        equippedBannerId={participant.equippedBannerId}
                       />
                       <ParticipantName>
                         {formatParticipantName(participant)}

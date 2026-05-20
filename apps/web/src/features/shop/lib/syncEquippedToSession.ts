@@ -21,5 +21,8 @@ export function syncEquippedToSession(equipped: EquippedView): void {
     equippedAvatarId: equipped.avatar,
     equippedBadgeId: equipped.badge,
     equippedNameColorId: equipped.name_color,
+    equippedFrameId: equipped.frame,
+    equippedAuraId: equipped.aura,
+    equippedBannerId: equipped.banner,
   });
 }

@@ -5,6 +5,7 @@ import './tamagui.config';
 export * from './components/Button';
 
 export * from './components/Avatar/Avatar';
+export * from './components/PlayerAvatar';
 export * from './components/Badge/Badge';
 export * from './components/StatusBadge';
 export * from './components/Toggle';

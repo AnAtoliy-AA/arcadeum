@@ -50,7 +50,7 @@ describe('gameChatStore', () => {
   });
 
   it('registerResolveEquipped sets resolver', () => {
-    const fn = (id: string | null) =>
+    const fn = (id?: string | null) =>
       id === 'u1'
         ? {
             equippedAvatarId: 'a1',

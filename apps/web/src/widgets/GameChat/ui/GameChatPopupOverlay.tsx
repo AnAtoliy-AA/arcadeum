@@ -19,19 +19,16 @@ export function GameChatPopupOverlay() {
   if (chatPanelOpen) return null;
   if (!latestMessage) return null;
 
-  const fromGame = gameResolveDisplayName?.(
-    latestMessage.senderId,
-    latestMessage.senderName,
-  );
+  const senderIdArg = latestMessage.senderId ?? undefined;
+  const senderNameArg = latestMessage.senderName ?? undefined;
+  const fromGame = gameResolveDisplayName?.(senderIdArg, senderNameArg);
   const senderName =
     fromGame && fromGame !== 'Unknown'
       ? fromGame
-      : (fallbackResolveDisplayName?.(
-          latestMessage.senderId,
-          latestMessage.senderName,
-        ) ?? latestMessage.senderName);
+      : (fallbackResolveDisplayName?.(senderIdArg, senderNameArg) ??
+        latestMessage.senderName);
 
-  const equipped = resolveEquipped?.(latestMessage.senderId ?? null) ?? null;
+  const equipped = resolveEquipped?.(senderIdArg) ?? null;
 
   const isOwn =
     !!currentUserId &&

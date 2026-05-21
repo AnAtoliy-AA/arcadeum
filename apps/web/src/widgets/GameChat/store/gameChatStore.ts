@@ -8,8 +8,8 @@ export type { CriticalLogEntry as ChatLogEntry } from '@/shared/types/games';
 export type { ChatScope } from '@/shared/types/games';
 
 export type ChatDisplayNameResolver = (
-  id?: string | null,
-  fallback?: string | null,
+  id?: string,
+  fallback?: string,
 ) => string | undefined;
 
 export type ChatActorColorResolver = (id?: string | null) => string | undefined;
@@ -24,7 +24,7 @@ export interface ChatEquippedItems {
 }
 
 export type ChatEquippedResolver = (
-  id: string | null,
+  id?: string | null,
 ) => ChatEquippedItems | null;
 
 interface GameChatStore {

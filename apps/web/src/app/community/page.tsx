@@ -4,15 +4,16 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import CommunityClient from './CommunityClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'community');
   return buildMetadata({
-    title: 'Community',
-    description: `Join the ${appConfig.appName} community — find groups, threads, and tournaments, and connect with other players.`,
+    ...seo,
     path: routes.community,
     keywords: [
       'board game community',

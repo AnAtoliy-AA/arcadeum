@@ -5,12 +5,16 @@ import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { youTubeVideoObject } from '@/shared/seo/jsonLd';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'home');
   return buildMetadata({
-    description: appConfig.seoDescription,
+    ...seo,
     path: routes.home,
     keywords: [
       'play board games',
@@ -24,9 +28,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function HomeRoute() {
+  const videoJsonLd = appConfig.presentationVideoId
+    ? youTubeVideoObject({
+        name: `${appConfig.appName} — Platform overview`,
+        description: appConfig.seoDescription,
+        youtubeId: appConfig.presentationVideoId,
+      })
+    : null;
+
   return (
-    <Suspense fallback={<PageLoading layout="home" />}>
-      <HomePage />
-    </Suspense>
+    <>
+      {videoJsonLd ? <JsonLd data={videoJsonLd} /> : null}
+      <Suspense fallback={<PageLoading layout="home" />}>
+        <HomePage />
+      </Suspense>
+    </>
   );
 }

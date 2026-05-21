@@ -5,15 +5,16 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import CookiePolicyClient from './CookiePolicyClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'cookies');
   return buildMetadata({
-    title: 'Cookie Policy',
-    description: `How ${appConfig.appName} uses cookies and similar technologies to keep you signed in, remember preferences, and improve the experience.`,
+    ...seo,
     path: routes.cookies,
     keywords: ['cookie policy', 'cookies', 'privacy', 'tracking'],
     locale,

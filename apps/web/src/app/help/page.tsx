@@ -4,15 +4,16 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import HelpClient from './HelpClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'help');
   return buildMetadata({
-    title: 'Help Center',
-    description: `Answers to common questions, troubleshooting steps, and platform guides for ${appConfig.appName}.`,
+    ...seo,
     path: routes.help,
     keywords: [
       'arcadeum help',

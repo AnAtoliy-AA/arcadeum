@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, contactPage } from '@/shared/seo/jsonLd';
 import ContactView from './ContactView';
@@ -16,9 +17,9 @@ const WORKING_HOURS =
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'contact');
   return buildMetadata({
-    title: 'Contact Us',
-    description: `Get in touch with the ${appConfig.appName} team — support, partnerships, press, and feedback.`,
+    ...seo,
     path: routes.contact,
     keywords: ['contact arcadeum', 'support', 'feedback', 'partnerships'],
     locale,

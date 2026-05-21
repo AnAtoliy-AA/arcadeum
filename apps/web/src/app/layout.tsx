@@ -99,6 +99,14 @@ export const metadata: Metadata = {
     'online board game platform',
     'arcadeum',
   ],
+  verification: {
+    google: appConfig.verification.google,
+    yandex: appConfig.verification.yandex,
+    yahoo: appConfig.verification.yahoo,
+    other: appConfig.verification.bing
+      ? { 'msvalidate.01': appConfig.verification.bing }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {

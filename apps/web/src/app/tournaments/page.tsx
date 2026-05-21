@@ -4,15 +4,16 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import TournamentsClient from './TournamentsClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'tournaments');
   return buildMetadata({
-    title: 'Tournaments',
-    description: `Join competitive board game tournaments on ${appConfig.appName} — compete for rewards, climb the bracket, and play with friends.`,
+    ...seo,
     path: routes.tournaments,
     keywords: [
       'board game tournaments',

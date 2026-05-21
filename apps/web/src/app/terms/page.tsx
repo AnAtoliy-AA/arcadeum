@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import TermsClient from './TermsClient';
@@ -21,9 +22,9 @@ const WORKING_HOURS =
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'terms');
   return buildMetadata({
-    title: 'Terms of Service',
-    description: `The terms and conditions for using ${appConfig.appName}: account rules, acceptable use, payments, and legal notices.`,
+    ...seo,
     path: routes.terms,
     keywords: [
       'terms of service',

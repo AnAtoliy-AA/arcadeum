@@ -6,6 +6,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import type {
@@ -15,9 +16,9 @@ import type {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'support');
   return buildMetadata({
-    title: 'Support the developers',
-    description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Sponsor, contribute, or star the repo.`,
+    ...seo,
     path: routes.support,
     keywords: [
       'support arcadeum',

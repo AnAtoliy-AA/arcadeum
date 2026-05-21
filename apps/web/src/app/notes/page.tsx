@@ -4,15 +4,16 @@ import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import NotesClient from './NotesClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'notes');
   return buildMetadata({
-    title: 'Patch Notes',
-    description: `Release notes and platform changes for ${appConfig.appName} — new games, balance updates, fixes, and improvements.`,
+    ...seo,
     path: routes.notes,
     ogType: 'article',
     keywords: ['patch notes', 'release notes', 'changelog', 'updates'],

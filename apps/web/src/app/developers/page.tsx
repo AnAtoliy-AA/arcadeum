@@ -4,15 +4,16 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import DevelopersClient from './DevelopersClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
+  const seo = getSeoMessages(locale, 'developers');
   return buildMetadata({
-    title: 'Developers',
-    description: `API documentation, SDKs, and integration guides for building on the ${appConfig.appName} platform.`,
+    ...seo,
     path: routes.developers,
     keywords: [
       'arcadeum api',

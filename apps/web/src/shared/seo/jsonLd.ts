@@ -145,3 +145,33 @@ export function contactPage(): JsonLdNode {
     url: absolute('/contact'),
   };
 }
+
+export type VideoObjectInput = {
+  name: string;
+  description: string;
+  /** YouTube video ID (no URL — just the 11-char ID). */
+  youtubeId: string;
+  /** ISO date the video was uploaded. Optional but recommended by Google. */
+  uploadDate?: string;
+};
+
+/**
+ * Emit a `VideoObject` for an embedded YouTube clip. Helps Google index the
+ * video and surface it in Video search results.
+ */
+export function youTubeVideoObject(input: VideoObjectInput): JsonLdNode {
+  const watchUrl = `https://www.youtube.com/watch?v=${input.youtubeId}`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${input.youtubeId}`;
+  const thumbnail = `https://i.ytimg.com/vi/${input.youtubeId}/maxresdefault.jpg`;
+  const node: JsonLdNode = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: input.name,
+    description: input.description,
+    thumbnailUrl: [thumbnail],
+    contentUrl: watchUrl,
+    embedUrl,
+  };
+  if (input.uploadDate) node.uploadDate = input.uploadDate;
+  return node;
+}

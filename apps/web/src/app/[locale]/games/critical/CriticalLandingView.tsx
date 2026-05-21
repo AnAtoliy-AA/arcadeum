@@ -72,6 +72,30 @@ export function CriticalLandingView({
         </section>
 
         <section
+          id="how-to-play"
+          className={styles.section}
+          aria-labelledby="critical-howto-heading"
+        >
+          <span className={styles.kicker}>{landing.sections.howToKicker}</span>
+          <h2 id="critical-howto-heading" className={styles.sectionTitle}>
+            {landing.howToPlay.title}
+          </h2>
+          <ol className={styles.steps}>
+            {[
+              landing.howToPlay.steps.setup,
+              landing.howToPlay.steps.draw,
+              landing.howToPlay.steps.play,
+              landing.howToPlay.steps.survive,
+            ].map((step, index) => (
+              <li key={index} className={styles.step}>
+                <h3 className={styles.stepTitle}>{step.title}</h3>
+                <p className={styles.stepBody}>{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section
           className={styles.section}
           aria-labelledby="critical-about-heading"
         >
@@ -87,6 +111,7 @@ export function CriticalLandingView({
         </section>
 
         <section
+          id="faq"
           className={styles.section}
           aria-labelledby="critical-faq-heading"
         >

@@ -31,8 +31,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'Cómo jugar',
     aboutKicker: 'Sobre el juego',
     faqKicker: 'Preguntas frecuentes',
+  },
+  howToPlay: {
+    title: 'Cómo jugar a Glimworm',
+    steps: {
+      setup: {
+        title: '1. Crea una sala y elige un modo',
+        body: 'Elige Battle Royale, Time Attack o Vidas + Mangas. Invita a tus amigos con un enlace o llena los asientos vacíos con bots de IA y juega en solitario.',
+      },
+      slither: {
+        title: '2. Entra en la arena',
+        body: 'Tu gusano luminoso aparece en un punto aleatorio. Muévete con el ratón o táctil y empieza a comer luces — cada luz te hace un poco más largo y más brillante.',
+      },
+      evade: {
+        title: '3. Evita los rastros de otros gusanos',
+        body: 'Si chocas de frente con el rastro de otro gusano, tu partida termina. Cruza por delante de gusanos más pequeños si puedes, pero nunca embistas un rastro más largo.',
+      },
+      survive: {
+        title: '4. Sobrevive más que nadie',
+        body: 'En Battle Royale gana el último gusano vivo. En Time Attack gana el de mayor puntuación al sonar el silbato. En ambos modos, sobrevivir mientras creces es todo el trabajo.',
+      },
+    },
   },
   about: {
     title: 'Sobre Glimworm',

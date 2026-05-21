@@ -30,8 +30,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'Comment jouer',
     aboutKicker: 'À propos du jeu',
     faqKicker: 'FAQ',
+  },
+  howToPlay: {
+    title: 'Comment jouer à Critical',
+    steps: {
+      setup: {
+        title: '1. Créez ou rejoignez un salon',
+        body: 'Choisissez un salon privé ou public, invitez vos amis et remplissez les places vides avec des bots IA pour démarrer avant que tout le monde n’arrive.',
+      },
+      draw: {
+        title: '2. Prenez votre main de départ',
+        body: 'Chaque joueur commence avec une carte Désamorçage et sept cartes d’Action aléatoires. Le paquet contient une ou plusieurs cartes Critical — l’explosion que vous essayez d’éviter.',
+      },
+      play: {
+        title: '3. Jouez des cartes d’Action ou piochez',
+        body: 'À votre tour, jouez autant de cartes d’Action que vous voulez — Attaque, Saut, Voir l’avenir, Vol, combos de deux ou trois identiques. Terminez en piochant une carte du paquet.',
+      },
+      survive: {
+        title: '4. Désamorcez la Critical ou explosez',
+        body: 'Quand vous piochez une carte Critical, jouez votre Désamorçage pour la neutraliser ; sinon vous êtes éliminé de la manche. Le dernier joueur en jeu remporte la manche.',
+      },
+    },
   },
   about: {
     title: 'À propos de Critical',

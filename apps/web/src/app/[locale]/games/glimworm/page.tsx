@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { GlimwormLandingView } from './GlimwormLandingView';
@@ -130,8 +131,37 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
           text: item.answer,
         },
       })),
+      // See critical/page.tsx for the rationale — `#faq` is the stable
+      // anchor on the landing's FAQ section that voice surfaces use to
+      // pick up the question/answer pairs.
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['#faq'],
+      },
     },
   ];
+
+  // HowTo schema derived from the new visible `howToPlay` section.
+  // Boosts SERP CTR on instructional queries ("how to play snake game
+  // online", "slither.io rules").
+  const howToSteps = landing?.howToPlay?.steps;
+  const howToJsonLd = howToSteps
+    ? buildHowToJsonLd({
+        locale,
+        pageUrl,
+        name: landing?.howToPlay?.title ?? 'How to play Glimworm',
+        description: landing?.meta?.description,
+        steps: [
+          howToSteps.setup,
+          howToSteps.slither,
+          howToSteps.evade,
+          howToSteps.survive,
+        ]
+          .filter((s): s is { title: string; body: string } => !!s)
+          .map((s) => ({ name: s.title, text: s.body })),
+      })
+    : null;
+  if (howToJsonLd) jsonLd.push(howToJsonLd);
 
   const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
 

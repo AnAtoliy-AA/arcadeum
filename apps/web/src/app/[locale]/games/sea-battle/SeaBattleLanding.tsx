@@ -242,7 +242,7 @@ export default function SeaBattleLanding({
               </div>
             </section>
 
-            <section className={styles.section}>
+            <section id="faq" className={styles.section}>
               <header className={styles.sectionHead}>
                 <div className={styles.sectionTitleGroup}>
                   <p className={styles.sectionKicker}>

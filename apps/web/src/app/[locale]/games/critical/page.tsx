@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { CriticalLandingView } from './CriticalLandingView';
@@ -132,8 +133,38 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
           text: item.answer,
         },
       })),
+      // Mark the on-page FAQ block (`<section id="faq">`) as speakable
+      // so Google Assistant / voice surfaces know which slice is safe
+      // to read aloud in response to a spoken query.
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['#faq'],
+      },
     },
   ];
+
+  // HowTo derived from the new `howToPlay` i18n that renders as the
+  // numbered "How to play Critical" section. Eligible for Google's
+  // step-by-step rich result on "how to play critical card game" and
+  // related queries.
+  const howToSteps = landing?.howToPlay?.steps;
+  const howToJsonLd = howToSteps
+    ? buildHowToJsonLd({
+        locale,
+        pageUrl,
+        name: landing?.howToPlay?.title ?? 'How to play Critical',
+        description: landing?.meta?.description,
+        steps: [
+          howToSteps.setup,
+          howToSteps.draw,
+          howToSteps.play,
+          howToSteps.survive,
+        ]
+          .filter((s): s is { title: string; body: string } => !!s)
+          .map((s) => ({ name: s.title, text: s.body })),
+      })
+    : null;
+  if (howToJsonLd) jsonLd.push(howToJsonLd);
 
   const relatedPosts = getPostsByTag(locale, ['Critical', 'Card Game']);
 

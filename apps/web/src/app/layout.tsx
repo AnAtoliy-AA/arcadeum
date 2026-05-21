@@ -137,6 +137,19 @@ export default async function RootLayout({
       data-theme-preference={themePreference}
     >
       <head>
+        {/*
+         * Resource hints. Preconnect opens the TCP+TLS handshake before any
+         * real request, so when the user (or a crawler running JS) hits the
+         * presentation video, OAuth flow, or YouTube thumbnail, the
+         * connection is already warm. `dns-prefetch` is the safe fallback
+         * for browsers that ignore `preconnect` (older Safari, some bots).
+         */}
+        <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+        <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
+        <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://i.ytimg.com" />
+        <link rel="preconnect" href="https://accounts.google.com" />
+        <link rel="dns-prefetch" href="https://accounts.google.com" />
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>

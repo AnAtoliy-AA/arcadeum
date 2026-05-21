@@ -70,6 +70,53 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
           </Section>
         )}
 
+        {(() => {
+          const faq = t?.faq as
+            | {
+                heading?: string;
+                items?: ({ question: string; answer: string } | null)[];
+              }
+            | undefined;
+          const items =
+            faq?.items?.filter(
+              (i): i is { question: string; answer: string } =>
+                !!i && !!i.question && !!i.answer,
+            ) ?? [];
+          if (!items.length) return null;
+          return (
+            <Section variant="legal">
+              <YStack gap="$3">
+                <Typography variant="label" uiSize="lg" fontWeight="700">
+                  {faq?.heading}
+                </Typography>
+                <YStack gap="$2">
+                  {items.map((item, index) => (
+                    <GlassCard
+                      key={index}
+                      p="$4"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                    >
+                      <YStack gap="$1">
+                        <Typography
+                          variant="label"
+                          uiSize="md"
+                          fontWeight="700"
+                        >
+                          {item.question}
+                        </Typography>
+                        <Typography variant="body" uiSize="sm" alpha="medium">
+                          {item.answer}
+                        </Typography>
+                      </YStack>
+                    </GlassCard>
+                  ))}
+                </YStack>
+              </YStack>
+            </Section>
+          );
+        })()}
+
         <Section variant="legal">
           <Typography variant="body" uiSize="md" alpha="medium">
             {t?.comingSoon}

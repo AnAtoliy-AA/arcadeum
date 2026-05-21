@@ -8,6 +8,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { resolveApiBase } from '@/shared/lib/api-base';
 import { Header } from '@/widgets/header/ui/Header';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 import { hreflang, isLocale } from '@/shared/i18n/locale-url';
 
 const geistSans = Geist({
@@ -259,6 +260,7 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
+        <WebVitalsReporter />
         <AppThemeProvider initialTheme={theme}>
           <LanguageProvider initialLocale={locale}>
             <PWAProvider>

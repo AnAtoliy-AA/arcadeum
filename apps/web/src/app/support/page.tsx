@@ -8,7 +8,7 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
 import { getSeoMessages } from '@/shared/seo/messages';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
-import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
+import { breadcrumbList, personSchema, webPage } from '@/shared/seo/jsonLd';
 import type {
   SupportAction,
   SupportTeamMember,
@@ -29,18 +29,6 @@ export async function generateMetadata(): Promise<Metadata> {
     locale,
   });
 }
-
-const SUPPORT_JSON_LD = [
-  webPage({
-    name: `Support the developers — ${appConfig.appName}`,
-    description: 'Sponsor development and keep the platform free.',
-    path: routes.support,
-  }),
-  breadcrumbList([
-    { name: 'Home', path: routes.home },
-    { name: 'Support', path: routes.support },
-  ]),
-];
 
 const TEAM_MEMBERS: SupportTeamMember[] = [
   {
@@ -106,6 +94,42 @@ function buildActions(): SupportAction[] {
   return actions;
 }
 
+function buildSupportJsonLd() {
+  // Dedupe team members by name so we emit one Person schema per individual
+  // even when they appear under multiple roles on the page.
+  const byName = new Map<string, SupportTeamMember[]>();
+  for (const member of TEAM_MEMBERS) {
+    const existing = byName.get(member.name) ?? [];
+    existing.push(member);
+    byName.set(member.name, existing);
+  }
+
+  const persons = Array.from(byName.values()).map((members) =>
+    personSchema({
+      name: members[0].name,
+      jobTitle:
+        members.length === 1 ? members[0].role : members.map((m) => m.role),
+      description: members[0].bio,
+      url: members[0].linkedin,
+      sameAs: members[0].linkedin ? [members[0].linkedin] : undefined,
+      worksFor: { name: appConfig.appName, url: appConfig.siteUrl },
+    }),
+  );
+
+  return [
+    webPage({
+      name: `Support the developers — ${appConfig.appName}`,
+      description: 'Sponsor development and keep the platform free.',
+      path: routes.support,
+    }),
+    breadcrumbList([
+      { name: 'Home', path: routes.home },
+      { name: 'Support', path: routes.support },
+    ]),
+    ...persons,
+  ];
+}
+
 export default async function SupportRoute() {
   const messages = await getTranslations();
   const supportT = messages.support;
@@ -113,7 +137,7 @@ export default async function SupportRoute() {
 
   return (
     <>
-      <JsonLd data={SUPPORT_JSON_LD} />
+      <JsonLd data={buildSupportJsonLd()} />
       <SupportClient
         appName={appConfig.appName}
         supportT={supportT}

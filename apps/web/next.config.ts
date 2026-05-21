@@ -189,6 +189,36 @@ const nextConfig: NextConfig = {
           },
         ],
       })),
+      // Public info/legal pages: content changes rarely, so let the CDN
+      // serve a fresh-ish copy for a few minutes and revalidate in the
+      // background for up to a day. Big TTFB win for crawlers + repeat
+      // visitors and a direct Core Web Vitals signal.
+      ...[
+        '/blog/:path*',
+        '/community/:path*',
+        '/developers/:path*',
+        '/help/:path*',
+        '/tournaments/:path*',
+        '/leaderboards/:path*',
+        '/rewards/:path*',
+        '/notes/:path*',
+        '/support/:path*',
+        '/privacy/:path*',
+        '/terms/:path*',
+        '/contact/:path*',
+        '/cookies/:path*',
+        '/players/:path*',
+      ].map((source) => ({
+        source,
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, s-maxage=300, stale-while-revalidate=86400',
+          },
+        ],
+      })),
     ];
   },
   env: {

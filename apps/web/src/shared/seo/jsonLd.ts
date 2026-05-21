@@ -137,6 +137,47 @@ export function profilePage(input: ProfileSchemaInput): JsonLdNode {
   };
 }
 
+export type PersonInput = {
+  name: string;
+  /** A single role or, when the person wears multiple hats, an array. */
+  jobTitle?: string | string[];
+  description?: string;
+  /** Optional canonical URL (LinkedIn, GitHub, personal site). */
+  url?: string;
+  /** `sameAs` profiles — social or other auth profile URLs. */
+  sameAs?: string[];
+  image?: string;
+  worksFor?: { name: string; url: string };
+};
+
+/**
+ * Person schema for a real human (founder, team member, author). Helps
+ * Google associate authored content with a known entity (E-A-T).
+ */
+export function personSchema(input: PersonInput): JsonLdNode {
+  const node: JsonLdNode = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: input.name,
+  };
+  if (input.jobTitle) node.jobTitle = input.jobTitle;
+  if (input.description) node.description = input.description;
+  if (input.url) node.url = input.url;
+  if (input.sameAs && input.sameAs.length > 0) node.sameAs = input.sameAs;
+  if (input.image)
+    node.image = input.image.startsWith('http')
+      ? input.image
+      : absolute(input.image);
+  if (input.worksFor) {
+    node.worksFor = {
+      '@type': 'Organization',
+      name: input.worksFor.name,
+      url: input.worksFor.url,
+    };
+  }
+  return node;
+}
+
 export function contactPage(): JsonLdNode {
   return {
     '@context': 'https://schema.org',

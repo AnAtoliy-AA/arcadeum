@@ -124,6 +124,13 @@ test.describe('Sea Battle Chat Message Popup', () => {
       { timeout: 60000 },
     );
 
+    // On wide viewports GamePageLayout auto-opens the chat panel, which now
+    // suppresses the popup overlay. Force it closed so the popup can render.
+    await page.evaluate(() => {
+      const store = (window as unknown as TestWindow).useGameChatStore;
+      store?.getState().setChatPanelOpen(false);
+    });
+
     const expectedMsg = 'Prepare for battle!';
     const state = createSeaBattleState(userId, otherUserId, [
       {
@@ -234,6 +241,13 @@ test.describe('Sea Battle Chat Message Popup', () => {
       },
       { timeout: 60000 },
     );
+
+    // On wide viewports GamePageLayout auto-opens the chat panel, which now
+    // suppresses the popup overlay. Force it closed so the popup can render.
+    await page.evaluate(() => {
+      const store = (window as unknown as TestWindow).useGameChatStore;
+      store?.getState().setChatPanelOpen(false);
+    });
 
     const expectedMsg = 'I will sink you!';
     const state = createSeaBattleState(userId, otherUserId, [
@@ -348,6 +362,13 @@ test.describe('Sea Battle Chat Message Popup', () => {
       },
       { timeout: 60000 },
     );
+
+    // On wide viewports GamePageLayout auto-opens the chat panel, which now
+    // suppresses the popup overlay. Force it closed so the popup can render.
+    await page.evaluate(() => {
+      const store = (window as unknown as TestWindow).useGameChatStore;
+      store?.getState().setChatPanelOpen(false);
+    });
 
     const expectedMsg = 'My own message';
     const state = createSeaBattleState(userId, otherUserId, [

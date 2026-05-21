@@ -1,29 +1,39 @@
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TamaguiProvider } from 'tamagui';
+import tamaguiConfig from '@/shared/config/tamagui.config';
 
 import { GameChat } from '../GameChat';
 import { useGameChatStore } from '../../store/gameChatStore';
 import type { ChatLogEntry } from '../../store/gameChatStore';
 
+function renderChat(ui: React.ReactElement) {
+  return render(
+    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+      {ui}
+    </TamaguiProvider>,
+  );
+}
+
 vi.mock('@arcadeum/ui', async () => {
-  const React = await import('react');
-  // Lightweight stubs for the Tamagui surface used by GameChat — we only
-  // need to verify what GameChat passes to ChatMessage.
   const passthrough = (name: string) =>
     function Stub({ children }: { children?: React.ReactNode }) {
       return React.createElement('div', { 'data-stub': name }, children);
     };
+  const button = ({
+    children,
+    onClick,
+  }: {
+    children?: React.ReactNode;
+    onClick?: () => void;
+  }) => React.createElement('button', { onClick }, children);
   return {
     XStack: passthrough('XStack'),
     YStack: passthrough('YStack'),
     ScrollView: passthrough('ScrollView'),
-    Button: ({
-      children,
-      onClick,
-    }: {
-      children?: React.ReactNode;
-      onClick?: () => void;
-    }) => React.createElement('button', { onClick }, children),
+    Button: button,
+    IconButton: button,
     GlassCard: passthrough('GlassCard'),
     CloseIcon: () => React.createElement('span'),
     Typography: ({ children }: { children?: React.ReactNode }) =>
@@ -75,7 +85,7 @@ describe('GameChat', () => {
     useGameChatStore.getState().clear();
   });
 
-  it('marks a message as own when senderId matches currentUserId', () => {
+  it('marks a chat message as own when senderId matches currentUserId', () => {
     useGameChatStore
       .getState()
       .setLogs([
@@ -83,7 +93,7 @@ describe('GameChat', () => {
         makeLog({ id: 'b', senderId: 'other', message: 'theirs' }),
       ]);
 
-    render(
+    renderChat(
       <GameChat
         currentUserId="me"
         resolveDisplayName={(id) => (id === 'me' ? 'You' : 'Bob')}
@@ -91,47 +101,50 @@ describe('GameChat', () => {
     );
 
     const rendered = screen.getAllByTestId('chat-message');
+    expect(rendered).toHaveLength(2);
     expect(rendered[0]?.getAttribute('data-is-own')).toBe('true');
     expect(rendered[0]?.getAttribute('data-sender')).toBe('You');
     expect(rendered[1]?.getAttribute('data-is-own')).toBe('false');
     expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
   });
 
-  it('passes raw message, sender name and a deterministic color for action/system logs', () => {
+  it('renders system and action logs separately from chat messages', () => {
     useGameChatStore
       .getState()
       .setLogs([
-        makeLog({ id: 'a', type: 'action', senderId: 'p1', message: 'Drew a card' }),
-        makeLog({ id: 'b', type: 'system', senderId: 'p2', message: 'exploded!' }),
+        makeLog({
+          id: 'a',
+          type: 'action',
+          senderId: 'p1',
+          message: 'Drew a card',
+        }),
+        makeLog({
+          id: 'b',
+          type: 'system',
+          senderId: 'p2',
+          message: 'exploded!',
+        }),
         makeLog({ id: 'c', type: 'message', senderId: 'p1', message: 'hi' }),
-        makeLog({ id: 'd', type: 'action', senderId: null, message: 'Game started' }),
       ]);
 
-    render(
+    renderChat(
       <GameChat
         currentUserId="p1"
         resolveDisplayName={(id) => (id === 'p1' ? 'You' : 'Bob')}
       />,
     );
 
-    const rendered = screen.getAllByTestId('chat-message');
+    // Only `message` logs use the ChatMessage component; system/action rows
+    // render via the new GameChatSystemRow surface.
+    const chatRendered = screen.getAllByTestId('chat-message');
+    expect(chatRendered).toHaveLength(1);
+    expect(chatRendered[0]?.textContent).toBe('hi');
+    expect(chatRendered[0]?.getAttribute('data-sender')).toBe('You');
+    expect(chatRendered[0]?.getAttribute('data-sender-color')).toMatch(/^#/);
 
-    // Action log: raw content, sender name resolved, deterministic color set.
-    expect(rendered[0]?.textContent).toBe('Drew a card');
-    expect(rendered[0]?.getAttribute('data-sender')).toBe('You');
-    const p1Color = rendered[0]?.getAttribute('data-sender-color');
-    expect(p1Color).toMatch(/^#/);
-
-    // Same player id in a chat message gets the SAME color.
-    expect(rendered[2]?.getAttribute('data-sender-color')).toBe(p1Color);
-
-    // Different player → different color (probabilistically, but our palette is small)
-    expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
-    expect(rendered[1]?.getAttribute('data-sender-color')).toMatch(/^#/);
-
-    // Log without a senderId → no sender, no color.
-    expect(rendered[3]?.getAttribute('data-sender')).toBe('');
-    expect(rendered[3]?.getAttribute('data-sender-color')).toBe('');
+    // System / action messages still appear somewhere in the rendered tree.
+    expect(screen.getByText('Drew a card')).toBeTruthy();
+    expect(screen.getByText('exploded!')).toBeTruthy();
   });
 
   it('treats messages as not-own when currentUserId is missing', () => {
@@ -139,7 +152,7 @@ describe('GameChat', () => {
       .getState()
       .setLogs([makeLog({ id: 'a', senderId: 'someone', message: 'hi' })]);
 
-    render(
+    renderChat(
       <GameChat
         resolveDisplayName={(id) => (id === 'someone' ? 'Alice' : id)}
       />,

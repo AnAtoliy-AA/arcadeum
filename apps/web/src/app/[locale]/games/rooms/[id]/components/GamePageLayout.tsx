@@ -7,12 +7,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
-import {
-  GameChat,
-  useGameChatStore,
-  ChatMessagePopup,
-  useLatestChatMessage,
-} from '@/widgets/GameChat';
+import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import type { GameRoomSummary } from '@/shared/types/games';
 
 import { Container, fullscreenStyles } from './styles';
@@ -78,27 +73,13 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     });
   }, [media.gtMd]);
 
-  // Chat message popup — reads from global store written by game widgets
-  const logs = useGameChatStore((s) => s.logs);
-  const registeredResolver = useGameChatStore((s) => s.resolveDisplayName);
-  const { latestMessage, dismiss: dismissPopup } = useLatestChatMessage(logs);
-
-  const fallbackResolver = useCallback(
-    (id?: string, fallback?: string) => {
+  const resolveDisplayName = useCallback(
+    (id?: string, fallback?: string): string | undefined => {
       if (id && userId && id === userId) return t('chat.you');
       const member = room.members?.find((m) => m.id === id);
-      return member?.displayName ?? fallback ?? id;
+      return member?.displayName ?? fallback ?? id ?? undefined;
     },
     [room.members, userId, t],
-  );
-
-  const resolveDisplayName = useCallback(
-    (id?: string, fallback?: string) => {
-      const fromGame = registeredResolver?.(id, fallback);
-      if (fromGame && fromGame !== 'Unknown') return fromGame;
-      return fallbackResolver(id, fallback);
-    },
-    [registeredResolver, fallbackResolver],
   );
 
   const resolveEquipped = useCallback(
@@ -118,13 +99,35 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     [room.members],
   );
 
-  const popupSender = latestMessage
-    ? resolveEquipped(latestMessage.senderId ?? null)
-    : null;
-  const popupSenderName = latestMessage
-    ? (resolveDisplayName(latestMessage.senderId, latestMessage.senderName) ??
-      latestMessage.senderName)
-    : '';
+  const gameRegisteredResolver = useGameChatStore((s) => s.resolveDisplayName);
+  const resolveDisplayNameForList = useCallback(
+    (id?: string, fallback?: string): string | undefined => {
+      const fromGame = gameRegisteredResolver?.(id, fallback);
+      if (fromGame && fromGame !== 'Unknown') return fromGame;
+      return resolveDisplayName(id, fallback);
+    },
+    [gameRegisteredResolver, resolveDisplayName],
+  );
+
+  // Sync layout-owned state into the chat store so GameChatPopupOverlay
+  // (mounted inside GameWidgetContainer) can render with full context.
+  useEffect(() => {
+    useGameChatStore.getState().setCurrentUserId(userId);
+  }, [userId]);
+
+  useEffect(() => {
+    useGameChatStore.getState().registerResolveEquipped(resolveEquipped);
+  }, [resolveEquipped]);
+
+  useEffect(() => {
+    useGameChatStore.getState().setChatPanelOpen(showChat);
+  }, [showChat]);
+
+  useEffect(() => {
+    useGameChatStore
+      .getState()
+      .registerFallbackResolveDisplayName(resolveDisplayName);
+  }, [resolveDisplayName]);
 
   return (
     <>
@@ -171,30 +174,12 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             <GameChat
               onClose={() => setShowChat(false)}
               teamMode={teamMode}
-              resolveDisplayName={resolveDisplayName}
+              resolveDisplayName={resolveDisplayNameForList}
               resolveEquipped={resolveEquipped}
               currentUserId={userId}
             />
           </ChatPanel>
         </GameRow>
-
-        {latestMessage && (
-          <ChatMessagePopup
-            key={latestMessage.id}
-            senderId={latestMessage.senderId ?? null}
-            senderName={popupSenderName}
-            senderEquippedAvatarId={popupSender?.equippedAvatarId ?? null}
-            senderEquippedBadgeId={popupSender?.equippedBadgeId ?? null}
-            senderEquippedNameColorId={popupSender?.equippedNameColorId ?? null}
-            senderEquippedFrameId={popupSender?.equippedFrameId ?? null}
-            senderEquippedAuraId={popupSender?.equippedAuraId ?? null}
-            senderEquippedBannerId={popupSender?.equippedBannerId ?? null}
-            message={latestMessage.message}
-            visible={!!latestMessage}
-            onDismiss={dismissPopup}
-            isOwn={latestMessage.senderId === userId}
-          />
-        )}
       </Container>
     </>
   );

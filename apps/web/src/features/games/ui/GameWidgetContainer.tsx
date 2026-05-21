@@ -11,6 +11,7 @@ import {
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
+import { GameChatPopupOverlay } from '@/widgets/GameChat';
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -398,6 +399,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </SharedHandSection>
         )}
         {modals}
+        <GameChatPopupOverlay />
       </Container>
     </>
   );

@@ -6,12 +6,12 @@ const APP = appConfig.appName;
 
 export const fr: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Jouez à des jeux de société en ligne entre amis`,
-    description: `Jouez aux grands classiques des jeux de société en ligne sur ${APP}. Créez des salons, invitez vos amis et profitez d'une expérience temps réel soignée, directement dans votre navigateur.`,
+    title: `${APP} — Jouez gratuitement à des jeux de société en ligne entre amis`,
+    description: `Jouez gratuitement à des jeux de société en ligne entre amis sur ${APP}. Bataille navale, stratégie, cartes — créez un salon, partagez le lien et jouez dans votre navigateur. Sans téléchargement, sans inscription.`,
   },
   games: {
-    title: `Parcourir les jeux · ${APP}`,
-    description: `Explorez tout le catalogue de jeux de société en ligne de ${APP}. Filtrez par statut et participation, trouvez des salons ouverts ou créez une partie privée.`,
+    title: `Jeux de société gratuits en ligne · ${APP}`,
+    description: `Parcourez le catalogue ${APP} de jeux de société gratuits en ligne. Trouvez des salons ouverts, créez une partie privée entre amis ou affrontez l'IA — directement dans votre navigateur, sans téléchargement.`,
   },
   gameCreate: {
     title: `Créer un salon · ${APP}`,

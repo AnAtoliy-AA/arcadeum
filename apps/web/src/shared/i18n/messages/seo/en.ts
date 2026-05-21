@@ -4,12 +4,12 @@ const APP = appConfig.appName;
 
 export const en = {
   home: {
-    title: `${APP} — Play Board Games Online with Friends`,
-    description: `Play classic board games online with friends on ${APP}. Create rooms, invite players, and enjoy a polished real-time tabletop experience right in your browser.`,
+    title: `${APP} — Play Free Online Board Games with Friends`,
+    description: `Play free online board games with friends on ${APP}. Battleship, strategy, and card games — create a room, share the link, and play in your browser. No download, no signup.`,
   },
   games: {
-    title: `Browse Games · ${APP}`,
-    description: `Explore the full ${APP} catalog of online board games. Filter by status and participation, find open rooms, or create a private game for friends.`,
+    title: `Free Online Board Games · ${APP}`,
+    description: `Browse ${APP}'s catalog of free online board games. Find open rooms, create a private match for friends, or play against AI — all in your browser, no download required.`,
   },
   gameCreate: {
     title: `Create a Game Room · ${APP}`,

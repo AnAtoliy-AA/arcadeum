@@ -1,11 +1,11 @@
 import type { DeepPartial } from '../base-types';
 
 export const en = {
-  kicker: 'The future of online board games',
+  kicker: 'Free online board games',
   tagline:
-    '{{appName}} is the ultimate platform to play board games online with friends.',
+    '{{appName}} is the ultimate platform to play free board games online with friends — Battleship, strategy, cards, and more.',
   description:
-    'Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
+    'Enjoy a wide variety of free board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
   primaryCtaLabel: 'Get started',
   playWithBotsLabel: 'Play with Bots',
   defaultRoomName: "{{name}}'s game",
@@ -97,11 +97,11 @@ export const en = {
 };
 
 export const es = {
-  kicker: 'Plataforma para juegos de mesa online',
+  kicker: 'Juegos de mesa gratis en línea',
   tagline:
-    '{{appName}} es tu plataforma para jugar juegos de mesa online con amigos.',
+    '{{appName}} es tu plataforma para jugar gratis a juegos de mesa en línea con amigos — Batalla Naval, estrategia, cartas y más.',
   description:
-    'Crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
+    'Disfruta de una amplia variedad de juegos de mesa gratis en línea. Crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
   primaryCtaLabel: 'Comenzar',
   playWithBotsLabel: 'Jugar con Bots',
   defaultRoomName: 'Partida de {{name}}',
@@ -196,11 +196,11 @@ export const es = {
 };
 
 export const fr = {
-  kicker: 'Plateforme pour jeux de société en ligne',
+  kicker: 'Jeux de société gratuits en ligne',
   tagline:
-    '{{appName}} est votre plateforme pour jouer aux jeux de société en ligne avec vos amis.',
+    '{{appName}} est votre plateforme pour jouer gratuitement à des jeux de société en ligne entre amis — Bataille navale, stratégie, cartes et plus.',
   description:
-    'Créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.',
+    "Profitez d'une large sélection de jeux de société gratuits en ligne. Créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
   primaryCtaLabel: 'Commencer',
   playWithBotsLabel: 'Jouer avec des Bots',
   defaultRoomName: 'Partie de {{name}}',
@@ -296,11 +296,11 @@ export const fr = {
 };
 
 export const ru = {
-  kicker: 'Будущее настольных игр',
+  kicker: 'Бесплатные настольные игры онлайн',
   tagline:
-    '{{appName}} — ваша онлайн-платформа для игры в настолки с друзьями.',
+    '{{appName}} — платформа для бесплатной игры в настольные игры онлайн с друзьями: Морской бой, стратегии, карты и больше.',
   description:
-    'Создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
+    'Большой выбор бесплатных настольных игр онлайн. Создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
   primaryCtaLabel: 'Начать',
   playWithBotsLabel: 'Играть с ботами',
   defaultRoomName: 'Игра {{name}}',
@@ -391,11 +391,11 @@ export const ru = {
 };
 
 export const by = {
-  kicker: 'Будучыня настольных гульняў',
+  kicker: 'Бясплатныя настольныя гульні анлайн',
   tagline:
-    '{{appName}} — ваша онлайн-платформа для гульні ў настолкі з сябрамі.',
+    '{{appName}} — платформа для бясплатнай гульні ў настольныя гульні анлайн з сябрамі: Марскі бой, стратэгіі, карты і больш.',
   description:
-    'Стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
+    'Шырокі выбар бясплатных настольных гульняў анлайн. Стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
   primaryCtaLabel: 'Пачаць',
   playWithBotsLabel: 'Гуляць з ботамі',
   defaultRoomName: 'Гульня {{name}}',

@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { SUPPORTED_LOCALES } from '@/shared/i18n';
+import { POST_SLUGS, getPost } from '@/features/blog/registry';
 
 type RouteKey =
   | 'home'
@@ -207,6 +208,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: PAGE_CHANGE_FREQ[key] ?? 'weekly',
         priority: PAGE_PRIORITY[key] ?? 0.9,
         alternates: { languages: alternatesFor(key) },
+      });
+    }
+
+    // Blog posts. Each post emits one entry per locale that actually
+    // has a translation, with hreflang alternates that include only the
+    // translated locales (plus `x-default`). Skipping untranslated
+    // locales avoids pointing Google at a fallback that would dilute
+    // the language-clustering signal.
+    for (const slug of POST_SLUGS) {
+      const post = getPost(slug, locale);
+      if (!post || post.locale !== locale) continue;
+
+      const postLanguages: Record<string, string> = {};
+      for (const l of SUPPORTED_LOCALES) {
+        const localized = getPost(slug, l);
+        if (localized && localized.locale === l) {
+          postLanguages[l] =
+            `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
+        }
+      }
+
+      entries.push({
+        url: `${appConfig.siteUrl}${r.blogPost(slug)}`,
+        lastModified: new Date(post.updatedAt ?? post.publishedAt),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        alternates: { languages: postLanguages },
       });
     }
   }

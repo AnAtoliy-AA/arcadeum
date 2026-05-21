@@ -56,6 +56,7 @@ export const buildRoutes = (locale: Locale) => {
 
     // Community & Content
     blog: `/${locale}/${s('blog')}`,
+    blogPost: (slug: string) => `/${locale}/${s('blog')}/${slug}`,
     community: `/${locale}/${s('community')}`,
     rewards: `/${locale}/${s('rewards')}`,
     tournaments: `/${locale}/${s('tournaments')}`,

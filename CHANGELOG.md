@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.19] - 2026-05-21
+
+### Added
+- blog content cluster — infra + first article (ARC-727) (ARC-727)
+- /games/glimworm landing page (ARC-727) (ARC-727)
+- /games/critical landing page (ARC-727) (ARC-727)
+
+
 ## [1.14.18] - 2026-05-21
 
 ### Added

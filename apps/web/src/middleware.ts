@@ -38,6 +38,49 @@ const EN_SLUG_TO_KEY: Record<string, SlugKey> = Object.fromEntries(
   Object.entries(EN_SLUGS).map(([key, slug]) => [slug, key as SlugKey]),
 );
 
+/**
+ * Slug keys whose pages must never be indexed (per-user, transactional,
+ * or internal). We emit `<meta name="robots">` via `buildPageMetadata`
+ * already; this header is defense in depth — it takes effect on non-HTML
+ * responses too and survives any future page-level oversight.
+ */
+const PRIVATE_SLUG_KEYS: ReadonlySet<SlugKey> = new Set([
+  'auth',
+  'chat',
+  'chats',
+  'history',
+  'settings',
+  'stats',
+  'referrals',
+  'admin',
+  'payment',
+  'wallet',
+  'shop',
+]);
+
+/**
+ * Within /games, these sub-paths are private even though /games itself is
+ * public. The middleware looks at the third URL segment to decide.
+ */
+const PRIVATE_GAMES_SUBPATHS: ReadonlySet<string> = new Set([
+  'create',
+  'rooms',
+]);
+
+function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
+  const [first, second] = segmentsAfterLocale;
+  if (!first) return false;
+
+  const slugMap = LOCALE_SLUGS[locale];
+  for (const key of PRIVATE_SLUG_KEYS) {
+    if (slugMap[key] === first) return true;
+  }
+  if (slugMap.games === first && second && PRIVATE_GAMES_SUBPATHS.has(second)) {
+    return true;
+  }
+  return false;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
@@ -70,7 +113,11 @@ export function middleware(req: NextRequest) {
         }
       }
     }
-    return NextResponse.next();
+    const response = NextResponse.next();
+    if (isPrivatePath(localeFromUrl, segments.slice(1))) {
+      response.headers.set('x-robots-tag', 'noindex, nofollow');
+    }
+    return response;
   }
 
   // Case 2: URL has no locale prefix. Pick locale via cookie -> Accept-

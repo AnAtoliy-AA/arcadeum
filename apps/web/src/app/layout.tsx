@@ -6,6 +6,7 @@ import './globals.css';
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 
 import BrowserRegistry from './BrowserRegistry';
 import { setupTamagui } from '@/shared/config/tamagui.config';
@@ -59,6 +60,14 @@ export const metadata: Metadata = {
     'online board game platform',
     'arcadeum',
   ],
+  verification: {
+    google: appConfig.verification.google,
+    yandex: appConfig.verification.yandex,
+    yahoo: appConfig.verification.yahoo,
+    other: appConfig.verification.bing
+      ? { 'msvalidate.01': appConfig.verification.bing }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -85,13 +94,37 @@ export default async function RootLayout({
   // Organization is locale-agnostic — same legal entity across languages.
   // WebSite and SoftwareApplication schemas live in [locale]/layout where
   // they can carry `inLanguage` + localized description.
+  const contactEmail =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
   const jsonLd = [
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
+      '@id': `${appConfig.siteUrl}/#organization`,
       name: appConfig.appName,
       url: appConfig.siteUrl,
-      logo: `${appConfig.siteUrl}/logo.png`,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${appConfig.siteUrl}/logo.png`,
+        width: 1200,
+        height: 630,
+      },
+      image: `${appConfig.siteUrl}/logo.png`,
+      description: appConfig.seoDescription,
+      foundingDate: '2024',
+      founder: {
+        '@type': 'Person',
+        name: 'Anatoliy Aliaksandrau',
+        ...(appConfig.social.linkedin
+          ? { url: appConfig.social.linkedin }
+          : {}),
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: contactEmail,
+        availableLanguage: ['en', 'es', 'fr', 'ru', 'be'],
+      },
       sameAs: Object.values(appConfig.social).filter(Boolean),
     },
   ];
@@ -107,6 +140,7 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
+        <WebVitalsReporter />
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>{children}</BrowserRegistry>
         </AppThemeProvider>

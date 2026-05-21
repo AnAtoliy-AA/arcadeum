@@ -2,8 +2,12 @@ import { Suspense } from 'react';
 import HomePage from './home/HomePage';
 import { PageLoading } from '@/shared/ui/Loading/PageLoading';
 import type { Metadata } from 'next';
+import { appConfig } from '@/shared/config/app-config';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { isLocale } from '@/shared/i18n';
+import { buildVideoObjectJsonLd } from '@/shared/seo/videoObjectJsonLd';
+import { getTranslations } from '@/shared/i18n/server';
+import { isLocale, type Locale } from '@/shared/i18n';
+import { JsonLd } from '@/shared/ui/JsonLd';
 
 export async function generateMetadata({
   params,
@@ -14,10 +18,32 @@ export async function generateMetadata({
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'home' }) : {};
 }
 
-export default function HomeRoute() {
+export default async function HomeRoute({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const safeLocale: Locale = isLocale(locale) ? locale : 'en';
+  const videoId = appConfig.presentationVideoId;
+  let videoJsonLd: Record<string, unknown> | null = null;
+  if (videoId) {
+    const messages = await getTranslations(safeLocale);
+    const seoHome = messages.seo?.home;
+    videoJsonLd = buildVideoObjectJsonLd({
+      locale: safeLocale,
+      youtubeId: videoId,
+      name: `${appConfig.appName} — ${seoHome?.title ?? 'Platform overview'}`,
+      description: seoHome?.description ?? appConfig.seoDescription,
+    });
+  }
+
   return (
-    <Suspense fallback={<PageLoading layout="home" />}>
-      <HomePage />
-    </Suspense>
+    <>
+      {videoJsonLd ? <JsonLd data={videoJsonLd} /> : null}
+      <Suspense fallback={<PageLoading layout="home" />}>
+        <HomePage />
+      </Suspense>
+    </>
   );
 }

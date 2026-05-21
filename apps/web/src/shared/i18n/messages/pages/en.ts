@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/en';
 import { adminAnnouncementsEn } from './admin-announcements/en';
 import { adminTournamentsEn } from './admin-tournaments/en';
 import { walletEn } from './wallet/en';
@@ -311,6 +312,7 @@ export const en = {
           'Connect with other players to share troubleshooting tips and gameplay advice.',
       },
     ],
+    faq: helpFaq,
     comingSoon: 'Help center is coming soon.',
   },
   leaderboards: {

@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/ru';
 import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
 import { walletRu } from './wallet/ru';
@@ -312,6 +313,7 @@ export const ru = {
           'Общайтесь с другими игроками, чтобы делиться советами и решать проблемы.',
       },
     ],
+    faq: helpFaq,
     comingSoon: 'Центр помощи скоро появится.',
   },
   leaderboards: {

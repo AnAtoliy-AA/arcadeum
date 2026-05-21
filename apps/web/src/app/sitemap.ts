@@ -65,9 +65,31 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   seaBattleLanding: '2026-05-18',
 };
 
-const ROUTE_KEYS: RouteKey[] = Object.keys(PAGE_LAST_MODIFIED).filter(
-  (k) => k !== 'seaBattleLanding',
-) as RouteKey[];
+/**
+ * Pages that the middleware marks `x-robots-tag: noindex, nofollow` (auth,
+ * personal dashboards, payment flows, game-room creation). They have no
+ * business in the sitemap — listing them wastes Google's crawl budget on
+ * URLs it will refuse to index, and surfaces a "submitted URL marked
+ * noindex" warning in Search Console.
+ *
+ * Keep this set in sync with `PRIVATE_SLUG_KEYS` in `src/middleware.ts`.
+ */
+const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
+  'auth',
+  'chat',
+  'chats',
+  'history',
+  'settings',
+  'stats',
+  'referrals',
+  'payment',
+  'wallet',
+  'gameCreate',
+]);
+
+const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
+  .filter((k) => k !== 'seaBattleLanding')
+  .filter((k) => !NOINDEX_KEYS.has(k));
 
 const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding'];
 
@@ -102,6 +124,44 @@ const PAGE_CHANGE_FREQ: Partial<
   gameCreate: 'monthly',
 };
 
+/**
+ * Per-page sitemap priority. Google uses this as a relative weighting only,
+ * not as an absolute crawl-rate signal. Three tiers:
+ *  - 1.0 : the front door
+ *  - 0.9 : flagship landings + structurally important pages
+ *  - 0.7 : public marketing / content surfaces
+ *  - 0.5 : info pages (support, help, contact, developer portal)
+ *  - 0.3 : legal pages (terms, privacy, cookies)
+ */
+const PAGE_PRIORITY: Record<RouteKey, number> = {
+  home: 1,
+  games: 0.9,
+  seaBattleLanding: 0.9,
+  leaderboards: 0.7,
+  tournaments: 0.7,
+  rewards: 0.7,
+  blog: 0.7,
+  community: 0.7,
+  notes: 0.7,
+  help: 0.5,
+  support: 0.5,
+  contact: 0.5,
+  developers: 0.5,
+  terms: 0.3,
+  privacy: 0.3,
+  cookies: 0.3,
+  auth: 0.3,
+  chat: 0.3,
+  chats: 0.3,
+  history: 0.3,
+  settings: 0.3,
+  stats: 0.3,
+  referrals: 0.3,
+  payment: 0.3,
+  wallet: 0.3,
+  gameCreate: 0.3,
+};
+
 function alternatesFor(key: RouteKey): Record<string, string> {
   return Object.fromEntries(
     SUPPORTED_LOCALES.map((locale) => {
@@ -123,7 +183,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url,
         lastModified: new Date(PAGE_LAST_MODIFIED[key]),
         changeFrequency: PAGE_CHANGE_FREQ[key] ?? 'monthly',
-        priority: key === 'home' ? 1 : 0.8,
+        priority: PAGE_PRIORITY[key] ?? 0.5,
         alternates: { languages: alternatesFor(key) },
       });
     }
@@ -133,7 +193,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url,
         lastModified: new Date(PAGE_LAST_MODIFIED[key]),
         changeFrequency: PAGE_CHANGE_FREQ[key] ?? 'weekly',
-        priority: 0.9,
+        priority: PAGE_PRIORITY[key] ?? 0.9,
         alternates: { languages: alternatesFor(key) },
       });
     }

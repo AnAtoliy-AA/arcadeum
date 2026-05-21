@@ -233,6 +233,48 @@ const nextConfig: NextConfig = {
           ],
         }));
       })(),
+      // Public info / legal pages change rarely. Let the CDN serve a
+      // fresh-ish copy for a few minutes and revalidate in the background
+      // for up to a day. Big TTFB win for crawlers + repeat visitors and
+      // a direct Core Web Vitals signal.
+      ...(() => {
+        const slugKeys = [
+          'blog',
+          'community',
+          'developers',
+          'help',
+          'tournaments',
+          'leaderboards',
+          'rewards',
+          'notes',
+          'support',
+          'privacy',
+          'terms',
+          'contact',
+          'cookies',
+          'players',
+        ] as const;
+        const sources: string[] = [];
+        for (const locale of SUPPORTED_LOCALES) {
+          for (const key of slugKeys) {
+            const slug = LOCALE_SLUGS[locale]?.[key];
+            if (!slug) continue;
+            sources.push(`/${locale}/${slug}/:path*`);
+            sources.push(`/${locale}/${slug}`);
+          }
+        }
+        return sources.map((source) => ({
+          source,
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: isDev
+                ? 'no-cache, no-store, must-revalidate'
+                : 'public, s-maxage=300, stale-while-revalidate=86400',
+            },
+          ],
+        }));
+      })(),
     ];
   },
   env: {

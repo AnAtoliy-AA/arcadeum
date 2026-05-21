@@ -6,12 +6,12 @@ const APP = appConfig.appName;
 
 export const es: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Juega juegos de mesa en línea con amigos`,
-    description: `Juega juegos de mesa clásicos en línea con amigos en ${APP}. Crea salas, invita jugadores y disfruta de una experiencia de mesa pulida en tiempo real desde tu navegador.`,
+    title: `${APP} — Juega gratis a juegos de mesa en línea con amigos`,
+    description: `Juega gratis a juegos de mesa en línea con amigos en ${APP}. Battleship, estrategia y cartas — crea una sala, comparte el enlace y juega en tu navegador. Sin descarga, sin registro.`,
   },
   games: {
-    title: `Explorar juegos · ${APP}`,
-    description: `Explora el catálogo completo de juegos de mesa en línea de ${APP}. Filtra por estado y participación, encuentra salas abiertas o crea una partida privada.`,
+    title: `Juegos de mesa gratis en línea · ${APP}`,
+    description: `Explora el catálogo de ${APP} con juegos de mesa gratis en línea. Encuentra salas abiertas, crea una partida privada con amigos o juega contra la IA — todo en tu navegador, sin descarga.`,
   },
   gameCreate: {
     title: `Crear una sala · ${APP}`,

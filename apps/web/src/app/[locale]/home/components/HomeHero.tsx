@@ -42,7 +42,7 @@ export default function HomeHero() {
 
   const { appName, supportCta } = appConfig;
 
-  const kicker = homeCopy.kicker ?? 'The future of online board games';
+  const kicker = homeCopy.kicker ?? 'Free online board games';
   const tagline =
     formatMessage(homeCopy.tagline, { appName }) ??
     `${appName} is the ultimate platform to play board games online with friends.`;

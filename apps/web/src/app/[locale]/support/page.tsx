@@ -1,10 +1,12 @@
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildPersonJsonLd } from '@/shared/seo/personJsonLd';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import SupportClient from './client';
 import { appConfig } from '@/shared/config/app-config';
+import { JsonLd } from '@/shared/ui/JsonLd';
 import type {
   SupportAction,
   SupportTeamMember,
@@ -83,6 +85,30 @@ function buildActions(): SupportAction[] {
   return actions;
 }
 
+/**
+ * Dedupe team members by name so we emit one Person schema per real
+ * human, with combined `jobTitle` when they wear multiple hats. The
+ * visible page still lists each role separately.
+ */
+function buildTeamPersonJsonLd(): Record<string, unknown>[] {
+  const byName = new Map<string, SupportTeamMember[]>();
+  for (const member of TEAM_MEMBERS) {
+    const existing = byName.get(member.name) ?? [];
+    existing.push(member);
+    byName.set(member.name, existing);
+  }
+  return Array.from(byName.values()).map((members) =>
+    buildPersonJsonLd({
+      name: members[0].name,
+      jobTitle:
+        members.length === 1 ? members[0].role : members.map((m) => m.role),
+      description: members[0].bio,
+      url: members[0].linkedin,
+      sameAs: members[0].linkedin ? [members[0].linkedin] : undefined,
+    }),
+  );
+}
+
 export default async function SupportRoute({
   params,
 }: {
@@ -92,9 +118,11 @@ export default async function SupportRoute({
   const messages = await getTranslations();
   const supportT = messages.support;
   const actions = buildActions();
+  const teamJsonLd = buildTeamPersonJsonLd();
 
   return (
     <>
+      <JsonLd data={teamJsonLd} />
       <PageBreadcrumb locale={locale} page="support" />
       <SupportClient
         appName={appConfig.appName}

@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/by';
 import { adminAnnouncementsBy } from './admin-announcements/by';
 import { adminTournamentsBy } from './admin-tournaments/by';
 import { walletBy } from './wallet/by';
@@ -310,6 +311,7 @@ export const by = {
           'Камунікуйце з іншымі гульцамі, каб дзяліцца парадамі і вырашаць праблемы.',
       },
     ],
+    faq: helpFaq,
     comingSoon: "Цэнтр дапамогі хутка з'явіцца.",
   },
   leaderboards: {

@@ -4,29 +4,51 @@ import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { breadcrumbList, collectionPage } from '@/shared/seo/jsonLd';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Games',
-  description: `Explore the library of available board games on ${appConfig.appName}. Join or create a room to play with friends.`,
-  alternates: {
-    canonical: routes.games,
-  },
-};
+  description: `Browse the full library of board games on ${appConfig.appName}. Join an open room, create a private game, or queue with friends — no install required.`,
+  path: routes.games,
+  keywords: [
+    'browse board games',
+    'find a game room',
+    'join board game online',
+    'game library',
+  ],
+});
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+const GAMES_JSON_LD = [
+  collectionPage({
+    name: `Games — ${appConfig.appName}`,
+    description: 'Browse the full library of board games and join a room.',
+    path: routes.games,
+  }),
+  breadcrumbList([
+    { name: 'Home', path: routes.home },
+    { name: 'Games', path: routes.games },
+  ]),
+];
+
 export default async function GamesRoute({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
 
   return (
-    <Suspense fallback={<GamesLoading />}>
-      <GamesDataFetcher searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <JsonLd data={GAMES_JSON_LD} />
+      <Suspense fallback={<GamesLoading />}>
+        <GamesDataFetcher searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }
 

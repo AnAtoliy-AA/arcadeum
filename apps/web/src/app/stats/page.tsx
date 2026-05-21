@@ -8,15 +8,16 @@ import {
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import StatsClient from './StatsClient';
 import StatsLoading from './loading';
+import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
 
-export const metadata = {
-  title: 'Player Statistics - Arcadeum',
-  description: 'View your game performance and statistics',
-  alternates: {
-    canonical: routes.stats,
-  },
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Player Statistics',
+  description: 'View your game performance and statistics.',
+  path: routes.stats,
+  index: false,
+});
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

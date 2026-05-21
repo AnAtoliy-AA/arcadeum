@@ -8,14 +8,14 @@ import HistoryClient from './HistoryClient';
 import HistoryLoading from './loading';
 import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Game History',
   description: 'Review your past games and results.',
-  alternates: {
-    canonical: routes.history,
-  },
-};
+  path: routes.history,
+  index: false,
+});
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -1,15 +1,40 @@
+import type { Metadata } from 'next';
+
 import { getTranslations } from '@/shared/i18n/server';
 import SupportClient from './client';
 import { appConfig } from '@/shared/config/app-config';
+import { routes } from '@/shared/config/routes';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import type {
   SupportAction,
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
-export const metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Support the developers',
-  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community.`,
-};
+  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Sponsor, contribute, or star the repo.`,
+  path: routes.support,
+  keywords: [
+    'support arcadeum',
+    'sponsor',
+    'donate',
+    'open source board games',
+  ],
+});
+
+const SUPPORT_JSON_LD = [
+  webPage({
+    name: `Support the developers — ${appConfig.appName}`,
+    description: 'Sponsor development and keep the platform free.',
+    path: routes.support,
+  }),
+  breadcrumbList([
+    { name: 'Home', path: routes.home },
+    { name: 'Support', path: routes.support },
+  ]),
+];
 
 const TEAM_MEMBERS: SupportTeamMember[] = [
   {
@@ -81,11 +106,14 @@ export default async function SupportRoute() {
   const actions = buildActions();
 
   return (
-    <SupportClient
-      appName={appConfig.appName}
-      supportT={supportT}
-      teamMembers={TEAM_MEMBERS}
-      actions={actions}
-    />
+    <>
+      <JsonLd data={SUPPORT_JSON_LD} />
+      <SupportClient
+        appName={appConfig.appName}
+        supportT={supportT}
+        teamMembers={TEAM_MEMBERS}
+        actions={actions}
+      />
+    </>
   );
 }

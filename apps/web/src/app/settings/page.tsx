@@ -1,14 +1,18 @@
+import type { Metadata } from 'next';
+
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
 import SettingsClient from './SettingsClient';
 
-export const metadata = {
+const DESCRIPTION = `Manage your appearance, language, and download preferences for the ${appConfig.appName} web experience.`;
+
+export const metadata: Metadata = buildMetadata({
   title: 'Settings',
-  description: `Manage your appearance, language, and download preferences for the ${appConfig.appName} web experience.`,
-  alternates: {
-    canonical: routes.settings,
-  },
-};
+  description: DESCRIPTION,
+  path: routes.settings,
+  index: false,
+});
 
 export default function SettingsRoute() {
   return (
@@ -16,7 +20,7 @@ export default function SettingsRoute() {
       appName={appConfig.appName}
       downloads={appConfig.downloads}
       supportCta={appConfig.supportCta}
-      description={metadata.description}
+      description={DESCRIPTION}
     />
   );
 }

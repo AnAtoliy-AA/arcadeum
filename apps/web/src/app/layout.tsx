@@ -5,6 +5,7 @@ import './globals.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
+import { resolveApiBase } from '@/shared/lib/api-base';
 import { Header } from '@/widgets/header/ui/Header';
 import { JsonLd } from '@/shared/ui/JsonLd';
 
@@ -22,14 +23,37 @@ export const metadata: Metadata = {
     template: `%s | ${appConfig.appName}`,
   },
   description: appConfig.seoDescription,
+  applicationName: appConfig.appName,
+  generator: 'Next.js',
+  referrer: 'strict-origin-when-cross-origin',
+  creator: appConfig.appName,
+  publisher: appConfig.appName,
+  category: 'games',
+  classification: 'Online Board Games',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.png',
-    apple: '/icon-192x192.png',
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/icon-192x192.png', sizes: '192x192' }],
+    shortcut: ['/favicon.png'],
+  },
+  appleWebApp: {
+    capable: true,
+    title: appConfig.appName,
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    alternateLocale: ['es_ES', 'fr_FR', 'ru_RU', 'be_BY'],
     url: appConfig.siteUrl,
     siteName: appConfig.appName,
     title: appConfig.seoTitle,
@@ -40,6 +64,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: appConfig.appName,
+        type: 'image/png',
       },
     ],
   },
@@ -48,10 +73,13 @@ export const metadata: Metadata = {
     title: appConfig.seoTitle,
     description: appConfig.seoDescription,
     images: ['/logo.png'],
+    creator: appConfig.social.x,
+    site: appConfig.social.x,
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -73,7 +101,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#151718',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#151718' },
+  ],
+  colorScheme: 'dark light',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 import BrowserRegistry from './BrowserRegistry';
@@ -102,23 +137,46 @@ export default async function RootLayout({
     'dark';
   const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
 
-  const jsonLd = [
+  const socialLinks = Object.values(appConfig.social).filter(Boolean);
+  const apiOrigin = (() => {
+    try {
+      return new URL(resolveApiBase()).origin;
+    } catch {
+      return undefined;
+    }
+  })();
+
+  const jsonLd: Record<string, unknown>[] = [
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
+      '@id': `${appConfig.siteUrl}/#organization`,
       name: appConfig.appName,
       url: appConfig.siteUrl,
-      logo: `${appConfig.siteUrl}/logo.png`,
-      sameAs: Object.values(appConfig.social).filter(Boolean),
+      logo: {
+        '@type': 'ImageObject',
+        url: `${appConfig.siteUrl}/logo.png`,
+        width: 1200,
+        height: 630,
+      },
+      description: appConfig.seoDescription,
+      sameAs: socialLinks,
     },
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': `${appConfig.siteUrl}/#website`,
       name: appConfig.appName,
       url: appConfig.siteUrl,
+      description: appConfig.seoDescription,
+      inLanguage: ['en', 'es', 'fr', 'ru', 'be'],
+      publisher: { '@id': `${appConfig.siteUrl}/#organization` },
       potentialAction: {
         '@type': 'SearchAction',
-        target: `${appConfig.siteUrl}/games?q={search_term_string}`,
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${appConfig.siteUrl}/games?search={search_term_string}`,
+        },
         'query-input': 'required name=search_term_string',
       },
     },
@@ -126,8 +184,11 @@ export default async function RootLayout({
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: appConfig.appName,
-      operatingSystem: 'Any',
+      url: appConfig.siteUrl,
+      operatingSystem: 'Web, iOS, Android',
       applicationCategory: 'GameApplication',
+      applicationSubCategory: 'BoardGame',
+      browserRequirements: 'Requires JavaScript. Requires HTML5.',
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: '4.8',
@@ -149,6 +210,18 @@ export default async function RootLayout({
       data-theme-preference={themePreference}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {apiOrigin ? (
+          <>
+            <link rel="preconnect" href={apiOrigin} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={apiOrigin} />
+          </>
+        ) : null}
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>

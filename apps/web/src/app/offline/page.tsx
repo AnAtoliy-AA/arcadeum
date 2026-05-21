@@ -1,20 +1,17 @@
+import type { Metadata } from 'next';
+
 import { getTranslations } from '@/shared/i18n/server';
+import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
 import BrowserRegistry from '../BrowserRegistry';
 import { OfflineView } from './OfflineView';
-import type { Metadata } from 'next';
-import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Offline',
   description: 'You are currently offline.',
-  alternates: {
-    canonical: routes.offline,
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  path: routes.offline,
+  index: false,
+});
 
 export default async function OfflinePage() {
   const messages = await getTranslations();

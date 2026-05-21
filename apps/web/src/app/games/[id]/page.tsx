@@ -1,33 +1,55 @@
+import type { Metadata } from 'next';
+
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
+import { gameMetadata } from '@/features/games/gameMetadata';
+import type { GameSlug } from '@/features/games/registry.types';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { SSR_TIMEOUT } from '@/shared/config/app-config';
+import { SSR_TIMEOUT, appConfig } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
-import GameDetailClient from './GameDetailClient';
-import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { breadcrumbList, gameSchema, webPage } from '@/shared/seo/jsonLd';
+import GameDetailClient from './GameDetailClient';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+function lookupGameMeta(id: string) {
+  return gameMetadata[id as GameSlug];
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  return {
-    title: 'Game Details',
-    alternates: {
-      canonical: routes.gameDetail(id),
-    },
-  };
+  const meta = lookupGameMeta(id);
+  const name = meta?.name ?? 'Game';
+  const description =
+    meta?.description ??
+    `Play ${name} online on ${appConfig.appName}. Join a room or invite friends to start a match.`;
+
+  return buildMetadata({
+    title: name,
+    description,
+    path: routes.gameDetail(id),
+    image: meta?.thumbnail,
+    keywords: [
+      `${name.toLowerCase()}`,
+      `play ${name.toLowerCase()} online`,
+      `${name.toLowerCase()} board game`,
+      ...(meta?.tags ?? []),
+    ],
+  });
 }
 
 export default async function GameDetailRoute({ params }: PageProps) {
   const { id: gameId } = await params;
   const accessToken = await getServerAccessToken();
+  const meta = lookupGameMeta(gameId);
 
-  // Initial fetch on server
   let initialRooms: GameRoomSummary[] = [];
   try {
     const response = await gamesApi.getRooms(
@@ -39,5 +61,32 @@ export default async function GameDetailRoute({ params }: PageProps) {
     handleSsrFetchError(`rooms for game ${gameId}`, error);
   }
 
-  return <GameDetailClient initialRooms={initialRooms} />;
+  const jsonLd = [
+    breadcrumbList([
+      { name: 'Home', path: routes.home },
+      { name: 'Games', path: routes.games },
+      { name: meta?.name ?? 'Game', path: routes.gameDetail(gameId) },
+    ]),
+    meta
+      ? gameSchema({
+          id: gameId,
+          name: meta.name,
+          description: meta.description,
+          image: meta.thumbnail,
+          minPlayers: meta.minPlayers,
+          maxPlayers: meta.maxPlayers,
+          playMode: 'MultiPlayer',
+        })
+      : webPage({
+          name: 'Game Details',
+          path: routes.gameDetail(gameId),
+        }),
+  ];
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <GameDetailClient initialRooms={initialRooms} />
+    </>
+  );
 }

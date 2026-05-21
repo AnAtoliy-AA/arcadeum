@@ -1,19 +1,16 @@
-import PaymentCancelClient from './PaymentCancelClient';
 import type { Metadata } from 'next';
-import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = {
+import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import PaymentCancelClient from './PaymentCancelClient';
+
+export const metadata: Metadata = buildMetadata({
   title: 'Payment Cancelled',
   description: 'Your payment was cancelled.',
-  alternates: {
-    canonical: routes.paymentCancel,
-  },
-};
+  path: routes.paymentCancel,
+  index: false,
+});
 
-/**
- * Payment Cancel Page
- * Use PaymentCancelClient for client-side only rendering to avoid Tamagui hydration issues.
- */
 export default function PaymentCancelPage() {
   return <PaymentCancelClient />;
 }

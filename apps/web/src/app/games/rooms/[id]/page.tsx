@@ -4,6 +4,7 @@ import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 import { routes } from '@/shared/config/routes';
@@ -15,14 +16,13 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  return {
-    title: `Game Room | ${appConfig.appName}`,
-    description: `Join game room ${resolvedParams.id} on ${appConfig.appName}.`,
-    alternates: {
-      canonical: routes.gameRoom(resolvedParams.id),
-    },
-  };
+  const { id } = await params;
+  return buildMetadata({
+    title: 'Game Room',
+    description: `Join game room ${id} on ${appConfig.appName}.`,
+    path: routes.gameRoom(id),
+    index: false,
+  });
 }
 
 export default async function GameRoomRoute({ params }: PageProps) {
@@ -38,7 +38,6 @@ export default async function GameRoomRoute({ params }: PageProps) {
 async function RoomDataFetcher({ id }: { id: string }) {
   const accessToken = await getServerAccessToken();
 
-  // Initial fetch on server
   let initialData = null;
   try {
     initialData = await gamesApi.getRoomInfo(id, {

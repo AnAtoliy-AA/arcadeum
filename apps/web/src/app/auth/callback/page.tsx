@@ -1,17 +1,15 @@
-import AuthCallbackClient from './AuthCallbackClient';
 import type { Metadata } from 'next';
-import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = {
+import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import AuthCallbackClient from './AuthCallbackClient';
+
+export const metadata: Metadata = buildMetadata({
   title: 'Auth Callback',
-  robots: {
-    index: false,
-    follow: false,
-  },
-  alternates: {
-    canonical: routes.authCallback,
-  },
-};
+  description: 'Completing sign-in…',
+  path: routes.authCallback,
+  index: false,
+});
 
 export default function AuthCallbackRoute() {
   return <AuthCallbackClient />;

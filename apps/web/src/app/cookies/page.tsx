@@ -1,24 +1,40 @@
 import { getTranslations } from '@/shared/i18n/server';
 import type { Metadata } from 'next';
+
+import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import CookiePolicyClient from './CookiePolicyClient';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Cookie Policy',
-  description: 'How we use cookies to improve your experience.',
-  alternates: {
-    canonical: routes.cookies,
-  },
-};
+  description: `How ${appConfig.appName} uses cookies and similar technologies to keep you signed in, remember preferences, and improve the experience.`,
+  path: routes.cookies,
+  keywords: ['cookie policy', 'cookies', 'privacy', 'tracking'],
+});
 
-/**
- * Cookie Policy Page
- * Fetches translations on the server and passes them to CookiePolicyClient.
- * Use CookiePolicyClient for client-side only rendering to avoid Tamagui hydration issues.
- */
+const COOKIES_JSON_LD = [
+  webPage({
+    name: `Cookie Policy — ${appConfig.appName}`,
+    description: 'How we use cookies.',
+    path: routes.cookies,
+  }),
+  breadcrumbList([
+    { name: 'Home', path: routes.home },
+    { name: 'Cookie Policy', path: routes.cookies },
+  ]),
+];
+
 export default async function CookiePolicyPage() {
   const messages = await getTranslations();
   const t = messages.pages?.cookies;
 
-  return <CookiePolicyClient t={t} />;
+  return (
+    <>
+      <JsonLd data={COOKIES_JSON_LD} />
+      <CookiePolicyClient t={t} />
+    </>
+  );
 }

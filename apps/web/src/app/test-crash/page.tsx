@@ -1,18 +1,16 @@
 import { Suspense } from 'react';
-import TestCrashContent from './TestCrashContent';
 import type { Metadata } from 'next';
-import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = {
+import { routes } from '@/shared/config/routes';
+import { buildMetadata } from '@/shared/seo/buildMetadata';
+import TestCrashContent from './TestCrashContent';
+
+export const metadata: Metadata = buildMetadata({
   title: 'Test Crash',
-  robots: {
-    index: false,
-    follow: false,
-  },
-  alternates: {
-    canonical: routes.testCrash,
-  },
-};
+  description: 'Internal test page.',
+  path: routes.testCrash,
+  index: false,
+});
 
 export default function TestCrashRoute() {
   return (

@@ -46,7 +46,7 @@ export function ChatMessagePopup({
       style={{
         cursor: 'pointer',
         maxWidth: 340,
-        position: 'fixed',
+        position: 'absolute',
         top: 24,
         right: 24,
         zIndex: 10000,

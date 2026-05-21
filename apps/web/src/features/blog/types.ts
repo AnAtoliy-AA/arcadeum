@@ -35,4 +35,24 @@ export interface BlogPost {
    * link signal lands on a real anchor with descriptive text.
    */
   body: BlogBlock[];
+  /**
+   * Optional HowTo schema payload. When present, the post emits a
+   * Schema.org `HowTo` node next to `BlogPosting` so Google can show
+   * step-by-step rich results in SERPs. The steps must mirror visible
+   * content on the page (Google's rich-result guideline) — by
+   * convention these are the same items the article's TL;DR list
+   * surfaces.
+   */
+  howTo?: {
+    /** Optional override of the recipe name. Defaults to the post title. */
+    name?: string;
+    /** ISO 8601 duration (e.g. `PT20M`). Optional but rich-result-friendly. */
+    totalTime?: string;
+    steps: Array<{
+      name: string;
+      text: string;
+      /** Optional `url` for the step — typically `#section-id` on the post. */
+      url?: string;
+    }>;
+  };
 }

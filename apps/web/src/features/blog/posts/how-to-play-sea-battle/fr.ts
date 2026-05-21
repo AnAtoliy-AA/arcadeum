@@ -126,4 +126,29 @@ export const post: BlogPost = {
       text: 'La Bataille navale est un jeu où les petites habitudes constantes se cumulent en un véritable avantage. Les règles sont assez anciennes pour qu’il n’existe aucune stratégie secrète — mais les quatre habitudes ci-dessus sont assez robustes pour qu’un joueur qui les applique toutes surpasse un joueur qui n’en applique aucune, à chaque fois. Jouez quelques manches, mesurez vos progrès et ajustez.',
     },
   ],
+  howTo: {
+    totalTime: 'PT20M',
+    steps: [
+      {
+        name: 'Placez les navires loin des bords et dans des quadrants distincts',
+        text: 'Décalez la flotte d’une ou deux cases du bord de la grille 10×10 et placez chaque navire dans son propre quadrant. Les flottes regroupées s’effondrent — une touche chanceuse offre deux ou trois coulages successifs.',
+        url: '#placement',
+      },
+      {
+        name: 'Recherchez en damier jusqu’à la première touche',
+        text: 'Tirez sur une case sur deux, comme une reine sur un échiquier. Le navire le plus court mesure deux cases, donc ce motif garantit que vous toucherez chaque navire et réduit de moitié les cases à essayer avant la première touche.',
+        url: '#search',
+      },
+      {
+        name: 'Passez en hunt-and-target après une touche',
+        text: 'Tirez sur les quatre cases adjacentes jusqu’à obtenir une nouvelle touche, puis continuez le long de cette ligne jusqu’au coulage. Revenez au damier dès que le coulage est annoncé.',
+        url: '#search',
+      },
+      {
+        name: 'Notez les ratés, pas seulement les touches',
+        text: 'Les ratés sont de l’information. Chacun vous dit qu’une case ne contient pas de navire et réduit l’espace de recherche. À mi-partie, les zones de ratés esquissent où doivent se trouver les navires restants.',
+        url: '#misses',
+      },
+    ],
+  },
 };

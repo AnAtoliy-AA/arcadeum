@@ -5,6 +5,8 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { CriticalLandingView } from './CriticalLandingView';
 
 const CRITICAL_SLUG = 'critical_v1';
@@ -133,6 +135,8 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
     },
   ];
 
+  const relatedPosts = getPostsByTag(locale, ['Critical', 'Card Game']);
+
   return (
     <>
       <JsonLd id="json-ld-critical" data={jsonLd} />
@@ -142,6 +146,11 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
         roomsHref={routes.gameDetail(CRITICAL_SLUG)}
         homeHref={routes.home}
         gamesHref={routes.games}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={relatedPosts}
+        gameName={landing?.hero?.title}
       />
     </>
   );

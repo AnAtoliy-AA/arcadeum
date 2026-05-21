@@ -119,4 +119,29 @@ export const post: BlogPost = {
       text: 'Sea Battle is a game where small, consistent habits compound into a real edge. The rules are old enough that there is no secret strategy nobody has tried — but the four habits above are robust enough that a player who applies them all will outperform a player who applies none of them, every time. Play a few rounds, mark your improvements, and adjust.',
     },
   ],
+  howTo: {
+    totalTime: 'PT20M',
+    steps: [
+      {
+        name: 'Place ships off the edges and in separate quadrants',
+        text: 'Float your fleet a cell or two off the rim of the 10×10 grid and put each ship in its own quadrant. Clustered fleets cascade — a single lucky hit hands the opponent two or three quick sinkings.',
+        url: '#placement',
+      },
+      {
+        name: 'Search in a checkerboard until the first hit',
+        text: 'Fire on every other cell, like a queen on a chessboard. The shortest ship is two cells long, so this pattern guarantees you will eventually touch every ship and halves the cells you need to try before the first hit.',
+        url: '#search',
+      },
+      {
+        name: 'Switch to hunt-and-target after a hit',
+        text: 'After landing a hit, fire at the four adjacent cells until you find a second hit, then continue firing along that line until the ship sinks. Return to the checkerboard the moment the sinking is announced.',
+        url: '#search',
+      },
+      {
+        name: 'Track misses, not just hits',
+        text: 'Misses are information. Each one tells you a specific cell does not contain a ship, which shrinks the remaining search space. By the mid-game the dead zones outline where the remaining ships must be.',
+        url: '#misses',
+      },
+    ],
+  },
 };

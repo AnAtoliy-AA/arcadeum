@@ -5,6 +5,8 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SeaBattleLanding from './SeaBattleLanding';
 
 const SEA_BATTLE_SLUG = 'sea_battle_v1';
@@ -137,6 +139,15 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
     },
   ];
 
+  const relatedPosts = getPostsByTag(locale, [
+    'Sea Battle',
+    'Battleship',
+    'Bataille navale',
+    'Batalla Naval',
+    'Морской бой',
+    'Марскі бой',
+  ]);
+
   return (
     <>
       <JsonLd id="json-ld-sea-battle" data={jsonLd} />
@@ -148,6 +159,11 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
         gamesHref={routes.games}
         rulesT={messages.games?.sea_battle_v1?.rules}
         variantsT={messages.games?.sea_battle_v1?.variants}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={relatedPosts}
+        gameName={landing?.hero?.title}
       />
     </>
   );

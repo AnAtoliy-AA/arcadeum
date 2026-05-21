@@ -5,6 +5,8 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { GlimwormLandingView } from './GlimwormLandingView';
 
 const GLIMWORM_SLUG = 'glimworm_v1';
@@ -131,6 +133,8 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
     },
   ];
 
+  const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
+
   return (
     <>
       <JsonLd id="json-ld-glimworm" data={jsonLd} />
@@ -140,6 +144,11 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
         roomsHref={routes.gameDetail(GLIMWORM_SLUG)}
         homeHref={routes.home}
         gamesHref={routes.games}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={relatedPosts}
+        gameName={landing?.hero?.title}
       />
     </>
   );

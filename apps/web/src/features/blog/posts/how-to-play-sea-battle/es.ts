@@ -120,4 +120,29 @@ export const post: BlogPost = {
       text: 'Batalla Naval es un juego donde los hábitos pequeños y constantes se acumulan en una ventaja real. Las reglas son lo bastante antiguas para que no haya estrategia secreta — pero los cuatro hábitos de arriba son robustos: un jugador que los aplique todos superará a uno que no aplique ninguno, una y otra vez. Juega unas rondas, mide tus mejoras y ajusta.',
     },
   ],
+  howTo: {
+    totalTime: 'PT20M',
+    steps: [
+      {
+        name: 'Coloca los barcos lejos de los bordes y en cuadrantes distintos',
+        text: 'Despega la flota una o dos celdas del borde del tablero 10×10 y pon cada barco en su propio cuadrante. Las flotas agrupadas se desploman — un solo acierto con suerte da dos o tres hundimientos seguidos.',
+        url: '#placement',
+      },
+      {
+        name: 'Busca en patrón de ajedrez hasta el primer tocado',
+        text: 'Dispara a celdas alternas, como una reina en el tablero. El barco más corto mide dos celdas, así que el patrón garantiza que toques cualquier barco y reduce a la mitad las celdas a probar antes del primer acierto.',
+        url: '#search',
+      },
+      {
+        name: 'Pasa a hunt-and-target tras un tocado',
+        text: 'Dispara a las cuatro celdas adyacentes hasta encontrar otro tocado, y luego continúa por esa línea hasta el hundimiento. Vuelve al ajedrez en cuanto se anuncie el hundimiento.',
+        url: '#search',
+      },
+      {
+        name: 'Sigue los fallos, no solo los tocados',
+        text: 'Los fallos son información. Cada uno te dice que una celda no tiene barco y reduce el espacio de búsqueda. A mitad de partida los huecos perfilan dónde tienen que estar los barcos restantes.',
+        url: '#misses',
+      },
+    ],
+  },
 };

@@ -33,7 +33,7 @@ const baseLog = {
   senderId: 'opponent-1',
   senderName: 'Admiral',
   message: 'Prepare for battle!',
-  createdAt: '2026-05-21T00:00:00Z',
+  createdAt: new Date(Date.now() + 60_000).toISOString(),
   scope: 'all' as const,
 };
 

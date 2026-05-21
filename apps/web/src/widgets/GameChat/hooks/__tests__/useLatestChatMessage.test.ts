@@ -3,11 +3,16 @@ import { renderHook, act } from '@testing-library/react';
 import { useLatestChatMessage } from '../useLatestChatMessage';
 import type { ChatLogEntry } from '../../store/gameChatStore';
 
+// Default createdAt is deliberately set to "future" so that messages arriving
+// after the hook mounts qualify as fresh and trigger a popup.
+const futureIso = () => new Date(Date.now() + 60_000).toISOString();
+const pastIso = () => new Date(Date.now() - 60_000).toISOString();
+
 const makeLog = (overrides: Partial<ChatLogEntry> = {}): ChatLogEntry => ({
   id: 'log-1',
   type: 'message',
   message: 'hello',
-  createdAt: new Date().toISOString(),
+  createdAt: futureIso(),
   senderId: 'user-1',
   senderName: 'Alice',
   scope: 'all',
@@ -20,7 +25,7 @@ describe('useLatestChatMessage', () => {
     expect(result.current.latestMessage).toBeNull();
   });
 
-  it('shows popup when a new message log arrives', () => {
+  it('shows popup when a fresh message arrives after mount', () => {
     const log = makeLog();
     const { result, rerender } = renderHook(
       ({ logs }) => useLatestChatMessage(logs),
@@ -31,6 +36,34 @@ describe('useLatestChatMessage', () => {
       id: 'log-1',
       senderName: 'Alice',
       message: 'hello',
+    });
+  });
+
+  it('suppresses popup for historical messages already present at mount', () => {
+    // Simulates a page-refresh snapshot — the most recent chat message was
+    // created BEFORE the hook mounted, so it must not pop.
+    const historicalLog = makeLog({ id: 'old-1', createdAt: pastIso() });
+    const { result, rerender } = renderHook(
+      ({ logs }) => useLatestChatMessage(logs),
+      { initialProps: { logs: [] as ChatLogEntry[] } },
+    );
+    rerender({ logs: [historicalLog] });
+    expect(result.current.latestMessage).toBeNull();
+  });
+
+  it('still pops a fresh message arriving after some history was present', () => {
+    const historicalLog = makeLog({ id: 'old-1', createdAt: pastIso() });
+    const newLog = makeLog({ id: 'new-1', message: 'just sent' });
+    const { result, rerender } = renderHook(
+      ({ logs }) => useLatestChatMessage(logs),
+      { initialProps: { logs: [] as ChatLogEntry[] } },
+    );
+    rerender({ logs: [historicalLog] });
+    expect(result.current.latestMessage).toBeNull();
+    rerender({ logs: [historicalLog, newLog] });
+    expect(result.current.latestMessage).toMatchObject({
+      id: 'new-1',
+      message: 'just sent',
     });
   });
 

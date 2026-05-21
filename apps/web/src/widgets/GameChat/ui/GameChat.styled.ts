@@ -18,8 +18,8 @@ export const Panel = styled(YStack, {
   minHeight: 360,
   borderRadius: 18,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(15,17,18,0.78)',
+  borderColor: '$glassBorder',
+  backgroundColor: '$glassBg',
   overflow: 'hidden',
   position: 'relative',
 });
@@ -31,7 +31,7 @@ export const Head = styled(YStack, {
   paddingTop: 12,
   paddingBottom: 10,
   borderBottomWidth: 1,
-  borderBottomColor: 'rgba(255,255,255,0.06)',
+  borderBottomColor: '$glassBorder',
 });
 
 export const HeadRow = styled(XStack, {
@@ -64,8 +64,8 @@ export const TabsRow = styled(XStack, {
   padding: 3,
   borderRadius: 999,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.06)',
-  backgroundColor: 'rgba(255,255,255,0.04)',
+  borderColor: '$glassBorder',
+  backgroundColor: '$backgroundHover',
   gap: 2,
 });
 
@@ -79,7 +79,7 @@ export const Tab = styled(XStack, {
   paddingVertical: 5,
   borderRadius: 999,
   gap: 6,
-  hoverStyle: { backgroundColor: 'rgba(255,255,255,0.04)' },
+  hoverStyle: { backgroundColor: '$backgroundHover' },
 });
 
 export const TabLabel = styled(Text, {
@@ -97,8 +97,8 @@ export const TabCount = styled(Text, {
   paddingHorizontal: 4,
   paddingVertical: 1,
   borderRadius: 999,
-  color: 'rgba(255,255,255,0.7)',
-  backgroundColor: 'rgba(255,255,255,0.08)',
+  color: '$colorMuted',
+  backgroundColor: '$backgroundHover',
 });
 
 export const Body = styled(YStack, {
@@ -139,7 +139,7 @@ export const Foot = styled(YStack, {
   paddingTop: 10,
   paddingBottom: 12,
   borderTopWidth: 1,
-  borderTopColor: 'rgba(255,255,255,0.06)',
+  borderTopColor: '$glassBorder',
 });
 
 export const QuickRow = styled(XStack, {
@@ -157,9 +157,9 @@ export const QuickButton = styled(XStack, {
   paddingHorizontal: 10,
   borderRadius: 999,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.06)',
-  backgroundColor: 'rgba(255,255,255,0.03)',
-  hoverStyle: { backgroundColor: 'rgba(255,255,255,0.06)' },
+  borderColor: '$glassBorder',
+  backgroundColor: '$backgroundHover',
+  hoverStyle: { backgroundColor: '$backgroundPress' },
 });
 
 export const QuickButtonText = styled(Text, {
@@ -178,8 +178,8 @@ export const InputPill = styled(XStack, {
   height: 38,
   borderRadius: 12,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(0,0,0,0.25)',
+  borderColor: '$glassBorder',
+  backgroundColor: '$backgroundHover',
 });
 
 export const ChannelChip = styled(Text, {
@@ -190,7 +190,7 @@ export const ChannelChip = styled(Text, {
   textTransform: 'uppercase',
   paddingRight: 8,
   borderRightWidth: 1,
-  borderRightColor: 'rgba(255,255,255,0.08)',
+  borderRightColor: '$glassBorder',
 });
 
 export const MetaLine = styled(XStack, {
@@ -214,12 +214,12 @@ export const CollapsedShell = styled(XStack, {
   height: 44,
   borderRadius: 999,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(15,17,18,0.85)',
+  borderColor: '$glassBorder',
+  backgroundColor: '$glassBg',
   alignItems: 'center',
   paddingHorizontal: 12,
   gap: 8,
-  hoverStyle: { borderColor: 'rgba(255,255,255,0.16)' },
+  hoverStyle: { borderColor: '$glassBorderHover' },
 });
 
 export const CollapsedPreview = styled(Text, {

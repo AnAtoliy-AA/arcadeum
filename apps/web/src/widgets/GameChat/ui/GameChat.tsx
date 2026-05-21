@@ -8,7 +8,7 @@ import {
   type ReactNode,
   type KeyboardEvent,
 } from 'react';
-import { XStack, YStack, ScrollView, Text } from 'tamagui';
+import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
@@ -156,6 +156,9 @@ export function GameChat({
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
+  const theme = useTheme();
+  const inputColor =
+    (theme.color?.get?.() as string | undefined) ?? '#ecefee';
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [draft, setDraft] = useState('');
@@ -433,7 +436,7 @@ export function GameChat({
               background: 'transparent',
               border: 'none',
               outline: 'none',
-              color: '#ecefee',
+              color: inputColor,
               fontSize: 13,
               fontFamily: 'inherit',
             }}

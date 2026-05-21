@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './es-variants';
 import { modals } from './es-modals';
+import { landing } from './landing-es';
 
 export const esMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Un juego de cartas estratégico donde evitas incidentes críticos',
+    landing,
     rules: {
       title: 'Reglas del Juego',
       headers: {

@@ -30,7 +30,8 @@ type RouteKey =
   | 'rewards'
   | 'tournaments'
   | 'wallet'
-  | 'seaBattleLanding';
+  | 'seaBattleLanding'
+  | 'criticalLanding';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -63,6 +64,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   tournaments: '2026-05-15',
   wallet: '2026-05-05',
   seaBattleLanding: '2026-05-18',
+  criticalLanding: '2026-05-21',
 };
 
 /**
@@ -87,11 +89,11 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'gameCreate',
 ]);
 
-const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
-  .filter((k) => k !== 'seaBattleLanding')
-  .filter((k) => !NOINDEX_KEYS.has(k));
+const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding', 'criticalLanding'];
 
-const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding'];
+const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
+  .filter((k) => !GAME_LANDING_KEYS.includes(k))
+  .filter((k) => !NOINDEX_KEYS.has(k));
 
 const PAGE_CHANGE_FREQ: Partial<
   Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>
@@ -107,6 +109,7 @@ const PAGE_CHANGE_FREQ: Partial<
   blog: 'weekly',
   community: 'weekly',
   seaBattleLanding: 'weekly',
+  criticalLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -137,6 +140,7 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   home: 1,
   games: 0.9,
   seaBattleLanding: 0.9,
+  criticalLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,

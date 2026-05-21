@@ -21,6 +21,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Salon de jeu · ${APP}`,
     description: `Rejoignez un salon en direct sur ${APP}, prenez place et commencez à jouer — ou regardez les parties en cours.`,
   },
+  criticalLanding: {
+    title: `Critical · Jeu de cartes explosif gratuit en ligne · ${APP}`,
+    description: `Jouez gratuitement à Critical en ligne sur ${APP} — un jeu de cartes stratégique où vous piochez, désamorcez et survivez à l'explosion. 2 à 5 joueurs, IA, decks thématiques. Sans téléchargement, sans inscription.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

@@ -1,5 +1,12 @@
 'use client';
-import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  Children,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useMedia } from 'tamagui';
 
 interface SeaBattleGridsProps {
@@ -13,16 +20,15 @@ const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 200;
 // Upper bound for a single board's width. Generous on purpose so on tall /
 // fullscreen displays the boards can grow into the available space — the
 // actual width is still constrained per-row by the height-driven cap below.
-const MAX_BOARD_WIDTH = 560;
+const MAX_BOARD_WIDTH = 720;
 // Non-grid chrome inside each PlayerSection (name, ships left strip, column
 // labels, paddings, badge wrapper). Used to convert "available height per row"
 // into "max board side" so two rows of boards fit without scroll.
-const BOARD_SECTION_CHROME_DESKTOP = 140;
-const BOARD_SECTION_CHROME_COMPACT = 100;
-// Chrome outside the boards section but inside the visible viewport
-// (app top bar, game widget header, control panel, paddings).
-const VIEWPORT_CHROME_DESKTOP = 220;
-const VIEWPORT_CHROME_COMPACT = 170;
+const BOARD_SECTION_CHROME_DESKTOP = 130;
+const BOARD_SECTION_CHROME_COMPACT = 90;
+// Bottom breathing room left under the boards so they don't kiss the
+// container edge.
+const BOTTOM_BREATHING_PX = 12;
 // Hard floor so the board never shrinks below something playable when the
 // viewport math gets aggressive (very short viewports, many rows).
 const MIN_PLAYABLE_BOARD_SIDE = 200;
@@ -40,14 +46,20 @@ function idealCols(count: number): number {
  *   - any landscape on phones / small tablets: at least 2 columns, sized to
  *     fit the viewport vertically so the layout doesn't scroll
  *   - tablet+ desktop: balanced layout from idealCols(), boards expand into
- *     available space but are capped by viewport height so 2 rows still fit
+ *     the actual remaining vertical space (measured from the DOM) so 2 rows
+ *     still fit while reclaiming every spare pixel
  */
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const media = useMedia();
   const count = Children.count(children);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  // Vertical space available below the grid's top edge within the visible
+  // viewport. Measured from the DOM (rather than guessed via a chrome
+  // constant) so the boards fill whatever room the rest of the layout
+  // happens to leave them.
+  const [availableHeight, setAvailableHeight] = useState(0);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -61,23 +73,32 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     return () => ro.disconnect();
   }, []);
 
-  useEffect(() => {
-    const update = () =>
-      setViewport({ w: window.innerWidth, h: window.innerHeight });
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('orientationchange', update);
+  useLayoutEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      setAvailableHeight(
+        Math.max(0, window.innerHeight - rect.top - BOTTOM_BREATHING_PX),
+      );
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(node);
+    window.addEventListener('resize', measure);
+    window.addEventListener('orientationchange', measure);
+    // Capture-phase listener so scrolling any ancestor (which can shift our
+    // top) re-runs the measurement.
+    document.addEventListener('scroll', measure, true);
     return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('orientationchange', update);
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('orientationchange', measure);
+      document.removeEventListener('scroll', measure, true);
     };
   }, []);
 
-  // Treat anything wider than it is tall as landscape. The "short" media query
-  // only catches very short viewports (≤480px); this also catches a tablet
-  // turned sideways at e.g. 900×600 where height isn't tiny but orientation
-  // is clearly landscape.
-  const isLandscape = viewport.w > 0 && viewport.w > viewport.h;
   const isCompact = !media.gtSm; // phone / small-tablet widths
   const isMobilePortrait = isCompact && !media.short && !isLandscape;
 
@@ -135,24 +156,21 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     );
   }
 
-  // Height-driven board size cap — keeps two-row layouts (and tall single-row
-  // layouts on landscape phones) inside the viewport so the widget doesn't
-  // need to scroll vertically.
+  // Compute the height-driven cap. `availableHeight` is the actual room left
+  // in the viewport below the grid's top; we divide it across however many
+  // rows the layout needs and subtract per-section chrome to get the maximum
+  // board side that won't trigger vertical scroll.
   const rows = Math.ceil(count / cols);
   const rowGap = media.short ? 10 : media.sm ? 12 : 16;
   const sectionChrome =
     media.short || isCompact
       ? BOARD_SECTION_CHROME_COMPACT
       : BOARD_SECTION_CHROME_DESKTOP;
-  const viewportChrome =
-    media.short || isCompact
-      ? VIEWPORT_CHROME_COMPACT
-      : VIEWPORT_CHROME_DESKTOP;
-  const availableHeight = Math.max(
-    MIN_PLAYABLE_BOARD_SIDE * rows,
-    viewport.h - viewportChrome,
+  const usableHeight = Math.max(
+    MIN_PLAYABLE_BOARD_SIDE * rows + rowGap * (rows - 1),
+    availableHeight,
   );
-  const perRowBudget = (availableHeight - rowGap * (rows - 1)) / rows;
+  const perRowBudget = (usableHeight - rowGap * (rows - 1)) / rows;
   const heightCappedBoardSide = Math.max(
     MIN_PLAYABLE_BOARD_SIDE,
     perRowBudget - sectionChrome,

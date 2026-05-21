@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.18] - 2026-05-21
+
+### Added
+- SEO copy — inject "free" keyword into home + games (ARC-727) (ARC-727)
+- more SEO — resource hints, FAQ JSON-LD, sitemap+robots audit (ARC-727) (ARC-727)
+- additive SEO — VideoObject, Person, Org enrichment, Web Vitals, cache + x-robots-tag (ARC-727) (ARC-727)
+
+
 ## [1.14.17] - 2026-05-20
 
 ### Added

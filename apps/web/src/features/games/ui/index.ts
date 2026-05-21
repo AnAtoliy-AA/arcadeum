@@ -10,3 +10,4 @@ export { GameResultModal } from './GameResultModal';
 export { RematchModal } from './RematchModal';
 export { RematchInvitationModal } from './RematchInvitationModal';
 export { GameVariantSelector } from './GameVariantSelector';
+export { InGameAvatar, type InGameAvatarProps } from './InGameAvatar';

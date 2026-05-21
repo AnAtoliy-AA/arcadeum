@@ -31,7 +31,8 @@ type RouteKey =
   | 'tournaments'
   | 'wallet'
   | 'seaBattleLanding'
-  | 'criticalLanding';
+  | 'criticalLanding'
+  | 'glimwormLanding';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -65,6 +66,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   wallet: '2026-05-05',
   seaBattleLanding: '2026-05-18',
   criticalLanding: '2026-05-21',
+  glimwormLanding: '2026-05-21',
 };
 
 /**
@@ -89,7 +91,11 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'gameCreate',
 ]);
 
-const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding', 'criticalLanding'];
+const GAME_LANDING_KEYS: RouteKey[] = [
+  'seaBattleLanding',
+  'criticalLanding',
+  'glimwormLanding',
+];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
   .filter((k) => !GAME_LANDING_KEYS.includes(k))
@@ -110,6 +116,7 @@ const PAGE_CHANGE_FREQ: Partial<
   community: 'weekly',
   seaBattleLanding: 'weekly',
   criticalLanding: 'weekly',
+  glimwormLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -141,6 +148,7 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   games: 0.9,
   seaBattleLanding: 0.9,
   criticalLanding: 0.9,
+  glimwormLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,

@@ -27,6 +27,10 @@ export const en = {
     title: `Critical · Free Exploding Card Game Online · ${APP}`,
     description: `Play Critical online for free on ${APP} — a strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks. No download, no signup.`,
   },
+  glimwormLanding: {
+    title: `Glimworm · Free Online Snake Arena Game · ${APP}`,
+    description: `Play Glimworm online for free on ${APP} — a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

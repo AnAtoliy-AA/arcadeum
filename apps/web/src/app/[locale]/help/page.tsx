@@ -50,6 +50,10 @@ export default async function HelpPage({
     locale: safeLocale,
     questions: faqItems,
     pageUrl: helpUrl,
+    // `#faq` is the FAQ block on HelpPageContent. Marking it speakable
+    // is a hint to Google Assistant / voice surfaces about which slice
+    // of the page is safe to read aloud in response to a spoken query.
+    speakableSelectors: ['#faq'],
   });
 
   return (

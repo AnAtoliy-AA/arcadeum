@@ -30,8 +30,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'Cómo jugar',
     aboutKicker: 'Sobre el juego',
     faqKicker: 'Preguntas frecuentes',
+  },
+  howToPlay: {
+    title: 'Cómo jugar a Critical',
+    steps: {
+      setup: {
+        title: '1. Crea o únete a una sala',
+        body: 'Elige una sala privada o pública, invita a tus amigos y llena los huecos vacíos con bots de IA si quieres empezar antes de que llegue todo el mundo.',
+      },
+      draw: {
+        title: '2. Recibe tu mano inicial',
+        body: 'Cada jugador empieza con una carta Defuse y siete cartas de Acción al azar. El mazo contiene una o más cartas Critical — la explosión que intentas evitar.',
+      },
+      play: {
+        title: '3. Juega cartas de Acción o roba',
+        body: 'En tu turno juega tantas cartas de Acción como quieras — Atacar, Saltar, Ver el futuro, Robar, combos de dos o tres iguales. Termina robando una carta del mazo.',
+      },
+      survive: {
+        title: '4. Desactiva la Critical o explota',
+        body: 'Cuando robes una carta Critical, juega tu Defuse para neutralizarla; si no, quedas eliminado de la ronda. El último jugador en pie gana.',
+      },
+    },
   },
   about: {
     title: 'Sobre Critical',

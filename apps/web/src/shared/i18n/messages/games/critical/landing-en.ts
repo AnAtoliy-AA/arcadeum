@@ -29,8 +29,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'How to play',
     aboutKicker: 'About the game',
     faqKicker: 'FAQ',
+  },
+  howToPlay: {
+    title: 'How to play Critical',
+    steps: {
+      setup: {
+        title: '1. Create or join a room',
+        body: 'Pick a private or public room, invite friends, and fill empty seats with AI bots if you want to start before everyone arrives.',
+      },
+      draw: {
+        title: '2. Take your starting hand',
+        body: 'Each player begins with a Defuse card and a hand of seven random Action cards. The deck contains one or more Critical cards — the explosion you are trying to avoid.',
+      },
+      play: {
+        title: '3. Play action cards or draw',
+        body: 'On your turn, play as many Action cards as you like — Attack, Skip, See the Future, Steal, combo two or three of a kind. End your turn by drawing one card from the deck.',
+      },
+      survive: {
+        title: '4. Defuse the Critical or explode',
+        body: 'When you draw a Critical card, play your Defuse to neutralize it; otherwise you are out for the round. The last player still standing wins.',
+      },
+    },
   },
   about: {
     title: 'About Critical',

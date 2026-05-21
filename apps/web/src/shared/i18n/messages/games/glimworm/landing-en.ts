@@ -29,8 +29,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'How to play',
     aboutKicker: 'About the game',
     faqKicker: 'FAQ',
+  },
+  howToPlay: {
+    title: 'How to play Glimworm',
+    steps: {
+      setup: {
+        title: '1. Create a room and pick a mode',
+        body: 'Choose Battle Royale, Time Attack, or Lives + Heats. Invite friends with a shareable link, or fill empty seats with AI bots and start solo.',
+      },
+      slither: {
+        title: '2. Slither into the arena',
+        body: 'Your glowing worm spawns at a random spot. Move with the mouse or touch and start eating lights — every light makes your worm a little longer and a little brighter.',
+      },
+      evade: {
+        title: '3. Avoid other worms’ trails',
+        body: 'Colliding head-first with another worm’s trail ends your run. Cut across smaller worms when you can, but never charge a longer trail head-on.',
+      },
+      survive: {
+        title: '4. Outlast everyone',
+        body: 'In Battle Royale, the last worm alive wins. In Time Attack, the highest-scoring worm at the buzzer wins. Either way, staying alive while growing is the whole job.',
+      },
+    },
   },
   about: {
     title: 'About Glimworm',

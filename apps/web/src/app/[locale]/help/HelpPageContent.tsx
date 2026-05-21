@@ -85,7 +85,13 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
           if (!items.length) return null;
           return (
             <Section variant="legal">
-              <YStack gap="$3">
+              {/*
+               * `id="faq"` is the anchor the FAQPage JSON-LD's
+               * SpeakableSpecification points at. Stable across builds
+               * (Tamagui's emitted class names hash) so Google Assistant
+               * can locate the block reliably.
+               */}
+              <YStack id="faq" gap="$3">
                 <Typography variant="label" uiSize="lg" fontWeight="700">
                   {faq?.heading}
                 </Typography>

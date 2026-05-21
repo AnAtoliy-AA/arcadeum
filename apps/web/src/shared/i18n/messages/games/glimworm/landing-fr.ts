@@ -30,8 +30,30 @@ export const landing = {
     ],
   },
   sections: {
+    howToKicker: 'Comment jouer',
     aboutKicker: 'À propos du jeu',
     faqKicker: 'FAQ',
+  },
+  howToPlay: {
+    title: 'Comment jouer à Glimworm',
+    steps: {
+      setup: {
+        title: '1. Créez un salon et choisissez un mode',
+        body: 'Choisissez Battle Royale, Time Attack ou Vies + Manches. Invitez vos amis via un lien partageable, ou remplissez les places vides avec des bots IA pour jouer en solo.',
+      },
+      slither: {
+        title: '2. Entrez dans l’arène',
+        body: 'Votre ver lumineux apparaît à un endroit aléatoire. Déplacez-vous à la souris ou au tactile et mangez les lumières — chaque lumière vous rend un peu plus long et plus brillant.',
+      },
+      evade: {
+        title: '3. Évitez les traînées des autres vers',
+        body: 'Une collision frontale avec la traînée d’un autre ver met fin à votre manche. Coupez devant les vers plus petits quand vous le pouvez, mais ne foncez jamais sur une traînée plus longue.',
+      },
+      survive: {
+        title: '4. Survivez plus longtemps que tout le monde',
+        body: 'En Battle Royale, le dernier ver en vie gagne. En Time Attack, le ver au meilleur score à la fin remporte la manche. Dans les deux cas, survivre en grandissant est le seul objectif.',
+      },
+    },
   },
   about: {
     title: 'À propos de Glimworm',

@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SeaBattleLanding from './SeaBattleLanding';
@@ -136,8 +137,39 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
           text: item.answer,
         },
       })),
+      // Speakable hint for Google Assistant / voice surfaces. `#faq` is
+      // the FAQ section's id on the rendered SeaBattleLanding view —
+      // stable across builds (unlike Tamagui's hashed module classes).
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['#faq'],
+      },
     },
   ];
+
+  // HowTo derived from the existing `howToPlay` i18n that already
+  // renders on the landing. Eligible for Google's step-by-step rich
+  // result on "how to play battleship" / "battleship rules" queries
+  // — a high-traffic surface (landing) emits the schema on top of the
+  // blog post that ships the long-form version.
+  const howToSteps = landing?.howToPlay?.steps;
+  const howToJsonLd = howToSteps
+    ? buildHowToJsonLd({
+        locale,
+        pageUrl,
+        name: landing?.howToPlay?.title ?? 'How to play Sea Battle',
+        description: landing?.meta?.description,
+        steps: [
+          howToSteps.create,
+          howToSteps.place,
+          howToSteps.fire,
+          howToSteps.win,
+        ]
+          .filter((s): s is { title: string; body: string } => !!s)
+          .map((s) => ({ name: s.title, text: s.body })),
+      })
+    : null;
+  if (howToJsonLd) jsonLd.push(howToJsonLd);
 
   const relatedPosts = getPostsByTag(locale, [
     'Sea Battle',

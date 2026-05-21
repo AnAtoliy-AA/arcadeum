@@ -23,15 +23,23 @@ export interface FaqQuestion {
  * matching language's SERP. The optional `pageUrl` becomes the
  * `mainEntityOfPage` value, which helps Google associate the rich result
  * with a specific URL instead of the domain root.
+ *
+ * When `speakableSelectors` are supplied, the schema adds a
+ * `SpeakableSpecification` so Google Assistant and similar voice
+ * surfaces know which on-page elements are safe to read aloud. Selectors
+ * must be CSS selectors that actually exist on the rendered page (the
+ * FAQ section's heading + answer paragraphs are the obvious targets).
  */
 export function buildFaqJsonLd({
   locale,
   questions,
   pageUrl,
+  speakableSelectors,
 }: {
   locale: Locale;
   questions: ReadonlyArray<FaqQuestion>;
   pageUrl?: string;
+  speakableSelectors?: ReadonlyArray<string>;
 }): Record<string, unknown> | null {
   if (!questions.length) return null;
 
@@ -50,6 +58,13 @@ export function buildFaqJsonLd({
   };
 
   if (pageUrl) node.mainEntityOfPage = pageUrl;
+
+  if (speakableSelectors && speakableSelectors.length > 0) {
+    node.speakable = {
+      '@type': 'SpeakableSpecification',
+      cssSelector: [...speakableSelectors],
+    };
+  }
 
   return node;
 }

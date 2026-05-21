@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.20] - 2026-05-21
+
+### Added
+- HowTo schema + related articles + dynamic OG images (ARC-727) (ARC-727)
+
+
 ## [1.14.19] - 2026-05-21
 
 ### Added

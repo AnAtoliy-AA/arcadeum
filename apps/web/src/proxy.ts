@@ -9,6 +9,43 @@ import {
 const LOCALE_SET = new Set<string>(SUPPORTED_LOCALES);
 const COOKIE_NAME = 'app-language';
 
+/**
+ * Private/transactional path prefixes that must never be indexed. We also
+ * emit `<meta name="robots">` via `buildMetadata({ index: false })`, but
+ * setting the response header is defense in depth: it takes effect even on
+ * non-HTML responses and on requests that bypass the page (e.g. direct
+ * loads of an asset under one of these paths).
+ */
+const NOINDEX_PREFIXES = [
+  '/auth',
+  '/chat',
+  '/chats',
+  '/history',
+  '/settings',
+  '/stats',
+  '/referrals',
+  '/payment',
+  '/games/create',
+  '/games/rooms/',
+  '/offline',
+  '/test-crash',
+];
+
+function isNoIndexPath(pathname: string): boolean {
+  return NOINDEX_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/'),
+  );
+}
+
+function applyRobotsHeader(
+  response: NextResponse,
+  pathnameWithoutLocale: string,
+): void {
+  if (isNoIndexPath(pathnameWithoutLocale)) {
+    response.headers.set('x-robots-tag', 'noindex, nofollow');
+  }
+}
+
 function pickLocaleFromAcceptLanguage(header: string | null): Locale {
   if (!header) return DEFAULT_LOCALE;
   for (const part of header.split(',')) {
@@ -56,6 +93,7 @@ export function proxy(request: NextRequest) {
     const response = NextResponse.rewrite(url);
     response.headers.set('x-locale', locale);
     response.headers.set('x-locale-pathname', pathname);
+    applyRobotsHeader(response, url.pathname);
     response.cookies.set(COOKIE_NAME, locale, {
       path: '/',
       sameSite: 'lax',
@@ -68,6 +106,7 @@ export function proxy(request: NextRequest) {
   const response = NextResponse.next();
   response.headers.set('x-locale', DEFAULT_LOCALE);
   response.headers.set('x-locale-pathname', pathname);
+  applyRobotsHeader(response, pathname);
 
   // First-time visitor: seed the cookie from Accept-Language so the language
   // switcher has a sensible initial state without changing what gets served.

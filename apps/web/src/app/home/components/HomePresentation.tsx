@@ -53,6 +53,7 @@ export default function HomePresentation() {
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
             allowFullScreen
+            loading="lazy"
             title="Arcadeum Trailer"
             sandbox="allow-scripts allow-same-origin allow-popups"
             style={{

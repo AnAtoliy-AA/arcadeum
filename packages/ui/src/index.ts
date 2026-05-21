@@ -28,6 +28,7 @@ export * from './components/Modal/Modal';
 export * from './components/Section/Section';
 export * from './components/PageLayout/PageLayout';
 export * from './components/PageTitle/PageTitle';
+export * from './components/Breadcrumbs';
 
 export * from './components/EmptyState/EmptyState';
 export * from './components/ErrorState/ErrorState';

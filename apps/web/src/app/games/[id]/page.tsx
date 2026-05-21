@@ -12,6 +12,7 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
 import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, gameSchema, webPage } from '@/shared/seo/jsonLd';
+import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
 import GameDetailClient from './GameDetailClient';
 
 interface PageProps {
@@ -85,9 +86,20 @@ export default async function GameDetailRoute({ params }: PageProps) {
         }),
   ];
 
+  const crumbName = meta?.name ?? 'Game';
+
   return (
     <>
       <JsonLd data={jsonLd} />
+      <div style={{ padding: '1rem 1.5rem 0' }}>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: routes.home },
+            { label: 'Games', href: routes.games },
+            { label: crumbName },
+          ]}
+        />
+      </div>
       <GameDetailClient initialRooms={initialRooms} />
     </>
   );

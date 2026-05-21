@@ -74,7 +74,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
     description = appConfig.seoDescription,
     path,
     keywords,
-    image = '/logo.png',
+    image,
     ogType = 'website',
     index = true,
     locale = DEFAULT_LOCALE,
@@ -85,6 +85,21 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
   const ogTitle = title
     ? `${title} | ${appConfig.appName}`
     : appConfig.seoTitle;
+
+  // Only set explicit images when the caller passes one. Leaving it undefined
+  // lets Next.js's file-based `opengraph-image.tsx` (or the root layout's
+  // default `/logo.png`) cascade in — explicit values would otherwise replace
+  // the file-based image at the route level.
+  const explicitImages = image
+    ? [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title ? `${title} — ${appConfig.appName}` : appConfig.appName,
+        },
+      ]
+    : undefined;
 
   const metadata: Metadata = {
     title,
@@ -102,20 +117,13 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
       siteName: appConfig.appName,
       title: ogTitle,
       description,
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title ? `${title} — ${appConfig.appName}` : appConfig.appName,
-        },
-      ],
+      ...(explicitImages ? { images: explicitImages } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title: ogTitle,
       description,
-      images: [image],
+      ...(image ? { images: [image] } : {}),
     },
   };
 

@@ -164,6 +164,9 @@ export default async function RootLayout({
     }
   })();
 
+  const contactEmail =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
+
   const jsonLd: Record<string, unknown>[] = [
     {
       '@context': 'https://schema.org',
@@ -177,7 +180,20 @@ export default async function RootLayout({
         width: 1200,
         height: 630,
       },
+      image: `${appConfig.siteUrl}/logo.png`,
       description: appConfig.seoDescription,
+      foundingDate: '2024',
+      founder: {
+        '@type': 'Person',
+        name: 'Anatoliy Aliaksandrau',
+        url: appConfig.social.linkedin,
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: contactEmail,
+        availableLanguage: ['en', 'es', 'fr', 'ru', 'be'],
+      },
       sameAs: socialLinks,
     },
     {

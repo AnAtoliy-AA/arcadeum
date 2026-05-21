@@ -8,6 +8,7 @@ import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { ChatBubble } from '../ChatBubble';
 import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
+import { InGameAvatar } from '@/features/games/ui';
 
 interface OpponentTileProps {
   player: CriticalPlayerTableState;
@@ -51,16 +52,6 @@ interface OpponentTileProps {
 const TURN_RING = '#34d399';
 const ELIMINATED_RING = 'rgba(239, 68, 68, 0.85)';
 const TARGET_RING = '#f472b6';
-
-function initialsOf(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
   return logs.findLast(
@@ -238,11 +229,15 @@ export function OpponentTile({
         borderColor={avatarBorderColor}
         alignItems="center"
         justifyContent="center"
+        overflow="hidden"
       >
         {alive ? (
-          <Text fontSize={14} fontWeight="800" letterSpacing={0.5}>
-            {initialsOf(displayName)}
-          </Text>
+          <InGameAvatar
+            playerId={player.playerId}
+            name={displayName}
+            size={finalAvatarSize >= 64 ? 'sm' : 'icon'}
+            data-testid={`player-avatar-${player.playerId}`}
+          />
         ) : (
           <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
         )}

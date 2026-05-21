@@ -11,13 +11,18 @@ import StatsLoading from './loading';
 import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Player Statistics',
-  description: 'View your game performance and statistics.',
-  path: routes.stats,
-  index: false,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Player Statistics',
+    description: 'View your game performance and statistics.',
+    path: routes.stats,
+    index: false,
+    locale,
+  });
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

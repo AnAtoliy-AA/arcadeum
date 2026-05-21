@@ -5,6 +5,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, profilePage } from '@/shared/seo/jsonLd';
 import PlayerProfileClient from './PlayerProfileClient';
 
@@ -15,12 +16,13 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const [{ id }, locale] = await Promise.all([params, getRequestLocale()]);
   return buildMetadata({
     title: `Player ${id}`,
     description: `Player rank, stats, and recent matches on ${appConfig.appName}.`,
     path: `/players/${id}`,
     ogType: 'profile',
+    locale,
   });
 }
 

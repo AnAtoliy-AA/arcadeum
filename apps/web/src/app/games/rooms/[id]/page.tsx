@@ -5,6 +5,7 @@ import { gamesApi } from '@/features/games/api';
 import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import GameRoomClient from './GameRoomClient';
 import GameRoomLoading from './loading';
 import { routes } from '@/shared/config/routes';
@@ -16,12 +17,13 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const [{ id }, locale] = await Promise.all([params, getRequestLocale()]);
   return buildMetadata({
     title: 'Game Room',
     description: `Join game room ${id} on ${appConfig.appName}.`,
     path: routes.gameRoom(id),
     index: false,
+    locale,
   });
 }
 

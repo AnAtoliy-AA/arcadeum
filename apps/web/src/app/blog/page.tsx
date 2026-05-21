@@ -4,16 +4,21 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import BlogClient from './BlogClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Blog',
-  description: `Latest news, deep-dives, and design notes from the ${appConfig.appName} team — what we're building and why.`,
-  path: routes.blog,
-  ogType: 'article',
-  keywords: ['arcadeum blog', 'board game news', 'tabletop design notes'],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Blog',
+    description: `Latest news, deep-dives, and design notes from the ${appConfig.appName} team — what we're building and why.`,
+    path: routes.blog,
+    ogType: 'article',
+    keywords: ['arcadeum blog', 'board game news', 'tabletop design notes'],
+    locale,
+  });
+}
 
 const BLOG_JSON_LD = [
   webPage({

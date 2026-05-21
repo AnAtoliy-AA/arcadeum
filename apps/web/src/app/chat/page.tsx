@@ -5,13 +5,18 @@ import type { Metadata } from 'next';
 
 import { routes } from '@/shared/config/routes';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Chat',
-  description: 'Chat with other players.',
-  path: routes.chat,
-  index: false,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Chat',
+    description: 'Chat with other players.',
+    path: routes.chat,
+    index: false,
+    locale,
+  });
+}
 
 const ChatPage = dynamic(() => import('./ChatPage'));
 

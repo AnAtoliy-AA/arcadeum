@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next';
 
 import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
+import { SUPPORTED_LOCALES } from '@/shared/i18n/types';
+import { hreflang, localePath } from '@/shared/i18n/locale-url';
 
 type ChangeFreq = MetadataRoute.Sitemap[number]['changeFrequency'];
 
@@ -29,13 +31,30 @@ const ENTRIES: Entry[] = [
   { path: routes.cookies, priority: 0.3, changeFrequency: 'yearly' },
 ];
 
+const absolute = (path: string): string =>
+  `${appConfig.siteUrl}${path === '/' ? '' : path}`;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  return ENTRIES.map(({ path, priority, changeFrequency }) => ({
-    url: `${appConfig.siteUrl}${path === routes.home ? '' : path}`,
-    lastModified,
-    changeFrequency,
-    priority,
-  }));
+  const entries: MetadataRoute.Sitemap = [];
+
+  for (const { path, priority, changeFrequency } of ENTRIES) {
+    const languages: Record<string, string> = {};
+    for (const locale of SUPPORTED_LOCALES) {
+      languages[hreflang(locale)] = absolute(localePath(path, locale));
+    }
+
+    for (const locale of SUPPORTED_LOCALES) {
+      entries.push({
+        url: absolute(localePath(path, locale)),
+        lastModified,
+        changeFrequency,
+        priority,
+        alternates: { languages },
+      });
+    }
+  }
+
+  return entries;
 }

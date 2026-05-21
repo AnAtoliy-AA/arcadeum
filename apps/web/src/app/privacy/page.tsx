@@ -5,18 +5,23 @@ import { getTranslations } from '@/shared/i18n/server';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import PrivacyClient from './PrivacyClient';
 
 const PRIVACY_EMAIL =
   process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? 'arcadeum.care@gmail.com';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Privacy Policy',
-  description: `Read the ${appConfig.appName} privacy policy: what data we collect, why we collect it, and how we keep it safe.`,
-  path: routes.privacy,
-  keywords: ['privacy policy', 'data protection', 'gdpr', 'privacy'],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Privacy Policy',
+    description: `Read the ${appConfig.appName} privacy policy: what data we collect, why we collect it, and how we keep it safe.`,
+    path: routes.privacy,
+    keywords: ['privacy policy', 'data protection', 'gdpr', 'privacy'],
+    locale,
+  });
+}
 
 const PRIVACY_JSON_LD = [
   webPage({

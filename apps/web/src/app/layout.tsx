@@ -3,11 +3,12 @@ import { Geist } from 'next/font/google';
 
 import './globals.css';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { resolveApiBase } from '@/shared/lib/api-base';
 import { Header } from '@/widgets/header/ui/Header';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { hreflang, isLocale } from '@/shared/i18n/locale-url';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -131,11 +132,20 @@ export default async function RootLayout({
 }>) {
   const fontClassName = `${geistSans.variable} ${geistSans.className}`;
   const cookieStore = await cookies();
+  const requestHeaders = await headers();
   const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
   const themePreference =
     (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
     'dark';
-  const locale = (cookieStore.get('app-language')?.value as Locale) || 'en';
+  const urlLocale = requestHeaders.get('x-locale') ?? undefined;
+  const cookieLocale = cookieStore.get('app-language')?.value;
+  // URL is the source of truth for SEO — the cookie is only a fallback for
+  // requests that bypass the middleware (e.g. static generation).
+  const locale: Locale = isLocale(urlLocale)
+    ? urlLocale
+    : isLocale(cookieLocale)
+      ? cookieLocale
+      : 'en';
 
   const socialLinks = Object.values(appConfig.social).filter(Boolean);
   const apiOrigin = (() => {
@@ -204,7 +214,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={locale}
+      lang={hreflang(locale)}
       className={`t_${theme}`}
       data-theme={theme}
       data-theme-preference={themePreference}

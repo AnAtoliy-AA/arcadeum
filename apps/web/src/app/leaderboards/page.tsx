@@ -5,20 +5,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import LeaderboardsClient from './LeaderboardsClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Leaderboards',
-  description: `See the top-ranked players on ${appConfig.appName} — global, weekly, and per-game leaderboards updated in real time.`,
-  path: routes.leaderboards,
-  keywords: [
-    'board game rankings',
-    'player leaderboard',
-    'top players',
-    'ranked board games',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Leaderboards',
+    description: `See the top-ranked players on ${appConfig.appName} — global, weekly, and per-game leaderboards updated in real time.`,
+    path: routes.leaderboards,
+    keywords: [
+      'board game rankings',
+      'player leaderboard',
+      'top players',
+      'ranked board games',
+    ],
+    locale,
+  });
+}
 
 const LEADERBOARDS_JSON_LD = [
   webPage({

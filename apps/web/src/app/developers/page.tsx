@@ -4,20 +4,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import DevelopersClient from './DevelopersClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Developers',
-  description: `API documentation, SDKs, and integration guides for building on the ${appConfig.appName} platform.`,
-  path: routes.developers,
-  keywords: [
-    'arcadeum api',
-    'game platform api',
-    'board game sdk',
-    'developer docs',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Developers',
+    description: `API documentation, SDKs, and integration guides for building on the ${appConfig.appName} platform.`,
+    path: routes.developers,
+    keywords: [
+      'arcadeum api',
+      'game platform api',
+      'board game sdk',
+      'developer docs',
+    ],
+    locale,
+  });
+}
 
 const DEVELOPERS_JSON_LD = [
   webPage({

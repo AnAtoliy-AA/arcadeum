@@ -6,23 +6,28 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import type {
   SupportAction,
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Support the developers',
-  description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Sponsor, contribute, or star the repo.`,
-  path: routes.support,
-  keywords: [
-    'support arcadeum',
-    'sponsor',
-    'donate',
-    'open source board games',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Support the developers',
+    description: `Keep ${appConfig.appName} iterating quickly and accessible to the tabletop community. Sponsor, contribute, or star the repo.`,
+    path: routes.support,
+    keywords: [
+      'support arcadeum',
+      'sponsor',
+      'donate',
+      'open source board games',
+    ],
+    locale,
+  });
+}
 
 const SUPPORT_JSON_LD = [
   webPage({

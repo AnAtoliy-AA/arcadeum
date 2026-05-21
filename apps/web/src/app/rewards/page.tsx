@@ -4,20 +4,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import RewardsClient from './RewardsClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Rewards',
-  description: `Earn cosmetic badges, early access decks, and exclusive perks on ${appConfig.appName} by playing and inviting friends.`,
-  path: routes.rewards,
-  keywords: [
-    'board game rewards',
-    'earn badges',
-    'referral rewards',
-    'unlocks',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Rewards',
+    description: `Earn cosmetic badges, early access decks, and exclusive perks on ${appConfig.appName} by playing and inviting friends.`,
+    path: routes.rewards,
+    keywords: [
+      'board game rewards',
+      'earn badges',
+      'referral rewards',
+      'unlocks',
+    ],
+    locale,
+  });
+}
 
 const REWARDS_JSON_LD = [
   webPage({

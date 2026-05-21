@@ -6,22 +6,27 @@ import { appConfig, SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, collectionPage } from '@/shared/seo/jsonLd';
 import GamesClient from './GamesClient';
 import GamesLoading from './loading';
 import { routes } from '@/shared/config/routes';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Games',
-  description: `Browse the full library of board games on ${appConfig.appName}. Join an open room, create a private game, or queue with friends — no install required.`,
-  path: routes.games,
-  keywords: [
-    'browse board games',
-    'find a game room',
-    'join board game online',
-    'game library',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Games',
+    description: `Browse the full library of board games on ${appConfig.appName}. Join an open room, create a private game, or queue with friends — no install required.`,
+    path: routes.games,
+    keywords: [
+      'browse board games',
+      'find a game room',
+      'join board game online',
+      'game library',
+    ],
+    locale,
+  });
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -10,6 +10,7 @@ import { handleSsrFetchError } from '@/shared/lib/ssr';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, gameSchema, webPage } from '@/shared/seo/jsonLd';
 import GameDetailClient from './GameDetailClient';
 
@@ -24,7 +25,7 @@ function lookupGameMeta(id: string) {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const [{ id }, locale] = await Promise.all([params, getRequestLocale()]);
   const meta = lookupGameMeta(id);
   const name = meta?.name ?? 'Game';
   const description =
@@ -42,6 +43,7 @@ export async function generateMetadata({
       `${name.toLowerCase()} board game`,
       ...(meta?.tags ?? []),
     ],
+    locale,
   });
 }
 

@@ -9,13 +9,18 @@ import HistoryLoading from './loading';
 import type { Metadata } from 'next';
 import { routes } from '@/shared/config/routes';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Game History',
-  description: 'Review your past games and results.',
-  path: routes.history,
-  index: false,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Game History',
+    description: 'Review your past games and results.',
+    path: routes.history,
+    index: false,
+    locale,
+  });
+}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

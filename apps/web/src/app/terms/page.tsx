@@ -5,6 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import TermsClient from './TermsClient';
 
@@ -18,12 +19,21 @@ const WORKING_HOURS =
   process.env.NEXT_PUBLIC_WORKING_HOURS ??
   'Monday – Friday, 10:00 – 18:00 (GMT+4)';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Terms of Service',
-  description: `The terms and conditions for using ${appConfig.appName}: account rules, acceptable use, payments, and legal notices.`,
-  path: routes.terms,
-  keywords: ['terms of service', 'terms and conditions', 'legal', 'agreement'],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Terms of Service',
+    description: `The terms and conditions for using ${appConfig.appName}: account rules, acceptable use, payments, and legal notices.`,
+    path: routes.terms,
+    keywords: [
+      'terms of service',
+      'terms and conditions',
+      'legal',
+      'agreement',
+    ],
+    locale,
+  });
+}
 
 const TERMS_JSON_LD = [
   webPage({

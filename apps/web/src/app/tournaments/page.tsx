@@ -4,20 +4,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import TournamentsClient from './TournamentsClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Tournaments',
-  description: `Join competitive board game tournaments on ${appConfig.appName} — compete for rewards, climb the bracket, and play with friends.`,
-  path: routes.tournaments,
-  keywords: [
-    'board game tournaments',
-    'online tournaments',
-    'compete board games',
-    'ranked play',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Tournaments',
+    description: `Join competitive board game tournaments on ${appConfig.appName} — compete for rewards, climb the bracket, and play with friends.`,
+    path: routes.tournaments,
+    keywords: [
+      'board game tournaments',
+      'online tournaments',
+      'compete board games',
+      'ranked play',
+    ],
+    locale,
+  });
+}
 
 const TOURNAMENTS_JSON_LD = [
   webPage({

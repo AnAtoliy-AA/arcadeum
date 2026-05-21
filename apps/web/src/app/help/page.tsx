@@ -4,20 +4,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import HelpClient from './HelpClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Help Center',
-  description: `Answers to common questions, troubleshooting steps, and platform guides for ${appConfig.appName}.`,
-  path: routes.help,
-  keywords: [
-    'arcadeum help',
-    'board game faq',
-    'support center',
-    'how to play',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Help Center',
+    description: `Answers to common questions, troubleshooting steps, and platform guides for ${appConfig.appName}.`,
+    path: routes.help,
+    keywords: [
+      'arcadeum help',
+      'board game faq',
+      'support center',
+      'how to play',
+    ],
+    locale,
+  });
+}
 
 const HELP_JSON_LD = [
   webPage({

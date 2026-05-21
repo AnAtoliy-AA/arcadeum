@@ -4,20 +4,25 @@ import { appConfig } from '@/shared/config/app-config';
 import { routes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import { breadcrumbList, webPage } from '@/shared/seo/jsonLd';
 import CommunityClient from './CommunityClient';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Community',
-  description: `Join the ${appConfig.appName} community — find groups, threads, and tournaments, and connect with other players.`,
-  path: routes.community,
-  keywords: [
-    'board game community',
-    'find players',
-    'discord tabletop',
-    'community games',
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Community',
+    description: `Join the ${appConfig.appName} community — find groups, threads, and tournaments, and connect with other players.`,
+    path: routes.community,
+    keywords: [
+      'board game community',
+      'find players',
+      'discord tabletop',
+      'community games',
+    ],
+    locale,
+  });
+}
 
 const COMMUNITY_JSON_LD = [
   webPage({

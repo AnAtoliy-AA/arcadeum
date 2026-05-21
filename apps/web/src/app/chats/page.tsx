@@ -8,18 +8,23 @@ import { HttpStatus } from '@/shared/lib/http-status';
 import { getTranslations } from '@/shared/i18n/server';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
 import { buildMetadata } from '@/shared/seo/buildMetadata';
+import { getRequestLocale } from '@/shared/i18n/locale-url';
 import ChatsClient from './ChatsClient';
 import ChatsLoading from './loading';
 import { routes } from '@/shared/config/routes';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Chats',
-  description: 'Manage your direct conversations and messages.',
-  path: routes.chats,
-  index: false,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return buildMetadata({
+    title: 'Chats',
+    description: 'Manage your direct conversations and messages.',
+    path: routes.chats,
+    index: false,
+    locale,
+  });
+}
 
 export default function ChatsRoute() {
   return (

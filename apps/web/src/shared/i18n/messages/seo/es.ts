@@ -21,6 +21,14 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Sala de juego · ${APP}`,
     description: `Únete a una sala en vivo en ${APP}, toma asiento y empieza a jugar — o conviértete en espectador.`,
   },
+  criticalLanding: {
+    title: `Critical · Juego de cartas explosivo gratis en línea · ${APP}`,
+    description: `Juega gratis a Critical en línea en ${APP} — un juego de cartas estratégico donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos. Sin descarga, sin registro.`,
+  },
+  glimwormLanding: {
+    title: `Glimworm · Juego de serpientes en arena gratis · ${APP}`,
+    description: `Juega gratis a Glimworm en línea en ${APP} — un juego de arena de gusanos luminosos en tiempo real para hasta 10 jugadores. Desliza, sobrevive, come las luces. Desde el navegador, sin descarga.`,
+  },
   seaBattleLanding: {
     title: `Batalla naval en línea · Juega Battleship gratis · ${APP}`,
     description: `Juega Batalla Naval (Battleship) en línea gratis en ${APP}. Partida rápida contra un bot, busca un oponente humano o invita amigos a una partida privada.`,

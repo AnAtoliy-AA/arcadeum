@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './by-variants';
 import { modals } from './by-modals';
+import { landing } from './landing-by';
 
 export const byMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Стратэгічная картачная гульня, дзе трэба пазбягаць крытычных пагроз',
+    landing,
     rules: {
       title: 'Правілы гульні',
       headers: {

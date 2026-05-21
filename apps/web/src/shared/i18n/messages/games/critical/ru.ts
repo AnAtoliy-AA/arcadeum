@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './ru-variants';
 import { modals } from './ru-modals';
+import { landing } from './landing-ru';
 
 export const ruMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Стратегическая карточная игра, где нужно избегать критических угроз',
+    landing,
     rules: {
       title: 'Правила игры',
       headers: {

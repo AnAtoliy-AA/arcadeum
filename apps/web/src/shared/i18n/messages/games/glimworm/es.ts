@@ -1,8 +1,11 @@
+import { landing } from './landing-es';
+
 export const esMessages = {
   glimworm_v1: {
     name: 'Glimworm',
     description: 'Una batalla de gusanos brillantes para 2 a 10 jugadores.',
     tagline: 'Mantén pulsado, deslízate, sobrevive.',
+    landing,
     variant: {
       battleRoyale: {
         name: 'Battle Royale',

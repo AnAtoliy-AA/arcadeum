@@ -1,8 +1,11 @@
+import { landing } from './landing-by';
+
 export const byMessages = {
   glimworm_v1: {
     name: 'Глімворм',
     description: 'Свяцелая бітва чарвякоў на 2–10 гульцоў.',
     tagline: 'Заціскай палец, слізгай, выжывай.',
+    landing,
     variant: {
       battleRoyale: {
         name: 'Каралеўская бітва',

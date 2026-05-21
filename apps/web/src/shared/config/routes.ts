@@ -22,6 +22,8 @@ export const buildRoutes = (locale: Locale) => {
     gameCreate: `/${locale}/${s('games')}/create`,
     gameRoom: (id: string) => `/${locale}/${s('games')}/rooms/${id}`,
     seaBattleLanding: `/${locale}/${s('games')}/sea-battle`,
+    criticalLanding: `/${locale}/${s('games')}/critical`,
+    glimwormLanding: `/${locale}/${s('games')}/glimworm`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,
@@ -54,6 +56,7 @@ export const buildRoutes = (locale: Locale) => {
 
     // Community & Content
     blog: `/${locale}/${s('blog')}`,
+    blogPost: (slug: string) => `/${locale}/${s('blog')}/${slug}`,
     community: `/${locale}/${s('community')}`,
     rewards: `/${locale}/${s('rewards')}`,
     tournaments: `/${locale}/${s('tournaments')}`,

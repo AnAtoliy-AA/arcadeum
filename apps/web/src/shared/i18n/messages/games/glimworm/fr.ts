@@ -1,8 +1,11 @@
+import { landing } from './landing-fr';
+
 export const frMessages = {
   glimworm_v1: {
     name: 'Glimworm',
     description: 'Une bataille de vers lumineux pour 2 à 10 joueurs.',
     tagline: 'Maintenez le doigt, glissez, survivez.',
+    landing,
     variant: {
       battleRoyale: {
         name: 'Battle Royale',

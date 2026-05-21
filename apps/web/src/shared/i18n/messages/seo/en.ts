@@ -23,6 +23,14 @@ export const en = {
     title: `Sea Battle Online · Play Battleship Free · ${APP}`,
     description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match.`,
   },
+  criticalLanding: {
+    title: `Critical · Free Exploding Card Game Online · ${APP}`,
+    description: `Play Critical online for free on ${APP} — a strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks. No download, no signup.`,
+  },
+  glimwormLanding: {
+    title: `Glimworm · Free Online Snake Arena Game · ${APP}`,
+    description: `Play Glimworm online for free on ${APP} — a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

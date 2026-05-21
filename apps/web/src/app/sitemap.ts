@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { SUPPORTED_LOCALES } from '@/shared/i18n';
+import { POST_SLUGS, getPost } from '@/features/blog/registry';
 
 type RouteKey =
   | 'home'
@@ -30,7 +31,9 @@ type RouteKey =
   | 'rewards'
   | 'tournaments'
   | 'wallet'
-  | 'seaBattleLanding';
+  | 'seaBattleLanding'
+  | 'criticalLanding'
+  | 'glimwormLanding';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -63,6 +66,8 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   tournaments: '2026-05-15',
   wallet: '2026-05-05',
   seaBattleLanding: '2026-05-18',
+  criticalLanding: '2026-05-21',
+  glimwormLanding: '2026-05-21',
 };
 
 /**
@@ -87,11 +92,15 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'gameCreate',
 ]);
 
-const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
-  .filter((k) => k !== 'seaBattleLanding')
-  .filter((k) => !NOINDEX_KEYS.has(k));
+const GAME_LANDING_KEYS: RouteKey[] = [
+  'seaBattleLanding',
+  'criticalLanding',
+  'glimwormLanding',
+];
 
-const GAME_LANDING_KEYS: RouteKey[] = ['seaBattleLanding'];
+const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
+  .filter((k) => !GAME_LANDING_KEYS.includes(k))
+  .filter((k) => !NOINDEX_KEYS.has(k));
 
 const PAGE_CHANGE_FREQ: Partial<
   Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>
@@ -107,6 +116,8 @@ const PAGE_CHANGE_FREQ: Partial<
   blog: 'weekly',
   community: 'weekly',
   seaBattleLanding: 'weekly',
+  criticalLanding: 'weekly',
+  glimwormLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -137,6 +148,8 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   home: 1,
   games: 0.9,
   seaBattleLanding: 0.9,
+  criticalLanding: 0.9,
+  glimwormLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,
@@ -195,6 +208,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: PAGE_CHANGE_FREQ[key] ?? 'weekly',
         priority: PAGE_PRIORITY[key] ?? 0.9,
         alternates: { languages: alternatesFor(key) },
+      });
+    }
+
+    // Blog posts. Each post emits one entry per locale that actually
+    // has a translation, with hreflang alternates that include only the
+    // translated locales (plus `x-default`). Skipping untranslated
+    // locales avoids pointing Google at a fallback that would dilute
+    // the language-clustering signal.
+    for (const slug of POST_SLUGS) {
+      const post = getPost(slug, locale);
+      if (!post || post.locale !== locale) continue;
+
+      const postLanguages: Record<string, string> = {};
+      for (const l of SUPPORTED_LOCALES) {
+        const localized = getPost(slug, l);
+        if (localized && localized.locale === l) {
+          postLanguages[l] =
+            `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
+        }
+      }
+
+      entries.push({
+        url: `${appConfig.siteUrl}${r.blogPost(slug)}`,
+        lastModified: new Date(post.updatedAt ?? post.publishedAt),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+        alternates: { languages: postLanguages },
       });
     }
   }

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.22] - 2026-05-21
+
+### Added
+- premium in-game chat redesign per handoff (ARC-735) (ARC-735)
+- wire GamePageLayout to chat store; remove local popup (ARC-735) (ARC-735)
+- mount chat popup overlay inside game widget (ARC-735) (ARC-735)
+- add GameChatPopupOverlay reading from chat store (ARC-735) (ARC-735)
+- extend chat store with userId, equipped, panelOpen, fallback resolver (ARC-735) (ARC-735)
+
+### Fixed
+- popup-on-refresh + theme-aware chat surfaces (ARC-735) (ARC-735)
+
+### Refactored
+- anchor popup to nearest positioned ancestor (ARC-735) (ARC-735)
+
+### Documentation
+- implementation plan for chat popup inside game widget (ARC-735) (ARC-735)
+- design for chat popup inside game widget (ARC-735) (ARC-735)
+
+
 ## [1.14.21] - 2026-05-21
 
 ### Added

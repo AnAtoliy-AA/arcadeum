@@ -51,3 +51,22 @@ export function getPosts(locale: Locale): BlogPost[] {
     .filter((p): p is BlogPost => !!p)
     .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
 }
+
+/**
+ * Posts whose tag list intersects any of the supplied tags. Used by the
+ * "Related articles" block on game landing pages — the landing page
+ * passes the localized + canonical tag aliases for its game and we
+ * surface every post that matches at least one of them. Case-insensitive
+ * so locale-translated tags (e.g. `Bataille navale`) still match.
+ */
+export function getPostsByTag(
+  locale: Locale,
+  tags: ReadonlyArray<string>,
+  limit = 4,
+): BlogPost[] {
+  if (!tags.length) return [];
+  const needles = tags.map((t) => t.toLowerCase());
+  return getPosts(locale)
+    .filter((p) => p.tags.some((tag) => needles.includes(tag.toLowerCase())))
+    .slice(0, limit);
+}

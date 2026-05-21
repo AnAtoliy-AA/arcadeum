@@ -12,6 +12,7 @@ import {
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildBlogPostJsonLd } from '@/shared/seo/blogPostJsonLd';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
+import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPost, POST_SLUGS } from '@/features/blog/registry';
 import { BlogPostView } from './BlogPostView';
 
@@ -140,12 +141,27 @@ export default async function BlogPostRoute({ params }: PageProps) {
     ],
   });
 
+  // HowTo schema is opt-in per post. Emit only when the author has
+  // authored explicit, visible steps (the article must contain a
+  // matching numbered list — Google's manual-action team flags HowTo
+  // schema that does not mirror on-page content).
+  const howToJsonLd = post.howTo
+    ? buildHowToJsonLd({
+        locale,
+        pageUrl,
+        name: post.howTo.name ?? post.title,
+        description: post.excerpt,
+        totalTime: post.howTo.totalTime,
+        steps: post.howTo.steps,
+      })
+    : null;
+
+  const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];
+  if (howToJsonLd) jsonLdNodes.push(howToJsonLd);
+
   return (
     <>
-      <JsonLd
-        id={`json-ld-blog-post-${slug}-${locale}`}
-        data={[postJsonLd, breadcrumbJsonLd]}
-      />
+      <JsonLd id={`json-ld-blog-post-${slug}-${locale}`} data={jsonLdNodes} />
       <BlogPostView
         post={post}
         homeHref={routes.home}

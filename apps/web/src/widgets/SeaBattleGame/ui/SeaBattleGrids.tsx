@@ -43,6 +43,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [isLandscape, setIsLandscape] = useState(false);
+  // Watches for an ancestor with `.is-fullscreen` (added by the page-level
+  // or widget-level useFullscreen hook). When set, the grid caps cols at 2
+  // so the player can see two full boards at once and scroll through the
+  // rest vertically — the preferred interaction in the expanded view.
+  const [isAncestorFullscreen, setIsAncestorFullscreen] = useState(false);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -65,6 +70,30 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       window.removeEventListener('resize', update);
       window.removeEventListener('orientationchange', update);
     };
+  }, []);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const check = () => {
+      let el: HTMLElement | null = node.parentElement;
+      while (el) {
+        if (el.classList.contains('is-fullscreen')) {
+          setIsAncestorFullscreen(true);
+          return;
+        }
+        el = el.parentElement;
+      }
+      setIsAncestorFullscreen(false);
+    };
+    check();
+    const observer = new MutationObserver(check);
+    let el: HTMLElement | null = node.parentElement;
+    while (el) {
+      observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+      el = el.parentElement;
+    }
+    return () => observer.disconnect();
   }, []);
 
   const isCompact = !media.gtSm; // phone / small-tablet widths
@@ -98,6 +127,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       Math.floor(containerWidth / MIN_BOARD_WIDTH_DESKTOP),
     );
     cols = Math.min(ideal, count, fits || ideal);
+  }
+
+  // Fullscreen override: when the widget (or page) is expanded to fill the
+  // viewport, cap at 2 cols so two full boards are visible at once and
+  // remaining boards scroll vertically. This trades horizontal density
+  // for per-board readability — the user's choice for the expanded view.
+  if (isAncestorFullscreen && cols > 2) {
+    cols = 2;
   }
 
   if (cols === 1) {

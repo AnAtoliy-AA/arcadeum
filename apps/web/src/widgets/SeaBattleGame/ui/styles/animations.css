@@ -253,12 +253,15 @@
 }
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
   font-size: 10px !important;
-  line-height: 1.1 !important;
-  max-height: 14px;
+  line-height: 1.2 !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
@@ -354,10 +357,10 @@
 
 /* Smaller chrome budget when ships is on the side. Horizontal chrome:
    40 (ships col) + 2 (gap) + 4 (section padding) + 4 (board margin)
-   ≈ 50. Vertical chrome: 14 (name max) + 2 (gap) + 4 (section padding)
-   + 16 (col labels) ≈ 36. */
+   ≈ 50. Vertical chrome: 18 (name + team pill) + 2 (gap) + 4 (section
+   padding) + 16 (col labels) ≈ 40. */
 .sb-fit-grid.sb-mobile-landscape .sb-board-with-labels-layout {
-  --sb-board-side: min(calc(100cqi - 55px), max(60px, calc(100cqh - 38px)));
+  --sb-board-side: min(calc(100cqi - 55px), max(60px, calc(100cqh - 42px)));
 }
 
 .sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {

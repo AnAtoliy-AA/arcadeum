@@ -273,35 +273,57 @@
   gap: 4px !important;
 }
 
-/* Label row: keep the "10/10" count visible; tighten the label text so
-   it fits the narrow column. */
+/* Label row: stack vertically. "SHIPS REMAINING" text rotated -90deg
+   so it reads bottom-to-top on the left of the strip; "10/10" count
+   sits horizontally below it. We give the rotated label a reserved
+   slot via height + display:flex so it doesn't overflow into the
+   board area. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:first-child {
   flex-direction: column !important;
-  gap: 2px;
+  align-items: center !important;
+  gap: 6px !important;
+  width: 100%;
 }
-.sb-mobile-landscape .sb-ships-remaining-container > div:first-child > div:first-child {
-  font-size: 8px !important;
-  letter-spacing: 0.5px !important;
+.sb-mobile-landscape .sb-ships-remaining-container > div:first-child > span:first-child {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 9px !important;
+  letter-spacing: 1px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
   text-align: center;
 }
+.sb-mobile-landscape .sb-ships-remaining-container > div:first-child > span:nth-child(2) {
+  font-size: 12px !important;
+}
 
-/* Bars row: stack ships vertically, fill remaining column height. */
+/* Bars row: stack ships vertically as a list. Each ship stays as a
+   HORIZONTAL row of cells (its natural orientation), just rendered
+   smaller. Left-aligned so a 1-cell patrol doesn't stretch to 60px. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) {
   flex-direction: column !important;
   flex: 1;
   height: auto;
-  align-items: stretch !important;
-  gap: 4px !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 3px !important;
 }
 
-/* Each ship bar: stack its segments vertically, fill width. The
-   `flex: <size>` (set inline by ShipsLeft for the row layout) keeps
-   ships of different sizes proportional in this column-stack too. */
+/* Each ship: keep horizontal cell row (no flex-direction override).
+   Override Tamagui's `flex: size` (which would grow vertically in a
+   column parent) and the inline `height: 10` so ships sit at a fixed
+   compact height. Width is set by data-size below — proportional to
+   ship length so the silhouette is recognizable. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) > div {
-  flex-direction: column !important;
-  width: 100% !important;
-  height: auto !important;
+  flex: 0 0 auto !important;
+  height: 8px !important;
 }
+
+.sb-mobile-landscape [data-size='5'] { width: 50px !important; }
+.sb-mobile-landscape [data-size='4'] { width: 40px !important; }
+.sb-mobile-landscape [data-size='3'] { width: 30px !important; }
+.sb-mobile-landscape [data-size='2'] { width: 20px !important; }
+.sb-mobile-landscape [data-size='1'] { width: 10px !important; }
 
 /* Smaller chrome budget when ships is on the side. Horizontal chrome:
    60 (ships col) + 4 (gap) + 12 (section padding) + 4 (board padding)

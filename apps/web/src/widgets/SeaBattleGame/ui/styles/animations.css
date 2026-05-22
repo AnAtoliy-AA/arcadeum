@@ -263,14 +263,16 @@
 }
 
 /* The ShipsLeft container is a YStack (column) wrapping a label row and
-   a bars row (XStack). In side-layout mode the OUTER container fills
-   its narrow column, the bars row becomes vertical (column), and each
-   ship bar inside also stacks its segments vertically. */
+   a bars row. In side-layout mode we reverse the column order so ship
+   silhouettes sit at the TOP of the strip and the "SHIPS REMAINING"
+   label + "10/10" count sit underneath them. */
 .sb-mobile-landscape .sb-ships-remaining-container {
   height: 100%;
   width: 100%;
   padding: 4px !important;
   gap: 4px !important;
+  flex-direction: column-reverse !important;
+  justify-content: flex-end !important;
 }
 
 /* Label row: stack vertically. "SHIPS REMAINING" text rotated -90deg

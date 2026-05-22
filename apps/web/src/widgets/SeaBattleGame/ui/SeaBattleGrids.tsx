@@ -6,7 +6,7 @@ interface SeaBattleGridsProps {
   children: ReactNode;
 }
 
-const MIN_BOARD_WIDTH_DESKTOP = 240;
+const MIN_BOARD_WIDTH_DESKTOP = 200;
 // Slightly tighter than desktop so phones / small tablets in landscape can
 // still guarantee two boards side by side even on the narrower viewports.
 const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 200;
@@ -42,6 +42,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const count = Children.toArray(children).length;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
   const [isLandscape, setIsLandscape] = useState(false);
   // Watches for an ancestor with `.is-fullscreen` (added by the page-level
   // or widget-level useFullscreen hook). When set, the grid caps cols at 2
@@ -52,10 +53,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
-    setContainerWidth(node.getBoundingClientRect().width);
+    const rect = node.getBoundingClientRect();
+    setContainerWidth(rect.width);
+    setContainerHeight(rect.height);
     const ro = new ResizeObserver((entries) => {
       const entry = entries[0];
-      if (entry) setContainerWidth(entry.contentRect.width);
+      if (entry) {
+        setContainerWidth(entry.contentRect.width);
+        setContainerHeight(entry.contentRect.height);
+      }
     });
     ro.observe(node);
     return () => ro.disconnect();
@@ -98,10 +104,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   const isCompact = !media.gtSm; // phone / small-tablet widths
   const isMobilePortrait = isCompact && !media.short && !isLandscape;
-  // Mobile / small-tablet held sideways (matches `wantsTwoColCap`'s
-  // breakpoint so the two layouts move together). CSS uses this hook to
-  // switch each section to "ships on the side" — vertical chrome above
-  // the board shrinks, board grows ~30% taller.
+  // Side-layout (ships on the LEFT of the board) is enabled when:
+  //   • mobile / small-tablet in landscape — the original case, where
+  //     vertical space is scarce.
+  //   • OR the grid is "height-tight": each cell ends up taller than
+  //     wide enough that side-layout would give a bigger board (less
+  //     vertical chrome 42 vs 115 outweighs the 47px horizontal cost
+  //     of the ships column). Common in widget-fullscreen with many
+  //     boards on a wide-but-not-tall desktop viewport.
   const isMobileLandscape = !media.gtMd && isLandscape;
 
   let cols: number;
@@ -179,30 +189,55 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
-  // Chrome budget = the section's non-board axis (above + below the board).
-  // In mobile landscape we move ships to the side, so vertical chrome
-  // drops from ~115 (above) to ~42 (compact name + team pill + col
-  // labels + gaps). The board also loses ~55px horizontally to the
-  // ships column + padding, so the square-cell row works out to
-  // `cellWidth - 55 + 42 = cellWidth - 13`.
+  // Fit-cap = (containerHeight - row gaps) / rows. Shrinks the row
+  // just enough so every row fits in the grid container without
+  // forcing a scroll (e.g. desktop fullscreen with 8 boards in 4×2).
+  const SAFETY_MIN_ROW_PX = 160;
+  const fitCapPx = containerHeight > 0
+    ? Math.max(
+        SAFETY_MIN_ROW_PX,
+        Math.floor((containerHeight - rowGap * (rows - 1)) / rows),
+      )
+    : 0;
+  // Side layout wins when the row is short enough that top-layout's
+  // 115px vertical chrome would crush the board below what side-
+  // layout's smaller 42px chrome + 55px horizontal cost can offer.
+  // Algebra: side wins iff (cqi - 55, cqh - 42) is bigger than
+  // (cqi - 8, cqh - 115); under height-limited (cqh small) cases,
+  // that reduces to `cqh < cqi + 18`. Approximate with row & cell width.
+  const isHeightTight =
+    fitCapPx > 0 && approxCellWidthPx > 0 && fitCapPx < approxCellWidthPx + 18;
+  const useSideLayout = isMobileLandscape || isHeightTight;
+  // Chrome budget = the section's non-board axis. Side layout: 42v + 55h.
+  // Top layout: 115v + 8h. The square-cell row works out to
+  //  top:  cellWidth + 115
+  //  side: cellWidth - 13   (= cellWidth - 55 + 42)
   const squareRowHeightPx = Math.round(
-    isMobileLandscape ? approxCellWidthPx - 13 : approxCellWidthPx + 115,
+    useSideLayout ? approxCellWidthPx - 13 : approxCellWidthPx + 115,
   );
-  // clamp(floor, square-row, 78dvh viewport-cap):
-  // - floor keeps the board playable on very narrow columns (would
-  //   otherwise crush below ~205px usable board).
-  // - 78dvh keeps a single row from pushing past one screen.
+  // clamp(floor, square-row, fit-cap):
   // - middle term tightens the row around an exact square cell so the
   //   section never renders a void below a width-limited board.
-  const rowFloorPx = wantsTwoColCap ? 320 : media.short ? 220 : isCompact ? 260 : 300;
-  const rowHeight = `clamp(${rowFloorPx}px, ${squareRowHeightPx}px, 78dvh)`;
+  // - floor keeps cells playable on roomy viewports; when the
+  //   container is genuinely short, we let the floor drop to fit-cap
+  //   (down to a safety minimum) so all rows stay visible.
+  const idealFloorPx = wantsTwoColCap
+    ? 320
+    : media.short
+      ? 220
+      : isCompact
+        ? 260
+        : 300;
+  const rowFloorPx = fitCapPx > 0 ? Math.min(idealFloorPx, fitCapPx) : idealFloorPx;
+  const fitCap = fitCapPx > 0 ? `${fitCapPx}px` : '78dvh';
+  const rowHeight = `clamp(${rowFloorPx}px, ${squareRowHeightPx}px, ${fitCap})`;
 
   return (
     <div
       ref={containerRef}
       data-testid="sea-battle-grids-container"
       className={`sb-grids-container sb-fit-grid${
-        isMobileLandscape ? ' sb-mobile-landscape' : ''
+        useSideLayout ? ' sb-mobile-landscape' : ''
       }`}
       style={{
         display: 'grid',

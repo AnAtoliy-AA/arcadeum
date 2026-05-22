@@ -181,11 +181,12 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   );
   // Chrome budget = the section's non-board axis (above + below the board).
   // In mobile landscape we move ships to the side, so vertical chrome
-  // drops from ~115 (above) to ~54 (name + col labels + gaps). The board
-  // also loses ~80px horizontally to the ships column, so the square-cell
-  // row works out to `cellWidth - 80 + 54 = cellWidth - 26`.
+  // drops from ~115 (above) to ~42 (compact name + col labels + gaps).
+  // The board also loses ~65px horizontally to the ships column +
+  // padding, so the square-cell row works out to
+  // `cellWidth - 65 + 42 = cellWidth - 23`.
   const squareRowHeightPx = Math.round(
-    isMobileLandscape ? approxCellWidthPx - 26 : approxCellWidthPx + 115,
+    isMobileLandscape ? approxCellWidthPx - 23 : approxCellWidthPx + 115,
   );
   // clamp(floor, square-row, 78dvh viewport-cap):
   // - floor keeps the board playable on very narrow columns (would

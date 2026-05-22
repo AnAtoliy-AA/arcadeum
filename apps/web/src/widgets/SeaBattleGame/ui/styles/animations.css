@@ -238,16 +238,26 @@
    LEFT side of the board instead of above it. The board picks up the
    reclaimed vertical chrome (~75px), growing ~30% taller in the same
    viewport. PlayerSection switches to a 2×2 CSS grid; ShipsContainer
-   flips to a vertical bar with the segments stacked. */
+   flips to a vertical bar with the segments stacked. The ships column
+   is narrow (48px) and the player name row is clamped to a single
+   compact line so the board can use as much of the cell as possible. */
 .sb-fit-grid.sb-mobile-landscape .sb-player-section-fit {
   display: grid !important;
-  grid-template-columns: 60px minmax(0, 1fr);
+  grid-template-columns: 48px minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     'name name'
     'ships board';
-  gap: 4px;
-  padding: 6px !important;
+  gap: 3px;
+  padding: 4px !important;
+}
+.sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
 }
 
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
@@ -342,11 +352,11 @@
 .sb-mobile-landscape [data-size='1'] { width: 10px !important; }
 
 /* Smaller chrome budget when ships is on the side. Horizontal chrome:
-   60 (ships col) + 4 (gap) + 12 (section padding) + 4 (board padding)
-   ≈ 80. Vertical chrome: 22 (name) + 4 (gap) + 12 (section padding)
-   + 16 (col labels) ≈ 54. */
+   48 (ships col) + 3 (gap) + 8 (section padding) + 4 (board margin)
+   ≈ 63. Vertical chrome: 15 (compact name) + 3 (gap) + 8 (section
+   padding) + 16 (col labels) ≈ 42. */
 .sb-fit-grid.sb-mobile-landscape .sb-board-with-labels-layout {
-  --sb-board-side: min(calc(100cqi - 80px), max(60px, calc(100cqh - 54px)));
+  --sb-board-side: min(calc(100cqi - 65px), max(60px, calc(100cqh - 42px)));
 }
 
 .sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {

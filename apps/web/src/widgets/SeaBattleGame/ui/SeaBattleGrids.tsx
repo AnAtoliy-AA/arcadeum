@@ -167,7 +167,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // each row 1fr ≥ this floor, the layout fits without scroll; below it,
   // the grid overflows and the widget scrolls — which is the right
   // behavior when too many players + too short a viewport.
-  const minRowHeight = media.short ? 220 : isCompact ? 260 : 300;
+  //
+  // When the 2-col cap kicks in (fullscreen or mobile/tablet landscape)
+  // we *want* exactly one pair of boards per visible page — so the row
+  // floor becomes "almost the whole visible viewport". That makes the
+  // boards fill the screen and additional rows live below, reached by
+  // scrolling. `dvh` adapts to the dynamic viewport so mobile UI
+  // chrome (address bar) doesn't push the next pair into view.
+  const minRowHeight = wantsTwoColCap
+    ? '78dvh'
+    : `${media.short ? 220 : isCompact ? 260 : 300}px`;
 
   return (
     <div
@@ -177,7 +186,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${rows}, minmax(${minRowHeight}px, 1fr))`,
+        gridTemplateRows: `repeat(${rows}, minmax(${minRowHeight}, 1fr))`,
         gap: rowGap,
         width: '100%',
         height: '100%',

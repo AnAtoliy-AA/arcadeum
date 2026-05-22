@@ -6,9 +6,8 @@ interface SeaBattleGridsProps {
   children: ReactNode;
 }
 
-const MIN_BOARD_WIDTH_DESKTOP = 200;
-// Slightly tighter than desktop so phones / small tablets in landscape can
-// still guarantee two boards side by side even on the narrower viewports.
+// Min board width for the mobile/tablet landscape sizing path. Desktop's
+// minimum is decided inline based on fit-mode state.
 const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 200;
 
 function idealCols(count: number): number {
@@ -49,6 +48,10 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // so the player can see two full boards at once and scroll through the
   // rest vertically — the preferred interaction in the expanded view.
   const [isAncestorFullscreen, setIsAncestorFullscreen] = useState(false);
+  // Mirrors `document.fullscreenElement` — the page-level browser
+  // fullscreen state. Triggers the same "fit all boards in viewport"
+  // mode as widget fullscreen.
+  const [isDocumentFullscreen, setIsDocumentFullscreen] = useState(false);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -76,6 +79,13 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       window.removeEventListener('resize', update);
       window.removeEventListener('orientationchange', update);
     };
+  }, []);
+
+  useEffect(() => {
+    const update = () => setIsDocumentFullscreen(!!document.fullscreenElement);
+    update();
+    document.addEventListener('fullscreenchange', update);
+    return () => document.removeEventListener('fullscreenchange', update);
   }, []);
 
   useEffect(() => {
@@ -137,10 +147,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = Math.max(2, Math.min(ideal, count, fits || 2));
   } else {
     const ideal = idealCols(count);
-    const fits = Math.max(
-      1,
-      Math.floor(containerWidth / MIN_BOARD_WIDTH_DESKTOP),
-    );
+    // In fit mode (widget or page fullscreen) we want to pack more
+    // boards per row to avoid scrolling, so accept narrower cells.
+    // In normal mode we prefer fewer, bigger cells (the user is fine
+    // scrolling between rows of larger boards).
+    const inFitMode =
+      isAncestorFullscreen ||
+      (typeof document !== 'undefined' && !!document.fullscreenElement);
+    const minBoardWidth = inFitMode ? 200 : 240;
+    const fits = Math.max(1, Math.floor(containerWidth / minBoardWidth));
     cols = Math.min(ideal, count, fits || ideal);
   }
 
@@ -189,20 +204,20 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
-  // Side-layout heuristic — we want to know if the available row will
-  // be short enough that top-layout's 115px vertical chrome would crush
-  // the board below what side-layout (42v + 55h) can offer. Use the
-  // measured container height when available; otherwise fall back to
-  // an approximation of the visible viewport minus widget chrome.
+  // "Fit-in-viewport" mode: the player explicitly chose an expanded
+  // view (widget or browser fullscreen) and expects to see every board
+  // at once. Outside that, we prefer bigger cells with scroll over
+  // small cells that fit.
+  const isFitMode = isAncestorFullscreen || isDocumentFullscreen;
+  // Side-layout heuristic — only meaningful in fit mode, where rows
+  // are forced down to fit the container. Outside fit mode the row is
+  // always `squareRow` so top-layout is always at least as good.
   const probableRowPx =
     containerHeight > 0
       ? Math.floor((containerHeight - rowGap * (rows - 1)) / rows)
-      : Math.max(
-          0,
-          (typeof window !== 'undefined' ? window.innerHeight - 220 : 0)
-            - rowGap * (rows - 1),
-        ) / rows;
+      : 0;
   const isHeightTight =
+    isFitMode &&
     probableRowPx > 0 &&
     approxCellWidthPx > 0 &&
     probableRowPx < approxCellWidthPx + 18;
@@ -214,16 +229,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const squareRowHeightPx = Math.round(
     useSideLayout ? approxCellWidthPx - 13 : approxCellWidthPx + 115,
   );
-  // Row sizing: `minmax(safety, squareRow)`. Each track tries to be
-  // `squareRow` (the size that exactly fits a square board + chrome),
-  // but the CSS grid auto-shrinks tracks when the container is shorter
-  // than `rows × squareRow`. The `safety` minimum keeps cells big
-  // enough to be clickable; below that, content overflows and scrolls.
-  // This is intentionally CSS-only so it works on the first paint
-  // before any ResizeObserver fires (the JS measurement above is only
-  // used for the side-layout heuristic, where being wrong by a frame
-  // is harmless).
+  // Row sizing differs by mode:
+  // - fit mode: `minmax(safety, squareRow)` — tracks auto-shrink so
+  //   every row fits in the container without scroll.
+  // - normal: just `squareRow` — let the row be its natural size; if
+  //   that doesn't fit, scroll. The user explicitly asked to keep
+  //   bigger cells over fitting in non-fullscreen.
   const SAFETY_MIN_ROW_PX = 160;
+  const rowTemplate = isFitMode
+    ? `minmax(${SAFETY_MIN_ROW_PX}px, ${squareRowHeightPx}px)`
+    : `${squareRowHeightPx}px`;
 
   return (
     <div
@@ -235,7 +250,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${rows}, minmax(${SAFETY_MIN_ROW_PX}px, ${squareRowHeightPx}px))`,
+        gridTemplateRows: `repeat(${rows}, ${rowTemplate})`,
         gap: rowGap,
         width: '100%',
         height: '100%',

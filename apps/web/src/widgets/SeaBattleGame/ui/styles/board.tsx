@@ -10,22 +10,11 @@ interface BoardComponentProps extends HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
-// Wraps the 10×10 grid in a `.sb-board-cell` so the multi-board layout
-// can drive it as a query container: in fit-grid mode the cell is sized
-// by its grid track, and the BoardGrid inside picks the larger of cqi/cqh
-// (clamped to the smaller) so it stays square and fits both dimensions.
-// In single-board contexts (placement) the cell stays width:100% and the
-// BoardGrid fills it naturally.
 export const BoardGrid = ({
   className = '',
-  children,
   ...props
 }: BoardComponentProps) => (
-  <div className="sb-board-cell">
-    <div className={`sb-board-grid-layout ${className}`} {...props}>
-      {children}
-    </div>
-  </div>
+  <div className={`sb-board-grid-layout ${className}`} {...props} />
 );
 
 export const BoardWithLabels = ({

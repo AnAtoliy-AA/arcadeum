@@ -146,8 +146,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         minHeight: 0,
         padding: media.short ? 4 : media.sm ? 4 : 8,
         boxSizing: 'border-box',
-        alignItems: 'stretch',
-        justifyItems: 'stretch',
+        // `place-content: center` packs the rows / columns toward the
+        // center when each cell's natural size (square boards) doesn't
+        // fill the container — so a 2-board landscape doesn't leave the
+        // boards floating in the top corners with empty space below.
+        placeContent: 'center',
         flex: 1,
       }}
     >

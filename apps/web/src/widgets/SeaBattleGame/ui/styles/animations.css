@@ -243,17 +243,18 @@
    compact line so the board can use as much of the cell as possible. */
 .sb-fit-grid.sb-mobile-landscape .sb-player-section-fit {
   display: grid !important;
-  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-columns: 40px minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     'name name'
     'ships board';
-  gap: 3px;
-  padding: 4px !important;
+  gap: 2px;
+  padding: 2px !important;
 }
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
-  font-size: 11px !important;
+  font-size: 10px !important;
   line-height: 1.1 !important;
+  max-height: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -352,11 +353,11 @@
 .sb-mobile-landscape [data-size='1'] { width: 10px !important; }
 
 /* Smaller chrome budget when ships is on the side. Horizontal chrome:
-   48 (ships col) + 3 (gap) + 8 (section padding) + 4 (board margin)
-   ≈ 63. Vertical chrome: 15 (compact name) + 3 (gap) + 8 (section
-   padding) + 16 (col labels) ≈ 42. */
+   40 (ships col) + 2 (gap) + 4 (section padding) + 4 (board margin)
+   ≈ 50. Vertical chrome: 14 (name max) + 2 (gap) + 4 (section padding)
+   + 16 (col labels) ≈ 36. */
 .sb-fit-grid.sb-mobile-landscape .sb-board-with-labels-layout {
-  --sb-board-side: min(calc(100cqi - 65px), max(60px, calc(100cqh - 42px)));
+  --sb-board-side: min(calc(100cqi - 55px), max(60px, calc(100cqh - 38px)));
 }
 
 .sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {

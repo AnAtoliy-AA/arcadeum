@@ -129,11 +129,13 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = Math.min(ideal, count, fits || ideal);
   }
 
-  // Fullscreen override: when the widget (or page) is expanded to fill the
-  // viewport, cap at 2 cols so two full boards are visible at once and
-  // remaining boards scroll vertically. This trades horizontal density
-  // for per-board readability — the user's choice for the expanded view.
-  if (isAncestorFullscreen && cols > 2) {
+  // Cap at 2 cols whenever there isn't real desktop-wide room: in widget
+  // / page fullscreen (any size), or in any non-desktop landscape
+  // (mobile / tablet held sideways). The player sees two full boards at
+  // once and scrolls vertically for the rest, instead of tiling 4 cols
+  // worth of small boards into a short viewport.
+  const wantsTwoColCap = isAncestorFullscreen || (isLandscape && !media.gtMd);
+  if (wantsTwoColCap && cols > 2) {
     cols = 2;
   }
 

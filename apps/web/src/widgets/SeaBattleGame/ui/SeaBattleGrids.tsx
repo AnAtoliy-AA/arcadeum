@@ -189,24 +189,23 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
-  // Fit-cap = (containerHeight - row gaps) / rows. Shrinks the row
-  // just enough so every row fits in the grid container without
-  // forcing a scroll (e.g. desktop fullscreen with 8 boards in 4×2).
-  const SAFETY_MIN_ROW_PX = 160;
-  const fitCapPx = containerHeight > 0
-    ? Math.max(
-        SAFETY_MIN_ROW_PX,
-        Math.floor((containerHeight - rowGap * (rows - 1)) / rows),
-      )
-    : 0;
-  // Side layout wins when the row is short enough that top-layout's
-  // 115px vertical chrome would crush the board below what side-
-  // layout's smaller 42px chrome + 55px horizontal cost can offer.
-  // Algebra: side wins iff (cqi - 55, cqh - 42) is bigger than
-  // (cqi - 8, cqh - 115); under height-limited (cqh small) cases,
-  // that reduces to `cqh < cqi + 18`. Approximate with row & cell width.
+  // Side-layout heuristic — we want to know if the available row will
+  // be short enough that top-layout's 115px vertical chrome would crush
+  // the board below what side-layout (42v + 55h) can offer. Use the
+  // measured container height when available; otherwise fall back to
+  // an approximation of the visible viewport minus widget chrome.
+  const probableRowPx =
+    containerHeight > 0
+      ? Math.floor((containerHeight - rowGap * (rows - 1)) / rows)
+      : Math.max(
+          0,
+          (typeof window !== 'undefined' ? window.innerHeight - 220 : 0)
+            - rowGap * (rows - 1),
+        ) / rows;
   const isHeightTight =
-    fitCapPx > 0 && approxCellWidthPx > 0 && fitCapPx < approxCellWidthPx + 18;
+    probableRowPx > 0 &&
+    approxCellWidthPx > 0 &&
+    probableRowPx < approxCellWidthPx + 18;
   const useSideLayout = isMobileLandscape || isHeightTight;
   // Chrome budget = the section's non-board axis. Side layout: 42v + 55h.
   // Top layout: 115v + 8h. The square-cell row works out to
@@ -215,22 +214,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const squareRowHeightPx = Math.round(
     useSideLayout ? approxCellWidthPx - 13 : approxCellWidthPx + 115,
   );
-  // clamp(floor, square-row, fit-cap):
-  // - middle term tightens the row around an exact square cell so the
-  //   section never renders a void below a width-limited board.
-  // - floor keeps cells playable on roomy viewports; when the
-  //   container is genuinely short, we let the floor drop to fit-cap
-  //   (down to a safety minimum) so all rows stay visible.
-  const idealFloorPx = wantsTwoColCap
-    ? 320
-    : media.short
-      ? 220
-      : isCompact
-        ? 260
-        : 300;
-  const rowFloorPx = fitCapPx > 0 ? Math.min(idealFloorPx, fitCapPx) : idealFloorPx;
-  const fitCap = fitCapPx > 0 ? `${fitCapPx}px` : '78dvh';
-  const rowHeight = `clamp(${rowFloorPx}px, ${squareRowHeightPx}px, ${fitCap})`;
+  // Row sizing: `minmax(safety, squareRow)`. Each track tries to be
+  // `squareRow` (the size that exactly fits a square board + chrome),
+  // but the CSS grid auto-shrinks tracks when the container is shorter
+  // than `rows × squareRow`. The `safety` minimum keeps cells big
+  // enough to be clickable; below that, content overflows and scrolls.
+  // This is intentionally CSS-only so it works on the first paint
+  // before any ResizeObserver fires (the JS measurement above is only
+  // used for the side-layout heuristic, where being wrong by a frame
+  // is harmless).
+  const SAFETY_MIN_ROW_PX = 160;
 
   return (
     <div
@@ -242,7 +235,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${rows}, ${rowHeight})`,
+        gridTemplateRows: `repeat(${rows}, minmax(${SAFETY_MIN_ROW_PX}px, ${squareRowHeightPx}px))`,
         gap: rowGap,
         width: '100%',
         height: '100%',

@@ -170,12 +170,18 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   //
   // When the 2-col cap kicks in (fullscreen or mobile/tablet landscape)
   // we *want* exactly one pair of boards per visible page — so the row
-  // floor becomes "almost the whole visible viewport". That makes the
-  // boards fill the screen and additional rows live below, reached by
-  // scrolling. `dvh` adapts to the dynamic viewport so mobile UI
-  // chrome (address bar) doesn't push the next pair into view.
+  // floor becomes "almost the whole visible viewport". `dvh` adapts to
+  // the dynamic viewport so mobile UI chrome (address bar) doesn't push
+  // the next pair into view.
+  //
+  // But on very short landscape phones (390-tall viewport: 78dvh ≈ 304)
+  // a row shorter than `min-board + chrome` would clip the board via
+  // PlayerSection's `overflow: hidden`. So we also floor at the
+  // structural minimum (200 board + 140 chrome = 340px); on small
+  // viewports the grid overflows and the widget scrolls, but the
+  // board itself stays whole.
   const minRowHeight = wantsTwoColCap
-    ? '78dvh'
+    ? 'max(78dvh, 340px)'
     : `${media.short ? 220 : isCompact ? 260 : 300}px`;
 
   return (

@@ -217,7 +217,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             team ? team.color : isDefending ? theme.hitColor : theme.cellBorder
           }
           borderWidth={team ? 2 : undefined}
-          className={isDefending ? 'sb-section-danger-breathe' : undefined}
+          className={`sb-player-section-fit ${
+            isDefending ? 'sb-section-danger-breathe' : ''
+          }`}
           backdropFilter="blur(8px)"
         >
           <PlayerName
@@ -305,7 +307,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           team ? team.color : isMyTurn ? theme.accentColor : theme.cellBorder
         }
         borderWidth={team ? 2 : undefined}
-        className={isMyTurn && !team ? 'sb-breathe' : undefined}
+        className={`sb-player-section-fit ${
+          isMyTurn && !team ? 'sb-breathe' : ''
+        }`}
         backdropFilter="blur(8px)"
       >
         <PlayerName

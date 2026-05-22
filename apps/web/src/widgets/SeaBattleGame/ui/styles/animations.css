@@ -263,16 +263,19 @@
 }
 
 /* The ShipsLeft container is a YStack (column) wrapping a label row and
-   a bars row. In side-layout mode we reverse the column order so ship
-   silhouettes sit at the TOP of the strip and the "SHIPS REMAINING"
-   label + "10/10" count sit underneath them. */
+   a bars row. In side-layout mode we want the visual order:
+     1. "10/10" count at the top (the most useful glanceable stat)
+     2. Ship silhouettes in the middle
+     3. "SHIPS REMAINING" rotated label at the bottom
+   The count and label are siblings inside one row, so we promote that
+   row to `display: contents` (its children become direct children of
+   the container) and then use `order` to position each part. */
 .sb-mobile-landscape .sb-ships-remaining-container {
   height: 100%;
   width: 100%;
   padding: 4px !important;
   gap: 4px !important;
-  flex-direction: column-reverse !important;
-  justify-content: flex-end !important;
+  flex-direction: column !important;
 }
 
 /* Label row: stack vertically. "SHIPS REMAINING" text rotated -90deg
@@ -280,12 +283,13 @@
    sits horizontally below it. We give the rotated label a reserved
    slot via height + display:flex so it doesn't overflow into the
    board area. */
+/* Promote the label-row contents into the container so we can order
+   "10/10" and "SHIPS REMAINING" independently of each other AND the
+   bars row below. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:first-child {
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 6px !important;
-  width: 100%;
+  display: contents;
 }
+/* "SHIPS REMAINING" — rotated, sits at the bottom of the strip. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:first-child > span:first-child {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
@@ -294,9 +298,19 @@
   line-height: 1 !important;
   white-space: nowrap;
   text-align: center;
+  align-self: center;
+  order: 3;
 }
+/* "10/10" — count at the very top of the strip. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:first-child > span:nth-child(2) {
-  font-size: 12px !important;
+  font-size: 13px !important;
+  text-align: center;
+  align-self: center;
+  order: 1;
+}
+/* Bars row stays in the middle (default order: 2). */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) {
+  order: 2;
 }
 
 /* Bars row: stack ships vertically as a list. Each ship stays as a

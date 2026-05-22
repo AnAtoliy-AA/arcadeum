@@ -164,24 +164,25 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const rows = Math.ceil(count / cols);
   const rowGap = media.short ? 10 : media.sm ? 12 : 16;
   const gridPadding = media.short ? 4 : media.sm ? 4 : 8;
-  // In 2-col cap mode we want one pair filling the visible viewport,
-  // but we should also cap the row at "exactly a square cell" so the
-  // section doesn't render a tall empty void below a width-limited
-  // board. Approximate cell width from the JS-tracked container width.
+  // Cap every row at "exactly a square cell + chrome". The board is sized
+  // to the SHORTER of width/height inside its section, so a row taller
+  // than (cellWidth + chrome) just leaves a void below the last cell —
+  // the cells can't grow into it because they're width-limited. Sizing
+  // rows directly (no `1fr` stretch) tightens each section around its
+  // board.
   const approxCellWidthPx = Math.max(
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
   const squareRowHeightPx = Math.round(approxCellWidthPx + 115);
-  // Row floor = clamp(320 structural-min, square-row, 78dvh viewport-cap).
-  // - 320px = chrome (~115) + min playable board (~205). Below this the
-  //   board would shrink below playability, so we overflow + scroll.
-  // - 78dvh keeps things from pushing past one screen on tall viewports.
-  // - In the middle, the row tightens around an exactly-square cell so
-  //   there's no empty space below the board.
-  const minRowHeight = wantsTwoColCap
-    ? `clamp(320px, ${squareRowHeightPx}px, 78dvh)`
-    : `${media.short ? 220 : isCompact ? 260 : 300}px`;
+  // clamp(floor, square-row, 78dvh viewport-cap):
+  // - floor keeps the board playable on very narrow columns (would
+  //   otherwise crush below ~205px usable board).
+  // - 78dvh keeps a single row from pushing past one screen.
+  // - middle term tightens the row around an exact square cell so the
+  //   section never renders a void below a width-limited board.
+  const rowFloorPx = wantsTwoColCap ? 320 : media.short ? 220 : isCompact ? 260 : 300;
+  const rowHeight = `clamp(${rowFloorPx}px, ${squareRowHeightPx}px, 78dvh)`;
 
   return (
     <div
@@ -191,7 +192,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${rows}, minmax(${minRowHeight}, 1fr))`,
+        gridTemplateRows: `repeat(${rows}, ${rowHeight})`,
         gap: rowGap,
         width: '100%',
         height: '100%',
@@ -200,8 +201,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         padding: media.short ? 4 : media.sm ? 4 : 8,
         boxSizing: 'border-box',
         // Anchor tracks to the top. We previously used `place-content:
-        // center` here, but when content (rows × minRowHeight) exceeds
-        // the grid container, centering pushes the first row ABOVE the
+        // center` here, but when content (rows × rowHeight) exceeds the
+        // grid container, centering pushes the first row ABOVE the
         // container top — where the widget's sticky header crops it.
         // Top-aligned: extras live below and scroll into view naturally.
         // Horizontally, `center` keeps the boards centered when they

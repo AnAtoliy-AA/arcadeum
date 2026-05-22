@@ -183,10 +183,20 @@
 }
 
 /* Inside the wrapper, PlayerSection (which carries the visible card
-   border) also needs to stretch so its border traces the full cell. */
+   border) needs to stretch vertically so its border traces the full
+   cell height. Horizontally, we let it shrink to its content (board +
+   chrome) so the border doesn't trace a wide empty rectangle around a
+   height-limited board — the leftover slack moves outside the section,
+   centered in the grid cell, instead of inside it. */
 .sb-fit-grid .sb-player-section-fit {
   height: 100%;
   min-height: 0;
+  /* Tamagui's `width: 100%` rule from PlayerSection is at higher
+     specificity (`:root ._w-...`), so override needs !important. */
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .sb-fit-grid .sb-board-with-labels-layout {

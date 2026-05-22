@@ -129,12 +129,12 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = Math.min(ideal, count, fits || ideal);
   }
 
-  // Cap at 2 cols whenever there isn't real desktop-wide room: in widget
-  // / page fullscreen (any size), or in any non-desktop landscape
-  // (mobile / tablet held sideways). The player sees two full boards at
-  // once and scrolls vertically for the rest, instead of tiling 4 cols
-  // worth of small boards into a short viewport.
-  const wantsTwoColCap = isAncestorFullscreen || (isLandscape && !media.gtMd);
+  // Cap at 2 cols whenever there isn't real desktop-wide room: mobile
+  // / tablet held sideways (any width ≤1150px in landscape) OR a
+  // mobile / tablet fullscreen. On desktop (>1150px) fullscreen, we
+  // keep the balanced idealCols layout so all boards stay visible at
+  // once — the player explicitly expanded to see *more*, not pages.
+  const wantsTwoColCap = !media.gtMd && (isAncestorFullscreen || isLandscape);
   if (wantsTwoColCap && cols > 2) {
     cols = 2;
   }
@@ -163,24 +163,24 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   const rows = Math.ceil(count / cols);
   const rowGap = media.short ? 10 : media.sm ? 12 : 16;
-  // Floor each row at a playable section height. If the viewport can give
-  // each row 1fr ≥ this floor, the layout fits without scroll; below it,
-  // the grid overflows and the widget scrolls — which is the right
-  // behavior when too many players + too short a viewport.
-  //
-  // When the 2-col cap kicks in (fullscreen or mobile/tablet landscape)
-  // we *want* exactly one pair of boards per visible page — so the row
-  // floor becomes "almost the whole visible viewport". `dvh` adapts to
-  // the dynamic viewport so mobile UI chrome (address bar) doesn't push
-  // the next pair into view.
-  //
-  // On very short landscape phones (390-tall viewport: 78dvh ≈ 304)
-  // the row also has to fit the section's chrome + a playable board.
-  // 320px = section chrome (~115) + board side (~205) — anything below
-  // that would force the board to shrink below playability, so we
-  // overflow the widget (which scrolls) instead.
+  const gridPadding = media.short ? 4 : media.sm ? 4 : 8;
+  // In 2-col cap mode we want one pair filling the visible viewport,
+  // but we should also cap the row at "exactly a square cell" so the
+  // section doesn't render a tall empty void below a width-limited
+  // board. Approximate cell width from the JS-tracked container width.
+  const approxCellWidthPx = Math.max(
+    0,
+    (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
+  );
+  const squareRowHeightPx = Math.round(approxCellWidthPx + 115);
+  // Row floor = clamp(320 structural-min, square-row, 78dvh viewport-cap).
+  // - 320px = chrome (~115) + min playable board (~205). Below this the
+  //   board would shrink below playability, so we overflow + scroll.
+  // - 78dvh keeps things from pushing past one screen on tall viewports.
+  // - In the middle, the row tightens around an exactly-square cell so
+  //   there's no empty space below the board.
   const minRowHeight = wantsTwoColCap
-    ? 'max(78dvh, 320px)'
+    ? `clamp(320px, ${squareRowHeightPx}px, 78dvh)`
     : `${media.short ? 220 : isCompact ? 260 : 300}px`;
 
   return (

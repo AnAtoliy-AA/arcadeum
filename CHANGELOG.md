@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.24] - 2026-05-22
+
+### Fixed
+- unblock app e2e cold bootstrap (ARC-732) (ARC-732)
+
+
 ## [1.14.23] - 2026-05-21
 
 ### Added

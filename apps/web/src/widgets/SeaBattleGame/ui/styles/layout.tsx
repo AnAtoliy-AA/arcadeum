@@ -4,9 +4,9 @@ export const MainGameArea = styled(YStack, {
   name: 'MainGameArea',
   gap: '$4',
   width: '100%',
-  flexGrow: 1,
-  flexShrink: 0,
+  flex: 1,
   minHeight: 0,
+  minWidth: 0,
   padding: '$2',
 
   $md: {

@@ -155,11 +155,49 @@
 
 .sb-board-with-labels-layout {
   display: grid !important;
-  grid-template-columns: auto 1fr !important;
-  grid-template-rows: auto auto !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  /* `auto minmax(0, 1fr)` so the board row stretches to fill the parent's
+     remaining height. In unconstrained parents (placement screen), 1fr
+     collapses to content size, preserving prior behavior. */
+  grid-template-rows: auto minmax(0, 1fr) !important;
   gap: 2px;
   width: 100%;
   max-width: 100%;
+  min-height: 0;
+  min-width: 0;
+  flex: 1;
+  /* Center the BoardGrid in cell (2,2) when it's smaller than the cell. */
+  place-items: center;
+}
+
+/* The `.sb-board-cell` wrapper occupies grid cell (2,2) of BoardWithLabels
+   and acts as the query container in fit-grid mode. The base style (used
+   in placement / unconstrained contexts) just lets the BoardGrid fill
+   its width naturally. */
+.sb-board-cell {
+  width: 100%;
+  display: contents;
+}
+
+/* In multi-board grid mode the ancestor flex chain hands down a definite
+   height. The cell becomes a size container; the BoardGrid inside picks
+   `min(100cqi, 100cqh)` as its side, then `aspect-ratio: 1` makes it
+   square. This is pure CSS — no JS measurement — and produces the
+   largest square that fits both cell width and cell height. */
+.sb-fit-grid .sb-board-cell {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+}
+
+.sb-fit-grid .sb-board-cell .sb-board-grid-layout {
+  width: min(100cqi, 100cqh) !important;
+  height: auto !important;
+  margin: 0 auto;
 }
 
 .sb-row-labels {

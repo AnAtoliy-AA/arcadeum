@@ -1,37 +1,15 @@
 'use client';
-import {
-  Children,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMedia } from 'tamagui';
 
 interface SeaBattleGridsProps {
   children: ReactNode;
 }
 
-const MIN_BOARD_WIDTH_DESKTOP = 280;
-// Slightly tighter than desktop so phones / small tablets in landscape can still
-// guarantee two boards side by side even on the narrower viewports.
+const MIN_BOARD_WIDTH_DESKTOP = 240;
+// Slightly tighter than desktop so phones / small tablets in landscape can
+// still guarantee two boards side by side even on the narrower viewports.
 const MIN_BOARD_WIDTH_MOBILE_LANDSCAPE = 200;
-// Upper bound for a single board's width. Generous on purpose so on tall /
-// fullscreen displays the boards can grow into the available space — the
-// actual width is still constrained per-row by the height-driven cap below.
-const MAX_BOARD_WIDTH = 720;
-// Non-grid chrome inside each PlayerSection (name, ships left strip, column
-// labels, paddings, badge wrapper). Used to convert "available height per row"
-// into "max board side" so two rows of boards fit without scroll.
-const BOARD_SECTION_CHROME_DESKTOP = 130;
-const BOARD_SECTION_CHROME_COMPACT = 90;
-// Bottom breathing room left under the boards so they don't kiss the
-// container edge.
-const BOTTOM_BREATHING_PX = 12;
-// Hard floor so the board never shrinks below something playable when the
-// viewport math gets aggressive (very short viewports, many rows).
-const MIN_PLAYABLE_BOARD_SIDE = 200;
 
 function idealCols(count: number): number {
   if (count <= 1) return 1;
@@ -41,24 +19,29 @@ function idealCols(count: number): number {
 }
 
 /**
- * Picks the column count and per-board size for the boards grid:
+ * Picks the column count for the boards grid and lets pure CSS handle
+ * sizing each board:
  *   - mobile portrait (narrow & not landscape): 1 column, full-width boards
- *   - any landscape on phones / small tablets: at least 2 columns, sized to
- *     fit the viewport vertically so the layout doesn't scroll
- *   - tablet+ desktop: balanced layout from idealCols(), boards expand into
- *     the actual remaining vertical space (measured from the DOM) so 2 rows
- *     still fit while reclaiming every spare pixel
+ *     stacked vertically (page scrolls naturally if there are many).
+ *   - any landscape on phones / small tablets: at least 2 columns.
+ *   - tablet+ desktop: balanced layout from idealCols().
+ *
+ * For >1 column layouts, the grid uses `repeat(M, minmax(0, 1fr))` rows
+ * + `repeat(N, minmax(0, 1fr))` cols, the ancestor flex chain provides a
+ * definite height (SharedGameBoard / MainGameArea are flex:1 minHeight:0),
+ * and the BoardGrid inside uses `aspect-ratio: 1` + `width: min(100%,
+ * 100cqh - chrome)` to be the largest square that fits its cell. The
+ * effect is "boards grow to fill the available space without scroll" —
+ * no JS measurement needed.
  */
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const media = useMedia();
-  const count = Children.count(children);
+  // `Children.count` includes booleans / nulls from `{cond && ...}`
+  // expressions, which inflates the row count when callers conditionally
+  // render the current-player board. `Children.toArray` drops those.
+  const count = Children.toArray(children).length;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  // Vertical space available below the grid's top edge within the visible
-  // viewport. Measured from the DOM (rather than guessed via a chrome
-  // constant) so the boards fill whatever room the rest of the layout
-  // happens to leave them.
-  const [availableHeight, setAvailableHeight] = useState(0);
   const [isLandscape, setIsLandscape] = useState(false);
 
   useEffect(() => {
@@ -73,36 +56,20 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     return () => ro.disconnect();
   }, []);
 
-  useLayoutEffect(() => {
-    const node = containerRef.current;
-    if (!node) return;
-    const measure = () => {
-      const rect = node.getBoundingClientRect();
-      setAvailableHeight(
-        Math.max(0, window.innerHeight - rect.top - BOTTOM_BREATHING_PX),
-      );
-      setIsLandscape(window.innerWidth > window.innerHeight);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(node);
-    window.addEventListener('resize', measure);
-    window.addEventListener('orientationchange', measure);
-    // Capture-phase listener so scrolling any ancestor (which can shift our
-    // top) re-runs the measurement.
-    document.addEventListener('scroll', measure, true);
+  useEffect(() => {
+    const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
     return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('orientationchange', measure);
-      document.removeEventListener('scroll', measure, true);
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
     };
   }, []);
 
   const isCompact = !media.gtSm; // phone / small-tablet widths
   const isMobilePortrait = isCompact && !media.short && !isLandscape;
 
-  // Column count
   let cols: number;
   if (count <= 1 || isMobilePortrait) {
     cols = 1;
@@ -125,7 +92,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     );
     cols = Math.max(2, Math.min(ideal, count, fits || 2));
   } else {
-    // Tablet landscape and desktop.
     const ideal = idealCols(count);
     const fits = Math.max(
       1,
@@ -156,59 +122,33 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     );
   }
 
-  // Compute the height-driven cap. `availableHeight` is the actual room left
-  // in the viewport below the grid's top; we divide it across however many
-  // rows the layout needs and subtract per-section chrome to get the maximum
-  // board side that won't trigger vertical scroll.
   const rows = Math.ceil(count / cols);
   const rowGap = media.short ? 10 : media.sm ? 12 : 16;
-  const sectionChrome =
-    media.short || isCompact
-      ? BOARD_SECTION_CHROME_COMPACT
-      : BOARD_SECTION_CHROME_DESKTOP;
-  const usableHeight = Math.max(
-    MIN_PLAYABLE_BOARD_SIDE * rows + rowGap * (rows - 1),
-    availableHeight,
-  );
-  const perRowBudget = (usableHeight - rowGap * (rows - 1)) / rows;
-  const heightCappedBoardSide = Math.max(
-    MIN_PLAYABLE_BOARD_SIDE,
-    perRowBudget - sectionChrome,
-  );
-  const maxBoardWidth = Math.min(MAX_BOARD_WIDTH, heightCappedBoardSide);
-
-  // Only apply the explicit pixel cap on layouts with room to grow. On
-  // phone-landscape (very short viewports) we keep 1fr tracks so boards
-  // always fill the narrow viewport width.
-  const useCap = !media.short;
-  const gridTemplateColumns = useCap
-    ? `repeat(${cols}, minmax(0, ${Math.round(maxBoardWidth)}px))`
-    : `repeat(${cols}, minmax(0, 1fr))`;
+  // Floor each row at a playable section height. If the viewport can give
+  // each row 1fr ≥ this floor, the layout fits without scroll; below it,
+  // the grid overflows and the widget scrolls — which is the right
+  // behavior when too many players + too short a viewport.
+  const minRowHeight = media.short ? 220 : isCompact ? 260 : 300;
 
   return (
     <div
       ref={containerRef}
       data-testid="sea-battle-grids-container"
-      className="sb-grids-container"
+      className="sb-grids-container sb-fit-grid"
       style={{
         display: 'grid',
-        gridTemplateColumns,
-        gridAutoRows: 'min-content',
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${rows}, minmax(${minRowHeight}px, 1fr))`,
         gap: rowGap,
         width: '100%',
+        height: '100%',
         minWidth: 0,
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        minHeight: 0,
         padding: media.short ? 4 : media.sm ? 4 : 8,
         boxSizing: 'border-box',
         alignItems: 'stretch',
         justifyItems: 'stretch',
-        alignContent: 'start',
-        // With a per-track cap, wide viewports would leave slack on the right
-        // of the rightmost board. Distribute it as extra inter-board gaps so
-        // the row still feels balanced.
-        justifyContent: 'space-evenly',
-        flexGrow: 1,
+        flex: 1,
       }}
     >
       {children}

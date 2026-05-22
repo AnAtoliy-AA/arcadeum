@@ -8,7 +8,13 @@ export const PlayerSection = styled(YStack, {
   borderWidth: 2,
   borderRadius: 12,
   minWidth: 0,
+  minHeight: 0,
   width: '100%',
+  // When the wrapper provides a definite height (multi-board grid mode),
+  // fill it so the BoardWithLabels child can take the remaining space via
+  // its grid 1fr row. In single-board / unconstrained contexts (placement
+  // screen), height:100% collapses to auto, preserving prior behavior.
+  height: '100%',
   overflow: 'hidden',
 
   variants: {
@@ -40,32 +46,24 @@ export const PlayerSection = styled(YStack, {
   },
 });
 
-// Narrow (≤1150px): full-width block, stacked vertically by parent column layout.
-// Wide (>1150px): flex:1 side-by-side row, capped at 440px.
+// Fills its parent grid cell so the contained board can fit-to-height via
+// CSS (1fr rows on the grid + aspect-ratio on the board). Width-cap is
+// dropped — the grid template now governs per-column width.
 export const PlayerSectionWrapper = styled(YStack, {
   name: 'PlayerSectionWrapper',
   position: 'relative',
   overflow: 'visible',
   paddingTop: 8,
   width: '100%',
-  maxWidth: 520,
-  alignSelf: 'center',
+  height: '100%',
+  minHeight: 0,
+  minWidth: 0,
 
-  $gtMd: {
-    paddingTop: 10,
-    width: 'auto',
-    alignSelf: 'auto',
-    flex: 1,
-    maxWidth: 'min(580px, calc(100vh - 240px))',
-    minWidth: 260,
-  },
   $sm: {
     paddingTop: 6,
-    maxWidth: 'none',
   },
   $short: {
     paddingTop: 4,
-    maxWidth: 'min(420px, calc(100vh - 120px))',
   },
 });
 

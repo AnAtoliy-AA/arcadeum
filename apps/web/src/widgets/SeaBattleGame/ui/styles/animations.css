@@ -167,16 +167,21 @@
   min-width: 0;
 }
 
-/* In multi-board grid mode each PlayerSection becomes a size container.
-   BoardWithLabels (labels + grid) is then sized to the *largest square*
-   that fits the section after the name / stats chrome above it — using
-   container query units so we don't depend on `aspect-ratio + max-*`
-   recomputation (which some browsers don't honor when both axes are
-   constrained by the flex chain). The inner `auto 1fr / auto 1fr` grid
-   guarantees ColLabels (cell 1/2), RowLabels (cell 2/1) and BoardGrid
-   (cell 2/2) share the same column-2 width and row-2 height, so labels
-   sit directly above / beside their cells. */
+/* In multi-board grid mode the ancestor flex chain hands down a definite
+   height. The grids container is a CSS grid; each direct child is a
+   PlayerSectionWrapper that we stretch to fill its cell, and inside,
+   PlayerSection acts as a size container so the board grid (further
+   inside) can pick its side from cqi/cqh. In mobile vertical (1-col
+   flex column) neither rule applies, so wrappers and sections size to
+   content and the page scrolls naturally between boards. */
+.sb-fit-grid > * {
+  height: 100%;
+  min-height: 0;
+}
+
 .sb-fit-grid .sb-player-section-fit {
+  height: 100%;
+  min-height: 0;
   container-type: size;
 }
 

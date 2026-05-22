@@ -10,11 +10,6 @@ export const PlayerSection = styled(YStack, {
   minWidth: 0,
   minHeight: 0,
   width: '100%',
-  // When the wrapper provides a definite height (multi-board grid mode),
-  // fill it so the BoardWithLabels child can take the remaining space via
-  // its grid 1fr row. In single-board / unconstrained contexts (placement
-  // screen), height:100% collapses to auto, preserving prior behavior.
-  height: '100%',
   overflow: 'hidden',
 
   variants: {
@@ -46,17 +41,16 @@ export const PlayerSection = styled(YStack, {
   },
 });
 
-// Fills its parent grid cell so the contained board can fit-to-height via
-// CSS (1fr rows on the grid + aspect-ratio on the board). Width-cap is
-// dropped — the grid template now governs per-column width.
+// Natural-height wrapper. In fit-grid mode the `.sb-fit-grid > *` CSS
+// rule stretches it to fill its grid cell; in mobile vertical (1-col flex
+// column) we leave it at content height so the page scrolls naturally
+// between boards instead of each board taking the full viewport height.
 export const PlayerSectionWrapper = styled(YStack, {
   name: 'PlayerSectionWrapper',
   position: 'relative',
   overflow: 'visible',
   paddingTop: 8,
   width: '100%',
-  height: '100%',
-  minHeight: 0,
   minWidth: 0,
 
   $sm: {

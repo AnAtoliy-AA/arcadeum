@@ -169,29 +169,34 @@
 
 /* In multi-board grid mode the ancestor flex chain hands down a definite
    height. The grids container is a CSS grid; each direct child is a
-   PlayerSectionWrapper that we stretch to fill its cell, and inside,
-   PlayerSection acts as a size container so the board grid (further
-   inside) can pick its side from cqi/cqh. In mobile vertical (1-col
-   flex column) neither rule applies, so wrappers and sections size to
-   content and the page scrolls naturally between boards. */
+   PlayerSectionWrapper that we stretch to fill its cell AND make a
+   size container — so anything deeper can read the wrapper's box via
+   cqi/cqh without depending on Tamagui className passthrough on the
+   styled components inside. In mobile vertical (1-col flex column) the
+   `.sb-fit-grid` class is absent, so neither rule applies and the
+   page scrolls naturally between boards. */
 .sb-fit-grid > * {
   height: 100%;
   min-height: 0;
-}
-
-.sb-fit-grid .sb-player-section-fit {
-  height: 100%;
-  min-height: 0;
+  min-width: 0;
   container-type: size;
 }
 
+/* Inside the wrapper, PlayerSection (which carries the visible card
+   border) also needs to stretch so its border traces the full cell. */
+.sb-fit-grid .sb-player-section-fit {
+  height: 100%;
+  min-height: 0;
+}
+
 .sb-fit-grid .sb-board-with-labels-layout {
-  /* Reserve ~90px of vertical chrome for name + stats + paddings above
-     the board within the PlayerSection — gives the board square room to
-     grow. The actual chrome is ~80-115 depending on breakpoint, so this
-     is a slightly generous estimate that prevents the layout from
-     pushing the board past the section bottom. */
-  --sb-board-side: min(100cqi, max(120px, calc(100cqh - 105px)));
+  /* Side = min(width-of-cell, height-of-cell - chrome). The chrome
+     budget (~140px) covers PlayerSectionWrapper's paddingTop, the
+     PlayerSection paddings + border, the player name row, the ships-
+     remaining strip and the gaps between them. Bigger than strictly
+     needed so the layout doesn't push the board past the section
+     bottom on viewports where the chrome rounds up. */
+  --sb-board-side: min(calc(100cqi - 8px), max(140px, calc(100cqh - 140px)));
   width: var(--sb-board-side);
   height: var(--sb-board-side);
   align-self: center;

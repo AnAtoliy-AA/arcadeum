@@ -98,6 +98,11 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   const isCompact = !media.gtSm; // phone / small-tablet widths
   const isMobilePortrait = isCompact && !media.short && !isLandscape;
+  // Mobile / small-tablet held sideways (matches `wantsTwoColCap`'s
+  // breakpoint so the two layouts move together). CSS uses this hook to
+  // switch each section to "ships on the side" — vertical chrome above
+  // the board shrinks, board grows ~30% taller.
+  const isMobileLandscape = !media.gtMd && isLandscape;
 
   let cols: number;
   if (count <= 1 || isMobilePortrait) {
@@ -174,7 +179,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
-  const squareRowHeightPx = Math.round(approxCellWidthPx + 115);
+  // Chrome budget = the section's non-board axis (above + below the board).
+  // In mobile landscape we move ships to the side, so vertical chrome
+  // drops from ~115 (above) to ~54 (name + col labels + gaps). The board
+  // also loses ~80px horizontally to the ships column, so the square-cell
+  // row works out to `cellWidth - 80 + 54 = cellWidth - 26`.
+  const squareRowHeightPx = Math.round(
+    isMobileLandscape ? approxCellWidthPx - 26 : approxCellWidthPx + 115,
+  );
   // clamp(floor, square-row, 78dvh viewport-cap):
   // - floor keeps the board playable on very narrow columns (would
   //   otherwise crush below ~205px usable board).
@@ -188,7 +200,9 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     <div
       ref={containerRef}
       data-testid="sea-battle-grids-container"
-      className="sb-grids-container sb-fit-grid"
+      className={`sb-grids-container sb-fit-grid${
+        isMobileLandscape ? ' sb-mobile-landscape' : ''
+      }`}
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,

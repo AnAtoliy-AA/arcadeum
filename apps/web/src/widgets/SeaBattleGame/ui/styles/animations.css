@@ -234,6 +234,83 @@
   height: 100% !important;
 }
 
+/* Mobile / small-tablet landscape: put the ships-remaining strip on the
+   LEFT side of the board instead of above it. The board picks up the
+   reclaimed vertical chrome (~75px), growing ~30% taller in the same
+   viewport. PlayerSection switches to a 2×2 CSS grid; ShipsContainer
+   flips to a vertical bar with the segments stacked. */
+.sb-fit-grid.sb-mobile-landscape .sb-player-section-fit {
+  display: grid !important;
+  grid-template-columns: 60px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'name name'
+    'ships board';
+  gap: 4px;
+  padding: 6px !important;
+}
+
+.sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
+  grid-area: name;
+}
+.sb-mobile-landscape .sb-player-section-fit > .is_PlayerStats {
+  grid-area: ships;
+  min-height: 0;
+  height: 100%;
+}
+.sb-mobile-landscape .sb-player-section-fit > .sb-board-with-labels-layout {
+  grid-area: board;
+}
+
+/* The ShipsLeft container is a YStack (column) wrapping a label row and
+   a bars row (XStack). In side-layout mode the OUTER container fills
+   its narrow column, the bars row becomes vertical (column), and each
+   ship bar inside also stacks its segments vertically. */
+.sb-mobile-landscape .sb-ships-remaining-container {
+  height: 100%;
+  width: 100%;
+  padding: 4px !important;
+  gap: 4px !important;
+}
+
+/* Label row: keep the "10/10" count visible; tighten the label text so
+   it fits the narrow column. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:first-child {
+  flex-direction: column !important;
+  gap: 2px;
+}
+.sb-mobile-landscape .sb-ships-remaining-container > div:first-child > div:first-child {
+  font-size: 8px !important;
+  letter-spacing: 0.5px !important;
+  text-align: center;
+}
+
+/* Bars row: stack ships vertically, fill remaining column height. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) {
+  flex-direction: column !important;
+  flex: 1;
+  height: auto;
+  align-items: stretch !important;
+  gap: 4px !important;
+}
+
+/* Each ship bar: stack its segments vertically, fill width. The
+   `flex: <size>` (set inline by ShipsLeft for the row layout) keeps
+   ships of different sizes proportional in this column-stack too. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) > div {
+  flex-direction: column !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Smaller chrome budget when ships is on the side. Horizontal chrome:
+   60 (ships col) + 4 (gap) + 12 (section padding) + 4 (board padding)
+   ≈ 80. Vertical chrome: 22 (name) + 4 (gap) + 12 (section padding)
+   + 16 (col labels) ≈ 54. */
+.sb-fit-grid.sb-mobile-landscape .sb-board-with-labels-layout {
+  --sb-board-side: min(calc(100cqi - 80px), max(60px, calc(100cqh - 54px)));
+}
+
 .sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {
   width: 100% !important;
   height: 100% !important;

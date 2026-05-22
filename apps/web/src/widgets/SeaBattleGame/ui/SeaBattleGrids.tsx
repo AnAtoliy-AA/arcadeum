@@ -174,14 +174,13 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // the dynamic viewport so mobile UI chrome (address bar) doesn't push
   // the next pair into view.
   //
-  // But on very short landscape phones (390-tall viewport: 78dvh ≈ 304)
-  // a row shorter than `min-board + chrome` would clip the board via
-  // PlayerSection's `overflow: hidden`. So we also floor at the
-  // structural minimum (200 board + 140 chrome = 340px); on small
-  // viewports the grid overflows and the widget scrolls, but the
-  // board itself stays whole.
+  // On very short landscape phones (390-tall viewport: 78dvh ≈ 304)
+  // the row also has to fit the section's chrome + a playable board.
+  // 320px = section chrome (~115) + board side (~205) — anything below
+  // that would force the board to shrink below playability, so we
+  // overflow the widget (which scrolls) instead.
   const minRowHeight = wantsTwoColCap
-    ? 'max(78dvh, 340px)'
+    ? 'max(78dvh, 320px)'
     : `${media.short ? 220 : isCompact ? 260 : 300}px`;
 
   return (
@@ -200,11 +199,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         minHeight: 0,
         padding: media.short ? 4 : media.sm ? 4 : 8,
         boxSizing: 'border-box',
-        // `place-content: center` packs the rows / columns toward the
-        // center when each cell's natural size (square boards) doesn't
-        // fill the container — so a 2-board landscape doesn't leave the
-        // boards floating in the top corners with empty space below.
-        placeContent: 'center',
+        // Anchor tracks to the top. We previously used `place-content:
+        // center` here, but when content (rows × minRowHeight) exceeds
+        // the grid container, centering pushes the first row ABOVE the
+        // container top — where the widget's sticky header crops it.
+        // Top-aligned: extras live below and scroll into view naturally.
+        // Horizontally, `center` keeps the boards centered when they
+        // don't fill the row.
+        alignContent: 'start',
+        justifyContent: 'center',
         flex: 1,
       }}
     >

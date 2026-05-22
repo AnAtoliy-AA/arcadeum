@@ -190,14 +190,15 @@
 }
 
 .sb-fit-grid .sb-board-with-labels-layout {
-  /* Side = min(width-of-cell, height-of-cell - chrome). The chrome
-     budget (~140px) covers PlayerSectionWrapper's paddingTop, the
-     PlayerSection paddings + border, the player name row, the ships-
-     remaining strip and the gaps between them. The 200px floor inside
-     max() prevents the board from shrinking below something playable
-     on tight viewports — if it doesn't fit, the layout overflows and
-     the widget scrolls rather than cropping the cells. */
-  --sb-board-side: min(calc(100cqi - 8px), max(200px, calc(100cqh - 140px)));
+  /* Side = min(width-of-cell, height-of-cell - chrome). The 115px chrome
+     budget matches what PlayerSectionWrapper's paddingTop + PlayerSection
+     paddings + border + player name row + ships-remaining strip + gaps
+     actually consume above the board grid — keeps the board strictly
+     inside its section so `overflow: hidden` never crops cells.
+     The 60px floor inside max() is a safety net for absurdly tight
+     cells; layout responsibility is on the row-floor math to keep cells
+     large enough that the board stays playable. */
+  --sb-board-side: min(calc(100cqi - 8px), max(60px, calc(100cqh - 115px)));
   width: var(--sb-board-side);
   height: var(--sb-board-side);
   align-self: center;
@@ -206,11 +207,12 @@
 }
 
 /* Mobile vertical (1-col flex column container). Each board fills the
-   column width and we cap its side by the dynamic viewport height so a
-   single full board is visible at a time — scroll moves through the
-   list of boards rather than within a single tall board. */
+   column width and we cap its side by the dynamic viewport height
+   minus app + widget chrome (~180px) and the in-section chrome (~115)
+   so a single full board fits without clipping, even when the column
+   is wider than the viewport height allows. */
 .sb-grids-container-mobile .sb-board-with-labels-layout {
-  --sb-board-side: min(100%, max(220px, calc(100dvh - 180px)));
+  --sb-board-side: min(100%, max(200px, calc(100dvh - 200px)));
   width: var(--sb-board-side);
   height: var(--sb-board-side);
   align-self: center;

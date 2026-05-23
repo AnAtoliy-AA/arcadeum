@@ -189,15 +189,13 @@ export default function HomeHero() {
                     {t(card.nameKey as TranslationKey) || card.nameKey}
                   </div>
                   <div className="hero-card-brand">{heroCardBrand}</div>
-                  {isFront ? (
-                    <Link
-                      href={`${routes.gameCreate}?variant=${card.id}`}
-                      className="hero-card-play-cta"
-                      data-testid="hero-card-play"
-                    >
-                      {playLabel}
-                    </Link>
-                  ) : null}
+                  <Link
+                    href={`${routes.gameCreate}?variant=${card.id}`}
+                    className="hero-card-play-cta"
+                    data-testid={`hero-card-play-${index}`}
+                  >
+                    {playLabel}
+                  </Link>
                 </div>
               );
             })}

@@ -167,35 +167,30 @@ export function GameCreateView() {
   }
 
   function setGameId(newGameId: GameId) {
-    setForm((prev) => {
-      const themes = themesFor(newGameId);
-      const themeId = themes[0]?.id ?? '';
-      const game = GAMES[newGameId];
-      let maxPlayers = prev.maxPlayers;
-      if (
-        typeof maxPlayers === 'number' &&
-        (maxPlayers < game.players.min || maxPlayers > game.players.max)
-      ) {
-        maxPlayers = 'auto';
-      }
-      const next: CreateRoomForm = {
-        ...prev,
-        gameId: newGameId,
-        themeId,
-        maxPlayers,
-        expansionPackIds:
-          newGameId === 'critical_v1' ? prev.expansionPackIds : ['core'],
-      };
-      updateUrl({ gameId: newGameId, themeId });
-      return next;
+    const themes = themesFor(newGameId);
+    const themeId = themes[0]?.id ?? '';
+    const game = GAMES[newGameId];
+    let maxPlayers = form.maxPlayers;
+    if (
+      typeof maxPlayers === 'number' &&
+      (maxPlayers < game.players.min || maxPlayers > game.players.max)
+    ) {
+      maxPlayers = 'auto';
+    }
+    setForm({
+      ...form,
+      gameId: newGameId,
+      themeId,
+      maxPlayers,
+      expansionPackIds:
+        newGameId === 'critical_v1' ? form.expansionPackIds : ['core'],
     });
+    updateUrl({ gameId: newGameId, themeId });
   }
 
   function setThemeId(themeId: string) {
-    setForm((prev) => {
-      updateUrl({ gameId: prev.gameId, themeId });
-      return { ...prev, themeId };
-    });
+    setForm({ ...form, themeId });
+    updateUrl({ gameId: form.gameId, themeId });
   }
 
   function setExpansionPackIds(ids: string[]) {

@@ -1060,11 +1060,12 @@
 .fanCard:hover {
   transform: translate(var(--fan-x), calc(var(--fan-y) - 20px))
     rotate(var(--fan-rotate)) scale(calc(var(--fan-scale) * 1.05));
-  /* Stay translucent on hover for a soft lift — full opacity felt jumpy
-     when the outer dim ghosts were the target. */
-  opacity: 0.82;
+  /* Bright and sharp on hover — drops the resting blur and bumps opacity
+     to full + a small brightness boost so a dim ghost reads as the
+     focal point under the cursor. */
+  opacity: 1;
   z-index: 100;
-  filter: none;
+  filter: brightness(1.12);
 }
 
 .fanCard::after {

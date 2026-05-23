@@ -864,16 +864,23 @@
 .rail {
   position: sticky;
   top: 22px;
+  /* Cap height to the viewport so the rail (which can be ~830px tall with
+     art + summary + CTA) never pushes its Create Room button below the
+     fold on 720-tall viewports. Internal y-scroll keeps the CTA reachable
+     while the rest of the rail content scrolls within the panel. */
+  max-height: calc(100vh - 44px);
   background: var(--gc-bg-card);
   border: 1px solid var(--gc-line);
   border-radius: 18px;
-  overflow: hidden;
+  overflow: hidden auto;
   min-width: 0;
 }
 
 @media (max-width: 1080px) {
   .rail {
     position: static;
+    max-height: none;
+    overflow: hidden;
   }
 }
 

@@ -989,6 +989,35 @@
   gap: 8px;
 }
 
+/* Mobile: float the Create Room CTA over the bottom of the viewport with a
+   blurred backdrop, matching the previous `StickyMobileCta` pattern. The
+   safe-area-inset-bottom keeps it clear of the iOS home indicator. */
+@media (max-width: 660px) {
+  .railCta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--gc-line-strong);
+    z-index: 150;
+  }
+
+  .createCaption {
+    display: none;
+  }
+
+  .page {
+    /* Reserve room at the bottom of the page so the last room-details
+       field isn't hidden under the fixed CTA. */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
+  }
+}
+
 .createCaption {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;

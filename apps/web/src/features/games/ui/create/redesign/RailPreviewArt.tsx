@@ -1,16 +1,24 @@
 'use client';
 
 import { useMemo, type CSSProperties } from 'react';
-import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
-import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
+import dynamic from 'next/dynamic';
 import { HandCard } from '@/widgets/CriticalGame/ui/hand/HandCard';
 import { handWithUids } from '@/widgets/CriticalGame/lib/combo';
 import type { CriticalCard } from '@/widgets/CriticalGame/types';
 import s from './GameCreateView.module.css';
 import { GameArt } from './art/GameArt';
 import { CriticalCardPoster } from './art/CriticalCardPoster';
-import { findCriticalTheme, type GameId } from './data/themes';
+import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
+import {
+  findCriticalTheme,
+  findSeaBattleTheme,
+  type GameId,
+} from './data/themes';
 import { useSpriteLoaded } from './useSpriteLoaded';
+
+const SeaBattleRealPreview = dynamic(() => import('./SeaBattleRealPreview'), {
+  ssr: false,
+});
 
 interface Props {
   gameId: GameId;
@@ -33,27 +41,7 @@ const FEATURED_CRITICAL_CARDS: CriticalCard[] = [
 // board for the chosen palette. Glimworm falls back to the SVG poster.
 export function RailPreviewArt({ gameId, themeId }: Props) {
   if (gameId === 'sea_battle_v1') {
-    // Full Sea Battle board — cellSize tuned so the 10×10 grid plus row/col
-    // labels fits the rail without clipping the bottom row or the column
-    // letters. Anchored top-left so the A–J letters and 1–10 numbers sit
-    // flush against the corner instead of floating in dead space.
-    return (
-      <SeaBattleThemeProvider variant={themeId}>
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            padding: 12,
-            boxSizing: 'border-box',
-          }}
-        >
-          <SeaBattleThemePreview selectedVariant={themeId} cellSize={22} />
-        </div>
-      </SeaBattleThemeProvider>
-    );
+    return <SeaBattleRail themeId={themeId} />;
   }
 
   if (gameId === 'critical_v1') {
@@ -61,6 +49,21 @@ export function RailPreviewArt({ gameId, themeId }: Props) {
   }
 
   return <GameArt gameId={gameId} themeId={themeId} size="lg" />;
+}
+
+// SSR-safe Sea Battle rail preview: the SVG poster renders both on the
+// server and during the first client paint; the real Tamagui-rendered board
+// overlays it once the dynamic chunk lands on the client.
+function SeaBattleRail({ themeId }: { themeId: string }) {
+  const resolved = findSeaBattleTheme(themeId);
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <SeaBattleBoardPoster theme={resolved} size="lg" />
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <SeaBattleRealPreview themeId={themeId} cellSize={22} padding={12} />
+      </div>
+    </div>
+  );
 }
 
 function CriticalCardCluster({ themeId }: { themeId: string }) {

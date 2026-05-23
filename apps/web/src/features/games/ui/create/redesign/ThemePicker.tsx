@@ -1,10 +1,10 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
-import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
+import dynamic from 'next/dynamic';
 import s from './GameCreateView.module.css';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
+import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
@@ -12,6 +12,10 @@ import {
   type SeaBattleThemeMeta,
   type GameId,
 } from './data/themes';
+
+const SeaBattleRealPreview = dynamic(() => import('./SeaBattleRealPreview'), {
+  ssr: false,
+});
 
 interface Props {
   gameId: GameId;
@@ -115,29 +119,20 @@ function CriticalThumbnail({ theme }: { theme: CriticalTheme }) {
   return <CriticalMiniCluster themeId={theme.id} cardWidth={54} />;
 }
 
-// Render the real `<SeaBattleThemePreview>` (real per-theme palette, cell
-// border radius, ship/hit/miss colors). The board is taller than the 16:9
-// thumbnail can fit, so we anchor it to the top-left and let the bottom
-// rows clip — that keeps the A–J column letters and the row 1 cells (incl.
-// A1) flush against the corner.
+// SSR-safe Sea Battle thumbnail: the SVG poster renders both on the server
+// and during the first client paint; the real Tamagui-rendered board
+// overlays it once the dynamic chunk lands on the client.
 function SeaBattleThumbnail({ theme }: { theme: SeaBattleThemeMeta }) {
   return (
-    <SeaBattleThemeProvider variant={theme.id}>
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-          background: theme.palette.bg,
-          padding: 6,
-          boxSizing: 'border-box',
-          overflow: 'hidden',
-        }}
-      >
-        <SeaBattleThemePreview selectedVariant={theme.id} cellSize={11} />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <SeaBattleBoardPoster theme={theme} size="sm" />
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <SeaBattleRealPreview
+          themeId={theme.id}
+          cellSize={11}
+          background={theme.palette.bg}
+        />
       </div>
-    </SeaBattleThemeProvider>
+    </div>
   );
 }

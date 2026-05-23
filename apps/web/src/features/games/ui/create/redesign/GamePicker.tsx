@@ -1,10 +1,10 @@
 'use client';
 
-import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
-import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
+import dynamic from 'next/dynamic';
 import s from './GameCreateView.module.css';
 import { GameArt } from './art/GameArt';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
+import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
@@ -13,6 +13,10 @@ import {
   VISIBLE_GAMES,
   type GameId,
 } from './data/themes';
+
+const SeaBattleRealPreview = dynamic(() => import('./SeaBattleRealPreview'), {
+  ssr: false,
+});
 
 interface GamePickerProps {
   value: GameId;
@@ -85,7 +89,8 @@ export function GamePicker({
 
 // Real previews for each game tile in the "Select a game" section. Critical
 // shows the three-card fan via `<CriticalMiniCluster>`, Sea Battle renders a
-// scaled-down real board, and Glimworm keeps the SVG poster.
+// scaled-down real board layered on top of the SVG poster fallback, and
+// Glimworm keeps the SVG poster.
 function GameTilePreview({
   gameId,
   themeId,
@@ -99,26 +104,17 @@ function GameTilePreview({
   }
   if (gameId === 'sea_battle_v1') {
     const resolved = findSeaBattleTheme(themeId || SEA_BATTLE_THEMES[0].id);
-    // Real `<SeaBattleThemePreview>` anchored top-left — bottom rows clip
-    // gracefully so A1 and the column letters stay visible at the corner.
     return (
-      <SeaBattleThemeProvider variant={resolved.id}>
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            background: resolved.palette.bg,
-            padding: 6,
-            boxSizing: 'border-box',
-            overflow: 'hidden',
-          }}
-        >
-          <SeaBattleThemePreview selectedVariant={resolved.id} cellSize={12} />
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <SeaBattleBoardPoster theme={resolved} size="sm" />
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SeaBattleRealPreview
+            themeId={resolved.id}
+            cellSize={12}
+            background={resolved.palette.bg}
+          />
         </div>
-      </SeaBattleThemeProvider>
+      </div>
     );
   }
   return <GameArt gameId={gameId} themeId={themeId} size="sm" />;

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.31] - 2026-05-23
+
+### Fixed
+- redirect unauthenticated users to /auth when buying gems (ARC-742) (ARC-742)
+
+
 ## [1.14.30] - 2026-05-23
 
 ### Fixed

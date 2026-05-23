@@ -6,6 +6,9 @@ interface Props {
   size?: 'sm' | 'lg';
 }
 
+const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+
 // Fixed ship/hit/miss layout so all themes are visually comparable.
 const SHIPS: { r: number; c: number; len: number; dir: 'h' | 'v' }[] = [
   { r: 1, c: 1, len: 4, dir: 'h' },
@@ -30,11 +33,48 @@ export function SeaBattleBoardPoster({ theme, size = 'sm' }: Props) {
   const big = size === 'lg';
   const w = big ? 400 : 240;
   const h = big ? 320 : 135;
-  const padX = big ? 50 : 10;
-  const padY = big ? 30 : 7;
+  // Leave room on the top for column letters and on the left for row
+  // numbers so both axes of the coordinate grid stay readable.
+  const padX = big ? 50 : 18;
+  const padY = big ? 30 : 16;
+  const labelGap = big ? 8 : 4;
   const cellW = (w - padX * 2) / 10;
   const cellH = (h - padY * 2) / 10;
+  const labelFontSize = big ? 11 : 7;
   const { bg, cell, ship, hit, miss } = theme.palette;
+  const labelColor = `${ship}`;
+
+  const colLabels = COL_LABELS.map((l, c) => (
+    <text
+      key={`col-${c}`}
+      x={padX + c * cellW + cellW / 2}
+      y={padY - labelGap}
+      textAnchor="middle"
+      fontFamily="JetBrains Mono, ui-monospace, monospace"
+      fontSize={labelFontSize}
+      fontWeight={600}
+      fill={labelColor}
+      opacity={0.75}
+    >
+      {l}
+    </text>
+  ));
+
+  const rowLabels = ROW_LABELS.map((l, r) => (
+    <text
+      key={`row-${r}`}
+      x={padX - labelGap}
+      y={padY + r * cellH + cellH / 2 + labelFontSize * 0.35}
+      textAnchor="end"
+      fontFamily="JetBrains Mono, ui-monospace, monospace"
+      fontSize={labelFontSize}
+      fontWeight={600}
+      fill={labelColor}
+      opacity={0.75}
+    >
+      {l}
+    </text>
+  ));
 
   const cells: ReactElement[] = [];
   for (let r = 0; r < 10; r++) {
@@ -55,7 +95,6 @@ export function SeaBattleBoardPoster({ theme, size = 'sm' }: Props) {
   }
 
   const ships: ReactElement[] = [];
-  const occupied = new Set<string>();
   for (const s of SHIPS) {
     const sw = s.dir === 'h' ? cellW * s.len - 2 : cellW - 2;
     const sh = s.dir === 'v' ? cellH * s.len - 2 : cellH - 2;
@@ -71,11 +110,6 @@ export function SeaBattleBoardPoster({ theme, size = 'sm' }: Props) {
         rx={big ? 3 : 1.5}
       />,
     );
-    for (let i = 0; i < s.len; i++) {
-      const r = s.r + (s.dir === 'v' ? i : 0);
-      const c = s.c + (s.dir === 'h' ? i : 0);
-      occupied.add(`${r}-${c}`);
-    }
   }
 
   const hits = HITS.map((p) => (
@@ -122,6 +156,8 @@ export function SeaBattleBoardPoster({ theme, size = 'sm' }: Props) {
       aria-hidden="true"
     >
       <rect width={w} height={h} fill={bg} />
+      {colLabels}
+      {rowLabels}
       {cells}
       {ships}
       {hits}

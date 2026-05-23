@@ -1,13 +1,13 @@
 'use client';
 
-import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
-import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
 import s from './GameCreateView.module.css';
 import { GameArt } from './art/GameArt';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
+import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
+  findSeaBattleTheme,
   GAMES,
   VISIBLE_GAMES,
   type GameId,
@@ -97,24 +97,10 @@ function GameTilePreview({
     return <CriticalMiniCluster themeId={resolved} cardWidth={48} />;
   }
   if (gameId === 'sea_battle_v1') {
-    const resolved = themeId || SEA_BATTLE_THEMES[0].id;
-    return (
-      <SeaBattleThemeProvider variant={resolved}>
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 8,
-            boxSizing: 'border-box',
-          }}
-        >
-          <SeaBattleThemePreview selectedVariant={resolved} cellSize={11} />
-        </div>
-      </SeaBattleThemeProvider>
-    );
+    const resolved = findSeaBattleTheme(themeId || SEA_BATTLE_THEMES[0].id);
+    // Compact SVG board with A–J / 1–10 labels — the real preview has too
+    // much vertical gap overhead to fit a 16:9 tile.
+    return <SeaBattleBoardPoster theme={resolved} size="sm" />;
   }
   return <GameArt gameId={gameId} themeId={themeId} size="sm" />;
 }

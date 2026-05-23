@@ -114,7 +114,7 @@ export function runConfirmPlacement(
 ): GameActionResult<SeaBattleState> {
   player.placementComplete = true;
   state.logs.push(
-    makeLog('system', 'A player has finished placing ships', {
+    makeLog('system', 'finished placing ships', {
       senderId: player.playerId,
     }),
   );

@@ -123,7 +123,8 @@ function inferSysKind(log: ChatLogEntry): SystemRowKind {
   const msg = log.message?.toLowerCase() ?? '';
   if (msg.includes('round')) return 'round';
   if (msg.includes('combo')) return 'combo';
-  if (msg.includes('join')) return 'join';
+  if (msg.includes('join') || msg.includes('placing') || msg.includes('left '))
+    return 'join';
   return log.type === 'action' ? 'combo' : 'elim';
 }
 

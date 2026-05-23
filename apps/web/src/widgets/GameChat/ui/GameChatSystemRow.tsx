@@ -38,7 +38,7 @@ export function GameChatSystemRow({
       backgroundColor={`color-mix(in srgb, ${color} 12%, transparent)`}
       data-testid="game-chat-system-row"
     >
-      <SysText color={color} fontWeight="700">
+      <SysText flex={0} color={color} fontWeight="700">
         {GLYPHS[kind]}
       </SysText>
       <SysText>

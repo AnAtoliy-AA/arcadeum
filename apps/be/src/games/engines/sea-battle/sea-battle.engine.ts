@@ -272,7 +272,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       if (target.shipsRemaining === 0) {
         target.alive = false;
         state.logs.push(
-          this.createLogEntry('system', 'A player has been eliminated!', {
+          this.createLogEntry('system', 'has been eliminated!', {
             senderId: target.playerId,
           }),
         );
@@ -415,7 +415,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     player.alive = false;
     newState.logs.push(
-      this.createLogEntry('system', 'A player has left the game', {
+      this.createLogEntry('system', 'left the game', {
         senderId: playerId,
       }),
     );

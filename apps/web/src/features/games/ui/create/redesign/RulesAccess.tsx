@@ -40,10 +40,13 @@ export function RulesAccess({ gameId, themeId }: Props) {
       <button
         type="button"
         data-testid="view-rules-button"
-        className={s.linkBtn}
+        className={s.railRulesBtn}
         onClick={() => setOpen(true)}
       >
-        📖 {label}
+        <span className={s.railRulesIcon} aria-hidden="true">
+          📖
+        </span>
+        {label}
       </button>
       {gameId === 'sea_battle_v1' ? (
         <SeaBattleRulesModal

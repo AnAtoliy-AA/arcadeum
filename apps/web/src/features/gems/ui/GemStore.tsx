@@ -1,12 +1,15 @@
 import { getServerLocale } from '@/shared/i18n/server';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { getActivePackages } from '../server/gems.server';
 import { GemPackageCard } from './GemPackageCard';
 
 export async function GemStore() {
-  const [packages, locale] = await Promise.all([
+  const [packages, locale, accessToken] = await Promise.all([
     getActivePackages(),
     getServerLocale(),
+    getServerAccessToken(),
   ]);
+  const isAuthenticated = Boolean(accessToken);
 
   if (packages.length === 0) {
     return (
@@ -51,7 +54,12 @@ export async function GemStore() {
         }}
       >
         {packages.map((pkg) => (
-          <GemPackageCard key={pkg.id} pkg={pkg} locale={locale} />
+          <GemPackageCard
+            key={pkg.id}
+            pkg={pkg}
+            locale={locale}
+            isAuthenticated={isAuthenticated}
+          />
         ))}
       </div>
     </section>

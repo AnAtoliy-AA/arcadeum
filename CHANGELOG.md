@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.27] - 2026-05-23
+
+### Added
+- additional shop avatar and badge items (ARC-712)
+
+### Fixed
+- pin .first() for duplicated legendary card testids in e2e (ARC-712) (ARC-712)
+
+
 ## [1.14.26] - 2026-05-23
 
 ### Added

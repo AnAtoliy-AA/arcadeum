@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.29] - 2026-05-23
+
+### Added
+- show Play CTA on hover of every hero card (N/A)
+- show 'Play' CTA on hover of front hero card linking to variant create (ARC-734) (ARC-734)
+- render hero cards with full-bleed variant artwork (ARC-734) (ARC-734)
+- add optional bgImage to CARD_VARIANTS for shipped artwork (ARC-734) (ARC-734)
+
+### Fixed
+- rename Play CTA testid to avoid hero-card- prefix collision (N/A)
+
+### Refactored
+- alias isLast as isFront for hero card LCP priority (ARC-734) (ARC-734)
+
+### Documentation
+- add ARC-734 hero cards implementation plan (ARC-734)
+- add ARC-734 hero cards premium design spec (ARC-734)
+
+
 ## [1.14.28] - 2026-05-23
 
 ### Fixed

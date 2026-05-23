@@ -213,9 +213,12 @@ export const SharedGameBoard = styled(BaseGameBoard, {
   flexDirection: 'column',
   position: 'relative',
   width: '100%',
-  flexGrow: 0,
-  flexShrink: 0,
-  flexBasis: 'auto',
+  // Fill the remaining height of the widget container after the sticky
+  // header so the boards inside can use 1fr-row CSS to fit vertically
+  // without scroll. Inner content opts in via flex propagation.
+  flex: 1,
+  minHeight: 0,
+  minWidth: 0,
   overflow: 'visible',
 });
 

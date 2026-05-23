@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.28] - 2026-05-23
+
+### Fixed
+- tighten system row layout and drop generic 'A player' prefix (ARC-736) (ARC-736)
+- render sender (and target) on system/action rows (ARC-736) (ARC-736)
+
+
 ## [1.14.27] - 2026-05-23
 
 ### Added

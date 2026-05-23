@@ -1156,7 +1156,6 @@
   flex-direction: column;
   padding: 0;
   width: 100%;
-  padding-top: var(--t-space-8);
   justify-content: flex-start;
   align-items: stretch;
 }

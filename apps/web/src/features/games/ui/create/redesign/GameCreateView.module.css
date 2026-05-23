@@ -1,0 +1,1227 @@
+/* Editorial layout tokens scoped to the games create redesign.
+   Colors resolve through Tamagui CSS variables (var(--background),
+   var(--color), var(--glassBg), …) so they follow the active theme. */
+.page {
+  --gc-ink: var(--background);
+  --gc-bg-card: var(--glassBg, rgba(15, 17, 18, 0.8));
+  --gc-bg-card-2: var(--background);
+  --gc-line: var(--glassBorder, rgba(255, 255, 255, 0.08));
+  --gc-line-strong: var(--glassBorderHover, rgba(255, 255, 255, 0.16));
+  --gc-text: var(--color);
+  --gc-text-dim: var(--textSecondary, rgba(180, 180, 200, 0.7));
+  --gc-text-faint: rgba(127, 127, 145, 0.7);
+  --gc-accent: var(--goldAccent, #ffd166);
+  --gc-accent-2: #ff9f4a;
+  --gc-accent-violet: #b794ff;
+  --gc-accent-cyan: #7dd3fc;
+
+  color: var(--gc-text);
+  min-height: 100vh;
+  padding: 0 0 96px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gc-text-dim);
+  margin-bottom: 16px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: 0 0 48px;
+}
+
+.head h1 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: var(--gc-text);
+}
+
+.head h1 em {
+  font-style: normal;
+  background: linear-gradient(
+    135deg,
+    var(--gc-accent) 0%,
+    var(--gc-accent-2) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.intro {
+  color: var(--gc-text-dim);
+  font-size: 15px;
+  max-width: 60ch;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.colLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  min-width: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gc-line);
+  margin-bottom: 24px;
+}
+
+.sectionHeadLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sectionNum {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gc-accent);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.sectionTitle {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--gc-text);
+}
+
+.sectionHint {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gc-text-faint);
+  white-space: nowrap;
+}
+
+.linkBtn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gc-text-dim);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.linkBtn:hover {
+  color: var(--gc-accent);
+}
+
+/* Quick presets */
+.presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset {
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  color: var(--gc-text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.preset:hover {
+  border-color: var(--gc-line-strong);
+  color: var(--gc-text);
+}
+
+.presetActive {
+  background: rgba(255, 209, 102, 0.1);
+  border-color: var(--gc-accent);
+  color: var(--gc-accent);
+}
+
+/* Game picker */
+.gameGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .gameGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gameCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  position: relative;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gameCard:hover {
+  transform: translateY(-3px);
+  border-color: var(--gc-line-strong);
+}
+
+.gameCard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gameCardActive {
+  border-color: var(--gc-accent);
+  box-shadow:
+    0 0 0 1px var(--gc-accent),
+    0 24px 48px -24px rgba(255, 209, 102, 0.5);
+}
+
+.gameCardArt {
+  aspect-ratio: 16 / 11;
+  background: var(--gc-bg-card-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.gameCardArt svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.gameCardBody {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gameCardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gameCardTitle {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.gameCardPlayers {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gc-text-dim);
+  white-space: nowrap;
+}
+
+.gameCardDesc {
+  font-size: 13.5px;
+  color: var(--gc-text-dim);
+  margin: 0;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.gameCardMeta {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gc-text-faint);
+  margin-top: 4px;
+}
+
+.gameCardBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(255, 209, 102, 0.15);
+  border: 1px solid var(--gc-accent);
+  color: var(--gc-accent);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.gameCardComingSoon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--gc-line-strong);
+  color: var(--gc-text-dim);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Expansion packs */
+.expansionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.expansionBarText {
+  min-width: 0;
+}
+
+.expansionBarTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gc-text);
+  margin: 0 0 2px;
+}
+
+.expansionBarDesc {
+  font-size: 12px;
+  color: var(--gc-text-dim);
+  margin: 0;
+}
+
+.expansionBarRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.expansionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.packRow {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: flex-start;
+  transition: border-color 0.15s ease;
+}
+
+.packRow:hover {
+  border-color: var(--gc-line-strong);
+}
+
+.packRowActive {
+  border-color: var(--gc-accent);
+  background: rgba(255, 209, 102, 0.04);
+}
+
+.packRowLocked {
+  cursor: default;
+}
+
+.packCheck {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--gc-line-strong);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--gc-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.packCheckOn {
+  background: var(--gc-accent);
+  border-color: var(--gc-accent);
+}
+
+.packBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.packHeader {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.packName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gc-text);
+}
+
+.packChip {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gc-text-dim);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.packChipLocked {
+  color: var(--gc-accent);
+  background: rgba(255, 209, 102, 0.1);
+}
+
+.packDesc {
+  font-size: 12.5px;
+  color: var(--gc-text-dim);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Theme picker — horizontal scroll strip */
+.themeStripWrap {
+  position: relative;
+  margin: 0 -8px;
+}
+
+.themeStrip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 240px);
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 8px 16px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gc-line-strong) transparent;
+}
+
+.themeStrip > * {
+  scroll-snap-align: start;
+}
+
+.themeStrip::-webkit-scrollbar {
+  height: 8px;
+}
+
+.themeStrip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.themeStrip::-webkit-scrollbar-thumb {
+  background: var(--gc-line-strong);
+  border-radius: 999px;
+}
+
+/* Subtle right-edge fade hint that more themes are off-screen. */
+.themeStripWrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 64px;
+  background: linear-gradient(to right, transparent, var(--gc-ink) 90%);
+  pointer-events: none;
+}
+
+.themeCard {
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.themeCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--gc-line-strong);
+}
+
+.themeCardActive {
+  border-color: var(--theme-color, var(--gc-accent));
+  box-shadow: 0 0 0 1px var(--theme-color, var(--gc-accent));
+}
+
+.themeArt {
+  aspect-ratio: 16 / 9;
+  background: var(--gc-bg-card-2);
+  overflow: hidden;
+}
+
+.themeArt svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.themeBody {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.themeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.themeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--theme-color, var(--gc-accent));
+  box-shadow: 0 0 8px var(--theme-color, var(--gc-accent));
+  flex-shrink: 0;
+}
+
+.themeName {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gc-text);
+}
+
+.themeDesc {
+  font-size: 12px;
+  color: var(--gc-text-dim);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.themeCheck {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--theme-color, var(--gc-accent));
+  color: var(--gc-ink);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.themeCardActive .themeCheck {
+  display: flex;
+}
+
+/* House rules */
+.rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--gc-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rule {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--gc-bg-card);
+  position: relative;
+}
+
+.rule:nth-child(odd) {
+  border-right: 1px solid var(--gc-line);
+}
+
+.rule:nth-child(-n + 2) {
+  border-bottom: 1px solid var(--gc-line);
+}
+
+@media (max-width: 640px) {
+  .rule {
+    border-right: 0 !important;
+  }
+  .rule:not(:last-child) {
+    border-bottom: 1px solid var(--gc-line) !important;
+  }
+}
+
+.ruleHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ruleTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gc-text);
+  margin: 0;
+}
+
+.ruleDesc {
+  font-size: 12px;
+  color: var(--gc-text-dim);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--gc-line-strong);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+  padding: 0;
+}
+
+.toggleOn {
+  background: var(--gc-accent);
+  border-color: var(--gc-accent);
+}
+
+.toggleHandle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 999px;
+  transition: transform 0.18s ease;
+}
+
+.toggleOn .toggleHandle {
+  transform: translateX(18px);
+  background: var(--gc-ink);
+}
+
+/* Room details */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gc-text-dim);
+}
+
+.counter {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  color: var(--gc-text-faint);
+  white-space: nowrap;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gc-text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--gc-text-faint);
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--gc-accent);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.stepperRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.stepperBtn {
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--gc-line);
+  border-radius: 8px;
+  color: var(--gc-text);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  padding: 0;
+}
+
+.stepperBtn:hover:not(:disabled) {
+  border-color: var(--gc-line-strong);
+}
+
+.stepperBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stepperValue {
+  flex: 1;
+  text-align: center;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gc-text);
+}
+
+.stepperHint {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  color: var(--gc-text-faint);
+  margin-top: 4px;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 10px;
+}
+
+.segmentedBtn {
+  background: transparent;
+  border: 0;
+  padding: 8px;
+  border-radius: 7px;
+  color: var(--gc-text-dim);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.segmentedBtn:hover {
+  color: var(--gc-text);
+}
+
+.segmentedBtnActive {
+  background: var(--gc-text);
+  color: var(--gc-ink);
+}
+
+/* Preview rail */
+.rail {
+  position: sticky;
+  top: 22px;
+  /* Cap height to the viewport so the rail (which can be ~830px tall with
+     art + summary + CTA) never pushes its Create Room button below the
+     fold on 720-tall viewports. Internal y-scroll keeps the CTA reachable
+     while the rest of the rail content scrolls within the panel. */
+  max-height: calc(100vh - 44px);
+  background: var(--gc-bg-card);
+  border: 1px solid var(--gc-line);
+  border-radius: 18px;
+  overflow: hidden auto;
+  min-width: 0;
+}
+
+@media (max-width: 1080px) {
+  .rail {
+    position: static;
+    max-height: none;
+    overflow: hidden;
+  }
+}
+
+.railArt {
+  min-height: 380px;
+  background: var(--gc-bg-card-2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.railArt svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.railArtTag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gc-text);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  padding: 6px 10px;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.railArtDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: gcPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes gcPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.railArtOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 28%);
+  gap: 6px;
+  pointer-events: none;
+}
+
+.railArtTitle {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gc-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.railArtSub {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gc-text-dim);
+}
+
+.railSummary {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.railRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--gc-line);
+  font-size: 13px;
+}
+
+.railRow:last-child {
+  border-bottom: 0;
+}
+
+.railRulesRow {
+  padding: 14px 18px 4px;
+  display: flex;
+  justify-content: stretch;
+}
+
+.railRulesBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--gc-line-strong, rgba(255, 255, 255, 0.18));
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--gc-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.railRulesBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gc-accent);
+  color: var(--gc-accent);
+}
+
+.railRulesBtn:active {
+  transform: translateY(1px);
+}
+
+.railRulesBtn:focus-visible {
+  outline: 2px solid var(--gc-accent);
+  outline-offset: 2px;
+}
+
+.railRulesIcon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.railRowLabel {
+  color: var(--gc-text-dim);
+  font-size: 12px;
+}
+
+.railRowValue {
+  color: var(--gc-text);
+  font-weight: 500;
+  text-align: right;
+  min-width: 0;
+}
+
+.railCta {
+  padding: 18px;
+  border-top: 1px solid var(--gc-line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Mobile: float the Create Room CTA over the bottom of the viewport with a
+   blurred backdrop, matching the previous `StickyMobileCta` pattern. The
+   safe-area-inset-bottom keeps it clear of the iOS home indicator. */
+@media (max-width: 660px) {
+  .railCta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--gc-line-strong);
+    z-index: 150;
+  }
+
+  .createCaption {
+    display: none;
+  }
+
+  .page {
+    /* Reserve room at the bottom of the page so the last room-details
+       field isn't hidden under the fixed CTA. */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
+  }
+}
+
+.createCaption {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--gc-text-faint);
+  text-align: center;
+}
+
+.errorBox {
+  margin: 0 18px 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* Preview-rail Critical card fan — hover lifts the focused card above its
+   neighbours with the same gesture as the home-hero card stack. */
+.fanCard {
+  position: absolute;
+  transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
+    scale(var(--fan-scale));
+  opacity: var(--fan-opacity, 1);
+  z-index: var(--fan-z, 1);
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.25s ease,
+    filter 0.25s ease;
+  filter: var(--fan-filter, none);
+}
+
+.fanCard:hover {
+  transform: translate(var(--fan-x), calc(var(--fan-y) - 20px))
+    rotate(var(--fan-rotate)) scale(calc(var(--fan-scale) * 1.05));
+  /* Bright and sharp on hover — drops the resting blur and bumps opacity
+     to full + a small brightness boost so a dim ghost reads as the
+     focal point under the cursor. */
+  opacity: 1;
+  z-index: 100;
+  filter: brightness(1.12);
+}
+
+.fanCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 10px;
+  /* A bright diagonal stripe inside a wide background image. Sliding the
+     background-position is more reliable than transforming the ::after
+     itself — the gradient is always confined to the card bounds, so the
+     stripe naturally enters from one edge and exits the other without
+     needing overflow:hidden on the parent (which would clip the
+     HandCard's outer glow). */
+  background-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255, 209, 102, 0.3) 47%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 209, 102, 0.3) 53%,
+    transparent 62%,
+    transparent 100%
+  );
+  background-size: 260% 100%;
+  background-position: 200% 0;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition:
+    background-position 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.18s ease;
+}
+
+.fanCard:hover::after {
+  background-position: -100% 0;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fanCard,
+  .fanCard:hover {
+    transition: none;
+  }
+  .fanCard:hover {
+    transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
+      scale(var(--fan-scale));
+  }
+  .fanCard::after,
+  .fanCard:hover::after {
+    background-image: none;
+    opacity: 0;
+  }
+}
+
+/* Fade-in stagger */
+.fade {
+  animation: gcFade 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+.fade2 {
+  animation-delay: 0.06s;
+}
+.fade3 {
+  animation-delay: 0.12s;
+}
+.fade4 {
+  animation-delay: 0.18s;
+}
+.fade5 {
+  animation-delay: 0.24s;
+}
+
+@keyframes gcFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade,
+  .fade2,
+  .fade3,
+  .fade4,
+  .fade5 {
+    animation: none;
+  }
+  .railArtDot {
+    animation: none;
+  }
+}

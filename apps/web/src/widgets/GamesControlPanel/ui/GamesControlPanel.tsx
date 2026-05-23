@@ -4,7 +4,6 @@ import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -18,6 +17,7 @@ import {
   MinimizeIcon,
 } from '@/shared/ui';
 import { Button, XStack, YStack } from '@arcadeum/ui';
+import { ShareGameMenu } from './ShareGameMenu';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -54,7 +54,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   } = props;
 
   const { snapshot } = useSessionTokens();
-  const [isCopied, setIsCopied] = useTimedTrue(2000);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const handleLeaveGame = useCallback(() => {
@@ -91,16 +90,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
   const handleCenterView = () => {
     onCenterView?.();
-  };
-
-  const handleCopyInviteLink = async () => {
-    if (!roomId) return;
-    const origin = window.location.origin;
-    const url = `${origin}/games/rooms/${roomId}${inviteCode ? `?inviteCode=${inviteCode}` : ''}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setIsCopied();
-    } catch {}
   };
 
   return (
@@ -294,27 +283,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         </XStack>
       )}
 
-      <Button
-        variant="glass"
-        size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
-        onClick={handleCopyInviteLink}
-        aria-label={
-          isCopied
-            ? t('games.common.copyInviteLinkCopied')
-            : t('games.common.copyInviteLinkButton')
-        }
-        title={t('games.common.copyInviteLink') || 'Share Game Link'}
-        data-testid="copy-invite-button"
-      >
-        {isCopied ? '✅' : '🔗'}
-        <Text $sm={{ display: 'none' }}>
-          {' ' +
-            (isCopied
-              ? t('games.common.copyInviteLinkCopied')
-              : t('games.common.copyInviteLinkButton'))}
-        </Text>
-      </Button>
+      {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
 
       <Button
         variant="glass"

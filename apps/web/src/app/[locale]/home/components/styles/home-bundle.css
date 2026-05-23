@@ -368,6 +368,50 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
+.hero-card-play-cta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.92);
+  z-index: 4;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0b0d10;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 8px 22px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    background 0.22s ease;
+  white-space: nowrap;
+}
+
+.hero-card-main:hover .hero-card-play-cta {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.hero-card-play-cta:hover {
+  background: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-play-cta {
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .is-hydrated .hero-card-main {
   opacity: 1;
   pointer-events: auto;

@@ -16,6 +16,7 @@ import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
 
 type HeroCard = {
+  id: (typeof HERO_VARIANT_IDS)[number];
   nameKey: string;
   bgImage?: string;
 };
@@ -30,6 +31,7 @@ export default function HomeHero() {
       HERO_VARIANT_IDS.map((id) => {
         const v = CARD_VARIANTS.find((c) => c.id === id);
         return {
+          id,
           nameKey: v?.name ?? '',
           bgImage: v?.bgImage,
         };
@@ -58,6 +60,7 @@ export default function HomeHero() {
     `Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const heroCardBrand = homeCopy.heroCardBrand ?? 'CRITICAL';
+  const playLabel = homeCopy.heroCardPlayCta ?? 'Play';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
   const primaryHref = routes.games;
@@ -186,6 +189,15 @@ export default function HomeHero() {
                     {t(card.nameKey as TranslationKey) || card.nameKey}
                   </div>
                   <div className="hero-card-brand">{heroCardBrand}</div>
+                  {isFront ? (
+                    <Link
+                      href={`${routes.gameCreate}?variant=${card.id}`}
+                      className="hero-card-play-cta"
+                      data-testid="hero-card-play"
+                    >
+                      {playLabel}
+                    </Link>
+                  ) : null}
                 </div>
               );
             })}

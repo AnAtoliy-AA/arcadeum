@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.32] - 2026-05-23
+
+### Added
+- View Game Rules link in preview rail (ARC-744) (ARC-744)
+- sticky bottom Create Room CTA on mobile (ARC-744) (ARC-744)
+- use shared CreateRoomButton in preview rail (ARC-744) (ARC-744)
+- hover-lift animation on preview-rail Critical card fan (ARC-744) (ARC-744)
+- real previews in game picker tiles + theme thumbnails; full Sea Battle board in rail (ARC-744) (ARC-744)
+- real card / board previews + theme-aware colors on /games/create (ARC-744) (ARC-744)
+- rework /games/create with editorial two-column layout (ARC-744) (ARC-744)
+
+### Fixed
+- cap sticky rail height so Create Room CTA stays reachable (ARC-744) (ARC-744)
+- restore e2e contract with redesigned /games/create (ARC-744) (ARC-744)
+- emit valid hreflang code for Belarusian locale (N/A)
+- stop calling router.replace inside setForm updater (ARC-744) (ARC-744)
+- silence remaining hydration warnings on /games/create (ARC-744) (ARC-744)
+- cover Sea Battle poster with opaque rail preview (ARC-744) (ARC-744)
+- SSR-safe Sea Battle preview via dynamic import to stop hydration mismatch (ARC-744) (ARC-744)
+- brighten hovered fan card — opacity 1, drop blur, add brightness boost (ARC-744) (ARC-744)
+- restore shine sweep + show card names on every fan card + lower hover opacity (ARC-744) (ARC-744)
+- soften card-fan hover — drop shine sweep, dial back hover opacity (ARC-744) (ARC-744)
+- real Sea Battle field anchored top-left in picker tiles + move LIVE PREVIEW pill (ARC-744) (ARC-744)
+- show A–J / 1–10 coordinate labels in Sea Battle theme tiles (ARC-744) (ARC-744)
+
+
 ## [1.14.31] - 2026-05-23
 
 ### Fixed

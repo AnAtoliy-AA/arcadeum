@@ -43,15 +43,17 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [isLandscape, setIsLandscape] = useState(false);
-  // Watches for an ancestor with `.is-fullscreen` (added by the page-level
-  // or widget-level useFullscreen hook). When set, the grid caps cols at 2
-  // so the player can see two full boards at once and scroll through the
-  // rest vertically — the preferred interaction in the expanded view.
-  const [isAncestorFullscreen, setIsAncestorFullscreen] = useState(false);
-  // Mirrors `document.fullscreenElement` — the page-level browser
-  // fullscreen state. Triggers the same "fit all boards in viewport"
-  // mode as widget fullscreen.
-  const [isDocumentFullscreen, setIsDocumentFullscreen] = useState(false);
+  // Widget-level fullscreen: ancestor matches `.game-widget-container.is-fullscreen`
+  // (the expand button on the widget header). This is the "fit every
+  // board on one screen" state and is the only state where the grid is
+  // allowed to shrink cells — and only on desktop (mobile widget-fs
+  // keeps cells at non-fs size per spec; scrolls if rows don't fit).
+  //
+  // Page-level fullscreen (games-room-container, browser F11) is
+  // deliberately not tracked: cells in page-fs must not differ from
+  // non-fs (page-fs is about screen real estate, not shrinking), so
+  // there's nothing to react to.
+  const [isWidgetFullscreen, setIsWidgetFullscreen] = useState(false);
 
   useEffect(() => {
     const node = containerRef.current;
@@ -82,25 +84,22 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   }, []);
 
   useEffect(() => {
-    const update = () => setIsDocumentFullscreen(!!document.fullscreenElement);
-    update();
-    document.addEventListener('fullscreenchange', update);
-    return () => document.removeEventListener('fullscreenchange', update);
-  }, []);
-
-  useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
     const check = () => {
+      let widgetFs = false;
       let el: HTMLElement | null = node.parentElement;
       while (el) {
-        if (el.classList.contains('is-fullscreen')) {
-          setIsAncestorFullscreen(true);
-          return;
+        if (
+          el.classList.contains('is-fullscreen') &&
+          el.classList.contains('game-widget-container')
+        ) {
+          widgetFs = true;
+          break;
         }
         el = el.parentElement;
       }
-      setIsAncestorFullscreen(false);
+      setIsWidgetFullscreen(widgetFs);
     };
     check();
     const observer = new MutationObserver(check);
@@ -147,24 +146,21 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = Math.max(2, Math.min(ideal, count, fits || 2));
   } else {
     const ideal = idealCols(count);
-    // In fit mode (widget or page fullscreen) we want to pack more
-    // boards per row to avoid scrolling, so accept narrower cells.
-    // In normal mode we prefer fewer, bigger cells (the user is fine
-    // scrolling between rows of larger boards).
-    const inFitMode =
-      isAncestorFullscreen ||
-      (typeof document !== 'undefined' && !!document.fullscreenElement);
-    const minBoardWidth = inFitMode ? 200 : 240;
+    // Widget-fs packs more boards per row (accept narrower cells) so the
+    // user can see every board at once — that's what widget-fs is for.
+    // Page-fs and normal both prefer fewer, bigger cells; page-fs is
+    // about more screen real estate, not about shrinking boards.
+    const minBoardWidth = isWidgetFullscreen ? 200 : 240;
     const fits = Math.max(1, Math.floor(containerWidth / minBoardWidth));
     cols = Math.min(ideal, count, fits || ideal);
   }
 
   // Cap at 2 cols whenever there isn't real desktop-wide room: mobile
   // / tablet held sideways (any width ≤1150px in landscape) OR a
-  // mobile / tablet fullscreen. On desktop (>1150px) fullscreen, we
-  // keep the balanced idealCols layout so all boards stay visible at
-  // once — the player explicitly expanded to see *more*, not pages.
-  const wantsTwoColCap = !media.gtMd && (isAncestorFullscreen || isLandscape);
+  // mobile / tablet WIDGET-fullscreen (where the spec asks for 2 boards
+  // fully visible). Page-fs doesn't trip the cap — its goal is more
+  // room, not a different column count.
+  const wantsTwoColCap = !media.gtMd && (isWidgetFullscreen || isLandscape);
   if (wantsTwoColCap && cols > 2) {
     cols = 2;
   }
@@ -204,11 +200,15 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     0,
     (containerWidth - gridPadding * 2 - rowGap * (cols - 1)) / cols,
   );
-  // "Fit-in-viewport" mode: the player explicitly chose an expanded
-  // view (widget or browser fullscreen) and expects to see every board
-  // at once. Outside that, we prefer bigger cells with scroll over
-  // small cells that fit.
-  const isFitMode = isAncestorFullscreen || isDocumentFullscreen;
+  // "Fit-in-viewport" mode: ONLY widget-fullscreen. The user explicitly
+  // chose the widget-expand button to see every board at once, so this
+  // is the only state where the grid is allowed to shrink cells.
+  //
+  // Page-fullscreen and non-fullscreen both keep cells at natural size
+  // and let the widget scroll between rows — page-fs is about more
+  // screen real estate, not about fitting more on screen. See
+  // SeaBattleGrids.md for the full contract.
+  const isFitMode = isWidgetFullscreen;
   // Side-layout heuristic — only meaningful in fit mode, where rows
   // are forced down to fit the container. Outside fit mode the row is
   // always `squareRow` so top-layout is always at least as good.
@@ -229,14 +229,18 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const squareRowHeightPx = Math.round(
     useSideLayout ? approxCellWidthPx - 13 : approxCellWidthPx + 115,
   );
-  // Row sizing differs by mode:
-  // - fit mode: `minmax(safety, squareRow)` — tracks auto-shrink so
-  //   every row fits in the container without scroll.
-  // - normal: just `squareRow` — let the row be its natural size; if
-  //   that doesn't fit, scroll. The user explicitly asked to keep
-  //   bigger cells over fitting in non-fullscreen.
+  // Row sizing rules (see SeaBattleGrids.md):
+  // - Desktop widget-fs: minmax shrinks rows so every board fits on
+  //   one screen — the explicit ask of the widget-expand button.
+  // - Everything else (mobile any, desktop normal, desktop page-fs):
+  //   natural squareRow. Widget scrolls if rows don't fit. Mobile
+  //   widget-fs deliberately uses the same sizing as mobile non-fs
+  //   per spec ("cells not less than non-fs"); widget-fs's win is the
+  //   recovered viewport (no app header), so more of each row is
+  //   visible at once without changing the cell size.
   const SAFETY_MIN_ROW_PX = 160;
-  const rowTemplate = isFitMode
+  const shouldShrinkToFit = isFitMode && media.gtMd;
+  const rowTemplate = shouldShrinkToFit
     ? `minmax(${SAFETY_MIN_ROW_PX}px, ${squareRowHeightPx}px)`
     : `${squareRowHeightPx}px`;
 

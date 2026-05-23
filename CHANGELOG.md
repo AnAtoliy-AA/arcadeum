@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.25] - 2026-05-23
+
+### Added
+- horizontal ship rows + vertical label in side strip (ARC-729) (ARC-729)
+- side ships-remaining in mobile landscape (ARC-729) (ARC-729)
+- cap mobile/tablet landscape grid at 2 cols (ARC-729) (ARC-729)
+- cap grid at 2 cols in fullscreen mode (ARC-729) (ARC-729)
+- adaptive board sizing + 2-col min in landscape (ARC-729) (ARC-729)
+
+### Fixed
+- only desktop widget-fs shrinks grid cells (ARC-729) (ARC-729)
+- prefer bigger cells with scroll outside fullscreen (ARC-729) (ARC-729)
+- CSS-only row fit so boards never overflow viewport (ARC-729) (ARC-729)
+- fit all boards in viewport without scroll (ARC-729) (ARC-729)
+- restore team pill in mobile-landscape name row (ARC-729) (ARC-729)
+- tighten section around board so border traces content (ARC-729) (ARC-729)
+- clamp row height to square-cell + chrome (ARC-729) (ARC-729)
+- stop board clip + top-row chrome hide on multi-row layouts (ARC-729) (ARC-729)
+- floor 2-col cap row at board+chrome so cells don't clip (ARC-729) (ARC-729)
+- mobile vertical cap + 200px floor, per requirements (ARC-729) (ARC-729)
+- pack 2-col cap rows to ~viewport so one pair fills the screen (ARC-729) (ARC-729)
+- move size container onto wrapper for reliable cqi/cqh (ARC-729) (ARC-729)
+- natural-height sections on mobile vertical (ARC-729) (ARC-729)
+- switch board sizing to container-query units (ARC-729) (ARC-729)
+- align row/col labels with board cells (ARC-729) (ARC-729)
+- measure remaining viewport height instead of guessing (ARC-729) (ARC-729)
+
+### Refactored
+- pure-CSS fit-grid sizing for boards (ARC-729) (ARC-729)
+
+
 ## [1.14.24] - 2026-05-22
 
 ### Fixed

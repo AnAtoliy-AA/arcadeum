@@ -192,7 +192,7 @@ export default function HomeHero() {
                   <Link
                     href={`${routes.gameCreate}?variant=${card.id}`}
                     className="hero-card-play-cta"
-                    data-testid={`hero-card-play-${index}`}
+                    data-testid={`hero-play-cta-${index}`}
                   >
                     {playLabel}
                   </Link>

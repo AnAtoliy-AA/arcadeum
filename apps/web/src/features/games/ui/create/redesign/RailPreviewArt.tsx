@@ -16,10 +16,15 @@ interface Props {
   themeId: string;
 }
 
+// Five-card fan: two outer ghosts, two inner ghosts, one centered featured
+// card. Order is rendered left→right so we can position them with a single
+// transform per slot below.
 const FEATURED_CRITICAL_CARDS: CriticalCard[] = [
-  'critical_event',
+  'evade',
   'neutralizer',
+  'critical_event',
   'strike',
+  'trade',
 ];
 
 // Render the preview-rail artwork using the actual game widgets so the user
@@ -27,6 +32,10 @@ const FEATURED_CRITICAL_CARDS: CriticalCard[] = [
 // board for the chosen palette. Glimworm falls back to the SVG poster.
 export function RailPreviewArt({ gameId, themeId }: Props) {
   if (gameId === 'sea_battle_v1') {
+    // Full Sea Battle board — cellSize tuned so the 10×10 grid plus row/col
+    // labels fits the rail without clipping the bottom row or the column
+    // letters. Anchored top-left so the A–J letters and 1–10 numbers sit
+    // flush against the corner instead of floating in dead space.
     return (
       <SeaBattleThemeProvider variant={themeId}>
         <div
@@ -34,8 +43,8 @@ export function RailPreviewArt({ gameId, themeId }: Props) {
             width: '100%',
             height: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
             padding: 12,
             boxSizing: 'border-box',
           }}
@@ -54,13 +63,11 @@ export function RailPreviewArt({ gameId, themeId }: Props) {
 }
 
 function CriticalCardCluster({ themeId }: { themeId: string }) {
-  // Three cards fanned out: a left ghost, a centered featured card, a right
-  // ghost. Reuses the real HandCard so each card shows the variant's actual
-  // sprite art (or the role fallback glyph when art is missing). The SVG
-  // poster shows while the sprite sheet is loading, then crossfades into the
-  // real cards once the image is ready.
+  // Five-card fan, all real `<HandCard>` so each card shows the variant's
+  // actual sprite art (or the role fallback glyph when art is missing). The
+  // SVG poster shows while the sprite sheet is loading, then crossfades into
+  // the real cards once the image is ready.
   const cards = useMemo(() => handWithUids(FEATURED_CRITICAL_CARDS), []);
-  const [leftCard, centerCard, rightCard] = cards;
   const theme = findCriticalTheme(themeId);
   const { url, isLoaded } = useSpriteLoaded(themeId);
   const showReal = !!url && isLoaded;
@@ -86,30 +93,28 @@ function CriticalCardCluster({ themeId }: { themeId: string }) {
           pointerEvents: showReal ? 'auto' : 'none',
         }}
       >
-        <RealCardCluster
-          leftCard={leftCard}
-          centerCard={centerCard}
-          rightCard={rightCard}
-          themeId={themeId}
-        />
+        <RealCardCluster cards={cards} themeId={themeId} />
       </div>
     </div>
   );
 }
 
 interface ClusterCardsProps {
-  leftCard: ReturnType<typeof handWithUids>[number];
-  centerCard: ReturnType<typeof handWithUids>[number];
-  rightCard: ReturnType<typeof handWithUids>[number];
+  cards: ReturnType<typeof handWithUids>;
   themeId: string;
 }
 
-function RealCardCluster({
-  leftCard,
-  centerCard,
-  rightCard,
-  themeId,
-}: ClusterCardsProps) {
+// Five-card fan, left→right. Outer two are dimmed/blurred ghosts, inner two
+// are partially dimmed, center card is the hero.
+const FAN_SLOTS = [
+  { x: -116, y: 18, rotate: -18, opacity: 0.45, scale: 0.78, z: 0 },
+  { x: -62, y: 6, rotate: -10, opacity: 0.7, scale: 0.86, z: 1 },
+  { x: 0, y: 0, rotate: -1, opacity: 1, scale: 0.95, z: 2 },
+  { x: 62, y: 6, rotate: 10, opacity: 0.7, scale: 0.86, z: 1 },
+  { x: 116, y: 18, rotate: 18, opacity: 0.45, scale: 0.78, z: 0 },
+] as const;
+
+function RealCardCluster({ cards, themeId }: ClusterCardsProps) {
   return (
     <div
       style={{
@@ -121,59 +126,32 @@ function RealCardCluster({
         justifyContent: 'center',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          transform: 'translateX(-72px) translateY(8px) rotate(-12deg)',
-          opacity: 0.55,
-          filter: 'blur(0.3px)',
-        }}
-      >
-        <HandCard
-          card={leftCard}
-          isSelected={false}
-          disabled
-          cardVariant={themeId}
-          showName={false}
-          showDescription={false}
-          onToggle={() => {}}
-        />
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          transform: 'translateX(72px) translateY(8px) rotate(12deg)',
-          opacity: 0.55,
-          filter: 'blur(0.3px)',
-        }}
-      >
-        <HandCard
-          card={rightCard}
-          isSelected={false}
-          disabled
-          cardVariant={themeId}
-          showName={false}
-          showDescription={false}
-          onToggle={() => {}}
-        />
-      </div>
-      <div
-        style={{
-          position: 'relative',
-          transform: 'rotate(-2deg)',
-          zIndex: 1,
-        }}
-      >
-        <HandCard
-          card={centerCard}
-          isSelected={false}
-          disabled
-          cardVariant={themeId}
-          showName
-          showDescription={false}
-          onToggle={() => {}}
-        />
-      </div>
+      {cards.map((card, i) => {
+        const slot = FAN_SLOTS[i] ?? FAN_SLOTS[0];
+        const isHero = i === 2;
+        return (
+          <div
+            key={card.uid}
+            style={{
+              position: 'absolute',
+              transform: `translate(${slot.x}px, ${slot.y}px) rotate(${slot.rotate}deg) scale(${slot.scale})`,
+              opacity: slot.opacity,
+              zIndex: slot.z,
+              filter: isHero ? undefined : 'blur(0.4px)',
+            }}
+          >
+            <HandCard
+              card={card}
+              isSelected={false}
+              disabled
+              cardVariant={themeId}
+              showName={isHero}
+              showDescription={false}
+              onToggle={() => {}}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -866,10 +866,13 @@
 }
 
 .railArt {
-  aspect-ratio: 5 / 4;
+  min-height: 380px;
   background: var(--gc-bg-card-2);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .railArt svg {
@@ -922,8 +925,9 @@
   flex-direction: column;
   justify-content: flex-end;
   padding: 18px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 28%);
   gap: 6px;
+  pointer-events: none;
 }
 
 .railArtTitle {

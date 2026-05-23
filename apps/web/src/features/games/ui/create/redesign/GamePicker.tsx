@@ -1,6 +1,17 @@
+'use client';
+
+import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
+import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
 import s from './GameCreateView.module.css';
 import { GameArt } from './art/GameArt';
-import { GAMES, VISIBLE_GAMES, type GameId } from './data/themes';
+import { CriticalMiniCluster } from './art/CriticalMiniCluster';
+import {
+  CRITICAL_THEMES,
+  SEA_BATTLE_THEMES,
+  GAMES,
+  VISIBLE_GAMES,
+  type GameId,
+} from './data/themes';
 
 interface GamePickerProps {
   value: GameId;
@@ -31,6 +42,7 @@ export function GamePicker({
         const meta = GAMES[gameId];
         const active = value === gameId;
         const blocked = comingSoon.get(gameId) ?? false;
+        const tileTheme = active ? themeId : undefined;
         return (
           <button
             key={gameId}
@@ -49,7 +61,7 @@ export function GamePicker({
               <span className={s.gameCardComingSoon}>{labels.comingSoon}</span>
             ) : null}
             <div className={s.gameCardArt}>
-              <GameArt gameId={gameId} themeId={active ? themeId : undefined} />
+              <GameTilePreview gameId={gameId} themeId={tileTheme} />
             </div>
             <div className={s.gameCardBody}>
               <div className={s.gameCardHeader}>
@@ -68,4 +80,41 @@ export function GamePicker({
       })}
     </div>
   );
+}
+
+// Real previews for each game tile in the "Select a game" section. Critical
+// shows the three-card fan via `<CriticalMiniCluster>`, Sea Battle renders a
+// scaled-down real board, and Glimworm keeps the SVG poster.
+function GameTilePreview({
+  gameId,
+  themeId,
+}: {
+  gameId: GameId;
+  themeId?: string;
+}) {
+  if (gameId === 'critical_v1') {
+    const resolved = themeId || CRITICAL_THEMES[0].id;
+    return <CriticalMiniCluster themeId={resolved} cardWidth={48} />;
+  }
+  if (gameId === 'sea_battle_v1') {
+    const resolved = themeId || SEA_BATTLE_THEMES[0].id;
+    return (
+      <SeaBattleThemeProvider variant={resolved}>
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 8,
+            boxSizing: 'border-box',
+          }}
+        >
+          <SeaBattleThemePreview selectedVariant={resolved} cellSize={11} />
+        </div>
+      </SeaBattleThemeProvider>
+    );
+  }
+  return <GameArt gameId={gameId} themeId={themeId} size="sm" />;
 }

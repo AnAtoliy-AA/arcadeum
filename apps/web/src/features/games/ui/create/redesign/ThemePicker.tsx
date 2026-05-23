@@ -3,10 +3,8 @@
 import type { CSSProperties } from 'react';
 import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
-import { CardImage } from '@/widgets/CriticalGame/ui/styles/card-image';
 import s from './GameCreateView.module.css';
-import { CriticalCardPoster } from './art/CriticalCardPoster';
-import { useSpriteLoaded } from './useSpriteLoaded';
+import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
@@ -111,63 +109,10 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
   return null;
 }
 
-// Render the SVG poster as a placeholder until the variant's sprite sheet
-// has loaded, then crossfade into the real Critical card art. Variants that
-// don't ship a sprite (e.g. cyberpunk, galaxy) stay on the poster.
+// Three-card fan. The SVG poster shows as a placeholder until the variant's
+// sprite sheet finishes loading, then crossfades into the real cards.
 function CriticalThumbnail({ theme }: { theme: CriticalTheme }) {
-  const { url, isLoaded } = useSpriteLoaded(theme.id);
-  const showRealCard = !!url && isLoaded;
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          opacity: showRealCard ? 0 : 1,
-          transition: 'opacity 0.25s ease',
-        }}
-      >
-        <CriticalCardPoster theme={theme} size="sm" />
-      </div>
-      {url ? (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: `radial-gradient(circle at 50% 40%, ${theme.color}33 0%, #0a0510 70%)`,
-            opacity: showRealCard ? 1 : 0,
-            transition: 'opacity 0.25s ease',
-          }}
-        >
-          <div
-            style={{
-              position: 'relative',
-              width: 78,
-              height: 108,
-              borderRadius: 8,
-              border: `1.4px solid ${theme.color}`,
-              overflow: 'hidden',
-              background: 'rgba(8, 12, 20, 0.8)',
-              boxShadow: `0 12px 32px -12px ${theme.color}66`,
-              transform: 'rotate(-3deg)',
-            }}
-          >
-            <CardImage variant={theme.id} cardType="critical_event" />
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
+  return <CriticalMiniCluster themeId={theme.id} cardWidth={54} />;
 }
 
 function SeaBattleThumbnail({ theme }: { theme: SeaBattleThemeMeta }) {

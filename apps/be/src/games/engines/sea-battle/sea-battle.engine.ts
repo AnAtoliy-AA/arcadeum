@@ -272,7 +272,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       if (target.shipsRemaining === 0) {
         target.alive = false;
         state.logs.push(
-          this.createLogEntry('system', 'A player has been eliminated!'),
+          this.createLogEntry('system', 'A player has been eliminated!', {
+            senderId: target.playerId,
+          }),
         );
         // In team mode, make sure the eliminated player isn't left as their
         // team's active shooter — otherwise their team's next turn deadlocks
@@ -413,7 +415,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     player.alive = false;
     newState.logs.push(
-      this.createLogEntry('system', 'A player has left the game'),
+      this.createLogEntry('system', 'A player has left the game', {
+        senderId: playerId,
+      }),
     );
 
     if (newState.teams) {

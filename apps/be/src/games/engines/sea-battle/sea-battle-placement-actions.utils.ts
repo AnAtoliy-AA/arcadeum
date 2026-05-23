@@ -113,7 +113,11 @@ export function runConfirmPlacement(
   player: SeaBattlePlayer,
 ): GameActionResult<SeaBattleState> {
   player.placementComplete = true;
-  state.logs.push(makeLog('system', 'A player has finished placing ships'));
+  state.logs.push(
+    makeLog('system', 'A player has finished placing ships', {
+      senderId: player.playerId,
+    }),
+  );
   const allReady = state.players.every((p) => p.placementComplete);
   if (allReady) {
     state.phase = GAME_PHASE.BATTLE;

@@ -157,8 +157,7 @@ export function GameChat({
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
   const theme = useTheme();
-  const inputColor =
-    (theme.color?.get?.() as string | undefined) ?? '#ecefee';
+  const inputColor = (theme.color?.get?.() as string | undefined) ?? '#ecefee';
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [draft, setDraft] = useState('');
@@ -354,34 +353,41 @@ export function GameChat({
                 />
               </Divider>
               {visibleLogs.map((log) => {
+                const senderName = log.senderId
+                  ? resolveDisplayName
+                    ? resolveDisplayName(
+                        log.senderId ?? undefined,
+                        log.senderName ?? undefined,
+                      )
+                    : (log.senderName ?? undefined)
+                  : undefined;
+                const senderColor = log.senderId
+                  ? (resolveActorColor?.(log.senderId) ??
+                    getPlayerColor(log.senderId))
+                  : undefined;
+                const targetId = log.targetId;
+                const targetName = targetId
+                  ? resolveDisplayName
+                    ? resolveDisplayName(targetId, undefined)
+                    : targetId
+                  : undefined;
+                const targetColor = targetId
+                  ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
+                  : undefined;
                 if (log.type === 'system' || log.type === 'action') {
                   return (
                     <GameChatSystemRow
                       key={log.id}
                       kind={inferSysKind(log)}
                       content={renderResultHighlights(log.message)}
+                      senderName={senderName}
+                      senderColor={senderColor}
+                      targetName={targetName}
+                      targetColor={targetColor}
                     />
                   );
                 }
                 const isOwn = !!currentUserId && log.senderId === currentUserId;
-                const senderName = resolveDisplayName
-                  ? resolveDisplayName(
-                      log.senderId ?? undefined,
-                      log.senderName ?? undefined,
-                    )
-                  : (log.senderName ?? undefined);
-                const senderColor = log.senderId
-                  ? (resolveActorColor?.(log.senderId) ??
-                    getPlayerColor(log.senderId))
-                  : undefined;
-                const targetId = log.targetId;
-                const targetName =
-                  targetId && resolveDisplayName
-                    ? resolveDisplayName(targetId, undefined)
-                    : (targetId ?? undefined);
-                const targetColor = targetId
-                  ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
-                  : undefined;
                 return (
                   <GameChatRow
                     key={log.id}

@@ -1,7 +1,7 @@
 'use client';
 
-import CreateGameRoomPage from '@/features/games/ui/create/CreateGameRoomPage';
+import { GameCreateView } from '@/features/games/ui/create/redesign/GameCreateView';
 
 export default function CreateGameRoomClient() {
-  return <CreateGameRoomPage />;
+  return <GameCreateView />;
 }

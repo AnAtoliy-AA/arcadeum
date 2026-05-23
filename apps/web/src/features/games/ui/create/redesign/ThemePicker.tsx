@@ -1,9 +1,10 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
+import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
 import s from './GameCreateView.module.css';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
-import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
@@ -114,10 +115,29 @@ function CriticalThumbnail({ theme }: { theme: CriticalTheme }) {
   return <CriticalMiniCluster themeId={theme.id} cardWidth={54} />;
 }
 
-// Use the SVG poster (which includes A–J / 1–10 labels) for thumbnails —
-// the real `<SeaBattleThemePreview>` carries ~80px of vertical gap overhead
-// from its `gap="$2"` row spacing that doesn't fit a 16:9 tile, causing the
-// top column letters and several rows to clip.
+// Render the real `<SeaBattleThemePreview>` (real per-theme palette, cell
+// border radius, ship/hit/miss colors). The board is taller than the 16:9
+// thumbnail can fit, so we anchor it to the top-left and let the bottom
+// rows clip — that keeps the A–J column letters and the row 1 cells (incl.
+// A1) flush against the corner.
 function SeaBattleThumbnail({ theme }: { theme: SeaBattleThemeMeta }) {
-  return <SeaBattleBoardPoster theme={theme} size="sm" />;
+  return (
+    <SeaBattleThemeProvider variant={theme.id}>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          background: theme.palette.bg,
+          padding: 6,
+          boxSizing: 'border-box',
+          overflow: 'hidden',
+        }}
+      >
+        <SeaBattleThemePreview selectedVariant={theme.id} cellSize={11} />
+      </div>
+    </SeaBattleThemeProvider>
+  );
 }

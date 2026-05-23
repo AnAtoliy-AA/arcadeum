@@ -884,7 +884,7 @@
 .railArtTag {
   position: absolute;
   top: 14px;
-  left: 14px;
+  right: 14px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -897,6 +897,7 @@
   backdrop-filter: blur(8px);
   padding: 6px 10px;
   border-radius: 999px;
+  z-index: 2;
 }
 
 .railArtDot {

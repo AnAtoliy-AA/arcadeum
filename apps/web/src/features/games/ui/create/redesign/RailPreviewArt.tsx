@@ -150,7 +150,7 @@ function RealCardCluster({ cards, themeId }: ClusterCardsProps) {
               isSelected={false}
               disabled
               cardVariant={themeId}
-              showName={isHero}
+              showName
               showDescription={false}
               onToggle={() => {}}
             />

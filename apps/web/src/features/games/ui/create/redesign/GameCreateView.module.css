@@ -1060,11 +1060,49 @@
 .fanCard:hover {
   transform: translate(var(--fan-x), calc(var(--fan-y) - 20px))
     rotate(var(--fan-rotate)) scale(calc(var(--fan-scale) * 1.05));
-  /* Stay slightly translucent on hover for a softer pop — full opacity
-     felt too jumpy when the outer dim ghosts were the target. */
-  opacity: 0.9;
+  /* Stay translucent on hover for a soft lift — full opacity felt jumpy
+     when the outer dim ghosts were the target. */
+  opacity: 0.82;
   z-index: 100;
   filter: none;
+}
+
+.fanCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 10px;
+  /* A bright diagonal stripe inside a wide background image. Sliding the
+     background-position is more reliable than transforming the ::after
+     itself — the gradient is always confined to the card bounds, so the
+     stripe naturally enters from one edge and exits the other without
+     needing overflow:hidden on the parent (which would clip the
+     HandCard's outer glow). */
+  background-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255, 209, 102, 0.3) 47%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 209, 102, 0.3) 53%,
+    transparent 62%,
+    transparent 100%
+  );
+  background-size: 260% 100%;
+  background-position: 200% 0;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition:
+    background-position 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.18s ease;
+}
+
+.fanCard:hover::after {
+  background-position: -100% 0;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1075,6 +1113,11 @@
   .fanCard:hover {
     transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
       scale(var(--fan-scale));
+  }
+  .fanCard::after,
+  .fanCard:hover::after {
+    background-image: none;
+    opacity: 0;
   }
 }
 

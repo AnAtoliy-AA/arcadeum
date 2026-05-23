@@ -1060,30 +1060,11 @@
 .fanCard:hover {
   transform: translate(var(--fan-x), calc(var(--fan-y) - 20px))
     rotate(var(--fan-rotate)) scale(calc(var(--fan-scale) * 1.05));
-  opacity: 1;
+  /* Stay slightly translucent on hover for a softer pop — full opacity
+     felt too jumpy when the outer dim ghosts were the target. */
+  opacity: 0.9;
   z-index: 100;
   filter: none;
-}
-
-.fanCard::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  border-radius: 10px;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.12) 50%,
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  transition: transform 1.6s ease;
-}
-
-.fanCard:hover::after {
-  transform: translateX(100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1094,11 +1075,6 @@
   .fanCard:hover {
     transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
       scale(var(--fan-scale));
-  }
-  .fanCard::after,
-  .fanCard:hover::after {
-    transform: none;
-    background: none;
   }
 }
 

@@ -1042,6 +1042,66 @@
   line-height: 1.4;
 }
 
+/* Preview-rail Critical card fan — hover lifts the focused card above its
+   neighbours with the same gesture as the home-hero card stack. */
+.fanCard {
+  position: absolute;
+  transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
+    scale(var(--fan-scale));
+  opacity: var(--fan-opacity, 1);
+  z-index: var(--fan-z, 1);
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.25s ease,
+    filter 0.25s ease;
+  filter: var(--fan-filter, none);
+}
+
+.fanCard:hover {
+  transform: translate(var(--fan-x), calc(var(--fan-y) - 20px))
+    rotate(var(--fan-rotate)) scale(calc(var(--fan-scale) * 1.05));
+  opacity: 1;
+  z-index: 100;
+  filter: none;
+}
+
+.fanCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 10px;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 1.6s ease;
+}
+
+.fanCard:hover::after {
+  transform: translateX(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fanCard,
+  .fanCard:hover {
+    transition: none;
+  }
+  .fanCard:hover {
+    transform: translate(var(--fan-x), var(--fan-y)) rotate(var(--fan-rotate))
+      scale(var(--fan-scale));
+  }
+  .fanCard::after,
+  .fanCard:hover::after {
+    transform: none;
+    background: none;
+  }
+}
+
 /* Fade-in stagger */
 .fade {
   animation: gcFade 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both;

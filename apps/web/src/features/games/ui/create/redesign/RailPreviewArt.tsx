@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
 import { HandCard } from '@/widgets/CriticalGame/ui/hand/HandCard';
 import { handWithUids } from '@/widgets/CriticalGame/lib/combo';
 import type { CriticalCard } from '@/widgets/CriticalGame/types';
+import s from './GameCreateView.module.css';
 import { GameArt } from './art/GameArt';
 import { CriticalCardPoster } from './art/CriticalCardPoster';
 import { findCriticalTheme, type GameId } from './data/themes';
@@ -129,17 +130,21 @@ function RealCardCluster({ cards, themeId }: ClusterCardsProps) {
       {cards.map((card, i) => {
         const slot = FAN_SLOTS[i] ?? FAN_SLOTS[0];
         const isHero = i === 2;
+        // Drive the per-card position/rotation through CSS variables so the
+        // `.fanCard:hover` rule in the module CSS can lift the hovered card
+        // (the same gesture as the home-hero card stack) without losing the
+        // card's resting rotation / scale.
+        const slotStyle: CSSProperties = {
+          ['--fan-x' as string]: `${slot.x}px`,
+          ['--fan-y' as string]: `${slot.y}px`,
+          ['--fan-rotate' as string]: `${slot.rotate}deg`,
+          ['--fan-scale' as string]: String(slot.scale),
+          ['--fan-opacity' as string]: String(slot.opacity),
+          ['--fan-z' as string]: String(slot.z),
+          ['--fan-filter' as string]: isHero ? 'none' : 'blur(0.4px)',
+        };
         return (
-          <div
-            key={card.uid}
-            style={{
-              position: 'absolute',
-              transform: `translate(${slot.x}px, ${slot.y}px) rotate(${slot.rotate}deg) scale(${slot.scale})`,
-              opacity: slot.opacity,
-              zIndex: slot.z,
-              filter: isHero ? undefined : 'blur(0.4px)',
-            }}
-          >
+          <div key={card.uid} className={s.fanCard} style={slotStyle}>
             <HandCard
               card={card}
               isSelected={false}

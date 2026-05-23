@@ -10,23 +10,32 @@ import {
 } from '@/shared/lib/useTranslation';
 import { SupportIcon } from '@/shared/ui';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 
-type ThemeColor = '$red10' | '$blue10' | '$purple10';
-const THEME_COLORS: ThemeColor[] = ['$red10', '$blue10', '$purple10'];
+const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
+
+type HeroCard = {
+  id: (typeof HERO_VARIANT_IDS)[number];
+  nameKey: string;
+  bgImage?: string;
+};
 
 export default function HomeHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useTranslation();
   const routes = useRoutes();
 
-  const heroCards = useMemo(
+  const heroCards = useMemo<HeroCard[]>(
     () =>
-      [...CARD_VARIANTS].slice(0, 3).map((v, i) => ({
-        name: v.name,
-        icon: v.emoji,
-        colorToken: THEME_COLORS[i % THEME_COLORS.length],
-      })),
+      HERO_VARIANT_IDS.map((id) => {
+        const v = CARD_VARIANTS.find((c) => c.id === id);
+        return {
+          id,
+          nameKey: v?.name ?? '',
+          bgImage: v?.bgImage,
+        };
+      }),
     [],
   );
 
@@ -51,6 +60,7 @@ export default function HomeHero() {
     `Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let ${appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const heroCardBrand = homeCopy.heroCardBrand ?? 'CRITICAL';
+  const playLabel = homeCopy.heroCardPlayCta ?? 'Play';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
 
   const primaryHref = routes.games;
@@ -136,6 +146,7 @@ export default function HomeHero() {
           >
             {heroCards.map((card, index) => {
               const isLast = index === heroCards.length - 1;
+              const isFront = isLast;
 
               // spread them out slightly more for better visibility of the "not covered" parts
               const x = (index - 1) * 65;
@@ -162,64 +173,29 @@ export default function HomeHero() {
                   }
                   data-testid={`hero-card-${index}`}
                 >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      zIndex: 0,
-                      pointerEvents: 'none',
-                      opacity: 0.6,
-                      backgroundColor: `var(--${card.colorToken.replace('$', '')})`,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'relative',
-                      zIndex: 1,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                    }}
-                  >
-                    <span style={{ color: 'white', fontWeight: 'bold' }}>
-                      {t(card.name as TranslationKey) || card.name}
-                    </span>
-                    <span>{card.icon}</span>
+                  {card.bgImage ? (
+                    <Image
+                      src={card.bgImage}
+                      alt=""
+                      fill
+                      priority={isFront}
+                      sizes="(max-width: 1150px) 60vw, 280px"
+                      className="hero-card-image"
+                    />
+                  ) : null}
+                  <div className="hero-card-scrim hero-card-scrim-top" />
+                  <div className="hero-card-scrim hero-card-scrim-bottom" />
+                  <div className="hero-card-name">
+                    {t(card.nameKey as TranslationKey) || card.nameKey}
                   </div>
-                  <div
-                    style={{
-                      position: 'relative',
-                      zIndex: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flex: 1,
-                    }}
+                  <div className="hero-card-brand">{heroCardBrand}</div>
+                  <Link
+                    href={`${routes.gameCreate}?variant=${card.id}`}
+                    className="hero-card-play-cta"
+                    data-testid={`hero-play-cta-${index}`}
                   >
-                    <span style={{ fontSize: '120px', lineHeight: '120px' }}>
-                      {card.icon}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      position: 'relative',
-                      zIndex: 1,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      width: '100%',
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: 'white',
-                        opacity: 0.7,
-                        fontWeight: 'bold',
-                        letterSpacing: '2px',
-                      }}
-                    >
-                      {heroCardBrand}
-                    </span>
-                  </div>
+                    {playLabel}
+                  </Link>
                 </div>
               );
             })}

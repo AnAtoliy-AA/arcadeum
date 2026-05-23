@@ -4,6 +4,7 @@ export const CARD_VARIANTS: {
   description: string;
   emoji: string;
   gradient: string;
+  bgImage?: string;
   disabled?: boolean;
 }[] = [
   {
@@ -54,6 +55,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.galaxy.description',
     emoji: '🌌',
     gradient: 'linear-gradient(135deg, #6b21a8 0%, #1e1b4b 100%)',
+    bgImage: '/images/variants/galaxy_bg.png',
   },
   {
     id: 'fantasy',
@@ -61,6 +63,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.fantasy.description',
     emoji: '🐉',
     gradient: 'linear-gradient(135deg, #065f46 0%, #d4af37 100%)',
+    bgImage: '/images/variants/fantasy_bg.png',
   },
   {
     id: 'western',
@@ -68,6 +71,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.western.description',
     emoji: '🤠',
     gradient: 'linear-gradient(135deg, #9a3412 0%, #fde68a 100%)',
+    bgImage: '/images/variants/western_bg.png',
   },
   {
     id: 'egypt',
@@ -75,6 +79,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.egypt.description',
     emoji: '🏺',
     gradient: 'linear-gradient(135deg, #b45309 0%, #1e3a8a 100%)',
+    bgImage: '/images/variants/egypt_bg.png',
   },
   {
     id: 'steampunk',
@@ -82,6 +87,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.steampunk.description',
     emoji: '⚙️',
     gradient: 'linear-gradient(135deg, #78350f 0%, #fef3c7 100%)',
+    bgImage: '/images/variants/steampunk_bg.png',
   },
   {
     id: 'zen',
@@ -89,6 +95,7 @@ export const CARD_VARIANTS: {
     description: 'games.critical_v1.variants.zen.description',
     emoji: '🏮',
     gradient: 'linear-gradient(135deg, #db2777 0%, #1e1b4b 100%)',
+    bgImage: '/images/variants/zen_bg.png',
   },
   {
     id: 'random',

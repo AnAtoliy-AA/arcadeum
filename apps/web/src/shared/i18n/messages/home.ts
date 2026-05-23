@@ -10,6 +10,7 @@ export const en = {
   playWithBotsLabel: 'Play with Bots',
   defaultRoomName: "{{name}}'s game",
   heroCardBrand: 'CRITICAL',
+  heroCardPlayCta: 'Play',
   supportCtaLabel: 'Support the developers',
   downloadsTitle: 'Install Arcadeum',
   pwaDescription:
@@ -17,7 +18,6 @@ export const en = {
   downloadsDescription: 'Grab the latest builds directly from the web app.',
   downloadsIosLabel: 'Download for iOS',
   downloadsAndroidLabel: 'Download for Android',
-  // Games section
   gamesTitle: 'Featured Games',
   gamesSubtitle: 'Explore our growing library of tabletop experiences',
   gamePlayButton: 'Play Now',
@@ -31,7 +31,6 @@ export const en = {
   showLess: 'Show Less',
   rulesTab: 'Rules',
   infoTab: 'Game Themes',
-
   // Features section
   featuresTitle: 'Why {{appName}}?',
   featuresSubtitle:
@@ -57,7 +56,6 @@ export const en = {
   featureTournamentsTitle: 'Tournaments',
   featureTournamentsDescription:
     'Compete in ranked events and prove your skills against the best players.',
-  // How it works section
   howItWorksTitle: 'How It Works',
   howItWorksSubtitle: 'Get started in three simple steps',
   stepCreateTitle: 'Create or Join a Room',
@@ -106,6 +104,7 @@ export const es = {
   playWithBotsLabel: 'Jugar con Bots',
   defaultRoomName: 'Partida de {{name}}',
   heroCardBrand: 'CRITICAL',
+  heroCardPlayCta: 'Jugar',
   supportCtaLabel: 'Apoyar a los desarrolladores',
   downloadsTitle: 'Instalar Arcadeum',
   pwaDescription:
@@ -205,6 +204,7 @@ export const fr = {
   playWithBotsLabel: 'Jouer avec des Bots',
   defaultRoomName: 'Partie de {{name}}',
   heroCardBrand: 'CRITICAL',
+  heroCardPlayCta: 'Jouer',
   supportCtaLabel: 'Soutenir les développeurs',
   downloadsTitle: 'Installer Arcadeum',
   pwaDescription:
@@ -305,6 +305,7 @@ export const ru = {
   playWithBotsLabel: 'Играть с ботами',
   defaultRoomName: 'Игра {{name}}',
   heroCardBrand: 'CRITICAL',
+  heroCardPlayCta: 'Играть',
   supportCtaLabel: 'Поддержать разработчиков',
   downloadsTitle: 'Установить Arcadeum',
   pwaDescription:
@@ -400,6 +401,7 @@ export const by = {
   playWithBotsLabel: 'Гуляць з ботамі',
   defaultRoomName: 'Гульня {{name}}',
   heroCardBrand: 'CRITICAL',
+  heroCardPlayCta: 'Гуляць',
   supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
   downloadsTitle: 'Усталяваць Arcadeum',
   pwaDescription:

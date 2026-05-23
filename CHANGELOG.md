@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.30] - 2026-05-23
+
+### Fixed
+- add missing $error theme tokens to silence Tamagui warning and stabilize SSR (ARC-737, ARC-738) (ARC-737
+ARC-738)
+- clear dist before nest start --watch to avoid stale module race (ARC-739) (ARC-739)
+
+
 ## [1.14.29] - 2026-05-23
 
 ### Added

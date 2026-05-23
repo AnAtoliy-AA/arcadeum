@@ -1,23 +1,23 @@
-/* Editorial layout tokens scoped to the games create redesign */
+/* Editorial layout tokens scoped to the games create redesign.
+   Colors resolve through Tamagui CSS variables (var(--background),
+   var(--color), var(--glassBg), …) so they follow the active theme. */
 .page {
-  --gc-ink: #0a0510;
-  --gc-bg-deep: #08050f;
-  --gc-bg-card: #0e0a18;
-  --gc-bg-card-2: #120c1f;
-  --gc-line: rgba(255, 255, 255, 0.06);
-  --gc-line-strong: rgba(255, 255, 255, 0.12);
-  --gc-text: #f5f3ff;
-  --gc-text-dim: #8a8499;
-  --gc-text-faint: #5a5468;
-  --gc-accent: #ffd166;
+  --gc-ink: var(--background);
+  --gc-bg-card: var(--glassBg, rgba(15, 17, 18, 0.8));
+  --gc-bg-card-2: var(--background);
+  --gc-line: var(--glassBorder, rgba(255, 255, 255, 0.08));
+  --gc-line-strong: var(--glassBorderHover, rgba(255, 255, 255, 0.16));
+  --gc-text: var(--color);
+  --gc-text-dim: var(--textSecondary, rgba(180, 180, 200, 0.7));
+  --gc-text-faint: rgba(127, 127, 145, 0.7);
+  --gc-accent: var(--goldAccent, #ffd166);
   --gc-accent-2: #ff9f4a;
   --gc-accent-violet: #b794ff;
   --gc-accent-cyan: #7dd3fc;
 
-  background: var(--gc-ink);
   color: var(--gc-text);
   min-height: 100vh;
-  padding: 32px 0 96px;
+  padding: 0 0 96px;
 }
 
 .container {
@@ -40,7 +40,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  margin: 24px 0 48px;
+  margin: 0 0 48px;
 }
 
 .head h1 {
@@ -465,11 +465,52 @@
   line-height: 1.45;
 }
 
-/* Theme picker */
-.themeGrid {
+/* Theme picker — horizontal scroll strip */
+.themeStripWrap {
+  position: relative;
+  margin: 0 -8px;
+}
+
+.themeStrip {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 240px);
   gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 8px 16px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gc-line-strong) transparent;
+}
+
+.themeStrip > * {
+  scroll-snap-align: start;
+}
+
+.themeStrip::-webkit-scrollbar {
+  height: 8px;
+}
+
+.themeStrip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.themeStrip::-webkit-scrollbar-thumb {
+  background: var(--gc-line-strong);
+  border-radius: 999px;
+}
+
+/* Subtle right-edge fade hint that more themes are off-screen. */
+.themeStripWrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 64px;
+  background: linear-gradient(to right, transparent, var(--gc-ink) 90%);
+  pointer-events: none;
 }
 
 .themeCard {

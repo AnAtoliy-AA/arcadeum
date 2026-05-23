@@ -1,5 +1,5 @@
 import s from './GameCreateView.module.css';
-import { GameArt } from './art/GameArt';
+import { RailPreviewArt } from './RailPreviewArt';
 import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';
 import type { CreateRoomForm } from './data/form';
 
@@ -111,7 +111,7 @@ export function PreviewRail({
       data-testid="preview-rail"
     >
       <div className={s.railArt}>
-        <GameArt gameId={form.gameId} themeId={form.themeId} size="lg" />
+        <RailPreviewArt gameId={form.gameId} themeId={form.themeId} />
         <div className={s.railArtTag}>
           <span className={s.railArtDot} aria-hidden="true" />
           {labels.livePreview}

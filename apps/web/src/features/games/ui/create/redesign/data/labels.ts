@@ -12,6 +12,10 @@ export function buildLabels(t: (k: TranslationKey) => string) {
   return {
     tr,
     upTo,
+    // Accessible/page heading — used as the H1's accessible name and the
+    // browser tab fallback. The visible editorial title below is intentionally
+    // softer.
+    heading: tr('games.create.title', 'Create Game Room'),
     eyebrow: tr('games.create.eyebrow', 'New room'),
     titleMain: tr('games.create.title2', 'A new table.'),
     titleAccent: tr('games.create.titleAccent', 'Set in seconds.'),

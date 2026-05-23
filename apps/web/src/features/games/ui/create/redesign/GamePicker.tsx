@@ -55,7 +55,7 @@ export function GamePicker({
             role="radio"
             aria-checked={active}
             disabled={blocked}
-            data-testid={`game-card-${gameId}`}
+            data-testid={`game-tile-${gameId}`}
             onClick={() => onChange(gameId)}
             className={`${s.gameCard} ${active ? s.gameCardActive : ''}`}
           >

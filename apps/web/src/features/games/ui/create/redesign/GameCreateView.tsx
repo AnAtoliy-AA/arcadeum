@@ -154,6 +154,18 @@ export function GameCreateView() {
     [router, searchParams, routes.games],
   );
 
+  // Sync the URL with the resolved default theme on mount so deep links
+  // like /games/create?gameId=critical_v1 (no variant) land on
+  // /games/create?gameId=critical_v1&variant=<default>. Keeps the
+  // browser address bar honest about what the form is rendering and lets
+  // existing e2e coverage assert `/variant=/` against the new layout.
+  useEffect(() => {
+    if (form.themeId && !searchParams?.get('variant')) {
+      updateUrl({ gameId: form.gameId, themeId: form.themeId });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function patchForm(
     patch: Partial<
       Pick<
@@ -305,7 +317,14 @@ export function GameCreateView() {
               <div>
                 <span className={s.eyebrow}>{L.eyebrow}</span>
                 <h1>
-                  {L.titleMain} <em>{L.titleAccent}</em>
+                  {/* Accessible name + heading text for assistive tech and
+                      e2e tests that target the page by its functional
+                      title. The editorial copy below is the visible
+                      headline. */}
+                  <span className={s.srOnly}>{L.heading}</span>
+                  <span aria-hidden="true">
+                    {L.titleMain} <em>{L.titleAccent}</em>
+                  </span>
                 </h1>
                 <p className={s.intro}>{L.intro}</p>
               </div>

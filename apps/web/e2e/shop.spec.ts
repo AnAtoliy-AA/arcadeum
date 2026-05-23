@@ -74,7 +74,9 @@ test.describe('Shop redesign · Showcase Locker', () => {
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
   });
 
-  test('renders user avatar container with a circular boundary', async ({ page }) => {
+  test('renders user avatar container with a circular boundary', async ({
+    page,
+  }) => {
     await navigateTo(page, '/leaderboards');
     const avatarContainer = page.locator('[class*="AvatarContainer"]').first();
     await expect(avatarContainer).toBeVisible();
@@ -100,16 +102,19 @@ test.describe('Shop redesign · Showcase Locker', () => {
     ];
 
     for (const item of items) {
-      const card = page.getByTestId(`shop-card-${item.id}`);
+      // Legendary items (panther, mythic) render in both row-legendary and
+      // their category row, so the testid is intentionally duplicated. Pin to
+      // .first() — same pattern used for shop-top-bar (line 19) and
+      // shop-action-panel (line 109).
+      const card = page.getByTestId(`shop-card-${item.id}`).first();
       await expect(card).toBeVisible();
 
       // Focusing card action button activates preview mode
-      const action = page.getByTestId(`shop-card-action-${item.id}`);
+      const action = page.getByTestId(`shop-card-action-${item.id}`).first();
       await action.focus();
-      await expect(page.getByTestId('shop-action-panel').first()).toHaveAttribute(
-        'data-mode',
-        'preview',
-      );
+      await expect(
+        page.getByTestId('shop-action-panel').first(),
+      ).toHaveAttribute('data-mode', 'preview');
 
       // Verify purchase confirmation dialog opens when clicking the action button
       await action.evaluate((el: HTMLElement) => el.click());
@@ -132,4 +137,3 @@ test.describe('Shop redesign · Showcase Locker', () => {
     }
   });
 });
-

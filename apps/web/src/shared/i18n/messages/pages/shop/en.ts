@@ -192,12 +192,19 @@ export const shopEn = {
       dragon01: { name: 'Dragon', desc: 'A fierce dragon.' },
       phoenix01: { name: 'Phoenix', desc: 'A rising phoenix.' },
       cosmic01: { name: 'Cosmic', desc: 'A cosmic legend.' },
+      wolf01: { name: 'Cyber Wolf', desc: 'A hyperrealistic cybernetic wolf.' },
+      panther01: {
+        name: 'Cyber Panther',
+        desc: 'A hyperrealistic cybernetic panther.',
+      },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },
       veteran: { name: 'Veteran', desc: 'A seasoned player.' },
       champion: { name: 'Champion', desc: 'A proven champion.' },
       legend: { name: 'Legend', desc: 'A legendary player.' },
+      elite: { name: 'Elite Shield', desc: 'A prestigious cybernetic shield.' },
+      mythic: { name: 'Mythic Star', desc: 'A celestial golden star emblem.' },
     },
     name_color: {
       default: { name: 'Default', desc: 'The starter name color.' },

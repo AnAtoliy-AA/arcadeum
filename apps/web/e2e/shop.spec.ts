@@ -74,7 +74,9 @@ test.describe('Shop redesign · Showcase Locker', () => {
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
   });
 
-  test('renders user avatar container with a circular boundary', async ({ page }) => {
+  test('renders user avatar container with a circular boundary', async ({
+    page,
+  }) => {
     await navigateTo(page, '/leaderboards');
     const avatarContainer = page.locator('[class*="AvatarContainer"]').first();
     await expect(avatarContainer).toBeVisible();
@@ -85,5 +87,53 @@ test.describe('Shop redesign · Showcase Locker', () => {
     // Should be rounded (e.g. '9999px' or similar, definitely not '0px')
     expect(borderRadius).not.toBe('0px');
     expect(borderRadius).not.toBe('');
+  });
+
+  test('renders and allows preview of new premium items (Cyber Wolf, Cyber Panther, Elite Shield, Mythic Star)', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/shop');
+
+    const items = [
+      { id: 'avatar-wolf-01', name: 'Cyber Wolf' },
+      { id: 'avatar-panther-01', name: 'Cyber Panther' },
+      { id: 'badge-elite', name: 'Elite Shield' },
+      { id: 'badge-mythic', name: 'Mythic Star' },
+    ];
+
+    for (const item of items) {
+      // Legendary items (panther, mythic) render in both row-legendary and
+      // their category row, so the testid is intentionally duplicated. Pin to
+      // .first() — same pattern used for shop-top-bar (line 19) and
+      // shop-action-panel (line 109).
+      const card = page.getByTestId(`shop-card-${item.id}`).first();
+      await expect(card).toBeVisible();
+
+      // Focusing card action button activates preview mode
+      const action = page.getByTestId(`shop-card-action-${item.id}`).first();
+      await action.focus();
+      await expect(
+        page.getByTestId('shop-action-panel').first(),
+      ).toHaveAttribute('data-mode', 'preview');
+
+      // Verify purchase confirmation dialog opens when clicking the action button
+      await action.evaluate((el: HTMLElement) => el.click());
+      const dialog = page.getByTestId('purchase-confirm-dialog');
+      await expect(dialog).toBeVisible();
+
+      // Dismiss by clicking the overlay (DialogShell closes when
+      // e.target === e.currentTarget on the overlay div)
+      await dialog.evaluate((el: HTMLElement) => {
+        const rect = el.getBoundingClientRect();
+        el.dispatchEvent(
+          new MouseEvent('click', {
+            bubbles: true,
+            clientX: rect.left + 4,
+            clientY: rect.top + 4,
+          }),
+        );
+      });
+      await expect(dialog).not.toBeVisible();
+    }
   });
 });

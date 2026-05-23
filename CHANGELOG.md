@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.26] - 2026-05-23
+
+### Added
+- in-game share menu via telegram/whatsapp/x/facebook (ARC-732) (ARC-732)
+
+
 ## [1.14.25] - 2026-05-23
 
 ### Added

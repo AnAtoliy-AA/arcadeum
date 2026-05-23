@@ -1,6 +1,7 @@
 import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
 import s from './GameCreateView.module.css';
 import { RailPreviewArt } from './RailPreviewArt';
+import { RulesAccess } from './RulesAccess';
 import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';
 import type { CreateRoomForm } from './data/form';
 
@@ -186,6 +187,9 @@ export function PreviewRail({
         <div className={s.railRow}>
           <span className={s.railRowLabel}>{labels.rules}</span>
           <span className={s.railRowValue}>{activeRules(form, labels)}</span>
+        </div>
+        <div className={s.railRulesRow}>
+          <RulesAccess gameId={form.gameId} themeId={form.themeId} />
         </div>
       </div>
 

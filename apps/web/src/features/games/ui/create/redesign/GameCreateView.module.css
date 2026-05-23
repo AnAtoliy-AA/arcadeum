@@ -969,6 +969,12 @@
   border-bottom: 0;
 }
 
+.railRulesRow {
+  padding: 12px 18px 4px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .railRowLabel {
   color: var(--gc-text-dim);
   font-size: 12px;

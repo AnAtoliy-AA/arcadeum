@@ -44,17 +44,25 @@ function GlimwormPoster({ size }: { size: 'sm' | 'lg' }) {
   const greenEnd = { x: 300 * sx, y: 90 * sy };
   const pinkEnd = { x: 300 * sx, y: 170 * sy };
 
+  // Deterministic star positions. `Math.sin` is implementation-defined and
+  // can produce different last-digit results between the Node V8 used for
+  // SSR and the Chrome V8 used at hydration — which surfaces as a React
+  // hydration mismatch on SVG `cx` / `opacity` attributes. Round to a fixed
+  // precision so the server and client always serialize to the same string.
   const stars = Array.from({ length: big ? 32 : 16 }).map((_, i) => {
-    const x = (Math.sin(i * 12.9898) * 43758.5453) % 1;
-    const y = (Math.sin(i * 78.233) * 43758.5453) % 1;
+    const rawX = Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1);
+    const rawY = Math.abs((Math.sin(i * 78.233) * 43758.5453) % 1);
+    const cx = Math.round(rawX * w * 100) / 100;
+    const cy = Math.round(rawY * h * 100) / 100;
+    const opacity = Math.round((0.25 + rawX * 0.5) * 1000) / 1000;
     return (
       <circle
         key={i}
-        cx={Math.abs(x) * w}
-        cy={Math.abs(y) * h}
+        cx={cx}
+        cy={cy}
         r={big ? 0.8 : 0.5}
         fill="#fff"
-        opacity={0.25 + Math.abs(x) * 0.5}
+        opacity={opacity}
       />
     );
   });

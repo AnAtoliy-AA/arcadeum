@@ -143,6 +143,7 @@ export default function HomeHero() {
           >
             {heroCards.map((card, index) => {
               const isLast = index === heroCards.length - 1;
+              const isFront = isLast;
 
               // spread them out slightly more for better visibility of the "not covered" parts
               const x = (index - 1) * 65;
@@ -174,7 +175,7 @@ export default function HomeHero() {
                       src={card.bgImage}
                       alt=""
                       fill
-                      priority={isLast}
+                      priority={isFront}
                       sizes="(max-width: 1150px) 60vw, 280px"
                       className="hero-card-image"
                     />

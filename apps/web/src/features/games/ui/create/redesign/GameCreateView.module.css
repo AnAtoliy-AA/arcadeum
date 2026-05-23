@@ -989,40 +989,6 @@
   gap: 8px;
 }
 
-.createBtn {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  background: linear-gradient(
-    135deg,
-    var(--gc-accent) 0%,
-    var(--gc-accent-2) 100%
-  );
-  color: var(--gc-ink);
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 20px;
-  cursor: pointer;
-  width: 100%;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
-  box-shadow: 0 12px 32px -12px rgba(255, 159, 74, 0.55);
-}
-
-.createBtn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px -12px rgba(255, 159, 74, 0.65);
-}
-
-.createBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
 .createCaption {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;

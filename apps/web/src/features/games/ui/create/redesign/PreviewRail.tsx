@@ -1,3 +1,4 @@
+import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
 import s from './GameCreateView.module.css';
 import { RailPreviewArt } from './RailPreviewArt';
 import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';
@@ -191,19 +192,15 @@ export function PreviewRail({
       {error ? <div className={s.errorBox}>{error}</div> : null}
 
       <div className={s.railCta}>
-        <button
+        <CreateRoomButton
           type="button"
-          className={s.createBtn}
           disabled={!isValid || loading || blocked}
           onClick={onSubmit}
+          fullWidth
           data-testid="create-room-button"
         >
-          {blocked
-            ? cta.comingSoon
-            : loading
-              ? cta.creating
-              : `→ ${cta.create}`}
-        </button>
+          {blocked ? cta.comingSoon : loading ? cta.creating : cta.create}
+        </CreateRoomButton>
         <p className={s.createCaption}>{cta.shortcut}</p>
       </div>
     </aside>

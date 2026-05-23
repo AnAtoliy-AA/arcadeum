@@ -48,10 +48,7 @@ export class GameRoomsService {
     userId: string,
     dto: CreateGameRoomDto,
   ): Promise<GameRoomSummary> {
-    const inviteCode =
-      dto.visibility === 'private'
-        ? await this.generateInviteCode()
-        : undefined;
+    const inviteCode = await this.generateInviteCode();
 
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,

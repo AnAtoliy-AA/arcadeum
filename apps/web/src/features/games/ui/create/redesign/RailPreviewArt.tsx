@@ -60,7 +60,12 @@ function SeaBattleRail({ themeId }: { themeId: string }) {
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <SeaBattleBoardPoster theme={resolved} size="lg" />
       <div style={{ position: 'absolute', inset: 0 }}>
-        <SeaBattleRealPreview themeId={themeId} cellSize={22} padding={12} />
+        <SeaBattleRealPreview
+          themeId={themeId}
+          cellSize={22}
+          padding={12}
+          background={resolved.palette.bg}
+        />
       </div>
     </div>
   );

@@ -68,8 +68,6 @@ export default function HomeGames() {
 
   const closeDetails = () => setDetails((prev) => ({ ...prev, gameId: null }));
 
-  const showPager = featuredGames.length > 3;
-
   return (
     <section id="games" ref={sectionRef} className="games-section-main">
       <div
@@ -87,25 +85,23 @@ export default function HomeGames() {
           </p>
         </div>
 
-        {showPager ? (
-          <nav
-            className="featured-header-pager-main"
-            aria-label={homeCopy.gamesPagerLabel ?? 'Featured games carousel'}
-          >
-            <PagerButton
-              direction="left"
-              enabled={canScrollLeft}
-              onClick={() => scrollBy('left')}
-              label={homeCopy.gamesPagerPrev ?? 'Previous game'}
-            />
-            <PagerButton
-              direction="right"
-              enabled={canScrollRight}
-              onClick={() => scrollBy('right')}
-              label={homeCopy.gamesPagerNext ?? 'Next game'}
-            />
-          </nav>
-        ) : null}
+        <nav
+          className="featured-header-pager-main"
+          aria-label={homeCopy.gamesPagerLabel ?? 'Featured games carousel'}
+        >
+          <PagerButton
+            direction="left"
+            enabled={canScrollLeft}
+            onClick={() => scrollBy('left')}
+            label={homeCopy.gamesPagerPrev ?? 'Previous game'}
+          />
+          <PagerButton
+            direction="right"
+            enabled={canScrollRight}
+            onClick={() => scrollBy('right')}
+            label={homeCopy.gamesPagerNext ?? 'Next game'}
+          />
+        </nav>
       </div>
 
       <div className="slider-container-main" data-reveal data-reveal-delay="2">

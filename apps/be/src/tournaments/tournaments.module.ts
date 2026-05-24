@@ -9,6 +9,8 @@ import { TournamentsService } from './tournaments.service';
 import { AdminTournamentsController } from './admin-tournaments.controller';
 import { PublicTournamentsController } from './public-tournaments.controller';
 import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { TournamentsNotificationCron } from './tournaments.notification.cron';
 
 @Module({
   imports: [
@@ -18,9 +20,15 @@ import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
       { name: Tournament.name, schema: TournamentSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    NotificationsModule,
   ],
   controllers: [AdminTournamentsController, PublicTournamentsController],
-  providers: [TournamentsService, RolesGuard, TournamentsBootstrap],
+  providers: [
+    TournamentsService,
+    RolesGuard,
+    TournamentsBootstrap,
+    TournamentsNotificationCron,
+  ],
   exports: [TournamentsService],
 })
 export class TournamentsModule {}

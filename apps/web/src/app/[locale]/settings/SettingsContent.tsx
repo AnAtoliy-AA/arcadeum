@@ -32,6 +32,7 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
+import { NotificationSettingsSection } from '@/features/notifications/NotificationSettingsSection';
 import { InstallAppCta } from '@/widgets/install-app';
 
 type DownloadConfig = {
@@ -301,6 +302,8 @@ export default function SettingsContent({
           </Section>
 
           <BlockedUsersSection />
+
+          <NotificationSettingsSection />
 
           <Section title={accountTitle} description={accountDescription}>
             <AccountStatus>

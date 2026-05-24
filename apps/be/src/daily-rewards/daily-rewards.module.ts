@@ -10,6 +10,8 @@ import {
 import { AuthModule } from '../auth/auth.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { DailyRewardsNotificationCron } from './daily-rewards.notification.cron';
 
 /**
  * DailyRewardsModule depends on:
@@ -30,9 +32,10 @@ import { EconomyModule } from '../economy/economy.module';
     forwardRef(() => AuthModule),
     forwardRef(() => WalletModule),
     EconomyModule,
+    NotificationsModule,
   ],
   controllers: [DailyRewardsController],
-  providers: [DailyRewardsService],
+  providers: [DailyRewardsService, DailyRewardsNotificationCron],
   exports: [DailyRewardsService],
 })
 export class DailyRewardsModule {}

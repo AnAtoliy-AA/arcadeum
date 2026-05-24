@@ -1,10 +1,13 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, FilterQuery } from 'mongoose';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   Announcement,
   AnnouncementDocument,
@@ -55,9 +58,13 @@ interface ListForAdminArgs {
 
 @Injectable()
 export class AnnouncementsService {
+  private readonly logger = new Logger(AnnouncementsService.name);
+
   constructor(
     @InjectModel(Announcement.name)
     private readonly model: Model<AnnouncementDocument>,
+    private readonly notificationDispatcher: NotificationDispatcher,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async listForAdmin(
@@ -123,16 +130,56 @@ export class AnnouncementsService {
     if (!Types.ObjectId.isValid(requesterUserId)) {
       throw new BadRequestException({ code: 'INVALID_USER_ID' });
     }
+    const audience = body.audience ?? 'all';
     const created = (await this.model.create({
       severity: body.severity,
       severityRank: SEVERITY_RANK[body.severity],
-      audience: body.audience ?? 'all',
+      audience,
       startsAt: body.startsAt ?? null,
       endsAt: body.endsAt ?? null,
       content: body.content,
       createdBy: new Types.ObjectId(requesterUserId),
     })) as { _id: Types.ObjectId };
-    return this.findById(created._id.toString());
+
+    const announcement = await this.findById(created._id.toString());
+    await this.maybeDispatchAnnouncementNotification(
+      created._id,
+      audience,
+      body,
+    );
+    return announcement;
+  }
+
+  private async maybeDispatchAnnouncementNotification(
+    announcementId: Types.ObjectId,
+    audience: AnnouncementAudience,
+    body: CreateAnnouncementDto,
+  ): Promise<void> {
+    if (audience === 'anonymous') return;
+    const startsAt = body.startsAt ?? null;
+    if (startsAt && startsAt.getTime() > Date.now()) return;
+    try {
+      const optedIn =
+        await this.notificationsService.listUserIdsWithCategoryEnabled(
+          'announcement_new',
+        );
+      if (optedIn.length === 0) return;
+      const title = body.content.en?.title ?? 'Announcement';
+      const excerpt = (body.content.en?.body ?? '').slice(0, 140);
+      await this.notificationDispatcher.dispatchMany(
+        optedIn.map((id) => id.toHexString()),
+        {
+          category: 'announcement_new',
+          titleKey: 'notifications.announcement_new.title',
+          bodyKey: 'notifications.announcement_new.body',
+          i18nParams: { title, excerpt },
+          url: `/announcements/${announcementId.toHexString()}`,
+          data: { announcementId: announcementId.toHexString() },
+        },
+      );
+    } catch (err) {
+      this.logger.warn(`announcement_new dispatch failed: ${String(err)}`);
+    }
   }
 
   async update(

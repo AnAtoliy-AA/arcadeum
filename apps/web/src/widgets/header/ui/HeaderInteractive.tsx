@@ -15,6 +15,7 @@ import {
 } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 
@@ -126,6 +127,12 @@ export function HeaderInteractive() {
                 className="header-language-switcher"
               />
             </HeaderMobileHidden>
+
+            {isAuthenticated && (
+              <HeaderMobileHidden>
+                <NotificationBell />
+              </HeaderMobileHidden>
+            )}
 
             {isAuthenticated && displayName && (
               <HeaderMobileHidden>

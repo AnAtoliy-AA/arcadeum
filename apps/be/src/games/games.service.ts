@@ -89,9 +89,10 @@ export class GamesService {
     return this.roomsService.getRoom(roomId, userId);
   }
 
-  /**
-   * Get room with session
-   */
+  async findRoomByInviteCode(code: string, viewerId?: string) {
+    return this.roomsService.findByInviteCode(code, viewerId);
+  }
+
   async getRoomSession(roomId: string, userId?: string) {
     const room = await this.roomsService.getRoom(roomId, userId);
     let session = await this.sessionsService.findSessionByRoom(roomId);

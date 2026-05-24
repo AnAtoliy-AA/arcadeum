@@ -171,6 +171,20 @@ export class GamesController {
   }
 
   @UseGuards(JwtOptionalAuthGuard)
+  @Get('rooms/by-code/:code')
+  async findRoomByInviteCode(
+    @Req() req: Request,
+    @Param('code') code: string,
+  ): Promise<{ room: Awaited<ReturnType<GamesService['getRoom']>> }> {
+    const user = req.user as AuthenticatedUser | undefined | null;
+    const room = await this.gamesService.findRoomByInviteCode(
+      code,
+      user?.userId,
+    );
+    return { room };
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('room-info')
   async getRoomInfoBody(
     @Req() req: Request,

@@ -109,9 +109,21 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Get a specific room by ID
-   */
+  // Bypasses canViewRoom so non-participants can discover a private room they
+  // were invited to. Joining still validates the code in joinRoom.
+  async findByInviteCode(
+    code: string,
+    viewerId?: string,
+  ): Promise<GameRoomSummary> {
+    const normalized = code.trim().toUpperCase();
+    if (!normalized) throw new NotFoundException('Room not found');
+    const room = await this.gameRoomModel
+      .findOne({ inviteCode: normalized })
+      .exec();
+    if (!room) throw new NotFoundException('Room not found');
+    return this.gameRoomsMapper.prepareRoomSummary(room, viewerId);
+  }
+
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
@@ -432,12 +444,6 @@ export class GameRoomsService {
     return false;
   }
 
-  /**
-   * Decline a rematch invitation
-   */
-  /**
-   * Decline a rematch invitation
-   */
   async declineRematchInvitation(
     roomId: string,
     userId: string,

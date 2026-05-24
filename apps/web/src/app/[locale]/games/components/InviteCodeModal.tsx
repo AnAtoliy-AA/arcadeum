@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   Modal,
   ModalContent,
@@ -15,6 +16,7 @@ import {
   FormGroup,
 } from '@/shared/ui';
 import { gamesApi } from '@/features/games/api';
+import { HttpStatus } from '@/shared/lib/http-status';
 
 interface InviteCodeModalProps {
   open: boolean;
@@ -25,34 +27,37 @@ export function InviteCodeModal({ open, onClose }: InviteCodeModalProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const routes = useRoutes();
+  const { snapshot } = useSessionTokens();
   const [code, setCode] = useState('');
 
   const { mutate, isLoading, error, reset } = useMutation({
     mutationFn: async (inviteCode: string) => {
-      // Search for room by invite code
-      const response = await gamesApi.getRooms({
-        search: inviteCode,
-        limit: 50,
-      });
-
-      // Find the exact room with this invite code
-      const room =
-        response.rooms.find((r) => r.inviteCode === inviteCode) ||
-        response.rooms[0];
-
-      if (!room) {
-        throw new Error(
-          t('games.inviteCode.errors.notFound') || 'Room not found',
-        );
+      const normalized = inviteCode.trim().toUpperCase();
+      try {
+        return await gamesApi.getRoomByCode(normalized, {
+          token: snapshot.accessToken || undefined,
+        });
+      } catch (err: unknown) {
+        const status =
+          err && typeof err === 'object'
+            ? ((err as { status?: number; statusCode?: number }).status ??
+              (err as { statusCode?: number }).statusCode)
+            : undefined;
+        if (status === HttpStatus.NOT_FOUND) {
+          throw new Error(
+            t('games.inviteCode.errors.notFound') || 'Room not found',
+          );
+        }
+        throw err;
       }
-
-      return room;
     },
-    onSuccess: (room, inviteCode) => {
+    onSuccess: (room) => {
       onClose();
       // Pass invite code in URL so GameRoomPage auto-joins without re-entering
       router.push(
-        `${routes.gameRoom(room.id)}?inviteCode=${encodeURIComponent(inviteCode)}`,
+        `${routes.gameRoom(room.id)}?inviteCode=${encodeURIComponent(
+          code.trim().toUpperCase(),
+        )}`,
       );
     },
   });

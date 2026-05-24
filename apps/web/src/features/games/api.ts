@@ -153,6 +153,18 @@ export const gamesApi = {
     }
   },
 
+  getRoomByCode: async (
+    code: string,
+    options?: ApiClientOptions,
+  ): Promise<GameRoomSummary> => {
+    const normalized = code.trim().toUpperCase();
+    const data = await apiClient.get<{ room: GameRoomSummary }>(
+      `/games/rooms/by-code/${encodeURIComponent(normalized)}`,
+      options,
+    );
+    return data.room;
+  },
+
   getRoomInfo: async (
     roomId: string,
     options?: ApiClientOptions,

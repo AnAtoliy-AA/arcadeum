@@ -13,6 +13,7 @@ export class Notification {
   userId!: Types.ObjectId;
 
   @Prop({
+    type: String,
     required: true,
     enum: NOTIFICATION_CATEGORIES as readonly string[],
   })
@@ -35,6 +36,9 @@ export class Notification {
 
   @Prop({ required: true, default: false })
   read!: boolean;
+
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export type NotificationDocument = Notification & Document;

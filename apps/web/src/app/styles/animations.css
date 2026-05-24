@@ -755,6 +755,300 @@
   transform: scale(0.95);
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   Featured Games — V2 Cover-led Card (ARC-747)
+   See docs/handoffs/FEATURED_GAMES_V2_COVER_LED_HANDOFF.md for the
+   visual reference. Class names use the `featured-card-*-main`
+   prefix to coexist with the legacy `.game-card-main` styles.
+   ───────────────────────────────────────────────────────────────── */
+
+.featured-card-main {
+  --game-accent: var(--primary);
+
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: var(--glassBg);
+  border: 1px solid var(--glassBorder);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 24px 40px -22px rgba(0, 0, 0, 0.7);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+  isolation: isolate;
+}
+
+.featured-card-main:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--game-accent) 30%, var(--glassBorder));
+}
+
+.featured-card-cover-main {
+  position: relative;
+  height: 200px;
+  flex-shrink: 0;
+  background: radial-gradient(
+      120% 80% at 30% 20%,
+      color-mix(in srgb, var(--game-accent) 35%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      80% 80% at 100% 100%,
+      color-mix(in srgb, var(--game-accent) 12%, transparent),
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.03) 0 2px,
+      transparent 2px 16px
+    ),
+    #08191a;
+}
+
+.featured-card-cover-main::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 60%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--glassBg) 90%, transparent)
+  );
+  pointer-events: none;
+}
+
+.featured-card-cover-link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  text-decoration: none;
+  color: inherit;
+  z-index: 1;
+}
+
+.featured-card-cover-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -4px;
+  border-radius: 16px;
+}
+
+.featured-card-symbol-main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -65%);
+  width: 108px;
+  height: 108px;
+  color: color-mix(in srgb, var(--game-accent) 82%, white 12%);
+  filter: drop-shadow(
+    0 6px 28px color-mix(in srgb, var(--game-accent) 30%, transparent)
+  );
+  pointer-events: none;
+}
+
+.featured-card-title-main {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+.featured-card-pill-main {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--game-accent) 80%, white);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid color-mix(in srgb, var(--game-accent) 35%, transparent);
+  border-radius: 999px;
+  padding: 4px 9px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.featured-card-pill-dot-main {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--game-accent);
+  box-shadow: 0 0 8px var(--game-accent);
+}
+
+.featured-card-demo-main {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0b0f12;
+  background: #fde68a;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.featured-card-coming-soon-main {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(20, 22, 28, 0.85);
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.featured-card-body-main {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.featured-card-desc-main {
+  margin: 0;
+  color: var(--color);
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.85;
+  min-height: 42px;
+}
+
+.featured-card-meta-main {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  color: var(--color);
+  opacity: 0.7;
+  font-size: 12.5px;
+}
+
+.featured-card-meta-main li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.featured-card-meta-main b {
+  color: var(--color);
+  opacity: 1;
+  font-weight: 500;
+}
+
+.featured-card-foot-main {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.featured-card-cta-main {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 10px;
+  /* Premium gold gradient — matches the legacy `.home-link-button-primary`
+     treatment users are accustomed to from the previous CTA. */
+  background-image: linear-gradient(160deg, #ffe866 0%, #ff9500 100%);
+  color: rgb(26, 26, 26);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.7);
+  transition:
+    filter 0.18s ease-out,
+    transform 0.18s ease-out,
+    box-shadow 0.18s ease-out;
+}
+
+.featured-card-cta-main:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 165, 0, 0.75);
+}
+
+.featured-card-cta-main:active {
+  transform: translateY(1px);
+}
+
+.featured-card-cta-main:focus-visible {
+  outline: 2px solid #ff9500;
+  outline-offset: 3px;
+}
+
+.featured-card-cta-main[aria-disabled='true'] {
+  background-image: none;
+  background-color: rgba(110, 113, 145, 0.5);
+  color: rgba(255, 255, 255, 0.6);
+  border-top-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.featured-card-info-main {
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glassBorder);
+  color: var(--color);
+  opacity: 0.65;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition:
+    color 0.15s ease-out,
+    opacity 0.15s ease-out;
+}
+
+.featured-card-info-main:hover {
+  opacity: 1;
+}
+
+.featured-card-info-main:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .featured-card-title-main {
+    font-size: 22px;
+  }
+}
+
 /* How It Works Section */
 .how-it-works-section-main {
   width: 100%;

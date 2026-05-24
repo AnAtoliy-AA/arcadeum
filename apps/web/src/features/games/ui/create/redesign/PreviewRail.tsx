@@ -188,9 +188,10 @@ export function PreviewRail({
           <span className={s.railRowLabel}>{labels.rules}</span>
           <span className={s.railRowValue}>{activeRules(form, labels)}</span>
         </div>
-        <div className={s.railRulesRow}>
-          <RulesAccess gameId={form.gameId} themeId={form.themeId} />
-        </div>
+      </div>
+
+      <div className={s.railRulesRow}>
+        <RulesAccess gameId={form.gameId} themeId={form.themeId} />
       </div>
 
       {error ? <div className={s.errorBox}>{error}</div> : null}

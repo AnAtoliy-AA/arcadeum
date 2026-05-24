@@ -144,7 +144,7 @@ Compound index `{ userId: 1, createdAt: -1 }`. TTL on `createdAt` (30 days) keep
 
 ## 5. Backend API surface
 
-All routes under `/notifications`, all behind `@UseGuards(JwtAuthGuard)` per CLAUDE.md.
+All routes under `/notifications` are behind `@UseGuards(JwtAuthGuard)` per CLAUDE.md, **except** `GET /notifications/vapid-public-key`, which is intentionally public — the SW needs it before the user is necessarily logged in.
 
 | Method   | Path                              | Body / Query                                        | Returns                  | Notes                                   |
 | -------- | --------------------------------- | --------------------------------------------------- | ------------------------ | --------------------------------------- |

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.35] - 2026-05-24
+
+### Added
+- rework featured games section with V2 cover-led card (ARC-747) (ARC-747)
+
+### Fixed
+- pin rules + create-room buttons in preview rail (ARC-747) (ARC-747)
+- keep slider arrows below cards (ARC-747) (ARC-747)
+- always render featured-games pager (ARC-747) (ARC-747)
+- prefix play CTA href with active locale (ARC-747) (ARC-747)
+
+
 ## [1.14.34] - 2026-05-24
 
 ### Added

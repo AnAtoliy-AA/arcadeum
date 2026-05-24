@@ -1,6 +1,10 @@
 import type { SVGProps } from 'react';
 
 export function CriticalSymbol(props: SVGProps<SVGSVGElement>) {
+  // Five cards fanned out from a shared pivot near the bottom of the
+  // viewBox, like a held hand. All cards share the same base rect; only
+  // the rotation angle and opacity differ. Drawing order is back-to-front
+  // (left → right), so the rightmost card sits on top.
   return (
     <svg
       viewBox="0 0 64 64"
@@ -11,34 +15,49 @@ export function CriticalSymbol(props: SVGProps<SVGSVGElement>) {
       strokeLinecap="round"
       {...props}
     >
-      {/* Back card — tilted left, partially hidden behind the others */}
       <rect
-        x="13"
-        y="14"
-        width="22"
-        height="34"
-        rx="3"
-        transform="rotate(-18 24 31)"
-        opacity="0.55"
+        x="24"
+        y="30"
+        width="16"
+        height="26"
+        rx="2.5"
+        transform="rotate(-28 32 56)"
+        opacity="0.45"
       />
-      {/* Middle card — sits behind the front card, gently tilted right */}
       <rect
-        x="21"
-        y="13"
-        width="22"
-        height="34"
-        rx="3"
-        transform="rotate(-2 32 30)"
-        opacity="0.8"
+        x="24"
+        y="30"
+        width="16"
+        height="26"
+        rx="2.5"
+        transform="rotate(-14 32 56)"
+        opacity="0.65"
       />
-      {/* Front card — frontmost of the fan */}
       <rect
-        x="29"
-        y="12"
-        width="22"
-        height="34"
-        rx="3"
-        transform="rotate(14 40 29)"
+        x="24"
+        y="30"
+        width="16"
+        height="26"
+        rx="2.5"
+        transform="rotate(0 32 56)"
+        opacity="0.85"
+      />
+      <rect
+        x="24"
+        y="30"
+        width="16"
+        height="26"
+        rx="2.5"
+        transform="rotate(14 32 56)"
+        opacity="0.95"
+      />
+      <rect
+        x="24"
+        y="30"
+        width="16"
+        height="26"
+        rx="2.5"
+        transform="rotate(28 32 56)"
       />
     </svg>
   );

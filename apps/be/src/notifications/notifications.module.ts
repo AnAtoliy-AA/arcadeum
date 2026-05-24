@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 import {
   Notification,
   NotificationSchema,
@@ -22,6 +25,13 @@ import { PushSender } from './push-sender';
 @Module({
   imports: [
     AuthModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: resolveJwtSecret(config),
+      }),
+    }),
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
       {

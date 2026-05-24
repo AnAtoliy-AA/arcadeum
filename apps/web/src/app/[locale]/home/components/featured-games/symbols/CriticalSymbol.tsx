@@ -7,26 +7,39 @@ export function CriticalSymbol(props: SVGProps<SVGSVGElement>) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
+      strokeLinejoin="round"
+      strokeLinecap="round"
       {...props}
     >
+      {/* Back card — tilted left, partially hidden behind the others */}
       <rect
-        x="14"
-        y="10"
-        width="28"
-        height="42"
-        rx="4"
-        transform="rotate(-8 28 31)"
+        x="13"
+        y="14"
+        width="22"
+        height="34"
+        rx="3"
+        transform="rotate(-18 24 31)"
+        opacity="0.55"
       />
+      {/* Middle card — sits behind the front card, gently tilted right */}
       <rect
-        x="22"
+        x="21"
+        y="13"
+        width="22"
+        height="34"
+        rx="3"
+        transform="rotate(-2 32 30)"
+        opacity="0.8"
+      />
+      {/* Front card — frontmost of the fan */}
+      <rect
+        x="29"
         y="12"
-        width="28"
-        height="42"
-        rx="4"
-        transform="rotate(6 36 33)"
+        width="22"
+        height="34"
+        rx="3"
+        transform="rotate(14 40 29)"
       />
-      <line x1="30" y1="22" x2="42" y2="34" />
-      <line x1="42" y1="22" x2="30" y2="34" />
     </svg>
   );
 }

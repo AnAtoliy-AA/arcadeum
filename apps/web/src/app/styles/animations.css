@@ -976,21 +976,28 @@
   gap: 8px;
   padding: 11px 16px;
   border-radius: 10px;
-  background-color: var(--primary);
-  color: #06141a;
-  font-weight: 700;
+  /* Premium gold gradient — matches the legacy `.home-link-button-primary`
+     treatment users are accustomed to from the previous CTA. */
+  background-image: linear-gradient(160deg, #ffe866 0%, #ff9500 100%);
+  color: rgb(26, 26, 26);
+  font-weight: 800;
   font-size: 14px;
   letter-spacing: 0.01em;
   border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.7);
   transition:
     filter 0.18s ease-out,
-    transform 0.18s ease-out;
+    transform 0.18s ease-out,
+    box-shadow 0.18s ease-out;
 }
 
 .featured-card-cta-main:hover {
   filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 165, 0, 0.75);
 }
 
 .featured-card-cta-main:active {
@@ -998,13 +1005,16 @@
 }
 
 .featured-card-cta-main:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid #ff9500;
   outline-offset: 3px;
 }
 
 .featured-card-cta-main[aria-disabled='true'] {
+  background-image: none;
   background-color: rgba(110, 113, 145, 0.5);
   color: rgba(255, 255, 255, 0.6);
+  border-top-color: transparent;
+  box-shadow: none;
   cursor: not-allowed;
   pointer-events: none;
 }

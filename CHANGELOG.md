@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.33] - 2026-05-24
+
+### Added
+- generate invite code for all rooms (ARC-745) (ARC-745)
+
+### Fixed
+- look up rooms by invite code without anon-host filter (ARC-745) (ARC-745)
+
+
 ## [1.14.32] - 2026-05-23
 
 ### Added

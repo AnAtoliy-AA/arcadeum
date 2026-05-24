@@ -3,8 +3,9 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useRoutes } from '@/shared/config/useRoutes';
+import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
+import type { Locale } from '@/shared/i18n';
 import type { FeaturedGame } from '../data/games';
 import { FALLBACK_ACCENT, GameSymbol } from './featured-games/gameMeta';
 
@@ -28,17 +29,28 @@ interface Props {
   comingSoon?: boolean;
 }
 
-function getCardLinkHref(game: FeaturedGame, routes: Routes): string {
-  return game.landingHref ?? routes.games;
+function resolveLandingHref(game: FeaturedGame, locale: Locale): string | null {
+  if (!game.landingHref) return null;
+  return `/${locale}${game.landingHref}`;
+}
+
+function getCardLinkHref(
+  game: FeaturedGame,
+  routes: Routes,
+  locale: Locale,
+): string {
+  return resolveLandingHref(game, locale) ?? routes.games;
 }
 
 function getPlayHref(
   game: FeaturedGame,
   routes: Routes,
+  locale: Locale,
   comingSoon: boolean,
 ): string {
   if (!game.isPlayable || comingSoon) return '#';
-  if (game.landingHref) return game.landingHref;
+  const landing = resolveLandingHref(game, locale);
+  if (landing) return landing;
   return `${routes.gameCreate}?gameId=${game.id}`;
 }
 
@@ -55,6 +67,7 @@ export function HomeGameCard({
 }: Props) {
   const { t } = useTranslation();
   const routes = useRoutes();
+  const locale = useLocale();
 
   const isDisabled = comingSoon || !game.isPlayable;
   const accent = game.accentColor ?? FALLBACK_ACCENT;
@@ -75,7 +88,7 @@ export function HomeGameCard({
     >
       <div className="featured-card-cover-main">
         <Link
-          href={getCardLinkHref(game, routes)}
+          href={getCardLinkHref(game, routes, locale)}
           data-testid={`game-title-link-${game.id}`}
           className="featured-card-cover-link"
           aria-label={t(game.nameKey)}
@@ -139,7 +152,7 @@ export function HomeGameCard({
 
         <div className="featured-card-foot-main">
           <Link
-            href={getPlayHref(game, routes, comingSoon)}
+            href={getPlayHref(game, routes, locale, comingSoon)}
             className="featured-card-cta-main"
             data-testid="game-play-button"
             aria-disabled={isDisabled ? 'true' : undefined}

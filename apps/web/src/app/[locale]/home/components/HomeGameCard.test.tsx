@@ -14,6 +14,7 @@ vi.mock('@/shared/config/useRoutes', () => ({
     games: '/en/games',
     gameCreate: '/en/games/create',
   }),
+  useLocale: () => 'en',
 }));
 
 // next/link renders a plain <a> in test environment
@@ -26,6 +27,7 @@ vi.mock('next/navigation', () => ({
 
 const criticalGame = featuredGames.find((g) => g.id === 'critical_v1')!;
 const glimwormGame = featuredGames.find((g) => g.id === 'glimworm_v1')!;
+const seaBattleGame = featuredGames.find((g) => g.id === 'sea_battle_v1')!;
 
 const baseProps = {
   game: criticalGame,
@@ -65,6 +67,22 @@ describe('HomeGameCard — comingSoon prop', () => {
     const badge = screen.getByTestId('home-game-coming-soon-badge');
     expect(badge).toBeInTheDocument();
     expect(badge.textContent).toMatch(/coming soon|games\.create\.comingSoon/i);
+  });
+
+  it('routes the sea battle play CTA to the locale-prefixed landing page', () => {
+    render(<HomeGameCard {...baseProps} game={seaBattleGame} />);
+
+    const playBtn = screen.getByTestId('game-play-button');
+    expect(playBtn.getAttribute('href')).toBe('/en/games/sea-battle');
+  });
+
+  it('routes the play CTA to game create when no landing href is set', () => {
+    render(<HomeGameCard {...baseProps} game={criticalGame} />);
+
+    const playBtn = screen.getByTestId('game-play-button');
+    expect(playBtn.getAttribute('href')).toBe(
+      '/en/games/create?gameId=critical_v1',
+    );
   });
 
   it('still disables when comingSoon=false but isPlayable=false', () => {

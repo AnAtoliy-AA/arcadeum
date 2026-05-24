@@ -1,7 +1,7 @@
 /**
  * Generates a VAPID keypair for Web Push. Run once per environment.
  *
- * Usage: pnpm --filter be exec tsx scripts/generate-vapid-keys.ts
+ * Usage: pnpm --filter be exec ts-node scripts/generate-vapid-keys.ts
  *
  * Copy the printed values into your .env (BE) and .env.local (web).
  */

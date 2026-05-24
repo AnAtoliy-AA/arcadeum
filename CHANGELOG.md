@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.34] - 2026-05-24
+
+### Added
+- notify subscribers of new public announcement (ARC-740) (ARC-740)
+- notify on starting soon + registration opened (ARC-740) (ARC-740)
+- notify users when streak window opens (ARC-740) (ARC-740)
+- add header bell + settings section UI (ARC-740) (ARC-740)
+- add Zustand store with permission + subscription flow (ARC-740) (ARC-740)
+- add typed web API client + types (ARC-740) (ARC-740)
+- add vanilla service worker for push events (ARC-740) (ARC-740)
+- add i18n bundle in en/ru/es/fr/by (ARC-740) (ARC-740)
+- wire NotificationsModule + enable scheduler (ARC-740) (ARC-740)
+- add REST controller for prefs, inbox, subscriptions (ARC-740) (ARC-740)
+- add dispatcher orchestrating inbox + socket + push (ARC-740) (ARC-740)
+- add BE-side i18n bundle + render helper (ARC-740) (ARC-740)
+- add socket gateway for live inbox updates (ARC-740) (ARC-740)
+- add inbox + preferences service (ARC-740) (ARC-740)
+- add push-sender with VAPID + gone-subscription cleanup (ARC-740) (ARC-740)
+- add Mongoose schemas for subscriptions, inbox, prefs (ARC-740) (ARC-740)
+- add notification category enum (ARC-740) (ARC-740)
+
+### Fixed
+- use ts-node instead of tsx for VAPID script (ARC-740) (ARC-740)
+
+### Documentation
+- add PWA notifications implementation plan (ARC-740) (ARC-740)
+- clarify vapid-public-key endpoint is public (ARC-740) (ARC-740)
+- add PWA notifications design spec (ARC-740) (ARC-740)
+
+
 ## [1.14.33] - 2026-05-24
 
 ### Added

@@ -68,16 +68,44 @@ export default function HomeGames() {
 
   const closeDetails = () => setDetails((prev) => ({ ...prev, gameId: null }));
 
+  const showPager = featuredGames.length > 3;
+
   return (
     <section id="games" ref={sectionRef} className="games-section-main">
-      <div className="section-header-main" data-reveal data-reveal-delay="1">
-        <h2 className="section-title-main">
-          {homeCopy.gamesTitle ?? 'Featured Games'}
-        </h2>
-        <p className="section-subtitle-main">
-          {homeCopy.gamesSubtitle ??
-            'Discover our collection of premium multiplayer games'}
-        </p>
+      <div
+        className="featured-section-header-main"
+        data-reveal
+        data-reveal-delay="1"
+      >
+        <div className="featured-section-heading-main">
+          <h2 className="section-title-main">
+            {homeCopy.gamesTitle ?? 'Featured Games'}
+          </h2>
+          <p className="section-subtitle-main">
+            {homeCopy.gamesSubtitle ??
+              'Discover our collection of premium multiplayer games'}
+          </p>
+        </div>
+
+        {showPager ? (
+          <nav
+            className="featured-header-pager-main"
+            aria-label={homeCopy.gamesPagerLabel ?? 'Featured games carousel'}
+          >
+            <PagerButton
+              direction="left"
+              enabled={canScrollLeft}
+              onClick={() => scrollBy('left')}
+              label={homeCopy.gamesPagerPrev ?? 'Previous game'}
+            />
+            <PagerButton
+              direction="right"
+              enabled={canScrollRight}
+              onClick={() => scrollBy('right')}
+              label={homeCopy.gamesPagerNext ?? 'Next game'}
+            />
+          </nav>
+        ) : null}
       </div>
 
       <div className="slider-container-main" data-reveal data-reveal-delay="2">
@@ -109,19 +137,6 @@ export default function HomeGames() {
             </div>
           ))}
         </div>
-
-        <div className="slider-controls-main">
-          <SliderArrow
-            direction="left"
-            enabled={canScrollLeft}
-            onClick={() => scrollBy('left')}
-          />
-          <SliderArrow
-            direction="right"
-            enabled={canScrollRight}
-            onClick={() => scrollBy('right')}
-          />
-        </div>
       </div>
 
       <HomeGameDetailsModal
@@ -134,36 +149,34 @@ export default function HomeGames() {
   );
 }
 
-interface SliderArrowProps {
+interface PagerButtonProps {
   direction: 'left' | 'right';
   enabled: boolean;
   onClick: () => void;
+  label: string;
 }
 
-function SliderArrow({ direction, enabled, onClick }: SliderArrowProps) {
+function PagerButton({ direction, enabled, onClick, label }: PagerButtonProps) {
   const isLeft = direction === 'left';
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={isLeft ? 'Previous game' : 'Next game'}
+      aria-label={label}
       data-testid={isLeft ? 'prev-game-button' : 'next-game-button'}
       disabled={!enabled}
-      className="slider-btn-main"
-      style={{
-        opacity: enabled ? 1 : 0.3,
-        pointerEvents: enabled ? 'auto' : 'none',
-      }}
+      className="featured-header-pager-btn-main"
     >
       <svg
-        width={24}
-        height={24}
+        width={16}
+        height={16}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden
       >
         <path d={isLeft ? 'M15 18l-6-6 6-6' : 'M9 5l6 6-6 6'} />
       </svg>

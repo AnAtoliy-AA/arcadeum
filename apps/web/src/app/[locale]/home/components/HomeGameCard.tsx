@@ -1,16 +1,24 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
 import type { FeaturedGame } from '../data/games';
+import { FALLBACK_ACCENT, GameSymbol } from './featured-games/gameMeta';
 
 interface HomeCopy {
   demoBadge?: string;
+  demoBadgeLabel?: string;
   showMore?: string;
   gamePlayButton?: string;
+  gameTryDemo?: string;
   gameComingSoon?: string;
+  gameHowToPlay?: string;
+  gameMetaPlayers?: string;
+  gameMetaMatch?: string;
+  gameMetaPlayingNow?: string;
 }
 
 interface Props {
@@ -34,6 +42,11 @@ function getPlayHref(
   return `${routes.gameCreate}?gameId=${game.id}`;
 }
 
+function formatPlayingNow(count: number): string {
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+  return String(count);
+}
+
 export function HomeGameCard({
   game,
   homeCopy,
@@ -44,151 +57,143 @@ export function HomeGameCard({
   const routes = useRoutes();
 
   const isDisabled = comingSoon || !game.isPlayable;
+  const accent = game.accentColor ?? FALLBACK_ACCENT;
 
-  const playLabel = !isDisabled
-    ? (homeCopy.gamePlayButton ?? 'Play Now')
-    : (homeCopy.gameComingSoon ?? 'Coming Soon');
+  const playLabel = comingSoon
+    ? (homeCopy.gameComingSoon ?? 'Coming Soon')
+    : game.isDemo
+      ? (homeCopy.gameTryDemo ?? 'Try demo')
+      : (homeCopy.gamePlayButton ?? 'Play now');
+
+  const accentVar = { '--game-accent': accent } as CSSProperties;
 
   return (
-    <div data-testid={`game-card-${game.id}`} className="game-card-main">
-      <div
-        className="game-card-overlay"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 0,
-          pointerEvents: 'none',
-          opacity: 0,
-          background: game.gradient ?? 'transparent',
-          transition: 'opacity 0.2s ease-out',
-        }}
-      />
-      <div
-        className="game-info-wrapper"
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--t-space-3)',
-          position: 'relative',
-          zIndex: 2,
-        }}
-      >
-        <div className="game-header-main">
-          <Link
-            href={getCardLinkHref(game, routes)}
-            data-testid={`game-title-link-${game.id}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 'var(--t-space-2)',
-              textDecoration: 'none',
-              color: 'inherit',
-            }}
-          >
-            <span className="game-icon-main">{game.emoji}</span>
-            <h3
-              data-testid={`game-title-${game.id}`}
-              className="game-title-main"
-              style={{
-                background: game.gradient,
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                margin: 0,
-              }}
-            >
-              {t(game.nameKey)}
-            </h3>
-          </Link>
+    <article
+      data-testid={`game-card-${game.id}`}
+      className="featured-card-main"
+      style={accentVar}
+    >
+      <div className="featured-card-cover-main">
+        <Link
+          href={getCardLinkHref(game, routes)}
+          data-testid={`game-title-link-${game.id}`}
+          className="featured-card-cover-link"
+          aria-label={t(game.nameKey)}
+        >
+          <span className="featured-card-pill-main">
+            <span className="featured-card-pill-dot-main" aria-hidden />
+            {game.genre} · {game.pace}
+          </span>
+
           {game.isDemo ? (
             <span
               data-testid={`game-demo-badge-${game.id}`}
-              style={{
-                padding: '3px 9px',
-                borderRadius: 999,
-                fontSize: 10,
-                fontWeight: 800,
-                letterSpacing: 1.2,
-                textTransform: 'uppercase',
-                color: '#fff',
-                background: 'linear-gradient(135deg, #ffb05e 0%, #ff5e9c 100%)',
-                boxShadow: '0 3px 10px rgba(255,94,156,0.4)',
-                border: '1px solid rgba(255,255,255,0.25)',
-                flexShrink: 0,
-                alignSelf: 'center',
-              }}
+              className="featured-card-demo-main"
+              aria-label={homeCopy.demoBadgeLabel ?? 'Demo build'}
             >
               {homeCopy.demoBadge ?? 'Demo'}
             </span>
           ) : null}
+
           {comingSoon ? (
             <span
               data-testid="home-game-coming-soon-badge"
-              style={{
-                padding: '3px 9px',
-                borderRadius: 999,
-                fontSize: 10,
-                fontWeight: 800,
-                letterSpacing: 1.2,
-                textTransform: 'uppercase',
-                color: '#fff',
-                background: 'linear-gradient(135deg, #6e7191 0%, #4a4e69 100%)',
-                boxShadow: '0 3px 10px rgba(74,78,105,0.4)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                flexShrink: 0,
-                alignSelf: 'center',
-              }}
+              className="featured-card-coming-soon-main"
             >
               {t('games.create.comingSoon') || 'Coming Soon'}
             </span>
           ) : null}
-          <button
-            type="button"
-            onClick={() => onOpenDetails(game.id)}
-            title={homeCopy.showMore ?? 'Show Details'}
-            aria-label={homeCopy.showMore ?? 'Show Details'}
-            data-testid="game-help-button"
-            className="game-help-btn-main"
+
+          <GameSymbol
+            gameId={game.id}
+            className="featured-card-symbol-main"
+            aria-hidden="true"
+          />
+
+          <h3
+            data-testid={`game-title-${game.id}`}
+            className="featured-card-title-main"
           >
-            <span
-              style={{
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: 'var(--color)',
-              }}
-            >
-              ?
-            </span>
-          </button>
-        </div>
+            {t(game.nameKey)}
+          </h3>
+        </Link>
+      </div>
 
-        <p className="game-description-main">{t(game.descriptionKey)}</p>
+      <div className="featured-card-body-main">
+        <p className="featured-card-desc-main">{t(game.descriptionKey)}</p>
 
-        <div className="game-tags-main">
-          {game.tags.map((tag) => (
-            <span key={tag} className="game-tag-main">
-              {tag}
-            </span>
-          ))}
-        </div>
+        <ul className="featured-card-meta-main">
+          <li>
+            <b>{game.players}</b> {homeCopy.gameMetaPlayers ?? 'players'}
+          </li>
+          <li>
+            <b>{game.duration}</b> {homeCopy.gameMetaMatch ?? 'match'}
+          </li>
+          {game.playingNow != null && (
+            <li>
+              <b>{formatPlayingNow(game.playingNow)}</b>{' '}
+              {homeCopy.gameMetaPlayingNow ?? 'playing now'}
+            </li>
+          )}
+        </ul>
 
-        <div className="game-card-footer-main">
+        <div className="featured-card-foot-main">
           <Link
             href={getPlayHref(game, routes, comingSoon)}
-            style={{ width: '100%' }}
-            className="home-link-button home-link-button-primary"
+            className="featured-card-cta-main"
             data-testid="game-play-button"
             aria-disabled={isDisabled ? 'true' : undefined}
             aria-label={`${playLabel} ${t(game.nameKey)}`}
           >
-            {playLabel}
+            <PlayTriangle aria-hidden />
+            <span>{playLabel}</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => onOpenDetails(game.id)}
+            title={homeCopy.showMore ?? 'Show Details'}
+            aria-label={homeCopy.gameHowToPlay ?? 'How to play'}
+            data-testid="game-help-button"
+            className="featured-card-info-main"
+          >
+            <InfoIcon aria-hidden />
+          </button>
         </div>
       </div>
-    </div>
+    </article>
+  );
+}
+
+function PlayTriangle() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <polygon points="6 4 20 12 6 20" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
   );
 }

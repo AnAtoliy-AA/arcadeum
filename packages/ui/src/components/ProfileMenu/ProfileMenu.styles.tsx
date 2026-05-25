@@ -43,7 +43,6 @@ export const ProfileDropdown = styled(YStack, {
   backdropFilter: 'blur(32px) saturate(160%)',
   boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
   transformOrigin: 'right top',
-  paddingVertical: '$4',
   transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
 
   variants: {
@@ -64,6 +63,19 @@ export const ProfileDropdown = styled(YStack, {
   } as const,
 });
 
+const ProfileDropdownScroll = styled(YStack, {
+  name: 'ProfileDropdownScroll',
+  paddingVertical: '$4',
+  maxHeight: 'calc(100dvh - 110px)',
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  // Subtle scrollbar so it doesn't fight the glass aesthetic
+  style: {
+    scrollbarWidth: 'thin',
+    scrollbarColor: 'rgba(255,255,255,0.15) transparent',
+  },
+});
+
 export const ProfileDropdownWrapper = ProfileDropdown.styleable(
   ({ isOpen, children, onPress, onClick, ...props }, ref) => {
     return (
@@ -73,7 +85,7 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
         {...props}
         onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
       >
-        {/* Top Glow Edge */}
+        {/* Top Glow Edge — outside scroll area so it stays pinned */}
         <YStack
           position="absolute"
           top={0}
@@ -83,8 +95,9 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
           pointerEvents="none"
           background="linear-gradient(90deg, transparent, var(--primary), transparent)"
           opacity={0.5}
+          zIndex={2}
         />
-        {/* Glass Highlight Shine */}
+        {/* Glass Highlight Shine — outside scroll area, covers visible bounds */}
         <YStack
           position="absolute"
           top={0}
@@ -94,7 +107,9 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
           pointerEvents="none"
           background="linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%)"
         />
-        {children}
+        <ProfileDropdownScroll data-testid="profile-dropdown-scroll">
+          {children}
+        </ProfileDropdownScroll>
       </ProfileDropdown>
     );
   },

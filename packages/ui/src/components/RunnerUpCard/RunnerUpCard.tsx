@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
 
 export type RunnerUpCardProps = {
@@ -9,6 +10,8 @@ export type RunnerUpCardProps = {
   region?: string;
   placeLabel?: string;
   testID?: string;
+  /** Optional avatar slot — designed for `<EquippedPlayerAvatar size="sm" />`. */
+  avatar?: ReactNode;
 };
 
 const MEDAL_BY_PLACE: Record<2 | 3, string> = { 2: '🥈', 3: '🥉' };
@@ -33,10 +36,12 @@ export function RunnerUpCard({
   region,
   placeLabel,
   testID,
+  avatar,
 }: RunnerUpCardProps) {
   return (
     <Card testID={testID ?? `runner-up-${place}`}>
       <XStack alignItems="center" gap="$2">
+        {avatar}
         <Text fontSize="$6">{MEDAL_BY_PLACE[place]}</Text>
         <Text
           fontSize="$1"

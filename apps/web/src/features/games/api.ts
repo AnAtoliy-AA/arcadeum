@@ -6,6 +6,21 @@ import type {
   GameSessionSummary,
 } from '@/shared/types/games';
 
+export interface CatalogVariant {
+  id: string;
+  comingSoon: boolean;
+}
+
+export interface CatalogGame {
+  gameId: string;
+  comingSoon: boolean;
+  variants: CatalogVariant[];
+}
+
+export interface CatalogResponse {
+  games: CatalogGame[];
+}
+
 interface GetRoomsParams {
   status?: string;
   participation?: string;
@@ -138,6 +153,18 @@ export const gamesApi = {
     }
   },
 
+  getRoomByCode: async (
+    code: string,
+    options?: ApiClientOptions,
+  ): Promise<GameRoomSummary> => {
+    const normalized = code.trim().toUpperCase();
+    const data = await apiClient.get<{ room: GameRoomSummary }>(
+      `/games/rooms/by-code/${encodeURIComponent(normalized)}`,
+      options,
+    );
+    return data.room;
+  },
+
   getRoomInfo: async (
     roomId: string,
     options?: ApiClientOptions,
@@ -179,6 +206,30 @@ export const gamesApi = {
     return apiClient.post<CreateRoomResponse>('/games/rooms', payload, options);
   },
 
+  quickplay: async (
+    gameId: string,
+    options?: ApiClientOptions & { variant?: string },
+  ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId, mode: 'ai', variant },
+      rest,
+    );
+  },
+
+  findHumanMatch: async (
+    gameId: string,
+    options?: ApiClientOptions & { variant?: string },
+  ): Promise<CreateRoomResponse> => {
+    const { variant, ...rest } = options ?? {};
+    return apiClient.post<CreateRoomResponse>(
+      '/games/quickplay',
+      { gameId, mode: 'human', variant },
+      rest,
+    );
+  },
+
   updateRoomOptions: async (
     roomId: string,
     optionsPayload: Record<string, unknown>,
@@ -196,5 +247,9 @@ export const gamesApi = {
     options?: ApiClientOptions,
   ): Promise<void> => {
     return apiClient.post<void>('/games/rooms/delete', { roomId }, options);
+  },
+
+  getCatalog: async (options?: ApiClientOptions): Promise<CatalogResponse> => {
+    return apiClient.get<CatalogResponse>('/games/catalog', options);
   },
 };

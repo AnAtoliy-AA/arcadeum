@@ -1,111 +1,197 @@
 'use client';
 
-import { useMemo } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button, YStack, XStack } from '@arcadeum/ui';
+import { useEffect, useMemo, useState } from 'react';
+import { XStack, YStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
-import { Text, YStack as Stack, styled } from 'tamagui';
-import { useShopFiltersStore } from '../store/shopFiltersStore';
-import { ShopSidebar, type ShopSidebarLabels } from './ShopSidebar';
-import { ShopGrid, type ShopGridLabels } from './ShopGrid';
-import { InventoryTab, type InventoryTabLabels } from './InventoryTab';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import { useShopPreviewStore } from '../store/shopPreviewStore';
+import { ShopTopBar, type ShopTopBarLabels } from './ShopTopBar';
+import { ShopHero, type ShopHeroLabels } from './ShopHero';
+import { ShopRow, type ShopRowLabels } from './ShopRow';
+import {
+  ShopMannequinRail,
+  type ShopMannequinLabels,
+} from './ShopMannequinRail';
+import {
+  PurchaseConfirmDialog,
+  type PurchaseConfirmLabels,
+} from './PurchaseConfirmDialog';
+import type { SellConfirmLabels } from './SellConfirmDialog';
+import {
+  ShopSignInBanner,
+  type ShopSignInBannerLabels,
+} from './ShopSignInBanner';
+import {
+  ShopCatalogEmpty,
+  type ShopCatalogEmptyLabels,
+} from './ShopCatalogEmpty';
+import type { ShopCardLabels } from './ShopCard';
 import type {
   EffectiveShopItem,
+  FeaturedDropView,
   InventoryView,
+  NextGemPackView,
   WalletBalanceView,
 } from '../server/shop.types';
 
-export interface ShopSignInLabels {
+// The page-level `hero` slice comes straight from i18n (`pages.shop.hero`)
+// and only carries the hero's own strings. The Equip/Unequip/Equipped strings
+// reuse the existing `card.*` keys (same affordance), so the full
+// `ShopHeroLabels` is composed below in ShopPageView, not declared here.
+type ShopPageHeroLabels = Omit<
+  ShopHeroLabels,
+  'equip' | 'unequip' | 'equipped'
+>;
+
+export interface ShopInventorySectionLabels {
   title: string;
-  body: string;
-  cta: string;
+  eyebrow: string;
+  empty: string;
 }
 
 export interface ShopPageLabels {
-  title: string;
-  subtitle: string;
-  equipped?: string;
-  signIn?: ShopSignInLabels;
-  sidebar: ShopSidebarLabels;
-  grid: ShopGridLabels;
-  inventory: InventoryTabLabels;
+  meta: { title: string; description: string };
+  topBar: ShopTopBarLabels;
+  signIn: ShopSignInBannerLabels;
+  hero: ShopPageHeroLabels;
+  mannequin: ShopMannequinLabels;
+  row: {
+    avatars: ShopRowLabels;
+    badges: ShopRowLabels;
+    colors: ShopRowLabels;
+    skins: ShopRowLabels;
+    banners: ShopRowLabels;
+    auras: ShopRowLabels;
+    frames: ShopRowLabels;
+    legendary: ShopRowLabels;
+  };
+  card: ShopCardLabels;
+  rarities: Record<string, string>;
+  inventory: ShopInventorySectionLabels;
+  purchase: PurchaseConfirmLabels;
+  sell: SellConfirmLabels;
+  empty: ShopCatalogEmptyLabels;
 }
 
 export interface ShopPageViewProps {
   catalog: EffectiveShopItem[];
   inventory: InventoryView;
   balance: WalletBalanceView;
+  nextGemPack: NextGemPackView | null;
+  featuredDrop: FeaturedDropView | null;
   gemToCoinRate: number;
   isAuthenticated?: boolean;
   labels: ShopPageLabels;
 }
 
-const BalanceChip = styled(Stack, {
-  name: 'ShopBalanceChip',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
-
-  variants: {
-    currency: {
-      coins: {
-        backgroundColor: 'rgba(251,191,36,0.08)',
-        borderColor: 'rgba(251,191,36,0.25)',
-      },
-      gems: {
-        backgroundColor: 'rgba(167,139,250,0.08)',
-        borderColor: 'rgba(167,139,250,0.25)',
-      },
-    },
-  } as const,
-});
-
-const SidebarPanel = styled(Stack, {
-  name: 'ShopSidebarPanel',
-  width: 240,
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.06)',
-  $sm: { width: '100%' },
-});
-
 export function ShopPageView({
   catalog,
   inventory,
   balance,
+  nextGemPack,
+  featuredDrop,
   gemToCoinRate,
   isAuthenticated = true,
   labels,
 }: ShopPageViewProps) {
-  const tab = useShopFiltersStore((s) => s.tab);
+  const { t } = useTranslation();
+  const [purchaseTarget, setPurchaseTarget] =
+    useState<EffectiveShopItem | null>(null);
+
+  // The preview store is module-level (Zustand singleton). Without an unmount
+  // reset, a user who hovers a card here, navigates to /profile, and comes
+  // back lands on a rail still previewing a stale item. Clear hover and
+  // active-slot on unmount so each shop visit starts from idle.
+  useEffect(() => {
+    return () => {
+      const store = useShopPreviewStore.getState();
+      store.setHover(null);
+      store.clearActiveSlot();
+    };
+  }, []);
 
   const liveCatalog = useMemo(
     () => catalog.filter((item) => item.available),
     [catalog],
   );
 
-  const catalogById = useMemo(
-    () => new Map(catalog.map((item) => [item.id, item])),
-    [catalog],
+  // Each category list intentionally still contains items that also appear
+  // in the Legendary row — Legendary is a curated cross-cut, not a dedup of
+  // categories. Don't fold these together.
+  const avatars = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'avatar'),
+    [liveCatalog],
   );
-  const equippedAvatar = inventory.equipped.avatar
-    ? (catalogById.get(inventory.equipped.avatar) ?? null)
-    : null;
-  const equippedBadge = inventory.equipped.badge
-    ? (catalogById.get(inventory.equipped.badge) ?? null)
-    : null;
-  const equippedNameColor = inventory.equipped.name_color
-    ? (catalogById.get(inventory.equipped.name_color) ?? null)
+  const badges = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'badge'),
+    [liveCatalog],
+  );
+  const nameColors = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'name_color'),
+    [liveCatalog],
+  );
+  const skins = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'game_skin'),
+    [liveCatalog],
+  );
+  const banners = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'banner'),
+    [liveCatalog],
+  );
+  const auras = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'aura'),
+    [liveCatalog],
+  );
+  const frames = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'frame'),
+    [liveCatalog],
+  );
+  const legendaries = useMemo(
+    () => liveCatalog.filter((c) => c.rarity === 'legendary'),
+    [liveCatalog],
+  );
+
+  // The previous build also rendered a "New drops · This week" row keyed on
+  // `rarity === 'epic' || 'legendary'`. That selector was a Legendary alias
+  // (same items shown twice) and the "this week" claim is impossible without
+  // a real createdAt on shop items. The BE catalog is hardcoded today, so
+  // the row is gone until BE surfaces a real timestamp or admin-curated drop
+  // flag. See PR-689 follow-ups doc §1a / §6c.
+
+  const featuredItem = featuredDrop
+    ? (catalog.find((c) => c.id === featuredDrop.itemId) ?? null)
     : null;
 
-  // Destructure to avoid the wallet-balance no-restricted-syntax guardrail.
-  const { coins, gems } = balance;
+  const featuredOwned = featuredItem
+    ? inventory.items.some(
+        (row) => row.itemId === featuredItem.id && row.soldAt === null,
+      )
+    : false;
+  const featuredEquipped =
+    featuredItem !== null &&
+    inventory.equipped[featuredItem.category] === featuredItem.id;
+
+  // The hero reuses card.equip / card.unequip / card.equipped to avoid
+  // adding parallel translation entries — same affordance, different layout.
+  const heroLabels = useMemo(
+    () => ({
+      ...labels.hero,
+      equip: labels.card.equip,
+      unequip: labels.card.unequip,
+      equipped: labels.card.equipped,
+    }),
+    [labels.hero, labels.card],
+  );
+
+  const purchaseName = purchaseTarget
+    ? String(t(`pages.shop.${purchaseTarget.nameKey}` as TranslationKey))
+    : '';
+  const purchaseDesc = purchaseTarget
+    ? String(t(`pages.shop.${purchaseTarget.descKey}` as TranslationKey))
+    : '';
 
   return (
     <PageLayout>
@@ -117,156 +203,151 @@ export function ShopPageView({
         gap="$5"
         width="100%"
       >
-        <XStack
-          justifyContent="space-between"
-          alignItems="flex-end"
-          flexWrap="wrap"
-          gap="$3"
-        >
-          <YStack gap="$1">
-            <Text fontSize="$10" fontWeight="800" letterSpacing={-0.5}>
-              {labels.title}
-            </Text>
-            <Text fontSize="$3" color="$gray11">
-              {labels.subtitle}
-            </Text>
-          </YStack>
-          <XStack gap="$2" alignItems="center">
-            {equippedAvatar || equippedBadge || equippedNameColor ? (
-              <Stack
-                flexDirection="row"
-                alignItems="center"
-                gap={6}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderRadius="$3"
-                borderWidth={1}
-                borderColor="rgba(16,185,129,0.35)"
-                backgroundColor="rgba(16,185,129,0.08)"
-                data-testid="shop-equipped-preview"
-              >
-                <Text fontSize="$1" letterSpacing={0.5} color="$green11">
-                  {(labels.equipped ?? 'Equipped').toUpperCase()}
-                </Text>
-                {equippedAvatar ? (
-                  <Image
-                    src={equippedAvatar.assetUrl}
-                    alt=""
-                    width={28}
-                    height={28}
-                    data-testid="shop-equipped-avatar"
-                    style={{ objectFit: 'contain' }}
-                    unoptimized
-                  />
-                ) : null}
-                {equippedBadge ? (
-                  <Image
-                    src={equippedBadge.assetUrl}
-                    alt=""
-                    width={24}
-                    height={24}
-                    data-testid="shop-equipped-badge"
-                    style={{ objectFit: 'contain' }}
-                    unoptimized
-                  />
-                ) : null}
-                {equippedNameColor?.colorValue ? (
-                  <Text
-                    fontSize="$3"
-                    fontWeight="800"
-                    data-testid="shop-equipped-name-color"
-                    {...(equippedNameColor.colorValue.startsWith(
-                      'linear-gradient',
-                    )
-                      ? {
-                          style: {
-                            backgroundImage: equippedNameColor.colorValue,
-                            WebkitBackgroundClip: 'text',
-                            backgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            color: 'transparent',
-                          },
-                        }
-                      : { color: equippedNameColor.colorValue })}
-                  >
-                    Aa
-                  </Text>
-                ) : null}
-              </Stack>
-            ) : null}
-            <BalanceChip currency="coins" data-testid="shop-balance-coins">
-              <Text fontSize={18}>🪙</Text>
-              <Text fontSize="$4" fontWeight="700" color="#fbbf24">
-                {coins.toLocaleString()}
-              </Text>
-            </BalanceChip>
-            <BalanceChip currency="gems" data-testid="shop-balance-gems">
-              <Text fontSize={18}>💎</Text>
-              <Text fontSize="$4" fontWeight="700" color="#a78bfa">
-                {gems.toLocaleString()}
-              </Text>
-            </BalanceChip>
-          </XStack>
-        </XStack>
+        <ShopTopBar balance={balance} labels={labels.topBar} />
 
-        {!isAuthenticated && labels.signIn ? (
-          <Stack
-            flexDirection="column"
-            gap={6}
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="rgba(96,165,250,0.35)"
-            backgroundColor="rgba(59,130,246,0.08)"
-            data-testid="shop-signin-banner"
-          >
-            <Text fontSize="$5" fontWeight="700">
-              {labels.signIn.title}
-            </Text>
-            <Text fontSize="$3" color="$gray11">
-              {labels.signIn.body}
-            </Text>
-            <XStack>
-              <Link href="/auth">
-                <Button variant="primary" data-testid="shop-signin-cta">
-                  {labels.signIn.cta}
-                </Button>
-              </Link>
-            </XStack>
-          </Stack>
+        {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
+
+        {liveCatalog.length === 0 ? (
+          <ShopCatalogEmpty labels={labels.empty} />
         ) : null}
 
         <XStack
-          gap="$4"
-          flexDirection="row"
-          $sm={{ flexDirection: 'column' }}
+          gap="$5"
+          width="100%"
           alignItems="flex-start"
+          $sm={{ flexDirection: 'column' }}
         >
-          <SidebarPanel>
-            <ShopSidebar labels={labels.sidebar} />
-          </SidebarPanel>
+          <ShopMannequinRail
+            catalog={catalog}
+            inventory={inventory}
+            balance={balance}
+            nextGemPack={nextGemPack}
+            gemToCoinRate={gemToCoinRate}
+            labels={labels.mannequin}
+            sellLabels={labels.sell}
+          />
 
-          <YStack $gtSm={{ flex: 1 }} width="100%">
-            {tab === 'browse' ? (
-              <ShopGrid
-                catalog={liveCatalog}
-                inventory={inventory.items}
-                equipped={inventory.equipped}
-                balance={balance}
-                labels={labels.grid}
+          <YStack flex={1} width="100%" gap="$5" minWidth={0}>
+            {featuredItem ? (
+              <ShopHero
+                item={featuredItem}
+                owned={featuredOwned}
+                equipped={featuredEquipped}
+                labels={heroLabels}
+                onBuyClick={(item) => setPurchaseTarget(item)}
               />
-            ) : (
-              <InventoryTab
-                catalog={liveCatalog}
-                inventory={inventory.items}
-                equipped={inventory.equipped}
-                balance={balance}
-                gemToCoinRate={gemToCoinRate}
-                labels={labels.inventory}
-              />
-            )}
+            ) : null}
+
+            <ShopRow
+              id="row-legendary"
+              items={legendaries}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              highlight
+              labels={labels.row.legendary}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={3}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-avatars"
+              sectionKey="avatar"
+              items={avatars}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.avatars}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-frames"
+              sectionKey="frame"
+              items={frames}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.frames}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-badges"
+              sectionKey="badge"
+              items={badges}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.badges}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-banners"
+              sectionKey="banner"
+              items={banners}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.banners}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-auras"
+              sectionKey="aura"
+              items={auras}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.auras}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-colors"
+              sectionKey="name_color"
+              items={nameColors}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              small
+              labels={labels.row.colors}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-skins"
+              sectionKey="game_skin"
+              items={skins}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.skins}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
           </YStack>
         </XStack>
+
+        <PurchaseConfirmDialog
+          item={purchaseTarget}
+          itemName={purchaseName}
+          itemDesc={purchaseDesc}
+          balance={balance}
+          open={purchaseTarget !== null}
+          onClose={() => setPurchaseTarget(null)}
+          onSuccess={() => setPurchaseTarget(null)}
+          labels={labels.purchase}
+        />
       </YStack>
     </PageLayout>
   );

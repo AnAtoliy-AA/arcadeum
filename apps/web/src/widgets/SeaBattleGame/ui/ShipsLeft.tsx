@@ -88,6 +88,7 @@ export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
               height={isMobile ? 10 : 14}
               position="relative"
               data-title={config.name}
+              data-size={config.size}
               data-sunk={isSunk.toString()}
             >
               {Array.from({ length: config.size }).map((_, i) => (

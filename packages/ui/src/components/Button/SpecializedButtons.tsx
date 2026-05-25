@@ -84,35 +84,60 @@ export const StartButton = ({
   children,
   testId,
   width = '100%',
+  className,
   ...props
-}: ButtonProps) => (
-  <Button
-    variant="primary"
-    size="lg"
-    $sm={{ $uiSize: 'md', borderRadius: 8 }}
-    $short={{ $uiSize: 'sm', borderRadius: 8 }}
-    width={width}
-    fontWeight="600"
-    borderRadius={12}
-    backgroundColor="#c7aa2f"
-    color="#1a1a2e"
-    shadowColor="rgba(199, 170, 47, 0.3)"
-    shadowRadius={16}
-    shadowOffset={{ width: 0, height: 4 }}
-    hoverStyle={{
-      y: -2,
-      shadowRadius: 24,
-      shadowColor: 'rgba(199, 170, 47, 0.4)',
+}: ButtonProps & { className?: string }) => (
+  // The pulse + shimmer live on a wrapper because Tamagui's styled
+  // components drop unknown classNames from the prop chain (verified
+  // in the rendered DOM — only Tamagui's atomic _bg-* / _pos-* etc.
+  // survive). Wrapping in a plain <div> keeps the animation styles
+  // outside Tamagui's prop system entirely, and the button itself
+  // stays a normal Tamagui Button.
+  <div
+    className={['start-button-glow', className].filter(Boolean).join(' ')}
+    style={{
+      display: 'inline-block',
+      borderRadius: 12,
+      width: width as string | number,
     }}
-    disabledStyle={{
-      opacity: 0.5,
-      shadowRadius: 16,
-    }}
-    data-testid={testId || props['data-testid']}
-    {...props}
   >
-    {children}
-  </Button>
+    <Button
+      variant="primary"
+      size="lg"
+      $sm={{ $uiSize: 'md', borderRadius: 8 }}
+      $short={{ $uiSize: 'sm', borderRadius: 8 }}
+      width="100%"
+      fontWeight="800"
+      fontSize={18}
+      letterSpacing={0.3}
+      borderRadius={12}
+      color="#1a1a1a"
+      // Match the home Play Now button: yellow-to-orange gradient,
+      // orange glow. Solid backgroundColor is the fallback for any
+      // Tamagui consumer that doesn't pick up `background`.
+      backgroundColor="#ff9500"
+      style={{
+        background: 'linear-gradient(160deg, #ffe866 0%, #ff9500 100%)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.35)',
+      }}
+      shadowColor="rgba(255, 165, 0, 0.7)"
+      shadowRadius={20}
+      shadowOffset={{ width: 0, height: 4 }}
+      hoverStyle={{
+        y: -2,
+        shadowRadius: 28,
+        shadowColor: 'rgba(255, 165, 0, 0.85)',
+      }}
+      disabledStyle={{
+        opacity: 0.5,
+        shadowRadius: 12,
+      }}
+      data-testid={testId || props['data-testid']}
+      {...props}
+    >
+      {children}
+    </Button>
+  </div>
 );
 
 export const IconButton = ({

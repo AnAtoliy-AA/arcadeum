@@ -35,6 +35,9 @@ interface LeanUser {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedBannerId?: string | null;
+  equippedAuraId?: string | null;
+  equippedFrameId?: string | null;
 }
 
 const STARTER_PURCHASE_PREFIX = 'starter';
@@ -70,6 +73,9 @@ export class InventoryService {
           equippedAvatarId: 1,
           equippedBadgeId: 1,
           equippedNameColorId: 1,
+          equippedBannerId: 1,
+          equippedAuraId: 1,
+          equippedFrameId: 1,
         })
         .lean<LeanUser>(),
     ]);
@@ -89,6 +95,17 @@ export class InventoryService {
       .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
       .lean();
     return row !== null;
+  }
+
+  async findLiveByItem(
+    userId: string,
+    itemId: string,
+    session?: ClientSession,
+  ): Promise<LeanInventoryRow | null> {
+    const userObjId = new Types.ObjectId(userId);
+    return this.inventoryModel
+      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .lean<LeanInventoryRow | null>();
   }
 
   async findByUserAndPurchaseId(
@@ -130,23 +147,18 @@ export class InventoryService {
       }
     }
 
-    // Set equip slots only if currently null. Use unconditional $set with a
-    // filter that targets only null/missing values so re-runs don't clobber a
-    // user's later equip choice.
-    const avatarStarter = starters.find((s) => s.category === 'avatar');
-    const badgeStarter = starters.find((s) => s.category === 'badge');
+    // Auto-equip every starter whose category has an equip slot. Filter on
+    // null/undefined so re-runs (bootstrap back-fill, multi-tab races) never
+    // clobber a slot the user has since equipped themselves. Iterating over
+    // starters + equipKeyFor keeps this honest as new equippable categories
+    // land — no need to remember to add another if-block here.
     const userObjId = new Types.ObjectId(userId);
-    if (avatarStarter) {
+    for (const starter of starters) {
+      const equipKey = equipKeyFor(starter.category);
+      if (!equipKey) continue;
       await this.userModel.updateOne(
-        { _id: userObjId, equippedAvatarId: { $in: [null, undefined] } },
-        { $set: { equippedAvatarId: avatarStarter.id } },
-        { session },
-      );
-    }
-    if (badgeStarter) {
-      await this.userModel.updateOne(
-        { _id: userObjId, equippedBadgeId: { $in: [null, undefined] } },
-        { $set: { equippedBadgeId: badgeStarter.id } },
+        { _id: userObjId, [equipKey]: { $in: [null, undefined] } },
+        { $set: { [equipKey]: starter.id } },
         { session },
       );
     }
@@ -185,6 +197,9 @@ export class InventoryService {
               equippedAvatarId: 1,
               equippedBadgeId: 1,
               equippedNameColorId: 1,
+              equippedBannerId: 1,
+              equippedAuraId: 1,
+              equippedFrameId: 1,
             },
           },
         )
@@ -241,6 +256,9 @@ export class InventoryService {
       badge: user?.equippedBadgeId ?? null,
       name_color: user?.equippedNameColorId ?? null,
       game_skin: null,
+      banner: user?.equippedBannerId ?? null,
+      aura: user?.equippedAuraId ?? null,
+      frame: user?.equippedFrameId ?? null,
     };
   }
 

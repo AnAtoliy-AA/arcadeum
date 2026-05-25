@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { convertGemsAction } from '../server/gems.actions';
 
 interface ConvertGemsFormProps {
@@ -11,6 +13,7 @@ interface ConvertGemsFormProps {
 
 export function ConvertGemsForm({ rate, currentGems }: ConvertGemsFormProps) {
   const router = useRouter();
+  const { locale } = useLanguage();
   const [gemsInput, setGemsInput] = useState('');
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -96,7 +99,7 @@ export function ConvertGemsForm({ rate, currentGems }: ConvertGemsFormProps) {
               marginBottom: '4px',
             }}
           >
-            Gems to convert (you have {currentGems.toLocaleString()})
+            Gems to convert (you have {formatNumber(currentGems, locale)})
           </label>
           <input
             id="gems-to-convert"
@@ -129,7 +132,7 @@ export function ConvertGemsForm({ rate, currentGems }: ConvertGemsFormProps) {
             style={{ fontSize: '14px', color: '#a78bfa' }}
           >
             You will receive:{' '}
-            <strong>{coinsPreview.toLocaleString()} coins</strong>
+            <strong>{formatNumber(coinsPreview, locale)} coins</strong>
           </div>
         )}
 

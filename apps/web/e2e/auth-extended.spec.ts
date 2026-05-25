@@ -75,7 +75,7 @@ test.describe('Auth Extended', () => {
 
     // 3. Verify session is cleared and redirected
     await Promise.all([
-      page.waitForURL(/\/(auth|login)?$/, {}),
+      page.waitForURL(/\/(en|es|fr|ru|by)(\/(auth|login))?\/?$/, {}),
       logoutBtn.click({ force: true }),
     ]);
   });

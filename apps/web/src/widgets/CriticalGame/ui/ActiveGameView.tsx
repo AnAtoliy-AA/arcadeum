@@ -21,13 +21,12 @@ import {
   useGameAutoplayIntegration,
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
-import { GameModals } from './GameModals';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameStatusMessage } from './GameStatusMessage';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { ActiveGameContent } from './ActiveGameContent';
 import { MatchWidget } from './MatchWidget';
 import { CriticalGameHeader } from './CriticalGameHeader';
-import { MobileActionSheet } from './MobileActionSheet';
+import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
@@ -110,6 +109,8 @@ export function ActiveGameView({
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
+
+  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
 
   // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
@@ -117,6 +118,7 @@ export function ActiveGameView({
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
   }
+
   const showResultModal = isGameOver && !modalDismissed;
   useWebGameHaptics(isMyTurn);
 
@@ -137,13 +139,13 @@ export function ActiveGameView({
     handleCloseEventComboModal,
     handleSelectComboCard,
     handleToggleFiverCard,
-    favorModal,
     handleOpenFavorModal,
     handleCloseFavorModal,
     handleConfirmFavor,
     targetedAttackModal,
     setTargetedAttackModal,
     seeTheFutureModal,
+    setSeeTheFutureModal,
     handleCloseSeeTheFutureModal,
     stashModal,
     handleCloseStashModal,
@@ -154,25 +156,25 @@ export function ActiveGameView({
     smiteModal,
     handleCloseSmiteModal,
     omniscienceModal,
+    setOmniscienceModal,
     handleCloseOmniscienceModal,
+    handleConfirmEventCombo,
+    favorModal,
   } = useCriticalModals({
     playFavor: actions.playFavor,
+    playEventCombo: actions.playEventCombo,
   });
 
   // Monitor logs for seeTheFuture.reveal and omniscience.reveal entries
   useSeeTheFutureFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setSeeTheFutureModal: (_val: unknown) => {
-      // Compatibility if needed, but useCriticalModals should handle it
-    },
+    setSeeTheFutureModal,
   });
   useOmniscienceFromLogs({
     logs: snapshot?.logs,
     currentUserId,
-    setOmniscienceModal: (_val: unknown) => {
-      // Compatibility
-    },
+    setOmniscienceModal,
   });
 
   const youLabel = t('games.table.players.you');
@@ -195,8 +197,6 @@ export function ActiveGameView({
     actions.postHistoryNote,
     resolveDisplayName,
   );
-  // (No registered actor-color resolver in Critical — GameChat falls back
-  // to the shared getPlayerColor(id), which is exactly what we want for FFA.)
 
   const gameHandlers = useGameHandlers({
     selectedMode,
@@ -221,7 +221,6 @@ export function ActiveGameView({
   });
 
   const {
-    handleConfirmEventCombo,
     handleOpenFiverCombo,
     handleConfirmStash,
     handleConfirmMark,
@@ -252,19 +251,6 @@ export function ActiveGameView({
     actions,
     handlePlayActionCard,
   });
-
-  const modalPlayers = useMemo(
-    () =>
-      snapshot.players.map((p: CriticalPlayerState) => ({
-        playerId: p.playerId,
-        displayName: resolveDisplayName(
-          p.playerId,
-          `Player ${p.playerId.slice(0, 8)}`,
-        ),
-        alive: p.alive,
-      })),
-    [snapshot.players, resolveDisplayName],
-  );
 
   const buildSharedProps = () => ({
     room,
@@ -299,8 +285,6 @@ export function ActiveGameView({
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
       <YStack flex={1} className="animate-entrance">
-        {/* Flag-off: legacy header sits above the match. Widget mode hoists */}
-        {/* Rules / Fullscreen into a small menu inside HandRail (ARC-636). */}
         {!widgetMode && (
           <CriticalGameHeader
             room={room}
@@ -324,8 +308,6 @@ export function ActiveGameView({
             toggleFullscreen={toggleFullscreen}
           />
         )}
-        {/* Flag-off: legacy top-of-page TurnBanner + MatchHud. In widget */}
-        {/* mode these move inside the Arena's center column (ARC-633). */}
         {!widgetMode && (
           <>
             <XStack justifyContent="center">
@@ -360,133 +342,67 @@ export function ActiveGameView({
           <ActiveGameContent {...buildSharedProps()} />
         )}
       </YStack>
-
       {currentPlayer && (
         <GameStatusMessage
           currentPlayerAlive={currentPlayer.alive}
           isGameOver={!!isGameOver}
           t={t as (key: string) => string}
         />
-      )}
-
-      <GameModals
-        // Rematch Modal
-        showRematchModal={rematch.showRematchModal}
-        players={modalPlayers}
+      )}{' '}
+      <ActiveGameModals
         currentUserId={currentUserId}
-        rematchLoading={rematch.rematchLoading}
-        onCloseRematchModal={rematch.closeRematchModal}
-        onConfirmRematch={rematch.handleRematch}
-        // Rematch Invitation
-        invitation={rematch.invitation}
-        invitationTimeLeft={rematch.invitationTimeLeft}
-        onAcceptInvitation={rematch.handleAcceptInvitation}
-        onDeclineInvitation={rematch.handleDeclineInvitation}
-        onBlockRematch={rematch.handleBlockRematch}
-        onBlockUser={rematch.handleBlockUser}
-        isAcceptingInvitation={rematch.isAcceptingInvitation}
-        // Event Combo Modal
-        eventComboModal={eventComboModal}
-        onCloseEventComboModal={handleCloseEventComboModal}
-        selectedMode={selectedMode}
-        selectedTarget={selectedTarget}
-        selectedCard={selectedCard}
-        selectedIndex={selectedIndex}
-        selectedDiscardCard={selectedDiscardCard}
-        selectedFiverCards={selectedFiverCards}
-        aliveOpponents={aliveOpponents}
-        selfHand={currentPlayer?.hand ?? []}
-        discardPile={snapshot?.discardPile ?? []}
-        onSelectComboCard={handleSelectComboCard}
-        onSelectMode={setSelectedMode}
-        onSelectTarget={setSelectedTarget}
-        onSelectCard={setSelectedCard}
-        onSelectIndex={setSelectedIndex}
-        onSelectDiscardCard={setSelectedDiscardCard}
-        onToggleFiverCard={handleToggleFiverCard}
-        onConfirmEventCombo={handleConfirmEventCombo}
-        // See the Future Modal
-        seeTheFutureModal={seeTheFutureModal}
-        onCloseSeeTheFutureModal={handleCloseSeeTheFutureModal}
-        // Alter the Future
-        pendingAlter={snapshot?.pendingAlter ?? null}
-        onConfirmAlterFuture={handleConfirmAlterFuture}
-        // Targeted Attack Modal
-        targetedAttackModal={targetedAttackModal}
-        onCloseTargetedAttackModal={handleCloseTargetedAttackModal}
-        onConfirmTargetedAttack={handleConfirmTargetedAttack}
-        // Favor Modal
-        favorModal={favorModal}
-        onCloseFavorModal={handleCloseFavorModal}
-        onConfirmFavor={handleConfirmFavor}
-        // Defuse Modal
-        pendingDefuse={snapshot?.pendingDefuse ?? null}
-        onPlayDefuse={actions.playDefuse}
-        deck={snapshot?.deck ?? []}
-        // Give Favor Modal
-        pendingFavor={snapshot?.pendingFavor ?? null}
-        myHand={currentPlayer?.hand ?? []}
-        onGiveFavorCard={actions.giveFavorCard}
-        // Shared
-        resolveDisplayName={resolveDisplayName}
-        t={t as (key: string, params?: Record<string, unknown>) => string}
-        cardVariant={cardVariant}
-        // Theft Pack
-        stashModal={stashModal}
-        onCloseStashModal={handleCloseStashModal}
-        onConfirmStash={handleConfirmStash}
-        markModal={markModal}
-        onCloseMarkModal={handleCloseMarkModal}
-        onConfirmMark={handleConfirmMark}
-        onCloseStealDrawModal={handleCloseStealDrawModal}
-        onConfirmStealDraw={handleConfirmStealDraw}
-        smiteModal={smiteModal}
-        onCloseSmiteModal={handleCloseSmiteModal}
-        onConfirmSmite={handleConfirmSmite}
-        // Omniscience Modal
-        omniscienceModal={omniscienceModal}
-        onCloseOmniscienceModal={handleCloseOmniscienceModal}
-        stealDrawModal={stealDrawModal}
+        snapshot={snapshot}
         isMobile={isMobile}
+        cardVariant={cardVariant}
+        aliveOpponents={aliveOpponents}
+        currentPlayer={currentPlayer}
+        actions={actions}
+        rematch={rematch}
+        modals={{
+          eventComboModal,
+          selectedMode,
+          selectedTarget,
+          selectedCard,
+          selectedIndex,
+          selectedDiscardCard,
+          selectedFiverCards,
+          seeTheFutureModal,
+          stashModal,
+          markModal,
+          stealDrawModal,
+          smiteModal,
+          omniscienceModal,
+          targetedAttackModal,
+          favorModal,
+        }}
+        handlers={{
+          handleCloseEventComboModal,
+          handleSelectComboCard,
+          setSelectedMode,
+          setSelectedTarget,
+          setSelectedCard,
+          setSelectedIndex,
+          setSelectedDiscardCard,
+          handleToggleFiverCard,
+          handleConfirmEventCombo,
+          handleCloseSeeTheFutureModal,
+          handleConfirmAlterFuture,
+          handleCloseTargetedAttackModal,
+          handleConfirmTargetedAttack,
+          handleCloseFavorModal,
+          handleConfirmFavor,
+          handleCloseStashModal,
+          handleConfirmStash,
+          handleCloseMarkModal,
+          handleConfirmMark,
+          handleCloseStealDrawModal,
+          handleConfirmStealDraw,
+          handleCloseSmiteModal,
+          handleConfirmSmite,
+          handleCloseOmniscienceModal,
+        }}
+        resolveDisplayName={resolveDisplayName}
       />
-
-      {/* Mobile-only target pickers; desktop falls through to GameModals */}
-      {isMobile && (
-        <MobileActionSheet
-          isOpen={targetedAttackModal}
-          title={t('games.table.mobile.attack.title')}
-          description={t('games.table.mobile.attack.description')}
-          opponents={aliveOpponents}
-          resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.table.mobile.play')}
-          cancelLabel={t('games.table.mobile.cancel')}
-          onConfirm={(targetId) => {
-            actions.playActionCard('targeted_strike', {
-              targetPlayerId: targetId,
-            });
-            handleCloseTargetedAttackModal();
-          }}
-          onCancel={handleCloseTargetedAttackModal}
-        />
-      )}
-
-      {isMobile && (
-        <MobileActionSheet
-          isOpen={favorModal}
-          title={t('games.table.mobile.favor.title')}
-          description={t('games.table.mobile.favor.description')}
-          opponents={aliveOpponents}
-          resolveDisplayName={resolveDisplayName}
-          confirmLabel={t('games.table.mobile.play')}
-          cancelLabel={t('games.table.mobile.cancel')}
-          onConfirm={(targetId) => {
-            actions.playFavor(targetId);
-            handleCloseFavorModal();
-          }}
-          onCancel={handleCloseFavorModal}
-        />
-      )}
-
       <GameResultModal
         isOpen={!!showResultModal}
         data-testid="game-result-modal"

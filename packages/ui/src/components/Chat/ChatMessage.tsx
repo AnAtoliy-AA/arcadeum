@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { XStack, YStack, styled, ThemeableStack, GetProps } from 'tamagui';
+import { XStack, YStack, styled, ThemeableStack, GetProps, View } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 import { Typography } from '../Typography/Typography';
 
@@ -22,9 +22,16 @@ export type ChatMessageProps = {
   targetColor?: string;
   timestamp?: string;
   isOwn?: boolean;
+  /** @deprecated pass `senderAvatar` instead. Kept for backward compat with
+   *  callers that pre-date the PlayerAvatar slot. */
   avatarUrl?: string;
-  /** Sender's equipped shop badge URL — rendered inline next to the name. */
+  /** Sender's equipped shop badge URL — rendered inline next to the name.
+   *  @deprecated pass `senderAvatar` instead. */
   badgeUrl?: string;
+  /** Rich avatar slot. When provided, replaces the legacy `<Avatar>` + badge
+   *  block in the sender row. Designed for an `<EquippedPlayerAvatar>` from
+   *  the web shared UI. */
+  senderAvatar?: React.ReactNode;
   isEncrypted?: boolean;
   type?: 'system' | 'action' | 'message';
 };
@@ -135,6 +142,7 @@ export const ChatMessage = memo(function ChatMessage({
   isOwn = false,
   avatarUrl,
   badgeUrl,
+  senderAvatar,
   isEncrypted,
   type = 'message',
 }: ChatMessageProps) {
@@ -148,7 +156,22 @@ export const ChatMessage = memo(function ChatMessage({
     >
       {!isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2">
-          <Avatar name={senderName} size="sm" src={avatarUrl} />
+          {senderAvatar ?? (
+            <>
+              <Avatar name={senderName} size="sm" src={avatarUrl} />
+              {badgeUrl ? (
+                <View width={16} height={16}>
+                  <img
+                    src={badgeUrl}
+                    alt=""
+                    width={16}
+                    height={16}
+                    style={{ objectFit: 'contain' }}
+                  />
+                </View>
+              ) : null}
+            </>
+          )}
           <Typography
             uiSize="xs"
             weight="600"
@@ -159,30 +182,10 @@ export const ChatMessage = memo(function ChatMessage({
           >
             {senderName}
           </Typography>
-          {badgeUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={badgeUrl}
-              alt=""
-              width={16}
-              height={16}
-              style={{ objectFit: 'contain' }}
-            />
-          ) : null}
         </XStack>
       )}
       {isOwn && !isSystem && senderName && (
         <XStack ai="center" gap="$2" mb="$1" px="$2" alignSelf="flex-end">
-          {badgeUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={badgeUrl}
-              alt=""
-              width={16}
-              height={16}
-              style={{ objectFit: 'contain' }}
-            />
-          ) : null}
           <Typography
             uiSize="xs"
             weight="600"
@@ -193,7 +196,22 @@ export const ChatMessage = memo(function ChatMessage({
           >
             {senderName}
           </Typography>
-          <Avatar name={senderName} size="sm" src={avatarUrl} />
+          {senderAvatar ?? (
+            <>
+              {badgeUrl ? (
+                <View width={16} height={16}>
+                  <img
+                    src={badgeUrl}
+                    alt=""
+                    width={16}
+                    height={16}
+                    style={{ objectFit: 'contain' }}
+                  />
+                </View>
+              ) : null}
+              <Avatar name={senderName} size="sm" src={avatarUrl} />
+            </>
+          )}
         </XStack>
       )}
       <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">

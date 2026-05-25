@@ -26,6 +26,9 @@ const defaultSnapshot: SessionTokensSnapshot = {
   equippedAvatarId: null,
   equippedBadgeId: null,
   equippedNameColorId: null,
+  equippedFrameId: null,
+  equippedAuraId: null,
+  equippedBannerId: null,
 };
 
 interface SessionState {
@@ -82,6 +85,18 @@ function buildSnapshot(
       input.equippedNameColorId === undefined
         ? (current.equippedNameColorId ?? null)
         : input.equippedNameColorId,
+    equippedFrameId:
+      input.equippedFrameId === undefined
+        ? (current.equippedFrameId ?? null)
+        : input.equippedFrameId,
+    equippedAuraId:
+      input.equippedAuraId === undefined
+        ? (current.equippedAuraId ?? null)
+        : input.equippedAuraId,
+    equippedBannerId:
+      input.equippedBannerId === undefined
+        ? (current.equippedBannerId ?? null)
+        : input.equippedBannerId,
   };
 }
 
@@ -114,6 +129,12 @@ function enrichWithResponse(
       response.user?.equippedNameColorId ??
       snapshot.equippedNameColorId ??
       null,
+    equippedFrameId:
+      response.user?.equippedFrameId ?? snapshot.equippedFrameId ?? null,
+    equippedAuraId:
+      response.user?.equippedAuraId ?? snapshot.equippedAuraId ?? null,
+    equippedBannerId:
+      response.user?.equippedBannerId ?? snapshot.equippedBannerId ?? null,
   });
 }
 

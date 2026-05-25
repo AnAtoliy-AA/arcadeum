@@ -32,6 +32,9 @@ export type LeaderboardPlayerDto = {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 };
 
 export type MythicPlayerDto = LeaderboardPlayerDto & {
@@ -99,6 +102,9 @@ export type PlayerProfileDto = {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 };
 
 export type LeaderboardSnapshotDto = {

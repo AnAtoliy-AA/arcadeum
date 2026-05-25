@@ -47,7 +47,7 @@ test.describe('Header and Footer Modernization', () => {
     expect(backdropFilter).toContain('blur');
   });
 
-  test('navigation links should have indicators', async ({
+  test('active nav link should be visually distinct', async ({
     page,
     isMobile,
   }) => {
@@ -55,33 +55,21 @@ test.describe('Header and Footer Modernization', () => {
     await navigateTo(page, '/games');
     await ensureNavigationVisible(page);
 
-    if (isMobile) {
-      // On mobile, the active link in the mobile menu should have a distinct background
-      const activeLink = page.getByTestId('mobile-nav-games');
-      await expect(activeLink).toBeVisible();
-      const backgroundColor = await activeLink.evaluate(
-        (el) => window.getComputedStyle(el).backgroundColor,
-      );
-      // 'rgba(87, 195, 255, 0.1)' or similar, but may be 'rgb(37, 42, 46)' if opaque
-      expect(backgroundColor).toMatch(/rgba?\(/);
-      expect(backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-      expect(backgroundColor).not.toBe('transparent');
-    } else {
-      // Desktop link in nav should be active — its indicator should have opacity > 0
-      const activeIndicator = page
-        .locator('nav.nav-styled')
-        .first()
-        .getByTestId('nav-link-indicator')
-        .first();
+    const activeLink = isMobile
+      ? page.getByTestId('mobile-nav-games')
+      : page.locator('nav.nav-styled').getByTestId('nav-games').first();
 
-      // Wait for the indicator to become visible (it has a 0.2s transition)
-      await expect(activeIndicator).toBeVisible({});
+    await expect(activeLink).toBeVisible();
 
-      const opacity = await activeIndicator.evaluate(
-        (el) => window.getComputedStyle(el).opacity,
-      );
-      expect(parseFloat(opacity)).toBeGreaterThan(0);
-    }
+    // Active treatment is a tinted pill background — no longer an
+    // underline indicator. Verify the background is a non-transparent
+    // colour, which signals the active state to the user.
+    const backgroundColor = await activeLink.evaluate(
+      (el) => window.getComputedStyle(el).backgroundColor,
+    );
+    expect(backgroundColor).toMatch(/rgba?\(/);
+    expect(backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(backgroundColor).not.toBe('transparent');
   });
 
   test('logo should have hover effect', async ({

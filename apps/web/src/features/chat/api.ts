@@ -28,6 +28,12 @@ export interface ChatMessage {
   senderEquippedBadgeId?: string | null;
   /** Sender's currently-equipped shop name-color id (resolved client-side). */
   senderEquippedNameColorId?: string | null;
+  /** Sender's currently-equipped shop frame id (resolved client-side). */
+  senderEquippedFrameId?: string | null;
+  /** Sender's currently-equipped shop aura id (resolved client-side). */
+  senderEquippedAuraId?: string | null;
+  /** Sender's currently-equipped shop banner id (resolved client-side). */
+  senderEquippedBannerId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

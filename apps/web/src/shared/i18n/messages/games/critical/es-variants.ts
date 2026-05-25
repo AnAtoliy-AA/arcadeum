@@ -1,4 +1,6 @@
-export const variants = {
+import { extraVariants } from './variants/es-extra';
+
+export const variants: Record<string, Record<string, string>> = {
   cyberpunk: {
     name: 'Cortocircuito',
     description: 'Hackers cyberpunk evitan la sobrecarga del sistema',
@@ -235,16 +237,16 @@ export const variants = {
     rapture: 'Tormenta de arena',
   },
   'high-altitude-hike': {
-    name: 'Caminata por la Montaña',
-    description: 'Supervivencia en una aventura escapando de una avalancha',
+    name: 'Caminata de Alta Altitud',
+    description: 'Aventura de supervivencia escapando de una avalancha',
     critical_event: 'Avalancha',
     neutralizer: 'Tanque de Oxígeno',
     strike: 'Piolet',
-    evade: 'Parca',
-    trade: 'Intercambio de Equipo',
-    reorder: 'Revisión del Mapa',
-    insight: 'Exploración',
-    cancel: 'Pared de Hielo',
+    evade: 'Parka',
+    trade: 'Cambio de Equipo',
+    reorder: 'Revisión de Mapa',
+    insight: 'Explorador',
+    cancel: 'Muro de Hielo',
     targeted_strike: 'Pitón',
     collection_alpha: 'Edelweiss',
     collection_beta: 'Mineral Raro',
@@ -257,30 +259,35 @@ export const variants = {
     mega_evade: 'Campamento Base',
     invert: 'Descenso',
     // Future Pack
-    see_future_5x: 'Vista de la Cumbre',
+    see_future_5x: 'Vista desde la Cima',
     alter_future_3x: 'Elección de Ruta',
     alter_future_5x: 'Plan de Expedición',
     reveal_future_3x: 'Bengala de Señal',
     share_future_3x: 'Control de Radio',
-    draw_bottom: 'Excavar Nieve',
+    draw_bottom: 'Excavación en Nieve',
     swap_top_bottom: 'Sistema de Poleas',
     bury: 'Escondite',
     // Theft Pack
     wildcard: 'Sherpa',
-    mark: 'Marcador de Camino',
+    mark: 'Marcador de Sendero',
     steal_draw: 'Tirón de Cuerda',
     stash: 'Suministros',
     // Chaos Pack
-    critical_implosion: 'Colapso Glaciar',
+    critical_implosion: 'Colapso del Glaciar',
     containment_field: 'Iglú',
     fission: 'Congelación',
-    tribute: 'Reparto de Raciones',
-    blackout: 'Ceguera Blanca',
+    tribute: 'Compartir Raciones',
+    blackout: 'Viento Blanco',
     // Deity Pack
     omniscience: 'Ojo de Águila',
     miracle: 'Rescate en Helicóptero',
     smite: 'Trueno',
     rapture: 'Ventisca',
+  },
+  ...extraVariants,
+  random: {
+    name: 'Tema Aleatorio',
+    description: '¡Sorpréndeme con un tema al azar!',
   },
   default: {
     critical_event: 'Incidente Crítico',

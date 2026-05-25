@@ -8,6 +8,7 @@ export interface ChatLogEntry {
 export interface GameChatStore {
   getState: () => {
     logs: ChatLogEntry[];
+    setChatPanelOpen: (open: boolean) => void;
   };
 }
 

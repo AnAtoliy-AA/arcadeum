@@ -1,10 +1,12 @@
 import { variants as cardVariants } from './en-variants';
 import { modals } from './en-modals';
+import { landing } from './landing-en';
 
 export const enMessages = {
   critical_v1: {
     name: 'Critical',
     description: 'A strategic card game where you avoid critical hazards',
+    landing,
     rules: {
       title: 'Game Rules',
       headers: {
@@ -38,36 +40,7 @@ export const enMessages = {
       setup:
         'Each player starts with a Defuse card and a hand of random cards. The deck contains some Unstable cards... beware!',
     },
-    variants: {
-      cyberpunk: {
-        name: 'The Short Circuit',
-        description: 'Cyberpunk hackers preventing system overload',
-      },
-      underwater: {
-        name: 'Deep Sea Pressure',
-        description: 'Underwater horror in a leaking submarine',
-      },
-      crime: {
-        name: 'The Heist',
-        description: 'Crime noir theme with police raids and getaways',
-      },
-      horror: {
-        name: 'The Cursed Banquet',
-        description: 'Social horror theme at a dark sorcerer party',
-      },
-      adventure: {
-        name: 'The Ancient Temple',
-        description: 'Survival adventure in a mysterious temple',
-      },
-      'high-altitude-hike': {
-        name: 'High-Altitude Hike',
-        description: 'Survival adventure escaping an avalanche',
-      },
-      random: {
-        name: 'Random Theme',
-        description: 'Surprise me with a random theme!',
-      },
-    },
+    variants: cardVariants,
   },
 
   table: {
@@ -381,6 +354,12 @@ export const enMessages = {
       joining: 'Joining...',
       blockThisRematch: 'Block this rematch only',
       blockInvitations: 'Block all invitations from this player',
+      invitation: {
+        title: 'Rematch invitation',
+        message: '{{name}} invited you to play again.',
+        decline: 'Decline',
+        accept: 'Accept',
+      },
     },
     fullscreen: {
       enter: 'Enter fullscreen (F)',

@@ -1,7 +1,10 @@
 import { apiClient, ApiClientOptions } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
 import { PAGINATION } from '@/shared/config/constants';
-import type { HistorySummary, HistoryDetail } from '@/app/history/types';
+import type {
+  HistorySummary,
+  HistoryDetail,
+} from '@/app/[locale]/history/types';
 
 interface GetHistoryParams {
   search?: string;
@@ -47,6 +50,12 @@ export interface LeaderboardEntry {
   wins: number;
   losses: number;
   winRate: number;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 export interface LeaderboardResponse {

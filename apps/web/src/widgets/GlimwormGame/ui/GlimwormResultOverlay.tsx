@@ -187,8 +187,7 @@ export function GlimwormResultOverlay({
               style={{
                 padding: '12px 28px',
                 borderRadius: 8,
-                background:
-                  'linear-gradient(135deg, #5ee0ff 0%, #7c5cff 100%)',
+                background: 'linear-gradient(135deg, #5ee0ff 0%, #7c5cff 100%)',
                 color: '#fff',
                 border: 0,
                 cursor: 'pointer',

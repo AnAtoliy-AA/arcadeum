@@ -1,8 +1,11 @@
+import { landing } from './landing-en';
+
 export const enMessages = {
   glimworm_v1: {
     name: 'Glimworm',
     description: 'A glow-in-the-dark snake battle for 2–10 players.',
     tagline: 'Hold a finger, slither, survive.',
+    landing,
     variant: {
       battleRoyale: {
         name: 'Battle Royale',

@@ -43,8 +43,9 @@ test.describe('Game Room Detail', () => {
     // Navigate to a sample game ID
     await navigateTo(page, '/games/critical_v1');
 
-    // Check for page title or header
-    await expect(page.locator('h1, h2').first()).toContainText(/game rooms/i);
+    // The lounge title now shows the game's display name (resolved
+    // from i18n) instead of a generic "Game Rooms" label.
+    await expect(page.locator('h1, h2').first()).toContainText(/critical/i);
 
     // Check for "Create Room" button
     const createRoomBtn = page
@@ -61,11 +62,12 @@ test.describe('Game Room Detail', () => {
     // Navigate to a game that likely has no rooms
     await navigateTo(page, '/games/empty-game');
 
-    // Verify empty state message
+    // The shared GamesEmpty component is reused here — same copy as the
+    // /games lounge ("No rooms found. Create one to get started!").
     await expect(
       page
         .getByRole('main')
-        .getByText(/no rooms found for this game/i)
+        .getByText(/no rooms found/i)
         .first(),
     ).toBeVisible();
   });

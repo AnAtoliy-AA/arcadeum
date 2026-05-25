@@ -168,8 +168,9 @@ describe('HandCards', () => {
     });
     const card = screen.getByTestId('hand-card-strike-0');
     // strike → attack role → SwordsIcon
-    expect(card.querySelector('[data-testid="hand-card-fallback-attack"]'))
-      .not.toBeNull();
+    expect(
+      card.querySelector('[data-testid="hand-card-fallback-attack"]'),
+    ).not.toBeNull();
   });
 
   it('omits the fallback icon when the variant ships sprite art for the card', () => {
@@ -180,8 +181,9 @@ describe('HandCards', () => {
       cardVariant: 'crime',
     });
     const card = screen.getByTestId('hand-card-strike-0');
-    expect(card.querySelector('[data-testid="hand-card-fallback-attack"]'))
-      .toBeNull();
+    expect(
+      card.querySelector('[data-testid="hand-card-fallback-attack"]'),
+    ).toBeNull();
   });
 
   it('links the card description via aria-describedby so screen readers hear it', () => {

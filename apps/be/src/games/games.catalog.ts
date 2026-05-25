@@ -1,0 +1,57 @@
+export interface GameCatalogEntry {
+  gameId: string;
+  variants: ReadonlyArray<string>;
+}
+
+export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
+  {
+    gameId: 'critical_v1',
+    variants: [
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'adventure',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+      'random',
+    ],
+  },
+  {
+    gameId: 'sea_battle_v1',
+    variants: [
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
+    ],
+  },
+  { gameId: 'texas_holdem_v1', variants: [] },
+  {
+    gameId: 'glimworm_v1',
+    variants: ['battle_royale', 'time_attack', 'lives_heats'],
+  },
+];
+
+const CATALOG_INDEX = new Map<string, GameCatalogEntry>(
+  GAME_CATALOG.map((g) => [g.gameId, g]),
+);
+
+export function getCatalogEntry(gameId: string): GameCatalogEntry | undefined {
+  return CATALOG_INDEX.get(gameId);
+}
+
+export function hasVariant(gameId: string, variantId: string): boolean {
+  return getCatalogEntry(gameId)?.variants.includes(variantId) ?? false;
+}

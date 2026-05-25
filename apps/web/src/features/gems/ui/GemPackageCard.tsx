@@ -1,13 +1,22 @@
+import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import type { GemPackagePublic } from '../server/gems.types';
 import { BuyGemsButton } from './BuyGemsButton';
 
 interface GemPackageCardProps {
   pkg: GemPackagePublic;
+  locale?: Locale;
+  isAuthenticated?: boolean;
 }
 
-export function GemPackageCard({ pkg }: GemPackageCardProps) {
-  const priceDisplay = `$${(pkg.priceUsdCents / 100).toFixed(2)}`;
+export function GemPackageCard({
+  pkg,
+  locale = DEFAULT_LOCALE,
+  isAuthenticated = true,
+}: GemPackageCardProps) {
+  const priceDisplay = formatCurrency(pkg.priceUsdCents / 100, locale, 'USD');
   const totalGems = pkg['gems'] + pkg['bonusGems'];
+  const fmt = (n: number) => formatNumber(n, locale);
 
   return (
     <div
@@ -35,7 +44,7 @@ export function GemPackageCard({ pkg }: GemPackageCardProps) {
       {/* Gems count */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <span style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}>
-          {pkg['gems'].toLocaleString()}
+          {fmt(pkg['gems'])}
         </span>
         <span style={{ fontSize: '13px', color: '#71717a' }}>gems</span>
 
@@ -52,7 +61,7 @@ export function GemPackageCard({ pkg }: GemPackageCardProps) {
               fontWeight: 600,
             }}
           >
-            +{pkg.bonusGems.toLocaleString()} bonus
+            +{fmt(pkg.bonusGems)} bonus
           </span>
         )}
       </div>
@@ -60,7 +69,7 @@ export function GemPackageCard({ pkg }: GemPackageCardProps) {
       {/* Total (if bonus) */}
       {pkg.bonusGems > 0 && (
         <div style={{ fontSize: '12px', color: '#71717a' }}>
-          Total: {totalGems.toLocaleString()} gems
+          Total: {fmt(totalGems)} gems
         </div>
       )}
 
@@ -81,7 +90,7 @@ export function GemPackageCard({ pkg }: GemPackageCardProps) {
         >
           {priceDisplay}
         </div>
-        <BuyGemsButton packageId={pkg.id} />
+        <BuyGemsButton packageId={pkg.id} isAuthenticated={isAuthenticated} />
       </div>
     </div>
   );

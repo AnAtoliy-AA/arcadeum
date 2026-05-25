@@ -61,3 +61,19 @@ export interface UserSummary {
   username?: string | null;
   email?: string | null;
 }
+
+// Catalog response types
+export interface CatalogVariant {
+  id: string;
+  comingSoon: boolean;
+}
+
+export interface CatalogGame {
+  gameId: string;
+  comingSoon: boolean;
+  variants: CatalogVariant[];
+}
+
+export interface CatalogResponse {
+  games: CatalogGame[];
+}

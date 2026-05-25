@@ -10,6 +10,7 @@ import {
 import { AnnouncementsService } from './announcements.service';
 import { AdminAnnouncementsController } from './admin-announcements.controller';
 import { PublicAnnouncementsController } from './public-announcements.controller';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PublicAnnouncementsController } from './public-announcements.controller
       { name: Announcement.name, schema: AnnouncementSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    NotificationsModule,
   ],
   controllers: [AdminAnnouncementsController, PublicAnnouncementsController],
   providers: [AnnouncementsService, RolesGuard],

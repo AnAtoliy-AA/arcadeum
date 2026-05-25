@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { XStack, YStack, Text, View, styled } from 'tamagui';
 import { Button } from '../Button/Button';
 import { RankBadge } from '../RankBadge/RankBadge';
@@ -18,6 +19,9 @@ export type MythicSpotlightProps = {
   challengeLabel?: string;
   watchLabel?: string;
   followLabel?: string;
+  /** Rich portrait slot — when provided, replaces the default initials
+   *  monogram. Designed for `<EquippedPlayerAvatar size="card" />`. */
+  portrait?: ReactNode;
   onChallenge?: () => void;
   onWatch?: () => void;
   onFollow?: () => void;
@@ -71,6 +75,7 @@ export function MythicSpotlight({
   challengeLabel = '⚔ Challenge',
   watchLabel = '▶ Watch replay',
   followLabel = 'Follow',
+  portrait,
   onChallenge,
   onWatch,
   onFollow,
@@ -85,7 +90,7 @@ export function MythicSpotlight({
         }}
       />
       <XStack alignItems="center" gap="$5" flexWrap="wrap">
-        <MythicPortrait monogram={name} />
+        {portrait ?? <MythicPortrait monogram={name} />}
         <YStack gap="$2" flex={1} minWidth={240}>
           <XStack gap="$2" alignItems="center" flexWrap="wrap">
             <RankBadge tier="mythic">{`#${rank}`}</RankBadge>

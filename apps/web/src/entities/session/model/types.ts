@@ -30,6 +30,9 @@ export type SessionTokensSnapshot = {
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
   equippedNameColorId: string | null;
+  equippedFrameId: string | null;
+  equippedAuraId: string | null;
+  equippedBannerId: string | null;
 };
 
 export type SetSessionTokensInput = {
@@ -47,6 +50,9 @@ export type SetSessionTokensInput = {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 };
 
 export type LocalAuthMode = 'login' | 'register';

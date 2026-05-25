@@ -1,8 +1,11 @@
+import { landing } from './landing-ru';
+
 export const ruMessages = {
   glimworm_v1: {
     name: 'Глимворм',
     description: 'Светящаяся битва червей для 2–10 игроков.',
     tagline: 'Зажми палец, скользи, выживи.',
+    landing,
     variant: {
       battleRoyale: {
         name: 'Королевская битва',

@@ -149,4 +149,36 @@ export const en = {
       refreshToken: 'Refresh token',
     },
   },
+  forgot: {
+    title: 'Reset your password',
+    description:
+      "Enter the email tied to your account and we'll send a reset link.",
+    emailLabel: 'Email address',
+    submit: 'Send reset link',
+    submitting: 'Sending...',
+    successTitle: 'Check your inbox',
+    successBody:
+      "If an account exists for {{email}}, we've sent a password-reset link. The link expires in 15 minutes.",
+    backToSignIn: 'Back to sign in',
+    error: 'Could not send the reset link. Please try again.',
+    invalidEmail: 'Please enter a valid email address.',
+  },
+  reset: {
+    title: 'Choose a new password',
+    description: 'Pick something at least 8 characters long.',
+    passwordLabel: 'New password',
+    confirmLabel: 'Confirm new password',
+    submit: 'Update password',
+    submitting: 'Updating...',
+    successTitle: 'Password updated',
+    successBody: 'You can now sign in with your new password.',
+    signInCta: 'Continue to sign in',
+    missingToken:
+      'This link is missing its reset code. Request a new one from the sign-in page.',
+    invalidToken:
+      'This reset link is invalid or has expired. Request a new one.',
+    passwordTooShort: 'Password must be at least 8 characters.',
+    passwordMismatch: "Passwords don't match.",
+    error: 'Could not update password. Please try again.',
+  },
 };

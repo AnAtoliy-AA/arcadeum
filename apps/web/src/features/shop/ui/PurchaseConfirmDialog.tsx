@@ -4,6 +4,8 @@ import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
 import { purchaseItemAction } from '../server/shop.actions';
 import { syncEquippedToSession } from '../lib/syncEquippedToSession';
@@ -66,6 +68,7 @@ function PurchaseConfirmDialogInner({
   labels,
 }: PurchaseConfirmDialogProps) {
   const router = useRouter();
+  const { locale } = useLanguage();
   // Stable per-mount UUID — regenerated only when the outer key changes (new
   // open / new item), so React's strict-mode double-render and any retries
   // reuse the same id.
@@ -160,7 +163,7 @@ function PurchaseConfirmDialogInner({
           </Text>
           <Text fontSize="$2" color="$colorPress">
             {labels.yourBalance
-              .replace('{amount}', balanceForCurrency.toLocaleString())
+              .replace('{amount}', formatNumber(balanceForCurrency, locale))
               .replace('{currency}', item.priceCurrency)}
           </Text>
         </XStack>

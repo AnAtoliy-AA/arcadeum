@@ -3,6 +3,8 @@ import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { AnnouncementsService } from './announcements.service';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   Announcement,
   SEVERITY_RANK,
@@ -65,6 +67,8 @@ describe('AnnouncementsService (admin)', () => {
     countDocuments: jest.Mock;
     create: jest.Mock;
   };
+  let dispatcherMock: { dispatchMany: jest.Mock; dispatch: jest.Mock };
+  let notificationsMock: { listUserIdsWithCategoryEnabled: jest.Mock };
 
   beforeEach(async () => {
     model = {
@@ -75,10 +79,19 @@ describe('AnnouncementsService (admin)', () => {
       countDocuments: jest.fn(),
       create: jest.fn(),
     };
+    dispatcherMock = {
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
+      dispatch: jest.fn().mockResolvedValue(undefined),
+    };
+    notificationsMock = {
+      listUserIdsWithCategoryEnabled: jest.fn().mockResolvedValue([]),
+    };
     const moduleRef = await Test.createTestingModule({
       providers: [
         AnnouncementsService,
         { provide: getModelToken(Announcement.name), useValue: model },
+        { provide: NotificationDispatcher, useValue: dispatcherMock },
+        { provide: NotificationsService, useValue: notificationsMock },
       ],
     }).compile();
     service = moduleRef.get(AnnouncementsService);
@@ -230,6 +243,72 @@ describe('AnnouncementsService (admin)', () => {
           'not-an-oid',
         ),
       ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('fans out announcement_new to opted-in users on public create', async () => {
+      const id = oid();
+      const u1 = oid();
+      const u2 = oid();
+      model.create.mockResolvedValue({ _id: id });
+      model.findById.mockReturnValue(buildFindByIdChain(buildDoc({ _id: id })));
+      notificationsMock.listUserIdsWithCategoryEnabled.mockResolvedValue([
+        u1,
+        u2,
+      ]);
+
+      await service.create(
+        {
+          severity: 'info',
+          content: { en: { title: 'Patch', body: 'Big release' } },
+          audience: 'all',
+        } as never,
+        oid().toString(),
+      );
+
+      expect(dispatcherMock.dispatchMany).toHaveBeenCalledTimes(1);
+      const call = dispatcherMock.dispatchMany.mock.calls[0] as [
+        string[],
+        { category: string; i18nParams: Record<string, unknown> },
+      ];
+      expect(call[0]).toEqual([u1.toHexString(), u2.toHexString()]);
+      expect(call[1].category).toBe('announcement_new');
+      expect(call[1].i18nParams.title).toBe('Patch');
+      expect(call[1].i18nParams.excerpt).toBe('Big release');
+    });
+
+    it('does NOT dispatch when audience is anonymous-only', async () => {
+      const id = oid();
+      model.create.mockResolvedValue({ _id: id });
+      model.findById.mockReturnValue(buildFindByIdChain(buildDoc({ _id: id })));
+
+      await service.create(
+        {
+          severity: 'info',
+          content: { en: { title: 'X' } },
+          audience: 'anonymous',
+        } as never,
+        oid().toString(),
+      );
+
+      expect(dispatcherMock.dispatchMany).not.toHaveBeenCalled();
+    });
+
+    it('does NOT dispatch when startsAt is in the future', async () => {
+      const id = oid();
+      model.create.mockResolvedValue({ _id: id });
+      model.findById.mockReturnValue(buildFindByIdChain(buildDoc({ _id: id })));
+
+      await service.create(
+        {
+          severity: 'info',
+          content: { en: { title: 'X' } },
+          audience: 'all',
+          startsAt: new Date(Date.now() + 60_000),
+        } as never,
+        oid().toString(),
+      );
+
+      expect(dispatcherMock.dispatchMany).not.toHaveBeenCalled();
     });
   });
 

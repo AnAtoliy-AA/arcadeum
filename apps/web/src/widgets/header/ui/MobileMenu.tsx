@@ -6,7 +6,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
-import { routes } from '@/shared/config/routes';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { appConfig } from '@/shared/config/app-config';
 import {
   MobileBottomBar,
@@ -23,7 +23,7 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { RoleBadge } from '@arcadeum/ui/components/RoleBadge/RoleBadge';
-import { Avatar } from '@arcadeum/ui/components/Avatar/Avatar';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import {
   BarChartIcon,
   CardsIcon,
@@ -35,6 +35,7 @@ import {
   SettingsIcon,
   SmartphoneIcon,
   SupportIcon,
+  TrophyIcon,
   UserIcon,
   WalletIcon,
 } from '@arcadeum/ui/components/Icons/index';
@@ -49,20 +50,27 @@ interface MobileMenuProps {
 
 type IconComponent = ComponentType<{ size?: number }>;
 
-const NAV_ICON_BY_HREF: Record<string, IconComponent> = {
-  [routes.games]: CardsIcon,
-  [routes.shop]: GiftIcon,
-  [routes.chats]: MailIcon,
-  [routes.history]: FileTextIcon,
-  [routes.stats]: BarChartIcon,
-  [routes.settings]: SettingsIcon,
+const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
+  games: CardsIcon,
+  leaderboards: TrophyIcon,
+  shop: GiftIcon,
+  chats: MailIcon,
+  history: FileTextIcon,
+  stats: BarChartIcon,
+  settings: SettingsIcon,
 };
+
+function iconForHref(href: string): IconComponent | undefined {
+  const last = href.split('/').filter(Boolean).pop();
+  return last ? NAV_ICON_BY_SLUG[last] : undefined;
+}
 
 export default function MobileMenu({ navItems }: MobileMenuProps) {
   const pathname = usePathname();
   // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
+  const routes = useRoutes();
   const mounted = useIsMounted();
   const { isAuthenticated, displayName } = useHeaderAuth();
   const role = snapshot.role || 'free';
@@ -71,8 +79,8 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
 
   const handleLogout = useCallback(async () => {
     await clearTokens();
-    window.location.replace('/');
-  }, [clearTokens]);
+    window.location.replace(routes.home);
+  }, [clearTokens, routes.home]);
 
   const accountItems = useMemo(() => {
     if (!isAuthenticated) return [];
@@ -98,7 +106,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
       });
     }
     return items;
-  }, [isAuthenticated, role, t]);
+  }, [isAuthenticated, role, t, routes]);
 
   if (!mounted) return null;
 
@@ -106,7 +114,16 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
     <MobileNav data-mobile-menu data-testid="mobile-nav">
       {isAuthenticated && displayName ? (
         <MobileUserCard data-testid="mobile-user-card">
-          <Avatar name={displayName} size="md" />
+          <EquippedPlayerAvatar
+            name={displayName}
+            size="md"
+            equippedAvatarId={snapshot.equippedAvatarId}
+            equippedBadgeId={snapshot.equippedBadgeId}
+            equippedNameColorId={snapshot.equippedNameColorId}
+            equippedFrameId={snapshot.equippedFrameId}
+            equippedAuraId={snapshot.equippedAuraId}
+            equippedBannerId={snapshot.equippedBannerId}
+          />
           <YStack flex={1} minWidth={120} gap="$1">
             <XStack alignItems="center" gap="$2" flexWrap="wrap">
               <UserNameEllipsis>{displayName}</UserNameEllipsis>
@@ -125,7 +142,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         </MobileUserCard>
       ) : (
         <LinkButton
-          href="/auth"
+          href={routes.auth}
           variant="primary"
           size="md"
           fullWidth
@@ -143,12 +160,12 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
         </MobileSectionLabel>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-          const Icon = NAV_ICON_BY_HREF[item.href];
+          const Icon = iconForHref(item.href);
           return (
             <NavMobileLink
               key={item.href}
               href={item.href}
-              data-testid={`mobile-nav-${item.href.replace('/', '') || 'home'}`}
+              data-testid={`mobile-nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
               variant="ghost"
               size="md"
               isActive={isActive}

@@ -11,6 +11,7 @@ import {
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
+import { GameChatPopupOverlay } from '@/widgets/GameChat';
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -212,9 +213,12 @@ export const SharedGameBoard = styled(BaseGameBoard, {
   flexDirection: 'column',
   position: 'relative',
   width: '100%',
-  flexGrow: 0,
-  flexShrink: 0,
-  flexBasis: 'auto',
+  // Fill the remaining height of the widget container after the sticky
+  // header so the boards inside can use 1fr-row CSS to fit vertically
+  // without scroll. Inner content opts in via flex propagation.
+  flex: 1,
+  minHeight: 0,
+  minWidth: 0,
   overflow: 'visible',
 });
 
@@ -398,6 +402,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </SharedHandSection>
         )}
         {modals}
+        <GameChatPopupOverlay />
       </Container>
     </>
   );

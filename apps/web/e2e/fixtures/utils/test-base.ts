@@ -79,7 +79,7 @@ export const test = base.extend({
         if (
           type === 'error' &&
           /Failed to load resource.*status of 4\d{2}/i.test(text) &&
-          (/\/(?:wallet|payments|gems|games|auth|settings|chat|chats|leaderboards|stats|history|notifications|notes|referrals|rewards|tournaments|shop|profile|players|admin|community|developers|help|contact|support|blog|cookies|privacy|terms|legal|home)/.test(
+          (/\/(?:wallet|payment|payments|gems|games|auth|settings|chat|chats|leaderboards|stats|history|notifications|notes|referrals|rewards|tournaments|shop|profile|players|admin|community|developers|help|contact|support|blog|cookies|privacy|terms|legal|home)/.test(
             page.url(),
           ) ||
             /^https?:\/\/[^/]+\/?$/.test(page.url()) ||
@@ -125,6 +125,17 @@ export const test = base.extend({
           return;
         }
 
+        // Mobile Safari fires "due to access control checks" / "Fetch API
+        // cannot load" when an in-flight Next.js RSC fetch is cancelled by a
+        // subsequent navigation. The `?_rsc=` query is the unambiguous signal.
+        if (
+          (text.includes('due to access control checks') ||
+            text.includes('Fetch API cannot load')) &&
+          /[?&]_rsc=/.test(text)
+        ) {
+          return;
+        }
+
         console.log(`BROWSER [${type}]: ${text}`);
       } else if (isRelevantKeyword && !isFetchNoise) {
         // Log relevant room/session events if they aren't fetch noise
@@ -138,12 +149,17 @@ export const test = base.extend({
       if (failure) {
         // Ignore aborted requests which are common during navigation
         // Also ignore Next.js stack frame requests which often get cancelled on reload
+        const lowerErr = failure.errorText.toLowerCase();
         if (
           failure.errorText === 'NS_BINDING_ABORTED' ||
           failure.errorText === 'net::ERR_ABORTED' ||
-          failure.errorText === 'canceled' || // Common in WebKit
-          failure.errorText === 'cancelled' || // Other runtimes
-          failure.errorText.toLowerCase().includes('navigation cancel') ||
+          // Mobile Safari surfaces aborts as "Load request cancelled" /
+          // WebKit "canceled" / Firefox "cancelled". Substring covers all
+          // wordings — these are mid-navigation cancellations, not real
+          // network failures.
+          lowerErr.includes('canceled') ||
+          lowerErr.includes('cancelled') ||
+          lowerErr.includes('navigation cancel') ||
           url.includes('accounts.google.com') ||
           url.includes('__nextjs_original-stack-frames') ||
           (IS_DEV_E2E &&

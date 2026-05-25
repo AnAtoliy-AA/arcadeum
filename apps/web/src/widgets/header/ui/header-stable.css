@@ -69,7 +69,7 @@
   flex-direction: row;
   align-items: center;
   flex-shrink: 0;
-  gap: 24px;
+  gap: 12px;
 }
 
 .header-language-switcher {
@@ -87,13 +87,11 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--glassBorder) 15%,
-    var(--primaryGradientStart) 50%,
-    var(--glassBorder) 85%,
+    var(--glassBorder) 30%,
+    var(--glassBorder) 70%,
     transparent 100%
   );
-  box-shadow: 0 0 15px rgba(87, 195, 255, 0.15);
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 .profile-menu-placeholder {
@@ -142,9 +140,6 @@
   .header-language-switcher {
     margin-left: 0;
     margin-right: 0;
-  }
-  .header-language-globe {
-    display: none;
   }
   /* Keep coin/gem pills side-by-side and compact them */
   .wallet-balance-chip {

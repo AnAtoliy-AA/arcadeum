@@ -6,11 +6,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { AdminController } from './admin.controller';
 import { AdminUsersController } from './admin-users.controller';
 import { AdminUsersService } from './admin-users.service';
+import { GameVisibilityModule } from './game-visibility/game-visibility.module';
 
 @Module({
   imports: [
     AuthModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    GameVisibilityModule,
   ],
   controllers: [AdminController, AdminUsersController],
   providers: [RolesGuard, AdminUsersService],

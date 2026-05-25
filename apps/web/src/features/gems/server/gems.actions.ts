@@ -9,7 +9,15 @@ import type { ConversionResult } from './gems.types';
 
 export type BuyGemsResult =
   | { ok: true; approveUrl: string; paypalOrderId: string }
-  | { ok: false; error: 'not_found' | 'inactive' | 'unavailable' | 'generic' };
+  | {
+      ok: false;
+      error:
+        | 'not_found'
+        | 'inactive'
+        | 'unavailable'
+        | 'unauthorized'
+        | 'generic';
+    };
 
 export type FinalizeGemPurchaseResult =
   | {
@@ -66,6 +74,9 @@ export async function buyGemsAction(input: {
     body: JSON.stringify({ packageId: input.packageId }),
   });
 
+  if (res.status === 401 || res.status === 403) {
+    return { ok: false, error: 'unauthorized' };
+  }
   if (res.status === 404) return { ok: false, error: 'not_found' };
   if (res.status === 400) {
     const body = await res.json().catch(() => ({}));

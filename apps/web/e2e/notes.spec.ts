@@ -66,9 +66,10 @@ test.describe('Payment Notes Page', () => {
       page.getByRole('heading', { name: /supporter notes/i }),
     ).toBeVisible();
 
-    // Check for subtitle
+    // Check for subtitle (scoped to main content; the footer also links to
+    // /community which would match a looser regex).
     await expect(
-      page.getByText(/messages of support|community/i),
+      page.locator('main').getByText(/messages of support/i),
     ).toBeVisible();
   });
 

@@ -1,6 +1,6 @@
 'use client';
 import { memo, useCallback, useState } from 'react';
-import { Text, XStack } from 'tamagui';
+import { Text, XStack, YStack } from 'tamagui';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, COL_LABELS, ROW_LABELS } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
@@ -22,6 +22,7 @@ import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+import { InGameAvatar } from '@/features/games/ui';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;
@@ -60,9 +61,10 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // Optimistic "shot fired" state: instantly mark the clicked cell as pending
   // so the player sees feedback without waiting for the server round-trip,
   // and can't spam-click the same cell.
-  const [pendingCell, setPendingCell] = useState<{ r: number; c: number } | null>(
-    null,
-  );
+  const [pendingCell, setPendingCell] = useState<{
+    r: number;
+    c: number;
+  } | null>(null);
 
   // Derived: only treat the stored pending cell as "still pending" if it's
   // my turn and the server hasn't yet resolved the cell to HIT/MISS.
@@ -77,9 +79,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const handleGridClick = useCallback(
     (e: React.MouseEvent) => {
       if (!isMyTurn || isAttackDisabled || !onAttack) return;
-      const cell = (e.target as HTMLElement).closest(
-        '.sb-cell.sb-attackable',
-      );
+      const cell = (e.target as HTMLElement).closest('.sb-cell.sb-attackable');
       if (!cell) return;
       const row = cell.getAttribute('data-row');
       const col = cell.getAttribute('data-col');
@@ -145,11 +145,34 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     </BoardGrid>
   );
 
+  const cornerAvatar = (
+    <YStack
+      position="absolute"
+      top={-4}
+      left={-4}
+      zIndex={11}
+      pointerEvents="none"
+      borderRadius={9999}
+      borderWidth={2}
+      borderColor={team?.color ?? theme.cellBorder}
+      backgroundColor={theme.boardBackground}
+      padding={2}
+    >
+      <InGameAvatar
+        playerId={player.playerId}
+        name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
+        size="icon"
+        data-testid={`sb-corner-avatar-${player.playerId}`}
+      />
+    </YStack>
+  );
+
   if (isMe) {
     const isDefending = !isMyTurn && player.alive;
     const showBadge = player.alive;
     return (
       <PlayerSectionWrapper>
+        {cornerAvatar}
         <BadgeWrapper
           backgroundColor={theme.boardBackground}
           borderRadius={8}
@@ -167,12 +190,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               backgroundColor={
                 isCurrentTurn ? '$dangerBgSoft' : '$warningBgSoft'
               }
-              borderColor={
-                isCurrentTurn ? '$dangerBorder' : '$warningBorder'
-              }
-              className={
-                isCurrentTurn ? 'sb-badge-danger-breathe' : undefined
-              }
+              borderColor={isCurrentTurn ? '$dangerBorder' : '$warningBorder'}
+              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
             >
               <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
               <Text
@@ -195,14 +214,12 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerSection
           backgroundColor={theme.boardBackground}
           borderColor={
-            team
-              ? team.color
-              : isDefending
-                ? theme.hitColor
-                : theme.cellBorder
+            team ? team.color : isDefending ? theme.hitColor : theme.cellBorder
           }
           borderWidth={team ? 2 : undefined}
-          className={isDefending ? 'sb-section-danger-breathe' : undefined}
+          className={`sb-player-section-fit ${
+            isDefending ? 'sb-section-danger-breathe' : ''
+          }`}
           backdropFilter="blur(8px)"
         >
           <PlayerName
@@ -242,6 +259,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
 
   return (
     <PlayerSectionWrapper>
+      {cornerAvatar}
       <BadgeWrapper
         backgroundColor={theme.boardBackground}
         borderRadius={8}
@@ -286,14 +304,12 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         isTargetable={isMyTurn}
         backgroundColor={theme.boardBackground}
         borderColor={
-          team
-            ? team.color
-            : isMyTurn
-              ? theme.accentColor
-              : theme.cellBorder
+          team ? team.color : isMyTurn ? theme.accentColor : theme.cellBorder
         }
         borderWidth={team ? 2 : undefined}
-        className={isMyTurn && !team ? 'sb-breathe' : undefined}
+        className={`sb-player-section-fit ${
+          isMyTurn && !team ? 'sb-breathe' : ''
+        }`}
         backdropFilter="blur(8px)"
       >
         <PlayerName

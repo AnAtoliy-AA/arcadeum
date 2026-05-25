@@ -14,6 +14,16 @@ export type PageSection = {
   [key: string]: string | string[] | undefined;
 };
 
+export interface PageFaqItem {
+  question?: string;
+  answer?: string;
+}
+
+export interface PageFaq {
+  heading?: string;
+  items?: (PageFaqItem | null)[];
+}
+
 export interface PageTranslations {
   title?: string;
   subtitle?: string;
@@ -21,10 +31,12 @@ export interface PageTranslations {
   comingSoon?: string;
   features?: (PageFeature | null)[];
   sections?: Record<string, PageSection>;
+  faq?: PageFaq;
   [key: string]:
     | string
     | string[]
     | undefined
     | Record<string, string | PageSection | undefined>
-    | (PageFeature | null)[]; // Safe types for React node rendering
+    | (PageFeature | null)[]
+    | PageFaq; // Safe types for React node rendering
 }

@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/by';
 import { adminAnnouncementsBy } from './admin-announcements/by';
 import { adminTournamentsBy } from './admin-tournaments/by';
 import { walletBy } from './wallet/by';
@@ -8,6 +9,7 @@ import { adminEconomyBy } from './admin-economy/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { shopBy } from './shop/by';
 import { adminShopBy } from './admin-shop/by';
+import { adminGamesBy } from './admin-games/by';
 
 export const by = {
   admin: {
@@ -24,6 +26,7 @@ export const by = {
       tournaments: 'Турніры',
       economy: 'Эканоміка',
       shop: 'Крама',
+      games: 'Гульні',
       comingSoon: 'Хутка',
     },
     error: {
@@ -308,6 +311,7 @@ export const by = {
           'Камунікуйце з іншымі гульцамі, каб дзяліцца парадамі і вырашаць праблемы.',
       },
     ],
+    faq: helpFaq,
     comingSoon: "Цэнтр дапамогі хутка з'явіцца.",
   },
   leaderboards: {
@@ -484,4 +488,5 @@ export const by = {
   dailyRewards: dailyRewardsBy,
   shop: shopBy,
   adminShop: adminShopBy,
+  adminGames: adminGamesBy,
 };

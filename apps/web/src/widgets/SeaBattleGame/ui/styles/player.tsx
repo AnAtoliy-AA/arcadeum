@@ -8,6 +8,7 @@ export const PlayerSection = styled(YStack, {
   borderWidth: 2,
   borderRadius: 12,
   minWidth: 0,
+  minHeight: 0,
   width: '100%',
   overflow: 'hidden',
 
@@ -40,32 +41,23 @@ export const PlayerSection = styled(YStack, {
   },
 });
 
-// Narrow (≤1150px): full-width block, stacked vertically by parent column layout.
-// Wide (>1150px): flex:1 side-by-side row, capped at 440px.
+// Natural-height wrapper. In fit-grid mode the `.sb-fit-grid > *` CSS
+// rule stretches it to fill its grid cell; in mobile vertical (1-col flex
+// column) we leave it at content height so the page scrolls naturally
+// between boards instead of each board taking the full viewport height.
 export const PlayerSectionWrapper = styled(YStack, {
   name: 'PlayerSectionWrapper',
   position: 'relative',
   overflow: 'visible',
   paddingTop: 8,
   width: '100%',
-  maxWidth: 520,
-  alignSelf: 'center',
+  minWidth: 0,
 
-  $gtMd: {
-    paddingTop: 10,
-    width: 'auto',
-    alignSelf: 'auto',
-    flex: 1,
-    maxWidth: 'min(580px, calc(100vh - 240px))',
-    minWidth: 260,
-  },
   $sm: {
     paddingTop: 6,
-    maxWidth: 'none',
   },
   $short: {
     paddingTop: 4,
-    maxWidth: 'min(420px, calc(100vh - 120px))',
   },
 });
 

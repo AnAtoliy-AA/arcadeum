@@ -11,6 +11,8 @@ import {
 } from '@/shared/lib/useTranslation';
 import { gameSocket } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
+import { gamesApi } from '@/features/games/api';
+import type { CatalogVariant } from '@/features/games/api';
 import { useGlimwormStore } from '../store/glimwormStore';
 import type { GameRoomSummary } from '@/shared/types/games';
 import type { GlimwormVariant } from '../types';
@@ -63,6 +65,40 @@ export function GlimwormLobby({
   const [powerupsEnabled, setPowerupsEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [allowedVariants, setAllowedVariants] = useState<
+    CatalogVariant[] | null
+  >(null);
+
+  // One-shot catalog fetch on mount to filter the variant picker by what
+  // the caller's role can actually see (ARC-710). Failure is silent: the
+  // full list is shown and the BE will reject any restricted start.
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const glim = res.games.find((g) => g.gameId === 'glimworm_v1');
+        setAllowedVariants(glim?.variants ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setAllowedVariants(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const visibleVariants =
+    allowedVariants === null
+      ? GLIMWORM_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
+      : GLIMWORM_VARIANTS.filter((v) =>
+          allowedVariants.some((a) => a.id === v.id),
+        ).map((v) => ({
+          ...v,
+          comingSoon:
+            allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
+        }));
 
   // Read which colors are claimed by which player. The BE pushes a fresh
   // snapshot on join/leave/color-pick, so this reflects the live lobby state.
@@ -147,14 +183,20 @@ export function GlimwormLobby({
             {t('games.glimworm_v1.lobby.variant')}
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {GLIMWORM_VARIANTS.map((v) => {
+            {visibleVariants.map((v) => {
               const active = variant === v.id;
+              const isComingSoon = v.comingSoon;
+              const interactionAllowed = isHost && !isComingSoon;
               return (
                 <button
                   key={v.id}
                   type="button"
-                  disabled={!isHost}
-                  onClick={() => isHost && setVariant(v.id as GlimwormVariant)}
+                  data-testid={`variant-tile-${v.id}`}
+                  aria-disabled={isComingSoon || undefined}
+                  disabled={!interactionAllowed}
+                  onClick={() =>
+                    interactionAllowed && setVariant(v.id as GlimwormVariant)
+                  }
                   style={{
                     padding: '8px 14px',
                     borderRadius: 20,
@@ -165,14 +207,22 @@ export function GlimwormLobby({
                       ? '1.5px solid rgba(94,224,255,0.6)'
                       : '1.5px solid rgba(255,255,255,0.10)',
                     color: active ? '#a0e8ff' : '#cbd5e1',
-                    cursor: isHost ? 'pointer' : 'default',
-                    opacity: isHost || active ? 1 : 0.5,
+                    cursor: interactionAllowed ? 'pointer' : 'default',
+                    opacity: isComingSoon ? 0.4 : isHost || active ? 1 : 0.5,
                     fontSize: 13,
                     fontWeight: 500,
                     fontFamily: 'inherit',
                   }}
                 >
                   {v.emoji} {t(v.name as TranslationKey)}
+                  {isComingSoon && (
+                    <span
+                      data-testid="coming-soon-badge"
+                      style={{ marginLeft: 6, fontSize: 11, opacity: 0.85 }}
+                    >
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </span>
+                  )}
                 </button>
               );
             })}

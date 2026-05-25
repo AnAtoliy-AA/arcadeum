@@ -70,7 +70,7 @@ export function RematchInvitationModal({
             })}
           </MessageText>
 
-          {message && message.trim().length > 0 && (
+          {message && message.trim().length > 0 ? (
             <YStack
               alignSelf="stretch"
               marginBottom="$5"
@@ -89,7 +89,7 @@ export function RematchInvitationModal({
                 “{message}”
               </Paragraph>
             </YStack>
-          )}
+          ) : null}
 
           <ModalActions>
             <ModalButton

@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -41,6 +43,7 @@ export function RegisterConfirm({
   labels,
   walletPath = '/wallet',
 }: RegisterConfirmProps) {
+  const { locale } = useLanguage();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -52,11 +55,11 @@ export function RegisterConfirm({
   const bodyText =
     currentBalanceCoins !== null
       ? labels.body
-          .replace('{fee}', entryFeeCoins.toLocaleString())
-          .replace('{balance}', currentBalanceCoins.toLocaleString())
+          .replace('{fee}', formatNumber(entryFeeCoins, locale))
+          .replace('{balance}', formatNumber(currentBalanceCoins, locale))
       : labels.body
           .replace(' Your balance: {balance} coins.', '')
-          .replace('{fee}', entryFeeCoins.toLocaleString());
+          .replace('{fee}', formatNumber(entryFeeCoins, locale));
 
   const handleConfirm = () => {
     if (!hasEnoughBalance) {

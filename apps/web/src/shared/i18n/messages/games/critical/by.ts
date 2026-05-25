@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './by-variants';
 import { modals } from './by-modals';
+import { landing } from './landing-by';
 
 export const byMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Стратэгічная картачная гульня, дзе трэба пазбягаць крытычных пагроз',
+    landing,
     rules: {
       title: 'Правілы гульні',
       headers: {
@@ -64,9 +66,35 @@ export const byMessages = {
         name: 'Горны паход',
         description: 'Выжыванне ў прыгодзе, ратуючыся ад лавіны',
       },
+      galaxy: {
+        name: 'Касмічная адысея',
+        description:
+          'Даследуйце глыбіні космасу на высокатэхналагічным зорным караблі',
+      },
+      fantasy: {
+        name: 'Логава цмока',
+        description: 'Свет магіі, міфічных істот і старажытных легендаў',
+      },
+      western: {
+        name: 'Пыльнае цясніна',
+        description: 'Дзікі фронт разбойнікаў, шэрыфаў і залатой ліхаманкі',
+      },
+      egypt: {
+        name: 'Праклён фараона',
+        description: 'Піраміды, патаемныя камеры і таямніцы Нілу',
+      },
+      steampunk: {
+        name: 'Паравая машына',
+        description:
+          'Шасцерні, часавыя механізмы і прамысловыя цуды віктарыянскай эпохі',
+      },
+      zen: {
+        name: 'Месячны дзэн',
+        description: 'Спакой, дысцыпліна і шлях самурая',
+      },
       random: {
         name: 'Выпадковая тэма',
-        description: 'Здзівіце мяне выпадковай тэмай!',
+        description: 'Удзівіце мяне выпадковай тэмай!',
       },
     },
   },
@@ -385,6 +413,12 @@ export const byMessages = {
       joining: 'Уваход...',
       blockThisRematch: 'Блакаваць толькі гэты рэванш',
       blockInvitations: 'Блакаваць усе запрашэнні ад гэтага гульца',
+      invitation: {
+        title: 'Запрашэнне на рэванш',
+        message: '{{name}} запрашае вас згуляць яшчэ раз.',
+        decline: 'Адхіліць',
+        accept: 'Прыняць',
+      },
     },
     fullscreen: {
       enter: 'На ўвесь экран (F)',

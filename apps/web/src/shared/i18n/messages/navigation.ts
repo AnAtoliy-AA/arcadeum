@@ -1,9 +1,11 @@
 import type { DeepPartial } from '../base-types';
 
 export const en = {
+  homeTab: 'Home',
   chatsTab: 'Chats',
   gamesTab: 'Games',
   historyTab: 'History',
+  leaderboardsTab: 'Leaderboards',
   settingsTab: 'Settings',
   statsTab: 'Statistics',
   walletTab: 'Wallet',
@@ -15,9 +17,11 @@ export const en = {
 };
 
 export const es = {
+  homeTab: 'Inicio',
   chatsTab: 'Chats',
   gamesTab: 'Juegos',
   historyTab: 'Historial',
+  leaderboardsTab: 'Clasificaciones',
   settingsTab: 'Configuración',
   statsTab: 'Estadísticas',
   walletTab: 'Cartera',
@@ -29,9 +33,11 @@ export const es = {
 };
 
 export const fr = {
+  homeTab: 'Accueil',
   chatsTab: 'Discussions',
   gamesTab: 'Jeux',
   historyTab: 'Historique',
+  leaderboardsTab: 'Classements',
   settingsTab: 'Paramètres',
   statsTab: 'Statistiques',
   walletTab: 'Portefeuille',
@@ -43,9 +49,11 @@ export const fr = {
 };
 
 export const ru = {
+  homeTab: 'Главная',
   chatsTab: 'Чаты',
   gamesTab: 'Игры',
   historyTab: 'История',
+  leaderboardsTab: 'Рейтинги',
   settingsTab: 'Настройки',
   statsTab: 'Статистика',
   walletTab: 'Кошелёк',
@@ -57,9 +65,11 @@ export const ru = {
 };
 
 export const by = {
+  homeTab: 'Галоўная',
   chatsTab: 'Чаты',
   gamesTab: 'Гульні',
   historyTab: 'Гісторыя',
+  leaderboardsTab: 'Рэйтынгі',
   settingsTab: 'Налады',
   statsTab: 'Статыстыка',
   walletTab: 'Кашалёк',

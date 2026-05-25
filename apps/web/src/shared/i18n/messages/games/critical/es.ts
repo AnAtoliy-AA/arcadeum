@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './es-variants';
 import { modals } from './es-modals';
+import { landing } from './landing-es';
 
 export const esMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Un juego de cartas estratégico donde evitas incidentes críticos',
+    landing,
     rules: {
       title: 'Reglas del Juego',
       headers: {
@@ -39,36 +41,7 @@ export const esMessages = {
       setup:
         'Cada jugador comienza con una carta de Desactivación y una mano de cartas aleatorias. El mazo contiene algunas cartas Explosivas... ¡ten cuidado!',
     },
-    variants: {
-      cyberpunk: {
-        name: 'Cortocircuito',
-        description: 'Hackers cyberpunk evitan la sobrecarga del sistema',
-      },
-      underwater: {
-        name: 'Presión Profunda',
-        description: 'Horror bajo el agua en un submarino con fugas',
-      },
-      crime: {
-        name: 'El Atraco',
-        description: 'Tema noir con redadas policiales y huidas',
-      },
-      horror: {
-        name: 'Banquete Maldito',
-        description: 'Tema de horror social en la fiesta de un mago oscuro',
-      },
-      adventure: {
-        name: 'El Templo Antiguo',
-        description: 'Supervivencia en una aventura en un templo misterioso',
-      },
-      'high-altitude-hike': {
-        name: 'Caminata por la Montaña',
-        description: 'Supervivencia en una aventura escapando de una avalancha',
-      },
-      random: {
-        name: 'Tema Aleatorio',
-        description: '¡Sorpréndeme con un tema al azar!',
-      },
-    },
+    variants: cardVariants,
   },
 
   table: {
@@ -384,6 +357,12 @@ export const esMessages = {
       joining: 'Uniéndose...',
       blockThisRematch: 'Bloquear solo esta revancha',
       blockInvitations: 'Bloquear todas las invitaciones de este jugador',
+      invitation: {
+        title: 'Invitación a la revancha',
+        message: '{{name}} te invita a jugar otra vez.',
+        decline: 'Rechazar',
+        accept: 'Aceptar',
+      },
     },
     fullscreen: {
       enter: 'Pantalla completa (F)',

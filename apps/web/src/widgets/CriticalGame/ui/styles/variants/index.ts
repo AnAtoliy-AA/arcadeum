@@ -7,6 +7,12 @@ import { highAltitudeHikeVariantStyles } from './high-altitude-hike';
 import { crimeFullVariantStyles } from './crime';
 import { horrorFullVariantStyles } from './horror';
 import { adventureFullVariantStyles } from './adventure';
+import { galaxyVariantStyles } from './galaxy';
+import { fantasyVariantStyles } from './fantasy';
+import { westernVariantStyles } from './western';
+import { egyptVariantStyles } from './egypt';
+import { steampunkVariantStyles } from './steampunk';
+import { zenVariantStyles } from './zen';
 
 export const getVariantStyles = (variant?: string): VariantStyleConfig => {
   switch (variant) {
@@ -39,6 +45,36 @@ export const getVariantStyles = (variant?: string): VariantStyleConfig => {
       return {
         ...baseVariantStyles,
         ...adventureFullVariantStyles,
+      };
+    case GAME_VARIANT.GALAXY:
+      return {
+        ...baseVariantStyles,
+        ...galaxyVariantStyles,
+      };
+    case GAME_VARIANT.FANTASY:
+      return {
+        ...baseVariantStyles,
+        ...fantasyVariantStyles,
+      };
+    case GAME_VARIANT.WESTERN:
+      return {
+        ...baseVariantStyles,
+        ...westernVariantStyles,
+      };
+    case GAME_VARIANT.EGYPT:
+      return {
+        ...baseVariantStyles,
+        ...egyptVariantStyles,
+      };
+    case GAME_VARIANT.STEAMPUNK:
+      return {
+        ...baseVariantStyles,
+        ...steampunkVariantStyles,
+      };
+    case GAME_VARIANT.ZEN:
+      return {
+        ...baseVariantStyles,
+        ...zenVariantStyles,
       };
     default:
       return baseVariantStyles;

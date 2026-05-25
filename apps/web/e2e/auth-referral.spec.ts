@@ -6,12 +6,11 @@ test.describe('Auth Referral Code Registration', () => {
   // The ARC-690 redesign removed the in-form referral input — referral
   // capture is being moved to onboarding (see TODOs in useAuthForm.ts).
   // Manual entry from the sign-up card is no longer a supported flow.
-  test.skip(
-    'should allow entering a referral code during registration',
-    async ({ page }) => {
-      await navigateTo(page, '/auth');
-    },
-  );
+  test.skip('should allow entering a referral code during registration', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/auth');
+  });
 
   test('should forward URL referral code into the register payload', async ({
     page,

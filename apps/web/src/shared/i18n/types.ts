@@ -1,11 +1,17 @@
 import type { DeepPartial } from './base-types';
 
-export const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'ru', 'by'] as const;
+// Single source of truth lives in `@/shared/config/locale-slugs` — it
+// has no i18n dependencies, so it's safe to import from app-config and
+// routes without creating a cycle. Re-exported here so existing
+// `@/shared/i18n` imports keep working.
+export {
+  SUPPORTED_LOCALES,
+  DEFAULT_LOCALE,
+  type Locale,
+} from '@/shared/config/locale-slugs';
+import type { Locale } from '@/shared/config/locale-slugs';
 
-export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export type LanguagePreference = Locale;
-
-export const DEFAULT_LOCALE: Locale = 'en';
 
 export type { DeepPartial };
 
@@ -24,6 +30,8 @@ import type { PagesMessages } from './messages/pages';
 import type { StatsMessages } from './messages/stats';
 import type { PwaMessages } from './messages/pwa';
 import type { ReferralsMessages } from './messages/referrals';
+import type { SeoMessages } from './messages/seo';
+import type { NotificationsMessages } from './messages/notifications';
 
 // Re-export them
 export type {
@@ -42,6 +50,8 @@ export type {
   StatsMessages,
   PwaMessages,
   ReferralsMessages,
+  SeoMessages,
+  NotificationsMessages,
 };
 
 // Export legal types for easier access
@@ -98,5 +108,7 @@ export type TranslationBundle = {
   stats?: StatsMessages;
   pwa?: PwaMessages;
   referrals?: ReferralsMessages;
+  seo?: SeoMessages;
+  notifications?: NotificationsMessages;
   legal?: import('./messages/legal/types').LegalMessages;
 };

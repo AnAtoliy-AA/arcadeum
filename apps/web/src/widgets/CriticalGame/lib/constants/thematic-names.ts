@@ -1,3 +1,4 @@
+import { EXTRA_THEMATIC_NAMES } from './extra-names';
 import { GAME_VARIANT } from './variants';
 
 export const THEMATIC_CARD_NAMES: Record<string, Record<string, string>> = {
@@ -307,4 +308,5 @@ export const THEMATIC_CARD_NAMES: Record<string, Record<string, string>> = {
     pulse: 'Pressure Pulse',
     gateway: 'Abyss Gate',
   },
+  ...EXTRA_THEMATIC_NAMES,
 };

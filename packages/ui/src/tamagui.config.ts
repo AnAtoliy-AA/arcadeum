@@ -47,8 +47,21 @@ const tokens = createTokens({
     placeholderColor: '#8e9196',
     neutral: '#8e9196',
     red10: '#dc2626',
+    red11: '#ef4444',
     blue10: '#0284c7',
+    blue11: '#3b82f6',
     purple10: '#7c3aed',
+    // Radix-style neutral scale used across the app for muted secondary
+    // text (gray11), supporting surfaces (gray10), and high-contrast
+    // foreground (gray12). Values follow the Tailwind slate scale —
+    // slate-500/400/300 — to match the existing silverAccent
+    // (#94a3b8) and neutral palette. Without these, 30+ components
+    // that reference $gray11 et al. fell through to the default
+    // off-white theme color, triggering Tamagui's missing-token warning.
+    gray10: '#6b7280',
+    gray11: '#94a3b8',
+    gray12: '#cbd5e1',
+    green11: '#10b981',
     overlayBg: 'rgba(0, 0, 0, 0.5)',
     shadowColor: 'rgba(0, 0, 0, 0.2)',
     gold: '#FFD700',
@@ -99,6 +112,17 @@ const themeBase = {
   primaryText: '#ffffff',
   secondary: '#4338ca',
   danger: '#b91c1c',
+  // Alias the danger palette under the `$error*` namespace so components
+  // that follow the standard form-validation naming (Input, FormGroup,
+  // TextArea, Select, admin/tournaments error banners) resolve their
+  // tokens at SSR. A missing token here causes Tamagui to emit inline
+  // style fallbacks server-side and atomic classes client-side, which
+  // triggers hydration mismatches on any page using these components.
+  error: '#b91c1c',
+  errorText: '#ffffff',
+  errorBg: 'rgba(220, 38, 38, 0.15)',
+  errorBgSoft: 'rgba(185, 28, 28, 0.1)',
+  errorBorder: 'rgba(185, 28, 28, 0.4)',
   success: '#047857',
   warning: '#92400e',
   info: '#2563eb',

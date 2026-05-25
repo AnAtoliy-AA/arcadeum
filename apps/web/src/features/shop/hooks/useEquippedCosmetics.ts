@@ -17,6 +17,15 @@ export interface EquippedCosmetics {
    */
   nameColor: string | null;
   nameColorItem: EffectiveShopItem | null;
+  /** CSS color (hex or linear-gradient) for the equipped frame ring. */
+  frameColor: string | null;
+  frameItem: EffectiveShopItem | null;
+  /** CSS color (hex or linear-gradient) for the equipped aura halo. */
+  auraColor: string | null;
+  auraItem: EffectiveShopItem | null;
+  /** CSS color (hex or linear-gradient) for the equipped banner backdrop. */
+  bannerColor: string | null;
+  bannerItem: EffectiveShopItem | null;
 }
 
 const EMPTY_MAP: ReadonlyMap<string, EffectiveShopItem> = new Map();
@@ -34,8 +43,18 @@ export function useEquippedCosmetics(args: {
   equippedAvatarId: string | null | undefined;
   equippedBadgeId: string | null | undefined;
   equippedNameColorId?: string | null | undefined;
+  equippedFrameId?: string | null | undefined;
+  equippedAuraId?: string | null | undefined;
+  equippedBannerId?: string | null | undefined;
 }): EquippedCosmetics {
-  const { equippedAvatarId, equippedBadgeId, equippedNameColorId } = args;
+  const {
+    equippedAvatarId,
+    equippedBadgeId,
+    equippedNameColorId,
+    equippedFrameId,
+    equippedAuraId,
+    equippedBannerId,
+  } = args;
   const [catalogMap, setCatalogMap] =
     useState<ReadonlyMap<string, EffectiveShopItem>>(EMPTY_MAP);
 
@@ -60,6 +79,15 @@ export function useEquippedCosmetics(args: {
     const nameColor = equippedNameColorId
       ? (catalogMap.get(equippedNameColorId) ?? null)
       : null;
+    const frame = equippedFrameId
+      ? (catalogMap.get(equippedFrameId) ?? null)
+      : null;
+    const aura = equippedAuraId
+      ? (catalogMap.get(equippedAuraId) ?? null)
+      : null;
+    const banner = equippedBannerId
+      ? (catalogMap.get(equippedBannerId) ?? null)
+      : null;
     return {
       avatarItem: avatar,
       avatarUrl: avatar?.assetUrl ?? null,
@@ -67,6 +95,20 @@ export function useEquippedCosmetics(args: {
       badgeUrl: badge?.assetUrl ?? null,
       nameColorItem: nameColor,
       nameColor: nameColor?.colorValue ?? null,
+      frameItem: frame,
+      frameColor: frame?.colorValue ?? null,
+      auraItem: aura,
+      auraColor: aura?.colorValue ?? null,
+      bannerItem: banner,
+      bannerColor: banner?.colorValue ?? null,
     };
-  }, [equippedAvatarId, equippedBadgeId, equippedNameColorId, catalogMap]);
+  }, [
+    equippedAvatarId,
+    equippedBadgeId,
+    equippedNameColorId,
+    equippedFrameId,
+    equippedAuraId,
+    equippedBannerId,
+    catalogMap,
+  ]);
 }

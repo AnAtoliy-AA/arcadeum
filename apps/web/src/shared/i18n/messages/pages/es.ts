@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/es';
 import { adminAnnouncementsEs } from './admin-announcements/es';
 import { adminTournamentsEs } from './admin-tournaments/es';
 import { walletEs } from './wallet/es';
@@ -8,6 +9,7 @@ import { adminEconomyEs } from './admin-economy/es';
 import { dailyRewardsEs } from './daily-rewards/es';
 import { shopEs } from './shop/es';
 import { adminShopEs } from './admin-shop/es';
+import { adminGamesEs } from './admin-games/es';
 
 export const es = {
   admin: {
@@ -24,6 +26,7 @@ export const es = {
       tournaments: 'Torneos',
       economy: 'Economía',
       shop: 'Tienda',
+      games: 'Juegos',
       comingSoon: 'Próximamente',
     },
     error: {
@@ -305,6 +308,7 @@ export const es = {
           'Conecta con otros jugadores para compartir consejos y trucos.',
       },
     ],
+    faq: helpFaq,
     comingSoon: 'El centro de ayuda llegará pronto.',
   },
   leaderboards: {
@@ -482,4 +486,5 @@ export const es = {
   dailyRewards: dailyRewardsEs,
   shop: shopEs,
   adminShop: adminShopEs,
+  adminGames: adminGamesEs,
 };

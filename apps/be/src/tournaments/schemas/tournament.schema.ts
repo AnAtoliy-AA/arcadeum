@@ -95,6 +95,16 @@ export class Tournament {
   @Prop({ type: Date, default: null })
   registrationClosesAt!: Date | null;
 
+  // ARC-740: set when the starting-soon notification cron has fired for
+  // this tournament so we don't re-notify on the next tick.
+  @Prop({ type: Date, default: null })
+  notifiedStartingSoonAt!: Date | null;
+
+  // ARC-740: set when the registration-opened notification has fanned
+  // out to the audience.
+  @Prop({ type: Date, default: null })
+  notifiedRegistrationOpenAt!: Date | null;
+
   @Prop({ required: true, type: Number })
   maxPlayers!: number;
 

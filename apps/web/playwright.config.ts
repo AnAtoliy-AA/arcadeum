@@ -27,9 +27,16 @@ const BE_PORT = getPort('../be/.env', 'BE_PORT', '4000');
 const BASE_URL = `http://127.0.0.1:${WEB_PORT}`;
 const BE_URL = `http://127.0.0.1:${BE_PORT}`;
 
+// Shared secret the web server action sends to the BE so OriginGuard
+// accepts server-to-server submissions. Both BE and web servers below
+// must see the same value.
+const SUPPORT_INTERNAL_TOKEN =
+  process.env.SUPPORT_INTERNAL_TOKEN ?? 'e2e_shared_support_token';
+
 // Export for use in tests/fixtures
 process.env.WEB_PORT = WEB_PORT;
 process.env.BE_PORT = BE_PORT;
+process.env.SUPPORT_INTERNAL_TOKEN = SUPPORT_INTERNAL_TOKEN;
 
 /**
  * Playwright configuration for e2e tests
@@ -79,6 +86,12 @@ export default defineConfig({
     },
     {
       name: 'firefox',
+      // Firefox surfaces Turbopack dev-server chunk truncation as
+      // NS_ERROR_NET_PARTIAL_TRANSFER, which leaves the page non-hydrated and
+      // makes navigateTo time out. One retry absorbs the cold-compile +
+      // chunk-truncation flake without masking real regressions (a real bug
+      // must fail twice in a row to mark the run red).
+      retries: 1,
       use: {
         ...devices['Desktop Firefox'],
         launchOptions: {
@@ -96,24 +109,36 @@ export default defineConfig({
     },
     {
       name: 'webkit',
-      // Safari + Next.js dev server cold compile is reliably slow on the first
-      // navigation. A second attempt against the now-warm cache passes — same
-      // pattern as the CI-wide retries=1.
+      // Safari + Next.js 16 dev server cold compile is reliably slow on the
+      // first navigation. A second attempt against the now-warm cache passes
+      // — same pattern as the CI-wide retries=1. Bumping the per-test timeout
+      // gives the cold compile enough headroom that the retry isn't burnt on
+      // first-hit compilation either.
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['Desktop Safari'] },
     },
     {
       name: 'Mobile Chrome',
+      // Pixel 5 emulation pays a per-test setup cost (touch + reduced viewport
+      // shifts the layout/hydration tree). Combined with parallel-worker
+      // contention on the dev server this reliably tips a cold-compile of
+      // auth-gated routes (/wallet, /admin/users) into the 60s ceiling. Same
+      // single-retry policy as Firefox/Safari — masks the dev-server flake
+      // without hiding repeatable failures.
+      retries: 1,
       use: { ...devices['Pixel 5'] },
     },
     {
       name: 'Mobile Safari',
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['iPhone 12'] },
     },
     {
       name: 'Tablet Safari',
       retries: 1,
+      timeout: 120_000,
       use: { ...devices['iPad Pro 11'] },
     },
   ],
@@ -144,6 +169,20 @@ export default defineConfig({
         // config-load, before globalSetup runs.
         AUTH_JWT_SECRET:
           process.env.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only',
+        SUPPORT_INTERNAL_TOKEN,
+        // E2E: never deliver to a real inbox or Discord channel. Blanking
+        // these makes MailerService + DiscordNotifierService report
+        // 'unconfigured' instead of dispatching. The success path is still
+        // exercised end-to-end; the wire formats have their own unit tests.
+        // NOTE: this only takes effect when Playwright spawns its own BE.
+        // If you have `pnpm --filter be dev` running in another terminal,
+        // `reuseExistingServer: !CI` will reuse that process with its
+        // existing apps/be/.env — stop it first or set CI=1 to force a
+        // fresh spawn.
+        SMTP_HOST: '',
+        SMTP_PASS: '',
+        SUPPORT_EMAIL: '',
+        DISCORD_SUPPORT_WEBHOOK_URL: '',
       },
     },
     {
@@ -159,6 +198,7 @@ export default defineConfig({
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',
+        SUPPORT_INTERNAL_TOKEN,
       },
     },
   ],

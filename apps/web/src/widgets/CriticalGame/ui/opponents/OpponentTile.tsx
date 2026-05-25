@@ -4,8 +4,11 @@ import { YStack, XStack, Text } from 'tamagui';
 import { CardsIcon, SkullIcon } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { IdleBadge } from '@/shared/ui';
-import type { CriticalPlayerTableState } from '../../types';
+import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+import { ChatBubble } from '../ChatBubble';
+import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
+import { InGameAvatar } from '@/features/games/ui';
 
 interface OpponentTileProps {
   player: CriticalPlayerTableState;
@@ -43,20 +46,17 @@ interface OpponentTileProps {
    */
   onSelect?: () => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
+  logs?: CriticalLogEntry[];
 }
 
 const TURN_RING = '#34d399';
 const ELIMINATED_RING = 'rgba(239, 68, 68, 0.85)';
 const TARGET_RING = '#f472b6';
 
-function initialsOf(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+function findLastMessage(logs: CriticalLogEntry[], playerId: string) {
+  return logs.findLast(
+    (log) => log.type === 'message' && log.senderId === playerId,
+  );
 }
 
 interface OpponentTileState {
@@ -111,6 +111,7 @@ export function OpponentTile({
   isIdle = false,
   onSelect,
   resolveDisplayName,
+  logs = [],
 }: OpponentTileProps) {
   const { t } = useTranslation();
   const displayName = resolveDisplayName(
@@ -118,6 +119,8 @@ export function OpponentTile({
     `Player ${player.playerId.slice(0, 8)}`,
   );
   const alive = player.alive;
+
+  const latestMessage = findLastMessage(logs, player.playerId);
 
   const playerColor = getPlayerColor(player.playerId);
 
@@ -156,7 +159,8 @@ export function OpponentTile({
 
   return (
     <YStack
-      data-testid={`opponent-tile-${player.playerId}`}
+      position="relative"
+      data-testid={`player-card-${player.playerId}`}
       data-alive={alive ? 'true' : 'false'}
       data-current-turn={isCurrentTurn ? 'true' : 'false'}
       data-target={isTarget ? 'true' : 'false'}
@@ -200,6 +204,22 @@ export function OpponentTile({
       // scroll container so swipes don't strand a tile mid-row.
       style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
     >
+      {latestMessage && (
+        <>
+          <ChatBubble
+            key={`bubble-${latestMessage.id}`}
+            message={latestMessage.message}
+            position="bottom"
+          />
+          <SeaBattlePopup
+            key={`popup-${latestMessage.id}`}
+            playerId={player.playerId}
+            playerName={displayName}
+            visible={true}
+            position="bottom"
+          />
+        </>
+      )}
       <YStack
         width={finalAvatarSize}
         height={finalAvatarSize}
@@ -209,18 +229,22 @@ export function OpponentTile({
         borderColor={avatarBorderColor}
         alignItems="center"
         justifyContent="center"
+        overflow="hidden"
       >
         {alive ? (
-          <Text fontSize={14} fontWeight="800" letterSpacing={0.5}>
-            {initialsOf(displayName)}
-          </Text>
+          <InGameAvatar
+            playerId={player.playerId}
+            name={displayName}
+            size={finalAvatarSize >= 64 ? 'sm' : 'icon'}
+            data-testid={`player-avatar-${player.playerId}`}
+          />
         ) : (
           <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
         )}
       </YStack>
       <XStack alignItems="center" gap={4} maxWidth="100%">
         <Text
-          data-testid={`opponent-tile-name-${player.playerId}`}
+          data-testid={`player-name-${player.playerId}`}
           fontSize={12}
           fontWeight="700"
           letterSpacing={0.3}
@@ -233,7 +257,7 @@ export function OpponentTile({
       </XStack>
       {alive ? (
         <XStack
-          data-testid={`opponent-tile-count-${player.playerId}`}
+          data-testid={`player-stats-count-${player.playerId}`}
           alignItems="center"
           gap={4}
           opacity={0.85}
@@ -245,7 +269,7 @@ export function OpponentTile({
         </XStack>
       ) : (
         <Text
-          data-testid={`opponent-tile-eliminated-${player.playerId}`}
+          data-testid={`player-eliminated-label-${player.playerId}`}
           fontSize={10}
           fontWeight="800"
           letterSpacing={1}

@@ -56,10 +56,9 @@ test.describe('Auth Validation', () => {
   // register form. The mismatch validation lives on in useAuthForm but
   // cannot be triggered from the UI; AuthFormPanel.test.tsx covers the
   // label-rendering branch directly.
-  test.skip(
-    'should validate password match in registration mode',
-    async ({ page }) => {
-      await navigateTo(page, '/auth');
-    },
-  );
+  test.skip('should validate password match in registration mode', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/auth');
+  });
 });

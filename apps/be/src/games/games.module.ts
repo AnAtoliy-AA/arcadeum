@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GamesController } from './games.controller';
+import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
 import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
@@ -19,6 +20,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
+import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
@@ -43,6 +45,7 @@ import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
+import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
 // start/end; LeaderboardsService.getSnapshot now reads stats from
@@ -61,13 +64,15 @@ import { EconomyModule } from '../economy/economy.module';
     forwardRef(() => LeaderboardsModule),
     WalletModule,
     EconomyModule,
+    GameVisibilityModule,
   ],
-  controllers: [GamesController],
+  controllers: [GamesController, GamesHistoryController],
   providers: [
     // Core services
     GameRoomsService,
     GameRoomsMapper,
     GameRoomsRematchService,
+    GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
     GameHistoryService,

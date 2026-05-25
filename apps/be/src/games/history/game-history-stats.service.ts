@@ -166,7 +166,7 @@ export class GameHistoryStatsService {
         ? await this.userModel
             .find({ _id: { $in: userIds } })
             .select(
-              'username equippedAvatarId equippedBadgeId equippedNameColorId',
+              'username equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
             )
             .exec()
         : [];
@@ -182,6 +182,9 @@ export class GameHistoryStatsService {
           equippedAvatarId: u.equippedAvatarId ?? null,
           equippedBadgeId: u.equippedBadgeId ?? null,
           equippedNameColorId: u.equippedNameColorId ?? null,
+          equippedFrameId: u.equippedFrameId ?? null,
+          equippedAuraId: u.equippedAuraId ?? null,
+          equippedBannerId: u.equippedBannerId ?? null,
         },
       ]),
     );
@@ -200,6 +203,9 @@ export class GameHistoryStatsService {
         equippedAvatarId: userInfo?.equippedAvatarId ?? null,
         equippedBadgeId: userInfo?.equippedBadgeId ?? null,
         equippedNameColorId: userInfo?.equippedNameColorId ?? null,
+        equippedFrameId: userInfo?.equippedFrameId ?? null,
+        equippedAuraId: userInfo?.equippedAuraId ?? null,
+        equippedBannerId: userInfo?.equippedBannerId ?? null,
       };
     });
 

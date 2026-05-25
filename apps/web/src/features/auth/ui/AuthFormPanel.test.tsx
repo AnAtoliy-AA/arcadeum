@@ -236,5 +236,4 @@ describe('AuthFormPanel', () => {
     renderPanel(makeAuth({ isRegisterMode: true }));
     expect(screen.queryByTestId('auth-magic-link-cta')).toBeNull();
   });
-
 });

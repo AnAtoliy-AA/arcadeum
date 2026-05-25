@@ -1,6 +1,6 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.13.56",
+  "version": "1.14.36",
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
@@ -15,7 +15,7 @@
     "check-file-length": "node scripts/check-file-length.js",
     "check-translations": "node scripts/check_translation.js",
     "docs:check": "node scripts/check-doc-links.js",
-    "generate-sprites": "node scripts/generate_spritesheet.js",
+    "generate-sprites": "node scripts/spritesheet/generate_spritesheet.js",
     "changelog": "auto-changelog --stdout --template ./scripts/changelog-template.hbs --unreleased --commit-limit false > CHANGELOG.md",
     "release": "standard-version"
   },

@@ -53,7 +53,9 @@ interface GlimwormHudProps {
   onRestart?: () => void;
 }
 
-export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | null {
+export function GlimwormHud(
+  props: GlimwormHudProps = {},
+): React.JSX.Element | null {
   const { isHost = false, onRestart } = props;
   const { t } = useTranslation();
   const snapshot = useGlimwormStore((s) => s.latestSnapshot);
@@ -176,56 +178,54 @@ export function GlimwormHud(props: GlimwormHudProps = {}): React.JSX.Element | n
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-        <div
-          style={{ fontWeight: 700, letterSpacing: 0.4, marginBottom: 6 }}
-        >
-          {t('games.glimworm_v1.hud.score')}
-        </div>
-        {top5.map((w) => (
-          <div
-            key={w.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              opacity: w.alive ? 1 : 0.45,
-              fontWeight: w.self ? 600 : 400,
-              padding: '2px 0',
-            }}
-          >
-            <span
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: w.color,
-                boxShadow: w.self ? `0 0 6px ${w.color}` : 'none',
-                display: 'inline-block',
-                flexShrink: 0,
-              }}
-            />
-            <span
-              style={{
-                flex: 1,
-                color: w.self ? '#fff' : 'rgba(203,213,225,0.92)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {displayName(w, botIndexById)}
-            </span>
-            <span
-              style={{
-                fontVariantNumeric: 'tabular-nums',
-                color: '#a0e8ff',
-                fontWeight: 600,
-              }}
-            >
-              {w.score}
-            </span>
+          <div style={{ fontWeight: 700, letterSpacing: 0.4, marginBottom: 6 }}>
+            {t('games.glimworm_v1.hud.score')}
           </div>
-        ))}
+          {top5.map((w) => (
+            <div
+              key={w.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                opacity: w.alive ? 1 : 0.45,
+                fontWeight: w.self ? 600 : 400,
+                padding: '2px 0',
+              }}
+            >
+              <span
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  background: w.color,
+                  boxShadow: w.self ? `0 0 6px ${w.color}` : 'none',
+                  display: 'inline-block',
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  flex: 1,
+                  color: w.self ? '#fff' : 'rgba(203,213,225,0.92)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {displayName(w, botIndexById)}
+              </span>
+              <span
+                style={{
+                  fontVariantNumeric: 'tabular-nums',
+                  color: '#a0e8ff',
+                  fontWeight: 600,
+                }}
+              >
+                {w.score}
+              </span>
+            </div>
+          ))}
         </div>
         {isHost && onRestart && (
           <button

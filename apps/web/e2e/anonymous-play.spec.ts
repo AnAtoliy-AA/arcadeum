@@ -168,7 +168,7 @@ test.describe('Anonymous Play', () => {
     await expect(nameInput).toBeVisible({});
     await nameInput.fill('Private Link Test');
 
-    const visibilityBtn = page.getByTestId('visibility-toggle-button');
+    const visibilityBtn = page.getByTestId('visibility-private');
     await visibilityBtn.scrollIntoViewIfNeeded();
     await visibilityBtn.click({ force: true });
 

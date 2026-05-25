@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, YStack, XStack } from '@arcadeum/ui';
 import { Text } from 'tamagui';
+import { useLanguage } from '@/shared/i18n/context';
+import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
 import { sellItemAction } from '../server/shop.actions';
 import type { InventoryItemView } from '../server/shop.types';
@@ -39,6 +41,7 @@ export function SellConfirmDialog({
   labels,
 }: SellConfirmDialogProps) {
   const router = useRouter();
+  const { locale } = useLanguage();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -73,7 +76,7 @@ export function SellConfirmDialog({
           {labels.title}
         </Text>
         <Text fontSize="$4">
-          {labels.refund.replace('{amount}', refundCoins.toLocaleString())}
+          {labels.refund.replace('{amount}', formatNumber(refundCoins, locale))}
         </Text>
         {errorMsg ? (
           <Text color="$danger" fontSize="$2" data-testid="sell-error">
@@ -89,7 +92,7 @@ export function SellConfirmDialog({
             disabled={isPending}
             data-testid="sell-confirm-button"
           >
-            {labels.sell.replace('{amount}', refundCoins.toLocaleString())}
+            {labels.sell.replace('{amount}', formatNumber(refundCoins, locale))}
           </Button>
         </XStack>
       </YStack>

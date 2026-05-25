@@ -73,15 +73,32 @@ export const en = {
 };
 
 export const es = {
+  unknownGame: 'Juego desconocido',
+  loading: 'Cargando historial...',
+  loginRequired: 'Se requiere iniciar sesión para ver el historial',
   list: {
     emptyNoEntries: 'Aún no hay historial de juegos',
     emptySignedOut: 'Inicia sesión para ver tu historial de juegos',
     noMoreEntries: 'No hay más entradas para mostrar',
   },
-  loginRequired: 'Se requiere iniciar sesión para ver el historial',
+  search: {
+    label: 'Buscar en el historial',
+    placeholder: 'Buscar por sala o participante...',
+    noResults: 'Ningún juego coincide con tu búsqueda',
+  },
+  filter: {
+    label: 'Filtrar por estado',
+    all: 'Todos los estados',
+    clear: 'Limpiar filtros',
+  },
   filters: {
-    title: 'Buscar y Filtrar',
+    title: 'Buscar y filtrar',
     description: 'Encuentra juegos por nombre, participante o estado',
+  },
+  pagination: {
+    showing: 'Mostrando {{count}} de {{total}} juegos',
+    loadMore: 'Cargar más',
+    loading: 'Cargando...',
   },
   status: {
     lobby: 'Sala de espera',
@@ -90,18 +107,71 @@ export const es = {
     waiting: 'Esperando',
     active: 'Activo',
   },
+  actions: {
+    viewDetails: 'Ver detalles',
+    refresh: 'Actualizar',
+    retry: 'Reintentar',
+  },
+  detail: {
+    backToList: 'Volver',
+    loading: 'Cargando detalles...',
+    lastActivity: 'Última actividad: {{timestamp}}',
+    rematchTitle: 'Iniciar revancha',
+    rematchDescription:
+      'Selecciona a los participantes que quieras invitar a un nuevo juego.',
+    rematchAction: 'Iniciar revancha',
+    rematchCreating: 'Creando...',
+    participantsTitle: 'Participantes',
+    hostLabel: 'Anfitrión',
+    removeTitle: 'Eliminar del historial',
+    removeDescription:
+      'Esto eliminará esta entrada de tu historial. Esta acción no se puede deshacer.',
+    removeAction: 'Eliminar',
+    removeConfirm: 'Eliminar',
+    removeRemoving: 'Eliminando...',
+    removeCancel: 'Cancelar',
+    logsTitle: 'Registro de actividad',
+    noLogs: 'Sin actividad registrada.',
+    scopePlayers: 'Jugadores',
+    scopeAll: 'Todo',
+    sender: 'De {{name}}',
+  },
+  errors: {
+    authRequired: 'Se requiere autenticación',
+    detailRemoved: 'Este juego ha sido eliminado del historial.',
+    detailFailed: 'No se pudieron cargar los detalles',
+    rematchMinimum: 'Selecciona al menos un participante',
+    removeFailed: 'No se pudo eliminar del historial',
+  },
 };
 
 export const fr = {
+  unknownGame: 'Jeu inconnu',
+  loading: "Chargement de l'historique...",
+  loginRequired: "Connexion requise pour voir l'historique",
   list: {
     emptyNoEntries: 'Aucun historique de jeu pour le moment',
     emptySignedOut: 'Connectez-vous pour voir votre historique de jeu',
     noMoreEntries: "Plus d'entrées à afficher",
   },
-  loginRequired: "Connexion requise pour voir l'historique",
+  search: {
+    label: "Rechercher dans l'historique",
+    placeholder: 'Rechercher par salon ou participant...',
+    noResults: 'Aucun jeu ne correspond à votre recherche',
+  },
+  filter: {
+    label: 'Filtrer par statut',
+    all: 'Tous les statuts',
+    clear: 'Effacer les filtres',
+  },
   filters: {
-    title: 'Rechercher et Filtrer',
+    title: 'Rechercher et filtrer',
     description: 'Trouvez des jeux par nom, participant ou statut',
+  },
+  pagination: {
+    showing: '{{count}} sur {{total}} parties affichées',
+    loadMore: 'Charger plus',
+    loading: 'Chargement...',
   },
   status: {
     lobby: "Salon d'attente",
@@ -109,6 +179,42 @@ export const fr = {
     completed: 'Terminé',
     waiting: 'En attente',
     active: 'Actif',
+  },
+  actions: {
+    viewDetails: 'Voir les détails',
+    refresh: 'Actualiser',
+    retry: 'Réessayer',
+  },
+  detail: {
+    backToList: 'Retour',
+    loading: 'Chargement des détails...',
+    lastActivity: 'Dernière activité : {{timestamp}}',
+    rematchTitle: 'Lancer une revanche',
+    rematchDescription:
+      'Sélectionnez les participants à inviter à une nouvelle partie.',
+    rematchAction: 'Lancer la revanche',
+    rematchCreating: 'Création...',
+    participantsTitle: 'Participants',
+    hostLabel: 'Hôte',
+    removeTitle: "Supprimer de l'historique",
+    removeDescription:
+      'Cette entrée sera retirée de votre historique. Cette action est irréversible.',
+    removeAction: 'Supprimer',
+    removeConfirm: 'Supprimer',
+    removeRemoving: 'Suppression...',
+    removeCancel: 'Annuler',
+    logsTitle: "Journal d'activité",
+    noLogs: 'Aucune activité enregistrée.',
+    scopePlayers: 'Joueurs',
+    scopeAll: 'Tout',
+    sender: 'De {{name}}',
+  },
+  errors: {
+    authRequired: 'Authentification requise',
+    detailRemoved: "Cette partie a été retirée de l'historique.",
+    detailFailed: 'Impossible de charger les détails',
+    rematchMinimum: 'Sélectionnez au moins un participant',
+    removeFailed: "Impossible de supprimer de l'historique",
   },
 };
 

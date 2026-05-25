@@ -218,5 +218,168 @@ export const esMessages = {
         teamWon: '¡{{team}} gana!',
       },
     },
+    landing: {
+      meta: {
+        title: 'Batalla Naval — Juega Online Gratis con Amigos | Arcadeum',
+        description:
+          'Juega Batalla Naval online gratis. Combate naval clásico para 2–4 jugadores, con bots de IA, modo equipos y más de 10 temas. Sin descargas ni registros — crea una sala y comparte el enlace.',
+        ogTitle: 'Batalla Naval Online — Multijugador Gratis',
+        ogDescription:
+          'Coloca tu flota, dispara a las cuadrículas enemigas y hunde todos sus barcos. Juega en el navegador con amigos o contra la IA.',
+        keywords:
+          'batalla naval, batalla naval online, jugar batalla naval, batallas navales multijugador, batalla naval gratis',
+      },
+      hero: {
+        title: 'Batalla Naval',
+        tagline:
+          'Juega al clásico Batalla Naval online — gratis y multijugador',
+        intro:
+          'Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En Arcadeum puedes jugar a Batalla Naval directamente en el navegador — sin descargas ni registros — con amigos, desconocidos o contra bots de IA.',
+        ctaPlay: 'Crear una sala de Batalla Naval',
+        ctaRooms: 'Ver salas abiertas',
+        ctaQuickplay: 'Jugar contra IA ahora',
+        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        ctaPlayHuman: 'Buscar oponente humano',
+        ctaGroupLabel: 'Inicio rápido de Batalla Naval',
+        eyebrow: 'Gratis · 2–4 jugadores · Sin registro',
+        chips: [
+          'En el navegador',
+          'Juega contra bots IA',
+          'Modo equipos',
+          '10+ temas',
+        ],
+      },
+      sections: {
+        highlightsKicker: 'Por qué Arcadeum',
+        howToKicker: 'Cuatro pasos · ~20 minutos',
+        themesKicker: 'Elige tu flota',
+        themesTitle: '10+ temas, un solo juego',
+        themesLead:
+          'Diez estilos de tablero, tú eliges. Mismo juego, distinto ambiente — cámbialo cuando quieras en el lobby.',
+        rulesKicker: 'Referencia',
+        strategyKicker: 'Afina tu puntería',
+        aboutKicker: 'Sobre el juego',
+        faqKicker: 'FAQ',
+      },
+      strategy: {
+        title: 'Estrategia de Batalla Naval: cómo ganar más partidas',
+        intro:
+          'La Batalla Naval (Battleship) es un juego de probabilidades y eliminación progresiva. Unos pocos hábitos separan al jugador casual del almirante que hunde primero una y otra vez.',
+        tips: {
+          hunt: {
+            title: 'Caza y remata tras un impacto',
+            body: 'Después de un impacto, dispara a las casillas adyacentes en una de las cuatro direcciones hasta que el barco se hunda. En cuanto caiga, vuelve a tu patrón de búsqueda: la confirmación del hundimiento te indica qué casillas vecinas puedes ignorar.',
+          },
+          parity: {
+            title: 'Busca en patrón de damero',
+            body: 'El barco más corto ocupa dos casillas, así que disparar en damero garantiza tocar cada barco sin revisar todas las casillas. Reduce casi a la mitad lo que necesitas probar antes del primer impacto.',
+          },
+          edges: {
+            title: 'Evita los bordes y las líneas obvias',
+            body: 'Pegarse al borde parece seguro, pero los rivales humanos peinan primero el perímetro porque allí los barcos tienen menos huida posible. Aleja tu flota uno o dos espacios del margen.',
+          },
+          spread: {
+            title: 'Distribuye, no agrupes',
+            body: 'Pon cada barco en su propio cuadrante cuando puedas. Una flota agrupada se desploma en cadena: un solo impacto afortunado le regala al rival dos o tres hundimientos seguidos.',
+          },
+          memory: {
+            title: 'Recuerda los fallos, no solo los impactos',
+            body: 'Los fallos también informan. Marca mentalmente las zonas muertas y, a mitad de partida, habrás reducido a la mitad el espacio de búsqueda. La mayoría de los temas de Arcadeum ya marcan los fallos por ti.',
+          },
+        },
+      },
+      about: {
+        title: 'Sobre la Batalla Naval',
+        paragraphs: [
+          'La Batalla Naval, conocida internacionalmente como Battleship, es uno de los juegos de estrategia sobre cuadrícula más antiguos que aún se juegan. Mucho antes de los tableros de plástico, las reglas se dibujaban en hojas a cuadros: dos rivales, dos rejillas secretas de 10×10 y la emoción de cantar coordenadas una a una.',
+          'A mediados del siglo XX la partida saltó del papel al plástico y se convirtió en clásico de las noches en familia, antes de pasar a las pantallas — versiones electrónicas de bolsillo, adaptaciones de PC y, ahora, multijugador nativo en el navegador.',
+          'Arcadeum conserva la rejilla original de 10×10 y la flota de cinco barcos, pero añade lo que la versión en papel nunca tuvo: emparejamiento instantáneo, oponentes con IA, modo en equipos, diez temas visuales y enlaces de lobby que puedes compartir. Tanto si buscas una partida rápida contra el ordenador como una más larga contra otra persona, las reglas son las mismas que llevan un siglo discutiendo los almirantes.',
+        ],
+      },
+      board: {
+        label: 'Vista previa en vivo',
+        cycleHint: 'Toca para cambiar de tema',
+        cycleAriaLabel: 'Cambiar vista previa de tema, actualmente {{variant}}',
+      },
+      highlights: {
+        title: 'Por qué jugar a Batalla Naval en Arcadeum',
+        players: {
+          title: '2 a 4 jugadores',
+          body: 'Duelos cara a cara o batalla campal con hasta cuatro almirantes por sala.',
+        },
+        teams: {
+          title: 'Modo equipos',
+          body: 'Hasta cuatro equipos con tableros compartidos, chat de equipo privado y barcos ocultos opcionales.',
+        },
+        themes: {
+          title: 'Más de 10 temas',
+          body: 'Clásico, moderno, pixel-art, ciberpunk, nebulosa, vintage, atardecer y más.',
+        },
+        free: {
+          title: 'Gratis e instantáneo',
+          body: 'Sin instalaciones ni muros de pago. Abre una sala y comparte el enlace.',
+        },
+      },
+      howToPlay: {
+        title: 'Cómo jugar a Batalla Naval',
+        steps: {
+          create: {
+            title: '1. Crea una sala',
+            body: 'Elige un tema, invita amigos o añade bots de IA, elige duelo o modo equipos.',
+          },
+          place: {
+            title: '2. Coloca tu flota',
+            body: 'Arrastra tus cinco barcos a tu cuadrícula 10×10. Los barcos no pueden superponerse ni tocarse.',
+          },
+          fire: {
+            title: '3. Dispara al enemigo',
+            body: 'Por turnos elige una celda en la cuadrícula de cada oponente. Aciertos en rojo, fallos en blanco.',
+          },
+          win: {
+            title: '4. Húndelos a todos',
+            body: 'Gana el último almirante con al menos un barco a flote.',
+          },
+        },
+      },
+      faq: {
+        title: 'Preguntas frecuentes',
+        items: {
+          free: {
+            question: '¿Batalla Naval es gratis?',
+            answer:
+              'Sí. Batalla Naval en Arcadeum es totalmente gratis y se juega en el navegador sin descargas.',
+          },
+          players: {
+            question: '¿Cuántos jugadores puede tener una partida?',
+            answer:
+              'De dos a cuatro jugadores por sala. El modo equipos permite hasta cuatro equipos de dos o más jugadores.',
+          },
+          ai: {
+            question: '¿Puedo jugar contra la computadora?',
+            answer:
+              'Sí. Puedes rellenar cualquier hueco con un bot de IA para practicar solo o completar un grupo pequeño.',
+          },
+          duration: {
+            question: '¿Cuánto dura una partida de Batalla Naval?',
+            answer:
+              'Una partida típica dura unos 20 minutos, dependiendo del número de jugadores y la rapidez con la que disparen.',
+          },
+          rules: {
+            question: '¿Cuáles son las reglas de Batalla Naval?',
+            answer:
+              'Cada jugador coloca en secreto una flota en una cuadrícula 10×10, luego los jugadores se turnan para disparar a una celda en la cuadrícula de cada oponente. Los aciertos se marcan en rojo y los fallos en blanco. Cuando todas las celdas de un barco son alcanzadas, el barco se hunde. Gana el último jugador con al menos un barco a flote.',
+          },
+        },
+      },
+      finalCta: {
+        title: '¿Listo para jugar?',
+        subtitle: 'Abre una sala y comparte el enlace — tu flota te espera.',
+      },
+      breadcrumb: {
+        home: 'Inicio',
+        games: 'Juegos',
+        seaBattle: 'Batalla Naval',
+      },
+    },
   },
 };

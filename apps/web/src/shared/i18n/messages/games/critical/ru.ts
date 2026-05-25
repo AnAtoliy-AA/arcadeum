@@ -1,11 +1,13 @@
 import { variants as cardVariants } from './ru-variants';
 import { modals } from './ru-modals';
+import { landing } from './landing-ru';
 
 export const ruMessages = {
   critical_v1: {
     name: 'Critical',
     description:
       'Стратегическая карточная игра, где нужно избегать критических угроз',
+    landing,
     rules: {
       title: 'Правила игры',
       headers: {
@@ -63,6 +65,32 @@ export const ruMessages = {
       'high-altitude-hike': {
         name: 'Горный поход',
         description: 'Выживание в приключении, спасаясь от лавины',
+      },
+      galaxy: {
+        name: 'Космическая одиссея',
+        description:
+          'Исследуйте глубины космоса на высокотехнологичном звездолёте',
+      },
+      fantasy: {
+        name: 'Логово дракона',
+        description: 'Мир магии, мифических существ и древних легенд',
+      },
+      western: {
+        name: 'Пыльное ущелье',
+        description: 'Дикий фронтир разбойников, шерифов и золотой лихорадки',
+      },
+      egypt: {
+        name: 'Проклятие фараона',
+        description: 'Пирамиды, тайные камеры и загадки Нила',
+      },
+      steampunk: {
+        name: 'Паровой двигатель',
+        description:
+          'Шестерёнки, часовые механизмы и индустриальные чудеса викторианской эпохи',
+      },
+      zen: {
+        name: 'Лунный дзен',
+        description: 'Безмятежность, дисциплина и путь самурая',
       },
       random: {
         name: 'Случайная тема',
@@ -383,6 +411,12 @@ export const ruMessages = {
       joining: 'Вход...',
       blockThisRematch: 'Блокировать только этот реванш',
       blockInvitations: 'Блокировать все приглашения от этого игрока',
+      invitation: {
+        title: 'Приглашение на реванш',
+        message: '{{name}} приглашает вас сыграть ещё раз.',
+        decline: 'Отклонить',
+        accept: 'Принять',
+      },
     },
     fullscreen: {
       enter: 'На весь экран (F)',

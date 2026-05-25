@@ -33,6 +33,13 @@ type SocialConfig = {
   github?: string;
 };
 
+type VerificationConfig = {
+  google?: string;
+  yandex?: string;
+  bing?: string;
+  yahoo?: string;
+};
+
 export type WebAppConfig = {
   appName: string;
   appVersion: string;
@@ -44,6 +51,7 @@ export type WebAppConfig = {
   downloads: DownloadSectionConfig;
   social: SocialConfig;
   siteUrl: string;
+  verification: VerificationConfig;
 };
 
 export function trim(value?: string | null): string | undefined {
@@ -96,8 +104,8 @@ function readAppConfig(): WebAppConfig {
     appName,
     appVersion,
     presentationVideoId,
-    seoTitle: `${appName} - Play Board Games Online | Best Online Board Game Platform`,
-    seoDescription: `Play the best board games online with friends on ${appName}. Create private rooms, automate rules, and enjoy a premium tabletop experience in your browser. No registration required.`,
+    seoTitle: `${appName} - Play Free Online Board Games with Friends | Battleship & More`,
+    seoDescription: `Play free online board games with friends on ${appName} — Battleship, strategy, and card games. Create private rooms, automate rules, and enjoy a polished tabletop experience in your browser. No download, no signup.`,
     primaryCta: {
       href: primaryCtaHref,
       label: 'Get started',
@@ -127,6 +135,12 @@ function readAppConfig(): WebAppConfig {
         'https://github.com/AnAtoliy-AA/arcadeum',
     },
     siteUrl: trim(process.env.NEXT_PUBLIC_SITE_URL) ?? 'https://arcadeum.games',
+    verification: {
+      google: trim(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION),
+      yandex: trim(process.env.NEXT_PUBLIC_YANDEX_VERIFICATION),
+      bing: trim(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION),
+      yahoo: trim(process.env.NEXT_PUBLIC_YAHOO_SITE_VERIFICATION),
+    },
   };
 }
 

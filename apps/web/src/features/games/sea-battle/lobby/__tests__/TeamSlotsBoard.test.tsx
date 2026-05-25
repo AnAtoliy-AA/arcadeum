@@ -52,6 +52,7 @@ vi.mock('@arcadeum/ui', () => ({
     </button>
   ),
   Avatar: ({ name }: { name?: string }) => <span>{name}</span>,
+  PlayerAvatar: ({ name }: { name?: string }) => <span>{name}</span>,
   Input: (
     props: { value?: string; onChange?: (e: unknown) => void } & Record<
       string,

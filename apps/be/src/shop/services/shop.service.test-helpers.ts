@@ -177,6 +177,7 @@ export async function buildShopHarness(): Promise<ShopServiceHarness> {
 
   const inventory = {
     findByUserAndPurchaseId: jest.fn().mockResolvedValue(null),
+    findLiveByItem: jest.fn().mockResolvedValue(null),
     clearEquipIfPointsAt: jest.fn().mockResolvedValue(undefined),
   } as unknown as jest.Mocked<InventoryService>;
 

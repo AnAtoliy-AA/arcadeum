@@ -7,6 +7,9 @@ export interface GameRoomMemberSummary {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 }
 
 // Game Options Interface

@@ -330,10 +330,10 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();
     await expect(
-      chatArea.getByRole('button', { name: 'Team', exact: true }),
+      chatArea.getByRole('tab', { name: /Team/, exact: false }),
     ).toBeVisible();
     await expect(
-      chatArea.getByRole('button', { name: 'All', exact: true }),
+      chatArea.getByRole('tab', { name: /All/, exact: false }),
     ).toBeVisible();
   });
 });

@@ -8,6 +8,9 @@ interface ChatMessagePopupProps {
   senderEquippedAvatarId?: string | null;
   senderEquippedBadgeId?: string | null;
   senderEquippedNameColorId?: string | null;
+  senderEquippedFrameId?: string | null;
+  senderEquippedAuraId?: string | null;
+  senderEquippedBannerId?: string | null;
   message: string;
   visible: boolean;
   onDismiss: () => void;
@@ -20,6 +23,9 @@ export function ChatMessagePopup({
   senderEquippedAvatarId,
   senderEquippedBadgeId,
   senderEquippedNameColorId,
+  senderEquippedFrameId,
+  senderEquippedAuraId,
+  senderEquippedBannerId,
   message,
   visible,
   onDismiss,
@@ -40,7 +46,7 @@ export function ChatMessagePopup({
       style={{
         cursor: 'pointer',
         maxWidth: 340,
-        position: 'fixed',
+        position: 'absolute',
         top: 24,
         right: 24,
         zIndex: 10000,
@@ -55,6 +61,9 @@ export function ChatMessagePopup({
         senderEquippedAvatarId={senderEquippedAvatarId ?? null}
         senderEquippedBadgeId={senderEquippedBadgeId ?? null}
         senderEquippedNameColorId={senderEquippedNameColorId ?? null}
+        senderEquippedFrameId={senderEquippedFrameId ?? null}
+        senderEquippedAuraId={senderEquippedAuraId ?? null}
+        senderEquippedBannerId={senderEquippedBannerId ?? null}
         message={message}
         type="message"
         isOwn={isOwn}

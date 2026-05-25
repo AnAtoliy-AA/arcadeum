@@ -39,6 +39,14 @@ export const SceneAmbientGlow = styled(YStack, {
   name: 'CriticalSceneAmbientGlow',
 });
 
+export const SceneBackgroundImage = styled(YStack, {
+  name: 'CriticalSceneBackgroundImage',
+  position: 'absolute',
+  inset: 0,
+  zIndex: -1,
+  opacity: 0.6,
+});
+
 export const SceneParticles = styled(YStack, {
   name: 'CriticalSceneParticles',
   position: 'absolute',
@@ -131,6 +139,16 @@ export function makeAmbientGlowStyle(
   };
 }
 
+export function makeBackgroundImageStyle(url: string): CSSProperties {
+  return {
+    backgroundImage: `url(${url})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    pointerEvents: 'none',
+  };
+}
+
 export const SCENE_LAYER_TESTIDS = {
   backdrop: 'scene-backdrop',
   ambientGlow: 'scene-ambient-glow',
@@ -140,4 +158,5 @@ export const SCENE_LAYER_TESTIDS = {
   scanlines: 'scene-scanlines',
   vignette: 'scene-vignette',
   particles: 'scene-particles',
+  backgroundImage: 'scene-background-image',
 } as const;

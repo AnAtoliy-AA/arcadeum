@@ -12,7 +12,7 @@ export type UserRole =
   | 'developer'
   | 'admin';
 
-type RoleStyle = { bg: string; text: string; glow?: string };
+type RoleStyle = { bg: string; text: string; glow?: string; outlinedText?: string };
 
 const roleStyles: Record<UserRole, RoleStyle> = {
   free: {
@@ -52,6 +52,9 @@ const roleStyles: Record<UserRole, RoleStyle> = {
   admin: {
     bg: 'linear-gradient(135deg, var(--danger), color-mix(in srgb, var(--danger) 70%, black))',
     text: 'var(--white)',
+    // Filled admin uses white-on-red; outlined needs the role color directly
+    // so the border + text both read as "admin".
+    outlinedText: 'var(--danger)',
     glow: '0 0 12px color-mix(in srgb, var(--danger) 40%, transparent)',
   },
 };
@@ -59,23 +62,38 @@ const roleStyles: Record<UserRole, RoleStyle> = {
 export interface RoleBadgeProps {
   role: UserRole;
   children: React.ReactNode;
+  /**
+   * - `filled` (default): role-tinted gradient background with glow.
+   * - `outlined`: transparent background, role-color border + text. Quieter
+   *   treatment for dense contexts (header chip, inline lists) where the
+   *   filled variant dominates.
+   */
+  variant?: 'filled' | 'outlined';
 }
 
-export function RoleBadge({ role, children }: RoleBadgeProps) {
-  const { bg, text, glow } = roleStyles[role] ?? roleStyles.free;
+export function RoleBadge({ role, children, variant = 'filled' }: RoleBadgeProps) {
+  const style = roleStyles[role] ?? roleStyles.free;
+  const isOutlined = variant === 'outlined';
+  const textColor = isOutlined ? (style.outlinedText ?? style.text) : style.text;
   return (
     <XStack
       alignItems="center"
       paddingVertical={2}
       paddingHorizontal={7}
       borderRadius={5}
-      style={{ display: 'inline-flex', background: bg, boxShadow: glow ?? 'none', whiteSpace: 'nowrap' }}
+      style={{
+        display: 'inline-flex',
+        background: isOutlined ? 'transparent' : style.bg,
+        boxShadow: isOutlined ? 'none' : (style.glow ?? 'none'),
+        border: isOutlined ? `1px solid color-mix(in srgb, ${textColor} 60%, transparent)` : 'none',
+        whiteSpace: 'nowrap',
+      }}
     >
       <Typography
         uiSize="xs"
         weight="700"
         tracking="md"
-        style={{ textTransform: 'uppercase', color: text }}
+        style={{ textTransform: 'uppercase', color: textColor }}
       >
         {children}
       </Typography>

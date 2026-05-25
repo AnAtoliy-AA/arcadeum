@@ -8,7 +8,20 @@ import {
   SHOP_CATEGORIES,
   SHOP_PRICE_CURRENCIES,
   SHOP_RARITIES,
+  type ShopCategory,
 } from './shop-types';
+
+// Categories whose catalog entries render from `colorValue` (CSS solid
+// or linear-gradient) instead of a static image asset. Mirrors the
+// branches in apps/web/src/features/shop/ui/ItemAsset.tsx — keep in sync
+// when a new swatch category lands.
+const SWATCH_CATEGORIES = new Set<ShopCategory>([
+  'name_color',
+  'game_skin',
+  'banner',
+  'aura',
+  'frame',
+]);
 
 describe('SHOP_CATALOG', () => {
   it('ids are unique and stable kebab-case', () => {
@@ -38,11 +51,12 @@ describe('SHOP_CATALOG', () => {
   });
 
   it('every image-backed item has an assetUrl under /shop/', () => {
-    // name_color items render a CSS swatch from colorValue and intentionally
-    // have an empty assetUrl. Every other category must point to a static
+    // Swatch categories (see SWATCH_CATEGORIES above) render from a CSS
+    // colorValue instead of an image asset, so they intentionally ship
+    // with assetUrl=''. Every other category must point to a static
     // asset under /shop/.
     for (const item of Object.values(SHOP_CATALOG)) {
-      if (item.category === 'name_color') {
+      if (SWATCH_CATEGORIES.has(item.category)) {
         expect(item.colorValue).toBeTruthy();
         continue;
       }

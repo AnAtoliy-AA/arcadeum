@@ -33,6 +33,7 @@ export default function AppFooter() {
       title: t('home.footerPlatformTitle'),
       links: [
         { href: '/games', label: t('home.footerAllGames') },
+        { href: '/games/sea-battle', label: t('home.footerSeaBattle') },
         { href: '/tournaments', label: t('home.footerTournaments') },
         { href: '/leaderboards', label: t('home.footerLeaderboards') },
         { href: '/rewards', label: t('home.footerRewards') },

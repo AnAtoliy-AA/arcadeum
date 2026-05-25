@@ -1,3 +1,4 @@
+import { helpFaq } from './help-faq/ru';
 import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
 import { walletRu } from './wallet/ru';
@@ -8,6 +9,7 @@ import { adminEconomyRu } from './admin-economy/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { shopRu } from './shop/ru';
 import { adminShopRu } from './admin-shop/ru';
+import { adminGamesRu } from './admin-games/ru';
 
 export const ru = {
   admin: {
@@ -24,6 +26,7 @@ export const ru = {
       tournaments: 'Турниры',
       economy: 'Экономика',
       shop: 'Магазин',
+      games: 'Игры',
       comingSoon: 'Скоро',
     },
     error: {
@@ -310,6 +313,7 @@ export const ru = {
           'Общайтесь с другими игроками, чтобы делиться советами и решать проблемы.',
       },
     ],
+    faq: helpFaq,
     comingSoon: 'Центр помощи скоро появится.',
   },
   leaderboards: {
@@ -485,4 +489,5 @@ export const ru = {
   dailyRewards: dailyRewardsRu,
   shop: shopRu,
   adminShop: adminShopRu,
+  adminGames: adminGamesRu,
 };

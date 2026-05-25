@@ -11,6 +11,9 @@ export type AuthUserProfile = {
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
+  equippedFrameId?: string | null;
+  equippedAuraId?: string | null;
+  equippedBannerId?: string | null;
 };
 
 export type LoginResponse = {
@@ -115,6 +118,41 @@ export async function loginOAuthSession(params: {
     body: JSON.stringify(params),
   });
   return readJson<LoginResponse>(res);
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  // Endpoint is account-enumeration-safe on the BE — it always 204s, even
+  // when the email maps to no user. We treat any non-2xx as a generic
+  // failure so the UI can show a retry-friendly error instead of leaking
+  // server detail.
+  const res = await fetch(api('/auth/forgot'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    throw new Error(`Request failed (${res.status})`);
+  }
+}
+
+export async function confirmPasswordReset(params: {
+  token: string;
+  password: string;
+}): Promise<void> {
+  const res = await fetch(api('/auth/reset'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    // 401 = token invalid/expired; surfaced as a typed error code so the
+    // view can render the right copy ("link expired, request a new one")
+    // instead of a generic server error.
+    if (res.status === 401) {
+      throw new Error('TOKEN_INVALID');
+    }
+    throw new Error(`Request failed (${res.status})`);
+  }
 }
 
 export async function refreshSession(

@@ -225,22 +225,34 @@ export class LeaderboardsService {
     let equippedAvatarId: string | null = null;
     let equippedBadgeId: string | null = null;
     let equippedNameColorId: string | null = null;
+    let equippedFrameId: string | null = null;
+    let equippedAuraId: string | null = null;
+    let equippedBannerId: string | null = null;
     if (Types.ObjectId.isValid(userId)) {
       const userDoc = await this.userModel
         .findById(userId, {
           equippedAvatarId: 1,
           equippedBadgeId: 1,
           equippedNameColorId: 1,
+          equippedFrameId: 1,
+          equippedAuraId: 1,
+          equippedBannerId: 1,
         })
         .lean<{
           equippedAvatarId?: string | null;
           equippedBadgeId?: string | null;
           equippedNameColorId?: string | null;
+          equippedFrameId?: string | null;
+          equippedAuraId?: string | null;
+          equippedBannerId?: string | null;
         } | null>();
       if (userDoc) {
         equippedAvatarId = userDoc.equippedAvatarId ?? null;
         equippedBadgeId = userDoc.equippedBadgeId ?? null;
         equippedNameColorId = userDoc.equippedNameColorId ?? null;
+        equippedFrameId = userDoc.equippedFrameId ?? null;
+        equippedAuraId = userDoc.equippedAuraId ?? null;
+        equippedBannerId = userDoc.equippedBannerId ?? null;
       }
     }
 
@@ -251,6 +263,9 @@ export class LeaderboardsService {
       equippedAvatarId,
       equippedBadgeId,
       equippedNameColorId,
+      equippedFrameId,
+      equippedAuraId,
+      equippedBannerId,
     };
   }
 

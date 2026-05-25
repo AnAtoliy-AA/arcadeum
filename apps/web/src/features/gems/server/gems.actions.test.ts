@@ -92,6 +92,18 @@ describe('buyGemsAction', () => {
     const result = await buyGemsAction({ packageId: 'pkg-1' });
     expect(result).toEqual({ ok: false, error: 'generic' });
   });
+
+  it('returns unauthorized error on 401', async () => {
+    fetchMock.mockResolvedValue(makeErrorResponse(401));
+    const result = await buyGemsAction({ packageId: 'pkg-1' });
+    expect(result).toEqual({ ok: false, error: 'unauthorized' });
+  });
+
+  it('returns unauthorized error on 403', async () => {
+    fetchMock.mockResolvedValue(makeErrorResponse(403));
+    const result = await buyGemsAction({ packageId: 'pkg-1' });
+    expect(result).toEqual({ ok: false, error: 'unauthorized' });
+  });
 });
 
 // ─── finalizeGemPurchaseAction ────────────────────────────────────────────────

@@ -205,6 +205,10 @@ export type ContactMessages = {
       successTitle?: string;
       successBody?: string;
       sendAnother?: string;
+      openMail?: string;
+      errorTitle?: string;
+      errorBody?: string;
+      tryAgain?: string;
       success?: string;
     };
     side?: {

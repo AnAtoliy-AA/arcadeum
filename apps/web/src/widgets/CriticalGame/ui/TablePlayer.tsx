@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import {
   PlayerPositionWrapper,
   PlayerCard,
-  PlayerAvatar,
   PlayerName,
   PlayerCardCount,
   TurnIndicator,
@@ -13,8 +12,9 @@ import { SeaBattlePopup } from '@/widgets/SeaBattleGame/ui/SeaBattlePopup';
 import type { CriticalLogEntry, CriticalPlayerTableState } from '../types';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { IdleBadge } from '@/shared/ui';
-import { useMedia, Text } from 'tamagui';
+import { useMedia, Text, YStack } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
+import { InGameAvatar } from '@/features/games/ui';
 import { useScenePalette } from './ScenePaletteContext';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getPlayerColor } from '@/shared/lib/playerColors';
@@ -74,13 +74,6 @@ export function TablePlayer({
   const showEliminatedRing = !player.alive;
 
   const playerColor = getPlayerColor(playerId);
-
-  const initials = displayName
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   // Circular Positioning Logic (from table.ts)
   const positionStyle = useMemo(() => {
@@ -208,32 +201,33 @@ export function TablePlayer({
               }}
             />
           )}
-          <PlayerAvatar
-            $isCurrentTurn={isCurrent}
-            $isAlive={player.alive}
-            $variant={cardVariant as GameVariant}
+          <YStack
             width={avatarInnerSize}
             height={avatarInnerSize}
             borderRadius={9999}
             alignItems="center"
             justifyContent="center"
             overflow="hidden"
+            opacity={player.alive ? 1 : 0.4}
           >
-            <Text
-              fontSize={15}
-              fontWeight="800"
-              letterSpacing={0.5}
-              color={
-                player.alive
-                  ? isCurrent
-                    ? '#1a1a1a'
-                    : '$colorSubtle'
-                  : 'rgba(255,255,255,0.3)'
-              }
-            >
-              {player.alive ? initials : '💀'}
-            </Text>
-          </PlayerAvatar>
+            {player.alive ? (
+              <InGameAvatar
+                playerId={playerId}
+                name={displayName}
+                size={isMobile ? 'icon' : 'sm'}
+                data-testid={`player-avatar-${playerId}`}
+              />
+            ) : (
+              <Text
+                fontSize={15}
+                fontWeight="800"
+                letterSpacing={0.5}
+                color="rgba(255,255,255,0.3)"
+              >
+                💀
+              </Text>
+            )}
+          </YStack>
         </div>
 
         <PlayerName

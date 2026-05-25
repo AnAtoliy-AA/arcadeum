@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { YStack } from 'tamagui';
@@ -59,15 +59,10 @@ export default function ResetPasswordClient() {
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [status, setStatus] = useState<Status>('idle');
-  const [errorText, setErrorText] = useState('');
-
-  useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setErrorText(copy.missingToken);
-    }
-  }, [token, copy.missingToken]);
+  // Initial state is derived from `token` so a missing-token URL renders the
+  // error inline on first paint — no useEffect/setState round-trip needed.
+  const [status, setStatus] = useState<Status>(token ? 'idle' : 'error');
+  const [errorText, setErrorText] = useState(token ? '' : copy.missingToken);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

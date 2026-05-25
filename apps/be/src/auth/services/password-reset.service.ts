@@ -83,7 +83,7 @@ export class PasswordResetService {
         `Use this link within ${ttlMinutes} minutes to choose a new one:`,
         resetUrl,
         '',
-        "If you did not request this, you can ignore this email — your password will not change.",
+        'If you did not request this, you can ignore this email — your password will not change.',
       ].join('\n'),
     });
 

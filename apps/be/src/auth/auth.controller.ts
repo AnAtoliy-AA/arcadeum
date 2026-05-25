@@ -104,9 +104,7 @@ export class AuthController {
   @Post('reset')
   @UseGuards(AuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60 * 60 * 1000 } })
-  async reset(
-    @Body() dto: ResetPasswordDto,
-  ): Promise<{ ok: true } | never> {
+  async reset(@Body() dto: ResetPasswordDto): Promise<{ ok: true }> {
     const result = await this.passwordReset.consumeReset(
       dto.token,
       dto.password,

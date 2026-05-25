@@ -57,13 +57,18 @@ export const test = base.extend({
         // responses or auth-gated specs where mockSession is in effect but the
         // BE rejects the fake bearer token (BalanceChip/auth-blocked/etc fire
         // header calls on every page). Allowlist by the page URL the noise
-        // emits from: wallet/payments/gems/games (mocked error UX), auth/
-        // settings (mocked-session pages), and the homepage root.
+        // emits from. Every auth-gated route in the app needs to be here —
+        // the header/shop-balance-chip widgets fire `/wallet/balance`,
+        // `/auth/check/*`, `/notifications/*`, etc. on every page render
+        // and the fake JWT from mockSession always 401s against the real BE.
         if (
           type === 'error' &&
           /Failed to load resource.*status of 4\d{2}/i.test(text) &&
-          (/\/(?:wallet|payments|gems|games|auth|settings)/.test(page.url()) ||
-            /^https?:\/\/[^/]+\/?$/.test(page.url()))
+          (/\/(?:wallet|payments|gems|games|auth|settings|chat|chats|leaderboards|stats|history|notifications|notes|referrals|rewards|tournaments|shop|profile|players|admin|community|developers|help|contact|support|blog|cookies|privacy|terms|legal|home)/.test(
+            page.url(),
+          ) ||
+            /^https?:\/\/[^/]+\/?$/.test(page.url()) ||
+            /^https?:\/\/[^/]+\/(?:en|es|fr|ru|by)\/?$/.test(page.url()))
         ) {
           return;
         }

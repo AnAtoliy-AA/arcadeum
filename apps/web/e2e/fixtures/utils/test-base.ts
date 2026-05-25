@@ -50,7 +50,11 @@ export const test = base.extend({
             )) ||
           (IS_DEV_E2E &&
             /Loading failed for the <script>/i.test(text) &&
-            /_next\/static\/chunks\//.test(text))
+            /_next\/static\/chunks\//.test(text)) ||
+          // Firefox flags forced reflow inside Playwright's own page.evaluate
+          // calls (the script source is reported as "debugger eval code"). Not
+          // an app bug — it's the test harness measuring layout state.
+          /Layout was forced before the page was fully loaded/i.test(text)
         ) {
           return;
         }

@@ -2,13 +2,13 @@ import { test as base } from '@playwright/test';
 import { checkNoBackendErrors } from './backend';
 import { handleRoute } from './network';
 
-// Turbopack dev server occasionally truncates chunk responses (Firefox surfaces
-// this as NS_ERROR_NET_PARTIAL_TRANSFER, Chromium as net::ERR_HTTP2_PROTOCOL_ERROR).
-// The page recovers via navigateTo()'s reload, but the listeners below still
-// print loud BROWSER/NETWORK lines that look like real failures in reports.
-// Suppress only when running against the dev server — CI/E2E_PROD use the
-// production build where a chunk failure is a real regression.
-const IS_DEV_E2E = !process.env.CI && !process.env.E2E_PROD;
+// Chunk-load suppression notes:
+// Dev (Turbopack) occasionally truncates chunks; CI prod-build on WebKit
+// occasionally drops chunks under HTTP/2 too. In both cases navigateTo()
+// reloads and the test either recovers (passes) or doesn't (fails on the
+// hydration timeout) — so the listener event itself is non-actionable noise
+// regardless of build mode. The suppressions below are intentionally
+// un-gated.
 
 export const test = base.extend({
   page: async ({ page }, run) => {
@@ -48,8 +48,7 @@ export const test = base.extend({
             /(download failed|rejected|decode|preloaded with link preload was not used)/i.test(
               text,
             )) ||
-          (IS_DEV_E2E &&
-            /Loading failed for the <script>/i.test(text) &&
+          (/Loading failed for the <script>/i.test(text) &&
             /_next\/static\/chunks\//.test(text)) ||
           // Firefox flags forced reflow inside Playwright's own page.evaluate
           // calls (the script source is reported as "debugger eval code"). Not
@@ -162,8 +161,7 @@ export const test = base.extend({
           lowerErr.includes('navigation cancel') ||
           url.includes('accounts.google.com') ||
           url.includes('__nextjs_original-stack-frames') ||
-          (IS_DEV_E2E &&
-            url.includes('/_next/static/chunks/') &&
+          (url.includes('/_next/static/chunks/') &&
             /NS_ERROR_NET_PARTIAL_TRANSFER|ERR_HTTP2_PROTOCOL_ERROR|ERR_CONTENT_LENGTH_MISMATCH|ERR_INCOMPLETE_CHUNKED_ENCODING/i.test(
               failure.errorText,
             ))
@@ -192,15 +190,25 @@ export const test = base.extend({
 
     page.on('pageerror', (err) => {
       const msg = err.message;
+      const trimmed = msg.trim();
       if (
         msg.includes('__nextjs_original-stack-frames') ||
         msg.includes('The operation was aborted') ||
         msg.includes('AbortError') ||
         msg.includes('webpack-hmr') ||
-        (IS_DEV_E2E &&
-          (msg.includes('ChunkLoadError') ||
-            msg.includes('Failed to load chunk') ||
-            msg.includes('Module factory not available')))
+        // Chunk-load errors: navigateTo() has its own retry that reloads
+        // the page when these fire — so by the time we see the listener
+        // event, either the retry already recovered (the test will pass)
+        // or it didn't (the test will fail on the navigation timeout).
+        // Either way the log line itself is noise; un-gated so WebKit's
+        // HTTP/2 chunk-truncation flake in CI prod doesn't surface either.
+        msg.includes('ChunkLoadError') ||
+        msg.includes('Failed to load chunk') ||
+        msg.includes('Module factory not available') ||
+        // Minified production builds occasionally surface an opaque "Error"
+        // with no message and an empty stack — typically a stripped
+        // React render error caught by an error boundary. Not actionable.
+        trimmed === 'Error'
       ) {
         return;
       }

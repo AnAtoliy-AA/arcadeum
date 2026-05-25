@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.36] - 2026-05-25
+
+### Added
+- implement forgot/reset password flow end-to-end (ARC-748) (ARC-748)
+
+### Fixed
+- drop _rsc-cancel + opaque 'Error' noise from pageerror path too (ARC-748) (ARC-748)
+- un-gate chunk-load suppression + drop opaque 'Error' pageerror noise (ARC-748) (ARC-748)
+- suppress CI noise on /payment 401s, Safari aborts, RSC fetch cancels (ARC-748) (ARC-748)
+- stop AuthModule from pulling SupportController into integration tests (ARC-748) (ARC-748)
+- satisfy lint on forgot/reset wiring (ARC-748) (ARC-748)
+- absorb Turbopack dev-server flakes on firefox + Mobile Chrome (ARC-748) (ARC-748)
+- expand 401 suppression to every auth-gated route (ARC-748) (ARC-748)
+- repair leaderboard avatar shape check + harden PWA meta test (ARC-748) (ARC-748)
+- add missing critical variant names for ru/fr/by (ARC-748) (ARC-748)
+
+### Improved
+- priority on rank-2/3 avatars to fix LCP (ARC-748) (ARC-748)
+
+
 ## [1.14.35] - 2026-05-24
 
 ### Added

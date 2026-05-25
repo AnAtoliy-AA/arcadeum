@@ -7,12 +7,13 @@ import {
 import { SupportController } from './support.controller';
 import { SupportService } from './support.service';
 import { DiscordNotifierService } from './lib/discord-notifier.service';
-import { MailerService } from './lib/mailer.service';
+import { MailerModule } from './mailer.module';
 import { OriginGuard } from './lib/origin.guard';
 import { SupportThrottlerGuard } from './lib/support-throttler.guard';
 
 @Module({
   imports: [
+    MailerModule,
     MongooseModule.forFeature([
       { name: SupportContact.name, schema: SupportContactSchema },
     ]),
@@ -21,7 +22,6 @@ import { SupportThrottlerGuard } from './lib/support-throttler.guard';
   providers: [
     SupportService,
     DiscordNotifierService,
-    MailerService,
     OriginGuard,
     SupportThrottlerGuard,
   ],

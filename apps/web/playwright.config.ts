@@ -86,6 +86,12 @@ export default defineConfig({
     },
     {
       name: 'firefox',
+      // Firefox surfaces Turbopack dev-server chunk truncation as
+      // NS_ERROR_NET_PARTIAL_TRANSFER, which leaves the page non-hydrated and
+      // makes navigateTo time out. One retry absorbs the cold-compile +
+      // chunk-truncation flake without masking real regressions (a real bug
+      // must fail twice in a row to mark the run red).
+      retries: 1,
       use: {
         ...devices['Desktop Firefox'],
         launchOptions: {
@@ -114,6 +120,13 @@ export default defineConfig({
     },
     {
       name: 'Mobile Chrome',
+      // Pixel 5 emulation pays a per-test setup cost (touch + reduced viewport
+      // shifts the layout/hydration tree). Combined with parallel-worker
+      // contention on the dev server this reliably tips a cold-compile of
+      // auth-gated routes (/wallet, /admin/users) into the 60s ceiling. Same
+      // single-retry policy as Firefox/Safari — masks the dev-server flake
+      // without hiding repeatable failures.
+      retries: 1,
       use: { ...devices['Pixel 5'] },
     },
     {

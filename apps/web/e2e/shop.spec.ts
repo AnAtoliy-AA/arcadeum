@@ -78,15 +78,35 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/leaderboards');
-    const avatarContainer = page.locator('[class*="AvatarContainer"]').first();
-    await expect(avatarContainer).toBeVisible();
+    // RankTable fetches data client-side, so the first row only mounts
+    // once the BE responds. Wait for the row container before reading
+    // the avatar disc — dev-server compile can push this past Playwright's
+    // default 15s expect timeout.
+    const firstAvatar = page.getByTestId('leaderboard-row-1-avatar');
+    await expect(firstAvatar).toBeVisible({ timeout: 30000 });
 
-    const borderRadius = await avatarContainer.evaluate((el) => {
-      return window.getComputedStyle(el).borderRadius;
+    // EquippedPlayerAvatar renders the circular YStack as the
+    // `${testid}-disc` element (see packages/ui PlayerAvatar).
+    const avatarDisc = page.getByTestId('leaderboard-row-1-avatar-disc');
+    await expect(avatarDisc).toBeVisible();
+
+    const { borderRadius, width, height } = await avatarDisc.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      return {
+        borderRadius: styles.borderRadius,
+        width: rect.width,
+        height: rect.height,
+      };
     });
-    // Should be rounded (e.g. '9999px' or similar, definitely not '0px')
+    // Tamagui resolves `borderRadius={disc / 2}` to a pixel value equal to
+    // half the disc width — that's what makes it a circle. Assert both
+    // that some radius is applied and that it matches the half-width.
     expect(borderRadius).not.toBe('0px');
     expect(borderRadius).not.toBe('');
+    expect(Math.round(width)).toBe(Math.round(height));
+    const radiusPx = parseFloat(borderRadius);
+    expect(radiusPx).toBeGreaterThanOrEqual(width / 2 - 1);
   });
 
   test('renders and allows preview of new premium items (Cyber Wolf, Cyber Panther, Elite Shield, Mythic Star)', async ({

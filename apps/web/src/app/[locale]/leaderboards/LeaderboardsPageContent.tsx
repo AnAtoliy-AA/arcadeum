@@ -382,6 +382,7 @@ export default function LeaderboardsPageContent({
                         equippedAuraId={second.equippedAuraId}
                         equippedBannerId={second.equippedBannerId}
                         fallbackAvatarUrl={second.avatarUrl}
+                        priority
                       />
                     }
                   />
@@ -407,6 +408,7 @@ export default function LeaderboardsPageContent({
                           equippedAuraId={third.equippedAuraId}
                           equippedBannerId={third.equippedBannerId}
                           fallbackAvatarUrl={third.avatarUrl}
+                          priority
                         />
                       }
                     />

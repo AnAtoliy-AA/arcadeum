@@ -177,7 +177,11 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
       return;
     }
     await navigateTo(page, '/wallet');
-    const coinsFilter = page.getByTestId('filter-coins');
+    // Same SSR → hydration duplicate-node transient documented on filter-all
+    // below: mobile viewports briefly render two nodes with this testid. The
+    // first node carries the canonical href; `.first()` keeps strict-mode
+    // happy without weakening the link-href assertion.
+    const coinsFilter = page.getByTestId('filter-coins').first();
     await expect(coinsFilter).toBeVisible();
     await expect(coinsFilter).toHaveAttribute('href', '/wallet?currency=coins');
   });
@@ -189,7 +193,7 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
       return;
     }
     await navigateTo(page, '/wallet');
-    const gemsFilter = page.getByTestId('filter-gems');
+    const gemsFilter = page.getByTestId('filter-gems').first();
     await expect(gemsFilter).toBeVisible();
     await expect(gemsFilter).toHaveAttribute('href', '/wallet?currency=gems');
   });

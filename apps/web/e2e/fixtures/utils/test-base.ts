@@ -2,6 +2,14 @@ import { test as base } from '@playwright/test';
 import { checkNoBackendErrors } from './backend';
 import { handleRoute } from './network';
 
+// Turbopack dev server occasionally truncates chunk responses (Firefox surfaces
+// this as NS_ERROR_NET_PARTIAL_TRANSFER, Chromium as net::ERR_HTTP2_PROTOCOL_ERROR).
+// The page recovers via navigateTo()'s reload, but the listeners below still
+// print loud BROWSER/NETWORK lines that look like real failures in reports.
+// Suppress only when running against the dev server — CI/E2E_PROD use the
+// production build where a chunk failure is a real regression.
+const IS_DEV_E2E = !process.env.CI && !process.env.E2E_PROD;
+
 export const test = base.extend({
   page: async ({ page }, run) => {
     const translationWarnings: string[] = [];
@@ -39,7 +47,10 @@ export const test = base.extend({
           (/font|geist|preload/i.test(text) &&
             /(download failed|rejected|decode|preloaded with link preload was not used)/i.test(
               text,
-            ))
+            )) ||
+          (IS_DEV_E2E &&
+            /Loading failed for the <script>/i.test(text) &&
+            /_next\/static\/chunks\//.test(text))
         ) {
           return;
         }
@@ -130,7 +141,12 @@ export const test = base.extend({
           failure.errorText === 'cancelled' || // Other runtimes
           failure.errorText.toLowerCase().includes('navigation cancel') ||
           url.includes('accounts.google.com') ||
-          url.includes('__nextjs_original-stack-frames')
+          url.includes('__nextjs_original-stack-frames') ||
+          (IS_DEV_E2E &&
+            url.includes('/_next/static/chunks/') &&
+            /NS_ERROR_NET_PARTIAL_TRANSFER|ERR_HTTP2_PROTOCOL_ERROR|ERR_CONTENT_LENGTH_MISMATCH|ERR_INCOMPLETE_CHUNKED_ENCODING/i.test(
+              failure.errorText,
+            ))
         ) {
           return;
         }
@@ -160,7 +176,11 @@ export const test = base.extend({
         msg.includes('__nextjs_original-stack-frames') ||
         msg.includes('The operation was aborted') ||
         msg.includes('AbortError') ||
-        msg.includes('webpack-hmr')
+        msg.includes('webpack-hmr') ||
+        (IS_DEV_E2E &&
+          (msg.includes('ChunkLoadError') ||
+            msg.includes('Failed to load chunk') ||
+            msg.includes('Module factory not available')))
       ) {
         return;
       }

@@ -190,7 +190,12 @@ export const test = base.extend({
 
     page.on('pageerror', (err) => {
       const msg = err.message;
-      const trimmed = msg.trim();
+      const stack = err.stack || '';
+      // Inspect the full text we would log — message + stack — because some
+      // browsers populate one or the other but not both. Trimming to a bare
+      // "Error" indicates an opaque, stripped React render error caught by
+      // an error boundary; not actionable.
+      const fullText = `${msg}\n${stack}`.trim();
       if (
         msg.includes('__nextjs_original-stack-frames') ||
         msg.includes('The operation was aborted') ||
@@ -205,25 +210,35 @@ export const test = base.extend({
         msg.includes('ChunkLoadError') ||
         msg.includes('Failed to load chunk') ||
         msg.includes('Module factory not available') ||
-        // Minified production builds occasionally surface an opaque "Error"
-        // with no message and an empty stack — typically a stripped
-        // React render error caught by an error boundary. Not actionable.
-        trimmed === 'Error'
+        fullText === 'Error' ||
+        fullText === ''
       ) {
         return;
       }
 
       // Suppress transient access control errors and Fetch failures in pageerror too.
       // These can manifest as Unhandled Rejections in some browser environments.
+      const combined = `${msg}\n${stack}`;
       if (
-        (msg.includes('due to access control checks') ||
-          msg.includes('Fetch API cannot load')) &&
-        (msg.includes('localhost:4000') ||
-          msg.includes('localhost:4500') ||
-          msg.includes('127.0.0.1:4000') ||
-          msg.includes('127.0.0.1:4500') ||
-          msg.includes('localhost:3500') ||
-          msg.includes('127.0.0.1:3500'))
+        (combined.includes('due to access control checks') ||
+          combined.includes('Fetch API cannot load')) &&
+        (combined.includes('localhost:4000') ||
+          combined.includes('localhost:4500') ||
+          combined.includes('127.0.0.1:4000') ||
+          combined.includes('127.0.0.1:4500') ||
+          combined.includes('localhost:3500') ||
+          combined.includes('127.0.0.1:3500'))
+      ) {
+        return;
+      }
+
+      // Same RSC-fetch cancellation pattern as the console handler — WebKit
+      // emits this as a pageerror too when the navigation cancels an
+      // in-flight RSC fetch. Match on `_rsc=` in either message or stack.
+      if (
+        (combined.includes('due to access control checks') ||
+          combined.includes('Fetch API cannot load')) &&
+        /[?&]_rsc=/.test(combined)
       ) {
         return;
       }

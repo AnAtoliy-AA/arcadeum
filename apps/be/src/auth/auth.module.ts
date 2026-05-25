@@ -15,6 +15,7 @@ import {
 } from './schemas/password-reset-token.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import {
   OAuthClientService,
@@ -25,13 +26,19 @@ import {
 import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
-import { SupportModule } from '../support/support.module';
+import { MailerModule } from '../support/mailer.module';
 
 @Module({
   imports: [
     forwardRef(() => ReferralModule),
     ConfigModule,
-    SupportModule,
+    MailerModule,
+    // Self-register ThrottlerModule so AuthThrottlerGuard's deps resolve
+    // even when AuthModule is loaded outside the full app.module graph
+    // (e.g. integration tests that wire AuthModule directly into a
+    // Test.createTestingModule). The per-route @Throttle() decorators
+    // override the limit/ttl on a per-endpoint basis.
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },

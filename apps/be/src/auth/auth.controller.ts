@@ -12,6 +12,7 @@ import {
   Headers,
   HttpCode,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import {
   AuthService,
@@ -25,10 +26,17 @@ import { JwtAuthGuard } from './jwt/jwt.guard';
 import { AuthenticatedUser } from './jwt/jwt.strategy';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
 import { RefreshTokenRequestDto } from './dtos/refresh-token-request.dto';
+import { ForgotPasswordDto } from './dtos/forgot-password.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { PasswordResetService } from './services/password-reset.service';
+import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly passwordReset: PasswordResetService,
+  ) {}
 
   @Post('token')
   async exchange(
@@ -78,6 +86,35 @@ export class AuthController {
   @Post('refresh')
   refresh(@Body() dto: RefreshTokenRequestDto): Promise<AuthTokensResponse> {
     return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  // Account-enumeration defense: always 204, never reveal whether the email
+  // mapped to a user. Rate-limited tightly because every request triggers
+  // a DB write + outbound email when an account does exist.
+  @Post('forgot')
+  @HttpCode(204)
+  @UseGuards(AuthThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60 * 60 * 1000 } })
+  async forgot(@Body() dto: ForgotPasswordDto): Promise<void> {
+    await this.passwordReset.requestReset(dto.email);
+  }
+
+  // Slightly more permissive than /forgot because a real user can mistype
+  // a fresh password a few times before getting it right.
+  @Post('reset')
+  @UseGuards(AuthThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60 * 60 * 1000 } })
+  async reset(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<{ ok: true } | never> {
+    const result = await this.passwordReset.consumeReset(
+      dto.token,
+      dto.password,
+    );
+    if (!result.ok) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+    return { ok: true };
   }
 
   @Get('me')

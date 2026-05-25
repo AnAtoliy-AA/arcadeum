@@ -9,6 +9,10 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
+import {
+  PasswordResetToken,
+  PasswordResetTokenSchema,
+} from './schemas/password-reset-token.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt/jwt.strategy';
@@ -16,17 +20,22 @@ import {
   OAuthClientService,
   RefreshTokenService,
   GoogleOAuthService,
+  PasswordResetService,
 } from './services';
 import { UserRoleResolver } from './lib/user-role-resolver.service';
+import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
+import { SupportModule } from '../support/support.module';
 
 @Module({
   imports: [
     forwardRef(() => ReferralModule),
     ConfigModule,
+    SupportModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
+      { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
@@ -46,7 +55,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     OAuthClientService,
     RefreshTokenService,
     GoogleOAuthService,
+    PasswordResetService,
     UserRoleResolver,
+    AuthThrottlerGuard,
   ],
   exports: [AuthService, UserRoleResolver],
 })

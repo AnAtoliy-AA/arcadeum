@@ -25,5 +25,6 @@ import { SupportThrottlerGuard } from './lib/support-throttler.guard';
     OriginGuard,
     SupportThrottlerGuard,
   ],
+  exports: [MailerService],
 })
 export class SupportModule {}

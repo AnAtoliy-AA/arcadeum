@@ -1,6 +1,6 @@
 # Cascade — UNO-Family Card Game (Widget + Lobby + Landing + Chat)
 
-**Ticket:** ARC-XXX (next available)
+**Ticket:** ARC-751
 **Date:** 2026-05-26
 **Status:** Approved for planning
 **Author:** Anatoliy + Claude

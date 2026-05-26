@@ -107,6 +107,12 @@ export const frMessages = {
         '• À ton tour, clique sur une case vide.\n• Gagne en complétant une ligne.\n• Si le plateau se remplit sans gagnant, la manche est nulle.',
       winLengths:
         'Longueur gagnante par plateau : 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+      headers: {
+        objective: 'Objectif',
+        howToPlay: 'Comment jouer',
+        boardSizes: 'Tailles de plateau',
+      },
+      inARow: '{{n}} d’affilée',
     },
     gameOver: {
       won: 'Tu as gagné !',
@@ -114,6 +120,11 @@ export const frMessages = {
       draw: 'Match nul.',
       you: 'Toi',
       team: 'Équipe {{name}}',
+      messages: {
+        won: 'Tu as complété la ligne en premier. Prêt pour un autre round ?',
+        lost: 'L’autre côté a fermé la ligne. Tu veux une revanche ?',
+        draw: 'Personne n’a pu fermer de ligne. Essayer un autre plateau ?',
+      },
     },
     actions: {
       place: 'Placer la marque',

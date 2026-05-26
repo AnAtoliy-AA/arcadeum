@@ -65,7 +65,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
         landing={landing}
         variants={variants}
         rules={rules}
-        createRoomHref={`${routes.gameCreate}?slug=${TIC_TAC_TOE_SLUG}`}
+        createRoomHref={`${routes.gameCreate}?gameId=${TIC_TAC_TOE_SLUG}`}
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}

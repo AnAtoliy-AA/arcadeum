@@ -2,6 +2,7 @@ import type { SVGProps } from 'react';
 import { CriticalSymbol } from './symbols/CriticalSymbol';
 import { SeaBattleSymbol } from './symbols/SeaBattleSymbol';
 import { GlimwormSymbol } from './symbols/GlimwormSymbol';
+import { TicTacToeSymbol } from './symbols/TicTacToeSymbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
@@ -17,6 +18,8 @@ export function GameSymbol({ gameId, ...rest }: GameSymbolProps) {
       return <SeaBattleSymbol {...rest} />;
     case 'glimworm_v1':
       return <GlimwormSymbol {...rest} />;
+    case 'tic_tac_toe_v1':
+      return <TicTacToeSymbol {...rest} />;
     default:
       return null;
   }

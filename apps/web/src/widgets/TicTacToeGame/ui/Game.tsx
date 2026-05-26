@@ -3,8 +3,10 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useGameChatIntegration, useRematch } from '@/features/games/hooks';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ChatScope } from '@/shared/types/games';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -13,7 +15,6 @@ import { TicTacToeThemeProvider } from '../lib/TicTacToeThemeContext';
 import { TicTacToeLobby } from './TicTacToeLobby';
 import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
-import { TicTacToeGameOverModal } from './TicTacToeModals';
 import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
 import {
   type BoardSize,
@@ -45,6 +46,7 @@ function TicTacToeGameImpl({
   showRulesOpen,
   onShowRulesClose,
 }: TicTacToeGameProps) {
+  const { t } = useTranslation();
   const storeRoom = useGameStore((s: GameState) => s.room);
   const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
   const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
@@ -183,13 +185,34 @@ function TicTacToeGameImpl({
     </YStack>
   );
 
+  const sharedResult =
+    result === 'won' ? 'victory' : result === 'lost' ? 'defeat' : result;
+  const resultMessages = result
+    ? {
+        title:
+          result === 'won'
+            ? t('games.tic_tac_toe_v1.gameOver.won')
+            : result === 'lost'
+              ? t('games.tic_tac_toe_v1.gameOver.lost')
+              : t('games.tic_tac_toe_v1.gameOver.draw'),
+        message:
+          result === 'won'
+            ? t('games.tic_tac_toe_v1.gameOver.messages.won')
+            : result === 'lost'
+              ? t('games.tic_tac_toe_v1.gameOver.messages.lost')
+              : t('games.tic_tac_toe_v1.gameOver.messages.draw'),
+      }
+    : undefined;
+
   const modals = (
-    <TicTacToeGameOverModal
-      open={showResultModal}
+    <GameResultModal
+      isOpen={showResultModal}
+      result={sharedResult}
       onClose={() => setDismissedForSessionId(session?.id ?? null)}
-      result={result}
       onRematch={result ? onRematchClick : undefined}
       rematchLoading={rematchLoading}
+      t={t}
+      messages={resultMessages}
     />
   );
 

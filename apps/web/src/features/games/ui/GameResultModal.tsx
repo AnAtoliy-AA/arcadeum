@@ -10,13 +10,23 @@ import { Dialog, VisuallyHidden } from 'tamagui';
 
 // --- Types ---
 
+type GameResultKind = 'victory' | 'defeat' | 'draw';
+
 interface GameResultModalProps {
   isOpen: boolean;
-  result: 'victory' | 'defeat' | null;
+  result: GameResultKind | null;
   onRematch?: () => void;
   onClose?: () => void;
   rematchLoading?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  /**
+   * Per-game override for the headline + body copy. Use this when the
+   * game has its own end-state vocabulary (e.g. tic-tac-toe ships
+   * `gameOver.won/lost/draw`) and the shared `games.table.*` keys would
+   * be wrong. When omitted, the modal falls back to
+   * `games.table.${result}.title`/`.message`.
+   */
+  messages?: { title: string; message?: string };
 }
 
 // --- Internal Styled Components ---
@@ -32,14 +42,18 @@ const StyledBackdrop = styled(YStack, {
   backdropFilter: 'blur(12px)',
 
   variants: {
-    $isVictory: {
-      true: {
+    tone: {
+      victory: {
         background:
           'radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
-      false: {
+      defeat: {
         background:
           'radial-gradient(circle at center, rgba(255, 77, 77, 0.08) 0%, rgba(0, 0, 0, 0.95) 100%)',
+      },
+      draw: {
+        background:
+          'radial-gradient(circle at center, rgba(148, 163, 184, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
     },
   } as const,
@@ -73,15 +87,20 @@ const ResultTitleText = styled(H1, {
   letterSpacing: 2,
 
   variants: {
-    $isVictory: {
-      true: {
+    tone: {
+      victory: {
         color: '#FFD700',
         textShadowColor: 'rgba(255, 215, 0, 0.4)',
         textShadowRadius: 20,
       },
-      false: {
+      defeat: {
         color: '#ff4d4d',
         textShadowColor: 'rgba(255, 77, 77, 0.4)',
+        textShadowRadius: 20,
+      },
+      draw: {
+        color: '#cbd5e1',
+        textShadowColor: 'rgba(148, 163, 184, 0.4)',
         textShadowRadius: 20,
       },
     },
@@ -191,6 +210,7 @@ export function GameResultModal({
   onClose,
   rematchLoading,
   t,
+  messages,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -201,12 +221,19 @@ export function GameResultModal({
   if (!isOpen || !result || !isClient) return null;
 
   const isVictory = result === 'victory';
+  const isDraw = result === 'draw';
+  const emoji = isVictory ? '🏆' : isDraw ? '🤝' : '💀';
+
+  const title =
+    messages?.title ?? t(`games.table.${result}.title` as TranslationKey);
+  const body =
+    messages?.message ?? t(`games.table.${result}.message` as TranslationKey);
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" backgroundColor="black" />
-        <StyledBackdrop $isVictory={isVictory} />
+        <StyledBackdrop tone={result} />
         <StyledResultContent elevate key="content">
           <VisuallyHidden>
             <Dialog.Title>Game Result</Dialog.Title>
@@ -226,19 +253,19 @@ export function GameResultModal({
 
             <YStack alignItems="center" gap="$2" marginBottom="$6">
               <Text fontSize={80} marginBottom="$2" className="float">
-                {isVictory ? '🏆' : '💀'}
+                {emoji}
               </Text>
               <ResultTitleText
-                $isVictory={isVictory}
+                tone={result}
                 data-testid="game-result-title"
                 className={isVictory ? 'pulse' : undefined}
               >
-                {t(`games.table.${result}.title` as TranslationKey)}
+                {title}
               </ResultTitleText>
             </YStack>
 
             <ResultMessage className="animate-fade-in-up-delay-2">
-              {t(`games.table.${result}.message` as TranslationKey)}
+              {body}
             </ResultMessage>
 
             <ActionsContainer className="animate-fade-in-up-delay-4">

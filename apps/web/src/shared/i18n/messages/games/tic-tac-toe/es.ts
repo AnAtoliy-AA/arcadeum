@@ -101,6 +101,12 @@ export const esMessages = {
         '• En tu turno, haz clic en una casilla vacía.\n• Gana completando una línea.\n• Si el tablero se llena sin ganador, la ronda es empate.',
       winLengths:
         'Longitud ganadora por tablero: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+      headers: {
+        objective: 'Objetivo',
+        howToPlay: 'Cómo jugar',
+        boardSizes: 'Tamaños del tablero',
+      },
+      inARow: '{{n}} en línea',
     },
     gameOver: {
       won: '¡Has ganado!',
@@ -108,6 +114,11 @@ export const esMessages = {
       draw: 'Empate.',
       you: 'Tú',
       team: 'Equipo {{name}}',
+      messages: {
+        won: 'Completaste la línea primero. ¿Listo para otra ronda?',
+        lost: 'El otro lado cerró la línea. ¿Quieres revancha?',
+        draw: 'Nadie pudo cerrar una línea. ¿Probar otro tablero?',
+      },
     },
     actions: {
       place: 'Colocar marca',

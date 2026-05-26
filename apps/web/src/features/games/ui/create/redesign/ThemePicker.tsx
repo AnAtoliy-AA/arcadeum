@@ -5,12 +5,14 @@ import dynamic from 'next/dynamic';
 import s from './GameCreateView.module.css';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
+import { TicTacToeBoardPoster } from './art/TicTacToeBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
   TIC_TAC_TOE_THEMES,
   type CriticalTheme,
   type SeaBattleThemeMeta,
+  type TicTacToeThemeMeta,
   type GameId,
 } from './data/themes';
 
@@ -133,6 +135,9 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
                 style={{ '--theme-color': theme.color } as CSSProperties}
                 className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
+                <div className={s.themeArt}>
+                  <TicTacToeThumbnail theme={theme} />
+                </div>
                 <div className={s.themeBody}>
                   <div className={s.themeRow}>
                     <span className={s.themeDot} />
@@ -152,6 +157,10 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
   }
 
   return null;
+}
+
+function TicTacToeThumbnail({ theme }: { theme: TicTacToeThemeMeta }) {
+  return <TicTacToeBoardPoster theme={theme} size="sm" />;
 }
 
 // Three-card fan. The SVG poster shows as a placeholder until the variant's

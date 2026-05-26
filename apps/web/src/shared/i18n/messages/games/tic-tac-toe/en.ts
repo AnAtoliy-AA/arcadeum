@@ -98,6 +98,12 @@ export const enMessages = {
       steps:
         '• On your turn, click an empty cell.\n• Win by completing a line.\n• If the board fills up with no winner, the round is a draw.',
       winLengths: 'Win-length per board: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+      headers: {
+        objective: 'Objective',
+        howToPlay: 'How to play',
+        boardSizes: 'Board sizes',
+      },
+      inARow: '{{n}} in a row',
     },
     gameOver: {
       won: 'You won!',
@@ -105,6 +111,11 @@ export const enMessages = {
       draw: 'Draw.',
       you: 'You',
       team: '{{name}} team',
+      messages: {
+        won: 'You completed the line first. Ready for another round?',
+        lost: 'The other side closed the line. Want a rematch?',
+        draw: 'Neither side could close a line. Try a different board?',
+      },
     },
     actions: {
       place: 'Place mark',

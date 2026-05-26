@@ -125,9 +125,14 @@ function TicTacToeGameImpl({
     void handleRematch([], undefined);
   }, [handleRematch]);
 
-  const board = (
-    <YStack gap="$3" alignItems="center" padding="$3">
-      {isLobby && room ? (
+  if (!room) return null;
+
+  // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height
+  // (sea-battle does the same). The container's `board` slot is sized for
+  // the in-game grid and squeezes anything else.
+  if (isLobby) {
+    return (
+      <TicTacToeThemeProvider variant={options.variant}>
         <TicTacToeLobby
           room={room}
           isHost={isHost}
@@ -147,7 +152,13 @@ function TicTacToeGameImpl({
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
-      ) : snapshot ? (
+      </TicTacToeThemeProvider>
+    );
+  }
+
+  const board = (
+    <YStack gap="$3" alignItems="center" padding="$3">
+      {snapshot ? (
         <>
           <TurnBadge
             currentEntryId={currentEntryId}

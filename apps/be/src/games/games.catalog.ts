@@ -42,6 +42,10 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     gameId: 'glimworm_v1',
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
   },
+  {
+    gameId: 'tic_tac_toe_v1',
+    variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

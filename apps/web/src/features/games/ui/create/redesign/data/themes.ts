@@ -1,4 +1,8 @@
-export type GameId = 'critical_v1' | 'sea_battle_v1' | 'glimworm_v1';
+export type GameId =
+  | 'critical_v1'
+  | 'sea_battle_v1'
+  | 'glimworm_v1'
+  | 'tic_tac_toe_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -46,12 +50,24 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: false,
     rules: ['idle', 'spectators'],
   },
+  tic_tac_toe_v1: {
+    id: 'tic_tac_toe_v1',
+    title: 'Tic-Tac-Toe',
+    desc: 'Classic 3-in-a-row with themed variants and 3×3 – 9×9 boards.',
+    players: { min: 2, max: 4, label: '2–4' },
+    duration: '5 min',
+    kind: 'Board',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['teams', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
   'critical_v1',
   'sea_battle_v1',
   'glimworm_v1',
+  'tic_tac_toe_v1',
 ];
 
 // Critical theme registry. The `id` here is the value sent to the API
@@ -339,10 +355,61 @@ export const SEA_BATTLE_THEMES: SeaBattleThemeMeta[] = [
   },
 ];
 
+export interface TicTacToeThemeMeta {
+  id: string;
+  name: string;
+  desc: string;
+  color: string;
+}
+
+export const TIC_TAC_TOE_THEMES: TicTacToeThemeMeta[] = [
+  {
+    id: 'classic',
+    name: 'Classic',
+    desc: 'Crisp black grid on paper white.',
+    color: '#1f2937',
+  },
+  {
+    id: 'neon',
+    name: 'Neon',
+    desc: 'Glowing violet and cyan marks.',
+    color: '#a855f7',
+  },
+  {
+    id: 'paper',
+    name: 'Paper',
+    desc: 'Handwritten on warm parchment.',
+    color: '#92400e',
+  },
+  {
+    id: 'pixel',
+    name: 'Pixel',
+    desc: 'Retro 8-bit greens.',
+    color: '#22c55e',
+  },
+  {
+    id: 'chalkboard',
+    name: 'Chalkboard',
+    desc: 'Loose chalk strokes on slate.',
+    color: '#e5e7eb',
+  },
+  {
+    id: 'retro',
+    name: 'Retro TV',
+    desc: 'Sunset amber and warm red.',
+    color: '#f59e0b',
+  },
+];
+
 export function themesFor(gameId: GameId) {
   if (gameId === 'critical_v1') return CRITICAL_THEMES;
   if (gameId === 'sea_battle_v1') return SEA_BATTLE_THEMES;
+  if (gameId === 'tic_tac_toe_v1') return TIC_TAC_TOE_THEMES;
   return [];
+}
+
+export function findTicTacToeTheme(id: string | undefined): TicTacToeThemeMeta {
+  return TIC_TAC_TOE_THEMES.find((t) => t.id === id) ?? TIC_TAC_TOE_THEMES[0];
 }
 
 export function findCriticalTheme(id: string | undefined): CriticalTheme {

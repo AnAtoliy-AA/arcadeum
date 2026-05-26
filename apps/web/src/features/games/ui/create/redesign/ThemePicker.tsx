@@ -8,6 +8,7 @@ import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
+  TIC_TAC_TOE_THEMES,
   type CriticalTheme,
   type SeaBattleThemeMeta,
   type GameId,
@@ -92,6 +93,46 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
                 <div className={s.themeArt}>
                   <SeaBattleThumbnail theme={theme} />
                 </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gameId === 'tic_tac_toe_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Tic-Tac-Toe theme"
+          data-testid="theme-picker-tic-tac-toe"
+        >
+          {TIC_TAC_TOE_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
                 <div className={s.themeBody}>
                   <div className={s.themeRow}>
                     <span className={s.themeDot} />

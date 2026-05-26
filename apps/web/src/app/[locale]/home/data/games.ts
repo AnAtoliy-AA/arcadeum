@@ -41,6 +41,7 @@ export interface FeaturedGame {
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
+import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -106,6 +107,26 @@ export const featuredGames: FeaturedGame[] = [
       id: v.id,
       nameKey: v.name as TranslationKey,
       disabled: v.disabled,
+    })),
+  },
+  {
+    id: 'tic_tac_toe_v1',
+    nameKey: 'games.tic_tac_toe_v1.name' as TranslationKey,
+    descriptionKey: 'games.tic_tac_toe_v1.description' as TranslationKey,
+    accentColor: '#22d3ee',
+    genre: 'Board',
+    pace: 'Strategy',
+    players: '2–5',
+    duration: '5 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/tic-tac-toe',
+    type: 'board',
+    rulesPrefix: 'games.tic_tac_toe_v1.rules',
+    rulesKeys: ['objective', 'steps', 'winLengths'],
+    variants: TIC_TAC_TOE_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
     })),
   },
 ];

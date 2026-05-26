@@ -29,6 +29,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Glimworm · Juego de serpientes en arena gratis · ${APP}`,
     description: `Juega gratis a Glimworm en línea en ${APP} — un juego de arena de gusanos luminosos en tiempo real para hasta 10 jugadores. Desliza, sobrevive, come las luces. Desde el navegador, sin descarga.`,
   },
+  ticTacToeLanding: {
+    title: `Tres en raya · Multijugador · Tableros 3×3 – 9×9 · ${APP}`,
+    description: `Juega al tres en raya multijugador en ${APP} — seis variantes temáticas, 2–4 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin descarga.`,
+  },
   seaBattleLanding: {
     title: `Batalla naval en línea · Juega Battleship gratis · ${APP}`,
     description: `Juega Batalla Naval (Battleship) en línea gratis en ${APP}. Partida rápida contra un bot, busca un oponente humano o invita amigos a una partida privada.`,

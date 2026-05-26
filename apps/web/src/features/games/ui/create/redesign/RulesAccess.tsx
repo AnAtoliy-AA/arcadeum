@@ -15,7 +15,14 @@ const SeaBattleRulesModal = dynamic(
 );
 
 const CriticalRulesModal = dynamic(
-  () => import('@/widgets/CriticalGame/ui/RulesModal').then((m) => m.RulesModal),
+  () =>
+    import('@/widgets/CriticalGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
+const TicTacToeRulesModal = dynamic(
+  () =>
+    import('@/widgets/TicTacToeGame/ui/RulesModal').then((m) => m.RulesModal),
   { ssr: false },
 );
 
@@ -61,6 +68,14 @@ export function RulesAccess({ gameId, themeId }: Props) {
           onClose={() => setOpen(false)}
           currentVariant={themeId || 'cyberpunk'}
           t={t}
+        />
+      ) : null}
+      {gameId === 'tic_tac_toe_v1' ? (
+        <TicTacToeRulesModal
+          open={open}
+          onClose={() => setOpen(false)}
+          boardSize={3}
+          winLength={3}
         />
       ) : null}
     </>

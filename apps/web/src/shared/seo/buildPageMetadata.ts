@@ -38,6 +38,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   seaBattleLanding: (r) => r.seaBattleLanding,
   criticalLanding: (r) => r.criticalLanding,
   glimwormLanding: (r) => r.glimwormLanding,
+  ticTacToeLanding: (r) => r.ticTacToeLanding,
   settings: (r) => r.settings,
   history: (r) => r.history,
   stats: (r) => r.stats,

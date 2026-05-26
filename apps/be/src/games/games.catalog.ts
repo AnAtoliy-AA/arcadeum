@@ -46,6 +46,10 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     gameId: 'tic_tac_toe_v1',
     variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
   },
+  {
+    gameId: 'cascade_v1',
+    variants: ['cosmic', 'arcane', 'cyberpunk', 'elemental'],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

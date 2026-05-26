@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.1] - 2026-05-26
+
+### Added
+- scale tic-tac-toe player cap by board size (ARC-750) (ARC-750)
+- polish tic-tac-toe theme previews, rules, and end-game (ARC-750) (ARC-750)
+- list tic-tac-toe in admin game-visibility catalog (ARC-750) (ARC-750)
+- surface tic-tac-toe in home featured + games/create (ARC-750) (ARC-750)
+- tic-tac-toe landing page with hero, themes grid, FAQ, OG image (ARC-750) (ARC-750)
+- tic-tac-toe widget assembly (modals, lobby, game entry, registry) (ARC-750) (ARC-750)
+- tic-tac-toe widget shell (types, hooks, board, selectors) + i18n (ARC-750) (ARC-750)
+- tic-tac-toe socket gateway and module wiring (ARC-750) (ARC-750)
+- tic-tac-toe service and bot with minimax/heuristic/random (ARC-750) (ARC-750)
+- register TicTacToeEngine in engines module (ARC-750) (ARC-750)
+- tic-tac-toe engine with team mode and forfeit (ARC-750) (ARC-750)
+- tic-tac-toe utils and validators with specs (ARC-750) (ARC-750)
+- tic-tac-toe engine constants and types (ARC-750) (ARC-750)
+- add tic-tac-toe with 3×3, 5×5, 7×7, 9×9 boards (ARC-750) (ARC-750)
+
+### Fixed
+- mount tic-tac-toe rules modal in-game, not only in lobby (ARC-750) (ARC-750)
+- give tic-tac-toe board explicit width so cells render (ARC-750) (ARC-750)
+- render tic-tac-toe lobby outside GameWidgetContainer (ARC-750) (ARC-750)
+- register tic_tac_toe_v1 in GameType unions so the widget loads (ARC-750) (ARC-750)
+
+### Documentation
+- add tic-tac-toe full-game implementation plan (ARC-750) (ARC-750)
+- add full-game design for tic-tac-toe (ARC-750) (ARC-750)
+
+
 ## [1.15.0] - 2026-05-25
 
 

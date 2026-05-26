@@ -2,7 +2,8 @@ export type GameId =
   | 'critical_v1'
   | 'sea_battle_v1'
   | 'glimworm_v1'
-  | 'tic_tac_toe_v1';
+  | 'tic_tac_toe_v1'
+  | 'cascade_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -61,6 +62,17 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['teams', 'spectators'],
   },
+  cascade_v1: {
+    id: 'cascade_v1',
+    title: 'Cascade',
+    desc: 'UNO-style shedding card game with stacking penalties and four selectable themes.',
+    players: { min: 2, max: 10, label: '2–10' },
+    duration: '10 min',
+    kind: 'Card · matching',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -68,6 +80,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'sea_battle_v1',
   'glimworm_v1',
   'tic_tac_toe_v1',
+  'cascade_v1',
 ];
 
 // Critical theme registry. The `id` here is the value sent to the API
@@ -401,10 +414,19 @@ export const TIC_TAC_TOE_THEMES: TicTacToeThemeMeta[] = [
   },
 ];
 
+import {
+  CASCADE_THEMES,
+  findCascadeTheme,
+  type CascadeThemeMeta,
+} from './cascade-themes';
+
+export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
+
 export function themesFor(gameId: GameId) {
   if (gameId === 'critical_v1') return CRITICAL_THEMES;
   if (gameId === 'sea_battle_v1') return SEA_BATTLE_THEMES;
   if (gameId === 'tic_tac_toe_v1') return TIC_TAC_TOE_THEMES;
+  if (gameId === 'cascade_v1') return CASCADE_THEMES;
   return [];
 }
 

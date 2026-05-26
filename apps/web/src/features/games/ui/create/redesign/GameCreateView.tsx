@@ -40,6 +40,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   sea_battle_v1: 'sea_battle_v1',
   glimworm_v1: 'glimworm_v1',
   tic_tac_toe_v1: 'tic_tac_toe_v1',
+  cascade_v1: 'cascade_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -104,6 +105,14 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'classic',
       boardSize: 3,
       teamMode: form.rules.teams,
+      allowSpectators: form.rules.spectators,
+    };
+  }
+  if (form.gameId === 'cascade_v1') {
+    return {
+      variant: form.themeId || 'cosmic',
+      stackingEnabled: true,
+      idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
     };
   }

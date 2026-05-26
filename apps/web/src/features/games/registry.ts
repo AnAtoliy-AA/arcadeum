@@ -11,6 +11,7 @@ export const gameLoaders: Record<
   sea_battle_v1: () => import('@/widgets/SeaBattleGame'),
   glimworm_v1: () => import('@/widgets/GlimwormGame'),
   tic_tac_toe_v1: () => import('@/widgets/TicTacToeGame'),
+  cascade_v1: () => import('@/widgets/CascadeGame'),
   // Future game implementations will be added here
   // chess_v1: () => import("@/widgets/ChessGame"),
   // checkers_v1: () => import("@/widgets/CheckersGame"),
@@ -127,6 +128,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     implementationPath: '@/widgets/CheckersGame',
     lastUpdated: '2024-01-01',
     status: 'experimental',
+  },
+  cascade_v1: {
+    slug: 'cascade_v1',
+    name: 'Cascade',
+    description:
+      'UNO-family shedding card game with stacking penalties and four selectable themes',
+    category: 'Card Game',
+    minPlayers: 2,
+    maxPlayers: 10,
+    estimatedDuration: 10,
+    complexity: 2,
+    ageRating: 'G',
+    thumbnail: '/games/cascade.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['cards', 'casual', 'family', 'matching', 'classic'],
+    implementationPath: '@/widgets/CascadeGame',
+    lastUpdated: '2026-05-26',
+    status: 'beta',
   },
   tic_tac_toe_v1: {
     slug: 'tic_tac_toe_v1',

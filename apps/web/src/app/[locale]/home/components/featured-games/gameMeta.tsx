@@ -3,6 +3,7 @@ import { CriticalSymbol } from './symbols/CriticalSymbol';
 import { SeaBattleSymbol } from './symbols/SeaBattleSymbol';
 import { GlimwormSymbol } from './symbols/GlimwormSymbol';
 import { TicTacToeSymbol } from './symbols/TicTacToeSymbol';
+import { CascadeSymbol } from './symbols/CascadeSymbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
@@ -20,6 +21,8 @@ export function GameSymbol({ gameId, ...rest }: GameSymbolProps) {
       return <GlimwormSymbol {...rest} />;
     case 'tic_tac_toe_v1':
       return <TicTacToeSymbol {...rest} />;
+    case 'cascade_v1':
+      return <CascadeSymbol {...rest} />;
     default:
       return null;
   }

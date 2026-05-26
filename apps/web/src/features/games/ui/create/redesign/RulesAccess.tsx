@@ -26,6 +26,11 @@ const TicTacToeRulesModal = dynamic(
   { ssr: false },
 );
 
+const CascadeRulesModal = dynamic(
+  () => import('@/widgets/CascadeGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -77,6 +82,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
           boardSize={3}
           winLength={3}
         />
+      ) : null}
+      {gameId === 'cascade_v1' ? (
+        <CascadeRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

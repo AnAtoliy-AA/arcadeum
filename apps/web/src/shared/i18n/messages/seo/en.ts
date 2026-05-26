@@ -31,6 +31,10 @@ export const en = {
     title: `Glimworm · Free Online Snake Arena Game · ${APP}`,
     description: `Play Glimworm online for free on ${APP} — a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
   },
+  ticTacToeLanding: {
+    title: `Tic-Tac-Toe · Multiplayer · 3×3 – 9×9 boards · ${APP}`,
+    description: `Play multiplayer Tic-Tac-Toe on ${APP} — six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

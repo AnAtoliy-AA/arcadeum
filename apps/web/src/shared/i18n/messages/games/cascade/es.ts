@@ -25,11 +25,11 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Cascade — UNO-style multiplayer card game online',
+        title: 'Cascade — multiplayer shedding card game online',
         description:
           'Play Cascade online — a shedding card game with stacking Draw-Two / Wild +4 chains and four selectable visual themes. 2–10 players, free instant rooms, no install.',
         keywords:
-          'cascade, uno alternative, crazy eights, multiplayer card game, online card game, shedding card game',
+          'cascade, crazy eights, multiplayer card game, online card game, shedding card game, matching card game',
       },
       hero: {
         title: 'Cascade — the stacking card game, reimagined',
@@ -72,9 +72,9 @@ export const esMessages = {
       },
       faq: {
         differences: {
-          question: 'How is Cascade different from UNO?',
+          question: 'What kind of card game is Cascade?',
           answer:
-            'Cascade is an original card game in the Crazy Eights family. Card game mechanics are not copyrightable, but the UNO name and visual identity are trademarks of Mattel. Cascade ships its own name, palettes, and iconography.',
+            'Cascade is an original shedding card game in the Crazy Eights family. Match by color or number, chain Draw-Two and Wild Draw-Four cards to flood the next player, and empty your hand first to win. Card-game mechanics are not copyrightable; Cascade ships its own name, palettes, and iconography.',
         },
         stacking: {
           question: 'What is stacking?',

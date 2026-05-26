@@ -36,7 +36,7 @@ export const en = {
     description: `Play multiplayer Tic-Tac-Toe on ${APP} — six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no download.`,
   },
   cascadeLanding: {
-    title: `Cascade · UNO-style multiplayer card game · ${APP}`,
+    title: `Cascade · Multiplayer shedding card game · ${APP}`,
     description: `Play Cascade online on ${APP} — a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
   },
   settings: {

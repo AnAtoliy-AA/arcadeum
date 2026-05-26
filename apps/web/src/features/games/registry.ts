@@ -133,7 +133,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'cascade_v1',
     name: 'Cascade',
     description:
-      'UNO-family shedding card game with stacking penalties and four selectable themes',
+      'Shedding card game in the Crazy Eights family with stacking penalties and four selectable themes',
     category: 'Card Game',
     minPlayers: 2,
     maxPlayers: 10,

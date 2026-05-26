@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt =
-  'Cascade — UNO-family multiplayer card game with stacking penalty chains';
+  'Cascade — multiplayer shedding card game with stacking penalty chains';
 
 const FAN = [
   { color: '#dc2626', label: '7', rotate: -18, dx: -180 },

@@ -34,7 +34,7 @@ export const fr: DeepPartial<SeoMessages> = {
     description: `Jouez au morpion multijoueur sur ${APP} — six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans téléchargement.`,
   },
   cascadeLanding: {
-    title: `Cascade · Jeu de cartes multijoueur façon UNO · ${APP}`,
+    title: `Cascade · Jeu de cartes multijoueur de défausse · ${APP}`,
     description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
   },
   seaBattleLanding: {

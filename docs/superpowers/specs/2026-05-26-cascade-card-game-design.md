@@ -1,4 +1,4 @@
-# Cascade — UNO-Family Card Game (Widget + Lobby + Landing + Chat)
+# Cascade — Shedding Card Game (Widget + Lobby + Landing + Chat)
 
 **Ticket:** ARC-751
 **Date:** 2026-05-26
@@ -10,21 +10,20 @@
 Arcadeum currently offers turn-based board games (tic-tac-toe, sea-battle),
 real-time games (glimworm), and a card game (texas-holdem). The platform has
 no shedding-type matching card game — the most popular casual-card genre
-worldwide (UNO sells ~150M units/year, and the genre dominates app-store
-casual-card charts). Adding one fills a clear catalog gap and pulls in players
-who never engage with poker or strategy titles.
+worldwide. Adding one fills a clear catalog gap and pulls in players who never
+engage with poker or strategy titles.
 
 Outcome: a player browsing `/games` sees **Cascade** with the same shape as
 every other game on the platform — landing page, theme previews, "Create room"
 / "Browse rooms", multiplayer lobby with bots, in-room chat, full i18n.
 
 The name **Cascade** is theme-neutral and references the game's defining
-mechanic: chains of stacked Draw-Two / Draw-Four cards cascading penalty cards
-onto the next player. It is intentionally not "UNO": UNO is a Mattel
-registered trademark (USPTO Reg. No. 1,150,484) covering the name, logo, and
-distinctive card iconography. Game _mechanics_ are not copyrightable; the
-_name and visual identity_ are. Cascade uses original mechanics rooted in the
-public-domain Crazy Eights family, with original art and naming.
+mechanic: chains of stacked Draw-Two / Draw-Four cards cascading penalty
+cards onto the next player. Cascade is an original shedding card game in the
+public-domain Crazy Eights family. Card-game mechanics are not copyrightable;
+Cascade ships its own name, color palettes, action-card iconography, and
+visual identity, so it has no trademark exposure to any commercial card game
+in the genre.
 
 ## Goals
 
@@ -55,11 +54,11 @@ public-domain Crazy Eights family, with original art and naming.
 - Animations beyond what the existing card-component primitives provide.
   (No bespoke physics simulation — clean transitions only.)
 - Custom Cascade-only leaderboards beyond standard session stats.
-- Stack-on-Wild-Draw-Four. Real UNO disallows this; we follow the standard.
-  Stacking is allowed only Draw-Two onto Draw-Two and Draw-Four onto Draw-Four
+- Cross-stacking (Draw-Two onto Wild Draw-Four or vice versa). Stacking is
+  allowed only Draw-Two onto Draw-Two and Draw-Four onto Draw-Four
   (configurable per lobby — default ON for both, never cross-stacked).
-- A "challenge" mechanic on Wild Draw-Four (the obscure official UNO rule
-  where you can challenge whether the previous player had a legal alternative).
+- A "challenge" mechanic on Wild Draw-Four (the obscure house rule where
+  you can challenge whether the previous player had a legal alternative).
   Too niche; adds UI complexity without payoff.
 
 ## Core Mechanics

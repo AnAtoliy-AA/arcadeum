@@ -34,7 +34,7 @@ export const es: DeepPartial<SeoMessages> = {
     description: `Juega al tres en raya multijugador en ${APP} — seis variantes temáticas, 2–4 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin descarga.`,
   },
   cascadeLanding: {
-    title: `Cascade · Juego de cartas multijugador estilo UNO · ${APP}`,
+    title: `Cascade · Juego de cartas multijugador de descarte · ${APP}`,
     description: `Juega a Cascade en ${APP} — un juego de cartas de descarte con cadenas de Roba-Dos y Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas instantáneas gratis, sin descarga.`,
   },
   seaBattleLanding: {

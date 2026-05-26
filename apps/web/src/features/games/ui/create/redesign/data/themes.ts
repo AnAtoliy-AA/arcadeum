@@ -65,7 +65,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   cascade_v1: {
     id: 'cascade_v1',
     title: 'Cascade',
-    desc: 'UNO-style shedding card game with stacking penalties and four selectable themes.',
+    desc: 'Shedding card game in the Crazy Eights family — stack penalties and four selectable themes.',
     players: { min: 2, max: 10, label: '2–10' },
     duration: '10 min',
     kind: 'Card · matching',

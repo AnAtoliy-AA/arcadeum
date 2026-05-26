@@ -75,9 +75,11 @@ function TicTacToeBoardImpl({
         padding: '12px',
         backgroundColor: theme.gridLine,
         borderRadius: theme.borderRadius,
+        width: '100%',
         maxWidth: 'min(80vmin, 480px)',
         aspectRatio: '1 / 1',
         margin: '0 auto',
+        boxSizing: 'border-box',
       }}
     >
       {board.map((row, rowIdx) =>

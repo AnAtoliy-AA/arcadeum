@@ -157,7 +157,7 @@ function TicTacToeGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="center" padding="$3">
+    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
       {snapshot ? (
         <>
           <TurnBadge

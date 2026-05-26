@@ -16,7 +16,7 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import type { StartGameSessionResult } from '../games.types';
 import {
   DEFAULT_OPTIONS,
-  MAX_PLAYERS,
+  MAX_PLAYERS_BY_BOARD_SIZE,
   MIN_PLAYERS,
   type BoardSize,
   type Variant,
@@ -76,6 +76,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     }
 
     const options = this.resolveOptions(room.gameOptions);
+    const sizeCap = MAX_PLAYERS_BY_BOARD_SIZE[options.boardSize];
 
     const participants = await this.roomsService.getRoomParticipants(roomId);
     const playerIds = [...participants];
@@ -83,7 +84,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     if (withBots || playerIds.length === 1) {
       const desiredCount =
         botCount !== undefined ? botCount : Math.max(0, 2 - playerIds.length);
-      const cap = Math.min(MAX_PLAYERS - playerIds.length, desiredCount);
+      const cap = Math.min(sizeCap - playerIds.length, desiredCount);
       for (let i = 0; i < cap; i++) {
         playerIds.push(`bot-${Math.random().toString(36).slice(2, 10)}`);
       }
@@ -92,9 +93,9 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     if (playerIds.length < MIN_PLAYERS) {
       throw new Error('Not enough players to start Tic-Tac-Toe (minimum 2)');
     }
-    if (playerIds.length > MAX_PLAYERS) {
+    if (playerIds.length > sizeCap) {
       throw new Error(
-        `Too many players to start Tic-Tac-Toe (maximum ${MAX_PLAYERS})`,
+        `${options.boardSize}×${options.boardSize} supports up to ${sizeCap} players — reduce players or pick a larger board.`,
       );
     }
 

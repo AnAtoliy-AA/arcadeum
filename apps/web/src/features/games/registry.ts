@@ -134,7 +134,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     description: 'Classic 3-in-a-row with themed variants and 3×3 – 9×9 boards',
     category: 'Board Game',
     minPlayers: 2,
-    maxPlayers: 4,
+    maxPlayers: 5,
     estimatedDuration: 5,
     complexity: 1,
     ageRating: 'G',

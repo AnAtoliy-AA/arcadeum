@@ -11,7 +11,7 @@ import TicTacToeLanding from './TicTacToeLanding';
 void appConfig;
 const TIC_TAC_TOE_SLUG = 'tic_tac_toe_v1';
 const TIC_TAC_TOE_MIN_PLAYERS = 2;
-const TIC_TAC_TOE_MAX_PLAYERS = 4;
+const TIC_TAC_TOE_MAX_PLAYERS = 5;
 const TIC_TAC_TOE_GENRE = 'Board Game';
 
 type PageProps = {

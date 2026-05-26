@@ -74,7 +74,7 @@ export default function OpengraphImage() {
                 background: 'rgba(255,255,255,0.12)',
               }}
             >
-              2–4 players
+              2–5 players
             </span>
             <span
               style={{

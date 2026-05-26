@@ -3,7 +3,7 @@ import type { BaseGameWidgetProps } from '@/features/games/types/base';
 export type TicTacToeGameProps = BaseGameWidgetProps;
 
 export const MIN_PLAYERS = 2;
-export const MAX_PLAYERS = 4;
+export const MAX_PLAYERS = 5;
 
 export const BOARD_SIZES = [3, 5, 7, 9] as const;
 export type BoardSize = (typeof BOARD_SIZES)[number];
@@ -12,6 +12,15 @@ export const WIN_LENGTHS: Record<BoardSize, 3 | 4 | 5> = {
   3: 3,
   5: 4,
   7: 5,
+  9: 5,
+};
+
+// Per-board-size player caps — must match the BE
+// `MAX_PLAYERS_BY_BOARD_SIZE` in tic-tac-toe.constants.ts.
+export const MAX_PLAYERS_BY_BOARD_SIZE: Record<BoardSize, number> = {
+  3: 2,
+  5: 3,
+  7: 4,
   9: 5,
 };
 

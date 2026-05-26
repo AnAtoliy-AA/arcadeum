@@ -23,7 +23,7 @@ export const esMessages = {
       meta: {
         title: 'Tres en raya — multijugador en tableros 3×3, 5×5, 7×7, 9×9',
         description:
-          'Juega al tres en raya multijugador online. Seis variantes temáticas, 2–4 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin instalación.',
+          'Juega al tres en raya multijugador online. Seis variantes temáticas, 2–5 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin instalación.',
         keywords:
           'tres en raya, tic tac toe online, multijugador tres en raya, gomoku, cinco en raya, juegos de mesa',
       },
@@ -36,7 +36,7 @@ export const esMessages = {
       },
       highlights: {
         players: {
-          title: '2–4 jugadores',
+          title: '2–5 jugadores',
           body: 'Todos contra todos o por equipos; los bots llenan asientos vacíos.',
         },
         sizes: {
@@ -87,6 +87,7 @@ export const esMessages = {
     },
     lobby: {
       boardSize: 'Tamaño del tablero',
+      maxPlayersShort: 'hasta {{n}}',
       teamMode: 'Modo por equipos',
       startWithBots: 'Empezar con bots',
       addBot: 'Añadir bot',

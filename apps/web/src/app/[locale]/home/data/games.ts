@@ -116,7 +116,7 @@ export const featuredGames: FeaturedGame[] = [
     accentColor: '#22d3ee',
     genre: 'Board',
     pace: 'Strategy',
-    players: '2–4',
+    players: '2–5',
     duration: '5 min',
     playingNow: null,
     isPlayable: true,

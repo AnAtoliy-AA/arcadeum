@@ -42,7 +42,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       gameId: 'tic_tac_toe_v1',
       name: 'Tic-Tac-Toe',
       minPlayers: 2,
-      maxPlayers: 4,
+      maxPlayers: 5,
       version: '1.0.0',
       description:
         'Classic 3-in-a-row with themed variants and 3×3 – 9×9 boards',

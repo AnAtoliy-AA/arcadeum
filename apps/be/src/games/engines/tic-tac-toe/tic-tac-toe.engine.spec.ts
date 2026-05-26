@@ -253,7 +253,7 @@ describe('TicTacToeEngine', () => {
       const m = engine.getMetadata();
       expect(m.gameId).toBe('tic_tac_toe_v1');
       expect(m.minPlayers).toBe(2);
-      expect(m.maxPlayers).toBe(4);
+      expect(m.maxPlayers).toBe(5);
       expect(m.category).toBe('Board Game');
     });
   });

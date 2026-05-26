@@ -22,7 +22,7 @@ export const enMessages = {
       meta: {
         title: 'Tic-Tac-Toe — multiplayer with 3×3, 5×5, 7×7, 9×9 boards',
         description:
-          'Play multiplayer Tic-Tac-Toe online. Six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no install.',
+          'Play multiplayer Tic-Tac-Toe online. Six themed variants, 2–5 players, optional teams, bots from day one. Free, instant rooms, no install.',
         keywords:
           'tic tac toe, tic-tac-toe online, multiplayer tic tac toe, gomoku, 5 in a row, board games',
       },
@@ -35,7 +35,7 @@ export const enMessages = {
       },
       highlights: {
         players: {
-          title: '2–4 players',
+          title: '2–5 players',
           body: 'Free-for-all or teams; bots fill empty seats so you never wait.',
         },
         sizes: {
@@ -85,6 +85,7 @@ export const enMessages = {
     },
     lobby: {
       boardSize: 'Board size',
+      maxPlayersShort: 'up to {{n}}',
       teamMode: 'Team mode',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',

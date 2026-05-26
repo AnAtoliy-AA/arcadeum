@@ -6,7 +6,11 @@ import { useMutation } from '@/shared/hooks/useMutation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { BOARD_SIZES, type BoardSize } from '../types';
+import {
+  BOARD_SIZES,
+  MAX_PLAYERS_BY_BOARD_SIZE,
+  type BoardSize,
+} from '../types';
 
 interface BoardSizeSelectorProps {
   roomId: string;
@@ -66,7 +70,11 @@ export function BoardSizeSelector({
               disabled={disabled || isLoading}
               onClick={() => handlePick(size)}
               style={{
-                padding: '12px 18px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                padding: '10px 16px',
                 borderRadius: 10,
                 border: isActive
                   ? '2px solid var(--primary, #3b82f6)'
@@ -78,10 +86,24 @@ export function BoardSizeSelector({
                 fontWeight: 600,
                 cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
                 opacity: disabled ? 0.6 : 1,
-                minWidth: 64,
+                minWidth: 72,
+                lineHeight: 1.1,
               }}
             >
-              {size}×{size}
+              <span>
+                {size}×{size}
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  opacity: isActive ? 0.85 : 0.65,
+                }}
+              >
+                {t('games.tic_tac_toe_v1.lobby.maxPlayersShort', {
+                  n: String(MAX_PLAYERS_BY_BOARD_SIZE[size]),
+                })}
+              </span>
             </button>
           );
         })}

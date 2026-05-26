@@ -29,7 +29,7 @@ export const frMessages = {
       meta: {
         title: 'Morpion — multijoueur sur plateaux 3×3, 5×5, 7×7, 9×9',
         description:
-          'Joue au morpion multijoueur en ligne. Six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans installation.',
+          'Joue au morpion multijoueur en ligne. Six variantes thématiques, 2–5 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans installation.',
         keywords:
           'morpion, tic tac toe en ligne, morpion multijoueur, gomoku, cinq en ligne, jeux de plateau',
       },
@@ -42,7 +42,7 @@ export const frMessages = {
       },
       highlights: {
         players: {
-          title: '2–4 joueurs',
+          title: '2–5 joueurs',
           body: 'Chacun pour soi ou en équipes ; les bots remplissent les places vides.',
         },
         sizes: {
@@ -93,6 +93,7 @@ export const frMessages = {
     },
     lobby: {
       boardSize: 'Taille du plateau',
+      maxPlayersShort: 'jusqu’à {{n}}',
       teamMode: 'Mode équipes',
       startWithBots: 'Commencer avec des bots',
       addBot: 'Ajouter un bot',

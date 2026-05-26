@@ -33,6 +33,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Morpion · Multijoueur · Plateaux 3×3 – 9×9 · ${APP}`,
     description: `Jouez au morpion multijoueur sur ${APP} — six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans téléchargement.`,
   },
+  cascadeLanding: {
+    title: `Cascade · Jeu de cartes multijoueur façon UNO · ${APP}`,
+    description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

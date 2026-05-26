@@ -26,6 +26,8 @@ export const buildRoutes = (locale: Locale) => {
     glimwormLanding: `/${locale}/${s('games')}/glimworm`,
     ticTacToe: `/${locale}/${s('games')}/tic-tac-toe`,
     ticTacToeLanding: `/${locale}/${s('games')}/tic-tac-toe`,
+    cascade: `/${locale}/${s('games')}/cascade`,
+    cascadeLanding: `/${locale}/${s('games')}/cascade`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

@@ -15,6 +15,8 @@ import { TicTacToeThemeProvider } from '../lib/TicTacToeThemeContext';
 import { TicTacToeLobby } from './TicTacToeLobby';
 import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
+import { RulesModal } from './RulesModal';
+import { WIN_LENGTHS } from '../types';
 import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
 import {
   type BoardSize,
@@ -204,16 +206,26 @@ function TicTacToeGameImpl({
       }
     : undefined;
 
+  const inGameBoardSize = snapshot?.options.boardSize ?? options.boardSize;
+
   const modals = (
-    <GameResultModal
-      isOpen={showResultModal}
-      result={sharedResult}
-      onClose={() => setDismissedForSessionId(session?.id ?? null)}
-      onRematch={result ? onRematchClick : undefined}
-      rematchLoading={rematchLoading}
-      t={t}
-      messages={resultMessages}
-    />
+    <>
+      <GameResultModal
+        isOpen={showResultModal}
+        result={sharedResult}
+        onClose={() => setDismissedForSessionId(session?.id ?? null)}
+        onRematch={result ? onRematchClick : undefined}
+        rematchLoading={rematchLoading}
+        t={t}
+        messages={resultMessages}
+      />
+      <RulesModal
+        open={showRulesOpen}
+        onClose={onShowRulesClose}
+        boardSize={inGameBoardSize}
+        winLength={WIN_LENGTHS[inGameBoardSize]}
+      />
+    </>
   );
 
   return (

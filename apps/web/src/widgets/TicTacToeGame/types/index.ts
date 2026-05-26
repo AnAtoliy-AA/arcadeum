@@ -60,6 +60,17 @@ export interface TicTacToeOptions {
   teamMode: boolean;
 }
 
+export interface TicTacToeLogEntry {
+  id: string;
+  type: 'system' | 'action' | 'message';
+  message: string;
+  createdAt: string;
+  scope?: 'all' | 'players' | 'private' | 'team';
+  senderId?: string | null;
+  senderName?: string | null;
+  targetId?: string | null;
+}
+
 export interface TicTacToeClientState {
   phase: GamePhase;
   options: TicTacToeOptions;
@@ -72,4 +83,5 @@ export interface TicTacToeClientState {
   winLine: WinLineCell[] | null;
   winnerId: string | null;
   isDraw: boolean;
+  logs: TicTacToeLogEntry[];
 }

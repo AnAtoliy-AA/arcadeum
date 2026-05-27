@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.6] - 2026-05-27
+
+### Added
+- visible rotate icon on placed ships (ARC-754) (ARC-754)
+- optimistic move + rotate placed ships (ARC-754) (ARC-754)
+- drag placed ships to reposition (ARC-754) (ARC-754)
+
+### Documentation
+- address spec review feedback (ARC-754) (ARC-754)
+- design for dragging placed ships (ARC-754) (ARC-754)
+
+
 ## [1.15.5] - 2026-05-27
 
 ### Refactored

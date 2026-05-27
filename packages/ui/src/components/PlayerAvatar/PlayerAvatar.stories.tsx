@@ -7,7 +7,7 @@ const meta: Meta<typeof PlayerAvatar> = {
   argTypes: {
     size: {
       control: 'select',
-      options: ['icon', 'sm', 'md', 'lg', 'card'],
+      options: ['icon', 'sm', 'md', 'lg', 'card', 'profile'],
     },
   },
 };
@@ -51,6 +51,32 @@ export const Card: Story = {
   },
 };
 
+export const Profile: Story = {
+  args: {
+    name: 'Jane Doe',
+    size: 'profile',
+    avatarUrl: '/shop/avatars/jane.png',
+    badgeUrl: '/shop/badges/star.png',
+    frameColor: 'linear-gradient(135deg, #22d3ee 0%, #6366f1 100%)',
+    auraColor: 'rgba(168, 85, 247, 0.6)',
+    bannerColor: 'linear-gradient(135deg, #1e293b 0%, #6366f1 100%)',
+    nameColor: 'linear-gradient(90deg, #f59e0b, #ef4444)',
+    presenceLine: 'Level 42',
+    skinChip: { id: 'skin-neon', label: 'Neon' },
+  },
+};
+
+export const WithSkinChip: Story = {
+  args: {
+    name: 'Jane Doe',
+    size: 'card',
+    avatarUrl: '/shop/avatars/jane.png',
+    skinChip: { id: 'skin-neon', label: 'Neon' },
+    frameColor: '#22d3ee',
+    auraColor: '#22d3ee',
+  },
+};
+
 export const LoadingFromCatalog: Story = {
   args: {
     name: 'Jane Doe',
@@ -76,6 +102,15 @@ export const AllSizes: Story = {
         auraColor="#a855f7"
         bannerColor="#1e293b"
         presenceLine="Online"
+      />
+      <PlayerAvatar
+        name="Jane"
+        size="profile"
+        frameColor="#a855f7"
+        auraColor="#a855f7"
+        bannerColor="#1e293b"
+        presenceLine="Level 42"
+        skinChip={{ id: 'skin-neon', label: 'Neon' }}
       />
     </div>
   ),

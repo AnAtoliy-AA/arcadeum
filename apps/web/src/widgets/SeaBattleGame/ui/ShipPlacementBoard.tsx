@@ -359,6 +359,19 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
   const pendingCells = effectivePendingMove?.newCells ?? [];
 
+  // First cell of each multi-cell placed ship — gets a small ↻ rotate button
+  // so the interaction is discoverable. 1-cell submarines are excluded since
+  // their orientation is meaningless and rotating them is a no-op.
+  const shipHeadKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const ship of ships) {
+      if (ship.cells.length < 2) continue;
+      const head = ship.cells[0];
+      if (head) keys.add(`${head.row}-${head.col}`);
+    }
+    return keys;
+  }, [ships]);
+
   const boardEl = (
     <PlacementBoardGrid
       board={board}
@@ -369,6 +382,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       getBoardCellDragProps={getBoardCellDragProps}
       draggingCells={draggingCells}
       pendingCells={pendingCells}
+      shipHeadKeys={shipHeadKeys}
       isPlacementComplete={isPlacementComplete}
       onCellHover={handleCellHover}
       onMouseLeave={handleMouseLeave}

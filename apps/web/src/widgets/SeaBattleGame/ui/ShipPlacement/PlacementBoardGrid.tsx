@@ -46,6 +46,7 @@ interface PlacementBoardCellProps {
   isShipDraggable: boolean;
   isDraggingThisCell: boolean;
   isPendingCell: boolean;
+  isShipHead: boolean;
   draggable: boolean;
   onDragStart: (e: DragEvent<HTMLElement>) => void;
   rIndex: number;
@@ -59,6 +60,7 @@ interface PlacementBoardCellProps {
     col: number,
     e: React.MouseEvent<HTMLElement>,
   ) => void;
+  onRotateButton?: (row: number, col: number) => void;
   onDragOver: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDrop: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDragLeave: () => void;
@@ -73,6 +75,7 @@ const PlacementBoardCell = memo(
     isShipDraggable,
     isDraggingThisCell,
     isPendingCell,
+    isShipHead,
     draggable,
     onDragStart,
     rIndex,
@@ -82,6 +85,7 @@ const PlacementBoardCell = memo(
     onClick,
     onDoubleClick,
     onContextMenu,
+    onRotateButton,
     onDragOver,
     onDrop,
     onDragLeave,
@@ -114,6 +118,21 @@ const PlacementBoardCell = memo(
       (e: DragEvent<HTMLElement>) => onDrop(rIndex, cIndex, e),
       [onDrop, rIndex, cIndex],
     );
+    const handleRotateButton = useCallback(
+      (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        onRotateButton?.(rIndex, cIndex);
+      },
+      [onRotateButton, rIndex, cIndex],
+    );
+    const handleRotateButtonMouseDown = useCallback(
+      (e: React.MouseEvent<HTMLElement>) => {
+        // Prevent the cell's HTML5 drag from starting when the user clicks
+        // the icon — without this the rotate button is mostly unusable.
+        e.stopPropagation();
+      },
+      [],
+    );
 
     const classNames = [
       'sb-cell',
@@ -124,6 +143,9 @@ const PlacementBoardCell = memo(
     ]
       .filter(Boolean)
       .join(' ');
+
+    const showRotateButton =
+      isShipHead && !!onRotateButton && !isDraggingThisCell;
 
     return (
       <BoardCell
@@ -155,7 +177,20 @@ const PlacementBoardCell = memo(
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onDragLeave={onDragLeave}
-      />
+      >
+        {showRotateButton ? (
+          <span
+            role="button"
+            aria-label="Rotate ship"
+            className="sb-cell__rotate-btn"
+            draggable={false}
+            onMouseDown={handleRotateButtonMouseDown}
+            onClick={handleRotateButton}
+          >
+            ↻
+          </span>
+        ) : null}
+      </BoardCell>
     );
   },
 );
@@ -173,6 +208,7 @@ interface PlacementBoardGridProps {
   ) => { draggable: boolean; onDragStart: (e: DragEvent<HTMLElement>) => void };
   draggingCells: ShipCell[];
   pendingCells: ShipCell[];
+  shipHeadKeys: Set<string>;
   isPlacementComplete: boolean;
   onCellHover: (row: number, col: number) => void;
   onMouseLeave: () => void;
@@ -194,6 +230,7 @@ export const PlacementBoardGrid = memo(
     getBoardCellDragProps,
     draggingCells,
     pendingCells,
+    shipHeadKeys,
     isPlacementComplete,
     onCellHover,
     onMouseLeave,
@@ -247,6 +284,10 @@ export const PlacementBoardGrid = memo(
                 const cellKey = `${rIndex}-${cIndex}`;
                 const isDraggingThisCell = draggingKeys.has(cellKey);
                 const isPendingCell = pendingKeys.has(cellKey);
+                const isShipHead =
+                  isShipCell &&
+                  !isPlacementComplete &&
+                  shipHeadKeys.has(cellKey);
                 const dragProps = isShipCell
                   ? getBoardCellDragProps(rIndex, cIndex)
                   : { draggable: false, onDragStart: () => {} };
@@ -263,6 +304,7 @@ export const PlacementBoardGrid = memo(
                     }
                     isDraggingThisCell={isDraggingThisCell}
                     isPendingCell={isPendingCell}
+                    isShipHead={isShipHead}
                     draggable={dragProps.draggable}
                     onDragStart={dragProps.onDragStart}
                     rIndex={rIndex}
@@ -277,6 +319,9 @@ export const PlacementBoardGrid = memo(
                       isShipCell && onCellRotateInPlace
                         ? (r, c) => onCellRotateInPlace(r, c)
                         : undefined
+                    }
+                    onRotateButton={
+                      isShipHead ? onCellRotateInPlace : undefined
                     }
                     onDragOver={onDragOver}
                     onDrop={onDrop}

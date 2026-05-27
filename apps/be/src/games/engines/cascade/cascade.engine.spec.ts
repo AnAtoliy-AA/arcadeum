@@ -201,6 +201,174 @@ describe('CascadeEngine', () => {
       expect(res.state!.currentTurnIndex).toBe(1);
     });
 
+    it('multi-step DRAW_TWO chain accumulates pendingDraw across players', () => {
+      let state = engine.initializeState(['a', 'b', 'c']);
+      state = {
+        ...state,
+        topCard: { id: 't', color: 'R', kind: 'NUMBER', value: 1 },
+        activeColor: 'R',
+        currentTurnIndex: 0,
+      };
+      state = injectCard(state, 'a', {
+        id: 'a-d2',
+        color: 'R',
+        kind: 'DRAW_TWO',
+      });
+      state = injectCard(state, 'b', {
+        id: 'b-d2',
+        color: 'G',
+        kind: 'DRAW_TWO',
+      });
+
+      // A stacks → B can stack with ANY color D2 (cross-color stack allowed).
+      let res = engine.executeAction(state, 'play_card', ctx('a'), {
+        cardId: 'a-d2',
+      });
+      expect(res.success).toBe(true);
+      expect(res.state!.pendingDraw).toBe(2);
+      expect(res.state!.currentTurnIndex).toBe(1);
+
+      res = engine.executeAction(res.state!, 'play_card', ctx('b'), {
+        cardId: 'b-d2',
+      });
+      expect(res.success).toBe(true);
+      expect(res.state!.pendingDraw).toBe(4);
+      expect(res.state!.pendingStackKind).toBe('DRAW_TWO');
+      expect(res.state!.currentTurnIndex).toBe(2);
+    });
+
+    it('WILD_DRAW_FOUR stacks only onto another WILD_DRAW_FOUR', () => {
+      let state = engine.initializeState(['a', 'b']);
+      state = {
+        ...state,
+        topCard: { id: 't', color: 'R', kind: 'NUMBER', value: 1 },
+        activeColor: 'R',
+        currentTurnIndex: 0,
+      };
+      state = injectCard(state, 'a', {
+        id: 'a-w4',
+        color: 'W',
+        kind: 'WILD_DRAW_FOUR',
+      });
+      state = injectCard(state, 'b', {
+        id: 'b-w4',
+        color: 'W',
+        kind: 'WILD_DRAW_FOUR',
+      });
+      state = injectCard(state, 'b', {
+        id: 'b-d2',
+        color: 'R',
+        kind: 'DRAW_TWO',
+      });
+
+      // A plays Wild +4, names B as active color.
+      let res = engine.executeAction(state, 'play_card', ctx('a'), {
+        cardId: 'a-w4',
+        chosenColor: 'B',
+      });
+      expect(res.success).toBe(true);
+      expect(res.state!.pendingDraw).toBe(4);
+      expect(res.state!.pendingStackKind).toBe('WILD_DRAW_FOUR');
+      expect(res.state!.activeColor).toBe('B');
+
+      // B tries to cross-stack with DRAW_TWO — must be rejected.
+      const crossStack = engine.executeAction(
+        res.state!,
+        'play_card',
+        ctx('b'),
+        { cardId: 'b-d2' },
+      );
+      expect(crossStack.success).toBe(false);
+
+      // B legally stacks another WD4 → pendingDraw climbs to 8.
+      const okStack = engine.executeAction(res.state!, 'play_card', ctx('b'), {
+        cardId: 'b-w4',
+        chosenColor: 'G',
+      });
+      expect(okStack.success).toBe(true);
+      expect(okStack.state!.pendingDraw).toBe(8);
+      expect(okStack.state!.activeColor).toBe('G');
+      expect(okStack.state!.currentTurnIndex).toBe(0);
+    });
+
+    it('cross-stack rejected: DRAW_TWO cannot be played onto a WILD_DRAW_FOUR stack', () => {
+      let state = engine.initializeState(['a', 'b']);
+      state = {
+        ...state,
+        topCard: { id: 't', color: 'W', kind: 'WILD_DRAW_FOUR' },
+        activeColor: 'R',
+        pendingDraw: 4,
+        pendingStackKind: 'WILD_DRAW_FOUR',
+        currentTurnIndex: 1,
+      };
+      state = injectCard(state, 'b', {
+        id: 'b-d2',
+        color: 'R',
+        kind: 'DRAW_TWO',
+      });
+      const res = engine.executeAction(state, 'play_card', ctx('b'), {
+        cardId: 'b-d2',
+      });
+      expect(res.success).toBe(false);
+    });
+
+    it('pure mode: DRAW_TWO immediately gives next player 2 cards and skips them', () => {
+      let state = engine.initializeState(['a', 'b', 'c'], {
+        options: { mode: 'pure' },
+      });
+      state = {
+        ...state,
+        topCard: { id: 't', color: 'R', kind: 'NUMBER', value: 1 },
+        activeColor: 'R',
+        currentTurnIndex: 0,
+      };
+      state = injectCard(state, 'a', {
+        id: 'a-d2',
+        color: 'R',
+        kind: 'DRAW_TWO',
+      });
+      const bBefore = state.players[1].hand.length;
+      const res = engine.executeAction(state, 'play_card', ctx('a'), {
+        cardId: 'a-d2',
+      });
+      expect(res.success).toBe(true);
+      // Pending state never sticks in pure mode.
+      expect(res.state!.pendingDraw).toBe(0);
+      expect(res.state!.pendingStackKind).toBe(null);
+      // B received 2 cards.
+      expect(res.state!.players[1].hand.length).toBe(bBefore + 2);
+      // B was skipped — turn is now C.
+      expect(res.state!.currentTurnIndex).toBe(2);
+    });
+
+    it('pure mode: WILD_DRAW_FOUR immediately gives next player 4 cards and skips them', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: { mode: 'pure' },
+      });
+      state = {
+        ...state,
+        topCard: { id: 't', color: 'R', kind: 'NUMBER', value: 1 },
+        activeColor: 'R',
+        currentTurnIndex: 0,
+      };
+      state = injectCard(state, 'a', {
+        id: 'a-w4',
+        color: 'W',
+        kind: 'WILD_DRAW_FOUR',
+      });
+      const bBefore = state.players[1].hand.length;
+      const res = engine.executeAction(state, 'play_card', ctx('a'), {
+        cardId: 'a-w4',
+        chosenColor: 'B',
+      });
+      expect(res.success).toBe(true);
+      expect(res.state!.pendingDraw).toBe(0);
+      expect(res.state!.activeColor).toBe('B');
+      expect(res.state!.players[1].hand.length).toBe(bBefore + 4);
+      // 2-player pure mode → B drew + was skipped → back to A.
+      expect(res.state!.currentTurnIndex).toBe(0);
+    });
+
     it('stack-then-pay: drawing while pendingDraw>0 takes the pile', () => {
       let state = engine.initializeState(['a', 'b']);
       state = {

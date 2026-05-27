@@ -242,15 +242,8 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
         next.pendingStackKind = 'DRAW_TWO';
         // Pass turn — next player gets the chance to stack or draw.
       } else {
-        // Without stacking: next player draws 2 and is skipped.
-        this.stepTurn(next, 0);
-        this.drawCards(next, 2);
-        // Now treat as skip — current "next" player loses turn.
-        next.currentTurnIndex = nextIndex(
-          next.currentTurnIndex,
-          next.playerOrder.length,
-          next.direction,
-        );
+        // Pure mode: next player draws 2 and is skipped immediately.
+        this.applyImmediatePenalty(next, 2);
         return this.successResult(next);
       }
     } else if (card.kind === 'WILD_DRAW_FOUR') {
@@ -258,19 +251,24 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
         next.pendingDraw += 4;
         next.pendingStackKind = 'WILD_DRAW_FOUR';
       } else {
-        this.stepTurn(next, 0);
-        this.drawCards(next, 4);
-        next.currentTurnIndex = nextIndex(
-          next.currentTurnIndex,
-          next.playerOrder.length,
-          next.direction,
-        );
+        this.applyImmediatePenalty(next, 4);
         return this.successResult(next);
       }
     }
 
     this.stepTurn(next, skipNext ? 1 : 0);
     return this.successResult(next);
+  }
+
+  /**
+   * Pure-mode penalty: advance to the next player, give them `count` cards,
+   * then advance once more (so they're effectively skipped). Both advances
+   * go through `stepTurn` so dead-player skipping stays consistent.
+   */
+  private applyImmediatePenalty(state: CascadeState, count: number) {
+    this.stepTurn(state, 0);
+    this.drawCards(state, count);
+    this.stepTurn(state, 0);
   }
 
   private executeDraw(

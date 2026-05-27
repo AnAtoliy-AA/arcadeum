@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.5] - 2026-05-27
+
+### Refactored
+- move Buy Gems above history and anchor Next link (ARC-756) (ARC-756)
+
+
 ## [1.15.4] - 2026-05-27
 
 ### Fixed

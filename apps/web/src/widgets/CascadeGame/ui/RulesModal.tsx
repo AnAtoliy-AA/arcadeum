@@ -12,10 +12,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import {
-  CASCADE_VARIANT_IDS,
-  type CascadeVariant,
-} from '../types';
+import { CASCADE_VARIANT_IDS, type CascadeVariant } from '../types';
 
 interface RulesModalProps {
   open: boolean;
@@ -100,8 +97,8 @@ export function RulesModal({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent maxWidth={640}>
-        <ModalHeader>
+      <ModalContent maxWidth={640} data-testid="cascade-rules-modal">
+        <ModalHeader onClose={onClose}>
           <ModalTitle>{t('games.cascade_v1.rules.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>

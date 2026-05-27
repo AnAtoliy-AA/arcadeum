@@ -32,9 +32,9 @@ function resolveOptions(raw: unknown): CascadeOptions {
     stackingEnabled: boolean;
     lastCardCallEnabled: boolean;
   }>;
-  const mode: CascadeMode = (CASCADE_MODE_IDS as ReadonlyArray<string>).includes(
-    r.mode ?? '',
-  )
+  const mode: CascadeMode = (
+    CASCADE_MODE_IDS as ReadonlyArray<string>
+  ).includes(r.mode ?? '')
     ? (r.mode as CascadeMode)
     : 'classic';
   return {
@@ -42,9 +42,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     mode,
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
-      typeof r.lastCardCallEnabled === 'boolean'
-        ? r.lastCardCallEnabled
-        : true,
+      typeof r.lastCardCallEnabled === 'boolean' ? r.lastCardCallEnabled : true,
   };
 }
 
@@ -68,8 +66,15 @@ function CascadeGameImpl({
     (storeRoom?.id === roomId ? storeRoom : null) ?? initialRoom ?? null;
   const isLobby = room?.status === 'lobby';
 
-  const { snapshot, currentEntryId, myTurn, isGameOver, myHand, startBusy, session } =
-    useCascadeState({ roomId, currentUserId, initialSession });
+  const {
+    snapshot,
+    currentEntryId,
+    myTurn,
+    isGameOver,
+    myHand,
+    startBusy,
+    session,
+  } = useCascadeState({ roomId, currentUserId, initialSession });
 
   const { startSession, playCard, draw, callCascade } = useCascadeActions({
     roomId,
@@ -79,17 +84,17 @@ function CascadeGameImpl({
   // The shared `useGameSession` only ever sets startBusy=false (on the
   // games.session.started event); nothing flips it to true on click. So
   // without this local pending flag the start button stays clickable
-  // during the round-trip and users press it twice. Cleared when the
-  // session arrives (inline during render — the React-recommended pattern
-  // for "reset state when prop changes") or after a 6s safety timeout
-  // (covers BE rejection — e.g. minimum-players error — where the session
-  // never arrives).
+  // during the round-trip and users press it twice. We snapshot the
+  // current session id at click time and clear the flag once a *different*
+  // session id arrives — comparing IDs (not object refs) is robust against
+  // a non-null initial session bleeding into the first render. 6s safety
+  // timeout covers BE rejection (e.g. minimum-players error) where the
+  // started event never arrives.
   const [pendingStart, setPendingStart] = useState(false);
-  const [pendingStartSessionRef, setPendingStartSessionRef] = useState<
-    typeof session | null
+  const [startTriggerSessionId, setStartTriggerSessionId] = useState<
+    string | null
   >(null);
-  if (pendingStart && session && session !== pendingStartSessionRef) {
-    setPendingStartSessionRef(session);
+  if (pendingStart && session?.id && session.id !== startTriggerSessionId) {
     setPendingStart(false);
   }
   useEffect(() => {
@@ -100,13 +105,14 @@ function CascadeGameImpl({
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
+      setStartTriggerSessionId(session?.id ?? null);
       setPendingStart(true);
       startSession({
         withBots: !!opts?.withBots,
         botCount: opts?.botCount,
       });
     },
-    [startSession],
+    [startSession, session?.id],
   );
 
   useGameChatIntegration(

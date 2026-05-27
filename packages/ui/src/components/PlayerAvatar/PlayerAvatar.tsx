@@ -20,6 +20,10 @@ export interface PlayerAvatarProps {
   level?: number | null;
   presenceLine?: string;
   priority?: boolean;
+  /** Resolved skin item label for the SKIN chip. Only rendered at card/profile. */
+  skinChip?: { id: string; label: string } | null;
+  /** Overlay rendered top-left (used by shop for the TRY-ON tag). card/profile only. */
+  topLeftOverlay?: React.ReactNode;
   'data-testid'?: string;
   onPress?: () => void;
 }
@@ -72,6 +76,8 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   nameColor,
   presenceLine,
   priority,
+  skinChip,
+  topLeftOverlay,
   'data-testid': testId,
   onPress,
 }: PlayerAvatarProps) {
@@ -264,6 +270,42 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           height={0}
           data-testid={testId ? `${testId}-banner` : undefined}
         />
+      ) : null}
+      {topLeftOverlay ? (
+        <View
+          position="absolute"
+          top={12}
+          left={12}
+          zIndex={2}
+          pointerEvents="auto"
+        >
+          {topLeftOverlay}
+        </View>
+      ) : null}
+      {skinChip ? (
+        <View
+          position="absolute"
+          top={12}
+          right={12}
+          zIndex={2}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={6}
+          borderWidth={1}
+          borderColor="rgba(255,255,255,0.16)"
+          backgroundColor="rgba(0,0,0,0.4)"
+          data-testid={testId ? `${testId}-skin` : undefined}
+        >
+          <Text
+            fontSize={9}
+            letterSpacing={1}
+            textTransform="uppercase"
+            color="$gray11"
+            fontWeight="800"
+          >
+            SKIN · {skinChip.label}
+          </Text>
+        </View>
       ) : null}
       {showRays && raysBg ? (
         <View

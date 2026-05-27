@@ -218,4 +218,40 @@ describe('PlayerAvatar', () => {
     render(<PlayerAvatar name="J" size="md" data-testid="pa" />);
     expect(screen.queryByTestId('pa-rays')).toBeNull();
   });
+
+  it('renders the skin chip at card/profile when skinChip prop set', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon' }}
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-skin')).toHaveTextContent(/NEON/i);
+  });
+
+  it('does not render the skin chip below card', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon' }}
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.queryByTestId('pa-skin')).toBeNull();
+  });
+
+  it('renders topLeftOverlay above the disc', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        size="profile"
+        topLeftOverlay={<span data-testid="overlay">TRY-ON</span>}
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('overlay')).toBeInTheDocument();
+  });
 });

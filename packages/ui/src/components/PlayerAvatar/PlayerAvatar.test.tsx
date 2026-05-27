@@ -187,4 +187,35 @@ describe('PlayerAvatar', () => {
       /#22d3ee|rgb\(34,\s*211,\s*238\)/i,
     );
   });
+
+  it('renders the rays layer at md+ when aura is set', () => {
+    render(
+      <PlayerAvatar name="J" auraColor="#ff0" size="md" data-testid="pa" />,
+    );
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
+  });
+
+  it('renders the rays layer at md+ using rarityGlow when aura is absent', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        rarityGlow="rgba(168,85,247,0.26)"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
+  });
+
+  it('does not render the rays layer at sm', () => {
+    render(
+      <PlayerAvatar name="J" auraColor="#ff0" size="sm" data-testid="pa" />,
+    );
+    expect(screen.queryByTestId('pa-rays')).toBeNull();
+  });
+
+  it('does not render the rays layer when neither aura nor rarityGlow set', () => {
+    render(<PlayerAvatar name="J" size="md" data-testid="pa" />);
+    expect(screen.queryByTestId('pa-rays')).toBeNull();
+  });
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Text, View, YStack } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 
@@ -13,6 +13,8 @@ export interface PlayerAvatarProps {
   badgeUrl?: string | null;
   frameColor?: string | null;
   auraColor?: string | null;
+  /** Fallback halo color when no aura is set. Hex/rgba string. */
+  rarityGlow?: string | null;
   bannerColor?: string | null;
   nameColor?: string | null;
   level?: number | null;
@@ -65,6 +67,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   badgeUrl,
   frameColor,
   auraColor,
+  rarityGlow,
   bannerColor,
   nameColor,
   presenceLine,
@@ -78,8 +81,41 @@ export const PlayerAvatar = memo(function PlayerAvatar({
 
   const showBadge = size !== 'icon' && !!badgeUrl;
   const showFrame = size !== 'icon' && !!frameColor;
-  const showAura = (size === 'md' || size === 'card') && !!auraColor;
+  const showAura =
+    (size === 'md' || size === 'card' || size === 'profile') && !!auraColor;
   const showCardChrome = size === 'card' || size === 'profile';
+  const showRays =
+    (size === 'md' ||
+      size === 'lg' ||
+      size === 'card' ||
+      size === 'profile') &&
+    (!!auraColor || !!rarityGlow);
+  const raysColor =
+    pickSwatchColor(auraColor ?? null) ?? rarityGlow ?? null;
+
+  const raysBg = useMemo<React.CSSProperties | null>(() => {
+    if (!raysColor) return null;
+    const stops: string[] = [];
+    const steps = 12;
+    for (let i = 0; i < steps; i++) {
+      const peak = (i * 360) / steps;
+      const valley = peak + 360 / steps / 2;
+      stops.push(`${raysColor} ${peak}deg`);
+      stops.push(`transparent ${valley}deg`);
+    }
+    stops.push(`${raysColor} 360deg`);
+    return {
+      position: 'absolute',
+      inset: 0,
+      opacity: 0.5,
+      pointerEvents: 'none',
+      backgroundImage: `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`,
+      WebkitMaskImage:
+        'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+      maskImage:
+        'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+    };
+  }, [raysColor]);
 
   const ringHexBackground = showFrame
     ? isGradient(frameColor)
@@ -150,6 +186,18 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           data-testid={testId ? `${testId}-aura` : undefined}
         />
       ) : null}
+      {showRays && raysBg && !showCardChrome ? (
+        <View
+          position="absolute"
+          top={-Math.round(disc * 0.45)}
+          right={-Math.round(disc * 0.45)}
+          bottom={-Math.round(disc * 0.45)}
+          left={-Math.round(disc * 0.45)}
+          pointerEvents="none"
+          data-testid={testId ? `${testId}-rays` : undefined}
+          style={raysBg}
+        />
+      ) : null}
       <Avatar
         name={name}
         src={avatarUrl ?? undefined}
@@ -215,6 +263,18 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           width={0}
           height={0}
           data-testid={testId ? `${testId}-banner` : undefined}
+        />
+      ) : null}
+      {showRays && raysBg ? (
+        <View
+          position="absolute"
+          top={0}
+          right={0}
+          bottom={0}
+          left={0}
+          pointerEvents="none"
+          data-testid={testId ? `${testId}-rays` : undefined}
+          style={raysBg}
         />
       ) : null}
       {inner}

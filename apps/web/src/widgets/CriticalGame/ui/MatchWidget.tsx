@@ -415,6 +415,7 @@ export function MatchWidget({
               isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
             }
             resolveDisplayName={tileResolveName}
+            logs={snapshot.logs ?? []}
           />
           <Arena
             deck={snapshot.deck}

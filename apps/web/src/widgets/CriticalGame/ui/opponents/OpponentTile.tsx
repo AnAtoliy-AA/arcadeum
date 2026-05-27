@@ -157,53 +157,13 @@ export function OpponentTile({
       }
     : undefined;
 
+  // Outer non-interactive wrapper hosts the chat bubble + Sea Battle
+  // popup, so clicking the popup's Challenge button isn't nested inside
+  // the inner `role="button"` tile (which steals the click via `onPress`
+  // and blocks the popup's `router.push` from firing). The tile itself
+  // is the only press target.
   return (
-    <YStack
-      position="relative"
-      data-testid={`player-card-${player.playerId}`}
-      data-alive={alive ? 'true' : 'false'}
-      data-current-turn={isCurrentTurn ? 'true' : 'false'}
-      data-target={isTarget ? 'true' : 'false'}
-      role={interactive ? 'button' : undefined}
-      tabIndex={interactive ? 0 : undefined}
-      aria-pressed={interactive ? isTarget : undefined}
-      // Compose the accessible name from the visible visual state so a
-      // screen-reader user hears the same context a sighted player sees
-      // (turn ring, target ring, dead/dashed). State is mutually
-      // exclusive in the tile border, so we resolve a single suffix
-      // key per render — three unconditional `t()` lookups × 5 tiles
-      // every state push was wasteful telemetry noise.
-      aria-label={describeOpponentTile(
-        displayName,
-        t as unknown as (key: string) => string,
-        { alive, isCurrentTurn, isTarget },
-      )}
-      onPress={interactive ? onSelect : undefined}
-      onKeyDown={handleKeyDown}
-      cursor={interactive ? 'pointer' : 'default'}
-      hoverStyle={interactive ? { borderColor: TARGET_RING } : undefined}
-      alignItems="center"
-      gap="$1"
-      paddingHorizontal="$2"
-      paddingVertical="$2"
-      borderRadius={12}
-      borderWidth={1}
-      borderStyle={ringStyle}
-      borderColor={ringColor}
-      backgroundColor="rgba(0,0,0,0.35)"
-      // FFA: flex-grow with a max so 2–5 tiles distribute evenly across
-      // the row. Duel: lock the lone tile to a focal width so the
-      // opponent reads as the primary subject, not space-betweened.
-      flex={isDuel ? 0 : 1}
-      width={isDuel ? (isMobile ? 180 : 240) : undefined}
-      maxWidth={isDuel ? (isMobile ? 180 : 240) : 180}
-      minWidth={isMobile ? 96 : 120}
-      flexShrink={0}
-      opacity={alive ? 1 : 0.6}
-      // Scroll-snap on mobile: align each tile to the start of the
-      // scroll container so swipes don't strand a tile mid-row.
-      style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
-    >
+    <YStack position="relative" flex={isDuel ? 0 : 1} flexShrink={0}>
       {latestMessage && (
         <>
           <ChatBubble
@@ -221,64 +181,111 @@ export function OpponentTile({
         </>
       )}
       <YStack
-        width={finalAvatarSize}
-        height={finalAvatarSize}
-        borderRadius={9999}
-        backgroundColor="rgba(255,255,255,0.08)"
-        borderWidth={2}
-        borderColor={avatarBorderColor}
+        position="relative"
+        data-testid={`player-card-${player.playerId}`}
+        data-alive={alive ? 'true' : 'false'}
+        data-current-turn={isCurrentTurn ? 'true' : 'false'}
+        data-target={isTarget ? 'true' : 'false'}
+        role={interactive ? 'button' : undefined}
+        tabIndex={interactive ? 0 : undefined}
+        aria-pressed={interactive ? isTarget : undefined}
+        // Compose the accessible name from the visible visual state so a
+        // screen-reader user hears the same context a sighted player sees
+        // (turn ring, target ring, dead/dashed). State is mutually
+        // exclusive in the tile border, so we resolve a single suffix
+        // key per render — three unconditional `t()` lookups × 5 tiles
+        // every state push was wasteful telemetry noise.
+        aria-label={describeOpponentTile(
+          displayName,
+          t as unknown as (key: string) => string,
+          { alive, isCurrentTurn, isTarget },
+        )}
+        onPress={interactive ? onSelect : undefined}
+        onKeyDown={handleKeyDown}
+        cursor={interactive ? 'pointer' : 'default'}
+        hoverStyle={interactive ? { borderColor: TARGET_RING } : undefined}
         alignItems="center"
-        justifyContent="center"
-        overflow="hidden"
+        gap="$1"
+        paddingHorizontal="$2"
+        paddingVertical="$2"
+        borderRadius={12}
+        borderWidth={1}
+        borderStyle={ringStyle}
+        borderColor={ringColor}
+        backgroundColor="rgba(0,0,0,0.35)"
+        // FFA: flex-grow with a max so 2–5 tiles distribute evenly across
+        // the row. Duel: lock the lone tile to a focal width so the
+        // opponent reads as the primary subject, not space-betweened.
+        flex={isDuel ? 0 : 1}
+        width={isDuel ? (isMobile ? 180 : 240) : undefined}
+        maxWidth={isDuel ? (isMobile ? 180 : 240) : 180}
+        minWidth={isMobile ? 96 : 120}
+        flexShrink={0}
+        opacity={alive ? 1 : 0.6}
+        // Scroll-snap on mobile: align each tile to the start of the
+        // scroll container so swipes don't strand a tile mid-row.
+        style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
       >
+        <YStack
+          width={finalAvatarSize}
+          height={finalAvatarSize}
+          borderRadius={9999}
+          backgroundColor="rgba(255,255,255,0.08)"
+          borderWidth={2}
+          borderColor={avatarBorderColor}
+          alignItems="center"
+          justifyContent="center"
+          overflow="hidden"
+        >
+          {alive ? (
+            <InGameAvatar
+              playerId={player.playerId}
+              name={displayName}
+              size={finalAvatarSize >= 64 ? 'sm' : 'icon'}
+              data-testid={`player-avatar-${player.playerId}`}
+            />
+          ) : (
+            <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
+          )}
+        </YStack>
+        <XStack alignItems="center" gap={4} maxWidth="100%">
+          <Text
+            data-testid={`player-name-${player.playerId}`}
+            fontSize={12}
+            fontWeight="700"
+            letterSpacing={0.3}
+            numberOfLines={1}
+            maxWidth={isMobile ? 80 : 100}
+          >
+            {displayName}
+          </Text>
+          {isIdle && <IdleBadge />}
+        </XStack>
         {alive ? (
-          <InGameAvatar
-            playerId={player.playerId}
-            name={displayName}
-            size={finalAvatarSize >= 64 ? 'sm' : 'icon'}
-            data-testid={`player-avatar-${player.playerId}`}
-          />
+          <XStack
+            data-testid={`player-stats-count-${player.playerId}`}
+            alignItems="center"
+            gap={4}
+            opacity={0.85}
+          >
+            <CardsIcon size={11} />
+            <Text fontSize={11} fontWeight="800" letterSpacing={0.4}>
+              {player.hand.length}
+            </Text>
+          </XStack>
         ) : (
-          <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
+          <Text
+            data-testid={`player-eliminated-label-${player.playerId}`}
+            fontSize={10}
+            fontWeight="800"
+            letterSpacing={1}
+            textTransform="uppercase"
+            color={ELIMINATED_RING}
+          >
+            {t('games.table.players.eliminated')}
+          </Text>
         )}
       </YStack>
-      <XStack alignItems="center" gap={4} maxWidth="100%">
-        <Text
-          data-testid={`player-name-${player.playerId}`}
-          fontSize={12}
-          fontWeight="700"
-          letterSpacing={0.3}
-          numberOfLines={1}
-          maxWidth={isMobile ? 80 : 100}
-        >
-          {displayName}
-        </Text>
-        {isIdle && <IdleBadge />}
-      </XStack>
-      {alive ? (
-        <XStack
-          data-testid={`player-stats-count-${player.playerId}`}
-          alignItems="center"
-          gap={4}
-          opacity={0.85}
-        >
-          <CardsIcon size={11} />
-          <Text fontSize={11} fontWeight="800" letterSpacing={0.4}>
-            {player.hand.length}
-          </Text>
-        </XStack>
-      ) : (
-        <Text
-          data-testid={`player-eliminated-label-${player.playerId}`}
-          fontSize={10}
-          fontWeight="800"
-          letterSpacing={1}
-          textTransform="uppercase"
-          color={ELIMINATED_RING}
-        >
-          {t('games.table.players.eliminated')}
-        </Text>
-      )}
     </YStack>
   );
 }

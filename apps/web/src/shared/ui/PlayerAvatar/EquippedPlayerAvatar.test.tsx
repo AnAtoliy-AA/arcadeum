@@ -27,6 +27,8 @@ const allNulls = {
   auraItem: null,
   bannerColor: null,
   bannerItem: null,
+  skinItem: null,
+  skinChip: null,
 };
 
 describe('EquippedPlayerAvatar', () => {
@@ -54,6 +56,27 @@ describe('EquippedPlayerAvatar', () => {
     );
     expect(screen.getByTestId('epa-banner')).toBeInTheDocument();
     expect(screen.getByTestId('epa-name')).toHaveTextContent('Jane');
+  });
+
+  it('passes skinChip from useEquippedCosmetics to PlayerAvatar', () => {
+    vi.mocked(hook.useEquippedCosmetics).mockReturnValue({
+      ...allNulls,
+      skinItem: null,
+      skinChip: { id: 'skin-neon', label: 'items.game_skin.skin-neon.name' },
+    });
+    render(
+      <EquippedPlayerAvatar
+        name="Jane"
+        size="card"
+        equippedAvatarId={null}
+        equippedBadgeId={null}
+        equippedGameSkinId="skin-neon"
+        data-testid="pa"
+      />,
+    );
+    const skin = screen.getByTestId('pa-skin');
+    expect(skin).toBeInTheDocument();
+    expect(skin.textContent ?? '').toMatch(/SKIN/);
   });
 
   it('falls back to fallbackAvatarUrl when catalog returns null', () => {

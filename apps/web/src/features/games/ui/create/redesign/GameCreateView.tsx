@@ -109,8 +109,14 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   }
   if (form.gameId === 'cascade_v1') {
+    // The create page picker currently surfaces only the visual theme.
+    // Mode defaults to 'classic' from here; the lobby ModeSelector lets
+    // the host override before starting. Pure mode forces stacking off
+    // on the BE; the create-page initial `stackingEnabled: true` is
+    // informational only and is recomputed from mode in the engine.
     return {
       variant: form.themeId || 'cosmic',
+      mode: 'classic',
       stackingEnabled: true,
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,

@@ -12,7 +12,7 @@ const bot = new CascadeBotService({} as unknown as CascadeService);
 function baseState(overrides: Partial<CascadeState> = {}): CascadeState {
   return {
     phase: 'playing',
-    options: { variant: 'cosmic', stackingEnabled: true },
+    options: { variant: 'cosmic', mode: 'classic', stackingEnabled: true },
     players: [
       { playerId: 'bot-1', alive: true, hand: [] },
       { playerId: 'b', alive: true, hand: [] },

@@ -99,21 +99,20 @@ test.describe('Cascade play to win', () => {
     });
 
     await mockGameSocket(page, roomId, userId, {
+      // socket-mocks.ts spreads roomJoinedPayload directly INTO the room
+      // object on `games.room.joined`, so status / hostId / members /
+      // gameOptions must be at the top level — a nested `room` key would
+      // be ignored.
       roomJoinedPayload: {
+        name: 'Cascade Win Test',
         gameId: 'cascade_v1',
         maxPlayers: 10,
-        room: {
-          id: roomId,
-          name: 'Cascade Win Test',
-          gameId: 'cascade_v1',
-          maxPlayers: 10,
-          hostId: userId,
-          status: 'in_progress',
-          gameOptions: { variant: 'cosmic', stackingEnabled: true },
-          members: [
-            { id: userId, userId, displayName: 'Test User', isHost: true },
-          ],
-        },
+        status: 'in_progress',
+        hostId: userId,
+        gameOptions: { variant: 'cosmic', stackingEnabled: true },
+        members: [
+          { id: userId, userId, displayName: 'Test User', isHost: true },
+        ],
         session: {
           id: sessionId,
           status: 'active',
@@ -156,6 +155,13 @@ test.describe('Cascade play to win', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
     await closeRulesModal(page);
+
+    // Wait for the in-game UI to mount — the discard top card (Red 9) is
+    // guaranteed to render once the snapshot lands. This also rules out
+    // mis-mocked room status that would leave us stuck on the lobby.
+    await expect(
+      page.getByRole('button', { name: /red 9/i }).first(),
+    ).toBeVisible({ timeout: 10000 });
 
     // In-game UI: the user's lone playable card should be rendered.
     const playableCard = page.getByRole('button', { name: /red 5/i }).first();

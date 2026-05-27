@@ -8,6 +8,7 @@ import type {
   CardKind,
   Direction,
   GamePhase,
+  Mode,
   PendingAction,
   Variant,
 } from './cascade.constants';
@@ -23,6 +24,12 @@ export interface CascadeCard {
 
 export interface CascadeOptions {
   variant: Variant;
+  /**
+   * Gameplay mode — selects rule preset. `stackingEnabled` is derived from
+   * mode at engine-init time (classic/speed: ON, pure: OFF), but is also
+   * kept on state for clients to read.
+   */
+  mode: Mode;
   stackingEnabled: boolean;
 }
 

@@ -8,8 +8,9 @@ import {
   type GameLobbyTheme,
 } from '@/features/games/ui/ReusableGameLobby';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { CASCADE_VARIANTS } from '../lib/constants';
+import { CASCADE_MODES, CASCADE_VARIANTS } from '../lib/constants';
 import {
+  type CascadeMode,
   type CascadeOptions,
   type CascadeVariant,
   MIN_PLAYERS,
@@ -44,11 +45,18 @@ const getCascadeLobbyTheme = (variantId?: string): GameLobbyTheme => {
 function resolveOptions(raw: unknown): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
+    mode: string;
     stackingEnabled: boolean;
   }>;
+  const knownModes = CASCADE_MODES.map((m) => m.id) as ReadonlyArray<string>;
+  const mode: CascadeMode = knownModes.includes(r.mode ?? '')
+    ? (r.mode as CascadeMode)
+    : 'classic';
+  // Mode is the source of truth; pure disables stacking unconditionally.
   return {
     variant: (r.variant ?? 'cosmic') as CascadeVariant,
-    stackingEnabled: r.stackingEnabled !== false,
+    mode,
+    stackingEnabled: mode !== 'pure',
   };
 }
 
@@ -75,6 +83,11 @@ export function CascadeLobby({
       CASCADE_VARIANTS[0],
     [options.variant],
   );
+  const modeTokens = useMemo(
+    () =>
+      CASCADE_MODES.find((m) => m.id === options.mode) ?? CASCADE_MODES[0],
+    [options.mode],
+  );
 
   const optionsSlot = (
     <YStack gap="$3" padding="$3" borderRadius="$3" backgroundColor="rgba(0,0,0,0.18)">
@@ -85,6 +98,14 @@ export function CascadeLobby({
         {t(variantTokens.description)}
       </Text>
       <XStack alignItems="center" gap="$2" paddingTop="$2">
+        <Text color="#fbbf24" fontWeight="600">
+          {modeTokens.emoji} {t(modeTokens.name)}
+        </Text>
+        <Text color="#cbd5e1" fontSize={12}>
+          · {t(modeTokens.description)}
+        </Text>
+      </XStack>
+      <XStack alignItems="center" gap="$2">
         <Switch
           checked={options.stackingEnabled}
           disabled

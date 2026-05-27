@@ -18,6 +18,8 @@ import {
   DEFAULT_OPTIONS,
   MAX_PLAYERS,
   MIN_PLAYERS,
+  MODES,
+  type Mode,
   type Variant,
 } from '../engines/cascade/cascade.constants';
 import type {
@@ -213,14 +215,17 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
   private resolveOptions(raw: unknown): CascadeOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;
+      mode: string;
       stackingEnabled: boolean;
     }>;
+    const isValidMode = (m: unknown): m is Mode =>
+      typeof m === 'string' && (MODES as ReadonlyArray<string>).includes(m);
+    const mode: Mode = isValidMode(r.mode) ? r.mode : DEFAULT_OPTIONS.mode;
+    // Mode determines stacking; the lobby option is informational only.
     return {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
-      stackingEnabled:
-        typeof r.stackingEnabled === 'boolean'
-          ? r.stackingEnabled
-          : DEFAULT_OPTIONS.stackingEnabled,
+      mode,
+      stackingEnabled: mode !== 'pure',
     };
   }
 }

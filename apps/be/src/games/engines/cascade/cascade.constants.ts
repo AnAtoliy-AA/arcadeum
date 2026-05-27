@@ -22,6 +22,21 @@ export type CardKind = (typeof CARD_KINDS)[number];
 export const VARIANTS = ['cosmic', 'arcane', 'cyberpunk', 'elemental'] as const;
 export type Variant = (typeof VARIANTS)[number];
 
+/**
+ * Gameplay modes — distinct from the visual `variant`. The visual theme is
+ * pure presentation; the mode changes engine behavior.
+ *
+ * - classic: full ruleset (stacking enabled, no clock).
+ * - pure:    no stacking — Draw-Two / Wild +4 immediately resolve.
+ * - speed:   stacking enabled + per-turn clock; the bot/service auto-draws
+ *            for an idle player whose clock expires.
+ */
+export const MODES = ['classic', 'pure', 'speed'] as const;
+export type Mode = (typeof MODES)[number];
+
+/** Per-turn clock budget in ms for `speed` mode. */
+export const SPEED_TURN_BUDGET_MS = 15000;
+
 export const GAME_PHASE = {
   PLAYING: 'playing',
   GAME_OVER: 'game_over',
@@ -37,6 +52,7 @@ export type PendingAction = (typeof PENDING)[keyof typeof PENDING];
 
 export const DEFAULT_OPTIONS = {
   variant: 'cosmic' as Variant,
+  mode: 'classic' as Mode,
   stackingEnabled: true,
 };
 

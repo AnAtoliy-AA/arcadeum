@@ -19,6 +19,8 @@ import { RulesModal } from './RulesModal';
 import { CASCADE_VARIANTS } from '../lib/constants';
 import {
   type ActiveColor,
+  CASCADE_MODE_IDS,
+  type CascadeMode,
   type CascadeOptions,
   type CascadeVariant,
 } from '../types';
@@ -26,11 +28,18 @@ import {
 function resolveOptions(raw: unknown): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
+    mode: string;
     stackingEnabled: boolean;
   }>;
+  const mode: CascadeMode = (CASCADE_MODE_IDS as ReadonlyArray<string>).includes(
+    r.mode ?? '',
+  )
+    ? (r.mode as CascadeMode)
+    : 'classic';
   return {
     variant: (r.variant ?? 'cosmic') as CascadeVariant,
-    stackingEnabled: r.stackingEnabled !== false,
+    mode,
+    stackingEnabled: mode !== 'pure',
   };
 }
 

@@ -95,6 +95,23 @@ export const enMessages = {
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
     },
+    modes: {
+      classic: {
+        name: 'Classic',
+        description:
+          'Full ruleset. Stack Draw-Two and Wild +4 to flood the next player.',
+      },
+      pure: {
+        name: 'Pure',
+        description:
+          'No stacking. Draw-Two and Wild +4 resolve immediately. Cleaner for new players.',
+      },
+      speed: {
+        name: 'Speed',
+        description:
+          '15-second turn timer. Stacking on; auto-draw if you don’t play in time.',
+      },
+    },
     rules: {
       title: 'Rules',
       objective:

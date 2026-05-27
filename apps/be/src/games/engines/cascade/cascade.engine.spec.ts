@@ -58,11 +58,12 @@ describe('CascadeEngine', () => {
       expect(state.pendingAction).toBe(PENDING.NONE);
     });
 
-    it('honors stackingEnabled override', () => {
+    it('mode is the source of truth for stackingEnabled — a bare stackingEnabled=false is ignored without mode=pure', () => {
       const state = engine.initializeState(['a', 'b'], {
         options: { stackingEnabled: false },
       });
-      expect(state.options.stackingEnabled).toBe(false);
+      // No mode supplied → defaults to classic → stacking back on.
+      expect(state.options.stackingEnabled).toBe(true);
     });
   });
 
@@ -263,6 +264,38 @@ describe('CascadeEngine', () => {
       expect(res.success).toBe(true);
       expect(res.state!.phase).toBe(GAME_PHASE.GAME_OVER);
       expect(res.state!.winnerId).toBe('b');
+    });
+  });
+
+  describe('modes', () => {
+    it('classic mode keeps stacking enabled', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: { mode: 'classic' },
+      });
+      expect(state.options.mode).toBe('classic');
+      expect(state.options.stackingEnabled).toBe(true);
+    });
+
+    it('pure mode forces stacking off even if stackingEnabled was set true', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: { mode: 'pure', stackingEnabled: true },
+      });
+      expect(state.options.mode).toBe('pure');
+      expect(state.options.stackingEnabled).toBe(false);
+    });
+
+    it('speed mode keeps stacking enabled (clock is service-driven)', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: { mode: 'speed' },
+      });
+      expect(state.options.mode).toBe('speed');
+      expect(state.options.stackingEnabled).toBe(true);
+    });
+
+    it('default mode is classic when nothing is supplied', () => {
+      const state = engine.initializeState(['a', 'b']);
+      expect(state.options.mode).toBe('classic');
+      expect(state.options.stackingEnabled).toBe(true);
     });
   });
 

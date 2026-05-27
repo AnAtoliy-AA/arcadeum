@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { CascadeVariant } from '../types';
+import type { CascadeMode, CascadeVariant } from '../types';
 
 export interface CascadeVariantOption extends GameVariantOption {
   id: CascadeVariant;
@@ -51,5 +51,34 @@ export const CASCADE_VARIANTS: ReadonlyArray<CascadeVariantOption> = [
     gradient: 'linear-gradient(135deg, #166534 0%, #ca8a04 50%, #1e40af 100%)',
     lightGradient:
       'linear-gradient(90deg, #ecfdf5 0%, #a7f3d0 50%, #ecfdf5 100%)',
+  },
+];
+
+export interface CascadeModeOption {
+  id: CascadeMode;
+  name: TranslationKey;
+  description: TranslationKey;
+  emoji: string;
+}
+
+export const CASCADE_MODES: ReadonlyArray<CascadeModeOption> = [
+  {
+    id: 'classic',
+    name: 'games.cascade_v1.modes.classic.name' as TranslationKey,
+    description:
+      'games.cascade_v1.modes.classic.description' as TranslationKey,
+    emoji: '🎯',
+  },
+  {
+    id: 'pure',
+    name: 'games.cascade_v1.modes.pure.name' as TranslationKey,
+    description: 'games.cascade_v1.modes.pure.description' as TranslationKey,
+    emoji: '🧼',
+  },
+  {
+    id: 'speed',
+    name: 'games.cascade_v1.modes.speed.name' as TranslationKey,
+    description: 'games.cascade_v1.modes.speed.description' as TranslationKey,
+    emoji: '⚡',
   },
 ];

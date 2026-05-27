@@ -13,6 +13,9 @@ export const CASCADE_VARIANT_IDS = [
 ] as const;
 export type CascadeVariant = (typeof CASCADE_VARIANT_IDS)[number];
 
+export const CASCADE_MODE_IDS = ['classic', 'pure', 'speed'] as const;
+export type CascadeMode = (typeof CASCADE_MODE_IDS)[number];
+
 export const CARD_COLORS = ['R', 'Y', 'G', 'B', 'W'] as const;
 export type CardColor = (typeof CARD_COLORS)[number];
 
@@ -51,6 +54,7 @@ export interface CascadeCard {
 
 export interface CascadeOptions {
   variant: CascadeVariant;
+  mode: CascadeMode;
   stackingEnabled: boolean;
 }
 

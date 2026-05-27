@@ -95,6 +95,23 @@ export const frMessages = {
       waitingForPlayers: 'En attente des joueurs…',
       minPlayers: 'Minimum 2 joueurs',
     },
+    modes: {
+      classic: {
+        name: 'Classique',
+        description:
+          'Règles complètes. Enchaînez les Pioche-Deux et Joker +4 pour submerger le joueur suivant.',
+      },
+      pure: {
+        name: 'Pur',
+        description:
+          'Pas d’enchaînement. Pioche-Deux et Joker +4 se résolvent immédiatement. Plus simple pour les débutants.',
+      },
+      speed: {
+        name: 'Rapide',
+        description:
+          'Chronomètre de 15 secondes par tour. Enchaînement actif ; pioche automatique si vous ne jouez pas à temps.',
+      },
+    },
     rules: {
       title: 'Règles',
       objective:

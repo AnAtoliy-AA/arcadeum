@@ -13,7 +13,7 @@ function makeSnapshot(
 ): CascadeClientState {
   return {
     phase: 'playing',
-    options: { variant: 'cosmic', stackingEnabled: true },
+    options: { variant: 'cosmic', mode: 'classic', stackingEnabled: true },
     players: [
       {
         playerId: 'me',

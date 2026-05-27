@@ -95,6 +95,23 @@ export const esMessages = {
       waitingForPlayers: 'Esperando a los jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
     },
+    modes: {
+      classic: {
+        name: 'Clásico',
+        description:
+          'Reglas completas. Encadena Roba-Dos y Comodín +4 para inundar al siguiente jugador.',
+      },
+      pure: {
+        name: 'Puro',
+        description:
+          'Sin encadenado. Roba-Dos y Comodín +4 se resuelven al instante. Más fácil para principiantes.',
+      },
+      speed: {
+        name: 'Velocidad',
+        description:
+          'Temporizador de 15 segundos por turno. Con encadenado; robo automático si no juegas a tiempo.',
+      },
+    },
     rules: {
       title: 'Reglas',
       objective:

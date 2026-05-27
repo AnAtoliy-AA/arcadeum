@@ -66,6 +66,10 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     config?: InitializeConfig,
   ): CascadeState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
+    // Mode is the source of truth for stacking. `pure` mode forces stacking
+    // off so Draw-Two / Wild +4 immediately resolve; classic + speed keep it
+    // on. Any explicit `stackingEnabled` from the lobby is overridden here.
+    options.stackingEnabled = options.mode !== 'pure';
 
     const deck = shuffle(buildDeck());
     const players: CascadePlayer[] = playerIds.map((id) => ({

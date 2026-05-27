@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.4] - 2026-05-27
+
+### Fixed
+- wire opponent chat bubbles + Sea Battle popup in widget UI; retire legacy-only e2e tests (ARC-753) (ARC-753)
+- anchor autoplay dropdown to its right edge so it stays on-screen (ARC-753) (ARC-753)
+- keep MobileHandBar above widget fullscreen layer (ARC-753) (ARC-753)
+
+### Refactored
+- drop widget-mode flag, ship the new widget UI everywhere (ARC-753) (ARC-753)
+
+
 ## [1.15.3] - 2026-05-27
 
 ### Fixed

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.3] - 2026-05-27
+
+### Fixed
+- sea battle lobby crash when gameOptions.teams is not an array (ARC-752) (ARC-752)
+
+
 ## [1.15.2] - 2026-05-27
 
 ### Added

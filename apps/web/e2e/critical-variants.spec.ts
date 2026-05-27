@@ -118,12 +118,12 @@ test.describe('Critical Variant Selection', () => {
 
     await closeRulesModal(page);
 
-    // Check if we are in the game
-    await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
-      {},
-    );
+    // Check if we are in the game. The legacy `PlayerHand` heading is
+    // gone; MatchWidget is the canonical "in-game" marker.
+    await expect(page.locator('[data-testid="match-widget"]')).toBeVisible({});
 
-    // Redesign markers (ARC-480): verify scene backdrop + turn banner mount.
+    // Redesign markers (ARC-480): scene backdrop still mounts under the
+    // widget; turn banner lives inside `ArenaCenter`.
     await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
     await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
   });

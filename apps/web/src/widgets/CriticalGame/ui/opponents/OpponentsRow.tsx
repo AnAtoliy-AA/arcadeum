@@ -5,7 +5,7 @@ import { XStack } from 'tamagui';
 import { OpponentTile } from './OpponentTile';
 import { useIsNarrow } from '../../lib/useNarrowViewport';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import type { CriticalPlayerTableState } from '../../types';
+import type { CriticalLogEntry, CriticalPlayerTableState } from '../../types';
 
 interface OpponentsRowProps {
   opponents: CriticalPlayerTableState[];
@@ -26,6 +26,13 @@ interface OpponentsRowProps {
    */
   onSelectTarget?: (playerId: string) => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
+  /**
+   * Match log feed. Each tile picks its own latest `message`-type entry
+   * out of this list to render the chat bubble / Sea Battle popup —
+   * gating this at the row level avoids prop-drilling per-opponent
+   * filtering work into the row.
+   */
+  logs?: CriticalLogEntry[];
 }
 
 /**
@@ -40,6 +47,7 @@ export function OpponentsRow({
   targetPlayerId,
   onSelectTarget,
   resolveDisplayName,
+  logs,
 }: OpponentsRowProps) {
   // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
   // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
@@ -95,6 +103,7 @@ export function OpponentsRow({
               : undefined
           }
           resolveDisplayName={resolveDisplayName}
+          logs={logs}
         />
       ))}
     </XStack>

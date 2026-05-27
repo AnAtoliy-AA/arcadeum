@@ -80,12 +80,18 @@ function CascadeGameImpl({
   // games.session.started event); nothing flips it to true on click. So
   // without this local pending flag the start button stays clickable
   // during the round-trip and users press it twice. Cleared when the
-  // session arrives or after a 6s safety timeout (e.g. start rejected by
-  // the BE — minimum-players error).
+  // session arrives (inline during render — the React-recommended pattern
+  // for "reset state when prop changes") or after a 6s safety timeout
+  // (covers BE rejection — e.g. minimum-players error — where the session
+  // never arrives).
   const [pendingStart, setPendingStart] = useState(false);
-  useEffect(() => {
-    if (pendingStart && session) setPendingStart(false);
-  }, [pendingStart, session]);
+  const [pendingStartSessionRef, setPendingStartSessionRef] = useState<
+    typeof session | null
+  >(null);
+  if (pendingStart && session && session !== pendingStartSessionRef) {
+    setPendingStartSessionRef(session);
+    setPendingStart(false);
+  }
   useEffect(() => {
     if (!pendingStart) return;
     const t = setTimeout(() => setPendingStart(false), 6000);

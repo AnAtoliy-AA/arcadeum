@@ -40,6 +40,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   sea_battle_v1: 'sea_battle_v1',
   glimworm_v1: 'glimworm_v1',
   tic_tac_toe_v1: 'tic_tac_toe_v1',
+  cascade_v1: 'cascade_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -104,6 +105,24 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'classic',
       boardSize: 3,
       teamMode: form.rules.teams,
+      allowSpectators: form.rules.spectators,
+    };
+  }
+  if (form.gameId === 'cascade_v1') {
+    // The create page picker currently surfaces only the visual theme.
+    // Mode defaults to 'classic' from here; the lobby ModeSelector lets
+    // the host override before starting. Pure mode forces stacking off
+    // on the BE; the create-page initial `stackingEnabled: true` is
+    // informational only and is recomputed from mode in the engine.
+    return {
+      variant: form.themeId || 'cosmic',
+      mode: 'classic',
+      stackingEnabled: true,
+      // Last-Card race defaults ON when creating a room. Host can toggle
+      // it off in the lobby (lobby option is the source of truth at
+      // session-start; engine honours the value it sees).
+      lastCardCallEnabled: true,
+      idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
     };
   }

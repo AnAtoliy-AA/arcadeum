@@ -42,6 +42,7 @@ import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
+import { CASCADE_VARIANTS } from '@/widgets/CascadeGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -125,6 +126,26 @@ export const featuredGames: FeaturedGame[] = [
     rulesPrefix: 'games.tic_tac_toe_v1.rules',
     rulesKeys: ['objective', 'steps', 'winLengths'],
     variants: TIC_TAC_TOE_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'cascade_v1',
+    nameKey: 'games.cascade_v1.name' as TranslationKey,
+    descriptionKey: 'games.cascade_v1.description' as TranslationKey,
+    accentColor: '#7c3aed',
+    genre: 'Card',
+    pace: 'Casual',
+    players: '2–10',
+    duration: '10 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/cascade',
+    type: 'card',
+    rulesPrefix: 'games.cascade_v1.rules',
+    rulesKeys: ['objective', 'steps', 'actionCards', 'stacking'],
+    variants: CASCADE_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),

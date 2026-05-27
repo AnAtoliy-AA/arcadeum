@@ -8,6 +8,7 @@ export type GameType =
   | 'sea_battle_v1'
   | 'glimworm_v1'
   | 'tic_tac_toe_v1'
+  | 'cascade_v1'
   | null;
 
 interface UseGameActionsOptions {

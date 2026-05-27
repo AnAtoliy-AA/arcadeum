@@ -26,6 +26,11 @@ const TicTacToeRulesModal = dynamic(
   { ssr: false },
 );
 
+const CascadeRulesModal = dynamic(
+  () => import('@/widgets/CascadeGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -76,6 +81,16 @@ export function RulesAccess({ gameId, themeId }: Props) {
           onClose={() => setOpen(false)}
           boardSize={3}
           winLength={3}
+        />
+      ) : null}
+      {gameId === 'cascade_v1' ? (
+        <CascadeRulesModal
+          open={open}
+          onClose={() => setOpen(false)}
+          // RulesModal internally validates against CASCADE_VARIANT_IDS and
+          // falls back to 'cosmic' for unknown values, so an unconstrained
+          // themeId is safe here.
+          variant={themeId as never}
         />
       ) : null}
     </>

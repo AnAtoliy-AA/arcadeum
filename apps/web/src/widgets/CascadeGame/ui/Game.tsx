@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
@@ -76,6 +76,33 @@ function CascadeGameImpl({
     userId: currentUserId,
   });
 
+  // The shared `useGameSession` only ever sets startBusy=false (on the
+  // games.session.started event); nothing flips it to true on click. So
+  // without this local pending flag the start button stays clickable
+  // during the round-trip and users press it twice. Cleared when the
+  // session arrives or after a 6s safety timeout (e.g. start rejected by
+  // the BE — minimum-players error).
+  const [pendingStart, setPendingStart] = useState(false);
+  useEffect(() => {
+    if (pendingStart && session) setPendingStart(false);
+  }, [pendingStart, session]);
+  useEffect(() => {
+    if (!pendingStart) return;
+    const t = setTimeout(() => setPendingStart(false), 6000);
+    return () => clearTimeout(t);
+  }, [pendingStart]);
+
+  const handleStartGame = useCallback(
+    (opts?: { withBots?: boolean; botCount?: number }) => {
+      setPendingStart(true);
+      startSession({
+        withBots: !!opts?.withBots,
+        botCount: opts?.botCount,
+      });
+    },
+    [startSession],
+  );
+
   useGameChatIntegration(
     snapshot?.logs as never,
     (_msg: string, _scope: ChatScope) => {
@@ -130,13 +157,8 @@ function CascadeGameImpl({
         <CascadeLobby
           room={room}
           isHost={isHost}
-          startBusy={startBusy}
-          onStartGame={(opts) =>
-            startSession({
-              withBots: !!opts?.withBots,
-              botCount: opts?.botCount,
-            })
-          }
+          startBusy={startBusy || pendingStart}
+          onStartGame={handleStartGame}
           onLeaveRoom={() => storeLeaveRoom(roomId, currentUserId)}
           onDeleteRoom={() => void storeDeleteRoom(roomId)}
           onKickPlayer={(userId) =>

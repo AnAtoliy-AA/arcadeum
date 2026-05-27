@@ -100,14 +100,6 @@ export const ALL_GAME_CARDS: CriticalCard[] = [
   ...DEITY_PACK_CARDS,
 ];
 
-export type HandLayoutMode =
-  | 'grid'
-  | 'grid-3'
-  | 'grid-4'
-  | 'grid-5'
-  | 'grid-6'
-  | 'linear';
-
 export interface PendingAction {
   type: string;
   playerId: string;

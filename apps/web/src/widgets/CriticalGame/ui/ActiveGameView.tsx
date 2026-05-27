@@ -1,12 +1,11 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useMedia, YStack, XStack } from 'tamagui';
+import { useMedia, YStack } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   CriticalCard,
-  HandLayoutMode,
   CriticalPlayerState,
   GameRoomSummary,
   CriticalSnapshot,
@@ -23,16 +22,11 @@ import {
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { ActiveGameContent } from './ActiveGameContent';
 import { MatchWidget } from './MatchWidget';
-import { CriticalGameHeader } from './CriticalGameHeader';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
-import { TurnBanner } from './TurnBanner';
-import { MatchHud } from './MatchHud';
-import { useWidgetMode } from '../hooks/useWidgetMode';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '../hooks/useRematch';
 
@@ -44,10 +38,8 @@ interface ActiveGameViewProps {
   isFullscreen: boolean;
   toggleFullscreen: () => void;
   // From useCriticalState
-  actionBusy: string | null;
   actions: UseGameActionsReturn;
   currentPlayer: CriticalPlayerState | null;
-  currentTurnPlayer: CriticalPlayerState | undefined;
   isMyTurn: boolean;
   canAct: boolean;
   canPlayNope: boolean;
@@ -84,10 +76,8 @@ export function ActiveGameView({
   isHost,
   isFullscreen,
   toggleFullscreen,
-  actionBusy,
   actions,
   currentPlayer,
-  currentTurnPlayer,
   isMyTurn,
   canAct,
   canPlayNope,
@@ -98,9 +88,6 @@ export function ActiveGameView({
   const { t } = useTranslation();
   const media = useMedia();
   const isMobile = media.sm;
-  const widgetMode = useWidgetMode();
-  // Layout State
-  const [handLayout, setHandLayout] = useState<HandLayoutMode>('grid');
   const cardVariant = room.gameOptions?.cardVariant;
   const scenePalette = useMemo(
     () => getVariantStyles(cardVariant).scene,
@@ -139,7 +126,6 @@ export function ActiveGameView({
     handleCloseEventComboModal,
     handleSelectComboCard,
     handleToggleFiverCard,
-    handleOpenFavorModal,
     handleCloseFavorModal,
     handleConfirmFavor,
     targetedAttackModal,
@@ -225,7 +211,6 @@ export function ActiveGameView({
     handleConfirmStash,
     handleConfirmMark,
     handleConfirmStealDraw,
-    handleUnstash,
     handlePlayActionCard,
     handleCloseTargetedAttackModal,
     handleConfirmTargetedAttack,
@@ -252,95 +237,40 @@ export function ActiveGameView({
     handlePlayActionCard,
   });
 
-  const buildSharedProps = () => ({
-    room,
-    snapshot,
-    currentUserId,
-    currentPlayer,
-    cardVariant,
-    isGameOver: !!isGameOver,
-    isMyTurn: !!isMyTurn,
-    canAct: !!canAct,
-    canPlayNope,
-    actionBusy,
-    aliveOpponents,
-    handLayout,
-    setHandLayout,
-    resolveDisplayName,
-    t: t as unknown as (
-      k: string,
-      p?: Record<string, string | number>,
-    ) => string,
-    actions,
-    idleTimerTriggered,
-    autoplayState,
-    handleUnstash,
-    handlePlayActionCard,
-    handleOpenFavorModal,
-    handleOpenEventCombo,
-    handleOpenFiverCombo,
-  });
-
   return (
     <ScenePaletteProvider palette={scenePalette}>
       <SceneBackdrop />
       <YStack flex={1} className="animate-entrance">
-        {!widgetMode && (
-          <CriticalGameHeader
-            room={room}
-            t={
-              t as unknown as (
-                key: string,
-                params?: Record<string, string | number>,
-              ) => string
-            }
-            idleTimerEnabled={idleTimerEnabled}
-            actionBusy={actionBusy}
-            isGameOver={!!isGameOver}
-            currentPlayer={currentPlayer ?? undefined}
-            canAct={!!canAct}
-            isMyTurn={!!isMyTurn}
-            handleIdleTimeout={handleIdleTimeout}
-            autoplayState={autoplayState}
-            idleTimerTriggered={idleTimerTriggered}
-            handleStopAutoplay={handleStopAutoplay}
-            isFullscreen={isFullscreen}
-            toggleFullscreen={toggleFullscreen}
-          />
-        )}
-        {!widgetMode && (
-          <>
-            <XStack justifyContent="center">
-              <TurnBanner
-                isMyTurn={!!isMyTurn}
-                currentPlayerName={
-                  currentTurnPlayer
-                    ? resolveDisplayName(currentTurnPlayer.playerId, 'Player')
-                    : ''
-                }
-                secondsRemaining={null}
-                pendingDraws={snapshot.pendingDraws}
-              />
-            </XStack>
-            <MatchHud
-              snapshot={snapshot}
-              currentPlayer={currentPlayer}
-              isGameOver={!!isGameOver}
-              formatLogMessage={formatLogMessage}
-            />
-          </>
-        )}
-
-        {widgetMode ? (
-          <MatchWidget
-            {...buildSharedProps()}
-            formatLogMessage={formatLogMessage}
-            isFullscreen={isFullscreen}
-            toggleFullscreen={toggleFullscreen}
-          />
-        ) : (
-          <ActiveGameContent {...buildSharedProps()} />
-        )}
+        <MatchWidget
+          room={room}
+          snapshot={snapshot}
+          currentUserId={currentUserId}
+          currentPlayer={currentPlayer}
+          cardVariant={cardVariant}
+          isGameOver={!!isGameOver}
+          isMyTurn={!!isMyTurn}
+          canAct={!!canAct}
+          canPlayNope={canPlayNope}
+          resolveDisplayName={resolveDisplayName}
+          t={
+            t as unknown as (
+              k: string,
+              p?: Record<string, string | number>,
+            ) => string
+          }
+          actions={actions}
+          handlePlayActionCard={handlePlayActionCard}
+          handleOpenEventCombo={handleOpenEventCombo}
+          handleOpenFiverCombo={handleOpenFiverCombo}
+          formatLogMessage={formatLogMessage}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+          autoplayState={autoplayState}
+          idleTimerEnabled={idleTimerEnabled}
+          idleTimerTriggered={idleTimerTriggered}
+          handleIdleTimeout={handleIdleTimeout}
+          handleStopAutoplay={handleStopAutoplay}
+        />
       </YStack>
       {currentPlayer && (
         <GameStatusMessage

@@ -59,12 +59,10 @@ export default function CriticalGame({
 
   const {
     snapshot,
-    actionBusy,
     startBusy,
     actions,
     reorderParticipants,
     currentPlayer,
-    currentTurnPlayer,
     isMyTurn,
     canAct,
     canPlayNope,
@@ -129,10 +127,8 @@ export default function CriticalGame({
           isHost={isHost}
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}
-          actionBusy={actionBusy}
           actions={actions}
           currentPlayer={currentPlayer}
-          currentTurnPlayer={currentTurnPlayer ?? undefined}
           isMyTurn={!!isMyTurn}
           canAct={!!canAct}
           canPlayNope={!!canPlayNope}

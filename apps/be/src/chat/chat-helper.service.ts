@@ -113,6 +113,7 @@ export class ChatHelperService {
         equippedFrameId: string | null;
         equippedAuraId: string | null;
         equippedBannerId: string | null;
+        equippedGameSkinId: string | null;
       }
     >();
 
@@ -134,6 +135,7 @@ export class ChatHelperService {
               'equippedFrameId',
               'equippedAuraId',
               'equippedBannerId',
+              'equippedGameSkinId',
             ])
             .exec()) as UserDocument[])
         : [];
@@ -158,6 +160,7 @@ export class ChatHelperService {
           equippedFrameId: user.equippedFrameId ?? null,
           equippedAuraId: user.equippedAuraId ?? null,
           equippedBannerId: user.equippedBannerId ?? null,
+          equippedGameSkinId: user.equippedGameSkinId ?? null,
         });
       }
     }
@@ -187,6 +190,7 @@ export class ChatHelperService {
         senderEquippedFrameId: equipped?.equippedFrameId ?? null,
         senderEquippedAuraId: equipped?.equippedAuraId ?? null,
         senderEquippedBannerId: equipped?.equippedBannerId ?? null,
+        senderEquippedGameSkinId: equipped?.equippedGameSkinId ?? null,
         receiverIds: Array.isArray(message.receiverIds)
           ? message.receiverIds.map((id): string =>
               typeof id === 'string'

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.2] - 2026-05-27
+
+### Added
+- cascade Last-Card race (option-toggled, with bot reflex) (ARC-751) (ARC-751)
+- per-theme action-card names (Eclipse/Banish/Firewall/Block) (ARC-751) (ARC-751)
+- cascade gameplay modes (classic/pure/speed) + e2e flatten fix (ARC-751) (ARC-751)
+- cascade i18n translations + play-to-win e2e + mobile parity (ARC-751) (ARC-751)
+- cascade hook + board tests, e2e, rephrase to remove UNO refs (ARC-751) (ARC-751)
+- cascade landing page + SEO + BE bot spec + Card vitest (ARC-751) (ARC-751)
+- add Cascade web widget, registry, and create-page wiring (ARC-751) (ARC-751)
+- add Cascade backend engine, service, bot, and gateway (ARC-751) (ARC-751)
+
+### Fixed
+- cascade pendingStart used stale initial session, rules modal lacked close (ARC-751) (ARC-751)
+- cascade pendingStart reset uses inline reset, not effect setState (ARC-751) (ARC-751)
+- cascade start button needed two clicks to register (ARC-751) (ARC-751)
+- cascade +2/+4 stacking coverage + pure-mode skip consistency (ARC-751) (ARC-751)
+
+### Documentation
+- assign ARC-751 to cascade design spec (ARC-751) (ARC-751
+ARC-751)
+- cascade card game design spec (ARC-751) (ARC-751)
+
+
 ## [1.15.1] - 2026-05-26
 
 ### Added

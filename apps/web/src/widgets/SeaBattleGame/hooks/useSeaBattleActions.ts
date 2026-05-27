@@ -42,6 +42,20 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const moveShip = useCallback(
+    (shipId: string, cells: ShipCell[]) => {
+      if (!userId) return;
+      onActionStart?.('moveShip');
+      gameSocket.emit('seaBattle.session.move_ship', {
+        roomId,
+        userId,
+        shipId,
+        cells,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
   const confirmPlacement = useCallback(() => {
     if (!userId) return;
     onActionStart?.('confirmPlacement');
@@ -100,6 +114,7 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
   return {
     startSession,
     placeShip,
+    moveShip,
     confirmPlacement,
     attack,
     postHistoryNote,

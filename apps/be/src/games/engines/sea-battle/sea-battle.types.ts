@@ -60,6 +60,11 @@ export interface PlaceShipPayload {
   cells: ShipCell[];
 }
 
+export interface MoveShipPayload {
+  shipId: string;
+  cells: ShipCell[];
+}
+
 export interface AttackPayload {
   targetPlayerId: string;
   row: number;

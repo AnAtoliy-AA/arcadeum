@@ -22,6 +22,25 @@ import { GamesRealtimeService } from './games.realtime.service';
 import { SeaBattleTeamConfigItemDto } from './dtos/set-team-config.dto';
 import type { GameRoomSummary } from './rooms/game-rooms.types';
 
+interface ShipOpPayload {
+  roomId?: string;
+  userId?: string;
+  shipId?: string;
+  cells?: { row: number; col: number }[];
+  [key: string]: unknown;
+}
+
+interface ShipOp {
+  svc: (
+    userId: string,
+    roomId: string,
+    body: { shipId: string; cells: { row: number; col: number }[] },
+  ) => Promise<unknown>;
+  ackEvent: string;
+  errorAction: string;
+  errorMessage: string;
+}
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -72,50 +91,54 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.place_ship')
-  async handlePlaceShip(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      shipId?: string;
-      cells?: { row: number; col: number }[];
-    },
+  private async dispatchShipOp(
+    client: Socket,
+    payload: ShipOpPayload,
+    op: ShipOp,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const shipId = extractString(payload, 'shipId');
     const cells = payload.cells;
-
     if (!shipId || !cells || !Array.isArray(cells)) {
       throw new WsException('shipId and cells are required');
     }
-
     try {
-      await this.seaBattleService.placeShipByRoom(userId, roomId, {
-        shipId,
-        cells,
-      });
-      client.emit(
-        'seaBattle.session.ship_placed',
-        maybeEncrypt({
-          roomId,
-          userId,
-          shipId,
-        }),
-      );
+      await op.svc(userId, roomId, { shipId, cells });
+      client.emit(op.ackEvent, maybeEncrypt({ roomId, userId, shipId }));
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'place ship',
-          roomId,
-          userId,
-        },
-        'Unable to place ship.',
+        { action: op.errorAction, roomId, userId },
+        op.errorMessage,
       );
     }
+  }
+
+  @SubscribeMessage('seaBattle.session.place_ship')
+  handlePlaceShip(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: ShipOpPayload,
+  ): Promise<void> {
+    return this.dispatchShipOp(client, payload, {
+      svc: (u, r, b) => this.seaBattleService.placeShipByRoom(u, r, b),
+      ackEvent: 'seaBattle.session.ship_placed',
+      errorAction: 'place ship',
+      errorMessage: 'Unable to place ship.',
+    });
+  }
+
+  @SubscribeMessage('seaBattle.session.move_ship')
+  handleMoveShip(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: ShipOpPayload,
+  ): Promise<void> {
+    return this.dispatchShipOp(client, payload, {
+      svc: (u, r, b) => this.seaBattleService.moveShipByRoom(u, r, b),
+      ackEvent: 'seaBattle.session.ship_moved',
+      errorAction: 'move ship',
+      errorMessage: 'Unable to move ship.',
+    });
   }
 
   @SubscribeMessage('seaBattle.session.confirm_placement')

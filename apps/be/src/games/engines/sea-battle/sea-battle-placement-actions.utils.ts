@@ -12,6 +12,7 @@ import {
   SeaBattlePlayer,
   SeaBattleState,
   PlaceShipPayload,
+  MoveShipPayload,
 } from './sea-battle.types';
 import { randomlyPlaceShips } from './sea-battle.utils';
 import type {
@@ -57,6 +58,44 @@ export function runPlaceShip(
   }
   state.logs.push(
     makeLog('action', `Placed ${ship.name}`, {
+      scope: 'private',
+      senderId: player.playerId,
+    }),
+  );
+  return { success: true, state };
+}
+
+export function runMoveShip(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: MoveShipPayload,
+): GameActionResult<SeaBattleState> {
+  const existing = player.ships.find((s) => s.id === payload.shipId);
+  if (!existing) {
+    return { success: false, error: 'Ship is not currently placed' };
+  }
+
+  for (const cell of existing.cells) {
+    player.board[cell.row][cell.col] = CELL_STATE.EMPTY;
+  }
+  player.ships = player.ships.filter((s) => s.id !== payload.shipId);
+
+  const shipConfig = SHIPS.find((s) => s.id === payload.shipId) as ShipConfig;
+  const ship: Ship = {
+    id: payload.shipId,
+    name: shipConfig.name,
+    size: shipConfig.size,
+    cells: payload.cells,
+    hits: 0,
+    sunk: false,
+  };
+  player.ships.push(ship);
+  for (const cell of payload.cells) {
+    player.board[cell.row][cell.col] = CELL_STATE.SHIP;
+  }
+
+  state.logs.push(
+    makeLog('action', `Moved ${ship.name}`, {
       scope: 'private',
       senderId: player.playerId,
     }),

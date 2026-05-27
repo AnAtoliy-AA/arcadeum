@@ -67,6 +67,9 @@ export class User {
 
   @Prop({ type: String, default: null })
   equippedFrameId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedGameSkinId?: string | null;
 }
 
 export type UserDocument = User & Document;

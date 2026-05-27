@@ -72,6 +72,17 @@ describe('useCascadeActions', () => {
     });
   });
 
+  it('emits cascade.session.call_cascade', () => {
+    const { result } = renderHook(() =>
+      useCascadeActions({ roomId: 'r', userId: 'me' }),
+    );
+    result.current.callCascade();
+    expect(emit).toHaveBeenCalledWith('cascade.session.call_cascade', {
+      roomId: 'r',
+      userId: 'me',
+    });
+  });
+
   it('emits cascade.session.forfeit', () => {
     const { result } = renderHook(() =>
       useCascadeActions({ roomId: 'r', userId: 'me' }),

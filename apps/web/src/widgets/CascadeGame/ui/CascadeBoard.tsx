@@ -19,6 +19,11 @@ interface CascadeBoardProps {
   disabled: boolean;
   onPlayCard: (cardId: string, chosenColor?: ActiveColor) => void;
   onDraw: () => void;
+  /**
+   * Fire the "Cascade!" race call. Available to ALL alive players whenever
+   * `snapshot.lastCardWindow` is open — not gated on whose turn it is.
+   */
+  onCallCascade?: () => void;
 }
 
 export function CascadeBoard({
@@ -29,9 +34,15 @@ export function CascadeBoard({
   disabled,
   onPlayCard,
   onDraw,
+  onCallCascade,
 }: CascadeBoardProps) {
   const theme = useCascadeTheme();
   const [pendingWildCard, setPendingWildCard] = useState<string | null>(null);
+
+  const cascadeOpen =
+    snapshot.options.lastCardCallEnabled && !!snapshot.lastCardWindow;
+  const atRiskIsMe =
+    cascadeOpen && snapshot.lastCardWindow!.playerId === currentUserId;
 
   const opponents = useMemo(
     () => snapshot.players.filter((p) => p.playerId !== currentUserId),
@@ -92,6 +103,41 @@ export function CascadeBoard({
           </YStack>
         ))}
       </XStack>
+
+      {/* Last-Card race: pulsing call button visible to ALL alive players
+          while the window is open. First press wins — the engine sorts the
+          race by arrival order. Self-press = safe; other-press = at-risk
+          player draws 2 penalty cards. */}
+      {cascadeOpen && onCallCascade ? (
+        <XStack justifyContent="center" paddingTop="$2">
+          <button
+            type="button"
+            onClick={onCallCascade}
+            aria-label={
+              atRiskIsMe ? 'Call Cascade — save yourself' : 'Call Cascade'
+            }
+            style={{
+              padding: '12px 28px',
+              borderRadius: 999,
+              border: '2px solid rgba(251, 191, 36, 0.6)',
+              background:
+                'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%)',
+              color: '#fff',
+              fontWeight: 800,
+              fontSize: 18,
+              letterSpacing: 1.5,
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              boxShadow:
+                '0 0 0 4px rgba(251, 191, 36, 0.18), 0 6px 16px rgba(0,0,0,0.45)',
+              animation: 'cascade-pulse 900ms ease-in-out infinite',
+            }}
+          >
+            Cascade!
+          </button>
+          <style>{`@keyframes cascade-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }`}</style>
+        </XStack>
+      ) : null}
 
       {/* Center: draw + discard */}
       <XStack gap="$5" justifyContent="center" alignItems="center" paddingVertical="$4">

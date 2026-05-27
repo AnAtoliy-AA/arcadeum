@@ -56,6 +56,16 @@ export interface CascadeOptions {
   variant: CascadeVariant;
   mode: CascadeMode;
   stackingEnabled: boolean;
+  /**
+   * Last-Card race. When true and a player drops to one card, every alive
+   * player can press the Cascade button; first press wins. Default true.
+   */
+  lastCardCallEnabled: boolean;
+}
+
+export interface LastCardWindow {
+  playerId: string;
+  openedAt: string;
 }
 
 export interface CascadePlayer {
@@ -89,6 +99,7 @@ export interface CascadeClientState {
   pendingDraw: number;
   pendingStackKind: 'DRAW_TWO' | 'WILD_DRAW_FOUR' | null;
   pendingAction: PendingAction;
+  lastCardWindow: LastCardWindow | null;
   winnerId: string | null;
   logs: CascadeLogEntry[];
 }

@@ -118,6 +118,10 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'cosmic',
       mode: 'classic',
       stackingEnabled: true,
+      // Last-Card race defaults ON when creating a room. Host can toggle
+      // it off in the lobby (lobby option is the source of truth at
+      // session-start; engine honours the value it sees).
+      lastCardCallEnabled: true,
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
     };

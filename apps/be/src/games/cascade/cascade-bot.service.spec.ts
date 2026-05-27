@@ -12,7 +12,12 @@ const bot = new CascadeBotService({} as unknown as CascadeService);
 function baseState(overrides: Partial<CascadeState> = {}): CascadeState {
   return {
     phase: 'playing',
-    options: { variant: 'cosmic', mode: 'classic', stackingEnabled: true },
+    options: {
+      variant: 'cosmic',
+      mode: 'classic',
+      stackingEnabled: true,
+      lastCardCallEnabled: true,
+    },
     players: [
       { playerId: 'bot-1', alive: true, hand: [] },
       { playerId: 'b', alive: true, hand: [] },
@@ -26,6 +31,7 @@ function baseState(overrides: Partial<CascadeState> = {}): CascadeState {
     ],
     topCard: { id: 'top', color: 'R', kind: 'NUMBER', value: 5 } as CascadeCard,
     activeColor: 'R',
+    lastCardWindow: null,
     pendingDraw: 0,
     pendingStackKind: null,
     pendingAction: 'none',

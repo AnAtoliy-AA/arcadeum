@@ -15,6 +15,15 @@ import { isPlayable } from '../engines/cascade/cascade.utils';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
+/**
+ * Reflex windows for the Last-Card race. The at-risk player (if a bot)
+ * reacts much faster than other bots, so it usually saves itself first;
+ * other bots have a slower fuse so a human still has a real chance to
+ * call them out manually.
+ */
+const SELF_REFLEX_MS = { min: 200, max: 700 };
+const OTHER_REFLEX_MS = { min: 1500, max: 3500 };
+
 @Injectable()
 export class CascadeBotService {
   private readonly logger = new Logger(CascadeBotService.name);
@@ -33,6 +42,13 @@ export class CascadeBotService {
     if (session.status !== 'active') return;
     const state = session.state as unknown as CascadeState | undefined;
     if (!state || state.phase !== GAME_PHASE.PLAYING) return;
+
+    // Fire-and-forget: any bot can call Cascade independent of whose turn
+    // it is. Schedule the reflex now; it'll race against humans and other
+    // bots. Self-saves fire on a tighter timer than other-calls.
+    if (state.lastCardWindow && state.options.lastCardCallEnabled) {
+      this.scheduleCascadeReflex(session, state);
+    }
 
     const currentId = state.playerOrder[state.currentTurnIndex];
     if (!currentId || !this.isBot(currentId)) return;
@@ -57,6 +73,53 @@ export class CascadeBotService {
       this.logger.error(`Bot ${currentId} failed to play: ${error}`);
     } finally {
       this.processing.delete(lockKey);
+    }
+  }
+
+  /**
+   * Schedule each bot's call_cascade reflex. The at-risk bot (if any) races
+   * to save itself; every other bot races to catch the at-risk player.
+   * Whichever reflex fires first wins — the engine validates and the loser
+   * gets a no-op error (validateCallCascade rejects post-close).
+   */
+  private scheduleCascadeReflex(
+    session: GameSessionSummary,
+    state: CascadeState,
+  ): void {
+    const window = state.lastCardWindow;
+    if (!window) return;
+    const atRiskId = window.playerId;
+    const lockKeyBase = `cascade-call:${session.roomId}:${window.openedAt}`;
+
+    for (const player of state.players) {
+      if (!player.alive) continue;
+      if (!this.isBot(player.playerId)) continue;
+      const lockKey = `${lockKeyBase}:${player.playerId}`;
+      if (this.processing.has(lockKey)) continue;
+      this.processing.add(lockKey);
+
+      const range =
+        player.playerId === atRiskId ? SELF_REFLEX_MS : OTHER_REFLEX_MS;
+      const delay = range.min + Math.random() * (range.max - range.min);
+
+      setTimeout(() => {
+        this.cascadeService
+          .callCascade(player.playerId, session.roomId)
+          .catch((err: unknown) => {
+            // Losing the race is the expected case for the slower bots —
+            // the engine rejects post-close calls. Anything else is
+            // worth logging.
+            const message = err instanceof Error ? err.message : String(err);
+            if (!message.includes('No Cascade window')) {
+              this.logger.debug(
+                `Bot ${player.playerId} cascade call lost the race: ${message}`,
+              );
+            }
+          })
+          .finally(() => {
+            this.processing.delete(lockKey);
+          });
+      }, delay).unref?.();
     }
   }
 

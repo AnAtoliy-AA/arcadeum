@@ -30,6 +30,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     variant: string;
     mode: string;
     stackingEnabled: boolean;
+    lastCardCallEnabled: boolean;
   }>;
   const mode: CascadeMode = (CASCADE_MODE_IDS as ReadonlyArray<string>).includes(
     r.mode ?? '',
@@ -40,6 +41,10 @@ function resolveOptions(raw: unknown): CascadeOptions {
     variant: (r.variant ?? 'cosmic') as CascadeVariant,
     mode,
     stackingEnabled: mode !== 'pure',
+    lastCardCallEnabled:
+      typeof r.lastCardCallEnabled === 'boolean'
+        ? r.lastCardCallEnabled
+        : true,
   };
 }
 
@@ -66,7 +71,7 @@ function CascadeGameImpl({
   const { snapshot, currentEntryId, myTurn, isGameOver, myHand, startBusy, session } =
     useCascadeState({ roomId, currentUserId, initialSession });
 
-  const { startSession, playCard, draw } = useCascadeActions({
+  const { startSession, playCard, draw, callCascade } = useCascadeActions({
     roomId,
     userId: currentUserId,
   });
@@ -164,6 +169,7 @@ function CascadeGameImpl({
             disabled={isGameOver}
             onPlayCard={handlePlayCard}
             onDraw={draw}
+            onCallCascade={callCascade}
           />
         </>
       ) : null}

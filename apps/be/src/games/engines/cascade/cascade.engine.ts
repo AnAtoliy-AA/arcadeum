@@ -15,6 +15,13 @@ import {
   STARTING_HAND_SIZE,
   type ActiveColor,
 } from './cascade.constants';
+import {
+  applyCallCascade,
+  closeLastCardWindowFor,
+  maybeOpenLastCardWindow,
+  validateCallCascade,
+  type LastCardHelpers,
+} from './cascade.engine.last-card';
 import type {
   CascadeCard,
   CascadePlayer,
@@ -41,6 +48,7 @@ const ACTION = {
   PLAY_CARD: 'play_card',
   DRAW: 'draw',
   NAME_COLOR: 'name_color',
+  CALL_CASCADE: 'call_cascade',
   FORFEIT: 'forfeit',
 } as const;
 
@@ -98,6 +106,7 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
       pendingDraw: 0,
       pendingStackKind: null,
       pendingAction: PENDING.NONE,
+      lastCardWindow: null,
       winnerId: null,
       logs: [this.createLogEntry('system', 'Cascade started.')],
     };
@@ -123,6 +132,9 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
         context.userId,
       ).ok;
     }
+    if (action === ACTION.CALL_CASCADE) {
+      return this.validateCallCascade(state, context.userId).ok;
+    }
     if (action === ACTION.FORFEIT) {
       return validateForfeit(state, context.userId).ok;
     }
@@ -143,6 +155,9 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     }
     if (action === ACTION.NAME_COLOR) {
       return this.executeNameColor(state, context, payload as NameColorPayload);
+    }
+    if (action === ACTION.CALL_CASCADE) {
+      return this.executeCallCascade(state, context);
     }
     if (action === ACTION.FORFEIT) {
       return this.executeForfeit(state, context);
@@ -178,11 +193,17 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     const player = state.players.find((p) => p.playerId === playerId);
     if (!player?.alive) return [];
     const isCurrent = state.playerOrder[state.currentTurnIndex] === playerId;
-    if (!isCurrent) return [ACTION.FORFEIT];
+    // Cascade call is available to ANY alive player while a window is open,
+    // regardless of whose turn it is — that's the whole race mechanic.
+    const cascade =
+      state.lastCardWindow && state.options.lastCardCallEnabled
+        ? [ACTION.CALL_CASCADE]
+        : [];
+    if (!isCurrent) return [...cascade, ACTION.FORFEIT];
     if (state.pendingAction !== PENDING.NONE) {
-      return [ACTION.NAME_COLOR, ACTION.FORFEIT];
+      return [...cascade, ACTION.NAME_COLOR, ACTION.FORFEIT];
     }
-    return [ACTION.PLAY_CARD, ACTION.DRAW, ACTION.FORFEIT];
+    return [...cascade, ACTION.PLAY_CARD, ACTION.DRAW, ACTION.FORFEIT];
   }
 
   private executePlayCard(
@@ -194,6 +215,11 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     if (!v.ok) return this.errorResult(v.error);
 
     const next = this.cloneState(state);
+    // The at-risk player is acting on their own turn — playing closes any
+    // window they were under (either they're about to win, or they're past
+    // the call window).
+    this.closeLastCardWindowFor(next, context.userId);
+
     const player = next.players.find((p) => p.playerId === context.userId)!;
     const cardIdx = player.hand.findIndex((c) => c.id === payload.cardId);
     const [card] = player.hand.splice(cardIdx, 1);
@@ -216,6 +242,12 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
         this.createLogEntry('system', 'A player has emptied their hand.'),
       );
       return this.successResult(next);
+    }
+
+    // If the play dropped them to one card, open the Last-Card race window
+    // (gated on the lobby option).
+    if (player.hand.length === 1) {
+      this.maybeOpenLastCardWindow(next, player.playerId);
     }
 
     // Color resolution: wilds need a chosen color now, set active immediately.
@@ -279,6 +311,9 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     if (!v.ok) return this.errorResult(v.error);
 
     const next = this.cloneState(state);
+    // Drawing on your own turn closes any window you were under — past the
+    // race-call moment.
+    this.closeLastCardWindowFor(next, context.userId);
 
     // Pending stack: drawing concedes — take the pile and lose turn.
     if (next.pendingDraw > 0) {
@@ -364,6 +399,27 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     }
     return this.successResult(next);
   }
+
+  // ------- Last-Card call (delegated to cascade.engine.last-card) -------
+
+  private get lastCardHelpers(): LastCardHelpers {
+    return {
+      cloneState: (s) => this.cloneState(s),
+      drawIntoHand: (s, p) => this.drawIntoHand(s, p),
+      createLogEntry: (t, m, o) => this.createLogEntry(t, m, o),
+      successResult: (s) => this.successResult(s),
+      errorResult: (e) => this.errorResult(e),
+    };
+  }
+
+  private validateCallCascade = (s: CascadeState, u: string) =>
+    validateCallCascade(s, u);
+  private executeCallCascade = (s: CascadeState, c: GameActionContext) =>
+    applyCallCascade(s, c, this.lastCardHelpers);
+  private maybeOpenLastCardWindow = (s: CascadeState, p: string) =>
+    maybeOpenLastCardWindow(s, p);
+  private closeLastCardWindowFor = (s: CascadeState, p: string) =>
+    closeLastCardWindowFor(s, p);
 
   // ------- helpers -------
 

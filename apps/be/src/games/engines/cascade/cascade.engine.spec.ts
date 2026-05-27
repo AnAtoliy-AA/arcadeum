@@ -467,6 +467,10 @@ describe('CascadeEngine', () => {
     });
   });
 
+  // Last-Card race (Cascade call) tests live in cascade.engine.last-card.spec.ts
+  // — extracted to keep this file under the 500-line check-file-length limit.
+
+
   describe('sanitizeStateForPlayer', () => {
     it('hides other players hand contents but preserves counts', () => {
       const state = engine.initializeState(['a', 'b']);

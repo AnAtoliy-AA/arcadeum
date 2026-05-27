@@ -90,6 +90,7 @@ export const frMessages = {
     },
     lobby: {
       stacking: 'Autoriser les pénalités enchaînables',
+      lastCardCall: 'Course à la Dernière Carte (appuyez sur Cascade quand un adversaire arrive à 1)',
       startWithBots: 'Démarrer avec des bots',
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente des joueurs…',

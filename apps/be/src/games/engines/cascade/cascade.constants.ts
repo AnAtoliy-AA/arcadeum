@@ -54,7 +54,18 @@ export const DEFAULT_OPTIONS = {
   variant: 'cosmic' as Variant,
   mode: 'classic' as Mode,
   stackingEnabled: true,
+  /**
+   * "Cascade call" — the Last-Card race. When a player drops to one card,
+   * every alive player can press the Cascade button. First press wins:
+   * - the at-risk player → safe
+   * - anyone else → at-risk player draws 2 penalty cards
+   * Default ON; lobby host can disable for a friendlier mode.
+   */
+  lastCardCallEnabled: true,
 };
+
+/** Penalty for being caught with one card unannounced. */
+export const LAST_CARD_PENALTY = 2;
 
 export const DIRECTION = {
   CLOCKWISE: 1,

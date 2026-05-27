@@ -90,6 +90,7 @@ export const esMessages = {
     },
     lobby: {
       stacking: 'Permitir penalizaciones encadenables',
+      lastCardCall: 'Carrera por la Última Carta (pulsa Cascade cuando un rival llegue a 1)',
       startWithBots: 'Empezar con bots',
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando a los jugadores…',

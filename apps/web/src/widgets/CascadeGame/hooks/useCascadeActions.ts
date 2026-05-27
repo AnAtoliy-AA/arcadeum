@@ -56,11 +56,17 @@ export function useCascadeActions(options: UseCascadeActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const callCascade = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('call_cascade');
+    gameSocket.emit('cascade.session.call_cascade', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
   const forfeit = useCallback(() => {
     if (!userId) return;
     onActionStart?.('forfeit');
     gameSocket.emit('cascade.session.forfeit', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, playCard, draw, nameColor, forfeit };
+  return { startSession, playCard, draw, nameColor, callCascade, forfeit };
 }

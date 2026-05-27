@@ -21,7 +21,12 @@ vi.mock('@/features/games/hooks', () => ({
 
 const cascadeState: CascadeClientState = {
   phase: 'playing',
-  options: { variant: 'cosmic', mode: 'classic', stackingEnabled: true },
+  options: {
+    variant: 'cosmic',
+    mode: 'classic',
+    stackingEnabled: true,
+    lastCardCallEnabled: true,
+  },
   players: [
     {
       playerId: 'me',
@@ -49,6 +54,7 @@ const cascadeState: CascadeClientState = {
   pendingDraw: 0,
   pendingStackKind: null,
   pendingAction: 'none',
+  lastCardWindow: null,
   winnerId: null,
   logs: [],
 };

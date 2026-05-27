@@ -90,6 +90,7 @@ export const byMessages = {
     },
     lobby: {
       stacking: 'Дазволіць ланцугі штрафаў',
+      lastCardCall: 'Гонка за Апошнюю Карту (націсніце Cascade, калі ў суперніка застанецца 1)',
       startWithBots: 'Пачаць з ботамі',
       addBot: 'Дадаць бота',
       waitingForPlayers: 'Чаканне гульцоў…',

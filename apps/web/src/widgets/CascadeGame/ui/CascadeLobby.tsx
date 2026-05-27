@@ -47,6 +47,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     variant: string;
     mode: string;
     stackingEnabled: boolean;
+    lastCardCallEnabled: boolean;
   }>;
   const knownModes = CASCADE_MODES.map((m) => m.id) as ReadonlyArray<string>;
   const mode: CascadeMode = knownModes.includes(r.mode ?? '')
@@ -57,6 +58,10 @@ function resolveOptions(raw: unknown): CascadeOptions {
     variant: (r.variant ?? 'cosmic') as CascadeVariant,
     mode,
     stackingEnabled: mode !== 'pure',
+    lastCardCallEnabled:
+      typeof r.lastCardCallEnabled === 'boolean'
+        ? r.lastCardCallEnabled
+        : true,
   };
 }
 
@@ -115,6 +120,19 @@ export function CascadeLobby({
           <Switch.Thumb />
         </Switch>
         <Text color="#e2e8f0">{t('games.cascade_v1.lobby.stacking')}</Text>
+      </XStack>
+      <XStack alignItems="center" gap="$2">
+        <Switch
+          checked={options.lastCardCallEnabled}
+          disabled
+          size="$2"
+          aria-label="Last-Card race"
+        >
+          <Switch.Thumb />
+        </Switch>
+        <Text color="#e2e8f0">
+          {t('games.cascade_v1.lobby.lastCardCall')}
+        </Text>
       </XStack>
     </YStack>
   );

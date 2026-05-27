@@ -90,6 +90,7 @@ export const enMessages = {
     },
     lobby: {
       stacking: 'Allow stacking penalties',
+      lastCardCall: 'Last-Card race (press Cascade when an opponent hits 1)',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',

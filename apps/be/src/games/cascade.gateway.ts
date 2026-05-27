@@ -136,6 +136,28 @@ export class CascadeGateway {
     }
   }
 
+  @SubscribeMessage('cascade.session.call_cascade')
+  async handleCallCascade(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    try {
+      await this.cascadeService.callCascade(userId, roomId);
+      client.emit(
+        'cascade.session.cascade_called',
+        maybeEncrypt({ roomId, userId }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'call cascade', roomId, userId },
+        'Unable to call Cascade.',
+      );
+    }
+  }
+
   @SubscribeMessage('cascade.session.forfeit')
   async handleForfeit(
     @ConnectedSocket() client: Socket,

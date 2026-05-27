@@ -135,6 +135,10 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
     return this.runAction(userId, roomId, 'name_color', payload);
   }
 
+  async callCascade(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'call_cascade', {});
+  }
+
   async forfeit(userId: string, roomId: string) {
     return this.runAction(userId, roomId, 'forfeit', {});
   }
@@ -217,6 +221,7 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
       variant: string;
       mode: string;
       stackingEnabled: boolean;
+      lastCardCallEnabled: boolean;
     }>;
     const isValidMode = (m: unknown): m is Mode =>
       typeof m === 'string' && (MODES as ReadonlyArray<string>).includes(m);
@@ -226,6 +231,10 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
       mode,
       stackingEnabled: mode !== 'pure',
+      lastCardCallEnabled:
+        typeof r.lastCardCallEnabled === 'boolean'
+          ? r.lastCardCallEnabled
+          : DEFAULT_OPTIONS.lastCardCallEnabled,
     };
   }
 }

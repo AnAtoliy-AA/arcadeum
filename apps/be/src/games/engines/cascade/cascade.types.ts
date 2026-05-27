@@ -31,6 +31,22 @@ export interface CascadeOptions {
    */
   mode: Mode;
   stackingEnabled: boolean;
+  /**
+   * Whether the Last-Card race is active. When true and a player drops to
+   * one card, every alive player can press Cascade — first press wins.
+   */
+  lastCardCallEnabled: boolean;
+}
+
+/**
+ * Open Last-Card race window. While non-null, every alive player may emit
+ * `call_cascade`. First call wins (server processes actions serially).
+ * Cleared when the at-risk player takes their next turn or when any call
+ * resolves it.
+ */
+export interface LastCardWindow {
+  playerId: string;
+  openedAt: string;
 }
 
 export interface CascadePlayer extends GamePlayerState {
@@ -69,6 +85,13 @@ export interface CascadeState extends BaseGameState {
    * (typically: name the active color after playing a wild).
    */
   pendingAction: PendingAction;
+
+  /**
+   * Active Last-Card race, if any. Only one window at a time is supported:
+   * a second player going to 1 card while a window is open closes the old
+   * one safely and opens a new one for the new at-risk player.
+   */
+  lastCardWindow: LastCardWindow | null;
 
   winnerId: string | null;
 }

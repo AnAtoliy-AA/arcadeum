@@ -131,7 +131,11 @@ export function CascadeLobby({
       theme={getCascadeLobbyTheme(options.variant)}
       optionsSlot={optionsSlot}
       rulesModalSlot={
-        <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+        <RulesModal
+          open={showRulesOpen}
+          onClose={onShowRulesClose}
+          variant={options.variant}
+        />
       }
       onStartGame={onStartGame}
       onLeaveRoom={onLeaveRoom}

@@ -112,6 +112,36 @@ export const frMessages = {
           'Chronomètre de 15 secondes par tour. Enchaînement actif ; pioche automatique si vous ne jouez pas à temps.',
       },
     },
+    themedCards: {
+      cosmic: {
+        SKIP: 'Éclipse',
+        REVERSE: 'Trou de ver',
+        DRAW_TWO: 'Pluie de météores',
+        WILD: 'Singularité',
+        WILD_DRAW_FOUR: 'Supernova',
+      },
+      arcane: {
+        SKIP: 'Bannissement',
+        REVERSE: 'Miroir',
+        DRAW_TWO: 'Maléfice',
+        WILD: 'Polymorphie',
+        WILD_DRAW_FOUR: 'Cataclysme',
+      },
+      cyberpunk: {
+        SKIP: 'Firewall',
+        REVERSE: 'Loopback',
+        DRAW_TWO: 'DDoS',
+        WILD: 'Glitch',
+        WILD_DRAW_FOUR: 'Rootkit',
+      },
+      elemental: {
+        SKIP: 'Blocage',
+        REVERSE: 'Courant',
+        DRAW_TWO: 'Séisme',
+        WILD: 'Tempête',
+        WILD_DRAW_FOUR: 'Ouragan',
+      },
+    },
     rules: {
       title: 'Règles',
       objective:

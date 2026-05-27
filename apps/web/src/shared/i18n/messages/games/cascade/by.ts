@@ -112,6 +112,36 @@ export const byMessages = {
           'Таймер 15 секунд на ход. Ланцугі ўключаны; аўтабор, калі не паспелі сыграць.',
       },
     },
+    themedCards: {
+      cosmic: {
+        SKIP: 'Зацьменне',
+        REVERSE: 'Чарвяточына',
+        DRAW_TWO: 'Метэарны дождж',
+        WILD: 'Сінгулярнасць',
+        WILD_DRAW_FOUR: 'Звышновая',
+      },
+      arcane: {
+        SKIP: 'Выгнанне',
+        REVERSE: 'Люстра',
+        DRAW_TWO: 'Праклён',
+        WILD: 'Палімарф',
+        WILD_DRAW_FOUR: 'Катаклізм',
+      },
+      cyberpunk: {
+        SKIP: 'Firewall',
+        REVERSE: 'Loopback',
+        DRAW_TWO: 'DDoS',
+        WILD: 'Глітч',
+        WILD_DRAW_FOUR: 'Руткіт',
+      },
+      elemental: {
+        SKIP: 'Перашкода',
+        REVERSE: 'Плынь',
+        DRAW_TWO: 'Землятрус',
+        WILD: 'Бура',
+        WILD_DRAW_FOUR: 'Шторм',
+      },
+    },
     rules: {
       title: 'Правілы',
       objective:

@@ -112,6 +112,36 @@ export const enMessages = {
           '15-second turn timer. Stacking on; auto-draw if you don’t play in time.',
       },
     },
+    themedCards: {
+      cosmic: {
+        SKIP: 'Eclipse',
+        REVERSE: 'Wormhole',
+        DRAW_TWO: 'Meteor Shower',
+        WILD: 'Singularity',
+        WILD_DRAW_FOUR: 'Supernova',
+      },
+      arcane: {
+        SKIP: 'Banish',
+        REVERSE: 'Mirror',
+        DRAW_TWO: 'Hex',
+        WILD: 'Polymorph',
+        WILD_DRAW_FOUR: 'Cataclysm',
+      },
+      cyberpunk: {
+        SKIP: 'Firewall',
+        REVERSE: 'Loopback',
+        DRAW_TWO: 'DDoS',
+        WILD: 'Glitch',
+        WILD_DRAW_FOUR: 'Rootkit',
+      },
+      elemental: {
+        SKIP: 'Block',
+        REVERSE: 'Current',
+        DRAW_TWO: 'Quake',
+        WILD: 'Storm',
+        WILD_DRAW_FOUR: 'Tempest',
+      },
+    },
     rules: {
       title: 'Rules',
       objective:

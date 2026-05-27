@@ -112,6 +112,36 @@ export const ruMessages = {
           'Таймер 15 секунд на ход. Цепочки включены; автодобор, если не успели сыграть.',
       },
     },
+    themedCards: {
+      cosmic: {
+        SKIP: 'Затмение',
+        REVERSE: 'Червоточина',
+        DRAW_TWO: 'Метеорный дождь',
+        WILD: 'Сингулярность',
+        WILD_DRAW_FOUR: 'Сверхновая',
+      },
+      arcane: {
+        SKIP: 'Изгнание',
+        REVERSE: 'Зеркало',
+        DRAW_TWO: 'Порча',
+        WILD: 'Полиморф',
+        WILD_DRAW_FOUR: 'Катаклизм',
+      },
+      cyberpunk: {
+        SKIP: 'Firewall',
+        REVERSE: 'Loopback',
+        DRAW_TWO: 'DDoS',
+        WILD: 'Глитч',
+        WILD_DRAW_FOUR: 'Руткит',
+      },
+      elemental: {
+        SKIP: 'Преграда',
+        REVERSE: 'Течение',
+        DRAW_TWO: 'Землетрясение',
+        WILD: 'Буря',
+        WILD_DRAW_FOUR: 'Шторм',
+      },
+    },
     rules: {
       title: 'Правила',
       objective:

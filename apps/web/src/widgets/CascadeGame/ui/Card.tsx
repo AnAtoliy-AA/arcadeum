@@ -1,8 +1,12 @@
 'use client';
 
 import { memo } from 'react';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
-import type { CascadeCard } from '../types';
+import type { CascadeCard, CascadeVariant } from '../types';
 
 interface CardProps {
   card: CascadeCard;
@@ -32,18 +36,21 @@ function CardImpl({
   ariaLabel,
 }: CardProps) {
   const theme = useCascadeTheme();
+  const { t } = useTranslation();
   const dims = SIZES[size];
 
   const isClickable = !!onClick && !disabled;
   const bg = faceDown ? theme.surface : theme.palette[card.color];
   const symbol = renderSymbol(card, theme.symbols);
+  const resolvedLabel =
+    ariaLabel ?? describeCard(card, faceDown, theme.variant, t);
 
   return (
     <button
       type="button"
       onClick={isClickable ? onClick : undefined}
       disabled={disabled || !isClickable}
-      aria-label={ariaLabel ?? describeCard(card, faceDown)}
+      aria-label={resolvedLabel}
       aria-pressed={selected || undefined}
       style={{
         width: dims.w,
@@ -89,12 +96,29 @@ function renderSymbol(
   return symbols[card.kind];
 }
 
-function describeCard(card: CascadeCard, faceDown: boolean): string {
+function describeCard(
+  card: CascadeCard,
+  faceDown: boolean,
+  variant: CascadeVariant,
+  t: (key: TranslationKey) => string,
+): string {
   if (faceDown) return 'Hidden card';
   if (card.kind === 'NUMBER') return `${colorName(card.color)} ${card.value}`;
-  if (card.kind === 'WILD') return 'Wild';
-  if (card.kind === 'WILD_DRAW_FOUR') return 'Wild draw four';
-  return `${colorName(card.color)} ${card.kind.replace('_', ' ').toLowerCase()}`;
+  // Action / wild cards: resolve to the per-theme name (Eclipse / Banish /
+  // Firewall / Block, etc.). Wilds carry the themed name only; non-wild
+  // action cards prefix the color so screen-reader users hear "Red Eclipse".
+  const themed = t(themedCardKey(variant, card.kind));
+  if (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR') {
+    return themed;
+  }
+  return `${colorName(card.color)} ${themed}`;
+}
+
+function themedCardKey(
+  variant: CascadeVariant,
+  kind: Exclude<CascadeCard['kind'], 'NUMBER'>,
+): TranslationKey {
+  return `games.cascade_v1.themedCards.${variant}.${kind}` as TranslationKey;
 }
 
 function colorName(c: CascadeCard['color']): string {

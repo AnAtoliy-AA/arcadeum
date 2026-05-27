@@ -200,7 +200,11 @@ function CascadeGameImpl({
         t={t}
         messages={resultMessages}
       />
-      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <RulesModal
+        open={showRulesOpen}
+        onClose={onShowRulesClose}
+        variant={options.variant}
+      />
     </>
   );
 

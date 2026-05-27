@@ -112,6 +112,36 @@ export const esMessages = {
           'Temporizador de 15 segundos por turno. Con encadenado; robo automático si no juegas a tiempo.',
       },
     },
+    themedCards: {
+      cosmic: {
+        SKIP: 'Eclipse',
+        REVERSE: 'Agujero de gusano',
+        DRAW_TWO: 'Lluvia de meteoros',
+        WILD: 'Singularidad',
+        WILD_DRAW_FOUR: 'Supernova',
+      },
+      arcane: {
+        SKIP: 'Destierro',
+        REVERSE: 'Espejo',
+        DRAW_TWO: 'Maleficio',
+        WILD: 'Polimorfia',
+        WILD_DRAW_FOUR: 'Cataclismo',
+      },
+      cyberpunk: {
+        SKIP: 'Firewall',
+        REVERSE: 'Loopback',
+        DRAW_TWO: 'DDoS',
+        WILD: 'Glitch',
+        WILD_DRAW_FOUR: 'Rootkit',
+      },
+      elemental: {
+        SKIP: 'Bloque',
+        REVERSE: 'Corriente',
+        DRAW_TWO: 'Temblor',
+        WILD: 'Tormenta',
+        WILD_DRAW_FOUR: 'Tempestad',
+      },
+    },
     rules: {
       title: 'Reglas',
       objective:

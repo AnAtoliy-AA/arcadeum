@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Text, View, YStack } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 
@@ -64,6 +64,59 @@ function isGradient(value: string | null | undefined): boolean {
   return !!value && value.includes('gradient');
 }
 
+function buildRaysStyle(raysColor: string | null): React.CSSProperties | null {
+  if (!raysColor) return null;
+  const stops: string[] = [];
+  const steps = 12;
+  for (let i = 0; i < steps; i++) {
+    const peak = (i * 360) / steps;
+    const valley = peak + 360 / steps / 2;
+    stops.push(`${raysColor} ${peak}deg`);
+    stops.push(`transparent ${valley}deg`);
+  }
+  stops.push(`${raysColor} 360deg`);
+  return {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0.5,
+    pointerEvents: 'none',
+    backgroundImage: `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`,
+    WebkitMaskImage:
+      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+    maskImage:
+      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+  };
+}
+
+interface RaysHaloProps {
+  style: React.CSSProperties;
+  testId?: string;
+  /** Disc-relative inset for non-card modes; absolute inset:0 for card chrome. */
+  mode: 'disc' | 'chrome';
+  disc: number;
+}
+
+function RaysHalo({ style, testId, mode, disc }: RaysHaloProps) {
+  const inset =
+    mode === 'disc'
+      ? {
+          top: -Math.round(disc * 0.45),
+          right: -Math.round(disc * 0.45),
+          bottom: -Math.round(disc * 0.45),
+          left: -Math.round(disc * 0.45),
+        }
+      : { top: 0, right: 0, bottom: 0, left: 0 };
+  return (
+    <View
+      position="absolute"
+      {...inset}
+      pointerEvents="none"
+      data-testid={testId}
+      style={style}
+    />
+  );
+}
+
 export const PlayerAvatar = memo(function PlayerAvatar({
   name,
   size = 'sm',
@@ -97,31 +150,9 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       size === 'profile') &&
     (!!auraColor || !!rarityGlow);
   const raysColor =
-    pickSwatchColor(auraColor ?? null) ?? rarityGlow ?? null;
+    pickSwatchColor(auraColor ?? null) ?? pickSwatchColor(rarityGlow ?? null);
 
-  const raysBg = useMemo<React.CSSProperties | null>(() => {
-    if (!raysColor) return null;
-    const stops: string[] = [];
-    const steps = 12;
-    for (let i = 0; i < steps; i++) {
-      const peak = (i * 360) / steps;
-      const valley = peak + 360 / steps / 2;
-      stops.push(`${raysColor} ${peak}deg`);
-      stops.push(`transparent ${valley}deg`);
-    }
-    stops.push(`${raysColor} 360deg`);
-    return {
-      position: 'absolute',
-      inset: 0,
-      opacity: 0.5,
-      pointerEvents: 'none',
-      backgroundImage: `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`,
-      WebkitMaskImage:
-        'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
-      maskImage:
-        'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
-    };
-  }, [raysColor]);
+  const raysBg = buildRaysStyle(raysColor);
 
   const ringHexBackground = showFrame
     ? isGradient(frameColor)
@@ -193,15 +224,11 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         />
       ) : null}
       {showRays && raysBg && !showCardChrome ? (
-        <View
-          position="absolute"
-          top={-Math.round(disc * 0.45)}
-          right={-Math.round(disc * 0.45)}
-          bottom={-Math.round(disc * 0.45)}
-          left={-Math.round(disc * 0.45)}
-          pointerEvents="none"
-          data-testid={testId ? `${testId}-rays` : undefined}
+        <RaysHalo
           style={raysBg}
+          testId={testId ? `${testId}-rays` : undefined}
+          mode="disc"
+          disc={disc}
         />
       ) : null}
       <Avatar
@@ -308,15 +335,11 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         </View>
       ) : null}
       {showRays && raysBg ? (
-        <View
-          position="absolute"
-          top={0}
-          right={0}
-          bottom={0}
-          left={0}
-          pointerEvents="none"
-          data-testid={testId ? `${testId}-rays` : undefined}
+        <RaysHalo
           style={raysBg}
+          testId={testId ? `${testId}-rays` : undefined}
+          mode="chrome"
+          disc={disc}
         />
       ) : null}
       {inner}

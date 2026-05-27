@@ -150,4 +150,41 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-name')).toHaveTextContent('Jane');
     expect(screen.getByText('Level 99')).toBeInTheDocument();
   });
+
+  it('uses low-alpha hex tint + full border for solid frame color', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        frameColor="#ff00ff"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    const disc = screen.getByTestId('pa-disc');
+    expect(disc.style.backgroundColor || disc.style.background).toMatch(
+      /#ff00ff33|rgba\(255,\s*0,\s*255,\s*0\.2\)/i,
+    );
+    expect(disc.style.borderColor).toMatch(
+      /#ff00ff|rgb\(255,\s*0,\s*255\)/i,
+    );
+  });
+
+  it('uses dark wash composite + first-hex border for gradient frame', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        frameColor="linear-gradient(135deg, #22d3ee 0%, #6366f1 100%)"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    const disc = screen.getByTestId('pa-disc');
+    expect(disc.style.backgroundImage).toMatch(
+      /rgba\(15,\s*23,\s*42,\s*0\.55\)/,
+    );
+    expect(disc.style.backgroundImage).toContain('linear-gradient(135deg');
+    expect(disc.style.borderColor).toMatch(
+      /#22d3ee|rgb\(34,\s*211,\s*238\)/i,
+    );
+  });
 });

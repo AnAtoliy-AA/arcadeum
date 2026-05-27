@@ -135,4 +135,19 @@ describe('PlayerAvatar', () => {
     fireEvent.click(screen.getByTestId('pa'));
     expect(onPress).toHaveBeenCalled();
   });
+
+  it('renders banner sentinel, name label, and presence line at profile size', () => {
+    render(
+      <PlayerAvatar
+        name="Jane"
+        bannerColor="#0f0"
+        presenceLine="Level 99"
+        size="profile"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-banner')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-name')).toHaveTextContent('Jane');
+    expect(screen.getByText('Level 99')).toBeInTheDocument();
+  });
 });

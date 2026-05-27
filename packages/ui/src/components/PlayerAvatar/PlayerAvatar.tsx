@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { Text, View, YStack } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 
-export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'lg' | 'card';
+export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'lg' | 'card' | 'profile';
 
 export interface PlayerAvatarProps {
   name: string;
@@ -28,6 +28,7 @@ const DISC_SIZE: Record<PlayerAvatarSize, number> = {
   md: 72,
   lg: 140,
   card: 140,
+  profile: 200,
 };
 const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
   icon: 0,
@@ -35,6 +36,7 @@ const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
   md: 24,
   lg: 36,
   card: 36,
+  profile: 52,
 };
 const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   icon: 0,
@@ -42,6 +44,7 @@ const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   md: 3,
   lg: 3,
   card: 3,
+  profile: 4,
 };
 
 function pickSwatchColor(value: string | null | undefined): string | null {
@@ -76,7 +79,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   const showBadge = size !== 'icon' && !!badgeUrl;
   const showFrame = size !== 'icon' && !!frameColor;
   const showAura = (size === 'md' || size === 'card') && !!auraColor;
-  const showCardChrome = size === 'card';
+  const showCardChrome = size === 'card' || size === 'profile';
 
   const ringHexBackground = showFrame
     ? isGradient(frameColor)
@@ -198,7 +201,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       data-testid={testId}
       onPress={onPress}
       cursor={onPress ? 'pointer' : 'default'}
-      width={220}
+      width={size === 'profile' ? '100%' : 220}
       borderRadius="$5"
       paddingHorizontal="$4"
       paddingVertical="$4"

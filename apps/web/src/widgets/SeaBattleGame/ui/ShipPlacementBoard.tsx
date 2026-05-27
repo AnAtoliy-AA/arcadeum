@@ -17,6 +17,7 @@ import { useDragPlacement } from '../hooks/useDragPlacement';
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
+  onMoveShip: (shipId: string, cells: ShipCell[]) => void;
   onConfirmPlacement: () => void;
   onResetPlacement: () => void;
   isPlacementComplete: boolean;
@@ -30,6 +31,7 @@ import { PlacementBoardGrid } from './ShipPlacement/PlacementBoardGrid';
 export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   currentPlayer,
   onPlaceShip,
+  onMoveShip,
   onConfirmPlacement,
   onResetPlacement,
   isPlacementComplete,
@@ -56,16 +58,28 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     return SHIPS.find((s) => s.id === selectedShipId) || null;
   }, [selectedShipId]);
 
-  const { getDragProps, onDragOver, onDrop, onDragLeave, handleDragEnd } =
-    useDragPlacement({
-      board,
-      isVertical,
-      placedShipIds,
-      onPlaceShip,
-      setSelectedShipId,
-      setHoveredCells,
-      setIsInvalidHover,
-    });
+  const ships = currentPlayer?.ships ?? [];
+
+  const {
+    getDragProps,
+    getBoardCellDragProps,
+    onDragOver,
+    onDrop,
+    onDragLeave,
+    handleDragEnd,
+    draggingCells,
+  } = useDragPlacement({
+    board,
+    isVertical,
+    placedShipIds,
+    ships,
+    placementComplete: isPlacementComplete,
+    onPlaceShip,
+    onMoveShip,
+    setSelectedShipId,
+    setHoveredCells,
+    setIsInvalidHover,
+  });
 
   const canPlaceAt = useCallback(
     (row: number, col: number, ship: ShipConfig): boolean => {
@@ -211,6 +225,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       hoveredCells={hoveredCells}
       isInvalidHover={isInvalidHover}
       selectedShip={selectedShip}
+      getBoardCellDragProps={getBoardCellDragProps}
+      draggingCells={draggingCells}
+      isPlacementComplete={isPlacementComplete}
       onCellHover={handleCellHover}
       onMouseLeave={handleMouseLeave}
       onCellClick={handleCellClick}

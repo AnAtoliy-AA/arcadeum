@@ -77,6 +77,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   const {
     startSession,
     placeShip,
+    moveShip,
     confirmPlacement,
     attack,
     resetPlacement,
@@ -392,6 +393,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             isPlacementPhase={isPlacementPhase}
             currentPlayer={currentPlayer}
             placeShip={placeShip}
+            moveShip={moveShip}
             confirmPlacement={confirmPlacement}
             resetPlacement={resetPlacement}
             isPlacementComplete={isPlacementComplete}

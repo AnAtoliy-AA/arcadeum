@@ -43,6 +43,10 @@ interface PlacementBoardCellProps {
   isHovered: boolean;
   isInvalidCell: boolean;
   isClickable: boolean;
+  isShipDraggable: boolean;
+  isDraggingThisCell: boolean;
+  draggable: boolean;
+  onDragStart: (e: DragEvent<HTMLElement>) => void;
   rIndex: number;
   cIndex: number;
   onMouseEnter: (row: number, col: number) => void;
@@ -59,6 +63,10 @@ const PlacementBoardCell = memo(
     theme,
     isHovered,
     isInvalidCell,
+    isShipDraggable,
+    isDraggingThisCell,
+    draggable,
+    onDragStart,
     rIndex,
     cIndex,
     onMouseEnter,
@@ -85,17 +93,34 @@ const PlacementBoardCell = memo(
       [onDrop, rIndex, cIndex],
     );
 
+    const classNames = [
+      'sb-cell',
+      isHovered && !isInvalidCell ? 'sb-valid-pulse' : '',
+      isShipDraggable ? 'sb-cell--ship-draggable' : '',
+      isDraggingThisCell ? 'sb-cell--dragging' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return (
       <BoardCell
         style={{
-          backgroundColor: getCellBg(cellState, theme, isHovered, isInvalidCell),
+          backgroundColor: getCellBg(
+            cellState,
+            theme,
+            isHovered,
+            isInvalidCell,
+          ),
           borderColor: isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder,
           borderRadius: parseInt(theme.borderRadius) || 4,
+          opacity: isDraggingThisCell ? 0.4 : undefined,
         }}
         data-row={rIndex}
         data-col={cIndex}
         data-highlighted={isHovered ? 'true' : 'false'}
-        className={`sb-cell ${isHovered && !isInvalidCell ? 'sb-valid-pulse' : ''}`}
+        className={classNames}
+        draggable={draggable}
+        onDragStart={onDragStart}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={onMouseLeave}
         onPointerEnter={handleMouseEnter}
@@ -117,6 +142,12 @@ interface PlacementBoardGridProps {
   hoveredCells: ShipCell[];
   isInvalidHover: boolean;
   selectedShip: ShipConfig | null;
+  getBoardCellDragProps: (
+    row: number,
+    col: number,
+  ) => { draggable: boolean; onDragStart: (e: DragEvent<HTMLElement>) => void };
+  draggingCells: ShipCell[];
+  isPlacementComplete: boolean;
   onCellHover: (row: number, col: number) => void;
   onMouseLeave: () => void;
   onCellClick: (row: number, col: number) => void;
@@ -133,6 +164,9 @@ export const PlacementBoardGrid = memo(
     hoveredCells,
     isInvalidHover,
     selectedShip,
+    getBoardCellDragProps,
+    draggingCells,
+    isPlacementComplete,
     onCellHover,
     onMouseLeave,
     onCellClick,
@@ -141,6 +175,7 @@ export const PlacementBoardGrid = memo(
     onDragLeave,
     t,
   }: PlacementBoardGridProps) => {
+    const draggingKeys = new Set(draggingCells.map((c) => `${c.row}-${c.col}`));
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}
@@ -178,6 +213,13 @@ export const PlacementBoardGrid = memo(
                   (c) => c.row === rIndex && c.col === cIndex,
                 );
                 const isInvalidCell = isHovered && isInvalidHover;
+                const isShipCell = cellState === CELL_STATE.SHIP;
+                const isDraggingThisCell = draggingKeys.has(
+                  `${rIndex}-${cIndex}`,
+                );
+                const dragProps = isShipCell
+                  ? getBoardCellDragProps(rIndex, cIndex)
+                  : { draggable: false, onDragStart: () => {} };
                 return (
                   <PlacementBoardCell
                     key={`${rIndex}-${cIndex}`}
@@ -186,6 +228,12 @@ export const PlacementBoardGrid = memo(
                     isHovered={isHovered}
                     isInvalidCell={isInvalidCell}
                     isClickable={!!selectedShip}
+                    isShipDraggable={
+                      isShipCell && !isPlacementComplete && dragProps.draggable
+                    }
+                    isDraggingThisCell={isDraggingThisCell}
+                    draggable={dragProps.draggable}
+                    onDragStart={dragProps.onDragStart}
                     rIndex={rIndex}
                     cIndex={cIndex}
                     onMouseEnter={onCellHover}

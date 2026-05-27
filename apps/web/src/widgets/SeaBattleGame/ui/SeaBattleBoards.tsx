@@ -18,6 +18,7 @@ interface SeaBattleBoardsProps {
   isPlacementPhase: boolean;
   currentPlayer: SeaBattlePlayerState | null;
   placeShip: (shipId: string, cells: ShipCell[]) => void;
+  moveShip: (shipId: string, cells: ShipCell[]) => void;
   confirmPlacement: () => void;
   resetPlacement: () => void;
   isPlacementComplete: boolean;
@@ -43,6 +44,7 @@ export function SeaBattleBoards({
   isPlacementPhase,
   currentPlayer,
   placeShip,
+  moveShip,
   confirmPlacement,
   resetPlacement,
   isPlacementComplete,
@@ -69,6 +71,7 @@ export function SeaBattleBoards({
           key="placement-board"
           currentPlayer={currentPlayer}
           onPlaceShip={placeShip}
+          onMoveShip={moveShip}
           onConfirmPlacement={confirmPlacement}
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}

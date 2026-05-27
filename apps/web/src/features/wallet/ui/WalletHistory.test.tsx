@@ -1,15 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { WalletPageView } from './WalletPageView';
-import type {
-  WalletBalance,
-  PaginatedWalletTransactions,
-} from '../server/wallet.types';
-
-// WalletPageView is a pure presentational Server Component — no async I/O —
-// so Vitest + jsdom can render it directly without any special setup.
-
-const balance: WalletBalance = { coins: 1_250, gems: 30 };
+import { WalletHistory } from './WalletHistory';
+import type { PaginatedWalletTransactions } from '../server/wallet.types';
 
 const singlePage: PaginatedWalletTransactions = {
   items: [
@@ -40,31 +32,21 @@ const pagedResult: PaginatedWalletTransactions = {
   nextCursor: 'cursor-abc123',
 };
 
-describe('WalletPageView', () => {
-  it('renders coin and gem balances', () => {
-    render(<WalletPageView balance={balance} page={singlePage} />);
-    expect(screen.getByTestId('balance-coins-value').textContent).toContain(
-      '1,250',
-    );
-    expect(screen.getByTestId('balance-gems-value').textContent).toContain(
-      '30',
-    );
-  });
-
+describe('WalletHistory', () => {
   it('renders a row for each transaction', () => {
-    render(<WalletPageView balance={balance} page={singlePage} />);
+    render(<WalletHistory page={singlePage} />);
     const rows = screen.getAllByTestId('transaction-row');
     expect(rows).toHaveLength(2);
   });
 
   it('shows empty state when there are no transactions', () => {
-    render(<WalletPageView balance={balance} page={emptyPage} />);
+    render(<WalletHistory page={emptyPage} />);
     expect(screen.getByTestId('wallet-empty')).toBeTruthy();
     expect(screen.queryByTestId('transactions-table')).toBeNull();
   });
 
   it('shows Next link when nextCursor is present', () => {
-    render(<WalletPageView balance={balance} page={pagedResult} />);
+    render(<WalletHistory page={pagedResult} />);
     const nextLink = screen.getByTestId('next-page');
     expect(nextLink).toBeTruthy();
     expect((nextLink as HTMLAnchorElement).href).toContain(
@@ -72,32 +54,33 @@ describe('WalletPageView', () => {
     );
   });
 
+  it('anchors Next link to the history section so the browser does not scroll to the top of the page', () => {
+    render(<WalletHistory page={pagedResult} />);
+    const nextLink = screen.getByTestId('next-page') as HTMLAnchorElement;
+    expect(nextLink.href).toContain('#wallet-history');
+  });
+
   it('does not show Next link when nextCursor is null', () => {
-    render(<WalletPageView balance={balance} page={singlePage} />);
+    render(<WalletHistory page={singlePage} />);
     expect(screen.queryByTestId('next-page')).toBeNull();
   });
 
   it('preserves currency filter in Next link', () => {
-    render(
-      <WalletPageView balance={balance} page={pagedResult} currency="coins" />,
-    );
+    render(<WalletHistory page={pagedResult} currency="coins" />);
     const nextLink = screen.getByTestId('next-page') as HTMLAnchorElement;
     expect(nextLink.href).toContain('currency=coins');
     expect(nextLink.href).toContain('cursor=cursor-abc123');
   });
 
   it('marks the "All" filter active when no currency is set', () => {
-    render(<WalletPageView balance={balance} page={singlePage} />);
+    render(<WalletHistory page={singlePage} />);
     const allLink = screen.getByTestId('filter-all') as HTMLAnchorElement;
-    // Active filter has a lighter border colour (checked via href = /wallet)
     expect(allLink.href).toContain('/wallet');
     expect(allLink.href).not.toContain('currency=');
   });
 
   it('marks the coins filter active when currency=coins', () => {
-    render(
-      <WalletPageView balance={balance} page={singlePage} currency="coins" />,
-    );
+    render(<WalletHistory page={singlePage} currency="coins" />);
     const coinsLink = screen.getByTestId('filter-coins') as HTMLAnchorElement;
     expect(coinsLink.href).toContain('currency=coins');
   });

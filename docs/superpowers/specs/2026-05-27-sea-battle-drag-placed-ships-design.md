@@ -61,13 +61,16 @@ Identical to `validatePlaceShip` with three differences:
 
 - `validateAction`: add `case 'moveShip': return validateMoveShip(state, player, payload as MoveShipPayload);`
 - `executeAction`: add `case 'moveShip': return runMoveShip(newState, player, payload as MoveShipPayload);`
-- `getPossibleActions` (in `sea-battle.utils.ts`): include `'moveShip'` whenever the placement phase allows `placeShip` (i.e. not yet `placementComplete`).
+- `getSeaBattleAvailableActions` (in `sea-battle.utils.ts` at line 134): gate `moveShip` independently — append `'moveShip'` when `state.phase === PLACEMENT && !player.placementComplete && player.ships.length > 0`. Critically this must be added in addition to `confirmPlacement`, since after auto-place all ten ships are present and the player is exactly the persona this feature serves; tying `moveShip` to the same gate as `placeShip` (`ships.length < SHIPS.length`) would disable it in the primary use case.
+- `MoveShipPayload` must be exported from the same barrel that `sea-battle.service.ts` already imports `PlaceShipPayload` from (`./engines/sea-battle/sea-battle.types`), otherwise `moveShipByRoom`'s signature won't compile.
 
 **Service / gateway**
 
-- `sea-battle.service.ts`: add `moveShipByRoom(roomId, userId, payload)` mirroring `placeShipByRoom`.
-- Socket event: `seaBattle.session.move_ship` → `moveShipByRoom` → `dispatchAction('moveShip', ...)`.
+- `sea-battle.service.ts`: add `moveShipByRoom(userId, roomId, payload: MoveShipPayload)` mirroring `placeShipByRoom` (note the existing signature is `placeShipByRoom(userId, roomId, payload)` — userId first).
+- Gateway file is `apps/be/src/games/sea-battle.gateway.ts` (top-level under `games/`, not inside `games/sea-battle/`).
+- New handler `handleMoveShip` mirrors `handlePlaceShip` (lines 75–119): subscribe to `seaBattle.session.move_ship`, validate `shipId` + `cells` from payload, call `moveShipByRoom`, ack with `client.emit('seaBattle.session.ship_moved', maybeEncrypt({ roomId, userId, shipId }))`. Errors via the shared `handleError` helper.
 - Authorization: same guard as `placeShip` — must be the user's own placement.
+- FE does not subscribe to `ship_moved`; the broadcast session-state push is what redraws the board, matching how `ship_placed` is handled today. The ack is fire-and-forget telemetry, consistent with the other placement handlers.
 
 ### Frontend — extend the drag system
 
@@ -92,7 +95,7 @@ For each board cell:
 - Resolve the ship occupying `(row, col)` from `currentPlayer.ships`.
 - If no ship, or `placementComplete`, or `(pointer: coarse)` is true → return `{ draggable: false, onDragStart: noop }`.
 - Otherwise → `draggable: true`. `onDragStart`:
-  1. Compute `orientation` by comparing `cells[0]` and `cells[1]` (or default `h` for 1-cell ships).
+  1. Compute `orientation` by comparing `cells[0]` and `cells[1]`. All `SHIPS` in the game are size ≥ 2 so no special case is needed.
   2. Compute `anchorOffset` = index of `(row, col)` within `cells`.
   3. Set `dragMode = 'board'`, `boardDragOrigin = { shipId, originalCells, orientation, anchorOffset }`.
   4. `e.dataTransfer.setData('text/plain', shipId)` (the existing protocol — kept identical so palette and board paths share `onDrop`).
@@ -121,7 +124,7 @@ If `cells === null` (off-board) → invalid hover, no drop.
 - `'palette'` → existing behavior: `onPlaceShip(shipId, cells)`.
 - `'board'` → new prop `onMoveShip(shipId, cells)` (skip if cells deep-equal `originalCells`).
 
-`handleDragEnd` clears all drag state regardless of branch.
+`onDrop` and `handleDragEnd` clear local drag state synchronously — `dragMode`, `boardDragOrigin`, `hoveredCells`, `isInvalidHover`. The lifted-cell visual disappears immediately on drop and does not wait for the server-pushed session update; the board then re-renders from server state when the broadcast arrives. This matches how `placeShip` already behaves and prevents a stuck dim-cell if the server is slow or rejects the move.
 
 **`ShipPlacementBoard.tsx`**
 
@@ -163,8 +166,8 @@ Apply `.sb-cell--ship-draggable` only when the cell is a `SHIP` and not `placeme
 - **Drop off-board**: `getCells` returns `null` → no emit, ship snaps back.
 - **Drop overlapping another ship**: validity check returns false; hover shows red; on drop nothing emits.
 - **Drop on a cell adjacent to another ship**: same as above.
-- **`placementComplete` true**: board cells not draggable; BE validator also rejects.
-- **Team mode**: only the player's own board is shown for placement; rules unchanged.
+- **`placementComplete` true**: board cells not draggable; BE validator also rejects. Intentional — once you've confirmed your layout, you're locked in even while teammates are still placing.
+- **Team mode**: only the player's own board is shown for placement; the per-player `placementComplete` lock applies independently to each teammate, so one teammate confirming doesn't disable another's `moveShip`.
 - **State updated mid-drag** (e.g. teammate reset): the BE validator re-runs on the server's current state, so a stale move is rejected and the player's board reflects truth on next state push.
 - **Pointer coarse (mobile/tablet)**: both palette drag and board drag short-circuit to `draggable: false`. Click-to-select still works for palette → board.
 
@@ -208,10 +211,10 @@ Backend:
 - `apps/be/src/games/engines/sea-battle/sea-battle.types.ts` — add `MoveShipPayload`.
 - `apps/be/src/games/engines/sea-battle/sea-battle.validators.ts` — add `validateMoveShip`.
 - `apps/be/src/games/engines/sea-battle/sea-battle-placement-actions.utils.ts` — add `runMoveShip`.
-- `apps/be/src/games/engines/sea-battle/sea-battle.engine.ts` — wire `moveShip`.
-- `apps/be/src/games/engines/sea-battle/sea-battle.utils.ts` — `getPossibleActions` includes `moveShip`.
-- `apps/be/src/games/sea-battle/sea-battle.service.ts` — add `moveShipByRoom`.
-- Gateway/handler for the new socket event.
+- `apps/be/src/games/engines/sea-battle/sea-battle.engine.ts` — wire `moveShip` into `validateAction` and `executeAction`.
+- `apps/be/src/games/engines/sea-battle/sea-battle.utils.ts` — `getSeaBattleAvailableActions` (line 134) includes `moveShip` independently of `placeShip`'s gate.
+- `apps/be/src/games/sea-battle/sea-battle.service.ts` — add `moveShipByRoom(userId, roomId, payload)`.
+- `apps/be/src/games/sea-battle.gateway.ts` — add `handleMoveShip` subscribed to `seaBattle.session.move_ship`, emit ack `seaBattle.session.ship_moved`.
 - New engine spec file.
 
 Web:
@@ -226,4 +229,4 @@ Web:
 
 ## Rollout
 
-Single PR. No flag — the new action is additive on BE (existing clients keep working), and the FE upgrade adds a capability without changing the existing placement flow. Bot and pre-existing clients never emit `moveShip`, so server-side risk is contained to the new action's code path.
+Single PR. No flag — the new action is additive on BE (existing clients keep working), and the FE upgrade adds a capability without changing the existing placement flow. The bot service does not emit `moveShip` and there is no plan to add it, so server-side risk is contained to the new action's code path.

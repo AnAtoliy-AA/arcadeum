@@ -29,6 +29,8 @@ const allNulls = {
   auraItem: null,
   bannerColor: null,
   bannerItem: null,
+  skinItem: null,
+  skinChip: null,
 };
 
 function seedRoom(members: GameRoomSummary['members']) {

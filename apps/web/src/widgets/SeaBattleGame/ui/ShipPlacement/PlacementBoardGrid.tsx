@@ -45,6 +45,7 @@ interface PlacementBoardCellProps {
   isClickable: boolean;
   isShipDraggable: boolean;
   isDraggingThisCell: boolean;
+  isPendingCell: boolean;
   draggable: boolean;
   onDragStart: (e: DragEvent<HTMLElement>) => void;
   rIndex: number;
@@ -52,6 +53,12 @@ interface PlacementBoardCellProps {
   onMouseEnter: (row: number, col: number) => void;
   onMouseLeave: () => void;
   onClick: (row: number, col: number) => void;
+  onDoubleClick?: (row: number, col: number) => void;
+  onContextMenu?: (
+    row: number,
+    col: number,
+    e: React.MouseEvent<HTMLElement>,
+  ) => void;
   onDragOver: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDrop: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDragLeave: () => void;
@@ -65,6 +72,7 @@ const PlacementBoardCell = memo(
     isInvalidCell,
     isShipDraggable,
     isDraggingThisCell,
+    isPendingCell,
     draggable,
     onDragStart,
     rIndex,
@@ -72,6 +80,8 @@ const PlacementBoardCell = memo(
     onMouseEnter,
     onMouseLeave,
     onClick,
+    onDoubleClick,
+    onContextMenu,
     onDragOver,
     onDrop,
     onDragLeave,
@@ -83,6 +93,18 @@ const PlacementBoardCell = memo(
     const handleClick = useCallback(
       () => onClick(rIndex, cIndex),
       [onClick, rIndex, cIndex],
+    );
+    const handleDoubleClick = useCallback(
+      () => onDoubleClick?.(rIndex, cIndex),
+      [onDoubleClick, rIndex, cIndex],
+    );
+    const handleContextMenu = useCallback(
+      (e: React.MouseEvent<HTMLElement>) => {
+        if (!onContextMenu) return;
+        e.preventDefault();
+        onContextMenu(rIndex, cIndex, e);
+      },
+      [onContextMenu, rIndex, cIndex],
     );
     const handleDragOver = useCallback(
       (e: DragEvent<HTMLElement>) => onDragOver(rIndex, cIndex, e),
@@ -98,6 +120,7 @@ const PlacementBoardCell = memo(
       isHovered && !isInvalidCell ? 'sb-valid-pulse' : '',
       isShipDraggable ? 'sb-cell--ship-draggable' : '',
       isDraggingThisCell ? 'sb-cell--dragging' : '',
+      isPendingCell ? 'sb-cell--pending-sync' : '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -127,6 +150,8 @@ const PlacementBoardCell = memo(
         onPointerMove={handleMouseEnter}
         onPointerLeave={onMouseLeave}
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
+        onContextMenu={handleContextMenu}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onDragLeave={onDragLeave}
@@ -147,10 +172,12 @@ interface PlacementBoardGridProps {
     col: number,
   ) => { draggable: boolean; onDragStart: (e: DragEvent<HTMLElement>) => void };
   draggingCells: ShipCell[];
+  pendingCells: ShipCell[];
   isPlacementComplete: boolean;
   onCellHover: (row: number, col: number) => void;
   onMouseLeave: () => void;
   onCellClick: (row: number, col: number) => void;
+  onCellRotateInPlace?: (row: number, col: number) => void;
   onDragOver: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDrop: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDragLeave: () => void;
@@ -166,16 +193,19 @@ export const PlacementBoardGrid = memo(
     selectedShip,
     getBoardCellDragProps,
     draggingCells,
+    pendingCells,
     isPlacementComplete,
     onCellHover,
     onMouseLeave,
     onCellClick,
+    onCellRotateInPlace,
     onDragOver,
     onDrop,
     onDragLeave,
     t,
   }: PlacementBoardGridProps) => {
     const draggingKeys = new Set(draggingCells.map((c) => `${c.row}-${c.col}`));
+    const pendingKeys = new Set(pendingCells.map((c) => `${c.row}-${c.col}`));
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}
@@ -214,15 +244,15 @@ export const PlacementBoardGrid = memo(
                 );
                 const isInvalidCell = isHovered && isInvalidHover;
                 const isShipCell = cellState === CELL_STATE.SHIP;
-                const isDraggingThisCell = draggingKeys.has(
-                  `${rIndex}-${cIndex}`,
-                );
+                const cellKey = `${rIndex}-${cIndex}`;
+                const isDraggingThisCell = draggingKeys.has(cellKey);
+                const isPendingCell = pendingKeys.has(cellKey);
                 const dragProps = isShipCell
                   ? getBoardCellDragProps(rIndex, cIndex)
                   : { draggable: false, onDragStart: () => {} };
                 return (
                   <PlacementBoardCell
-                    key={`${rIndex}-${cIndex}`}
+                    key={cellKey}
                     cellState={cellState}
                     theme={theme}
                     isHovered={isHovered}
@@ -232,6 +262,7 @@ export const PlacementBoardGrid = memo(
                       isShipCell && !isPlacementComplete && dragProps.draggable
                     }
                     isDraggingThisCell={isDraggingThisCell}
+                    isPendingCell={isPendingCell}
                     draggable={dragProps.draggable}
                     onDragStart={dragProps.onDragStart}
                     rIndex={rIndex}
@@ -239,6 +270,14 @@ export const PlacementBoardGrid = memo(
                     onMouseEnter={onCellHover}
                     onMouseLeave={onMouseLeave}
                     onClick={onCellClick}
+                    onDoubleClick={
+                      isShipCell ? onCellRotateInPlace : undefined
+                    }
+                    onContextMenu={
+                      isShipCell && onCellRotateInPlace
+                        ? (r, c) => onCellRotateInPlace(r, c)
+                        : undefined
+                    }
                     onDragOver={onDragOver}
                     onDrop={onDrop}
                     onDragLeave={onDragLeave}

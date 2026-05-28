@@ -2,9 +2,37 @@
 
 import { memo } from 'react';
 import { Text, View, YStack } from 'tamagui';
-import { Avatar } from '../Avatar/Avatar';
 
 export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'lg' | 'card' | 'profile';
+
+const RAYS_SPIN_CLASS = 'arcadeum-player-avatar-rays-spin';
+
+// Inject the rays-spin keyframes once on the client. packages/ui has no CSS
+// module pipeline, so the slow halo rotation (matching the old shop preview)
+// lives in a single injected stylesheet. The keyframe keeps the centering
+// translate so the halo stays locked on the avatar while it spins, and a
+// reduced-motion query disables the animation.
+function ensureRaysKeyframes(): void {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(RAYS_SPIN_CLASS)) return;
+  const style = document.createElement('style');
+  style.id = RAYS_SPIN_CLASS;
+  style.textContent = `
+@keyframes ${RAYS_SPIN_CLASS} {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.${RAYS_SPIN_CLASS} {
+  animation: ${RAYS_SPIN_CLASS} 28s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .${RAYS_SPIN_CLASS} { animation: none; }
+}`;
+  document.head.appendChild(style);
+}
+
+ensureRaysKeyframes();
 
 export interface PlayerAvatarProps {
   name: string;
@@ -52,6 +80,16 @@ const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   card: 3,
   profile: 2,
 };
+
+function getInitials(name: string): string {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 function pickSwatchColor(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -108,6 +146,7 @@ function RaysHalo({ style, testId, haloSize }: RaysHaloProps) {
       width={haloSize}
       height={haloSize}
       pointerEvents="none"
+      className={RAYS_SPIN_CLASS}
       data-testid={testId}
       style={{ ...style, transform: 'translate(-50%, -50%)' }}
     />
@@ -170,9 +209,9 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   // falling back to rarity glow) so an equipped aura and a hovered shop item
   // both light the avatar.
   const glowColor = showRays ? raysColor : null;
-  // Halo reaches well past the disc on the hero card sizes; tighter on inline
+  // Halo reaches past the disc on the hero card sizes; tighter on inline
   // sizes so list rows don't bloom into their neighbours.
-  const haloSize = Math.round(disc * (showCardChrome ? 2.6 : 1.9));
+  const haloSize = Math.round(disc * (showCardChrome ? 2.1 : 1.7));
 
   const bannerStyle: React.CSSProperties | undefined =
     showCardChrome && bannerColor
@@ -181,7 +220,20 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         : { backgroundColor: bannerColor }
       : undefined;
 
-  const innerImage = Math.round(disc * 0.78);
+  const innerImage = Math.round(disc * 0.92);
+
+  // Soft radial wash inside the disc, behind the avatar art (and visible
+  // through its transparent areas). Tinted by the equipped FRAME so it sits
+  // over — and reinforces — the disc's frame-tint base, brighter at the top
+  // center and fading to transparent at the rim. Driven by the frame only
+  // (not the aura) so the cyan/teal aura halo doesn't tint the disc interior.
+  // Skipped on the tiny inline sizes where it would just read as noise.
+  const discBgSwatch = pickSwatchColor(frameColor ?? null);
+  const showDiscBackground =
+    size !== 'icon' && size !== 'sm' && !!discBgSwatch;
+  const discBackground: React.CSSProperties = {
+    backgroundImage: `radial-gradient(circle at 50% 40%, ${discBgSwatch}73 0%, ${discBgSwatch}24 65%, transparent 100%)`,
+  };
 
   const inner = (
     <YStack
@@ -224,13 +276,48 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           data-testid={testId ? `${testId}-aura` : undefined}
         />
       ) : null}
-      <Avatar
-        name={name}
-        src={avatarUrl ?? undefined}
-        size="sm"
-        priority={priority}
-        style={{ width: innerImage, height: innerImage }}
-      />
+      {showDiscBackground ? (
+        <View
+          position="absolute"
+          top={0}
+          right={0}
+          bottom={0}
+          left={0}
+          borderRadius={disc / 2}
+          pointerEvents="none"
+          style={discBackground}
+          data-testid={testId ? `${testId}-bg` : undefined}
+        />
+      ) : null}
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={name}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          width={innerImage}
+          height={innerImage}
+          style={{
+            width: innerImage,
+            height: innerImage,
+            objectFit: 'contain',
+            position: 'relative',
+            zIndex: 1,
+          }}
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      ) : (
+        <Text
+          color="$white"
+          fontWeight="700"
+          fontSize={Math.max(12, Math.round(disc * 0.34))}
+          zIndex={1}
+        >
+          {getInitials(name)}
+        </Text>
+      )}
       {showBadge ? (
         <View
           position="absolute"

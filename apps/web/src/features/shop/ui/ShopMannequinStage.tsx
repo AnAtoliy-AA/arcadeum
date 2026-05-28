@@ -39,6 +39,7 @@ export function ShopMannequinStage({
   const banner = preview.banner ?? null;
   const aura = preview.aura ?? null;
   const frame = preview.frame ?? null;
+  const background = preview.background ?? null;
 
   const rarityGlow = useMemo(() => {
     const focus = hoverItem ?? avatar ?? badge ?? skin ?? nameColor;
@@ -97,6 +98,7 @@ export function ShopMannequinStage({
       badgeUrl={badge?.assetUrl ?? null}
       frameColor={frame?.colorValue ?? null}
       auraColor={aura?.colorValue ?? null}
+      backgroundColor={background?.colorValue ?? null}
       bannerColor={banner?.colorValue ?? null}
       nameColor={nameColor?.colorValue ?? null}
       rarityGlow={rarityGlow}

@@ -31,6 +31,10 @@ export interface EquippedCosmetics {
   /** Pre-shaped skin chip prop ready for `<PlayerAvatar skinChip={…} />`.
    *  `label` is the raw i18n key — consumers translate it. */
   skinChip: { id: string; label: string } | null;
+  /** Catalog item for the equipped avatar background. */
+  backgroundItem: EffectiveShopItem | null;
+  /** CSS color (hex or linear-gradient) for the equipped avatar background. */
+  backgroundColor: string | null;
 }
 
 const EMPTY_MAP: ReadonlyMap<string, EffectiveShopItem> = new Map();
@@ -52,6 +56,7 @@ export function useEquippedCosmetics(args: {
   equippedAuraId?: string | null | undefined;
   equippedBannerId?: string | null | undefined;
   equippedGameSkinId?: string | null | undefined;
+  equippedBackgroundId?: string | null | undefined;
 }): EquippedCosmetics {
   const {
     equippedAvatarId,
@@ -61,6 +66,7 @@ export function useEquippedCosmetics(args: {
     equippedAuraId,
     equippedBannerId,
     equippedGameSkinId,
+    equippedBackgroundId,
   } = args;
   const [catalogMap, setCatalogMap] =
     useState<ReadonlyMap<string, EffectiveShopItem>>(EMPTY_MAP);
@@ -98,6 +104,9 @@ export function useEquippedCosmetics(args: {
     const skin = equippedGameSkinId
       ? (catalogMap.get(equippedGameSkinId) ?? null)
       : null;
+    const background = equippedBackgroundId
+      ? (catalogMap.get(equippedBackgroundId) ?? null)
+      : null;
     return {
       avatarItem: avatar,
       avatarUrl: avatar?.assetUrl ?? null,
@@ -113,6 +122,8 @@ export function useEquippedCosmetics(args: {
       bannerColor: banner?.colorValue ?? null,
       skinItem: skin,
       skinChip: skin ? { id: skin.id, label: skin.nameKey } : null,
+      backgroundItem: background,
+      backgroundColor: background?.colorValue ?? null,
     };
   }, [
     equippedAvatarId,

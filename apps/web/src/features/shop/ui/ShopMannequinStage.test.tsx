@@ -27,6 +27,7 @@ const EMPTY = {
   banner: null,
   aura: null,
   frame: null,
+  background: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
 function item(

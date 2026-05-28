@@ -106,6 +106,7 @@ export type PlayerProfileDto = {
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
   equippedGameSkinId?: string | null;
+  equippedBackgroundId?: string | null;
 };
 
 export type LeaderboardSnapshotDto = {

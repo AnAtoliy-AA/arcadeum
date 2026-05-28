@@ -43,6 +43,9 @@ export interface PlayerAvatarProps {
   auraColor?: string | null;
   /** Fallback halo color when no aura is set. Hex/rgba string. */
   rarityGlow?: string | null;
+  /** Equipped avatar-background wash (hex or linear-gradient). Overrides the
+   *  frame-derived backdrop behind the avatar art when set. */
+  backgroundColor?: string | null;
   bannerColor?: string | null;
   nameColor?: string | null;
   level?: number | null;
@@ -161,6 +164,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   frameColor,
   auraColor,
   rarityGlow,
+  backgroundColor,
   bannerColor,
   nameColor,
   presenceLine,
@@ -222,18 +226,22 @@ export const PlayerAvatar = memo(function PlayerAvatar({
 
   const innerImage = Math.round(disc * 0.92);
 
-  // Soft radial wash inside the disc, behind the avatar art (and visible
-  // through its transparent areas). Tinted by the equipped FRAME so it sits
-  // over — and reinforces — the disc's frame-tint base, brighter at the top
-  // center and fading to transparent at the rim. Driven by the frame only
-  // (not the aura) so the cyan/teal aura halo doesn't tint the disc interior.
-  // Skipped on the tiny inline sizes where it would just read as noise.
-  const discBgSwatch = pickSwatchColor(frameColor ?? null);
+  // Soft wash inside the disc, behind the avatar art (and visible through its
+  // transparent areas). An equipped `backgroundColor` wins: a gradient paints
+  // edge-to-edge, a solid hex gets a radial wash. With no background equipped,
+  // the FRAME tint provides the fallback wash so the disc still has depth.
+  // (Aura is intentionally NOT used here so the cyan/teal halo doesn't bleed
+  // into the disc interior.) Skipped on the tiny inline sizes.
+  const frameSwatch = pickSwatchColor(frameColor ?? null);
+  const discBgSource = backgroundColor ?? frameSwatch;
   const showDiscBackground =
-    size !== 'icon' && size !== 'sm' && !!discBgSwatch;
-  const discBackground: React.CSSProperties = {
-    backgroundImage: `radial-gradient(circle at 50% 40%, ${discBgSwatch}73 0%, ${discBgSwatch}24 65%, transparent 100%)`,
-  };
+    size !== 'icon' && size !== 'sm' && !!discBgSource;
+  const discBackground: React.CSSProperties =
+    backgroundColor && isGradient(backgroundColor)
+      ? { backgroundImage: backgroundColor }
+      : {
+          backgroundImage: `radial-gradient(circle at 50% 40%, ${discBgSource}73 0%, ${discBgSource}24 65%, transparent 100%)`,
+        };
 
   const inner = (
     <YStack

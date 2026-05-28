@@ -65,6 +65,7 @@ export const adminShopBy = {
     banner: 'Banner',
     aura: 'Aura',
     frame: 'Frame',
+    background: 'Фон',
   },
   rarity: {
     common: 'Common',

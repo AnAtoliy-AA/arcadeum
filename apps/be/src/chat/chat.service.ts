@@ -27,6 +27,8 @@ export interface MessageView {
   senderEquippedBannerId?: string | null;
   /** Sender's currently-equipped game-skin item id (resolved client-side). */
   senderEquippedGameSkinId?: string | null;
+  /** Sender's currently-equipped avatar-background item id (resolved client-side). */
+  senderEquippedBackgroundId?: string | null;
   receiverIds: string[];
   content: string;
   timestamp: string;

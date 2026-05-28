@@ -6,6 +6,7 @@ export const SHOP_CATEGORIES = [
   'banner',
   'aura',
   'frame',
+  'background',
 ] as const;
 export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
 
@@ -62,7 +63,8 @@ export type EquipKey =
   | 'equippedBannerId'
   | 'equippedAuraId'
   | 'equippedFrameId'
-  | 'equippedGameSkinId';
+  | 'equippedGameSkinId'
+  | 'equippedBackgroundId';
 
 export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'avatar') return 'equippedAvatarId';
@@ -72,5 +74,6 @@ export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'aura') return 'equippedAuraId';
   if (category === 'frame') return 'equippedFrameId';
   if (category === 'game_skin') return 'equippedGameSkinId';
+  if (category === 'background') return 'equippedBackgroundId';
   return null;
 }

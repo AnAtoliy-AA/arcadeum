@@ -29,6 +29,8 @@ const allNulls = {
   bannerItem: null,
   skinItem: null,
   skinChip: null,
+  backgroundItem: null,
+  backgroundColor: null,
 };
 
 describe('EquippedPlayerAvatar', () => {

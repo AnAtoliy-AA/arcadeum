@@ -40,6 +40,7 @@ const slotLabels: Record<ShopCategory, { label: string; desc: string }> = {
   banner: { label: 'Banner', desc: '' },
   aura: { label: 'Aura', desc: '' },
   frame: { label: 'Frame', desc: '' },
+  background: { label: 'Background', desc: '' },
 };
 
 const walletLabels = { nextPack: '', ofTarget: '' };
@@ -64,6 +65,7 @@ const EMPTY_PREVIEW = {
   banner: null,
   aura: null,
   frame: null,
+  background: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
 const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };

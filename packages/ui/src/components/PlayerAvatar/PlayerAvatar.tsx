@@ -34,7 +34,7 @@ const DISC_SIZE: Record<PlayerAvatarSize, number> = {
   md: 72,
   lg: 140,
   card: 140,
-  profile: 200,
+  profile: 140,
 };
 const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
   icon: 0,
@@ -42,7 +42,7 @@ const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
   md: 24,
   lg: 36,
   card: 36,
-  profile: 52,
+  profile: 44,
 };
 const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   icon: 0,
@@ -50,7 +50,7 @@ const RING_WIDTH: Record<PlayerAvatarSize, number> = {
   md: 3,
   lg: 3,
   card: 3,
-  profile: 4,
+  profile: 2,
 };
 
 function pickSwatchColor(value: string | null | undefined): string | null {
@@ -64,6 +64,9 @@ function isGradient(value: string | null | undefined): boolean {
   return !!value && value.includes('gradient');
 }
 
+// The 12-spike conic gradient + circular mask. Positioning is applied at the
+// render site so the halo can be centered on the avatar disc regardless of
+// the surrounding layout (the disc sits above the name in card chrome).
 function buildRaysStyle(raysColor: string | null): React.CSSProperties | null {
   if (!raysColor) return null;
   const stops: string[] = [];
@@ -76,43 +79,37 @@ function buildRaysStyle(raysColor: string | null): React.CSSProperties | null {
   }
   stops.push(`${raysColor} 360deg`);
   return {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0.5,
+    opacity: 0.55,
     pointerEvents: 'none',
     backgroundImage: `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`,
     WebkitMaskImage:
-      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 60%, transparent 100%)',
     maskImage:
-      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 65%, transparent 100%)',
+      'radial-gradient(circle closest-side at 50% 50%, black 0%, black 60%, transparent 100%)',
   };
 }
 
 interface RaysHaloProps {
   style: React.CSSProperties;
   testId?: string;
-  /** Disc-relative inset for non-card modes; absolute inset:0 for card chrome. */
-  mode: 'disc' | 'chrome';
-  disc: number;
+  /** Halo diameter in px — centered on the avatar disc. */
+  haloSize: number;
 }
 
-function RaysHalo({ style, testId, mode, disc }: RaysHaloProps) {
-  const inset =
-    mode === 'disc'
-      ? {
-          top: -Math.round(disc * 0.45),
-          right: -Math.round(disc * 0.45),
-          bottom: -Math.round(disc * 0.45),
-          left: -Math.round(disc * 0.45),
-        }
-      : { top: 0, right: 0, bottom: 0, left: 0 };
+// A square ray layer centered on the disc center via 50%/translate, so the
+// glow radiates symmetrically around the avatar no matter where the disc sits
+// in its parent. Sits behind the disc (the disc paints over the masked center).
+function RaysHalo({ style, testId, haloSize }: RaysHaloProps) {
   return (
     <View
       position="absolute"
-      {...inset}
+      top="50%"
+      left="50%"
+      width={haloSize}
+      height={haloSize}
       pointerEvents="none"
       data-testid={testId}
-      style={style}
+      style={{ ...style, transform: 'translate(-50%, -50%)' }}
     />
   );
 }
@@ -169,9 +166,13 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         borderColor: 'rgba(255,255,255,0.18)',
       };
 
-  const auraSwatch = showAura
-    ? (pickSwatchColor(auraColor) ?? 'rgba(96,165,250,0.45)')
-    : null;
+  // Soft bloom under the disc. Driven by the same color as the rays (aura,
+  // falling back to rarity glow) so an equipped aura and a hovered shop item
+  // both light the avatar.
+  const glowColor = showRays ? raysColor : null;
+  // Halo reaches well past the disc on the hero card sizes; tighter on inline
+  // sizes so list rows don't bloom into their neighbours.
+  const haloSize = Math.round(disc * (showCardChrome ? 2.6 : 1.9));
 
   const bannerStyle: React.CSSProperties | undefined =
     showCardChrome && bannerColor
@@ -193,8 +194,8 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       position="relative"
       style={{
         ...(showFrame ? ringHexBackground : {}),
-        ...(auraSwatch
-          ? { boxShadow: `0 0 ${Math.round(disc * 0.4)}px ${auraSwatch}` }
+        ...(glowColor
+          ? { boxShadow: `0 0 ${Math.round(disc * 0.4)}px ${glowColor}` }
           : {}),
       }}
       data-testid={testId ? `${testId}-disc` : undefined}
@@ -221,14 +222,6 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           borderRadius={disc}
           pointerEvents="none"
           data-testid={testId ? `${testId}-aura` : undefined}
-        />
-      ) : null}
-      {showRays && raysBg && !showCardChrome ? (
-        <RaysHalo
-          style={raysBg}
-          testId={testId ? `${testId}-rays` : undefined}
-          mode="disc"
-          disc={disc}
         />
       ) : null}
       <Avatar
@@ -265,14 +258,38 @@ export const PlayerAvatar = memo(function PlayerAvatar({
     </YStack>
   );
 
+  // Disc + its halo. The rays sit behind the disc and are centered on the disc
+  // center, so the glow radiates symmetrically around the avatar regardless of
+  // any sibling content (name/presence) below it.
+  const discZone = (
+    <YStack
+      width={disc}
+      height={disc}
+      alignItems="center"
+      justifyContent="center"
+      position="relative"
+    >
+      {showRays && raysBg ? (
+        <RaysHalo
+          style={raysBg}
+          testId={testId ? `${testId}-rays` : undefined}
+          haloSize={haloSize}
+        />
+      ) : null}
+      {inner}
+    </YStack>
+  );
+
   if (!showCardChrome) {
     return (
       <YStack
         data-testid={testId}
         onPress={onPress}
         cursor={onPress ? 'pointer' : 'default'}
+        alignItems="center"
+        justifyContent="center"
       >
-        {inner}
+        {discZone}
       </YStack>
     );
   }
@@ -283,10 +300,14 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       onPress={onPress}
       cursor={onPress ? 'pointer' : 'default'}
       width={size === 'profile' ? '100%' : 220}
+      minHeight={size === 'profile' ? 280 : undefined}
       borderRadius="$5"
+      borderWidth={1}
+      borderColor="rgba(255,255,255,0.08)"
       paddingHorizontal="$4"
       paddingVertical="$4"
       alignItems="center"
+      justifyContent="center"
       gap="$3"
       overflow="hidden"
       style={bannerStyle ?? { backgroundColor: 'rgba(15,23,42,0.55)' }}
@@ -334,15 +355,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           </Text>
         </View>
       ) : null}
-      {showRays && raysBg ? (
-        <RaysHalo
-          style={raysBg}
-          testId={testId ? `${testId}-rays` : undefined}
-          mode="chrome"
-          disc={disc}
-        />
-      ) : null}
-      {inner}
+      {discZone}
       <YStack alignItems="center" gap={4}>
         <Text
           fontSize="$6"

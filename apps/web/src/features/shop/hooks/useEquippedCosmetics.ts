@@ -133,6 +133,7 @@ export function useEquippedCosmetics(args: {
     equippedAuraId,
     equippedBannerId,
     equippedGameSkinId,
+    equippedBackgroundId,
     catalogMap,
   ]);
 }

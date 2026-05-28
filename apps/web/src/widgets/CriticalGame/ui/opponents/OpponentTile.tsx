@@ -143,6 +143,15 @@ export function OpponentTile({
   // isolation (tests / storybook).
   const finalAvatarSize =
     avatarSize ?? (isMobile ? (isDuel ? 64 : 36) : isDuel ? 88 : 48);
+  // The avatar now renders its full disc cosmetics (frame/aura/background), so
+  // use the richer `md` disc where the layout has room and `sm` in the most
+  // cramped buckets (mobile FFA, 5-player desktop). Both sizes show every
+  // cosmetic — only the diameter differs. The seat-colour bubble below hugs
+  // the disc (PlayerAvatar disc px: sm 40, md 72) with a small gap so the
+  // identity ring stays concentric with the cosmetic frame.
+  const avatarSizeName: 'sm' | 'md' = finalAvatarSize >= 44 ? 'md' : 'sm';
+  const discSize = avatarSizeName === 'md' ? 72 : 40;
+  const bubbleSize = discSize + 8;
   // Keep `playerColor` on the avatar border at low opacity when dead so
   // the eliminated seat still reads as that player rather than a generic
   // grey pill. `66` ≈ 40% alpha against the hex base.
@@ -226,26 +235,28 @@ export function OpponentTile({
         // scroll container so swipes don't strand a tile mid-row.
         style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
       >
+        {/* Seat-colour identity ring. No `overflow: hidden` so the avatar's
+            aura/rays halo can bleed past the disc, and no fill (the avatar
+            paints its own background wash). The bubble is slightly larger than
+            the disc so this ring sits just outside the cosmetic frame. */}
         <YStack
-          width={finalAvatarSize}
-          height={finalAvatarSize}
+          width={bubbleSize}
+          height={bubbleSize}
           borderRadius={9999}
-          backgroundColor="rgba(255,255,255,0.08)"
           borderWidth={2}
           borderColor={avatarBorderColor}
           alignItems="center"
           justifyContent="center"
-          overflow="hidden"
         >
           {alive ? (
             <InGameAvatar
               playerId={player.playerId}
               name={displayName}
-              size={finalAvatarSize >= 64 ? 'sm' : 'icon'}
+              size={avatarSizeName}
               data-testid={`player-avatar-${player.playerId}`}
             />
           ) : (
-            <SkullIcon size={Math.round(finalAvatarSize * 0.55)} />
+            <SkullIcon size={Math.round(discSize * 0.55)} />
           )}
         </YStack>
         <XStack alignItems="center" gap={4} maxWidth="100%">

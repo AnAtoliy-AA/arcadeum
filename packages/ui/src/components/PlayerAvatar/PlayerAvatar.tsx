@@ -68,15 +68,15 @@ const DISC_SIZE: Record<PlayerAvatarSize, number> = {
   profile: 140,
 };
 const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
-  icon: 0,
+  icon: 12,
   sm: 14,
   md: 24,
-  lg: 36,
-  card: 36,
-  profile: 44,
+  lg: 44,
+  card: 44,
+  profile: 56,
 };
 const RING_WIDTH: Record<PlayerAvatarSize, number> = {
-  icon: 0,
+  icon: 2,
   sm: 2,
   md: 3,
   lg: 3,
@@ -178,17 +178,15 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   const badge = BADGE_SIZE[size];
   const ring = RING_WIDTH[size];
 
-  const showBadge = size !== 'icon' && !!badgeUrl;
-  const showFrame = size !== 'icon' && !!frameColor;
-  const showAura =
-    (size === 'md' || size === 'card' || size === 'profile') && !!auraColor;
+  // Every size renders the full set of disc-level cosmetics (badge, frame,
+  // aura/rays, background). Only the chrome wrapper — banner backdrop, name
+  // label, skin chip — stays gated to the card/profile presentations, since
+  // those need a name to sit on. Banner is therefore "biggest only".
+  const showBadge = !!badgeUrl;
+  const showFrame = !!frameColor;
+  const showAura = !!auraColor;
   const showCardChrome = size === 'card' || size === 'profile';
-  const showRays =
-    (size === 'md' ||
-      size === 'lg' ||
-      size === 'card' ||
-      size === 'profile') &&
-    (!!auraColor || !!rarityGlow);
+  const showRays = !!auraColor || !!rarityGlow;
   const raysColor =
     pickSwatchColor(auraColor ?? null) ?? pickSwatchColor(rarityGlow ?? null);
 
@@ -205,8 +203,11 @@ export const PlayerAvatar = memo(function PlayerAvatar({
           borderColor: frameColor as string,
         }
     : {
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        borderColor: 'rgba(255,255,255,0.18)',
+        // No frame equipped: still paint a base disc (slate fill + faint ring)
+        // so initials sit on a visible circle instead of floating as bare
+        // letters. Bots/guests with no cosmetics rely on this.
+        backgroundColor: 'rgba(15,23,42,0.55)',
+        borderColor: 'rgba(255,255,255,0.22)',
       };
 
   // Soft bloom under the disc. Driven by the same color as the rays (aura,
@@ -215,7 +216,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   const glowColor = showRays ? raysColor : null;
   // Halo reaches past the disc on the hero card sizes; tighter on inline
   // sizes so list rows don't bloom into their neighbours.
-  const haloSize = Math.round(disc * (showCardChrome ? 2.1 : 1.7));
+  const haloSize = Math.round(disc * (showCardChrome ? 1.75 : 1.45));
 
   const bannerStyle: React.CSSProperties | undefined =
     showCardChrome && bannerColor
@@ -231,11 +232,10 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   // edge-to-edge, a solid hex gets a radial wash. With no background equipped,
   // the FRAME tint provides the fallback wash so the disc still has depth.
   // (Aura is intentionally NOT used here so the cyan/teal halo doesn't bleed
-  // into the disc interior.) Skipped on the tiny inline sizes.
+  // into the disc interior.)
   const frameSwatch = pickSwatchColor(frameColor ?? null);
   const discBgSource = backgroundColor ?? frameSwatch;
-  const showDiscBackground =
-    size !== 'icon' && size !== 'sm' && !!discBgSource;
+  const showDiscBackground = !!discBgSource;
   const discBackground: React.CSSProperties =
     backgroundColor && isGradient(backgroundColor)
       ? { backgroundImage: backgroundColor }
@@ -250,10 +250,10 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       borderRadius={disc / 2}
       alignItems="center"
       justifyContent="center"
-      borderWidth={showFrame ? ring : 0}
+      borderWidth={showFrame ? ring : 1}
       position="relative"
       style={{
-        ...(showFrame ? ringHexBackground : {}),
+        ...ringHexBackground,
         ...(glowColor
           ? { boxShadow: `0 0 ${Math.round(disc * 0.4)}px ${glowColor}` }
           : {}),

@@ -77,6 +77,9 @@ describe('InGameAvatar', () => {
     expect(spy).toHaveBeenCalledWith({
       equippedAvatarId: 'av-1',
       equippedBadgeId: 'bd-1',
+      equippedFrameId: null,
+      equippedAuraId: null,
+      equippedBackgroundId: null,
     });
     expect(screen.getByRole('img')).toHaveAttribute('src', '/jane.png');
   });
@@ -92,10 +95,13 @@ describe('InGameAvatar', () => {
     expect(spy).toHaveBeenCalledWith({
       equippedAvatarId: null,
       equippedBadgeId: null,
+      equippedFrameId: null,
+      equippedAuraId: null,
+      equippedBackgroundId: null,
     });
   });
 
-  it('suppresses cosmetic frame/aura/banner so game state rings stay authoritative', () => {
+  it('surfaces frame/aura cosmetics in-game but never the chrome-only banner', () => {
     vi.mocked(cosmeticsHook.useEquippedCosmetics).mockReturnValue({
       ...allNulls,
       avatarUrl: '/x.png',
@@ -120,11 +126,11 @@ describe('InGameAvatar', () => {
       <InGameAvatar playerId="u-1" name="Jane" size="md" data-testid="iga" />,
     );
 
-    // PlayerAvatar only paints frame / aura when those props are truthy. Since
-    // InGameAvatar passes null for all three, none of those decorations
-    // appear in the DOM.
-    expect(screen.queryByTestId('iga-frame')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('iga-aura')).not.toBeInTheDocument();
+    // Frame ring and aura halo now render in-game (identity reads the same as
+    // in the shop). Banner stays off: it's chrome-only (card/profile) and
+    // `md` has no chrome, so InGameAvatar passes null for it.
+    expect(screen.getByTestId('iga-frame')).toBeInTheDocument();
+    expect(screen.getByTestId('iga-aura')).toBeInTheDocument();
     expect(screen.queryByTestId('iga-banner')).not.toBeInTheDocument();
   });
 });

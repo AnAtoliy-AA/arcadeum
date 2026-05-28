@@ -17,12 +17,21 @@ describe('PlayerAvatar', () => {
     expect(screen.getByText('JD')).toBeInTheDocument();
   });
 
+  it('paints a base disc circle even with no frame/avatar (bots/guests)', () => {
+    render(<PlayerAvatar name="Bot 1" size="md" data-testid="pa" />);
+    const disc = screen.getByTestId('pa-disc');
+    expect(
+      disc.style.backgroundColor || disc.style.background,
+    ).toMatch(/rgba\(15,\s*23,\s*42/);
+    expect(disc.style.borderColor).toMatch(/rgba\(255,\s*255,\s*255/);
+  });
+
   it('renders the avatar image when avatarUrl is provided', () => {
     render(<PlayerAvatar name="Jane" avatarUrl="/x.png" />);
     expect(screen.getByRole('img')).toHaveAttribute('src', '/x.png');
   });
 
-  it('does not render badge / frame / aura / banner at icon size', () => {
+  it('renders badge / frame / aura at icon size, but never banner', () => {
     render(
       <PlayerAvatar
         name="J"
@@ -34,9 +43,10 @@ describe('PlayerAvatar', () => {
         data-testid="pa"
       />,
     );
-    expect(screen.queryByTestId('pa-badge')).toBeNull();
-    expect(screen.queryByTestId('pa-frame')).toBeNull();
-    expect(screen.queryByTestId('pa-aura')).toBeNull();
+    expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
+    // Banner is chrome-only (card / profile), so it never appears at icon size.
     expect(screen.queryByTestId('pa-banner')).toBeNull();
   });
 
@@ -85,11 +95,11 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
   });
 
-  it('renders the aura halo at md/card only', () => {
+  it('renders the aura halo at every size, including sm', () => {
     const { rerender } = render(
       <PlayerAvatar name="J" auraColor="#ff0" size="sm" data-testid="pa" />,
     );
-    expect(screen.queryByTestId('pa-aura')).toBeNull();
+    expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
 
     rerender(
       <TamaguiProvider config={config} defaultTheme="dark">
@@ -207,11 +217,11 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
   });
 
-  it('does not render the rays layer at sm', () => {
+  it('renders the rays layer at sm when aura is set', () => {
     render(
       <PlayerAvatar name="J" auraColor="#ff0" size="sm" data-testid="pa" />,
     );
-    expect(screen.queryByTestId('pa-rays')).toBeNull();
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
   });
 
   it('does not render the rays layer when neither aura nor rarityGlow set', () => {

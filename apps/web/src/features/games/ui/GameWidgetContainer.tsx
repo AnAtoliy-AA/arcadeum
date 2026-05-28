@@ -267,6 +267,8 @@ interface SharedHeaderProps {
   turnStatusVariant: TurnStatusVariant;
   /** Turn status text */
   turnStatusText: string;
+  /** Optional avatar of the player on the clock, rendered inside the turn pill */
+  turnAvatar?: React.ReactNode;
   /** Optional extra actions rendered before fullscreen button */
   extraActions?: React.ReactNode;
   /** Optional gradient for the title text */
@@ -358,7 +360,12 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </YStack>
         </GameInfo>
 
-        <TurnStatusPill $status={headerProps.turnStatusVariant}>
+        <TurnStatusPill
+          $status={headerProps.turnStatusVariant}
+          gap={headerProps.turnAvatar ? '$2' : undefined}
+          paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+        >
+          {headerProps.turnAvatar}
           <TurnStatusText $status={headerProps.turnStatusVariant}>
             {headerProps.turnStatusText}
           </TurnStatusText>

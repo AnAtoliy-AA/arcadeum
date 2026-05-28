@@ -27,13 +27,6 @@ interface OpponentTileProps {
    */
   isMobile?: boolean;
   /**
-   * Computed avatar diameter from `OpponentsRow.getAvatarSize`. Scales
-   * with FFA opponent count so 5-up rows don't look avatar-dominated and
-   * 3-up rows don't look sparse. Optional — falls back to the legacy
-   * duel/non-duel branch if the parent forgot to thread it.
-   */
-  avatarSize?: number;
-  /**
    * True when the player's id is in `gameStore.idlePlayers`. Lifted to
    * `OpponentsRow` so the store subscription runs once instead of
    * fan-out per tile (5 tiles × `.includes` scans on every state update).
@@ -107,7 +100,6 @@ export function OpponentTile({
   isTarget = false,
   isDuel = false,
   isMobile = false,
-  avatarSize,
   isIdle = false,
   onSelect,
   resolveDisplayName,
@@ -130,7 +122,7 @@ export function OpponentTile({
   // when alive/idle, which read as two different identifiers for the same
   // person when the player was on the clock (border was green, avatar was
   // their seat colour). The preview reserves the tile border for state.
-  let ringColor: string = 'rgba(255,255,255,0.10)';
+  let ringColor: string = 'rgba(255,255,255,0.16)';
   if (!alive) ringColor = ELIMINATED_RING;
   else if (isTarget) ringColor = TARGET_RING;
   else if (isCurrentTurn) ringColor = TURN_RING;
@@ -141,15 +133,12 @@ export function OpponentTile({
   // they fit thumb-width. Caller (OpponentsRow) scales by opponent count
   // — fallback to the duel/non-duel branch for components rendered in
   // isolation (tests / storybook).
-  const finalAvatarSize =
-    avatarSize ?? (isMobile ? (isDuel ? 64 : 36) : isDuel ? 88 : 48);
-  // The avatar now renders its full disc cosmetics (frame/aura/background), so
-  // use the richer `md` disc where the layout has room and `sm` in the most
-  // cramped buckets (mobile FFA, 5-player desktop). Both sizes show every
-  // cosmetic — only the diameter differs. The seat-colour bubble below hugs
-  // the disc (PlayerAvatar disc px: sm 40, md 72) with a small gap so the
-  // identity ring stays concentric with the cosmetic frame.
-  const avatarSizeName: 'sm' | 'md' = finalAvatarSize >= 44 ? 'md' : 'sm';
+  // Desktop uses the richer `md` disc (72px) so the equipped cosmetics read
+  // clearly; mobile FFA stays on `sm` (40px) to fit thumb-width tiles. The
+  // seat-colour bubble hugs the disc with an 8px ring gap. The tile is sized
+  // to its natural content height (see `flex={0}` below) so a larger disc
+  // grows the card instead of overflowing it.
+  const avatarSizeName: 'sm' | 'md' = isMobile ? 'sm' : 'md';
   const discSize = avatarSizeName === 'md' ? 72 : 40;
   const bubbleSize = discSize + 8;
   // Keep `playerColor` on the avatar border at low opacity when dead so
@@ -221,32 +210,47 @@ export function OpponentTile({
         borderWidth={1}
         borderStyle={ringStyle}
         borderColor={ringColor}
-        backgroundColor="rgba(0,0,0,0.35)"
-        // FFA: flex-grow with a max so 2–5 tiles distribute evenly across
-        // the row. Duel: lock the lone tile to a focal width so the
-        // opponent reads as the primary subject, not space-betweened.
-        flex={isDuel ? 0 : 1}
-        width={isDuel ? (isMobile ? 180 : 240) : undefined}
+        // Solid card fill so the tile reads as a container that fully encloses
+        // the avatar + name + count. The previous near-transparent fill
+        // (rgba(0,0,0,0.35)) vanished against the dark arena, leaving only a
+        // faint top arc — the avatar looked like it floated over a thin oval.
+        backgroundColor="rgba(12,17,28,0.92)"
+        // Lift the card above the arena panel behind it so its border + fill
+        // read clearly instead of blending into the arena's own background.
+        zIndex={1}
+        // Natural content height — NOT flex-grow. `flex={1}` here gave the tile
+        // `flex-basis: 0`, so it contributed zero height to the column and
+        // collapsed to a thin bar while the avatar overflowed. The parent
+        // wrapper handles horizontal distribution across the row; the tile just
+        // fills that width (`100%`) and grows tall enough for its content.
+        flex={0}
+        width={isDuel ? (isMobile ? 180 : 240) : '100%'}
         maxWidth={isDuel ? (isMobile ? 180 : 240) : 180}
         minWidth={isMobile ? 96 : 120}
+        // Guaranteed floor so the card always has room for the avatar bubble +
+        // name + count, independent of how the surrounding flex column resolves
+        // (the avatar bubble + ~64px of text/padding below it).
+        minHeight={bubbleSize + 64}
         flexShrink={0}
         opacity={alive ? 1 : 0.6}
         // Scroll-snap on mobile: align each tile to the start of the
         // scroll container so swipes don't strand a tile mid-row.
         style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
       >
-        {/* Seat-colour identity ring. No `overflow: hidden` so the avatar's
-            aura/rays halo can bleed past the disc, and no fill (the avatar
-            paints its own background wash). The bubble is slightly larger than
-            the disc so this ring sits just outside the cosmetic frame. */}
+        {/* Seat-colour identity ring. `overflow: hidden` clips the avatar to a
+            clean circle and guarantees it can't spill out of its slot (an
+            unclipped, oversized disc previously overflowed the tile). */}
         <YStack
           width={bubbleSize}
           height={bubbleSize}
           borderRadius={9999}
+          backgroundColor="rgba(255,255,255,0.08)"
           borderWidth={2}
           borderColor={avatarBorderColor}
           alignItems="center"
           justifyContent="center"
+          overflow="hidden"
+          flexShrink={0}
         >
           {alive ? (
             <InGameAvatar

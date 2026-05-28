@@ -72,6 +72,11 @@ export function OpponentsRow({
       paddingVertical="$2"
       justifyContent="center"
       flexWrap="nowrap"
+      // Don't let the column layout (MatchWidgetGrid) shrink this row when
+      // vertical space is tight. Without this the row compresses below its
+      // content height, the tiles collapse to a thin bar, and the avatars +
+      // names overflow downward — colliding with the arena / turn banner.
+      flexShrink={0}
       // Mobile: horizontal scroll with scroll-snap so each tile lands on
       // a fixed stop instead of free-floating. Desktop: tiles flex-grow
       // evenly with a max width so 2-/3-/4-up rows look balanced rather
@@ -95,7 +100,6 @@ export function OpponentsRow({
           isTarget={!!targetPlayerId && opponent.playerId === targetPlayerId}
           isDuel={isDuel}
           isMobile={isMobile}
-          avatarSize={getAvatarSize(opponents.length, isDuel, isMobile)}
           isIdle={idleSet.has(opponent.playerId)}
           onSelect={
             onSelectTarget && opponent.alive
@@ -108,22 +112,4 @@ export function OpponentsRow({
       ))}
     </XStack>
   );
-}
-
-/**
- * Avatar diameter for a tile, scaled by FFA opponent count so a 5-up row
- * doesn't look avatar-dominated and a 3-up row doesn't look sparse. Duel
- * mode locks to the focal size — there's only one tile, no crowding to
- * worry about. Mobile knocks both branches down so tiles fit thumb-width.
- */
-function getAvatarSize(
-  count: number,
-  isDuel: boolean,
-  isMobile: boolean,
-): number {
-  if (isMobile) return isDuel ? 64 : 36;
-  if (isDuel) return 88;
-  if (count >= 5) return 40;
-  if (count === 4) return 44;
-  return 56;
 }

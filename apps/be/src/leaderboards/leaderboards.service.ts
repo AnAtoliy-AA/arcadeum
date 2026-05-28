@@ -228,6 +228,7 @@ export class LeaderboardsService {
     let equippedFrameId: string | null = null;
     let equippedAuraId: string | null = null;
     let equippedBannerId: string | null = null;
+    let equippedGameSkinId: string | null = null;
     if (Types.ObjectId.isValid(userId)) {
       const userDoc = await this.userModel
         .findById(userId, {
@@ -237,6 +238,7 @@ export class LeaderboardsService {
           equippedFrameId: 1,
           equippedAuraId: 1,
           equippedBannerId: 1,
+          equippedGameSkinId: 1,
         })
         .lean<{
           equippedAvatarId?: string | null;
@@ -245,6 +247,7 @@ export class LeaderboardsService {
           equippedFrameId?: string | null;
           equippedAuraId?: string | null;
           equippedBannerId?: string | null;
+          equippedGameSkinId?: string | null;
         } | null>();
       if (userDoc) {
         equippedAvatarId = userDoc.equippedAvatarId ?? null;
@@ -253,6 +256,7 @@ export class LeaderboardsService {
         equippedFrameId = userDoc.equippedFrameId ?? null;
         equippedAuraId = userDoc.equippedAuraId ?? null;
         equippedBannerId = userDoc.equippedBannerId ?? null;
+        equippedGameSkinId = userDoc.equippedGameSkinId ?? null;
       }
     }
 
@@ -266,6 +270,7 @@ export class LeaderboardsService {
       equippedFrameId,
       equippedAuraId,
       equippedBannerId,
+      equippedGameSkinId,
     };
   }
 

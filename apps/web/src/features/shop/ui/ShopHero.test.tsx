@@ -96,6 +96,7 @@ describe('ShopHero', () => {
         banner: null,
         aura: null,
         frame: null,
+        background: null,
       },
     });
     const item = makeItem();
@@ -132,6 +133,7 @@ describe('ShopHero', () => {
         banner: null,
         aura: null,
         frame: null,
+        background: null,
       },
     });
     const item = makeItem();

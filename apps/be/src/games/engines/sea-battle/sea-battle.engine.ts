@@ -18,6 +18,7 @@ import {
   SeaBattlePlayer,
   SeaBattleState,
   PlaceShipPayload,
+  MoveShipPayload,
   AttackPayload,
   ChatPayload,
 } from './sea-battle.types';
@@ -29,6 +30,7 @@ import {
 } from './sea-battle.utils';
 import {
   validatePlaceShip,
+  validateMoveShip,
   validateAutoPlace,
   validateConfirmPlacement,
   validateResetPlacement,
@@ -45,6 +47,7 @@ import {
 } from './team-rotation.utils';
 import {
   runPlaceShip,
+  runMoveShip,
   runAutoPlace,
   runConfirmPlacement,
   runResetPlacement,
@@ -127,6 +130,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     switch (action) {
       case 'placeShip':
         return validatePlaceShip(state, player, payload as PlaceShipPayload);
+      case 'moveShip':
+        return validateMoveShip(state, player, payload as MoveShipPayload);
       case 'autoPlace':
         return validateAutoPlace(state);
       case 'confirmPlacement': {
@@ -175,54 +180,22 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     switch (action) {
       case 'placeShip':
-        return this.executePlaceShip(
-          newState,
-          player,
-          payload as PlaceShipPayload,
-        );
+        return runPlaceShip(newState, player, payload as PlaceShipPayload);
+      case 'moveShip':
+        return runMoveShip(newState, player, payload as MoveShipPayload);
       case 'autoPlace':
-        return this.executeAutoPlace(newState, player);
+        return runAutoPlace(newState, player);
       case 'confirmPlacement':
-        return this.executeConfirmPlacement(newState, player);
+        return runConfirmPlacement(newState, player);
+      case 'resetPlacement':
+        return runResetPlacement(newState, player);
       case 'attack':
         return this.executeAttack(newState, player, payload as AttackPayload);
-
-      case 'resetPlacement':
-        return this.executeResetPlacement(newState, player);
       case 'chat':
         return this.executeChat(newState, player, payload as ChatPayload);
       default:
         return this.errorResult('Unknown action');
     }
-  }
-
-  private executePlaceShip(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-    payload: PlaceShipPayload,
-  ): GameActionResult<SeaBattleState> {
-    return runPlaceShip(state, player, payload);
-  }
-
-  private executeAutoPlace(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-  ): GameActionResult<SeaBattleState> {
-    return runAutoPlace(state, player);
-  }
-
-  private executeConfirmPlacement(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-  ): GameActionResult<SeaBattleState> {
-    return runConfirmPlacement(state, player);
-  }
-
-  private executeResetPlacement(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-  ): GameActionResult<SeaBattleState> {
-    return runResetPlacement(state, player);
   }
 
   private executeAttack(

@@ -44,6 +44,7 @@ import {
   type Range,
 } from './_components/LeaderboardControls';
 import { FreshnessIndicator } from './_components/FreshnessIndicator';
+import { MythicBloom } from './_components/MythicBloom';
 
 const PAGE_SIZE = 50;
 const SELF_ROW_FALLBACK_HEIGHT = 88;
@@ -318,7 +319,8 @@ export default function LeaderboardsPageContent({
 
           {mythic ? (
             <XStack gap="$4" flexWrap="wrap" alignItems="stretch">
-              <View flex={2} minWidth={360}>
+              <View flex={2} minWidth={360} position="relative">
+                <MythicBloom />
                 <MythicSpotlight
                   rank={mythic.rank}
                   name={mythic.name}
@@ -339,6 +341,7 @@ export default function LeaderboardsPageContent({
                       equippedFrameId={mythic.equippedFrameId}
                       equippedAuraId={mythic.equippedAuraId}
                       equippedBannerId={mythic.equippedBannerId}
+                      role={mythic.role}
                       fallbackAvatarUrl={mythic.avatarUrl}
                       priority
                     />

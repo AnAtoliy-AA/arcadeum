@@ -148,7 +148,7 @@ describe('SessionRoleSync', () => {
     expect(apiGetMock).toHaveBeenCalledTimes(1);
   });
 
-  it('passes only profile fields to setTokens', async () => {
+  it('passes profile + equipped cosmetic fields to setTokens (no token fields)', async () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
     render(<SessionRoleSync />);
     await flushPromises();
@@ -161,10 +161,31 @@ describe('SessionRoleSync', () => {
       username: 'alice',
       displayName: 'Alice',
       role: 'admin',
+      equippedAvatarId: null,
+      equippedBadgeId: null,
+      equippedNameColorId: null,
+      equippedFrameId: null,
+      equippedAuraId: null,
+      equippedBannerId: null,
+      equippedGameSkinId: null,
     });
     expect(arg).not.toHaveProperty('accessToken');
     expect(arg).not.toHaveProperty('refreshToken');
     expect(arg).not.toHaveProperty('accessTokenExpiresAt');
+  });
+
+  it('propagates equipped cosmetics from /auth/me so the header avatar stays fresh', async () => {
+    apiGetMock.mockResolvedValueOnce({
+      ...PROFILE,
+      equippedAvatarId: 'avatar-saturn',
+      equippedFrameId: 'frame-gold',
+    });
+    render(<SessionRoleSync />);
+    await flushPromises();
+
+    const arg = storeRef.state.setTokens.mock.calls[0][0];
+    expect(arg.equippedAvatarId).toBe('avatar-saturn');
+    expect(arg.equippedFrameId).toBe('frame-gold');
   });
 
   it('logout-during-sync: drops the result if accessToken cleared mid-fetch', async () => {

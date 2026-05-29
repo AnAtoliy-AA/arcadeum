@@ -47,6 +47,7 @@ export type RealLeaderboardEntry = {
   wins: number;
   losses: number;
   winRate: number;
+  role?: string | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
@@ -143,6 +144,7 @@ export function hydratePlayer(
     isFriend: false,
     isInMatch: false,
     gameTags: [],
+    role: real.role ?? null,
     equippedAvatarId: real.equippedAvatarId ?? null,
     equippedBadgeId: real.equippedBadgeId ?? null,
     equippedNameColorId: real.equippedNameColorId ?? null,

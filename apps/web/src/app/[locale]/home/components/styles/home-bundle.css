@@ -277,6 +277,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Cursor-driven parallax: vars set by HomeHero on pointer move. Tilts the
+     whole stack (per-card transforms are untouched). */
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-stack {
+    transform: none;
+  }
 }
 
 .hero-card-main {

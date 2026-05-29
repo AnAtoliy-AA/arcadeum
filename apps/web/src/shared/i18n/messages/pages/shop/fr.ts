@@ -63,6 +63,11 @@ export const shopFr = {
         desc: 'Anneau décoratif qui entoure votre avatar.',
         empty: 'Vide',
       },
+      background: {
+        label: 'Arrière-plan',
+        desc: 'Halo coloré derrière votre avatar.',
+        empty: 'Vide',
+      },
     },
     action: {
       previewingEyebrow: 'Aperçu',
@@ -124,6 +129,12 @@ export const shopFr = {
     frames: {
       title: 'Cadres',
       eyebrow: '{count} articles',
+      viewAll: 'Tout voir',
+      collapse: 'Réduire',
+    },
+    backgrounds: {
+      title: 'Arrière-plans',
+      eyebrow: '{count} objets',
       viewAll: 'Tout voir',
       collapse: 'Réduire',
     },
@@ -253,6 +264,13 @@ export const shopFr = {
       emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
       violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },
       prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
+    },
+    background: {
+      default: { name: 'Par défaut', desc: 'Arrière-plan de départ.' },
+      slate: { name: 'Ardoise', desc: 'Lavis ardoise sobre.' },
+      ocean: { name: 'Océan', desc: 'Dégradé bleu-turquoise profond.' },
+      violet: { name: 'Violet', desc: 'Dégradé violet intense.' },
+      aurora: { name: 'Aurore', desc: 'Dégradé turquoise-violet-rose.' },
     },
   },
 };

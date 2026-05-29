@@ -4,6 +4,8 @@ import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
+import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -54,6 +56,8 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   } = props;
 
   const { snapshot } = useSessionTokens();
+  const { soundEnabled, setSoundEnabled } = useSoundSetting();
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const handleLeaveGame = useCallback(() => {
@@ -165,6 +169,36 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Text $sm={{ display: 'none' }}>
           {' ' + t('games.table.controlPanel.fullscreen')}
         </Text>
+      </Button>
+
+      <Button
+        variant="glass"
+        size="sm"
+        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+        isActive={soundEnabled}
+        aria-pressed={soundEnabled}
+        onClick={() => setSoundEnabled(!soundEnabled)}
+        aria-label={t('settings.soundLabel')}
+        title={t('settings.soundLabel')}
+        data-testid="sound-toggle-button"
+      >
+        {soundEnabled ? '🔊' : '🔇'}
+        <Text $sm={{ display: 'none' }}>{' ' + t('settings.soundLabel')}</Text>
+      </Button>
+
+      <Button
+        variant="glass"
+        size="sm"
+        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+        isActive={musicEnabled}
+        aria-pressed={musicEnabled}
+        onClick={() => setMusicEnabled(!musicEnabled)}
+        aria-label={t('settings.musicLabel')}
+        title={t('settings.musicLabel')}
+        data-testid="music-toggle-button"
+      >
+        {musicEnabled ? '🎵' : '🔕'}
+        <Text $sm={{ display: 'none' }}>{' ' + t('settings.musicLabel')}</Text>
       </Button>
 
       {onShowRules && (

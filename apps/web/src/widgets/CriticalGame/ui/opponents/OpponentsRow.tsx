@@ -5,7 +5,7 @@ import { XStack } from 'tamagui';
 import { OpponentTile } from './OpponentTile';
 import { useIsNarrow } from '../../lib/useNarrowViewport';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import type { CriticalPlayerTableState } from '../../types';
+import type { CriticalLogEntry, CriticalPlayerTableState } from '../../types';
 
 interface OpponentsRowProps {
   opponents: CriticalPlayerTableState[];
@@ -26,6 +26,13 @@ interface OpponentsRowProps {
    */
   onSelectTarget?: (playerId: string) => void;
   resolveDisplayName: (playerId: string, fallback: string) => string;
+  /**
+   * Match log feed. Each tile picks its own latest `message`-type entry
+   * out of this list to render the chat bubble / Sea Battle popup —
+   * gating this at the row level avoids prop-drilling per-opponent
+   * filtering work into the row.
+   */
+  logs?: CriticalLogEntry[];
 }
 
 /**
@@ -40,6 +47,7 @@ export function OpponentsRow({
   targetPlayerId,
   onSelectTarget,
   resolveDisplayName,
+  logs,
 }: OpponentsRowProps) {
   // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
   // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
@@ -64,6 +72,11 @@ export function OpponentsRow({
       paddingVertical="$2"
       justifyContent="center"
       flexWrap="nowrap"
+      // Don't let the column layout (MatchWidgetGrid) shrink this row when
+      // vertical space is tight. Without this the row compresses below its
+      // content height, the tiles collapse to a thin bar, and the avatars +
+      // names overflow downward — colliding with the arena / turn banner.
+      flexShrink={0}
       // Mobile: horizontal scroll with scroll-snap so each tile lands on
       // a fixed stop instead of free-floating. Desktop: tiles flex-grow
       // evenly with a max width so 2-/3-/4-up rows look balanced rather
@@ -87,7 +100,6 @@ export function OpponentsRow({
           isTarget={!!targetPlayerId && opponent.playerId === targetPlayerId}
           isDuel={isDuel}
           isMobile={isMobile}
-          avatarSize={getAvatarSize(opponents.length, isDuel, isMobile)}
           isIdle={idleSet.has(opponent.playerId)}
           onSelect={
             onSelectTarget && opponent.alive
@@ -95,26 +107,9 @@ export function OpponentsRow({
               : undefined
           }
           resolveDisplayName={resolveDisplayName}
+          logs={logs}
         />
       ))}
     </XStack>
   );
-}
-
-/**
- * Avatar diameter for a tile, scaled by FFA opponent count so a 5-up row
- * doesn't look avatar-dominated and a 3-up row doesn't look sparse. Duel
- * mode locks to the focal size — there's only one tile, no crowding to
- * worry about. Mobile knocks both branches down so tiles fit thumb-width.
- */
-function getAvatarSize(
-  count: number,
-  isDuel: boolean,
-  isMobile: boolean,
-): number {
-  if (isMobile) return isDuel ? 64 : 36;
-  if (isDuel) return 88;
-  if (count >= 5) return 40;
-  if (count === 4) return 44;
-  return 56;
 }

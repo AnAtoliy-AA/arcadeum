@@ -16,7 +16,8 @@ export type ShopRowLabelKey =
   | 'skins'
   | 'banners'
   | 'auras'
-  | 'frames';
+  | 'frames'
+  | 'backgrounds';
 
 /**
  * Maps ShopCategory → the matching `labels.row.*` slice key. Catalog rows
@@ -33,6 +34,7 @@ export const CATEGORY_TO_ROW_LABEL_KEY: Record<ShopCategory, ShopRowLabelKey> =
     banner: 'banners',
     aura: 'auras',
     frame: 'frames',
+    background: 'backgrounds',
   };
 
 /**
@@ -71,5 +73,6 @@ export function ownedByCategory(
     banner: filterOwned('banner'),
     aura: filterOwned('aura'),
     frame: filterOwned('frame'),
+    background: filterOwned('background'),
   };
 }

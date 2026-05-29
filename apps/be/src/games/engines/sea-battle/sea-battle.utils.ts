@@ -150,6 +150,7 @@ export function getSeaBattleAvailableActions(
       }
       if (player.ships.length > 0) {
         actions.push('resetPlacement');
+        actions.push('moveShip');
       }
     }
   }

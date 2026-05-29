@@ -28,6 +28,13 @@ export function useFullscreen(
     setIsFullscreen((prev) => !prev);
   }, []);
 
+  // Unconditionally leave fullscreen. No-op when already exited, so callers
+  // (e.g. the auto-exit-on-game-finish effect) can fire it safely without a
+  // risk of toggling fullscreen back on.
+  const exitFullscreen = useCallback(() => {
+    setIsFullscreen((prev) => (prev ? false : prev));
+  }, []);
+
   useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
@@ -63,5 +70,6 @@ export function useFullscreen(
   return {
     isFullscreen,
     toggleFullscreen,
+    exitFullscreen,
   };
 }

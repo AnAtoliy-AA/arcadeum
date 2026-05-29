@@ -1,0 +1,152 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding: 48px 0;
+}
+
+.highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.highlightCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.08),
+    rgba(124, 58, 237, 0.02)
+  );
+  border: 1px solid rgba(124, 58, 237, 0.18);
+}
+
+.highlightIcon {
+  font-size: 32px;
+}
+
+.highlightTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.highlightBody {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.stepCard {
+  position: relative;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.06),
+    rgba(168, 85, 247, 0.02)
+  );
+  border: 1px solid rgba(168, 85, 247, 0.18);
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #4338ca);
+  color: white;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.stepBody {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.themes,
+.rules,
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.sectionSubtitle {
+  font-size: 16px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.rules {
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(34, 197, 94, 0.04);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.rulesNote {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.faq {
+  gap: 20px;
+}
+
+.faqItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.faqQuestion {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.faqAnswer {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.breadcrumbs {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: underline;
+}

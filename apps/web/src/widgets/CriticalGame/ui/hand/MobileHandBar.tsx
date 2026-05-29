@@ -81,7 +81,9 @@ export function MobileHandBar({
     background: 'rgba(7, 10, 17, 0.94)',
     borderTop: '1px solid rgba(255,255,255,0.10)',
     boxShadow: '0 -8px 24px rgba(0,0,0,0.45)',
-    zIndex: 40,
+    // Above `.critical-game-widget.is-fullscreen` (z-index 1100), so the
+    // sticky bar stays visible when the widget is in fullscreen mode.
+    zIndex: isFullscreen ? 1200 : 40,
     backdropFilter: 'blur(8px)',
   };
 

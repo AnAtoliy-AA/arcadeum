@@ -25,6 +25,8 @@ export type LeaderboardPlayerDto = {
   isFriend?: boolean;
   isInMatch?: boolean;
   gameTags?: string[];
+  /** Prestige role (premium/vip/supporter/…) for the VIP avatar treatment. */
+  role?: string | null;
   /**
    * Cosmetic ids the player has currently equipped. Resolved client-side via
    * the shop catalog. Null for bot rows and players who haven't equipped.
@@ -105,6 +107,8 @@ export type PlayerProfileDto = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
+  equippedBackgroundId?: string | null;
 };
 
 export type LeaderboardSnapshotDto = {

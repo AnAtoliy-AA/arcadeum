@@ -43,6 +43,9 @@ export const en = {
     admin: 'Admin',
     user: 'User',
   },
+  cosmetics: {
+    skin: 'Skin',
+  },
 };
 
 export const es = {
@@ -87,6 +90,9 @@ export const es = {
     developer: 'Dev',
     admin: 'Admin',
     user: 'Usuario',
+  },
+  cosmetics: {
+    skin: 'Skin',
   },
 };
 
@@ -133,6 +139,9 @@ export const fr = {
     admin: 'Admin',
     user: 'Utilisateur',
   },
+  cosmetics: {
+    skin: 'Skin',
+  },
 };
 
 export const ru = {
@@ -178,6 +187,9 @@ export const ru = {
     admin: 'Админ',
     user: 'Пользователь',
   },
+  cosmetics: {
+    skin: 'Скин',
+  },
 };
 
 export const by = {
@@ -222,6 +234,9 @@ export const by = {
     developer: 'Распрацоўшчык',
     admin: 'Адмін',
     user: 'Карыстальнік',
+  },
+  cosmetics: {
+    skin: 'Скін',
   },
 };
 

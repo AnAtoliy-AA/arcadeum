@@ -24,6 +24,10 @@ export const buildRoutes = (locale: Locale) => {
     seaBattleLanding: `/${locale}/${s('games')}/sea-battle`,
     criticalLanding: `/${locale}/${s('games')}/critical`,
     glimwormLanding: `/${locale}/${s('games')}/glimworm`,
+    ticTacToe: `/${locale}/${s('games')}/tic-tac-toe`,
+    ticTacToeLanding: `/${locale}/${s('games')}/tic-tac-toe`,
+    cascade: `/${locale}/${s('games')}/cascade`,
+    cascadeLanding: `/${locale}/${s('games')}/cascade`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,
@@ -62,6 +66,8 @@ export const buildRoutes = (locale: Locale) => {
     tournaments: `/${locale}/${s('tournaments')}`,
     wallet: `/${locale}/${s('wallet')}`,
     shop: `/${locale}/${s('shop')}`,
+    // Literal segment (no localized slug) — keeps the path stable across locales.
+    battlePass: `/${locale}/battle-pass`,
     shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
     developers: `/${locale}/${s('developers')}`,

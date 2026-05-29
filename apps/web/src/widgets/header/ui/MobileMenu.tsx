@@ -123,6 +123,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
             equippedFrameId={snapshot.equippedFrameId}
             equippedAuraId={snapshot.equippedAuraId}
             equippedBannerId={snapshot.equippedBannerId}
+            equippedGameSkinId={snapshot.equippedGameSkinId}
           />
           <YStack flex={1} minWidth={120} gap="$1">
             <XStack alignItems="center" gap="$2" flexWrap="wrap">

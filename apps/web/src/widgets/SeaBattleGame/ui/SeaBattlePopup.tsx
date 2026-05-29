@@ -64,7 +64,12 @@ export function SeaBattlePopup({
     return () => clearTimeout(timer);
   }, [visible, onClose]);
 
-  const handleChallenge = () => {
+  // Stop bubbling so clicking Challenge inside an OpponentTile (which
+  // has role="button" + onPress for target selection) doesn't also arm
+  // the player as an attack target — clicking the popup is unambiguously
+  // a "go challenge" intent, not "arm target".
+  const handleChallenge = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     router.push(
       `/games/create?gameId=sea_battle_v1&opponentId=${playerId}&opponentName=${encodeURIComponent(playerName)}`,
     );

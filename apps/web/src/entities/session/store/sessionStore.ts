@@ -29,6 +29,7 @@ const defaultSnapshot: SessionTokensSnapshot = {
   equippedFrameId: null,
   equippedAuraId: null,
   equippedBannerId: null,
+  equippedGameSkinId: null,
 };
 
 interface SessionState {
@@ -97,6 +98,10 @@ function buildSnapshot(
       input.equippedBannerId === undefined
         ? (current.equippedBannerId ?? null)
         : input.equippedBannerId,
+    equippedGameSkinId:
+      input.equippedGameSkinId === undefined
+        ? (current.equippedGameSkinId ?? null)
+        : input.equippedGameSkinId,
   };
 }
 
@@ -135,6 +140,8 @@ function enrichWithResponse(
       response.user?.equippedAuraId ?? snapshot.equippedAuraId ?? null,
     equippedBannerId:
       response.user?.equippedBannerId ?? snapshot.equippedBannerId ?? null,
+    equippedGameSkinId:
+      response.user?.equippedGameSkinId ?? snapshot.equippedGameSkinId ?? null,
   });
 }
 

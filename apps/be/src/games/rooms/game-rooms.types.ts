@@ -12,6 +12,7 @@ export interface GameRoomMemberSummary {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedBackgroundId?: string | null;
 }
 
 export interface GameRoomSummary {

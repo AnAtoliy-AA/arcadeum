@@ -111,4 +111,6 @@ export type TranslationBundle = {
   seo?: SeoMessages;
   notifications?: NotificationsMessages;
   legal?: import('./messages/legal/types').LegalMessages;
+  battlePass?: import('./messages/battle-pass').BattlePassMessages;
+  musicPlayer?: import('./messages/music-player').MusicPlayerMessages;
 };

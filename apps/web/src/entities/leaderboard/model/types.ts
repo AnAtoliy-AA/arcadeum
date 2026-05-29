@@ -33,6 +33,8 @@ export type LeaderboardPlayer = {
   isFriend?: boolean;
   isInMatch?: boolean;
   gameTags?: string[];
+  /** Prestige role (premium/vip/supporter/…) for the VIP avatar treatment. */
+  role?: string | null;
   /** Cosmetic ids the player has equipped; resolved via the shop catalog. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
@@ -40,6 +42,7 @@ export type LeaderboardPlayer = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
 };
 
 export type MythicPlayer = LeaderboardPlayer & {
@@ -111,6 +114,7 @@ export type PlayerProfile = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
 };
 
 export type LeaderboardSnapshot = {

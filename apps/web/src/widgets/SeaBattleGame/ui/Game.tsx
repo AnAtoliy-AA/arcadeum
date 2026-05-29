@@ -22,6 +22,7 @@ import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
+import { InGameAvatar } from '@/features/games/ui';
 
 import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
@@ -77,6 +78,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   const {
     startSession,
     placeShip,
+    moveShip,
     confirmPlacement,
     attack,
     resetPlacement,
@@ -336,9 +338,24 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       subtitle: room?.name,
       turnStatusVariant: turnStatus.variant,
       turnStatusText: turnStatus.text,
+      turnAvatar: currentTurnPlayer ? (
+        <InGameAvatar
+          playerId={currentTurnPlayer.playerId}
+          name={resolveDisplayNameBound(currentTurnPlayer.playerId, 'opponent')}
+          size="icon"
+          data-testid="sb-turn-avatar"
+        />
+      ) : null,
       titleGradient: currentVariant?.gradient,
     }),
-    [currentVariant, headerTitle, room?.name, turnStatus],
+    [
+      currentVariant,
+      headerTitle,
+      room?.name,
+      turnStatus,
+      currentTurnPlayer,
+      resolveDisplayNameBound,
+    ],
   );
 
   if (!room) return null;
@@ -387,11 +404,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     <SeaBattleThemeProvider variant={cardVariant}>
       <GameWidgetContainer
         headerProps={headerProps}
+        isGameOver={isGameOver}
         board={
           <SeaBattleBoards
             isPlacementPhase={isPlacementPhase}
             currentPlayer={currentPlayer}
             placeShip={placeShip}
+            moveShip={moveShip}
             confirmPlacement={confirmPlacement}
             resetPlacement={resetPlacement}
             isPlacementComplete={isPlacementComplete}

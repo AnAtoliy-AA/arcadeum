@@ -21,6 +21,7 @@ const SWATCH_CATEGORIES = new Set<ShopCategory>([
   'banner',
   'aura',
   'frame',
+  'background',
 ]);
 
 describe('SHOP_CATALOG', () => {

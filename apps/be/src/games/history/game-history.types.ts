@@ -70,6 +70,8 @@ export interface LeaderboardEntry {
   wins: number;
   losses: number;
   winRate: number;
+  /** Prestige role (premium/vip/supporter/…) for the VIP avatar treatment. */
+  role?: string | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;

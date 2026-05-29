@@ -11,6 +11,7 @@ import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
+import { GameMusic } from '@/features/games/ui/GameMusic';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 
@@ -142,6 +143,11 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         ref={gameContainerRef as React.RefObject<never>}
         className="games-room-container"
       >
+        {/* Background music — a per-game track with a compact transport player
+            (prev / play-pause / next / stop), shown while Music is enabled.
+            Mounted inside Container so it stays reachable in native fullscreen. */}
+        <GameMusic gameId={session?.gameId} />
+
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
         <AutoExitFullscreenOnFinish

@@ -19,6 +19,7 @@ import { en as statsEn } from './stats';
 import { en as supportEn } from './support';
 import { en as notificationsEn } from './notifications';
 import { en as battlePassEn } from './battle-pass';
+import { en as musicPlayerEn } from './music-player';
 
 /**
  * Static translations bundle for the default locale.
@@ -45,6 +46,7 @@ export const translations = {
     seo: seoEn,
     notifications: notificationsEn,
     battlePass: battlePassEn,
+    musicPlayer: musicPlayerEn,
   },
 } as const;
 
@@ -78,6 +80,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     support,
     notifications,
     battlePass,
+    musicPlayer,
   ] = await Promise.all([
     import('./auth'),
     import('./pages'),
@@ -97,6 +100,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./support'),
     import('./notifications'),
     import('./battle-pass'),
+    import('./music-player'),
   ]);
 
   // Extract the specific locale from each module
@@ -120,5 +124,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     seo: seo[locale],
     notifications: notifications[locale],
     battlePass: battlePass[locale],
+    musicPlayer: musicPlayer[locale],
   };
 }

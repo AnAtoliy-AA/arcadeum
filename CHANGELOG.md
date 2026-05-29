@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.11] - 2026-05-29
+
+### Added
+- wire media keys to the music player (Mac F7/F9, lock screen) (ARC-760) (ARC-760)
+- add a transport mini-player to in-game music (ARC-760) (ARC-760)
+- show a "Now playing" chip when game music starts (ARC-760) (ARC-760)
+- in-game background music with real tracks (ARC-760) (ARC-760)
+- in-game background music with real tracks (ARC-760) (ARC-760)
+
+### Fixed
+- stack the music player so long titles don't shift controls (ARC-760) (ARC-760)
+
+
 ## [1.15.10] - 2026-05-29
 
 ### Added

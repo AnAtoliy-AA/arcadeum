@@ -143,9 +143,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         ref={gameContainerRef as React.RefObject<never>}
         className="games-room-container"
       >
-        {/* Background music — a per-game track, plays while Music is enabled,
-            and shows a brief "Now playing" chip when playback starts. Mounted
-            inside Container so the chip stays visible in native fullscreen. */}
+        {/* Background music — a per-game track with a compact transport player
+            (prev / play-pause / next / stop), shown while Music is enabled.
+            Mounted inside Container so it stays reachable in native fullscreen. */}
         <GameMusic gameId={session?.gameId} />
 
         {/* Drops out of fullscreen shortly after the game finishes so the

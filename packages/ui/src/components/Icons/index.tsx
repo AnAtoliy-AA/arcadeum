@@ -466,3 +466,4 @@ export const GithubIcon = ({ size = 24 }: { size?: number }) => (
 );
 
 export * from './GameIcons';
+export * from './MediaIcons';

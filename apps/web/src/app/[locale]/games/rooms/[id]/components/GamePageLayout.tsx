@@ -139,12 +139,15 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   return (
     <>
       <style>{fullscreenStyles}</style>
-      {/* Background music — a per-game track, plays while Music is enabled. */}
-      <GameMusic gameId={session?.gameId} />
       <Container
         ref={gameContainerRef as React.RefObject<never>}
         className="games-room-container"
       >
+        {/* Background music — a per-game track, plays while Music is enabled,
+            and shows a brief "Now playing" chip when playback starts. Mounted
+            inside Container so the chip stays visible in native fullscreen. */}
+        <GameMusic gameId={session?.gameId} />
+
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
         <AutoExitFullscreenOnFinish

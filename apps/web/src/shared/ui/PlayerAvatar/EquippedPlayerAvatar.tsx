@@ -3,6 +3,10 @@
 import { memo } from 'react';
 import { PlayerAvatar, type PlayerAvatarSize } from '@arcadeum/ui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 export interface EquippedPlayerAvatarProps {
   name: string;
@@ -13,6 +17,8 @@ export interface EquippedPlayerAvatarProps {
   equippedFrameId?: string | null | undefined;
   equippedAuraId?: string | null | undefined;
   equippedBannerId?: string | null | undefined;
+  equippedGameSkinId?: string | null | undefined;
+  equippedBackgroundId?: string | null | undefined;
   /** Legacy `avatarUrl` from older payloads (pre-shop catalog). Used when the
    *  catalog doesn't resolve an equipped item. */
   fallbackAvatarUrl?: string;
@@ -33,7 +39,17 @@ export const EquippedPlayerAvatar = memo(function EquippedPlayerAvatar(
     equippedFrameId: props.equippedFrameId,
     equippedAuraId: props.equippedAuraId,
     equippedBannerId: props.equippedBannerId,
+    equippedGameSkinId: props.equippedGameSkinId,
+    equippedBackgroundId: props.equippedBackgroundId,
   });
+  const { t } = useTranslation();
+  const skinChip = cosmetics.skinChip
+    ? {
+        id: cosmetics.skinChip.id,
+        label: String(t(cosmetics.skinChip.label as TranslationKey)),
+        prefix: t('common.cosmetics.skin'),
+      }
+    : null;
   return (
     <PlayerAvatar
       name={props.name}
@@ -42,8 +58,10 @@ export const EquippedPlayerAvatar = memo(function EquippedPlayerAvatar(
       badgeUrl={cosmetics.badgeUrl}
       frameColor={cosmetics.frameColor}
       auraColor={cosmetics.auraColor}
+      backgroundColor={cosmetics.backgroundColor}
       bannerColor={cosmetics.bannerColor}
       nameColor={cosmetics.nameColor}
+      skinChip={skinChip}
       level={props.level}
       presenceLine={props.presenceLine}
       priority={props.priority}

@@ -38,6 +38,8 @@ interface LeanUser {
   equippedBannerId?: string | null;
   equippedAuraId?: string | null;
   equippedFrameId?: string | null;
+  equippedGameSkinId?: string | null;
+  equippedBackgroundId?: string | null;
 }
 
 const STARTER_PURCHASE_PREFIX = 'starter';
@@ -76,6 +78,8 @@ export class InventoryService {
           equippedBannerId: 1,
           equippedAuraId: 1,
           equippedFrameId: 1,
+          equippedGameSkinId: 1,
+          equippedBackgroundId: 1,
         })
         .lean<LeanUser>(),
     ]);
@@ -200,6 +204,8 @@ export class InventoryService {
               equippedBannerId: 1,
               equippedAuraId: 1,
               equippedFrameId: 1,
+              equippedGameSkinId: 1,
+          equippedBackgroundId: 1,
             },
           },
         )
@@ -223,6 +229,11 @@ export class InventoryService {
             equippedAvatarId: 1,
             equippedBadgeId: 1,
             equippedNameColorId: 1,
+            equippedBannerId: 1,
+            equippedAuraId: 1,
+            equippedFrameId: 1,
+            equippedGameSkinId: 1,
+          equippedBackgroundId: 1,
           },
         },
       )
@@ -255,10 +266,11 @@ export class InventoryService {
       avatar: user?.equippedAvatarId ?? null,
       badge: user?.equippedBadgeId ?? null,
       name_color: user?.equippedNameColorId ?? null,
-      game_skin: null,
+      game_skin: user?.equippedGameSkinId ?? null,
       banner: user?.equippedBannerId ?? null,
       aura: user?.equippedAuraId ?? null,
       frame: user?.equippedFrameId ?? null,
+      background: user?.equippedBackgroundId ?? null,
     };
   }
 

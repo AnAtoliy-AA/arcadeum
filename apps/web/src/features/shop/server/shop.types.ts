@@ -8,7 +8,8 @@ export type ShopCategory =
   | 'game_skin'
   | 'banner'
   | 'aura'
-  | 'frame';
+  | 'frame'
+  | 'background';
 export type ShopRarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type ShopPriceCurrency = 'coins' | 'gems';
 export type ShopAcquiredVia = 'coins' | 'gems' | 'grant' | 'starter';
@@ -84,6 +85,7 @@ export const EMPTY_EQUIPPED: EquippedView = {
   banner: null,
   aura: null,
   frame: null,
+  background: null,
 };
 
 export const EMPTY_INVENTORY: InventoryView = {

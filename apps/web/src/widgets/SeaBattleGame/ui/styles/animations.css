@@ -252,21 +252,28 @@
   padding: 2px !important;
 }
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
+  grid-area: name;
   font-size: 10px !important;
   line-height: 1.2 !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 4px;
+  /* The name row spans both grid columns, but the ~40px ships strip lives in
+     the left column. Pad the name past that strip so it centers over the
+     BOARD (and clears the top-left corner avatar) rather than the whole card. */
+  padding: 0 4px 0 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
 }
 
-.sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
-  grid-area: name;
-}
+/* IMPORTANT: this `sb-mobile-landscape` class is ALSO applied in desktop
+   widget-fullscreen when many boards force the height-tight side layout (see
+   SeaBattleGrids `useSideLayout`). Do NOT add a rule that hides the corner
+   avatar (`.sb-header-avatar`) here — that is what made the chips vanish in
+   fullscreen. The avatar is an absolute overlay (out of grid flow), so it does
+   not disturb the grid areas. */
 .sb-mobile-landscape .sb-player-section-fit > .is_PlayerStats {
   grid-area: ships;
   min-height: 0;
@@ -287,7 +294,10 @@
 .sb-mobile-landscape .sb-ships-remaining-container {
   height: 100%;
   width: 100%;
-  padding: 4px !important;
+  /* Extra top padding so the vertical ships strip ("10/10" + silhouettes +
+     "SHIPS REMAINING" label) starts below the top-left corner avatar instead
+     of being tucked under it. */
+  padding: 36px 4px 4px 4px !important;
   gap: 4px !important;
   flex-direction: column !important;
 }
@@ -355,20 +365,24 @@
   height: 8px !important;
 }
 
+/* Silhouette widths are sized to fit the 40px ships column minus its 8px
+   horizontal padding (~32px content), so even the longest ship stays inside
+   the strip's rounded border. ~7px per cell; size-5 is capped at the content
+   width (this variant tops out at size-4, but the cap keeps it safe). */
 .sb-mobile-landscape [data-size='5'] {
-  width: 50px !important;
+  width: 32px !important;
 }
 .sb-mobile-landscape [data-size='4'] {
-  width: 40px !important;
+  width: 28px !important;
 }
 .sb-mobile-landscape [data-size='3'] {
-  width: 30px !important;
+  width: 21px !important;
 }
 .sb-mobile-landscape [data-size='2'] {
-  width: 20px !important;
+  width: 14px !important;
 }
 .sb-mobile-landscape [data-size='1'] {
-  width: 10px !important;
+  width: 7px !important;
 }
 
 /* Smaller chrome budget when ships is on the side. Horizontal chrome:

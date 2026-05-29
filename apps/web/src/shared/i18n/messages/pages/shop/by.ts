@@ -63,6 +63,11 @@ export const shopBy = {
         desc: 'Дэкаратыўнае кальцо вакол вашага аватара.',
         empty: 'Пуста',
       },
+      background: {
+        label: 'Фон',
+        desc: 'Каляровая заліўка за аватарам.',
+        empty: 'Пуста',
+      },
     },
     action: {
       previewingEyebrow: 'Прымерка',
@@ -123,6 +128,12 @@ export const shopBy = {
     },
     frames: {
       title: 'Рамкі',
+      eyebrow: '{count} прадметаў',
+      viewAll: 'Усе',
+      collapse: 'Згарнуць',
+    },
+    backgrounds: {
+      title: 'Фоны',
       eyebrow: '{count} прадметаў',
       viewAll: 'Усе',
       collapse: 'Згарнуць',
@@ -238,6 +249,13 @@ export const shopBy = {
       emerald: { name: 'Смарагдавая рамка', desc: 'Яркае смарагдавае кальцо.' },
       violet: { name: 'Фіялетавая рамка', desc: 'Глыбокае фіялетавае кальцо.' },
       prism: { name: 'Прызматычная рамка', desc: 'Пераліўнае прызматычнае кальцо.' },
+    },
+    background: {
+      default: { name: 'Стандартны', desc: 'Стартавы фон.' },
+      slate: { name: 'Сланцавы фон', desc: 'Прыглушаны сланцавы.' },
+      ocean: { name: 'Акіянскі фон', desc: 'Глыбокі сіне-бірузовы градыент.' },
+      violet: { name: 'Фіялетавы фон', desc: 'Насычаны фіялетавы градыент.' },
+      aurora: { name: 'Аўрора', desc: 'Пералівісты бірузова-фіялетава-ружовы.' },
     },
   },
 };

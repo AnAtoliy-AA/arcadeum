@@ -40,6 +40,7 @@ export type LeaderboardPlayer = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
 };
 
 export type MythicPlayer = LeaderboardPlayer & {
@@ -111,6 +112,7 @@ export type PlayerProfile = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
 };
 
 export type LeaderboardSnapshot = {

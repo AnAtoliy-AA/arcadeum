@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack, YStack } from 'tamagui';
+import { InGameAvatar } from '@/features/games/ui';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import type { ActiveColor } from '../types';
 
@@ -31,18 +32,28 @@ export function TurnBadge({
       borderRadius="$3"
       backgroundColor="rgba(0,0,0,0.25)"
     >
-      <YStack>
-        <span style={{ color: '#d1d5db', fontSize: 12 }}>
-          {myTurn
-            ? 'Your turn'
-            : currentEntryId
-              ? `Waiting on ${shortId(currentEntryId)}`
-              : 'Waiting…'}
-        </span>
-        <span style={{ color: theme.cardText, fontSize: 14, fontWeight: 600 }}>
-          {direction === 1 ? 'Clockwise ↻' : 'Counter-clockwise ↺'}
-        </span>
-      </YStack>
+      <XStack alignItems="center" gap="$2">
+        {currentEntryId ? (
+          <InGameAvatar
+            playerId={currentEntryId}
+            name={shortId(currentEntryId)}
+            size="sm"
+            data-testid="cascade-turn-avatar"
+          />
+        ) : null}
+        <YStack>
+          <span style={{ color: '#d1d5db', fontSize: 12 }}>
+            {myTurn
+              ? 'Your turn'
+              : currentEntryId
+                ? `Waiting on ${shortId(currentEntryId)}`
+                : 'Waiting…'}
+          </span>
+          <span style={{ color: theme.cardText, fontSize: 14, fontWeight: 600 }}>
+            {direction === 1 ? 'Clockwise ↻' : 'Counter-clockwise ↺'}
+          </span>
+        </YStack>
+      </XStack>
       <XStack alignItems="center" gap="$2">
         {pendingDraw > 0 ? (
           <YStack

@@ -126,7 +126,7 @@ export class GameRoomsMapper {
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
       .select(
-        'username email equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
+        'username email equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId',
       )
       .exec();
 
@@ -163,6 +163,7 @@ export class GameRoomsMapper {
       equippedFrameId: user?.equippedFrameId ?? null,
       equippedAuraId: user?.equippedAuraId ?? null,
       equippedBannerId: user?.equippedBannerId ?? null,
+      equippedBackgroundId: user?.equippedBackgroundId ?? null,
     };
   }
 

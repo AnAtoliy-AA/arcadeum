@@ -124,6 +124,7 @@ export default function ProfileMenu() {
           equippedFrameId={snapshot.equippedFrameId}
           equippedAuraId={snapshot.equippedAuraId}
           equippedBannerId={snapshot.equippedBannerId}
+          equippedGameSkinId={snapshot.equippedGameSkinId}
           data-testid="header-equipped-avatar"
         />
         <UserNameEllipsis
@@ -158,6 +159,7 @@ export default function ProfileMenu() {
             equippedFrameId={snapshot.equippedFrameId}
             equippedAuraId={snapshot.equippedAuraId}
             equippedBannerId={snapshot.equippedBannerId}
+            equippedGameSkinId={snapshot.equippedGameSkinId}
           />
           <YStack flex={1} minWidth={120} gap="$1">
             <UserNameEllipsis

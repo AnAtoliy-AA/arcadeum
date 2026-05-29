@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.10] - 2026-05-29
+
+### Added
+- pay out tier rewards on claim + add e2e/integration coverage (ARC-759) (ARC-759)
+
+
 ## [1.15.9] - 2026-05-29
 
 ### Added

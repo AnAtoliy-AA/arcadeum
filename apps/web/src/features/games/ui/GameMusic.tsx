@@ -163,6 +163,59 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     [],
   );
 
+  // Wire OS / keyboard media keys (Mac F7/F8/F9, Bluetooth remotes, lock
+  // screen) to the player. Browsers auto-map play/pause to a playing audio
+  // element, which is why F8 already worked — but previous/next only fire once
+  // we register Media Session action handlers, so F7/F9 were no-ops before.
+  useEffect(() => {
+    if (!musicEnabled) return;
+    const ms =
+      typeof navigator !== 'undefined' ? navigator.mediaSession : undefined;
+    if (!ms) return;
+
+    if (typeof MediaMetadata !== 'undefined') {
+      ms.metadata = new MediaMetadata({
+        title: track.title,
+        artist: 'Arcadeum',
+      });
+    }
+
+    const setHandler = (
+      action: MediaSessionAction,
+      handler: MediaSessionActionHandler | null,
+    ) => {
+      try {
+        ms.setActionHandler(action, handler);
+      } catch {
+        // Not every browser supports every action — ignore the unsupported.
+      }
+    };
+
+    setHandler('play', () => {
+      if (audioRef.current?.paused) togglePlay();
+    });
+    setHandler('pause', () => {
+      if (audioRef.current && !audioRef.current.paused) togglePlay();
+    });
+    setHandler('previoustrack', prev);
+    setHandler('nexttrack', next);
+    setHandler('stop', stop);
+
+    return () => {
+      (
+        ['play', 'pause', 'previoustrack', 'nexttrack', 'stop'] as const
+      ).forEach((action) => setHandler(action, null));
+    };
+  }, [musicEnabled, track.title, togglePlay, prev, next, stop]);
+
+  // Keep the OS "now playing" indicator in sync with our playback state.
+  useEffect(() => {
+    const ms =
+      typeof navigator !== 'undefined' ? navigator.mediaSession : undefined;
+    if (!ms) return;
+    ms.playbackState = isPlaying ? 'playing' : 'paused';
+  }, [isPlaying]);
+
   if (!musicEnabled) return null;
 
   const transportHover = { rotate: '0deg', scale: 1.12 } as const;

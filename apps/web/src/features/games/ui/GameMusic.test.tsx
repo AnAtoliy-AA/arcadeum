@@ -4,6 +4,7 @@ import {
   cleanup,
   fireEvent,
   screen,
+  act,
 } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import { config } from '@/shared/config/tamagui.config';
@@ -151,6 +152,42 @@ describe('GameMusic', () => {
     render(<GameMusic gameId="sea_battle_v1" />);
     const before = lastAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-prev'));
+    expect(lastAudioEl().src).not.toBe(before);
+  });
+
+  it('registers media-key handlers so F7/F9 (prev/next) change the track', () => {
+    musicEnabled = true;
+    const handlers: Record<string, MediaSessionActionHandler | null> = {};
+    const mediaSession = {
+      metadata: null,
+      playbackState: 'none',
+      setActionHandler: vi.fn(
+        (action: string, cb: MediaSessionActionHandler | null) => {
+          handlers[action] = cb;
+        },
+      ),
+    };
+    vi.stubGlobal('navigator', { ...globalThis.navigator, mediaSession });
+    vi.stubGlobal(
+      'MediaMetadata',
+      class {
+        constructor(public init: unknown) {}
+      },
+    );
+
+    render(<GameMusic gameId="sea_battle_v1" />);
+
+    expect(mediaSession.setActionHandler).toHaveBeenCalledWith(
+      'nexttrack',
+      expect.any(Function),
+    );
+    expect(mediaSession.setActionHandler).toHaveBeenCalledWith(
+      'previoustrack',
+      expect.any(Function),
+    );
+
+    const before = lastAudioEl().src;
+    act(() => handlers.nexttrack?.(undefined as never));
     expect(lastAudioEl().src).not.toBe(before);
   });
 

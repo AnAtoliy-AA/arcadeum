@@ -10,6 +10,7 @@ import {
 } from '@arcadeum/ui';
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
+import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { GameChatPopupOverlay } from '@/widgets/GameChat';
 
@@ -267,6 +268,8 @@ interface SharedHeaderProps {
   turnStatusVariant: TurnStatusVariant;
   /** Turn status text */
   turnStatusText: string;
+  /** Optional avatar of the player on the clock, rendered inside the turn pill */
+  turnAvatar?: React.ReactNode;
   /** Optional extra actions rendered before fullscreen button */
   extraActions?: React.ReactNode;
   /** Optional gradient for the title text */
@@ -284,6 +287,8 @@ interface GameWidgetContainerProps {
   modals?: React.ReactNode;
   variant?: string;
   isMyTurn?: boolean;
+  /** When true, the widget auto-exits its fullscreen shortly after finish. */
+  isGameOver?: boolean;
 }
 
 const gameWidgetGlobalStyles = `
@@ -312,13 +317,23 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   modals,
   variant,
   isMyTurn,
+  isGameOver,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Widget-only fullscreen — independent of the page-level toggle in
   // `GamePageLayout`. Page level expands [control panel + widget + chat];
   // this expands only the widget. Keyboard disabled so the global `f`
   // shortcut owned by the page-level instance doesn't toggle both at once.
-  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+  const { isFullscreen, toggleFullscreen, exitFullscreen } =
+    useFullscreen(containerRef);
+
+  // Leave this widget's fullscreen shortly after the game finishes. Mapped to
+  // the status the auto-exit hook expects so it fires once on the transition.
+  useAutoExitFullscreen({
+    status: isGameOver ? 'completed' : 'active',
+    isFullscreen,
+    exitFullscreen,
+  });
 
   const renderedHeader =
     header ??
@@ -358,7 +373,12 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </YStack>
         </GameInfo>
 
-        <TurnStatusPill $status={headerProps.turnStatusVariant}>
+        <TurnStatusPill
+          $status={headerProps.turnStatusVariant}
+          gap={headerProps.turnAvatar ? '$2' : undefined}
+          paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+        >
+          {headerProps.turnAvatar}
           <TurnStatusText $status={headerProps.turnStatusVariant}>
             {headerProps.turnStatusText}
           </TurnStatusText>
@@ -369,6 +389,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
 
           <FullscreenButton
             onClick={toggleFullscreen}
+            data-testid="widget-fullscreen-button"
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}

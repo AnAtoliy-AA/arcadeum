@@ -5,11 +5,17 @@ import dynamic from 'next/dynamic';
 import s from './GameCreateView.module.css';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
+import { TicTacToeBoardPoster } from './art/TicTacToeBoardPoster';
+import { CascadeBoardPoster } from './art/CascadeBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
+  TIC_TAC_TOE_THEMES,
+  CASCADE_THEMES,
   type CriticalTheme,
   type SeaBattleThemeMeta,
+  type TicTacToeThemeMeta,
+  type CascadeThemeMeta,
   type GameId,
 } from './data/themes';
 
@@ -110,7 +116,101 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
     );
   }
 
+  if (gameId === 'tic_tac_toe_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Tic-Tac-Toe theme"
+          data-testid="theme-picker-tic-tac-toe"
+        >
+          {TIC_TAC_TOE_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <TicTacToeThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gameId === 'cascade_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Cascade theme"
+          data-testid="theme-picker-cascade"
+        >
+          {CASCADE_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <CascadeThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return null;
+}
+
+function TicTacToeThumbnail({ theme }: { theme: TicTacToeThemeMeta }) {
+  return <TicTacToeBoardPoster theme={theme} size="sm" />;
+}
+
+function CascadeThumbnail({ theme }: { theme: CascadeThemeMeta }) {
+  return <CascadeBoardPoster theme={theme} size="sm" />;
 }
 
 // Three-card fan. The SVG poster shows as a placeholder until the variant's

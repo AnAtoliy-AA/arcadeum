@@ -15,7 +15,19 @@ const SeaBattleRulesModal = dynamic(
 );
 
 const CriticalRulesModal = dynamic(
-  () => import('@/widgets/CriticalGame/ui/RulesModal').then((m) => m.RulesModal),
+  () =>
+    import('@/widgets/CriticalGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
+const TicTacToeRulesModal = dynamic(
+  () =>
+    import('@/widgets/TicTacToeGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
+const CascadeRulesModal = dynamic(
+  () => import('@/widgets/CascadeGame/ui/RulesModal').then((m) => m.RulesModal),
   { ssr: false },
 );
 
@@ -61,6 +73,24 @@ export function RulesAccess({ gameId, themeId }: Props) {
           onClose={() => setOpen(false)}
           currentVariant={themeId || 'cyberpunk'}
           t={t}
+        />
+      ) : null}
+      {gameId === 'tic_tac_toe_v1' ? (
+        <TicTacToeRulesModal
+          open={open}
+          onClose={() => setOpen(false)}
+          boardSize={3}
+          winLength={3}
+        />
+      ) : null}
+      {gameId === 'cascade_v1' ? (
+        <CascadeRulesModal
+          open={open}
+          onClose={() => setOpen(false)}
+          // RulesModal internally validates against CASCADE_VARIANT_IDS and
+          // falls back to 'cosmic' for unknown values, so an unconstrained
+          // themeId is safe here.
+          variant={themeId as never}
         />
       ) : null}
     </>

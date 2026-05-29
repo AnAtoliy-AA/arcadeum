@@ -72,29 +72,29 @@ test.describe('Critical Card Visibility', () => {
     await waitForRoomReady(page);
     await closeGameRulesModal(page);
 
-    // Anchor on the actual hand card via data-cardtype to avoid picking up
-    // hidden CardName instances elsewhere in the DOM (rules modal, off-screen
-    // siblings, etc). Works on both desktop and mobile after ARC-485.
-    const handStrike = page.locator('[data-cardtype="strike"]').first();
+    // Anchor on the hand card by card id (`data-card="strike"`) — the
+    // new MatchWidget renders cards via `HandCard` which exposes that
+    // attribute. Rules-modal previews use a different testid scope, so
+    // this won't accidentally match them.
+    const handStrike = page.locator('[data-card="strike"]').first();
     await expect(handStrike).toBeVisible({});
 
-    const cardName = handStrike.locator('.is_CardName').first();
+    // `HandCard` exposes its name block via a per-card testid prefix.
+    const cardName = handStrike.locator('[data-testid^="hand-card-name-"]');
     await expect(cardName).toBeVisible({});
 
-    const cardDescription = handStrike.locator('.is_CardDescription').first();
-    if (await cardDescription.isVisible()) {
+    // Description is gated by the user's show-description toggle; assert
+    // it only when it actually rendered.
+    const cardDescription = handStrike.locator(
+      '[data-testid^="hand-card-description-"]',
+    );
+    if (await cardDescription.isVisible().catch(() => false)) {
       await expect(cardDescription).toBeVisible();
     }
 
-    // Check for semi-transparent black background on the container
-    const containerBg = await cardName.locator('..').evaluate((el) => {
-      return window.getComputedStyle(el).backgroundColor;
-    });
-
-    expect(containerBg).toContain('rgba(0, 0, 0');
-
-    // Redesign markers (ARC-480): scene backdrop + turn banner should mount
-    // once the active game view has rendered.
+    // Redesign markers (ARC-480): scene backdrop should still mount
+    // beneath the new MatchWidget, and the turn banner now lives in
+    // `ArenaCenter`.
     await expect(page.locator('[data-testid="scene-backdrop"]')).toBeVisible();
     await expect(page.locator('[data-testid="turn-banner"]')).toBeVisible();
   });

@@ -27,6 +27,11 @@ interface PlaceShipPayload {
   cells: { row: number; col: number }[];
 }
 
+interface MoveShipPayload {
+  shipId: string;
+  cells: { row: number; col: number }[];
+}
+
 interface AttackPayload {
   targetPlayerId: string;
   row: number;
@@ -254,6 +259,29 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       sessionId: session.id,
       userId,
       action: 'placeShip',
+      payload,
+    });
+
+    await this.checkAndSyncRoomStatus(updatedSession);
+    await this.emitSessionUpdate(updatedSession);
+    return updatedSession;
+  }
+
+  /**
+   * Move an already-placed ship to a new position on the board
+   */
+  async moveShipByRoom(
+    userId: string,
+    roomId: string,
+    payload: MoveShipPayload,
+  ) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+
+    const updatedSession = await this.sessionsService.executeAction({
+      sessionId: session.id,
+      userId,
+      action: 'moveShip',
       payload,
     });
 

@@ -41,6 +41,12 @@ import { GlimwormGateway } from './glimworm.gateway';
 import { GlimwormService } from './glimworm/glimworm.service';
 import { GlimwormBotService } from './glimworm/glimworm-bot.service';
 import { GlimwormStateStore } from './glimworm/glimworm.state';
+import { TicTacToeGateway } from './tic-tac-toe.gateway';
+import { TicTacToeService } from './tic-tac-toe/tic-tac-toe.service';
+import { TicTacToeBotService } from './tic-tac-toe/tic-tac-toe-bot.service';
+import { CascadeGateway } from './cascade.gateway';
+import { CascadeService } from './cascade/cascade.service';
+import { CascadeBotService } from './cascade/cascade-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -92,6 +98,12 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     GlimwormStateStore,
     GlimwormService,
     GlimwormBotService,
+    // Tic-Tac-Toe
+    TicTacToeService,
+    TicTacToeBotService,
+    // Cascade
+    CascadeService,
+    CascadeBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -105,6 +117,8 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     TexasHoldemGateway,
     SeaBattleGateway,
     GlimwormGateway,
+    TicTacToeGateway,
+    CascadeGateway,
   ],
   exports: [GameHistoryStatsService],
 })

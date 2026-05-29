@@ -152,7 +152,7 @@ test.describe('/wallet filters and pagination (mocked)', () => {
   });
 });
 
-// ── WalletPageView DOM assertions (mocked server props via route intercept) ───
+// ── Wallet page DOM assertions (mocked server props via route intercept) ───
 
 test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
   /**

@@ -63,6 +63,11 @@ export const shopRu = {
         desc: 'Декоративное кольцо вокруг вашего аватара.',
         empty: 'Пусто',
       },
+      background: {
+        label: 'Фон',
+        desc: 'Каляровая заліўка за аватарам.',
+        empty: 'Пусто',
+      },
     },
     action: {
       previewingEyebrow: 'Примерка',
@@ -123,6 +128,12 @@ export const shopRu = {
     },
     frames: {
       title: 'Рамки',
+      eyebrow: '{count} предметов',
+      viewAll: 'Все',
+      collapse: 'Свернуть',
+    },
+    backgrounds: {
+      title: 'Фоны',
       eyebrow: '{count} предметов',
       viewAll: 'Все',
       collapse: 'Свернуть',
@@ -241,6 +252,13 @@ export const shopRu = {
       emerald: { name: 'Изумрудная рамка', desc: 'Яркое изумрудное кольцо.' },
       violet: { name: 'Фиолетовая рамка', desc: 'Глубокое фиолетовое кольцо.' },
       prism: { name: 'Призматическая рамка', desc: 'Переливающееся призматическое кольцо.' },
+    },
+    background: {
+      default: { name: 'Стандартный', desc: 'Стартовый фон.' },
+      slate: { name: 'Сланцевый фон', desc: 'Приглушённый сланцевый.' },
+      ocean: { name: 'Океанский фон', desc: 'Глубокий сине-бирюзовый градиент.' },
+      violet: { name: 'Фиолетовый фон', desc: 'Насыщенный фиолетовый градиент.' },
+      aurora: { name: 'Аврора', desc: 'Переливающийся бирюзово-фиолетово-розовый.' },
     },
   },
 };

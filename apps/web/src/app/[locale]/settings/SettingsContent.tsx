@@ -6,6 +6,7 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
+import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -134,6 +135,7 @@ export default function SettingsContent({
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
   const { soundEnabled, setSoundEnabled } = useSoundSetting();
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const { locale, setLocale, messages } = useLanguage();
 
   const settingsCopy = messages.settings ?? {};
@@ -222,6 +224,10 @@ export default function SettingsContent({
     setHapticsEnabled(!hapticsEnabled);
   }, [setHapticsEnabled, hapticsEnabled]);
 
+  const handleToggleMusic = useCallback(() => {
+    setMusicEnabled(!musicEnabled);
+  }, [setMusicEnabled, musicEnabled]);
+
   const languageGroupLabel = languageTitle;
 
   const languageOptions = useMemo(
@@ -288,6 +294,15 @@ export default function SettingsContent({
                 checked={soundEnabled}
                 readOnly
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
+              />
+            </ToggleRow>
+            <ToggleRow data-testid="music-row" onClick={handleToggleMusic}>
+              <ToggleLabel>{settingsCopy.musicLabel ?? 'Music'}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={musicEnabled}
+                readOnly
+                aria-label={settingsCopy.musicLabel ?? 'Music'}
               />
             </ToggleRow>
             <ToggleRow data-testid="haptics-row" onClick={handleToggleHaptics}>

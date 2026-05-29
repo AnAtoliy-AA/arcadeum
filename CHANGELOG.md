@@ -7,6 +7,167 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.11] - 2026-05-29
+
+### Added
+- wire media keys to the music player (Mac F7/F9, lock screen) (ARC-760) (ARC-760)
+- add a transport mini-player to in-game music (ARC-760) (ARC-760)
+- show a "Now playing" chip when game music starts (ARC-760) (ARC-760)
+- in-game background music with real tracks (ARC-760) (ARC-760)
+- in-game background music with real tracks (ARC-760) (ARC-760)
+
+### Fixed
+- stack the music player so long titles don't shift controls (ARC-760) (ARC-760)
+
+
+## [1.15.10] - 2026-05-29
+
+### Added
+- pay out tier rewards on claim + add e2e/integration coverage (ARC-759) (ARC-759)
+
+
+## [1.15.9] - 2026-05-29
+
+### Added
+- premium experience pack — celebration, sound/music, VIP identity, battle pass (ARC-758) (ARC-758)
+
+
+## [1.15.8] - 2026-05-29
+
+### Added
+- auto-exit fullscreen after a game finishes (ARC-757) (ARC-757)
+
+### Fixed
+- auto-exit the widget-level fullscreen on finish too (ARC-757) (ARC-757)
+- trigger fullscreen auto-exit off session status, not room status (ARC-757) (ARC-757)
+
+
+## [1.15.7] - 2026-05-29
+
+### Added
+- show equipped avatars across games + cosmetic-less fallback disc (ARC-755) (ARC-755)
+- add equippable avatar background cosmetic category (ARC-755) (ARC-755)
+- thread equippedGameSkinId to profile menu, profile page, session (ARC-755) (ARC-755)
+- EquippedPlayerAvatar threads skin chip + i18n label (ARC-755) (ARC-755)
+- resolve equippedGameSkinId in useEquippedCosmetics (ARC-755) (ARC-755)
+- propagate equippedGameSkinId through chat snapshots (ARC-755) (ARC-755)
+- wire game_skin to equippedGameSkinId equip slot (ARC-755) (ARC-755)
+- equippedGameSkinId on user schema + auth profile (ARC-755) (ARC-755)
+- skin chip + topLeftOverlay slot on PlayerAvatar (ARC-755) (ARC-755)
+- rays halo layer on PlayerAvatar md+ (ARC-755) (ARC-755)
+- add profile size to PlayerAvatar (ARC-755) (ARC-755)
+
+### Fixed
+- stack PlayerAvatar badge above the avatar art (ARC-755) (ARC-755)
+- localize skin-chip prefix for all PlayerAvatar consumers (ARC-755) (ARC-755)
+- sync equipped cosmetics to header + fix critical opponent card height (ARC-755) (ARC-755)
+- real-size avatar image, frame-tinted backdrop, spinning rays (ARC-755) (ARC-755)
+- center rays halo on avatar disc + restore shop proportions (ARC-755) (ARC-755)
+
+### Refactored
+- split PlayerAvatar into modules + i18n the skin chip (ARC-755) (ARC-755)
+- route preview through shared PlayerAvatar (ARC-755) (ARC-755)
+- extract RaysHalo + symmetric pickSwatchColor + drop useMemo (ARC-755) (ARC-755)
+
+### Documentation
+- stories for PlayerAvatar profile size + skin chip (ARC-755) (ARC-755)
+- implementation plan for equipped avatar everywhere (ARC-755) (ARC-755)
+- design for equipped avatar everywhere (ARC-755) (ARC-755)
+
+
+## [1.15.6] - 2026-05-27
+
+### Added
+- visible rotate icon on placed ships (ARC-754) (ARC-754)
+- optimistic move + rotate placed ships (ARC-754) (ARC-754)
+- drag placed ships to reposition (ARC-754) (ARC-754)
+
+### Documentation
+- address spec review feedback (ARC-754) (ARC-754)
+- design for dragging placed ships (ARC-754) (ARC-754)
+
+
+## [1.15.5] - 2026-05-27
+
+### Refactored
+- move Buy Gems above history and anchor Next link (ARC-756) (ARC-756)
+
+
+## [1.15.4] - 2026-05-27
+
+### Fixed
+- wire opponent chat bubbles + Sea Battle popup in widget UI; retire legacy-only e2e tests (ARC-753) (ARC-753)
+- anchor autoplay dropdown to its right edge so it stays on-screen (ARC-753) (ARC-753)
+- keep MobileHandBar above widget fullscreen layer (ARC-753) (ARC-753)
+
+### Refactored
+- drop widget-mode flag, ship the new widget UI everywhere (ARC-753) (ARC-753)
+
+
+## [1.15.3] - 2026-05-27
+
+### Fixed
+- sea battle lobby crash when gameOptions.teams is not an array (ARC-752) (ARC-752)
+
+
+## [1.15.2] - 2026-05-27
+
+### Added
+- cascade Last-Card race (option-toggled, with bot reflex) (ARC-751) (ARC-751)
+- per-theme action-card names (Eclipse/Banish/Firewall/Block) (ARC-751) (ARC-751)
+- cascade gameplay modes (classic/pure/speed) + e2e flatten fix (ARC-751) (ARC-751)
+- cascade i18n translations + play-to-win e2e + mobile parity (ARC-751) (ARC-751)
+- cascade hook + board tests, e2e, rephrase to remove UNO refs (ARC-751) (ARC-751)
+- cascade landing page + SEO + BE bot spec + Card vitest (ARC-751) (ARC-751)
+- add Cascade web widget, registry, and create-page wiring (ARC-751) (ARC-751)
+- add Cascade backend engine, service, bot, and gateway (ARC-751) (ARC-751)
+
+### Fixed
+- cascade pendingStart used stale initial session, rules modal lacked close (ARC-751) (ARC-751)
+- cascade pendingStart reset uses inline reset, not effect setState (ARC-751) (ARC-751)
+- cascade start button needed two clicks to register (ARC-751) (ARC-751)
+- cascade +2/+4 stacking coverage + pure-mode skip consistency (ARC-751) (ARC-751)
+
+### Documentation
+- assign ARC-751 to cascade design spec (ARC-751) (ARC-751
+ARC-751)
+- cascade card game design spec (ARC-751) (ARC-751)
+
+
+## [1.15.1] - 2026-05-26
+
+### Added
+- scale tic-tac-toe player cap by board size (ARC-750) (ARC-750)
+- polish tic-tac-toe theme previews, rules, and end-game (ARC-750) (ARC-750)
+- list tic-tac-toe in admin game-visibility catalog (ARC-750) (ARC-750)
+- surface tic-tac-toe in home featured + games/create (ARC-750) (ARC-750)
+- tic-tac-toe landing page with hero, themes grid, FAQ, OG image (ARC-750) (ARC-750)
+- tic-tac-toe widget assembly (modals, lobby, game entry, registry) (ARC-750) (ARC-750)
+- tic-tac-toe widget shell (types, hooks, board, selectors) + i18n (ARC-750) (ARC-750)
+- tic-tac-toe socket gateway and module wiring (ARC-750) (ARC-750)
+- tic-tac-toe service and bot with minimax/heuristic/random (ARC-750) (ARC-750)
+- register TicTacToeEngine in engines module (ARC-750) (ARC-750)
+- tic-tac-toe engine with team mode and forfeit (ARC-750) (ARC-750)
+- tic-tac-toe utils and validators with specs (ARC-750) (ARC-750)
+- tic-tac-toe engine constants and types (ARC-750) (ARC-750)
+- add tic-tac-toe with 3×3, 5×5, 7×7, 9×9 boards (ARC-750) (ARC-750)
+
+### Fixed
+- mount tic-tac-toe rules modal in-game, not only in lobby (ARC-750) (ARC-750)
+- give tic-tac-toe board explicit width so cells render (ARC-750) (ARC-750)
+- render tic-tac-toe lobby outside GameWidgetContainer (ARC-750) (ARC-750)
+- register tic_tac_toe_v1 in GameType unions so the widget loads (ARC-750) (ARC-750)
+
+### Documentation
+- add tic-tac-toe full-game implementation plan (ARC-750) (ARC-750)
+- add full-game design for tic-tac-toe (ARC-750) (ARC-750)
+
+
+## [1.15.0] - 2026-05-25
+
+
+
+
 ## [1.14.36] - 2026-05-25
 
 ### Added

@@ -103,9 +103,15 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
   const teamMode = !!teamOpts.teamMode;
-  // Memoized so the `?? []` fallback doesn't return a fresh array reference
-  // each render and bust downstream useMemo deps.
-  const teams = React.useMemo(() => teamOpts.teams ?? [], [teamOpts.teams]);
+  // gameOptions is `Record<string, unknown>` over the wire (Mongoose Mixed), so
+  // the cast above doesn't validate the runtime shape. Guard with isArray to
+  // tolerate stale/corrupted server data — without it, `.reduce` below crashes
+  // the entire lobby render the moment `teams` is anything other than nullish
+  // or an array.
+  const teams = React.useMemo(
+    () => (Array.isArray(teamOpts.teams) ? teamOpts.teams : []),
+    [teamOpts.teams],
+  );
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
 
   // In team mode, the lobby cap is the sum of team target sizes (up to 8).

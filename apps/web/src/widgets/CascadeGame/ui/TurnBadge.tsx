@@ -3,6 +3,7 @@
 import { XStack, YStack } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
+import styles from './CascadeGame.module.css';
 import type { ActiveColor } from '../types';
 
 interface TurnBadgeProps {
@@ -30,7 +31,7 @@ export function TurnBadge({
       paddingHorizontal="$3"
       paddingVertical="$2"
       borderRadius="$3"
-      backgroundColor="rgba(0,0,0,0.25)"
+      className={`${styles.turnBar} ${myTurn ? styles.turnBarActive : ''}`}
     >
       <XStack alignItems="center" gap="$2">
         {currentEntryId ? (
@@ -42,44 +43,42 @@ export function TurnBadge({
           />
         ) : null}
         <YStack>
-          <span style={{ color: '#d1d5db', fontSize: 12 }}>
+          <span className={styles.turnLabelMuted}>
             {myTurn
               ? 'Your turn'
               : currentEntryId
                 ? `Waiting on ${shortId(currentEntryId)}`
                 : 'Waiting…'}
           </span>
-          <span style={{ color: theme.cardText, fontSize: 14, fontWeight: 600 }}>
-            {direction === 1 ? 'Clockwise ↻' : 'Counter-clockwise ↺'}
+          <span className={styles.turnLabelStrong}>
+            <span
+              className={`${styles.dirArrow} ${
+                direction === -1 ? styles.dirArrowReverse : ''
+              }`}
+              aria-hidden="true"
+            >
+              ↻
+            </span>
+            {direction === 1 ? 'Clockwise' : 'Counter-clockwise'}
           </span>
         </YStack>
       </XStack>
       <XStack alignItems="center" gap="$2">
         {pendingDraw > 0 ? (
-          <YStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
-            backgroundColor="rgba(239, 68, 68, 0.9)"
-          >
-            <span style={{ color: '#fff', fontWeight: 800, fontSize: 13 }}>
-              +{pendingDraw} stacked
-            </span>
-          </YStack>
+          <span className={styles.stackBadge}>+{pendingDraw} stacked</span>
         ) : null}
-        <YStack
-          alignItems="center"
-          justifyContent="center"
-          width={36}
-          height={36}
-          borderRadius={18}
-          backgroundColor={theme.palette[activeColor]}
-          borderWidth={2}
-          borderColor={theme.cardBorder}
+        <span
+          className={styles.colorChip}
+          style={
+            {
+              background: theme.palette[activeColor],
+              '--chip-glow': theme.palette[activeColor],
+            } as React.CSSProperties
+          }
           aria-label={`Active color ${activeColor}`}
         >
-          <span style={{ color: '#fff', fontWeight: 800 }}>{activeColor}</span>
-        </YStack>
+          {activeColor}
+        </span>
       </XStack>
     </XStack>
   );

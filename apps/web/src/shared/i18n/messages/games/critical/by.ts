@@ -354,6 +354,12 @@ export const byMessages = {
       },
     },
     log: { title: 'Журнал гульні', empty: 'Дзеянняў пакуль няма' },
+    turn: {
+      yourTurn: 'Ваш ход',
+      otherTurn: 'Ход {{name}}',
+      waiting: 'Чаканне…',
+      gameOver: 'Гульня скончана',
+    },
     chat: {
       title: 'Чат стала',
       empty: 'Паведамленняў пакуль няма. Разбіце лёд!',

@@ -292,6 +292,12 @@ export const esMessages = {
       show: 'Mostrar chat',
       hide: 'Ocultar chat',
     },
+    turn: {
+      yourTurn: 'Tu turno',
+      otherTurn: 'Turno de {{name}}',
+      waiting: 'Esperando…',
+      gameOver: 'Juego terminado',
+    },
     victory: {
       title: '¡Victoria!',
       message: '¡Excelente desempeño! Has dominado la partida.',

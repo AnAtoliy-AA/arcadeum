@@ -11,3 +11,8 @@ export { RematchModal } from './RematchModal';
 export { RematchInvitationModal } from './RematchInvitationModal';
 export { GameVariantSelector } from './GameVariantSelector';
 export { InGameAvatar, type InGameAvatarProps } from './InGameAvatar';
+export {
+  TurnIndicator,
+  resolveTurnStatus,
+  type TurnContract,
+} from './TurnIndicator';

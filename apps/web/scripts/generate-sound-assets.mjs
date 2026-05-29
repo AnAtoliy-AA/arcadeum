@@ -106,6 +106,7 @@ const ASSETS = {
   ]),
 };
 
+
 mkdirSync(OUT_DIR, { recursive: true });
 for (const [name, samples] of Object.entries(ASSETS)) {
   const path = join(OUT_DIR, name);

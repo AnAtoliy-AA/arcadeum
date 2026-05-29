@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.1] - 2026-05-29
+
+### Added
+- add optional aurora card style for Cascade (ARC-760) (ARC-760)
+- bring full prototype polish to the Cascade table (ARC-760) (ARC-760)
+- rework Cascade cards into on-brand dark-glass faces (ARC-760) (ARC-760)
+- modernize the Cascade wild-color picker (ARC-760) (ARC-760)
+- modernize the Cascade board for a more playable table (ARC-760) (ARC-760)
+
+### Documentation
+- add the Cascade board card-rework handoff (ARC-760) (ARC-760)
+
+
 ## [1.16.0] - 2026-05-29
 
 

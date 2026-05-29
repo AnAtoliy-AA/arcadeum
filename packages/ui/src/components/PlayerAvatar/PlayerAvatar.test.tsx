@@ -241,6 +241,19 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-skin')).toHaveTextContent(/NEON/i);
   });
 
+  it('prepends the localized prefix to the skin chip when provided', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon', prefix: 'Skin' }}
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    // Component owns only the separator + styling; the words come from props.
+    expect(screen.getByTestId('pa-skin')).toHaveTextContent(/SKIN · NEON/i);
+  });
+
   it('does not render the skin chip below card', () => {
     render(
       <PlayerAvatar

@@ -25,7 +25,7 @@ import type {
 
 export interface ShopMannequinLabels {
   tryOn: string;
-  stage: { level: string; online: string };
+  stage: { level: string; online: string; skin: string };
   slots: Record<ShopCategory, ShopSlotLabels>;
   action: ShopActionLabels;
   wallet: WalletRailLabels;

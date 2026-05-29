@@ -404,6 +404,40 @@
   opacity: 0.12;
 }
 
+/*
+ * Optional "aurora" face style (board root carries `.aurora`): same dark
+ * body, but colour pools into the lower-left / upper-right corners for a bit
+ * more colour presence. Face-down backs keep their own treatment.
+ */
+.aurora .card:not(.faceDown) {
+  background:
+    radial-gradient(
+      120% 70% at 18% 110%,
+      color-mix(in srgb, var(--face) 70%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      110% 60% at 90% -10%,
+      color-mix(in srgb, var(--face) 38%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(158deg, #1f2536 0%, #0c1019 100%);
+}
+.aurora .card.wild {
+  background:
+    conic-gradient(
+      from 200deg at 50% 118%,
+      rgba(244, 63, 94, 0.6),
+      rgba(251, 191, 36, 0.6),
+      rgba(34, 197, 94, 0.6),
+      rgba(59, 130, 246, 0.6),
+      rgba(168, 85, 247, 0.6),
+      rgba(244, 63, 94, 0.6)
+    ),
+    linear-gradient(158deg, #1b2030, #0a0d16);
+  background-blend-mode: screen, normal;
+}
+
 /* ---- Hand fan ------------------------------------------------------- */
 
 .hand {

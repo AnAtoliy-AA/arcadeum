@@ -31,6 +31,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     mode: string;
     stackingEnabled: boolean;
     lastCardCallEnabled: boolean;
+    cardStyle: string;
   }>;
   const mode: CascadeMode = (
     CASCADE_MODE_IDS as ReadonlyArray<string>
@@ -43,6 +44,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
       typeof r.lastCardCallEnabled === 'boolean' ? r.lastCardCallEnabled : true,
+    cardStyle: r.cardStyle === 'aurora' ? 'aurora' : 'neon',
   };
 }
 
@@ -201,6 +203,7 @@ function CascadeGameImpl({
             myHand={myHand}
             myTurn={myTurn}
             disabled={isGameOver}
+            cardStyle={options.cardStyle}
             onPlayCard={handlePlayCard}
             onDraw={draw}
             onCallCascade={callCascade}

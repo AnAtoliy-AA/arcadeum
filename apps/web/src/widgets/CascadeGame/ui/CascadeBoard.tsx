@@ -8,7 +8,12 @@ import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import { useActionToasts } from '../hooks/useActionToasts';
 import { useCardFly } from '../hooks/useCardFly';
 import styles from './CascadeGame.module.css';
-import type { ActiveColor, CascadeCard, CascadeClientState } from '../types';
+import type {
+  ActiveColor,
+  CascadeCard,
+  CascadeCardStyle,
+  CascadeClientState,
+} from '../types';
 
 interface CascadeBoardProps {
   snapshot: CascadeClientState;
@@ -16,6 +21,8 @@ interface CascadeBoardProps {
   myHand: CascadeCard[];
   myTurn: boolean;
   disabled: boolean;
+  /** Card face treatment; defaults to the edge-glow `neon` look. */
+  cardStyle?: CascadeCardStyle;
   onPlayCard: (cardId: string, chosenColor?: ActiveColor) => void;
   onDraw: () => void;
   /**
@@ -34,6 +41,7 @@ export function CascadeBoard({
   myHand,
   myTurn,
   disabled,
+  cardStyle = 'neon',
   onPlayCard,
   onDraw,
   onCallCascade,
@@ -110,7 +118,7 @@ export function CascadeBoard({
       gap="$3"
       padding="$3"
       borderRadius="$4"
-      className={styles.table}
+      className={`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}
       style={
         {
           background: theme.background,

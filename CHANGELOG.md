@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.8] - 2026-05-29
+
+### Added
+- auto-exit fullscreen after a game finishes (ARC-757) (ARC-757)
+
+### Fixed
+- auto-exit the widget-level fullscreen on finish too (ARC-757) (ARC-757)
+- trigger fullscreen auto-exit off session status, not room status (ARC-757) (ARC-757)
+
+
 ## [1.15.7] - 2026-05-29
 
 ### Added

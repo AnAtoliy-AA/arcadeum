@@ -240,12 +240,11 @@ function TicTacToeGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',
           subtitle: room?.name,
-          turnStatusVariant: isGameOver
-            ? 'completed'
-            : myTurn
-              ? 'yourTurn'
-              : 'waiting',
-          turnStatusText: isGameOver ? 'Game over' : myTurn ? 'Your turn' : '—',
+          turn: {
+            onClockUserId: currentShooterId,
+            isMyTurn: myTurn,
+            isGameOver,
+          },
         }}
       />
     </TicTacToeThemeProvider>

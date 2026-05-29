@@ -7,6 +7,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import type { CascadeCard, CascadeVariant } from '../types';
+import styles from './CascadeGame.module.css';
 
 interface CardProps {
   card: CascadeCard;
@@ -19,10 +20,13 @@ interface CardProps {
   ariaLabel?: string;
 }
 
-const SIZES: Record<NonNullable<CardProps['size']>, { w: number; h: number; font: number }> = {
-  sm: { w: 48, h: 70, font: 14 },
-  md: { w: 64, h: 96, font: 18 },
-  lg: { w: 88, h: 132, font: 24 },
+const SIZES: Record<
+  NonNullable<CardProps['size']>,
+  { w: number; h: number; glyph: number; corner: number }
+> = {
+  sm: { w: 50, h: 74, glyph: 22, corner: 12 },
+  md: { w: 66, h: 98, glyph: 30, corner: 15 },
+  lg: { w: 92, h: 138, glyph: 42, corner: 19 },
 };
 
 function CardImpl({
@@ -40,10 +44,21 @@ function CardImpl({
   const dims = SIZES[size];
 
   const isClickable = !!onClick && !disabled;
-  const bg = faceDown ? theme.surface : theme.palette[card.color];
+  const faceColor = faceDown ? theme.surface : theme.palette[card.color];
   const symbol = renderSymbol(card, theme.symbols);
   const resolvedLabel =
     ariaLabel ?? describeCard(card, faceDown, theme.variant, t);
+
+  const className = [
+    styles.card,
+    faceDown && styles.faceDown,
+    isClickable && styles.clickable,
+    playable && styles.playable,
+    selected && styles.selected,
+    disabled && !faceDown && styles.disabled,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <button
@@ -52,38 +67,40 @@ function CardImpl({
       disabled={disabled || !isClickable}
       aria-label={resolvedLabel}
       aria-pressed={selected || undefined}
-      style={{
-        width: dims.w,
-        height: dims.h,
-        borderRadius: Math.round(dims.w * 0.14),
-        background: bg,
-        color: theme.cardText,
-        border: `2px solid ${
-          selected
-            ? '#fbbf24'
-            : playable
-              ? 'rgba(255, 255, 255, 0.85)'
-              : theme.cardBorder
-        }`,
-        boxShadow: playable
-          ? '0 0 0 2px rgba(251, 191, 36, 0.4), 0 4px 12px rgba(0,0,0,0.35)'
-          : '0 2px 8px rgba(0,0,0,0.25)',
-        cursor: isClickable ? 'pointer' : 'default',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: dims.font,
-        fontWeight: 800,
-        letterSpacing: -0.5,
-        padding: 0,
-        transition:
-          'transform 120ms ease, box-shadow 200ms ease, border-color 120ms ease',
-        transform: selected ? 'translateY(-8px)' : 'translateY(0)',
-        opacity: disabled && !faceDown ? 0.55 : 1,
-        userSelect: 'none',
-      }}
+      className={className}
+      style={
+        {
+          width: dims.w,
+          height: dims.h,
+          '--card-bg': faceColor,
+        } as React.CSSProperties
+      }
     >
-      <span aria-hidden="true">{faceDown ? '✦' : symbol}</span>
+      {faceDown ? null : (
+        <>
+          <span
+            aria-hidden="true"
+            className={`${styles.corner} ${styles.cornerTL}`}
+            style={{ fontSize: dims.corner }}
+          >
+            {symbol}
+          </span>
+          <span
+            aria-hidden="true"
+            className={styles.centerGlyph}
+            style={{ fontSize: dims.glyph }}
+          >
+            <span>{symbol}</span>
+          </span>
+          <span
+            aria-hidden="true"
+            className={`${styles.corner} ${styles.cornerBR}`}
+            style={{ fontSize: dims.corner }}
+          >
+            {symbol}
+          </span>
+        </>
+      )}
     </button>
   );
 }

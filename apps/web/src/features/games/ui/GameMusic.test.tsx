@@ -97,6 +97,18 @@ describe('GameMusic', () => {
     );
   });
 
+  it('starts at the default volume and applies slider changes to the audio', () => {
+    musicEnabled = true;
+    render(<GameMusic gameId="sea_battle_v1" />);
+    const audio = lastAudioEl();
+    expect(audio.volume).toBeCloseTo(0.3);
+
+    fireEvent.change(screen.getByTestId('game-music-volume'), {
+      target: { value: '60' },
+    });
+    expect(audio.volume).toBeCloseTo(0.6);
+  });
+
   it('pauses and resumes via the play/pause control', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);

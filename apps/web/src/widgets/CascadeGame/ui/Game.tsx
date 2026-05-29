@@ -255,6 +255,7 @@ function CascadeGameImpl({
         modals={modals}
         variant={options.variant}
         isMyTurn={myTurn}
+        isGameOver={isGameOver}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Cascade',

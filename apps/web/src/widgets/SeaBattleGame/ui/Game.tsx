@@ -404,6 +404,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     <SeaBattleThemeProvider variant={cardVariant}>
       <GameWidgetContainer
         headerProps={headerProps}
+        isGameOver={isGameOver}
         board={
           <SeaBattleBoards
             isPlacementPhase={isPlacementPhase}

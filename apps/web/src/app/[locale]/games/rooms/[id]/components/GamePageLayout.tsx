@@ -5,18 +5,19 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
-import { useAutoExitFullscreen } from '@/features/games/hooks/useAutoExitFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
-import type { GameRoomSummary } from '@/shared/types/games';
+import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
+import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 
 interface GamePageLayoutProps {
   roomId: string;
   room: GameRoomSummary;
+  session?: GameSessionSummary | null;
   inviteCode?: string;
   userId: string | null;
 
@@ -42,6 +43,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const {
     roomId,
     room,
+    session,
     inviteCode,
     userId,
     isDisconnected,
@@ -66,14 +68,6 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       enableKeyboard: true,
     },
   );
-
-  // Drop out of fullscreen shortly after the game finishes so the player
-  // returns to the normal page chrome (header, rematch, navigation).
-  useAutoExitFullscreen({
-    status: room.status,
-    isFullscreen,
-    exitFullscreen,
-  });
 
   // Chat visibility — wide screens default visible, narrow hidden
   const [showChat, setShowChat] = useState(false);
@@ -148,6 +142,15 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         ref={gameContainerRef as React.RefObject<never>}
         className="games-room-container"
       >
+        {/* Drops out of fullscreen shortly after the game finishes so the
+            player returns to the normal page chrome (header, rematch, nav). */}
+        <AutoExitFullscreenOnFinish
+          roomId={roomId}
+          isFullscreen={isFullscreen}
+          exitFullscreen={exitFullscreen}
+          initialSession={session}
+        />
+
         <ConnectionOverlay
           visible={isDisconnected}
           reconnecting={isReconnecting}

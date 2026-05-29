@@ -52,18 +52,19 @@ test.describe('Fullscreen auto-exit on game finish', () => {
     });
   });
 
-  test('leaves fullscreen shortly after the room status becomes completed', async ({
+  test('leaves fullscreen shortly after the session status becomes completed', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto(`/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    // Wait for the store's room-update listener to be registered.
+    // The real "game finished" signal is a session snapshot — wait for its
+    // listener to be registered.
     await page.waitForFunction(
       () =>
         !!window.gameSocket?.connected &&
-        !!window.gameSocket?._mockListeners?.['games.room.update'],
+        !!window.gameSocket?._mockListeners?.['games.session.snapshot'],
       { timeout: 60000 },
     );
 
@@ -73,19 +74,31 @@ test.describe('Fullscreen auto-exit on game finish', () => {
     await page.getByTestId('fullscreen-button').click();
     await expect(container).toHaveClass(/is-fullscreen/);
 
-    // Backend marks the game finished.
+    // Backend marks the game finished — this is the only event clients receive
+    // on completion (room.status is NOT pushed to the client).
     await page.evaluate(
-      ({ roomId, members }) => {
-        window.gameSocket?.trigger('games.room.update', {
-          room: {
-            id: roomId,
-            gameId: 'critical_v1',
+      ({ roomId, userId, opponentId }) => {
+        window.gameSocket?.trigger('games.session.snapshot', {
+          roomId,
+          session: {
+            id: 'session-1',
             status: 'completed',
-            members,
+            state: {
+              players: [
+                { playerId: userId, alive: true, hand: [], stash: [] },
+                { playerId: opponentId, alive: false, hand: [], stash: [] },
+              ],
+              playerOrder: [userId, opponentId],
+              currentTurnIndex: 0,
+              deck: [],
+              discardPile: [],
+              logs: [],
+              winnerId: userId,
+            },
           },
         });
       },
-      { roomId, members },
+      { roomId, userId, opponentId },
     );
 
     // Auto-exit fires after the delay (~1.5s) — allow generous slack.

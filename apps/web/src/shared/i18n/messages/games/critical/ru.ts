@@ -352,6 +352,12 @@ export const ruMessages = {
       },
     },
     log: { title: 'Журнал игры', empty: 'Действий пока нет' },
+    turn: {
+      yourTurn: 'Ваш ход',
+      otherTurn: 'Ход игрока {{name}}',
+      waiting: 'Ожидание…',
+      gameOver: 'Игра окончена',
+    },
     chat: {
       title: 'Чат стола',
       empty: 'Сообщений пока нет. Разбейте лед!',

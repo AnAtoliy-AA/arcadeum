@@ -289,6 +289,12 @@ export const ruMessages = {
       show: 'Показать чат',
       hide: 'Скрыть чат',
     },
+    turn: {
+      yourTurn: 'Ваш ход',
+      otherTurn: 'Ход игрока {{name}}',
+      waiting: 'Ожидание…',
+      gameOver: 'Игра окончена',
+    },
     victory: {
       title: 'Победа!',
       message: 'Отличная игра! Вы доминировали в этом матче.',

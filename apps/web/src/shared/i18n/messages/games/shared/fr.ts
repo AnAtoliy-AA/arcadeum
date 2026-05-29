@@ -294,6 +294,12 @@ export const frMessages = {
       show: 'Afficher le chat',
       hide: 'Masquer le chat',
     },
+    turn: {
+      yourTurn: 'À vous de jouer',
+      otherTurn: 'Au tour de {{name}}',
+      waiting: 'En attente…',
+      gameOver: 'Partie terminée',
+    },
     victory: {
       title: 'Victoire !',
       message: 'Excellente performance ! Vous avez dominé la partie.',

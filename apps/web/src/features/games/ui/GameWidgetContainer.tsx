@@ -13,6 +13,11 @@ import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { GameChatPopupOverlay } from '@/widgets/GameChat';
+import {
+  TurnIndicator,
+  resolveTurnStatus,
+  type TurnContract,
+} from './TurnIndicator';
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -264,11 +269,21 @@ interface SharedHeaderProps {
   title: string;
   /** Optional subtitle (e.g. room name) */
   subtitle?: string;
-  /** Turn status pill variant */
-  turnStatusVariant: TurnStatusVariant;
-  /** Turn status text */
-  turnStatusText: string;
-  /** Optional avatar of the player on the clock, rendered inside the turn pill */
+  /**
+   * Preferred: declarative turn contract. The header renders the shared
+   * {@link TurnIndicator} (avatar + name + "Your turn / {name}'s turn") and
+   * derives the pill status from these fields. A new game gets the full turn
+   * display by passing only an id + isMyTurn.
+   */
+  turn?: TurnContract;
+  /**
+   * Legacy / non-turn escape hatch (e.g. real-time games like Glimworm that
+   * have no turns). Ignored when `turn` is provided.
+   */
+  turnStatusVariant?: TurnStatusVariant;
+  /** Legacy / non-turn status text. Ignored when `turn` is provided. */
+  turnStatusText?: string;
+  /** Legacy free-form avatar node. Ignored when `turn` is provided. */
   turnAvatar?: React.ReactNode;
   /** Optional extra actions rendered before fullscreen button */
   extraActions?: React.ReactNode;
@@ -335,6 +350,12 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
     exitFullscreen,
   });
 
+  const pillStatus: TurnStatusVariant = headerProps
+    ? headerProps.turn
+      ? resolveTurnStatus(headerProps.turn)
+      : (headerProps.turnStatusVariant ?? 'default')
+    : 'default';
+
   const renderedHeader =
     header ??
     (headerProps ? (
@@ -373,16 +394,28 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </YStack>
         </GameInfo>
 
-        <TurnStatusPill
-          $status={headerProps.turnStatusVariant}
-          gap={headerProps.turnAvatar ? '$2' : undefined}
-          paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
-        >
-          {headerProps.turnAvatar}
-          <TurnStatusText $status={headerProps.turnStatusVariant}>
-            {headerProps.turnStatusText}
-          </TurnStatusText>
-        </TurnStatusPill>
+        {headerProps.turn ? (
+          <TurnStatusPill
+            $status={pillStatus}
+            gap="$2"
+            paddingLeft="$1"
+            data-testid="turn-status-pill"
+          >
+            <TurnIndicator turn={headerProps.turn} />
+          </TurnStatusPill>
+        ) : (
+          <TurnStatusPill
+            $status={pillStatus}
+            gap={headerProps.turnAvatar ? '$2' : undefined}
+            paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+            data-testid="turn-status-pill"
+          >
+            {headerProps.turnAvatar}
+            <TurnStatusText $status={pillStatus}>
+              {headerProps.turnStatusText}
+            </TurnStatusText>
+          </TurnStatusPill>
+        )}
 
         <HeaderActions>
           {headerProps.extraActions}

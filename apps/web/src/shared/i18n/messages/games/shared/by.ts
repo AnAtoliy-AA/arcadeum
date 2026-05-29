@@ -288,6 +288,12 @@ export const byMessages = {
       show: 'Паказаць чат',
       hide: 'Схаваць чат',
     },
+    turn: {
+      yourTurn: 'Ваш ход',
+      otherTurn: 'Ход {{name}}',
+      waiting: 'Чаканне…',
+      gameOver: 'Гульня скончана',
+    },
     victory: {
       title: 'Перамога!',
       message: 'Выдатная гульня! Вы дамінавалі ў гэтым матчы.',

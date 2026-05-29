@@ -295,6 +295,12 @@ export const esMessages = {
       },
     },
     log: { title: 'Registro del Juego', empty: 'Sin actividad aún' },
+    turn: {
+      yourTurn: 'Tu turno',
+      otherTurn: 'Turno de {{name}}',
+      waiting: 'Esperando…',
+      gameOver: 'Juego terminado',
+    },
     chat: {
       title: 'Chat de la Mesa',
       empty: 'Sin mensajes aún. ¡Rompe el hielo!',

@@ -288,6 +288,12 @@ export const enMessages = {
       show: 'Show Chat',
       hide: 'Hide Chat',
     },
+    turn: {
+      yourTurn: 'Your turn',
+      otherTurn: "{{name}}'s turn",
+      waiting: 'Waiting…',
+      gameOver: 'Game over',
+    },
     victory: {
       title: 'Victory!',
       message: 'Excellent performance! You dominated the game.',

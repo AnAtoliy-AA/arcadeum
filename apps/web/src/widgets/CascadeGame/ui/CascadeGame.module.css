@@ -450,6 +450,109 @@
     0 0 14px var(--chip-glow, rgba(255, 255, 255, 0.4));
 }
 
+/* ---- Wild color picker ---------------------------------------------- */
+
+.pickerBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 6, 16, 0.55);
+  backdrop-filter: blur(3px);
+  animation: cascade-fade 160ms ease-out;
+}
+
+.pickerPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 26px;
+  border-radius: 20px;
+  background: rgba(12, 14, 30, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  animation: cascade-pop 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pickerTitle {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.pickerRow {
+  display: flex;
+  gap: 12px;
+}
+
+.swatch {
+  --face: var(--swatch-bg, #1f1b3d);
+  position: relative;
+  width: 62px;
+  height: 86px;
+  border-radius: 12px;
+  background: radial-gradient(
+      120% 90% at 30% 18%,
+      rgba(255, 255, 255, 0.3),
+      transparent 55%
+    ),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--face) 82%, white 18%),
+      var(--face) 55%,
+      color-mix(in srgb, var(--face) 78%, black 22%)
+    );
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  font-weight: 900;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms ease;
+}
+.swatch::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+}
+.swatch:hover,
+.swatch:focus-visible {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(255, 255, 255, 0.25);
+  outline: none;
+}
+
+@keyframes cascade-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cascade-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* ---- Cascade! call button ------------------------------------------ */
 
 .callButton {
@@ -488,7 +591,11 @@
   .handSlot,
   .card,
   .pod,
-  .drawButton {
+  .drawButton,
+  .dirArrow,
+  .pickerBackdrop,
+  .pickerPanel,
+  .swatch {
     animation: none !important;
     transition: none !important;
   }

@@ -263,12 +263,11 @@ function CascadeGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Cascade',
           subtitle: room?.name,
-          turnStatusVariant: isGameOver
-            ? 'completed'
-            : myTurn
-              ? 'yourTurn'
-              : 'waiting',
-          turnStatusText: isGameOver ? 'Game over' : myTurn ? 'Your turn' : '—',
+          turn: {
+            onClockUserId: currentEntryId ?? null,
+            isMyTurn: myTurn,
+            isGameOver,
+          },
         }}
       />
     </CascadeThemeProvider>

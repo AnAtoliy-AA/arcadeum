@@ -94,6 +94,8 @@ export function CascadeBoard({
           '--cascade-surface': theme.surface,
           '--cascade-card-border': theme.cardBorder,
           '--cascade-card-text': theme.cardText,
+          '--cascade-accent': theme.accent,
+          '--cascade-accent-rgb': theme.accentRGB,
         } as React.CSSProperties
       }
     >

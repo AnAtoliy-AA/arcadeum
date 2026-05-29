@@ -44,14 +44,21 @@ function CardImpl({
   const dims = SIZES[size];
 
   const isClickable = !!onClick && !disabled;
+  const isWild =
+    !faceDown && (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR');
   const faceColor = faceDown ? theme.surface : theme.palette[card.color];
   const symbol = renderSymbol(card, theme.symbols);
   const resolvedLabel =
     ariaLabel ?? describeCard(card, faceDown, theme.variant, t);
 
+  // Action/wild glyphs are wider than digits, so they're set a touch smaller;
+  // the ghost layer scales off that same base so depth stays proportional.
+  const glyphSize = card.kind === 'NUMBER' ? dims.glyph : dims.glyph * 0.82;
+
   const className = [
     styles.card,
     faceDown && styles.faceDown,
+    isWild && styles.wild,
     isClickable && styles.clickable,
     playable && styles.playable,
     selected && styles.selected,
@@ -80,6 +87,13 @@ function CardImpl({
         <>
           <span
             aria-hidden="true"
+            className={styles.ghost}
+            style={{ fontSize: glyphSize * 1.9 }}
+          >
+            {symbol}
+          </span>
+          <span
+            aria-hidden="true"
             className={`${styles.corner} ${styles.cornerTL}`}
             style={{ fontSize: dims.corner }}
           >
@@ -88,9 +102,9 @@ function CardImpl({
           <span
             aria-hidden="true"
             className={styles.centerGlyph}
-            style={{ fontSize: dims.glyph }}
+            style={{ fontSize: glyphSize }}
           >
-            <span>{symbol}</span>
+            {symbol}
           </span>
           <span
             aria-hidden="true"

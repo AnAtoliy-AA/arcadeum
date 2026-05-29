@@ -31,7 +31,7 @@ export function ColorPicker({ open, onPick }: ColorPickerProps) {
               className={styles.swatch}
               style={{ '--swatch-bg': theme.palette[c] } as React.CSSProperties}
             >
-              {c}
+              <span className={styles.swatchLabel}>{theme.colorNames[c]}</span>
             </button>
           ))}
         </div>

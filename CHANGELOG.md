@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.7] - 2026-05-29
+
+### Added
+- show equipped avatars across games + cosmetic-less fallback disc (ARC-755) (ARC-755)
+- add equippable avatar background cosmetic category (ARC-755) (ARC-755)
+- thread equippedGameSkinId to profile menu, profile page, session (ARC-755) (ARC-755)
+- EquippedPlayerAvatar threads skin chip + i18n label (ARC-755) (ARC-755)
+- resolve equippedGameSkinId in useEquippedCosmetics (ARC-755) (ARC-755)
+- propagate equippedGameSkinId through chat snapshots (ARC-755) (ARC-755)
+- wire game_skin to equippedGameSkinId equip slot (ARC-755) (ARC-755)
+- equippedGameSkinId on user schema + auth profile (ARC-755) (ARC-755)
+- skin chip + topLeftOverlay slot on PlayerAvatar (ARC-755) (ARC-755)
+- rays halo layer on PlayerAvatar md+ (ARC-755) (ARC-755)
+- add profile size to PlayerAvatar (ARC-755) (ARC-755)
+
+### Fixed
+- stack PlayerAvatar badge above the avatar art (ARC-755) (ARC-755)
+- localize skin-chip prefix for all PlayerAvatar consumers (ARC-755) (ARC-755)
+- sync equipped cosmetics to header + fix critical opponent card height (ARC-755) (ARC-755)
+- real-size avatar image, frame-tinted backdrop, spinning rays (ARC-755) (ARC-755)
+- center rays halo on avatar disc + restore shop proportions (ARC-755) (ARC-755)
+
+### Refactored
+- split PlayerAvatar into modules + i18n the skin chip (ARC-755) (ARC-755)
+- route preview through shared PlayerAvatar (ARC-755) (ARC-755)
+- extract RaysHalo + symmetric pickSwatchColor + drop useMemo (ARC-755) (ARC-755)
+
+### Documentation
+- stories for PlayerAvatar profile size + skin chip (ARC-755) (ARC-755)
+- implementation plan for equipped avatar everywhere (ARC-755) (ARC-755)
+- design for equipped avatar everywhere (ARC-755) (ARC-755)
+
+
 ## [1.15.6] - 2026-05-27
 
 ### Added

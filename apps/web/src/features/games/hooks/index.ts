@@ -5,3 +5,4 @@ export type { GameType } from './useGameActions';
 export { useRematch } from './useRematch';
 export { useGameChatIntegration } from './useGameChatIntegration';
 export { useFullscreen } from './useFullscreen';
+export { useAutoExitFullscreen } from './useAutoExitFullscreen';

@@ -24,6 +24,8 @@ export interface EquippedPlayerAvatarProps {
   fallbackAvatarUrl?: string;
   level?: number | null;
   presenceLine?: string;
+  /** Prestige role (premium/vip/supporter) for the VIP avatar treatment. */
+  role?: string | null;
   priority?: boolean;
   'data-testid'?: string;
   onPress?: () => void;
@@ -64,6 +66,7 @@ export const EquippedPlayerAvatar = memo(function EquippedPlayerAvatar(
       skinChip={skinChip}
       level={props.level}
       presenceLine={props.presenceLine}
+      role={props.role}
       priority={props.priority}
       data-testid={props['data-testid']}
       onPress={props.onPress}

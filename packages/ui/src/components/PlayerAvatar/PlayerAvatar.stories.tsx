@@ -134,3 +134,25 @@ export const AllSizes: Story = {
     );
   },
 };
+
+// VIP tiers (premium/vip/supporter) get an aura, a tier-tinted nameplate and a
+// prestige glyph — visible everywhere the avatar renders.
+export const VipPremium: Story = {
+  args: {
+    name: 'Aurelia',
+    size: 'card',
+    role: 'premium',
+    bannerColor: '#1e293b',
+    presenceLine: 'Level 42',
+  },
+};
+
+export const VipVip: Story = {
+  args: {
+    name: 'Nyx',
+    size: 'card',
+    role: 'vip',
+    bannerColor: '#1e293b',
+    presenceLine: 'Online',
+  },
+};

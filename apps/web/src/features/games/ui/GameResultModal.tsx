@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModalStyles';
 import { Dialog, VisuallyHidden } from 'tamagui';
+import { VictoryCelebration } from './VictoryCelebration';
 
 // --- Types ---
 
@@ -129,46 +131,6 @@ const HomeLink = styled(LinkButton, {
   width: '100%',
 });
 
-const ConfettiWrapper = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  pointerEvents: 'none',
-  overflow: 'hidden',
-  zIndex: 0,
-});
-
-// --- Confetti Component ---
-
-const CONFETTI_PARTICLES = Array.from({ length: 50 }).map((_, i) => ({
-  left: (i * 7) % 100,
-  delay: (i * 0.17) % 3,
-  color: ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'][i % 5],
-}));
-
-const ConfettiContainer = () => {
-  return (
-    <ConfettiWrapper>
-      {CONFETTI_PARTICLES.map((p, i) => (
-        <YStack
-          key={i}
-          position="absolute"
-          top={-10}
-          width={10}
-          height={10}
-          left={`${p.left}%`}
-          backgroundColor={p.color}
-          style={{
-            animation: `fall 4s linear ${p.delay}s infinite`,
-          }}
-        />
-      ))}
-    </ConfettiWrapper>
-  );
-};
-
 // --- Main Component ---
 
 const StyledResultContent = styled(Dialog.Content, {
@@ -217,6 +179,20 @@ export function GameResultModal({
     () => true,
     () => false,
   );
+
+  const { play } = useSound();
+  // Play the result sting once when the modal opens (not on every re-render).
+  const playedForRef = useRef<GameResultKind | null>(null);
+  useEffect(() => {
+    if (!isOpen || !result) {
+      playedForRef.current = null;
+      return;
+    }
+    if (playedForRef.current === result) return;
+    playedForRef.current = result;
+    if (result === 'victory') play('win');
+    else if (result === 'defeat') play('lose');
+  }, [isOpen, result, play]);
 
   if (!isOpen || !result || !isClient) return null;
 
@@ -301,7 +277,7 @@ export function GameResultModal({
         </StyledResultContent>
       </Dialog.Portal>
 
-      {isVictory && <ConfettiContainer />}
+      <VictoryCelebration tone={result} />
     </Modal>
   );
 }

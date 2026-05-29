@@ -206,6 +206,15 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <DropdownLink
+          href={routes.battlePass}
+          onClick={closeMenu}
+          data-testid="header-battle-pass-link"
+          icon={<GiftIcon size={18} />}
+        >
+          {t('battlePass.navLabel')}
+        </DropdownLink>
+
+        <DropdownLink
           href={routes.settings}
           onClick={closeMenu}
           data-testid="header-settings-link"

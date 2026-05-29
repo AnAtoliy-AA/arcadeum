@@ -1,5 +1,7 @@
-import { formatNumber } from '@/shared/i18n/formatters';
+'use client';
+
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
+import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 import type { WalletBalance } from '../server/wallet.types';
 
 interface Props {
@@ -12,7 +14,6 @@ export function WalletBalanceSummary({
   locale = DEFAULT_LOCALE,
 }: Props) {
   const { coins, gems } = balance;
-  const fmt = (n: number) => formatNumber(n, locale);
 
   return (
     <section
@@ -66,7 +67,7 @@ export function WalletBalanceSummary({
             style={{ fontSize: '28px', fontWeight: 700, color: '#fbbf24' }}
             data-testid="balance-coins-value"
           >
-            {fmt(coins)}
+            <AnimatedNumber value={coins} locale={locale} />
           </div>
         </div>
 
@@ -89,7 +90,7 @@ export function WalletBalanceSummary({
             style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
             data-testid="balance-gems-value"
           >
-            {fmt(gems)}
+            <AnimatedNumber value={gems} locale={locale} />
           </div>
         </div>
       </div>

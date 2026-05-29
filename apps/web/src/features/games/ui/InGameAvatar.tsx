@@ -46,6 +46,7 @@ export const InGameAvatar = memo(function InGameAvatar({
       backgroundColor={cosmetics.backgroundColor}
       bannerColor={null}
       nameColor={null}
+      role={member?.role}
       priority={priority}
       data-testid={testId}
     />

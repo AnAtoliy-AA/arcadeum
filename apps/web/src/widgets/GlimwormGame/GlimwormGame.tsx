@@ -12,12 +12,15 @@ import { GlimwormControlsHint } from './ui/GlimwormControlsHint';
 import { GlimwormResultOverlay } from './ui/GlimwormResultOverlay';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
+import { GameWidgetContainer } from '@/features/games/ui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
 
 export default function GlimwormGame(
   props: BaseGameWidgetProps,
 ): React.JSX.Element {
   const { roomId, currentUserId, isHost, room } = props;
+  const { t } = useTranslation();
 
   // State-backed callback ref: when the canvas div is mounted (after the
   // lobby branch ends), `setCanvasEl` flips the state and the pixi/controls
@@ -79,34 +82,59 @@ export default function GlimwormGame(
     );
   }
 
+  // Real-time game: no turns, so the shared shell uses its non-turn header
+  // (status text instead of a turn-with-avatar pill).
+  const statusText = isCountdown
+    ? t('games.glimworm_v1.status.getReady')
+    : isEnded
+      ? t('games.glimworm_v1.status.roundOver')
+      : t('games.glimworm_v1.status.inPlay');
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        minHeight: 480,
+    <GameWidgetContainer
+      isMyTurn={false}
+      isGameOver={isEnded}
+      headerProps={{
+        variantEmoji: '🪱',
+        title: t('games.glimworm_v1.name'),
+        subtitle: room.name,
+        turnStatusVariant: isCountdown
+          ? 'waiting'
+          : isEnded
+            ? 'completed'
+            : 'default',
+        turnStatusText: statusText,
       }}
-    >
-      <div
-        ref={canvasRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: '#06070d',
-        }}
-      />
-      <GlimwormHud isHost={isHost} onRestart={handleRestart} />
-      <GlimwormDeathOverlay />
-      {isCountdown && <GlimwormCountdown />}
-      {!isCountdown && !isEnded && <GlimwormControlsHint />}
-      {isEnded && (
-        <GlimwormResultOverlay
-          isHost={isHost}
-          onRematch={handleRematch}
-          onLobby={handleRestart}
-        />
-      )}
-    </div>
+      board={
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            minHeight: 480,
+          }}
+        >
+          <div
+            ref={canvasRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: '#06070d',
+            }}
+          />
+          <GlimwormHud isHost={isHost} onRestart={handleRestart} />
+          <GlimwormDeathOverlay />
+          {isCountdown && <GlimwormCountdown />}
+          {!isCountdown && !isEnded && <GlimwormControlsHint />}
+          {isEnded && (
+            <GlimwormResultOverlay
+              isHost={isHost}
+              onRematch={handleRematch}
+              onLobby={handleRestart}
+            />
+          )}
+        </div>
+      }
+    />
   );
 }

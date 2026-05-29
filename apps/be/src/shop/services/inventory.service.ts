@@ -168,6 +168,35 @@ export class InventoryService {
     }
   }
 
+  /**
+   * Grant ownership of a single catalog item to a user (no payment). Used by
+   * non-shop reward flows (e.g. Battle Pass tiers). Idempotent on `purchaseId`:
+   * a duplicate grant with the same id is a no-op, so retries never duplicate.
+   */
+  async grant(
+    userId: string,
+    itemId: string,
+    purchaseId: string,
+  ): Promise<void> {
+    const def = getCatalogItem(itemId);
+    if (!def) throw new BadRequestException('shop.unknownItem');
+    try {
+      await this.inventoryModel.create([
+        {
+          userId: new Types.ObjectId(userId),
+          itemId,
+          purchaseId,
+          acquiredVia: 'grant',
+          paidAmount: null,
+          paidCurrency: null,
+        },
+      ]);
+    } catch (err) {
+      if (this.isDuplicateKey(err)) return; // already granted — idempotent
+      throw err;
+    }
+  }
+
   // Equip / unequip freshness contract:
   //  - /chat (player-to-player): live — equipped IDs are read on every page
   //    of messages via the chat helper's batched User lookup.
@@ -205,7 +234,7 @@ export class InventoryService {
               equippedAuraId: 1,
               equippedFrameId: 1,
               equippedGameSkinId: 1,
-          equippedBackgroundId: 1,
+              equippedBackgroundId: 1,
             },
           },
         )
@@ -233,7 +262,7 @@ export class InventoryService {
             equippedAuraId: 1,
             equippedFrameId: 1,
             equippedGameSkinId: 1,
-          equippedBackgroundId: 1,
+            equippedBackgroundId: 1,
           },
         },
       )

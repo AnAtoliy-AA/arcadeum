@@ -12,6 +12,8 @@ export type BattlePassReward = {
   amount?: number;
   /** Display label (e.g. cosmetic name / "150 Coins"). */
   label: string;
+  /** Catalog item id for cosmetic rewards — granted on claim. */
+  itemId?: string;
 };
 
 export type BattlePassTier = {
@@ -51,7 +53,11 @@ export const CURRENT_SEASON: BattlePassSeason = {
       tier: 3,
       xpRequired: 400,
       freeReward: { type: 'coins', amount: 200, label: '200 Coins' },
-      premiumReward: { type: 'cosmetic', label: 'Genesis Frame' },
+      premiumReward: {
+        type: 'cosmetic',
+        label: 'Genesis Frame',
+        itemId: 'frame-prism',
+      },
     },
     {
       tier: 4,
@@ -63,7 +69,11 @@ export const CURRENT_SEASON: BattlePassSeason = {
       tier: 5,
       xpRequired: 1200,
       freeReward: { type: 'gems', amount: 10, label: '10 Gems' },
-      premiumReward: { type: 'cosmetic', label: 'Aurora Aura' },
+      premiumReward: {
+        type: 'cosmetic',
+        label: 'Aurora Aura',
+        itemId: 'aura-prism',
+      },
     },
     {
       tier: 6,
@@ -75,13 +85,21 @@ export const CURRENT_SEASON: BattlePassSeason = {
       tier: 7,
       xpRequired: 2600,
       freeReward: { type: 'coins', amount: 450, label: '450 Coins' },
-      premiumReward: { type: 'cosmetic', label: 'Genesis Banner' },
+      premiumReward: {
+        type: 'cosmetic',
+        label: 'Genesis Banner',
+        itemId: 'banner-nebula',
+      },
     },
     {
       tier: 8,
       xpRequired: 3600,
       freeReward: { type: 'gems', amount: 25, label: '25 Gems' },
-      premiumReward: { type: 'cosmetic', label: 'Mythic Genesis Avatar' },
+      premiumReward: {
+        type: 'cosmetic',
+        label: 'Mythic Genesis Avatar',
+        itemId: 'avatar-cosmic-01',
+      },
     },
   ],
 };

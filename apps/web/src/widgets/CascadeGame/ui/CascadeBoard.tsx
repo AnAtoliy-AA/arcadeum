@@ -1,10 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { XStack, YStack } from 'tamagui';
 import { Card } from './Card';
 import { ColorPicker } from './ColorPicker';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
+import { useActionToasts } from '../hooks/useActionToasts';
+import { useCardFly } from '../hooks/useCardFly';
 import styles from './CascadeGame.module.css';
 import type { ActiveColor, CascadeCard, CascadeClientState } from '../types';
 
@@ -38,6 +40,12 @@ export function CascadeBoard({
 }: CascadeBoardProps) {
   const theme = useCascadeTheme();
   const [pendingWildCard, setPendingWildCard] = useState<string | null>(null);
+  const [shakeId, setShakeId] = useState<string | null>(null);
+
+  const slotRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const discardRef = useRef<HTMLDivElement | null>(null);
+  const { node: flyNode, launch: launchFly } = useCardFly();
+  const toasts = useActionToasts(snapshot.topCard, theme.symbols);
 
   const cascadeOpen =
     snapshot.options.lastCardCallEnabled && !!snapshot.lastCardWindow;
@@ -60,24 +68,41 @@ export function CascadeBoard({
     return set;
   }, [myHand, snapshot, myTurn, disabled]);
 
+  const flyToDiscard = useCallback(
+    (cardId: string, card: CascadeCard) => {
+      launchFly(card, slotRefs.current.get(cardId), discardRef.current);
+    },
+    [launchFly],
+  );
+
   const handleCardClick = (card: CascadeCard) => {
     if (!myTurn || disabled) return;
-    if (!playableIds.has(card.id)) return;
+    // Unplayable card on your turn: shake it instead of a dead click.
+    if (!playableIds.has(card.id)) {
+      setShakeId(card.id);
+      window.setTimeout(() => setShakeId(null), 400);
+      return;
+    }
     if (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR') {
       setPendingWildCard(card.id);
       return;
     }
+    flyToDiscard(card.id, card);
     onPlayCard(card.id);
   };
 
   const handlePickColor = (color: ActiveColor) => {
     if (!pendingWildCard) return;
+    const wild = myHand.find((c) => c.id === pendingWildCard);
+    if (wild) flyToDiscard(wild.id, wild);
     onPlayCard(pendingWildCard, color);
     setPendingWildCard(null);
   };
 
   const handCount = myHand.length;
   const drawEnabled = myTurn && !disabled;
+  const mustDraw = drawEnabled && snapshot.pendingDraw > 0;
+  const deckEmblem = theme.symbols.WILD;
 
   return (
     <YStack
@@ -110,6 +135,16 @@ export function CascadeBoard({
                 key={opp.playerId}
                 className={`${styles.pod} ${isActive ? styles.podActive : ''}`}
               >
+                {isActive && !disabled ? (
+                  <span className={styles.podThink} aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                ) : null}
+                {opp.alive && opp.hand.length === 1 ? (
+                  <span className={styles.podLast}>LAST</span>
+                ) : null}
                 <span
                   className={styles.podAvatar}
                   style={{
@@ -176,16 +211,23 @@ export function CascadeBoard({
               onClick={() => drawEnabled && onDraw()}
               disabled={!drawEnabled}
               aria-label="Draw a card"
-              className={styles.drawButton}
+              className={`${styles.drawButton} ${mustDraw ? styles.drawMust : ''}`}
             >
-              Draw
+              <span className={styles.drawEmblem} aria-hidden="true">
+                {deckEmblem}
+              </span>
               {snapshot.pendingDraw > 0 ? (
                 <span className={styles.drawPlus}>+{snapshot.pendingDraw}</span>
               ) : null}
             </button>
+            <span className={styles.pileLabel}>Draw</span>
           </div>
 
-          <div className={styles.discard} style={{ width: 92, height: 138 }}>
+          <div
+            ref={discardRef}
+            className={styles.discard}
+            style={{ width: 92, height: 138 }}
+          >
             <span
               className={styles.discardUnder}
               style={{ transform: 'translate(-5px, 5px) rotate(-5deg)' }}
@@ -197,6 +239,7 @@ export function CascadeBoard({
               aria-hidden="true"
             />
             <Card card={snapshot.topCard} size="lg" disabled />
+            <span className={styles.pileLabel}>Discard</span>
           </div>
         </div>
 
@@ -206,10 +249,17 @@ export function CascadeBoard({
             const center = (handCount - 1) / 2;
             const offset = i - center;
             const step = Math.min(6, 46 / Math.max(handCount, 1));
+            const isPlayableCard = playableIds.has(c.id);
             return (
               <div
                 key={c.id}
-                className={styles.handSlot}
+                ref={(el) => {
+                  if (el) slotRefs.current.set(c.id, el);
+                  else slotRefs.current.delete(c.id);
+                }}
+                className={`${styles.handSlot} ${
+                  isPlayableCard ? styles.handSlotPlay : ''
+                } ${shakeId === c.id ? styles.shake : ''}`}
                 style={
                   {
                     '--rot': `${offset * step}deg`,
@@ -219,8 +269,9 @@ export function CascadeBoard({
               >
                 <Card
                   card={c}
-                  playable={playableIds.has(c.id)}
-                  disabled={!myTurn || disabled || !playableIds.has(c.id)}
+                  playable={isPlayableCard}
+                  disabled={!myTurn || disabled}
+                  dimmed={myTurn && !disabled && !isPlayableCard}
                   onClick={() => handleCardClick(c)}
                 />
               </div>
@@ -229,7 +280,21 @@ export function CascadeBoard({
         </div>
       </YStack>
 
+      {toasts.length ? (
+        <div className={styles.toasts} aria-hidden="true">
+          {toasts.map((t) => (
+            <div key={t.key} className={styles.toast}>
+              {t.glyph ? (
+                <span className={styles.toastGlyph}>{t.glyph}</span>
+              ) : null}
+              {t.label}
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       <ColorPicker open={!!pendingWildCard} onPick={handlePickColor} />
+      {flyNode}
     </YStack>
   );
 }

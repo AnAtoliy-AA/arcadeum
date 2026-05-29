@@ -15,6 +15,11 @@ interface CardProps {
   playable?: boolean;
   selected?: boolean;
   disabled?: boolean;
+  /**
+   * Visually muted but still interactive — used for unplayable cards on the
+   * player's turn so a click can trigger the "illegal move" shake.
+   */
+  dimmed?: boolean;
   onClick?: () => void;
   size?: 'sm' | 'md' | 'lg';
   ariaLabel?: string;
@@ -35,6 +40,7 @@ function CardImpl({
   playable = false,
   selected = false,
   disabled = false,
+  dimmed = false,
   onClick,
   size = 'md',
   ariaLabel,
@@ -62,7 +68,7 @@ function CardImpl({
     isClickable && styles.clickable,
     playable && styles.playable,
     selected && styles.selected,
-    disabled && !faceDown && styles.disabled,
+    !faceDown && (dimmed || disabled) && styles.disabled,
   ]
     .filter(Boolean)
     .join(' ');
@@ -83,7 +89,13 @@ function CardImpl({
         } as React.CSSProperties
       }
     >
-      {faceDown ? null : (
+      {faceDown ? (
+        <span aria-hidden="true" className={styles.backMark}>
+          <span style={{ fontSize: glyphSize * 0.7 }}>
+            {theme.symbols.WILD}
+          </span>
+        </span>
+      ) : (
         <>
           <span
             aria-hidden="true"

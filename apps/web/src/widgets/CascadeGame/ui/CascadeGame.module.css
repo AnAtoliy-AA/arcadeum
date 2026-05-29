@@ -18,7 +18,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       120% 80% at 50% 0%,
       rgba(255, 255, 255, 0.08) 0%,
       transparent 45%
@@ -32,6 +33,27 @@
   z-index: 0;
 }
 
+/* Glowing accent ring pooled behind the centre piles. */
+.table::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 460px;
+  height: 320px;
+  max-width: 90%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.18),
+    transparent 72%
+  );
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .tableLayer {
   position: relative;
   z-index: 1;
@@ -40,17 +62,18 @@
 /* ---- Player pods ---------------------------------------------------- */
 
 .pod {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 16px;
-  border-radius: 16px;
+  gap: 5px;
+  padding: 12px 16px 14px;
+  border-radius: 18px;
   background: rgba(8, 10, 24, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
-  min-width: 124px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.34);
+  min-width: 132px;
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -58,11 +81,65 @@
 }
 
 .podActive {
-  border-color: rgba(251, 191, 36, 0.75);
+  border-color: rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.85);
   box-shadow:
-    0 0 0 2px rgba(251, 191, 36, 0.35),
-    0 8px 22px rgba(0, 0, 0, 0.45);
-  transform: translateY(-2px);
+    0 0 0 2px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.4),
+    0 0 26px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.3),
+    0 10px 26px rgba(0, 0, 0, 0.45);
+  transform: translateY(-4px);
+}
+
+/* Animated "thinking" dots on whoever's turn it is. */
+.podThink {
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  display: flex;
+  gap: 3px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.9);
+  box-shadow: 0 2px 10px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.5);
+}
+.podThink i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #06040f;
+  animation: cascade-think 1s ease-in-out infinite;
+}
+.podThink i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.podThink i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes cascade-think {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Alert pill when an opponent is down to their last card. */
+.podLast {
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b, #dc2626);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.6);
+  animation: cascade-pulse 0.9s ease-in-out infinite;
 }
 
 .podAvatar {
@@ -101,20 +178,28 @@
 .podFan {
   display: flex;
   align-items: flex-end;
-  height: 22px;
+  height: 30px;
+  margin-top: 1px;
 }
 
 .podFanCard {
-  width: 13px;
-  height: 20px;
-  border-radius: 3px;
-  margin-left: -6px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0.05)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 17px;
+  height: 26px;
+  border-radius: 4px;
+  margin-left: -8px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.16) 0 4px,
+      transparent 4px 8px
+    ),
+    linear-gradient(
+      155deg,
+      rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.5),
+      rgba(8, 10, 24, 0.9)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   transform-origin: bottom center;
 }
 .podFanCard:first-child {
@@ -135,7 +220,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 14%;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       125% 78% at 50% -8%,
       color-mix(in srgb, var(--face) 42%, transparent),
       transparent 56%
@@ -177,7 +263,8 @@
 
 .faceDown {
   --face: var(--cascade-accent, #a78bfa);
-  background: repeating-linear-gradient(
+  background:
+    repeating-linear-gradient(
       45deg,
       color-mix(in srgb, var(--face) 14%, transparent) 0px,
       color-mix(in srgb, var(--face) 14%, transparent) 6px,
@@ -185,6 +272,24 @@
       transparent 12px
     ),
     linear-gradient(160deg, #1b2133 0%, #0a0d16 100%);
+}
+
+/* Tilted emblem lozenge on the card back. */
+.backMark {
+  width: 46%;
+  height: 46%;
+  border-radius: 50% / 40%;
+  transform: rotate(-22deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.backMark > span {
+  transform: rotate(22deg);
+  font-weight: 900;
+  color: #fff;
 }
 
 /* Cards are already dark, so dimming is gentle — not a heavy brightness cut. */
@@ -273,7 +378,8 @@
 
 /* WILD / WILD +4 — prismatic aura on dark glass, not a single colour. */
 .wild {
-  background: conic-gradient(
+  background:
+    conic-gradient(
       from 200deg at 50% 118%,
       rgba(244, 63, 94, 0.55),
       rgba(251, 191, 36, 0.55),
@@ -320,13 +426,31 @@
 .handSlot:first-child {
   margin-left: 0;
 }
-.handSlot:hover {
-  transform: translateY(-26px) rotate(0deg) scale(1.06);
+/* Only playable cards lift on hover, cueing what you can actually play. */
+.handSlotPlay:hover {
+  transform: translateY(-28px) rotate(0deg) scale(1.07);
   z-index: 30;
 }
 /* Open a gap around the hovered card so it doesn't clip its neighbours. */
-.handSlot:hover + .handSlot {
+.handSlotPlay:hover + .handSlot {
   margin-left: -8px;
+}
+
+/* Brief shake when an unplayable card is clicked. */
+.handSlot.shake {
+  animation: cascade-shake 0.4s ease;
+}
+@keyframes cascade-shake {
+  0%,
+  100% {
+    transform: rotate(var(--rot, 0deg)) translateY(var(--lift, 0px));
+  }
+  25% {
+    transform: translateX(-6px) rotate(var(--rot, 0deg));
+  }
+  75% {
+    transform: translateX(6px) rotate(var(--rot, 0deg));
+  }
 }
 
 @media (max-width: 560px) {
@@ -353,7 +477,8 @@
   position: absolute;
   inset: 0;
   border-radius: 12px;
-  background: repeating-linear-gradient(
+  background:
+    repeating-linear-gradient(
       45deg,
       rgba(255, 255, 255, 0.05) 0px,
       rgba(255, 255, 255, 0.05) 6px,
@@ -376,7 +501,8 @@
   width: 92px;
   height: 138px;
   border-radius: 12px;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       120% 90% at 30% 18%,
       rgba(255, 255, 255, 0.16),
       transparent 55%
@@ -404,10 +530,38 @@
   opacity: 0.6;
 }
 
+.drawEmblem {
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
 .drawPlus {
   font-size: 12px;
   font-weight: 800;
   color: #fde68a;
+}
+
+/* Red, pulsing draw pile when the player must resolve a stacked penalty. */
+.drawMust {
+  border-color: rgba(239, 68, 68, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.35),
+    0 0 22px rgba(239, 68, 68, 0.4);
+  animation: cascade-pulse 1s ease-in-out infinite;
+}
+
+/* Small uppercase caption beneath each pile. */
+.pileLabel {
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .discard {
@@ -541,7 +695,8 @@
   height: 100px;
   padding: 8px;
   border-radius: 12px;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       125% 78% at 50% -8%,
       color-mix(in srgb, var(--face) 45%, transparent),
       transparent 56%
@@ -638,18 +793,95 @@
   }
 }
 
+/* ---- Event toasts --------------------------------------------------- */
+
+.toasts {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 26px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: 1px;
+  background: rgba(8, 10, 24, 0.78);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.4);
+  animation: cascade-toast 1.3s ease forwards;
+}
+.toastGlyph {
+  font-size: 30px;
+  line-height: 1;
+}
+
+@keyframes cascade-toast {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(8px);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.05) translateY(0);
+  }
+  30% {
+    transform: scale(1);
+  }
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-12px);
+  }
+}
+
+/* ---- Flying card (play animation) ---------------------------------- */
+
+.fly {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transition:
+    transform 420ms cubic-bezier(0.5, 0, 0.2, 1),
+    opacity 420ms ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .playable,
   .callButton,
   .handSlot,
   .card,
   .pod,
+  .podThink i,
+  .podLast,
   .drawButton,
+  .drawMust,
   .dirArrow,
   .pickerBackdrop,
   .pickerPanel,
-  .swatch {
+  .swatch,
+  .toast,
+  .shake {
     animation: none !important;
+    transition: none !important;
+  }
+  .fly {
     transition: none !important;
   }
 }

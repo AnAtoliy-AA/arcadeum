@@ -26,7 +26,7 @@ export const shopBy = {
   },
   mannequin: {
     tryOn: 'Прымерка',
-    stage: { level: 'УЗР {level} · Анлайн', online: 'Анлайн', skin: 'Скін' },
+    stage: { level: 'УЗР {level} · Анлайн', online: 'Анлайн' },
     slots: {
       avatar: {
         label: 'Аватар',

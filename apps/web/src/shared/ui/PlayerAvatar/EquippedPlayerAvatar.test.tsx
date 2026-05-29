@@ -7,6 +7,14 @@ import * as hook from '@/features/shop/hooks/useEquippedCosmetics';
 
 vi.mock('@/features/shop/hooks/useEquippedCosmetics');
 
+// No LanguageProvider here, so stub the translator: resolve the skin-chip
+// prefix to a known word and pass every other key through unchanged.
+vi.mock('@/shared/lib/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string) => (key === 'common.cosmetics.skin' ? 'Skin' : key),
+  }),
+}));
+
 const render = (ui: React.ReactElement) =>
   rtlRender(
     <TamaguiProvider config={config} defaultTheme="dark">
@@ -78,7 +86,9 @@ describe('EquippedPlayerAvatar', () => {
     );
     const skin = screen.getByTestId('pa-skin');
     expect(skin).toBeInTheDocument();
-    expect(skin.textContent ?? '').toMatch(/SKIN/);
+    // Localized prefix + resolved skin label, separated by the chip's middot.
+    expect(skin.textContent ?? '').toContain('Skin · ');
+    expect(skin.textContent ?? '').toContain('items.game_skin.skin-neon.name');
   });
 
   it('falls back to fallbackAvatarUrl when catalog returns null', () => {

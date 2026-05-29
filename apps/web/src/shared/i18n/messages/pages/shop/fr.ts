@@ -26,7 +26,7 @@ export const shopFr = {
   },
   mannequin: {
     tryOn: 'Essai',
-    stage: { level: 'NIV {level} · En ligne', online: 'En ligne', skin: 'Skin' },
+    stage: { level: 'NIV {level} · En ligne', online: 'En ligne' },
     slots: {
       avatar: {
         label: 'Avatar',

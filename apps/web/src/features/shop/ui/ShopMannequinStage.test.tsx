@@ -16,7 +16,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 
 const labels: ShopMannequinStageLabels = {
   tryOn: 'Try-on',
-  stage: { level: 'LVL {level} · Online', online: 'Online', skin: 'Skin' },
+  stage: { level: 'LVL {level} · Online', online: 'Online' },
 };
 
 const EMPTY = {

@@ -26,7 +26,7 @@ export const shopEn = {
   },
   mannequin: {
     tryOn: 'Try-on',
-    stage: { level: 'LVL {level} · Online', online: 'Online', skin: 'Skin' },
+    stage: { level: 'LVL {level} · Online', online: 'Online' },
     slots: {
       avatar: {
         label: 'Avatar',

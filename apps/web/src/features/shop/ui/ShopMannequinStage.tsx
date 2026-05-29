@@ -12,7 +12,7 @@ import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
 
 export interface ShopMannequinStageLabels {
   tryOn: string;
-  stage: { level: string; online: string; skin: string };
+  stage: { level: string; online: string };
 }
 
 export interface ShopMannequinStageProps {
@@ -50,7 +50,7 @@ export function ShopMannequinStage({
     ? {
         id: skin.id,
         label: String(t(`pages.shop.${skin.nameKey}` as TranslationKey)),
-        prefix: labels.stage.skin,
+        prefix: t('common.cosmetics.skin'),
       }
     : null;
 

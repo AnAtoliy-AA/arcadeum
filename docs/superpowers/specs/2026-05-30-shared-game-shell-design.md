@@ -147,8 +147,10 @@ is where Critical's idle-timer + autoplay relocate.
   shows board-specific detail (active color / direction), otherwise drop in
   favor of the header indicator. (Cascade's `TurnBadge` shows active color +
   direction → **keep**; it is board state, not turn identity.)
-- **SeaBattle**: replace its hand-built `turnAvatar` block with the `turn`
-  contract; delete the local `InGameAvatar` wiring it duplicated.
+- **SeaBattle**: replace its hand-built `turnAvatar` block (which manually
+  wires the shared `InGameAvatar` + a resolved name) with the `turn` contract.
+  Name resolution moves into `TurnIndicator`; no duplicate avatar component
+  exists to delete.
 
 ### 4. Migrate Critical onto the shell
 
@@ -158,12 +160,17 @@ is where Critical's idle-timer + autoplay relocate.
   with `GameWidgetContainer`.
 - Header → standard `headerProps` with the `turn` contract derived from
   Critical's `currentPlayer` / `isMyTurn` / `isGameOver`.
-- `IdleTimerDisplay` + `AutoplayControls` → `extraActions`.
+- `IdleTimerDisplay` + `AutoplayControls` currently live **inside**
+  `MatchWidget.tsx` (not in any header). Lift them out into the shell's
+  `extraActions` slot — this is the one intentional edit to `MatchWidget` for
+  this refactor.
 - Critical's `SceneBackdrop` / scene palette stays inside the `board` slot.
-- Critical's own widget-level fullscreen + chat-popup are removed (the shell
-  provides both). Keep `criticalWidgetFullscreenStyles` deletion in scope.
+- Critical's own widget-level fullscreen (`useFullscreen` +
+  `criticalWidgetFullscreenStyles` in Game.tsx) is removed — the shell provides
+  fullscreen. Critical has no chat-popup component of its own today; it simply
+  **gains** the shell's `GameChatPopupOverlay`.
 - The complex grid (`MatchWidget`, opponents row, arena, hand) renders inside
-  the `board` slot unchanged.
+  the `board` slot unchanged apart from the controls lift above.
 
 ### 5. Glimworm no-turn header
 
@@ -186,7 +193,8 @@ no-turn `turnStatusText` escape hatch for real-time games.
 
 ```
 GamePageLayout (page chrome, already shared)
-  ├─ registers resolveDisplayName / resolveEquipped / currentUserId → GameChat store
+  ├─ registers resolveEquipped / currentUserId → GameChat store
+  │   (resolveDisplayName is registered by each Game via useGameChatIntegration)
   └─ <Game /> (per registry)
         └─ GameWidgetContainer (shared shell)
               ├─ header: TurnIndicator(onClockUserId,isMyTurn) ──┐

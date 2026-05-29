@@ -5,6 +5,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
+import { useAutoExitFullscreen } from '@/features/games/hooks/useAutoExitFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
@@ -59,8 +60,19 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const media = useMedia();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
-  const { isFullscreen, toggleFullscreen } = useFullscreen(gameContainerRef, {
-    enableKeyboard: true,
+  const { isFullscreen, toggleFullscreen, exitFullscreen } = useFullscreen(
+    gameContainerRef,
+    {
+      enableKeyboard: true,
+    },
+  );
+
+  // Drop out of fullscreen shortly after the game finishes so the player
+  // returns to the normal page chrome (header, rematch, navigation).
+  useAutoExitFullscreen({
+    status: room.status,
+    isFullscreen,
+    exitFullscreen,
   });
 
   // Chat visibility — wide screens default visible, narrow hidden

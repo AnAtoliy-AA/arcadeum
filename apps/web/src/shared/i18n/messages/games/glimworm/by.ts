@@ -51,6 +51,9 @@ export const byMessages = {
       connecting: 'Падключэнне…',
       reconnecting: 'Перападключэнне…',
       slowConnection: 'Павольнае злучэнне',
+      getReady: 'Прыгатуйцеся',
+      inPlay: 'Ідзе гульня',
+      roundOver: 'Раўнд скончаны',
     },
     rules: {
       objective:

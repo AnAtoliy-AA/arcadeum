@@ -55,6 +55,9 @@ export const esMessages = {
       connecting: 'Conectando…',
       reconnecting: 'Reconectando…',
       slowConnection: 'Conexión lenta',
+      getReady: 'Prepárate',
+      inPlay: 'En juego',
+      roundOver: 'Ronda terminada',
     },
     rules: {
       objective:

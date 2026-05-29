@@ -43,13 +43,17 @@ describe('BattlePassService', () => {
         }),
       ),
     };
+    const wallet = { credit: jest.fn(() => Promise.resolve({})) };
+    const inventory = { grant: jest.fn(() => Promise.resolve()) };
     type Args = ConstructorParameters<typeof BattlePassService>;
     const service = new BattlePassService(
       progressModel as unknown as Args[0],
       userModel as unknown as Args[1],
       stats as unknown as Args[2],
+      wallet as unknown as Args[3],
+      inventory as unknown as Args[4],
     );
-    return { service, userModel, progressModel, stats };
+    return { service, userModel, progressModel, stats, wallet, inventory };
   }
 
   it('derives xp, current tier and premium flag', async () => {
@@ -89,9 +93,9 @@ describe('BattlePassService', () => {
     );
   });
 
-  it('claims an unlocked tier and returns premium rewards for prestige users', async () => {
-    // High stats → all tiers unlocked.
-    const { service, progressModel } = build({
+  it('claims an unlocked tier, credits currency and grants the premium cosmetic', async () => {
+    // High stats → all tiers unlocked. Tier 3: free = coins, premium = cosmetic.
+    const { service, progressModel, wallet, inventory } = build({
       role: 'premium',
       totalGames: 500,
       wins: 400,
@@ -100,13 +104,48 @@ describe('BattlePassService', () => {
     expect(progressModel.findOneAndUpdate).toHaveBeenCalled();
     expect(result.tier).toBe(3);
     expect(result.claimedTiers).toContain(3);
-    // Free + premium reward for a premium user.
-    expect(result.rewards).toHaveLength(2);
+    expect(result.rewards).toHaveLength(2); // free + premium
+
+    // Free coins credited with a deterministic idempotency key.
+    expect(wallet.credit).toHaveBeenCalledWith(
+      'user-1',
+      'coins',
+      expect.any(Number),
+      'battle_pass_reward',
+      'bp:season-1:3:free:user-1',
+      expect.any(Object),
+    );
+    // Premium cosmetic granted.
+    expect(inventory.grant).toHaveBeenCalledWith(
+      'user-1',
+      'frame-prism',
+      'bp:season-1:3:premium:user-1',
+    );
   });
 
-  it('returns only the free reward for non-premium users', async () => {
-    const { service } = build({ role: 'free', totalGames: 500, wins: 400 });
+  it('credits only the free reward for non-premium users', async () => {
+    const { service, wallet, inventory } = build({
+      role: 'free',
+      totalGames: 500,
+      wins: 400,
+    });
     const result = await service.claim('user-1', 3);
     expect(result.rewards).toHaveLength(1);
+    expect(wallet.credit).toHaveBeenCalledTimes(1);
+    expect(inventory.grant).not.toHaveBeenCalled();
+  });
+
+  it('does not pay out again when the tier is already claimed', async () => {
+    const { service, wallet, inventory, progressModel } = build({
+      role: 'premium',
+      totalGames: 500,
+      wins: 400,
+      claimedTiers: [3],
+    });
+    const result = await service.claim('user-1', 3);
+    expect(result.claimedTiers).toEqual([3]);
+    expect(wallet.credit).not.toHaveBeenCalled();
+    expect(inventory.grant).not.toHaveBeenCalled();
+    expect(progressModel.findOneAndUpdate).not.toHaveBeenCalled();
   });
 });

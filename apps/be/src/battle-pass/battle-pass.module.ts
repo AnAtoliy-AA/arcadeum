@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { BattlePassController } from './battle-pass.controller';
@@ -10,6 +10,8 @@ import {
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 import { GamesModule } from '../games/games.module';
+import { WalletModule } from '../wallet/wallet.module';
+import { ShopModule } from '../shop/shop.module';
 
 @Module({
   imports: [
@@ -18,7 +20,9 @@ import { GamesModule } from '../games/games.module';
       { name: User.name, schema: UserSchema },
     ]),
     AuthModule,
-    forwardRef(() => GamesModule),
+    GamesModule,
+    WalletModule,
+    ShopModule,
   ],
   controllers: [BattlePassController],
   providers: [BattlePassService],

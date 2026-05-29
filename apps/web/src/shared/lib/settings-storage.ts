@@ -5,6 +5,7 @@ export type StoredSettings = {
   language?: string;
   hapticsEnabled?: boolean;
   soundEnabled?: boolean;
+  musicEnabled?: boolean;
 };
 
 const listeners = new Set<() => void>();
@@ -42,6 +43,10 @@ export function loadStoredSettings(): StoredSettings {
 
     if (typeof parsed.soundEnabled === 'boolean') {
       settings.soundEnabled = parsed.soundEnabled;
+    }
+
+    if (typeof parsed.musicEnabled === 'boolean') {
+      settings.musicEnabled = parsed.musicEnabled;
     }
 
     return settings;

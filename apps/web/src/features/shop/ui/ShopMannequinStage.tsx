@@ -90,23 +90,40 @@ export function ShopMannequinStage({
     </XStack>
   ) : null;
 
+  // Signature of the previewed look — when it changes, the wrapper remounts and
+  // replays the `shop-morph` animation so the mannequin cross-fades on swap.
+  const morphKey = [
+    avatar,
+    badge,
+    frame,
+    aura,
+    background,
+    banner,
+    nameColor,
+    skin,
+  ]
+    .map((i) => i?.id ?? '-')
+    .join('|');
+
   return (
-    <PlayerAvatar
-      data-testid="shop-stage"
-      name={displayName}
-      size="profile"
-      avatarUrl={avatar?.assetUrl ?? null}
-      badgeUrl={badge?.assetUrl ?? null}
-      frameColor={frame?.colorValue ?? null}
-      auraColor={aura?.colorValue ?? null}
-      backgroundColor={background?.colorValue ?? null}
-      bannerColor={banner?.colorValue ?? null}
-      nameColor={nameColor?.colorValue ?? null}
-      rarityGlow={rarityGlow}
-      skinChip={skinChip}
-      topLeftOverlay={topLeftOverlay}
-      presenceLine={presenceLine}
-      priority
-    />
+    <div key={morphKey} className="shop-stage-morph">
+      <PlayerAvatar
+        data-testid="shop-stage"
+        name={displayName}
+        size="profile"
+        avatarUrl={avatar?.assetUrl ?? null}
+        badgeUrl={badge?.assetUrl ?? null}
+        frameColor={frame?.colorValue ?? null}
+        auraColor={aura?.colorValue ?? null}
+        backgroundColor={background?.colorValue ?? null}
+        bannerColor={banner?.colorValue ?? null}
+        nameColor={nameColor?.colorValue ?? null}
+        rarityGlow={rarityGlow}
+        skinChip={skinChip}
+        topLeftOverlay={topLeftOverlay}
+        presenceLine={presenceLine}
+        priority
+      />
+    </div>
   );
 }

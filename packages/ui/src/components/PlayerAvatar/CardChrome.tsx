@@ -14,6 +14,10 @@ interface CardChromeProps {
    *  component owns only the separator + styling, never the literal text. */
   skinChip?: { id: string; label: string; prefix?: string } | null;
   topLeftOverlay?: React.ReactNode;
+  /** VIP tier accent (premium/vip/supporter) applied to the nameplate. */
+  roleColor?: string | null;
+  /** Prestige glyph shown beside the name for VIP tiers. */
+  roleGlyph?: string | null;
   testId?: string;
   onPress?: () => void;
   /** The disc + halo zone, rendered between the chrome overlays and the name. */
@@ -31,6 +35,8 @@ export function CardChrome({
   presenceLine,
   skinChip,
   topLeftOverlay,
+  roleColor,
+  roleGlyph,
   testId,
   onPress,
   children,
@@ -108,7 +114,12 @@ export function CardChrome({
         <Text
           fontSize="$6"
           fontWeight="900"
-          color={nameColor && !isGradient(nameColor) ? nameColor : '$white'}
+          // Equipped name color wins; otherwise a VIP tier tints the name.
+          color={
+            nameColor && !isGradient(nameColor)
+              ? nameColor
+              : (roleColor ?? '$white')
+          }
           data-testid={testId ? `${testId}-name` : undefined}
           {...(nameColor && isGradient(nameColor)
             ? {
@@ -119,8 +130,11 @@ export function CardChrome({
                   backgroundClip: 'text',
                 },
               }
-            : {})}
+            : roleColor
+              ? { style: { textShadow: `0 0 12px ${roleColor}66` } }
+              : {})}
         >
+          {roleGlyph ? `${roleGlyph} ` : ''}
           {name}
         </Text>
         {presenceLine ? (

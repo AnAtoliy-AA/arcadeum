@@ -7,6 +7,7 @@ import { CardChrome } from './CardChrome';
 import { pickSwatchColor } from './colors';
 import { DISC_SIZE, type PlayerAvatarSize } from './constants';
 import { buildRaysStyle, RaysHalo } from './RaysHalo';
+import { getRoleGlyph, getRoleTierColor } from './roles';
 
 export type { PlayerAvatarSize } from './constants';
 
@@ -26,6 +27,9 @@ export interface PlayerAvatarProps {
   nameColor?: string | null;
   level?: number | null;
   presenceLine?: string;
+  /** Prestige role (premium/vip/supporter). Drives a tier aura + nameplate
+   *  treatment so paid tiers are visible everywhere the avatar appears. */
+  role?: string | null;
   priority?: boolean;
   /** Resolved skin item label for the SKIN chip. Only rendered at card/profile.
    *  `prefix` is the localized category word; the literal lives in the consumer. */
@@ -48,6 +52,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   bannerColor,
   nameColor,
   presenceLine,
+  role,
   priority,
   skinChip,
   topLeftOverlay,
@@ -55,15 +60,21 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   onPress,
 }: PlayerAvatarProps) {
   const disc = DISC_SIZE[size];
+  const roleColor = getRoleTierColor(role);
+  const roleGlyph = getRoleGlyph(role);
 
   // Every size renders the full set of disc-level cosmetics (badge, frame,
   // aura/rays, background). Only the chrome wrapper — banner backdrop, name
   // label, skin chip — stays gated to the card/profile presentations, since
   // those need a name to sit on. Banner is therefore "biggest only".
   const showCardChrome = size === 'card' || size === 'profile';
-  const showRays = !!auraColor || !!rarityGlow;
+  // VIP tier glows even without an equipped aura, so prestige players are
+  // recognizable in any list. An equipped aura/rarity glow still takes priority.
+  const showRays = !!auraColor || !!rarityGlow || !!roleColor;
   const raysColor =
-    pickSwatchColor(auraColor ?? null) ?? pickSwatchColor(rarityGlow ?? null);
+    pickSwatchColor(auraColor ?? null) ??
+    pickSwatchColor(rarityGlow ?? null) ??
+    pickSwatchColor(roleColor);
   const raysBg = buildRaysStyle(raysColor);
 
   // Soft bloom under the disc, driven by the same color as the rays (aura,
@@ -130,6 +141,8 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       presenceLine={presenceLine}
       skinChip={skinChip}
       topLeftOverlay={topLeftOverlay}
+      roleColor={roleColor}
+      roleGlyph={roleGlyph}
       testId={testId}
       onPress={onPress}
     >

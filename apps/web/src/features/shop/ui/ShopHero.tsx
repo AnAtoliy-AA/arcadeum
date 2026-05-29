@@ -182,13 +182,14 @@ export function ShopHero({
       onPointerEnter={handleHoverOn}
       onPointerLeave={handleHoverOff}
     >
-      <HeroFrame style={bgStyle}>
+      <HeroFrame className="animate-entrance" style={bgStyle}>
         <XStack
           gap="$5"
           alignItems="center"
           $sm={{ flexDirection: 'column', alignItems: 'flex-start' }}
         >
           <Stack
+            className="shop-featured-disc"
             width={140}
             height={140}
             borderRadius={70}
@@ -197,7 +198,7 @@ export function ShopHero({
             backgroundColor="rgba(255,255,255,0.04)"
             borderWidth={2}
             borderColor={`${accent}66`}
-            style={{ boxShadow: `0 0 48px ${glow}` }}
+            style={{ ['--shop-glow' as string]: glow } as React.CSSProperties}
           >
             <ItemAsset item={item} size={108} priority />
           </Stack>

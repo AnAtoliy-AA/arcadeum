@@ -33,6 +33,8 @@ export type LeaderboardPlayer = {
   isFriend?: boolean;
   isInMatch?: boolean;
   gameTags?: string[];
+  /** Prestige role (premium/vip/supporter/…) for the VIP avatar treatment. */
+  role?: string | null;
   /** Cosmetic ids the player has equipped; resolved via the shop catalog. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;

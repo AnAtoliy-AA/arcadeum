@@ -6,10 +6,11 @@ import {
 } from '../lib/settings-storage';
 
 export function useSoundSetting() {
+  // Sound effects are opt-in — disabled until the user turns them on.
   const soundEnabled = useSyncExternalStore(
     subscribeToSettings,
-    () => loadStoredSettings().soundEnabled ?? true,
-    () => true,
+    () => loadStoredSettings().soundEnabled ?? false,
+    () => false,
   );
 
   const setSoundEnabled = useCallback((enabled: boolean) => {

@@ -71,6 +71,22 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
   });
 
+  it('stacks the badge above the avatar art so it is never clipped', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        avatarUrl="/x.png"
+        badgeUrl="/b.png"
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    // Tamagui applies zIndex via class, so read the resolved computed value.
+    const badgeZ = Number(getComputedStyle(screen.getByTestId('pa-badge')).zIndex);
+    const imgZ = Number(getComputedStyle(screen.getByRole('img', { name: 'J' })).zIndex);
+    expect(badgeZ).toBeGreaterThan(imgZ);
+  });
+
   it('renders the frame ring at sm/md/card', () => {
     const { rerender } = render(
       <PlayerAvatar

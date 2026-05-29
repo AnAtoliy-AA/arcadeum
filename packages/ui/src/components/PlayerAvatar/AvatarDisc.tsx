@@ -174,6 +174,9 @@ export function AvatarDisc({
           borderColor="rgba(255,255,255,0.20)"
           alignItems="center"
           justifyContent="center"
+          // Sits above the avatar art/initials (both zIndex 1) so the corner
+          // badge is never clipped by a full-bleed avatar image.
+          zIndex={2}
           data-testid={testId ? `${testId}-badge` : undefined}
         >
           <img

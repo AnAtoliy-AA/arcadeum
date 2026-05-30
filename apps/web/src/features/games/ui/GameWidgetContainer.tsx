@@ -304,6 +304,12 @@ interface GameWidgetContainerProps {
   isMyTurn?: boolean;
   /** When true, the widget auto-exits its fullscreen shortly after finish. */
   isGameOver?: boolean;
+  /**
+   * Renders the shared in-game chat message popup overlay (default true).
+   * Set false for games that show incoming chat their own way (e.g. Critical
+   * renders per-opponent chat bubbles) to avoid showing each message twice.
+   */
+  showChatPopup?: boolean;
 }
 
 const gameWidgetGlobalStyles = `
@@ -333,6 +339,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   variant,
   isMyTurn,
   isGameOver,
+  showChatPopup = true,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Widget-only fullscreen — independent of the page-level toggle in
@@ -456,7 +463,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </SharedHandSection>
         )}
         {modals}
-        <GameChatPopupOverlay />
+        {showChatPopup && <GameChatPopupOverlay />}
       </Container>
     </>
   );

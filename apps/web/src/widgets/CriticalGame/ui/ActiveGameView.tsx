@@ -257,6 +257,9 @@ export function ActiveGameView({
         variant={cardVariant as GameVariant}
         isMyTurn={isMyTurn}
         isGameOver={isGameOver}
+        // Critical shows incoming chat as per-opponent bubbles over each tile,
+        // so it opts out of the shared corner popup to avoid double display.
+        showChatPopup={false}
         headerProps={{
           variantEmoji: variantMeta?.emoji ?? '🎴',
           title: headerTitle,

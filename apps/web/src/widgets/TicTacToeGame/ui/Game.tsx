@@ -5,9 +5,12 @@ import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import { useGameChatIntegration, useRematch } from '@/features/games/hooks';
+import {
+  useGameChatIntegration,
+  useGameChatSend,
+  useRematch,
+} from '@/features/games/hooks';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ChatScope } from '@/shared/types/games';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
 import { useTicTacToeActions } from '../hooks/useTicTacToeActions';
@@ -79,17 +82,11 @@ function TicTacToeGameImpl({
     userId: currentUserId,
   });
 
-  // Pipe engine logs into the shared GameChat. The shared chat infra has no
-  // tic-tac-toe-specific send hook; users send chat via the shared composer.
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    (_msg: string, _scope: ChatScope) => {
-      // Chat send wired through shared composer for now — no game-specific
-      // socket event required.
-      void _msg;
-      void _scope;
-    },
-  );
+  // Pipe engine logs into the shared GameChat and send chat via the generic
+  // session history-note event (the BE appends it to the session logs and
+  // rebroadcasts, so it shows in the shared panel + popup).
+  const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
+  useGameChatIntegration(snapshot?.logs as never, sendChat);
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 

@@ -34,7 +34,7 @@ import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
-import type { RematchInvitation } from '../hooks/useRematch';
+import type { RematchInvitation } from '@/features/games/hooks/useRematch';
 
 interface ActiveGameViewProps {
   currentUserId: string | null;
@@ -105,8 +105,7 @@ export function ActiveGameView({
   const headerTitle = variantMeta
     ? `${t('games.critical_v1.name')} · ${t(variantMeta.name as TranslationKey)}`
     : t('games.critical_v1.name');
-  const turnPlayerId =
-    snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
+  const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
 
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
@@ -271,32 +270,32 @@ export function ActiveGameView({
             <SceneBackdrop />
             <YStack flex={1} className="animate-entrance">
               <MatchWidget
-          room={room}
-          snapshot={snapshot}
-          currentUserId={currentUserId}
-          currentPlayer={currentPlayer}
-          cardVariant={cardVariant}
-          isGameOver={!!isGameOver}
-          isMyTurn={!!isMyTurn}
-          canAct={!!canAct}
-          canPlayNope={canPlayNope}
-          resolveDisplayName={resolveDisplayName}
-          t={
-            t as unknown as (
-              k: string,
-              p?: Record<string, string | number>,
-            ) => string
-          }
-          actions={actions}
-          handlePlayActionCard={handlePlayActionCard}
-          handleOpenEventCombo={handleOpenEventCombo}
-          handleOpenFiverCombo={handleOpenFiverCombo}
-          formatLogMessage={formatLogMessage}
-          autoplayState={autoplayState}
-          idleTimerEnabled={idleTimerEnabled}
-          idleTimerTriggered={idleTimerTriggered}
-          handleIdleTimeout={handleIdleTimeout}
-          handleStopAutoplay={handleStopAutoplay}
+                room={room}
+                snapshot={snapshot}
+                currentUserId={currentUserId}
+                currentPlayer={currentPlayer}
+                cardVariant={cardVariant}
+                isGameOver={!!isGameOver}
+                isMyTurn={!!isMyTurn}
+                canAct={!!canAct}
+                canPlayNope={canPlayNope}
+                resolveDisplayName={resolveDisplayName}
+                t={
+                  t as unknown as (
+                    k: string,
+                    p?: Record<string, string | number>,
+                  ) => string
+                }
+                actions={actions}
+                handlePlayActionCard={handlePlayActionCard}
+                handleOpenEventCombo={handleOpenEventCombo}
+                handleOpenFiverCombo={handleOpenFiverCombo}
+                formatLogMessage={formatLogMessage}
+                autoplayState={autoplayState}
+                idleTimerEnabled={idleTimerEnabled}
+                idleTimerTriggered={idleTimerTriggered}
+                handleIdleTimeout={handleIdleTimeout}
+                handleStopAutoplay={handleStopAutoplay}
               />
             </YStack>
             {currentPlayer && (
@@ -311,72 +310,73 @@ export function ActiveGameView({
         modals={
           <>
             <ActiveGameModals
-        currentUserId={currentUserId}
-        snapshot={snapshot}
-        isMobile={isMobile}
-        cardVariant={cardVariant}
-        aliveOpponents={aliveOpponents}
-        currentPlayer={currentPlayer}
-        actions={actions}
-        rematch={rematch}
-        modals={{
-          eventComboModal,
-          selectedMode,
-          selectedTarget,
-          selectedCard,
-          selectedIndex,
-          selectedDiscardCard,
-          selectedFiverCards,
-          seeTheFutureModal,
-          stashModal,
-          markModal,
-          stealDrawModal,
-          smiteModal,
-          omniscienceModal,
-          targetedAttackModal,
-          favorModal,
-        }}
-        handlers={{
-          handleCloseEventComboModal,
-          handleSelectComboCard,
-          setSelectedMode,
-          setSelectedTarget,
-          setSelectedCard,
-          setSelectedIndex,
-          setSelectedDiscardCard,
-          handleToggleFiverCard,
-          handleConfirmEventCombo,
-          handleCloseSeeTheFutureModal,
-          handleConfirmAlterFuture,
-          handleCloseTargetedAttackModal,
-          handleConfirmTargetedAttack,
-          handleCloseFavorModal,
-          handleConfirmFavor,
-          handleCloseStashModal,
-          handleConfirmStash,
-          handleCloseMarkModal,
-          handleConfirmMark,
-          handleCloseStealDrawModal,
-          handleConfirmStealDraw,
-          handleCloseSmiteModal,
-          handleConfirmSmite,
-          handleCloseOmniscienceModal,
-        }}
-        resolveDisplayName={resolveDisplayName}
-      />
-      <GameResultModal
-        isOpen={!!showResultModal}
-        data-testid="game-result-modal"
-        result={
-          snapshot.players.find((p) => p.alive)?.playerId === currentUserId
-            ? 'victory'
-            : 'defeat'
-        }
-        onRematch={isHost ? rematch.openRematchModal : undefined}
-        onClose={() => setModalDismissed(true)}
-        rematchLoading={rematch.rematchLoading}
-        t={t}
-      />
+              currentUserId={currentUserId}
+              snapshot={snapshot}
+              isMobile={isMobile}
+              cardVariant={cardVariant}
+              aliveOpponents={aliveOpponents}
+              currentPlayer={currentPlayer}
+              actions={actions}
+              rematch={rematch}
+              modals={{
+                eventComboModal,
+                selectedMode,
+                selectedTarget,
+                selectedCard,
+                selectedIndex,
+                selectedDiscardCard,
+                selectedFiverCards,
+                seeTheFutureModal,
+                stashModal,
+                markModal,
+                stealDrawModal,
+                smiteModal,
+                omniscienceModal,
+                targetedAttackModal,
+                favorModal,
+              }}
+              handlers={{
+                handleCloseEventComboModal,
+                handleSelectComboCard,
+                setSelectedMode,
+                setSelectedTarget,
+                setSelectedCard,
+                setSelectedIndex,
+                setSelectedDiscardCard,
+                handleToggleFiverCard,
+                handleConfirmEventCombo,
+                handleCloseSeeTheFutureModal,
+                handleConfirmAlterFuture,
+                handleCloseTargetedAttackModal,
+                handleConfirmTargetedAttack,
+                handleCloseFavorModal,
+                handleConfirmFavor,
+                handleCloseStashModal,
+                handleConfirmStash,
+                handleCloseMarkModal,
+                handleConfirmMark,
+                handleCloseStealDrawModal,
+                handleConfirmStealDraw,
+                handleCloseSmiteModal,
+                handleConfirmSmite,
+                handleCloseOmniscienceModal,
+              }}
+              resolveDisplayName={resolveDisplayName}
+            />
+            <GameResultModal
+              isOpen={!!showResultModal}
+              data-testid="game-result-modal"
+              result={
+                snapshot.players.find((p) => p.alive)?.playerId ===
+                currentUserId
+                  ? 'victory'
+                  : 'defeat'
+              }
+              onRematch={isHost ? rematch.openRematchModal : undefined}
+              onClose={() => setModalDismissed(true)}
+              rematchLoading={rematch.rematchLoading}
+              t={t}
+            />
           </>
         }
       />

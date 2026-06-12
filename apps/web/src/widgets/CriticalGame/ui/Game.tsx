@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useRematch } from '../hooks';
-import { useGameStore, type GameState } from '@/features/games/store/gameStore';
+import { useGameRoomActions } from '@/features/games/hooks';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
@@ -19,19 +19,10 @@ export default function CriticalGame({
 }: CriticalGameProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  // Widget-only fullscreen. Keyboard shortcut is owned by the page-level
-  // `useFullscreen` in `GamePageLayout` (single global listener), so this
-  // instance is mouse-only.
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
 
-  const storeRoom = useGameStore((s: GameState) => s.room);
-  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
-  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
-  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
-  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
-
-  const room =
-    (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
+  const { room, onDeleteRoom, onKickPlayer, onLeaveRoom, onRefresh } =
+    useGameRoomActions(roomId, initialRoom);
 
   const {
     snapshot,
@@ -67,19 +58,16 @@ export default function CriticalGame({
         onStartGame={actions.startCritical}
         onReorderPlayers={reorderParticipants}
         onReinvite={rematch.handleReinvite}
-        onDeleteRoom={() => storeDeleteRoom(roomId)}
+        onDeleteRoom={onDeleteRoom}
         onKickPlayer={
           currentUserId
-            ? (targetUserId) =>
-                storeKickPlayer(roomId, targetUserId, currentUserId)
+            ? (targetUserId) => onKickPlayer(targetUserId, currentUserId)
             : undefined
         }
         onLeaveRoom={
-          currentUserId
-            ? () => storeLeaveRoom(roomId, currentUserId)
-            : undefined
+          currentUserId ? () => onLeaveRoom(currentUserId) : undefined
         }
-        onRefresh={() => storeRefreshRoom(roomId)}
+        onRefresh={onRefresh}
         t={t}
       />
     );

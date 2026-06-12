@@ -1,6 +1,6 @@
 export { useCriticalState } from './useCriticalState';
 export { useCriticalModals } from './useCriticalModals';
-export { useRematch } from './useRematch';
+export { useRematch } from '@/features/games/hooks';
 export { useAutoplay } from './useAutoplay';
 export { useWebGameHaptics } from './useWebGameHaptics';
 export { useIdleTimer } from './useIdleTimer';

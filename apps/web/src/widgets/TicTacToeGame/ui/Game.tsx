@@ -1,15 +1,17 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import {
   useGameChatIntegration,
   useGameChatSend,
   useRematch,
+  useGameRoomActions,
+  useGameResultModal,
 } from '@/features/games/hooks';
+import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -52,14 +54,8 @@ function TicTacToeGameImpl({
   onShowRulesClose,
 }: TicTacToeGameProps) {
   const { t } = useTranslation();
-  const storeRoom = useGameStore((s: GameState) => s.room);
-  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
-  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
-  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
-  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
-
-  const room =
-    (storeRoom?.id === roomId ? storeRoom : null) ?? initialRoom ?? null;
+  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
+    useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -90,9 +86,34 @@ function TicTacToeGameImpl({
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
-  const [dismissedForSessionId, setDismissedForSessionId] = useState<
-    string | null
-  >(null);
+  const result = computeGameResult(isGameOver, currentUserId, {
+    winnerId: snapshot?.winnerId,
+    isDraw: snapshot?.isDraw,
+    isWinner: snapshot?.options.teamMode
+      ? () => {
+          const myPlayer = snapshot.players.find(
+            (p) => p.playerId === currentUserId,
+          );
+          return myPlayer?.teamId === snapshot.winnerId;
+        }
+      : undefined,
+  });
+
+  const { showResultModal, sharedResult, resultMessages, dismiss } =
+    useGameResultModal(
+      session,
+      result,
+      result
+        ? {
+            title: t(
+              `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+            ),
+            message: t(
+              `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+            ),
+          }
+        : undefined,
+    );
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
@@ -105,22 +126,6 @@ function TicTacToeGameImpl({
       TIC_TAC_TOE_VARIANTS[0],
     [options.variant],
   );
-
-  const result: 'won' | 'lost' | 'draw' | null = useMemo(() => {
-    if (!snapshot || !isGameOver) return null;
-    if (snapshot.isDraw) return 'draw';
-    if (!snapshot.winnerId || !currentUserId) return 'lost';
-    if (snapshot.options.teamMode) {
-      const myPlayer = snapshot.players.find(
-        (p) => p.playerId === currentUserId,
-      );
-      return myPlayer?.teamId === snapshot.winnerId ? 'won' : 'lost';
-    }
-    return snapshot.winnerId === currentUserId ? 'won' : 'lost';
-  }, [snapshot, isGameOver, currentUserId]);
-
-  const showResultModal =
-    !!result && dismissedForSessionId !== (session?.id ?? null);
 
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
@@ -144,12 +149,10 @@ function TicTacToeGameImpl({
               botCount: opts?.botCount,
             })
           }
-          onLeaveRoom={() => storeLeaveRoom(roomId, currentUserId)}
-          onDeleteRoom={() => void storeDeleteRoom(roomId)}
-          onKickPlayer={(userId) =>
-            storeKickPlayer(roomId, userId, currentUserId ?? '')
-          }
-          onRefresh={() => void storeRefreshRoom(roomId)}
+          onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
+          onDeleteRoom={onDeleteRoom}
+          onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
+          onRefresh={onRefresh}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
@@ -184,25 +187,6 @@ function TicTacToeGameImpl({
     </YStack>
   );
 
-  const sharedResult =
-    result === 'won' ? 'victory' : result === 'lost' ? 'defeat' : result;
-  const resultMessages = result
-    ? {
-        title:
-          result === 'won'
-            ? t('games.tic_tac_toe_v1.gameOver.won')
-            : result === 'lost'
-              ? t('games.tic_tac_toe_v1.gameOver.lost')
-              : t('games.tic_tac_toe_v1.gameOver.draw'),
-        message:
-          result === 'won'
-            ? t('games.tic_tac_toe_v1.gameOver.messages.won')
-            : result === 'lost'
-              ? t('games.tic_tac_toe_v1.gameOver.messages.lost')
-              : t('games.tic_tac_toe_v1.gameOver.messages.draw'),
-      }
-    : undefined;
-
   const inGameBoardSize = snapshot?.options.boardSize ?? options.boardSize;
 
   const modals = (
@@ -210,7 +194,7 @@ function TicTacToeGameImpl({
       <GameResultModal
         isOpen={showResultModal}
         result={sharedResult}
-        onClose={() => setDismissedForSessionId(session?.id ?? null)}
+        onClose={dismiss}
         onRematch={result ? onRematchClick : undefined}
         rematchLoading={rematchLoading}
         t={t}

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.4] - 2026-06-13
+
+### Added
+- add additional premium shop items and fix E2E tests (N/A)
+
+
 ## [1.16.3] - 2026-06-13
 
 ### Added

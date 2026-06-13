@@ -103,6 +103,9 @@ function CascadeGameImpl({
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
+    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
+      | import('@/features/games/lib/computeGameResult').BackendGameResult
+      | undefined,
   });
 
   const { showResultModal, sharedResult, resultMessages, dismiss } =

@@ -226,6 +226,9 @@ export class GameSessionsService {
     // Check if game is over
     if (engine.isGameOver(result.state as unknown as BaseGameState)) {
       session.status = 'completed';
+      (result.state as unknown as BaseGameState).gameResult = engine.getResult(
+        result.state as unknown as BaseGameState,
+      );
     }
 
     session.updatedAt = new Date();

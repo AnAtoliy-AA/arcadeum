@@ -89,14 +89,9 @@ function TicTacToeGameImpl({
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
-    isWinner: snapshot?.options.teamMode
-      ? () => {
-          const myPlayer = snapshot.players.find(
-            (p) => p.playerId === currentUserId,
-          );
-          return myPlayer?.teamId === snapshot.winnerId;
-        }
-      : undefined,
+    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
+      | import('@/features/games/lib/computeGameResult').BackendGameResult
+      | undefined,
   });
 
   const { showResultModal, sharedResult, resultMessages, dismiss } =

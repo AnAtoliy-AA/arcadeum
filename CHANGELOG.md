@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.3] - 2026-06-13
+
+### Added
+- wire TicTacToe chat send via shared useGameChatSend hook (N/A)
+- add shared TurnIndicator + turn contract to GameWidgetContainer (N/A)
+
+### Fixed
+- wire Cascade chat and add generic history_note handler (N/A)
+- avoid double chat popups in Critical on the shared shell (N/A)
+
+### Refactored
+- add standardized gameResult to session state (N/A)
+- extract shared hooks and utilities from game widgets (N/A)
+- render Glimworm inside the shared GameWidgetContainer (N/A)
+- render CriticalGame inside the shared GameWidgetContainer (N/A)
+- adopt shared turn contract in TicTacToe and Cascade headers (N/A)
+
+### Documentation
+- add git rules — no force push, no amend (N/A)
+- tighten shared game shell spec after review (N/A)
+- add shared game shell refactor design (N/A)
+
+
 ## [1.16.2] - 2026-06-13
 
 

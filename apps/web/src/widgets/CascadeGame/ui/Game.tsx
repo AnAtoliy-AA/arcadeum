@@ -6,6 +6,7 @@ import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
+  useGameChatSend,
   useRematch,
   useGameRoomActions,
   useGameResultModal,
@@ -13,7 +14,6 @@ import {
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ChatScope } from '@/shared/types/games';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -96,13 +96,8 @@ function CascadeGameImpl({
     [startSession, markPendingStart],
   );
 
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    (_msg: string, _scope: ChatScope) => {
-      void _msg;
-      void _scope;
-    },
-  );
+  const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
+  useGameChatIntegration(snapshot?.logs as never, sendChat);
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 

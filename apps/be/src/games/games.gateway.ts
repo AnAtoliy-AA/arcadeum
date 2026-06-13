@@ -391,4 +391,42 @@ export class GamesGateway {
     const specChannel = this.realtime.spectatorChannel(roomId);
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
+
+  @SubscribeMessage('games.session.history_note')
+  async handleHistoryNote(
+    @MessageBody()
+    payload: {
+      roomId: string;
+      userId: string;
+      message: string;
+      scope: string;
+    },
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const message = extractString(payload, 'message');
+    const scopeRaw =
+      typeof payload?.scope === 'string'
+        ? payload.scope.trim().toLowerCase()
+        : 'all';
+    const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+
+    try {
+      await this.gamesService.postHistoryNote(
+        roomId,
+        userId,
+        message,
+        scope as 'all' | 'players' | 'private',
+      );
+      client.emit(
+        'games.session.history_note.ack',
+        maybeEncrypt({ roomId, userId, scope }),
+      );
+    } catch (error) {
+      this.logger.error(
+        `handleHistoryNote failed for room ${roomId}: ${error}`,
+      );
+    }
+  }
 }

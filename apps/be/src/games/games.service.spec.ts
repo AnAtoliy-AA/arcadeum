@@ -11,8 +11,7 @@ import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service'
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
-import { WalletService } from '../wallet/wallet.service';
-import { EconomySettingsService } from '../economy/economy-settings.service';
+import { GamePostMatchService } from './game-post-match.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -23,7 +22,6 @@ describe('GamesService', () => {
   let roomsQuickplayService: jest.Mocked<GameRoomsQuickplayService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let realtimeService: jest.Mocked<GamesRealtimeService>;
-  let walletService: jest.Mocked<WalletService>;
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -85,11 +83,9 @@ describe('GamesService', () => {
     const mockLeaderboardSync = {
       syncInMatch: jest.fn().mockResolvedValue(undefined),
     };
-    const mockWalletService = {
-      credit: jest.fn(),
-    };
-    const mockEconomyService = {
-      getNumber: jest.fn().mockResolvedValue(50),
+    const mockPostMatchService = {
+      onGameCompleted: jest.fn().mockResolvedValue(undefined),
+      payoutGameWin: jest.fn().mockResolvedValue(undefined),
     };
 
     module = await Test.createTestingModule({
@@ -112,8 +108,7 @@ describe('GamesService', () => {
           provide: GamesLeaderboardSyncService,
           useValue: mockLeaderboardSync,
         },
-        { provide: WalletService, useValue: mockWalletService },
-        { provide: EconomySettingsService, useValue: mockEconomyService },
+        { provide: GamePostMatchService, useValue: mockPostMatchService },
       ],
     }).compile();
 
@@ -122,7 +117,6 @@ describe('GamesService', () => {
     roomsQuickplayService = module.get(GameRoomsQuickplayService);
     sessionsService = module.get(GameSessionsService);
     realtimeService = module.get(GamesRealtimeService);
-    walletService = module.get(WalletService);
   });
 
   afterAll(async () => {
@@ -258,70 +252,6 @@ describe('GamesService', () => {
       await expect(service.startGameSession(dto, userId)).rejects.toThrow(
         'Only the host can start the game',
       );
-    });
-  });
-
-  describe('payoutGameWin', () => {
-    const makeSession = (id: string): GameSessionSummary =>
-      ({
-        id,
-        roomId: 'room1',
-        gameId: 'critical_v1',
-        status: 'completed',
-      }) as GameSessionSummary;
-
-    it('credits each winner with GAME_WIN_COIN_REWARD on session completion', async () => {
-      const session = makeSession('sess-1');
-      sessionsService.getWinners.mockResolvedValue(['winner-1', 'winner-2']);
-      walletService.credit.mockResolvedValue({} as never);
-
-      await service.payoutGameWin(session);
-
-      expect(walletService.credit).toHaveBeenCalledTimes(2);
-      expect(walletService.credit).toHaveBeenCalledWith(
-        'winner-1',
-        'coins',
-        50,
-        'game_win',
-        'game-sess-1-payout-winner-1',
-        { sessionId: 'sess-1', gameId: 'critical_v1' },
-      );
-      expect(walletService.credit).toHaveBeenCalledWith(
-        'winner-2',
-        'coins',
-        50,
-        'game_win',
-        'game-sess-1-payout-winner-2',
-        { sessionId: 'sess-1', gameId: 'critical_v1' },
-      );
-    });
-
-    it('does nothing when winners list is empty (draw)', async () => {
-      const session = makeSession('sess-2');
-      sessionsService.getWinners.mockResolvedValue([]);
-
-      await service.payoutGameWin(session);
-
-      expect(walletService.credit).not.toHaveBeenCalled();
-    });
-
-    it('logs and continues when wallet.credit fails for one winner', async () => {
-      const session = makeSession('sess-3');
-      sessionsService.getWinners.mockResolvedValue(['winner-1', 'winner-2']);
-      walletService.credit
-        .mockRejectedValueOnce(new Error('wallet-down'))
-        .mockResolvedValueOnce({} as never);
-
-      await expect(service.payoutGameWin(session)).resolves.not.toThrow();
-      expect(walletService.credit).toHaveBeenCalledTimes(2);
-    });
-
-    it('logs and skips all credits when getWinners throws', async () => {
-      const session = makeSession('sess-4');
-      sessionsService.getWinners.mockRejectedValue(new Error('engine-error'));
-
-      await expect(service.payoutGameWin(session)).resolves.not.toThrow();
-      expect(walletService.credit).not.toHaveBeenCalled();
     });
   });
 });

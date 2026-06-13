@@ -7,6 +7,8 @@ import { gemsEn } from './gems/en';
 import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
 import { dailyRewardsEn } from './daily-rewards/en';
+import { dailyChallengesEn } from './daily-challenges/en';
+import { achievementsEn } from './achievements/en';
 import { shopEn } from './shop/en';
 import { adminShopEn } from './admin-shop/en';
 import { adminGamesEn } from './admin-games/en';
@@ -483,6 +485,8 @@ export const en = {
   adminGemPackages: adminGemPackagesEn,
   adminEconomy: adminEconomyEn,
   dailyRewards: dailyRewardsEn,
+  dailyChallenges: dailyChallengesEn,
+  achievements: achievementsEn,
   shop: shopEn,
   adminShop: adminShopEn,
   adminGames: adminGamesEn,

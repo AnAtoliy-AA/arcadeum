@@ -91,13 +91,7 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
         />
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 20,
-        }}
-      >
+      <div className={s.detailsRow}>
         <div className={s.field}>
           <label className={s.fieldLabel}>
             <span>{labels.maxPlayers}</span>

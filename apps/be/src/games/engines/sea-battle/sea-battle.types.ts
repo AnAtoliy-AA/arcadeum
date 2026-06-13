@@ -1,4 +1,9 @@
-import { CellState, GamePhase, AttackResult } from './sea-battle.constants';
+import {
+  CellState,
+  GamePhase,
+  AttackResult,
+  GameModeVariant,
+} from './sea-battle.constants';
 import { ChatScope, GameLogEntry } from '../base/game-engine.interface';
 
 export interface SeaBattleTeam {
@@ -30,6 +35,7 @@ export interface SeaBattlePlayer {
   ships: Ship[];
   shipsRemaining: number;
   placementComplete: boolean;
+  turnDeadline?: number;
   [key: string]: unknown;
 }
 
@@ -52,7 +58,20 @@ export interface SeaBattleState {
   teamOrder?: string[];
   currentTeamIndex?: number;
   hideShipsFromTeammates?: boolean;
+  mode?: GameModeVariant;
+  roundNumber?: number;
   [key: string]: unknown;
+}
+
+export interface SeaBattleConfig {
+  teams?: Array<{
+    id: string;
+    name: string;
+    color: string;
+    playerIds: string[];
+  }>;
+  hideShipsFromTeammates?: boolean;
+  mode?: GameModeVariant;
 }
 
 export interface PlaceShipPayload {

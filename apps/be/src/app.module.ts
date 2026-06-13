@@ -17,6 +17,8 @@ import { WalletModule } from './wallet/wallet.module';
 import { GemsModule } from './gems/gems.module';
 import { EconomyModule } from './economy/economy.module';
 import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
+import { DailyChallengesModule } from './daily-challenges/daily-challenges.module';
+import { AchievementsModule } from './achievements/achievements.module';
 import { ShopModule } from './shop/shop.module';
 import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
@@ -49,6 +51,8 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     GemsModule,
     EconomyModule,
     DailyRewardsModule,
+    DailyChallengesModule,
+    AchievementsModule,
     ShopModule,
     BattlePassModule,
     NotificationsModule,

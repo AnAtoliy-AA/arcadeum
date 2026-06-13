@@ -46,7 +46,13 @@ export interface BaseGameState {
   players: GamePlayerState[];
   logs: GameLogEntry[];
   currentTurnIndex?: number;
+  gameResult?: GameResult;
   [key: string]: unknown;
+}
+
+export interface GameResult {
+  winnerIds: string[];
+  isDraw: boolean;
 }
 
 export interface GameActionResult<TState = unknown> {
@@ -129,6 +135,12 @@ export interface IGameEngine<TState extends BaseGameState = BaseGameState> {
    * @param state Current game state
    */
   getWinners(state: TState): string[];
+
+  /**
+   * Get standardized game result. Defaults to computing from isGameOver/getWinners.
+   * Override in engines that have explicit draw detection (e.g. TicTacToe).
+   */
+  getResult(state: TState): GameResult;
 
   /**
    * Sanitize state for a specific player (hide private information)

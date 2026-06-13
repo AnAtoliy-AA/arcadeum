@@ -65,6 +65,11 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
+### Git rules
+
+- **Never use `git push --force`** — CI blocks force pushes on branches with open PRs. If you need to rebase, push to a new branch and open a new PR instead.
+- **Always create new commits** — never `git commit --amend`. Amend rewrites history and causes the same CI failure as force push. If the last commit needs updating, create a new commit on top.
+
 ## Skills
 
 ### Project skills

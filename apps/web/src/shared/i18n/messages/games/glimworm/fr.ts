@@ -52,6 +52,9 @@ export const frMessages = {
       connecting: 'Connexion…',
       reconnecting: 'Reconnexion…',
       slowConnection: 'Connexion lente',
+      getReady: 'Préparez-vous',
+      inPlay: 'En jeu',
+      roundOver: 'Manche terminée',
     },
     rules: {
       objective:

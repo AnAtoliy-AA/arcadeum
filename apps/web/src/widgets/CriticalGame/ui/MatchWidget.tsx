@@ -66,8 +66,13 @@ export interface MatchWidgetProps {
   ) => void;
   handleOpenFiverCombo: () => void;
   formatLogMessage: (message?: string | null) => string;
-  isFullscreen: boolean;
-  toggleFullscreen: () => void;
+  /**
+   * Optional. The hand's fullscreen affordance — when omitted (the widget now
+   * renders inside the shared GameWidgetContainer, which owns fullscreen), the
+   * hand hides its own fullscreen button.
+   */
+  isFullscreen?: boolean;
+  toggleFullscreen?: () => void;
   /**
    * Autoplay state + idle-timer wiring. The autoplay menu and the idle
    * countdown badge render at the top of the widget grid. Idle-on-timeout

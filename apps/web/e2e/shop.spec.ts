@@ -87,7 +87,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     expect(borderRadius).not.toBe('');
   });
 
-  test('renders and allows preview of new premium items (Cyber Wolf, Cyber Panther, Elite Shield, Mythic Star)', async ({
+  test('renders and allows preview of new premium items (Cyber Wolf, Cyber Panther, Cyber Tiger, Cyber Eagle, Elite Shield, Mythic Star, Vanguard Shield, Nexus Star)', async ({
     page,
   }) => {
     await navigateTo(page, '/shop');
@@ -95,16 +95,20 @@ test.describe('Shop redesign · Showcase Locker', () => {
     const items = [
       { id: 'avatar-wolf-01', name: 'Cyber Wolf' },
       { id: 'avatar-panther-01', name: 'Cyber Panther' },
+      { id: 'avatar-tiger-01', name: 'Cyber Tiger' },
+      { id: 'avatar-eagle-01', name: 'Cyber Eagle' },
       { id: 'badge-elite', name: 'Elite Shield' },
       { id: 'badge-mythic', name: 'Mythic Star' },
+      { id: 'badge-vanguard', name: 'Vanguard Shield' },
+      { id: 'badge-nexus', name: 'Nexus Star' },
     ];
 
     for (const item of items) {
-      const card = page.getByTestId(`shop-card-${item.id}`);
+      const card = page.getByTestId(`shop-card-${item.id}`).first();
       await expect(card).toBeVisible();
 
       // Focusing card action button activates preview mode
-      const action = page.getByTestId(`shop-card-action-${item.id}`);
+      const action = page.getByTestId(`shop-card-action-${item.id}`).first();
       await action.focus();
       await expect(page.getByTestId('shop-action-panel').first()).toHaveAttribute(
         'data-mode',

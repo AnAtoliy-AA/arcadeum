@@ -200,6 +200,14 @@ export const shopFr = {
         name: 'Panthère Cybernétique',
         desc: 'Une panthère cybernétique hyperréaliste.',
       },
+      tiger01: {
+        name: 'Tigre Cybernétique',
+        desc: 'Un tigre cybernétique hyperréaliste.',
+      },
+      eagle01: {
+        name: 'Aigle Cybernétique',
+        desc: 'Un aigle cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },
@@ -213,6 +221,14 @@ export const shopFr = {
       mythic: {
         name: 'Étoile Mythique',
         desc: 'Un emblème d’étoile céleste dorée.',
+      },
+      vanguard: {
+        name: 'Bouclier de l’Avant-garde',
+        desc: 'Un blason défensif blindé.',
+      },
+      nexus: {
+        name: 'Étoile du Nexus',
+        desc: 'Une puissante étoile cosmique futuriste.',
       },
     },
     name_color: {

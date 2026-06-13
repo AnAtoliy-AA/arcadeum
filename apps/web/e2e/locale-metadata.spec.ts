@@ -37,8 +37,12 @@ test.describe('Locale metadata — hreflang & canonical', () => {
     await page.goto('/en', { waitUntil: 'domcontentloaded' });
     const alts = await collectAlternates(page);
     const hreflangs = alts.map((a) => a.hreflang);
+    // Belarusian emits `hreflang="be"` (ISO 639-1) — our internal locale
+    // slug is `by` (country code), but `by` is not a valid BCP 47 language
+    // code so Google / Lighthouse flag it as unknown. See
+    // shared/i18n/index.ts → localeToHreflang.
     expect(hreflangs).toEqual(
-      expect.arrayContaining(['en', 'es', 'fr', 'ru', 'by', 'x-default']),
+      expect.arrayContaining(['en', 'es', 'fr', 'ru', 'be', 'x-default']),
     );
   });
 
@@ -65,7 +69,8 @@ test.describe('Locale metadata — hreflang & canonical', () => {
     expect(byLang['fr']).toMatch(/\/fr\/jeux$/);
     expect(byLang['es']).toMatch(/\/es\/juegos$/);
     expect(byLang['ru']).toMatch(/\/ru\/igry$/);
-    expect(byLang['by']).toMatch(/\/by\/hulni$/);
+    // Belarusian: internal slug stays `by`, but hreflang must be `be`.
+    expect(byLang['be']).toMatch(/\/by\/hulni$/);
   });
 
   test('og:locale matches the active locale (en → en_US)', async ({ page }) => {

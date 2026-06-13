@@ -37,6 +37,7 @@ describe('useEquippedCosmetics', () => {
       item('aura-1', 'aura', 'linear-gradient(135deg, #1e293b, #334155)'),
       item('banner-1', 'banner', '#0f172a'),
       item('nc-1', 'name_color', '#ff00ff'),
+      item('skin-neon', 'game_skin', '#0ff'),
     ]);
   });
 
@@ -67,6 +68,23 @@ describe('useEquippedCosmetics', () => {
     expect(result.current.auraColor).toContain('linear-gradient');
     expect(result.current.bannerColor).toBe('#0f172a');
     expect(result.current.frameItem?.id).toBe('frame-1');
+  });
+
+  it('resolves equippedGameSkinId to skinItem + skinChip label', async () => {
+    const { result } = renderHook(() =>
+      useEquippedCosmetics({
+        equippedAvatarId: null,
+        equippedBadgeId: null,
+        equippedGameSkinId: 'skin-neon',
+      }),
+    );
+    await waitFor(() => {
+      expect(result.current.skinItem?.id).toBe('skin-neon');
+    });
+    expect(result.current.skinChip).toEqual({
+      id: 'skin-neon',
+      label: 'items.game_skin.skin-neon.name',
+    });
   });
 
   it('returns null for ids not in the catalog', async () => {

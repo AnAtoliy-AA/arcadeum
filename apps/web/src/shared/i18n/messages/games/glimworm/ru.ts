@@ -52,6 +52,9 @@ export const ruMessages = {
       connecting: 'Подключение…',
       reconnecting: 'Переподключение…',
       slowConnection: 'Медленное соединение',
+      getReady: 'Приготовьтесь',
+      inPlay: 'Идёт игра',
+      roundOver: 'Раунд окончен',
     },
     rules: {
       objective:

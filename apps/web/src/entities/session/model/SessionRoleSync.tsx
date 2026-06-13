@@ -41,13 +41,23 @@ export function SessionRoleSync(): null {
 
         // Profile fields ONLY — buildSnapshot preserves token fields via
         // `input.X ?? current.X`, so a refresh that landed during this
-        // fetch survives.
+        // fetch survives. /auth/me is the authoritative profile source, so we
+        // also propagate equipped cosmetics (avatar/badge/frame/aura/etc.) —
+        // otherwise the header avatar stays stale after equipping elsewhere
+        // (it shows initials while the live game resolves the real avatar).
         await statePost.setTokens({
           userId: profile.id,
           email: profile.email,
           username: profile.username,
           displayName: profile.displayName ?? profile.username ?? profile.email,
           role: profile.role,
+          equippedAvatarId: profile.equippedAvatarId ?? null,
+          equippedBadgeId: profile.equippedBadgeId ?? null,
+          equippedNameColorId: profile.equippedNameColorId ?? null,
+          equippedFrameId: profile.equippedFrameId ?? null,
+          equippedAuraId: profile.equippedAuraId ?? null,
+          equippedBannerId: profile.equippedBannerId ?? null,
+          equippedGameSkinId: profile.equippedGameSkinId ?? null,
         });
 
         lastSuccessfulSyncAtRef.current = Date.now();

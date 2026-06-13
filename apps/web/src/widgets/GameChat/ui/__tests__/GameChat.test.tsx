@@ -109,23 +109,21 @@ describe('GameChat', () => {
   });
 
   it('renders system and action logs separately from chat messages', () => {
-    useGameChatStore
-      .getState()
-      .setLogs([
-        makeLog({
-          id: 'a',
-          type: 'action',
-          senderId: 'p1',
-          message: 'Drew a card',
-        }),
-        makeLog({
-          id: 'b',
-          type: 'system',
-          senderId: 'p2',
-          message: 'exploded!',
-        }),
-        makeLog({ id: 'c', type: 'message', senderId: 'p1', message: 'hi' }),
-      ]);
+    useGameChatStore.getState().setLogs([
+      makeLog({
+        id: 'a',
+        type: 'action',
+        senderId: 'p1',
+        message: 'Drew a card',
+      }),
+      makeLog({
+        id: 'b',
+        type: 'system',
+        senderId: 'p2',
+        message: 'exploded!',
+      }),
+      makeLog({ id: 'c', type: 'message', senderId: 'p1', message: 'hi' }),
+    ]);
 
     renderChat(
       <GameChat
@@ -143,8 +141,41 @@ describe('GameChat', () => {
     expect(chatRendered[0]?.getAttribute('data-sender-color')).toMatch(/^#/);
 
     // System / action messages still appear somewhere in the rendered tree.
-    expect(screen.getByText('Drew a card')).toBeTruthy();
-    expect(screen.getByText('exploded!')).toBeTruthy();
+    expect(screen.getByText(/Drew a card/)).toBeTruthy();
+    expect(screen.getByText(/exploded!/)).toBeTruthy();
+  });
+
+  it('renders sender (and optional target) on system and action rows', () => {
+    useGameChatStore.getState().setLogs([
+      makeLog({
+        id: 'sa',
+        type: 'action',
+        senderId: 'p1',
+        targetId: 'p2',
+        message: 'attacked H10 — MISS!',
+      }),
+      makeLog({
+        id: 'ss',
+        type: 'system',
+        senderId: 'p1',
+        message: 'A player has finished placing ships',
+      }),
+    ]);
+
+    renderChat(
+      <GameChat
+        currentUserId="p1"
+        resolveDisplayName={(id) =>
+          id === 'p1' ? 'Alice' : id === 'p2' ? 'Bob' : id
+        }
+      />,
+    );
+
+    const senders = screen.getAllByTestId('system-row-sender');
+    expect(senders.map((n) => n.textContent)).toEqual(['Alice', 'Alice']);
+
+    const targets = screen.getAllByTestId('system-row-target');
+    expect(targets.map((n) => n.textContent)).toEqual(['Bob']);
   });
 
   it('treats messages as not-own when currentUserId is missing', () => {

@@ -7,6 +7,7 @@ import {
   isLocale,
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
+  localeToHreflang,
   type Locale,
 } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -49,7 +50,8 @@ export async function generateMetadata({
   const languages: Record<string, string> = {};
   for (const l of SUPPORTED_LOCALES) {
     if (getPost(slug, l)) {
-      languages[l] = `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
+      languages[localeToHreflang(l)] =
+        `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
     }
   }
   languages['x-default'] =

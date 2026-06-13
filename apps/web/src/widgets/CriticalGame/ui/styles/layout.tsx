@@ -1,81 +1,13 @@
 import { styled, YStack } from 'tamagui';
 import {
-  GameContainer as BaseGameContainer,
   GameBoard as BaseGameBoard,
   TableArea as BaseTableArea,
 } from '@arcadeum/ui';
-import { getVariantStyles } from './variants';
-import { TamaguiTheme } from './variants/types';
-import { scrollbarStyles } from '@/shared/lib/styles';
 
-export const GameContainer = styled(BaseGameContainer, {
-  name: 'GameContainer',
-  gap: '$5',
-  paddingHorizontal: '$7',
-  paddingTop: '$7',
-  paddingBottom: 0,
-  borderRadius: 24,
-  flex: 1,
-  minHeight: 0,
-  position: 'relative',
-  overflowX: 'hidden',
-  overflowY: 'auto',
-
-  backdropFilter: 'blur(20px)',
-  height: '100%',
-  flexDirection: 'column',
-  minWidth: 0,
-
-  ...scrollbarStyles,
-
-  $sm: {
-    paddingHorizontal: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-    borderRadius: 16,
-    gap: '$2',
-    overflowY: 'auto',
-  },
-
-  variants: {
-    $isMyTurn: {
-      true: {
-        // We handle the pulse animation via a prop or in tamagui.config.ts
-      },
-    },
-    isFullscreen: {
-      true: {
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        width: '100vw',
-        height: '100vh',
-        borderRadius: 0,
-        borderWidth: 0,
-      },
-    },
-    $variant: (
-      val: string,
-      { props, theme }: { props: { $isMyTurn?: boolean }; theme: TamaguiTheme },
-    ) => {
-      const config = getVariantStyles(val).layout;
-      const isMyTurn = props.$isMyTurn;
-
-      return {
-        backgroundColor: config.getRoomBackground(
-          theme.background?.val || '',
-          (theme.cardBackground || theme.background)?.val || '',
-        ),
-        borderWidth: isMyTurn ? 2 : 1,
-        borderColor: config.getRoomBorder(
-          !!isMyTurn,
-          theme.borderColor?.val || '',
-        ),
-        shadowColor: config.getRoomShadow(!!isMyTurn),
-        ...config.getBackgroundEffects(),
-      };
-    },
-  } as const,
-});
+// NOTE: the old `GameContainer` styled wrapper was removed when Critical
+// adopted the shared `GameWidgetContainer` (header / fullscreen / chat popup /
+// my-turn border now live in the shared shell). The per-variant room
+// background it carried is handled by the shared shell + `SceneBackdrop`.
 
 export const GameBoard = styled(BaseGameBoard, {
   name: 'GameBoard',

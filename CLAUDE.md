@@ -65,6 +65,11 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
+### Git rules
+
+- **Never use `git push --force`** — CI blocks force pushes on branches with open PRs. If you need to rebase, push to a new branch and open a new PR instead.
+- **Always create new commits** — never `git commit --amend`. Amend rewrites history and causes the same CI failure as force push. If the last commit needs updating, create a new commit on top.
+
 ## Skills
 
 ### Project skills
@@ -73,6 +78,7 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 - `/commit` — create a commit following Conventional Commits with ARC-XXX scope
 - `/new-web-page` — add a Next.js App Router page (`page.tsx` + `*Client.tsx` + `*View.tsx` + i18n)
 - `/new-be-module` — add a NestJS module (controller, service, module, DTOs, Mongoose schema)
+- `/new-game` — add a complete multiplayer game end-to-end (BE engine/service/gateway/bot, web widget, landing, registries, i18n, tests, PR)
 - `/new-mobile-screen` — add an Expo Router screen with i18n and Tamagui UI
 - `/new-ui-component` — add a shared Tamagui component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`

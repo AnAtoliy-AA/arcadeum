@@ -145,23 +145,26 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     </BoardGrid>
   );
 
+  // Equipped player chip, absolutely positioned so its CENTER sits on the
+  // board card's top-left corner (~3/4 of it hangs outside). It's anchored to
+  // PlayerSection (the card), which is `position: relative; overflow: visible`,
+  // so it lands on the real board corner — not the wider grid cell — and the
+  // outside part still shows. No extra ring/border: team colour already reads
+  // from the board border + team pill, and the avatar carries its own disc.
+  // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
     <YStack
+      className="sb-header-avatar"
       position="absolute"
-      top={-4}
-      left={-4}
+      top={-36}
+      left={-36}
       zIndex={11}
       pointerEvents="none"
-      borderRadius={9999}
-      borderWidth={2}
-      borderColor={team?.color ?? theme.cellBorder}
-      backgroundColor={theme.boardBackground}
-      padding={2}
     >
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
-        size="icon"
+        size="md"
         data-testid={`sb-corner-avatar-${player.playerId}`}
       />
     </YStack>
@@ -172,7 +175,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     const showBadge = player.alive;
     return (
       <PlayerSectionWrapper>
-        {cornerAvatar}
         <BadgeWrapper
           backgroundColor={theme.boardBackground}
           borderRadius={8}
@@ -222,6 +224,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           }`}
           backdropFilter="blur(8px)"
         >
+          {cornerAvatar}
           <PlayerName
             data-testid="player-board-name"
             color={theme.textColor}
@@ -259,7 +262,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
 
   return (
     <PlayerSectionWrapper>
-      {cornerAvatar}
       <BadgeWrapper
         backgroundColor={theme.boardBackground}
         borderRadius={8}
@@ -312,6 +314,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         }`}
         backdropFilter="blur(8px)"
       >
+        {cornerAvatar}
         <PlayerName
           data-testid="player-board-name"
           color={theme.textColor}

@@ -1,6 +1,5 @@
 // Layout Components
 export {
-  GameContainer,
   GameBoard,
   TableArea,
   HandSection,

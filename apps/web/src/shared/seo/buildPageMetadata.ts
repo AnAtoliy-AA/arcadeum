@@ -1,7 +1,12 @@
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  localeToHreflang,
+  type Locale,
+} from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import type { SeoMessages } from '@/shared/i18n/messages/seo/en';
 
@@ -33,6 +38,8 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   seaBattleLanding: (r) => r.seaBattleLanding,
   criticalLanding: (r) => r.criticalLanding,
   glimwormLanding: (r) => r.glimwormLanding,
+  ticTacToeLanding: (r) => r.ticTacToeLanding,
+  cascadeLanding: (r) => r.cascadeLanding,
   settings: (r) => r.settings,
   history: (r) => r.history,
   stats: (r) => r.stats,
@@ -129,7 +136,7 @@ export async function buildPageMetadata({
   const languages: Record<string, string> = Object.fromEntries(
     SUPPORTED_LOCALES.map((l) => {
       const localePath = resolvePath(buildRoutes(l));
-      return [l, `${appConfig.siteUrl}${localePath}`];
+      return [localeToHreflang(l), `${appConfig.siteUrl}${localePath}`];
     }),
   );
   languages['x-default'] = `${appConfig.siteUrl}${resolvePath(

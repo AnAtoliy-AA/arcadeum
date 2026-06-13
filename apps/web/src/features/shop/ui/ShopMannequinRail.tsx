@@ -70,6 +70,7 @@ const SLOT_TO_ROW: Record<ShopCategory, string> = {
   banner: 'row-banners',
   aura: 'row-auras',
   frame: 'row-frames',
+  background: 'row-backgrounds',
 };
 
 // Approximate sticky-header + breathing-room offset. ShopRow also sets
@@ -122,6 +123,9 @@ export function ShopMannequinRail({
   const equippedFrame = inventory.equipped.frame
     ? (catalogById.get(inventory.equipped.frame) ?? null)
     : null;
+  const equippedBackground = inventory.equipped.background
+    ? (catalogById.get(inventory.equipped.background) ?? null)
+    : null;
 
   const preview: Record<ShopCategory, EffectiveShopItem | null | undefined> = {
     avatar: hoverItem?.category === 'avatar' ? hoverItem : equippedAvatar,
@@ -132,6 +136,8 @@ export function ShopMannequinRail({
     banner: hoverItem?.category === 'banner' ? hoverItem : equippedBanner,
     aura: hoverItem?.category === 'aura' ? hoverItem : equippedAura,
     frame: hoverItem?.category === 'frame' ? hoverItem : equippedFrame,
+    background:
+      hoverItem?.category === 'background' ? hoverItem : equippedBackground,
   };
 
   const onSlotClick = (slot: ShopCategory) => {

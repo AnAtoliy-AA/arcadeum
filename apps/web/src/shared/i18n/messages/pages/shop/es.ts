@@ -63,6 +63,11 @@ export const shopEs = {
         desc: 'Anillo decorativo que rodea tu avatar.',
         empty: 'Vacío',
       },
+      background: {
+        label: 'Fondo',
+        desc: 'Lavado de color detrás de tu avatar.',
+        empty: 'Vacío',
+      },
     },
     action: {
       previewingEyebrow: 'Probando',
@@ -123,6 +128,12 @@ export const shopEs = {
     },
     frames: {
       title: 'Marcos',
+      eyebrow: '{count} artículos',
+      viewAll: 'Ver todo',
+      collapse: 'Contraer',
+    },
+    backgrounds: {
+      title: 'Fondos',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
       collapse: 'Contraer',
@@ -263,6 +274,13 @@ export const shopEs = {
       emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
       violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
       prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
+    },
+    background: {
+      default: { name: 'Predeterminado', desc: 'Fondo inicial.' },
+      slate: { name: 'Fondo pizarra', desc: 'Lavado pizarra apagado.' },
+      ocean: { name: 'Fondo océano', desc: 'Degradado azul-turquesa profundo.' },
+      violet: { name: 'Fondo violeta', desc: 'Degradado violeta intenso.' },
+      aurora: { name: 'Fondo aurora', desc: 'Degradado turquesa-violeta-rosa.' },
     },
   },
 };

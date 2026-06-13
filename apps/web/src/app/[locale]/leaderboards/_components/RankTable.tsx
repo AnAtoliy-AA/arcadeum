@@ -233,6 +233,7 @@ function RankRow({
             equippedFrameId={p.equippedFrameId}
             equippedAuraId={p.equippedAuraId}
             equippedBannerId={p.equippedBannerId}
+            role={p.role}
             fallbackAvatarUrl={p.avatarUrl}
             priority={priority}
             data-testid={`leaderboard-row-${p.rank}-avatar`}

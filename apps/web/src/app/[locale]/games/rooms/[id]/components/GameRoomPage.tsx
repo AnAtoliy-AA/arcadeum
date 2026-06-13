@@ -399,6 +399,7 @@ export default function GameRoomPage({
       <GamePageLayout
         roomId={roomId}
         room={room}
+        session={initialSession as GameSessionSummary | null}
         userId={snapshot.userId}
         inviteCode={room?.inviteCode}
         isDisconnected={isDisconnected}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $PWD/.claude/hooks/block-env-access.js",
+            "statusMessage": "Checking for .env* access..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -144,4 +144,36 @@ export const es = {
       refreshToken: 'Token de actualización',
     },
   },
+  forgot: {
+    title: 'Restablece tu contraseña',
+    description:
+      'Escribe el email vinculado a tu cuenta y te enviaremos un enlace para restablecerla.',
+    emailLabel: 'Correo electrónico',
+    submit: 'Enviar enlace',
+    submitting: 'Enviando...',
+    successTitle: 'Revisa tu bandeja',
+    successBody:
+      'Si existe una cuenta para {{email}}, enviamos un enlace para restablecer la contraseña. El enlace caduca en 15 minutos.',
+    backToSignIn: 'Volver al inicio de sesión',
+    error: 'No se pudo enviar el enlace. Inténtalo de nuevo.',
+    invalidEmail: 'Introduce un correo electrónico válido.',
+  },
+  reset: {
+    title: 'Elige una nueva contraseña',
+    description: 'Mínimo 8 caracteres.',
+    passwordLabel: 'Nueva contraseña',
+    confirmLabel: 'Confirmar contraseña',
+    submit: 'Actualizar contraseña',
+    submitting: 'Actualizando...',
+    successTitle: 'Contraseña actualizada',
+    successBody: 'Ya puedes iniciar sesión con tu nueva contraseña.',
+    signInCta: 'Continuar al inicio de sesión',
+    missingToken:
+      'A este enlace le falta el código de restablecimiento. Solicita uno nuevo desde el inicio de sesión.',
+    invalidToken:
+      'Este enlace de restablecimiento no es válido o ha caducado. Solicita uno nuevo.',
+    passwordTooShort: 'La contraseña debe tener al menos 8 caracteres.',
+    passwordMismatch: 'Las contraseñas no coinciden.',
+    error: 'No se pudo actualizar la contraseña. Inténtalo de nuevo.',
+  },
 };

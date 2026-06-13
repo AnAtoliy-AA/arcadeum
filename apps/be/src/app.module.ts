@@ -18,8 +18,11 @@ import { GemsModule } from './gems/gems.module';
 import { EconomyModule } from './economy/economy.module';
 import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
 import { ShopModule } from './shop/shop.module';
+import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import {
   resolveMongoUri,
   resolveMongoOptions,
@@ -47,6 +50,9 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     EconomyModule,
     DailyRewardsModule,
     ShopModule,
+    BattlePassModule,
+    NotificationsModule,
+    ScheduleModule.forRoot(),
     // Default ttl/limit are placeholders — the SupportController declares
     // its own @Throttle override. ThrottlerGuard is only applied at the
     // controller level (not as APP_GUARD) so other routes are unaffected.

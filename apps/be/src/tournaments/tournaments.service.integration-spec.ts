@@ -6,6 +6,7 @@
  * cancel-refund-all, markComplete-prize, markComplete-idempotency.
  */
 import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { HydratedDocument, Model, Types } from 'mongoose';
@@ -40,6 +41,7 @@ describe('TournamentsService (integration)', () => {
 
     const moduleRef = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(uri),
         AuthModule,
         WalletModule,

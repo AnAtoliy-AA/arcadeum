@@ -277,20 +277,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Cursor-driven parallax: vars set by HomeHero on pointer move. Tilts the
+     whole stack (per-card transforms are untouched). */
+  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-stack {
+    transform: none;
+  }
 }
 
 .hero-card-main {
   position: absolute;
   width: 280px;
   height: 380px;
-  background: rgba(30, 32, 35, 0.85);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 22, 26, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 24px;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 6px 14px rgba(0, 0, 0, 0.3),
+    0 20px 40px -10px rgba(0, 0, 0, 0.55);
   transform: translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate))
     scale(var(--card-scale));
   opacity: 0;
@@ -299,6 +311,116 @@
     opacity 0.6s ease-out,
     box-shadow 0.3s ease;
   pointer-events: none;
+}
+
+.hero-card-image {
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hero-card-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-card-scrim-top {
+  top: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.25) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hero-card-scrim-bottom {
+  bottom: 0;
+  height: 50%;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hero-card-name {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  right: 24px;
+  z-index: 2;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.005em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.hero-card-brand {
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.hero-card-play-cta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.92);
+  z-index: 4;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0b0d10;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 8px 22px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    background 0.22s ease;
+  white-space: nowrap;
+}
+
+.hero-card-main:hover .hero-card-play-cta {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.hero-card-play-cta:hover {
+  background: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-play-cta {
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .is-hydrated .hero-card-main {
@@ -310,8 +432,38 @@
   transform: translate(var(--card-x), calc(var(--card-y) - 20px))
     rotate(var(--card-rotate)) scale(1.05) !important;
   z-index: 100 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 12px 24px rgba(0, 0, 0, 0.4),
+    0 30px 60px -12px rgba(0, 0, 0, 0.7);
+}
+
+.hero-card-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 1.6s ease;
+}
+
+.hero-card-main:hover::after {
+  transform: translateX(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-main::after,
+  .hero-card-main:hover::after {
+    transition: none;
+    transform: translateX(-100%);
+  }
 }
 
 @media (max-width: 1150px) {
@@ -319,10 +471,6 @@
     margin-top: 60px;
     margin-bottom: 40px;
     transform: scale(0.85);
-  }
-
-  .hero-card-main {
-    background: rgba(30, 32, 35, 0.92);
   }
 }
 /* Static Presentation Styles */

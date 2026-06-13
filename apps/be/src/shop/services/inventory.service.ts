@@ -38,6 +38,8 @@ interface LeanUser {
   equippedBannerId?: string | null;
   equippedAuraId?: string | null;
   equippedFrameId?: string | null;
+  equippedGameSkinId?: string | null;
+  equippedBackgroundId?: string | null;
 }
 
 const STARTER_PURCHASE_PREFIX = 'starter';
@@ -76,6 +78,8 @@ export class InventoryService {
           equippedBannerId: 1,
           equippedAuraId: 1,
           equippedFrameId: 1,
+          equippedGameSkinId: 1,
+          equippedBackgroundId: 1,
         })
         .lean<LeanUser>(),
     ]);
@@ -164,6 +168,35 @@ export class InventoryService {
     }
   }
 
+  /**
+   * Grant ownership of a single catalog item to a user (no payment). Used by
+   * non-shop reward flows (e.g. Battle Pass tiers). Idempotent on `purchaseId`:
+   * a duplicate grant with the same id is a no-op, so retries never duplicate.
+   */
+  async grant(
+    userId: string,
+    itemId: string,
+    purchaseId: string,
+  ): Promise<void> {
+    const def = getCatalogItem(itemId);
+    if (!def) throw new BadRequestException('shop.unknownItem');
+    try {
+      await this.inventoryModel.create([
+        {
+          userId: new Types.ObjectId(userId),
+          itemId,
+          purchaseId,
+          acquiredVia: 'grant',
+          paidAmount: null,
+          paidCurrency: null,
+        },
+      ]);
+    } catch (err) {
+      if (this.isDuplicateKey(err)) return; // already granted — idempotent
+      throw err;
+    }
+  }
+
   // Equip / unequip freshness contract:
   //  - /chat (player-to-player): live — equipped IDs are read on every page
   //    of messages via the chat helper's batched User lookup.
@@ -200,6 +233,8 @@ export class InventoryService {
               equippedBannerId: 1,
               equippedAuraId: 1,
               equippedFrameId: 1,
+              equippedGameSkinId: 1,
+              equippedBackgroundId: 1,
             },
           },
         )
@@ -223,6 +258,11 @@ export class InventoryService {
             equippedAvatarId: 1,
             equippedBadgeId: 1,
             equippedNameColorId: 1,
+            equippedBannerId: 1,
+            equippedAuraId: 1,
+            equippedFrameId: 1,
+            equippedGameSkinId: 1,
+            equippedBackgroundId: 1,
           },
         },
       )
@@ -255,10 +295,11 @@ export class InventoryService {
       avatar: user?.equippedAvatarId ?? null,
       badge: user?.equippedBadgeId ?? null,
       name_color: user?.equippedNameColorId ?? null,
-      game_skin: null,
+      game_skin: user?.equippedGameSkinId ?? null,
       banner: user?.equippedBannerId ?? null,
       aura: user?.equippedAuraId ?? null,
       frame: user?.equippedFrameId ?? null,
+      background: user?.equippedBackgroundId ?? null,
     };
   }
 

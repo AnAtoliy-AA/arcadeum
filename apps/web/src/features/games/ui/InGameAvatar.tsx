@@ -13,13 +13,15 @@ export interface InGameAvatarProps {
   'data-testid'?: string;
 }
 
-// In-field avatars deliberately suppress cosmetic frame/aura/banner/name-color
-// so they don't compete with the game's own state rings (turn, seat color,
-// eliminated). Only the avatar image and equipped badge are shown.
+// In-field avatars render the player's equipped disc cosmetics (avatar, badge,
+// frame ring, aura/rays halo, background wash) so identity reads the same in
+// game as it does in the shop/profile. Banner and name-color stay off: they're
+// chrome-only (card/profile) and `md` has no chrome, and the game's own tile
+// border carries turn/seat/eliminated state.
 export const InGameAvatar = memo(function InGameAvatar({
   playerId,
   name,
-  size = 'icon',
+  size = 'md',
   priority,
   'data-testid': testId,
 }: InGameAvatarProps) {
@@ -28,6 +30,9 @@ export const InGameAvatar = memo(function InGameAvatar({
   const cosmetics = useEquippedCosmetics({
     equippedAvatarId: member?.equippedAvatarId ?? null,
     equippedBadgeId: member?.equippedBadgeId ?? null,
+    equippedFrameId: member?.equippedFrameId ?? null,
+    equippedAuraId: member?.equippedAuraId ?? null,
+    equippedBackgroundId: member?.equippedBackgroundId ?? null,
   });
 
   return (
@@ -36,10 +41,12 @@ export const InGameAvatar = memo(function InGameAvatar({
       size={size}
       avatarUrl={cosmetics.avatarUrl}
       badgeUrl={cosmetics.badgeUrl}
-      frameColor={null}
-      auraColor={null}
+      frameColor={cosmetics.frameColor}
+      auraColor={cosmetics.auraColor}
+      backgroundColor={cosmetics.backgroundColor}
       bannerColor={null}
       nameColor={null}
+      role={member?.role}
       priority={priority}
       data-testid={testId}
     />

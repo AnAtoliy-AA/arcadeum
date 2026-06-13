@@ -63,6 +63,11 @@ export const shopEn = {
         desc: 'Decorative ring wrapped around your avatar.',
         empty: 'Empty',
       },
+      background: {
+        label: 'Background',
+        desc: 'Colored wash painted behind your avatar, inside the frame.',
+        empty: 'Empty',
+      },
     },
     action: {
       previewingEyebrow: 'Previewing',
@@ -123,6 +128,12 @@ export const shopEn = {
     },
     frames: {
       title: 'Frames',
+      eyebrow: '{count} items',
+      viewAll: 'View all',
+      collapse: 'Collapse',
+    },
+    backgrounds: {
+      title: 'Backgrounds',
       eyebrow: '{count} items',
       viewAll: 'View all',
       collapse: 'Collapse',
@@ -242,6 +253,16 @@ export const shopEn = {
       emerald: { name: 'Emerald Frame', desc: 'A vivid emerald ring.' },
       violet: { name: 'Violet Frame', desc: 'A polished violet ring.' },
       prism: { name: 'Prism Frame', desc: 'A shifting prism ring.' },
+    },
+    background: {
+      default: { name: 'Default', desc: 'The starter backdrop.' },
+      slate: { name: 'Slate Backdrop', desc: 'A muted slate wash.' },
+      ocean: { name: 'Ocean Backdrop', desc: 'A deep teal-to-blue gradient.' },
+      violet: { name: 'Violet Backdrop', desc: 'A rich violet gradient.' },
+      aurora: {
+        name: 'Aurora Backdrop',
+        desc: 'A shifting teal-violet-pink gradient.',
+      },
     },
   },
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, memo } from 'react';
+import { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { Text, YStack, useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
@@ -8,6 +8,7 @@ import type {
   ShipConfig,
   SeaBattlePlayerState,
   CellState,
+  Ship,
 } from '../types';
 import { SHIPS, BOARD_SIZE, CELL_STATE } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
@@ -17,6 +18,7 @@ import { useDragPlacement } from '../hooks/useDragPlacement';
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
+  onMoveShip: (shipId: string, cells: ShipCell[]) => void;
   onConfirmPlacement: () => void;
   onResetPlacement: () => void;
   isPlacementComplete: boolean;
@@ -30,6 +32,7 @@ import { PlacementBoardGrid } from './ShipPlacement/PlacementBoardGrid';
 export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   currentPlayer,
   onPlaceShip,
+  onMoveShip,
   onConfirmPlacement,
   onResetPlacement,
   isPlacementComplete,
@@ -42,30 +45,180 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
 
+  const serverShips = useMemo<Ship[]>(
+    () => currentPlayer?.ships ?? [],
+    [currentPlayer?.ships],
+  );
+  const serverBoard = useMemo<CellState[][]>(
+    () => currentPlayer?.board || createEmptyBoard(),
+    [currentPlayer?.board],
+  );
+
+  // Optimistic move: when the player drops a ship, render it at the new spot
+  // immediately while the server round-trip is in flight. The pending state
+  // is treated as "effective" only while the server hasn't yet reflected the
+  // move — derived in render so we never call setState from an effect.
+  // A 2s safety timer clears the underlying state if no server update arrives
+  // (e.g. dropped socket, server-side rejection that produces no broadcast).
+  const [pendingMove, setPendingMove] = useState<{
+    shipId: string;
+    originalCells: ShipCell[];
+    newCells: ShipCell[];
+  } | null>(null);
+
+  const effectivePendingMove = useMemo(() => {
+    if (!pendingMove) return null;
+    const ship = serverShips.find((s) => s.id === pendingMove.shipId);
+    if (!ship) return pendingMove;
+    const matchesNew =
+      ship.cells.length === pendingMove.newCells.length &&
+      ship.cells.every(
+        (c, i) =>
+          c.row === pendingMove.newCells[i].row &&
+          c.col === pendingMove.newCells[i].col,
+      );
+    return matchesNew ? null : pendingMove;
+  }, [serverShips, pendingMove]);
+
+  const ships = useMemo<Ship[]>(() => {
+    if (!effectivePendingMove) return serverShips;
+    return serverShips.map((s) =>
+      s.id === effectivePendingMove.shipId
+        ? { ...s, cells: effectivePendingMove.newCells }
+        : s,
+    );
+  }, [serverShips, effectivePendingMove]);
+
+  const board = useMemo<CellState[][]>(() => {
+    if (!effectivePendingMove) return serverBoard;
+    const next = serverBoard.map((row) => row.slice());
+    for (const c of effectivePendingMove.originalCells) {
+      next[c.row][c.col] = CELL_STATE.EMPTY;
+    }
+    for (const c of effectivePendingMove.newCells) {
+      next[c.row][c.col] = CELL_STATE.SHIP;
+    }
+    return next;
+  }, [serverBoard, effectivePendingMove]);
+
+  useEffect(() => {
+    if (!pendingMove) return;
+    const timer = setTimeout(() => setPendingMove(null), 2000);
+    return () => clearTimeout(timer);
+  }, [pendingMove]);
+
+  const handleMoveShip = useCallback(
+    (shipId: string, cells: ShipCell[]) => {
+      const ship = serverShips.find((s) => s.id === shipId);
+      if (ship) {
+        setPendingMove({
+          shipId,
+          originalCells: ship.cells,
+          newCells: cells,
+        });
+      }
+      onMoveShip(shipId, cells);
+    },
+    [serverShips, onMoveShip],
+  );
+
   const placedShipIds = useMemo(() => {
-    return new Set(currentPlayer?.ships.map((s) => s.id) || []);
-  }, [currentPlayer?.ships]);
+    return new Set(ships.map((s) => s.id));
+  }, [ships]);
 
   const unplacedShips = useMemo(() => {
     return SHIPS.filter((s) => !placedShipIds.has(s.id));
   }, [placedShipIds]);
 
-  const board = currentPlayer?.board || createEmptyBoard();
-
   const selectedShip = useMemo(() => {
     return SHIPS.find((s) => s.id === selectedShipId) || null;
   }, [selectedShipId]);
 
-  const { getDragProps, onDragOver, onDrop, onDragLeave, handleDragEnd } =
-    useDragPlacement({
-      board,
-      isVertical,
-      placedShipIds,
-      onPlaceShip,
-      setSelectedShipId,
-      setHoveredCells,
-      setIsInvalidHover,
-    });
+  const {
+    getDragProps,
+    getBoardCellDragProps,
+    onDragOver,
+    onDrop,
+    onDragLeave,
+    handleDragEnd,
+    draggingCells,
+  } = useDragPlacement({
+    board,
+    isVertical,
+    placedShipIds,
+    ships,
+    placementComplete: isPlacementComplete,
+    onPlaceShip,
+    onMoveShip: handleMoveShip,
+    setSelectedShipId,
+    setHoveredCells,
+    setIsInvalidHover,
+  });
+
+  // Rotate a placed ship in place around the clicked cell. Keeps the clicked
+  // cell as the anchor and flips orientation; falls back silently if the
+  // rotated layout would be invalid (out of bounds, overlap, or adjacency).
+  const handleRotateInPlace = useCallback(
+    (row: number, col: number) => {
+      if (isPlacementComplete) return;
+      const ship = ships.find((s) =>
+        s.cells.some((c) => c.row === row && c.col === col),
+      );
+      if (!ship || ship.cells.length < 2) return;
+
+      const wasVertical = ship.cells[0].col === ship.cells[1].col;
+      const anchorIdx = ship.cells.findIndex(
+        (c) => c.row === row && c.col === col,
+      );
+      if (anchorIdx < 0) return;
+
+      const newCells: ShipCell[] = [];
+      for (let i = 0; i < ship.size; i++) {
+        const offset = i - anchorIdx;
+        const cell = wasVertical
+          ? { row, col: col + offset }
+          : { row: row + offset, col };
+        if (
+          cell.row < 0 ||
+          cell.row >= BOARD_SIZE ||
+          cell.col < 0 ||
+          cell.col >= BOARD_SIZE
+        ) {
+          return;
+        }
+        newCells.push(cell);
+      }
+
+      // Validate against a board with the rotating ship's own cells cleared.
+      const virtual = board.map((r) => r.slice());
+      for (const c of ship.cells) {
+        virtual[c.row][c.col] = CELL_STATE.EMPTY;
+      }
+      const dirs = [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+      ];
+      for (const cell of newCells) {
+        if (virtual[cell.row][cell.col] !== CELL_STATE.EMPTY) return;
+        for (const [dr, dc] of dirs) {
+          const r = cell.row + (dr ?? 0);
+          const c = cell.col + (dc ?? 0);
+          if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+            if (virtual[r][c] === CELL_STATE.SHIP) return;
+          }
+        }
+      }
+
+      handleMoveShip(ship.id, newCells);
+    },
+    [ships, board, isPlacementComplete, handleMoveShip],
+  );
 
   const canPlaceAt = useCallback(
     (row: number, col: number, ship: ShipConfig): boolean => {
@@ -204,6 +357,21 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     />
   );
 
+  const pendingCells = effectivePendingMove?.newCells ?? [];
+
+  // First cell of each multi-cell placed ship — gets a small ↻ rotate button
+  // so the interaction is discoverable. 1-cell submarines are excluded since
+  // their orientation is meaningless and rotating them is a no-op.
+  const shipHeadKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const ship of ships) {
+      if (ship.cells.length < 2) continue;
+      const head = ship.cells[0];
+      if (head) keys.add(`${head.row}-${head.col}`);
+    }
+    return keys;
+  }, [ships]);
+
   const boardEl = (
     <PlacementBoardGrid
       board={board}
@@ -211,9 +379,15 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       hoveredCells={hoveredCells}
       isInvalidHover={isInvalidHover}
       selectedShip={selectedShip}
+      getBoardCellDragProps={getBoardCellDragProps}
+      draggingCells={draggingCells}
+      pendingCells={pendingCells}
+      shipHeadKeys={shipHeadKeys}
+      isPlacementComplete={isPlacementComplete}
       onCellHover={handleCellHover}
       onMouseLeave={handleMouseLeave}
       onCellClick={handleCellClick}
+      onCellRotateInPlace={handleRotateInPlace}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragLeave={onDragLeave}

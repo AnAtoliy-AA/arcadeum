@@ -15,6 +15,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
+import { NotificationsService } from '../notifications/notifications.service';
 
 interface RequestWithUser {
   user?: AuthenticatedUser;
@@ -80,6 +82,16 @@ describe('AdminAnnouncementsController (integration)', () => {
         RolesGuard,
         { provide: getModelToken(Announcement.name), useValue: model },
         { provide: getModelToken(User.name), useValue: userModelStub },
+        {
+          provide: NotificationDispatcher,
+          useValue: { dispatch: jest.fn(), dispatchMany: jest.fn() },
+        },
+        {
+          provide: NotificationsService,
+          useValue: {
+            listUserIdsWithCategoryEnabled: jest.fn().mockResolvedValue([]),
+          },
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)

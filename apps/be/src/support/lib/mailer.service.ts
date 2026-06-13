@@ -11,6 +11,12 @@ export type MailerSendInput = {
   message: string;
 };
 
+export type MailerSendToInput = {
+  to: string;
+  subject: string;
+  text: string;
+};
+
 export type MailerSendResult =
   | { status: 'sent' }
   | { status: 'unconfigured' }
@@ -66,6 +72,39 @@ export class MailerService {
         subject: `[Contact] ${safeSubject}`,
         // Plain text only — no HTML rendering of user content.
         text: `From: ${safeName} <${safeEmail}>\n\n${input.message}`,
+      });
+      return { status: 'sent' };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'unknown';
+      this.logger.error(`Email send failed: ${message}`);
+      return { status: 'failed', error: message };
+    }
+  }
+
+  /**
+   * Transactional send (app → user). Used by flows that need to email a
+   * specific recipient (e.g. password reset), as opposed to support inquiries
+   * that always route to SUPPORT_EMAIL.
+   */
+  async sendTo(input: MailerSendToInput): Promise<MailerSendResult> {
+    if (isE2EMode()) {
+      this.logger.debug('E2E mode — skipping real email delivery');
+      return { status: 'unconfigured' };
+    }
+    if (!this.transporter || !this.from) {
+      this.logger.warn('SMTP not configured — skipping email delivery');
+      return { status: 'unconfigured' };
+    }
+
+    const safeTo = stripNewlines(input.to);
+    const safeSubject = stripNewlines(input.subject);
+
+    try {
+      await this.transporter.sendMail({
+        from: this.from,
+        to: safeTo,
+        subject: safeSubject,
+        text: input.text,
       });
       return { status: 'sent' };
     } catch (err) {

@@ -51,6 +51,9 @@ export const enMessages = {
       connecting: 'Connecting…',
       reconnecting: 'Reconnecting…',
       slowConnection: 'Slow connection',
+      getReady: 'Get ready',
+      inPlay: 'In play',
+      roundOver: 'Round over',
     },
     rules: {
       objective:

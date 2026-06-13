@@ -112,32 +112,26 @@ test.describe('Game Room Creation', () => {
   });
 
   test('should validate maximum players limit', async ({ page }) => {
+    // ARC-744 redesign: max players is now a stepper, not a number input.
+    // The stepper enforces the per-game cap via a disabled increment button,
+    // so the test now asserts that visible cap + a valid submission.
     const nameInput = page.getByLabel(/room name/i);
     await expect(nameInput).toBeVisible();
-
-    // Explicit click to ensure focus and hydration readiness
     await nameInput.click();
     await nameInput.fill('Max Players Test');
-    // Verify it actually stuck
     await expect(nameInput).toHaveValue('Max Players Test');
 
-    const maxInput = page.getByPlaceholder('Auto');
-    await maxInput.click();
-    // pressSequentially fires per-keystroke input events, which propagate
-    // reliably to React's controlled-input state. `fill()` on number
-    // inputs occasionally lands the value in the DOM without triggering
-    // React's onChange in Firefox, leaving the maxPlayers state at ''.
-    await maxInput.pressSequentially('7');
-    await expect(maxInput).toHaveValue('7');
+    const incBtn = page.getByTestId('stepper-inc');
+    await expect(incBtn).toBeVisible();
+    // Critical max is 6; the stepper starts at "auto" → 2 → 3 → … → 6 then
+    // disables. Click until disabled to prove the cap is enforced.
+    for (let i = 0; i < 10; i++) {
+      if (await incBtn.isDisabled()) break;
+      await incBtn.click();
+    }
+    await expect(incBtn).toBeDisabled();
 
-    const submitBtn = page.getByRole('button', { name: /create room/i });
-    await submitBtn.dispatchEvent('click');
-    await expect(page).toHaveURL(/\/games\/create/);
-
-    await maxInput.click();
-    await maxInput.fill('');
-    await maxInput.pressSequentially('6');
-    await expect(maxInput).toHaveValue('6');
+    const submitBtn = page.getByTestId('create-room-button');
     await submitBtn.dispatchEvent('click');
 
     await expect(page).toHaveURL(
@@ -147,19 +141,20 @@ test.describe('Game Room Creation', () => {
   });
 
   test('should clear max players with Auto button', async ({ page }) => {
-    const maxInput = page.getByPlaceholder('Auto');
-    await expect(maxInput).toBeVisible();
-    await maxInput.click();
-    // pressSequentially — see comment in 'should validate maximum players
-    // limit' above. Necessary for the Auto button to render, which is
-    // conditional on `maxPlayers` truthy in the React state.
-    await maxInput.pressSequentially('5');
-    await expect(maxInput).toHaveValue('5');
+    // ARC-744 redesign: there's no standalone "Auto" reset button — the
+    // stepper cycles back to "Auto" when the user decrements below the
+    // game minimum. Drive that path directly.
+    const incBtn = page.getByTestId('stepper-inc');
+    const decBtn = page.getByTestId('stepper-dec');
+    const stepper = page.getByTestId('max-players-stepper');
 
-    const autoBtn = page.getByTestId('auto-max-players-button');
-    await expect(autoBtn).toBeVisible();
-    await autoBtn.click();
+    await incBtn.click();
+    // Stepper starts at Auto → first click yields the game min (2 for
+    // Critical), so the visible value is a number now.
+    await expect(stepper).not.toContainText(/auto/i);
 
-    await expect(maxInput).toHaveValue('');
+    // Decrement once: at the minimum the stepper snaps back to Auto.
+    await decBtn.click();
+    await expect(stepper).toContainText(/auto/i);
   });
 });

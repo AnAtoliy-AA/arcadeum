@@ -8,6 +8,7 @@ import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
 import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { isLocale, SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
@@ -137,12 +138,14 @@ export default async function LocaleLayout({
   return (
     <LanguageProvider locale={locale}>
       <PWAProvider>
-        <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-        <AnnouncementBanner />
-        <Header />
-        {children}
-        <LayoutFooter />
-        {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+        <SoundProvider>
+          <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
+          <AnnouncementBanner />
+          <Header />
+          {children}
+          <LayoutFooter />
+          {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+        </SoundProvider>
       </PWAProvider>
     </LanguageProvider>
   );

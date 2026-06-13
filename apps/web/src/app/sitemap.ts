@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
-import { SUPPORTED_LOCALES } from '@/shared/i18n';
+import { SUPPORTED_LOCALES, localeToHreflang } from '@/shared/i18n';
 import { POST_SLUGS, getPost } from '@/features/blog/registry';
 
 type RouteKey =
@@ -180,7 +180,7 @@ function alternatesFor(key: RouteKey): Record<string, string> {
     SUPPORTED_LOCALES.map((locale) => {
       const r = buildRoutes(locale);
       const value = r[key];
-      return [locale, `${appConfig.siteUrl}${value as string}`];
+      return [localeToHreflang(locale), `${appConfig.siteUrl}${value as string}`];
     }),
   );
 }
@@ -224,7 +224,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       for (const l of SUPPORTED_LOCALES) {
         const localized = getPost(slug, l);
         if (localized && localized.locale === l) {
-          postLanguages[l] =
+          postLanguages[localeToHreflang(l)] =
             `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
         }
       }

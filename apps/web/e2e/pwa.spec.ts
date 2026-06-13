@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('PWA Features', () => {
   test('manifest file is accessible', async ({ request }) => {
@@ -26,7 +26,10 @@ test.describe('PWA Features', () => {
   });
 
   test('page has PWA meta tags', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    // Use the shared navigation helper so the test retries on
+    // dev-server compile flakes (ChunkLoadError / hydration mismatch)
+    // that show up when the full suite is run in parallel.
+    await navigateTo(page, '/');
 
     const manifestLink = page.locator('link[rel="manifest"]');
     await expect(manifestLink).toHaveAttribute('href', '/manifest.json');

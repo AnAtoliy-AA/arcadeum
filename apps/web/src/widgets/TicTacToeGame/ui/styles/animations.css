@@ -1,0 +1,32 @@
+@keyframes ttt-mark-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ttt-winning-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px rgba(250, 204, 21, 0.75);
+  }
+}
+
+.ttt-mark {
+  animation: ttt-mark-pop 220ms ease-out both;
+}
+
+.ttt-winning {
+  animation: ttt-winning-pulse 1.4s ease-in-out infinite;
+}

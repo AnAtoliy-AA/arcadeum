@@ -16,6 +16,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { useLanguage } from '@/shared/i18n/context';
+import { FALLBACK_ACCENT, GameSymbol } from '../featured-games/gameMeta';
 
 interface HomeGameDetailsModalProps {
   isOpen: boolean;
@@ -121,9 +122,7 @@ export function HomeGameDetailsModal({
             width={44}
             height={44}
             borderRadius={12}
-            background={
-              game?.gradient ?? 'linear-gradient(135deg,#ff4d4d,#f9cb28)'
-            }
+            background={game?.accentColor ?? FALLBACK_ACCENT}
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
@@ -217,19 +216,22 @@ export function HomeGameDetailsModal({
     <Modal open={isOpen} onClose={onClose}>
       <ModalGlassContent maxWidth="800px">
         <style>{tabStyles}</style>
-        <HeaderBackgroundEmoji>
-          <span style={{ fontSize: '10rem', filter: 'blur(4px)' }}>
-            {game.emoji}
-          </span>
+        <HeaderBackgroundEmoji aria-hidden>
+          <GameSymbol
+            gameId={game.id}
+            width={160}
+            height={160}
+            style={{
+              color: game.accentColor ?? FALLBACK_ACCENT,
+              filter: 'blur(2px)',
+            }}
+          />
         </HeaderBackgroundEmoji>
         <ModalHeader onClose={onClose}>
           <ModalTitle>
             <span
-              className="text-gradient"
               style={{
-                background:
-                  game.gradient ??
-                  'linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%)',
+                color: game.accentColor ?? FALLBACK_ACCENT,
                 fontSize: '2.25rem',
                 fontWeight: '900',
                 letterSpacing: '-0.02em',

@@ -10,8 +10,14 @@ import {
 } from '@arcadeum/ui';
 import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
+import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { GameChatPopupOverlay } from '@/widgets/GameChat';
+import {
+  TurnIndicator,
+  resolveTurnStatus,
+  type TurnContract,
+} from './TurnIndicator';
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -263,10 +269,22 @@ interface SharedHeaderProps {
   title: string;
   /** Optional subtitle (e.g. room name) */
   subtitle?: string;
-  /** Turn status pill variant */
-  turnStatusVariant: TurnStatusVariant;
-  /** Turn status text */
-  turnStatusText: string;
+  /**
+   * Preferred: declarative turn contract. The header renders the shared
+   * {@link TurnIndicator} (avatar + name + "Your turn / {name}'s turn") and
+   * derives the pill status from these fields. A new game gets the full turn
+   * display by passing only an id + isMyTurn.
+   */
+  turn?: TurnContract;
+  /**
+   * Legacy / non-turn escape hatch (e.g. real-time games like Glimworm that
+   * have no turns). Ignored when `turn` is provided.
+   */
+  turnStatusVariant?: TurnStatusVariant;
+  /** Legacy / non-turn status text. Ignored when `turn` is provided. */
+  turnStatusText?: string;
+  /** Legacy free-form avatar node. Ignored when `turn` is provided. */
+  turnAvatar?: React.ReactNode;
   /** Optional extra actions rendered before fullscreen button */
   extraActions?: React.ReactNode;
   /** Optional gradient for the title text */
@@ -284,6 +302,14 @@ interface GameWidgetContainerProps {
   modals?: React.ReactNode;
   variant?: string;
   isMyTurn?: boolean;
+  /** When true, the widget auto-exits its fullscreen shortly after finish. */
+  isGameOver?: boolean;
+  /**
+   * Renders the shared in-game chat message popup overlay (default true).
+   * Set false for games that show incoming chat their own way (e.g. Critical
+   * renders per-opponent chat bubbles) to avoid showing each message twice.
+   */
+  showChatPopup?: boolean;
 }
 
 const gameWidgetGlobalStyles = `
@@ -312,13 +338,30 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   modals,
   variant,
   isMyTurn,
+  isGameOver,
+  showChatPopup = true,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Widget-only fullscreen — independent of the page-level toggle in
   // `GamePageLayout`. Page level expands [control panel + widget + chat];
   // this expands only the widget. Keyboard disabled so the global `f`
   // shortcut owned by the page-level instance doesn't toggle both at once.
-  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+  const { isFullscreen, toggleFullscreen, exitFullscreen } =
+    useFullscreen(containerRef);
+
+  // Leave this widget's fullscreen shortly after the game finishes. Mapped to
+  // the status the auto-exit hook expects so it fires once on the transition.
+  useAutoExitFullscreen({
+    status: isGameOver ? 'completed' : 'active',
+    isFullscreen,
+    exitFullscreen,
+  });
+
+  const pillStatus: TurnStatusVariant = headerProps
+    ? headerProps.turn
+      ? resolveTurnStatus(headerProps.turn)
+      : (headerProps.turnStatusVariant ?? 'default')
+    : 'default';
 
   const renderedHeader =
     header ??
@@ -358,17 +401,35 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </YStack>
         </GameInfo>
 
-        <TurnStatusPill $status={headerProps.turnStatusVariant}>
-          <TurnStatusText $status={headerProps.turnStatusVariant}>
-            {headerProps.turnStatusText}
-          </TurnStatusText>
-        </TurnStatusPill>
+        {headerProps.turn ? (
+          <TurnStatusPill
+            $status={pillStatus}
+            gap="$2"
+            paddingLeft="$1"
+            data-testid="turn-status-pill"
+          >
+            <TurnIndicator turn={headerProps.turn} />
+          </TurnStatusPill>
+        ) : (
+          <TurnStatusPill
+            $status={pillStatus}
+            gap={headerProps.turnAvatar ? '$2' : undefined}
+            paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+            data-testid="turn-status-pill"
+          >
+            {headerProps.turnAvatar}
+            <TurnStatusText $status={pillStatus}>
+              {headerProps.turnStatusText}
+            </TurnStatusText>
+          </TurnStatusPill>
+        )}
 
         <HeaderActions>
           {headerProps.extraActions}
 
           <FullscreenButton
             onClick={toggleFullscreen}
+            data-testid="widget-fullscreen-button"
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
@@ -402,7 +463,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </SharedHandSection>
         )}
         {modals}
-        <GameChatPopupOverlay />
+        {showChatPopup && <GameChatPopupOverlay />}
       </Container>
     </>
   );

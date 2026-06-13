@@ -19,6 +19,7 @@ const labels: ShopSlotRingLabels = {
   banner: { label: 'Banner', desc: '', empty: 'Empty' },
   aura: { label: 'Aura', desc: '', empty: 'Empty' },
   frame: { label: 'Frame', desc: '', empty: 'Empty' },
+  background: { label: 'Background', desc: '', empty: 'Empty' },
 };
 
 function makeItem(
@@ -49,6 +50,7 @@ const EMPTY_PREVIEW = {
   banner: null,
   aura: null,
   frame: null,
+  background: null,
 };
 
 describe('ShopSlotRing', () => {

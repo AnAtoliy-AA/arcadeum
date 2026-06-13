@@ -23,6 +23,7 @@ export interface ShopSlotRingLabels {
   banner: ShopSlotLabels;
   aura: ShopSlotLabels;
   frame: ShopSlotLabels;
+  background: ShopSlotLabels;
 }
 
 export interface ShopSlotRingProps {
@@ -36,6 +37,7 @@ export interface ShopSlotRingProps {
 const SLOT_ORDER: ShopCategory[] = [
   'avatar',
   'frame',
+  'background',
   'badge',
   'banner',
   'aura',

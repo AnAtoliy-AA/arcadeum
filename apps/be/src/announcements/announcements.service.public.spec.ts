@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { AnnouncementsService } from './announcements.service';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   Announcement,
   SEVERITY_RANK,
@@ -53,6 +55,16 @@ describe('AnnouncementsService (public)', () => {
       providers: [
         AnnouncementsService,
         { provide: getModelToken(Announcement.name), useValue: model },
+        {
+          provide: NotificationDispatcher,
+          useValue: { dispatch: jest.fn(), dispatchMany: jest.fn() },
+        },
+        {
+          provide: NotificationsService,
+          useValue: {
+            listUserIdsWithCategoryEnabled: jest.fn().mockResolvedValue([]),
+          },
+        },
       ],
     }).compile();
     service = moduleRef.get(AnnouncementsService);

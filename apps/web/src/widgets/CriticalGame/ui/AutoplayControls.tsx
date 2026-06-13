@@ -58,7 +58,10 @@ const Toggle = styled(Text, {
 const DropdownMenu = styled(YStack, {
   position: 'absolute',
   top: '100%',
-  left: 0,
+  // Anchor to the right edge of the trigger so the 280px menu doesn't
+  // overflow the viewport when the autoplay button sits in the
+  // right-aligned widget header bar.
+  right: 0,
   marginTop: '$2',
   width: 280,
   backgroundColor: '#1e1e2e',

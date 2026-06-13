@@ -81,6 +81,7 @@ function Skel({
 }) {
   return (
     <div
+      className="shimmer-surface"
       style={{
         width: w,
         height: h,

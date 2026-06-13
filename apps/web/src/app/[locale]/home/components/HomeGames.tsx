@@ -69,7 +69,12 @@ export default function HomeGames() {
   const closeDetails = () => setDetails((prev) => ({ ...prev, gameId: null }));
 
   return (
-    <section id="games" ref={sectionRef} className="games-section-main">
+    <section
+      id="games"
+      ref={sectionRef}
+      className="games-section-main"
+      aria-label={homeCopy.gamesPagerLabel ?? 'Featured games carousel'}
+    >
       <div className="section-header-main" data-reveal data-reveal-delay="1">
         <h2 className="section-title-main">
           {homeCopy.gamesTitle ?? 'Featured Games'}
@@ -115,11 +120,13 @@ export default function HomeGames() {
             direction="left"
             enabled={canScrollLeft}
             onClick={() => scrollBy('left')}
+            label={homeCopy.gamesPagerPrev ?? 'Previous game'}
           />
           <SliderArrow
             direction="right"
             enabled={canScrollRight}
             onClick={() => scrollBy('right')}
+            label={homeCopy.gamesPagerNext ?? 'Next game'}
           />
         </div>
       </div>
@@ -138,15 +145,16 @@ interface SliderArrowProps {
   direction: 'left' | 'right';
   enabled: boolean;
   onClick: () => void;
+  label: string;
 }
 
-function SliderArrow({ direction, enabled, onClick }: SliderArrowProps) {
+function SliderArrow({ direction, enabled, onClick, label }: SliderArrowProps) {
   const isLeft = direction === 'left';
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={isLeft ? 'Previous game' : 'Next game'}
+      aria-label={label}
       data-testid={isLeft ? 'prev-game-button' : 'next-game-button'}
       disabled={!enabled}
       className="slider-btn-main"

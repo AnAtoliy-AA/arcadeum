@@ -23,7 +23,6 @@ coverage/
 # E2E test logs
 backend-e2e-errors.log
 
-.claude
 .claw
 .playwright-mcp
 .superpowers

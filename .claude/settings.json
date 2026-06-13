@@ -1,0 +1,75 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "mcp__playwright",
+      "Bash(npm *)",
+      "Bash(git *)",
+      "Bash(ls *)",
+      "Bash(vitest *)"
+    ],
+    "deny": [
+      "Bash(git push origin --delete main)",
+      "Bash(git push origin --delete main *)",
+      "Bash(git push origin --delete develop)",
+      "Bash(git push origin --delete develop *)",
+      "Bash(git push origin --delete staging)",
+      "Bash(git push origin --delete staging *)",
+      "Bash(git push --delete origin main)",
+      "Bash(git push --delete origin main *)",
+      "Bash(git push --delete origin develop)",
+      "Bash(git push --delete origin develop *)",
+      "Bash(git push --delete origin staging)",
+      "Bash(git push --delete origin staging *)",
+      "Bash(git push origin :main)",
+      "Bash(git push origin :main *)",
+      "Bash(git push origin :develop)",
+      "Bash(git push origin :develop *)",
+      "Bash(git push origin :staging)",
+      "Bash(git push origin :staging *)",
+      "Bash(git branch -D main)",
+      "Bash(git branch -D main *)",
+      "Bash(git branch -D develop)",
+      "Bash(git branch -D develop *)",
+      "Bash(git branch -D staging)",
+      "Bash(git branch -D staging *)",
+      "Bash(gh api -X DELETE *)",
+      "Bash(gh api --method DELETE *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $PWD/.claude/hooks/block-env-access.js",
+            "statusMessage": "Checking for .env* access..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $PWD/.claude/hooks/tsc-check.sh",
+            "asyncRewake": true,
+            "timeout": 60,
+            "statusMessage": "Running tsc..."
+          },
+          {
+            "type": "command",
+            "command": "bash $PWD/.claude/hooks/ui-component-check.sh",
+            "asyncRewake": true,
+            "timeout": 10,
+            "statusMessage": "Checking UI component placement..."
+          }
+        ]
+      }
+    ]
+  }
+}

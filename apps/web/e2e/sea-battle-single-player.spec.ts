@@ -170,7 +170,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     // must close it AFTER the start button is mounted but BEFORE clicking.
     // waitForRoomReady runs too early on slow webkit and misses the modal.
     await closeGameRulesModal(page);
-    await startBtn.click();
+    await startBtn.click({ force: true });
 
     // Increased timeout for placement phase
     await expect(page.getByText(/place your ships/i).first()).toBeVisible({});

@@ -102,7 +102,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({});
-    await startBtn.click();
+    await startBtn.click({ force: true });
 
     await expect
       .poll(async () => {

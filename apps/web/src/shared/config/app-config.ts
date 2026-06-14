@@ -27,6 +27,8 @@ type SocialConfig = {
   facebook?: string;
   youtube?: string;
   linkedin?: string;
+  linkedinDeveloper?: string;
+  tiktok?: string;
   threads?: string;
   x?: string;
   discord?: string;
@@ -127,6 +129,10 @@ function readAppConfig(): WebAppConfig {
       facebook: trim(process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK),
       youtube: trim(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE),
       linkedin: trim(process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN),
+      linkedinDeveloper: trim(
+        process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN_DEVELOPER,
+      ),
+      tiktok: trim(process.env.NEXT_PUBLIC_SOCIAL_TIKTOK),
       threads: trim(process.env.NEXT_PUBLIC_SOCIAL_THREADS),
       x: trim(process.env.NEXT_PUBLIC_SOCIAL_X),
       discord: trim(process.env.NEXT_PUBLIC_SOCIAL_DISCORD),

@@ -27,7 +27,26 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  return buildPageMetadata({ locale, page: 'ticTacToeLanding' });
+  const base = await buildPageMetadata({ locale, page: 'ticTacToeLanding' });
+  return {
+    ...base,
+    openGraph: {
+      ...base.openGraph,
+      images: [
+        {
+          url: `/${locale}/games/tic-tac-toe/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: 'Tic-Tac-Toe — free multiplayer on Arcadeum',
+        },
+      ],
+    },
+    twitter: {
+      ...base.twitter,
+      card: 'summary_large_image',
+      images: [`/${locale}/games/tic-tac-toe/opengraph-image`],
+    },
+  };
 }
 
 export default async function TicTacToeLandingRoute({ params }: PageProps) {

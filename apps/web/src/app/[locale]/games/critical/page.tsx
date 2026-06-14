@@ -49,6 +49,14 @@ export async function generateMetadata({
       title: t?.ogTitle ?? t?.title ?? base.openGraph?.title,
       description:
         t?.ogDescription ?? t?.description ?? base.openGraph?.description,
+      images: [
+        {
+          url: `/${locale}/games/critical/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: 'Critical — multiplayer card game on Arcadeum',
+        },
+      ],
     },
     twitter: {
       ...base.twitter,
@@ -56,6 +64,7 @@ export async function generateMetadata({
       title: t?.ogTitle ?? t?.title ?? base.twitter?.title,
       description:
         t?.ogDescription ?? t?.description ?? base.twitter?.description,
+      images: [`/${locale}/games/critical/opengraph-image`],
     },
   };
 }

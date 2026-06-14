@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.7] - 2026-06-14
+
+### Fixed
+- refactor modals to render inline within widget and fix insight card routing (N/A)
+- improve modals, mobile UX, fullscreen, defaults (N/A)
+
+
 ## [1.16.6] - 2026-06-14
 
 ### Fixed

@@ -193,7 +193,6 @@ export const GameContainer = styled(YStack, {
   minHeight: 0,
   width: '100%',
   maxWidth: '100%',
-  overflow: 'hidden',
   backgroundColor: '$background',
 
   $tablet: {

@@ -105,13 +105,11 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       gap="$4"
       flexWrap="wrap"
       $sm={{
-        flexWrap: 'nowrap',
-        overflowX: 'auto',
-        gap: '$1.5',
+        gap: '$2',
         justifyContent: 'center',
-        paddingVertical: '$1',
-        paddingHorizontal: '$2',
-        borderRadius: 8,
+        paddingVertical: '$2',
+        paddingHorizontal: '$3',
+        borderRadius: 12,
       }}
       paddingVertical="$3"
       paddingHorizontal="$6"

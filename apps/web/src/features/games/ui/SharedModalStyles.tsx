@@ -42,6 +42,7 @@ export const StyledModalFrame: TamaguiComponent = styled(Dialog.Content, {
   shadowColor: 'rgba(0, 0, 0, 0.5)',
   shadowRadius: 60,
   shadowOffset: { width: 0, height: 20 },
+  zIndex: 1200,
 
   variants: {
     variant: {

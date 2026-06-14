@@ -8,6 +8,7 @@ import { HandZone } from './hand/HandZone';
 import { RulesModal } from './RulesModal';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
+import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import {
   detectCombo,
   handWithUids,
@@ -116,6 +117,11 @@ export function MatchWidget({
   handleIdleTimeout,
   handleStopAutoplay,
 }: MatchWidgetProps) {
+  // Read the widget-level fullscreen state from the context owned by
+  // GameWidgetContainer. The prop `isFullscreen` is the legacy path;
+  // the context is the authoritative source for the sticky bar's z-index.
+  const ctxFullscreen = useWidgetFullscreen();
+  const effectiveFullscreen = isFullscreen ?? ctxFullscreen;
   // `selectedUids` lives in the URL hash so refresh restores the
   // selection and shareable links carry it. Empty arrays serialize to
   // `null`, keeping the URL clean at idle.
@@ -453,7 +459,7 @@ export function MatchWidget({
               canDraw={isMyTurn && !isGameOver}
               canNope={canPlayNope}
               cardVariant={cardVariant}
-              isFullscreen={isFullscreen}
+              isFullscreen={effectiveFullscreen}
               showCardName={showCardName}
               showCardDescription={showCardDescription}
               onPlay={handlePlay}

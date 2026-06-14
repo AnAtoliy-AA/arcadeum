@@ -16,13 +16,12 @@ export const SIMPLE_ACTION_CARDS = [
   'strike',
   'reorder',
   'cancel',
+  'trade',
   ...ATTACK_PACK_CARDS,
   ...FUTURE_PACK_CARDS,
   ...THEFT_PACK_CARDS,
   ...DEITY_PACK_CARDS,
-  'fission',
-  'tribute',
-  'blackout',
+  ...CHAOS_PACK_CARDS,
   'unstash',
 ] as const;
 export type SimpleActionCard = (typeof SIMPLE_ACTION_CARDS)[number];

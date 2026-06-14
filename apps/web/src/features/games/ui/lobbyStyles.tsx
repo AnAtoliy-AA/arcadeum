@@ -17,12 +17,14 @@ export const LobbyContent = styled(XStack, {
   minHeight: 0,
   padding: '$5',
   overflowY: 'auto',
+  overflowX: 'hidden',
   alignItems: 'flex-start',
   $tablet: {
     flexDirection: 'column',
     flex: 1,
     minHeight: 0,
     overflowY: 'visible',
+    overflowX: 'hidden',
     padding: '$3',
     gap: '$4',
     alignItems: 'stretch',
@@ -190,6 +192,8 @@ export const GameContainer = styled(YStack, {
   flex: 1,
   minHeight: 0,
   width: '100%',
+  maxWidth: '100%',
+  overflow: 'hidden',
   backgroundColor: '$background',
 
   $tablet: {

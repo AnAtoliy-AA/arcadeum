@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.6] - 2026-06-14
+
+### Fixed
+- rewrite sea battle bot-count test to use mock response instead of event recording (N/A)
+- use force click in sea battle e2e tests to bypass pointer event interception (N/A)
+- reduce fullscreen padding on mobile screens (ARC-779) (ARC-779)
+- make games control panel wrap on mobile instead of horizontal scroll (ARC-779) (ARC-779)
+- prevent horizontal scroll in game lobbies on mobile (ARC-779) (ARC-779)
+- remove overflow hidden from GameContainer to unclip header badge (ARC-779) (ARC-779)
+- prevent horizontal scroll in game lobbies and fix webkit e2e test (ARC-779) (ARC-779)
+- update PWA manifest for Android TV compatibility (N/A)
+- add breakpoint constants to games/create CSS (N/A)
+- improve games/create mobile UX (N/A)
+
+### Refactored
+- convert all CSS to SCSS with breakpoint mixins (N/A)
+
+
 ## [1.16.5] - 2026-06-13
 
 ### Added

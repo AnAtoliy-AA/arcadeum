@@ -1,3 +1,5 @@
+@use 'breakpoints' as bp;
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -378,7 +380,7 @@
   margin: var(--t-space-4) 0;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .hero-card-stack-main {
     transform: scale(0.75);
   }
@@ -563,7 +565,7 @@
   height: 420px;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .slider-container-main {
     padding: 0 var(--t-space-4);
   }
@@ -626,7 +628,7 @@
   text-overflow: ellipsis;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .game-title-main {
     font-size: var(--t-font-size-5) !important;
   }
@@ -667,7 +669,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .game-description-main {
     font-size: var(--t-font-size-3) !important;
     max-width: 100%;
@@ -1043,7 +1045,7 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .featured-card-title-main {
     font-size: 22px;
   }
@@ -1194,7 +1196,7 @@
   padding: var(--t-space-12) var(--t-space-6);
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .features-section-main {
     padding: var(--t-space-10) var(--t-space-5);
   }

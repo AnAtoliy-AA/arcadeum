@@ -1,7 +1,7 @@
 'use client';
 
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
-import styles from './SeaBattleLanding.module.css';
+import styles from './SeaBattleLanding.module.scss';
 import { QuickplayButton } from './QuickplayButton';
 import { useHeroVariant } from './heroVariantContext';
 

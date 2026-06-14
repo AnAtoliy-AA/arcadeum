@@ -1,4 +1,4 @@
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { GAMES, type GameId } from './data/themes';
 import { NOTES_MAX, ROOM_NAME_MAX, type CreateRoomForm } from './data/form';
 

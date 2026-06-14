@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { styled, XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
-import './header-stable.css';
+import './header-stable.scss';
 
 // ─── Header Inner ─────────────────────────────────────────────────────────────
 // (Using plain HTML in HeaderLayout for hydration safety)

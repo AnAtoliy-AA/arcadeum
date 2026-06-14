@@ -2,7 +2,7 @@ import { PageLayout } from '@arcadeum/ui';
 import type { ReactNode } from 'react';
 import { getTranslations } from '@/shared/i18n/server';
 import { AdminSidebar } from './_components/AdminSidebar';
-import styles from './AdminLayoutShell.module.css';
+import styles from './AdminLayoutShell.module.scss';
 
 interface AdminLayoutShellProps {
   username: string;

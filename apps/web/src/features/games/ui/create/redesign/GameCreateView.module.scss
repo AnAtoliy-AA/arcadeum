@@ -1,3 +1,5 @@
+@use '../../../../../app/styles/breakpoints' as bp;
+
 /* Editorial layout tokens scoped to the games create redesign.
    Colors resolve through Tamagui CSS variables (var(--background),
    var(--color), var(--glassBg), …) so they follow the active theme.
@@ -113,7 +115,7 @@
   align-items: start;
 }
 
-@media (max-width: 1080px) {
+@include bp.wide {
   .grid {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -263,7 +265,7 @@
   gap: 16px;
 }
 
-@media (max-width: 720px) {
+@include bp.mobile {
   .gameGrid {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -754,7 +756,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .rules {
     grid-template-columns: 1fr;
   }
@@ -784,7 +786,7 @@
   border-bottom: 1px solid var(--gc-line);
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .rule {
     border-right: 0 !important;
   }
@@ -1058,7 +1060,7 @@
   min-width: 0;
 }
 
-@media (max-width: 1080px) {
+@include bp.wide {
   .rail {
     position: static;
     max-height: none;
@@ -1265,7 +1267,7 @@
 /* Mobile: float the Create Room CTA over the bottom of the viewport with a
    blurred backdrop, matching the previous `StickyMobileCta` pattern. The
    safe-area-inset-bottom keeps it clear of the iOS home indicator. */
-@media (max-width: 660px) {
+@include bp.cta {
   .railCta {
     position: fixed;
     left: 0;

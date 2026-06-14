@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist } from 'next/font/google';
 
-import './globals.css';
+import './globals.scss';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';

@@ -26,7 +26,7 @@ import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
 import { ContactForm } from './ContactForm';
 import { ContactTips } from './ContactTips';
-import styles from './ContactView.module.css';
+import styles from './ContactView.module.scss';
 
 export interface ContactViewProps {
   t?: ContactMessages;

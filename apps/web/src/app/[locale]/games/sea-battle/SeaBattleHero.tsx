@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
-import styles from './SeaBattleLanding.module.css';
+import styles from './SeaBattleLanding.module.scss';
 import { Icon } from './landingIcons';
 import { QuickplayButton } from './QuickplayButton';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';

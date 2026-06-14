@@ -8,7 +8,7 @@ import type {
   TicTacToeTeam,
   WinLineCell,
 } from '../types';
-import './styles/animations.css';
+import './styles/animations.scss';
 
 interface TicTacToeBoardProps {
   board: CellValue[][];

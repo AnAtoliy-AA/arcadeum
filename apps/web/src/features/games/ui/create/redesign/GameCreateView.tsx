@@ -16,7 +16,7 @@ import {
 import { Container } from '@arcadeum/ui/components/Container/Container';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { SectionGroup } from './SectionGroup';
 import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';

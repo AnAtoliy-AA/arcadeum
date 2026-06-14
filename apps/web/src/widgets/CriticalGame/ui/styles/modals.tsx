@@ -1,11 +1,5 @@
-import {
-  styled,
-  YStack,
-  XStack,
-  Text,
-  Dialog,
-  TamaguiComponent,
-} from 'tamagui';
+import React, { useCallback } from 'react';
+import { styled, YStack, XStack, Text } from 'tamagui';
 import { Button, GameVariant, ModalButton, OptionButton } from '@arcadeum/ui';
 
 export { ModalButton, OptionButton };
@@ -24,19 +18,40 @@ const VARIANT_COLORS = {
   },
 };
 
-// Modal Components
-export const Modal = styled(Dialog, {
-  name: 'Modal',
+const Overlay = styled(YStack, {
+  name: 'ModalOverlay',
+  position: 'sticky' as unknown as 'sticky',
+  top: 0,
+  left: 0,
+  right: 0,
+  minHeight: '100%',
+  backgroundColor: 'rgba(0,0,0,0.8)',
+  zIndex: 1000,
+  justifyContent: 'center' as never,
+  alignItems: 'center' as never,
 });
 
-export const ModalOverlay = styled(Dialog.Overlay, {
-  name: 'ModalOverlay',
-  backgroundColor: 'rgba(0,0,0,0.8)',
-  enterStyle: { opacity: 0 },
-  exitStyle: { opacity: 0 },
-}) as TamaguiComponent;
+interface ModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
+}
 
-const StyledModalFrame = styled(Dialog.Content, {
+export function Modal({ open = false, onOpenChange, children }: ModalProps) {
+  const handleOverlayClick = useCallback(() => {
+    onOpenChange?.(false);
+  }, [onOpenChange]);
+
+  if (!open) return null;
+
+  return (
+    <Overlay onPress={handleOverlayClick} data-testid="modal-overlay">
+      {children}
+    </Overlay>
+  );
+}
+
+const StyledModalFrame = styled(YStack, {
   name: 'ModalFrame',
   backgroundColor: '$background',
   borderWidth: 2,
@@ -45,9 +60,10 @@ const StyledModalFrame = styled(Dialog.Content, {
   maxWidth: 600,
   width: '100%',
   maxHeight: '90%',
-  position: 'relative',
+  position: 'relative' as unknown as 'relative',
   elevation: 10,
   overflow: 'hidden',
+  zIndex: 1001,
 
   variants: {
     variant: {
@@ -81,7 +97,7 @@ export const ModalContent = ({
   children,
   variant,
   $variant,
-  onPress,
+  onPress: _onPress,
   onClick,
   ...props
 }: {
@@ -96,7 +112,10 @@ export const ModalContent = ({
   return (
     <StyledModalFrame
       variant={variant || ($variant as GameVariant)}
-      onClick={onClick || onPress}
+      onClick={(e: React.MouseEvent) => {
+        e.stopPropagation();
+        onClick?.({ stopPropagation: () => {} });
+      }}
       {...props}
     >
       <StyledScrollArea>{children}</StyledScrollArea>
@@ -125,10 +144,11 @@ export const ModalHeader = styled(XStack, {
   } as const,
 });
 
-export const ModalTitle = styled(Dialog.Title, {
+export const ModalTitle = styled(Text, {
   name: 'ModalTitle',
   fontSize: 24,
   fontWeight: '700',
+  color: '$color',
   variants: {
     $variant: {
       cyberpunk: { color: VARIANT_COLORS.cyberpunk.primary },

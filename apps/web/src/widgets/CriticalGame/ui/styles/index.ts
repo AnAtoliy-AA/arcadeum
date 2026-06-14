@@ -143,7 +143,6 @@ export {
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.8] - 2026-06-14
+
+### Added
+- add tiktok and linkedin social links to footer and support page (N/A)
+
+
 ## [1.16.7] - 2026-06-14
 
 ### Fixed

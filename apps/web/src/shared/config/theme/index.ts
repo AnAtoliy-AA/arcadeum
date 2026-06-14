@@ -21,7 +21,7 @@ import { violetDarkTokens, violetLightTokens } from './tokens.violet';
 import { tealDarkTokens, tealLightTokens } from './tokens.teal';
 import type { ThemeName, ThemeTokens, ThemePreference } from './types';
 
-export const DEFAULT_THEME_NAME: ThemeName = 'dark';
+export const DEFAULT_THEME_NAME: ThemeName = 'tealDark';
 
 export const themeTokens: Record<ThemeName, ThemeTokens> = {
   light: lightTokens,

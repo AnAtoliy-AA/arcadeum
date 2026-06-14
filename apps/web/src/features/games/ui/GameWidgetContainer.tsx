@@ -1,5 +1,5 @@
 import './scrollbar.scss';
-import React, { useRef } from 'react';
+import React, { createContext, useContext, useRef } from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   GameContainer as BaseGameContainer,
@@ -13,11 +13,23 @@ import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { GameChatPopupOverlay } from '@/widgets/GameChat';
+import { SubtitleText } from './SubtitleText';
 import {
   TurnIndicator,
   resolveTurnStatus,
   type TurnContract,
 } from './TurnIndicator';
+
+/**
+ * Exposes the widget's fullscreen state to children (e.g. MatchWidget →
+ * MobileHandBar) so the sticky bottom bar can raise its z-index above
+ * the fullscreen container (z-index 1100).
+ */
+const WidgetFullscreenContext = createContext<boolean>(false);
+
+export function useWidgetFullscreen(): boolean {
+  return useContext(WidgetFullscreenContext);
+}
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
 
@@ -90,7 +102,6 @@ const GameHeader = styled(XStack, {
   top: -28,
   zIndex: 30,
   flexShrink: 0,
-  overflow: 'hidden',
 
   $sm: {
     paddingHorizontal: '$4',
@@ -98,7 +109,8 @@ const GameHeader = styled(XStack, {
     marginHorizontal: -8,
     marginTop: -8,
     top: -8,
-    gap: '$2',
+    gap: '$1',
+    flexWrap: 'nowrap',
   },
 });
 
@@ -108,6 +120,12 @@ const GameInfo = styled(XStack, {
   gap: '$2',
   minWidth: 0,
   flex: 1,
+  position: 'relative',
+
+  $sm: {
+    minWidth: 0,
+    flex: 1,
+  },
 });
 
 const VariantIconBadge = styled(YStack, {
@@ -135,9 +153,12 @@ const GameTitle = styled(Text, {
   fontWeight: '800',
   letterSpacing: -0.3,
   numberOfLines: 1,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap' as never,
 
   $sm: {
-    fontSize: 14,
+    fontSize: 13,
   },
 });
 
@@ -372,7 +393,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             <Text fontSize={15}>{headerProps.variantEmoji}</Text>
           </VariantIconBadge>
 
-          <YStack gap={0} minWidth={0} flex={1}>
+          <YStack gap={0} minWidth={0} flex={1} position="relative">
             <GameTitle numberOfLines={1}>
               {headerProps.titleGradient ? (
                 <span
@@ -389,14 +410,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             </GameTitle>
 
             {headerProps.subtitle && (
-              <Text
-                fontSize={11}
-                opacity={0.45}
-                numberOfLines={1}
-                $sm={{ display: 'none' }}
-              >
-                {headerProps.subtitle}
-              </Text>
+              <SubtitleText text={headerProps.subtitle} />
             )}
           </YStack>
         </GameInfo>
@@ -441,30 +455,32 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   return (
     <>
       <style>{gameWidgetGlobalStyles}</style>
-      <Container
-        ref={containerRef as React.RefObject<never>}
-        className="game-widget-container"
-        $isMyTurn={!!isMyTurn}
-        $variant={variant as GameVariant}
-        data-testid="game-widget-container"
-      >
-        {renderedHeader}
-        <SharedGameBoard data-testid="game-board-section">
-          {board}
-        </SharedGameBoard>
-        {tableArea && (
-          <SharedTableArea data-testid="game-table-section">
-            {tableArea}
-          </SharedTableArea>
-        )}
-        {handSection && (
-          <SharedHandSection data-testid="game-hand-section">
-            {handSection}
-          </SharedHandSection>
-        )}
-        {modals}
-        {showChatPopup && <GameChatPopupOverlay />}
-      </Container>
+      <WidgetFullscreenContext.Provider value={isFullscreen}>
+        <Container
+          ref={containerRef as React.RefObject<never>}
+          className="game-widget-container"
+          $isMyTurn={!!isMyTurn}
+          $variant={variant as GameVariant}
+          data-testid="game-widget-container"
+        >
+          {renderedHeader}
+          <SharedGameBoard data-testid="game-board-section">
+            {board}
+          </SharedGameBoard>
+          {tableArea && (
+            <SharedTableArea data-testid="game-table-section">
+              {tableArea}
+            </SharedTableArea>
+          )}
+          {handSection && (
+            <SharedHandSection data-testid="game-hand-section">
+              {handSection}
+            </SharedHandSection>
+          )}
+          {modals}
+          {showChatPopup && <GameChatPopupOverlay />}
+        </Container>
+      </WidgetFullscreenContext.Provider>
     </>
   );
 });

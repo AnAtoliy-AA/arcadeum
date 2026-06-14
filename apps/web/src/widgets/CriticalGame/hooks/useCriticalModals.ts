@@ -50,9 +50,10 @@ export function useCriticalModals({
 
   const handleConfirmEventCombo = useCallback(() => {
     if (!playEventCombo) return;
+    const comboCard = store.eventComboModal?.selectedComboCard;
     if (store.selectedMode === 'pair') {
       playEventCombo(
-        store.selectedCard,
+        comboCard ?? null,
         'pair',
         store.selectedTarget ?? undefined,
         undefined,
@@ -60,10 +61,10 @@ export function useCriticalModals({
       );
     } else if (store.selectedMode === 'trio') {
       playEventCombo(
-        store.selectedCard,
+        comboCard ?? null,
         'triple',
         store.selectedTarget ?? undefined,
-        store.selectedCard ?? undefined, // desiredCard
+        comboCard ?? undefined,
       );
     }
     store.closeEventComboModal();

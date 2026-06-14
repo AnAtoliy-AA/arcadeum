@@ -1,7 +1,20 @@
 /* Editorial layout tokens scoped to the games create redesign.
    Colors resolve through Tamagui CSS variables (var(--background),
-   var(--color), var(--glassBg), …) so they follow the active theme. */
+   var(--color), var(--glassBg), …) so they follow the active theme.
+
+   Breakpoints (used in @media below — CSS custom properties can't be
+   consumed by @media, so the actual px values appear inline, but the
+   constants here document the intent and make bulk updates easy):
+
+     --bp-wide    1080px  — grid collapse (2-col → 1-col), rail hide
+     --bp-mobile   720px  — compact spacing, horizontal game cards
+     --bp-cta      660px  — fixed-bottom mobile CTA bar
+     --bp-narrow   640px  — stacked 1-col grids (rules, details) */
 .page {
+  --bp-wide: 1080px;
+  --bp-mobile: 720px;
+  --bp-cta: 660px;
+  --bp-narrow: 640px;
   --gc-ink: var(--background);
   --gc-bg-card: var(--glassBg, rgba(15, 17, 18, 0.8));
   --gc-bg-card-2: var(--background);

@@ -2,7 +2,7 @@
 
 import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
-import styles from './SeaBattleThemesGrid.module.css';
+import styles from './SeaBattleThemesGrid.module.scss';
 
 // Order matches the i18n variants block in sea-battle messages.
 const VARIANTS = [

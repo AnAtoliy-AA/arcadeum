@@ -1,7 +1,23 @@
+@use '../../../../../app/styles/breakpoints' as bp;
+
 /* Editorial layout tokens scoped to the games create redesign.
    Colors resolve through Tamagui CSS variables (var(--background),
-   var(--color), var(--glassBg), …) so they follow the active theme. */
+   var(--color), var(--glassBg), …) so they follow the active theme.
+
+   Breakpoints (used in @media below — CSS custom properties can't be
+   consumed by @media, so the actual px values appear inline, but the
+   constants here document the intent and make bulk updates easy):
+
+     --bp-wide    1080px  — grid collapse (2-col → 1-col), rail hide
+     --bp-mobile   720px  — compact spacing, horizontal game cards
+     --bp-cta      660px  — fixed-bottom mobile CTA bar
+     --bp-narrow   640px  — stacked 1-col grids (rules, details) */
 .page {
+  --bp-wide: 1080px;
+  --bp-mobile: 720px;
+  --bp-cta: 660px;
+  --bp-narrow: 640px;
+
   --gc-ink: var(--background);
   --gc-bg-card: var(--glassBg, rgba(15, 17, 18, 0.8));
   --gc-bg-card-2: var(--background);
@@ -20,10 +36,22 @@
   padding: 0 0 96px;
 }
 
+@media (max-width: 720px) {
+  .page {
+    padding: 0 0 100px;
+  }
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 0 16px;
+  }
 }
 
 .eyebrow {
@@ -41,6 +69,13 @@
   flex-direction: column;
   gap: 32px;
   margin: 0 0 48px;
+}
+
+@media (max-width: 720px) {
+  .head {
+    gap: 20px;
+    margin: 0 0 32px;
+  }
 }
 
 .head h1 {
@@ -80,9 +115,10 @@
   align-items: start;
 }
 
-@media (max-width: 1080px) {
+@include bp.wide {
   .grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 
@@ -91,6 +127,12 @@
   flex-direction: column;
   gap: 56px;
   min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .colLeft {
+    gap: 40px;
+  }
 }
 
 .srOnly {
@@ -173,6 +215,12 @@
   flex-wrap: wrap;
 }
 
+@media (max-width: 720px) {
+  .presets {
+    gap: 6px;
+  }
+}
+
 .preset {
   font-family: inherit;
   display: inline-flex;
@@ -188,6 +236,15 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;
+}
+
+@media (max-width: 720px) {
+  .preset {
+    padding: 10px 16px;
+    font-size: 13px;
+    flex: 1;
+    justify-content: center;
+  }
 }
 
 .preset:hover {
@@ -208,9 +265,10 @@
   gap: 16px;
 }
 
-@media (max-width: 720px) {
+@include bp.mobile {
   .gameGrid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -231,6 +289,13 @@
     transform 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+@media (max-width: 720px) {
+  .gameCard {
+    flex-direction: row;
+    border-radius: 12px;
+  }
 }
 
 .gameCard:hover {
@@ -257,6 +322,15 @@
   overflow: hidden;
 }
 
+@media (max-width: 720px) {
+  .gameCardArt {
+    aspect-ratio: auto;
+    width: 110px;
+    min-height: 80px;
+    flex-shrink: 0;
+  }
+}
+
 .gameCardArt svg {
   width: 100%;
   height: 100%;
@@ -269,6 +343,16 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .gameCardBody {
+    padding: 12px 14px;
+    gap: 3px;
+    justify-content: center;
+  }
 }
 
 .gameCardHeader {
@@ -284,6 +368,12 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0;
+}
+
+@media (max-width: 720px) {
+  .gameCardTitle {
+    font-size: 14px;
+  }
 }
 
 .gameCardPlayers {
@@ -305,6 +395,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 720px) {
+  .gameCardDesc {
+    display: none;
+  }
+}
+
 .gameCardMeta {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;
@@ -312,6 +408,12 @@
   text-transform: uppercase;
   color: var(--gc-text-faint);
   margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .gameCardMeta {
+    margin-top: 2px;
+  }
 }
 
 .gameCardBadge {
@@ -328,6 +430,15 @@
   padding: 4px 8px;
   border-radius: 4px;
   font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .gameCardBadge {
+    top: 8px;
+    left: 8px;
+    font-size: 8px;
+    padding: 3px 6px;
+  }
 }
 
 .gameCardComingSoon {
@@ -496,6 +607,14 @@
   scrollbar-color: var(--gc-line-strong) transparent;
 }
 
+@media (max-width: 720px) {
+  .themeStrip {
+    grid-auto-columns: minmax(180px, 200px);
+    gap: 12px;
+    padding: 4px 8px 12px;
+  }
+}
+
 .themeStrip > * {
   scroll-snap-align: start;
 }
@@ -573,6 +692,13 @@
   gap: 4px;
 }
 
+@media (max-width: 720px) {
+  .themeBody {
+    padding: 8px 10px 10px;
+    gap: 2px;
+  }
+}
+
 .themeRow {
   display: flex;
   align-items: center;
@@ -630,7 +756,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .rules {
     grid-template-columns: 1fr;
   }
@@ -645,6 +771,13 @@
   position: relative;
 }
 
+@media (max-width: 720px) {
+  .rule {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+}
+
 .rule:nth-child(odd) {
   border-right: 1px solid var(--gc-line);
 }
@@ -653,7 +786,7 @@
   border-bottom: 1px solid var(--gc-line);
 }
 
-@media (max-width: 640px) {
+@include bp.narrow {
   .rule {
     border-right: 0 !important;
   }
@@ -696,6 +829,22 @@
   padding: 0;
 }
 
+@media (max-width: 720px) {
+  .toggle {
+    width: 44px;
+    height: 24px;
+  }
+
+  .toggleHandle {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toggleOn .toggleHandle {
+    transform: translateX(20px);
+  }
+}
+
 .toggleOn {
   background: var(--gc-accent);
   border-color: var(--gc-accent);
@@ -722,6 +871,18 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.detailsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .detailsRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 .field {
@@ -777,6 +938,12 @@
   font-family: inherit;
 }
 
+@media (max-width: 720px) {
+  .textarea {
+    min-height: 60px;
+  }
+}
+
 .stepperRow {
   display: flex;
   align-items: center;
@@ -801,6 +968,14 @@
   justify-content: center;
   font-family: inherit;
   padding: 0;
+}
+
+@media (max-width: 720px) {
+  .stepperBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
 }
 
 .stepperBtn:hover:not(:disabled) {
@@ -851,6 +1026,13 @@
   transition: all 0.15s ease;
 }
 
+@media (max-width: 720px) {
+  .segmentedBtn {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+}
+
 .segmentedBtn:hover {
   color: var(--gc-text);
 }
@@ -878,12 +1060,27 @@
   min-width: 0;
 }
 
-@media (max-width: 1080px) {
+@include bp.wide {
   .rail {
     position: static;
     max-height: none;
     overflow: hidden;
     display: block;
+    border-radius: 14px;
+    background: transparent;
+    border: none;
+  }
+
+  .railArt {
+    display: none;
+  }
+
+  .railSummary {
+    display: none;
+  }
+
+  .railRulesRow {
+    display: none;
   }
 }
 
@@ -1070,7 +1267,7 @@
 /* Mobile: float the Create Room CTA over the bottom of the viewport with a
    blurred backdrop, matching the previous `StickyMobileCta` pattern. The
    safe-area-inset-bottom keeps it clear of the iOS home indicator. */
-@media (max-width: 660px) {
+@include bp.cta {
   .railCta {
     position: fixed;
     left: 0;

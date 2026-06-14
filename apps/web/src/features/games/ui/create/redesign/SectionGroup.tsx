@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 
 interface Props {
   num: string;

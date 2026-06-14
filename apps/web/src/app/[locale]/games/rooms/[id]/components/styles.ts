@@ -12,11 +12,16 @@ export const fullscreenStyles = `
     height: 100vh !important;
     max-width: 100vw !important;
     margin: 0 !important;
-    padding: 1rem 1.5rem !important;
+    padding: 0.5rem !important;
     background: #151718 !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     z-index: 1000;
+  }
+  @media (min-width: 801px) {
+    .games-room-container.is-fullscreen {
+      padding: 1rem 1.5rem !important;
+    }
   }
 `;
 

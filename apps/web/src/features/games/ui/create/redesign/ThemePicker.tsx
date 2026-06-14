@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import dynamic from 'next/dynamic';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import { TicTacToeBoardPoster } from './art/TicTacToeBoardPoster';

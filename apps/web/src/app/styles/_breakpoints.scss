@@ -1,0 +1,33 @@
+// Shared breakpoint mixins and variables
+// Usage: @include bp.wide { ... } or @include bp.mobile { ... }
+
+$bp-wide: 1080px;
+$bp-mobile: 720px;
+$bp-cta: 660px;
+$bp-narrow: 640px;
+$bp-tablet: 1023px;
+$bp-sm: 800px;
+
+@mixin wide {
+  @media (max-width: $bp-wide) { @content; }
+}
+
+@mixin tablet {
+  @media (max-width: $bp-tablet) { @content; }
+}
+
+@mixin sm {
+  @media (max-width: $bp-sm) { @content; }
+}
+
+@mixin mobile {
+  @media (max-width: $bp-mobile) { @content; }
+}
+
+@mixin cta {
+  @media (max-width: $bp-cta) { @content; }
+}
+
+@mixin narrow {
+  @media (max-width: $bp-narrow) { @content; }
+}

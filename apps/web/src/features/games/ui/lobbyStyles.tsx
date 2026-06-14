@@ -17,12 +17,14 @@ export const LobbyContent = styled(XStack, {
   minHeight: 0,
   padding: '$5',
   overflowY: 'auto',
+  overflowX: 'hidden',
   alignItems: 'flex-start',
   $tablet: {
     flexDirection: 'column',
     flex: 1,
     minHeight: 0,
     overflowY: 'visible',
+    overflowX: 'hidden',
     padding: '$3',
     gap: '$4',
     alignItems: 'stretch',
@@ -94,6 +96,8 @@ export const RoomNameBadge = styled(XStack, {
   borderWidth: 1,
   borderColor: 'rgba(16, 185, 129, 0.2)',
   borderRadius: 20,
+  maxWidth: '100%',
+  overflow: 'hidden',
 });
 
 export const RoomNameIcon = styled(Text, {
@@ -106,7 +110,10 @@ export const RoomNameText = styled(Text, {
   name: 'RoomNameText',
   fontSize: '$5',
   fontWeight: '600',
-  color: '$color', // Will be overridden by gradient in component if needed
+  color: '$color',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 });
 
 // Progress Bar
@@ -190,6 +197,8 @@ export const GameContainer = styled(YStack, {
   flex: 1,
   minHeight: 0,
   width: '100%',
+  maxWidth: '100%',
+  overflowX: 'hidden',
   backgroundColor: '$background',
 
   $tablet: {
@@ -207,6 +216,13 @@ export const GameHeader = styled(XStack, {
   borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   flexWrap: 'wrap',
   gap: '$3',
+  minWidth: 0,
+  $tablet: {
+    padding: '$3',
+  },
+  $sm: {
+    padding: '$2 $3',
+  },
 });
 
 export const GameInfo = styled(XStack, {
@@ -214,6 +230,11 @@ export const GameInfo = styled(XStack, {
   alignItems: 'center',
   gap: '$4',
   flexWrap: 'wrap',
+  minWidth: 0,
+  flex: 1,
+  $sm: {
+    gap: '$2',
+  },
 });
 
 export const GameTitleText = styled(H2, {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
 import { Container, PageLayout } from '@/shared/ui';
-import styles from './SeaBattleLanding.module.css';
+import styles from './SeaBattleLanding.module.scss';
 import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
 import { SeaBattleThemesGrid } from './SeaBattleThemesGrid';
 import { HeroVariantProvider } from './heroVariantContext';

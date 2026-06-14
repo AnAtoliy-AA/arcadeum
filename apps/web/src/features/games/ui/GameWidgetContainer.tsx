@@ -1,4 +1,4 @@
-import './scrollbar.css';
+import './scrollbar.scss';
 import React, { useRef } from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {

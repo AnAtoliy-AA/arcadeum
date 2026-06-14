@@ -1,5 +1,5 @@
 import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { RailPreviewArt } from './RailPreviewArt';
 import { RulesAccess } from './RulesAccess';
 import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';

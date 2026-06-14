@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import type { GameId } from './data/themes';
 
 // Both rules modals are Tamagui-heavy and only needed once the user

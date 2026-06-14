@@ -100,7 +100,8 @@ test.describe('Game Room Creation', () => {
   test('should show validation error for empty name', async ({ page }) => {
     const nameInput = page.getByLabel(/room name/i);
     await expect(nameInput).toBeVisible();
-    await nameInput.fill('');
+    await nameInput.click({ clickCount: 3 });
+    await page.keyboard.press('Backspace');
     await expect(nameInput).toHaveValue('');
 
     const submitBtn = page.getByTestId('create-room-button');

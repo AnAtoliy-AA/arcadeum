@@ -14,6 +14,7 @@ import { SHIPS, BOARD_SIZE, CELL_STATE } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
+import { useMobileShipMove } from '../hooks/useMobileShipMove';
 
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
@@ -121,6 +122,19 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     },
     [serverShips, onMoveShip],
   );
+
+  const {
+    movingShipId,
+    clearMovingState,
+    handleCellClick: handleMobileCellClick,
+  } = useMobileShipMove({
+    ships,
+    board,
+    isPlacementComplete,
+    onMoveShip: handleMoveShip,
+    setHoveredCells,
+    setIsInvalidHover,
+  });
 
   const placedShipIds = useMemo(() => {
     return new Set(ships.map((s) => s.id));
@@ -298,6 +312,13 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
   const handleCellClick = useCallback(
     (row: number, col: number) => {
+      // Mobile tap-to-move: handled by hook; returns true if consumed
+      if (handleMobileCellClick(row, col)) {
+        setSelectedShipId(null);
+        return;
+      }
+
+      // Desktop: existing palette → board placement flow
       if (!selectedShip || !canPlaceAt(row, col, selectedShip)) return;
 
       const cells = getCellsForPlacement(
@@ -318,7 +339,14 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       setHoveredCells([]);
       setIsInvalidHover(false);
     },
-    [selectedShip, isVertical, canPlaceAt, onPlaceShip, placedShipIds],
+    [
+      selectedShip,
+      isVertical,
+      canPlaceAt,
+      onPlaceShip,
+      placedShipIds,
+      handleMobileCellClick,
+    ],
   );
 
   const handleRotate = useCallback(() => {
@@ -353,6 +381,8 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       onConfirm={onConfirmPlacement}
       onReset={onResetPlacement}
       onAutoPlace={onAutoPlace}
+      onCancelMove={clearMovingState}
+      isMovingShip={!!movingShipId}
       t={t}
     />
   );
@@ -384,6 +414,11 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       pendingCells={pendingCells}
       shipHeadKeys={shipHeadKeys}
       isPlacementComplete={isPlacementComplete}
+      movingShipCells={
+        movingShipId
+          ? (ships.find((s) => s.id === movingShipId)?.cells ?? [])
+          : []
+      }
       onCellHover={handleCellHover}
       onMouseLeave={handleMouseLeave}
       onCellClick={handleCellClick}
@@ -451,17 +486,13 @@ function getCellsForPlacement(
   isVertical: boolean,
 ): ShipCell[] | null {
   const cells: ShipCell[] = [];
-
   for (let i = 0; i < size; i++) {
     const row = isVertical ? startRow + i : startRow;
     const col = isVertical ? startCol : startCol + i;
-
     if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
       return null;
     }
-
     cells.push({ row, col });
   }
-
   return cells;
 }

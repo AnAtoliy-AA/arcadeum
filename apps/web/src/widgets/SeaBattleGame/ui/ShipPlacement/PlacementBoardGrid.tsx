@@ -46,6 +46,7 @@ interface PlacementBoardCellProps {
   isShipDraggable: boolean;
   isDraggingThisCell: boolean;
   isPendingCell: boolean;
+  isMovingCell: boolean;
   isShipHead: boolean;
   draggable: boolean;
   onDragStart: (e: DragEvent<HTMLElement>) => void;
@@ -75,6 +76,7 @@ const PlacementBoardCell = memo(
     isShipDraggable,
     isDraggingThisCell,
     isPendingCell,
+    isMovingCell,
     isShipHead,
     draggable,
     onDragStart,
@@ -140,6 +142,7 @@ const PlacementBoardCell = memo(
       isShipDraggable ? 'sb-cell--ship-draggable' : '',
       isDraggingThisCell ? 'sb-cell--dragging' : '',
       isPendingCell ? 'sb-cell--pending-sync' : '',
+      isMovingCell ? 'sb-cell--moving' : '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -210,6 +213,7 @@ interface PlacementBoardGridProps {
   pendingCells: ShipCell[];
   shipHeadKeys: Set<string>;
   isPlacementComplete: boolean;
+  movingShipCells?: ShipCell[];
   onCellHover: (row: number, col: number) => void;
   onMouseLeave: () => void;
   onCellClick: (row: number, col: number) => void;
@@ -232,6 +236,7 @@ export const PlacementBoardGrid = memo(
     pendingCells,
     shipHeadKeys,
     isPlacementComplete,
+    movingShipCells,
     onCellHover,
     onMouseLeave,
     onCellClick,
@@ -243,6 +248,9 @@ export const PlacementBoardGrid = memo(
   }: PlacementBoardGridProps) => {
     const draggingKeys = new Set(draggingCells.map((c) => `${c.row}-${c.col}`));
     const pendingKeys = new Set(pendingCells.map((c) => `${c.row}-${c.col}`));
+    const movingKeys = new Set(
+      (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
+    );
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}
@@ -284,6 +292,7 @@ export const PlacementBoardGrid = memo(
                 const cellKey = `${rIndex}-${cIndex}`;
                 const isDraggingThisCell = draggingKeys.has(cellKey);
                 const isPendingCell = pendingKeys.has(cellKey);
+                const isMovingCell = movingKeys.has(cellKey);
                 const isShipHead =
                   isShipCell &&
                   !isPlacementComplete &&
@@ -304,6 +313,7 @@ export const PlacementBoardGrid = memo(
                     }
                     isDraggingThisCell={isDraggingThisCell}
                     isPendingCell={isPendingCell}
+                    isMovingCell={isMovingCell}
                     isShipHead={isShipHead}
                     draggable={dragProps.draggable}
                     onDragStart={dragProps.onDragStart}
@@ -312,9 +322,7 @@ export const PlacementBoardGrid = memo(
                     onMouseEnter={onCellHover}
                     onMouseLeave={onMouseLeave}
                     onClick={onCellClick}
-                    onDoubleClick={
-                      isShipCell ? onCellRotateInPlace : undefined
-                    }
+                    onDoubleClick={isShipCell ? onCellRotateInPlace : undefined}
                     onContextMenu={
                       isShipCell && onCellRotateInPlace
                         ? (r, c) => onCellRotateInPlace(r, c)

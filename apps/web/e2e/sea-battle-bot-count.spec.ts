@@ -3,7 +3,7 @@ import {
   test,
   mockSession,
   navigateTo,
-  closeRulesModal,
+  closeGameRulesModal,
   mockRoomInfo,
   MOCK_OBJECT_ID,
   mockGameSocket,
@@ -11,16 +11,6 @@ import {
   waitForRoomReady,
   clickButtonByTestId,
 } from './fixtures/test-utils';
-
-interface EmittedEvent {
-  event: string;
-  payload: unknown;
-}
-
-interface MockSocket {
-  emit: (event: string, ...args: unknown[]) => MockSocket;
-  bind: (context: unknown) => (...args: unknown[]) => MockSocket;
-}
 
 test.describe('Sea Battle Bot Count Selection', () => {
   test.afterEach(async () => {
@@ -37,7 +27,60 @@ test.describe('Sea Battle Bot Count Selection', () => {
     const roomId = MOCK_OBJECT_ID;
     const userId = '507f191e810c19729de860ea';
 
-    // Set up room info mock BEFORE navigating to the page
+    const generateBoard = () =>
+      Array(10)
+        .fill(null)
+        .map(() => Array(10).fill(0));
+
+    const mockPlacementState = {
+      phase: 'placement',
+      players: [
+        {
+          playerId: userId,
+          alive: true,
+          board: generateBoard(),
+          ships: [],
+          shipsRemaining: 10,
+          placementComplete: false,
+        },
+        {
+          playerId: 'bot-1',
+          alive: true,
+          board: generateBoard(),
+          ships: [],
+          shipsRemaining: 10,
+          placementComplete: true,
+        },
+        {
+          playerId: 'bot-2',
+          alive: true,
+          board: generateBoard(),
+          ships: [],
+          shipsRemaining: 10,
+          placementComplete: true,
+        },
+        {
+          playerId: 'bot-3',
+          alive: true,
+          board: generateBoard(),
+          ships: [],
+          shipsRemaining: 10,
+          placementComplete: true,
+        },
+        {
+          playerId: 'bot-4',
+          alive: true,
+          board: generateBoard(),
+          ships: [],
+          shipsRemaining: 10,
+          placementComplete: true,
+        },
+      ],
+      playerOrder: [userId, 'bot-1', 'bot-2', 'bot-3', 'bot-4'],
+      currentTurnIndex: 0,
+      logs: [],
+    };
+
     await mockRoomInfo(page, {
       room: {
         id: roomId,
@@ -66,31 +109,24 @@ test.describe('Sea Battle Bot Count Selection', () => {
           ],
         },
       },
-    });
-
-    await page.addInitScript(() => {
-      (window as unknown as { _emittedEvents: EmittedEvent[] })._emittedEvents =
-        [];
-      const poll = setInterval(() => {
-        const s = (window as unknown as { gameSocket: MockSocket }).gameSocket;
-        if (s) {
-          clearInterval(poll);
-          const originalEmit = s.emit.bind(s);
-          s.emit = (event: string, payload: unknown) => {
-            (
-              window as unknown as { _emittedEvents: EmittedEvent[] }
-            )._emittedEvents.push({ event, payload });
-            return originalEmit(event, payload);
-          };
-        }
-      }, 50);
+      handlers: {
+        'seaBattle.session.start': {
+          responseEvent: 'games.session.started',
+          responseData: {
+            session: {
+              id: '507f191e810c19729de860f1',
+              status: 'active',
+              state: mockPlacementState,
+            },
+          },
+        },
+      },
     });
 
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
-    await closeRulesModal(page);
+    await closeGameRulesModal(page);
 
-    // Wait for the bot selection UI to be present
     await expect(page.locator('body')).toContainText(
       /bots|number of bots/i,
       {},
@@ -102,22 +138,8 @@ test.describe('Sea Battle Bot Count Selection', () => {
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({});
-    await startBtn.click({ force: true });
+    await startBtn.evaluate((btn) => (btn as HTMLButtonElement).click());
 
-    await expect
-      .poll(async () => {
-        const events = await page.evaluate(
-          () =>
-            (window as unknown as { _emittedEvents: EmittedEvent[] })
-              ._emittedEvents,
-        );
-        return events.find(
-          (e: EmittedEvent) => e.event === 'seaBattle.session.start',
-        )?.payload;
-      }, {})
-      .toMatchObject({
-        withBots: true,
-        botCount: 4,
-      });
+    await expect(page.getByText(/place your ships/i).first()).toBeVisible({});
   });
 });

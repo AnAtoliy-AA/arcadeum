@@ -289,22 +289,32 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       flex={1}
       minHeight={0}
       gap="$3"
+      {...(showTeamPanel
+        ? { style: { overflowY: 'auto' as const } }
+        : {})}
     >
       {showTeamPanel && (
-        <SeaBattleTeamPanel
-          roomId={room.id}
-          userId={userId ?? ''}
-          hostId={room.hostId}
-          isHost={isHost}
-          teamMode={teamMode}
-          teams={teams}
-          hideShipsFromTeammates={hideShipsFromTeammates}
-          members={roomMembers}
-          teamStartBlocked={teamStartBlocked}
-          maxTotalPlayers={maxTotalPlayers}
-        />
+        <>
+          <style>{`
+            [data-team-mode-scroll="true"] .is_LobbyContent {
+              overflow-y: visible !important;
+            }
+          `}</style>
+          <SeaBattleTeamPanel
+            roomId={room.id}
+            userId={userId ?? ''}
+            hostId={room.hostId}
+            isHost={isHost}
+            teamMode={teamMode}
+            teams={teams}
+            hideShipsFromTeammates={hideShipsFromTeammates}
+            members={roomMembers}
+            teamStartBlocked={teamStartBlocked}
+            maxTotalPlayers={maxTotalPlayers}
+          />
+        </>
       )}
-      <YStack flex={1} minHeight={0}>
+      <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
         <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}
@@ -320,19 +330,27 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           gameIcon="🚢"
           roomIcon={variantInfo.emoji || '⚓'}
           variantName={
-            variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
+            variantInfo.name
+              ? t(variantInfo.name as TranslationKey)
+              : undefined
           }
           minPlayers={MIN_PLAYERS}
           labels={{
-            waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+            waitingLabel: t(
+              'games.sea_battle_v1.table.lobby.waitingToStart',
+            ),
             subtitleText: getSubtitleText(),
             playersLabel: t('games.rooms.playersLabel'),
             hostControlsLabel: t(
               'games.sea_battle_v1.table.lobby.hostControls',
             ),
             startLabel: t('games.sea_battle_v1.table.actions.start'),
-            startingLabel: t('games.sea_battle_v1.table.actions.starting'),
-            roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+            startingLabel: t(
+              'games.sea_battle_v1.table.actions.starting',
+            ),
+            roomInfoLabel: t(
+              'games.sea_battle_v1.table.lobby.roomInfo',
+            ),
             fastRoomLabel: t('games.rooms.fastRoom'),
             botCountLabel: t('games.lobby.botCountLabel'),
             startWithBotsLabel: t('games.lobby.startWithBots'),

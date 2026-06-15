@@ -12,7 +12,7 @@ import { achievementsRu } from './achievements/ru';
 import { shopRu } from './shop/ru';
 import { adminShopRu } from './admin-shop/ru';
 import { adminGamesRu } from './admin-games/ru';
-
+import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -29,6 +29,7 @@ export const ru = {
       economy: 'Экономика',
       shop: 'Магазин',
       games: 'Игры',
+      blockedIps: 'Заблокированные IP',
       comingSoon: 'Скоро',
     },
     error: {
@@ -118,6 +119,7 @@ export const ru = {
     announcements: adminAnnouncementsRu,
     tournaments: adminTournamentsRu,
     wallet: adminWalletRu,
+    blockedIps: adminBlockedIpsRu,
   },
   tournaments: {
     title: 'Турниры',

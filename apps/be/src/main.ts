@@ -1,14 +1,26 @@
 import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
 import { getAllowedOrigins } from './common/utils/cors.util';
+import { IpBlockGuard, IpBlockService } from './common/guards/ip-block.guard';
+import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 
 async function bootstrap() {
   const logger = new ArcadeumLogger();
   logger.setLogLevels(['error', 'warn', 'log']);
   const app = await NestFactory.create(AppModule, { logger });
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+    }),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,6 +31,11 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalInterceptors(new RequestIdInterceptor());
+
+  const ipBlockService = app.get(IpBlockService);
+  app.useGlobalGuards(new IpBlockGuard(ipBlockService));
+
   app.enableCors({
     origin: getAllowedOrigins(),
     credentials: true,
@@ -28,6 +45,7 @@ async function bootstrap() {
       'Accept',
       'Authorization',
       'x-anonymous-id',
+      'x-request-id',
     ],
   });
 

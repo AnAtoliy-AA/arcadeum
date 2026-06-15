@@ -22,7 +22,14 @@ const MOVE_DELAY_MS = { min: 400, max: 1100 };
  * call them out manually.
  */
 const SELF_REFLEX_MS = { min: 200, max: 700 };
-const OTHER_REFLEX_MS = { min: 1500, max: 3500 };
+const OTHER_REFLEX_MS = { min: 800, max: 2500 };
+
+/** Error substrings that indicate a lost cascade-call race — expected. */
+const CASCADE_RACE_ERRORS = [
+  'No Cascade window',
+  'Someone already called Cascade',
+  'Invalid action',
+];
 
 @Injectable()
 export class CascadeBotService {
@@ -110,7 +117,10 @@ export class CascadeBotService {
             // the engine rejects post-close calls. Anything else is
             // worth logging.
             const message = err instanceof Error ? err.message : String(err);
-            if (!message.includes('No Cascade window')) {
+            const isExpectedLoss = CASCADE_RACE_ERRORS.some((e) =>
+              message.includes(e),
+            );
+            if (!isExpectedLoss) {
               this.logger.debug(
                 `Bot ${player.playerId} cascade call lost the race: ${message}`,
               );

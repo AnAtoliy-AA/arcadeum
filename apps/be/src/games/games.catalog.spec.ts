@@ -47,7 +47,7 @@ describe('GAME_CATALOG color variants', () => {
     ]);
   });
 
-  it('lists all 10 Sea Battle visual themes', () => {
+  it('lists all Sea Battle variants (visual themes + gameplay modes)', () => {
     expect(getCatalogEntry('sea_battle_v1')?.variants).toEqual([
       'classic',
       'modern',
@@ -59,6 +59,9 @@ describe('GAME_CATALOG color variants', () => {
       'forest',
       'sunset',
       'monochrome',
+      'speed',
+      'battle_royale',
+      'team_2v2',
     ]);
   });
 

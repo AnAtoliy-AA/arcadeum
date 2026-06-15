@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist } from 'next/font/google';
 
-import './globals.css';
+import './globals.scss';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
@@ -23,10 +23,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   metadataBase: new URL(appConfig.siteUrl),
-  title: {
-    default: appConfig.seoTitle,
-    template: `%s | ${appConfig.appName}`,
-  },
+  title: appConfig.seoTitle,
   description: appConfig.seoDescription,
   manifest: '/manifest.json',
   icons: {

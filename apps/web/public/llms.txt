@@ -1,0 +1,34 @@
+# Arcadeum
+
+> Free online board games — play with friends in your browser.
+
+Arcadeum is a browser-based multiplayer platform for classic board games: Battleship (Sea Battle), Critical, Glimworm, Tic-Tac-Toe, and Cascade. Create a private room, share the link, and play instantly — no download, no signup.
+
+## Core Games
+
+- **Sea Battle (Battleship)** — Sink your opponent's fleet in this classic strategy game.
+- **Critical** — A strategic card game: draw, defuse, and survive the explosion.
+- **Glimworm** — Real-time glow-worm snake arena for up to 10 players.
+- **Tic-Tac-Toe** — Six themed variants, 2–4 players, optional teams.
+- **Cascade** — Shedding card game with stacking chains and four themes.
+
+## Features
+
+- Multiplayer with friends (private rooms, shareable links)
+- AI bots for solo practice
+- Real-time chat
+- Player profiles, stats, and leaderboards
+- Daily rewards and cosmetic shop
+- No download required — runs in any modern browser
+- Available in English, Spanish, French, Russian, and Belarusian
+
+## Links
+
+- Website: https://arcadeum.games
+- Discord: https://discord.gg/arcadeum
+- Telegram: https://t.me/arcadeum
+- GitHub: https://github.com/anomalyco/arcadeum
+
+## Contact
+
+- Email: arcadeum.care@gmail.com

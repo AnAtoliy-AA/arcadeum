@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
-import styles from './SeaBattleLandingBoard.module.css';
+import styles from './SeaBattleLandingBoard.module.scss';
 
 const ROTATING_VARIANTS = [
   'classic',

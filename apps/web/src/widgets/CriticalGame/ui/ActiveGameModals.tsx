@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type {
   CriticalSnapshot,
@@ -103,6 +104,30 @@ export function ActiveGameModals({
 }: ActiveGameModalsProps) {
   const { t } = useTranslation();
 
+  // Local dismiss state for GiveFavorModal — when the user closes it,
+  // it stays dismissed until pendingFavor changes (new request or fulfilled).
+  const [giveFavorDismissed, setGiveFavorDismissed] = useState(false);
+  const handleCloseGiveFavorModal = useCallback(
+    () => setGiveFavorDismissed(true),
+    [],
+  );
+
+  // Reset dismiss when pendingFavor changes (new request or cleared)
+  const pendingFavorKey = snapshot?.pendingFavor
+    ? `${snapshot.pendingFavor.targetId}-${snapshot.pendingFavor.requesterId}`
+    : null;
+  const prevPendingFavorKey = useState(pendingFavorKey);
+  if (pendingFavorKey !== prevPendingFavorKey[0]) {
+    prevPendingFavorKey[1](pendingFavorKey);
+    if (giveFavorDismissed) setGiveFavorDismissed(false);
+  }
+
+  const effectiveGiveFavorOpen =
+    !!currentUserId &&
+    !!snapshot?.pendingFavor &&
+    snapshot.pendingFavor.targetId === currentUserId &&
+    !giveFavorDismissed;
+
   return (
     <>
       <GameModals
@@ -174,6 +199,8 @@ export function ActiveGameModals({
         pendingFavor={snapshot?.pendingFavor ?? null}
         myHand={currentPlayer?.hand ?? []}
         onGiveFavorCard={actions.giveFavorCard}
+        onCloseGiveFavorModal={handleCloseGiveFavorModal}
+        giveFavorOverrideOpen={effectiveGiveFavorOpen}
         // Shared
         resolveDisplayName={resolveDisplayName}
         t={(key, params) =>
@@ -248,6 +275,63 @@ export function ActiveGameModals({
             handlers.handleCloseFavorModal();
           }}
           onCancel={handlers.handleCloseFavorModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={modals.markModal}
+          title={t('games.table.modals.mark.title' as TranslationKey)}
+          description={t(
+            'games.table.modals.mark.description' as TranslationKey,
+          )}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play' as TranslationKey)}
+          cancelLabel={t('games.table.mobile.cancel' as TranslationKey)}
+          onConfirm={(targetId) => {
+            actions.playActionCard('mark', { targetPlayerId: targetId });
+            handlers.handleCloseMarkModal();
+          }}
+          onCancel={handlers.handleCloseMarkModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={modals.stealDrawModal}
+          title={t('games.table.modals.stealDraw.title' as TranslationKey)}
+          description={t(
+            'games.table.modals.stealDraw.description' as TranslationKey,
+          )}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play' as TranslationKey)}
+          cancelLabel={t('games.table.mobile.cancel' as TranslationKey)}
+          onConfirm={(targetId) => {
+            actions.playActionCard('steal_draw', { targetPlayerId: targetId });
+            handlers.handleCloseStealDrawModal();
+          }}
+          onCancel={handlers.handleCloseStealDrawModal}
+        />
+      )}
+
+      {isMobile && (
+        <MobileActionSheet
+          isOpen={modals.smiteModal}
+          title={t('games.table.cards.smite' as TranslationKey)}
+          description={t(
+            'games.table.cards.descriptions.smite' as TranslationKey,
+          )}
+          opponents={aliveOpponents}
+          resolveDisplayName={resolveDisplayName}
+          confirmLabel={t('games.table.mobile.play' as TranslationKey)}
+          cancelLabel={t('games.table.mobile.cancel' as TranslationKey)}
+          onConfirm={(targetId) => {
+            actions.playActionCard('smite', { targetPlayerId: targetId });
+            handlers.handleCloseSmiteModal();
+          }}
+          onCancel={handlers.handleCloseSmiteModal}
         />
       )}
     </>

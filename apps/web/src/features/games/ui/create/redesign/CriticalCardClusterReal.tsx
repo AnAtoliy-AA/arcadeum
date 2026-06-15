@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import { HandCard } from '@/widgets/CriticalGame/ui/hand/HandCard';
 import { handWithUids } from '@/widgets/CriticalGame/lib/combo';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 
 // Five-card fan, left→right. Outer two are dimmed/blurred ghosts, inner two
 // are partially dimmed, center card is the hero.

@@ -3,7 +3,7 @@ import { buildRoutes } from '@/shared/config/routes';
 import type { Locale } from '@/shared/i18n';
 import type { BlogPost } from './types';
 import { BLOG_LABELS } from './labels';
-import styles from './RelatedArticles.module.css';
+import styles from './RelatedArticles.module.scss';
 
 interface Props {
   locale: Locale;

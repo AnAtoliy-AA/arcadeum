@@ -155,7 +155,6 @@ export default function HomeHero() {
               <Link
                 href={supportCta.href}
                 className="home-link-button home-link-button-ghost home-btn-gap-2"
-                prefetch={false}
               >
                 <SupportIcon size={18} />
                 {supportLabel}
@@ -207,7 +206,7 @@ export default function HomeHero() {
                   {card.bgImage ? (
                     <Image
                       src={card.bgImage}
-                      alt=""
+                      alt={`${card.nameKey} game card preview`}
                       fill
                       priority={isFront}
                       sizes="(max-width: 1150px) 60vw, 280px"

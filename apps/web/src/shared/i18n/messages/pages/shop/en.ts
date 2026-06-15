@@ -208,6 +208,8 @@ export const shopEn = {
         name: 'Cyber Panther',
         desc: 'A hyperrealistic cybernetic panther.',
       },
+      tiger01: { name: 'Cyber Tiger', desc: 'A hyperrealistic cybernetic tiger.' },
+      eagle01: { name: 'Cyber Eagle', desc: 'A hyperrealistic cybernetic eagle.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },
@@ -216,6 +218,8 @@ export const shopEn = {
       legend: { name: 'Legend', desc: 'A legendary player.' },
       elite: { name: 'Elite Shield', desc: 'A prestigious cybernetic shield.' },
       mythic: { name: 'Mythic Star', desc: 'A celestial golden star emblem.' },
+      vanguard: { name: 'Vanguard Shield', desc: 'An armored defensive crest.' },
+      nexus: { name: 'Nexus Star', desc: 'A powerful futuristic cosmic star.' },
     },
     name_color: {
       default: { name: 'Default', desc: 'The starter name color.' },

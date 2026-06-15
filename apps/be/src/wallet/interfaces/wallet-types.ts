@@ -17,5 +17,7 @@ export const WALLET_REASONS = [
   'shop_purchase',
   'shop_sell_refund',
   'battle_pass_reward',
+  'achievement',
+  'daily_challenge',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

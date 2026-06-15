@@ -295,6 +295,12 @@ export const enMessages = {
       },
     },
     log: { title: 'Game Log', empty: 'No activity yet' },
+    turn: {
+      yourTurn: 'Your turn',
+      otherTurn: "{{name}}'s turn",
+      waiting: 'Waiting…',
+      gameOver: 'Game over',
+    },
     chat: {
       title: 'Table Chat',
       empty: 'No messages yet. Break the ice!',

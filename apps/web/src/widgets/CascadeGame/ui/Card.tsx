@@ -7,6 +7,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import type { CascadeCard, CascadeVariant } from '../types';
+import styles from './CascadeGame.module.css';
 
 interface CardProps {
   card: CascadeCard;
@@ -14,15 +15,23 @@ interface CardProps {
   playable?: boolean;
   selected?: boolean;
   disabled?: boolean;
+  /**
+   * Visually muted but still interactive — used for unplayable cards on the
+   * player's turn so a click can trigger the "illegal move" shake.
+   */
+  dimmed?: boolean;
   onClick?: () => void;
   size?: 'sm' | 'md' | 'lg';
   ariaLabel?: string;
 }
 
-const SIZES: Record<NonNullable<CardProps['size']>, { w: number; h: number; font: number }> = {
-  sm: { w: 48, h: 70, font: 14 },
-  md: { w: 64, h: 96, font: 18 },
-  lg: { w: 88, h: 132, font: 24 },
+const SIZES: Record<
+  NonNullable<CardProps['size']>,
+  { w: number; h: number; glyph: number; corner: number }
+> = {
+  sm: { w: 50, h: 74, glyph: 22, corner: 12 },
+  md: { w: 66, h: 98, glyph: 30, corner: 15 },
+  lg: { w: 92, h: 138, glyph: 42, corner: 19 },
 };
 
 function CardImpl({
@@ -31,6 +40,7 @@ function CardImpl({
   playable = false,
   selected = false,
   disabled = false,
+  dimmed = false,
   onClick,
   size = 'md',
   ariaLabel,
@@ -40,10 +50,28 @@ function CardImpl({
   const dims = SIZES[size];
 
   const isClickable = !!onClick && !disabled;
-  const bg = faceDown ? theme.surface : theme.palette[card.color];
+  const isWild =
+    !faceDown && (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR');
+  const faceColor = faceDown ? theme.surface : theme.palette[card.color];
   const symbol = renderSymbol(card, theme.symbols);
   const resolvedLabel =
     ariaLabel ?? describeCard(card, faceDown, theme.variant, t);
+
+  // Action/wild glyphs are wider than digits, so they're set a touch smaller;
+  // the ghost layer scales off that same base so depth stays proportional.
+  const glyphSize = card.kind === 'NUMBER' ? dims.glyph : dims.glyph * 0.82;
+
+  const className = [
+    styles.card,
+    faceDown && styles.faceDown,
+    isWild && styles.wild,
+    isClickable && styles.clickable,
+    playable && styles.playable,
+    selected && styles.selected,
+    !faceDown && (dimmed || disabled) && styles.disabled,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <button
@@ -52,38 +80,53 @@ function CardImpl({
       disabled={disabled || !isClickable}
       aria-label={resolvedLabel}
       aria-pressed={selected || undefined}
-      style={{
-        width: dims.w,
-        height: dims.h,
-        borderRadius: Math.round(dims.w * 0.14),
-        background: bg,
-        color: theme.cardText,
-        border: `2px solid ${
-          selected
-            ? '#fbbf24'
-            : playable
-              ? 'rgba(255, 255, 255, 0.85)'
-              : theme.cardBorder
-        }`,
-        boxShadow: playable
-          ? '0 0 0 2px rgba(251, 191, 36, 0.4), 0 4px 12px rgba(0,0,0,0.35)'
-          : '0 2px 8px rgba(0,0,0,0.25)',
-        cursor: isClickable ? 'pointer' : 'default',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: dims.font,
-        fontWeight: 800,
-        letterSpacing: -0.5,
-        padding: 0,
-        transition:
-          'transform 120ms ease, box-shadow 200ms ease, border-color 120ms ease',
-        transform: selected ? 'translateY(-8px)' : 'translateY(0)',
-        opacity: disabled && !faceDown ? 0.55 : 1,
-        userSelect: 'none',
-      }}
+      className={className}
+      style={
+        {
+          width: dims.w,
+          height: dims.h,
+          '--card-bg': faceColor,
+        } as React.CSSProperties
+      }
     >
-      <span aria-hidden="true">{faceDown ? '✦' : symbol}</span>
+      {faceDown ? (
+        <span aria-hidden="true" className={styles.backMark}>
+          <span style={{ fontSize: glyphSize * 0.7 }}>
+            {theme.symbols.WILD}
+          </span>
+        </span>
+      ) : (
+        <>
+          <span
+            aria-hidden="true"
+            className={styles.ghost}
+            style={{ fontSize: glyphSize * 1.9 }}
+          >
+            {symbol}
+          </span>
+          <span
+            aria-hidden="true"
+            className={`${styles.corner} ${styles.cornerTL}`}
+            style={{ fontSize: dims.corner }}
+          >
+            {symbol}
+          </span>
+          <span
+            aria-hidden="true"
+            className={styles.centerGlyph}
+            style={{ fontSize: glyphSize }}
+          >
+            {symbol}
+          </span>
+          <span
+            aria-hidden="true"
+            className={`${styles.corner} ${styles.cornerBR}`}
+            style={{ fontSize: dims.corner }}
+          >
+            {symbol}
+          </span>
+        </>
+      )}
     </button>
   );
 }

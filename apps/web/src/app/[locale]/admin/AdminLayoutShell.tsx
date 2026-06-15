@@ -2,7 +2,7 @@ import { PageLayout } from '@arcadeum/ui';
 import type { ReactNode } from 'react';
 import { getTranslations } from '@/shared/i18n/server';
 import { AdminSidebar } from './_components/AdminSidebar';
-import styles from './AdminLayoutShell.module.css';
+import styles from './AdminLayoutShell.module.scss';
 
 interface AdminLayoutShellProps {
   username: string;
@@ -18,6 +18,7 @@ interface AdminNavTranslations {
   economy?: string;
   shop?: string;
   games?: string;
+  blockedIps?: string;
   comingSoon?: string;
 }
 
@@ -49,6 +50,7 @@ export default async function AdminLayoutShell({
       economy: navT?.economy,
       shop: navT?.shop,
       games: navT?.games,
+      blockedIps: navT?.blockedIps,
     },
     comingSoon: navT?.comingSoon ?? 'Coming soon',
   };

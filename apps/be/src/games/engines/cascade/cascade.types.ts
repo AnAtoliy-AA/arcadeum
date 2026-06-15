@@ -47,6 +47,8 @@ export interface CascadeOptions {
 export interface LastCardWindow {
   playerId: string;
   openedAt: string;
+  /** The first player who called Cascade — used to enforce "first click wins". */
+  calledBy?: string;
 }
 
 export interface CascadePlayer extends GamePlayerState {

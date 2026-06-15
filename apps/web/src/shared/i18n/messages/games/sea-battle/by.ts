@@ -181,6 +181,7 @@ export const byMessages = {
         addBot: 'Дадаць бота',
         removeBot: 'Выдаліць',
         totalSlots: 'Усяго слотаў: {{used}} / {{max}}',
+        maxPlayers: 'Макс. гульцоў:',
         minTeamsHint: 'Патрэбна мінімум 2 каманды',
         maxTeamsHint: 'Да 4 каманд (у кожнай мінімум 2 гульцы)',
         minSizeHint: 'У кожнай камандзе мінімум 2 слоты',

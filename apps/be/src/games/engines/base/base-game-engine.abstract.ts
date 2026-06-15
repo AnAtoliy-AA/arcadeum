@@ -7,6 +7,7 @@ import {
   GameActionContext,
   GameLogEntry,
   GamePlayerState,
+  GameResult,
   ChatScope,
 } from './game-engine.interface';
 
@@ -60,6 +61,17 @@ export abstract class BaseGameEngine<
    * Subclasses must implement this to get winners
    */
   abstract getWinners(state: TState): string[];
+
+  /**
+   * Standardized game result. Override in engines with explicit draw detection.
+   */
+  getResult(state: TState): GameResult {
+    if (!this.isGameOver(state)) {
+      return { winnerIds: [], isDraw: false };
+    }
+    const winnerIds = this.getWinners(state);
+    return { winnerIds, isDraw: winnerIds.length === 0 };
+  }
 
   /**
    * Subclasses must implement this to sanitize state

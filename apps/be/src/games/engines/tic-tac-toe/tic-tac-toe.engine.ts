@@ -137,6 +137,18 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     return [state.winnerId];
   }
 
+  getResult(
+    state: TicTacToeState,
+  ): import('../base/game-engine.interface').GameResult {
+    if (!this.isGameOver(state)) {
+      return { winnerIds: [], isDraw: false };
+    }
+    return {
+      winnerIds: this.getWinners(state),
+      isDraw: state.isDraw,
+    };
+  }
+
   sanitizeStateForPlayer(state: TicTacToeState): Partial<TicTacToeState> {
     return state;
   }

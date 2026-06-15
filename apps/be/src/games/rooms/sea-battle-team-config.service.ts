@@ -19,7 +19,13 @@ import { AssignTeamDto } from '../dtos/assign-team.dto';
 
 const MIN_TEAMS = 2;
 const MIN_TEAM_SIZE = 2;
-const MAX_TOTAL_PLAYERS = 8;
+const DEFAULT_MAX_TOTAL_PLAYERS = 8;
+
+function resolveMaxTotalPlayers(opts: SeaBattleGameOptions): number {
+  return typeof opts.maxTotalPlayers === 'number'
+    ? opts.maxTotalPlayers
+    : DEFAULT_MAX_TOTAL_PLAYERS;
+}
 
 @Injectable()
 export class SeaBattleTeamConfigService {
@@ -35,12 +41,13 @@ export class SeaBattleTeamConfigService {
   ): Promise<GameRoomSummary> {
     const room = await this.requireLobbyHostRoom(roomId, hostId);
     const participants = room.participants.map((p) => p.userId);
-    if (participants.length > MAX_TOTAL_PLAYERS) {
+    const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
+    const maxTotal = resolveMaxTotalPlayers(opts);
+    if (participants.length > maxTotal) {
       throw new BadRequestException(
-        'Too many players in room — kick excess players before enabling team mode',
+        `Too many players in room — kick excess players before enabling team mode (max ${maxTotal})`,
       );
     }
-    const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
     opts.teamMode = true;
 
     // Seed two teams. Host on team 1; remaining alternate.
@@ -51,9 +58,9 @@ export class SeaBattleTeamConfigService {
 
     const aSize = Math.max(MIN_TEAM_SIZE, a.length);
     const bSize = Math.max(MIN_TEAM_SIZE, b.length);
-    if (aSize + bSize > MAX_TOTAL_PLAYERS) {
+    if (aSize + bSize > maxTotal) {
       throw new BadRequestException(
-        'Cannot fit participants into default teams',
+        `Cannot fit participants into default teams (max ${maxTotal})`,
       );
     }
 
@@ -109,11 +116,10 @@ export class SeaBattleTeamConfigService {
     if (dto.teams.length < MIN_TEAMS) {
       throw new BadRequestException('Need at least 2 teams');
     }
+    const maxTotal = dto.maxTotalPlayers ?? resolveMaxTotalPlayers(opts);
     const total = dto.teams.reduce((s, t) => s + t.targetSize, 0);
-    if (total > MAX_TOTAL_PLAYERS) {
-      throw new BadRequestException(
-        `Total slots cannot exceed ${MAX_TOTAL_PLAYERS}`,
-      );
+    if (total > maxTotal) {
+      throw new BadRequestException(`Total slots cannot exceed ${maxTotal}`);
     }
     if (dto.teams.some((t) => t.targetSize < MIN_TEAM_SIZE)) {
       throw new BadRequestException(
@@ -137,6 +143,9 @@ export class SeaBattleTeamConfigService {
     opts.teams = next;
     if (dto.hideShipsFromTeammates !== undefined) {
       opts.hideShipsFromTeammates = dto.hideShipsFromTeammates;
+    }
+    if (dto.maxTotalPlayers !== undefined) {
+      opts.maxTotalPlayers = dto.maxTotalPlayers;
     }
     room.gameOptions = opts;
     room.markModified('gameOptions');
@@ -197,10 +206,11 @@ export class SeaBattleTeamConfigService {
       throw new BadRequestException('Team is full');
     }
 
+    const maxTotal = resolveMaxTotalPlayers(opts);
     const totalParticipants = room.participants.length;
-    if (totalParticipants >= MAX_TOTAL_PLAYERS) {
+    if (totalParticipants >= maxTotal) {
       throw new BadRequestException(
-        `Room cannot exceed ${MAX_TOTAL_PLAYERS} participants`,
+        `Room cannot exceed ${maxTotal} participants`,
       );
     }
 

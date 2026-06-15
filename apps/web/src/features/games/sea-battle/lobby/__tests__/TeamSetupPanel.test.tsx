@@ -103,6 +103,7 @@ describe('TeamSetupPanel', () => {
         userId="player-2"
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
+        maxTotalPlayers={8}
       />,
     );
     expect(container).toBeEmptyDOMElement();
@@ -115,6 +116,7 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MAX_TEAMS)}
+        maxTotalPlayers={8}
       />,
     );
     const addBtn = screen.getByTestId('team-add-btn');
@@ -128,6 +130,7 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
+        maxTotalPlayers={8}
       />,
     );
     expect(screen.queryByTestId('team-remove-t1')).toBeNull();
@@ -142,6 +145,7 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MAX_TEAMS, 3)}
+        maxTotalPlayers={8}
       />,
     );
     expect(screen.getByTestId('team-setup-validation')).toBeInTheDocument();
@@ -154,6 +158,7 @@ describe('TeamSetupPanel', () => {
         userId={HOST}
         hostId={HOST}
         teams={makeTeams(MIN_TEAMS)}
+        maxTotalPlayers={8}
       />,
     );
     fireEvent.click(screen.getByTestId('team-add-btn'));

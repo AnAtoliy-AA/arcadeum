@@ -28,7 +28,7 @@ import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
 
 import { RulesModal } from './RulesModal';
-import './styles/animations.css';
+import './styles/animations.scss';
 
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,

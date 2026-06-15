@@ -180,6 +180,7 @@ export const ruMessages = {
         addBot: 'Добавить бота',
         removeBot: 'Удалить',
         totalSlots: 'Всего слотов: {{used}} / {{max}}',
+        maxPlayers: 'Макс. игроков:',
         minTeamsHint: 'Нужно минимум 2 команды',
         maxTeamsHint: 'До 4 команд (в каждой минимум 2 игрока)',
         minSizeHint: 'В каждой команде должно быть минимум 2 слота',

@@ -7,7 +7,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
-import cardStyles from './RoomCardComponent.module.css';
+import cardStyles from './RoomCardComponent.module.scss';
 import {
   StyledRoomCard,
   StyledRoomHeader,

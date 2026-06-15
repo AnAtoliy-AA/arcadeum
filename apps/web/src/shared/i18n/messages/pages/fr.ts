@@ -7,10 +7,12 @@ import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
 import { dailyRewardsFr } from './daily-rewards/fr';
+import { dailyChallengesFr } from './daily-challenges/fr';
+import { achievementsFr } from './achievements/fr';
 import { shopFr } from './shop/fr';
 import { adminShopFr } from './admin-shop/fr';
 import { adminGamesFr } from './admin-games/fr';
-
+import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 export const fr = {
   admin: {
     title: 'Administration',
@@ -27,6 +29,7 @@ export const fr = {
       economy: 'Économie',
       shop: 'Boutique',
       games: 'Jeux',
+      blockedIps: 'IPs Bloqués',
       comingSoon: 'Bientôt',
     },
     error: {
@@ -114,6 +117,7 @@ export const fr = {
     announcements: adminAnnouncementsFr,
     tournaments: adminTournamentsFr,
     wallet: adminWalletFr,
+    blockedIps: adminBlockedIpsFr,
   },
   tournaments: {
     title: 'Tournois',
@@ -487,6 +491,8 @@ export const fr = {
   adminGemPackages: adminGemPackagesFr,
   adminEconomy: adminEconomyFr,
   dailyRewards: dailyRewardsFr,
+  dailyChallenges: dailyChallengesFr,
+  achievements: achievementsFr,
   shop: shopFr,
   adminShop: adminShopFr,
   adminGames: adminGamesFr,

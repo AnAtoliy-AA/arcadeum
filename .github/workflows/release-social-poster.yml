@@ -1,0 +1,153 @@
+name: Release Social Poster
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  post-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Gather Release Changes and Post
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
+          THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+        run: |
+          python - <<EOF
+          import os
+          import subprocess
+          import re
+          import requests
+
+          # 1. Find the latest tag (the version just released)
+          try:
+              tag = subprocess.check_output(
+                  ['git', 'describe', '--tags', '--abbrev=0'],
+                  text=True
+              ).strip()
+          except Exception:
+              print("No tags found. Skipping release post.")
+              exit(0)
+
+          # 2. Get all commits included in this release
+          try:
+              raw_commits = subprocess.check_output(
+                  ['git', 'log', f'{tag}^..{tag}', '--pretty=format:%s'],
+                  text=True
+              ).strip()
+          except Exception:
+              raw_commits = subprocess.check_output(
+                  ['git', 'log', '-1', '--pretty=format:%s', tag],
+                  text=True
+              ).strip()
+
+          if not raw_commits.strip():
+              print("No commit messages found. Skipping.")
+              exit(0)
+
+          # 3. Read the CHANGELOG section for this version
+          changelog_section = ""
+          try:
+              with open("CHANGELOG.md", "r") as f:
+                  content = f.read()
+              match = re.search(
+                  rf"## \[{re.escape(tag.lstrip('v'))}\].*?(?=## \[|\Z)",
+                  content,
+                  re.DOTALL,
+              )
+              if match:
+                  changelog_section = match.group(0).strip()
+          except FileNotFoundError:
+              pass
+
+          # 4. Filter and clean commits
+          skip_patterns = [
+              "Merge pull request",
+              "Merge remote-tracking",
+              "chore: bump version",
+              "chore: update changelog",
+              "chore: start next minor",
+          ]
+          emoji_map = {
+              "feat(web):": "✨",
+              "feat(be):": "✅",
+              "feat(ui):": "🎨",
+              "feat:": "✨",
+              "fix(web):": "🛠️",
+              "fix(be):": "🔧",
+              "fix(ui):": "🖌️",
+              "fix:": "🛠️",
+              "refactor(web):": "⚙️",
+              "refactor(be):": "⚙️",
+              "refactor:": "⚙️",
+              "fix(web,critical):": "🚨",
+          }
+
+          clean_updates = []
+          seen = set()
+          for line in raw_commits.split('\n'):
+              line = line.strip()
+              if not line or any(p in line for p in skip_patterns) or line in seen:
+                  continue
+              seen.add(line)
+
+              cleaned = line
+              for prefix, emoji in emoji_map.items():
+                  cleaned = cleaned.replace(prefix, emoji)
+              clean_updates.append(f"- {cleaned}")
+
+          if not clean_updates:
+              print("No consumer-facing changes in this release. Skipping.")
+              exit(0)
+
+          version = tag.lstrip('v')
+          updates_text = "\n".join(clean_updates[:10])
+
+          # 5. Build platform-specific posts
+          facebook_text = (
+              f"🚀 New Release: v{version}\n\n"
+              f"What shipped:\n{updates_text}\n\n"
+              f"Try it now at arcadeum.games\n\n"
+              f"#arcadeum #gamedev #newrelease #boardgames"
+          )
+
+          threads_text = (
+              f"Shipped v{version} 🚀\n\n"
+              f"{updates_text}\n\n"
+              f"Play now → arcadeum.games"
+          )
+
+          if len(threads_text) > 480:
+              threads_text = threads_text[:475] + "..."
+
+          # 6. Post to Buffer
+          buffer_url = "https://api.bufferapp.com/1/updates/create.json"
+          headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
+
+          payloads = [
+              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": True},
+              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True},
+          ]
+
+          for data in payloads:
+              resp = requests.post(buffer_url, headers=headers, data=data)
+              if resp.status_code == 200:
+                  print(f"Posted release v{version} to {data['profile_ids[]']}")
+              else:
+                  print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+
+          EOF

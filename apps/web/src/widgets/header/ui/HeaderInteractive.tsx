@@ -100,7 +100,6 @@ export function HeaderInteractive() {
             <HeaderMobileHidden>
               <Link
                 href={routes.support}
-                prefetch={false}
                 aria-label={t('common.actions.support')}
                 style={{ textDecoration: 'none', display: 'inline-flex' }}
                 data-testid="header-support-button"

@@ -33,7 +33,9 @@ type RouteKey =
   | 'wallet'
   | 'seaBattleLanding'
   | 'criticalLanding'
-  | 'glimwormLanding';
+  | 'glimwormLanding'
+  | 'ticTacToeLanding'
+  | 'cascadeLanding';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -68,6 +70,8 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   seaBattleLanding: '2026-05-18',
   criticalLanding: '2026-05-21',
   glimwormLanding: '2026-05-21',
+  ticTacToeLanding: '2026-05-21',
+  cascadeLanding: '2026-05-21',
 };
 
 /**
@@ -96,6 +100,8 @@ const GAME_LANDING_KEYS: RouteKey[] = [
   'seaBattleLanding',
   'criticalLanding',
   'glimwormLanding',
+  'ticTacToeLanding',
+  'cascadeLanding',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -118,6 +124,8 @@ const PAGE_CHANGE_FREQ: Partial<
   seaBattleLanding: 'weekly',
   criticalLanding: 'weekly',
   glimwormLanding: 'weekly',
+  ticTacToeLanding: 'weekly',
+  cascadeLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -150,6 +158,8 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   seaBattleLanding: 0.9,
   criticalLanding: 0.9,
   glimwormLanding: 0.9,
+  ticTacToeLanding: 0.9,
+  cascadeLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,
@@ -180,7 +190,10 @@ function alternatesFor(key: RouteKey): Record<string, string> {
     SUPPORTED_LOCALES.map((locale) => {
       const r = buildRoutes(locale);
       const value = r[key];
-      return [localeToHreflang(locale), `${appConfig.siteUrl}${value as string}`];
+      return [
+        localeToHreflang(locale),
+        `${appConfig.siteUrl}${value as string}`,
+      ];
     }),
   );
 }

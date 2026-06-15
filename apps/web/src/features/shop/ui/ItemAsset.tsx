@@ -212,9 +212,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
           borderWidth={1}
           borderColor="rgba(255,255,255,0.18)"
           style={
-            isGradient
-              ? { backgroundImage: value }
-              : { backgroundColor: value }
+            isGradient ? { backgroundImage: value } : { backgroundColor: value }
           }
         />
       </YStack>
@@ -231,7 +229,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     >
       <Image
         src={item.assetUrl}
-        alt=""
+        alt={`${item.nameKey} preview`}
         width={size}
         height={size}
         style={{ objectFit: 'contain' }}

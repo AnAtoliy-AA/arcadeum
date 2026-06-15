@@ -194,19 +194,8 @@ export class GameSessionsService {
       timestamp: new Date(),
     };
 
-    // Validate the action
-    const isValid = engine.validateAction(
-      session.state as unknown as BaseGameState,
-      action,
-      context,
-      payload,
-    );
-
-    if (!isValid) {
-      throw new BadRequestException('Invalid action');
-    }
-
-    // Execute the action
+    // Execute the action (engines validate internally and return errorResult
+    // with the actual error message on failure).
     const result = engine.executeAction(
       session.state as unknown as BaseGameState,
       action,
@@ -215,7 +204,7 @@ export class GameSessionsService {
     );
 
     if (!result.success) {
-      throw new BadRequestException(result.error || 'Action failed');
+      throw new BadRequestException(result.error || 'Invalid action');
     }
 
     // Update session with new state

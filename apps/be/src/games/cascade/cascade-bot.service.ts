@@ -28,7 +28,6 @@ const OTHER_REFLEX_MS = { min: 800, max: 2500 };
 const CASCADE_RACE_ERRORS = [
   'No Cascade window',
   'Someone already called Cascade',
-  'Invalid action',
 ];
 
 @Injectable()

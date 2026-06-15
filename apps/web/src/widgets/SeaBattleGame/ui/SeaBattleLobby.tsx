@@ -15,6 +15,7 @@ import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
+import { emitSetTeamConfig } from '@/features/games/sea-battle/lobby/team-mode.api';
 import { gamesApi } from '@/features/games/api';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -113,6 +114,25 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     [teamOpts.teams],
   );
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
+  const maxTotalPlayers =
+    typeof teamOpts.maxTotalPlayers === 'number' ? teamOpts.maxTotalPlayers : 8;
+
+  const handleMaxTotalPlayersChange = React.useCallback(
+    (next: number) => {
+      emitSetTeamConfig({
+        roomId: room.id,
+        userId: userId ?? '',
+        teams: teams.map((t) => ({
+          id: t.id,
+          name: t.name,
+          color: t.color,
+          targetSize: t.targetSize,
+        })),
+        maxTotalPlayers: next,
+      });
+    },
+    [room.id, userId, teams],
+  );
 
   // In team mode, the lobby cap is the sum of team target sizes (up to 8).
   // The persisted room.maxPlayers can lag behind this (e.g. when a small FFA
@@ -129,9 +149,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const effectiveRoom = React.useMemo(
     () =>
       teamMode && teamCap > (room.maxPlayers ?? 0)
-        ? { ...room, maxPlayers: teamCap }
+        ? { ...room, maxPlayers: Math.min(teamCap, maxTotalPlayers) }
         : room,
-    [room, teamMode, teamCap],
+    [room, teamMode, teamCap, maxTotalPlayers],
   );
 
   const allTeamsFull =
@@ -313,10 +333,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
             hideShipsFromTeammates={hideShipsFromTeammates}
             members={roomMembers}
             teamStartBlocked={teamStartBlocked}
+            maxTotalPlayers={maxTotalPlayers}
+            onMaxTotalPlayersChange={handleMaxTotalPlayersChange}
           />
         </>
       )}
-      <YStack flex={1} minHeight={0}>
+      <YStack flex={showTeamPanel ? 0 : 1} minHeight={0}>
         <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}

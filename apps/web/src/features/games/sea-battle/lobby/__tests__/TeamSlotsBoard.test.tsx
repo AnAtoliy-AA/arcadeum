@@ -124,6 +124,7 @@ describe('TeamSlotsBoard', () => {
         hostId={HOST}
         teams={makeTeams()}
         members={MEMBERS}
+        maxTotalPlayers={8}
       />,
     );
 
@@ -145,6 +146,7 @@ describe('TeamSlotsBoard', () => {
         hostId={HOST}
         teams={makeTeams()}
         members={MEMBERS}
+        maxTotalPlayers={8}
       />,
     );
     expect(screen.queryByTestId(`bot-remove-${BOT_ID}`)).toBeNull();
@@ -158,6 +160,7 @@ describe('TeamSlotsBoard', () => {
         hostId={HOST}
         teams={makeTeams()}
         members={MEMBERS}
+        maxTotalPlayers={8}
       />,
     );
     fireEvent.click(screen.getByTestId(`bot-remove-${BOT_ID}`));
@@ -176,6 +179,7 @@ describe('TeamSlotsBoard', () => {
         hostId={HOST}
         teams={makeTeams()}
         members={MEMBERS}
+        maxTotalPlayers={8}
       />,
     );
 
@@ -196,6 +200,7 @@ describe('TeamSlotsBoard', () => {
         hostId={HOST}
         teams={makeTeams()}
         members={MEMBERS}
+        maxTotalPlayers={8}
       />,
     );
 

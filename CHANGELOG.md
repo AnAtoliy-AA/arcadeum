@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.13] - 2026-06-15
+
+### Fixed
+- comprehensive SEO audit fixes across 26 files (N/A)
+
+
 ## [1.16.12] - 2026-06-15
 
 ### Added

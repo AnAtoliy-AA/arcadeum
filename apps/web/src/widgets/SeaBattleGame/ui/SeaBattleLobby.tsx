@@ -289,32 +289,22 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       flex={1}
       minHeight={0}
       gap="$3"
-      {...(showTeamPanel
-        ? { style: { overflowY: 'auto' as const } }
-        : {})}
     >
       {showTeamPanel && (
-        <>
-          <style>{`
-            [data-team-mode-scroll="true"] .is_LobbyContent {
-              overflow-y: visible !important;
-            }
-          `}</style>
-          <SeaBattleTeamPanel
-            roomId={room.id}
-            userId={userId ?? ''}
-            hostId={room.hostId}
-            isHost={isHost}
-            teamMode={teamMode}
-            teams={teams}
-            hideShipsFromTeammates={hideShipsFromTeammates}
-            members={roomMembers}
-            teamStartBlocked={teamStartBlocked}
-            maxTotalPlayers={maxTotalPlayers}
-          />
-        </>
+        <SeaBattleTeamPanel
+          roomId={room.id}
+          userId={userId ?? ''}
+          hostId={room.hostId}
+          isHost={isHost}
+          teamMode={teamMode}
+          teams={teams}
+          hideShipsFromTeammates={hideShipsFromTeammates}
+          members={roomMembers}
+          teamStartBlocked={teamStartBlocked}
+          maxTotalPlayers={maxTotalPlayers}
+        />
       )}
-      <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
+      <YStack flex={1} minHeight={0}>
         <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}

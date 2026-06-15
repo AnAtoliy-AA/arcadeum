@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.10] - 2026-06-15
+
+### Added
+- add social media auto-posting for daily changelogs and releases (N/A)
+
+### Fixed
+- randomize daily post time within 2-hour window (N/A)
+- add pip install requests, expand emoji map, pin develop branch for daily fetch (N/A)
+
+
 ## [1.16.9] - 2026-06-15
 
 ### Added

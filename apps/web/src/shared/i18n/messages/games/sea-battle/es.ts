@@ -181,6 +181,7 @@ export const esMessages = {
         addBot: 'Añadir bot',
         removeBot: 'Eliminar',
         totalSlots: 'Espacios totales: {{used}} / {{max}}',
+        maxPlayers: 'Máx. jugadores:',
         minTeamsHint: 'Se requieren al menos 2 equipos',
         maxTeamsHint: 'Hasta 4 equipos (cada uno con al menos 2 jugadores)',
         minSizeHint: 'Cada equipo necesita al menos 2 espacios',

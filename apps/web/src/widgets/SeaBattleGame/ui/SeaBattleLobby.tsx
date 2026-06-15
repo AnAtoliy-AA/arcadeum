@@ -113,6 +113,8 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     [teamOpts.teams],
   );
   const hideShipsFromTeammates = !!teamOpts.hideShipsFromTeammates;
+  const maxTotalPlayers =
+    typeof teamOpts.maxTotalPlayers === 'number' ? teamOpts.maxTotalPlayers : 8;
 
   // In team mode, the lobby cap is the sum of team target sizes (up to 8).
   // The persisted room.maxPlayers can lag behind this (e.g. when a small FFA
@@ -129,9 +131,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const effectiveRoom = React.useMemo(
     () =>
       teamMode && teamCap > (room.maxPlayers ?? 0)
-        ? { ...room, maxPlayers: teamCap }
+        ? { ...room, maxPlayers: Math.min(teamCap, maxTotalPlayers) }
         : room,
-    [room, teamMode, teamCap],
+    [room, teamMode, teamCap, maxTotalPlayers],
   );
 
   const allTeamsFull =
@@ -223,50 +225,68 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     </Text>
   );
 
-  const optionsSlot =
-    isHost && room.status === 'lobby' ? (
-      themeListHorizontal ? (
-        // Narrow viewport: horizontal scrollable list ABOVE the preview so
-        // neither the field nor the chip labels get squeezed.
-        <YStack gap="$3" width="100%" minWidth={0}>
-          <YStack gap="$2" width="100%" minWidth={0}>
-            {themeLabel}
-            <XStack
-              gap="$2"
-              width="100%"
-              minWidth={0}
-              overflow="scroll"
-              paddingBottom="$1"
-            >
-              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-            </XStack>
-          </YStack>
-          <SeaBattleThemeProvider variant={selectedVariant}>
-            <SeaBattleThemePreview selectedVariant={selectedVariant} />
-          </SeaBattleThemeProvider>
-        </YStack>
-      ) : (
-        // Wide viewport: preview on the left, vertical list on the right,
-        // list bounded to preview height and scrollable.
-        <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
-          <SeaBattleThemeProvider variant={selectedVariant}>
-            <SeaBattleThemePreview selectedVariant={selectedVariant} />
-          </SeaBattleThemeProvider>
-          <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
-            {themeLabel}
-            <YStack
-              gap="$2"
-              flex={1}
-              minHeight={0}
-              overflow="scroll"
-              paddingRight="$1"
-            >
-              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-            </YStack>
-          </YStack>
-        </XStack>
-      )
+  const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
+
+  const teamPanelSlot =
+    showTeamPanel ? (
+      <SeaBattleTeamPanel
+        roomId={room.id}
+        userId={userId ?? ''}
+        hostId={room.hostId}
+        isHost={isHost}
+        teamMode={teamMode}
+        teams={teams}
+        hideShipsFromTeammates={hideShipsFromTeammates}
+        members={roomMembers}
+        teamStartBlocked={teamStartBlocked}
+        maxTotalPlayers={maxTotalPlayers}
+      />
     ) : null;
+
+  const optionsSlot = (
+    <>
+      {teamPanelSlot}
+      {isHost && room.status === 'lobby' ? (
+        themeListHorizontal ? (
+          <YStack gap="$3" width="100%" minWidth={0}>
+            <YStack gap="$2" width="100%" minWidth={0}>
+              {themeLabel}
+              <XStack
+                gap="$2"
+                width="100%"
+                minWidth={0}
+                overflow="scroll"
+                paddingBottom="$1"
+              >
+                {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+              </XStack>
+            </YStack>
+            <SeaBattleThemeProvider variant={selectedVariant}>
+              <SeaBattleThemePreview selectedVariant={selectedVariant} />
+            </SeaBattleThemeProvider>
+          </YStack>
+        ) : (
+          <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
+            <SeaBattleThemeProvider variant={selectedVariant}>
+              <SeaBattleThemePreview selectedVariant={selectedVariant} />
+            </SeaBattleThemeProvider>
+            <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
+              {themeLabel}
+              <YStack
+                gap="$2"
+                flex={1}
+                minHeight={0}
+                overflow="scroll"
+                paddingRight="$1"
+              >
+                {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+              </YStack>
+            </YStack>
+          </XStack>
+        )
+      ) : null}
+    </>
+  );
 
   const headerActionsSlot = (
     <IconButton
@@ -278,46 +298,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     </IconButton>
   );
 
-  // When team mode is on, the team panel + lobby together exceed the viewport,
-  // so the wrapping YStack scrolls as one unit. We also disable
-  // ReusableGameLobby's own LobbyContent scroll (scoped via the
-  // data-team-mode-scroll attribute) so the user only ever sees a single
-  // scrollbar instead of nested scroll layers. In FFA we leave the lobby's
-  // internal scroll untouched.
-  const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
-
   return (
-    <YStack
-      flex={1}
-      minHeight={0}
-      gap="$3"
-      data-team-mode-scroll={showTeamPanel ? 'true' : undefined}
-      style={showTeamPanel ? { overflowY: 'auto' } : undefined}
-    >
-      {showTeamPanel && (
-        <>
-          <style>{`
-            [data-team-mode-scroll="true"] .is_LobbyContent {
-              overflow-y: visible !important;
-              flex: 0 0 auto !important;
-              min-height: 0 !important;
-            }
-          `}</style>
-          <SeaBattleTeamPanel
-            roomId={room.id}
-            userId={userId ?? ''}
-            hostId={room.hostId}
-            isHost={isHost}
-            teamMode={teamMode}
-            teams={teams}
-            hideShipsFromTeammates={hideShipsFromTeammates}
-            members={roomMembers}
-            teamStartBlocked={teamStartBlocked}
-          />
-        </>
-      )}
-      <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
-        <ReusableGameLobby
+    <YStack flex={1} minHeight={0}>
+      <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}
           startBusy={startBusy}
@@ -332,19 +315,27 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           gameIcon="🚢"
           roomIcon={variantInfo.emoji || '⚓'}
           variantName={
-            variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
+            variantInfo.name
+              ? t(variantInfo.name as TranslationKey)
+              : undefined
           }
           minPlayers={MIN_PLAYERS}
           labels={{
-            waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+            waitingLabel: t(
+              'games.sea_battle_v1.table.lobby.waitingToStart',
+            ),
             subtitleText: getSubtitleText(),
             playersLabel: t('games.rooms.playersLabel'),
             hostControlsLabel: t(
               'games.sea_battle_v1.table.lobby.hostControls',
             ),
             startLabel: t('games.sea_battle_v1.table.actions.start'),
-            startingLabel: t('games.sea_battle_v1.table.actions.starting'),
-            roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+            startingLabel: t(
+              'games.sea_battle_v1.table.actions.starting',
+            ),
+            roomInfoLabel: t(
+              'games.sea_battle_v1.table.lobby.roomInfo',
+            ),
             fastRoomLabel: t('games.rooms.fastRoom'),
             botCountLabel: t('games.lobby.botCountLabel'),
             startWithBotsLabel: t('games.lobby.startWithBots'),
@@ -356,7 +347,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           headerActionsSlot={headerActionsSlot}
           enableBots={true}
         />
-      </YStack>
     </YStack>
   );
 });

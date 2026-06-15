@@ -27,7 +27,26 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  return buildPageMetadata({ locale, page: 'cascadeLanding' });
+  const base = await buildPageMetadata({ locale, page: 'cascadeLanding' });
+  return {
+    ...base,
+    openGraph: {
+      ...base.openGraph,
+      images: [
+        {
+          url: `/${locale}/games/cascade/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: 'Cascade — multiplayer shedding card game on Arcadeum',
+        },
+      ],
+    },
+    twitter: {
+      ...base.twitter,
+      card: 'summary_large_image',
+      images: [`/${locale}/games/cascade/opengraph-image`],
+    },
+  };
 }
 
 export default async function CascadeLandingRoute({ params }: PageProps) {

@@ -181,6 +181,7 @@ export const frMessages = {
         addBot: 'Ajouter un bot',
         removeBot: 'Supprimer',
         totalSlots: 'Cases totales : {{used}} / {{max}}',
+        maxPlayers: 'Max. joueurs :',
         minTeamsHint: 'Au moins 2 équipes requises',
         maxTeamsHint: 'Jusqu’à 4 équipes (chacune avec au moins 2 joueurs)',
         minSizeHint: 'Chaque équipe nécessite au moins 2 cases',

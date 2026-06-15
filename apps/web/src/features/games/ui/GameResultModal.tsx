@@ -39,7 +39,7 @@ const StyledBackdrop = styled(YStack, {
   left: 0,
   right: 0,
   bottom: 0,
-  zIndex: -1,
+  zIndex: 1199,
   backgroundColor: 'rgba(0, 0, 0, 0.85)',
   backdropFilter: 'blur(12px)',
 
@@ -142,6 +142,7 @@ const StyledResultContent = styled(Dialog.Content, {
   y: 0,
   scale: 1,
   opacity: 1,
+  zIndex: 1200,
 
   variants: {
     animated: {

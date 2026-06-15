@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.12] - 2026-06-15
+
+### Added
+- add rate limiting, helmet, IP blocking, and security hardening (N/A)
+
+
 ## [1.16.11] - 2026-06-15
 
 ### Added

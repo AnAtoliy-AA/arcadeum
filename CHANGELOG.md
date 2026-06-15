@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.14] - 2026-06-15
+
+### Fixed
+- propagate actual validation error messages from game engines (N/A)
+- update cascade bot race-error detection and tighten reflex delays (N/A)
+- enforce first-click-wins for cascade call race condition (N/A)
+
+
 ## [1.16.13] - 2026-06-15
 
 ### Fixed

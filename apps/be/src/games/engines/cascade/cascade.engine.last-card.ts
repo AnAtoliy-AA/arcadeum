@@ -42,6 +42,9 @@ export function validateCallCascade(
   if (!state.lastCardWindow) {
     return { ok: false, error: 'No Cascade window is open' };
   }
+  if (state.lastCardWindow.calledBy) {
+    return { ok: false, error: 'Someone already called Cascade' };
+  }
   const caller = state.players.find((p) => p.playerId === userId);
   if (!caller) return { ok: false, error: 'Player not in game' };
   if (!caller.alive) return { ok: false, error: 'Player is out' };
@@ -58,6 +61,7 @@ export function applyCallCascade(
 
   const next = helpers.cloneState(state);
   const window = next.lastCardWindow!;
+  window.calledBy = context.userId;
   const isSelf = context.userId === window.playerId;
 
   if (isSelf) {

@@ -104,11 +104,7 @@ describe('CascadeEngine — Last-Card race (Cascade call)', () => {
       ctx('a'),
       { cardId: 'play' },
     ).state!;
-    const firstCall = engine.executeAction(
-      openState,
-      'call_cascade',
-      ctx('a'),
-    );
+    const firstCall = engine.executeAction(openState, 'call_cascade', ctx('a'));
     expect(firstCall.success).toBe(true);
     const secondCall = engine.executeAction(
       firstCall.state!,

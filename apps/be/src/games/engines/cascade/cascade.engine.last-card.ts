@@ -9,10 +9,7 @@ import type {
   GameActionResult,
   GameLogEntry,
 } from '../base/game-engine.interface';
-import {
-  GAME_PHASE,
-  LAST_CARD_PENALTY,
-} from './cascade.constants';
+import { GAME_PHASE, LAST_CARD_PENALTY } from './cascade.constants';
 import type { CascadePlayer, CascadeState } from './cascade.types';
 
 export interface LastCardHelpers {

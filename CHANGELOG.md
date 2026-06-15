@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.9] - 2026-06-15
+
+### Added
+- configurable max total players + fix team panel scroll (N/A)
+- add explicit og:image and twitter:image to all game landing pages (N/A)
+- add tap-to-move for placed ships on mobile (N/A)
+
+### Fixed
+- move team panel into optionsSlot so it scrolls with lobby (N/A)
+- remove all CSS overrides, use plain flex layout for team lobby (N/A)
+- team panel and lobby scroll together as one unit (N/A)
+- remove fragile CSS override for team lobby scroll (N/A)
+- only override overflow-y on LobbyContent, not flex/minHeight (N/A)
+- use flex:undefined instead of flex:0 on lobby wrapper (N/A)
+- cap team size stepper by remaining slots across all teams (N/A)
+- add missing i18n key and backend maxTotalPlayers validation (N/A)
+- always use flex:1 on lobby wrapper to prevent collapse when team panel is shown (N/A)
+- raise GameResultModal and shared modal z-index above fullscreen container (N/A)
+
+### Refactored
+- remove redundant max players stepper from lobby (N/A)
+
+
 ## [1.16.8] - 2026-06-14
 
 ### Added

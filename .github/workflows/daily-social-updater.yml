@@ -2,13 +2,20 @@ name: Daily Develop Changelog Poster
 
 on:
   schedule:
-    - cron: '0 9 * * *' # Runs automatically every single day at 9:00 AM UTC
+    - cron: '0 8 * * *' # Triggers at 8:00 AM UTC, then sleeps a random 0-2 hours
   workflow_dispatch: # Allows you to manually trigger this anytime from the GitHub "Actions" tab to test it
 
 jobs:
   gather-and-post:
     runs-on: ubuntu-latest
     steps:
+      - name: Randomize posting time (0-2 hours)
+        run: |
+          SLEEP_SEC=$(( RANDOM % 7201 ))
+          echo "Sleeping $SLEEP_SEC seconds before posting..."
+          sleep "$SLEEP_SEC"
+          echo "Done sleeping."
+
       - name: Checkout Code
         uses: actions/checkout@v4
         with:

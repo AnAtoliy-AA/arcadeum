@@ -1,0 +1,90 @@
+name: Daily Develop Changelog Poster
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # Runs automatically every single day at 9:00 AM UTC
+  workflow_dispatch: # Allows you to manually trigger this anytime from the GitHub "Actions" tab to test it
+
+jobs:
+  gather-and-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches full commit history to scan the last 24 hours
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Process Commits and Post to Buffer
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
+          THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+        run: |
+          python - <<EOF
+          import os
+          import subprocess
+          import requests
+
+          # 1. Fetch commits from the last 24 hours
+          try:
+              raw_commits = subprocess.check_output(['git', 'log', '--since="24 hours ago"', '--pretty=format:%s']).decode('utf-8')
+          except Exception as e:
+              print(f"Error fetching logs: {e}")
+              raw_commits = ""
+
+          if not raw_commits.strip():
+              print("No updates found in the last 24 hours. Skipping social posts.")
+              exit(0)
+
+          # 2. Filter out noisy merge lines and automated version chores
+          clean_updates = []
+          for line in raw_commits.split('\n'):
+              if not line.strip() or "Merge pull request" in line or "Merge remote-tracking" in line or "chore: bump version" in line:
+                  continue
+
+              # Standardize prefixes for clean public readability
+              cleaned = line.replace("feat(web):", "✨")\
+                            .replace("fix(web):", "🛠️")\
+                            .replace("refactor(web):", "⚙️")\
+                            .replace("fix(web,critical):", "🚨")
+              clean_updates.append(f"- {cleaned}")
+
+          if not clean_updates:
+              print("No consumer-facing changes found today. Skipping.")
+              exit(0)
+
+          changelog_text = "\n".join(clean_updates)
+
+          # 3. Create platform-specific variants
+          facebook_text = f"🚀 Daily Development Update!\n\nHere is a live look at what we added and optimized in the platform codebase yesterday:\n\n{changelog_text}\n\n#buildinpublic #indiedev #gamedevelopment"
+          threads_text = f"Another productive day in the books. Shipped these updates to the platform yesterday:\n\n{changelog_text}\n\nWhat are you coding today? 🛠️"
+
+          # Prevent text overflow on Threads micro-blog limit safely
+          if len(threads_text) > 480:
+              threads_text = threads_text[:475] + "..."
+
+          # 4. Push updates directly to your Buffer Queue
+          buffer_url = "https://api.bufferapp.com/1/updates/create.json"
+          headers = {
+              "Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"
+          }
+
+          # Array of payloads for each connected channel
+          payloads = [
+              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": True},
+              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True}
+          ]
+
+          for data in payloads:
+              response = requests.post(buffer_url, headers=headers, data=data)
+              if response.status_code == 200:
+                  print(f"Successfully posted update to profile ID: {data['profile_ids[]']}")
+              else:
+                  print(f"Failed to post to {data['profile_ids[]']}: {response.text}")
+
+          EOF

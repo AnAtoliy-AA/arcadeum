@@ -316,7 +316,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           />
         </>
       )}
-      <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
+      <YStack flex={1} minHeight={0}>
         <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}

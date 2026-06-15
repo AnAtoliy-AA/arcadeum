@@ -282,10 +282,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   // When team mode is on, the team panel + lobby together exceed the viewport,
   // so the wrapping YStack scrolls as one unit. We also disable
-  // ReusableGameLobby's own LobbyContent scroll (scoped via the
-  // data-team-mode-scroll attribute) so the user only ever sees a single
-  // scrollbar instead of nested scroll layers. In FFA we leave the lobby's
-  // internal scroll untouched.
   const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
 
   return (
@@ -293,31 +289,22 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       flex={1}
       minHeight={0}
       gap="$3"
-      data-team-mode-scroll={showTeamPanel ? 'true' : undefined}
-      style={showTeamPanel ? { overflowY: 'auto' } : undefined}
     >
       {showTeamPanel && (
-        <>
-          <style>{`
-            [data-team-mode-scroll="true"] .is_LobbyContent {
-              overflow-y: visible !important;
-            }
-          `}</style>
-          <SeaBattleTeamPanel
-            roomId={room.id}
-            userId={userId ?? ''}
-            hostId={room.hostId}
-            isHost={isHost}
-            teamMode={teamMode}
-            teams={teams}
-            hideShipsFromTeammates={hideShipsFromTeammates}
-            members={roomMembers}
-            teamStartBlocked={teamStartBlocked}
-            maxTotalPlayers={maxTotalPlayers}
-          />
-        </>
+        <SeaBattleTeamPanel
+          roomId={room.id}
+          userId={userId ?? ''}
+          hostId={room.hostId}
+          isHost={isHost}
+          teamMode={teamMode}
+          teams={teams}
+          hideShipsFromTeammates={hideShipsFromTeammates}
+          members={roomMembers}
+          teamStartBlocked={teamStartBlocked}
+          maxTotalPlayers={maxTotalPlayers}
+        />
       )}
-      <YStack flex={showTeamPanel ? undefined : 1} minHeight={0}>
+      <YStack flex={1} minHeight={0}>
         <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}

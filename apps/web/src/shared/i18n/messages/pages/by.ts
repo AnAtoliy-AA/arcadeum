@@ -12,6 +12,7 @@ import { achievementsBy } from './achievements/by';
 import { shopBy } from './shop/by';
 import { adminShopBy } from './admin-shop/by';
 import { adminGamesBy } from './admin-games/by';
+import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 
 export const by = {
   admin: {
@@ -29,6 +30,7 @@ export const by = {
       economy: 'Эканоміка',
       shop: 'Крама',
       games: 'Гульні',
+      blockedIps: 'Заблакіраваныя IP',
       comingSoon: 'Хутка',
     },
     error: {
@@ -116,6 +118,7 @@ export const by = {
     announcements: adminAnnouncementsBy,
     tournaments: adminTournamentsBy,
     wallet: adminWalletBy,
+    blockedIps: adminBlockedIpsBy,
   },
   tournaments: {
     title: 'Турніры',

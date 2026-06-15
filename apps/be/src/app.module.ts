@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { GamesModule } from './games/games.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
 import { LeaderboardsModule } from './leaderboards/leaderboards.module';
@@ -32,6 +32,7 @@ import {
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
+import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
 
 @Module({
   imports: [
@@ -57,10 +58,11 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     BattlePassModule,
     NotificationsModule,
     ScheduleModule.forRoot(),
-    // Default ttl/limit are placeholders — the SupportController declares
-    // its own @Throttle override. ThrottlerGuard is only applied at the
-    // controller level (not as APP_GUARD) so other routes are unaffected.
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ThrottlerModule.forRoot([
+      { name: 'default', ttl: 60_000, limit: 100 },
+      { name: 'auth', ttl: 60_000, limit: 10 },
+      { name: 'strict', ttl: 60_000 * 60, limit: 5 },
+    ]),
     SupportModule,
     MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
   ],
@@ -78,6 +80,10 @@ import { MessageCodeInterceptor } from './common/interceptors/message-code.inter
     {
       provide: APP_INTERCEPTOR,
       useClass: MessageCodeInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: GlobalThrottlerGuard,
     },
   ],
 })

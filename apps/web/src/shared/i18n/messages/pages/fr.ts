@@ -12,7 +12,7 @@ import { achievementsFr } from './achievements/fr';
 import { shopFr } from './shop/fr';
 import { adminShopFr } from './admin-shop/fr';
 import { adminGamesFr } from './admin-games/fr';
-
+import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 export const fr = {
   admin: {
     title: 'Administration',
@@ -29,6 +29,7 @@ export const fr = {
       economy: 'Économie',
       shop: 'Boutique',
       games: 'Jeux',
+      blockedIps: 'IPs Bloqués',
       comingSoon: 'Bientôt',
     },
     error: {
@@ -116,6 +117,7 @@ export const fr = {
     announcements: adminAnnouncementsFr,
     tournaments: adminTournamentsFr,
     wallet: adminWalletFr,
+    blockedIps: adminBlockedIpsFr,
   },
   tournaments: {
     title: 'Tournois',

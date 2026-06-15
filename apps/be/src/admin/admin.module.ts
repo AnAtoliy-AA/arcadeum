@@ -7,6 +7,8 @@ import { AdminController } from './admin.controller';
 import { AdminUsersController } from './admin-users.controller';
 import { AdminUsersService } from './admin-users.service';
 import { GameVisibilityModule } from './game-visibility/game-visibility.module';
+import { AdminBlockedIpsController } from './admin-blocked-ips.controller';
+import { IpBlockService } from '../common/guards/ip-block.guard';
 
 @Module({
   imports: [
@@ -14,7 +16,12 @@ import { GameVisibilityModule } from './game-visibility/game-visibility.module';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     GameVisibilityModule,
   ],
-  controllers: [AdminController, AdminUsersController],
-  providers: [RolesGuard, AdminUsersService],
+  controllers: [
+    AdminController,
+    AdminUsersController,
+    AdminBlockedIpsController,
+  ],
+  providers: [RolesGuard, AdminUsersService, IpBlockService],
+  exports: [IpBlockService],
 })
 export class AdminModule {}

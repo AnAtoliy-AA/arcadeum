@@ -18,6 +18,7 @@ interface AdminNavTranslations {
   economy?: string;
   shop?: string;
   games?: string;
+  blockedIps?: string;
   comingSoon?: string;
 }
 
@@ -49,6 +50,7 @@ export default async function AdminLayoutShell({
       economy: navT?.economy,
       shop: navT?.shop,
       games: navT?.games,
+      blockedIps: navT?.blockedIps,
     },
     comingSoon: navT?.comingSoon ?? 'Coming soon',
   };

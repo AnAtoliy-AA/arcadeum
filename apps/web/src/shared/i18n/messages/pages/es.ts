@@ -12,6 +12,7 @@ import { achievementsEs } from './achievements/es';
 import { shopEs } from './shop/es';
 import { adminShopEs } from './admin-shop/es';
 import { adminGamesEs } from './admin-games/es';
+import { adminBlockedIpsEs } from './admin-blocked-ips/es';
 
 export const es = {
   admin: {
@@ -29,6 +30,7 @@ export const es = {
       economy: 'Economía',
       shop: 'Tienda',
       games: 'Juegos',
+      blockedIps: 'IPs Bloqueados',
       comingSoon: 'Próximamente',
     },
     error: {
@@ -112,6 +114,7 @@ export const es = {
     announcements: adminAnnouncementsEs,
     tournaments: adminTournamentsEs,
     wallet: adminWalletEs,
+    blockedIps: adminBlockedIpsEs,
   },
   tournaments: {
     title: 'Torneos',

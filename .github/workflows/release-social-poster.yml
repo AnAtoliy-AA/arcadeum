@@ -18,6 +18,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install requests
+        run: pip install requests
+
       - name: Gather Release Changes and Post
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
@@ -27,6 +30,7 @@ jobs:
           python - <<EOF
           import os
           import subprocess
+          import re
           import requests
 
           # 1. Find the latest tag (the version just released)
@@ -41,13 +45,11 @@ jobs:
 
           # 2. Get all commits included in this release
           try:
-              # Commits between the previous tag and the current one
               raw_commits = subprocess.check_output(
                   ['git', 'log', f'{tag}^..{tag}', '--pretty=format:%s'],
                   text=True
               ).strip()
           except Exception:
-              # Fallback: get the single tagged commit
               raw_commits = subprocess.check_output(
                   ['git', 'log', '-1', '--pretty=format:%s', tag],
                   text=True
@@ -57,13 +59,11 @@ jobs:
               print("No commit messages found. Skipping.")
               exit(0)
 
-          # 3. Also read the CHANGELOG section for this version
+          # 3. Read the CHANGELOG section for this version
           changelog_section = ""
           try:
               with open("CHANGELOG.md", "r") as f:
                   content = f.read()
-              # Find the section starting with ## [vX.Y.Z] or ## [X.Y.Z]
-              import re
               match = re.search(
                   rf"## \[{re.escape(tag.lstrip('v'))}\].*?(?=## \[|\Z)",
                   content,
@@ -75,31 +75,39 @@ jobs:
               pass
 
           # 4. Filter and clean commits
+          skip_patterns = [
+              "Merge pull request",
+              "Merge remote-tracking",
+              "chore: bump version",
+              "chore: update changelog",
+              "chore: start next minor",
+          ]
+          emoji_map = {
+              "feat(web):": "✨",
+              "feat(be):": "✅",
+              "feat(ui):": "🎨",
+              "feat:": "✨",
+              "fix(web):": "🛠️",
+              "fix(be):": "🔧",
+              "fix(ui):": "🖌️",
+              "fix:": "🛠️",
+              "refactor(web):": "⚙️",
+              "refactor(be):": "⚙️",
+              "refactor:": "⚙️",
+              "fix(web,critical):": "🚨",
+          }
+
           clean_updates = []
           seen = set()
           for line in raw_commits.split('\n'):
               line = line.strip()
-              if not line:
-                  continue
-              if "Merge pull request" in line or "Merge remote-tracking" in line:
-                  continue
-              if "chore: bump version" in line or "chore: update changelog" in line:
-                  continue
-              if "chore: start next minor" in line:
-                  continue
-              if line in seen:
+              if not line or any(p in line for p in skip_patterns) or line in seen:
                   continue
               seen.add(line)
 
-              cleaned = line.replace("feat(web):", "✨")\
-                            .replace("fix(web):", "🛠️")\
-                            .replace("refactor(web):", "⚙️")\
-                            .replace("feat(be):", "✅")\
-                            .replace("fix(be):", "🔧")\
-                            .replace("feat:", "✨")\
-                            .replace("fix:", "🛠️")\
-                            .replace("feat(ui):", "🎨")\
-                            .replace("fix(ui):", "🖌️")
+              cleaned = line
+              for prefix, emoji in emoji_map.items():
+                  cleaned = cleaned.replace(prefix, emoji)
               clean_updates.append(f"- {cleaned}")
 
           if not clean_updates:
@@ -107,7 +115,7 @@ jobs:
               exit(0)
 
           version = tag.lstrip('v')
-          updates_text = "\n".join(clean_updates[:10])  # Cap at 10 items
+          updates_text = "\n".join(clean_updates[:10])
 
           # 5. Build platform-specific posts
           facebook_text = (

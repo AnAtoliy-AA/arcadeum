@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install requests
+        run: pip install requests
+
       - name: Process Commits and Post to Buffer
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
@@ -30,9 +33,12 @@ jobs:
           import subprocess
           import requests
 
-          # 1. Fetch commits from the last 24 hours
+          # 1. Fetch commits from the last 24 hours on develop
           try:
-              raw_commits = subprocess.check_output(['git', 'log', '--since="24 hours ago"', '--pretty=format:%s']).decode('utf-8')
+              raw_commits = subprocess.check_output(
+                  ['git', 'log', 'origin/develop', '--since="24 hours ago"', '--pretty=format:%s'],
+                  text=True
+              )
           except Exception as e:
               print(f"Error fetching logs: {e}")
               raw_commits = ""
@@ -42,49 +48,78 @@ jobs:
               exit(0)
 
           # 2. Filter out noisy merge lines and automated version chores
-          clean_updates = []
-          for line in raw_commits.split('\n'):
-              if not line.strip() or "Merge pull request" in line or "Merge remote-tracking" in line or "chore: bump version" in line:
-                  continue
+          skip_patterns = [
+              "Merge pull request",
+              "Merge remote-tracking",
+              "chore: bump version",
+              "chore: update changelog",
+              "chore: start next minor",
+          ]
+          emoji_map = {
+              "feat(web):": "✨",
+              "feat(be):": "✅",
+              "feat(ui):": "🎨",
+              "feat:": "✨",
+              "fix(web):": "🛠️",
+              "fix(be):": "🔧",
+              "fix(ui):": "🖌️",
+              "fix:": "🛠️",
+              "refactor(web):": "⚙️",
+              "refactor(be):": "⚙️",
+              "refactor:": "⚙️",
+              "fix(web,critical):": "🚨",
+          }
 
-              # Standardize prefixes for clean public readability
-              cleaned = line.replace("feat(web):", "✨")\
-                            .replace("fix(web):", "🛠️")\
-                            .replace("refactor(web):", "⚙️")\
-                            .replace("fix(web,critical):", "🚨")
+          clean_updates = []
+          seen = set()
+          for line in raw_commits.split('\n'):
+              line = line.strip()
+              if not line or any(p in line for p in skip_patterns) or line in seen:
+                  continue
+              seen.add(line)
+
+              cleaned = line
+              for prefix, emoji in emoji_map.items():
+                  cleaned = cleaned.replace(prefix, emoji)
               clean_updates.append(f"- {cleaned}")
 
           if not clean_updates:
               print("No consumer-facing changes found today. Skipping.")
               exit(0)
 
-          changelog_text = "\n".join(clean_updates)
+          # Cap at 15 items to keep posts scannable
+          changelog_text = "\n".join(clean_updates[:15])
 
           # 3. Create platform-specific variants
-          facebook_text = f"🚀 Daily Development Update!\n\nHere is a live look at what we added and optimized in the platform codebase yesterday:\n\n{changelog_text}\n\n#buildinpublic #indiedev #gamedevelopment"
-          threads_text = f"Another productive day in the books. Shipped these updates to the platform yesterday:\n\n{changelog_text}\n\nWhat are you coding today? 🛠️"
+          facebook_text = (
+              f"🚀 Daily Development Update!\n\n"
+              f"Here is a live look at what we added and optimized yesterday:\n\n"
+              f"{changelog_text}\n\n"
+              f"#buildinpublic #indiedev #gamedevelopment"
+          )
+          threads_text = (
+              f"Another productive day in the books. Shipped yesterday:\n\n"
+              f"{changelog_text}\n\n"
+              f"What are you coding today? 🛠️"
+          )
 
-          # Prevent text overflow on Threads micro-blog limit safely
           if len(threads_text) > 480:
               threads_text = threads_text[:475] + "..."
 
           # 4. Push updates directly to your Buffer Queue
           buffer_url = "https://api.bufferapp.com/1/updates/create.json"
-          headers = {
-              "Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"
-          }
+          headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
 
-          # Array of payloads for each connected channel
           payloads = [
               {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": True},
-              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True}
+              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True},
           ]
 
           for data in payloads:
-              response = requests.post(buffer_url, headers=headers, data=data)
-              if response.status_code == 200:
-                  print(f"Successfully posted update to profile ID: {data['profile_ids[]']}")
+              resp = requests.post(buffer_url, headers=headers, data=data)
+              if resp.status_code == 200:
+                  print(f"Posted daily update to {data['profile_ids[]']}")
               else:
-                  print(f"Failed to post to {data['profile_ids[]']}: {response.text}")
+                  print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
 
           EOF

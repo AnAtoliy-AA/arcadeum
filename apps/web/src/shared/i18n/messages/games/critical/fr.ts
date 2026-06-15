@@ -351,6 +351,12 @@ export const frMessages = {
       title: 'Journal de la Partie',
       empty: 'Aucune activité pour le moment',
     },
+    turn: {
+      yourTurn: 'À vous de jouer',
+      otherTurn: 'Au tour de {{name}}',
+      waiting: 'En attente…',
+      gameOver: 'Partie terminée',
+    },
     chat: {
       title: 'Chat de Table',
       empty: 'Aucun message. Lancez la conversation !',

@@ -12,11 +12,14 @@ import {
   ATTACK_RESULT,
   ROW_LABELS,
   COL_LABELS,
+  GAME_MODE_VARIANTS,
+  SPEED_TURN_BUDGET_MS,
   type AttackResult,
 } from './sea-battle.constants';
 import {
   SeaBattlePlayer,
   SeaBattleState,
+  SeaBattleConfig,
   PlaceShipPayload,
   MoveShipPayload,
   AttackPayload,
@@ -71,16 +74,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
   initializeState(
     playerIds: string[],
-    config?: {
-      teams?: Array<{
-        id: string;
-        name: string;
-        color: string;
-        playerIds: string[];
-      }>;
-      hideShipsFromTeammates?: boolean;
-    } & Record<string, unknown>,
+    config?: SeaBattleConfig & Record<string, unknown>,
   ): SeaBattleState {
+    const mode = config?.mode ?? GAME_MODE_VARIANTS.CLASSIC;
+
     const players: SeaBattlePlayer[] = playerIds.map((id) => ({
       playerId: id,
       alive: true,
@@ -95,7 +92,14 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       players,
       playerOrder: playerIds,
       currentTurnIndex: 0,
-      logs: [this.createLogEntry('system', 'Game started! Place your ships.')],
+      logs: [
+        this.createLogEntry(
+          'system',
+          `Game started! Mode: ${mode}. Place your ships.`,
+        ),
+      ],
+      mode,
+      roundNumber: 1,
     };
 
     if (config?.teams && config.teams.length > 0) {
@@ -297,6 +301,14 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       } else {
         this.advanceToNextPlayer(state);
       }
+
+      // Increment round number on miss (turn passes)
+      state.roundNumber = (state.roundNumber ?? 1) + 1;
+    }
+
+    // Set turn deadline for speed mode
+    if (state.mode === GAME_MODE_VARIANTS.SPEED) {
+      this.setTurnDeadline(state);
     }
 
     return this.successResult(state);
@@ -317,6 +329,23 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return;
       }
     } while (nextIndex !== state.currentTurnIndex);
+  }
+
+  private setTurnDeadline(state: SeaBattleState): void {
+    const activePlayerId = this.getActivePlayerId(state);
+    if (!activePlayerId) return;
+
+    const player = state.players.find((p) => p.playerId === activePlayerId);
+    if (player) {
+      player.turnDeadline = Date.now() + SPEED_TURN_BUDGET_MS;
+    }
+  }
+
+  private getActivePlayerId(state: SeaBattleState): string | undefined {
+    if (state.teams) {
+      return getActiveShooterId(state);
+    }
+    return state.playerOrder[state.currentTurnIndex];
   }
 
   private executeChat(

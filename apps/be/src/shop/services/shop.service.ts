@@ -201,7 +201,7 @@ export class ShopService {
             equippedAuraId: 1,
             equippedFrameId: 1,
             equippedGameSkinId: 1,
-          equippedBackgroundId: 1,
+            equippedBackgroundId: 1,
           })
           .lean<LeanUser | null>();
         if (!user) throw new NotFoundException('users.notFound');
@@ -434,7 +434,7 @@ export class ShopService {
             equippedAuraId: 1,
             equippedFrameId: 1,
             equippedGameSkinId: 1,
-          equippedBackgroundId: 1,
+            equippedBackgroundId: 1,
           },
         },
       )

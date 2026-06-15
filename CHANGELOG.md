@@ -7,6 +7,163 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.15] - 2026-06-15
+
+### Fixed
+- remove 180deg rotation on notifications bell hover (N/A)
+
+### Documentation
+- clarify PRs must target develop branch (N/A)
+- add rule to pull develop before opening PR (N/A)
+
+
+## [1.16.14] - 2026-06-15
+
+### Fixed
+- propagate actual validation error messages from game engines (N/A)
+- update cascade bot race-error detection and tighten reflex delays (N/A)
+- enforce first-click-wins for cascade call race condition (N/A)
+
+
+## [1.16.13] - 2026-06-15
+
+### Fixed
+- comprehensive SEO audit fixes across 26 files (N/A)
+
+
+## [1.16.12] - 2026-06-15
+
+### Added
+- add rate limiting, helmet, IP blocking, and security hardening (N/A)
+
+
+## [1.16.11] - 2026-06-15
+
+### Added
+- replace basic SEO with Agentic SEO Skill v3.0.1 (N/A)
+- add SEO, a11y, and performance Claude skills (N/A)
+
+
+## [1.16.10] - 2026-06-15
+
+### Added
+- add social media auto-posting for daily changelogs and releases (N/A)
+
+### Fixed
+- randomize daily post time within 2-hour window (N/A)
+- add pip install requests, expand emoji map, pin develop branch for daily fetch (N/A)
+
+
+## [1.16.9] - 2026-06-15
+
+### Added
+- configurable max total players + fix team panel scroll (N/A)
+- add explicit og:image and twitter:image to all game landing pages (N/A)
+- add tap-to-move for placed ships on mobile (N/A)
+
+### Fixed
+- move team panel into optionsSlot so it scrolls with lobby (N/A)
+- remove all CSS overrides, use plain flex layout for team lobby (N/A)
+- team panel and lobby scroll together as one unit (N/A)
+- remove fragile CSS override for team lobby scroll (N/A)
+- only override overflow-y on LobbyContent, not flex/minHeight (N/A)
+- use flex:undefined instead of flex:0 on lobby wrapper (N/A)
+- cap team size stepper by remaining slots across all teams (N/A)
+- add missing i18n key and backend maxTotalPlayers validation (N/A)
+- always use flex:1 on lobby wrapper to prevent collapse when team panel is shown (N/A)
+- raise GameResultModal and shared modal z-index above fullscreen container (N/A)
+
+### Refactored
+- remove redundant max players stepper from lobby (N/A)
+
+
+## [1.16.8] - 2026-06-14
+
+### Added
+- add tiktok and linkedin social links to footer and support page (N/A)
+
+
+## [1.16.7] - 2026-06-14
+
+### Fixed
+- refactor modals to render inline within widget and fix insight card routing (N/A)
+- improve modals, mobile UX, fullscreen, defaults (N/A)
+
+
+## [1.16.6] - 2026-06-14
+
+### Fixed
+- rewrite sea battle bot-count test to use mock response instead of event recording (N/A)
+- use force click in sea battle e2e tests to bypass pointer event interception (N/A)
+- reduce fullscreen padding on mobile screens (ARC-779) (ARC-779)
+- make games control panel wrap on mobile instead of horizontal scroll (ARC-779) (ARC-779)
+- prevent horizontal scroll in game lobbies on mobile (ARC-779) (ARC-779)
+- remove overflow hidden from GameContainer to unclip header badge (ARC-779) (ARC-779)
+- prevent horizontal scroll in game lobbies and fix webkit e2e test (ARC-779) (ARC-779)
+- update PWA manifest for Android TV compatibility (N/A)
+- add breakpoint constants to games/create CSS (N/A)
+- improve games/create mobile UX (N/A)
+
+### Refactored
+- convert all CSS to SCSS with breakpoint mixins (N/A)
+
+
+## [1.16.5] - 2026-06-13
+
+### Added
+- add daily challenges, achievements, and sea battle variants (N/A)
+
+
+## [1.16.4] - 2026-06-13
+
+### Added
+- add additional premium shop items and fix E2E tests (N/A)
+
+
+## [1.16.3] - 2026-06-13
+
+### Added
+- wire TicTacToe chat send via shared useGameChatSend hook (N/A)
+- add shared TurnIndicator + turn contract to GameWidgetContainer (N/A)
+
+### Fixed
+- wire Cascade chat and add generic history_note handler (N/A)
+- avoid double chat popups in Critical on the shared shell (N/A)
+
+### Refactored
+- add standardized gameResult to session state (N/A)
+- extract shared hooks and utilities from game widgets (N/A)
+- render Glimworm inside the shared GameWidgetContainer (N/A)
+- render CriticalGame inside the shared GameWidgetContainer (N/A)
+- adopt shared turn contract in TicTacToe and Cascade headers (N/A)
+
+### Documentation
+- add git rules — no force push, no amend (N/A)
+- tighten shared game shell spec after review (N/A)
+- add shared game shell refactor design (N/A)
+
+
+## [1.16.2] - 2026-06-13
+
+
+## [1.16.1] - 2026-05-29
+
+### Added
+- add optional aurora card style for Cascade (ARC-760) (ARC-760)
+- bring full prototype polish to the Cascade table (ARC-760) (ARC-760)
+- rework Cascade cards into on-brand dark-glass faces (ARC-760) (ARC-760)
+- modernize the Cascade wild-color picker (ARC-760) (ARC-760)
+- modernize the Cascade board for a more playable table (ARC-760) (ARC-760)
+
+### Documentation
+- add the Cascade board card-rework handoff (ARC-760) (ARC-760)
+
+
+## [1.16.0] - 2026-05-29
+
+
+
+
 ## [1.15.11] - 2026-05-29
 
 ### Added

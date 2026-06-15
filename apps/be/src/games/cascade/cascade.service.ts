@@ -36,6 +36,8 @@ const WATCHDOG_STALE_THRESHOLD_MS = 20000;
 export class CascadeService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CascadeService.name);
   private watchdogInterval: NodeJS.Timeout | null = null;
+  /** Per-room mutex to serialize action execution and prevent TOCTOU races. */
+  private readonly roomLocks = new Map<string, Promise<void>>();
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -149,19 +151,37 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
     action: string,
     payload: unknown,
   ) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action,
-      payload,
+    // Serialize all actions per room to prevent race conditions (e.g. two
+    // concurrent call_cascade requests both passing validation on the same
+    // snapshot).
+    const prev = this.roomLocks.get(roomId) ?? Promise.resolve();
+    let release: () => void;
+    const next = new Promise<void>((resolve) => {
+      release = resolve;
     });
+    this.roomLocks.set(roomId, next);
+    await prev;
 
-    await this.afterSessionStep(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    try {
+      const session = await this.sessionsService.findSessionByRoom(roomId);
+      if (!session) throw new Error('Session not found');
+
+      const updatedSession = await this.sessionsService.executeAction({
+        sessionId: session.id,
+        userId,
+        action,
+        payload,
+      });
+
+      await this.afterSessionStep(updatedSession);
+      await this.emitSessionUpdate(updatedSession);
+      return updatedSession;
+    } finally {
+      release!();
+      if (this.roomLocks.get(roomId) === next) {
+        this.roomLocks.delete(roomId);
+      }
+    }
   }
 
   private async afterSessionStep(session: GameSessionSummary) {

@@ -5,7 +5,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { emitSetTeamConfig } from './team-mode.api';
 import {
   MAX_TEAMS,
-  MAX_TOTAL_PLAYERS,
   MIN_TEAMS,
   MIN_TEAM_SIZE,
   TEAM_DEFAULT_COLORS,
@@ -17,21 +16,17 @@ interface TeamSetupPanelProps {
   userId: string;
   hostId: string;
   teams: SeaBattleTeam[];
+  maxTotalPlayers: number;
 }
 
-/**
- * Host-only footer for the team setup section: Add Team button, total slot
- * counter, and a validation banner. The per-team editable controls (name,
- * color, size, remove) live inside each team's card in TeamSlotsBoard.
- */
 export function TeamSetupPanel(props: TeamSetupPanelProps) {
-  const { roomId, userId, hostId, teams } = props;
+  const { roomId, userId, hostId, teams, maxTotalPlayers } = props;
   const { t } = useTranslation();
 
   if (userId !== hostId) return null;
 
   const totalSlots = teams.reduce((sum, team) => sum + team.targetSize, 0);
-  const isOverCap = totalSlots > MAX_TOTAL_PLAYERS;
+  const isOverCap = totalSlots > maxTotalPlayers;
   const tooFewTeams = teams.length < MIN_TEAMS;
   const someUnderMin = teams.some((team) => team.targetSize < MIN_TEAM_SIZE);
   const hasErrors = isOverCap || tooFewTeams || someUnderMin;
@@ -74,7 +69,7 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
         <Typography variant="caption" uiSize="sm">
           {t('games.sea_battle_v1.teamMode.setup.totalSlots', {
             used: totalSlots,
-            max: MAX_TOTAL_PLAYERS,
+            max: maxTotalPlayers,
           })}
         </Typography>
       </XStack>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { CriticalGamesMessages } from '@/shared/i18n/messages/games/critical';
 import { Container, PageLayout } from '@/shared/ui';
-import styles from './CriticalLanding.module.css';
+import styles from './CriticalLanding.module.scss';
 
 type CriticalMessages = CriticalGamesMessages['critical_v1'];
 type Landing = CriticalMessages['landing'];

@@ -338,7 +338,12 @@ const nextConfig: NextConfig = {
       // Run BEFORE Next.js route matching so /fr/jeux is served by the
       // /fr/games filesystem directory.
       beforeFiles: buildLocaleRewrites(),
-      afterFiles: [],
+      afterFiles: [
+        {
+          source: '/.well-known/security.txt',
+          destination: '/security.txt',
+        },
+      ],
       fallback: [],
     };
   },

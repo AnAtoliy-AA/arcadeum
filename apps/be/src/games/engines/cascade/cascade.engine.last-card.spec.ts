@@ -104,11 +104,7 @@ describe('CascadeEngine — Last-Card race (Cascade call)', () => {
       ctx('a'),
       { cardId: 'play' },
     ).state!;
-    const firstCall = engine.executeAction(
-      openState,
-      'call_cascade',
-      ctx('a'),
-    );
+    const firstCall = engine.executeAction(openState, 'call_cascade', ctx('a'));
     expect(firstCall.success).toBe(true);
     const secondCall = engine.executeAction(
       firstCall.state!,
@@ -116,6 +112,26 @@ describe('CascadeEngine — Last-Card race (Cascade call)', () => {
       ctx('b'),
     );
     expect(secondCall.success).toBe(false);
+  });
+
+  it('calledBy set after first call — second call on post-call state is rejected', () => {
+    const openState = engine.executeAction(
+      setupOneCardLeft('a'),
+      'play_card',
+      ctx('a'),
+      { cardId: 'play' },
+    ).state!;
+    // b calls first
+    const afterB = engine.executeAction(openState, 'call_cascade', ctx('b'));
+    expect(afterB.success).toBe(true);
+    expect(afterB.state!.lastCardWindow).toBeNull();
+    // c calls on post-call state — rejected (window closed)
+    const afterC = engine.executeAction(
+      afterB.state!,
+      'call_cascade',
+      ctx('c'),
+    );
+    expect(afterC.success).toBe(false);
   });
 
   it('window auto-closes when the at-risk player takes their next turn (draws)', () => {

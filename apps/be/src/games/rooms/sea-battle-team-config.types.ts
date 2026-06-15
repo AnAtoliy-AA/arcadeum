@@ -10,6 +10,7 @@ export interface SeaBattleGameOptions {
   teamMode?: boolean;
   hideShipsFromTeammates?: boolean;
   teams?: SeaBattleTeamConfigEntry[];
+  maxTotalPlayers?: number;
   [key: string]: unknown;
 }
 

@@ -262,7 +262,7 @@ describe('CascadeEngine', () => {
       });
 
       // A plays Wild +4, names B as active color.
-      let res = engine.executeAction(state, 'play_card', ctx('a'), {
+      const res = engine.executeAction(state, 'play_card', ctx('a'), {
         cardId: 'a-w4',
         chosenColor: 'B',
       });
@@ -469,7 +469,6 @@ describe('CascadeEngine', () => {
 
   // Last-Card race (Cascade call) tests live in cascade.engine.last-card.spec.ts
   // — extracted to keep this file under the 500-line check-file-length limit.
-
 
   describe('sanitizeStateForPlayer', () => {
     it('hides other players hand contents but preserves counts', () => {

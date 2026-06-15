@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { GlimwormGamesMessages } from '@/shared/i18n/messages/games/glimworm';
 import { Container, PageLayout } from '@/shared/ui';
-import styles from './GlimwormLanding.module.css';
+import styles from './GlimwormLanding.module.scss';
 
 type GlimwormMessages = GlimwormGamesMessages['glimworm_v1'];
 type Landing = GlimwormMessages['landing'];

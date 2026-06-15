@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { EXPANSION_PACK_LIST } from './data/themes';
 
 interface Props {

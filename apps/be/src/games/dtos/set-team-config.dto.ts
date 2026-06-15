@@ -50,4 +50,10 @@ export class SetTeamConfigDto {
   @IsOptional()
   @IsBoolean()
   hideShipsFromTeammates?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(4)
+  @Max(12)
+  maxTotalPlayers?: number;
 }

@@ -29,8 +29,8 @@ export function buildVideoObjectJsonLd({
   youtubeId: string;
   name: string;
   description: string;
-  /** ISO date the video was published. Optional but recommended by Google. */
-  uploadDate?: string;
+  /** ISO date the video was published. Required by Google for VideoObject rich results. */
+  uploadDate: string;
 }): Record<string, unknown> {
   const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
   const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
@@ -45,7 +45,7 @@ export function buildVideoObjectJsonLd({
     thumbnailUrl: [thumbnail],
     contentUrl: watchUrl,
     embedUrl,
+    uploadDate,
   };
-  if (uploadDate) node.uploadDate = uploadDate;
   return node;
 }

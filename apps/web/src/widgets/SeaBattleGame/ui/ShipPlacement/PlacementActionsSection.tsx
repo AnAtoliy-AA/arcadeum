@@ -16,6 +16,8 @@ interface PlacementActionsSectionProps {
   onConfirm: () => void;
   onReset: () => void;
   onAutoPlace?: () => void;
+  onCancelMove?: () => void;
+  isMovingShip?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -31,24 +33,44 @@ export const PlacementActionsSection = memo(
     onConfirm,
     onReset,
     onAutoPlace,
+    onCancelMove,
+    isMovingShip,
     t,
   }: PlacementActionsSectionProps) => {
     const btnSize = isMobile ? 'sm' : 'lg';
 
     return (
       <PlacementActions>
-        <RotateButton
-          variant="secondary"
-          size={btnSize}
-          onClick={onRotate}
-          disabled={!selectedShip}
-        >
-          ↻ {t('games.sea_battle_v1.table.actions.rotate')} (
-          {isVertical
-            ? t('games.sea_battle_v1.table.state.vertical')
-            : t('games.sea_battle_v1.table.state.horizontal')}
-          )
-        </RotateButton>
+        {isMovingShip && onCancelMove && (
+          <ActionButton
+            variant="secondary"
+            size={btnSize}
+            onClick={onCancelMove}
+            style={{
+              background: 'rgba(251, 191, 36, 0.15)',
+              borderColor: 'rgba(251, 191, 36, 0.5)',
+            }}
+          >
+            ✕{' '}
+            {t(
+              'games.sea_battle_v1.table.actions.cancelMove' as TranslationKey,
+            ) || 'Cancel move'}
+          </ActionButton>
+        )}
+        {!isMovingShip && (
+          <RotateButton
+            variant="secondary"
+            size={btnSize}
+            onClick={onRotate}
+            disabled={!selectedShip}
+          >
+            ↻ {t('games.sea_battle_v1.table.actions.rotate')} (
+            {isVertical
+              ? t('games.sea_battle_v1.table.state.vertical')
+              : t('games.sea_battle_v1.table.state.horizontal')}
+            )
+          </RotateButton>
+        )}
         <ActionButton
           variant="primary"
           size={btnSize}

@@ -1,4 +1,4 @@
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import type { PresetId } from './data/form';
 
 interface PresetOption {

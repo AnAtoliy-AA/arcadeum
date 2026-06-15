@@ -66,6 +66,7 @@ export function HeaderInteractive() {
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
+      { href: routes.settings, label: t('navigation.settingsTab') },
     ],
     [navItems, t, routes],
   );
@@ -99,7 +100,6 @@ export function HeaderInteractive() {
             <HeaderMobileHidden>
               <Link
                 href={routes.support}
-                prefetch={false}
                 aria-label={t('common.actions.support')}
                 style={{ textDecoration: 'none', display: 'inline-flex' }}
                 data-testid="header-support-button"

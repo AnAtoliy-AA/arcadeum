@@ -7,10 +7,12 @@ import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
+import { dailyChallengesRu } from './daily-challenges/ru';
+import { achievementsRu } from './achievements/ru';
 import { shopRu } from './shop/ru';
 import { adminShopRu } from './admin-shop/ru';
 import { adminGamesRu } from './admin-games/ru';
-
+import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -27,6 +29,7 @@ export const ru = {
       economy: 'Экономика',
       shop: 'Магазин',
       games: 'Игры',
+      blockedIps: 'Заблокированные IP',
       comingSoon: 'Скоро',
     },
     error: {
@@ -116,6 +119,7 @@ export const ru = {
     announcements: adminAnnouncementsRu,
     tournaments: adminTournamentsRu,
     wallet: adminWalletRu,
+    blockedIps: adminBlockedIpsRu,
   },
   tournaments: {
     title: 'Турниры',
@@ -487,6 +491,8 @@ export const ru = {
   adminGemPackages: adminGemPackagesRu,
   adminEconomy: adminEconomyRu,
   dailyRewards: dailyRewardsRu,
+  dailyChallenges: dailyChallengesRu,
+  achievements: achievementsRu,
   shop: shopRu,
   adminShop: adminShopRu,
   adminGames: adminGamesRu,

@@ -31,6 +31,9 @@ import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-a
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
+import { GamePostMatchService } from './game-post-match.service';
+import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -71,6 +74,8 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     WalletModule,
     EconomyModule,
     GameVisibilityModule,
+    DailyChallengesModule,
+    AchievementsModule,
   ],
   controllers: [GamesController, GamesHistoryController],
   providers: [
@@ -110,6 +115,7 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     GamesService,
     GamesRematchService,
     GamesLeaderboardSyncService,
+    GamePostMatchService,
     // Gateways
     GamesGateway,
     CriticalGateway,

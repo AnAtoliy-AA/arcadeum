@@ -1,13 +1,19 @@
 'use client';
 
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import { useGameChatIntegration, useRematch } from '@/features/games/hooks';
+import {
+  useGameChatIntegration,
+  useGameChatSend,
+  useRematch,
+  useGameRoomActions,
+  useGameResultModal,
+  usePendingStart,
+} from '@/features/games/hooks';
+import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ChatScope } from '@/shared/types/games';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -31,6 +37,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     mode: string;
     stackingEnabled: boolean;
     lastCardCallEnabled: boolean;
+    cardStyle: string;
   }>;
   const mode: CascadeMode = (
     CASCADE_MODE_IDS as ReadonlyArray<string>
@@ -43,6 +50,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
       typeof r.lastCardCallEnabled === 'boolean' ? r.lastCardCallEnabled : true,
+    cardStyle: r.cardStyle === 'aurora' ? 'aurora' : 'neon',
   };
 }
 
@@ -56,14 +64,8 @@ function CascadeGameImpl({
   onShowRulesClose,
 }: CascadeGameProps) {
   const { t } = useTranslation();
-  const storeRoom = useGameStore((s: GameState) => s.room);
-  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
-  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
-  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
-  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
-
-  const room =
-    (storeRoom?.id === roomId ? storeRoom : null) ?? initialRoom ?? null;
+  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
+    useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
 
   const {
@@ -81,53 +83,46 @@ function CascadeGameImpl({
     userId: currentUserId,
   });
 
-  // The shared `useGameSession` only ever sets startBusy=false (on the
-  // games.session.started event); nothing flips it to true on click. So
-  // without this local pending flag the start button stays clickable
-  // during the round-trip and users press it twice. We snapshot the
-  // current session id at click time and clear the flag once a *different*
-  // session id arrives — comparing IDs (not object refs) is robust against
-  // a non-null initial session bleeding into the first render. 6s safety
-  // timeout covers BE rejection (e.g. minimum-players error) where the
-  // started event never arrives.
-  const [pendingStart, setPendingStart] = useState(false);
-  const [startTriggerSessionId, setStartTriggerSessionId] = useState<
-    string | null
-  >(null);
-  if (pendingStart && session?.id && session.id !== startTriggerSessionId) {
-    setPendingStart(false);
-  }
-  useEffect(() => {
-    if (!pendingStart) return;
-    const t = setTimeout(() => setPendingStart(false), 6000);
-    return () => clearTimeout(t);
-  }, [pendingStart]);
+  const { pendingStart, markPendingStart } = usePendingStart(session?.id);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
-      setStartTriggerSessionId(session?.id ?? null);
-      setPendingStart(true);
+      markPendingStart();
       startSession({
         withBots: !!opts?.withBots,
         botCount: opts?.botCount,
       });
     },
-    [startSession, session?.id],
+    [startSession, markPendingStart],
   );
 
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    (_msg: string, _scope: ChatScope) => {
-      void _msg;
-      void _scope;
-    },
-  );
+  const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
+  useGameChatIntegration(snapshot?.logs as never, sendChat);
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
-  const [dismissedForSessionId, setDismissedForSessionId] = useState<
-    string | null
-  >(null);
+  const result = computeGameResult(isGameOver, currentUserId, {
+    winnerId: snapshot?.winnerId,
+    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
+      | import('@/features/games/lib/computeGameResult').BackendGameResult
+      | undefined,
+  });
+
+  const { showResultModal, sharedResult, resultMessages, dismiss } =
+    useGameResultModal(
+      session,
+      result,
+      result
+        ? {
+            title: t(
+              `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+            ),
+            message: t(
+              `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+            ),
+          }
+        : undefined,
+    );
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
@@ -140,15 +135,6 @@ function CascadeGameImpl({
       CASCADE_VARIANTS[0],
     [options.variant],
   );
-
-  const result: 'won' | 'lost' | 'draw' | null = useMemo(() => {
-    if (!snapshot || !isGameOver) return null;
-    if (!snapshot.winnerId || !currentUserId) return 'lost';
-    return snapshot.winnerId === currentUserId ? 'won' : 'lost';
-  }, [snapshot, isGameOver, currentUserId]);
-
-  const showResultModal =
-    !!result && dismissedForSessionId !== (session?.id ?? null);
 
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
@@ -171,12 +157,10 @@ function CascadeGameImpl({
           isHost={isHost}
           startBusy={startBusy || pendingStart}
           onStartGame={handleStartGame}
-          onLeaveRoom={() => storeLeaveRoom(roomId, currentUserId)}
-          onDeleteRoom={() => void storeDeleteRoom(roomId)}
-          onKickPlayer={(userId) =>
-            storeKickPlayer(roomId, userId, currentUserId ?? '')
-          }
-          onRefresh={() => void storeRefreshRoom(roomId)}
+          onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
+          onDeleteRoom={onDeleteRoom}
+          onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
+          onRefresh={onRefresh}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
@@ -201,6 +185,7 @@ function CascadeGameImpl({
             myHand={myHand}
             myTurn={myTurn}
             disabled={isGameOver}
+            cardStyle={options.cardStyle}
             onPlayCard={handlePlayCard}
             onDraw={draw}
             onCallCascade={callCascade}
@@ -210,31 +195,12 @@ function CascadeGameImpl({
     </YStack>
   );
 
-  const sharedResult =
-    result === 'won' ? 'victory' : result === 'lost' ? 'defeat' : result;
-  const resultMessages = result
-    ? {
-        title:
-          result === 'won'
-            ? t('games.cascade_v1.gameOver.won')
-            : result === 'lost'
-              ? t('games.cascade_v1.gameOver.lost')
-              : t('games.cascade_v1.gameOver.draw'),
-        message:
-          result === 'won'
-            ? t('games.cascade_v1.gameOver.messages.won')
-            : result === 'lost'
-              ? t('games.cascade_v1.gameOver.messages.lost')
-              : t('games.cascade_v1.gameOver.messages.draw'),
-      }
-    : undefined;
-
   const modals = (
     <>
       <GameResultModal
         isOpen={showResultModal}
         result={sharedResult}
-        onClose={() => setDismissedForSessionId(session?.id ?? null)}
+        onClose={dismiss}
         onRematch={result ? onRematchClick : undefined}
         rematchLoading={rematchLoading}
         t={t}
@@ -260,12 +226,11 @@ function CascadeGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Cascade',
           subtitle: room?.name,
-          turnStatusVariant: isGameOver
-            ? 'completed'
-            : myTurn
-              ? 'yourTurn'
-              : 'waiting',
-          turnStatusText: isGameOver ? 'Game over' : myTurn ? 'Your turn' : '—',
+          turn: {
+            onClockUserId: currentEntryId ?? null,
+            isMyTurn: myTurn,
+            isGameOver,
+          },
         }}
       />
     </CascadeThemeProvider>

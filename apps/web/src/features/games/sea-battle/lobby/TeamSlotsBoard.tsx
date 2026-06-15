@@ -41,6 +41,7 @@ interface TeamSlotsBoardProps {
   hostId: string;
   teams: SeaBattleTeam[];
   members: TeamSlotsMember[];
+  maxTotalPlayers: number;
 }
 
 interface TeamDraft {
@@ -71,7 +72,7 @@ function memberDisplayName(
  * between teams, remove bots, and add bots to fill open slots.
  */
 export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
-  const { roomId, userId, hostId, teams, members } = props;
+  const { roomId, userId, hostId, teams, members, maxTotalPlayers } = props;
   const { t } = useTranslation();
   const isHost = userId === hostId;
   const botLabel = t('games.sea_battle_v1.teamMode.slots.botLabel');
@@ -90,6 +91,8 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
     setPrevTeams(teams);
     setDrafts(buildDrafts(teams));
   }
+
+  const totalSlots = drafts.reduce((s, d) => s + d.targetSize, 0);
 
   const commit = (next: TeamDraft[]) => {
     emitSetTeamConfig({
@@ -175,6 +178,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                   <SizeStepper
                     value={draft.targetSize}
                     onChange={(n) => updateDraft(team.id, { targetSize: n })}
+                    max={maxTotalPlayers - (totalSlots - draft.targetSize)}
                   />
                   {drafts.length > MIN_TEAMS && (
                     <Button

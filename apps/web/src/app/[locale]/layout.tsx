@@ -10,7 +10,12 @@ import { PWAProvider } from '@/features/pwa/PWAContext';
 import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
 import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
-import { isLocale, SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
+import {
+  isLocale,
+  SUPPORTED_LOCALES,
+  localeToHreflang,
+  type Locale,
+} from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -45,7 +50,10 @@ export async function generateMetadata({
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const languages = Object.fromEntries(
-    SUPPORTED_LOCALES.map((l) => [l, `${appConfig.siteUrl}/${l}`]),
+    SUPPORTED_LOCALES.map((l) => [
+      localeToHreflang(l),
+      `${appConfig.siteUrl}/${l}`,
+    ]),
   );
 
   return {
@@ -65,7 +73,7 @@ export async function generateMetadata({
       description: appConfig.seoDescription,
       images: [
         {
-          url: '/logo.png',
+          url: `${appConfig.siteUrl}/logo.png`,
           width: 1200,
           height: 630,
           alt: appConfig.appName,

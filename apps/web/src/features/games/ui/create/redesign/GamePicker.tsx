@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import s from './GameCreateView.module.css';
+import s from './GameCreateView.module.scss';
 import { GameArt } from './art/GameArt';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';

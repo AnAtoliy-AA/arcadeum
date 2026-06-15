@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.15] - 2026-06-15
+
+### Fixed
+- remove 180deg rotation on notifications bell hover (N/A)
+
+### Documentation
+- clarify PRs must target develop branch (N/A)
+- add rule to pull develop before opening PR (N/A)
+
+
 ## [1.16.14] - 2026-06-15
 
 ### Fixed

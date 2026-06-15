@@ -1,0 +1,58 @@
+# Arcadeum — Free Online Board Games
+
+> Play free online board games with friends. Battleship, strategy, and card games — create a room, share the link, and play in your browser.
+
+Arcadeum is a browser-based multiplayer platform for classic board games. No download, no signup required.
+
+## What is Arcadeum?
+
+Arcadeum lets you play board games online with friends or AI opponents. Each game runs in your browser — just create a room and share the link.
+
+### Supported Games
+
+- **Sea Battle (Battleship)** — Classic naval combat strategy game. Place your ships, guess your opponent's coordinates, and sink their fleet before they sink yours.
+- **Critical** — A strategic card game where you draw cards, defuse threats, and survive the explosion. 2–5 players with AI bots and themed decks.
+- **Glimworm** — A real-time glow-worm snake arena for up to 10 players. Slither, survive, and eat the lights.
+- **Tic-Tac-Toe** — Six themed variants with 2–4 players, optional teams, and boards from 3×3 to 9×9.
+- **Cascade** — A shedding card game with Draw-Two and Wild +4 stacking chains. 2–10 players with four selectable themes.
+
+### How to Play
+
+1. Go to https://arcadeum.games
+2. Pick a game
+3. Create a room (or join one)
+4. Share the room link with friends
+5. Play in your browser — no install needed
+
+### Features
+
+- **Private Rooms** — Create a room, get a shareable link, and play with friends anywhere.
+- **AI Bots** — Practice solo against computer opponents.
+- **Real-time Chat** — Talk to your friends while you play.
+- **Player Profiles** — Track your stats, wins, and game history.
+- **Leaderboards** — Climb the rankings and compete with friends.
+- **Daily Rewards** — Log in daily to earn coins and cosmetics.
+- **Cosmetic Shop** — Unlock avatars, badges, and color tags to personalize your profile.
+- **Multi-language** — Available in English, Spanish, French, Russian, and Belarusian.
+
+### Tech Stack
+
+- **Frontend**: Next.js (React), Tailwind CSS, Tamagui
+- **Backend**: NestJS, MongoDB, Socket.IO
+- **Mobile**: React Native / Expo
+- **Monorepo**: pnpm workspaces + Turborepo
+
+### Links
+
+- Website: https://arcadeum.games
+- Discord: https://discord.gg/arcadeum
+- Telegram: https://t.me/arcadeum
+- GitHub: https://github.com/anomalyco/arcadeum
+
+### Contact
+
+- Email: arcadeum.care@gmail.com
+
+---
+
+Arcadeum is open source and built with love by a small team. Contributions welcome!

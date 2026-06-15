@@ -49,7 +49,7 @@ export async function generateMetadata({
         t?.ogDescription ?? t?.description ?? base.openGraph?.description,
       images: [
         {
-          url: `/${locale}/games/glimworm/opengraph-image`,
+          url: `${appConfig.siteUrl}/${locale}/games/glimworm/opengraph-image`,
           width: 1200,
           height: 630,
           alt: 'Glimworm — real-time multiplayer game on Arcadeum',
@@ -62,7 +62,7 @@ export async function generateMetadata({
       title: t?.ogTitle ?? t?.title ?? base.twitter?.title,
       description:
         t?.ogDescription ?? t?.description ?? base.twitter?.description,
-      images: [`/${locale}/games/glimworm/opengraph-image`],
+      images: [`${appConfig.siteUrl}/${locale}/games/glimworm/opengraph-image`],
     },
   };
 }

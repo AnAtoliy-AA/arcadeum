@@ -18,7 +18,13 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const messages = await getTranslations(locale);
-  return { title: messages.battlePass?.title ?? 'Battle Pass' };
+  return {
+    title: messages.battlePass?.title ?? 'Battle Pass',
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
 }
 
 export default async function BattlePassPage({

@@ -5,6 +5,10 @@ import { cancelGemPurchase } from '@/features/gems/server/gems.actions';
 export const metadata: Metadata = {
   title: 'Gem Purchase Cancelled · Arcadeum',
   description: 'Your gem purchase was cancelled.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 interface SearchParams {

@@ -19,6 +19,8 @@ interface CollectionItem {
   image?: string;
   /** Optional short description. */
   description?: string;
+  /** Schema.org @type for the item. Defaults to 'Thing'. */
+  itemType?: string;
 }
 
 /**
@@ -71,7 +73,7 @@ export function buildCollectionPageJsonLd({
           position: idx + 1,
           url: itemUrl,
           item: {
-            '@type': 'Thing',
+            '@type': (item.itemType as string) ?? 'Thing',
             name: item.name,
             url: itemUrl,
             ...(item.description ? { description: item.description } : {}),

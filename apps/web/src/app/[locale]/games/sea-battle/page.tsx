@@ -55,7 +55,7 @@ export async function generateMetadata({
         t?.ogDescription ?? t?.description ?? base.openGraph?.description,
       images: [
         {
-          url: `/${locale}/games/sea-battle/opengraph-image`,
+          url: `${appConfig.siteUrl}/${locale}/games/sea-battle/opengraph-image`,
           width: 1200,
           height: 630,
           alt: 'Sea Battle — free online Battleship on Arcadeum',
@@ -68,7 +68,9 @@ export async function generateMetadata({
       title: t?.ogTitle ?? t?.title ?? base.twitter?.title,
       description:
         t?.ogDescription ?? t?.description ?? base.twitter?.description,
-      images: [`/${locale}/games/sea-battle/opengraph-image`],
+      images: [
+        `${appConfig.siteUrl}/${locale}/games/sea-battle/opengraph-image`,
+      ],
     },
   };
 }

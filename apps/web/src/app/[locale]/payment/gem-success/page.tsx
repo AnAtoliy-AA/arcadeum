@@ -18,6 +18,10 @@ import { formatNumber } from '@/shared/i18n/formatters';
 export const metadata: Metadata = {
   title: 'Gem Purchase · Arcadeum',
   description: 'Confirming your gem purchase…',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 interface SearchParams {

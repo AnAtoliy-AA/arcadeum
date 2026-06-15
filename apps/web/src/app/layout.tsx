@@ -23,10 +23,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   metadataBase: new URL(appConfig.siteUrl),
-  title: {
-    default: appConfig.seoTitle,
-    template: `%s | ${appConfig.appName}`,
-  },
+  title: appConfig.seoTitle,
   description: appConfig.seoDescription,
   manifest: '/manifest.json',
   icons: {

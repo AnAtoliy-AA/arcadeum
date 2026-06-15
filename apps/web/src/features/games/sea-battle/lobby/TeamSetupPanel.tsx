@@ -1,10 +1,7 @@
 'use client';
 
 import { Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { emitSetTeamConfig } from './team-mode.api';
 import {
   MAX_TEAMS,
@@ -20,18 +17,10 @@ interface TeamSetupPanelProps {
   hostId: string;
   teams: SeaBattleTeam[];
   maxTotalPlayers: number;
-  onMaxTotalPlayersChange?: (next: number) => void;
 }
 
 export function TeamSetupPanel(props: TeamSetupPanelProps) {
-  const {
-    roomId,
-    userId,
-    hostId,
-    teams,
-    maxTotalPlayers,
-    onMaxTotalPlayersChange,
-  } = props;
+  const { roomId, userId, hostId, teams, maxTotalPlayers } = props;
   const { t } = useTranslation();
 
   if (userId !== hostId) return null;
@@ -65,10 +54,6 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
     emitSetTeamConfig({ roomId, userId, teams: next });
   };
 
-  const handleMaxChange = (next: number) => {
-    onMaxTotalPlayersChange?.(next);
-  };
-
   return (
     <YStack gap="$2" data-testid="team-setup-panel">
       <XStack gap="$3" alignItems="center" flexWrap="wrap">
@@ -87,39 +72,6 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
             max: maxTotalPlayers,
           })}
         </Typography>
-      </XStack>
-
-      <XStack gap="$2" alignItems="center" flexWrap="wrap">
-        <Typography variant="caption" uiSize="sm">
-          {t(
-            'games.sea_battle_v1.teamMode.setup.maxPlayers' as TranslationKey,
-          ) || 'Max players:'}
-        </Typography>
-        <XStack alignItems="center" gap="$1">
-          <Button
-            size="sm"
-            variant="secondary"
-            disabled={maxTotalPlayers <= MIN_TEAM_SIZE * MIN_TEAMS}
-            onClick={() => handleMaxChange(maxTotalPlayers - 1)}
-          >
-            −
-          </Button>
-          <Typography
-            variant="body"
-            uiSize="md"
-            style={{ minWidth: 24, textAlign: 'center' }}
-          >
-            {maxTotalPlayers}
-          </Typography>
-          <Button
-            size="sm"
-            variant="secondary"
-            disabled={maxTotalPlayers >= 12}
-            onClick={() => handleMaxChange(maxTotalPlayers + 1)}
-          >
-            +
-          </Button>
-        </XStack>
       </XStack>
 
       {hasErrors && (

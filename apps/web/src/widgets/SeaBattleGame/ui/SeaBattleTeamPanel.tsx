@@ -37,7 +37,6 @@ interface SeaBattleTeamPanelProps {
   members: TeamSlotsMember[];
   teamStartBlocked: boolean;
   maxTotalPlayers: number;
-  onMaxTotalPlayersChange?: (next: number) => void;
 }
 
 /**
@@ -57,7 +56,6 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
   members,
   teamStartBlocked,
   maxTotalPlayers,
-  onMaxTotalPlayersChange,
 }: SeaBattleTeamPanelProps) {
   const { t } = useTranslation();
 
@@ -166,7 +164,6 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
             hostId={hostId}
             teams={teams}
             maxTotalPlayers={maxTotalPlayers}
-            onMaxTotalPlayersChange={onMaxTotalPlayersChange}
           />
         )}
 

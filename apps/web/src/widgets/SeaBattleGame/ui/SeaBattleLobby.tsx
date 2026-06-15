@@ -301,8 +301,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           <style>{`
             [data-team-mode-scroll="true"] .is_LobbyContent {
               overflow-y: visible !important;
-              flex: 0 0 auto !important;
-              min-height: 0 !important;
             }
           `}</style>
           <SeaBattleTeamPanel

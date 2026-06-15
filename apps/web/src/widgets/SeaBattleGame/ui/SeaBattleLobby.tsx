@@ -225,50 +225,68 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     </Text>
   );
 
-  const optionsSlot =
-    isHost && room.status === 'lobby' ? (
-      themeListHorizontal ? (
-        // Narrow viewport: horizontal scrollable list ABOVE the preview so
-        // neither the field nor the chip labels get squeezed.
-        <YStack gap="$3" width="100%" minWidth={0}>
-          <YStack gap="$2" width="100%" minWidth={0}>
-            {themeLabel}
-            <XStack
-              gap="$2"
-              width="100%"
-              minWidth={0}
-              overflow="scroll"
-              paddingBottom="$1"
-            >
-              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-            </XStack>
-          </YStack>
-          <SeaBattleThemeProvider variant={selectedVariant}>
-            <SeaBattleThemePreview selectedVariant={selectedVariant} />
-          </SeaBattleThemeProvider>
-        </YStack>
-      ) : (
-        // Wide viewport: preview on the left, vertical list on the right,
-        // list bounded to preview height and scrollable.
-        <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
-          <SeaBattleThemeProvider variant={selectedVariant}>
-            <SeaBattleThemePreview selectedVariant={selectedVariant} />
-          </SeaBattleThemeProvider>
-          <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
-            {themeLabel}
-            <YStack
-              gap="$2"
-              flex={1}
-              minHeight={0}
-              overflow="scroll"
-              paddingRight="$1"
-            >
-              {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-            </YStack>
-          </YStack>
-        </XStack>
-      )
+  const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
+
+  const teamPanelSlot =
+    showTeamPanel ? (
+      <SeaBattleTeamPanel
+        roomId={room.id}
+        userId={userId ?? ''}
+        hostId={room.hostId}
+        isHost={isHost}
+        teamMode={teamMode}
+        teams={teams}
+        hideShipsFromTeammates={hideShipsFromTeammates}
+        members={roomMembers}
+        teamStartBlocked={teamStartBlocked}
+        maxTotalPlayers={maxTotalPlayers}
+      />
     ) : null;
+
+  const optionsSlot = (
+    <>
+      {teamPanelSlot}
+      {isHost && room.status === 'lobby' ? (
+        themeListHorizontal ? (
+          <YStack gap="$3" width="100%" minWidth={0}>
+            <YStack gap="$2" width="100%" minWidth={0}>
+              {themeLabel}
+              <XStack
+                gap="$2"
+                width="100%"
+                minWidth={0}
+                overflow="scroll"
+                paddingBottom="$1"
+              >
+                {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+              </XStack>
+            </YStack>
+            <SeaBattleThemeProvider variant={selectedVariant}>
+              <SeaBattleThemePreview selectedVariant={selectedVariant} />
+            </SeaBattleThemeProvider>
+          </YStack>
+        ) : (
+          <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
+            <SeaBattleThemeProvider variant={selectedVariant}>
+              <SeaBattleThemePreview selectedVariant={selectedVariant} />
+            </SeaBattleThemeProvider>
+            <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
+              {themeLabel}
+              <YStack
+                gap="$2"
+                flex={1}
+                minHeight={0}
+                overflow="scroll"
+                paddingRight="$1"
+              >
+                {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
+              </YStack>
+            </YStack>
+          </XStack>
+        )
+      ) : null}
+    </>
+  );
 
   const headerActionsSlot = (
     <IconButton
@@ -280,32 +298,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     </IconButton>
   );
 
-  // When team mode is on, the team panel + lobby together exceed the viewport,
-  // so the wrapping YStack scrolls as one unit. We also disable
-  const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
-
   return (
-    <YStack
-      flex={1}
-      minHeight={0}
-      gap="$3"
-    >
-      {showTeamPanel && (
-        <SeaBattleTeamPanel
-          roomId={room.id}
-          userId={userId ?? ''}
-          hostId={room.hostId}
-          isHost={isHost}
-          teamMode={teamMode}
-          teams={teams}
-          hideShipsFromTeammates={hideShipsFromTeammates}
-          members={roomMembers}
-          teamStartBlocked={teamStartBlocked}
-          maxTotalPlayers={maxTotalPlayers}
-        />
-      )}
-      <YStack flex={1} minHeight={0}>
-        <ReusableGameLobby
+    <YStack flex={1} minHeight={0}>
+      <ReusableGameLobby
           room={effectiveRoom}
           isHost={isHost}
           startBusy={startBusy}
@@ -352,7 +347,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           headerActionsSlot={headerActionsSlot}
           enableBots={true}
         />
-      </YStack>
     </YStack>
   );
 });

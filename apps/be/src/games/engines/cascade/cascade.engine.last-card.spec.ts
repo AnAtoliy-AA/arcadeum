@@ -114,6 +114,26 @@ describe('CascadeEngine — Last-Card race (Cascade call)', () => {
     expect(secondCall.success).toBe(false);
   });
 
+  it('calledBy set after first call — second call on post-call state is rejected', () => {
+    const openState = engine.executeAction(
+      setupOneCardLeft('a'),
+      'play_card',
+      ctx('a'),
+      { cardId: 'play' },
+    ).state!;
+    // b calls first
+    const afterB = engine.executeAction(openState, 'call_cascade', ctx('b'));
+    expect(afterB.success).toBe(true);
+    expect(afterB.state!.lastCardWindow).toBeNull();
+    // c calls on post-call state — rejected (window closed)
+    const afterC = engine.executeAction(
+      afterB.state!,
+      'call_cascade',
+      ctx('c'),
+    );
+    expect(afterC.success).toBe(false);
+  });
+
   it('window auto-closes when the at-risk player takes their next turn (draws)', () => {
     const openState = engine.executeAction(
       setupOneCardLeft('a'),

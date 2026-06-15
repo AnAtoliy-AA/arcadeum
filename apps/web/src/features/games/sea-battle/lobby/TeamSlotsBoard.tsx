@@ -92,6 +92,8 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
     setDrafts(buildDrafts(teams));
   }
 
+  const totalSlots = drafts.reduce((s, d) => s + d.targetSize, 0);
+
   const commit = (next: TeamDraft[]) => {
     emitSetTeamConfig({
       roomId,
@@ -176,7 +178,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                   <SizeStepper
                     value={draft.targetSize}
                     onChange={(n) => updateDraft(team.id, { targetSize: n })}
-                    max={maxTotalPlayers}
+                    max={maxTotalPlayers - (totalSlots - draft.targetSize)}
                   />
                   {drafts.length > MIN_TEAMS && (
                     <Button

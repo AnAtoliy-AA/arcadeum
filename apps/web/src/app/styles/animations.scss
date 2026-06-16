@@ -17,46 +17,7 @@
   }
 }
 
-@keyframes jump {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-
-  40% {
-    transform: translateY(-12px);
-  }
-
-  60% {
-    transform: translateY(-6px);
-  }
-}
-
-.pulse {
-  animation: pulse 2s infinite ease-in-out;
-}
-
-.jump {
-  animation: jump 2s infinite ease-in-out;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
-}
+/* pulse keyframe — used by .pulse-ring in home-bundle.scss */
 
 @keyframes fall {
   0% {
@@ -110,67 +71,6 @@
   }
 }
 
-/* ─── Player Card Animations ─────────────────────────────── */
-@keyframes playerCardFloat {
-  0%,
-  100% {
-    transform: translateY(0px) scale(1);
-  }
-
-  50% {
-    transform: translateY(-5px) scale(1.02);
-  }
-}
-
-@keyframes avatarRingSpin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes playerCardEntrance {
-  from {
-    opacity: 0;
-    transform: scale(0.85) translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes avatarGlowPulse {
-  0%,
-  100% {
-    opacity: 0.6;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-.player-card-float {
-  animation: playerCardFloat 2.5s ease-in-out infinite;
-}
-
-.player-card-entrance {
-  animation: playerCardEntrance 0.35s ease-out both;
-}
-
-.player-avatar-ring-spin {
-  animation: avatarRingSpin 3s linear infinite;
-}
-
-.player-avatar-glow-pulse {
-  animation: avatarGlowPulse 2s ease-in-out infinite;
-}
-
 /* ─── Game Theme Animations ─────────────────────────────── */
 @keyframes icyShimmer {
   0% {
@@ -190,56 +90,6 @@
   100% {
     transform: translateX(100%) skewX(-15deg);
     opacity: 0;
-  }
-}
-
-@keyframes auroraWave {
-  0%,
-  100% {
-    transform: translateY(0) scaleY(1) skewX(5deg);
-    opacity: 0.3;
-    filter: blur(40px) hue-rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-30px) scaleY(1.2) skewX(-5deg);
-    opacity: 0.6;
-    filter: blur(50px) hue-rotate(20deg);
-  }
-}
-
-@keyframes turnBorderPulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 20px rgba(34, 197, 94, 0.4),
-      0 0 40px rgba(34, 197, 94, 0.2),
-      inset 0 0 20px rgba(34, 197, 94, 0.1);
-  }
-
-  50% {
-    box-shadow:
-      0 0 30px rgba(34, 197, 94, 0.6),
-      0 0 60px rgba(34, 197, 94, 0.3),
-      inset 0 0 30px rgba(34, 197, 94, 0.15);
-  }
-}
-
-@keyframes cardFlip {
-  0% {
-    transform: rotateY(0deg);
-  }
-
-  45% {
-    transform: rotateY(90deg);
-  }
-
-  55% {
-    transform: rotateY(90deg);
-  }
-
-  100% {
-    transform: rotateY(0deg);
   }
 }
 
@@ -265,18 +115,6 @@
   }
 }
 
-@keyframes hero-color-shift {
-  0% {
-    filter: hue-rotate(0deg) brightness(1);
-  }
-  50% {
-    filter: hue-rotate(180deg) brightness(1.2);
-  }
-  100% {
-    filter: hue-rotate(360deg) brightness(1);
-  }
-}
-
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out both;
 }
@@ -287,35 +125,6 @@
 
 .animate-fade-in-up-delay-4 {
   animation: fadeInUp 0.6s ease-out both 0.4s;
-}
-
-.animate-shimmer-slow {
-  animation: shimmer 10s linear infinite;
-  background-image: linear-gradient(
-    135deg,
-    var(--color) 0%,
-    var(--primary) 25%,
-    #ffffff 50%,
-    var(--primary) 75%,
-    var(--accent) 100%
-  );
-  background-size: 200% auto;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-title-responsive {
-  font-size: clamp(3.5rem, 8vw, 6rem);
-  line-height: 1.1;
-  text-align: center;
-}
-
-@media (min-width: 1151px) {
-  /* gtMd */
-  .hero-title-responsive {
-    text-align: left;
-  }
 }
 
 .hero-actions-responsive {
@@ -579,125 +388,6 @@
     height: auto;
     min-height: 380px;
   }
-}
-
-.game-card-main {
-  background-color: var(--glassBg);
-  border: 1px solid var(--glassBorder);
-  border-radius: var(--t-radius-6);
-  padding: var(--t-space-5);
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.2s ease-out,
-    box-shadow 0.2s ease-out;
-}
-
-.game-card-main:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
-}
-
-.game-header-main {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--t-space-4);
-}
-
-.game-icon-main {
-  font-size: 40px;
-  line-height: 1;
-}
-
-.game-title-main {
-  margin: 0;
-  font-size: var(--t-font-size-6);
-  font-weight: 800;
-  flex: 1;
-  letter-spacing: -0.02px;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@include bp.narrow {
-  .game-title-main {
-    font-size: var(--t-font-size-5) !important;
-  }
-}
-
-.game-help-btn-main {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background-color: var(--glassBorder);
-  border: 1px solid var(--glassBorder);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 3;
-  transition: all 0.2s ease-out;
-}
-
-.game-help-btn-main:hover {
-  background-color: var(--primary);
-  border-color: transparent;
-  transform: scale(1.1);
-}
-
-.game-description-main {
-  margin: 0;
-  font-size: var(--t-font-size-4);
-  line-height: 1.5;
-  color: var(--color);
-  opacity: 0.7;
-  max-width: 650px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-@include bp.narrow {
-  .game-description-main {
-    font-size: var(--t-font-size-3) !important;
-    max-width: 100%;
-  }
-}
-
-.game-tags-main {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: var(--t-space-2);
-}
-
-.game-tag-main {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background-color: var(--glassBg);
-  border: 1px solid var(--glassBorder);
-  color: var(--color);
-  opacity: 0.8;
-  white-space: nowrap;
-}
-
-.game-card-footer-main {
-  margin-top: auto;
-  padding-top: var(--t-space-4);
 }
 
 .slider-controls-main {
@@ -1468,7 +1158,6 @@
   position: relative;
   display: inline-block;
   color: var(--primary);
-  will-change: transform;
 }
 
 .is-hydrated .kicker-hydration-shimmer::after {
@@ -1553,143 +1242,6 @@
 
 /* ─── Critical Game Theme Animations ────────────────────── */
 
-@keyframes scanlineFlicker {
-  0%,
-  100% {
-    opacity: 0.06;
-  }
-
-  50% {
-    opacity: 0.15;
-  }
-}
-
-@keyframes glitch {
-  0% {
-    transform: translate(0);
-    filter: hue-rotate(0deg);
-  }
-
-  2% {
-    transform: translate(-2px, 1px);
-    filter: hue-rotate(90deg);
-  }
-
-  4% {
-    transform: translate(2px, -1px);
-    filter: hue-rotate(-90deg);
-  }
-
-  6% {
-    transform: translate(0);
-    filter: hue-rotate(0deg);
-  }
-}
-
-@keyframes gridMove {
-  0% {
-    background-position: 0 0;
-  }
-
-  100% {
-    background-position: 0 80px;
-  }
-}
-
-@keyframes bitFloat {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-
-  20% {
-    opacity: 0.6;
-  }
-
-  80% {
-    opacity: 0.6;
-  }
-
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-@keyframes scanlineMove {
-  0% {
-    background-position: 0 0;
-  }
-
-  100% {
-    background-position: 0 40px;
-  }
-}
-
-@keyframes sunbeamSway {
-  0%,
-  100% {
-    transform: rotate(-45deg) scale(1);
-    opacity: 0.1;
-  }
-
-  50% {
-    transform: rotate(-40deg) scale(1.1);
-    opacity: 0.3;
-  }
-}
-
-@keyframes bubbleRise {
-  0% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 0.7;
-  }
-
-  90% {
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateY(-100vh);
-    opacity: 0;
-  }
-}
-
-@keyframes rainFall {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 0.6;
-  }
-
-  90% {
-    opacity: 0.6;
-  }
-
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-@keyframes searchlight {
-  0%,
-  100% {
-    transform: rotate(-20deg);
-  }
-
-  50% {
-    transform: rotate(20deg);
-  }
-}
-
 @keyframes vignetteFlicker {
   0% {
     opacity: 0.4;
@@ -1720,56 +1272,6 @@
   }
 }
 
-@keyframes mistMove {
-  0% {
-    transform: translate(-10%, 10%) scale(1);
-    opacity: 0.2;
-  }
-
-  50% {
-    transform: translate(10%, -10%) scale(1.1);
-    opacity: 0.4;
-  }
-
-  100% {
-    transform: translate(-10%, 10%) scale(1);
-    opacity: 0.2;
-  }
-}
-
-@keyframes dustFloat {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-
-  20% {
-    opacity: 0.8;
-  }
-
-  80% {
-    opacity: 0.8;
-  }
-
-  100% {
-    transform: translateY(-60px) translateX(20px);
-    opacity: 0;
-  }
-}
-
-@keyframes sparkleJump {
-  0%,
-  100% {
-    transform: scale(0);
-    opacity: 0;
-  }
-
-  50% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-}
-
 @keyframes snowDrift {
   0% {
     transform: translateY(-10px) translateX(0);
@@ -1790,19 +1292,6 @@
   }
 }
 
-@keyframes icePulse {
-  0%,
-  100% {
-    opacity: 0.3;
-    filter: blur(2px);
-  }
-
-  50% {
-    opacity: 0.6;
-    filter: blur(4px);
-  }
-}
-
 .text-gradient {
   background-clip: text !important;
   -webkit-background-clip: text !important;
@@ -1815,29 +1304,6 @@
   animation-iteration-count: infinite;
   animation-duration: var(--snowflake-duration);
   animation-delay: var(--snowflake-delay);
-}
-
-.glint-composited {
-  position: relative;
-  overflow: hidden;
-}
-
-.glint-composited::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transform: skewX(-25deg);
-  animation: shimmer-glide 3s infinite;
-  pointer-events: none;
 }
 
 .animate-entrance {
@@ -1911,57 +1377,6 @@
   }
 }
 
-/* ─── Sea Battle Specific Animations ──────────────────────── */
-@keyframes sb-breathe {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 20px rgba(87, 195, 255, 0.1);
-  }
-  50% {
-    transform: scale(1.01);
-    box-shadow: 0 0 40px rgba(87, 195, 255, 0.2);
-  }
-}
-
-.sb-breathe {
-  animation: sb-breathe 4s ease-in-out infinite;
-}
-
-@keyframes sb-glow-hit {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
-  }
-}
-
-@keyframes sb-glow-sunk {
-  0%,
-  100% {
-    filter: grayscale(1) drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-    opacity: 0.2;
-  }
-  50% {
-    filter: grayscale(1) drop-shadow(0 0 6px rgba(0, 0, 0, 0.8));
-    opacity: 0.3;
-  }
-}
-
-.sb-glow-hit {
-  animation: sb-glow-hit 2s ease-in-out infinite;
-}
-
-.sb-glow-sunk {
-  animation: sb-glow-sunk 3s ease-in-out infinite;
-}
-
-.sb-ships-remaining-container {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* StartButton glow pulse — keeps the "start the game" CTA breathing so
    it's hard to miss in the lobby after a one-tap landing handoff.
    Orange-tinted to match the home Play-Now palette. */
@@ -1992,7 +1407,6 @@
   animation: start-button-pulse 3.6s ease-in-out infinite;
   position: relative;
   overflow: hidden;
-  will-change: box-shadow;
 }
 
 .start-button-glow.start-button-glow::after {
@@ -2132,18 +1546,18 @@
   }
 }
 
-/* Respect prefers-reduced-motion: collapse every keyframe animation to a
-   single frame and short-circuit CSS transitions. Scene + variant visuals
-   remain fully styled (gradients, shadows, borders) — only autonomous
-   motion is suppressed. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/*
+ * prefers-reduced-motion: handled by the canonical ruleset in
+ * utilities.scss — not duplicated here to avoid conflicting values.
+ */
+
+/* PageLoading skeleton pulse animation (injected globally from PageLoading.tsx). */
+@keyframes pl-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.25;
   }
 }

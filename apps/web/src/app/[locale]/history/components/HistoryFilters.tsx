@@ -1,7 +1,6 @@
 'use client';
 
-import { XStack, YStack } from '@arcadeum/ui';
-import { Input, Select, Button } from '@arcadeum/ui';
+import { XStack, YStack, Input, Select, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface HistoryFiltersProps {

@@ -88,6 +88,8 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
             backgroundColor="$error"
             alignItems="center"
             justifyContent="center"
+            role="status"
+            aria-live="polite"
             data-testid="notification-bell-badge"
           >
             <Text fontSize={10} fontWeight="700" color="$white">

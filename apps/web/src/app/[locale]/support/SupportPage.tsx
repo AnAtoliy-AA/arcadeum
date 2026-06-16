@@ -3,7 +3,7 @@
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { YStack } from 'tamagui';
 
-import { PageTitle } from '@/shared/ui';
+import { PageTitle } from '@arcadeum/ui';
 import type {
   SupportAction,
   SupportTeamMember,

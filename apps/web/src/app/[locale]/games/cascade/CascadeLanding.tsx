@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Container, PageLayout } from '@/shared/ui';
+import { Container, PageLayout } from '@arcadeum/ui';
 import type { CascadeMessages } from '@/shared/i18n/messages/games/cascade';
 import styles from './CascadeLanding.module.scss';
 import { CascadeHero } from './CascadeHero';

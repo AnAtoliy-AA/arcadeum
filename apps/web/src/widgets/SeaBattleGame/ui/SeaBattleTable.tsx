@@ -1,6 +1,6 @@
 'use client';
 import { YStack, XStack, Text } from 'tamagui';
-import { GlassCard, Badge, IdleBadge } from '@/shared/ui';
+import { GlassCard, Badge, IdleBadge } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,

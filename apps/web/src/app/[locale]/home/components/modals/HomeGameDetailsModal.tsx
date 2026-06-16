@@ -9,7 +9,7 @@ import {
   ModalTitle,
   ModalBody,
 } from '@arcadeum/ui';
-import { LinkButton } from '@/shared/ui';
+import { LinkButton } from '@arcadeum/ui';
 import { useRoutes } from '@/shared/config/useRoutes';
 import {
   useTranslation,

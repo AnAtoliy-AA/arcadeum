@@ -3,10 +3,9 @@
 import { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { XStack } from '@arcadeum/ui';
+import { XStack, Select } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
-import { Select } from '@/shared/ui';
 
 const LOCALES_LABELS: Record<Locale, string> = {
   en: 'EN',

@@ -1,4 +1,8 @@
-// Export all public APIs for the games feature
+// Public APIs for the games feature
+//
+// NOTE: This barrel intentionally omits heavy UI components (GameContainer,
+// GameCard, GameGrid, etc.) to avoid pulling them into shared chunks.
+// Import them directly from '@/features/games/ui/GameCard' etc. instead.
 
 // Types
 export type {
@@ -17,42 +21,6 @@ export type {
 // Registry
 export { gameLoaders, gameMetadata, type GameSlug } from './registry';
 
-// UI Components
-export { GameContainer } from './ui/GameContainer';
-
-export { GameCard } from './ui/GameCard';
-
-export { GameGrid } from './ui/GameGrid';
-
-export { GameStatus } from './ui/GameStatus';
-
-export {
-  GameControls,
-  LeaveButton,
-  StartButton,
-  ReadyButton,
-} from './ui/GameControls';
-
-export { PlayerList } from './ui/PlayerList';
-
-export {
-  ReusableGameLobby,
-  type ReusableGameLobbyProps,
-  type GameLobbyTheme,
-  // Styled components for extension
-  GameContainer as LobbyGameContainer,
-  GameHeader as LobbyGameHeader,
-  IconButton,
-  StartButton as LobbyStartButton,
-} from './ui/ReusableGameLobby';
-
-export { AVATAR_COLORS } from './ui/SortablePlayerItem';
-
-// Re-export lobby styles
-export * from './ui/lobbyStyles';
-
-export { GamesSearch } from './GamesSearch/GamesSearch';
-
 // Libraries
 export { GameFactory, gameFactory, useGameFactory } from './lib/gameFactory';
 
@@ -63,3 +31,6 @@ export {
 } from './lib/gameConfig';
 
 export { GamePropsFactory, GamePropsGuards } from './lib/gameProps';
+
+// UI (lightweight only — heavy components imported directly)
+export { GamesSearch } from './GamesSearch/GamesSearch';

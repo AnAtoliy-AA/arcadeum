@@ -7,7 +7,7 @@ import {
   GlassCard,
   Skeleton,
   YStack,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 
 const LoadingSkeleton = () => (
   <PageLayout>

@@ -1,9 +1,8 @@
 'use client';
 
 import { YStack, XStack, Text } from 'tamagui';
-import { CardsIcon, SkullIcon } from '@arcadeum/ui';
+import { CardsIcon, SkullIcon, IdleBadge } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { IdleBadge } from '@/shared/ui';
 import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { ChatBubble } from '../ChatBubble';

@@ -101,7 +101,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
       </YStack>
 
       {/* XP progress to next tier */}
-      <YStack gap="$2">
+      <YStack gap="$2" role="status" aria-live="polite">
         <Text fontSize="$2" opacity={0.7}>
           {maxed
             ? t('battlePass.maxedOut' as TranslationKey)

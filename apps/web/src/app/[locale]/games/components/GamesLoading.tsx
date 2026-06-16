@@ -1,5 +1,5 @@
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { ServerLoadingNotice } from '@/shared/ui';
+import { ServerLoadingNotice } from '@arcadeum/ui';
 import { Loading, ServerWakeUpContainer, Spinner } from '../styles';
 
 interface GamesLoadingProps {

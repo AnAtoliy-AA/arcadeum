@@ -52,15 +52,7 @@ export function CopyActionButton({
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(copyValue);
       } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = copyValue;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'absolute';
-        textarea.style.left = '-9999px';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
+        throw new Error('clipboard-not-supported');
       }
 
       setStatus('success');

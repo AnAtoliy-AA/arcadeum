@@ -1,6 +1,6 @@
 import React from 'react';
 import { YStack, XStack, Text, styled } from 'tamagui';
-import { Button, ButtonProps } from '@arcadeum/ui';
+import { Button, ButtonProps, Typography } from '@arcadeum/ui';
 
 export const settingsStyles = `
   .settings-toggle-input {
@@ -63,8 +63,6 @@ export const PillGroup = styled(XStack, {
   flexWrap: 'wrap',
   gap: '$4',
 } as Record<string, unknown>);
-
-import { Typography } from '@/shared/ui';
 
 export const AccountStatus = styled(Typography, {
   name: 'AccountStatus',

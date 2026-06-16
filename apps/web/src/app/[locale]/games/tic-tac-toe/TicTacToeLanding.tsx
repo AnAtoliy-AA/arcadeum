@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Container, PageLayout } from '@/shared/ui';
+import { Container, PageLayout } from '@arcadeum/ui';
 import type { TicTacToeMessages } from '@/shared/i18n/messages/games/tic-tac-toe';
 import styles from './TicTacToeLanding.module.scss';
 import { TicTacToeHero } from './TicTacToeHero';

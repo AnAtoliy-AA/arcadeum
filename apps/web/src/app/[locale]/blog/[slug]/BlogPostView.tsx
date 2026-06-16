@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Container, PageLayout } from '@/shared/ui';
+import { Container, PageLayout } from '@arcadeum/ui';
 import type { BlogPost } from '@/features/blog/types';
 import styles from './BlogPost.module.scss';
 

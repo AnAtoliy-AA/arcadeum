@@ -21,6 +21,8 @@ const geistSans = Geist({
   preload: true,
 });
 
+// NOTE: openGraph.locale is set per-locale in [locale]/layout.tsx
+// generateMetadata — no need to duplicate it here.
 export const metadata: Metadata = {
   metadataBase: new URL(appConfig.siteUrl),
   title: appConfig.seoTitle,
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
     site: '@_arcadeum_',
     title: appConfig.seoTitle,
     description: appConfig.seoDescription,
-    images: ['/logo.png'],
+    images: [{ url: '/logo.png', width: 1200, height: 630, alt: appConfig.appName }],
   },
   robots: {
     index: true,
@@ -92,8 +94,7 @@ export default async function RootLayout({
   // Organization is locale-agnostic — same legal entity across languages.
   // WebSite and SoftwareApplication schemas live in [locale]/layout where
   // they can carry `inLanguage` + localized description.
-  const contactEmail =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
+  const contactEmail = appConfig.supportEmail;
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -151,6 +152,9 @@ export default async function RootLayout({
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
         <WebVitalsReporter />
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>{children}</BrowserRegistry>

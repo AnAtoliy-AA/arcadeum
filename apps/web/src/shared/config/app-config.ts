@@ -46,6 +46,7 @@ export type WebAppConfig = {
   appName: string;
   appVersion: string;
   presentationVideoId?: string;
+  videoUploadDate: string;
   seoTitle: string;
   seoDescription: string;
   primaryCta: CtaConfig;
@@ -54,6 +55,11 @@ export type WebAppConfig = {
   social: SocialConfig;
   siteUrl: string;
   verification: VerificationConfig;
+  supportEmail: string;
+  workingHours: string;
+  privacyEmail: string;
+  legalName: string;
+  idCode: string;
 };
 
 export function trim(value?: string | null): string | undefined {
@@ -93,6 +99,9 @@ function readAppConfig(): WebAppConfig {
     process.env.NEXT_PUBLIC_PRESENTATION_VIDEO_ID,
   );
 
+  const videoUploadDate =
+    trim(process.env.NEXT_PUBLIC_VIDEO_UPLOAD_DATE) ?? '2025-01-01';
+
   const primaryCtaHref =
     trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? routes.auth;
 
@@ -106,6 +115,7 @@ function readAppConfig(): WebAppConfig {
     appName,
     appVersion,
     presentationVideoId,
+    videoUploadDate,
     seoTitle: `${appName} - Play Free Online Board Games with Friends | Battleship & More`,
     seoDescription: `Play free online board games with friends on ${appName} — Battleship, strategy, and card games. Create private rooms, automate rules, and enjoy a polished tabletop experience in your browser. No download, no signup.`,
     primaryCta: {
@@ -147,6 +157,17 @@ function readAppConfig(): WebAppConfig {
       bing: trim(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION),
       yahoo: trim(process.env.NEXT_PUBLIC_YAHOO_SITE_VERIFICATION),
     },
+    supportEmail:
+      trim(process.env.NEXT_PUBLIC_SUPPORT_EMAIL) ?? 'arcadeum.care@gmail.com',
+    workingHours:
+      trim(process.env.NEXT_PUBLIC_WORKING_HOURS) ??
+      'Mon – Fri, 10:00 – 18:00 (GMT+4)',
+    privacyEmail:
+      trim(process.env.NEXT_PUBLIC_PRIVACY_EMAIL) ?? 'arcadeum.care@gmail.com',
+    legalName:
+      trim(process.env.NEXT_PUBLIC_LEGAL_NAME) ??
+      'Individual Entrepreneur Anatoliy Aliaksandrau',
+    idCode: trim(process.env.NEXT_PUBLIC_ID_CODE) ?? '',
   };
 }
 

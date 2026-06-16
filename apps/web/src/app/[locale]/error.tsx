@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { ErrorState } from '@/shared/ui';
 import { XStack } from 'tamagui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 
 export default function Error({
   error,
@@ -11,6 +12,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     // Log the error to an error reporting service
   }, [error]);
@@ -24,10 +27,14 @@ export default function Error({
         minHeight="50vh"
       >
         <ErrorState
-          title="Something went wrong!"
-          message={error.message || 'An unexpected error has occurred.'}
+          title={t('common.error.title') || 'Something went wrong!'}
+          message={
+            error.message ||
+            t('common.error.message') ||
+            'An unexpected error has occurred.'
+          }
           onRetry={() => reset()}
-          retryLabel="Try again"
+          retryLabel={t('common.error.retry') || 'Try again'}
         />
       </XStack>
     </div>

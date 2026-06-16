@@ -39,7 +39,7 @@ export function InstallPWAModalContent() {
         </ModalHeader>
         <ModalBody>
           <XStack justifyContent="center" marginBottom="$5">
-            <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="" />
+            <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="Arcadeum app icon" />
           </XStack>
           <Paragraph
             textAlign="center"

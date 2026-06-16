@@ -52,6 +52,9 @@ export function buildBlogPostJsonLd({
   const fullPageUrl = pageUrl.startsWith('http')
     ? pageUrl
     : `${appConfig.siteUrl}${pageUrl}`;
+  // TODO: Per-post OG images yield richer SERP cards. When the blog
+  // registry gains an `image` field, use it here instead of falling back
+  // to the site logo.
   const fullImage = image ?? `${appConfig.siteUrl}/logo.png`;
 
   const node: Record<string, unknown> = {

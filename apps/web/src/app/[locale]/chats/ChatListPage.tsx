@@ -230,7 +230,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                 >
                   <Card interactive padding="md" variant="elevated">
                     <XStack ai="center" gap="$4" width="100%">
-                      <Avatar name={title} size="md" alt="" />
+                      <Avatar name={title} size="md" alt={`${title} avatar`} />
                       <YStack flex={1} gap="$1" minWidth={0}>
                         <XStack jc="space-between" ai="center" gap="$2">
                           <Text

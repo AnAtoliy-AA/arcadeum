@@ -69,7 +69,6 @@ export default function HomePresentation() {
         ) : (
           <div
             className="video-placeholder-main"
-            onClick={handlePlayClick}
             data-testid="video-placeholder"
           >
             <Image

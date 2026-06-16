@@ -136,28 +136,30 @@ export default async function LocaleLayout({
   ];
 
   return (
-    <LanguageProvider locale={locale}>
-      <PWAProvider>
-        <SoundProvider>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: '100dvh',
-            }}
-          >
-            <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-            <RouteChangeAnnouncer />
-            <AnnouncementBanner />
-            <Header />
-            <main style={{ flex: 1 }}>
-              <Suspense>{children}</Suspense>
-            </main>
-            <LayoutFooter />
-          </div>
-          {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
-        </SoundProvider>
-      </PWAProvider>
-    </LanguageProvider>
+    <>
+      <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
+      <LanguageProvider locale={locale}>
+        <PWAProvider>
+          <SoundProvider>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100dvh',
+              }}
+            >
+              <RouteChangeAnnouncer />
+              <AnnouncementBanner />
+              <Header />
+              <main style={{ flex: 1 }}>
+                <Suspense>{children}</Suspense>
+              </main>
+              <LayoutFooter />
+            </div>
+            {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+          </SoundProvider>
+        </PWAProvider>
+      </LanguageProvider>
+    </>
   );
 }

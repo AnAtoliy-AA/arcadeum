@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.1] - 2026-06-16
+
+### Fixed
+- always show copied feedback after clipboard attempt (N/A)
+- add clipboard fallback for referral copy button in e2e (N/A)
+- remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
+- security, a11y, CSS, and code quality optimizations (N/A)
+- improve SEO, accessibility, and performance across 20 issues (N/A)
+- add build step to release workflow before e2e tests (N/A)
+- improve SEO metadata and AI search readiness (N/A)
+
+### Refactored
+- migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
+
+
+## [1.17.0] - 2026-06-15
+
+
+
+
+## [1.16.15] - 2026-06-15
+
+### Fixed
+- remove 180deg rotation on notifications bell hover (N/A)
+
+### Documentation
+- clarify PRs must target develop branch (N/A)
+- add rule to pull develop before opening PR (N/A)
+
+
+## [1.16.14] - 2026-06-15
+
+### Fixed
+- propagate actual validation error messages from game engines (N/A)
+- update cascade bot race-error detection and tighten reflex delays (N/A)
+- enforce first-click-wins for cascade call race condition (N/A)
+
+
 ## [1.16.13] - 2026-06-15
 
 ### Fixed

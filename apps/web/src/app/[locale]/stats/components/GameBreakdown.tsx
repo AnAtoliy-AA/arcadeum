@@ -5,9 +5,12 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { SkeletonCircle, SkeletonText } from '@arcadeum/ui';
-import { ProgressBar } from '@arcadeum/ui';
-import { Section } from '@/shared/ui';
+import {
+  SkeletonCircle,
+  SkeletonText,
+  ProgressBar,
+  Section,
+} from '@arcadeum/ui';
 
 export const gameBreakdownCSS = `
   .stats-breakdown-header {

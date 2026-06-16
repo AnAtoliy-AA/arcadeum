@@ -67,7 +67,8 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
 ### Git rules
 
-- **Never push directly to `main`, `staging`, or `develop`** — always create a feature branch and open a PR. These are protected branches; direct pushes bypass review.
+- **Never push directly to `main`, `staging`, or `develop`** — always create a feature branch and open a PR targeting `develop`. These are protected branches; direct pushes bypass review.
+- **Pull `develop` before opening a PR** — run `git fetch origin && git merge origin/develop` on your branch to catch merge conflicts early and keep the PR diff minimal.
 - **Never use `git push --force`** — CI blocks force pushes on branches with open PRs. If you need to rebase, push to a new branch and open a new PR instead.
 - **Always create new commits** — never `git commit --amend`. Amend rewrites history and causes the same CI failure as force push. If the last commit needs updating, create a new commit on top.
 

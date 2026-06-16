@@ -36,7 +36,7 @@ export default async function HomeRoute({
       youtubeId: videoId,
       name: seoHome?.title ?? `${appConfig.appName} — Platform overview`,
       description: seoHome?.description ?? appConfig.seoDescription,
-      uploadDate: '2025-01-01',
+      uploadDate: appConfig.videoUploadDate,
     });
   }
 

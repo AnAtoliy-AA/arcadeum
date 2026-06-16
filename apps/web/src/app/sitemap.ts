@@ -35,7 +35,8 @@ type RouteKey =
   | 'criticalLanding'
   | 'glimwormLanding'
   | 'ticTacToeLanding'
-  | 'cascadeLanding';
+  | 'cascadeLanding'
+  | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -72,6 +73,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   glimwormLanding: '2026-05-21',
   ticTacToeLanding: '2026-05-21',
   cascadeLanding: '2026-05-21',
+  shop: '2026-05-21',
 };
 
 /**
@@ -94,6 +96,7 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'payment',
   'wallet',
   'gameCreate',
+  'shop',
 ]);
 
 const GAME_LANDING_KEYS: RouteKey[] = [
@@ -141,6 +144,7 @@ const PAGE_CHANGE_FREQ: Partial<
   chats: 'monthly',
   referrals: 'weekly',
   gameCreate: 'monthly',
+  shop: 'monthly',
 };
 
 /**
@@ -183,6 +187,7 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   payment: 0.3,
   wallet: 0.3,
   gameCreate: 0.3,
+  shop: 0.3,
 };
 
 function alternatesFor(key: RouteKey): Record<string, string> {

@@ -8,7 +8,7 @@ import {
   IconButton,
   type GameVariant,
 } from '@arcadeum/ui';
-import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
+import { MaximizeIcon, MinimizeIcon } from '@arcadeum/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';

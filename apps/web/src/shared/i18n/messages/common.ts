@@ -46,6 +46,11 @@ export const en = {
   cosmetics: {
     skin: 'Skin',
   },
+  error: {
+    title: 'Something went wrong!',
+    message: 'An unexpected error has occurred.',
+    retry: 'Try again',
+  },
 };
 
 export const es = {
@@ -93,6 +98,11 @@ export const es = {
   },
   cosmetics: {
     skin: 'Skin',
+  },
+  error: {
+    title: '¡Algo salió mal!',
+    message: 'Ha ocurrido un error inesperado.',
+    retry: 'Intentar de nuevo',
   },
 };
 
@@ -142,6 +152,11 @@ export const fr = {
   cosmetics: {
     skin: 'Skin',
   },
+  error: {
+    title: 'Oups !',
+    message: "Une erreur inattendue s'est produite.",
+    retry: 'Réessayer',
+  },
 };
 
 export const ru = {
@@ -190,6 +205,11 @@ export const ru = {
   cosmetics: {
     skin: 'Скин',
   },
+  error: {
+    title: 'Что-то пошло не так!',
+    message: 'Произошла непредвиденная ошибка.',
+    retry: 'Попробовать снова',
+  },
 };
 
 export const by = {
@@ -237,6 +257,11 @@ export const by = {
   },
   cosmetics: {
     skin: 'Скін',
+  },
+  error: {
+    title: 'Нешта пайшло не так!',
+    message: 'Адбылася нечаканая памылка.',
+    retry: 'Паспрабаваць зноў',
   },
 };
 

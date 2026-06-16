@@ -11,7 +11,7 @@ import {
   GlassCard,
   EmptyState,
   Skeleton,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatCurrency, formatDate } from '@/shared/i18n/formatters';

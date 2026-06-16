@@ -9,7 +9,7 @@ import {
   PageTitle,
   Card,
   LinkButton,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { paymentApi } from '@/features/payment/api';

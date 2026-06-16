@@ -10,7 +10,7 @@ import {
   Section,
   XStack,
   YStack,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 
 interface RewardsTranslation {
   title?: string;

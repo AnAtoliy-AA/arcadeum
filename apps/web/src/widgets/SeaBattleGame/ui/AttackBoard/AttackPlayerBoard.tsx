@@ -16,7 +16,7 @@ import {
   PlayerStats,
   RowLabels,
 } from '../styles';
-import { IdleBadge } from '@/shared/ui';
+import { IdleBadge } from '@arcadeum/ui';
 import { type TranslationKey } from '@/shared/lib/useTranslation';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';

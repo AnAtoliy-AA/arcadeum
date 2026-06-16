@@ -1,14 +1,7 @@
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
+import { SCHEMA_LANGUAGE_MAP } from './schemaLanguageMap';
 import type { Locale } from '@/shared/i18n';
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
-};
 
 interface CollectionItem {
   /** Display name shown in the rich-result snippet. */

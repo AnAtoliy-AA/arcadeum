@@ -4,13 +4,13 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
+  Button,
   PageLayout,
   Container as SharedContainer,
   Select,
   ErrorState,
   EmptyState,
-} from '@/shared/ui';
-import { Button } from '@arcadeum/ui';
+} from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,

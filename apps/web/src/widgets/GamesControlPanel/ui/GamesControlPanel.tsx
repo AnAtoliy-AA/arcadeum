@@ -17,7 +17,7 @@ import {
   ModalFooter,
   MaximizeIcon,
   MinimizeIcon,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { Button, XStack, YStack } from '@arcadeum/ui';
 import { ShareGameMenu } from './ShareGameMenu';
 

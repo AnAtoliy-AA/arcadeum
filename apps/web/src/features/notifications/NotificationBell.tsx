@@ -58,6 +58,15 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
         size="md"
         aria-label={t('notifications.bell.aria') as string}
         data-testid={testId}
+        hoverStyle={{
+          transform: 'scale(1.1)',
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+          borderColor: 'rgba(255, 255, 255, 0.25)',
+          shadowColor: 'rgba(0,0,0,0.3)',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 1,
+          shadowRadius: 10,
+        }}
         onPress={() => {
           setOpen((o) => {
             const next = !o;
@@ -79,6 +88,8 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
             backgroundColor="$error"
             alignItems="center"
             justifyContent="center"
+            role="status"
+            aria-live="polite"
             data-testid="notification-bell-badge"
           >
             <Text fontSize={10} fontWeight="700" color="$white">

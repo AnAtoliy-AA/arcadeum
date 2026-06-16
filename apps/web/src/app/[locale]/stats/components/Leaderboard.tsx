@@ -2,10 +2,16 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import type { LeaderboardEntry } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Badge, Section, EmptyState } from '@/shared/ui';
+import {
+  Badge,
+  Section,
+  EmptyState,
+  SkeletonCircle,
+  SkeletonText,
+  ProgressBar,
+  Spinner,
+} from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { SkeletonCircle, SkeletonText, ProgressBar } from '@arcadeum/ui';
-import { Spinner } from '@/shared/ui';
 
 export const leaderboardCSS = `
   .stats-leaderboard-header {

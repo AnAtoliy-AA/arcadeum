@@ -28,5 +28,13 @@ export function usePendingStart(sessionId: string | null | undefined) {
     setExpiry(1);
   }, [sessionId]);
 
-  return { pendingStart: pending, markPendingStart: markPending } as const;
+  const clearPending = useCallback(() => {
+    setExpiry(0);
+  }, []);
+
+  return {
+    pendingStart: pending,
+    markPendingStart: markPending,
+    clearPendingStart: clearPending,
+  } as const;
 }

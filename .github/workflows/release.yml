@@ -26,9 +26,13 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Build
+        run: pnpm exec turbo run build --filter web --filter be
+
       - name: Run E2E Tests
         env:
-          MONGODB_URI: mongodb://localhost:27017/arcadeum_test
+          CI: 'true'
+          E2E_PROD: 'true'
           AUTH_JWT_SECRET: ${{ secrets.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only' }}
           NEXT_PUBLIC_E2E: 'true'
         run: pnpm --filter web test:e2e

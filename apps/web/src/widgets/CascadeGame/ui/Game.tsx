@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
@@ -83,7 +83,13 @@ function CascadeGameImpl({
     userId: currentUserId,
   });
 
-  const { pendingStart, markPendingStart } = usePendingStart(session?.id);
+  const { pendingStart, markPendingStart, clearPendingStart } = usePendingStart(
+    session?.id,
+  );
+
+  useEffect(() => {
+    if (!isLobby) clearPendingStart();
+  }, [isLobby, clearPendingStart]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {

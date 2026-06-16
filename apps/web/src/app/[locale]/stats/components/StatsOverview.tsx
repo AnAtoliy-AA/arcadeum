@@ -2,8 +2,7 @@ import React from 'react';
 import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Card } from '@/shared/ui';
-import { SkeletonText, ProgressCircle } from '@arcadeum/ui';
+import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
 
 export const statsOverviewCSS = `
   .stats-overview-grid {

@@ -24,6 +24,7 @@ type State = {
 
 type Actions = {
   initialize(token: string): Promise<void>;
+  fetchUnreadCount(token: string): Promise<void>;
   setPermission(permission: PermissionState): void;
   enableCategory(category: NotificationCategory, token: string): Promise<void>;
   disableCategory(category: NotificationCategory, token: string): Promise<void>;
@@ -74,6 +75,15 @@ export const useNotificationsStore = create<State & Actions>((set, get) => ({
       });
     } catch (err) {
       set({ loading: false, error: String(err) });
+    }
+  },
+
+  async fetchUnreadCount(token: string) {
+    try {
+      const { count } = await notificationsApi.unreadCount(token);
+      set({ unreadCount: count });
+    } catch {
+      // Silently ignore — badge will show 0 until bell is opened
     }
   },
 

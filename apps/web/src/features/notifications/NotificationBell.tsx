@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useState } from 'react';
 import { View, Text, YStack, XStack } from 'tamagui';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -41,13 +41,16 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   const token = snapshot.accessToken;
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const initialize = useNotificationsStore((s) => s.initialize);
+  const fetchUnreadCount = useNotificationsStore((s) => s.fetchUnreadCount);
   const loadInbox = useNotificationsStore((s) => s.loadInbox);
   const [open, setOpen] = useState(false);
+  const fetchedRef = useState(() => ({ current: false }))[0];
 
-  useEffect(() => {
-    if (!token) return;
-    void initialize(token);
-  }, [token, initialize]);
+  const ensureLoaded = () => {
+    if (!token || fetchedRef.current) return;
+    fetchedRef.current = true;
+    void fetchUnreadCount(token);
+  };
 
   if (!token) return null;
 
@@ -58,6 +61,8 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
         size="md"
         aria-label={t('notifications.bell.aria') as string}
         data-testid={testId}
+        onHoverIn={ensureLoaded}
+        onFocus={ensureLoaded}
         hoverStyle={{
           transform: 'scale(1.1)',
           backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -70,7 +75,10 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
         onPress={() => {
           setOpen((o) => {
             const next = !o;
-            if (next) void loadInbox(token);
+            if (next) {
+              void initialize(token);
+              void loadInbox(token);
+            }
             return next;
           });
         }}
@@ -105,7 +113,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   );
 }
 
-function NotificationPopover({
+const NotificationPopover = memo(function NotificationPopover({
   token,
   onClose,
 }: {
@@ -167,9 +175,9 @@ function NotificationPopover({
       )}
     </YStack>
   );
-}
+});
 
-function NotificationRow({
+const NotificationRow = memo(function NotificationRow({
   item,
   onClick,
   token,
@@ -211,4 +219,4 @@ function NotificationRow({
       </YStack>
     </Link>
   );
-}
+});

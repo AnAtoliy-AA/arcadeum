@@ -18,8 +18,6 @@ export function RouteChangeAnnouncer() {
     if (pathname !== prevPathname.current) {
       prevPathname.current = pathname;
       if (announcerRef.current) {
-        // Clear then set so the live region re-announces even if the
-        // new text is the same length (e.g. /en/games -> /fr/jeux).
         announcerRef.current.textContent = '';
         requestAnimationFrame(() => {
           if (announcerRef.current) {
@@ -36,6 +34,7 @@ export function RouteChangeAnnouncer() {
       role="status"
       aria-live="assertive"
       aria-atomic="true"
+      suppressHydrationWarning
       style={{
         position: 'absolute',
         width: 1,

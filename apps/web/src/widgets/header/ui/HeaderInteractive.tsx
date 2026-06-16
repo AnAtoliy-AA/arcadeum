@@ -15,8 +15,16 @@ import {
 } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
-import { NotificationBell } from '@/features/notifications/NotificationBell';
+import dynamic from 'next/dynamic';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
+
+const NotificationBell = dynamic(
+  () =>
+    import('@/features/notifications/NotificationBell').then(
+      (m) => m.NotificationBell,
+    ),
+  { ssr: false },
+);
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 
 import {

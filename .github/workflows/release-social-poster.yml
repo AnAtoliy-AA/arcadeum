@@ -45,8 +45,17 @@ jobs:
 
           # 2. Get all commits included in this release
           try:
+              prev_tag = subprocess.check_output(
+                  ['git', 'describe', '--tags', '--abbrev=0', f'{tag}^'],
+                  text=True
+              ).strip()
+              range_spec = f'{prev_tag}..{tag}'
+          except Exception:
+              range_spec = tag
+
+          try:
               raw_commits = subprocess.check_output(
-                  ['git', 'log', f'{tag}^..{tag}', '--pretty=format:%s'],
+                  ['git', 'log', range_spec, '--pretty=format:%s'],
                   text=True
               ).strip()
           except Exception:

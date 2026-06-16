@@ -7,7 +7,7 @@ import {
   Text,
   type GetThemeValueForKey,
 } from 'tamagui';
-import { GlassCard } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
 import { SectionContainer } from './Common.styles';
 
 export const FeaturesSection = styled(SectionContainer, {
@@ -74,4 +74,4 @@ export const FeatureDescription = styled(Text, {
 });
 
 // ComingSoonBadge uses Badge directly in the component
-export { Badge as ComingSoonBadge } from '@/shared/ui';
+export { Badge as ComingSoonBadge } from '@arcadeum/ui';

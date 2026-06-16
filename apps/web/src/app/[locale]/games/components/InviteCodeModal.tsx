@@ -14,7 +14,7 @@ import {
   Button,
   Input,
   FormGroup,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { gamesApi } from '@/features/games/api';
 import { HttpStatus } from '@/shared/lib/http-status';
 

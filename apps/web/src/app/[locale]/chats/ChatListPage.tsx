@@ -9,8 +9,8 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { Button } from '@arcadeum/ui';
 import {
+  Button,
   PageLayout,
   Container,
   PageTitle,
@@ -20,7 +20,7 @@ import {
   Input,
   Spinner,
   EmptyState,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';

@@ -3,8 +3,7 @@
 import React from 'react';
 import { styled, XStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { PageTitle } from '@/shared/ui';
-import { Button } from '@arcadeum/ui';
+import { PageTitle, Button } from '@arcadeum/ui';
 
 export const statsHeaderCSS = `
   @keyframes stats-header-spin {

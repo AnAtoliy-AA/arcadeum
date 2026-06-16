@@ -8,7 +8,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { SupportIcon } from '@/shared/ui';
+import { SupportIcon } from '@arcadeum/ui';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';

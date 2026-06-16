@@ -1,14 +1,11 @@
-// Shared UI Components
-// These are dumb, presentational building blocks without business logic
+// Web-specific UI components that depend on Next.js, business logic, or
+// web-only hooks. All shared/presentational components live in @arcadeum/ui.
 //
-// NOTE: The wildcard re-export pulls the entire @arcadeum/ui package into
-// any consumer's chunk. This hurts tree-shaking but is kept for backward
-// compatibility with the ~50 files that import from '@/shared/ui'. New
-// code should import directly from '@arcadeum/ui' or a specific sub-path
-// (e.g. '@/shared/ui/PlayerAvatar') to enable better code splitting.
-export * from '@arcadeum/ui';
+// Import pattern:
+//   import { Button, Card, Modal } from '@arcadeum/ui';        // shared
+//   import { DownloadButtons } from '@/shared/ui/DownloadButtons'; // web-local
+//   import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar'; // web-local
 
-// Any web-specific logic that couldn't be migrated or needs to stay here
 export { DownloadButtons } from './DownloadButtons/DownloadButtons';
 export type { DownloadButtonsProps } from './DownloadButtons/DownloadButtons';
 export * from './OptionCard/OptionCard';

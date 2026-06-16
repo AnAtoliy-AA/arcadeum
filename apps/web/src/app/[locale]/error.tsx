@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ErrorState } from '@/shared/ui';
+import { ErrorState } from '@arcadeum/ui';
 import { XStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 

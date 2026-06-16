@@ -9,7 +9,7 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePWAOptional } from './context';
 import { Button } from '@arcadeum/ui';
@@ -39,7 +39,12 @@ export function InstallPWAModalContent() {
         </ModalHeader>
         <ModalBody>
           <XStack justifyContent="center" marginBottom="$5">
-            <Avatar src="/icon-192x192.png" name="Arcadeum" size="xl" alt="Arcadeum app icon" />
+            <Avatar
+              src="/icon-192x192.png"
+              name="Arcadeum"
+              size="xl"
+              alt="Arcadeum app icon"
+            />
           </XStack>
           <Paragraph
             textAlign="center"

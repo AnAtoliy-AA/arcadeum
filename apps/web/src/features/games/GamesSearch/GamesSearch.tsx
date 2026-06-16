@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { XStack } from 'tamagui';
-import { Button } from '@arcadeum/ui';
-import { Input } from '@/shared/ui';
+import { Button, Input } from '@arcadeum/ui';
 
 export interface GamesSearchProps {
   /** Callback triggered when search query changes (debounced) or search button is clicked */

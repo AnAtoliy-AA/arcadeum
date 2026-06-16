@@ -1,8 +1,7 @@
 'use client';
 
-import { XStack, Button } from '@arcadeum/ui';
+import { XStack, Button, PageTitle } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { PageTitle } from '@/shared/ui';
 
 interface HistoryHeaderProps {
   loading: boolean;

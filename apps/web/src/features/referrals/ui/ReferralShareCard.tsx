@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GlassCard } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   CardTitle,
@@ -64,7 +64,9 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
         </CopyButton>
       </CodeContainer>
       <ShareLinkRow>
-        <span style={{ fontSize: '0.85rem', color: 'rgba(236,239,238,0.45)' }}>{t('referrals.shareCard.linkLabel')}</span>
+        <span style={{ fontSize: '0.85rem', color: 'rgba(236,239,238,0.45)' }}>
+          {t('referrals.shareCard.linkLabel')}
+        </span>
         <ShareLink>{shareUrl}</ShareLink>
       </ShareLinkRow>
     </GlassCard>

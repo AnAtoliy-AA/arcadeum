@@ -1,5 +1,4 @@
-import { Typography, YStack, XStack } from '@arcadeum/ui';
-import { Button } from '@arcadeum/ui';
+import { Typography, YStack, XStack, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface PaymentPresetsProps {

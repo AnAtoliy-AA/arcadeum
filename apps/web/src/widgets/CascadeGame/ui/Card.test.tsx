@@ -13,6 +13,11 @@ const THEMED_NAMES: Record<string, string> = {
   'games.cascade_v1.themedCards.cosmic.DRAW_TWO': 'Meteor Shower',
   'games.cascade_v1.themedCards.cosmic.WILD': 'Singularity',
   'games.cascade_v1.themedCards.cosmic.WILD_DRAW_FOUR': 'Supernova',
+  'games.cascade_v1.cardColors.R': 'Red',
+  'games.cascade_v1.cardColors.B': 'Blue',
+  'games.cascade_v1.cardColors.G': 'Green',
+  'games.cascade_v1.cardColors.Y': 'Yellow',
+  'games.cascade_v1.hiddenCard': 'Hidden card',
 };
 
 vi.mock('@/shared/lib/useTranslation', () => ({

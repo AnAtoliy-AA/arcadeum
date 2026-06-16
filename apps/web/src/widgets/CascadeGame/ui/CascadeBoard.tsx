@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { XStack, YStack } from 'tamagui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card } from './Card';
 import { ColorPicker } from './ColorPicker';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
@@ -21,14 +22,10 @@ interface CascadeBoardProps {
   myHand: CascadeCard[];
   myTurn: boolean;
   disabled: boolean;
-  /** Card face treatment; defaults to the edge-glow `neon` look. */
   cardStyle?: CascadeCardStyle;
+  members?: Array<{ id: string; displayName: string }>;
   onPlayCard: (cardId: string, chosenColor?: ActiveColor) => void;
   onDraw: () => void;
-  /**
-   * Fire the "Cascade!" race call. Available to ALL alive players whenever
-   * `snapshot.lastCardWindow` is open — not gated on whose turn it is.
-   */
   onCallCascade?: () => void;
 }
 
@@ -42,11 +39,13 @@ export function CascadeBoard({
   myTurn,
   disabled,
   cardStyle = 'neon',
+  members,
   onPlayCard,
   onDraw,
   onCallCascade,
 }: CascadeBoardProps) {
   const theme = useCascadeTheme();
+  const { t } = useTranslation();
   const [pendingWildCard, setPendingWildCard] = useState<string | null>(null);
   const [shakeId, setShakeId] = useState<string | null>(null);
 
@@ -116,7 +115,8 @@ export function CascadeBoard({
     <YStack
       width="100%"
       gap="$3"
-      padding="$3"
+      padding="$0"
+      paddingTop="$4"
       borderRadius="$4"
       className={`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}
       style={
@@ -151,7 +151,9 @@ export function CascadeBoard({
                   </span>
                 ) : null}
                 {opp.alive && opp.hand.length === 1 ? (
-                  <span className={styles.podLast}>LAST</span>
+                  <span className={styles.podLast}>
+                    {t('games.cascade_v1.board.last')}
+                  </span>
                 ) : null}
                 <span
                   className={styles.podAvatar}
@@ -160,12 +162,16 @@ export function CascadeBoard({
                   }}
                   aria-hidden="true"
                 >
-                  {shortName(opp.playerId).charAt(0).toUpperCase()}
+                  {shortName(opp.playerId, members).charAt(0).toUpperCase()}
                 </span>
                 <span className={styles.podName}>
-                  {shortName(opp.playerId)}
+                  {shortName(opp.playerId, members)}
                 </span>
-                <span className={styles.podCount}>{opp.hand.length} cards</span>
+                <span className={styles.podCount}>
+                  {t('games.cascade_v1.board.cards', {
+                    count: opp.hand.length,
+                  })}
+                </span>
                 <div className={styles.podFan} aria-hidden="true">
                   {Array.from({ length: backs }).map((_, i) => (
                     <span
@@ -193,10 +199,12 @@ export function CascadeBoard({
               onClick={onCallCascade}
               className={styles.callButton}
               aria-label={
-                atRiskIsMe ? 'Call Cascade — save yourself' : 'Call Cascade'
+                atRiskIsMe
+                  ? t('games.cascade_v1.board.callCascadeSelf')
+                  : t('games.cascade_v1.board.callCascade')
               }
             >
-              Cascade!
+              {t('games.cascade_v1.board.callCascade')}
             </button>
           </XStack>
         ) : null}
@@ -218,7 +226,7 @@ export function CascadeBoard({
               type="button"
               onClick={() => drawEnabled && onDraw()}
               disabled={!drawEnabled}
-              aria-label="Draw a card"
+              aria-label={t('games.cascade_v1.board.draw')}
               className={`${styles.drawButton} ${mustDraw ? styles.drawMust : ''}`}
             >
               <span className={styles.drawEmblem} aria-hidden="true">
@@ -228,7 +236,9 @@ export function CascadeBoard({
                 <span className={styles.drawPlus}>+{snapshot.pendingDraw}</span>
               ) : null}
             </button>
-            <span className={styles.pileLabel}>Draw</span>
+            <span className={styles.pileLabel}>
+              {t('games.cascade_v1.board.draw')}
+            </span>
           </div>
 
           <div
@@ -247,7 +257,9 @@ export function CascadeBoard({
               aria-hidden="true"
             />
             <Card card={snapshot.topCard} size="lg" disabled />
-            <span className={styles.pileLabel}>Discard</span>
+            <span className={styles.pileLabel}>
+              {t('games.cascade_v1.board.discard')}
+            </span>
           </div>
         </div>
 
@@ -307,8 +319,14 @@ export function CascadeBoard({
   );
 }
 
-function shortName(id: string): string {
-  return id.startsWith('bot-') ? 'Bot' : id.slice(0, 6);
+function shortName(
+  id: string,
+  members?: Array<{ id: string; displayName: string }>,
+): string {
+  if (id.startsWith('bot-')) return 'Bot';
+  const member = members?.find((m) => m.id === id);
+  if (member?.displayName) return member.displayName;
+  return id.slice(0, 6) + '…';
 }
 
 /** Deterministic theme color for an opponent's avatar disc, from their id. */

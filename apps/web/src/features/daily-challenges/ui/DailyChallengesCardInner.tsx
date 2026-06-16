@@ -40,6 +40,8 @@ export function ClaimChallengeButton({
   if (claimed) {
     return (
       <span
+        role="status"
+        aria-live="polite"
         style={{
           padding: '6px 12px',
           borderRadius: '6px',

@@ -1,5 +1,5 @@
 import { styled, XStack, YStack, Text } from 'tamagui';
-import { Input as UIInput } from '@/shared/ui';
+import { Input as UIInput } from '@arcadeum/ui';
 
 // Class-based fullscreen — useFullscreen toggles `.is-fullscreen` so the
 // page stays in the normal DOM tree and body-portaled modals

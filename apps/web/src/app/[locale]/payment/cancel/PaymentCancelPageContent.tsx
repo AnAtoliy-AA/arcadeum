@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLayout, Container, PageTitle, LinkButton } from '@/shared/ui';
+import { PageLayout, Container, PageTitle, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Paragraph } from 'tamagui';
 

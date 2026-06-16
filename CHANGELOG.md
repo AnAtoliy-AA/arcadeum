@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.5] - 2026-06-16
+
+### Fixed
+- scroll mobile nav to bottom before clicking language pill (N/A)
+- use force click for mobile language pill in fixed scroll container (N/A)
+- fix social media workflow bugs and e2e test (N/A)
+
+### Improved
+- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
+
+
+## [1.17.4] - 2026-06-16
+
+### Fixed
+- sticky footer on mobile and hide during gameplay (N/A)
+- fix game result modal positioning and sizing on mobile (N/A)
+
+
+## [1.17.3] - 2026-06-16
+
+### Fixed
+- cascade game fixes — styles, padding, fullscreen, tests, i18n (N/A)
+
+
+## [1.17.2] - 2026-06-16
+
+### Fixed
+- wrap children in Suspense to prevent async cleanup error (N/A)
+
+
+## [1.17.1] - 2026-06-16
+
+### Fixed
+- always show copied feedback after clipboard attempt (N/A)
+- add clipboard fallback for referral copy button in e2e (N/A)
+- remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
+- security, a11y, CSS, and code quality optimizations (N/A)
+- improve SEO, accessibility, and performance across 20 issues (N/A)
+- add build step to release workflow before e2e tests (N/A)
+- improve SEO metadata and AI search readiness (N/A)
+
+### Refactored
+- migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
+
+
+## [1.17.0] - 2026-06-15
+
+
+
+
 ## [1.16.15] - 2026-06-15
 
 ### Fixed

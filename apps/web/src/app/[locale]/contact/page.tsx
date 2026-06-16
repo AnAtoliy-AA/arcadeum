@@ -3,12 +3,8 @@ import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
+import { appConfig } from '@/shared/config/app-config';
 import ContactView from './ContactView';
-
-const SUPPORT_EMAIL =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'arcadeum.care@gmail.com';
-const WORKING_HOURS =
-  process.env.NEXT_PUBLIC_WORKING_HOURS ?? 'Mon – Fri, 10:00 – 18:00 (GMT+4)';
 
 export async function generateMetadata({
   params,
@@ -33,8 +29,8 @@ export default async function ContactPage({
       <PageBreadcrumb locale={locale} page="contact" />
       <ContactView
         t={t}
-        SUPPORT_EMAIL={SUPPORT_EMAIL}
-        WORKING_HOURS={WORKING_HOURS}
+        SUPPORT_EMAIL={appConfig.supportEmail}
+        WORKING_HOURS={appConfig.workingHours}
       />
     </>
   );

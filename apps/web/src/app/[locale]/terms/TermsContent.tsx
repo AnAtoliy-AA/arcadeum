@@ -13,7 +13,7 @@ import {
   Typography,
   Section,
   YStack,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import type { TermsMessages, ContactMessages } from '@/shared/i18n/types';
 
 export interface TermsContentProps {

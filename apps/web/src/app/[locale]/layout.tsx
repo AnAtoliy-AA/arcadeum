@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -19,6 +20,8 @@ import {
 import { getTranslations } from '@/shared/i18n/server';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
+import { RouteChangeAnnouncer } from '@/shared/ui/RouteChangeAnnouncer';
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: 'en_US',
@@ -26,14 +29,6 @@ const OG_LOCALE_MAP: Record<Locale, string> = {
   fr: 'fr_FR',
   ru: 'ru_RU',
   by: 'be_BY',
-};
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
 };
 
 export function generateStaticParams() {
@@ -117,6 +112,8 @@ export default async function LocaleLayout({
       description: localizedDescription,
       potentialAction: {
         '@type': 'SearchAction',
+        // Client-side filtered games list — no separate search page needed.
+        // Google uses this for sitelinks searchbox in the SERP.
         target: `${appConfig.siteUrl}${routes.games}?q={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
@@ -130,11 +127,6 @@ export default async function LocaleLayout({
       description: localizedDescription,
       operatingSystem: 'Any',
       applicationCategory: 'GameApplication',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '1240',
-      },
       offers: {
         '@type': 'Offer',
         price: '0',
@@ -147,11 +139,22 @@ export default async function LocaleLayout({
     <LanguageProvider locale={locale}>
       <PWAProvider>
         <SoundProvider>
-          <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-          <AnnouncementBanner />
-          <Header />
-          {children}
-          <LayoutFooter />
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100dvh',
+            }}
+          >
+            <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
+            <RouteChangeAnnouncer />
+            <AnnouncementBanner />
+            <Header />
+            <main style={{ flex: 1 }}>
+              <Suspense>{children}</Suspense>
+            </main>
+            <LayoutFooter />
+          </div>
           {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
         </SoundProvider>
       </PWAProvider>

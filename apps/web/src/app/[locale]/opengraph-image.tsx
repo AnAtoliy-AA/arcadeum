@@ -20,7 +20,7 @@ export function generateStaticParams() {
 }
 
 interface Props {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 // Locale-specific accent palettes so the unfurl looks visually
@@ -49,9 +49,8 @@ const PALETTE: Record<Locale, { accent: string; gradient: string }> = {
 };
 
 export default async function OpengraphImage({ params }: Props) {
-  const locale: Locale = isLocale(params.locale)
-    ? params.locale
-    : DEFAULT_LOCALE;
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const messages = await getTranslations(locale);
   const seo = messages.seo?.home;
 

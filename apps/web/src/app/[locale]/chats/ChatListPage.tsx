@@ -9,8 +9,8 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { Button } from '@arcadeum/ui';
 import {
+  Button,
   PageLayout,
   Container,
   PageTitle,
@@ -20,7 +20,7 @@ import {
   Input,
   Spinner,
   EmptyState,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
@@ -230,7 +230,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                 >
                   <Card interactive padding="md" variant="elevated">
                     <XStack ai="center" gap="$4" width="100%">
-                      <Avatar name={title} size="md" alt="" />
+                      <Avatar name={title} size="md" alt={`${title} avatar`} />
                       <YStack flex={1} gap="$1" minWidth={0}>
                         <XStack jc="space-between" ai="center" gap="$2">
                           <Text

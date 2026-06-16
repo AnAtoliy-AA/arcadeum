@@ -26,7 +26,9 @@ async function NotesDataFetcher() {
       timeout: SSR_TIMEOUT,
     });
   } catch (error) {
-    console.error('Failed to pre-fetch notes during SSR:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to pre-fetch notes during SSR:', error);
+    }
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GlassCard } from '@/shared/ui';
+import { GlassCard } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   CardTitle,
@@ -28,17 +28,22 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = shareUrl;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
     } catch {
-      const input = document.createElement('input');
-      input.value = shareUrl;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      setCopied(true);
+      // Clipboard write is best-effort; show feedback regardless.
     }
+    setCopied(true);
   };
 
   return (
@@ -70,7 +75,9 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
         </CopyButton>
       </CodeContainer>
       <ShareLinkRow>
-        <span style={{ fontSize: '0.85rem', color: 'rgba(236,239,238,0.45)' }}>{t('referrals.shareCard.linkLabel')}</span>
+        <span style={{ fontSize: '0.85rem', color: 'rgba(236,239,238,0.45)' }}>
+          {t('referrals.shareCard.linkLabel')}
+        </span>
         <ShareLink>{shareUrl}</ShareLink>
       </ShareLinkRow>
     </GlassCard>

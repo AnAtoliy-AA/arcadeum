@@ -79,7 +79,9 @@ async function HistoryDataFetcher({
       // Intentionally ignore to show 'Login Required' UI on the client
       return <HistoryClient initialData={undefined} />;
     }
-    console.error('Failed to pre-fetch history during SSR:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to pre-fetch history during SSR:', error);
+    }
   }
 
   return <HistoryClient initialData={initialData || undefined} />;

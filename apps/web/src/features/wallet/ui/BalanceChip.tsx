@@ -41,6 +41,8 @@ async function BalanceChipInner() {
   return (
     <div
       className="wallet-balance-chip"
+      role="status"
+      aria-live="polite"
       aria-label={t?.chip?.coinsLabel ?? 'Wallet balance'}
       style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
     >

@@ -8,7 +8,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { SupportIcon } from '@/shared/ui';
+import { SupportIcon } from '@arcadeum/ui';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
@@ -206,10 +206,12 @@ export default function HomeHero() {
                   {card.bgImage ? (
                     <Image
                       src={card.bgImage}
-                      alt={`${card.nameKey} game card preview`}
+                      alt={`${t(card.nameKey as TranslationKey)} game card preview`}
                       fill
                       priority={isFront}
                       sizes="(max-width: 1150px) 60vw, 280px"
+                      placeholder="blur"
+                      blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="
                       className="hero-card-image"
                     />
                   ) : null}

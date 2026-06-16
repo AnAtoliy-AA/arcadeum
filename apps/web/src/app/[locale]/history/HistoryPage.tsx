@@ -1,11 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@arcadeum/ui';
-import { EmptyState } from '@/shared/ui';
+import {
+  Button,
+  EmptyState,
+  Section,
+  PageLayout,
+  Container,
+} from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Section, PageLayout, Container } from '@/shared/ui';
 import { useHistoryFetch, useHistoryDetail, useHistoryActions } from './hooks';
 import {
   HistoryHeader,

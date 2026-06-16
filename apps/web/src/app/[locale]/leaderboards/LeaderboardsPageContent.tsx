@@ -125,9 +125,9 @@ export default function LeaderboardsPageContent({
     setFreshnessPulseKey((k) => k + 1);
     if (page === 1) {
       refetch().catch((err: unknown) => {
-        // #20: don't swallow silently. Until we wire telemetry this at
-        // least surfaces a flapping BE in the dev console.
-        console.warn('[leaderboards] refetch on capture failed', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[leaderboards] refetch on capture failed', err);
+        }
       });
     }
   }, [page, refetch]);

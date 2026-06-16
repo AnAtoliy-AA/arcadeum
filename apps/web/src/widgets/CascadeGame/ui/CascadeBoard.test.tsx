@@ -8,6 +8,35 @@ import { CascadeBoard } from './CascadeBoard';
 import { CascadeThemeProvider } from '../lib/CascadeThemeContext';
 import type { CascadeClientState } from '../types';
 
+const TRANSLATIONS: Record<string, string> = {
+  'games.cascade_v1.cardColors.R': 'Red',
+  'games.cascade_v1.cardColors.B': 'Blue',
+  'games.cascade_v1.cardColors.G': 'Green',
+  'games.cascade_v1.cardColors.Y': 'Yellow',
+  'games.cascade_v1.hiddenCard': 'Hidden card',
+  'games.cascade_v1.board.draw': 'Draw a card',
+  'games.cascade_v1.board.discard': 'Discard pile',
+  'games.cascade_v1.board.last': 'LAST',
+  'games.cascade_v1.board.cards': '{{count}} cards',
+  'games.cascade_v1.board.callCascade': 'Cascade!',
+  'games.cascade_v1.board.callCascadeSelf': 'Call Cascade (self)',
+  'games.cascade_v1.board.backToGames': '← Games',
+};
+
+vi.mock('@/shared/lib/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string, params?: Record<string, string | number>) => {
+      const template = TRANSLATIONS[key] ?? key;
+      if (!params) return template;
+      let result = template;
+      for (const [k, v] of Object.entries(params)) {
+        result = result.split(`{{${k}}}`).join(String(v));
+      }
+      return result;
+    },
+  }),
+}));
+
 function makeSnapshot(
   overrides: Partial<CascadeClientState> = {},
 ): CascadeClientState {

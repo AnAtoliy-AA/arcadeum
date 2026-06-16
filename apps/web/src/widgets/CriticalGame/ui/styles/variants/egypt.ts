@@ -9,7 +9,7 @@ export const egyptVariantStyles: VariantStyleConfig = {
       'radial-gradient(circle at 50% 20%, rgba(180, 83, 9, 0.24) 0%, rgba(20, 15, 5, 1) 45%, rgba(0, 0, 0, 1) 100%)',
     gridLineColorA: 'rgba(217, 119, 6, 0.15)',
     gridLineColorB: 'rgba(30, 58, 138, 0.1)',
-    sceneBackgroundImage: '/images/variants/egypt_bg.png',
+    sceneBackgroundImage: '/images/variants/egypt_bg.webp',
     particleColors: [
       'rgba(217, 119, 6, 0.8)',
       'rgba(30, 58, 138, 0.7)',

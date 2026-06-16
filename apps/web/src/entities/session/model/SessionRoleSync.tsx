@@ -73,7 +73,9 @@ export function SessionRoleSync(): null {
         }
         // 5xx / network — keep stale snapshot. Throttle slot NOT
         // consumed; next focus may retry.
-        console.warn('[SessionRoleSync] /auth/me failed:', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[SessionRoleSync] /auth/me failed:', err);
+        }
       } finally {
         inFlightRef.current = false;
       }

@@ -299,7 +299,6 @@
      of being tucked under it. */
   padding: 36px 4px 4px 4px !important;
   gap: 4px !important;
-  flex-direction: column !important;
 }
 
 /* Label row: stack vertically. "SHIPS REMAINING" text rotated -90deg
@@ -321,7 +320,7 @@
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-size: 9px !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 1px;
   line-height: 1 !important;
   white-space: nowrap;
   text-align: center;

@@ -126,11 +126,6 @@ export default async function LocaleLayout({
       description: localizedDescription,
       operatingSystem: 'Any',
       applicationCategory: 'GameApplication',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '1240',
-      },
       offers: {
         '@type': 'Offer',
         price: '0',

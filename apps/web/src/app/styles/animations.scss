@@ -1468,7 +1468,6 @@
   position: relative;
   display: inline-block;
   color: var(--primary);
-  will-change: transform;
 }
 
 .is-hydrated .kicker-hydration-shimmer::after {
@@ -1992,7 +1991,6 @@
   animation: start-button-pulse 3.6s ease-in-out infinite;
   position: relative;
   overflow: hidden;
-  will-change: box-shadow;
 }
 
 .start-button-glow.start-button-glow::after {
@@ -2132,18 +2130,18 @@
   }
 }
 
-/* Respect prefers-reduced-motion: collapse every keyframe animation to a
-   single frame and short-circuit CSS transitions. Scene + variant visuals
-   remain fully styled (gradients, shadows, borders) — only autonomous
-   motion is suppressed. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/*
+ * prefers-reduced-motion: handled by the canonical ruleset in
+ * utilities.scss — not duplicated here to avoid conflicting values.
+ */
+
+/* PageLoading skeleton pulse animation (injected globally from PageLoading.tsx). */
+@keyframes pl-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.25;
   }
 }

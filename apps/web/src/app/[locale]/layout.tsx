@@ -19,6 +19,8 @@ import {
 import { getTranslations } from '@/shared/i18n/server';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
+import { RouteChangeAnnouncer } from '@/shared/ui/RouteChangeAnnouncer';
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: 'en_US',
@@ -26,14 +28,6 @@ const OG_LOCALE_MAP: Record<Locale, string> = {
   fr: 'fr_FR',
   ru: 'ru_RU',
   by: 'be_BY',
-};
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
 };
 
 export function generateStaticParams() {
@@ -150,6 +144,7 @@ export default async function LocaleLayout({
       <PWAProvider>
         <SoundProvider>
           <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
+          <RouteChangeAnnouncer />
           <AnnouncementBanner />
           <Header />
           {children}

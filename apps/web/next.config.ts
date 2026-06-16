@@ -156,6 +156,14 @@ const nextConfig: NextConfig = {
             value:
               'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin',
+          },
         ],
       },
       {

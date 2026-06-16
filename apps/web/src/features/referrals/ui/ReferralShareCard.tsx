@@ -31,13 +31,7 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
     } catch {
-      const input = document.createElement('input');
-      input.value = shareUrl;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      setCopied(true);
+      setCopied(false);
     }
   };
 

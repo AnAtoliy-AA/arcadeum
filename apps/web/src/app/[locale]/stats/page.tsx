@@ -77,7 +77,9 @@ async function StatsDataFetcher({
       initialStats = results[1].value as PlayerStats;
     }
   } catch (error) {
-    console.error('Failed to pre-fetch stats during SSR:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to pre-fetch stats during SSR:', error);
+    }
   }
 
   return (

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -142,7 +143,7 @@ export default async function LocaleLayout({
           <RouteChangeAnnouncer />
           <AnnouncementBanner />
           <Header />
-          {children}
+          <Suspense>{children}</Suspense>
           <LayoutFooter />
           {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
         </SoundProvider>

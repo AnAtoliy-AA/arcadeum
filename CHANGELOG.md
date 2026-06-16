@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.5] - 2026-06-16
+
+### Fixed
+- scroll mobile nav to bottom before clicking language pill (N/A)
+- use force click for mobile language pill in fixed scroll container (N/A)
+- fix social media workflow bugs and e2e test (N/A)
+
+### Improved
+- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
+
+
 ## [1.17.4] - 2026-06-16
 
 ### Fixed

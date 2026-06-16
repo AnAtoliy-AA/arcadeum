@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.4] - 2026-06-16
+
+### Fixed
+- sticky footer on mobile and hide during gameplay (N/A)
+- fix game result modal positioning and sizing on mobile (N/A)
+
+
 ## [1.17.3] - 2026-06-16
 
 ### Fixed

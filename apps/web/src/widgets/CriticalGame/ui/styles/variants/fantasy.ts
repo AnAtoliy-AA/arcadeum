@@ -9,7 +9,7 @@ export const fantasyVariantStyles: VariantStyleConfig = {
       'radial-gradient(circle at 50% 20%, rgba(6, 95, 70, 0.24) 0%, rgba(20, 20, 10, 1) 45%, rgba(0, 0, 0, 1) 100%)',
     gridLineColorA: 'rgba(5, 150, 105, 0.15)',
     gridLineColorB: 'rgba(212, 175, 55, 0.1)',
-    sceneBackgroundImage: '/images/variants/fantasy_bg.png',
+    sceneBackgroundImage: '/images/variants/fantasy_bg.webp',
     particleColors: [
       'rgba(5, 150, 105, 0.8)',
       'rgba(212, 175, 55, 0.7)',

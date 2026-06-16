@@ -9,7 +9,7 @@ export const zenVariantStyles: VariantStyleConfig = {
       'radial-gradient(circle at 50% 20%, rgba(219, 39, 119, 0.24) 0%, rgba(15, 23, 42, 1) 45%, rgba(0, 0, 0, 1) 100%)',
     gridLineColorA: 'rgba(236, 72, 153, 0.15)',
     gridLineColorB: 'rgba(30, 64, 175, 0.1)',
-    sceneBackgroundImage: '/images/variants/zen_bg.png',
+    sceneBackgroundImage: '/images/variants/zen_bg.webp',
     particleColors: [
       'rgba(236, 72, 153, 0.8)',
       'rgba(30, 64, 175, 0.7)',

@@ -40,10 +40,10 @@ export function ReferralShareCard({ referralCode }: ReferralShareCardProps) {
         document.execCommand('copy');
         document.body.removeChild(ta);
       }
-      setCopied(true);
     } catch {
-      setCopied(false);
+      // Clipboard write is best-effort; show feedback regardless.
     }
+    setCopied(true);
   };
 
   return (

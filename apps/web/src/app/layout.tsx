@@ -32,6 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@_arcadeum_',
     title: appConfig.seoTitle,
     description: appConfig.seoDescription,
     images: ['/logo.png'],

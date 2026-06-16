@@ -206,7 +206,7 @@ export default function HomeHero() {
                   {card.bgImage ? (
                     <Image
                       src={card.bgImage}
-                      alt={`${card.nameKey} game card preview`}
+                      alt={`${t(card.nameKey as TranslationKey)} game card preview`}
                       fill
                       priority={isFront}
                       sizes="(max-width: 1150px) 60vw, 280px"

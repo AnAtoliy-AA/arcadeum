@@ -9,7 +9,7 @@ export const galaxyVariantStyles: VariantStyleConfig = {
       'radial-gradient(circle at 50% 20%, rgba(107, 33, 168, 0.24) 0%, rgba(15, 23, 42, 1) 45%, rgba(0, 0, 0, 1) 100%)',
     gridLineColorA: 'rgba(139, 92, 246, 0.15)',
     gridLineColorB: 'rgba(30, 64, 175, 0.1)',
-    sceneBackgroundImage: '/images/variants/galaxy_bg.png',
+    sceneBackgroundImage: '/images/variants/galaxy_bg.webp',
     particleColors: [
       'rgba(139, 92, 246, 0.8)',
       'rgba(30, 64, 175, 0.7)',

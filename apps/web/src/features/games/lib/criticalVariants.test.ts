@@ -9,12 +9,12 @@ describe('CARD_VARIANTS bgImage field', () => {
   };
 
   it('populates bgImage for the 6 variants with shipped artwork', () => {
-    expectImage('egypt', 'egypt_bg.png');
-    expectImage('fantasy', 'fantasy_bg.png');
-    expectImage('galaxy', 'galaxy_bg.png');
-    expectImage('steampunk', 'steampunk_bg.png');
-    expectImage('western', 'western_bg.png');
-    expectImage('zen', 'zen_bg.png');
+    expectImage('egypt', 'egypt_bg.webp');
+    expectImage('fantasy', 'fantasy_bg.webp');
+    expectImage('galaxy', 'galaxy_bg.webp');
+    expectImage('steampunk', 'steampunk_bg.webp');
+    expectImage('western', 'western_bg.webp');
+    expectImage('zen', 'zen_bg.webp');
   });
 
   it('leaves bgImage undefined for variants without shipped artwork', () => {

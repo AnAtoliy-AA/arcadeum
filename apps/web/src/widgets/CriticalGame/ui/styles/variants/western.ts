@@ -9,7 +9,7 @@ export const westernVariantStyles: VariantStyleConfig = {
       'radial-gradient(circle at 50% 20%, rgba(154, 52, 18, 0.24) 0%, rgba(44, 24, 16, 1) 45%, rgba(0, 0, 0, 1) 100%)',
     gridLineColorA: 'rgba(194, 65, 12, 0.15)',
     gridLineColorB: 'rgba(253, 230, 138, 0.1)',
-    sceneBackgroundImage: '/images/variants/western_bg.png',
+    sceneBackgroundImage: '/images/variants/western_bg.webp',
     particleColors: [
       'rgba(194, 65, 12, 0.8)',
       'rgba(253, 230, 138, 0.7)',

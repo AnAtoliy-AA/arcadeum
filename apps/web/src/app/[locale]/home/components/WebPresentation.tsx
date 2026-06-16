@@ -140,7 +140,6 @@ export function WebPresentation() {
                 alt={slide.title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
-                priority={index === 0}
                 style={{
                   objectFit: 'cover',
                   animation: isActive

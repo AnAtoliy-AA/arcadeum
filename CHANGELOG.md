@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.1] - 2026-06-16
+
+### Fixed
+- always show copied feedback after clipboard attempt (N/A)
+- add clipboard fallback for referral copy button in e2e (N/A)
+- remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
+- security, a11y, CSS, and code quality optimizations (N/A)
+- improve SEO, accessibility, and performance across 20 issues (N/A)
+- add build step to release workflow before e2e tests (N/A)
+- improve SEO metadata and AI search readiness (N/A)
+
+### Refactored
+- migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
+
+
 ## [1.17.0] - 2026-06-15
 
 

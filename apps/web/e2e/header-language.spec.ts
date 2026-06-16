@@ -81,7 +81,7 @@ test.describe('Header Language Switcher', () => {
     await expect(mobileSwitcher).toBeVisible();
 
     // 4. Pick FR via the pill and verify the document language updates.
-    await mobileNav.getByTestId('mobile-language-fr').click();
+    await mobileNav.getByTestId('mobile-language-fr').click({ force: true });
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
 });

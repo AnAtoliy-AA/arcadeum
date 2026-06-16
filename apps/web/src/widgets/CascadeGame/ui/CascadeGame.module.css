@@ -18,8 +18,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       120% 80% at 50% 0%,
       rgba(255, 255, 255, 0.08) 0%,
       transparent 45%
@@ -187,8 +186,7 @@
   height: 26px;
   border-radius: 4px;
   margin-left: -8px;
-  background:
-    repeating-linear-gradient(
+  background: repeating-linear-gradient(
       45deg,
       rgba(255, 255, 255, 0.16) 0 4px,
       transparent 4px 8px
@@ -220,8 +218,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 14%;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       125% 78% at 50% -8%,
       color-mix(in srgb, var(--face) 42%, transparent),
       transparent 56%
@@ -263,8 +260,7 @@
 
 .faceDown {
   --face: var(--cascade-accent, #a78bfa);
-  background:
-    repeating-linear-gradient(
+  background: repeating-linear-gradient(
       45deg,
       color-mix(in srgb, var(--face) 14%, transparent) 0px,
       color-mix(in srgb, var(--face) 14%, transparent) 6px,
@@ -378,8 +374,7 @@
 
 /* WILD / WILD +4 — prismatic aura on dark glass, not a single colour. */
 .wild {
-  background:
-    conic-gradient(
+  background: conic-gradient(
       from 200deg at 50% 118%,
       rgba(244, 63, 94, 0.55),
       rgba(251, 191, 36, 0.55),
@@ -410,8 +405,7 @@
  * more colour presence. Face-down backs keep their own treatment.
  */
 .aurora .card:not(.faceDown) {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       120% 70% at 18% 110%,
       color-mix(in srgb, var(--face) 70%, transparent),
       transparent 58%
@@ -424,8 +418,7 @@
     linear-gradient(158deg, #1f2536 0%, #0c1019 100%);
 }
 .aurora .card.wild {
-  background:
-    conic-gradient(
+  background: conic-gradient(
       from 200deg at 50% 118%,
       rgba(244, 63, 94, 0.6),
       rgba(251, 191, 36, 0.6),
@@ -491,6 +484,9 @@
   .handSlot {
     margin-left: -16px;
   }
+  .piles {
+    gap: 24px;
+  }
 }
 
 /* ---- Center piles --------------------------------------------------- */
@@ -511,8 +507,7 @@
   position: absolute;
   inset: 0;
   border-radius: 12px;
-  background:
-    repeating-linear-gradient(
+  background: repeating-linear-gradient(
       45deg,
       rgba(255, 255, 255, 0.05) 0px,
       rgba(255, 255, 255, 0.05) 6px,
@@ -535,8 +530,7 @@
   width: 92px;
   height: 138px;
   border-radius: 12px;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       120% 90% at 30% 18%,
       rgba(255, 255, 255, 0.16),
       transparent 55%
@@ -729,8 +723,7 @@
   height: 100px;
   padding: 8px;
   border-radius: 12px;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       125% 78% at 50% -8%,
       color-mix(in srgb, var(--face) 45%, transparent),
       transparent 56%

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
  * Guards against double-clicking the start button while waiting for the
@@ -8,22 +8,24 @@ import { useState, useEffect, useCallback } from 'react';
  * arrives.
  */
 export function usePendingStart(sessionId: string | null | undefined) {
-  const [pending, setPending] = useState(false);
   const [triggerSessionId, setTriggerSessionId] = useState<string | null>(null);
+  const [expiry, setExpiry] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (pending && sessionId && sessionId !== triggerSessionId) {
-    setPending(false);
-  }
+  const pending = expiry > 0 && !(sessionId && sessionId !== triggerSessionId);
 
   useEffect(() => {
-    if (!pending) return;
-    const t = setTimeout(() => setPending(false), 6000);
-    return () => clearTimeout(t);
-  }, [pending]);
+    if (expiry === 0) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setExpiry(0), 6000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [expiry]);
 
   const markPending = useCallback(() => {
     setTriggerSessionId(sessionId ?? null);
-    setPending(true);
+    setExpiry(1);
   }, [sessionId]);
 
   return { pendingStart: pending, markPendingStart: markPending } as const;

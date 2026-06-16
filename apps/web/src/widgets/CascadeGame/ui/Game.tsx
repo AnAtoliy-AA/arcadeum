@@ -169,7 +169,7 @@ function CascadeGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <YStack gap="$3" alignItems="stretch" padding="$1" width="100%">
       {snapshot ? (
         <>
           <TurnBadge
@@ -178,6 +178,7 @@ function CascadeGameImpl({
             activeColor={snapshot.activeColor}
             direction={snapshot.direction}
             pendingDraw={snapshot.pendingDraw}
+            members={room?.members}
           />
           <CascadeBoard
             snapshot={snapshot}
@@ -186,6 +187,7 @@ function CascadeGameImpl({
             myTurn={myTurn}
             disabled={isGameOver}
             cardStyle={options.cardStyle}
+            members={room?.members}
             onPlayCard={handlePlayCard}
             onDraw={draw}
             onCallCascade={callCascade}

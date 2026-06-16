@@ -8,7 +8,8 @@ export const esMessages = {
     variants: {
       cosmic: {
         name: 'Cósmico',
-        description: 'Tipos de estrellas, supernovas y agujeros de gusano entre los colores.',
+        description:
+          'Tipos de estrellas, supernovas y agujeros de gusano entre los colores.',
       },
       arcane: {
         name: 'Arcano',
@@ -16,7 +17,8 @@ export const esMessages = {
       },
       cyberpunk: {
         name: 'Cyberpunk',
-        description: 'Facciones de hackers de neón: Carmesí, Voltaje, Matriz, Cobalto.',
+        description:
+          'Facciones de hackers de neón: Carmesí, Voltaje, Matriz, Cobalto.',
       },
       elemental: {
         name: 'Elemental',
@@ -68,7 +70,8 @@ export const esMessages = {
       },
       themes: {
         title: 'Elige tu estilo',
-        subtitle: 'Mismas reglas, cuatro paletas de color e iconos de acción distintos.',
+        subtitle:
+          'Mismas reglas, cuatro paletas de color e iconos de acción distintos.',
       },
       faq: {
         differences: {
@@ -90,7 +93,8 @@ export const esMessages = {
     },
     lobby: {
       stacking: 'Permitir penalizaciones encadenables',
-      lastCardCall: 'Carrera por la Última Carta (pulsa Cascade cuando un rival llegue a 1)',
+      lastCardCall:
+        'Carrera por la Última Carta (pulsa Cascade cuando un rival llegue a 1)',
       startWithBots: 'Empezar con bots',
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando a los jugadores…',
@@ -142,6 +146,22 @@ export const esMessages = {
         WILD: 'Tormenta',
         WILD_DRAW_FOUR: 'Tempestad',
       },
+    },
+    board: {
+      last: 'ÚLTIMA',
+      draw: 'Robar',
+      discard: 'Descarte',
+      yourTurn: 'Tu turno',
+      waitingOn: 'Esperando a {{player}}',
+      waiting: 'Esperando…',
+      clockwise: 'Sentido horario',
+      counterClockwise: 'Sentido antihorario',
+      stacked: '+{{n}} encadenados',
+      chooseColor: 'Elige un color',
+      cards: '{{count}} cartas',
+      callCascade: '¡Cascade!',
+      callCascadeSelf: '¡Cascade! — sálvate',
+      backToGames: '← Juegos',
     },
     rules: {
       title: 'Reglas',
@@ -200,5 +220,13 @@ export const esMessages = {
       pendingDraw: '+{{n}} encadenados',
       activeColor: 'Color activo: {{color}}',
     },
+    cardColors: {
+      R: 'Rojo',
+      Y: 'Amarillo',
+      G: 'Verde',
+      B: 'Azul',
+      W: 'Comodín',
+    },
+    hiddenCard: 'Carta oculta',
   },
 };

@@ -2,6 +2,7 @@
 
 import { XStack, YStack } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import styles from './CascadeGame.module.css';
 import type { ActiveColor } from '../types';
@@ -12,6 +13,7 @@ interface TurnBadgeProps {
   activeColor: ActiveColor;
   direction: 1 | -1;
   pendingDraw: number;
+  members?: Array<{ id: string; displayName: string }>;
 }
 
 export function TurnBadge({
@@ -20,8 +22,10 @@ export function TurnBadge({
   activeColor,
   direction,
   pendingDraw,
+  members,
 }: TurnBadgeProps) {
   const theme = useCascadeTheme();
+  const { t } = useTranslation();
 
   return (
     <XStack
@@ -37,7 +41,7 @@ export function TurnBadge({
         {currentEntryId ? (
           <InGameAvatar
             playerId={currentEntryId}
-            name={shortId(currentEntryId)}
+            name={shortId(currentEntryId, members)}
             size="sm"
             data-testid="cascade-turn-avatar"
           />
@@ -45,10 +49,12 @@ export function TurnBadge({
         <YStack>
           <span className={styles.turnLabelMuted}>
             {myTurn
-              ? 'Your turn'
+              ? t('games.cascade_v1.board.yourTurn')
               : currentEntryId
-                ? `Waiting on ${shortId(currentEntryId)}`
-                : 'Waiting…'}
+                ? t('games.cascade_v1.board.waitingOn', {
+                    player: shortId(currentEntryId, members),
+                  })
+                : t('games.cascade_v1.board.waiting')}
           </span>
           <span className={styles.turnLabelStrong}>
             <span
@@ -59,13 +65,17 @@ export function TurnBadge({
             >
               ↻
             </span>
-            {direction === 1 ? 'Clockwise' : 'Counter-clockwise'}
+            {direction === 1
+              ? t('games.cascade_v1.board.clockwise')
+              : t('games.cascade_v1.board.counterClockwise')}
           </span>
         </YStack>
       </XStack>
       <XStack alignItems="center" gap="$2">
         {pendingDraw > 0 ? (
-          <span className={styles.stackBadge}>+{pendingDraw} stacked</span>
+          <span className={styles.stackBadge}>
+            {t('games.cascade_v1.board.stacked', { n: pendingDraw })}
+          </span>
         ) : null}
         <span
           className={styles.colorChip}
@@ -75,7 +85,9 @@ export function TurnBadge({
               '--chip-glow': theme.palette[activeColor],
             } as React.CSSProperties
           }
-          aria-label={`Active color ${activeColor}`}
+          aria-label={t('games.cascade_v1.status.activeColor', {
+            color: activeColor,
+          })}
         >
           {activeColor}
         </span>
@@ -84,7 +96,12 @@ export function TurnBadge({
   );
 }
 
-function shortId(id: string): string {
+function shortId(
+  id: string,
+  members?: Array<{ id: string; displayName: string }>,
+): string {
   if (id.startsWith('bot-')) return 'Bot';
+  const member = members?.find((m) => m.id === id);
+  if (member?.displayName) return member.displayName;
   return id.slice(0, 6) + '…';
 }

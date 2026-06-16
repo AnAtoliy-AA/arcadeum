@@ -8,7 +8,8 @@ export const frMessages = {
     variants: {
       cosmic: {
         name: 'Cosmique',
-        description: 'Types d’étoiles, supernovae et trous de ver parmi les couleurs.',
+        description:
+          'Types d’étoiles, supernovae et trous de ver parmi les couleurs.',
       },
       arcane: {
         name: 'Arcane',
@@ -16,7 +17,8 @@ export const frMessages = {
       },
       cyberpunk: {
         name: 'Cyberpunk',
-        description: 'Factions de hackers néon : Cramoisi, Voltage, Matrice, Cobalt.',
+        description:
+          'Factions de hackers néon : Cramoisi, Voltage, Matrice, Cobalt.',
       },
       elemental: {
         name: 'Élémentaire',
@@ -68,7 +70,8 @@ export const frMessages = {
       },
       themes: {
         title: 'Choisissez votre ambiance',
-        subtitle: 'Mêmes règles, quatre palettes de couleurs et icônes d’action distinctes.',
+        subtitle:
+          'Mêmes règles, quatre palettes de couleurs et icônes d’action distinctes.',
       },
       faq: {
         differences: {
@@ -90,7 +93,8 @@ export const frMessages = {
     },
     lobby: {
       stacking: 'Autoriser les pénalités enchaînables',
-      lastCardCall: 'Course à la Dernière Carte (appuyez sur Cascade quand un adversaire arrive à 1)',
+      lastCardCall:
+        'Course à la Dernière Carte (appuyez sur Cascade quand un adversaire arrive à 1)',
       startWithBots: 'Démarrer avec des bots',
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente des joueurs…',
@@ -142,6 +146,22 @@ export const frMessages = {
         WILD: 'Tempête',
         WILD_DRAW_FOUR: 'Ouragan',
       },
+    },
+    board: {
+      last: 'DERNIÈRE',
+      draw: 'Piocher',
+      discard: 'Défausse',
+      yourTurn: 'Votre tour',
+      waitingOn: 'En attente de {{player}}',
+      waiting: 'En attente…',
+      clockwise: 'Sens horaire',
+      counterClockwise: 'Sens anti-horaire',
+      stacked: '+{{n}} enchaînés',
+      chooseColor: 'Choisissez une couleur',
+      cards: '{{count}} cartes',
+      callCascade: 'Cascade !',
+      callCascadeSelf: 'Cascade ! — sauvez-vous',
+      backToGames: '← Jeux',
     },
     rules: {
       title: 'Règles',
@@ -200,5 +220,13 @@ export const frMessages = {
       pendingDraw: '+{{n}} enchaînés',
       activeColor: 'Couleur active : {{color}}',
     },
+    cardColors: {
+      R: 'Rouge',
+      Y: 'Jaune',
+      G: 'Vert',
+      B: 'Bleu',
+      W: 'Joker',
+    },
+    hiddenCard: 'Carte cachée',
   },
 };

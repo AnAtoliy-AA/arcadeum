@@ -16,7 +16,8 @@ export const ruMessages = {
       },
       cyberpunk: {
         name: 'Киберпанк',
-        description: 'Неоновые фракции хакеров: Багряные, Вольтаж, Матрица, Кобальт.',
+        description:
+          'Неоновые фракции хакеров: Багряные, Вольтаж, Матрица, Кобальт.',
       },
       elemental: {
         name: 'Стихии',
@@ -68,7 +69,8 @@ export const ruMessages = {
       },
       themes: {
         title: 'Выберите атмосферу',
-        subtitle: 'Те же правила, четыре разные цветовые палитры и иконки действий.',
+        subtitle:
+          'Те же правила, четыре разные цветовые палитры и иконки действий.',
       },
       faq: {
         differences: {
@@ -90,7 +92,8 @@ export const ruMessages = {
     },
     lobby: {
       stacking: 'Разрешить цепочки штрафов',
-      lastCardCall: 'Гонка за Последнюю Карту (жмите Cascade, когда у соперника останется 1)',
+      lastCardCall:
+        'Гонка за Последнюю Карту (жмите Cascade, когда у соперника останется 1)',
       startWithBots: 'Начать с ботами',
       addBot: 'Добавить бота',
       waitingForPlayers: 'Ожидание игроков…',
@@ -142,6 +145,22 @@ export const ruMessages = {
         WILD: 'Буря',
         WILD_DRAW_FOUR: 'Шторм',
       },
+    },
+    board: {
+      last: 'ПОСЛЕДНЯЯ',
+      draw: 'Взять',
+      discard: 'Сброс',
+      yourTurn: 'Ваш ход',
+      waitingOn: 'Ожидание {{player}}',
+      waiting: 'Ожидание…',
+      clockwise: 'По часовой',
+      counterClockwise: 'Против часовой',
+      stacked: '+{{n}} в цепочке',
+      chooseColor: 'Выберите цвет',
+      cards: '{{count}} карт',
+      callCascade: 'Cascade!',
+      callCascadeSelf: 'Cascade! — спасите себя',
+      backToGames: '← Игры',
     },
     rules: {
       title: 'Правила',
@@ -200,5 +219,13 @@ export const ruMessages = {
       pendingDraw: '+{{n}} в цепочке',
       activeColor: 'Активный цвет: {{color}}',
     },
+    cardColors: {
+      R: 'Красный',
+      Y: 'Жёлтый',
+      G: 'Зелёный',
+      B: 'Синий',
+      W: 'Дикий',
+    },
+    hiddenCard: 'Рубашка',
   },
 };

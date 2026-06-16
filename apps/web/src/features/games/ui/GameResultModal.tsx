@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
+import { styled, YStack, XStack, H1, Paragraph, Text, useMedia } from 'tamagui';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -34,11 +34,11 @@ interface GameResultModalProps {
 // --- Internal Styled Components ---
 
 const StyledBackdrop = styled(YStack, {
-  position: 'absolute',
+  position: 'fixed',
   top: 0,
   left: 0,
-  right: 0,
-  bottom: 0,
+  width: '100vw',
+  height: '100dvh',
   zIndex: 1199,
   backgroundColor: 'rgba(0, 0, 0, 0.85)',
   backdropFilter: 'blur(12px)',
@@ -75,6 +75,8 @@ const ContentWrapper = styled(YStack, {
   shadowOffset: { width: 0, height: 40 },
   maxWidth: '90%',
   width: 520,
+  maxHeight: '90dvh',
+  overflowY: 'auto',
   position: 'relative',
   borderTopColor: 'rgba(255, 255, 255, 0.2)',
   borderLeftColor: 'rgba(255, 255, 255, 0.15)',
@@ -138,6 +140,14 @@ const StyledResultContent = styled(Dialog.Content, {
   backgroundColor: 'transparent',
   borderWidth: 0,
   padding: 0,
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100dvh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   x: 0,
   y: 0,
   scale: 1,
@@ -181,6 +191,7 @@ export function GameResultModal({
     () => false,
   );
 
+  const media = useMedia();
   const { play } = useSound();
   // Play the result sting once when the modal opens (not on every re-render).
   const playedForRef = useRef<GameResultKind | null>(null);
@@ -219,7 +230,12 @@ export function GameResultModal({
             </Dialog.Description>
           </VisuallyHidden>
 
-          <ContentWrapper className="animate-entrance">
+          <ContentWrapper
+            className="animate-entrance"
+            padding={media.sm ? '$5' : '$10'}
+            borderRadius={media.sm ? 24 : 40}
+            width={media.sm ? '95%' : 520}
+          >
             {onClose && (
               <XStack position="absolute" top="$4" right="$4">
                 <CloseButton onClick={onClose} data-testid="modal-close-button">
@@ -249,7 +265,7 @@ export function GameResultModal({
               {onRematch && (
                 <Button
                   variant={isVictory ? 'primary' : 'secondary'}
-                  size="lg"
+                  size={media.sm ? 'md' : 'lg'}
                   onClick={onRematch}
                   disabled={rematchLoading}
                   data-testid="rematch-button"
@@ -269,7 +285,11 @@ export function GameResultModal({
               </HomeLink>
 
               {onClose && (
-                <Button variant="ghost" onClick={onClose} size="md">
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  size={media.sm ? 'sm' : 'md'}
+                >
                   {t('games.table.modals.common.close' as TranslationKey)}
                 </Button>
               )}

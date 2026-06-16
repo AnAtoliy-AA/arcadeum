@@ -116,7 +116,7 @@ export function CascadeBoard({
       width="100%"
       gap="$3"
       padding="$0"
-      paddingTop="$1"
+      paddingTop="$4"
       borderRadius="$4"
       className={`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}
       style={

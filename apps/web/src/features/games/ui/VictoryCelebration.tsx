@@ -7,11 +7,11 @@ export type CelebrationTone = 'victory' | 'defeat' | 'draw';
 
 const Layer = styled(YStack, {
   name: 'VictoryCelebrationLayer',
-  position: 'absolute',
+  position: 'fixed',
   top: 0,
   left: 0,
-  right: 0,
-  bottom: 0,
+  width: '100vw',
+  height: '100dvh',
   pointerEvents: 'none',
   overflow: 'hidden',
   zIndex: 0,

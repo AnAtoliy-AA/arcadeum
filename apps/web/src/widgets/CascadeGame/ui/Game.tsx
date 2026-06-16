@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { YStack } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
@@ -83,7 +83,13 @@ function CascadeGameImpl({
     userId: currentUserId,
   });
 
-  const { pendingStart, markPendingStart } = usePendingStart(session?.id);
+  const { pendingStart, markPendingStart, clearPendingStart } = usePendingStart(
+    session?.id,
+  );
+
+  useEffect(() => {
+    if (!isLobby) clearPendingStart();
+  }, [isLobby, clearPendingStart]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
@@ -169,7 +175,7 @@ function CascadeGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <YStack gap="$3" alignItems="stretch" padding="$1" width="100%">
       {snapshot ? (
         <>
           <TurnBadge
@@ -178,6 +184,7 @@ function CascadeGameImpl({
             activeColor={snapshot.activeColor}
             direction={snapshot.direction}
             pendingDraw={snapshot.pendingDraw}
+            members={room?.members}
           />
           <CascadeBoard
             snapshot={snapshot}
@@ -186,6 +193,7 @@ function CascadeGameImpl({
             myTurn={myTurn}
             disabled={isGameOver}
             cardStyle={options.cardStyle}
+            members={room?.members}
             onPlayCard={handlePlayCard}
             onDraw={draw}
             onCallCascade={callCascade}

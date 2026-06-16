@@ -143,6 +143,22 @@ export const enMessages = {
         WILD_DRAW_FOUR: 'Tempest',
       },
     },
+    board: {
+      last: 'LAST',
+      draw: 'Draw',
+      discard: 'Discard',
+      yourTurn: 'Your turn',
+      waitingOn: 'Waiting on {{player}}',
+      waiting: 'Waiting…',
+      clockwise: 'Clockwise',
+      counterClockwise: 'Counter-clockwise',
+      stacked: '+{{n}} stacked',
+      chooseColor: 'Choose a color',
+      cards: '{{count}} cards',
+      callCascade: 'Call Cascade',
+      callCascadeSelf: 'Call Cascade — save yourself',
+      backToGames: '← Games',
+    },
     rules: {
       title: 'Rules',
       objective:
@@ -195,10 +211,18 @@ export const enMessages = {
       gameOver: 'The game has ended.',
     },
     status: {
-      turn: '{{player}}’s turn',
+      turn: "{{player}}'s turn",
       winner: '{{player}} won',
       pendingDraw: '+{{n}} stacked',
       activeColor: 'Active color: {{color}}',
     },
+    cardColors: {
+      R: 'Red',
+      Y: 'Yellow',
+      G: 'Green',
+      B: 'Blue',
+      W: 'Wild',
+    },
+    hiddenCard: 'Hidden card',
   },
 };

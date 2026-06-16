@@ -145,16 +145,14 @@ function describeCard(
   variant: CascadeVariant,
   t: (key: TranslationKey) => string,
 ): string {
-  if (faceDown) return 'Hidden card';
-  if (card.kind === 'NUMBER') return `${colorName(card.color)} ${card.value}`;
-  // Action / wild cards: resolve to the per-theme name (Eclipse / Banish /
-  // Firewall / Block, etc.). Wilds carry the themed name only; non-wild
-  // action cards prefix the color so screen-reader users hear "Red Eclipse".
+  if (faceDown) return t('games.cascade_v1.hiddenCard');
+  if (card.kind === 'NUMBER')
+    return `${t(`games.cascade_v1.cardColors.${card.color}` as TranslationKey)} ${card.value}`;
   const themed = t(themedCardKey(variant, card.kind));
   if (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR') {
     return themed;
   }
-  return `${colorName(card.color)} ${themed}`;
+  return `${t(`games.cascade_v1.cardColors.${card.color}` as TranslationKey)} ${themed}`;
 }
 
 function themedCardKey(
@@ -162,10 +160,6 @@ function themedCardKey(
   kind: Exclude<CascadeCard['kind'], 'NUMBER'>,
 ): TranslationKey {
   return `games.cascade_v1.themedCards.${variant}.${kind}` as TranslationKey;
-}
-
-function colorName(c: CascadeCard['color']): string {
-  return { R: 'Red', Y: 'Yellow', G: 'Green', B: 'Blue', W: 'Wild' }[c];
 }
 
 export const Card = memo(CardImpl);

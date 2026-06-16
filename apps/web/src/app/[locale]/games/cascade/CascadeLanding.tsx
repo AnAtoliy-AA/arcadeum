@@ -19,6 +19,9 @@ interface Props {
   roomsHref: string;
   gamesHref: string;
   homeHref: string;
+  homeLabel: string;
+  gamesLabel: string;
+  backToGamesLabel: string;
 }
 
 export default function CascadeLanding({
@@ -29,6 +32,9 @@ export default function CascadeLanding({
   roomsHref,
   gamesHref,
   homeHref,
+  homeLabel,
+  gamesLabel,
+  backToGamesLabel,
 }: Props) {
   if (!landing) return null;
 
@@ -117,12 +123,13 @@ export default function CascadeLanding({
             gamesHref={gamesHref}
             createRoomLabel={landing.hero.createRoom}
             browseRoomsLabel={landing.hero.browseRooms}
+            backToGamesLabel={backToGamesLabel}
           />
 
           <nav className={styles.breadcrumbs}>
-            <Link href={homeHref}>Home</Link>
+            <Link href={homeHref}>{homeLabel}</Link>
             <span aria-hidden> / </span>
-            <Link href={gamesHref}>Games</Link>
+            <Link href={gamesHref}>{gamesLabel}</Link>
             <span aria-hidden> / </span>
             <span>Cascade</span>
           </nav>

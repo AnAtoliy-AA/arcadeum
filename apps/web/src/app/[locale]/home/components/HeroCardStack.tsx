@@ -60,16 +60,9 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
     pointerDownRef.current = true;
   }, []);
 
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      pointerDownRef.current = false;
-      const stack = stackRef.current;
-      if (stack) {
-        setHoveredIndex(indexFromPointerX(e.clientX, stack));
-      }
-    },
-    [],
-  );
+  const handlePointerUp = useCallback(() => {
+    pointerDownRef.current = false;
+  }, []);
 
   const handlePointerLeave = useCallback(() => {
     const stack = stackRef.current;

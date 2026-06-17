@@ -286,6 +286,9 @@
     opacity 0.6s ease-out,
     box-shadow 0.3s ease;
   pointer-events: none;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .hero-card-image {
@@ -372,28 +375,17 @@
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 8px 22px rgba(0, 0, 0, 0.45);
-  opacity: 0;
   pointer-events: none;
-  transition:
-    opacity 0.22s ease,
-    transform 0.22s ease,
-    background 0.22s ease;
+  transition: transform 0.22s ease;
   white-space: nowrap;
 }
 
 .hero-card-active .hero-card-play-cta {
-  opacity: 1;
-  pointer-events: auto;
   transform: translate(-50%, -50%) scale(1);
-}
-
-.hero-card-play-cta:hover {
-  background: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card-play-cta {
-    transition: opacity 0.15s ease;
     transform: translate(-50%, -50%) scale(1);
   }
 }

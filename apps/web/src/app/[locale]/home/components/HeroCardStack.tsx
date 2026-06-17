@@ -92,8 +92,9 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
           const isActive = hoveredIndex === index;
 
           return (
-            <div
+            <Link
               key={index}
+              href={`${routes.gameCreate}?variant=${card.id}`}
               className={`hero-card-main${isActive ? ' hero-card-active' : ''}`}
               style={
                 {
@@ -125,14 +126,13 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
                 {t(card.nameKey as TranslationKey) || card.nameKey}
               </div>
               <div className="hero-card-brand">CRITICAL</div>
-              <Link
-                href={`${routes.gameCreate}?variant=${card.id}`}
+              <span
                 className="hero-card-play-cta"
                 data-testid={`hero-play-cta-${index}`}
               >
                 {playLabel}
-              </Link>
-            </div>
+              </span>
+            </Link>
           );
         })}
       </div>

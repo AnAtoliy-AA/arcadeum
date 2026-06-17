@@ -4,7 +4,6 @@ import { ReactNode, useEffect } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
 import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-import { SessionRoleSync } from '@/entities/session/model/SessionRoleSync';
 import {
   config as tamaguiConfig,
   setupTamagui,
@@ -71,10 +70,5 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
     useSessionStore.getState().setHydrated(true);
   }, []);
 
-  return (
-    <>
-      <SessionRoleSync />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

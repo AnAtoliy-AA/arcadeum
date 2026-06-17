@@ -1,6 +1,4 @@
-import { YStack } from '@arcadeum/ui';
-import { Typography } from '@arcadeum/ui';
-import { PageTitle } from '@/shared/ui';
+import { YStack, Typography, PageTitle } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export function PaymentHeader() {

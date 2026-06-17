@@ -8,7 +8,7 @@ import {
   IconButton,
   type GameVariant,
 } from '@arcadeum/ui';
-import { MaximizeIcon, MinimizeIcon } from '@/shared/ui';
+import { MaximizeIcon, MinimizeIcon } from '@arcadeum/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { scrollbarStyles } from '@/shared/lib/styles';
@@ -36,8 +36,8 @@ export function useWidgetFullscreen(): boolean {
 const Container = styled(BaseGameContainer, {
   name: 'GameWidgetContainer',
   gap: '$5',
-  paddingHorizontal: '$7',
-  paddingTop: '$7',
+  paddingHorizontal: '$1',
+  paddingTop: 0,
   paddingBottom: 0,
   borderRadius: 24,
   minHeight: 0,
@@ -55,7 +55,7 @@ const Container = styled(BaseGameContainer, {
 
   $sm: {
     paddingHorizontal: '$2',
-    paddingTop: '$2',
+    paddingTop: 0,
     paddingBottom: 0,
     borderRadius: 16,
     overflowX: 'hidden',
@@ -72,12 +72,22 @@ const Container = styled(BaseGameContainer, {
     },
     isFullscreen: {
       true: {
-        maxWidth: '100vw',
-        maxHeight: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         width: '100vw',
         height: '100vh',
+        maxWidth: '100vw',
+        maxHeight: '100vh',
         borderRadius: 0,
-        borderWidth: 0,
+        background: '#151718',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        zIndex: 1100,
+        paddingHorizontal: '$1',
+        paddingTop: 0,
       },
     },
   } as const,
@@ -96,19 +106,19 @@ const GameHeader = styled(XStack, {
   backdropFilter: 'blur(16px)',
   borderBottomWidth: 1,
   borderBottomColor: '$glassBorder',
-  marginHorizontal: -28,
-  marginTop: -28,
+  marginHorizontal: '-$1',
+  marginTop: 0,
   position: 'sticky',
-  top: -28,
+  top: 0,
   zIndex: 30,
   flexShrink: 0,
 
   $sm: {
     paddingHorizontal: '$4',
     paddingVertical: '$2',
-    marginHorizontal: -8,
-    marginTop: -8,
-    top: -8,
+    marginHorizontal: '-$2',
+    marginTop: 0,
+    top: 0,
     gap: '$1',
     flexWrap: 'nowrap',
   },
@@ -240,13 +250,14 @@ export const SharedGameBoard = styled(BaseGameBoard, {
   flexDirection: 'column',
   position: 'relative',
   width: '100%',
-  // Fill the remaining height of the widget container after the sticky
-  // header so the boards inside can use 1fr-row CSS to fit vertically
-  // without scroll. Inner content opts in via flex propagation.
   flex: 1,
   minHeight: 0,
   minWidth: 0,
   overflow: 'visible',
+
+  $sm: {
+    padding: '$2',
+  },
 });
 
 export const SharedTableArea = styled(BaseTableArea, {
@@ -332,23 +343,6 @@ interface GameWidgetContainerProps {
    */
   showChatPopup?: boolean;
 }
-
-const gameWidgetGlobalStyles = `
-  .game-widget-container.is-fullscreen {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
-    border-width: 0 !important;
-    background: #151718 !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    z-index: 1100;
-  }
-`;
 
 export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   headerProps,
@@ -454,12 +448,12 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
 
   return (
     <>
-      <style>{gameWidgetGlobalStyles}</style>
       <WidgetFullscreenContext.Provider value={isFullscreen}>
         <Container
           ref={containerRef as React.RefObject<never>}
           className="game-widget-container"
           $isMyTurn={!!isMyTurn}
+          isFullscreen={isFullscreen}
           $variant={variant as GameVariant}
           data-testid="game-widget-container"
         >

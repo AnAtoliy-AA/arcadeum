@@ -105,6 +105,16 @@ export function WebPresentation() {
     [goToSlide],
   );
 
+  const createSlideKeyDownHandler = useCallback(
+    (index: number) => (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        goToSlide(index);
+      }
+    },
+    [goToSlide],
+  );
+
   return (
     <div ref={containerRef} className="presentation-container">
       {slides.map((slide, index) => {
@@ -130,7 +140,6 @@ export function WebPresentation() {
                 alt={slide.title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
-                priority={index === 0}
                 style={{
                   objectFit: 'cover',
                   animation: isActive
@@ -160,7 +169,9 @@ export function WebPresentation() {
                   key={index}
                   className="presentation-progress-segment"
                   onClick={createSlideClickHandler(index)}
+                  onKeyDown={createSlideKeyDownHandler(index)}
                   role="button"
+                  tabIndex={0}
                   aria-label={`Go to slide ${index + 1}`}
                   style={{
                     background: isActive

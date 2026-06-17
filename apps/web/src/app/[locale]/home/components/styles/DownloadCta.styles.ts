@@ -9,7 +9,7 @@ export const DownloadCtaSection = styled(SectionContainer, {
 });
 
 // DownloadCtaCard uses GlassCard directly in the component
-export { GlassCard as DownloadCtaCard } from '@/shared/ui';
+export { GlassCard as DownloadCtaCard } from '@arcadeum/ui';
 
 export const DownloadTitle = styled(Text, {
   name: 'DownloadTitle',

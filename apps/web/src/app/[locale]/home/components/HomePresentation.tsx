@@ -69,15 +69,15 @@ export default function HomePresentation() {
         ) : (
           <div
             className="video-placeholder-main"
-            onClick={handlePlayClick}
             data-testid="video-placeholder"
           >
             <Image
-              src="/images/home/video-cover.png"
+              src="/images/home/video-cover.webp"
               alt="Arcadeum Trailer Illustration"
               fill
-              priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEwMCIgaGVpZ2h0PSI2MTkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgZmlsbD0iIzMyMzUzZCIgd2lkdGg9IjExMDAiIGhlaWdodD0iNjE5Ii8+PC9zdmc+"
               data-testid="video-thumbnail"
               style={{ objectFit: 'cover', opacity: 0.85 }}
             />

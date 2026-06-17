@@ -1,9 +1,11 @@
 'use client';
 
-import { Button, Badge, Card, ArrowLeftIcon, XStack } from '@arcadeum/ui';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { useTranslation } from '@/shared/lib/useTranslation';
 import {
+  Button,
+  Badge,
+  Card,
+  ArrowLeftIcon,
+  XStack,
   Modal,
   ModalContent,
   ModalHeader,
@@ -12,7 +14,9 @@ import {
   LoadingState,
   ErrorState,
   Section,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   HistorySummary,
   HistoryDetail,

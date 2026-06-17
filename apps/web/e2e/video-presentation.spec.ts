@@ -21,7 +21,7 @@ test.describe('Video Presentation', () => {
       'alt',
       'Arcadeum Trailer Illustration',
     );
-    await expect(thumbnail).toHaveAttribute('src', /video-cover\.png/);
+    await expect(thumbnail).toHaveAttribute('src', /video-cover\.webp/);
   });
 
   test('should play video on click', async ({ page }) => {

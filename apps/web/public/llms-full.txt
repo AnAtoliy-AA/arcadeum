@@ -44,7 +44,18 @@ Arcadeum lets you play board games online with friends or AI opponents. Each gam
 
 ### Links
 
-- Website: https://arcadeum.games
+- [Home](https://arcadeum.games/en): Landing page with featured games and overview
+- [Games](https://arcadeum.games/en/games): Browse all games and join rooms
+- [Sea Battle](https://arcadeum.games/en/games/sea-battle): Classic Battleship strategy game
+- [Critical](https://arcadeum.games/en/games/critical): Strategic card game — draw, defuse, survive
+- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants, 2–5 players
+- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game with stacking chains
+- [Blog](https://arcadeum.games/en/blog): Guides, tutorials, and news
+- [Community](https://arcadeum.games/en/community): Join the Arcadeum community
+- [Leaderboards](https://arcadeum.games/en/leaderboards): Top players and rankings
+- [Tournaments](https://arcadeum.games/en/tournaments): Competitive play schedules
+- [Developers](https://arcadeum.games/en/developers): API and integration docs
+- [Support](https://arcadeum.games/en/support): Help and contact info
 - Discord: https://discord.gg/arcadeum
 - Telegram: https://t.me/arcadeum
 - GitHub: https://github.com/anomalyco/arcadeum

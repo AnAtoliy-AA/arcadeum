@@ -6,6 +6,7 @@ interface Props {
   gamesHref: string;
   createRoomLabel: string;
   browseRoomsLabel: string;
+  backToGamesLabel: string;
 }
 
 export function CascadeFinalCtaButtons({
@@ -14,6 +15,7 @@ export function CascadeFinalCtaButtons({
   gamesHref,
   createRoomLabel,
   browseRoomsLabel,
+  backToGamesLabel,
 }: Props) {
   return (
     <div
@@ -59,7 +61,7 @@ export function CascadeFinalCtaButtons({
           textDecoration: 'underline',
         }}
       >
-        ← Games
+        {backToGamesLabel}
       </Link>
     </div>
   );

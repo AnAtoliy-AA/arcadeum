@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button, Badge } from '@arcadeum/ui';
+import { Button, Badge, RefreshIcon } from '@arcadeum/ui';
 import {
   Sidebar,
   LobbyCard,
@@ -44,7 +44,6 @@ import {
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
 import { ConfirmationModal } from './ConfirmationModal';
-import { RefreshIcon } from '@arcadeum/ui';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;

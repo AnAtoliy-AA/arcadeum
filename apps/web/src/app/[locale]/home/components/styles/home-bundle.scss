@@ -27,7 +27,6 @@
     /* Deep shadow */ 12px 18px 30px rgba(0, 0, 0, 0.6); /* Soft floor shadow */
 
   animation: hero-float-3d 6s ease-in-out infinite;
-  will-change: transform;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -81,26 +80,11 @@
   animation:
     hero-shimmer 8s linear infinite,
     hero-color-shift 15s linear infinite;
-
-  will-change: background-position, filter;
 }
 
 /* Cleanup */
 .hero-title-shimmer::before {
   display: none !important;
-}
-
-@keyframes hero-shimmer {
-  0% {
-    background-position:
-      200% center,
-      0% center;
-  }
-  100% {
-    background-position:
-      -200% center,
-      200% center;
-  }
 }
 
 @keyframes hero-color-shift {
@@ -132,15 +116,6 @@
 @keyframes hero-shimmer {
   0% {
     background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-@keyframes hero-glint-flow {
-  0% {
-    background-position: -200% center;
   }
   100% {
     background-position: 200% center;
@@ -311,6 +286,9 @@
     opacity 0.6s ease-out,
     box-shadow 0.3s ease;
   pointer-events: none;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .hero-card-image {
@@ -397,23 +375,17 @@
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 8px 22px rgba(0, 0, 0, 0.45);
-  opacity: 0;
   pointer-events: none;
+  opacity: 0;
   transition:
     opacity 0.22s ease,
-    transform 0.22s ease,
-    background 0.22s ease;
+    transform 0.22s ease;
   white-space: nowrap;
 }
 
-.hero-card-main:hover .hero-card-play-cta {
+.hero-card-active .hero-card-play-cta {
   opacity: 1;
-  pointer-events: auto;
   transform: translate(-50%, -50%) scale(1);
-}
-
-.hero-card-play-cta:hover {
-  background: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -423,12 +395,13 @@
   }
 }
 
+[data-hydrated="true"] .hero-card-main,
 .is-hydrated .hero-card-main {
   opacity: 1;
   pointer-events: auto;
 }
 
-.hero-card-main:hover {
+.hero-card-active {
   transform: translate(var(--card-x), calc(var(--card-y) - 20px))
     rotate(var(--card-rotate)) scale(1.05) !important;
   z-index: 100 !important;
@@ -454,13 +427,13 @@
   transition: transform 1.6s ease;
 }
 
-.hero-card-main:hover::after {
+.hero-card-active::after {
   transform: translateX(100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card-main::after,
-  .hero-card-main:hover::after {
+  .hero-card-active::after {
     transition: none;
     transform: translateX(-100%);
   }

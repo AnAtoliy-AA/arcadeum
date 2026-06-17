@@ -156,6 +156,14 @@ const nextConfig: NextConfig = {
             value:
               'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin',
+          },
         ],
       },
       {
@@ -198,6 +206,27 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             value: "default-src 'self'; script-src 'self'",
+          },
+        ],
+      },
+      // Static assets in /public — long-lived immutable cache. These
+      // files never change between deploys (Next.js hashes _next/static
+      // automatically; the rules below cover /images, /fonts, etc.).
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/fonts/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
@@ -285,12 +314,7 @@ const nextConfig: NextConfig = {
   // origin request detected" warning on every /_next/* request. Allow both
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
-  reactCompiler: false,
-  compiler: {
-    styledComponents: {
-      ssr: true,
-    },
-  },
+  reactCompiler: true,
   transpilePackages: [
     'tamagui',
     '@tamagui/core',

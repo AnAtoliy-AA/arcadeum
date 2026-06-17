@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   walletSocket,
@@ -12,27 +12,36 @@ interface Props {
   authToken: string;
 }
 
+const DEFER_MS = 2000;
+
 /**
  * Client island that maintains the wallet socket connection for authenticated
  * users. Listens for `wallet:updated` events and calls `router.refresh()` so
  * any Server Component showing a balance re-fetches from the server.
  *
- * Mounted exactly once in the root layout (apps/web/src/app/layout.tsx) so it
- * is not re-created when navigating between pages. The bridge is only rendered
- * when a valid auth token exists — the Server Component parent guards that.
+ * The connection is deferred by 2 s so it doesn't compete with initial
+ * rendering / LCP on pages where wallet data isn't displayed (e.g. landing).
  */
 export function WalletLiveBridge({ authToken }: Props) {
   const router = useRouter();
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    connectWalletSocket(authToken);
+    const timer = setTimeout(() => {
+      connectWalletSocket(authToken);
 
-    const onUpdate = () => router.refresh();
-    walletSocket.on('wallet:updated', onUpdate);
+      const onUpdate = () => router.refresh();
+      walletSocket.on('wallet:updated', onUpdate);
+
+      cleanupRef.current = () => {
+        walletSocket.off('wallet:updated', onUpdate);
+        disconnectWalletSocket();
+      };
+    }, DEFER_MS);
 
     return () => {
-      walletSocket.off('wallet:updated', onUpdate);
-      disconnectWalletSocket();
+      clearTimeout(timer);
+      cleanupRef.current?.();
     };
   }, [authToken, router]);
 

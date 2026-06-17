@@ -16,9 +16,8 @@ import {
   CardFrame,
   GradientScrim,
 } from './styles';
-import { Typography } from '@/shared/ui';
+import { Typography, type GameVariant } from '@arcadeum/ui';
 import { CardImage } from './styles/card-image';
-import { type GameVariant } from '@arcadeum/ui';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Locale } from '@/shared/i18n';
-import { Container } from '@/shared/ui';
+import { Container } from '@arcadeum/ui';
 import styles from './BlogPostList.module.scss';
 
 export interface BlogPostCard {

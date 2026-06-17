@@ -124,6 +124,11 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        homeLabel={messages.navigation?.homeTab ?? 'Home'}
+        gamesLabel={messages.navigation?.gamesTab ?? 'Games'}
+        backToGamesLabel={
+          messages.games?.cascade_v1?.board?.backToGames ?? '← Games'
+        }
       />
     </>
   );

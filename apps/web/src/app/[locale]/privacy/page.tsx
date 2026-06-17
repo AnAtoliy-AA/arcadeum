@@ -3,10 +3,8 @@ import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';
 import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
+import { appConfig } from '@/shared/config/app-config';
 import PrivacyClient from './PrivacyClient';
-
-const PRIVACY_EMAIL =
-  process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? 'arcadeum.care@gmail.com';
 
 export async function generateMetadata({
   params,
@@ -31,7 +29,7 @@ export default async function PrivacyPage({
       <PrivacyClient
         t={messages.legal?.privacy}
         contactT={messages.legal?.contact}
-        PRIVACY_EMAIL={PRIVACY_EMAIL}
+        PRIVACY_EMAIL={appConfig.privacyEmail}
       />
     </>
   );

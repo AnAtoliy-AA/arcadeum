@@ -2,7 +2,7 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   Spinner as SharedSpinner,
   PageTitle as SharedPageTitle,
-} from '@/shared/ui';
+} from '@arcadeum/ui';
 
 export const Header = styled(XStack, {
   name: 'Header',

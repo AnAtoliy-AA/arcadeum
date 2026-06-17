@@ -1,7 +1,7 @@
 'use client';
 
 import { styled, H2, Text, YStack } from 'tamagui';
-import { Container } from '@/shared/ui';
+import { Container } from '@arcadeum/ui';
 
 export const PageWrapper = styled(YStack, {
   name: 'PageWrapper',

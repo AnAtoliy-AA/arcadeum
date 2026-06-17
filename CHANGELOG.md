@@ -7,6 +7,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.10] - 2026-06-17
+
+### Fixed
+- show play badge only on hero card hover (N/A)
+
+
+## [1.17.9] - 2026-06-17
+
+### Fixed
+- make entire hero card clickable, play label is just a badge (N/A)
+- remove hoveredIndex recalc on pointerup so click reaches play button (N/A)
+- freeze hero card hover during click to prevent play button disappearing (N/A)
+- hero card hover overlap race condition (N/A)
+- prevent hero card overlap blocking play button on hover (N/A)
+
+
+## [1.17.8] - 2026-06-17
+
+### Fixed
+- resolve hydration mismatch in layout caused by Turbopack streaming SSR (N/A)
+
+### Improved
+- defer non-critical hydration work to reduce main-thread contention (N/A)
+
+
+## [1.17.7] - 2026-06-17
+
+### Improved
+- optimize LCP by splitting hero to server component and deferring notification init (N/A)
+
+
+## [1.17.6] - 2026-06-16
+
+### Fixed
+- fix cascade lobby double-click start and hydration mismatch (N/A)
+
+
+## [1.17.5] - 2026-06-16
+
+### Fixed
+- scroll mobile nav to bottom before clicking language pill (N/A)
+- use force click for mobile language pill in fixed scroll container (N/A)
+- fix social media workflow bugs and e2e test (N/A)
+
+### Improved
+- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
+
+
+## [1.17.4] - 2026-06-16
+
+### Fixed
+- sticky footer on mobile and hide during gameplay (N/A)
+- fix game result modal positioning and sizing on mobile (N/A)
+
+
+## [1.17.3] - 2026-06-16
+
+### Fixed
+- cascade game fixes — styles, padding, fullscreen, tests, i18n (N/A)
+
+
+## [1.17.2] - 2026-06-16
+
+### Fixed
+- wrap children in Suspense to prevent async cleanup error (N/A)
+
+
+## [1.17.1] - 2026-06-16
+
+### Fixed
+- always show copied feedback after clipboard attempt (N/A)
+- add clipboard fallback for referral copy button in e2e (N/A)
+- remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
+- security, a11y, CSS, and code quality optimizations (N/A)
+- improve SEO, accessibility, and performance across 20 issues (N/A)
+- add build step to release workflow before e2e tests (N/A)
+- improve SEO metadata and AI search readiness (N/A)
+
+### Refactored
+- migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
+
+
+## [1.17.0] - 2026-06-15
+
+
+
+
 ## [1.16.15] - 2026-06-15
 
 ### Fixed

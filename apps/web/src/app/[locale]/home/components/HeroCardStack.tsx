@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -15,6 +15,7 @@ const MAX_TILT_DEG = 8;
 
 export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const stackRef = useRef<HTMLDivElement>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { t } = useTranslation();
   const routes = useRoutes();
 
@@ -43,7 +44,14 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
     if (!stack) return;
     stack.style.setProperty('--tilt-x', '0deg');
     stack.style.setProperty('--tilt-y', '0deg');
+    setHoveredIndex(null);
   };
+
+  const handleCardEnter = useCallback(
+    (index: number) => setHoveredIndex(index),
+    [],
+  );
+  const handleCardLeave = useCallback(() => setHoveredIndex(null), []);
 
   return (
     <div data-testid="hero-visual" className="hero-visual-main fade-on-mount">
@@ -59,22 +67,25 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
           const x = (index - 1) * 65;
           const rotate = `${(index - 1) * 12}deg`;
           const y = index * -15;
+          const isActive = hoveredIndex === index;
 
           return (
             <div
               key={index}
-              className="hero-card-main"
+              className={`hero-card-main${isActive ? ' hero-card-active' : ''}`}
               style={
                 {
                   '--card-x': `${x}px`,
                   '--card-y': `${y}px`,
                   '--card-rotate': rotate,
                   '--card-scale': isLast ? 1 : 0.95,
-                  zIndex: index,
+                  zIndex: isActive ? 100 : index,
                   opacity: isLast ? 1 : 0.8,
                 } as React.CSSProperties
               }
               data-testid={`hero-card-${index}`}
+              onPointerEnter={() => handleCardEnter(index)}
+              onPointerLeave={handleCardLeave}
             >
               {card.bgImage ? (
                 <Image

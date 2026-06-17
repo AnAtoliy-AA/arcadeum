@@ -167,28 +167,24 @@ export default function LeaderboardsPageContent({
   );
   useLeaderboardSocket('leaderboards.entry.updated', handleEntryUpdated);
 
-  function handleModeChange(next: GameMode) {
+  function resetAndSet<T>(setter: (v: T) => void, next: T) {
     startTransition(() => {
-      setMode(next);
+      setter(next);
       setPage(1);
       setAccumulated([]);
     });
+  }
+
+  function handleModeChange(next: GameMode) {
+    resetAndSet(setMode, next);
   }
 
   function handleScopeChange(next: Scope) {
-    startTransition(() => {
-      setScope(next);
-      setPage(1);
-      setAccumulated([]);
-    });
+    resetAndSet(setScope, next);
   }
 
   function handleRangeChange(next: Range) {
-    startTransition(() => {
-      setRange(next);
-      setPage(1);
-      setAccumulated([]);
-    });
+    resetAndSet(setRange, next);
   }
 
   // Blocker #3: jump to the actual self row inside the table, not the

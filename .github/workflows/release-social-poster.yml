@@ -26,6 +26,8 @@ jobs:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
           THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python - <<EOF
           import os
@@ -158,5 +160,25 @@ jobs:
                   print(f"Posted release v{version} to {data['profile_ids[]']}")
               else:
                   print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+
+          # 7. Post to Telegram
+          telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          telegram_chat = os.environ.get('TELEGRAM_CHAT_ID', '')
+          if telegram_token and telegram_chat:
+              telegram_text = (
+                  f"🚀 <b>New Release: v{version}</b>\n\n"
+                  f"<b>What shipped:</b>\n<pre>{updates_text}</pre>\n\n"
+                  f"Try it now at arcadeum.games"
+              )
+              tg_resp = requests.post(
+                  f"https://api.telegram.org/bot{telegram_token}/sendMessage",
+                  data={"chat_id": telegram_chat, "text": telegram_text, "parse_mode": "HTML"},
+              )
+              if tg_resp.status_code == 200:
+                  print(f"Posted release v{version} to Telegram")
+              else:
+                  print(f"Failed to post to Telegram: {tg_resp.text}")
+          else:
+              print("Telegram not configured, skipping.")
 
           EOF

@@ -16,6 +16,7 @@ import { PendingGemPurchases } from '@/features/gems/ui/PendingGemPurchases';
 import { GemStore } from '@/features/gems/ui/GemStore';
 import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import { getConversionRate } from '@/features/gems/server/gems.server';
+import { WithdrawToWallet } from '@/features/withdraw/ui/WithdrawToWallet';
 import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
@@ -137,6 +138,10 @@ export default async function WalletPage({
         </div>
 
         <ConvertGemsForm rate={conversionRate} currentGems={currentGems} />
+      </div>
+
+      <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
+        <WithdrawToWallet arcadeumBalance={balance.arcadeum ?? 0} />
       </div>
 
       <WalletHistory page={page} currency={currency} locale={typedLocale} />

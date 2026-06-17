@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.10] - 2026-06-17
+
+### Fixed
+- show play badge only on hero card hover (N/A)
+
+
 ## [1.17.9] - 2026-06-17
 
 ### Fixed

@@ -13,10 +13,10 @@ export default async function HomeHero() {
 
   const kicker = homeCopy.kicker ?? 'Free online board games';
   const tagline =
-    homeCopy.tagline?.replace('{appName}', appConfig.appName) ??
+    homeCopy.tagline?.replace('{{appName}}', appConfig.appName) ??
     `${appConfig.appName} is the ultimate platform to play board games online with friends.`;
   const description =
-    homeCopy.description?.replace('{appName}', appConfig.appName) ??
+    homeCopy.description?.replace('{{appName}}', appConfig.appName) ??
     `Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';

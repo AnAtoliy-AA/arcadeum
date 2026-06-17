@@ -32,11 +32,13 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Process Commits and Post to Buffer
+      - name: Process Commits and Post
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
           THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python - <<EOF
           import os
@@ -121,8 +123,8 @@ jobs:
           headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
 
           payloads = [
-              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": True},
-              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True},
+              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": "true"},
+              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": "true"},
           ]
 
           for data in payloads:
@@ -131,5 +133,25 @@ jobs:
                   print(f"Posted daily update to {data['profile_ids[]']}")
               else:
                   print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+
+          # 5. Post to Telegram
+          telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          telegram_chat = os.environ.get('TELEGRAM_CHAT_ID', '')
+          if telegram_token and telegram_chat:
+              telegram_text = (
+                  f"🚀 <b>Daily Development Update</b>\n\n"
+                  f"Shipped yesterday:\n\n"
+                  f"<pre>{changelog_text}</pre>"
+              )
+              tg_resp = requests.post(
+                  f"https://api.telegram.org/bot{telegram_token}/sendMessage",
+                  data={"chat_id": telegram_chat, "text": telegram_text, "parse_mode": "HTML"},
+              )
+              if tg_resp.status_code == 200:
+                  print("Posted daily update to Telegram")
+              else:
+                  print(f"Failed to post to Telegram: {tg_resp.text}")
+          else:
+              print("Telegram not configured, skipping.")
 
           EOF

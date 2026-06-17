@@ -398,6 +398,7 @@
   }
 }
 
+[data-hydrated="true"] .hero-card-main,
 .is-hydrated .hero-card-main {
   opacity: 1;
   pointer-events: auto;

@@ -21,7 +21,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
-import { RouteChangeAnnouncer } from '@/shared/ui/RouteChangeAnnouncer';
+import { LayoutShell } from '@/shared/ui/LayoutShell';
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: 'en_US',
@@ -141,21 +141,14 @@ export default async function LocaleLayout({
       <LanguageProvider locale={locale}>
         <PWAProvider>
           <SoundProvider>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '100dvh',
-              }}
-            >
-              <RouteChangeAnnouncer />
+            <LayoutShell>
               <AnnouncementBanner />
               <Header />
               <main style={{ flex: 1 }}>
                 <Suspense>{children}</Suspense>
               </main>
               <LayoutFooter />
-            </div>
+            </LayoutShell>
             {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
           </SoundProvider>
         </PWAProvider>

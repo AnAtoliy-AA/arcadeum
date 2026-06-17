@@ -13,6 +13,7 @@ import { setupTamagui } from '@/shared/config/tamagui.config';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
+import { LazySessionRoleSync } from '@/shared/ui/LazySessionRoleSync';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,7 +38,9 @@ export const metadata: Metadata = {
     site: '@_arcadeum_',
     title: appConfig.seoTitle,
     description: appConfig.seoDescription,
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: appConfig.appName }],
+    images: [
+      { url: '/logo.png', width: 1200, height: 630, alt: appConfig.appName },
+    ],
   },
   robots: {
     index: true,
@@ -157,7 +160,10 @@ export default async function RootLayout({
         </a>
         <WebVitalsReporter />
         <AppThemeProvider initialTheme={theme}>
-          <BrowserRegistry>{children}</BrowserRegistry>
+          <BrowserRegistry>
+            <LazySessionRoleSync />
+            {children}
+          </BrowserRegistry>
         </AppThemeProvider>
       </body>
     </html>

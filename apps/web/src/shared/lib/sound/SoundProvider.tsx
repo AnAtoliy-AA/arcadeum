@@ -39,13 +39,17 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     enabledRef.current = soundEnabled;
   }, [soundEnabled]);
 
-  useEffect(() => {
-    playerRef.current?.preloadAll();
-  }, []);
+  const preloadedRef = useRef(false);
 
   const value = useMemo<SoundContextValue>(
     () => ({
-      play: (id) => playerRef.current?.play(id, enabledRef.current),
+      play: (id) => {
+        if (!preloadedRef.current) {
+          preloadedRef.current = true;
+          playerRef.current?.preloadAll();
+        }
+        playerRef.current?.play(id, enabledRef.current);
+      },
     }),
     [],
   );

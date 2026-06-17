@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, startTransition } from 'react';
 import { YStack, XStack, Text, styled, H4, SizableText } from 'tamagui';
 import {
   Modal,
@@ -255,13 +255,13 @@ export function HomeGameDetailsModal({
           >
             <button
               className={`tab-pill${activeTab === 'rules' ? ' active' : ''}`}
-              onClick={() => setActiveTab('rules')}
+              onClick={() => startTransition(() => setActiveTab('rules'))}
             >
               {homeCopy.rulesTab ?? 'Rules'}
             </button>
             <button
               className={`tab-pill${activeTab === 'info' ? ' active' : ''}`}
-              onClick={() => setActiveTab('info')}
+              onClick={() => startTransition(() => setActiveTab('info'))}
             >
               {homeCopy.infoTab ?? 'Game Themes'}
             </button>

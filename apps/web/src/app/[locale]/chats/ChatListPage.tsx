@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, useCallback, ComponentProps, ReactNode } from 'react';
+import {
+  useState,
+  useCallback,
+  useDeferredValue,
+  ComponentProps,
+  ReactNode,
+} from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -87,7 +93,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
   });
 
   const displayChats = queryChats || [];
-  const displaySearchResults = querySearchResults || [];
+  const displaySearchResults = useDeferredValue(querySearchResults) || [];
   const loading = chatsLoading && !initialData;
 
   const handleSelectUser = useCallback(

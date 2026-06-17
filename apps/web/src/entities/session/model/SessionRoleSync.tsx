@@ -6,6 +6,7 @@ import { apiClient, ApiError } from '@/shared/lib/api-client';
 import type { AuthUserProfile } from '../api/authApi';
 
 const FOCUS_THROTTLE_MS = 30_000;
+const INITIAL_SYNC_DEFER_MS = 2000;
 
 /**
  * Mounted exactly once at the app root. Keeps the persisted session
@@ -81,7 +82,7 @@ export function SessionRoleSync(): null {
       }
     };
 
-    void sync();
+    const timer = setTimeout(() => void sync(), INITIAL_SYNC_DEFER_MS);
 
     const unsubscribe = useSessionStore.subscribe((state, prev) => {
       if (state.hydrated && !prev.hydrated) void sync();
@@ -93,6 +94,7 @@ export function SessionRoleSync(): null {
     window.addEventListener('focus', onFocus);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('focus', onFocus);
       unsubscribe();
     };

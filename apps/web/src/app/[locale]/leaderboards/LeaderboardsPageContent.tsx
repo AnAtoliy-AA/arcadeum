@@ -1,5 +1,11 @@
 'use client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  startTransition,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
@@ -162,21 +168,27 @@ export default function LeaderboardsPageContent({
   useLeaderboardSocket('leaderboards.entry.updated', handleEntryUpdated);
 
   function handleModeChange(next: GameMode) {
-    setMode(next);
-    setPage(1);
-    setAccumulated([]);
+    startTransition(() => {
+      setMode(next);
+      setPage(1);
+      setAccumulated([]);
+    });
   }
 
   function handleScopeChange(next: Scope) {
-    setScope(next);
-    setPage(1);
-    setAccumulated([]);
+    startTransition(() => {
+      setScope(next);
+      setPage(1);
+      setAccumulated([]);
+    });
   }
 
   function handleRangeChange(next: Range) {
-    setRange(next);
-    setPage(1);
-    setAccumulated([]);
+    startTransition(() => {
+      setRange(next);
+      setPage(1);
+      setAccumulated([]);
+    });
   }
 
   // Blocker #3: jump to the actual self row inside the table, not the

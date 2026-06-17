@@ -381,7 +381,6 @@
   white-space: nowrap;
 }
 
-.hero-card-main:hover .hero-card-play-cta,
 .hero-card-active .hero-card-play-cta {
   opacity: 1;
   pointer-events: auto;
@@ -405,7 +404,6 @@
   pointer-events: auto;
 }
 
-.hero-card-main:hover,
 .hero-card-active {
   transform: translate(var(--card-x), calc(var(--card-y) - 20px))
     rotate(var(--card-rotate)) scale(1.05) !important;
@@ -432,14 +430,13 @@
   transition: transform 1.6s ease;
 }
 
-.hero-card-main:hover::after,
 .hero-card-active::after {
   transform: translateX(100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card-main::after,
-  .hero-card-main:hover::after {
+  .hero-card-active::after {
     transition: none;
     transform: translateX(-100%);
   }

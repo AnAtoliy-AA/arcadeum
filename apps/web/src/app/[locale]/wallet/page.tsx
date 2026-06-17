@@ -39,10 +39,12 @@ interface SearchParams {
 }
 
 function parseCurrency(input?: string): WalletCurrency | undefined {
-  return input === 'coins' || input === 'gems' ? input : undefined;
+  return input === 'coins' || input === 'gems' || input === 'arcadeum'
+    ? input
+    : undefined;
 }
 
-const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0 };
+const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0, arcadeum: 0 };
 const EMPTY_PAGE: PaginatedWalletTransactions = { items: [], nextCursor: null };
 
 const GEM_SECTIONS_STYLE: React.CSSProperties = {

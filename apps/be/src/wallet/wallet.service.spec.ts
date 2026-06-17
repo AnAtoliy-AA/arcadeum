@@ -196,7 +196,7 @@ describe('WalletService', () => {
         lean: () => Promise.resolve({ coins: 42, gems: 3 }),
       });
       const r = await service.getBalance(userId);
-      expect(r).toEqual({ coins: 42, gems: 3 });
+      expect(r).toEqual({ coins: 42, gems: 3, arcadeum: 0 });
     });
   });
 

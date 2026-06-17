@@ -13,7 +13,7 @@ export function WalletBalanceSummary({
   balance,
   locale = DEFAULT_LOCALE,
 }: Props) {
-  const { coins, gems } = balance;
+  const { coins, gems, arcadeum } = balance;
 
   return (
     <section
@@ -91,6 +91,29 @@ export function WalletBalanceSummary({
             data-testid="balance-gems-value"
           >
             <AnimatedNumber value={gems} locale={locale} />
+          </div>
+        </div>
+
+        <div
+          data-testid="balance-arcadeum"
+          style={{
+            flex: '1 1 160px',
+            padding: '20px 24px',
+            borderRadius: '12px',
+            background: 'rgba(52,211,153,0.08)',
+            border: '1px solid rgba(52,211,153,0.2)',
+          }}
+        >
+          <div
+            style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
+          >
+            🎮 ARCADEUM
+          </div>
+          <div
+            style={{ fontSize: '28px', fontWeight: 700, color: '#34d399' }}
+            data-testid="balance-arcadeum-value"
+          >
+            <AnimatedNumber value={arcadeum} locale={locale} />
           </div>
         </div>
       </div>

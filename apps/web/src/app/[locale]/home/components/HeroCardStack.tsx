@@ -26,6 +26,7 @@ function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
 export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const stackRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const pointerDownRef = useRef(false);
   const { t } = useTranslation();
   const routes = useRoutes();
 
@@ -48,7 +49,24 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
       const py = (e.clientY - rect.top) / rect.height - 0.5;
       stack.style.setProperty('--tilt-x', `${px * MAX_TILT_DEG * 2}deg`);
       stack.style.setProperty('--tilt-y', `${-py * MAX_TILT_DEG * 2}deg`);
-      setHoveredIndex(indexFromPointerX(e.clientX, stack));
+      if (!pointerDownRef.current) {
+        setHoveredIndex(indexFromPointerX(e.clientX, stack));
+      }
+    },
+    [],
+  );
+
+  const handlePointerDown = useCallback(() => {
+    pointerDownRef.current = true;
+  }, []);
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      pointerDownRef.current = false;
+      const stack = stackRef.current;
+      if (stack) {
+        setHoveredIndex(indexFromPointerX(e.clientX, stack));
+      }
     },
     [],
   );
@@ -58,6 +76,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
     if (!stack) return;
     stack.style.setProperty('--tilt-x', '0deg');
     stack.style.setProperty('--tilt-y', '0deg');
+    pointerDownRef.current = false;
     setHoveredIndex(null);
   }, []);
 
@@ -68,6 +87,8 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
         className="hero-card-stack-main hero-card-stack"
         data-testid="hero-card-stack"
         onPointerMove={handlePointerMove}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
       >
         {heroCards.map((card, index) => {

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.2] - 2026-06-17
+
+### Added
+- add Telegram group posting to social workflows (N/A)
+
+### Fixed
+- fix Buffer social posts and release E2E tests (N/A)
+
+
+## [1.18.1] - 2026-06-17
+
+### Fixed
+- use double curly braces for appName interpolation in HomeHero (N/A)
+
+
+## [1.18.0] - 2026-06-17
+
+
+
+
 ## [1.17.10] - 2026-06-17
 
 ### Fixed

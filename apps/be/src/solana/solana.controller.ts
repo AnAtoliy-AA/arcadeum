@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { SolanaService } from './solana.service';
 import { WalletService } from '../wallet/wallet.service';
 import { WithdrawDto } from './dto/withdraw.dto';
+import { BuybackDto } from './dto/buyback.dto';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/guards/roles.decorator';
 import { randomUUID } from 'crypto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
@@ -10,6 +21,8 @@ const WITHDRAWAL_FEE_PERCENT = 2;
 
 @Controller('solana')
 export class SolanaController {
+  private readonly logger = new Logger(SolanaController.name);
+
   constructor(
     private readonly solana: SolanaService,
     private readonly wallet: WalletService,
@@ -74,6 +87,20 @@ export class SolanaController {
       amount: dto.amount,
       fee: feeAmount,
       totalDeducted: totalDeduction,
+    };
+  }
+
+  @Post('buyback')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  buyback(@Req() req: { user: AuthenticatedUser }, @Body() dto: BuybackDto) {
+    this.logger.log(
+      `Buyback initiated: ${dto.solAmount} SOL by admin ${req.user.userId}`,
+    );
+    return {
+      success: true,
+      message: 'Buyback endpoint ready. Implement DEX integration.',
+      solAmount: dto.solAmount,
     };
   }
 }

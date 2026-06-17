@@ -315,11 +315,6 @@ const nextConfig: NextConfig = {
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: true,
-  compiler: {
-    styledComponents: {
-      ssr: true,
-    },
-  },
   transpilePackages: [
     'tamagui',
     '@tamagui/core',

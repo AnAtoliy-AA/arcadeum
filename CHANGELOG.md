@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.8] - 2026-06-17
+
+### Fixed
+- resolve hydration mismatch in layout caused by Turbopack streaming SSR (N/A)
+
+### Improved
+- defer non-critical hydration work to reduce main-thread contention (N/A)
+
+
 ## [1.17.7] - 2026-06-17
 
 ### Improved

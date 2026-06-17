@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, startTransition } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
@@ -114,7 +114,7 @@ export default function StatsPage({
         <TabGroup role="group" aria-label={t('stats.myStatsTab')}>
           <TabButton
             $active={activeTab === 'my-stats'}
-            onClick={() => setActiveTab('my-stats')}
+            onClick={() => startTransition(() => setActiveTab('my-stats'))}
             aria-pressed={activeTab === 'my-stats'}
             data-testid="stats-tab-my-stats"
           >
@@ -122,7 +122,7 @@ export default function StatsPage({
           </TabButton>
           <TabButton
             $active={activeTab === 'leaderboard'}
-            onClick={() => setActiveTab('leaderboard')}
+            onClick={() => startTransition(() => setActiveTab('leaderboard'))}
             aria-pressed={activeTab === 'leaderboard'}
             data-testid="stats-tab-leaderboard"
           >

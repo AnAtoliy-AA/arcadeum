@@ -254,12 +254,14 @@
 }
 
 .animate-shimmer-mid,
+[data-hydrated="true"] .kicker-hydration-shimmer,
 .is-hydrated .kicker-hydration-shimmer {
   position: relative;
   display: inline-block;
   color: var(--primary);
 }
 
+[data-hydrated="true"] .kicker-hydration-shimmer::after,
 .is-hydrated .kicker-hydration-shimmer::after {
   content: '';
   position: absolute;
@@ -292,6 +294,7 @@
   transition: opacity 0.6s ease-out;
 }
 
+[data-hydrated="true"] .fade-on-mount,
 .is-hydrated .fade-on-mount,
 .fade-on-mount.mounted {
   opacity: 1;

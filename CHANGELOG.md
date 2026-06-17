@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.9] - 2026-06-17
+
+### Fixed
+- make entire hero card clickable, play label is just a badge (N/A)
+- remove hoveredIndex recalc on pointerup so click reaches play button (N/A)
+- freeze hero card hover during click to prevent play button disappearing (N/A)
+- hero card hover overlap race condition (N/A)
+- prevent hero card overlap blocking play button on hover (N/A)
+
+
 ## [1.17.8] - 2026-06-17
 
 ### Fixed

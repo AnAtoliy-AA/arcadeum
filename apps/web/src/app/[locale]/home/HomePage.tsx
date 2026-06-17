@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 // to a single physical file collapses them to one HTTP round-trip.
 // See docs/superpowers/specs/2026-05-06-home-perf-phase-2-diagnostic-results.md
 import './components/styles/home-bundle.scss';
+import '@/app/styles/animations-pages.scss';
 
 const HomeGames = dynamic(() => import('./components/HomeGames'));
 const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));

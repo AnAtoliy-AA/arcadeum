@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.7] - 2026-06-17
+
+### Improved
+- optimize LCP by splitting hero to server component and deferring notification init (N/A)
+
+
+## [1.17.6] - 2026-06-16
+
+### Fixed
+- fix cascade lobby double-click start and hydration mismatch (N/A)
+
+
 ## [1.17.5] - 2026-06-16
 
 ### Fixed

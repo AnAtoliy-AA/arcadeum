@@ -121,8 +121,8 @@ jobs:
           headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
 
           payloads = [
-              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": True},
-              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": True},
+              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": "true"},
+              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": "true"},
           ]
 
           for data in payloads:

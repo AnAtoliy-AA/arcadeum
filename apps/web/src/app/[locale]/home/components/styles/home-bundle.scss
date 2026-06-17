@@ -376,16 +376,21 @@
     0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 8px 22px rgba(0, 0, 0, 0.45);
   pointer-events: none;
-  transition: transform 0.22s ease;
+  opacity: 0;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
   white-space: nowrap;
 }
 
 .hero-card-active .hero-card-play-cta {
+  opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card-play-cta {
+    transition: opacity 0.15s ease;
     transform: translate(-50%, -50%) scale(1);
   }
 }

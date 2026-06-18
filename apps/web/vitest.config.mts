@@ -10,9 +10,11 @@ export default defineConfig({
     globals: true,
     reporters: process.env.CI ? 'verbose' : 'default',
     pool: 'threads',
-    server: {
-      deps: {
-        inline: [/^@tamagui\//, /^tamagui$/],
+    deps: {
+      optimizer: {
+        web: {
+          include: ['@tamagui/web', '@tamagui/core', '@tamagui/button', '@arcadeum/ui'],
+        },
       },
     },
     exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],

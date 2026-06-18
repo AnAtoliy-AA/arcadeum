@@ -4,6 +4,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  resolve: {
+    dedupe: ['@tamagui/web', '@tamagui/core', '@tamagui/button'],
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],

@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.1] - 2026-06-18
+
+### Added
+- add LinkedIn channel to Buffer social posting (N/A)
+
+### Fixed
+- migrate Buffer integration from deprecated REST API to GraphQL API (N/A)
+- validate Buffer token before posting to avoid OIDC 401 errors (N/A)
+- add MongoDB service container to release workflow (N/A)
+- override CI to falsy so Playwright uses dev mode for BE (N/A)
+
+
+## [1.19.0] - 2026-06-17
+
+
+
+
+## [1.18.2] - 2026-06-17
+
+### Added
+- add Telegram group posting to social workflows (N/A)
+
+### Fixed
+- fix Buffer social posts and release E2E tests (N/A)
+
+
+## [1.18.1] - 2026-06-17
+
+### Fixed
+- use double curly braces for appName interpolation in HomeHero (N/A)
+
+
+## [1.18.0] - 2026-06-17
+
+
+
+
+## [1.17.10] - 2026-06-17
+
+### Fixed
+- show play badge only on hero card hover (N/A)
+
+
+## [1.17.9] - 2026-06-17
+
+### Fixed
+- make entire hero card clickable, play label is just a badge (N/A)
+- remove hoveredIndex recalc on pointerup so click reaches play button (N/A)
+- freeze hero card hover during click to prevent play button disappearing (N/A)
+- hero card hover overlap race condition (N/A)
+- prevent hero card overlap blocking play button on hover (N/A)
+
+
+## [1.17.8] - 2026-06-17
+
+### Fixed
+- resolve hydration mismatch in layout caused by Turbopack streaming SSR (N/A)
+
+### Improved
+- defer non-critical hydration work to reduce main-thread contention (N/A)
+
+
 ## [1.17.7] - 2026-06-17
 
 ### Improved

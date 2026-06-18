@@ -37,6 +37,7 @@ jobs:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
           THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          LINKEDIN_ID: ${{ secrets.BUFFER_LINKEDIN_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
@@ -118,6 +119,13 @@ jobs:
           if len(threads_text) > 480:
               threads_text = threads_text[:475] + "..."
 
+          linkedin_text = (
+              f"🚀 Daily Development Update\n\n"
+              f"Here's what we shipped yesterday:\n\n"
+              f"{changelog_text}\n\n"
+              f"#buildinpublic #indiedev #gamedevelopment #softwareengineering"
+          )
+
           # 4. Push updates directly to your Buffer Queue (new GraphQL API)
           buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
           if buffer_token:
@@ -130,6 +138,7 @@ jobs:
               channels = [
                   (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
                   (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn"),
               ]
 
               for channel_id, text, name in channels:

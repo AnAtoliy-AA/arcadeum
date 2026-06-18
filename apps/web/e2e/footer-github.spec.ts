@@ -6,7 +6,7 @@ test.describe('Footer GitHub Link', () => {
 
   async function scrollToFooter(page: import('@playwright/test').Page) {
     await navigateTo(page, '/');
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     for (let i = 0; i < 3; i++) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     }

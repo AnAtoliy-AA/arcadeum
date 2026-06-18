@@ -119,20 +119,27 @@ jobs:
               threads_text = threads_text[:475] + "..."
 
           # 4. Push updates directly to your Buffer Queue
-          buffer_url = "https://api.bufferapp.com/1/updates/create.json"
-          headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
+          buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
+          if buffer_token:
+              buffer_url = "https://api.bufferapp.com/1/updates/create.json"
+              headers = {"Authorization": f"Bearer {buffer_token}"}
 
-          payloads = [
-              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": "true"},
-              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": "true"},
-          ]
+              payloads = [
+                  {"profile_ids[]": os.environ.get('FACEBOOK_ID', ''), "text": facebook_text, "now": "true"},
+                  {"profile_ids[]": os.environ.get('THREADS_ID', ''), "text": threads_text, "now": "true"},
+              ]
 
-          for data in payloads:
-              resp = requests.post(buffer_url, headers=headers, data=data)
-              if resp.status_code == 200:
-                  print(f"Posted daily update to {data['profile_ids[]']}")
-              else:
-                  print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+              for data in payloads:
+                  if not data['profile_ids[]']:
+                      print(f"Skipping Buffer post — profile ID not set")
+                      continue
+                  resp = requests.post(buffer_url, headers=headers, data=data)
+                  if resp.status_code == 200:
+                      print(f"Posted daily update to {data['profile_ids[]']}")
+                  else:
+                      print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+          else:
+              print("BUFFER_API_TOKEN not set, skipping Buffer posts.")
 
           # 5. Post to Telegram
           telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')

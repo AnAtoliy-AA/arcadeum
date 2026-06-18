@@ -53,6 +53,8 @@ const HeroFrame = styled(Stack, {
   paddingVertical: '$5',
   overflow: 'hidden',
   position: 'relative',
+  flexShrink: 0,
+  minHeight: 400,
 });
 
 const HeroTag = styled(Stack, {
@@ -186,7 +188,8 @@ export function ShopHero({
         <XStack
           gap="$5"
           alignItems="center"
-          $sm={{ flexDirection: 'column', alignItems: 'flex-start' }}
+          $xs={{ flexDirection: 'column', alignItems: 'flex-start', gap: '$3' }}
+          $sm={{ flexDirection: 'column', alignItems: 'flex-start', gap: '$3' }}
         >
           <Stack
             className="shop-featured-disc"
@@ -270,23 +273,25 @@ export function ShopHero({
                 disabled={isPending}
                 data-testid={actionTestId}
                 data-action={action}
+                size="sm"
+                className={action === 'buy' ? 'hero-gold-pulse' : undefined}
                 style={{
                   backgroundImage:
                     action === 'buy'
-                      ? `linear-gradient(135deg, ${accent}, ${accent}cc)`
+                      ? `linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b)`
                       : undefined,
-                  borderColor: accent,
+                  borderColor: action === 'buy' ? '#f59e0b' : accent,
                 }}
               >
                 <Text
-                  fontSize="$4"
+                  fontSize="$3"
                   fontWeight="800"
                   color={action === 'buy' ? '#0a0a0a' : '$white'}
                 >
                   {actionLabel}
                 </Text>
                 {action === 'buy' ? (
-                  <Text fontSize="$3" fontWeight="700" color="#0a0a0a">
+                  <Text fontSize="$2" fontWeight="700" color="#0a0a0a">
                     · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
                     {formatNumber(item.priceAmount, locale)}
                   </Text>

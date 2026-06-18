@@ -922,6 +922,25 @@
   animation: shop-glow-pulse 2.8s ease-in-out infinite;
 }
 
+/* Gold pulse for the hero "Buy Now" CTA — matching the start-button feel. */
+@keyframes hero-gold-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(245, 158, 11, 0.4),
+      0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(245, 158, 11, 0.7),
+      0 0 0 8px rgba(245, 158, 11, 0);
+  }
+}
+
+.hero-gold-pulse {
+  animation: hero-gold-pulse 2.4s ease-in-out infinite;
+}
+
 /* Try-on morph: replayed (via React key) whenever the previewed cosmetics
    change, so swapping items cross-fades the mannequin instead of snapping. */
 @keyframes shop-morph {

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.1] - 2026-06-18
+
+### Added
+- add LinkedIn channel to Buffer social posting (N/A)
+
+### Fixed
+- migrate Buffer integration from deprecated REST API to GraphQL API (N/A)
+- validate Buffer token before posting to avoid OIDC 401 errors (N/A)
+- add MongoDB service container to release workflow (N/A)
+- override CI to falsy so Playwright uses dev mode for BE (N/A)
+
+
 ## [1.19.0] - 2026-06-17
 
 

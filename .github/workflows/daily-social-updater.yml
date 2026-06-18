@@ -9,13 +9,6 @@ jobs:
   gather-and-post:
     runs-on: ubuntu-latest
     steps:
-      - name: Randomize posting time (0-2 hours)
-        run: |
-          SLEEP_SEC=$(( RANDOM % 7201 ))
-          echo "Sleeping $SLEEP_SEC seconds before posting..."
-          sleep "$SLEEP_SEC"
-          echo "Done sleeping."
-
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -32,21 +25,12 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Process Commits and Post
-        env:
-          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
-          FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
-          THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
-          LINKEDIN_ID: ${{ secrets.BUFFER_LINKEDIN_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Collect and format commits
         run: |
-          python - <<EOF
-          import os
+          python - <<'EOF'
           import subprocess
-          import requests
+          import json
 
-          # 1. Fetch commits from the last 24 hours on develop
           try:
               raw_commits = subprocess.check_output(
                   ['git', 'log', 'origin/develop', '--since=24 hours ago', '--pretty=format:%s'],
@@ -60,7 +44,6 @@ jobs:
               print("No updates found in the last 24 hours. Skipping social posts.")
               exit(0)
 
-          # 2. Filter out noisy merge lines and automated version chores
           skip_patterns = [
               "Merge pull request",
               "Merge remote-tracking",
@@ -100,10 +83,35 @@ jobs:
               print("No consumer-facing changes found today. Skipping.")
               exit(0)
 
-          # Cap at 15 items to keep posts scannable
           changelog_text = "\n".join(clean_updates[:15])
+          with open('/tmp/changelog.txt', 'w') as f:
+              f.write(changelog_text)
+          print(f"Saved {len(clean_updates)} updates to /tmp/changelog.txt")
+          EOF
 
-          # 3. Create platform-specific variants
+      - name: Randomize posting time (0-2 hours)
+        run: |
+          SLEEP_SEC=$(( RANDOM % 7201 ))
+          echo "Sleeping $SLEEP_SEC seconds before posting..."
+          sleep "$SLEEP_SEC"
+          echo "Done sleeping."
+
+      - name: Post to socials
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
+          THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          LINKEDIN_ID: ${{ secrets.BUFFER_LINKEDIN_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<'EOF'
+          import os
+          import requests
+
+          with open('/tmp/changelog.txt', 'r') as f:
+              changelog_text = f.read()
+
           facebook_text = (
               f"🚀 Daily Development Update!\n\n"
               f"Here is a live look at what we added and optimized yesterday:\n\n"
@@ -126,7 +134,6 @@ jobs:
               f"#buildinpublic #indiedev #gamedevelopment #softwareengineering"
           )
 
-          # 4. Push updates directly to your Buffer Queue (new GraphQL API)
           buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
           if buffer_token:
               buffer_url = "https://api.buffer.com"
@@ -175,7 +182,6 @@ jobs:
           else:
               print("BUFFER_API_TOKEN not set, skipping Buffer posts.")
 
-          # 5. Post to Telegram
           telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
           telegram_chat = os.environ.get('TELEGRAM_CHAT_ID', '')
           if telegram_token and telegram_chat:

@@ -26,6 +26,7 @@ jobs:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
           THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          LINKEDIN_ID: ${{ secrets.BUFFER_LINKEDIN_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
@@ -145,21 +146,62 @@ jobs:
           if len(threads_text) > 480:
               threads_text = threads_text[:475] + "..."
 
-          # 6. Post to Buffer
-          buffer_url = "https://api.bufferapp.com/1/updates/create.json"
-          headers = {"Authorization": f"Bearer {os.environ['BUFFER_API_TOKEN']}"}
+          linkedin_text = (
+              f"🚀 New Release: v{version}\n\n"
+              f"We just shipped updates to Arcadeum:\n\n"
+              f"{updates_text}\n\n"
+              f"Try it now at arcadeum.games\n\n"
+              f"#gamedev #newrelease #boardgames #indiegame"
+          )
 
-          payloads = [
-              {"profile_ids[]": os.environ['FACEBOOK_ID'], "text": facebook_text, "now": "true"},
-              {"profile_ids[]": os.environ['THREADS_ID'], "text": threads_text, "now": "true"},
-          ]
+          # 6. Post to Buffer (new GraphQL API)
+          buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
+          if buffer_token:
+              buffer_url = "https://api.buffer.com"
+              headers = {
+                  "Authorization": f"Bearer {buffer_token}",
+                  "Content-Type": "application/json",
+              }
 
-          for data in payloads:
-              resp = requests.post(buffer_url, headers=headers, data=data)
-              if resp.status_code == 200:
-                  print(f"Posted release v{version} to {data['profile_ids[]']}")
-              else:
-                  print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+              channels = [
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn"),
+              ]
+
+              for channel_id, text, name in channels:
+                  if not channel_id:
+                      print(f"Skipping Buffer post to {name} — channel ID not set")
+                      continue
+                  query = """
+                  mutation {
+                    createPost(input: {
+                      text: %(text)s
+                      channelId: %(channel_id)s
+                      schedulingType: automatic
+                      mode: now
+                    }) {
+                      ... on PostActionSuccess {
+                        post { id text status }
+                      }
+                      ... on MutationError {
+                        message
+                      }
+                    }
+                  }
+                  """ % {"text": repr(text), "channel_id": repr(channel_id)}
+                  payload = {"query": query}
+                  resp = requests.post(buffer_url, headers=headers, json=payload)
+                  if resp.status_code == 200:
+                      result = resp.json()
+                      if "errors" in result:
+                          print(f"Failed to post to {name}: {result['errors']}")
+                      else:
+                          print(f"Posted release v{version} to {name}")
+                  else:
+                      print(f"Failed to post to {name}: {resp.text}")
+          else:
+              print("BUFFER_API_TOKEN not set, skipping Buffer posts.")
 
           # 7. Post to Telegram
           telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')

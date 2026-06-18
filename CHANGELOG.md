@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.2] - 2026-06-18
+
+### Fixed
+- add minHeight 400 on mobile for shop hero card (N/A)
+- improve shop hero card mobile layout and buy button styling (N/A)
+- restore min-height on page-layout-base to fix chat e2e test (N/A)
+- prevent shop YStack from collapsing to 0 height on mobile (N/A)
+- match body min-height to layout shell using 100dvh instead of 100vh (N/A)
+- revert overflow auto on main — breaks chat page layout (N/A)
+- keep footer at bottom of page with overflow auto on main (N/A)
+
+
 ## [1.19.1] - 2026-06-18
 
 ### Added

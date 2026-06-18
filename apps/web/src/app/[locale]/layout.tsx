@@ -144,7 +144,7 @@ export default async function LocaleLayout({
             <LayoutShell>
               <AnnouncementBanner />
               <Header />
-              <main style={{ flex: 1, overflow: 'auto' }}>
+              <main style={{ flex: 1 }}>
                 <Suspense>{children}</Suspense>
               </main>
               <LayoutFooter />

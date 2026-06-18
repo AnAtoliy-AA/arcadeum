@@ -118,26 +118,51 @@ jobs:
           if len(threads_text) > 480:
               threads_text = threads_text[:475] + "..."
 
-          # 4. Push updates directly to your Buffer Queue
+          # 4. Push updates directly to your Buffer Queue (new GraphQL API)
           buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
           if buffer_token:
-              buffer_url = "https://api.bufferapp.com/1/updates/create.json"
-              headers = {"Authorization": f"Bearer {buffer_token}"}
+              buffer_url = "https://api.buffer.com"
+              headers = {
+                  "Authorization": f"Bearer {buffer_token}",
+                  "Content-Type": "application/json",
+              }
 
-              payloads = [
-                  {"profile_ids[]": os.environ.get('FACEBOOK_ID', ''), "text": facebook_text, "now": "true"},
-                  {"profile_ids[]": os.environ.get('THREADS_ID', ''), "text": threads_text, "now": "true"},
+              channels = [
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
               ]
 
-              for data in payloads:
-                  if not data['profile_ids[]']:
-                      print(f"Skipping Buffer post — profile ID not set")
+              for channel_id, text, name in channels:
+                  if not channel_id:
+                      print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
-                  resp = requests.post(buffer_url, headers=headers, data=data)
+                  query = """
+                  mutation {
+                    createPost(input: {
+                      text: %(text)s
+                      channelId: %(channel_id)s
+                      schedulingType: automatic
+                      mode: now
+                    }) {
+                      ... on PostActionSuccess {
+                        post { id text status }
+                      }
+                      ... on MutationError {
+                        message
+                      }
+                    }
+                  }
+                  """ % {"text": repr(text), "channel_id": repr(channel_id)}
+                  payload = {"query": query}
+                  resp = requests.post(buffer_url, headers=headers, json=payload)
                   if resp.status_code == 200:
-                      print(f"Posted daily update to {data['profile_ids[]']}")
+                      result = resp.json()
+                      if "errors" in result:
+                          print(f"Failed to post to {name}: {result['errors']}")
+                      else:
+                          print(f"Posted daily update to {name}")
                   else:
-                      print(f"Failed to post to {data['profile_ids[]']}: {resp.text}")
+                      print(f"Failed to post to {name}: {resp.text}")
           else:
               print("BUFFER_API_TOKEN not set, skipping Buffer posts.")
 

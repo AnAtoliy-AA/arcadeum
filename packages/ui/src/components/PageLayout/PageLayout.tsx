@@ -22,13 +22,13 @@ export interface PageLayoutProps {
 
 export const PageLayout = ({ children, className = '', ...props }: PageLayoutProps) => {
   return (
-    <main
+    <div
       {...props}
       id="main-content"
       className={`page-layout-glass-bg page-layout-base ${className}`}
     >
       {children}
-    </main>
+    </div>
   );
 };
 

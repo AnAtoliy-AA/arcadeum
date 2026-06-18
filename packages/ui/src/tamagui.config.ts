@@ -327,9 +327,14 @@ declare global {
 
 export const setupTamagui = () => {
   if (typeof globalThis !== 'undefined') {
-    // Avoid re-initialization if already set
-    if (!globalThis.TamaguiConfig) {
-      globalThis.TamaguiConfig = config;
+    // Tamagui internals look for globalThis.__tamaguiConfig (double underscore)
+    const g = globalThis as Record<string, unknown>;
+    if (!g.__tamaguiConfig) {
+      g.__tamaguiConfig = config;
+    }
+    // Keep the old key for backward compatibility with any code referencing it
+    if (!g.TamaguiConfig) {
+      g.TamaguiConfig = config;
     }
   }
 };

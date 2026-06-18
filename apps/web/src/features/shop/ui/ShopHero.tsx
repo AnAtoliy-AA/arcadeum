@@ -54,7 +54,7 @@ const HeroFrame = styled(Stack, {
   overflow: 'hidden',
   position: 'relative',
   flexShrink: 0,
-  minHeight: 400,
+  $sm: { minHeight: 400 },
 });
 
 const HeroTag = styled(Stack, {

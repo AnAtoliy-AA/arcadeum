@@ -4,20 +4,12 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
-  resolve: {
-    dedupe: ['tamagui', '@tamagui/core', '@tamagui/web', '@arcadeum/ui'],
-  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
     reporters: process.env.CI ? 'verbose' : 'default',
-    pool: 'threads',
-    server: {
-      deps: {
-        inline: [/^@tamagui/, /^tamagui/],
-      },
-    },
+    pool: process.env.CI ? 'forks' : 'threads',
     exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],
     coverage: {
       provider: 'v8',

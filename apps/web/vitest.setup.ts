@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import './src/shared/config/tamagui.config';
 
 // Mock matchMedia for Tamagui
 Object.defineProperty(window, 'matchMedia', {

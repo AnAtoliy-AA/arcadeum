@@ -143,7 +143,7 @@ export default function ChatPage() {
         background="radial-gradient(circle at 10% 20%, $primaryGradientStart 0%, transparent 40%), radial-gradient(circle at 90% 80%, $secondaryGradientStart 0%, transparent 40%)"
         pointerEvents="none"
       />
-      <Container size="md" flex={1} pb="$4" pt="$4" height="calc(100vh - 4rem)">
+      <Container size="md" flex={1} pb="$4" pt="$4">
         <GlassCard
           flex={1}
           p={0}

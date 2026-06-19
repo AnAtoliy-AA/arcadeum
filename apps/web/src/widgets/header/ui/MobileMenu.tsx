@@ -54,6 +54,7 @@ const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
   games: CardsIcon,
   leaderboards: TrophyIcon,
   shop: GiftIcon,
+  token: WalletIcon,
   chats: MailIcon,
   history: FileTextIcon,
   stats: BarChartIcon,

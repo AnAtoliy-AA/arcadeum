@@ -2,8 +2,7 @@ jest.mock('@solana/web3.js', () => ({
   Connection: jest.fn().mockImplementation(() => ({})),
   PublicKey: jest.fn().mockImplementation((key: string) => ({
     toBase58: () => key,
-    equals: (other: { toBase58: () => string }) =>
-      other?.toBase58?.() === key,
+    equals: (other: { toBase58: () => string }) => other?.toBase58?.() === key,
   })),
   Keypair: { generate: jest.fn() },
   Transaction: jest.fn(),

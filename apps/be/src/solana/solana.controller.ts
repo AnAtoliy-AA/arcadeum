@@ -125,7 +125,8 @@ export class SolanaController {
     ]);
 
     const solValueUsd = dto.solAmount * solPrice;
-    const estimatedArcadeum = arcadeumPrice > 0 ? solValueUsd / arcadeumPrice : 0;
+    const estimatedArcadeum =
+      arcadeumPrice > 0 ? solValueUsd / arcadeumPrice : 0;
 
     return {
       success: true,

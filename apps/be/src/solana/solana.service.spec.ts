@@ -44,17 +44,16 @@ jest.mock('./lib/solana-keypair', () => ({
 }));
 
 jest.mock('./lib/arcadeum-token', () => ({
-  getArcadeumMint: jest.fn().mockReturnValue({ toBase58: () => 'mock-mint-address' }),
+  getArcadeumMint: jest
+    .fn()
+    .mockReturnValue({ toBase58: () => 'mock-mint-address' }),
   toRawAmount: jest.fn((n: number) => BigInt(Math.round(n * 1e9))),
   fromRawAmount: jest.fn((n: bigint) => Number(n) / 1e9),
   ARCADEUM_DECIMALS: 9,
 }));
 
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import {
-  getAssociatedTokenAddress,
-  getAccount,
-} from '@solana/spl-token';
+import { getAssociatedTokenAddress, getAccount } from '@solana/spl-token';
 import { getPlatformKeypair } from './lib/solana-keypair';
 import { toRawAmount } from './lib/arcadeum-token';
 import { SolanaService } from './solana.service';
@@ -62,7 +61,8 @@ import { ConfigService } from '@nestjs/config';
 
 const DEFAULT_CONFIG: Record<string, string> = {
   SOLANA_RPC_URL: 'https://api.mainnet-beta.solana.com',
-  SOLANA_PRIVATE_KEY: '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]',
+  SOLANA_PRIVATE_KEY:
+    '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]',
   ARCADEUM_MINT_ADDRESS: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 };
 
@@ -89,12 +89,16 @@ describe('SolanaService', () => {
     (getPlatformKeypair as jest.Mock).mockReturnValue(keypair);
 
     service = new SolanaService(makeConfig());
-    connection = (service as unknown as { connection: InstanceType<typeof Connection> }).connection;
+    connection = (
+      service as unknown as { connection: InstanceType<typeof Connection> }
+    ).connection;
   });
 
   describe('getPlatformBalance', () => {
     it('returns SOL + ARCADEUM balances', async () => {
-      (connection.getBalance as jest.Mock).mockResolvedValue(2 * LAMPORTS_PER_SOL);
+      (connection.getBalance as jest.Mock).mockResolvedValue(
+        2 * LAMPORTS_PER_SOL,
+      );
       const ata = PublicKey.default ?? new PublicKey('ata-address');
       (getAssociatedTokenAddress as jest.Mock).mockResolvedValue(ata);
       (getAccount as jest.Mock).mockResolvedValue({
@@ -113,7 +117,9 @@ describe('SolanaService', () => {
       (getAssociatedTokenAddress as jest.Mock).mockResolvedValue(
         new PublicKey('ata-address'),
       );
-      (getAccount as jest.Mock).mockRejectedValue(new Error('Account not found'));
+      (getAccount as jest.Mock).mockRejectedValue(
+        new Error('Account not found'),
+      );
 
       const result = await service.getPlatformBalance();
 

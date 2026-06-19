@@ -26,7 +26,8 @@ export class SolanaService {
   private readonly arcadeumMint: PublicKey;
 
   private solPriceCache: { price: number; expiresAt: number } | null = null;
-  private arcadeumPriceCache: { price: number; expiresAt: number } | null = null;
+  private arcadeumPriceCache: { price: number; expiresAt: number } | null =
+    null;
   private static readonly CACHE_TTL_MS = 60_000;
 
   constructor(private readonly config: ConfigService) {
@@ -36,7 +37,8 @@ export class SolanaService {
     this.connection = new Connection(rpcUrl, 'confirmed');
 
     const mintAddress =
-      this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '11111111111111111111111111111111';
+      this.config.get<string>('ARCADEUM_MINT_ADDRESS') ??
+      '11111111111111111111111111111111';
     this.arcadeumMint = getArcadeumMint(mintAddress);
   }
 
@@ -125,10 +127,7 @@ export class SolanaService {
       this.arcadeumMint,
       keypair.publicKey,
     );
-    const toAta = await getAssociatedTokenAddress(
-      this.arcadeumMint,
-      recipient,
-    );
+    const toAta = await getAssociatedTokenAddress(this.arcadeumMint, recipient);
 
     const transaction = new Transaction().add(
       createTransferInstruction(fromAta, toAta, keypair.publicKey, rawAmount),

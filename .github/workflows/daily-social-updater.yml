@@ -89,13 +89,6 @@ jobs:
           print(f"Saved {len(clean_updates)} updates to /tmp/changelog.txt")
           EOF
 
-      - name: Randomize posting time (0-2 hours)
-        run: |
-          SLEEP_SEC=$(( RANDOM % 7201 ))
-          echo "Sleeping $SLEEP_SEC seconds before posting..."
-          sleep "$SLEEP_SEC"
-          echo "Done sleeping."
-
       - name: Post to socials
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
@@ -154,8 +147,13 @@ jobs:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
                   query = """
-                  mutation CreatePost($input: CreatePostInput!) {
-                    createPost(input: $input) {
+                  mutation CreatePost($text: String!, $channelId: String!, $schedulingType: ShareType!) {
+                    createPost(input: {
+                      text: $text
+                      channelId: $channelId
+                      schedulingType: $schedulingType
+                      mode: now
+                    }) {
                       ... on PostActionSuccess {
                         post { id text status }
                       }
@@ -166,11 +164,9 @@ jobs:
                   }
                   """
                   variables = {
-                      "input": {
-                          "text": text,
-                          "channelId": channel_id,
-                          "schedulingType": "automatic",
-                      }
+                      "text": text,
+                      "channelId": channel_id,
+                      "schedulingType": "automatic",
                   }
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)

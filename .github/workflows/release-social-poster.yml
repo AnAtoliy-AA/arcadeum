@@ -192,8 +192,13 @@ jobs:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
                   query = """
-                  mutation CreatePost($input: CreatePostInput!) {
-                    createPost(input: $input) {
+                  mutation CreatePost($text: String!, $channelId: String!, $schedulingType: ShareType!) {
+                    createPost(input: {
+                      text: $text
+                      channelId: $channelId
+                      schedulingType: $schedulingType
+                      mode: now
+                    }) {
                       ... on PostActionSuccess {
                         post { id text status }
                       }
@@ -204,11 +209,9 @@ jobs:
                   }
                   """
                   variables = {
-                      "input": {
-                          "text": text,
-                          "channelId": channel_id,
-                          "schedulingType": "automatic",
-                      }
+                      "text": text,
+                      "channelId": channel_id,
+                      "schedulingType": "automatic",
                   }
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)

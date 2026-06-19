@@ -1,14 +1,14 @@
 import { PublicKey } from '@solana/web3.js';
 
-/**
- * ARCADEUM SPL Token configuration.
- * Replace MINT_ADDRESS with your actual token mint after launching on Pump.fun.
- */
-export const ARCADEUM_MINT_ADDRESS = new PublicKey(
-  process.env.ARCADEUM_MINT_ADDRESS ?? '11111111111111111111111111111111',
-);
-
 export const ARCADEUM_DECIMALS = 9;
+
+/**
+ * Create the ARCADEUM mint PublicKey from a base58 address string.
+ * Throws if the address is invalid.
+ */
+export function getArcadeumMint(mintAddress: string): PublicKey {
+  return new PublicKey(mintAddress);
+}
 
 /**
  * Convert human-readable ARCADEUM amount to raw token units.

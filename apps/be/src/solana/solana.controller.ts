@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { SolanaService } from './solana.service';
 import { WalletService } from '../wallet/wallet.service';
@@ -29,13 +30,15 @@ export class SolanaController {
   ) {}
 
   @Get('platform-balance')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async platformBalance() {
     return this.solana.getPlatformBalance();
   }
 
   @Post('withdraw')
   @UseGuards(JwtAuthGuard)
+  @Throttle({ strict: { limit: 5, ttl: 3_600_000 } })
   async withdraw(
     @Req() req: { user: AuthenticatedUser },
     @Body() dto: WithdrawDto,
@@ -49,6 +52,24 @@ export class SolanaController {
       throw new Error('Insufficient ARCADEUM balance');
     }
 
+    // Transfer FIRST, then debit on success. This prevents funds from
+    // being lost if the on-chain transaction fails.
+    let signature: string;
+    try {
+      signature = await this.solana.transferArcadeum(
+        dto.walletAddress,
+        dto.amount,
+      );
+    } catch (err) {
+      this.logger.error(
+        `On-chain transfer failed for user ${userId}: ${err instanceof Error ? err.message : err}`,
+      );
+      throw new Error(
+        'Blockchain transfer failed. Your balance was not changed.',
+      );
+    }
+
+    // Debit only after successful on-chain confirmation
     await this.wallet.debit(
       userId,
       'arcadeum',
@@ -59,6 +80,7 @@ export class SolanaController {
         walletAddress: dto.walletAddress,
         amount: dto.amount,
         fee: feeAmount,
+        signature,
       },
     );
 
@@ -76,11 +98,6 @@ export class SolanaController {
       );
     }
 
-    const signature = await this.solana.transferArcadeum(
-      dto.walletAddress,
-      dto.amount,
-    );
-
     return {
       success: true,
       signature,
@@ -93,14 +110,30 @@ export class SolanaController {
   @Post('buyback')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  buyback(@Req() req: { user: AuthenticatedUser }, @Body() dto: BuybackDto) {
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async buyback(
+    @Req() req: { user: AuthenticatedUser },
+    @Body() dto: BuybackDto,
+  ) {
     this.logger.log(
       `Buyback initiated: ${dto.solAmount} SOL by admin ${req.user.userId}`,
     );
+
+    const [solPrice, arcadeumPrice] = await Promise.all([
+      this.solana.getSolPrice(),
+      this.solana.getArcadeumPrice(),
+    ]);
+
+    const solValueUsd = dto.solAmount * solPrice;
+    const estimatedArcadeum = arcadeumPrice > 0 ? solValueUsd / arcadeumPrice : 0;
+
     return {
       success: true,
-      message: 'Buyback endpoint ready. Implement DEX integration.',
+      message: 'Buyback estimate. DEX integration pending.',
       solAmount: dto.solAmount,
+      solPriceUsd: solPrice,
+      arcadeumPriceUsd: arcadeumPrice,
+      estimatedArcadeum: Math.round(estimatedArcadeum * 100) / 100,
     };
   }
 }

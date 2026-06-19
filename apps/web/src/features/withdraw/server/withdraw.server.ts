@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { resolveApiUrl } from '@/shared/lib/api-base';
+import { getTranslations } from '@/shared/i18n/server';
 
 export async function submitWithdrawal(params: {
   walletAddress: string;
@@ -15,6 +16,15 @@ export async function submitWithdrawal(params: {
 }> {
   const cookieJar = await cookies();
   const token = cookieJar.get('web_access_token')?.value;
+
+  let wallet: { withdraw: { error: string } } | null = null;
+  try {
+    const messages = await getTranslations();
+    wallet = messages.wallet as { withdraw: { error: string } } | null;
+  } catch {
+    // Fallback to defaults
+  }
+
   if (!token) throw new Error('Not authenticated');
 
   const res = await fetch(resolveApiUrl('/solana/withdraw'), {
@@ -28,8 +38,10 @@ export async function submitWithdrawal(params: {
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Withdrawal failed: ${res.status} ${body}`);
+    const errorMsg = wallet?.withdraw.error ?? 'Withdrawal failed';
+    // Never expose raw backend error bodies to the client — they may
+    // contain internal details (stack traces, DB errors, RPC URLs).
+    throw new Error(errorMsg);
   }
 
   return res.json();

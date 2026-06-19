@@ -1,43 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import styles from './TokenInfo.module.scss';
 
 interface Props {
   mintAddress?: string;
-}
-
-interface TokenMetadata {
-  name: string;
-  symbol: string;
-  description: string;
-  image: string | null;
-  pumpfunUrl: string | null;
+  metadata?: {
+    name: string;
+    symbol: string;
+    description: string;
+    image: string | null;
+    pumpfunUrl: string | null;
+  } | null;
 }
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export function TokenInfo({ mintAddress }: Props) {
+export function TokenInfo({ mintAddress, metadata }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  const [metadata, setMetadata] = useState<TokenMetadata | null>(null);
-
-  useEffect(() => {
-    const base =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    void fetch(`${base}/solana/token-metadata`, { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.name && data?.symbol) {
-          setMetadata(data);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   const handleCopy = async () => {
     if (!mintAddress) return;

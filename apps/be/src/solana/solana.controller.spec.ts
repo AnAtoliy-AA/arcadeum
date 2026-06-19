@@ -147,10 +147,12 @@ describe('SolanaController', () => {
         })
         .expect(201);
 
-      expect(res.body.success).toBe(true);
-      expect(res.body.signature).toBe('sig-123');
-      expect(res.body.amount).toBe(100);
-      expect(res.body.fee).toBe(2);
+      expect(res.body).toMatchObject({
+        success: true,
+        signature: 'sig-123',
+        amount: 100,
+        fee: 2,
+      });
       expect(walletService.debit).toHaveBeenCalledTimes(2);
       expect(solanaService.transferArcadeum).toHaveBeenCalledWith(
         'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
@@ -188,12 +190,14 @@ describe('SolanaController', () => {
         .send({ solAmount: 1 })
         .expect(201);
 
-      expect(res.body.success).toBe(true);
-      expect(res.body.solAmount).toBe(1);
-      expect(res.body.solPriceUsd).toBe(150);
-      expect(res.body.arcadeumPriceUsd).toBe(0.01);
-      expect(res.body.estimatedArcadeum).toBe(15000);
-      expect(res.body.message).toContain('DEX integration');
+      expect(res.body).toMatchObject({
+        success: true,
+        solAmount: 1,
+        solPriceUsd: 150,
+        arcadeumPriceUsd: 0.01,
+        estimatedArcadeum: 15000,
+        message: expect.stringContaining('DEX integration'),
+      });
     });
   });
 });

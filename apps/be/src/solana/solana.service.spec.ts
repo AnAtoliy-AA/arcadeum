@@ -50,13 +50,13 @@ jest.mock('./lib/arcadeum-token', () => ({
   ARCADEUM_DECIMALS: 9,
 }));
 
-import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import {
   getAssociatedTokenAddress,
   getAccount,
 } from '@solana/spl-token';
 import { getPlatformKeypair } from './lib/solana-keypair';
-import { getArcadeumMint, toRawAmount } from './lib/arcadeum-token';
+import { toRawAmount } from './lib/arcadeum-token';
 import { SolanaService } from './solana.service';
 import { ConfigService } from '@nestjs/config';
 

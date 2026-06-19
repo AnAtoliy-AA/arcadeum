@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import styles from './TokenInfo.module.scss';
 
 interface Props {
   mintAddress?: string;
@@ -20,123 +21,32 @@ export function TokenInfo({ mintAddress }: Props) {
 
   return (
     <div
-      style={{
-        maxWidth: '900px',
-        margin: '0 auto',
-        padding: '0 16px 32px',
-      }}
+      style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px 32px' }}
     >
-      <div
-        style={{
-          borderRadius: '12px',
-          border: '1px solid rgba(52,211,153,0.2)',
-          background: 'rgba(52,211,153,0.05)',
-          padding: '24px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '16px',
-          }}
-        >
-          <div
-            style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #34d399, #059669)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '24px',
-              fontWeight: 700,
-              color: '#fff',
-            }}
-          >
-            A
-          </div>
+      <div className={styles.tokenCard}>
+        <div className={styles.header}>
+          <div className={styles.icon}>A</div>
           <div>
-            <h3
-              style={{
-                fontSize: '18px',
-                fontWeight: 700,
-                color: '#e4e4e7',
-                margin: 0,
-              }}
-            >
-              {t('wallet.tokenInfo.name')}
-            </h3>
-            <span
-              style={{
-                fontSize: '14px',
-                color: '#34d399',
-                fontWeight: 600,
-              }}
-            >
+            <h3 className={styles.name}>{t('wallet.tokenInfo.name')}</h3>
+            <span className={styles.ticker}>
               {t('wallet.tokenInfo.ticker')}
             </span>
           </div>
         </div>
 
-        <p
-          style={{
-            fontSize: '14px',
-            color: '#a1a1aa',
-            lineHeight: 1.6,
-            margin: '0 0 16px',
-          }}
-        >
+        <p className={styles.description}>
           {t('wallet.tokenInfo.description')}
         </p>
 
         {mintAddress && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 14px',
-              borderRadius: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#71717a',
-                whiteSpace: 'nowrap',
-              }}
-            >
+          <div className={styles.mintRow}>
+            <span className={styles.mintLabel}>
               {t('wallet.tokenInfo.mint')}:
             </span>
-            <code
-              style={{
-                fontSize: '12px',
-                color: '#a1a1aa',
-                fontFamily: 'monospace',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                flex: 1,
-              }}
-            >
-              {mintAddress}
-            </code>
+            <code className={styles.mintValue}>{mintAddress}</code>
             <button
               onClick={handleCopy}
-              style={{
-                padding: '4px 12px',
-                borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.12)',
-                background: 'rgba(255,255,255,0.06)',
-                color: copied ? '#34d399' : '#a1a1aa',
-                fontSize: '12px',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
+              className={copied ? styles.copyBtnCopied : styles.copyBtn}
             >
               {copied ? t('wallet.tokenInfo.copied') : t('wallet.tokenInfo.copy')}
             </button>

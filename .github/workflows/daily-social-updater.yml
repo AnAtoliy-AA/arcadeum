@@ -151,7 +151,9 @@ jobs:
                     createPost(input: {
                       text: $text
                       channelId: $channelId
-                      schedulingType: now
+                      schedulingType: automatic
+                      mode: shareNow
+                      assets: []
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }

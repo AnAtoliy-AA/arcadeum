@@ -190,7 +190,8 @@ describe('SolanaController', () => {
         .send({ solAmount: 1 })
         .expect(201);
 
-      expect(res.body).toMatchObject({
+      const body = res.body as Record<string, unknown>;
+      expect(body).toMatchObject({
         success: true,
         solAmount: 1,
         solPriceUsd: 150,

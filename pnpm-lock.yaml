@@ -11,6 +11,12 @@ overrides:
   '@tamagui/shorthands': 2.0.0-rc.23
   '@tamagui/config': 2.0.0-rc.23
   '@tamagui/lucide-icons': 2.0.0-rc.23
+  tamagui>react: 19.1.0
+  tamagui>react-dom: 19.1.0
+  '@tamagui/core>react': 19.1.0
+  '@tamagui/core>react-dom': 19.1.0
+  '@tamagui/web>react': 19.1.0
+  '@tamagui/web>react-dom': 19.1.0
 
 importers:
 
@@ -4508,7 +4514,7 @@ packages:
   '@tamagui/core@2.0.0-rc.23':
     resolution: {integrity: sha512-NT+OH45xshWOdAbk4IEX0eeUkXnDXV6sTFG8oIx+HA89n63GffpUdg3VGAtYsjI4kojKqq3RXj1R1nEig2pvlQ==}
     peerDependencies:
-      react: '>=19'
+      react: 19.1.0
       react-native: '*'
 
   '@tamagui/create-context@2.0.0-rc.23':
@@ -5038,8 +5044,8 @@ packages:
   '@tamagui/web@2.0.0-rc.23':
     resolution: {integrity: sha512-uCQZPGr2jKjNlu53dUZyZPKGVRPcTnREI4nn/04FN+dP4LECcQsoVSFZ28KPosr6ErU4JPBYFG13oxjTOoQw6Q==}
     peerDependencies:
-      react: '>=19'
-      react-dom: '*'
+      react: 19.1.0
+      react-dom: 19.1.0
       react-native: '*'
 
   '@tamagui/z-index-stack@2.0.0-rc.23':
@@ -12023,7 +12029,7 @@ packages:
   tamagui@2.0.0-rc.23:
     resolution: {integrity: sha512-mE0eDzKVv8FhSU+IhAujwuCHD6FKVUSD6juC5ZYXNyMHZC+yvW352LN/uHWTQJ7QzkLUskGbmNr3VCj+3ArYvg==}
     peerDependencies:
-      react: '>=19'
+      react: 19.1.0
       react-native: '*'
 
   tapable@2.3.0:

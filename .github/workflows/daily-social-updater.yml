@@ -137,24 +137,33 @@ jobs:
               }
 
               channels = [
-                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "post"),
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook"),
                   (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None),
                   (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None),
               ]
 
-              for channel_id, text, name, post_type in channels:
+              for channel_id, text, name, metadata_key in channels:
                   if not channel_id:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
+                  if metadata_key:
+                      metadata_json = json.dumps({metadata_key: {"type": "post"}})
+                  else:
+                      metadata_json = "{}"
+                  variables = {
+                      "text": text,
+                      "channelId": channel_id,
+                      "metadata": json.loads(metadata_json),
+                  }
                   query = """
-                  mutation CreatePost($text: String!, $channelId: ChannelId!) {
+                  mutation CreatePost($text: String!, $channelId: ChannelId!, $metadata: PostInputMetaData) {
                     createPost(input: {
                       text: $text
                       channelId: $channelId
                       schedulingType: automatic
                       mode: shareNow
                       assets: []
-                      %(type_field)s
+                      metadata: $metadata
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -165,12 +174,6 @@ jobs:
                     }
                   }
                   """
-                  type_field = f'type: "{post_type}"' if post_type else ""
-                  query = query % {"type_field": type_field}
-                  variables = {
-                      "text": text,
-                      "channelId": channel_id,
-                  }
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   print(f"{name} response: {resp.status_code} {resp.text}")

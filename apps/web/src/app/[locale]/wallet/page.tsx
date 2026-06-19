@@ -21,6 +21,8 @@ import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import type { WalletReason } from '@/features/wallet/server/wallet.types';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -118,6 +120,14 @@ export default async function WalletPage({
 
   const { gems: currentGems } = balance;
 
+  let reasonLabels: Partial<Record<WalletReason, string>> = {};
+  try {
+    const messages = await getTranslations(typedLocale);
+    reasonLabels = messages.wallet?.reasons ?? {};
+  } catch {
+    // Fallback to default English labels
+  }
+
   return (
     <div>
       <PageBreadcrumb locale={locale} page="wallet" />
@@ -141,10 +151,18 @@ export default async function WalletPage({
       </div>
 
       <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
-        <WithdrawToWallet arcadeumBalance={balance.arcadeum ?? 0} />
+        <WithdrawToWallet
+          arcadeumBalance={balance.arcadeum ?? 0}
+          locale={typedLocale}
+        />
       </div>
 
-      <WalletHistory page={page} currency={currency} locale={typedLocale} />
+      <WalletHistory
+        page={page}
+        currency={currency}
+        locale={typedLocale}
+        reasonLabels={reasonLabels}
+      />
     </div>
   );
 }

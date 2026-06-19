@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { usePhantom } from '../lib/usePhantom';
 import { submitWithdrawal } from '../server/withdraw.server';
 
@@ -8,9 +10,15 @@ const WITHDRAWAL_FEE_PERCENT = 2;
 
 interface Props {
   arcadeumBalance: number;
+  locale?: Locale;
 }
 
-export function WithdrawToWallet({ arcadeumBalance }: Props) {
+export function WithdrawToWallet({
+  arcadeumBalance,
+  locale = DEFAULT_LOCALE,
+}: Props) {
+  const { t } = useTranslation(locale);
+  const wallet = t.wallet;
   const {
     publicKey,
     isConnected,
@@ -18,7 +26,7 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
     error: phantomError,
     connect,
     disconnect,
-  } = usePhantom();
+  } = usePhantom(locale);
   const [amount, setAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -48,7 +56,9 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
       setResult(res);
       setAmount('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Withdrawal failed');
+      setError(
+        err instanceof Error ? err.message : wallet.withdraw.error,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -64,10 +74,10 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
           color: '#e4e4e7',
         }}
       >
-        Withdraw to Wallet
+        {wallet.withdraw.title}
       </h2>
       <p style={{ fontSize: '14px', color: '#71717a', marginBottom: '24px' }}>
-        Transfer your ARCADEUM tokens to your Phantom wallet. A 2% fee applies.
+        {wallet.withdraw.description}
       </p>
 
       {!isConnected ? (
@@ -86,7 +96,9 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
             cursor: isConnecting ? 'wait' : 'pointer',
           }}
         >
-          {isConnecting ? 'Connecting...' : 'Connect Phantom Wallet'}
+          {isConnecting
+            ? wallet.withdraw.connecting
+            : wallet.withdraw.connectButton}
         </button>
       ) : (
         <>
@@ -102,7 +114,7 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
               wordBreak: 'break-all',
             }}
           >
-            Connected: {publicKey}
+            {wallet.withdraw.connected}: {publicKey}
             <button
               onClick={disconnect}
               style={{
@@ -114,7 +126,7 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
                 textDecoration: 'underline',
               }}
             >
-              Disconnect
+              {wallet.withdraw.disconnect}
             </button>
           </div>
 
@@ -127,7 +139,10 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
                 marginBottom: '6px',
               }}
             >
-              Amount (Available: {arcadeumBalance.toLocaleString()} ARCADEUM)
+              {wallet.withdraw.amountLabel.replace(
+                '{balance}',
+                arcadeumBalance.toLocaleString(),
+              )}
             </label>
             <input
               type="number"
@@ -135,7 +150,7 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
               onChange={(e) => setAmount(e.target.value)}
               min={1}
               max={arcadeumBalance}
-              placeholder="Enter amount"
+              placeholder={wallet.withdraw.amountPlaceholder}
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -160,10 +175,23 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
                 color: '#a1a1aa',
               }}
             >
-              <div>Amount: {numericAmount.toLocaleString()} ARCADEUM</div>
-              <div>Fee (2%): {fee.toLocaleString()} ARCADEUM</div>
+              <div>
+                {wallet.withdraw.amountLabel.replace(
+                  '{balance}',
+                  numericAmount.toLocaleString(),
+                )}
+              </div>
+              <div>
+                {wallet.withdraw.feeLabel.replace(
+                  '{fee}',
+                  fee.toLocaleString(),
+                )}
+              </div>
               <div style={{ color: '#e4e4e7', fontWeight: 600 }}>
-                You receive: {numericAmount.toLocaleString()} ARCADEUM
+                {wallet.withdraw.youReceive.replace(
+                  '{amount}',
+                  numericAmount.toLocaleString(),
+                )}
               </div>
             </div>
           )}
@@ -196,7 +224,11 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
                 fontSize: '13px',
               }}
             >
-              Withdrawal successful! TX: {result.signature.slice(0, 16)}...
+              {wallet.withdraw.success.replace(
+                '{signature}',
+                result.signature.slice(0, 16),
+              )}
+              ...
             </div>
           )}
 
@@ -215,7 +247,9 @@ export function WithdrawToWallet({ arcadeumBalance }: Props) {
               cursor: canSubmit ? 'pointer' : 'not-allowed',
             }}
           >
-            {isSubmitting ? 'Processing...' : 'Withdraw'}
+            {isSubmitting
+              ? wallet.withdraw.processing
+              : wallet.withdraw.submitButton}
           </button>
         </>
       )}

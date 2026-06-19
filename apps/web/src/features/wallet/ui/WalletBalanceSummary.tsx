@@ -2,6 +2,7 @@
 
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { WalletBalance } from '../server/wallet.types';
 
 interface Props {
@@ -14,10 +15,12 @@ export function WalletBalanceSummary({
   locale = DEFAULT_LOCALE,
 }: Props) {
   const { coins, gems, arcadeum } = balance;
+  const { t } = useTranslation(locale);
+  const wallet = t.wallet;
 
   return (
     <section
-      aria-label="Wallet balance"
+      aria-label={wallet.balance.title}
       style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 16px 0' }}
     >
       <h1
@@ -28,7 +31,7 @@ export function WalletBalanceSummary({
           color: 'var(--color-text, #e4e4e7)',
         }}
       >
-        Your Wallet
+        {wallet.balance.title}
       </h1>
       <p
         style={{
@@ -37,7 +40,7 @@ export function WalletBalanceSummary({
           marginBottom: '32px',
         }}
       >
-        Coins are earned through play. Gems are purchased.
+        {wallet.balance.subtitle}
       </p>
 
       <div
@@ -61,7 +64,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            🪙 Coins
+            🪙 {wallet.balance.coins}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#fbbf24' }}
@@ -84,7 +87,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            💎 Gems
+            💎 {wallet.balance.gems}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
@@ -107,7 +110,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            🎮 ARCADEUM
+            🎮 {wallet.balance.arcadeum}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#34d399' }}

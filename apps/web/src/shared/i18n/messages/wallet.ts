@@ -39,6 +39,7 @@ export interface WalletMessages {
     filterAll: string;
     filterCoins: string;
     filterGems: string;
+    filterArcadeum: string;
     emptyTitle: string;
     emptyDescription: string;
     colReason: string;
@@ -116,6 +117,7 @@ export const en: WalletMessages = {
     filterAll: 'All',
     filterCoins: 'Coins',
     filterGems: 'Gems',
+    filterArcadeum: 'Arcadeum',
     emptyTitle: 'No transactions yet',
     emptyDescription: 'Your wallet activity will appear here.',
     colReason: 'Reason',
@@ -193,6 +195,7 @@ export const ru: DeepPartial<WalletMessages> = {
     filterAll: 'Все',
     filterCoins: 'Монеты',
     filterGems: 'Гемы',
+    filterArcadeum: 'Arcadeum',
     emptyTitle: 'Пока нет транзакций',
     emptyDescription: 'Активность вашего кошелька появится здесь.',
     colReason: 'Причина',
@@ -270,6 +273,7 @@ export const es: DeepPartial<WalletMessages> = {
     filterAll: 'Todos',
     filterCoins: 'Monedas',
     filterGems: 'Gemas',
+    filterArcadeum: 'Arcadeum',
     emptyTitle: 'Sin transacciones aún',
     emptyDescription: 'La actividad de tu monedero aparecerá aquí.',
     colReason: 'Razón',
@@ -347,6 +351,7 @@ export const fr: DeepPartial<WalletMessages> = {
     filterAll: 'Tout',
     filterCoins: 'Pièces',
     filterGems: 'Gemmes',
+    filterArcadeum: 'Arcadeum',
     emptyTitle: 'Aucune transaction pour le moment',
     emptyDescription: "L'activité de votre portefeuille apparaîtra ici.",
     colReason: 'Raison',
@@ -424,6 +429,7 @@ export const by: DeepPartial<WalletMessages> = {
     filterAll: 'Усе',
     filterCoins: 'Манеты',
     filterGems: 'Гемы',
+    filterArcadeum: 'Arcadeum',
     emptyTitle: 'Пакуль няма транзакцый',
     emptyDescription: "Актыўнасць вашага кашалька з'явіцца тут.",
     colReason: 'Прычына',

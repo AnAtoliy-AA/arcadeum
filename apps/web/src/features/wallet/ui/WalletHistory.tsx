@@ -55,6 +55,7 @@ export async function WalletHistory({
     filterAll?: string;
     filterCoins?: string;
     filterGems?: string;
+    filterArcadeum?: string;
     emptyTitle?: string;
     emptyDescription?: string;
     colReason?: string;
@@ -70,13 +71,15 @@ export async function WalletHistory({
     // Fallback to defaults
   }
 
-  const allHref = '/wallet';
-  const coinsHref = '/wallet?currency=coins';
-  const gemsHref = '/wallet?currency=gems';
+  const allHref = '/wallet#wallet-history';
+  const coinsHref = '/wallet?currency=coins#wallet-history';
+  const gemsHref = '/wallet?currency=gems#wallet-history';
+  const arcadeumHref = '/wallet?currency=arcadeum#wallet-history';
 
   const isAll = !currency;
   const isCoins = currency === 'coins';
   const isGems = currency === 'gems';
+  const isArcadeum = currency === 'arcadeum';
 
   return (
     <section
@@ -119,6 +122,13 @@ export async function WalletHistory({
         >
           💎 {history?.filterGems ?? 'Gems'}
         </Link>
+        <Link
+          href={arcadeumHref}
+          style={isArcadeum ? FILTER_ACTIVE : FILTER_INACTIVE}
+          data-testid="filter-arcadeum"
+        >
+          🎮 {history?.filterArcadeum ?? 'Arcadeum'}
+        </Link>
       </nav>
 
       {items.length === 0 ? (
@@ -142,7 +152,8 @@ export async function WalletHistory({
             {history?.emptyTitle ?? 'No transactions yet'}
           </div>
           <div style={{ fontSize: '14px' }}>
-            {history?.emptyDescription ?? 'Your wallet activity will appear here.'}
+            {history?.emptyDescription ??
+              'Your wallet activity will appear here.'}
           </div>
         </div>
       ) : (
@@ -164,12 +175,14 @@ export async function WalletHistory({
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                {([
-                  { key: 'reason', fallback: 'Reason' },
-                  { key: 'change', fallback: 'Change' },
-                  { key: 'balanceAfter', fallback: 'Balance after' },
-                  { key: 'when', fallback: 'When' },
-                ] as const).map(({ key, fallback }) => {
+                {(
+                  [
+                    { key: 'reason', fallback: 'Reason' },
+                    { key: 'change', fallback: 'Change' },
+                    { key: 'balanceAfter', fallback: 'Balance after' },
+                    { key: 'when', fallback: 'When' },
+                  ] as const
+                ).map(({ key, fallback }) => {
                   const label =
                     key === 'reason'
                       ? history?.colReason

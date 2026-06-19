@@ -31,6 +31,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python - <<EOF
+          import json
           import os
           import subprocess
           import re
@@ -191,12 +192,13 @@ jobs:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
                   query = """
-                  mutation {
+                  mutation CreatePost($text: String!, $channelId: ChannelId!) {
                     createPost(input: {
-                      text: %(text)s
-                      channelId: %(channel_id)s
+                      text: $text
+                      channelId: $channelId
                       schedulingType: automatic
-                      mode: now
+                      mode: shareNow
+                      assets: []
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -206,8 +208,12 @@ jobs:
                       }
                     }
                   }
-                  """ % {"text": repr(text), "channel_id": repr(channel_id)}
-                  payload = {"query": query}
+                  """
+                  variables = {
+                      "text": text,
+                      "channelId": channel_id,
+                  }
+                  payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   if resp.status_code == 200:
                       result = resp.json()

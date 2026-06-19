@@ -137,12 +137,12 @@ jobs:
               }
 
               channels = [
-                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook"),
-                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None),
-                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None),
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook", "addToQueue"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None, "shareNow"),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None, "shareNow"),
               ]
 
-              for channel_id, text, name, metadata_key in channels:
+              for channel_id, text, name, metadata_key, mode in channels:
                   if not channel_id:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
@@ -161,7 +161,7 @@ jobs:
                       text: $text
                       channelId: $channelId
                       schedulingType: automatic
-                      mode: shareNow
+                      mode: %s
                       assets: []
                       metadata: $metadata
                     }) {
@@ -173,7 +173,7 @@ jobs:
                       }
                     }
                   }
-                  """
+                  """ % mode
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   print(f"{name} response: {resp.status_code} {resp.text}")

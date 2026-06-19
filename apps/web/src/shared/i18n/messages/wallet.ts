@@ -87,7 +87,7 @@ export const en: WalletMessages = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      'ARCADEUM GAMES (ARC) is the native SPL token of the Arcadeum gaming platform. Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.',
+      '{{name}} ({{ticker}}) is a token on the Solana blockchain. Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet.',
     mint: 'Mint',
     copy: 'Copy',
     copied: 'Copied!',
@@ -164,7 +164,7 @@ export const ru: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      'ARCADEUM GAMES (ARC) — нативный SPL-токен игровой платформы Arcadeum. Зарабатывайте токены в игре, покупайте в магазине или выводите на кошелёк Phantom в Solana.',
+      '{{name}} ({{ticker}}) — токен на блокчейне Solana. Зарабатывайте токены в игре, покупайте в магазине или выводите на кошелёк Phantom.',
     mint: 'Минт',
     copy: 'Копировать',
     copied: 'Скопировано!',
@@ -241,7 +241,7 @@ export const es: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      'ARCADEUM GAMES (ARC) es el token SPL nativo de la plataforma de juegos Arcadeum. Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom en Solana.',
+      '{{name}} ({{ticker}}) es un token en la blockchain de Solana. Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom.',
     mint: 'Mint',
     copy: 'Copiar',
     copied: '¡Copiado!',
@@ -262,8 +262,7 @@ export const es: DeepPartial<WalletMessages> = {
     processing: 'Procesando...',
     success: '¡Retiro exitoso! TX: {signature}',
     error: 'Error en el retiro',
-    phantomNotFound:
-      'Monedero Phantom no encontrado. Por favor, instálalo.',
+    phantomNotFound: 'Monedero Phantom no encontrado. Por favor, instálalo.',
     connectionFailed: 'Error de conexión',
     disconnectFailed: 'Error al desconectar el monedero',
   },
@@ -310,8 +309,7 @@ export const es: DeepPartial<WalletMessages> = {
 export const fr: DeepPartial<WalletMessages> = {
   balance: {
     title: 'Votre Portefeuille',
-    subtitle:
-      'Les pièces sont gagnées en jouant. Les gemmes sont achetées.',
+    subtitle: 'Les pièces sont gagnées en jouant. Les gemmes sont achetées.',
     coins: 'Pièces',
     gems: 'Gemmes',
     arcadeum: 'ARCADEUM',
@@ -320,7 +318,7 @@ export const fr: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      "ARCADEUM GAMES (ARC) est le token SPL natif de la plateforme de jeux Arcadeum. Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom sur Solana.",
+      '{name} ({ticker}) est un token sur la blockchain Solana. Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom.',
     mint: 'Mint',
     copy: 'Copier',
     copied: 'Copié !',
@@ -328,7 +326,7 @@ export const fr: DeepPartial<WalletMessages> = {
   withdraw: {
     title: 'Retirer vers le portefeuille',
     description:
-      'Transférez vos tokens ARCADEUM vers votre portefeuille Phantom. Une commission de 2% s\'applique.',
+      "Transférez vos tokens ARCADEUM vers votre portefeuille Phantom. Une commission de 2% s'applique.",
     connectButton: 'Connecter le portefeuille Phantom',
     connecting: 'Connexion...',
     connected: 'Connecté',
@@ -341,8 +339,7 @@ export const fr: DeepPartial<WalletMessages> = {
     processing: 'Traitement...',
     success: 'Retrait réussi! TX: {signature}',
     error: 'Échec du retrait',
-    phantomNotFound:
-      'Portefeuille Phantom non trouvé. Veuillez l\'installer.',
+    phantomNotFound: "Portefeuille Phantom non trouvé. Veuillez l'installer.",
     connectionFailed: 'Échec de la connexion',
     disconnectFailed: 'Échec de la déconnexion du portefeuille',
   },
@@ -351,8 +348,7 @@ export const fr: DeepPartial<WalletMessages> = {
     filterCoins: 'Pièces',
     filterGems: 'Gemmes',
     emptyTitle: 'Aucune transaction pour le moment',
-    emptyDescription:
-      "L'activité de votre portefeuille apparaîtra ici.",
+    emptyDescription: "L'activité de votre portefeuille apparaîtra ici.",
     colReason: 'Raison',
     colChange: 'Changement',
     colBalanceAfter: 'Solde après',
@@ -399,7 +395,7 @@ export const by: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      'ARCADEUM GAMES (ARC) — натыўны SPL-токен gaming платформы Arcadeum. Зарабляйце токены ў гульні, купляйце ў краме або выводзіце на кашалёк Phantom у Solana.',
+      '{name} ({ticker}) — токен на блокчейне Solana. Зарабляйце токены ў гульні, купляйце ў краме або выводзіце на кашалёк Phantom.',
     mint: 'Мінт',
     copy: 'Капіяваць',
     copied: 'Скапіявана!',
@@ -429,7 +425,7 @@ export const by: DeepPartial<WalletMessages> = {
     filterCoins: 'Манеты',
     filterGems: 'Гемы',
     emptyTitle: 'Пакуль няма транзакцый',
-    emptyDescription: 'Актыўнасць вашага кашалька з\'явіцца тут.',
+    emptyDescription: "Актыўнасць вашага кашалька з'явіцца тут.",
     colReason: 'Прычына',
     colChange: 'Змена',
     colBalanceAfter: 'Баланс пасля',

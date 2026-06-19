@@ -29,6 +29,11 @@ export class SolanaController {
     private readonly wallet: WalletService,
   ) {}
 
+  @Get('token-metadata')
+  async tokenMetadata() {
+    return this.solana.getTokenMetadata();
+  }
+
   @Get('platform-balance')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

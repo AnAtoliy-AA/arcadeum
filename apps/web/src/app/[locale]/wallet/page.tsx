@@ -94,6 +94,8 @@ export default async function WalletPage({
             <GemStore />
           </div>
         </div>
+        <TokenInfo mintAddress={process.env.ARCADEUM_MINT_ADDRESS} />
+
         <WalletHistory
           page={EMPTY_PAGE}
           currency={currency}
@@ -152,14 +154,10 @@ export default async function WalletPage({
       </div>
 
       <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
-        <WithdrawToWallet
-          arcadeumBalance={balance.arcadeum ?? 0}
-        />
+        <WithdrawToWallet arcadeumBalance={balance.arcadeum ?? 0} />
       </div>
 
-      <TokenInfo
-        mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
-      />
+      <TokenInfo mintAddress={process.env.ARCADEUM_MINT_ADDRESS} />
 
       <WalletHistory
         page={page}

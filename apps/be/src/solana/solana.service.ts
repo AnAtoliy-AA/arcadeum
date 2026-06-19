@@ -93,6 +93,42 @@ export class SolanaService {
     return price;
   }
 
+  async getTokenMetadata(): Promise<{
+    name: string;
+    symbol: string;
+    description: string;
+    image: string | null;
+  } | null> {
+    const mintAddress = this.arcadeumMint.toBase58();
+
+    try {
+      const res = await fetch(
+        `https://frontend-api-v3.pump.fun/coins/${mintAddress}`,
+      );
+      if (!res.ok) {
+        this.logger.warn(`pump.fun API returned ${res.status}`);
+        return null;
+      }
+
+      const data = (await res.json()) as {
+        name?: string;
+        symbol?: string;
+        description?: string;
+        image_uri?: string;
+      };
+
+      return {
+        name: data.name ?? '',
+        symbol: data.symbol ?? '',
+        description: data.description ?? '',
+        image: data.image_uri ?? null,
+      };
+    } catch {
+      this.logger.warn('Failed to fetch token metadata from pump.fun');
+      return null;
+    }
+  }
+
   async getPlatformBalance(): Promise<{ sol: number; arcadeum: number }> {
     const keypair = this.getKeypair();
     const solBalance = await this.connection.getBalance(keypair.publicKey);

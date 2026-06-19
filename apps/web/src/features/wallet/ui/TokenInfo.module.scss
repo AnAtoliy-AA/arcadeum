@@ -8,35 +8,47 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 16px;
 }
 
 .icon {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: linear-gradient(135deg, #34d399, #059669);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
 }
 
+.tokenImage {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .name {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
-  color: #e4e4e7;
-  margin: 0;
+  color: #f4f4f5;
+  margin: 0 0 2px;
 }
 
 .ticker {
+  display: inline-block;
   font-size: 14px;
   color: #34d399;
   font-weight: 600;
+  background: rgba(52, 211, 153, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .description {
@@ -44,6 +56,11 @@
   color: #a1a1aa;
   line-height: 1.6;
   margin: 0 0 16px;
+}
+
+.highlight {
+  color: #34d399;
+  font-weight: 600;
 }
 
 .mintRow {

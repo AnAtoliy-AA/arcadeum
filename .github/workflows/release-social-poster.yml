@@ -208,7 +208,6 @@ jobs:
                           "text": text,
                           "channelId": channel_id,
                           "schedulingType": "automatic",
-                          "mode": "now",
                       }
                   }
                   payload = {"query": query, "variables": variables}

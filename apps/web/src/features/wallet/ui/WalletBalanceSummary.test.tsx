@@ -1,7 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { WalletBalanceSummary } from './WalletBalanceSummary';
 import type { WalletBalance } from '../server/wallet.types';
+
+vi.mock('@/shared/lib/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'wallet.balance.title': 'Your Wallet',
+        'wallet.balance.subtitle': 'Coins are earned through play. Gems are purchased.',
+        'wallet.balance.coins': 'Coins',
+        'wallet.balance.gems': 'Gems',
+        'wallet.balance.arcadeum': 'ARCADEUM',
+      };
+      return translations[key] ?? key;
+    },
+  }),
+}));
 
 describe('WalletBalanceSummary', () => {
   it('renders coin and gem balances', () => {

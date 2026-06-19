@@ -213,6 +213,14 @@ export default function TermsContent({
           </Typography>
         </Section>
 
+        {s?.crypto && (
+          <Section variant="legal" title={s?.crypto?.title}>
+            <Typography variant="body" uiSize="md" alpha="high">
+              {s?.crypto?.content}
+            </Typography>
+          </Section>
+        )}
+
         <Section variant="legal" title={s?.governingLaw?.title}>
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.governingLaw?.content}

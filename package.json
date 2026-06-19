@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "postinstall": "node scripts/patch-tamagui-token-init.mjs",
     "prepare": "husky",
     "dev": "turbo run dev --parallel --filter be --filter web --filter \"@arcadeum/ui\"",
     "dev:all": "turbo run dev --parallel && cd packages/ui && pnpm run dev",
@@ -41,7 +42,13 @@
       "@tamagui/web": "2.0.0-rc.23",
       "@tamagui/shorthands": "2.0.0-rc.23",
       "@tamagui/config": "2.0.0-rc.23",
-      "@tamagui/lucide-icons": "2.0.0-rc.23"
+      "@tamagui/lucide-icons": "2.0.0-rc.23",
+      "tamagui>react": "19.1.0",
+      "tamagui>react-dom": "19.1.0",
+      "@tamagui/core>react": "19.1.0",
+      "@tamagui/core>react-dom": "19.1.0",
+      "@tamagui/web>react": "19.1.0",
+      "@tamagui/web>react-dom": "19.1.0"
     }
   }
 }

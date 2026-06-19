@@ -16,10 +16,14 @@ import { PendingGemPurchases } from '@/features/gems/ui/PendingGemPurchases';
 import { GemStore } from '@/features/gems/ui/GemStore';
 import { ConvertGemsForm } from '@/features/gems/ui/ConvertGemsForm';
 import { getConversionRate } from '@/features/gems/server/gems.server';
+import { WithdrawToWallet } from '@/features/withdraw/ui/WithdrawToWallet';
 import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import type { WalletReason } from '@/features/wallet/server/wallet.types';
+import { TokenInfo } from '@/features/wallet/ui/TokenInfo';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -39,10 +43,12 @@ interface SearchParams {
 }
 
 function parseCurrency(input?: string): WalletCurrency | undefined {
-  return input === 'coins' || input === 'gems' ? input : undefined;
+  return input === 'coins' || input === 'gems' || input === 'arcadeum'
+    ? input
+    : undefined;
 }
 
-const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0 };
+const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0, arcadeum: 0 };
 const EMPTY_PAGE: PaginatedWalletTransactions = { items: [], nextCursor: null };
 
 const GEM_SECTIONS_STYLE: React.CSSProperties = {
@@ -115,6 +121,14 @@ export default async function WalletPage({
 
   const { gems: currentGems } = balance;
 
+  let reasonLabels: Partial<Record<WalletReason, string>> = {};
+  try {
+    const messages = await getTranslations(typedLocale);
+    reasonLabels = messages.wallet?.reasons ?? {};
+  } catch {
+    // Fallback to default English labels
+  }
+
   return (
     <div>
       <PageBreadcrumb locale={locale} page="wallet" />
@@ -137,7 +151,22 @@ export default async function WalletPage({
         <ConvertGemsForm rate={conversionRate} currentGems={currentGems} />
       </div>
 
-      <WalletHistory page={page} currency={currency} locale={typedLocale} />
+      <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
+        <WithdrawToWallet
+          arcadeumBalance={balance.arcadeum ?? 0}
+        />
+      </div>
+
+      <TokenInfo
+        mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+      />
+
+      <WalletHistory
+        page={page}
+        currency={currency}
+        locale={typedLocale}
+        reasonLabels={reasonLabels}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { WalletBalance } from '../server/wallet.types';
 
 interface Props {
@@ -13,11 +14,12 @@ export function WalletBalanceSummary({
   balance,
   locale = DEFAULT_LOCALE,
 }: Props) {
-  const { coins, gems } = balance;
+  const { coins, gems, arcadeum } = balance;
+  const { t } = useTranslation();
 
   return (
     <section
-      aria-label="Wallet balance"
+      aria-label={t('wallet.balance.title')}
       style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 16px 0' }}
     >
       <h1
@@ -28,7 +30,7 @@ export function WalletBalanceSummary({
           color: 'var(--color-text, #e4e4e7)',
         }}
       >
-        Your Wallet
+        {t('wallet.balance.title')}
       </h1>
       <p
         style={{
@@ -37,7 +39,7 @@ export function WalletBalanceSummary({
           marginBottom: '32px',
         }}
       >
-        Coins are earned through play. Gems are purchased.
+        {t('wallet.balance.subtitle')}
       </p>
 
       <div
@@ -61,7 +63,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            🪙 Coins
+            🪙 {t('wallet.balance.coins')}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#fbbf24' }}
@@ -84,13 +86,36 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            💎 Gems
+            💎 {t('wallet.balance.gems')}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
             data-testid="balance-gems-value"
           >
             <AnimatedNumber value={gems} locale={locale} />
+          </div>
+        </div>
+
+        <div
+          data-testid="balance-arcadeum"
+          style={{
+            flex: '1 1 160px',
+            padding: '20px 24px',
+            borderRadius: '12px',
+            background: 'rgba(52,211,153,0.08)',
+            border: '1px solid rgba(52,211,153,0.2)',
+          }}
+        >
+          <div
+            style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
+          >
+            🎮 {t('wallet.balance.arcadeum')}
+          </div>
+          <div
+            style={{ fontSize: '28px', fontWeight: 700, color: '#34d399' }}
+            data-testid="balance-arcadeum-value"
+          >
+            <AnimatedNumber value={arcadeum} locale={locale} />
           </div>
         </div>
       </div>

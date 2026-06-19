@@ -1,7 +1,26 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { WalletHistory } from './WalletHistory';
 import type { PaginatedWalletTransactions } from '../server/wallet.types';
+
+vi.mock('@/shared/i18n/server', () => ({
+  getTranslations: vi.fn().mockResolvedValue({
+    wallet: {
+      history: {
+        filterAll: 'All',
+        filterCoins: 'Coins',
+        filterGems: 'Gems',
+        emptyTitle: 'No transactions yet',
+        emptyDescription: 'Your wallet activity will appear here.',
+        colReason: 'Reason',
+        colChange: 'Change',
+        colBalanceAfter: 'Balance after',
+        colWhen: 'When',
+        nextPage: 'Next',
+      },
+    },
+  }),
+}));
 
 const singlePage: PaginatedWalletTransactions = {
   items: [
@@ -33,20 +52,20 @@ const pagedResult: PaginatedWalletTransactions = {
 };
 
 describe('WalletHistory', () => {
-  it('renders a row for each transaction', () => {
-    render(<WalletHistory page={singlePage} />);
+  it('renders a row for each transaction', async () => {
+    render(await WalletHistory({ page: singlePage }));
     const rows = screen.getAllByTestId('transaction-row');
     expect(rows).toHaveLength(2);
   });
 
-  it('shows empty state when there are no transactions', () => {
-    render(<WalletHistory page={emptyPage} />);
+  it('shows empty state when there are no transactions', async () => {
+    render(await WalletHistory({ page: emptyPage }));
     expect(screen.getByTestId('wallet-empty')).toBeTruthy();
     expect(screen.queryByTestId('transactions-table')).toBeNull();
   });
 
-  it('shows Next link when nextCursor is present', () => {
-    render(<WalletHistory page={pagedResult} />);
+  it('shows Next link when nextCursor is present', async () => {
+    render(await WalletHistory({ page: pagedResult }));
     const nextLink = screen.getByTestId('next-page');
     expect(nextLink).toBeTruthy();
     expect((nextLink as HTMLAnchorElement).href).toContain(
@@ -54,33 +73,33 @@ describe('WalletHistory', () => {
     );
   });
 
-  it('anchors Next link to the history section so the browser does not scroll to the top of the page', () => {
-    render(<WalletHistory page={pagedResult} />);
+  it('anchors Next link to the history section so the browser does not scroll to the top of the page', async () => {
+    render(await WalletHistory({ page: pagedResult }));
     const nextLink = screen.getByTestId('next-page') as HTMLAnchorElement;
     expect(nextLink.href).toContain('#wallet-history');
   });
 
-  it('does not show Next link when nextCursor is null', () => {
-    render(<WalletHistory page={singlePage} />);
+  it('does not show Next link when nextCursor is null', async () => {
+    render(await WalletHistory({ page: singlePage }));
     expect(screen.queryByTestId('next-page')).toBeNull();
   });
 
-  it('preserves currency filter in Next link', () => {
-    render(<WalletHistory page={pagedResult} currency="coins" />);
+  it('preserves currency filter in Next link', async () => {
+    render(await WalletHistory({ page: pagedResult, currency: 'coins' }));
     const nextLink = screen.getByTestId('next-page') as HTMLAnchorElement;
     expect(nextLink.href).toContain('currency=coins');
     expect(nextLink.href).toContain('cursor=cursor-abc123');
   });
 
-  it('marks the "All" filter active when no currency is set', () => {
-    render(<WalletHistory page={singlePage} />);
+  it('marks the "All" filter active when no currency is set', async () => {
+    render(await WalletHistory({ page: singlePage }));
     const allLink = screen.getByTestId('filter-all') as HTMLAnchorElement;
     expect(allLink.href).toContain('/wallet');
     expect(allLink.href).not.toContain('currency=');
   });
 
-  it('marks the coins filter active when currency=coins', () => {
-    render(<WalletHistory page={singlePage} currency="coins" />);
+  it('marks the coins filter active when currency=coins', async () => {
+    render(await WalletHistory({ page: singlePage, currency: 'coins' }));
     const coinsLink = screen.getByTestId('filter-coins') as HTMLAnchorElement;
     expect(coinsLink.href).toContain('currency=coins');
   });

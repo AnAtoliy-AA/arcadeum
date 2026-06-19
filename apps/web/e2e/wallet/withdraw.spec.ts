@@ -13,7 +13,7 @@ const MOCK_WITHDRAW_SUCCESS = {
 
 async function mockPhantomConnected(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
-    (window as any).solana = {
+    (window as Record<string, unknown>).solana = {
       isPhantom: true,
       isConnected: true,
       publicKey: { toString: () => 'FakePublicKey1234567890abcdef' },
@@ -29,7 +29,7 @@ async function mockPhantomNotInstalled(
   page: import('@playwright/test').Page,
 ) {
   await page.addInitScript(() => {
-    delete (window as any).solana;
+    delete (window as Record<string, unknown>).solana;
   });
 }
 

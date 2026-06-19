@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.1] - 2026-06-19
+
+### Fixed
+- use CHANGELOG.md content for release social posts instead of merge commits (N/A)
+
+
 ## [1.20.0] - 2026-06-19
 
 

@@ -89,13 +89,6 @@ jobs:
           print(f"Saved {len(clean_updates)} updates to /tmp/changelog.txt")
           EOF
 
-      - name: Randomize posting time (0-2 hours)
-        run: |
-          SLEEP_SEC=$(( RANDOM % 7201 ))
-          echo "Sleeping $SLEEP_SEC seconds before posting..."
-          sleep "$SLEEP_SEC"
-          echo "Done sleeping."
-
       - name: Post to socials
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
@@ -177,6 +170,7 @@ jobs:
                   }
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
+                  print(f"{name} response: {resp.status_code} {resp.text}")
                   if resp.status_code == 200:
                       result = resp.json()
                       if "errors" in result:

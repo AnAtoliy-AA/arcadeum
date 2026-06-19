@@ -191,14 +191,16 @@ describe('SolanaController', () => {
         .expect(201);
 
       const body = res.body as Record<string, unknown>;
-      expect(body).toMatchObject({
-        success: true,
-        solAmount: 1,
-        solPriceUsd: 150,
-        arcadeumPriceUsd: 0.01,
-        estimatedArcadeum: 15000,
-        message: expect.stringContaining('DEX integration'),
-      });
+      expect(body).toEqual(
+        expect.objectContaining({
+          success: true,
+          solAmount: 1,
+          solPriceUsd: 150,
+          arcadeumPriceUsd: 0.01,
+          estimatedArcadeum: 15000,
+          message: expect.stringContaining('DEX integration'),
+        }),
+      );
     });
   });
 });

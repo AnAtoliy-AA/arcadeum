@@ -34,6 +34,9 @@ jobs:
       - name: Build
         run: pnpm exec turbo run build --filter web --filter be
 
+      - name: Install Playwright Browsers
+        run: pnpm --filter web exec playwright install --with-deps
+
       - name: Run E2E Tests
         env:
           MONGODB_URI: mongodb://localhost:27017/arcadeum_test

@@ -15,7 +15,7 @@ export function WalletBalanceSummary({
   locale = DEFAULT_LOCALE,
 }: Props) {
   const { coins, gems, arcadeum } = balance;
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation();
   const wallet = t.wallet;
 
   return (

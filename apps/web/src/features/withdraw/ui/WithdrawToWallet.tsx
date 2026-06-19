@@ -17,7 +17,7 @@ export function WithdrawToWallet({
   arcadeumBalance,
   locale = DEFAULT_LOCALE,
 }: Props) {
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation();
   const wallet = t.wallet;
   const {
     publicKey,

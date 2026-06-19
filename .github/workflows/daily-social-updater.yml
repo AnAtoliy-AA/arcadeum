@@ -144,7 +144,7 @@ jobs:
               }
 
               channels = [
-                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook", "addToQueue"),
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook", "shareNow"),
                   (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None, "shareNow"),
                   (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None, "shareNow"),
               ]

@@ -104,3 +104,17 @@
   composes: copyBtn;
   color: #34d399;
 }
+
+.pumpfunLink {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #34d399;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.pumpfunLink:hover {
+  color: #6ee7b7;
+}

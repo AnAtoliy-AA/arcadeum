@@ -69,6 +69,10 @@ export const es = {
   // ... how it works ...
   howItWorksTitle: 'Cómo Funciona',
   howItWorksSubtitle: 'Comienza en tres simples pasos',
+  tokenTitle: 'Nuestro Token',
+  tokenSubtitle: 'Impulsando el ecosistema Arcadeum en Solana',
+  tokenDescription:
+    'Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom en Solana.',
   stepCreateTitle: 'Crea o Únete a una Sala',
   stepCreateDescription:
     'Inicia una nueva sala de juego o introduce un código de invitación para unirte a una sesión existente.',
@@ -94,6 +98,7 @@ export const es = {
   footerTournaments: 'Torneos',
   footerLeaderboards: 'Tablas de clasificación',
   footerRewards: 'Recompensas',
+  footerToken: 'Token',
   footerResourcesTitle: 'Recursos',
   footerHelpCenter: 'Centro de ayuda',
   footerGamingBlog: 'Blog de juegos',

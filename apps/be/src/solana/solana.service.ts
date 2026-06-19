@@ -98,6 +98,12 @@ export class SolanaService {
     symbol: string;
     description: string;
     image: string | null;
+    pumpfunUrl: string | null;
+    marketCapUsd: number | null;
+    totalSupply: string | null;
+    createdAt: number | null;
+    twitter: string | null;
+    website: string | null;
   } | null> {
     const mintAddress = this.arcadeumMint.toBase58();
 
@@ -115,6 +121,11 @@ export class SolanaService {
         symbol?: string;
         description?: string;
         image_uri?: string;
+        usd_market_cap?: number;
+        total_supply_str?: string;
+        created_timestamp?: number;
+        twitter?: string;
+        website?: string;
       };
 
       return {
@@ -122,6 +133,12 @@ export class SolanaService {
         symbol: data.symbol ?? '',
         description: data.description ?? '',
         image: data.image_uri ?? null,
+        pumpfunUrl: `https://pump.fun/coin/${mintAddress}`,
+        marketCapUsd: data.usd_market_cap ?? null,
+        totalSupply: data.total_supply_str ?? null,
+        createdAt: data.created_timestamp ?? null,
+        twitter: data.twitter ?? null,
+        website: data.website ?? null,
       };
     } catch {
       this.logger.warn('Failed to fetch token metadata from pump.fun');

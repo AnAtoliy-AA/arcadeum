@@ -14,6 +14,7 @@ interface TokenMetadata {
   symbol: string;
   description: string;
   image: string | null;
+  pumpfunUrl: string | null;
 }
 
 function escapeRegex(s: string): string {
@@ -113,6 +114,17 @@ export function TokenInfo({ mintAddress }: Props) {
                 : t('wallet.tokenInfo.copy')}
             </button>
           </div>
+        )}
+
+        {metadata?.pumpfunUrl && (
+          <a
+            href={metadata.pumpfunUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.pumpfunLink}
+          >
+            View on pump.fun ↗
+          </a>
         )}
       </div>
     </div>

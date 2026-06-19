@@ -137,12 +137,12 @@ jobs:
               }
 
               channels = [
-                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
-                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
-                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn"),
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "post"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None),
               ]
 
-              for channel_id, text, name in channels:
+              for channel_id, text, name, post_type in channels:
                   if not channel_id:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
@@ -154,6 +154,7 @@ jobs:
                       schedulingType: automatic
                       mode: shareNow
                       assets: []
+                      %(type_field)s
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -164,6 +165,8 @@ jobs:
                     }
                   }
                   """
+                  type_field = f'type: "{post_type}"' if post_type else ""
+                  query = query % {"type_field": type_field}
                   variables = {
                       "text": text,
                       "channelId": channel_id,
@@ -175,6 +178,8 @@ jobs:
                       result = resp.json()
                       if "errors" in result:
                           print(f"Failed to post to {name}: {result['errors']}")
+                      elif result.get("data", {}).get("createPost", {}).get("message"):
+                          print(f"Failed to post to {name}: {result['data']['createPost']['message']}")
                       else:
                           print(f"Posted daily update to {name}")
                   else:

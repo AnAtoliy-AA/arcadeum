@@ -5,16 +5,15 @@ import type { WalletBalance } from '../server/wallet.types';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
-    t: {
-      wallet: {
-        balance: {
-          title: 'Your Wallet',
-          subtitle: 'Coins are earned through play. Gems are purchased.',
-          coins: 'Coins',
-          gems: 'Gems',
-          arcadeum: 'ARCADEUM',
-        },
-      },
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'wallet.balance.title': 'Your Wallet',
+        'wallet.balance.subtitle': 'Coins are earned through play. Gems are purchased.',
+        'wallet.balance.coins': 'Coins',
+        'wallet.balance.gems': 'Gems',
+        'wallet.balance.arcadeum': 'ARCADEUM',
+      };
+      return translations[key] ?? key;
     },
   }),
 }));

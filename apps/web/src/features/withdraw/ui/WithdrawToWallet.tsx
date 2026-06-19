@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { usePhantom } from '../lib/usePhantom';
 import { submitWithdrawal } from '../server/withdraw.server';
 
@@ -10,15 +9,10 @@ const WITHDRAWAL_FEE_PERCENT = 2;
 
 interface Props {
   arcadeumBalance: number;
-  locale?: Locale;
 }
 
-export function WithdrawToWallet({
-  arcadeumBalance,
-  locale = DEFAULT_LOCALE,
-}: Props) {
+export function WithdrawToWallet({ arcadeumBalance }: Props) {
   const { t } = useTranslation();
-  const wallet = t.wallet;
   const {
     publicKey,
     isConnected,
@@ -26,7 +20,7 @@ export function WithdrawToWallet({
     error: phantomError,
     connect,
     disconnect,
-  } = usePhantom(locale);
+  } = usePhantom();
   const [amount, setAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -57,7 +51,7 @@ export function WithdrawToWallet({
       setAmount('');
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : wallet.withdraw.error,
+        err instanceof Error ? err.message : t('wallet.withdraw.error'),
       );
     } finally {
       setIsSubmitting(false);
@@ -74,10 +68,10 @@ export function WithdrawToWallet({
           color: '#e4e4e7',
         }}
       >
-        {wallet.withdraw.title}
+        {t('wallet.withdraw.title')}
       </h2>
       <p style={{ fontSize: '14px', color: '#71717a', marginBottom: '24px' }}>
-        {wallet.withdraw.description}
+        {t('wallet.withdraw.description')}
       </p>
 
       {!isConnected ? (
@@ -97,8 +91,8 @@ export function WithdrawToWallet({
           }}
         >
           {isConnecting
-            ? wallet.withdraw.connecting
-            : wallet.withdraw.connectButton}
+            ? t('wallet.withdraw.connecting')
+            : t('wallet.withdraw.connectButton')}
         </button>
       ) : (
         <>
@@ -114,7 +108,7 @@ export function WithdrawToWallet({
               wordBreak: 'break-all',
             }}
           >
-            {wallet.withdraw.connected}: {publicKey}
+            {t('wallet.withdraw.connected')}: {publicKey}
             <button
               onClick={disconnect}
               style={{
@@ -126,7 +120,7 @@ export function WithdrawToWallet({
                 textDecoration: 'underline',
               }}
             >
-              {wallet.withdraw.disconnect}
+              {t('wallet.withdraw.disconnect')}
             </button>
           </div>
 
@@ -139,10 +133,9 @@ export function WithdrawToWallet({
                 marginBottom: '6px',
               }}
             >
-              {wallet.withdraw.amountLabel.replace(
-                '{balance}',
-                arcadeumBalance.toLocaleString(),
-              )}
+              {t('wallet.withdraw.amountLabel', {
+                balance: arcadeumBalance.toLocaleString(),
+              })}
             </label>
             <input
               type="number"
@@ -150,7 +143,7 @@ export function WithdrawToWallet({
               onChange={(e) => setAmount(e.target.value)}
               min={1}
               max={arcadeumBalance}
-              placeholder={wallet.withdraw.amountPlaceholder}
+              placeholder={t('wallet.withdraw.amountPlaceholder')}
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -176,22 +169,19 @@ export function WithdrawToWallet({
               }}
             >
               <div>
-                {wallet.withdraw.amountLabel.replace(
-                  '{balance}',
-                  numericAmount.toLocaleString(),
-                )}
+                {t('wallet.withdraw.amountLabel', {
+                  balance: numericAmount.toLocaleString(),
+                })}
               </div>
               <div>
-                {wallet.withdraw.feeLabel.replace(
-                  '{fee}',
-                  fee.toLocaleString(),
-                )}
+                {t('wallet.withdraw.feeLabel', {
+                  fee: fee.toLocaleString(),
+                })}
               </div>
               <div style={{ color: '#e4e4e7', fontWeight: 600 }}>
-                {wallet.withdraw.youReceive.replace(
-                  '{amount}',
-                  numericAmount.toLocaleString(),
-                )}
+                {t('wallet.withdraw.youReceive', {
+                  amount: numericAmount.toLocaleString(),
+                })}
               </div>
             </div>
           )}
@@ -224,10 +214,9 @@ export function WithdrawToWallet({
                 fontSize: '13px',
               }}
             >
-              {wallet.withdraw.success.replace(
-                '{signature}',
-                result.signature.slice(0, 16),
-              )}
+              {t('wallet.withdraw.success', {
+                signature: result.signature.slice(0, 16),
+              })}
               ...
             </div>
           )}
@@ -248,8 +237,8 @@ export function WithdrawToWallet({
             }}
           >
             {isSubmitting
-              ? wallet.withdraw.processing
-              : wallet.withdraw.submitButton}
+              ? t('wallet.withdraw.processing')
+              : t('wallet.withdraw.submitButton')}
           </button>
         </>
       )}

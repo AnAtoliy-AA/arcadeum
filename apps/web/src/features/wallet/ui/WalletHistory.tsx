@@ -52,16 +52,16 @@ export async function WalletHistory({
   const { items, nextCursor } = page;
 
   let history: {
-    filterAll: string;
-    filterCoins: string;
-    filterGems: string;
-    emptyTitle: string;
-    emptyDescription: string;
-    colReason: string;
-    colChange: string;
-    colBalanceAfter: string;
-    colWhen: string;
-    nextPage: string;
+    filterAll?: string;
+    filterCoins?: string;
+    filterGems?: string;
+    emptyTitle?: string;
+    emptyDescription?: string;
+    colReason?: string;
+    colChange?: string;
+    colBalanceAfter?: string;
+    colWhen?: string;
+    nextPage?: string;
   } | null = null;
   try {
     const messages = await getTranslations(locale);

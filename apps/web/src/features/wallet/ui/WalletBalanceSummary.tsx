@@ -16,11 +16,10 @@ export function WalletBalanceSummary({
 }: Props) {
   const { coins, gems, arcadeum } = balance;
   const { t } = useTranslation();
-  const wallet = t.wallet;
 
   return (
     <section
-      aria-label={wallet.balance.title}
+      aria-label={t('wallet.balance.title')}
       style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 16px 0' }}
     >
       <h1
@@ -31,7 +30,7 @@ export function WalletBalanceSummary({
           color: 'var(--color-text, #e4e4e7)',
         }}
       >
-        {wallet.balance.title}
+        {t('wallet.balance.title')}
       </h1>
       <p
         style={{
@@ -40,7 +39,7 @@ export function WalletBalanceSummary({
           marginBottom: '32px',
         }}
       >
-        {wallet.balance.subtitle}
+        {t('wallet.balance.subtitle')}
       </p>
 
       <div
@@ -64,7 +63,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            🪙 {wallet.balance.coins}
+            🪙 {t('wallet.balance.coins')}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#fbbf24' }}
@@ -87,7 +86,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            💎 {wallet.balance.gems}
+            💎 {t('wallet.balance.gems')}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
@@ -110,7 +109,7 @@ export function WalletBalanceSummary({
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
-            🎮 {wallet.balance.arcadeum}
+            🎮 {t('wallet.balance.arcadeum')}
           </div>
           <div
             style={{ fontSize: '28px', fontWeight: 700, color: '#34d399' }}

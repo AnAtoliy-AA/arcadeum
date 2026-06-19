@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface PhantomProvider {
@@ -20,9 +19,8 @@ declare global {
   }
 }
 
-export function usePhantom(locale: Locale = DEFAULT_LOCALE) {
-  const { t } = useTranslation(locale);
-  const wallet = t.wallet;
+export function usePhantom() {
+  const { t } = useTranslation();
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -36,7 +34,7 @@ export function usePhantom(locale: Locale = DEFAULT_LOCALE) {
 
   const connect = useCallback(async () => {
     if (!window.solana?.isPhantom) {
-      setError(wallet?.withdraw.phantomNotFound ?? 'Phantom wallet not found. Please install it.');
+      setError(t('wallet.withdraw.phantomNotFound'));
       return;
     }
     setIsConnecting(true);
@@ -46,22 +44,22 @@ export function usePhantom(locale: Locale = DEFAULT_LOCALE) {
       setPublicKey(resp.publicKey.toString());
       setIsConnected(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : (wallet?.withdraw.connectionFailed ?? 'Connection failed'));
+      setError(err instanceof Error ? err.message : t('wallet.withdraw.connectionFailed'));
     } finally {
       setIsConnecting(false);
     }
-  }, [wallet]);
+  }, [t]);
 
   const disconnect = useCallback(async () => {
     try {
       await window.solana?.disconnect();
     } catch {
-      setError(wallet?.withdraw.disconnectFailed ?? 'Failed to disconnect wallet');
+      setError(t('wallet.withdraw.disconnectFailed'));
       return;
     }
     setPublicKey(null);
     setIsConnected(false);
-  }, [wallet]);
+  }, [t]);
 
   useEffect(() => {
     const provider = window.solana;

@@ -153,7 +153,6 @@ export default async function WalletPage({
       <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
         <WithdrawToWallet
           arcadeumBalance={balance.arcadeum ?? 0}
-          locale={typedLocale}
         />
       </div>
 

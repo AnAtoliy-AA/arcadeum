@@ -32,7 +32,6 @@ import type { PwaMessages } from './messages/pwa';
 import type { ReferralsMessages } from './messages/referrals';
 import type { SeoMessages } from './messages/seo';
 import type { NotificationsMessages } from './messages/notifications';
-import type { WalletMessages } from './messages/wallet';
 
 // Re-export them
 export type {
@@ -53,7 +52,6 @@ export type {
   ReferralsMessages,
   SeoMessages,
   NotificationsMessages,
-  WalletMessages,
 };
 
 // Export legal types for easier access
@@ -115,5 +113,5 @@ export type TranslationBundle = {
   legal?: import('./messages/legal/types').LegalMessages;
   battlePass?: import('./messages/battle-pass').BattlePassMessages;
   musicPlayer?: import('./messages/music-player').MusicPlayerMessages;
-  wallet?: WalletMessages;
+  wallet?: DeepPartial<import('./messages/wallet').WalletMessages>;
 };

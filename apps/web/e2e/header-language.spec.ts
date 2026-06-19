@@ -42,8 +42,10 @@ test.describe('Header Language Switcher', () => {
       await expect(enPill).toHaveAttribute('aria-pressed', 'true');
 
       const esPill = mobileNav.getByTestId('mobile-language-es');
-      await esPill.scrollIntoViewIfNeeded();
-      await esPill.click({ force: true });
+      await mobileNav.evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
+      await esPill.click();
       await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     } else {
       const languageSwitcher = page

@@ -35,12 +35,13 @@ export class SolanaService {
       'https://api.mainnet-beta.solana.com';
     this.connection = new Connection(rpcUrl, 'confirmed');
 
-    const mintAddress = this.config.getOrThrow<string>('ARCADEUM_MINT_ADDRESS');
+    const mintAddress =
+      this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '11111111111111111111111111111111';
     this.arcadeumMint = getArcadeumMint(mintAddress);
   }
 
   private getKeypair() {
-    const secretKeyJson = this.config.getOrThrow<string>('SOLANA_PRIVATE_KEY');
+    const secretKeyJson = this.config.get<string>('SOLANA_PRIVATE_KEY') ?? '';
     return getPlatformKeypair(secretKeyJson);
   }
 

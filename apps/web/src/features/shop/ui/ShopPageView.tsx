@@ -232,7 +232,13 @@ export function ShopPageView({
             sellLabels={labels.sell}
           />
 
-          <YStack flex={1} width="100%" gap="$5" minWidth={0}>
+          <YStack
+            flex={1}
+            width="100%"
+            gap="$5"
+            minWidth={0}
+            $sm={{ flexGrow: 0, flexBasis: 'auto' }}
+          >
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}

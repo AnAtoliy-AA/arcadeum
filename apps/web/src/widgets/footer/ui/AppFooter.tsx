@@ -6,6 +6,7 @@ import {
   InstagramIcon,
   LinkedInIcon,
   SupportIcon,
+  TelegramIcon,
   ThreadsIcon,
   TikTokIcon,
   XIcon,
@@ -24,6 +25,7 @@ const SOCIAL_MAPPING = [
   { id: 'linkedin', label: 'LinkedIn', Icon: LinkedInIcon },
   { id: 'threads', label: 'Threads', Icon: ThreadsIcon },
   { id: 'x', label: 'X', Icon: XIcon },
+  { id: 'telegram', label: 'Telegram', Icon: TelegramIcon },
   { id: 'discord', label: 'Discord', Icon: DiscordIcon },
   { id: 'github', label: 'GitHub', Icon: GithubIcon },
 ] as const;

@@ -33,6 +33,7 @@ type SocialConfig = {
   x?: string;
   discord?: string;
   github?: string;
+  telegram?: string;
 };
 
 type VerificationConfig = {
@@ -149,6 +150,7 @@ function readAppConfig(): WebAppConfig {
       github:
         trim(process.env.NEXT_PUBLIC_SOCIAL_GITHUB) ??
         'https://github.com/AnAtoliy-AA/arcadeum',
+      telegram: trim(process.env.NEXT_PUBLIC_SOCIAL_TELEGRAM),
     },
     siteUrl: trim(process.env.NEXT_PUBLIC_SITE_URL) ?? 'https://arcadeum.games',
     verification: {

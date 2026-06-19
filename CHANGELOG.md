@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.2] - 2026-06-19
+
+### Fixed
+- use addToQueue for Facebook manual publish (N/A)
+- use shareNow for Facebook immediate publish (N/A)
+- use addToQueue for Facebook to bypass identity check (N/A)
+- pass Facebook post type via metadata instead of top-level field (N/A)
+- add Facebook post type and fix error detection in Buffer API (N/A)
+- use correct Buffer enum values (shareNow, assets: []) (N/A)
+- use correct Buffer GraphQL types (ChannelId, schedulingType: now) (N/A)
+- hardcode mode enum in query, remove random sleep (N/A)
+- remove invalid ShareMode enum value from Buffer GraphQL mutation (N/A)
+- use GraphQL variables for Buffer API in release poster too (N/A)
+- use GraphQL variables for Buffer API to fix string escaping (N/A)
+
+
 ## [1.20.1] - 2026-06-19
 
 ### Fixed

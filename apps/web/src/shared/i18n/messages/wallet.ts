@@ -8,6 +8,14 @@ export interface WalletMessages {
     gems: string;
     arcadeum: string;
   };
+  tokenInfo: {
+    name: string;
+    ticker: string;
+    description: string;
+    mint: string;
+    copy: string;
+    copied: string;
+  };
   withdraw: {
     title: string;
     description: string;
@@ -74,6 +82,15 @@ export const en: WalletMessages = {
     coins: 'Coins',
     gems: 'Gems',
     arcadeum: 'ARCADEUM',
+  },
+  tokenInfo: {
+    name: 'ARCADEUM GAMES',
+    ticker: 'ARC',
+    description:
+      'ARCADEUM GAMES (ARC) is the native SPL token of the Arcadeum gaming platform. Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.',
+    mint: 'Mint',
+    copy: 'Copy',
+    copied: 'Copied!',
   },
   withdraw: {
     title: 'Withdraw to Wallet',
@@ -143,6 +160,15 @@ export const ru: DeepPartial<WalletMessages> = {
     gems: 'Гемы',
     arcadeum: 'ARCADEUM',
   },
+  tokenInfo: {
+    name: 'ARCADEUM GAMES',
+    ticker: 'ARC',
+    description:
+      'ARCADEUM GAMES (ARC) — нативный SPL-токен игровой платформы Arcadeum. Зарабатывайте токены в игре, покупайте в магазине или выводите на кошелёк Phantom в Solana.',
+    mint: 'Минт',
+    copy: 'Копировать',
+    copied: 'Скопировано!',
+  },
   withdraw: {
     title: 'Вывод в кошелёк',
     description:
@@ -210,6 +236,15 @@ export const es: DeepPartial<WalletMessages> = {
     coins: 'Monedas',
     gems: 'Gemas',
     arcadeum: 'ARCADEUM',
+  },
+  tokenInfo: {
+    name: 'ARCADEUM GAMES',
+    ticker: 'ARC',
+    description:
+      'ARCADEUM GAMES (ARC) es el token SPL nativo de la plataforma de juegos Arcadeum. Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom en Solana.',
+    mint: 'Mint',
+    copy: 'Copiar',
+    copied: '¡Copiado!',
   },
   withdraw: {
     title: 'Retirar al monedero',
@@ -281,6 +316,15 @@ export const fr: DeepPartial<WalletMessages> = {
     gems: 'Gemmes',
     arcadeum: 'ARCADEUM',
   },
+  tokenInfo: {
+    name: 'ARCADEUM GAMES',
+    ticker: 'ARC',
+    description:
+      "ARCADEUM GAMES (ARC) est le token SPL natif de la plateforme de jeux Arcadeum. Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom sur Solana.",
+    mint: 'Mint',
+    copy: 'Copier',
+    copied: 'Copié !',
+  },
   withdraw: {
     title: 'Retirer vers le portefeuille',
     description:
@@ -350,6 +394,15 @@ export const by: DeepPartial<WalletMessages> = {
     coins: 'Манеты',
     gems: 'Гемы',
     arcadeum: 'ARCADEUM',
+  },
+  tokenInfo: {
+    name: 'ARCADEUM GAMES',
+    ticker: 'ARC',
+    description:
+      'ARCADEUM GAMES (ARC) — натыўны SPL-токен gaming платформы Arcadeum. Зарабляйце токены ў гульні, купляйце ў краме або выводзіце на кашалёк Phantom у Solana.',
+    mint: 'Мінт',
+    copy: 'Капіяваць',
+    copied: 'Скапіявана!',
   },
   withdraw: {
     title: 'Вывад у кашалёк',

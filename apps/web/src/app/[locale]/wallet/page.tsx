@@ -23,6 +23,7 @@ import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale, type Locale } from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import type { WalletReason } from '@/features/wallet/server/wallet.types';
+import { TokenInfo } from '@/features/wallet/ui/TokenInfo';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -155,6 +156,10 @@ export default async function WalletPage({
           arcadeumBalance={balance.arcadeum ?? 0}
         />
       </div>
+
+      <TokenInfo
+        mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+      />
 
       <WalletHistory
         page={page}

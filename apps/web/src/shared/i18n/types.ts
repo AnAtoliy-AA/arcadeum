@@ -113,4 +113,5 @@ export type TranslationBundle = {
   legal?: import('./messages/legal/types').LegalMessages;
   battlePass?: import('./messages/battle-pass').BattlePassMessages;
   musicPlayer?: import('./messages/music-player').MusicPlayerMessages;
+  wallet?: DeepPartial<import('./messages/wallet').WalletMessages>;
 };

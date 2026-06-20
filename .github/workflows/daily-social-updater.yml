@@ -106,6 +106,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python - <<'EOF'
+          import json
           import os
           import requests
 
@@ -143,22 +144,33 @@ jobs:
               }
 
               channels = [
-                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
-                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
-                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn"),
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook", "facebook", "addToQueue"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads", None, "shareNow"),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn", None, "shareNow"),
               ]
 
-              for channel_id, text, name in channels:
+              for channel_id, text, name, metadata_key, mode in channels:
                   if not channel_id:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
+                  if metadata_key:
+                      metadata_json = json.dumps({metadata_key: {"type": "post"}})
+                  else:
+                      metadata_json = "{}"
+                  variables = {
+                      "text": text,
+                      "channelId": channel_id,
+                      "metadata": json.loads(metadata_json),
+                  }
                   query = """
-                  mutation {
+                  mutation CreatePost($text: String!, $channelId: ChannelId!, $metadata: PostInputMetaData) {
                     createPost(input: {
-                      text: %(text)s
-                      channelId: %(channel_id)s
+                      text: $text
+                      channelId: $channelId
                       schedulingType: automatic
-                      mode: now
+                      mode: %s
+                      assets: []
+                      metadata: $metadata
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -168,13 +180,15 @@ jobs:
                       }
                     }
                   }
-                  """ % {"text": repr(text), "channel_id": repr(channel_id)}
-                  payload = {"query": query}
+                  """ % mode
+                  payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   if resp.status_code == 200:
                       result = resp.json()
                       if "errors" in result:
                           print(f"Failed to post to {name}: {result['errors']}")
+                      elif result.get("data", {}).get("createPost", {}).get("message"):
+                          print(f"Failed to post to {name}: {result['data']['createPost']['message']}")
                       else:
                           print(f"Posted daily update to {name}")
                   else:

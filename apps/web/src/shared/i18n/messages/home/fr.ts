@@ -70,6 +70,10 @@ export const fr = {
   // How it works section
   howItWorksTitle: 'Comment Ça Marche',
   howItWorksSubtitle: 'Commencez en trois étapes simples',
+  tokenTitle: 'Notre Token',
+  tokenSubtitle: "Alimentant l'écosystème Arcadeum sur Solana",
+  tokenDescription:
+    'Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom sur Solana.',
   stepCreateTitle: 'Créez ou Rejoignez un Salon',
   stepCreateDescription:
     "Démarrez un nouveau salon de jeu ou entrez un code d'invitation pour rejoindre une session existante.",
@@ -95,6 +99,7 @@ export const fr = {
   footerTournaments: 'Tournois',
   footerLeaderboards: 'Classements',
   footerRewards: 'Récompenses',
+  footerToken: 'Token',
   footerResourcesTitle: 'Ressources',
   footerHelpCenter: "Centre d'aide",
   footerGamingBlog: 'Blog de jeu',

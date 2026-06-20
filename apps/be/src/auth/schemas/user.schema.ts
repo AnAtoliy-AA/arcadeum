@@ -50,6 +50,9 @@ export class User {
   @Prop({ type: Number, default: 0, min: 0 })
   gems!: number;
 
+  @Prop({ type: Number, default: 0, min: 0 })
+  arcadeum!: number;
+
   @Prop({ type: String, default: null })
   equippedAvatarId?: string | null;
 

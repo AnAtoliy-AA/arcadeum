@@ -31,6 +31,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python - <<EOF
+          import json
           import os
           import subprocess
           import re
@@ -86,48 +87,65 @@ jobs:
           except FileNotFoundError:
               pass
 
-          # 4. Filter and clean commits
-          skip_patterns = [
-              "Merge pull request",
-              "Merge remote-tracking",
-              "chore: bump version",
-              "chore: update changelog",
-              "chore: start next minor",
-          ]
-          emoji_map = {
-              "feat(web):": "✨",
-              "feat(be):": "✅",
-              "feat(ui):": "🎨",
-              "feat:": "✨",
-              "fix(web):": "🛠️",
-              "fix(be):": "🔧",
-              "fix(ui):": "🖌️",
-              "fix:": "🛠️",
-              "refactor(web):": "⚙️",
-              "refactor(be):": "⚙️",
-              "refactor:": "⚙️",
-              "fix(web,critical):": "🚨",
-          }
-
-          clean_updates = []
-          seen = set()
-          for line in raw_commits.split('\n'):
-              line = line.strip()
-              if not line or any(p in line for p in skip_patterns) or line in seen:
-                  continue
-              seen.add(line)
-
-              cleaned = line
-              for prefix, emoji in emoji_map.items():
-                  cleaned = cleaned.replace(prefix, emoji)
-              clean_updates.append(f"- {cleaned}")
-
-          if not clean_updates:
-              print("No consumer-facing changes in this release. Skipping.")
-              exit(0)
-
+          # 4. Build updates text — prefer CHANGELOG, fall back to git log
           version = tag.lstrip('v')
-          updates_text = "\n".join(clean_updates[:10])
+
+          use_changelog = False
+          if changelog_section:
+              # Strip the header line and formatting, keep bullet items
+              lines = changelog_section.split('\n')
+              clean_lines = []
+              for line in lines:
+                  line = line.strip()
+                  if not line or line.startswith('## ['):
+                      continue
+                  clean_lines.append(line)
+              updates_text = "\n".join(clean_lines)
+              if updates_text.strip():
+                  use_changelog = True
+
+          if not use_changelog:
+              # Fall back to parsed git commits
+              skip_patterns = [
+                  "Merge pull request",
+                  "Merge remote-tracking",
+                  "chore: bump version",
+                  "chore: update changelog",
+                  "chore: start next minor",
+              ]
+              emoji_map = {
+                  "feat(web):": "✨",
+                  "feat(be):": "✅",
+                  "feat(ui):": "🎨",
+                  "feat:": "✨",
+                  "fix(web):": "🛠️",
+                  "fix(be):": "🔧",
+                  "fix(ui):": "🖌️",
+                  "fix:": "🛠️",
+                  "refactor(web):": "⚙️",
+                  "refactor(be):": "⚙️",
+                  "refactor:": "⚙️",
+                  "fix(web,critical):": "🚨",
+              }
+
+              clean_updates = []
+              seen = set()
+              for line in raw_commits.split('\n'):
+                  line = line.strip()
+                  if not line or any(p in line for p in skip_patterns) or line in seen:
+                      continue
+                  seen.add(line)
+
+                  cleaned = line
+                  for prefix, emoji in emoji_map.items():
+                      cleaned = cleaned.replace(prefix, emoji)
+                  clean_updates.append(f"- {cleaned}")
+
+              if not clean_updates:
+                  print("No consumer-facing changes in this release. Skipping.")
+                  exit(0)
+
+              updates_text = "\n".join(clean_updates[:10])
 
           # 5. Build platform-specific posts
           facebook_text = (
@@ -174,12 +192,13 @@ jobs:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
                   query = """
-                  mutation {
+                  mutation CreatePost($text: String!, $channelId: ChannelId!) {
                     createPost(input: {
-                      text: %(text)s
-                      channelId: %(channel_id)s
+                      text: $text
+                      channelId: $channelId
                       schedulingType: automatic
-                      mode: now
+                      mode: shareNow
+                      assets: []
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -189,8 +208,12 @@ jobs:
                       }
                     }
                   }
-                  """ % {"text": repr(text), "channel_id": repr(channel_id)}
-                  payload = {"query": query}
+                  """
+                  variables = {
+                      "text": text,
+                      "channelId": channel_id,
+                  }
+                  payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   if resp.status_code == 200:
                       result = resp.json()

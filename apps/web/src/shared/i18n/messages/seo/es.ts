@@ -73,6 +73,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Cartera y saldo · ${APP}`,
     description: `Gestiona tu cartera de ${APP}: consulta tu saldo de monedas, el historial de transacciones y tu inventario cosmético.`,
   },
+  token: {
+    title: `Token · ${APP}`,
+    description: `Descubre el token ${APP} en Solana: gana jugando, compra en la tienda o retira a tu monedero Phantom.`,
+  },
   shop: {
     title: `Tienda · Cosméticos y mejoras · ${APP}`,
     description: `Explora la tienda de ${APP}: desbloquea avatares, insignias, colores de nombre y packs para personalizar tu perfil.`,

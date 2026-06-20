@@ -64,6 +64,10 @@ export type TermsMessages = {
       title?: string;
       content?: string;
     };
+    crypto?: {
+      title?: string;
+      content?: string;
+    };
   };
 };
 

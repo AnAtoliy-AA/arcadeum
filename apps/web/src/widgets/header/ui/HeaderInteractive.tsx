@@ -56,6 +56,7 @@ export function HeaderInteractive() {
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
+      { href: routes.token, label: t('navigation.tokenTab') },
       {
         href: routes.shop,
         label: t('navigation.shopTab'),

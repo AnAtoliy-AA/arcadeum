@@ -72,9 +72,24 @@ export default async function WalletPage({
 
   // Fetch the conversion rate server-side (no auth needed — public endpoint).
   let conversionRate = 100;
+  let tokenMetadata: {
+    name: string;
+    symbol: string;
+    description: string;
+    image: string | null;
+    pumpfunUrl: string | null;
+  } | null = null;
   try {
-    const rateData = await getConversionRate();
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
+    const [rateData, tokenData] = await Promise.all([
+      getConversionRate(),
+      fetch(`${backendUrl}/solana/token-metadata`, { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ]);
     conversionRate = rateData.rate;
+    tokenMetadata = tokenData;
   } catch {
     // Fallback to default if BE is unavailable
   }
@@ -94,6 +109,11 @@ export default async function WalletPage({
             <GemStore />
           </div>
         </div>
+        <TokenInfo
+          mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+          metadata={tokenMetadata}
+        />
+
         <WalletHistory
           page={EMPTY_PAGE}
           currency={currency}
@@ -152,13 +172,12 @@ export default async function WalletPage({
       </div>
 
       <div style={GEM_SECTIONS_STYLE} data-testid="withdraw-section">
-        <WithdrawToWallet
-          arcadeumBalance={balance.arcadeum ?? 0}
-        />
+        <WithdrawToWallet arcadeumBalance={balance.arcadeum ?? 0} />
       </div>
 
       <TokenInfo
         mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+        metadata={tokenMetadata}
       />
 
       <WalletHistory

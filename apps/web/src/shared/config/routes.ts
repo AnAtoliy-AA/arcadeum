@@ -65,6 +65,7 @@ export const buildRoutes = (locale: Locale) => {
     rewards: `/${locale}/${s('rewards')}`,
     tournaments: `/${locale}/${s('tournaments')}`,
     wallet: `/${locale}/${s('wallet')}`,
+    token: `/${locale}/${s('token')}`,
     shop: `/${locale}/${s('shop')}`,
     // Literal segment (no localized slug) — keeps the path stable across locales.
     battlePass: `/${locale}/battle-pass`,

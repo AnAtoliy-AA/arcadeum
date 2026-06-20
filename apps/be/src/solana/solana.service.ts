@@ -93,6 +93,59 @@ export class SolanaService {
     return price;
   }
 
+  async getTokenMetadata(): Promise<{
+    name: string;
+    symbol: string;
+    description: string;
+    image: string | null;
+    pumpfunUrl: string | null;
+    marketCapUsd: number | null;
+    totalSupply: string | null;
+    createdAt: number | null;
+    twitter: string | null;
+    website: string | null;
+  } | null> {
+    const mintAddress = this.arcadeumMint.toBase58();
+
+    try {
+      const res = await fetch(
+        `https://frontend-api-v3.pump.fun/coins/${mintAddress}`,
+      );
+      if (!res.ok) {
+        this.logger.warn(`pump.fun API returned ${res.status}`);
+        return null;
+      }
+
+      const data = (await res.json()) as {
+        name?: string;
+        symbol?: string;
+        description?: string;
+        image_uri?: string;
+        usd_market_cap?: number;
+        total_supply_str?: string;
+        created_timestamp?: number;
+        twitter?: string;
+        website?: string;
+      };
+
+      return {
+        name: data.name ?? '',
+        symbol: data.symbol ?? '',
+        description: data.description ?? '',
+        image: data.image_uri ?? null,
+        pumpfunUrl: `https://pump.fun/coin/${mintAddress}`,
+        marketCapUsd: data.usd_market_cap ?? null,
+        totalSupply: data.total_supply_str ?? null,
+        createdAt: data.created_timestamp ?? null,
+        twitter: data.twitter ?? null,
+        website: data.website ?? null,
+      };
+    } catch {
+      this.logger.warn('Failed to fetch token metadata from pump.fun');
+      return null;
+    }
+  }
+
   async getPlatformBalance(): Promise<{ sol: number; arcadeum: number }> {
     const keypair = this.getKeypair();
     const solBalance = await this.connection.getBalance(keypair.publicKey);

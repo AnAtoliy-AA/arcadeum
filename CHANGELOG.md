@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.5] - 2026-06-20
+
+### Added
+- add token page, home section, header nav link, and pump.fun link (N/A)
+- add Arcadeum filter to wallet history and fix filter scroll (N/A)
+- display real token image, name and ticker from pump.fun (N/A)
+
+### Fixed
+- add missing useState import in TokenInfo (N/A)
+- fix mobile language pill click by scrolling container (N/A)
+- update e2e tests for wallet filter anchors and mobile language scroll (N/A)
+- add wallet icon to token link in mobile menu (N/A)
+
+
 ## [1.20.4] - 2026-06-19
 
 

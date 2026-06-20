@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
+import { getTranslations } from '@/shared/i18n/server';
 import type {
   WalletCurrency,
+  WalletReason,
   PaginatedWalletTransactions,
 } from '../server/wallet.types';
 import { TransactionRow } from './TransactionRow';
@@ -10,6 +12,7 @@ interface Props {
   page: PaginatedWalletTransactions;
   currency?: WalletCurrency;
   locale?: Locale;
+  reasonLabels?: Partial<Record<WalletReason, string>>;
 }
 
 const PILL_BASE: React.CSSProperties = {
@@ -40,20 +43,43 @@ const FILTER_INACTIVE: React.CSSProperties = {
   color: '#a1a1aa',
 };
 
-export function WalletHistory({
+export async function WalletHistory({
   page,
   currency,
   locale = DEFAULT_LOCALE,
+  reasonLabels,
 }: Props) {
   const { items, nextCursor } = page;
 
-  const allHref = '/wallet';
-  const coinsHref = '/wallet?currency=coins';
-  const gemsHref = '/wallet?currency=gems';
+  let history: {
+    filterAll?: string;
+    filterCoins?: string;
+    filterGems?: string;
+    filterArcadeum?: string;
+    emptyTitle?: string;
+    emptyDescription?: string;
+    colReason?: string;
+    colChange?: string;
+    colBalanceAfter?: string;
+    colWhen?: string;
+    nextPage?: string;
+  } | null = null;
+  try {
+    const messages = await getTranslations(locale);
+    history = messages.wallet?.history ?? null;
+  } catch {
+    // Fallback to defaults
+  }
+
+  const allHref = '/wallet#wallet-history';
+  const coinsHref = '/wallet?currency=coins#wallet-history';
+  const gemsHref = '/wallet?currency=gems#wallet-history';
+  const arcadeumHref = '/wallet?currency=arcadeum#wallet-history';
 
   const isAll = !currency;
   const isCoins = currency === 'coins';
   const isGems = currency === 'gems';
+  const isArcadeum = currency === 'arcadeum';
 
   return (
     <section
@@ -80,21 +106,28 @@ export function WalletHistory({
           style={isAll ? FILTER_ACTIVE : FILTER_INACTIVE}
           data-testid="filter-all"
         >
-          All
+          {history?.filterAll ?? 'All'}
         </Link>
         <Link
           href={coinsHref}
           style={isCoins ? FILTER_ACTIVE : FILTER_INACTIVE}
           data-testid="filter-coins"
         >
-          🪙 Coins
+          🪙 {history?.filterCoins ?? 'Coins'}
         </Link>
         <Link
           href={gemsHref}
           style={isGems ? FILTER_ACTIVE : FILTER_INACTIVE}
           data-testid="filter-gems"
         >
-          💎 Gems
+          💎 {history?.filterGems ?? 'Gems'}
+        </Link>
+        <Link
+          href={arcadeumHref}
+          style={isArcadeum ? FILTER_ACTIVE : FILTER_INACTIVE}
+          data-testid="filter-arcadeum"
+        >
+          🎮 {history?.filterArcadeum ?? 'Arcadeum'}
         </Link>
       </nav>
 
@@ -116,10 +149,11 @@ export function WalletHistory({
               color: '#a1a1aa',
             }}
           >
-            No transactions yet
+            {history?.emptyTitle ?? 'No transactions yet'}
           </div>
           <div style={{ fontSize: '14px' }}>
-            Your wallet activity will appear here.
+            {history?.emptyDescription ??
+              'Your wallet activity will appear here.'}
           </div>
         </div>
       ) : (
@@ -141,10 +175,25 @@ export function WalletHistory({
                   borderBottom: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                {(['Reason', 'Change', 'Balance after', 'When'] as const).map(
-                  (col) => (
+                {(
+                  [
+                    { key: 'reason', fallback: 'Reason' },
+                    { key: 'change', fallback: 'Change' },
+                    { key: 'balanceAfter', fallback: 'Balance after' },
+                    { key: 'when', fallback: 'When' },
+                  ] as const
+                ).map(({ key, fallback }) => {
+                  const label =
+                    key === 'reason'
+                      ? history?.colReason
+                      : key === 'change'
+                        ? history?.colChange
+                        : key === 'balanceAfter'
+                          ? history?.colBalanceAfter
+                          : history?.colWhen;
+                  return (
                     <th
-                      key={col}
+                      key={key}
                       style={{
                         padding: '10px 16px',
                         textAlign: 'left',
@@ -155,15 +204,20 @@ export function WalletHistory({
                         color: '#71717a',
                       }}
                     >
-                      {col}
+                      {label ?? fallback}
                     </th>
-                  ),
-                )}
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
               {items.map((tx) => (
-                <TransactionRow key={tx.id} tx={tx} locale={locale} />
+                <TransactionRow
+                  key={tx.id}
+                  tx={tx}
+                  locale={locale}
+                  reasonLabels={reasonLabels}
+                />
               ))}
             </tbody>
           </table>
@@ -189,7 +243,7 @@ export function WalletHistory({
               textDecoration: 'none',
             }}
           >
-            Next →
+            {history?.nextPage ?? 'Next'} →
           </Link>
         </div>
       )}

@@ -430,7 +430,6 @@ export default function LeaderboardsPageContent({
           ) : null}
 
           <GameModeTabs value={mode} onChange={handleModeChange} t={t} />
-
           <XStack gap="$4" flexWrap="wrap">
             <ClimbersFallersRail
               climbers={data?.climbers ?? []}
@@ -441,7 +440,6 @@ export default function LeaderboardsPageContent({
           </XStack>
 
           <RewardLadder rewards={data?.rewards ?? []} t={t} />
-
           <LeaderboardControls
             scope={scope}
             onScopeChange={handleScopeChange}
@@ -452,7 +450,6 @@ export default function LeaderboardsPageContent({
             onJumpToSelf={data?.self ? jumpToSelf : undefined}
             t={t}
           />
-
           {showEmpty ? (
             <EmptyState
               message={emptyT.body ?? 'Be the first to climb the ladder.'}

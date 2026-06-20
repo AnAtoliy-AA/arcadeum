@@ -24,7 +24,7 @@ import { InsufficientFundsException } from './exceptions/insufficient-funds.exce
 import { InvalidCurrencyException } from './exceptions/invalid-currency.exception';
 import { WalletGateway } from './wallet.gateway';
 
-type UserBalanceFields = { coins: number; gems: number };
+type UserBalanceFields = { coins: number; gems: number; arcadeum: number };
 
 @Injectable()
 export class WalletService {
@@ -116,6 +116,7 @@ export class WalletService {
     return {
       coins: balances.coins ?? 0,
       gems: balances.gems ?? 0,
+      arcadeum: balances.arcadeum ?? 0,
     };
   }
 
@@ -239,7 +240,11 @@ export class WalletService {
     }
 
     const balanceFields = user as unknown as UserBalanceFields;
-    lastBalance = { coins: balanceFields.coins, gems: balanceFields.gems };
+    lastBalance = {
+      coins: balanceFields.coins,
+      gems: balanceFields.gems,
+      arcadeum: balanceFields.arcadeum,
+    };
 
     const docs = await this.txModel.create(
       [
@@ -288,7 +293,11 @@ export class WalletService {
   }
 
   private assertCurrency(currency: string): void {
-    if (currency !== 'coins' && currency !== 'gems') {
+    if (
+      currency !== 'coins' &&
+      currency !== 'gems' &&
+      currency !== 'arcadeum'
+    ) {
       throw new InvalidCurrencyException(currency);
     }
   }

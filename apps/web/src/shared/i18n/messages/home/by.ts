@@ -67,6 +67,10 @@ export const by = {
   // How it works section
   howItWorksTitle: 'Як гэта працуе',
   howItWorksSubtitle: 'Пачніце за тры простыя крокі',
+  tokenTitle: 'Наш токен',
+  tokenSubtitle: 'Рухавік экасістэмы Arcadeum на Solana',
+  tokenDescription:
+    'Зарабляйце токены ў гульні, купляйце ў краме або выводзіце на кашалёк Phantom у Solana.',
   stepCreateTitle: 'Стварыце або ўвайдзіце ў пакой',
   stepCreateDescription:
     'Пачніце новы гульнявы пакой або ўвядзіце код запрашэння, каб далучыцца да існуючай сесіі.',
@@ -90,6 +94,7 @@ export const by = {
   footerTournaments: 'Турніры',
   footerLeaderboards: 'Табліцы лідараў',
   footerRewards: 'Узнагароды',
+  footerToken: 'Токен',
   footerResourcesTitle: 'Рэсурсы',
   footerHelpCenter: 'Цэнтр дапамогі',
   footerGamingBlog: 'Блог пра гульні',

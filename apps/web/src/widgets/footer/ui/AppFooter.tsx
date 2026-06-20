@@ -43,6 +43,7 @@ export default function AppFooter() {
         { href: '/tournaments', label: t('home.footerTournaments') },
         { href: '/leaderboards', label: t('home.footerLeaderboards') },
         { href: '/rewards', label: t('home.footerRewards') },
+        { href: '/token', label: t('home.footerToken') },
       ],
     },
     {

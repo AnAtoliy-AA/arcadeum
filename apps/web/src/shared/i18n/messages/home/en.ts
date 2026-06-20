@@ -65,6 +65,10 @@ export const en = {
     'Compete in ranked events and prove your skills against the best players.',
   howItWorksTitle: 'How It Works',
   howItWorksSubtitle: 'Get started in three simple steps',
+  tokenTitle: 'Our Token',
+  tokenSubtitle: 'Powering the Arcadeum ecosystem on Solana',
+  tokenDescription:
+    'Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.',
   stepCreateTitle: 'Create or Join a Room',
   stepCreateDescription:
     'Start a new game room or enter an invite code to join an existing session.',
@@ -88,6 +92,7 @@ export const en = {
   footerTournaments: 'Tournaments',
   footerLeaderboards: 'Leaderboards',
   footerRewards: 'Rewards',
+  footerToken: 'Token',
   footerResourcesTitle: 'Resources',
   footerHelpCenter: 'Help Center',
   footerGamingBlog: 'Gaming Blog',

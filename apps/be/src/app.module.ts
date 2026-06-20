@@ -22,6 +22,7 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { ShopModule } from './shop/shop.module';
 import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
+import { SolanaModule } from './solana/solana.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -64,6 +65,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
       { name: 'strict', ttl: 60_000 * 60, limit: 5 },
     ]),
     SupportModule,
+    SolanaModule,
     MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
   ],
   controllers: [AppController],

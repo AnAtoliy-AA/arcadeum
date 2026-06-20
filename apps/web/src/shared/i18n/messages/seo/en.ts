@@ -71,6 +71,10 @@ export const en = {
     title: `Wallet & Balance · ${APP}`,
     description: `Manage your ${APP} wallet — view your coin balance, transaction history, and current cosmetic inventory.`,
   },
+  token: {
+    title: `Token · ${APP}`,
+    description: `Learn about the ${APP} token on Solana — earn through gameplay, purchase in the shop, or withdraw to your Phantom wallet.`,
+  },
   shop: {
     title: `Shop · Cosmetics & Boosts · ${APP}`,
     description: `Browse the ${APP} shop — unlock avatars, badges, color tags, and packs to personalize your profile.`,

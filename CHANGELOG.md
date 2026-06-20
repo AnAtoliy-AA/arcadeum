@@ -7,6 +7,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.5] - 2026-06-20
+
+### Added
+- add token page, home section, header nav link, and pump.fun link (N/A)
+- add Arcadeum filter to wallet history and fix filter scroll (N/A)
+- display real token image, name and ticker from pump.fun (N/A)
+
+### Fixed
+- add missing useState import in TokenInfo (N/A)
+- fix mobile language pill click by scrolling container (N/A)
+- update e2e tests for wallet filter anchors and mobile language scroll (N/A)
+- add wallet icon to token link in mobile menu (N/A)
+
+
+## [1.20.4] - 2026-06-19
+
+
+## [1.20.3] - 2026-06-19
+
+### Added
+- add ARCADEUM GAMES token info section with ARC ticker (N/A)
+- complete Solana withdraw feature with security hardening (N/A)
+- add admin buy-back endpoint for token purchases (N/A)
+- add Withdraw to Wallet page with Phantom integration (N/A)
+- add cryptocurrency disclaimer to Terms of Service (N/A)
+- add Solana module with SPL token transfer and withdrawal (N/A)
+- add arcadeum currency to wallet system (N/A)
+
+### Fixed
+- rewrite withdraw e2e tests for server-side auth (N/A)
+- fix lint errors in withdraw e2e test (N/A)
+- use individual expect assertions to avoid any lint errors (N/A)
+- fix lint error with toMatchObject and asymmetric matchers (N/A)
+- fix lint error in solana controller spec (N/A)
+- fix lint errors in solana test files (N/A)
+- make ARCADEUM_MINT_ADDRESS and SOLANA_PRIVATE_KEY optional (N/A)
+- fix useTranslation API usage and DeepPartial types (N/A)
+- remove locale arg from useTranslation calls (N/A)
+- patch @tamagui/web config.mjs to auto-init tokensMerged from global config (N/A)
+- resolve CI build and test failures (N/A)
+- broaden uuid ESM transform pattern for pnpm nested paths (N/A)
+- transform uuid ESM in e2e test config (N/A)
+- add missing User model to SolanaModule imports (N/A)
+
+### Refactored
+- extract TokenInfo inline styles to CSS module (N/A)
+
+### Documentation
+- add ARCADEUM_MINT_ADDRESS to web .env.example (N/A)
+- add Solana environment variable documentation (N/A)
+- add Solana token ecosystem final report (N/A)
+
+
+## [1.20.2] - 2026-06-19
+
+### Fixed
+- use addToQueue for Facebook manual publish (N/A)
+- use shareNow for Facebook immediate publish (N/A)
+- use addToQueue for Facebook to bypass identity check (N/A)
+- pass Facebook post type via metadata instead of top-level field (N/A)
+- add Facebook post type and fix error detection in Buffer API (N/A)
+- use correct Buffer enum values (shareNow, assets: []) (N/A)
+- use correct Buffer GraphQL types (ChannelId, schedulingType: now) (N/A)
+- hardcode mode enum in query, remove random sleep (N/A)
+- remove invalid ShareMode enum value from Buffer GraphQL mutation (N/A)
+- use GraphQL variables for Buffer API in release poster too (N/A)
+- use GraphQL variables for Buffer API to fix string escaping (N/A)
+
+
+## [1.20.1] - 2026-06-19
+
+### Fixed
+- use CHANGELOG.md content for release social posts instead of merge commits (N/A)
+
+
+## [1.20.0] - 2026-06-19
+
+
+
+
 ## [1.19.3] - 2026-06-19
 
 ### Fixed

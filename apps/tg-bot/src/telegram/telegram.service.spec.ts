@@ -44,18 +44,20 @@ describe('TelegramService', () => {
       return env[key];
     });
 
-    service = new TelegramService(
-      { get: configGet } as unknown as ConfigService,
-    );
+    service = new TelegramService({
+      get: configGet,
+    } as unknown as ConfigService);
   });
 
   describe('onModuleInit', () => {
     it('should throw if TELEGRAM_BOT_TOKEN is missing', () => {
       const configGet = jest.fn(() => undefined);
-      const svc = new TelegramService(
-        { get: configGet } as unknown as ConfigService,
+      const svc = new TelegramService({
+        get: configGet,
+      } as unknown as ConfigService);
+      expect(() => svc.onModuleInit()).toThrow(
+        'TELEGRAM_BOT_TOKEN is required',
       );
-      expect(() => svc.onModuleInit()).toThrow('TELEGRAM_BOT_TOKEN is required');
     });
 
     it('should throw if TELEGRAM_CHAT_ID is missing', () => {
@@ -63,9 +65,9 @@ describe('TelegramService', () => {
         if (key === 'TELEGRAM_BOT_TOKEN') return BOT_TOKEN;
         return undefined;
       });
-      const svc = new TelegramService(
-        { get: configGet } as unknown as ConfigService,
-      );
+      const svc = new TelegramService({
+        get: configGet,
+      } as unknown as ConfigService);
       expect(() => svc.onModuleInit()).toThrow('TELEGRAM_CHAT_ID is required');
     });
 
@@ -89,7 +91,10 @@ describe('TelegramService', () => {
       });
 
       expect(mockSendMessage).toHaveBeenCalledTimes(1);
-      const [chatId, message, opts] = mockSendMessage.mock.calls[0];
+      const call = mockSendMessage.mock.calls[0] as unknown[];
+      const chatId = call[0] as string;
+      const message = call[1] as string;
+      const opts = call[2] as { parse_mode: string };
       expect(chatId).toBe(CHAT_ID);
       expect(opts).toEqual({ parse_mode: 'HTML' });
       expect(message).toContain('BOUGHT');
@@ -111,7 +116,7 @@ describe('TelegramService', () => {
         signature: 'sell_sig_456',
       });
 
-      const [, message] = mockSendMessage.mock.calls[0];
+      const message = (mockSendMessage.mock.calls[0] as unknown[])[1] as string;
       expect(message).toContain('SOLD');
       expect(message).toContain('Seller11111111');
     });
@@ -125,7 +130,7 @@ describe('TelegramService', () => {
         signature: 'pct_sig',
       });
 
-      const [, message] = mockSendMessage.mock.calls[0];
+      const message = (mockSendMessage.mock.calls[0] as unknown[])[1] as string;
       expect(message).toContain('1.0000%');
     });
 
@@ -138,7 +143,7 @@ describe('TelegramService', () => {
         signature: 'small_sig',
       });
 
-      const [, message] = mockSendMessage.mock.calls[0];
+      const message = (mockSendMessage.mock.calls[0] as unknown[])[1] as string;
       expect(message).toContain('0.0001%');
     });
 

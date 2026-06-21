@@ -9,6 +9,7 @@
     "prepare": "husky",
     "dev": "turbo run dev --parallel --filter be --filter web --filter \"@arcadeum/ui\"",
     "dev:all": "turbo run dev --parallel && cd packages/ui && pnpm run dev",
+    "dev:tg-bot": "pnpm --filter tg-bot dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",

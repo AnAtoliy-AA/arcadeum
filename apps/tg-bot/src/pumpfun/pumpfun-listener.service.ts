@@ -141,7 +141,6 @@ export class PumpFunListenerService implements OnModuleInit {
   ): ParsedTransaction | null {
     if (!tx.meta) return null;
 
-    const accounts = this.getAccountKeys(tx);
     const mintBase58 = this.mintAddress.toBase58();
 
     const preTokenBalances = tx.meta.preTokenBalances ?? [];

@@ -144,6 +144,9 @@ export class PumpFunListenerService implements OnModuleInit {
     const accounts = this.getAccountKeys(tx);
     const mintBase58 = this.mintAddress.toBase58();
 
+    const preTokenBalances = tx.meta.preTokenBalances ?? [];
+    const postTokenBalances = tx.meta.postTokenBalances ?? [];
+
     let type: 'buy' | 'sell' | null = null;
 
     if (tx.meta.innerInstructions) {
@@ -169,8 +172,11 @@ export class PumpFunListenerService implements OnModuleInit {
     }
 
     if (!type) {
-      const programIdBase58 = this.pumpfunProgramId.toBase58();
-      if (!accounts.includes(programIdBase58)) return null;
+      const hasMintInTokens =
+        preTokenBalances.some((b) => b.mint === mintBase58) ||
+        postTokenBalances.some((b) => b.mint === mintBase58);
+
+      if (!hasMintInTokens) return null;
 
       const prePostDiff = tx.meta.preBalances.map(
         (pre, i) => pre - (tx.meta?.postBalances[i] ?? 0),

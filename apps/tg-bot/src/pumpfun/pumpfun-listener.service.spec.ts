@@ -63,7 +63,7 @@ describe('PumpFunListenerService', () => {
     it('should return null if tx has no meta', () => {
       const result = (
         service as unknown as {
-          parseTransaction: typeof service['parseTransaction'];
+          parseTransaction: (typeof service)['parseTransaction'];
         }
       ).parseTransaction(
         {
@@ -83,7 +83,7 @@ describe('PumpFunListenerService', () => {
       const buyerWallet = 'BuyerWallet1111111111111111111111111111111';
       const result = (
         service as unknown as {
-          parseTransaction: typeof service['parseTransaction'];
+          parseTransaction: (typeof service)['parseTransaction'];
         }
       ).parseTransaction(
         {
@@ -133,16 +133,14 @@ describe('PumpFunListenerService', () => {
       Buffer.from(SELL_DISCRIMINATOR).copy(sellDiscB64);
       const result = (
         service as unknown as {
-          parseTransaction: typeof service['parseTransaction'];
+          parseTransaction: (typeof service)['parseTransaction'];
         }
       ).parseTransaction(
         {
           meta: {
             innerInstructions: [
               {
-                instructions: [
-                  { data: sellDiscB64.toString('base64') },
-                ],
+                instructions: [{ data: sellDiscB64.toString('base64') }],
               },
             ],
             preBalances: [500_000_000, 1_000_000_000],
@@ -185,7 +183,7 @@ describe('PumpFunListenerService', () => {
     it('should return null if no token balance change found', () => {
       const result = (
         service as unknown as {
-          parseTransaction: typeof service['parseTransaction'];
+          parseTransaction: (typeof service)['parseTransaction'];
         }
       ).parseTransaction(
         {
@@ -198,9 +196,7 @@ describe('PumpFunListenerService', () => {
           },
           transaction: {
             message: {
-              staticAccountKeys: [
-                makeAccountKey(PUMPFUN_PROGRAM),
-              ],
+              staticAccountKeys: [makeAccountKey(PUMPFUN_PROGRAM)],
             },
           },
         } as never,
@@ -214,7 +210,7 @@ describe('PumpFunListenerService', () => {
       const wallet = 'TestWallet111111111111111111111111111111111';
       const result = (
         service as unknown as {
-          parseTransaction: typeof service['parseTransaction'];
+          parseTransaction: (typeof service)['parseTransaction'];
         }
       ).parseTransaction(
         {

@@ -71,7 +71,9 @@ export class PumpFunListenerService implements OnModuleInit {
   private async startPolling() {
     const mint = this.mintAddress.toBase58();
     this.logger.log(`Polling transactions for mint: ${mint}`);
-    this.logger.log(`Poll interval: ${PumpFunListenerService.POLL_INTERVAL_MS}ms`);
+    this.logger.log(
+      `Poll interval: ${PumpFunListenerService.POLL_INTERVAL_MS}ms`,
+    );
 
     while (true) {
       try {
@@ -127,9 +129,7 @@ export class PumpFunListenerService implements OnModuleInit {
     }
   }
 
-  private getAccountKeys(
-    tx: VersionedTransactionResponse,
-  ): string[] {
+  private getAccountKeys(tx: VersionedTransactionResponse): string[] {
     const msg = tx.transaction.message;
     const accountKeys = msg.staticAccountKeys ?? [];
     return accountKeys.map((k) => k.toBase58());

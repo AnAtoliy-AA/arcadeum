@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.1] - 2026-06-21
+
+### Added
+- add PumpFun transaction monitor Telegram bot (N/A)
+
+### Fixed
+- remove unused accounts variable (N/A)
+- detect trades without PumpFun program in accounts (N/A)
+- add eslint config and fix lint errors (N/A)
+
+
 ## [1.21.0] - 2026-06-20
 
 

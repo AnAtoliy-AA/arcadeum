@@ -10,6 +10,7 @@ import { ShopController } from './shop.controller';
 import { CatalogService } from './services/catalog.service';
 import { InventoryService } from './services/inventory.service';
 import { ShopService } from './services/shop.service';
+import { ShopWalletService } from './services/shop-wallet.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
@@ -36,6 +37,10 @@ describe('ShopController (integration)', () => {
     sellBack: jest.fn(),
   };
 
+  const shopWallet = {
+    purchaseWithWallet: jest.fn(),
+  };
+
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [ShopController],
@@ -43,6 +48,7 @@ describe('ShopController (integration)', () => {
         { provide: CatalogService, useValue: catalog },
         { provide: InventoryService, useValue: inventory },
         { provide: ShopService, useValue: shop },
+        { provide: ShopWalletService, useValue: shopWallet },
       ],
     })
       .overrideGuard(JwtAuthGuard)

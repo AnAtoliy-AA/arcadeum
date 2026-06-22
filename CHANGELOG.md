@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.3] - 2026-06-22
+
+### Fixed
+- update pnpm-lock.yaml after removing @nestjs/schedule (N/A)
+- improve buy/sell detection with phase2 token balance fallback (N/A)
+- improve buy/sell detection, add retry logic and health check (N/A)
+
+
 ## [1.21.2] - 2026-06-22
 
 ### Added

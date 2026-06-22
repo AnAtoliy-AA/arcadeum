@@ -84,7 +84,9 @@ export default function TokenClient() {
   const displayTicker = metadata?.symbol ?? 'ARC';
   const displayDescription =
     metadata?.description ||
-    'Earn tokens through gameplay or tournament prizes. Spend them in the shop.';
+    t('wallet.tokenInfo.description')
+      .replace('{{name}}', displayName)
+      .replace('{{ticker}}', displayTicker);
 
   if (loading) {
     return (
@@ -99,7 +101,7 @@ export default function TokenClient() {
       <div className={styles.hero}>
         <div className={styles.heroBadge}>
           <span className={styles.heroBadgeDot} />
-          Solana Token
+          {t('wallet.tokenPage.heroBadge')}
         </div>
 
         <div className={styles.tokenIcon}>
@@ -125,7 +127,7 @@ export default function TokenClient() {
 
         <div className={styles.heroActions}>
           <Link href="/wallet" className={styles.primaryBtn}>
-            🎮 View Wallet
+            🎮 {t('wallet.tokenPage.viewWallet')}
           </Link>
           {metadata?.pumpfunUrl && (
             <a
@@ -158,7 +160,7 @@ export default function TokenClient() {
             <div className={styles.stat}>
               <span className={styles.statIcon}>📊</span>
               <span className={styles.statLabel}>
-                Market Cap{' '}
+                {t('wallet.tokenPage.marketCap')}{' '}
                 <button
                   onClick={handleRefresh}
                   disabled={refreshing}
@@ -189,7 +191,9 @@ export default function TokenClient() {
           {metadata?.totalSupply && (
             <div className={styles.stat}>
               <span className={styles.statIcon}>🪙</span>
-              <span className={styles.statLabel}>Total Supply</span>
+              <span className={styles.statLabel}>
+                {t('wallet.tokenPage.totalSupply')}
+              </span>
               <span className={styles.statValue}>
                 {formatSupply(metadata.totalSupply)}
               </span>
@@ -198,7 +202,9 @@ export default function TokenClient() {
           {metadata?.createdAt && (
             <div className={styles.stat}>
               <span className={styles.statIcon}>📅</span>
-              <span className={styles.statLabel}>Created</span>
+              <span className={styles.statLabel}>
+                {t('wallet.tokenPage.created')}
+              </span>
               <span className={styles.statValue}>
                 {formatDate(metadata.createdAt)}
               </span>
@@ -208,50 +214,58 @@ export default function TokenClient() {
       )}
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>How to Earn</h2>
+        <h2 className={styles.sectionTitle}>
+          {t('wallet.tokenPage.howToEarn.title')}
+        </h2>
         <p className={styles.sectionSubtitle}>
-          Get ARC tokens through the platform
+          {t('wallet.tokenPage.howToEarn.subtitle')}
         </p>
         <div className={styles.infoGrid}>
           <div className={styles.infoCard}>
             <div className={styles.infoCardIcon}>🏆</div>
-            <h3 className={styles.infoCardTitle}>Tournament Prizes</h3>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToEarn.tournamentPrizes.title')}
+            </h3>
             <p className={styles.infoCardDesc}>
-              Win ARC tokens as prizes in skill-based tournaments. Top
-              performers earn tokens for their achievements.
-            </p>
-          </div>
-          <div className={styles.infoCard}>
-            <div className={styles.infoCardIcon}>🛍️</div>
-            <h3 className={styles.infoCardTitle}>Connect Wallet</h3>
-            <p className={styles.infoCardDesc}>
-              Connect your Phantom wallet and send ARC tokens to use them
-              for shop purchases on the platform.
+              {t('wallet.tokenPage.howToEarn.tournamentPrizes.description')}
             </p>
           </div>
         </div>
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>How to Spend</h2>
+        <h2 className={styles.sectionTitle}>
+          {t('wallet.tokenPage.howToSpend.title')}
+        </h2>
         <p className={styles.sectionSubtitle}>
-          Use your tokens to customize your profile and stand out
+          {t('wallet.tokenPage.howToSpend.subtitle')}
         </p>
         <div className={styles.infoGrid}>
           <div className={styles.infoCard}>
             <div className={styles.infoCardIcon}>🎨</div>
-            <h3 className={styles.infoCardTitle}>Shop Items</h3>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.shopItems.title')}
+            </h3>
             <p className={styles.infoCardDesc}>
-              Purchase avatars, badges, name colors, and other cosmetics from
-              the shop.
+              {t('wallet.tokenPage.howToSpend.shopItems.description')}
             </p>
           </div>
           <div className={styles.infoCard}>
             <div className={styles.infoCardIcon}>✨</div>
-            <h3 className={styles.infoCardTitle}>Profile Customization</h3>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.profileCustomization.title')}
+            </h3>
             <p className={styles.infoCardDesc}>
-              Equip your purchased items to personalize your profile and
-              stand out in matches.
+              {t('wallet.tokenPage.howToSpend.profileCustomization.description')}
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🛍️</div>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.connectWallet.title')}
+            </h3>
+            <p className={styles.infoCardDesc}>
+              {t('wallet.tokenPage.howToSpend.connectWallet.description')}
             </p>
           </div>
         </div>
@@ -276,9 +290,11 @@ export default function TokenClient() {
 
       {(metadata?.twitter || metadata?.website) && (
         <div className={styles.socialSection}>
-          <h2 className={styles.sectionTitle}>Community</h2>
+          <h2 className={styles.sectionTitle}>
+            {t('wallet.tokenPage.community.title')}
+          </h2>
           <p className={styles.sectionSubtitle}>
-            Join our community and stay updated
+            {t('wallet.tokenPage.community.subtitle')}
           </p>
           <div className={styles.socialLinks}>
             {metadata?.twitter && (
@@ -306,9 +322,7 @@ export default function TokenClient() {
       )}
 
       <p className={styles.disclaimer}>
-        ARCADEUM tokens are utility assets for in-platform use only. They
-        have no inherent monetary value and are not investments. All
-        purchases are final.
+        {t('wallet.tokenPage.disclaimer')}
       </p>
     </div>
   );

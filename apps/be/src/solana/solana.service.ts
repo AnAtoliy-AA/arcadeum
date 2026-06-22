@@ -1,16 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  Connection,
-  PublicKey,
-  Transaction,
-  SystemProgram,
-  LAMPORTS_PER_SOL,
-} from '@solana/web3.js';
-import {
-  createTransferInstruction,
-  getAssociatedTokenAddress,
-  getAccount,
-} from '@solana/spl-token';
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { getAssociatedTokenAddress, getAccount } from '@solana/spl-token';
 import { ConfigService } from '@nestjs/config';
 import { getPlatformKeypair } from './lib/solana-keypair';
 import {
@@ -168,82 +158,86 @@ export class SolanaService {
     };
   }
 
-  async transferArcadeum(
-    recipientAddress: string,
-    amount: number,
-  ): Promise<string> {
-    const keypair = this.getKeypair();
-    const recipient = new PublicKey(recipientAddress);
-    const rawAmount = toRawAmount(amount);
+  async verifyTransaction(
+    signature: string,
+    expectedAmount: number,
+    senderAddress: string,
+  ): Promise<boolean> {
+    try {
+      const keypair = this.getKeypair();
+      const treasuryAddress = keypair.publicKey.toBase58();
 
-    const fromAta = await getAssociatedTokenAddress(
-      this.arcadeumMint,
-      keypair.publicKey,
-    );
-    const toAta = await getAssociatedTokenAddress(this.arcadeumMint, recipient);
+      const transaction = await this.connection.getTransaction(signature, {
+        commitment: 'confirmed',
+        maxSupportedTransactionVersion: 0,
+      });
 
-    const transaction = new Transaction().add(
-      createTransferInstruction(fromAta, toAta, keypair.publicKey, rawAmount),
-    );
+      if (!transaction) {
+        this.logger.warn(`Transaction ${signature} not found`);
+        return false;
+      }
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.lastValidBlockHeight = lastValidBlockHeight;
-    transaction.feePayer = keypair.publicKey;
-    transaction.sign(keypair);
+      if (transaction.meta?.err) {
+        this.logger.warn(`Transaction ${signature} failed`);
+        return false;
+      }
 
-    const signature = await this.connection.sendRawTransaction(
-      transaction.serialize(),
-    );
+      const sender = new PublicKey(senderAddress);
+      const treasury = new PublicKey(treasuryAddress);
 
-    await this.connection.confirmTransaction({
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    });
+      const message = transaction.transaction.message;
+      const accountKeys = message.staticAccountKeys ?? [];
+      const senderIndex = accountKeys.findIndex((key) => key.equals(sender));
+      const treasuryIndex = accountKeys.findIndex((key) =>
+        key.equals(treasury),
+      );
 
-    this.logger.log(
-      `Transferred ${amount} ARCADEUM to ${recipientAddress}: ${signature}`,
-    );
-    return signature;
-  }
+      if (senderIndex === -1 || treasuryIndex === -1) {
+        this.logger.warn('Sender or treasury not found in transaction');
+        return false;
+      }
 
-  async transferSol(
-    recipientAddress: string,
-    lamports: number,
-  ): Promise<string> {
-    const keypair = this.getKeypair();
-    const recipient = new PublicKey(recipientAddress);
+      const innerInstructions =
+        transaction.meta?.innerInstructions?.flat() ?? [];
+      const tokenProgramId = new PublicKey(
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+      );
+      for (const ix of innerInstructions) {
+        const compiledIx = ix as unknown as {
+          programIdIndex: number;
+          accounts: number[];
+          data?: string;
+        };
+        const programId = accountKeys[compiledIx.programIdIndex];
+        if (programId?.equals(tokenProgramId)) {
+          const accounts = compiledIx.accounts;
+          if (accounts.length >= 4) {
+            const source = accountKeys[accounts[0]];
+            const destination = accountKeys[accounts[1]];
 
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: keypair.publicKey,
-        toPubkey: recipient,
-        lamports,
-      }),
-    );
+            if (source?.equals(sender) && destination?.equals(treasury)) {
+              const data = compiledIx.data;
+              if (data) {
+                const buffer = Buffer.from(data, 'base64');
+                if (buffer.length >= 8) {
+                  const amount = Number(buffer.readBigUInt64LE(0));
+                  if (amount >= toRawAmount(expectedAmount)) {
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.lastValidBlockHeight = lastValidBlockHeight;
-    transaction.feePayer = keypair.publicKey;
-    transaction.sign(keypair);
-
-    const signature = await this.connection.sendRawTransaction(
-      transaction.serialize(),
-    );
-
-    await this.connection.confirmTransaction({
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    });
-
-    this.logger.log(
-      `Transferred ${lamports} lamports to ${recipientAddress}: ${signature}`,
-    );
-    return signature;
+      this.logger.warn('No matching ARC transfer found in transaction');
+      return false;
+    } catch (err) {
+      this.logger.error(
+        `Failed to verify transaction: ${err instanceof Error ? err.message : err}`,
+      );
+      return false;
+    }
   }
 }

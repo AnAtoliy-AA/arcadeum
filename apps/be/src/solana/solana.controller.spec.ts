@@ -55,9 +55,7 @@ describe('SolanaController', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [SolanaController],
-      providers: [
-        { provide: SolanaService, useValue: solanaService },
-      ],
+      providers: [{ provide: SolanaService, useValue: solanaService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({
@@ -128,7 +126,8 @@ describe('SolanaController', () => {
         .get('/solana/token-metadata')
         .expect(200);
 
-      expect(res.body.name).toBe('Arcadeum Games');
+      const body = res.body as { name: string };
+      expect(body.name).toBe('Arcadeum Games');
     });
   });
 
@@ -145,7 +144,8 @@ describe('SolanaController', () => {
         })
         .expect(201);
 
-      expect(res.body.valid).toBe(true);
+      const body = res.body as { valid: boolean };
+      expect(body.valid).toBe(true);
     });
 
     it('returns invalid when transaction fails verification', async () => {
@@ -160,7 +160,8 @@ describe('SolanaController', () => {
         })
         .expect(201);
 
-      expect(res.body.valid).toBe(false);
+      const body = res.body as { valid: boolean };
+      expect(body.valid).toBe(false);
     });
   });
 });

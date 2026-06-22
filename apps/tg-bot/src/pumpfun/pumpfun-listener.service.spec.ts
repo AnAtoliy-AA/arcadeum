@@ -55,6 +55,12 @@ describe('PumpFunListenerService', () => {
     });
   });
 
+  describe('onModuleDestroy', () => {
+    it('should abort polling', async () => {
+      await service.onModuleDestroy();
+    });
+  });
+
   describe('parseTransaction', () => {
     const makeAccountKey = (base58: string) => ({
       toBase58: () => base58,
@@ -89,8 +95,8 @@ describe('PumpFunListenerService', () => {
         {
           meta: {
             innerInstructions: [],
-            preBalances: [1_000_000_000, 500_000_000],
-            postBalances: [500_000_000, 1_500_000_000],
+            preBalances: [500_000_000, 2_000_000_000],
+            postBalances: [500_000_000, 1_000_000_000],
             preTokenBalances: [
               {
                 accountIndex: 0,
@@ -216,8 +222,8 @@ describe('PumpFunListenerService', () => {
         {
           meta: {
             innerInstructions: [],
-            preBalances: [2_000_000_000, 1_000_000_000],
-            postBalances: [1_000_000_000, 2_000_000_000],
+            preBalances: [500_000_000, 2_000_000_000],
+            postBalances: [500_000_000, 1_000_000_000],
             preTokenBalances: [
               {
                 accountIndex: 0,

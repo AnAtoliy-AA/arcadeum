@@ -1,0 +1,182 @@
+.container {
+  margin-bottom: 32px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.label {
+  font-size: 12px;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+
+.change {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.changeUp {
+  color: #34d399;
+}
+
+.changeDown {
+  color: #f87171;
+}
+
+.chart {
+  width: 100%;
+  height: 240px;
+}
+
+.loading {
+  width: 100%;
+  height: 240px;
+  border-radius: 8px;
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.02) 30%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.02) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.empty {
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #52525b;
+}
+
+.timeRangeButtons {
+  display: flex;
+  gap: 4px;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+.timeRangeBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #a1a1aa;
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.timeRangeBtnActive {
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.1);
+
+  &:hover {
+    color: #818cf8;
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.15);
+  }
+}
+
+.periodStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.periodStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.periodStatLabel {
+  font-size: 10px;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.periodStatValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a1a1aa;
+}
+
+.chartTooltip {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(24, 24, 27, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 160px;
+}
+
+.tooltipTime {
+  font-size: 11px;
+  color: #71717a;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tooltipGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+}
+
+.tooltipKey {
+  font-size: 11px;
+  color: #52525b;
+}
+
+.tooltipVal {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d4d4d8;
+  text-align: right;
+}

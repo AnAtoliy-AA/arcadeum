@@ -84,7 +84,7 @@ export default function TokenClient() {
   const displayTicker = metadata?.symbol ?? 'ARC';
   const displayDescription =
     metadata?.description ||
-    'Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.';
+    'Earn tokens through gameplay or tournament prizes. Spend them in the shop.';
 
   if (loading) {
     return (

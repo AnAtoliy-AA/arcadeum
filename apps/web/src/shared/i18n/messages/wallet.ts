@@ -16,25 +16,6 @@ export interface WalletMessages {
     copy: string;
     copied: string;
   };
-  withdraw: {
-    title: string;
-    description: string;
-    connectButton: string;
-    connecting: string;
-    connected: string;
-    disconnect: string;
-    amountLabel: string;
-    amountPlaceholder: string;
-    feeLabel: string;
-    youReceive: string;
-    submitButton: string;
-    processing: string;
-    success: string;
-    error: string;
-    phantomNotFound: string;
-    connectionFailed: string;
-    disconnectFailed: string;
-  };
   history: {
     filterAll: string;
     filterCoins: string;
@@ -62,13 +43,12 @@ export interface WalletMessages {
     referral_tier_bonus: string;
     daily_reward: string;
     shop_purchase: string;
+    shop_purchase_arc: string;
     shop_sell_refund: string;
     battle_pass_reward: string;
     achievement: string;
     daily_challenge: string;
     token_purchase: string;
-    token_withdrawal: string;
-    token_withdrawal_fee: string;
     tournament_token_prize: string;
     wager_entry: string;
     wager_prize: string;
@@ -88,30 +68,10 @@ export const en: WalletMessages = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{{name}} ({{ticker}}) is a token on the Solana blockchain. Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet.',
+      '{{name}} ({{ticker}}) is a token on the Solana blockchain. Earn tokens through gameplay or tournament prizes.',
     mint: 'Mint',
     copy: 'Copy',
     copied: 'Copied!',
-  },
-  withdraw: {
-    title: 'Withdraw to Wallet',
-    description:
-      'Transfer your ARCADEUM tokens to your Phantom wallet. A 2% fee applies.',
-    connectButton: 'Connect Phantom Wallet',
-    connecting: 'Connecting...',
-    connected: 'Connected',
-    disconnect: 'Disconnect',
-    amountLabel: 'Amount (Available: {balance} ARCADEUM)',
-    amountPlaceholder: 'Enter amount',
-    feeLabel: 'Fee (2%): {fee} ARCADEUM',
-    youReceive: 'You receive: {amount} ARCADEUM',
-    submitButton: 'Withdraw',
-    processing: 'Processing...',
-    success: 'Withdrawal successful! TX: {signature}',
-    error: 'Withdrawal failed',
-    phantomNotFound: 'Phantom wallet not found. Please install it.',
-    connectionFailed: 'Connection failed',
-    disconnectFailed: 'Failed to disconnect wallet',
   },
   history: {
     filterAll: 'All',
@@ -140,13 +100,12 @@ export const en: WalletMessages = {
     referral_tier_bonus: 'Referral tier bonus',
     daily_reward: 'Daily reward',
     shop_purchase: 'Shop purchase',
+    shop_purchase_arc: 'Shop purchase (ARC)',
     shop_sell_refund: 'Shop sell refund',
     battle_pass_reward: 'Battle pass reward',
     achievement: 'Achievement',
     daily_challenge: 'Daily challenge',
     token_purchase: 'Token purchase',
-    token_withdrawal: 'Token withdrawal',
-    token_withdrawal_fee: 'Token withdrawal fee',
     tournament_token_prize: 'Tournament token prize',
     wager_entry: 'Wager entry',
     wager_prize: 'Wager prize',
@@ -166,30 +125,10 @@ export const ru: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{{name}} ({{ticker}}) — токен на блокчейне Solana. Зарабатывайте токены в игре, покупайте в магазине или выводите на кошелёк Phantom.',
+      '{{name}} ({{ticker}}) — токен на блокчейне Solana. Зарабатывайте токены в игре или призовые в турнирах.',
     mint: 'Минт',
     copy: 'Копировать',
     copied: 'Скопировано!',
-  },
-  withdraw: {
-    title: 'Вывод в кошелёк',
-    description:
-      'Переведите токены ARCADEUM в кошелёк Phantom. Взимается комиссия 2%.',
-    connectButton: 'Подключить Phantom кошелёк',
-    connecting: 'Подключение...',
-    connected: 'Подключено',
-    disconnect: 'Отключить',
-    amountLabel: 'Сумма (Доступно: {balance} ARCADEUM)',
-    amountPlaceholder: 'Введите сумму',
-    feeLabel: 'Комиссия (2%): {fee} ARCADEUM',
-    youReceive: 'Вы получите: {amount} ARCADEUM',
-    submitButton: 'Вывести',
-    processing: 'Обработка...',
-    success: 'Вывод успешен! TX: {signature}',
-    error: 'Ошибка вывода',
-    phantomNotFound: 'Кошелёк Phantom не найден. Установите его.',
-    connectionFailed: 'Ошибка подключения',
-    disconnectFailed: 'Не удалось отключить кошелёк',
   },
   history: {
     filterAll: 'Все',
@@ -218,13 +157,12 @@ export const ru: DeepPartial<WalletMessages> = {
     referral_tier_bonus: 'Бонус уровня реферала',
     daily_reward: 'Ежедневная награда',
     shop_purchase: 'Покупка в магазине',
+    shop_purchase_arc: 'Покупка в магазине (ARC)',
     shop_sell_refund: 'Возврат продажи',
     battle_pass_reward: 'Награда боевого пропуска',
     achievement: 'Достижение',
     daily_challenge: 'Ежедневное задание',
     token_purchase: 'Покупка токенов',
-    token_withdrawal: 'Вывод токенов',
-    token_withdrawal_fee: 'Комиссия за вывод',
     tournament_token_prize: 'Приз турнира в токенах',
     wager_entry: 'Ставка',
     wager_prize: 'Выигрыш ставки',
@@ -244,30 +182,10 @@ export const es: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{{name}} ({{ticker}}) es un token en la blockchain de Solana. Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom.',
+      '{{name}} ({{ticker}}) es un token en la blockchain de Solana. Gana tokens jugando o en premios de torneos.',
     mint: 'Mint',
     copy: 'Copiar',
     copied: '¡Copiado!',
-  },
-  withdraw: {
-    title: 'Retirar al monedero',
-    description:
-      'Transfiere tus tokens ARCADEUM a tu monedero Phantom. Se aplica una comisión del 2%.',
-    connectButton: 'Conectar monedero Phantom',
-    connecting: 'Conectando...',
-    connected: 'Conectado',
-    disconnect: 'Desconectar',
-    amountLabel: 'Cantidad (Disponible: {balance} ARCADEUM)',
-    amountPlaceholder: 'Ingresa la cantidad',
-    feeLabel: 'Comisión (2%): {fee} ARCADEUM',
-    youReceive: 'Recibes: {amount} ARCADEUM',
-    submitButton: 'Retirar',
-    processing: 'Procesando...',
-    success: '¡Retiro exitoso! TX: {signature}',
-    error: 'Error en el retiro',
-    phantomNotFound: 'Monedero Phantom no encontrado. Por favor, instálalo.',
-    connectionFailed: 'Error de conexión',
-    disconnectFailed: 'Error al desconectar el monedero',
   },
   history: {
     filterAll: 'Todos',
@@ -296,13 +214,12 @@ export const es: DeepPartial<WalletMessages> = {
     referral_tier_bonus: 'Bono de nivel de referido',
     daily_reward: 'Recompensa diaria',
     shop_purchase: 'Compra en tienda',
+    shop_purchase_arc: 'Compra en tienda (ARC)',
     shop_sell_refund: 'Reembolso de venta',
     battle_pass_reward: 'Recompensa de pase de batalla',
     achievement: 'Logro',
     daily_challenge: 'Desafío diario',
     token_purchase: 'Compra de tokens',
-    token_withdrawal: 'Retiro de tokens',
-    token_withdrawal_fee: 'Comisión de retiro',
     tournament_token_prize: 'Premio de tokens en torneo',
     wager_entry: 'Apuesta',
     wager_prize: 'Premio de apuesta',
@@ -322,30 +239,10 @@ export const fr: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{name} ({ticker}) est un token sur la blockchain Solana. Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom.',
+      '{name} ({ticker}) est un token sur la blockchain Solana. Gagnez des tokens en jouant ou en prix de tournois.',
     mint: 'Mint',
     copy: 'Copier',
     copied: 'Copié !',
-  },
-  withdraw: {
-    title: 'Retirer vers le portefeuille',
-    description:
-      "Transférez vos tokens ARCADEUM vers votre portefeuille Phantom. Une commission de 2% s'applique.",
-    connectButton: 'Connecter le portefeuille Phantom',
-    connecting: 'Connexion...',
-    connected: 'Connecté',
-    disconnect: 'Déconnecter',
-    amountLabel: 'Montant (Disponible: {balance} ARCADEUM)',
-    amountPlaceholder: 'Entrez le montant',
-    feeLabel: 'Commission (2%): {fee} ARCADEUM',
-    youReceive: 'Vous recevez: {amount} ARCADEUM',
-    submitButton: 'Retirer',
-    processing: 'Traitement...',
-    success: 'Retrait réussi! TX: {signature}',
-    error: 'Échec du retrait',
-    phantomNotFound: "Portefeuille Phantom non trouvé. Veuillez l'installer.",
-    connectionFailed: 'Échec de la connexion',
-    disconnectFailed: 'Échec de la déconnexion du portefeuille',
   },
   history: {
     filterAll: 'Tout',
@@ -374,13 +271,12 @@ export const fr: DeepPartial<WalletMessages> = {
     referral_tier_bonus: 'Bonus de niveau de parrainage',
     daily_reward: 'Récompense quotidienne',
     shop_purchase: 'Achat en boutique',
+    shop_purchase_arc: 'Achat en boutique (ARC)',
     shop_sell_refund: 'Remboursement de vente',
     battle_pass_reward: 'Récompense du pass de bataille',
     achievement: 'Succès',
     daily_challenge: 'Défi quotidien',
     token_purchase: 'Achat de tokens',
-    token_withdrawal: 'Retrait de tokens',
-    token_withdrawal_fee: 'Commission de retrait',
     tournament_token_prize: 'Prix de tokens en tournoi',
     wager_entry: 'Pari',
     wager_prize: 'Prix de pari',
@@ -400,30 +296,10 @@ export const by: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{name} ({ticker}) — токен на блокчейне Solana. Зарабляйце токены ў гульні, купляйце ў краме або выводзіце на кашалёк Phantom.',
+      '{name} ({ticker}) — токен на блокчейне Solana. Зарабляйце токены ў гульні або прызавыя ў турнірах.',
     mint: 'Мінт',
     copy: 'Капіяваць',
     copied: 'Скапіявана!',
-  },
-  withdraw: {
-    title: 'Вывад у кашалёк',
-    description:
-      'Перавядзіце токены ARCADEUM у кашалёк Phantom. Спаганяецца камісія 2%.',
-    connectButton: 'Падключыць Phantom кашалёк',
-    connecting: 'Падключэнне...',
-    connected: 'Падключана',
-    disconnect: 'Адключыць',
-    amountLabel: 'Сума (Даступна: {balance} ARCADEUM)',
-    amountPlaceholder: 'Увядзіце суму',
-    feeLabel: 'Камісія (2%): {fee} ARCADEUM',
-    youReceive: 'Вы атрымаеце: {amount} ARCADEUM',
-    submitButton: 'Вывесці',
-    processing: 'Апрацоўка...',
-    success: 'Вывад паспяховы! TX: {signature}',
-    error: 'Памылка вываду',
-    phantomNotFound: 'Кашалёк Phantom не знойдзены. Усталюйце яго.',
-    connectionFailed: 'Памылка падключэння',
-    disconnectFailed: 'Не ўдалося адключыць кашалёк',
   },
   history: {
     filterAll: 'Усе',
@@ -452,13 +328,12 @@ export const by: DeepPartial<WalletMessages> = {
     referral_tier_bonus: 'Бонус узроўню рэферала',
     daily_reward: 'Штодзённая ўзнагарода',
     shop_purchase: 'Пакупка ў краме',
+    shop_purchase_arc: 'Пакупка ў краме (ARC)',
     shop_sell_refund: 'Вяртанне продажу',
     battle_pass_reward: 'Узнагарода баявога пропуску',
     achievement: 'Дасягненне',
     daily_challenge: 'Штодзённае заданне',
     token_purchase: 'Пакупка токенаў',
-    token_withdrawal: 'Вывад токенаў',
-    token_withdrawal_fee: 'Камісія за вывад',
     tournament_token_prize: 'Прыз турніру ў токенах',
     wager_entry: 'Стаўка',
     wager_prize: 'Выйгрыш стаўкі',

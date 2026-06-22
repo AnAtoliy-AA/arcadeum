@@ -222,11 +222,11 @@ export default function TokenClient() {
             </p>
           </div>
           <div className={styles.infoCard}>
-            <div className={styles.infoCardIcon}>🎮</div>
-            <h3 className={styles.infoCardTitle}>Gameplay Rewards</h3>
+            <div className={styles.infoCardIcon}>🛍️</div>
+            <h3 className={styles.infoCardTitle}>Connect Wallet</h3>
             <p className={styles.infoCardDesc}>
-              Earn coins through gameplay, daily rewards, and referrals.
-              Convert coins to other in-platform currencies.
+              Connect your Phantom wallet and send ARC tokens to use them
+              for shop purchases on the platform.
             </p>
           </div>
         </div>

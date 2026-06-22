@@ -1,7 +1,6 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
 
-@Global()
 @Module({
   providers: [TelegramService],
   exports: [TelegramService],

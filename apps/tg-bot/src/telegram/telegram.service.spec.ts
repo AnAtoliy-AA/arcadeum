@@ -31,22 +31,27 @@ describe('TelegramService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
 
     const grammyMock = jest.requireMock('grammy');
     mockSendMessage = grammyMock.__mockSendMessage;
 
-    const configGet = jest.fn((key: string) => {
-      const env: Record<string, string> = {
-        TELEGRAM_BOT_TOKEN: BOT_TOKEN,
-        TELEGRAM_CHAT_ID: CHAT_ID,
-        PUMPFUN_MINT_ADDRESS: MINT,
-      };
-      return env[key];
-    });
+    const env: Record<string, string> = {
+      TELEGRAM_BOT_TOKEN: BOT_TOKEN,
+      TELEGRAM_CHAT_ID: CHAT_ID,
+      PUMPFUN_MINT_ADDRESS: MINT,
+      TOKEN_TOTAL_SUPPLY: '1000000000',
+    };
+
+    const configGet = jest.fn((key: string) => env[key]);
 
     service = new TelegramService({
       get: configGet,
     } as unknown as ConfigService);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('onModuleInit', () => {
@@ -73,6 +78,26 @@ describe('TelegramService', () => {
 
     it('should initialize successfully with valid config', () => {
       expect(() => service.onModuleInit()).not.toThrow();
+    });
+
+    it('should default totalSupply to 1 billion when not configured', () => {
+      const configGet = jest.fn((key: string) => {
+        if (key === 'TELEGRAM_BOT_TOKEN') return BOT_TOKEN;
+        if (key === 'TELEGRAM_CHAT_ID') return CHAT_ID;
+        if (key === 'PUMPFUN_MINT_ADDRESS') return MINT;
+        return undefined;
+      });
+      const svc = new TelegramService({
+        get: configGet,
+      } as unknown as ConfigService);
+      expect(() => svc.onModuleInit()).not.toThrow();
+    });
+  });
+
+  describe('onModuleDestroy', () => {
+    it('should stop the bot and clear retry timer', async () => {
+      service.onModuleInit();
+      await service.onModuleDestroy();
     });
   });
 
@@ -147,18 +172,67 @@ describe('TelegramService', () => {
       expect(message).toContain('0.0001%');
     });
 
-    it('should log error if sendMessage fails', async () => {
+    it('should enqueue message if sendMessage fails', async () => {
       mockSendMessage.mockRejectedValueOnce(new Error('Telegram API error'));
 
-      await expect(
-        service.sendTransaction({
-          type: 'buy',
-          wallet: 'W1',
-          tokenAmount: 100,
-          solAmount: 0.01,
-          signature: 'err_sig',
+      await service.sendTransaction({
+        type: 'buy',
+        wallet: 'W1',
+        tokenAmount: 100,
+        solAmount: 0.01,
+        signature: 'err_sig',
+      });
+
+      expect(mockSendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should enqueue and retry failed messages', async () => {
+      mockSendMessage.mockRejectedValueOnce(
+        Object.assign(new Error('Telegram API error'), {
+          error_code: 500,
         }),
-      ).resolves.not.toThrow();
+      );
+
+      await service.sendTransaction({
+        type: 'buy',
+        wallet: 'W1',
+        tokenAmount: 100,
+        solAmount: 0.01,
+        signature: 'retry_sig',
+      });
+
+      expect(mockSendMessage).toHaveBeenCalledTimes(1);
+
+      await (
+        service as unknown as { flushRetryQueue: () => Promise<void> }
+      ).flushRetryQueue();
+
+      expect(mockSendMessage).toHaveBeenCalledTimes(2);
+    });
+
+    it('should parse retry-after from GrammyError', async () => {
+      const grammyError = Object.assign(
+        new Error('429: Too Many Requests: retry after 15'),
+        {
+          error_code: 429,
+          response: {
+            ok: false,
+            error_code: 429,
+            description: 'Too Many Requests: retry after 15',
+          },
+        },
+      );
+      mockSendMessage.mockRejectedValueOnce(grammyError);
+
+      await service.sendTransaction({
+        type: 'buy',
+        wallet: 'W1',
+        tokenAmount: 100,
+        solAmount: 0.01,
+        signature: 'rate_sig',
+      });
+
+      expect(mockSendMessage).toHaveBeenCalledTimes(1);
     });
   });
 });

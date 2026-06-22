@@ -11,7 +11,9 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { CatalogService } from './services/catalog.service';
 import { InventoryService } from './services/inventory.service';
 import { ShopService } from './services/shop.service';
+import { ShopWalletService } from './services/shop-wallet.service';
 import { PurchaseItemDto } from './dto/purchase-item.dto';
+import { PurchaseItemWithWalletDto } from './dto/purchase-item-wallet.dto';
 import { SellItemDto } from './dto/sell-item.dto';
 import { EquipItemDto } from './dto/equip-item.dto';
 import { UnequipItemDto } from './dto/unequip-item.dto';
@@ -34,6 +36,7 @@ export class ShopController {
     private readonly catalog: CatalogService,
     private readonly inventory: InventoryService,
     private readonly shop: ShopService,
+    private readonly shopWallet: ShopWalletService,
   ) {}
 
   // Public — bot-crawlable for SEO of featured cosmetics.
@@ -61,6 +64,21 @@ export class ShopController {
     @Body() dto: PurchaseItemDto,
   ) {
     return this.shop.purchase(req.user.userId, dto.itemId, dto.purchaseId);
+  }
+
+  @Post('purchase-with-wallet')
+  @UseGuards(JwtAuthGuard)
+  async purchaseWithWallet(
+    @Req() req: { user: AuthenticatedUser },
+    @Body() dto: PurchaseItemWithWalletDto,
+  ) {
+    return this.shopWallet.purchaseWithWallet(
+      req.user.userId,
+      dto.itemId,
+      dto.purchaseId,
+      dto.signature,
+      dto.senderAddress,
+    );
   }
 
   @Post('sell')

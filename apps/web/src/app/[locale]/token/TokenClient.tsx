@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import MarketCapSparkline from './MarketCapSparkline';
 import styles from './TokenClient.module.scss';
 
 interface TokenMetadata {
@@ -151,6 +152,8 @@ export default function TokenClient() {
           )}
         </div>
       </div>
+
+      <MarketCapSparkline />
 
       {(metadata?.marketCapUsd != null ||
         metadata?.totalSupply ||

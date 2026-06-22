@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.2] - 2026-06-22
+
+### Added
+- add token price chart with GeckoTerminal API and i18n (N/A)
+- redesign token page with premium UI/UX (N/A)
+- add wallet-based shop purchase endpoint (N/A)
+- add admin controls for shop currencies (N/A)
+- add ARC as shop currency and new wallet reasons (N/A)
+
+### Fixed
+- move connect wallet to spend section and add i18n translations (N/A)
+- replace gameplay rewards with wallet connection in token page (N/A)
+- update token page to show real ways to earn ARC (N/A)
+- type-assert res.body in solana controller spec (N/A)
+- mock @solana/web3.js in shop controller spec (N/A)
+- update tests for withdrawal removal and ARC shop support (N/A)
+- add arcadeum to admin shop override type (N/A)
+
+### Refactored
+- split chart into helpers, styles, and component files (N/A)
+- add utility token disclaimers to wallet and token pages (N/A)
+- add shop disclaimer and remove Jupiter exchange link (N/A)
+- update SEO descriptions to remove withdrawal references (N/A)
+- update i18n messages to remove withdrawal references (N/A)
+- remove withdrawal UI from wallet page (N/A)
+- remove withdrawal endpoint and transfer methods (N/A)
+
+
 ## [1.21.1] - 2026-06-21
 
 ### Added

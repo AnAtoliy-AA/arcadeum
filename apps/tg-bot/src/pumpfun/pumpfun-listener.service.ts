@@ -24,6 +24,8 @@ const SELL_DISCRIMINATOR = createHash('sha256')
   .digest()
   .subarray(0, 8);
 
+const BONDING_CURVE = 'BHYF1uFfwujrZyLrAQw3vZJQFQ6XEkRk4TNxHo8kTTXj';
+
 interface ParsedTransaction {
   type: 'buy' | 'sell';
   wallet: string;
@@ -135,10 +137,6 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
       this.logger.debug(`Skipped ${skipped} old/seen transaction(s)`);
     }
 
-    if (newSigs.length > 0) {
-      this.logger.log(`Found ${newSigs.length} new transaction(s)`);
-    }
-
     for (const sig of newSigs) {
       try {
         const tx = await this.retryRpc(() =>
@@ -240,6 +238,16 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
     if (!type) {
       const accounts = this.getAccountKeys(tx);
 
+      // Collect all token balance changes for our mint
+      interface TokenDelta {
+        owner: string;
+        walletIdx: number;
+        delta: number;
+        preAmount: number;
+        postAmount: number;
+      }
+      const deltas: TokenDelta[] = [];
+
       for (const post of postTokenBalances) {
         if (post.mint !== mintBase58 || !post.owner) continue;
 
@@ -249,24 +257,51 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
 
         const postAmount = Number(post.uiTokenAmount.amount);
         const preAmount = pre ? Number(pre.uiTokenAmount.amount) : 0;
+        const delta = postAmount - preAmount;
 
-        if (postAmount === preAmount) continue;
+        if (delta === 0) continue;
 
         const walletIdx = accounts.indexOf(post.owner);
-        if (walletIdx === -1) continue;
 
-        const solPre = tx.meta.preBalances[walletIdx] ?? 0;
-        const solPost = tx.meta.postBalances[walletIdx] ?? 0;
+        deltas.push({ owner: post.owner, walletIdx, delta, preAmount, postAmount });
+      }
 
-        if (postAmount > preAmount && solPre > solPost) {
-          type = 'buy';
-          typeSource = 'token-balance';
-          break;
+      if (deltas.length > 0) {
+        // Phase 1: try strict check (token + SOL at same wallet)
+        for (const d of deltas) {
+          if (d.walletIdx === -1) continue;
+
+          const solPre = tx.meta.preBalances[d.walletIdx] ?? 0;
+          const solPost = tx.meta.postBalances[d.walletIdx] ?? 0;
+
+          if (d.delta > 0 && solPre > solPost) {
+            type = 'buy';
+            typeSource = 'token-balance';
+            break;
+          }
+          if (d.delta < 0 && solPost > solPre) {
+            type = 'sell';
+            typeSource = 'token-balance';
+            break;
+          }
         }
-        if (preAmount > postAmount && solPost > solPre) {
-          type = 'sell';
-          typeSource = 'token-balance';
-          break;
+
+        // Phase 2: use token direction without SOL confirmation
+        if (!type) {
+          // Exclude bonding curve — it's always the counterparty, not the user
+          const userDeltas = deltas.filter(
+            (d) => d.owner !== BONDING_CURVE,
+          );
+
+          if (userDeltas.length >= 1) {
+            const d = userDeltas[0];
+            type = d.delta > 0 ? 'buy' : 'sell';
+            typeSource = 'token-balance';
+          } else if (deltas.length === 1) {
+            const d = deltas[0];
+            type = d.delta < 0 ? 'buy' : 'sell';
+            typeSource = 'token-balance';
+          }
         }
       }
 
@@ -274,16 +309,63 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
     }
 
     const wallet =
-      type === 'buy'
-        ? this.findWalletFromTokenBalance(tx, mintBase58, 'increase')
-        : this.findWalletFromTokenBalance(tx, mintBase58, 'decrease');
+      this.findWalletFromTokenBalance(tx, mintBase58, 'increase') ??
+      this.findWalletFromTokenBalance(tx, mintBase58, 'decrease');
 
-    if (!wallet) return null;
+    if (!wallet) {
+      // Fallback: find wallet from SOL balance changes (exclude bonding curve)
+      // Pick the account with the LARGEST SOL change (most likely the actual trade)
+      const accounts = this.getAccountKeys(tx);
+      const expectedSolDirection = type === 'buy' ? 'decrease' : 'increase';
+      let bestWallet: string | null = null;
+      let bestSolChange = 0;
 
-    const solAmount = this.extractSolAmount(tx, wallet);
-    const tokenAmount = this.extractTokenAmount(tx, wallet, mintBase58);
+      for (let i = 0; i < accounts.length; i++) {
+        if (accounts[i] === BONDING_CURVE) continue;
+        const solPre = tx.meta.preBalances[i] ?? 0;
+        const solPost = tx.meta.postBalances[i] ?? 0;
+
+        if (expectedSolDirection === 'decrease' && solPre > solPost) {
+          const change = solPre - solPost;
+          if (change > bestSolChange) {
+            bestSolChange = change;
+            bestWallet = accounts[i];
+          }
+        }
+        if (expectedSolDirection === 'increase' && solPost > solPre) {
+          const change = solPost - solPre;
+          if (change > bestSolChange) {
+            bestSolChange = change;
+            bestWallet = accounts[i];
+          }
+        }
+      }
+
+      if (bestWallet) {
+        return {
+          type,
+          wallet: bestWallet,
+          tokenAmount: Math.abs(this.extractTokenAmount(tx, bestWallet, mintBase58)),
+          solAmount: bestSolChange / LAMPORTS_PER_SOL,
+          signature,
+        };
+      }
+
+      return null;
+    }
+
+    let solAmount = this.extractSolAmount(tx, wallet);
+    let tokenAmount = this.extractTokenAmount(tx, wallet, mintBase58);
 
     if (solAmount === 0 && tokenAmount === 0) return null;
+
+    // For phase2-detected txns, SOL may go through wSOL — extract from bonding curve
+    if (Math.abs(solAmount) < 0.001 && tokenAmount !== 0) {
+      const curveSol = this.extractSolAmount(tx, BONDING_CURVE);
+      if (Math.abs(curveSol) > 0.001) {
+        solAmount = type === 'buy' ? -curveSol : curveSol;
+      }
+    }
 
     this.logger.log(
       `[${signature.slice(0, 8)}] ${type.toUpperCase()} via ${typeSource} | wallet: ${wallet.slice(0, 8)}... | tokens: ${tokenAmount.toFixed(2)} | sol: ${solAmount.toFixed(4)}`,
@@ -311,6 +393,7 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
     for (let i = 0; i < postTokenBalances.length; i++) {
       const post = postTokenBalances[i];
       if (post.mint !== mintBase58 || !post.owner) continue;
+      if (post.owner === BONDING_CURVE) continue;
 
       const pre = preTokenBalances.find(
         (p) => p.accountIndex === post.accountIndex && p.mint === mintBase58,

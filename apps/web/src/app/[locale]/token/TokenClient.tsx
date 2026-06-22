@@ -89,111 +89,43 @@ export default function TokenClient() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
-          <div className={styles.skeleton} />
-        </div>
+        <div className={styles.skeleton} />
       </div>
     );
   }
 
   return (
     <div className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.header}>
+      <div className={styles.hero}>
+        <div className={styles.heroBadge}>
+          <span className={styles.heroBadgeDot} />
+          Solana Token
+        </div>
+
+        <div className={styles.tokenIcon}>
+          <div className={styles.tokenIconRing} />
           {metadata?.image ? (
             <Image
               src={metadata.image}
               alt={displayName}
-              width={96}
-              height={96}
-              className={styles.tokenImage}
+              width={120}
+              height={120}
+              className={styles.tokenIconImg}
               unoptimized
             />
           ) : (
-            <div className={styles.icon}>A</div>
+            <div className={styles.tokenIconFallback}>A</div>
           )}
-          <div>
-            <h1 className={styles.name}>{displayName}</h1>
-            <span className={styles.ticker}>{displayTicker}</span>
-          </div>
         </div>
 
-        <p className={styles.description}>{displayDescription}</p>
+        <h1 className={styles.heroName}>{displayName}</h1>
+        <span className={styles.heroTicker}>{displayTicker}</span>
 
-        {(metadata?.marketCapUsd != null ||
-          metadata?.totalSupply ||
-          metadata?.createdAt) && (
-          <div className={styles.stats}>
-            {metadata?.marketCapUsd != null && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>
-                  Market Cap{' '}
-                  <button
-                    onClick={handleRefresh}
-                    disabled={refreshing}
-                    className={styles.refreshBtn}
-                    title="Refresh data"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={refreshing ? styles.spinning : undefined}
-                    >
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      <polyline points="21 3 21 9 15 9" />
-                    </svg>
-                  </button>
-                </span>
-                <span className={styles.statValue}>
-                  {formatNumber(metadata.marketCapUsd)}
-                </span>
-              </div>
-            )}
-            {metadata?.totalSupply && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total Supply</span>
-                <span className={styles.statValue}>
-                  {formatSupply(metadata.totalSupply)}
-                </span>
-              </div>
-            )}
-            {metadata?.createdAt && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Created</span>
-                <span className={styles.statValue}>
-                  {formatDate(metadata.createdAt)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        <p className={styles.heroDescription}>{displayDescription}</p>
 
-        {mintAddress && (
-          <div className={styles.mintRow}>
-            <span className={styles.mintLabel}>
-              {t('wallet.tokenInfo.mint')}:
-            </span>
-            <code className={styles.mintValue}>{mintAddress}</code>
-            <button
-              onClick={handleCopy}
-              className={copied ? styles.copyBtnCopied : styles.copyBtn}
-            >
-              {copied
-                ? t('wallet.tokenInfo.copied')
-                : t('wallet.tokenInfo.copy')}
-            </button>
-          </div>
-        )}
-
-        <div className={styles.actions}>
+        <div className={styles.heroActions}>
           <Link href="/wallet" className={styles.primaryBtn}>
-            View Wallet
+            🎮 View Wallet
           </Link>
           {metadata?.pumpfunUrl && (
             <a
@@ -216,8 +148,153 @@ export default function TokenClient() {
             </a>
           )}
         </div>
+      </div>
 
-        {(metadata?.twitter || metadata?.website) && (
+      {(metadata?.marketCapUsd != null ||
+        metadata?.totalSupply ||
+        metadata?.createdAt) && (
+        <div className={styles.stats}>
+          {metadata?.marketCapUsd != null && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📊</span>
+              <span className={styles.statLabel}>
+                Market Cap{' '}
+                <button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className={styles.refreshBtn}
+                  title="Refresh data"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={refreshing ? styles.spinning : undefined}
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    <polyline points="21 3 21 9 15 9" />
+                  </svg>
+                </button>
+              </span>
+              <span className={styles.statValue}>
+                {formatNumber(metadata.marketCapUsd)}
+              </span>
+            </div>
+          )}
+          {metadata?.totalSupply && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>🪙</span>
+              <span className={styles.statLabel}>Total Supply</span>
+              <span className={styles.statValue}>
+                {formatSupply(metadata.totalSupply)}
+              </span>
+            </div>
+          )}
+          {metadata?.createdAt && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📅</span>
+              <span className={styles.statLabel}>Created</span>
+              <span className={styles.statValue}>
+                {formatDate(metadata.createdAt)}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>How to Earn</h2>
+        <p className={styles.sectionSubtitle}>
+          Get ARC tokens by playing and competing on the platform
+        </p>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🏆</div>
+            <h3 className={styles.infoCardTitle}>Tournament Prizes</h3>
+            <p className={styles.infoCardDesc}>
+              Compete in skill-based tournaments and win ARC tokens as prizes
+              for top placements.
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🎮</div>
+            <h3 className={styles.infoCardTitle}>Game Wins</h3>
+            <p className={styles.infoCardDesc}>
+              Earn coins through gameplay that can be converted to other
+              in-platform currencies.
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🎁</div>
+            <h3 className={styles.infoCardTitle}>Daily Rewards</h3>
+            <p className={styles.infoCardDesc}>
+              Log in daily to claim rewards that increase with consecutive
+              days played.
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>👥</div>
+            <h3 className={styles.infoCardTitle}>Referrals</h3>
+            <p className={styles.infoCardDesc}>
+              Invite friends and earn bonus coins for each successful referral.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>How to Spend</h2>
+        <p className={styles.sectionSubtitle}>
+          Use your tokens to customize your profile and stand out
+        </p>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🎨</div>
+            <h3 className={styles.infoCardTitle}>Shop Items</h3>
+            <p className={styles.infoCardDesc}>
+              Purchase avatars, badges, name colors, and other cosmetics from
+              the shop.
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>✨</div>
+            <h3 className={styles.infoCardTitle}>Profile Customization</h3>
+            <p className={styles.infoCardDesc}>
+              Equip your purchased items to personalize your profile and
+              stand out in matches.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {mintAddress && (
+        <div className={styles.mintRow}>
+          <span className={styles.mintLabel}>
+            {t('wallet.tokenInfo.mint')}:
+          </span>
+          <code className={styles.mintValue}>{mintAddress}</code>
+          <button
+            onClick={handleCopy}
+            className={copied ? styles.copyBtnCopied : styles.copyBtn}
+          >
+            {copied
+              ? t('wallet.tokenInfo.copied')
+              : t('wallet.tokenInfo.copy')}
+          </button>
+        </div>
+      )}
+
+      {(metadata?.twitter || metadata?.website) && (
+        <div className={styles.socialSection}>
+          <h2 className={styles.sectionTitle}>Community</h2>
+          <p className={styles.sectionSubtitle}>
+            Join our community and stay updated
+          </p>
           <div className={styles.socialLinks}>
             {metadata?.twitter && (
               <a
@@ -236,12 +313,18 @@ export default function TokenClient() {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                Website ↗
+                🌐 Website ↗
               </a>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      <p className={styles.disclaimer}>
+        ARCADEUM tokens are utility assets for in-platform use only. They
+        have no inherent monetary value and are not investments. All
+        purchases are final.
+      </p>
     </div>
   );
 }

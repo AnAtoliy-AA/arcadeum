@@ -111,6 +111,19 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
             View on pump.fun ↗
           </a>
         )}
+
+        <p
+          style={{
+            fontSize: '11px',
+            color: '#52525b',
+            marginTop: '12px',
+            lineHeight: 1.5,
+            textAlign: 'center',
+          }}
+        >
+          ARCADEUM tokens are utility assets for in-platform use only. They
+          have no inherent monetary value and are not investments.
+        </p>
       </div>
     </div>
   );

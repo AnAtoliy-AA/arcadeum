@@ -215,16 +215,6 @@ export default function TokenClient() {
               Solscan ↗
             </a>
           )}
-          {mintAddress && (
-            <a
-              href={`https://jup.ag/swap/SOL-${mintAddress}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.secondaryBtn}
-            >
-              Buy on Jupiter ↗
-            </a>
-          )}
         </div>
 
         {(metadata?.twitter || metadata?.website) && (

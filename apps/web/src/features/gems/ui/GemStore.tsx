@@ -30,6 +30,17 @@ export async function GemStore() {
         >
           No packages available right now.
         </p>
+        <p
+          style={{
+            fontSize: '12px',
+            color: '#52525b',
+            marginTop: '8px',
+            lineHeight: 1.5,
+          }}
+        >
+          All purchases are final. Virtual goods have no real-world monetary
+          value and cannot be refunded, exchanged, or cashed out.
+        </p>
       </section>
     );
   }
@@ -62,6 +73,17 @@ export async function GemStore() {
           />
         ))}
       </div>
+      <p
+        style={{
+          fontSize: '12px',
+          color: '#52525b',
+          marginTop: '16px',
+          lineHeight: 1.5,
+        }}
+      >
+        All purchases are final. Virtual goods have no real-world monetary
+        value and cannot be refunded, exchanged, or cashed out.
+      </p>
     </section>
   );
 }

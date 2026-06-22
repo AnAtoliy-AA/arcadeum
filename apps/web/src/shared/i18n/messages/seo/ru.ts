@@ -75,7 +75,7 @@ export const ru: DeepPartial<SeoMessages> = {
   },
   token: {
     title: `Токен · ${APP}`,
-    description: `Узнайте о токене ${APP} на Solana: зарабатывайте в игре, покупайте в магазине или выводите на кошелёк Phantom.`,
+    description: `Узнайте о токене ${APP} на Solana: зарабатывайте в игре или призовые в турнирах, тратьте в магазине.`,
   },
   shop: {
     title: `Магазин · Косметика и бонусы · ${APP}`,

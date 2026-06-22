@@ -73,7 +73,7 @@ export const en = {
   },
   token: {
     title: `Token · ${APP}`,
-    description: `Learn about the ${APP} token on Solana — earn through gameplay, purchase in the shop, or withdraw to your Phantom wallet.`,
+    description: `Learn about the ${APP} token on Solana — earn through gameplay or tournament prizes, spend in the shop.`,
   },
   shop: {
     title: `Shop · Cosmetics & Boosts · ${APP}`,

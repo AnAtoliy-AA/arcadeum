@@ -30,7 +30,6 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { SolanaController } from './solana.controller';
 import { SolanaService } from './solana.service';
-import { WalletService } from '../wallet/wallet.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
@@ -47,14 +46,8 @@ describe('SolanaController', () => {
 
   const solanaService = {
     getPlatformBalance: jest.fn(),
-    transferArcadeum: jest.fn(),
-    getSolPrice: jest.fn(),
-    getArcadeumPrice: jest.fn(),
-  };
-
-  const walletService = {
-    getBalance: jest.fn(),
-    debit: jest.fn(),
+    verifyTransaction: jest.fn(),
+    getTokenMetadata: jest.fn(),
   };
 
   const adminUserId = 'admin-user-id';
@@ -62,10 +55,7 @@ describe('SolanaController', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [SolanaController],
-      providers: [
-        { provide: SolanaService, useValue: solanaService },
-        { provide: WalletService, useValue: walletService },
-      ],
+      providers: [{ provide: SolanaService, useValue: solanaService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({
@@ -105,11 +95,8 @@ describe('SolanaController', () => {
 
   beforeEach(() => {
     solanaService.getPlatformBalance.mockReset();
-    solanaService.transferArcadeum.mockReset();
-    solanaService.getSolPrice.mockReset();
-    solanaService.getArcadeumPrice.mockReset();
-    walletService.getBalance.mockReset();
-    walletService.debit.mockReset();
+    solanaService.verifyTransaction.mockReset();
+    solanaService.getTokenMetadata.mockReset();
   });
 
   describe('GET /solana/platform-balance', () => {
@@ -128,73 +115,53 @@ describe('SolanaController', () => {
     });
   });
 
-  describe('POST /solana/withdraw', () => {
-    it('debits wallet and calls transferArcadeum', async () => {
-      walletService.getBalance.mockResolvedValue({
-        coins: 0,
-        gems: 0,
-        arcadeum: 1000,
+  describe('GET /solana/token-metadata', () => {
+    it('returns token metadata', async () => {
+      solanaService.getTokenMetadata.mockResolvedValue({
+        name: 'Arcadeum Games',
+        symbol: 'ARC',
       });
-      walletService.debit.mockResolvedValue({});
-      solanaService.transferArcadeum.mockResolvedValue('sig-123');
 
       const res = await request(server())
-        .post('/solana/withdraw')
-        .send({
-          walletAddress: 'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
-          amount: 100,
-        })
-        .expect(201);
+        .get('/solana/token-metadata')
+        .expect(200);
 
-      const body = res.body as Record<string, unknown>;
-      expect(body.success).toBe(true);
-      expect(body.signature).toBe('sig-123');
-      expect(body.amount).toBe(100);
-      expect(body.fee).toBe(2);
-      expect(walletService.debit).toHaveBeenCalledTimes(2);
-      expect(solanaService.transferArcadeum).toHaveBeenCalledWith(
-        'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
-        100,
-      );
-    });
-
-    it('throws on insufficient balance', async () => {
-      walletService.getBalance.mockResolvedValue({
-        coins: 0,
-        gems: 0,
-        arcadeum: 50,
-      });
-
-      await request(server())
-        .post('/solana/withdraw')
-        .send({
-          walletAddress: 'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
-          amount: 100,
-        })
-        .expect(500);
-
-      expect(walletService.debit).not.toHaveBeenCalled();
-      expect(solanaService.transferArcadeum).not.toHaveBeenCalled();
+      const body = res.body as { name: string };
+      expect(body.name).toBe('Arcadeum Games');
     });
   });
 
-  describe('POST /solana/buyback', () => {
-    it('returns estimated ARCADEUM amount based on SOL price', async () => {
-      solanaService.getSolPrice.mockResolvedValue(150);
-      solanaService.getArcadeumPrice.mockResolvedValue(0.01);
+  describe('POST /solana/verify-transaction', () => {
+    it('returns valid when transaction is verified', async () => {
+      solanaService.verifyTransaction.mockResolvedValue(true);
 
       const res = await request(server())
-        .post('/solana/buyback')
-        .send({ solAmount: 1 })
+        .post('/solana/verify-transaction')
+        .send({
+          signature: 'test-sig',
+          amount: 100,
+          senderAddress: 'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
+        })
         .expect(201);
 
-      const body = res.body as Record<string, unknown>;
-      expect(body.success).toBe(true);
-      expect(body.solAmount).toBe(1);
-      expect(body.solPriceUsd).toBe(150);
-      expect(body.arcadeumPriceUsd).toBe(0.01);
-      expect(body.estimatedArcadeum).toBe(15000);
-      expect(body.message).toContain('DEX integration');
+      const body = res.body as { valid: boolean };
+      expect(body.valid).toBe(true);
+    });
+
+    it('returns invalid when transaction fails verification', async () => {
+      solanaService.verifyTransaction.mockResolvedValue(false);
+
+      const res = await request(server())
+        .post('/solana/verify-transaction')
+        .send({
+          signature: 'bad-sig',
+          amount: 100,
+          senderAddress: 'HN7cHqfpFJzHUgMpX1QcSxKxJzVsUPqJyzA9BMjouQ8c',
+        })
+        .expect(201);
+
+      const body = res.body as { valid: boolean };
+      expect(body.valid).toBe(false);
     });
   });
 });

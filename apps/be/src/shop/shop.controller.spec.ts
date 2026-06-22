@@ -1,3 +1,25 @@
+jest.mock('@solana/web3.js', () => ({
+  Connection: jest.fn().mockImplementation(() => ({})),
+  PublicKey: jest.fn().mockImplementation((key: string) => ({
+    toBase58: () => key,
+    equals: (other: { toBase58: () => string }) => other?.toBase58?.() === key,
+  })),
+  Keypair: { generate: jest.fn() },
+  Transaction: jest.fn(),
+  SystemProgram: { transfer: jest.fn() },
+  LAMPORTS_PER_SOL: 1_000_000_000,
+}));
+
+jest.mock('@solana/spl-token', () => ({
+  createTransferInstruction: jest.fn(),
+  getAssociatedTokenAddress: jest.fn(),
+  getAccount: jest.fn(),
+}));
+
+jest.mock('../solana/lib/solana-keypair', () => ({
+  getPlatformKeypair: jest.fn(),
+}));
+
 import {
   ExecutionContext,
   INestApplication,
@@ -10,6 +32,7 @@ import { ShopController } from './shop.controller';
 import { CatalogService } from './services/catalog.service';
 import { InventoryService } from './services/inventory.service';
 import { ShopService } from './services/shop.service';
+import { ShopWalletService } from './services/shop-wallet.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
@@ -36,6 +59,10 @@ describe('ShopController (integration)', () => {
     sellBack: jest.fn(),
   };
 
+  const shopWallet = {
+    purchaseWithWallet: jest.fn(),
+  };
+
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [ShopController],
@@ -43,6 +70,7 @@ describe('ShopController (integration)', () => {
         { provide: CatalogService, useValue: catalog },
         { provide: InventoryService, useValue: inventory },
         { provide: ShopService, useValue: shop },
+        { provide: ShopWalletService, useValue: shopWallet },
       ],
     })
       .overrideGuard(JwtAuthGuard)

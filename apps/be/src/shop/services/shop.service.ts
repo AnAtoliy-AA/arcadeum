@@ -43,7 +43,6 @@ interface LeanUser {
   equippedGameSkinId?: string | null;
   equippedBackgroundId?: string | null;
 }
-
 interface InventoryRowSnapshot {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
@@ -130,11 +129,15 @@ export class ShopService {
 
     await this.connection.transaction(async (session) => {
       // 1. Wallet debit (parentSession).
+      const reason =
+        effective.priceCurrency === 'arcadeum'
+          ? 'shop_purchase_arc'
+          : 'shop_purchase';
       await this.wallet.debit(
         userId,
         effective.priceCurrency,
         effective.priceAmount,
-        'shop_purchase',
+        reason,
         `shop-buy-${purchaseId}`,
         { itemId: effective.id },
         session,
@@ -378,7 +381,7 @@ export class ShopService {
     patch: {
       available?: boolean | null;
       priceAmount?: number | null;
-      priceCurrency?: 'coins' | 'gems' | null;
+      priceCurrency?: 'coins' | 'gems' | 'arcadeum' | null;
     },
     adminUserId: string,
   ): Promise<{ override: import('../lib/shop-types').EffectiveShopItem }> {

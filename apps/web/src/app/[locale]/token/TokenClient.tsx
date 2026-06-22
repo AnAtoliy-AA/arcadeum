@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import MarketCapSparkline from './MarketCapSparkline';
 import styles from './TokenClient.module.scss';
 
 interface TokenMetadata {
@@ -84,116 +85,50 @@ export default function TokenClient() {
   const displayTicker = metadata?.symbol ?? 'ARC';
   const displayDescription =
     metadata?.description ||
-    'Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.';
+    t('wallet.tokenInfo.description')
+      .replace('{{name}}', displayName)
+      .replace('{{ticker}}', displayTicker);
 
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
-          <div className={styles.skeleton} />
-        </div>
+        <div className={styles.skeleton} />
       </div>
     );
   }
 
   return (
     <div className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.header}>
+      <div className={styles.hero}>
+        <div className={styles.heroBadge}>
+          <span className={styles.heroBadgeDot} />
+          {t('wallet.tokenPage.heroBadge')}
+        </div>
+
+        <div className={styles.tokenIcon}>
+          <div className={styles.tokenIconRing} />
           {metadata?.image ? (
             <Image
               src={metadata.image}
               alt={displayName}
-              width={96}
-              height={96}
-              className={styles.tokenImage}
+              width={120}
+              height={120}
+              className={styles.tokenIconImg}
               unoptimized
             />
           ) : (
-            <div className={styles.icon}>A</div>
+            <div className={styles.tokenIconFallback}>A</div>
           )}
-          <div>
-            <h1 className={styles.name}>{displayName}</h1>
-            <span className={styles.ticker}>{displayTicker}</span>
-          </div>
         </div>
 
-        <p className={styles.description}>{displayDescription}</p>
+        <h1 className={styles.heroName}>{displayName}</h1>
+        <span className={styles.heroTicker}>{displayTicker}</span>
 
-        {(metadata?.marketCapUsd != null ||
-          metadata?.totalSupply ||
-          metadata?.createdAt) && (
-          <div className={styles.stats}>
-            {metadata?.marketCapUsd != null && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>
-                  Market Cap{' '}
-                  <button
-                    onClick={handleRefresh}
-                    disabled={refreshing}
-                    className={styles.refreshBtn}
-                    title="Refresh data"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={refreshing ? styles.spinning : undefined}
-                    >
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      <polyline points="21 3 21 9 15 9" />
-                    </svg>
-                  </button>
-                </span>
-                <span className={styles.statValue}>
-                  {formatNumber(metadata.marketCapUsd)}
-                </span>
-              </div>
-            )}
-            {metadata?.totalSupply && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total Supply</span>
-                <span className={styles.statValue}>
-                  {formatSupply(metadata.totalSupply)}
-                </span>
-              </div>
-            )}
-            {metadata?.createdAt && (
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Created</span>
-                <span className={styles.statValue}>
-                  {formatDate(metadata.createdAt)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        <p className={styles.heroDescription}>{displayDescription}</p>
 
-        {mintAddress && (
-          <div className={styles.mintRow}>
-            <span className={styles.mintLabel}>
-              {t('wallet.tokenInfo.mint')}:
-            </span>
-            <code className={styles.mintValue}>{mintAddress}</code>
-            <button
-              onClick={handleCopy}
-              className={copied ? styles.copyBtnCopied : styles.copyBtn}
-            >
-              {copied
-                ? t('wallet.tokenInfo.copied')
-                : t('wallet.tokenInfo.copy')}
-            </button>
-          </div>
-        )}
-
-        <div className={styles.actions}>
+        <div className={styles.heroActions}>
           <Link href="/wallet" className={styles.primaryBtn}>
-            View Wallet
+            🎮 {t('wallet.tokenPage.viewWallet')}
           </Link>
           {metadata?.pumpfunUrl && (
             <a
@@ -215,19 +150,155 @@ export default function TokenClient() {
               Solscan ↗
             </a>
           )}
-          {mintAddress && (
-            <a
-              href={`https://jup.ag/swap/SOL-${mintAddress}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.secondaryBtn}
-            >
-              Buy on Jupiter ↗
-            </a>
+        </div>
+      </div>
+
+      <MarketCapSparkline />
+
+      {(metadata?.marketCapUsd != null ||
+        metadata?.totalSupply ||
+        metadata?.createdAt) && (
+        <div className={styles.stats}>
+          {metadata?.marketCapUsd != null && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📊</span>
+              <span className={styles.statLabel}>
+                {t('wallet.tokenPage.marketCap')}{' '}
+                <button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className={styles.refreshBtn}
+                  title="Refresh data"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={refreshing ? styles.spinning : undefined}
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    <polyline points="21 3 21 9 15 9" />
+                  </svg>
+                </button>
+              </span>
+              <span className={styles.statValue}>
+                {formatNumber(metadata.marketCapUsd)}
+              </span>
+            </div>
+          )}
+          {metadata?.totalSupply && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>🪙</span>
+              <span className={styles.statLabel}>
+                {t('wallet.tokenPage.totalSupply')}
+              </span>
+              <span className={styles.statValue}>
+                {formatSupply(metadata.totalSupply)}
+              </span>
+            </div>
+          )}
+          {metadata?.createdAt && (
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📅</span>
+              <span className={styles.statLabel}>
+                {t('wallet.tokenPage.created')}
+              </span>
+              <span className={styles.statValue}>
+                {formatDate(metadata.createdAt)}
+              </span>
+            </div>
           )}
         </div>
+      )}
 
-        {(metadata?.twitter || metadata?.website) && (
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          {t('wallet.tokenPage.howToEarn.title')}
+        </h2>
+        <p className={styles.sectionSubtitle}>
+          {t('wallet.tokenPage.howToEarn.subtitle')}
+        </p>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🏆</div>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToEarn.tournamentPrizes.title')}
+            </h3>
+            <p className={styles.infoCardDesc}>
+              {t('wallet.tokenPage.howToEarn.tournamentPrizes.description')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          {t('wallet.tokenPage.howToSpend.title')}
+        </h2>
+        <p className={styles.sectionSubtitle}>
+          {t('wallet.tokenPage.howToSpend.subtitle')}
+        </p>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🎨</div>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.shopItems.title')}
+            </h3>
+            <p className={styles.infoCardDesc}>
+              {t('wallet.tokenPage.howToSpend.shopItems.description')}
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>✨</div>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.profileCustomization.title')}
+            </h3>
+            <p className={styles.infoCardDesc}>
+              {t('wallet.tokenPage.howToSpend.profileCustomization.description')}
+            </p>
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.infoCardIcon}>🛍️</div>
+            <h3 className={styles.infoCardTitle}>
+              {t('wallet.tokenPage.howToSpend.connectWallet.title')}
+            </h3>
+            <p className={styles.infoCardDesc}>
+              {t('wallet.tokenPage.howToSpend.connectWallet.description')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {mintAddress && (
+        <div className={styles.mintRow}>
+          <span className={styles.mintLabel}>
+            {t('wallet.tokenInfo.mint')}:
+          </span>
+          <code className={styles.mintValue}>{mintAddress}</code>
+          <button
+            onClick={handleCopy}
+            className={copied ? styles.copyBtnCopied : styles.copyBtn}
+          >
+            {copied
+              ? t('wallet.tokenInfo.copied')
+              : t('wallet.tokenInfo.copy')}
+          </button>
+        </div>
+      )}
+
+      {(metadata?.twitter || metadata?.website) && (
+        <div className={styles.socialSection}>
+          <h2 className={styles.sectionTitle}>
+            {t('wallet.tokenPage.community.title')}
+          </h2>
+          <p className={styles.sectionSubtitle}>
+            {t('wallet.tokenPage.community.subtitle')}
+          </p>
           <div className={styles.socialLinks}>
             {metadata?.twitter && (
               <a
@@ -246,12 +317,16 @@ export default function TokenClient() {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                Website ↗
+                🌐 Website ↗
               </a>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      <p className={styles.disclaimer}>
+        {t('wallet.tokenPage.disclaimer')}
+      </p>
     </div>
   );
 }

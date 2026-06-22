@@ -119,6 +119,19 @@ export function WalletBalanceSummary({
           </div>
         </div>
       </div>
+
+      <p
+        style={{
+          fontSize: '11px',
+          color: '#52525b',
+          marginTop: '16px',
+          lineHeight: 1.5,
+        }}
+      >
+        All balances are in-platform virtual currency with no real-world
+        monetary value. They cannot be exchanged for cash or transferred
+        outside the platform.
+      </p>
     </section>
   );
 }

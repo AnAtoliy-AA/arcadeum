@@ -73,7 +73,7 @@ export const fr = {
   tokenTitle: 'Notre Token',
   tokenSubtitle: "Alimentant l'écosystème Arcadeum sur Solana",
   tokenDescription:
-    'Gagnez des tokens en jouant, achetez-les en boutique ou retirez-les vers votre portefeuille Phantom sur Solana.',
+    'Gagnez des tokens en jouant ou en prix de tournois. Dépensez-les en boutique.',
   stepCreateTitle: 'Créez ou Rejoignez un Salon',
   stepCreateDescription:
     "Démarrez un nouveau salon de jeu ou entrez un code d'invitation pour rejoindre une session existante.",

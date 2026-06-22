@@ -4,6 +4,28 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model, Types } from 'mongoose';
 
+jest.mock('@solana/web3.js', () => ({
+  Connection: jest.fn().mockImplementation(() => ({})),
+  PublicKey: jest.fn().mockImplementation((key: string) => ({
+    toBase58: () => key,
+    equals: (other: { toBase58: () => string }) => other?.toBase58?.() === key,
+  })),
+  Keypair: { generate: jest.fn() },
+  Transaction: jest.fn(),
+  SystemProgram: { transfer: jest.fn() },
+  LAMPORTS_PER_SOL: 1_000_000_000,
+}));
+
+jest.mock('@solana/spl-token', () => ({
+  createTransferInstruction: jest.fn(),
+  getAssociatedTokenAddress: jest.fn(),
+  getAccount: jest.fn(),
+}));
+
+jest.mock('../solana/lib/solana-keypair', () => ({
+  getPlatformKeypair: jest.fn(),
+}));
+
 import { BattlePassService } from './battle-pass.service';
 import {
   BattlePassProgress,

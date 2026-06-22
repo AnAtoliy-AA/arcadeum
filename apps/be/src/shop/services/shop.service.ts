@@ -381,7 +381,7 @@ export class ShopService {
     patch: {
       available?: boolean | null;
       priceAmount?: number | null;
-      priceCurrency?: 'coins' | 'gems' | null;
+      priceCurrency?: 'coins' | 'gems' | 'arcadeum' | null;
     },
     adminUserId: string,
   ): Promise<{ override: import('../lib/shop-types').EffectiveShopItem }> {

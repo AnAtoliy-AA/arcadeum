@@ -210,38 +210,23 @@ export default function TokenClient() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>How to Earn</h2>
         <p className={styles.sectionSubtitle}>
-          Get ARC tokens by playing and competing on the platform
+          Get ARC tokens through the platform
         </p>
         <div className={styles.infoGrid}>
           <div className={styles.infoCard}>
             <div className={styles.infoCardIcon}>🏆</div>
             <h3 className={styles.infoCardTitle}>Tournament Prizes</h3>
             <p className={styles.infoCardDesc}>
-              Compete in skill-based tournaments and win ARC tokens as prizes
-              for top placements.
+              Win ARC tokens as prizes in skill-based tournaments. Top
+              performers earn tokens for their achievements.
             </p>
           </div>
           <div className={styles.infoCard}>
             <div className={styles.infoCardIcon}>🎮</div>
-            <h3 className={styles.infoCardTitle}>Game Wins</h3>
+            <h3 className={styles.infoCardTitle}>Gameplay Rewards</h3>
             <p className={styles.infoCardDesc}>
-              Earn coins through gameplay that can be converted to other
-              in-platform currencies.
-            </p>
-          </div>
-          <div className={styles.infoCard}>
-            <div className={styles.infoCardIcon}>🎁</div>
-            <h3 className={styles.infoCardTitle}>Daily Rewards</h3>
-            <p className={styles.infoCardDesc}>
-              Log in daily to claim rewards that increase with consecutive
-              days played.
-            </p>
-          </div>
-          <div className={styles.infoCard}>
-            <div className={styles.infoCardIcon}>👥</div>
-            <h3 className={styles.infoCardTitle}>Referrals</h3>
-            <p className={styles.infoCardDesc}>
-              Invite friends and earn bonus coins for each successful referral.
+              Earn coins through gameplay, daily rewards, and referrals.
+              Convert coins to other in-platform currencies.
             </p>
           </div>
         </div>

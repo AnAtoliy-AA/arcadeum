@@ -4,7 +4,7 @@ export const esMessages = {
     description:
       'Empareja por color o número, encadena cartas Roba-Dos y Comodín +4 para inundar al siguiente jugador, y vacía tu mano primero para ganar.',
     summary:
-      'Un juego de cartas de descarte de la familia Ochos Locos — cuatro temas seleccionables, 2–10 jugadores, penalizaciones encadenables.',
+      'Un juego de cartas de descarte de la familia Ochos Locos — ocho temas seleccionables, 2–10 jugadores, penalizaciones encadenables.',
     variants: {
       cosmic: {
         name: 'Cósmico',
@@ -24,6 +24,24 @@ export const esMessages = {
         name: 'Elemental',
         description: 'Fuego, Piedra, Hoja y Marea — paleta natural y limpia.',
       },
+      classic: {
+        name: 'Clásico',
+        description:
+          'Colores tradicionales de juego de cartas — limpio y atemporal.',
+      },
+      neon: {
+        name: 'Neón',
+        description: 'Paleta de neón brillante sobre fondo púrpura profundo.',
+      },
+      tropical: {
+        name: 'Tropical',
+        description:
+          'Hibisco, Palma, Océano — vibraciones de playa y colores cálidos.',
+      },
+      steampunk: {
+        name: 'Steampunk',
+        description: 'Latón, Caldera, Verdín — estética mecánica victoriana.',
+      },
     },
     landing: {
       meta: {
@@ -36,7 +54,7 @@ export const esMessages = {
       hero: {
         title: 'Cascade — el juego de cartas de encadenado, reinventado',
         subtitle:
-          'Combina color o número. Encadena penalizaciones. Elige entre cuatro temas visuales. 2–10 jugadores.',
+          'Combina color o número. Encadena penalizaciones. Elige entre ocho temas visuales. 2–10 jugadores.',
         createRoom: 'Crear sala',
         browseRooms: 'Buscar salas',
       },
@@ -46,8 +64,8 @@ export const esMessages = {
           body: 'Todos contra todos; los bots llenan los asientos vacíos para empezar al instante.',
         },
         themes: {
-          title: '4 temas visuales',
-          body: 'Cósmico, Arcano, Cyberpunk, Elemental — las reglas no cambian, el aspecto sí.',
+          title: '8 temas visuales',
+          body: 'Cósmico, Arcano, Cyberpunk, Elemental, Clásico, Neón, Tropical, Steampunk — las reglas no cambian, el aspecto sí.',
         },
         stacking: {
           title: 'Penalizaciones encadenables',
@@ -71,7 +89,7 @@ export const esMessages = {
       themes: {
         title: 'Elige tu estilo',
         subtitle:
-          'Mismas reglas, cuatro paletas de color e iconos de acción distintos.',
+          'Mismas reglas, ocho paletas de color e iconos de acción distintos.',
       },
       faq: {
         differences: {
@@ -145,6 +163,34 @@ export const esMessages = {
         DRAW_TWO: 'Temblor',
         WILD: 'Tormenta',
         WILD_DRAW_FOUR: 'Tempestad',
+      },
+      classic: {
+        SKIP: 'Saltar',
+        REVERSE: 'Reversa',
+        DRAW_TWO: 'Roba Dos',
+        WILD: 'Comodín',
+        WILD_DRAW_FOUR: 'Comodín +4',
+      },
+      neon: {
+        SKIP: 'Apagón',
+        REVERSE: 'Reconectar',
+        DRAW_TWO: 'Sobrecarga',
+        WILD: 'Prisma',
+        WILD_DRAW_FOUR: 'Sobrecarga Total',
+      },
+      tropical: {
+        SKIP: 'Marea',
+        REVERSE: 'Viento Comercial',
+        DRAW_TWO: 'Monzón',
+        WILD: 'Coral',
+        WILD_DRAW_FOUR: 'Huracán',
+      },
+      steampunk: {
+        SKIP: 'Engranaje',
+        REVERSE: 'Pistón',
+        DRAW_TWO: 'Ruptura de Vapor',
+        WILD: 'Éter',
+        WILD_DRAW_FOUR: 'Explosión de Caldera',
       },
     },
     board: {

@@ -4,7 +4,7 @@ export const enMessages = {
     description:
       'Match by color or number, chain Draw-Two and Draw-Four cards to flood the next player, and empty your hand first to win.',
     summary:
-      'A shedding card game in the Crazy Eights family — four selectable themes, 2–10 players, full stacking penalties.',
+      'A shedding card game in the Crazy Eights family — eight selectable themes, 2–10 players, full stacking penalties.',
     variants: {
       cosmic: {
         name: 'Cosmic',
@@ -22,6 +22,23 @@ export const enMessages = {
         name: 'Elemental',
         description: 'Fire, Stone, Leaf, and Tide — clean nature palette.',
       },
+      classic: {
+        name: 'Classic',
+        description: 'Traditional card game colors — clean and timeless.',
+      },
+      neon: {
+        name: 'Neon',
+        description: 'Glowing neon palette on deep purple void.',
+      },
+      tropical: {
+        name: 'Tropical',
+        description: 'Hibiscus, Palm, Ocean — beach vibes and warm colors.',
+      },
+      steampunk: {
+        name: 'Steampunk',
+        description:
+          'Brass, Boiler, Verdigris — Victorian mechanical aesthetic.',
+      },
     },
     landing: {
       meta: {
@@ -34,7 +51,7 @@ export const enMessages = {
       hero: {
         title: 'Cascade — the stacking card game, reimagined',
         subtitle:
-          'Match color or number. Chain penalties. Pick from four distinct visual themes. 2–10 players.',
+          'Match color or number. Chain penalties. Pick from eight distinct visual themes. 2–10 players.',
         createRoom: 'Create a room',
         browseRooms: 'Browse rooms',
       },
@@ -44,8 +61,8 @@ export const enMessages = {
           body: 'Free-for-all rounds; bots fill empty seats so you can start instantly.',
         },
         themes: {
-          title: '4 visual themes',
-          body: 'Cosmic, Arcane, Cyberpunk, Elemental — the rules stay, the look changes.',
+          title: '8 visual themes',
+          body: 'Cosmic, Arcane, Cyberpunk, Elemental, Classic, Neon, Tropical, Steampunk — the rules stay, the look changes.',
         },
         stacking: {
           title: 'Stacking penalties',
@@ -68,7 +85,7 @@ export const enMessages = {
       },
       themes: {
         title: 'Pick a vibe',
-        subtitle: 'Same rules, four distinct color palettes and action icons.',
+        subtitle: 'Same rules, eight distinct color palettes and action icons.',
       },
       faq: {
         differences: {
@@ -141,6 +158,34 @@ export const enMessages = {
         DRAW_TWO: 'Quake',
         WILD: 'Storm',
         WILD_DRAW_FOUR: 'Tempest',
+      },
+      classic: {
+        SKIP: 'Skip',
+        REVERSE: 'Reverse',
+        DRAW_TWO: 'Draw Two',
+        WILD: 'Wild',
+        WILD_DRAW_FOUR: 'Draw Four',
+      },
+      neon: {
+        SKIP: 'Blackout',
+        REVERSE: 'Rewire',
+        DRAW_TWO: 'Surge',
+        WILD: 'Prism',
+        WILD_DRAW_FOUR: 'Overload',
+      },
+      tropical: {
+        SKIP: 'Tide Pull',
+        REVERSE: 'Trade Wind',
+        DRAW_TWO: 'Monsoon',
+        WILD: 'Coral',
+        WILD_DRAW_FOUR: 'Hurricane',
+      },
+      steampunk: {
+        SKIP: 'Gear Lock',
+        REVERSE: 'Piston',
+        DRAW_TWO: 'Steam Burst',
+        WILD: 'Aether',
+        WILD_DRAW_FOUR: 'Boiler Explosion',
       },
     },
     board: {

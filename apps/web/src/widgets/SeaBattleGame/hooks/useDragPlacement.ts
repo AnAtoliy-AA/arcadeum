@@ -96,6 +96,28 @@ function boardWithout(
   return next;
 }
 
+function findCellFromPoint(
+  x: number,
+  y: number,
+): { row: number; col: number } | null {
+  const el = document.elementFromPoint(x, y) as HTMLElement | null;
+  if (!el) return null;
+  let current: HTMLElement | null = el;
+  while (current && current !== document.body) {
+    const r = current.dataset?.row;
+    const c = current.dataset?.col;
+    if (r !== undefined && c !== undefined) {
+      const row = parseInt(r, 10);
+      const col = parseInt(c, 10);
+      if (!isNaN(row) && !isNaN(col)) return { row, col };
+    }
+    current = current.parentElement;
+  }
+  return null;
+}
+
+const TOUCH_DRAG_THRESHOLD = 10;
+
 export function useDragPlacement({
   board,
   isVertical,
@@ -114,6 +136,30 @@ export function useDragPlacement({
   const dragMode = useRef<DragMode>(null);
   const draggingShipId = useRef<string | null>(null);
   const boardDragOrigin = useRef<BoardDragOrigin | null>(null);
+
+  const touchRef = useRef<{
+    active: boolean;
+    started: boolean;
+    startX: number;
+    startY: number;
+    shipId: string | null;
+    origin: BoardDragOrigin | null;
+  }>({
+    active: false,
+    started: false,
+    startX: 0,
+    startY: 0,
+    shipId: null,
+    origin: null,
+  });
+  const touchDragJustEnded = useRef(false);
+  const boardRef = useRef(board);
+  const onMoveShipRef = useRef(onMoveShip);
+
+  useEffect(() => {
+    boardRef.current = board;
+    onMoveShipRef.current = onMoveShip;
+  });
 
   useEffect(() => {
     isTouchDevice.current = window.matchMedia('(pointer: coarse)').matches;
@@ -281,6 +327,148 @@ export function useDragPlacement({
     clearDragState();
   }, [clearDragState]);
 
+  const onTouchBoardPointerDown = useCallback(
+    (row: number, col: number, e: React.PointerEvent) => {
+      if (!isTouchDevice.current || placementComplete) return;
+
+      const ship = ships.find((s) =>
+        s.cells.some((c) => c.row === row && c.col === col),
+      );
+      if (!ship) return;
+
+      const orientation = getOrientation(ship.cells);
+      const anchorOffset = ship.cells.findIndex(
+        (c) => c.row === row && c.col === col,
+      );
+
+      touchRef.current = {
+        active: true,
+        started: false,
+        startX: e.clientX,
+        startY: e.clientY,
+        shipId: ship.id,
+        origin: {
+          shipId: ship.id,
+          originalCells: ship.cells,
+          orientation,
+          anchorOffset: anchorOffset >= 0 ? anchorOffset : 0,
+        },
+      };
+
+      const onMove = (me: PointerEvent) => {
+        const t = touchRef.current;
+        if (!t.active || !t.origin) return;
+
+        if (!t.started) {
+          const dx = me.clientX - t.startX;
+          const dy = me.clientY - t.startY;
+          if (
+            Math.abs(dx) < TOUCH_DRAG_THRESHOLD &&
+            Math.abs(dy) < TOUCH_DRAG_THRESHOLD
+          )
+            return;
+
+          t.started = true;
+          draggingShipId.current = t.shipId;
+          dragMode.current = 'board';
+          boardDragOrigin.current = t.origin;
+          setDraggingCells(t.origin.originalCells);
+          setIsDragging(true);
+          setSelectedShipId(null);
+        }
+
+        const cell = findCellFromPoint(me.clientX, me.clientY);
+        if (cell && t.origin) {
+          const shipDef = SHIPS.find((s) => s.id === t.shipId);
+          if (!shipDef) return;
+          const vertical = t.origin.orientation === 'v';
+          const startRow = vertical
+            ? cell.row - t.origin.anchorOffset
+            : cell.row;
+          const startCol = vertical
+            ? cell.col
+            : cell.col - t.origin.anchorOffset;
+          const cells = getCells(startRow, startCol, shipDef.size, vertical);
+          const virtualBoard = boardWithout(
+            boardRef.current,
+            t.origin.originalCells,
+          );
+          if (cells && canPlace(cells, virtualBoard)) {
+            setHoveredCells(cells);
+            setIsInvalidHover?.(false);
+          } else {
+            setHoveredCells([]);
+            setIsInvalidHover?.(true);
+          }
+        }
+      };
+
+      const onUp = (ue: PointerEvent) => {
+        const t = touchRef.current;
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+
+        if (t.started && t.shipId && t.origin) {
+          const cell = findCellFromPoint(ue.clientX, ue.clientY);
+          if (cell) {
+            const shipDef = SHIPS.find((s) => s.id === t.shipId);
+            if (shipDef) {
+              const vertical = t.origin.orientation === 'v';
+              const startRow = vertical
+                ? cell.row - t.origin.anchorOffset
+                : cell.row;
+              const startCol = vertical
+                ? cell.col
+                : cell.col - t.origin.anchorOffset;
+              const cells = getCells(
+                startRow,
+                startCol,
+                shipDef.size,
+                vertical,
+              );
+              const virtualBoard = boardWithout(
+                boardRef.current,
+                t.origin.originalCells,
+              );
+              if (
+                cells &&
+                canPlace(cells, virtualBoard) &&
+                !cellsEqual(cells, t.origin.originalCells)
+              ) {
+                onMoveShipRef.current(t.shipId, cells);
+              }
+            }
+          }
+          clearDragState();
+          touchDragJustEnded.current = true;
+          setTimeout(() => {
+            touchDragJustEnded.current = false;
+          }, 300);
+        }
+
+        touchRef.current = {
+          active: false,
+          started: false,
+          startX: 0,
+          startY: 0,
+          shipId: null,
+          origin: null,
+        };
+      };
+
+      document.addEventListener('pointermove', onMove, { passive: false });
+      document.addEventListener('pointerup', onUp);
+    },
+    [
+      ships,
+      placementComplete,
+      setSelectedShipId,
+      setHoveredCells,
+      setIsInvalidHover,
+      clearDragState,
+    ],
+  );
+
   return {
     getDragProps,
     getBoardCellDragProps,
@@ -290,5 +478,10 @@ export function useDragPlacement({
     handleDragEnd,
     isDragging,
     draggingCells,
+    onTouchBoardPointerDown,
+    touchDragJustEnded,
+    resetTouchDragJustEnded: useCallback(() => {
+      touchDragJustEnded.current = false;
+    }, []),
   };
 }

@@ -52,6 +52,45 @@ export const CASCADE_VARIANTS: ReadonlyArray<CascadeVariantOption> = [
     lightGradient:
       'linear-gradient(90deg, #ecfdf5 0%, #a7f3d0 50%, #ecfdf5 100%)',
   },
+  {
+    id: 'classic',
+    name: 'games.cascade_v1.variants.classic.name' as TranslationKey,
+    description:
+      'games.cascade_v1.variants.classic.description' as TranslationKey,
+    emoji: '🃏',
+    gradient: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #172554 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #dbeafe 0%, #93c5fd 50%, #dbeafe 100%)',
+  },
+  {
+    id: 'neon',
+    name: 'games.cascade_v1.variants.neon.name' as TranslationKey,
+    description: 'games.cascade_v1.variants.neon.description' as TranslationKey,
+    emoji: '💜',
+    gradient: 'linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #0f0a1e 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #f5f3ff 0%, #c4b5fd 50%, #f5f3ff 100%)',
+  },
+  {
+    id: 'tropical',
+    name: 'games.cascade_v1.variants.tropical.name' as TranslationKey,
+    description:
+      'games.cascade_v1.variants.tropical.description' as TranslationKey,
+    emoji: '🏖️',
+    gradient: 'linear-gradient(135deg, #065f46 0%, #0ea5e9 50%, #164e63 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #ecfdf5 0%, #99f6e4 50%, #ecfdf5 100%)',
+  },
+  {
+    id: 'steampunk',
+    name: 'games.cascade_v1.variants.steampunk.name' as TranslationKey,
+    description:
+      'games.cascade_v1.variants.steampunk.description' as TranslationKey,
+    emoji: '⚙️',
+    gradient: 'linear-gradient(135deg, #78350f 0%, #d97706 50%, #1c1917 100%)',
+    lightGradient:
+      'linear-gradient(90deg, #fef3c7 0%, #fcd34d 50%, #fef3c7 100%)',
+  },
 ];
 
 export interface CascadeModeOption {
@@ -65,8 +104,7 @@ export const CASCADE_MODES: ReadonlyArray<CascadeModeOption> = [
   {
     id: 'classic',
     name: 'games.cascade_v1.modes.classic.name' as TranslationKey,
-    description:
-      'games.cascade_v1.modes.classic.description' as TranslationKey,
+    description: 'games.cascade_v1.modes.classic.description' as TranslationKey,
     emoji: '🎯',
   },
   {

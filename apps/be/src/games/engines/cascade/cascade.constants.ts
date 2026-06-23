@@ -19,7 +19,16 @@ export const CARD_KINDS = [
 ] as const;
 export type CardKind = (typeof CARD_KINDS)[number];
 
-export const VARIANTS = ['cosmic', 'arcane', 'cyberpunk', 'elemental'] as const;
+export const VARIANTS = [
+  'cosmic',
+  'arcane',
+  'cyberpunk',
+  'elemental',
+  'classic',
+  'neon',
+  'tropical',
+  'steampunk',
+] as const;
 export type Variant = (typeof VARIANTS)[number];
 
 /**

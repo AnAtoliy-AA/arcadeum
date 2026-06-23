@@ -4,7 +4,7 @@ export const frMessages = {
     description:
       'Assortis par couleur ou numéro, enchaînez les cartes Pioche-Deux et Joker +4 pour submerger le joueur suivant, et videz votre main en premier pour gagner.',
     summary:
-      'Un jeu de cartes de défausse de la famille des Huit Américain — quatre thèmes au choix, 2–10 joueurs, pénalités enchaînables.',
+      'Un jeu de cartes de défausse de la famille des Huit Américain — huit thèmes au choix, 2–10 joueurs, pénalités enchaînables.',
     variants: {
       cosmic: {
         name: 'Cosmique',
@@ -24,6 +24,25 @@ export const frMessages = {
         name: 'Élémentaire',
         description: 'Feu, Pierre, Feuille et Marée — palette nature épurée.',
       },
+      classic: {
+        name: 'Classique',
+        description:
+          'Couleurs traditionnelles de jeu de cartes — propre et intemporel.',
+      },
+      neon: {
+        name: 'Néon',
+        description: 'Palette néon lumineuse sur fond violet profond.',
+      },
+      tropical: {
+        name: 'Tropical',
+        description:
+          'Hibiscus, Palmier, Océan — ambiance plage et couleurs chaudes.',
+      },
+      steampunk: {
+        name: 'Steampunk',
+        description:
+          'Laiton, Chaudière, Vert-de-gris — esthétique mécanique victorienne.',
+      },
     },
     landing: {
       meta: {
@@ -36,7 +55,7 @@ export const frMessages = {
       hero: {
         title: 'Cascade — le jeu de cartes à chaînes, réinventé',
         subtitle:
-          'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi quatre thèmes visuels. 2–10 joueurs.',
+          'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi huit thèmes visuels. 2–10 joueurs.',
         createRoom: 'Créer un salon',
         browseRooms: 'Parcourir les salons',
       },
@@ -46,8 +65,8 @@ export const frMessages = {
           body: 'Chacun pour soi ; les bots remplissent les places vides pour démarrer immédiatement.',
         },
         themes: {
-          title: '4 thèmes visuels',
-          body: 'Cosmique, Arcane, Cyberpunk, Élémentaire — règles identiques, look différent.',
+          title: '8 thèmes visuels',
+          body: 'Cosmique, Arcane, Cyberpunk, Élémentaire, Classique, Néon, Tropical, Steampunk — règles identiques, look différent.',
         },
         stacking: {
           title: 'Pénalités enchaînables',
@@ -71,7 +90,7 @@ export const frMessages = {
       themes: {
         title: 'Choisissez votre ambiance',
         subtitle:
-          'Mêmes règles, quatre palettes de couleurs et icônes d’action distinctes.',
+          'Mêmes règles, huit palettes de couleurs et icônes d\u2019action distinctes.',
       },
       faq: {
         differences: {
@@ -145,6 +164,34 @@ export const frMessages = {
         DRAW_TWO: 'Séisme',
         WILD: 'Tempête',
         WILD_DRAW_FOUR: 'Ouragan',
+      },
+      classic: {
+        SKIP: 'Passer',
+        REVERSE: 'Inverser',
+        DRAW_TWO: 'Pioche Deux',
+        WILD: 'Joker',
+        WILD_DRAW_FOUR: 'Joker +4',
+      },
+      neon: {
+        SKIP: 'Coupure',
+        REVERSE: 'Reconnecter',
+        DRAW_TWO: 'Surtension',
+        WILD: 'Prisme',
+        WILD_DRAW_FOUR: 'Surcharge',
+      },
+      tropical: {
+        SKIP: 'Marée',
+        REVERSE: 'Alizé',
+        DRAW_TWO: 'Mousson',
+        WILD: 'Corail',
+        WILD_DRAW_FOUR: 'Ouragan',
+      },
+      steampunk: {
+        SKIP: 'Engrenage',
+        REVERSE: 'Piston',
+        DRAW_TWO: 'Échappement',
+        WILD: 'Éther',
+        WILD_DRAW_FOUR: 'Explosion de Chaudière',
       },
     },
     board: {

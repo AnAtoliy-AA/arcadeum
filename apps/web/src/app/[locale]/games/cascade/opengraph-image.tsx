@@ -85,7 +85,7 @@ export default function OpengraphImage() {
                 background: 'rgba(255,255,255,0.12)',
               }}
             >
-              4 themes
+              8 themes
             </span>
             <span
               style={{

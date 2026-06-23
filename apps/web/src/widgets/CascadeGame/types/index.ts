@@ -10,6 +10,10 @@ export const CASCADE_VARIANT_IDS = [
   'arcane',
   'cyberpunk',
   'elemental',
+  'classic',
+  'neon',
+  'tropical',
+  'steampunk',
 ] as const;
 export type CascadeVariant = (typeof CASCADE_VARIANT_IDS)[number];
 

@@ -30,6 +30,30 @@ export const CASCADE_THEMES: CascadeThemeMeta[] = [
     desc: 'Fire, Stone, Leaf, and Tide — clean nature palette.',
     color: '#16a34a',
   },
+  {
+    id: 'classic',
+    name: 'Classic',
+    desc: 'Traditional card game colors — clean and timeless.',
+    color: '#2563eb',
+  },
+  {
+    id: 'neon',
+    name: 'Neon',
+    desc: 'Glowing neon palette on deep purple void.',
+    color: '#a855f7',
+  },
+  {
+    id: 'tropical',
+    name: 'Tropical',
+    desc: 'Hibiscus, Palm, Ocean — beach vibes and warm colors.',
+    color: '#14b8a6',
+  },
+  {
+    id: 'steampunk',
+    name: 'Steampunk',
+    desc: 'Brass, Boiler, Verdigris — Victorian mechanical aesthetic.',
+    color: '#d97706',
+  },
 ];
 
 export function findCascadeTheme(id: string | undefined): CascadeThemeMeta {

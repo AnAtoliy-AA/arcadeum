@@ -36,9 +36,6 @@ export function useIdleReconnect({
     if (isConnected) {
       wasConnectedRef.current = true;
     }
-  }, [isConnected]);
-
-  useEffect(() => {
     const next = enabled && !isConnected && !!room && wasConnectedRef.current;
     queueMicrotask(() => setIsDisconnected(next));
   }, [isConnected, enabled, room]);

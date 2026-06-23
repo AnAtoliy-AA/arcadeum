@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.4] - 2026-06-23
+
+### Fixed
+- prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
+- prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
+
+### Refactored
+- merge two useEffects into one in useIdleReconnect (N/A)
+
+
 ## [1.21.3] - 2026-06-22
 
 ### Fixed

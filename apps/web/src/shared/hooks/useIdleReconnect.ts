@@ -28,9 +28,16 @@ export function useIdleReconnect({
   const isConnected = useGameStore((s: GameState) => s.isConnected);
   const room = useGameStore((s: GameState) => s.room);
   const [isReconnecting, setIsReconnecting] = useState(false);
+  const [wasConnected, setWasConnected] = useState(false);
   const reconnectingRef = useRef(false);
 
-  const isDisconnected = enabled && !isConnected && !!room;
+  useEffect(() => {
+    if (isConnected) {
+      setWasConnected(true);
+    }
+  }, [isConnected]);
+
+  const isDisconnected = enabled && !isConnected && !!room && wasConnected;
 
   const reconnect = useCallback(() => {
     if (reconnectingRef.current || !accessToken) return;

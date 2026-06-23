@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.5] - 2026-06-23
+
+### Fixed
+- visually differentiate completed rooms from active ones (ARC-834) (ARC-834)
+
+
 ## [1.21.4] - 2026-06-23
 
 ### Fixed

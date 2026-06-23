@@ -50,6 +50,7 @@ interface PlacementBoardCellProps {
   isShipHead: boolean;
   draggable: boolean;
   onDragStart: (e: DragEvent<HTMLElement>) => void;
+  onPointerDown?: (e: React.PointerEvent) => void;
   rIndex: number;
   cIndex: number;
   onMouseEnter: (row: number, col: number) => void;
@@ -80,6 +81,7 @@ const PlacementBoardCell = memo(
     isShipHead,
     draggable,
     onDragStart,
+    onPointerDown,
     rIndex,
     cIndex,
     onMouseEnter,
@@ -169,6 +171,7 @@ const PlacementBoardCell = memo(
         className={classNames}
         draggable={draggable}
         onDragStart={onDragStart}
+        onPointerDown={onPointerDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={onMouseLeave}
         onPointerEnter={handleMouseEnter}
@@ -214,6 +217,11 @@ interface PlacementBoardGridProps {
   shipHeadKeys: Set<string>;
   isPlacementComplete: boolean;
   movingShipCells?: ShipCell[];
+  onTouchBoardPointerDown?: (
+    row: number,
+    col: number,
+    e: React.PointerEvent,
+  ) => void;
   onCellHover: (row: number, col: number) => void;
   onMouseLeave: () => void;
   onCellClick: (row: number, col: number) => void;
@@ -237,6 +245,7 @@ export const PlacementBoardGrid = memo(
     shipHeadKeys,
     isPlacementComplete,
     movingShipCells,
+    onTouchBoardPointerDown,
     onCellHover,
     onMouseLeave,
     onCellClick,
@@ -317,6 +326,11 @@ export const PlacementBoardGrid = memo(
                     isShipHead={isShipHead}
                     draggable={dragProps.draggable}
                     onDragStart={dragProps.onDragStart}
+                    onPointerDown={
+                      isShipCell && onTouchBoardPointerDown
+                        ? (e) => onTouchBoardPointerDown(rIndex, cIndex, e)
+                        : undefined
+                    }
                     rIndex={rIndex}
                     cIndex={cIndex}
                     onMouseEnter={onCellHover}

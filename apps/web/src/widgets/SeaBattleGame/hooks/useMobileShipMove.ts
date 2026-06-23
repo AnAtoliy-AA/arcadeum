@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { ShipCell, CellState, Ship } from '../types';
 import { BOARD_SIZE, CELL_STATE } from '../types';
 
@@ -8,6 +8,7 @@ interface UseMobileShipMoveArgs {
   ships: Ship[];
   board: CellState[][];
   isPlacementComplete: boolean;
+  isMobile: boolean;
   onMoveShip: (shipId: string, cells: ShipCell[]) => void;
   setHoveredCells: (cells: ShipCell[]) => void;
   setIsInvalidHover: (v: boolean) => void;
@@ -66,11 +67,17 @@ export function useMobileShipMove({
   ships,
   board,
   isPlacementComplete,
+  isMobile,
   onMoveShip,
   setHoveredCells,
   setIsInvalidHover,
 }: UseMobileShipMoveArgs) {
   const [movingShipId, setMovingShipId] = useState<string | null>(null);
+  const isTouchDevice = useRef(false);
+
+  useEffect(() => {
+    isTouchDevice.current = window.matchMedia('(pointer: coarse)').matches;
+  }, []);
 
   const clearMovingState = useCallback(() => {
     setMovingShipId(null);
@@ -80,12 +87,6 @@ export function useMobileShipMove({
 
   const handleCellClick = useCallback(
     (row: number, col: number): boolean => {
-      const media =
-        typeof window !== 'undefined'
-          ? window.matchMedia('(pointer: coarse)')
-          : null;
-      const isCoarse = media?.matches ?? false;
-
       // Mobile tap-to-move flow: user tapped a placed ship to relocate it
       if (movingShipId) {
         const movingShip = ships.find((s) => s.id === movingShipId);
@@ -117,7 +118,7 @@ export function useMobileShipMove({
       }
 
       // Mobile: tap on a placed ship cell → start moving it
-      if (isCoarse && !isPlacementComplete) {
+      if ((isMobile || isTouchDevice.current) && !isPlacementComplete) {
         const shipOnCell = ships.find((s) =>
           s.cells.some((c) => c.row === row && c.col === col),
         );
@@ -136,6 +137,7 @@ export function useMobileShipMove({
       ships,
       board,
       isPlacementComplete,
+      isMobile,
       onMoveShip,
       clearMovingState,
       setHoveredCells,

@@ -6,11 +6,13 @@ import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { CELL_STATE } from '../types';
 
 // Pre-set 10×10 pattern: 0=empty 1=ship 2=hit 3=miss
+// All ships placed as in real game (1×4, 2×3, 3×2, 4×1).
+// Cruiser at (3,3)-(3,5) is sunk — all cells hits, full 8-dir surround as misses.
 const BOARD_PATTERN: number[] = [
-  1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0,
+  0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 1, 1, 3, 3, 3, 3,
+  3, 1, 0, 0, 0, 0, 3, 2, 2, 2, 3, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 1,
+  1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 3,
+  0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0,
 ];
 
 const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
@@ -93,13 +95,13 @@ export function SeaBattleThemePreview({
             const state = BOARD_PATTERN[rIndex * 10 + cIndex];
             // Preserve data-testid compatibility with sea-battle-lobby-colors.spec.ts
             const testId =
-              rIndex === 0 && cIndex === 0
+              rIndex === 0 && cIndex === 2
                 ? 'color-swatch-ship'
-                : rIndex === 5 && cIndex === 3
+                : rIndex === 3 && cIndex === 3
                   ? 'color-swatch-hit'
-                  : rIndex === 9 && cIndex === 7
+                  : rIndex === 4 && cIndex === 3
                     ? 'color-swatch-miss'
-                    : rIndex === 0 && cIndex === 4
+                    : rIndex === 0 && cIndex === 0
                       ? 'color-swatch-empty'
                       : undefined;
             return (
@@ -128,7 +130,8 @@ export function SeaBattleThemePreview({
                     width={missDotSize}
                     height={missDotSize}
                     borderRadius={100}
-                    backgroundColor="rgba(255,255,255,0.55)"
+                    backgroundColor={theme.textSecondaryColor}
+                    opacity={0.7}
                   />
                 )}
               </YStack>

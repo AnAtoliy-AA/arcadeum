@@ -99,9 +99,10 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
     hostRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostRaw;
   const isJoining = joiningRoomId === room.id;
   const isPrivate = room.visibility === 'private';
+  const isCompleted = room.status === 'completed';
 
   return (
-    <ThemedView style={styles.roomCard}>
+    <ThemedView style={[styles.roomCard, isCompleted && styles.roomCardCompleted]}>
       <View style={styles.roomHeader}>
         <ThemedText type="defaultSemiBold" style={styles.roomTitle}>
           {room.name}

@@ -83,8 +83,10 @@ export function RoomCard({
   const gameLabel =
     gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
 
+  const isCompleted = room.status === 'completed';
+
   return (
-    <ThemedView style={styles.card}>
+    <ThemedView style={[styles.card, isCompleted && styles.cardCompleted]}>
       <View style={styles.header}>
         <ThemedText type="defaultSemiBold" style={styles.title}>
           {room.name}
@@ -207,6 +209,9 @@ function createStyles(palette: Palette) {
         offset: { width: 0, height: 4 },
         elevation: 2,
       }),
+    },
+    cardCompleted: {
+      opacity: 0.6,
     },
     header: {
       flexDirection: 'row',

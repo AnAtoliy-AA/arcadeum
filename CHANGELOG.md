@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.7] - 2026-06-23
+
+### Fixed
+- enable touch drag and tap-to-move for ship placement on mobile (ARC-831) (ARC-831)
+
+
 ## [1.21.6] - 2026-06-23
 
 ### Added

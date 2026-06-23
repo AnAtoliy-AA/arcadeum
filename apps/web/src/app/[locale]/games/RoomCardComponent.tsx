@@ -74,10 +74,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     [],
   );
 
+  const isCompleted = room.status === 'completed';
+
   return (
     <StyledRoomCard
       viewMode={viewMode}
-      className={cardStyles.roomCard}
+      status={isCompleted ? 'completed' : undefined}
+      className={`${cardStyles.roomCard} ${isCompleted ? cardStyles.completed : ''}`}
       data-testid="room-card"
     >
       <StyledRoomHeader viewMode={viewMode}>

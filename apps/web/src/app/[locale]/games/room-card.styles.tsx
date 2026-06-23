@@ -47,6 +47,18 @@ export const StyledRoomCard = styled(YStack, {
         flexWrap: 'wrap',
       },
     },
+    status: {
+      completed: {
+        borderColor: 'rgba(107, 114, 128, 0.2)',
+        hoverStyle: {
+          scale: 1,
+          y: 0,
+          borderColor: 'rgba(107, 114, 128, 0.2)',
+          backgroundColor: '$glassBg',
+          boxShadow: 'none',
+        },
+      },
+    },
   } as const,
 
   defaultVariants: {

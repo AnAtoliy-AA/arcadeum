@@ -49,15 +49,17 @@ export function GamesFilters({
                 completed: 'games.lounge.filters.status.completed',
               } as const;
               const label = t(statusKeys[value] as TranslationKey);
+              const isActive = statusFilter === value;
               return (
                 <Button
                   key={value}
                   variant="chip"
                   size="sm"
-                  isActive={statusFilter === value}
+                  isActive={isActive}
+                  borderColor={isActive ? 'rgba(99, 102, 241, 0.5)' : undefined}
                   onClick={() => onStatusChange(value)}
                   aria-label={`Filter by status: ${label || value}`}
-                  aria-pressed={statusFilter === value}
+                  aria-pressed={isActive}
                 >
                   {label || value}
                 </Button>
@@ -94,16 +96,18 @@ export function GamesFilters({
                 not_joined: 'games.lounge.filters.participation.not_joined',
               } as const;
               const label = t(participationKeys[value] as TranslationKey);
+              const isActive = participationFilter === value;
               return (
                 <Button
                   key={value}
                   variant="chip"
                   size="sm"
-                  isActive={participationFilter === value}
+                  isActive={isActive}
                   disabled={value !== 'all' && !isAuthenticated}
+                  borderColor={isActive ? 'rgba(99, 102, 241, 0.5)' : undefined}
                   onClick={() => onParticipationChange(value)}
                   aria-label={`Filter by participation: ${label || value}`}
-                  aria-pressed={participationFilter === value}
+                  aria-pressed={isActive}
                 >
                   {label || value}
                 </Button>

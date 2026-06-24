@@ -19,7 +19,6 @@ import { useTicTacToeActions } from '../hooks/useTicTacToeActions';
 import { TicTacToeThemeProvider } from '../lib/TicTacToeThemeContext';
 import { TicTacToeLobby } from './TicTacToeLobby';
 import { TicTacToeBoard } from './TicTacToeBoard';
-import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { WIN_LENGTHS } from '../types';
 import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
@@ -59,32 +58,48 @@ function TicTacToeGameImpl({
 
   const isLobby = room?.status === 'lobby';
 
-  const {
-    snapshot,
-    currentEntryId,
-    currentShooterId,
-    myTurn,
-    isGameOver,
-    startBusy,
-    session,
-  } = useTicTacToeState({
-    roomId,
-    currentUserId,
-    initialSession,
-  });
+  const { snapshot, currentShooterId, myTurn, isGameOver, startBusy, session } =
+    useTicTacToeState({
+      roomId,
+      currentUserId,
+      initialSession,
+    });
 
   const { startSession, placeMark } = useTicTacToeActions({
     roomId,
     userId: currentUserId,
   });
 
+  const { rematchLoading, handleRematch } = useRematch({ roomId });
+
+  const resolveDisplayNameBound = useCallback(
+    (id?: string | null) => {
+      if (!currentUserId || !room) return id || '';
+      if (id === currentUserId) return 'You';
+      if (id?.startsWith('bot-')) {
+        const botOrder =
+          snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
+        const botIndex = botOrder.indexOf(id);
+        if (botIndex !== -1) return `Bot ${botIndex + 1}`;
+        return 'Bot';
+      }
+      const member = room.members?.find((m) => m.id === id);
+      if (member?.displayName && member.displayName !== 'Unknown')
+        return member.displayName;
+      return id || '';
+    },
+    [currentUserId, room, snapshot],
+  );
+
   // Pipe engine logs into the shared GameChat and send chat via the generic
   // session history-note event (the BE appends it to the session logs and
   // rebroadcasts, so it shows in the shared panel + popup).
   const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
-  useGameChatIntegration(snapshot?.logs as never, sendChat);
-
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
+  useGameChatIntegration(
+    snapshot?.logs as never,
+    sendChat,
+    resolveDisplayNameBound,
+  );
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
@@ -158,26 +173,16 @@ function TicTacToeGameImpl({
   const board = (
     <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
       {snapshot ? (
-        <>
-          <TurnBadge
-            currentEntryId={currentEntryId}
-            currentShooterId={currentShooterId}
-            teamMode={snapshot.options.teamMode}
-            players={snapshot.players}
-            teams={snapshot.teams}
-            myTurn={myTurn}
-          />
-          <TicTacToeBoard
-            board={snapshot.board}
-            winLine={snapshot.winLine}
-            players={snapshot.players}
-            teams={snapshot.teams}
-            teamMode={snapshot.options.teamMode}
-            disabled={!myTurn || isGameOver}
-            ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
-            onCellClick={(row, col) => placeMark(row, col)}
-          />
-        </>
+        <TicTacToeBoard
+          board={snapshot.board}
+          winLine={snapshot.winLine}
+          players={snapshot.players}
+          teams={snapshot.teams}
+          teamMode={snapshot.options.teamMode}
+          disabled={!myTurn || isGameOver}
+          ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
+          onCellClick={(row, col) => placeMark(row, col)}
+        />
       ) : null}
     </YStack>
   );

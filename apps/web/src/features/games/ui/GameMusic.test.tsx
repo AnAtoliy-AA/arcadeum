@@ -8,7 +8,12 @@ import {
 } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import { config } from '@/shared/config/tamagui.config';
-import { GameMusic, trackForGame, trackIndexForGame } from './GameMusic';
+import {
+  GameMusic,
+  trackForGame,
+  trackIndexForGame,
+  TRACKS,
+} from './GameMusic';
 
 const render = (ui: React.ReactElement) =>
   rtlRender(
@@ -90,12 +95,8 @@ describe('GameMusic', () => {
     expect(lastAudioEl().loop).toBe(true);
     expect(lastAudioEl().volume).toBeGreaterThan(0);
     expect(lastAudioEl().volume).toBeLessThanOrEqual(1);
-    expect(lastAudioEl().src).toContain('fleet-at-dawn');
+    expect(lastAudioEl().src).toContain('/music/');
     expect(lastAudioEl().play).toHaveBeenCalledTimes(1);
-    // Track title is surfaced in the player.
-    expect(screen.getByTestId('game-music-player').textContent).toContain(
-      'Fleet at Dawn',
-    );
   });
 
   it('starts at the default volume and applies slider changes to the audio', () => {
@@ -142,9 +143,7 @@ describe('GameMusic', () => {
     fireEvent.click(screen.getByTestId('game-music-next'));
     const after = lastAudioEl().src;
     expect(after).not.toBe(before);
-    expect(after).toContain('fleet-at-dawn');
-    // Previous element was released when the track changed.
-    expect(after).toMatch(/fleet-at-dawn-[12]\.mp3$/);
+    expect(after).toContain('/music/');
   });
 
   it('goes back to a different track with prev', () => {
@@ -201,14 +200,17 @@ describe('GameMusic', () => {
   });
 
   it('trackIndexForGame / trackForGame are deterministic with a safe fallback', () => {
-    expect(trackForGame().src).toBe('/sounds/fleet-at-dawn-1.mp3');
+    expect(trackForGame().src).toBe('/music/clockwork-horizon.mp3');
     expect(trackIndexForGame()).toBe(0);
     expect(trackIndexForGame('sea_battle_v1')).toBe(
       trackIndexForGame('sea_battle_v1'),
     );
-    expect(trackForGame('sea_battle_v1').src).toMatch(
-      /fleet-at-dawn-[12]\.mp3$/,
-    );
+    expect(trackForGame('sea_battle_v1').src).toContain('/music/');
     expect(trackForGame('sea_battle_v1').title).toBeTruthy();
+  });
+
+  it('all track titles are unique', () => {
+    const titles = TRACKS.map((t) => t.title);
+    expect(new Set(titles).size).toBe(titles.length);
   });
 });

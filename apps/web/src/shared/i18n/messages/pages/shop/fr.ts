@@ -219,6 +219,14 @@ export const shopFr = {
         name: 'Aigle Cybernétique',
         desc: 'Un aigle cybernétique hyperréaliste.',
       },
+      lion01: {
+        name: 'Lion Cybernétique',
+        desc: 'Un lion cybernétique hyperréaliste.',
+      },
+      shark01: {
+        name: 'Requin Cybernétique',
+        desc: 'Un requin cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },
@@ -256,6 +264,8 @@ export const shopFr = {
         name: 'Aurore',
         desc: 'Un dégradé changeant d’aurore boréale.',
       },
+      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique brillant.' },
+      glitch: { name: 'Glitch', desc: 'Une couleur d’artéfact numérique changeante.' },
     },
     game_skin: {
       default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
@@ -265,14 +275,18 @@ export const shopFr = {
       slate: { name: 'Ardoise', desc: 'Un arrière-plan gris ardoise sobre.' },
       tide: { name: 'Marée', desc: 'Un dégradé frais turquoise vers cyan.' },
       twilight: { name: 'Crépuscule', desc: 'Indigo fondu dans un rose intense.' },
-      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolore.' },
+      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolor.' },
+      cyberpunk: { name: 'Cyberpunk', desc: 'Un dégradé d’horizon futuriste néon.' },
+      void: { name: 'Vide', desc: 'Un arrière-plan de trou noir de l’espace profond.' },
     },
     aura: {
       default: { name: 'Par défaut', desc: 'L’aura initiale.' },
-      silver: { name: 'Aura argentée', desc: 'Un halo argenté subtil.' },
+      silver: { name: 'Aura argentée', desc: 'Un halo argenté sutil.' },
       cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
       violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
       prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
+      gold: { name: 'Aura dorée', desc: 'Un éclat d’or brillant prestigieux.' },
+      glitch: { name: 'Aura glitch', desc: 'Une lueur de distorsion numérique animée.' },
     },
     frame: {
       default: { name: 'Par défaut', desc: 'Le cadre initial.' },
@@ -280,6 +294,8 @@ export const shopFr = {
       emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
       violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },
       prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
+      gold: { name: 'Cadre doré', desc: 'Un anneau doré poli et brillant.' },
+      cyberpunk: { name: 'Cadre cyberpunk', desc: 'Un cadre cyberpunk néon vibrant.' },
     },
     background: {
       default: { name: 'Par défaut', desc: 'Arrière-plan de départ.' },

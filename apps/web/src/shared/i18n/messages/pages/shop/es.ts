@@ -208,6 +208,14 @@ export const shopEs = {
         name: 'Águila Cibernética',
         desc: 'Un águila cibernética hiperrealista.',
       },
+      lion01: {
+        name: 'León Cibernético',
+        desc: 'Un león cibernético hiperrealista.',
+      },
+      shark01: {
+        name: 'Tiburón Cibernético',
+        desc: 'Un tiburón cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },
@@ -239,6 +247,8 @@ export const shopEs = {
       violet: { name: 'Violeta', desc: 'Un violeta vivo.' },
       sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
       aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
+      nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico brillante.' },
+      glitch: { name: 'Glitch', desc: 'Un color de artefacto digital cambiante.' },
     },
     game_skin: {
       default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
@@ -249,6 +259,8 @@ export const shopEs = {
       tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
       twilight: { name: 'Crepúsculo', desc: 'Índigo que se funde en rosa intenso.' },
       nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
+      cyberpunk: { name: 'Cyberpunk', desc: 'Un degradado de horizonte futurista neón.' },
+      void: { name: 'Vacío', desc: 'Un fondo de agujero negro del espacio profundo.' },
     },
     aura: {
       default: { name: 'Predeterminada', desc: 'El aura inicial.' },
@@ -256,6 +268,8 @@ export const shopEs = {
       cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
       violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
       prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
+      gold: { name: 'Aura dorada', desc: 'Un prestigioso brillo dorado resplandeciente.' },
+      glitch: { name: 'Aura glitch', desc: 'Un brillo de distorsión digital animado.' },
     },
     frame: {
       default: { name: 'Predeterminado', desc: 'El marco inicial.' },
@@ -263,6 +277,8 @@ export const shopEs = {
       emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
       violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
       prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
+      gold: { name: 'Marco dorado', desc: 'Un anillo de oro pulido y brillante.' },
+      cyberpunk: { name: 'Marco cyberpunk', desc: 'Un marco cyberpunk de neón vibrante.' },
     },
   },
 };

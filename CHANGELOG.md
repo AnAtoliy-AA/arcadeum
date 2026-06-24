@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.9] - 2026-06-24
+
+### Added
+- add cyber lion/shark avatars, premium name colors, banners, auras, and frames (N/A)
+
+### Fixed
+- split shop-catalog.ts to stay under 500-line lint limit (N/A)
+
+
 ## [1.21.8] - 2026-06-24
 
 ### Fixed

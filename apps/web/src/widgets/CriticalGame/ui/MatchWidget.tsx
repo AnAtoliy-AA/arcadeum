@@ -1,19 +1,14 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ComponentProps,
-} from 'react';
-import type { ActiveGameContent } from './ActiveGameContent';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
 import { RulesModal } from './RulesModal';
+import { IdleTimerDisplay } from './IdleTimerDisplay';
+import { AutoplayControls } from './AutoplayControls';
+import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import {
   detectCombo,
   handWithUids,
@@ -24,8 +19,17 @@ import {
 import { getCardTranslationKey } from '../lib/cardUtils';
 import { NarrowViewportProvider } from '../lib/useNarrowViewport';
 import { withViewTransition } from '../lib/viewTransition';
+import { readHandToggle, writeHandToggle } from '../lib/handToggleStorage';
 import { useUrlHashState } from '@/shared/hooks/useUrlHashState';
-import type { CriticalCard } from '../types';
+import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
+import type { UseAutoplayReturn } from '../hooks/useAutoplay';
+import type {
+  CriticalCard,
+  CriticalComboCard,
+  CriticalPlayerState,
+  CriticalSnapshot,
+  GameRoomSummary,
+} from '../types';
 
 // Codec for `selectedUids` in the URL hash. CSV (not JSON) so a shared
 // link like `#sel=u1,u2,u3` stays readable; uids are short
@@ -40,65 +44,47 @@ const DEFUSE_CARDS: readonly CriticalCard[] = [
   'containment_field',
 ];
 
-type ToggleField = 'name' | 'description';
-
-/**
- * Read a persisted hand-card toggle from localStorage. SSR-safe: returns
- * the default on the server, and treats any localStorage failure (private
- * browsing, quota, JSON corruption) as "use the default" so a bad cache
- * entry never breaks the match.
- */
-function readToggle(
-  key: string | null,
-  field: ToggleField,
-  fallback: boolean,
-): boolean {
-  if (!key || typeof window === 'undefined') return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw) as Partial<Record<ToggleField, boolean>>;
-    const value = parsed?.[field];
-    return typeof value === 'boolean' ? value : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-/** Write a persisted hand-card toggle. Failures are swallowed silently. */
-function writeToggle(
-  key: string | null,
-  field: ToggleField,
-  value: boolean,
-): void {
-  if (!key || typeof window === 'undefined') return;
-  try {
-    const raw = window.localStorage.getItem(key);
-    const parsed = raw
-      ? ((JSON.parse(raw) as Partial<Record<ToggleField, boolean>>) ?? {})
-      : {};
-    parsed[field] = value;
-    window.localStorage.setItem(key, JSON.stringify(parsed));
-  } catch {
-    /* localStorage unavailable (Safari private mode, quota) — silent skip */
-  }
-}
-
-export type MatchWidgetProps = ComponentProps<typeof ActiveGameContent> & {
-  /**
-   * Format a raw `CriticalLogEntry.message` for display. Comes from
-   * `useDisplayNames` in `ActiveGameView` — passed down so the FlashBanner
-   * inside the new ArenaCenter can surface formatted log entries.
-   */
+export interface MatchWidgetProps {
+  room: GameRoomSummary;
+  snapshot: CriticalSnapshot;
+  currentUserId: string | null;
+  currentPlayer: CriticalPlayerState | null;
+  cardVariant?: string;
+  isGameOver: boolean;
+  isMyTurn: boolean;
+  canAct: boolean;
+  canPlayNope: boolean;
+  resolveDisplayName: (
+    playerId?: string,
+    fallbackName?: string,
+  ) => string | undefined;
+  t: (key: string, params?: Record<string, string | number>) => string;
+  actions: UseGameActionsReturn;
+  handlePlayActionCard: (card: CriticalCard) => void;
+  handleOpenEventCombo: (
+    cards: CriticalComboCard[],
+    hand: CriticalCard[],
+  ) => void;
+  handleOpenFiverCombo: () => void;
   formatLogMessage: (message?: string | null) => string;
   /**
-   * Fullscreen state + toggle, sourced from `useFullscreen` in the
-   * parent. The HandRail menu (ARC-636) exposes the toggle so widget
-   * mode doesn't need the legacy `CriticalGameHeader` to access it.
+   * Optional. The hand's fullscreen affordance — when omitted (the widget now
+   * renders inside the shared GameWidgetContainer, which owns fullscreen), the
+   * hand hides its own fullscreen button.
    */
-  isFullscreen: boolean;
-  toggleFullscreen: () => void;
-};
+  isFullscreen?: boolean;
+  toggleFullscreen?: () => void;
+  /**
+   * Autoplay state + idle-timer wiring. The autoplay menu and the idle
+   * countdown badge render at the top of the widget grid. Idle-on-timeout
+   * still triggers autoplay even with the menu collapsed.
+   */
+  autoplayState: UseAutoplayReturn;
+  idleTimerEnabled: boolean;
+  idleTimerTriggered: boolean;
+  handleIdleTimeout: () => void;
+  handleStopAutoplay: () => void;
+}
 
 /**
  * Widget-mode renderer for an active Critical match. Three-row stack:
@@ -116,24 +102,26 @@ export function MatchWidget({
   isMyTurn,
   canAct,
   canPlayNope,
-  actionBusy: _actionBusy,
-  aliveOpponents: _aliveOpponents,
-  handLayout: _handLayout,
-  setHandLayout: _setHandLayout,
   resolveDisplayName,
   t,
   actions,
-  idleTimerTriggered: _idleTimerTriggered,
-  autoplayState: _autoplayState,
-  handleUnstash: _handleUnstash,
   handlePlayActionCard,
-  handleOpenFavorModal: _handleOpenFavorModal,
   handleOpenEventCombo,
   handleOpenFiverCombo,
   formatLogMessage,
   isFullscreen,
   toggleFullscreen,
+  autoplayState,
+  idleTimerEnabled,
+  idleTimerTriggered,
+  handleIdleTimeout,
+  handleStopAutoplay,
 }: MatchWidgetProps) {
+  // Read the widget-level fullscreen state from the context owned by
+  // GameWidgetContainer. The prop `isFullscreen` is the legacy path;
+  // the context is the authoritative source for the sticky bar's z-index.
+  const ctxFullscreen = useWidgetFullscreen();
+  const effectiveFullscreen = isFullscreen ?? ctxFullscreen;
   // `selectedUids` lives in the URL hash so refresh restores the
   // selection and shareable links carry it. Empty arrays serialize to
   // `null`, keeping the URL clean at idle.
@@ -152,10 +140,10 @@ export function MatchWidget({
     ? `critical:hand-toggles:${currentUserId}`
     : null;
   const [showCardName, setShowCardName] = useState<boolean>(() =>
-    readToggle(togglesStorageKey, 'name', true),
+    readHandToggle(togglesStorageKey, 'name', true),
   );
   const [showCardDescription, setShowCardDescription] = useState<boolean>(() =>
-    readToggle(togglesStorageKey, 'description', true),
+    readHandToggle(togglesStorageKey, 'description', true),
   );
   // Hydration guard for §4.6 + the review's §1.1 follow-up. The
   // `useState` initializer only runs once on mount; if `currentUserId`
@@ -179,19 +167,19 @@ export function MatchWidget({
   useEffect(() => {
     if (!togglesStorageKey || hydratedFromStorage.current) return;
     hydratedFromStorage.current = true;
-    const name = readToggle(togglesStorageKey, 'name', true);
-    const desc = readToggle(togglesStorageKey, 'description', true);
+    const name = readHandToggle(togglesStorageKey, 'name', true);
+    const desc = readHandToggle(togglesStorageKey, 'description', true);
     setShowCardName(name);
     setShowCardDescription(desc);
   }, [togglesStorageKey]);
   /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!hydratedFromStorage.current) return;
-    writeToggle(togglesStorageKey, 'name', showCardName);
+    writeHandToggle(togglesStorageKey, 'name', showCardName);
   }, [togglesStorageKey, showCardName]);
   useEffect(() => {
     if (!hydratedFromStorage.current) return;
-    writeToggle(togglesStorageKey, 'description', showCardDescription);
+    writeHandToggle(togglesStorageKey, 'description', showCardDescription);
   }, [togglesStorageKey, showCardDescription]);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
   const handleCloseRules = useCallback(() => setRulesOpen(false), []);
@@ -400,10 +388,36 @@ export function MatchWidget({
 
   const showHand = !!currentPlayer && currentPlayer.alive && !isGameOver;
 
+  const showAutoplayBar = !isGameOver && !!currentPlayer;
+
   return (
     <div data-testid="match-widget">
       <NarrowViewportProvider maxWidth={480}>
         <MatchWidgetGrid data-testid="match-widget-grid">
+          {showAutoplayBar && (
+            <div
+              data-testid="match-widget-autoplay-bar"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
+              <IdleTimerDisplay
+                enabled={idleTimerEnabled}
+                isMyTurn={isMyTurn}
+                canAct={canAct}
+                onTimeout={handleIdleTimeout}
+                autoplayTriggered={idleTimerTriggered}
+                onStop={handleStopAutoplay}
+                t={t}
+              />
+              <AutoplayControls autoplayState={autoplayState} t={t} />
+            </div>
+          )}
           <OpponentsRow
             opponents={opponents}
             currentTurnPlayerId={turnPlayerId}
@@ -412,6 +426,7 @@ export function MatchWidget({
               isMyTurn && !isGameOver && canAct ? handleSelectTarget : undefined
             }
             resolveDisplayName={tileResolveName}
+            logs={snapshot.logs ?? []}
           />
           <Arena
             deck={snapshot.deck}
@@ -444,7 +459,7 @@ export function MatchWidget({
               canDraw={isMyTurn && !isGameOver}
               canNope={canPlayNope}
               cardVariant={cardVariant}
-              isFullscreen={isFullscreen}
+              isFullscreen={effectiveFullscreen}
               showCardName={showCardName}
               showCardDescription={showCardDescription}
               onPlay={handlePlay}

@@ -116,6 +116,8 @@ export interface GameModalsProps {
   pendingFavor: { targetId: string; requesterId: string } | null;
   myHand: CriticalCard[];
   onGiveFavorCard: (card: CriticalCard) => void;
+  onCloseGiveFavorModal?: () => void;
+  giveFavorOverrideOpen?: boolean;
 
   // Shared
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
@@ -205,6 +207,8 @@ export function GameModals({
   pendingFavor,
   myHand,
   onGiveFavorCard,
+  onCloseGiveFavorModal,
+  giveFavorOverrideOpen,
 
   // Shared
   resolveDisplayName,
@@ -350,9 +354,10 @@ export function GameModals({
       {/* Give Favor Modal - shows when someone requested a favor from current user */}
       <GiveFavorModal
         isOpen={
-          !!currentUserId &&
-          !!pendingFavor &&
-          pendingFavor.targetId === currentUserId
+          giveFavorOverrideOpen ??
+          (!!currentUserId &&
+            !!pendingFavor &&
+            pendingFavor.targetId === currentUserId)
         }
         requesterName={
           pendingFavor
@@ -361,6 +366,7 @@ export function GameModals({
         }
         myHand={myHand}
         onGiveCard={onGiveFavorCard}
+        onCancel={onCloseGiveFavorModal}
         t={t}
         cardVariant={cardVariant}
       />
@@ -375,53 +381,59 @@ export function GameModals({
         cardVariant={cardVariant}
       />
 
-      {/* Mark Modal (Target Selection) */}
-      <TargetedAttackModal
-        isOpen={markModal}
-        onClose={onCloseMarkModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmMark}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        titleKey="games.table.modals.mark.title"
-        descriptionKey="games.table.modals.mark.description"
-        emoji="🏷️"
-        cardVariant={cardVariant}
-      />
+      {/* Mark Modal (Target Selection) — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <TargetedAttackModal
+          isOpen={markModal}
+          onClose={onCloseMarkModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmMark}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          titleKey="games.table.modals.mark.title"
+          descriptionKey="games.table.modals.mark.description"
+          emoji="🏷️"
+          cardVariant={cardVariant}
+        />
+      )}
 
-      {/* Steal Draw Modal (Target Selection) */}
-      <TargetedAttackModal
-        isOpen={stealDrawModal}
-        onClose={onCloseStealDrawModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmStealDraw}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        titleKey="games.table.modals.stealDraw.title"
-        descriptionKey="games.table.modals.stealDraw.description"
-        emoji="🤏"
-        cardVariant={cardVariant}
-      />
+      {/* Steal Draw Modal (Target Selection) — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <TargetedAttackModal
+          isOpen={stealDrawModal}
+          onClose={onCloseStealDrawModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmStealDraw}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          titleKey="games.table.modals.stealDraw.title"
+          descriptionKey="games.table.modals.stealDraw.description"
+          emoji="🤏"
+          cardVariant={cardVariant}
+        />
+      )}
 
-      {/* Smite Modal (Target Selection) */}
-      <TargetedAttackModal
-        isOpen={smiteModal}
-        onClose={onCloseSmiteModal}
-        aliveOpponents={aliveOpponents}
-        selectedTarget={selectedTarget}
-        onSelectTarget={onSelectTarget}
-        onConfirm={onConfirmSmite}
-        resolveDisplayName={resolveDisplayName}
-        t={t}
-        titleKey="games.table.cards.smite"
-        descriptionKey="games.table.cards.descriptions.smite"
-        emoji="⚡"
-        cardVariant={cardVariant}
-      />
+      {/* Smite Modal (Target Selection) — desktop only; mobile uses MobileActionSheet */}
+      {!isMobile && (
+        <TargetedAttackModal
+          isOpen={smiteModal}
+          onClose={onCloseSmiteModal}
+          aliveOpponents={aliveOpponents}
+          selectedTarget={selectedTarget}
+          onSelectTarget={onSelectTarget}
+          onConfirm={onConfirmSmite}
+          resolveDisplayName={resolveDisplayName}
+          t={t}
+          titleKey="games.table.cards.smite"
+          descriptionKey="games.table.cards.descriptions.smite"
+          emoji="⚡"
+          cardVariant={cardVariant}
+        />
+      )}
 
       {/* Omniscience Modal */}
       <OmniscienceModal

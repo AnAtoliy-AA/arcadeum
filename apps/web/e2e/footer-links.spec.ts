@@ -9,7 +9,7 @@ test.describe('Footer Links', () => {
   // Navigate and scroll to footer, waiting for it to render
   async function scrollToFooter(page: import('@playwright/test').Page) {
     await navigateTo(page, '/');
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     // Ensure the footer is attached to the DOM
     const footer = page.locator('footer').first();
     await footer.waitFor({ state: 'attached' });

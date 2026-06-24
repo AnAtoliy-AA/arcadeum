@@ -7,7 +7,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
-import cardStyles from './RoomCardComponent.module.css';
+import cardStyles from './RoomCardComponent.module.scss';
 import {
   StyledRoomCard,
   StyledRoomHeader,
@@ -74,10 +74,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     [],
   );
 
+  const isCompleted = room.status === 'completed';
+
   return (
     <StyledRoomCard
       viewMode={viewMode}
-      className={cardStyles.roomCard}
+      status={isCompleted ? 'completed' : undefined}
+      className={`${cardStyles.roomCard} ${isCompleted ? cardStyles.completed : ''}`}
       data-testid="room-card"
     >
       <StyledRoomHeader viewMode={viewMode}>

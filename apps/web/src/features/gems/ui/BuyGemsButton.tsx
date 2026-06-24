@@ -6,20 +6,32 @@ import { buyGemsAction } from '../server/gems.actions';
 interface BuyGemsButtonProps {
   packageId: string;
   label?: string;
+  isAuthenticated?: boolean;
 }
 
 export function BuyGemsButton({
   packageId,
   label = 'Buy with PayPal',
+  isAuthenticated = true,
 }: BuyGemsButtonProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      window.location.href = '/auth';
+      return;
+    }
+
     startTransition(async () => {
       const result = await buyGemsAction({ packageId });
 
       if (result.ok) {
         window.location.href = result.approveUrl;
+        return;
+      }
+
+      if (result.error === 'unauthorized') {
+        window.location.href = '/auth';
         return;
       }
 

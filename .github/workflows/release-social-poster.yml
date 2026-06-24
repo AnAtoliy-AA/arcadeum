@@ -1,0 +1,249 @@
+name: Release Social Poster
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  post-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Gather Release Changes and Post
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          FACEBOOK_ID: ${{ secrets.BUFFER_FACEBOOK_ID }}
+          THREADS_ID: ${{ secrets.BUFFER_THREADS_ID }}
+          LINKEDIN_ID: ${{ secrets.BUFFER_LINKEDIN_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<EOF
+          import json
+          import os
+          import subprocess
+          import re
+          import requests
+
+          # 1. Find the latest tag (the version just released)
+          try:
+              tag = subprocess.check_output(
+                  ['git', 'describe', '--tags', '--abbrev=0'],
+                  text=True
+              ).strip()
+          except Exception:
+              print("No tags found. Skipping release post.")
+              exit(0)
+
+          # 2. Get all commits included in this release (since previous tag)
+          try:
+              prev_tag = subprocess.check_output(
+                  ['git', 'describe', '--tags', '--abbrev=0', f'{tag}^'],
+                  text=True
+              ).strip()
+              log_range = f'{prev_tag}..{tag}'
+          except Exception:
+              log_range = f'{tag}^..{tag}'
+
+          try:
+              raw_commits = subprocess.check_output(
+                  ['git', 'log', log_range, '--pretty=format:%s'],
+                  text=True
+              ).strip()
+          except Exception:
+              raw_commits = subprocess.check_output(
+                  ['git', 'log', '-1', '--pretty=format:%s', tag],
+                  text=True
+              ).strip()
+
+          if not raw_commits.strip():
+              print("No commit messages found. Skipping.")
+              exit(0)
+
+          # 3. Read the CHANGELOG section for this version
+          changelog_section = ""
+          try:
+              with open("CHANGELOG.md", "r") as f:
+                  content = f.read()
+              match = re.search(
+                  rf"## \[{re.escape(tag.lstrip('v'))}\].*?(?=## \[|\Z)",
+                  content,
+                  re.DOTALL,
+              )
+              if match:
+                  changelog_section = match.group(0).strip()
+          except FileNotFoundError:
+              pass
+
+          # 4. Build updates text — prefer CHANGELOG, fall back to git log
+          version = tag.lstrip('v')
+
+          use_changelog = False
+          if changelog_section:
+              # Strip the header line and formatting, keep bullet items
+              lines = changelog_section.split('\n')
+              clean_lines = []
+              for line in lines:
+                  line = line.strip()
+                  if not line or line.startswith('## ['):
+                      continue
+                  clean_lines.append(line)
+              updates_text = "\n".join(clean_lines)
+              if updates_text.strip():
+                  use_changelog = True
+
+          if not use_changelog:
+              # Fall back to parsed git commits
+              skip_patterns = [
+                  "Merge pull request",
+                  "Merge remote-tracking",
+                  "chore: bump version",
+                  "chore: update changelog",
+                  "chore: start next minor",
+              ]
+              emoji_map = {
+                  "feat(web):": "✨",
+                  "feat(be):": "✅",
+                  "feat(ui):": "🎨",
+                  "feat:": "✨",
+                  "fix(web):": "🛠️",
+                  "fix(be):": "🔧",
+                  "fix(ui):": "🖌️",
+                  "fix:": "🛠️",
+                  "refactor(web):": "⚙️",
+                  "refactor(be):": "⚙️",
+                  "refactor:": "⚙️",
+                  "fix(web,critical):": "🚨",
+              }
+
+              clean_updates = []
+              seen = set()
+              for line in raw_commits.split('\n'):
+                  line = line.strip()
+                  if not line or any(p in line for p in skip_patterns) or line in seen:
+                      continue
+                  seen.add(line)
+
+                  cleaned = line
+                  for prefix, emoji in emoji_map.items():
+                      cleaned = cleaned.replace(prefix, emoji)
+                  clean_updates.append(f"- {cleaned}")
+
+              if not clean_updates:
+                  print("No consumer-facing changes in this release. Skipping.")
+                  exit(0)
+
+              updates_text = "\n".join(clean_updates[:10])
+
+          # 5. Build platform-specific posts
+          facebook_text = (
+              f"🚀 New Release: v{version}\n\n"
+              f"What shipped:\n{updates_text}\n\n"
+              f"Try it now at arcadeum.games\n\n"
+              f"#arcadeum #gamedev #newrelease #boardgames"
+          )
+
+          threads_text = (
+              f"Shipped v{version} 🚀\n\n"
+              f"{updates_text}\n\n"
+              f"Play now → arcadeum.games"
+          )
+
+          if len(threads_text) > 480:
+              threads_text = threads_text[:475] + "..."
+
+          linkedin_text = (
+              f"🚀 New Release: v{version}\n\n"
+              f"We just shipped updates to Arcadeum:\n\n"
+              f"{updates_text}\n\n"
+              f"Try it now at arcadeum.games\n\n"
+              f"#gamedev #newrelease #boardgames #indiegame"
+          )
+
+          # 6. Post to Buffer (new GraphQL API)
+          buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
+          if buffer_token:
+              buffer_url = "https://api.buffer.com"
+              headers = {
+                  "Authorization": f"Bearer {buffer_token}",
+                  "Content-Type": "application/json",
+              }
+
+              channels = [
+                  (os.environ.get('FACEBOOK_ID', ''), facebook_text, "Facebook"),
+                  (os.environ.get('THREADS_ID', ''), threads_text, "Threads"),
+                  (os.environ.get('LINKEDIN_ID', ''), linkedin_text, "LinkedIn"),
+              ]
+
+              for channel_id, text, name in channels:
+                  if not channel_id:
+                      print(f"Skipping Buffer post to {name} — channel ID not set")
+                      continue
+                  query = """
+                  mutation CreatePost($text: String!, $channelId: ChannelId!) {
+                    createPost(input: {
+                      text: $text
+                      channelId: $channelId
+                      schedulingType: automatic
+                      mode: shareNow
+                      assets: []
+                    }) {
+                      ... on PostActionSuccess {
+                        post { id text status }
+                      }
+                      ... on MutationError {
+                        message
+                      }
+                    }
+                  }
+                  """
+                  variables = {
+                      "text": text,
+                      "channelId": channel_id,
+                  }
+                  payload = {"query": query, "variables": variables}
+                  resp = requests.post(buffer_url, headers=headers, json=payload)
+                  if resp.status_code == 200:
+                      result = resp.json()
+                      if "errors" in result:
+                          print(f"Failed to post to {name}: {result['errors']}")
+                      else:
+                          print(f"Posted release v{version} to {name}")
+                  else:
+                      print(f"Failed to post to {name}: {resp.text}")
+          else:
+              print("BUFFER_API_TOKEN not set, skipping Buffer posts.")
+
+          # 7. Post to Telegram
+          telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          telegram_chat = os.environ.get('TELEGRAM_CHAT_ID', '')
+          if telegram_token and telegram_chat:
+              telegram_text = (
+                  f"🚀 <b>New Release: v{version}</b>\n\n"
+                  f"<b>What shipped:</b>\n<pre>{updates_text}</pre>\n\n"
+                  f"Try it now at arcadeum.games"
+              )
+              tg_resp = requests.post(
+                  f"https://api.telegram.org/bot{telegram_token}/sendMessage",
+                  data={"chat_id": telegram_chat, "text": telegram_text, "parse_mode": "HTML"},
+              )
+              if tg_resp.status_code == 200:
+                  print(f"Posted release v{version} to Telegram")
+              else:
+                  print(f"Failed to post to Telegram: {tg_resp.text}")
+          else:
+              print("Telegram not configured, skipping.")
+
+          EOF

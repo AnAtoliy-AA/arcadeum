@@ -41,7 +41,11 @@ test.describe('Header Language Switcher', () => {
       await expect(enPill).toBeVisible();
       await expect(enPill).toHaveAttribute('aria-pressed', 'true');
 
-      await mobileNav.getByTestId('mobile-language-es').click();
+      const esPill = mobileNav.getByTestId('mobile-language-es');
+      await mobileNav.evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
+      await esPill.click();
       await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     } else {
       const languageSwitcher = page
@@ -81,6 +85,11 @@ test.describe('Header Language Switcher', () => {
     await expect(mobileSwitcher).toBeVisible();
 
     // 4. Pick FR via the pill and verify the document language updates.
+    //    The pills sit at the bottom of the scrollable MobileNav — scroll
+    //    the container to the bottom so the button is inside the viewport.
+    await mobileNav.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
     await mobileNav.getByTestId('mobile-language-fr').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });

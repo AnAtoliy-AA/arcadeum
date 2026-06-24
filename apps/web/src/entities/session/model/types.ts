@@ -33,6 +33,7 @@ export type SessionTokensSnapshot = {
   equippedFrameId: string | null;
   equippedAuraId: string | null;
   equippedBannerId: string | null;
+  equippedGameSkinId: string | null;
 };
 
 export type SetSessionTokensInput = {
@@ -53,6 +54,7 @@ export type SetSessionTokensInput = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  equippedGameSkinId?: string | null;
 };
 
 export type LocalAuthMode = 'login' | 'register';

@@ -152,7 +152,7 @@ test.describe('/wallet filters and pagination (mocked)', () => {
   });
 });
 
-// ── WalletPageView DOM assertions (mocked server props via route intercept) ───
+// ── Wallet page DOM assertions (mocked server props via route intercept) ───
 
 test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
   /**
@@ -177,9 +177,16 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
       return;
     }
     await navigateTo(page, '/wallet');
-    const coinsFilter = page.getByTestId('filter-coins');
+    // Same SSR → hydration duplicate-node transient documented on filter-all
+    // below: mobile viewports briefly render two nodes with this testid. The
+    // first node carries the canonical href; `.first()` keeps strict-mode
+    // happy without weakening the link-href assertion.
+    const coinsFilter = page.getByTestId('filter-coins').first();
     await expect(coinsFilter).toBeVisible();
-    await expect(coinsFilter).toHaveAttribute('href', '/wallet?currency=coins');
+    await expect(coinsFilter).toHaveAttribute(
+      'href',
+      '/wallet?currency=coins#wallet-history',
+    );
   });
 
   test('filter-gems link points to ?currency=gems', async ({ page }) => {
@@ -189,9 +196,12 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
       return;
     }
     await navigateTo(page, '/wallet');
-    const gemsFilter = page.getByTestId('filter-gems');
+    const gemsFilter = page.getByTestId('filter-gems').first();
     await expect(gemsFilter).toBeVisible();
-    await expect(gemsFilter).toHaveAttribute('href', '/wallet?currency=gems');
+    await expect(gemsFilter).toHaveAttribute(
+      'href',
+      '/wallet?currency=gems#wallet-history',
+    );
   });
 
   test('filter-all link points to /wallet', async ({ page }) => {
@@ -208,7 +218,7 @@ test.describe('/wallet page — UI data-testid assertions (mocked)', () => {
     // job is to verify the All-filter link exists and points at /wallet.
     const allFilter = page.getByTestId('filter-all').first();
     await expect(allFilter).toBeVisible();
-    await expect(allFilter).toHaveAttribute('href', '/wallet');
+    await expect(allFilter).toHaveAttribute('href', '/wallet#wallet-history');
   });
 });
 

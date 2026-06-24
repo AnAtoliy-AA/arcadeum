@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Locale } from '@/shared/i18n';
-import { Container } from '@/shared/ui';
-import styles from './BlogPostList.module.css';
+import { Container } from '@arcadeum/ui';
+import styles from './BlogPostList.module.scss';
 
 export interface BlogPostCard {
   slug: string;

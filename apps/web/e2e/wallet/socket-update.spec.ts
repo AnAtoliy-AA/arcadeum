@@ -162,8 +162,8 @@ test.describe('/wallet socket-driven refresh (mocked socket)', () => {
 
     // The page renders — check that the balance section HTML is present
     const body = await res.text();
-    // The WalletPageView renders a [data-testid="balance-coins"] and
-    // [data-testid="balance-gems"] div. If those are not present the server
+    // WalletBalanceSummary renders [data-testid="balance-coins"] and
+    // [data-testid="balance-gems"] divs. If those are not present the server
     // component is broken (regression guard).
     //
     // Note: The page may redirect to /login for unauthenticated users. In that

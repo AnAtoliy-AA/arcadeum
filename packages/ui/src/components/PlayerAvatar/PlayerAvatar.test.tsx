@@ -17,12 +17,21 @@ describe('PlayerAvatar', () => {
     expect(screen.getByText('JD')).toBeInTheDocument();
   });
 
+  it('paints a base disc circle even with no frame/avatar (bots/guests)', () => {
+    render(<PlayerAvatar name="Bot 1" size="md" data-testid="pa" />);
+    const disc = screen.getByTestId('pa-disc');
+    expect(
+      disc.style.backgroundColor || disc.style.background,
+    ).toMatch(/rgba\(15,\s*23,\s*42/);
+    expect(disc.style.borderColor).toMatch(/rgba\(255,\s*255,\s*255/);
+  });
+
   it('renders the avatar image when avatarUrl is provided', () => {
     render(<PlayerAvatar name="Jane" avatarUrl="/x.png" />);
     expect(screen.getByRole('img')).toHaveAttribute('src', '/x.png');
   });
 
-  it('does not render badge / frame / aura / banner at icon size', () => {
+  it('renders badge / frame / aura at icon size, but never banner', () => {
     render(
       <PlayerAvatar
         name="J"
@@ -34,9 +43,10 @@ describe('PlayerAvatar', () => {
         data-testid="pa"
       />,
     );
-    expect(screen.queryByTestId('pa-badge')).toBeNull();
-    expect(screen.queryByTestId('pa-frame')).toBeNull();
-    expect(screen.queryByTestId('pa-aura')).toBeNull();
+    expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
+    // Banner is chrome-only (card / profile), so it never appears at icon size.
     expect(screen.queryByTestId('pa-banner')).toBeNull();
   });
 
@@ -59,6 +69,22 @@ describe('PlayerAvatar', () => {
       </TamaguiProvider>,
     );
     expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
+  });
+
+  it('stacks the badge above the avatar art so it is never clipped', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        avatarUrl="/x.png"
+        badgeUrl="/b.png"
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    // Tamagui applies zIndex via class, so read the resolved computed value.
+    const badgeZ = Number(getComputedStyle(screen.getByTestId('pa-badge')).zIndex);
+    const imgZ = Number(getComputedStyle(screen.getByRole('img', { name: 'J' })).zIndex);
+    expect(badgeZ).toBeGreaterThan(imgZ);
   });
 
   it('renders the frame ring at sm/md/card', () => {
@@ -85,11 +111,11 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
   });
 
-  it('renders the aura halo at md/card only', () => {
+  it('renders the aura halo at every size, including sm', () => {
     const { rerender } = render(
       <PlayerAvatar name="J" auraColor="#ff0" size="sm" data-testid="pa" />,
     );
-    expect(screen.queryByTestId('pa-aura')).toBeNull();
+    expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
 
     rerender(
       <TamaguiProvider config={config} defaultTheme="dark">
@@ -134,5 +160,137 @@ describe('PlayerAvatar', () => {
     render(<PlayerAvatar name="J" onPress={onPress} data-testid="pa" />);
     fireEvent.click(screen.getByTestId('pa'));
     expect(onPress).toHaveBeenCalled();
+  });
+
+  it('renders banner sentinel, name label, and presence line at profile size', () => {
+    render(
+      <PlayerAvatar
+        name="Jane"
+        bannerColor="#0f0"
+        presenceLine="Level 99"
+        size="profile"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-banner')).toBeInTheDocument();
+    expect(screen.getByTestId('pa-name')).toHaveTextContent('Jane');
+    expect(screen.getByText('Level 99')).toBeInTheDocument();
+  });
+
+  it('uses low-alpha hex tint + full border for solid frame color', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        frameColor="#ff00ff"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    const disc = screen.getByTestId('pa-disc');
+    expect(disc.style.backgroundColor || disc.style.background).toMatch(
+      /#ff00ff33|rgba\(255,\s*0,\s*255,\s*0\.2\)/i,
+    );
+    expect(disc.style.borderColor).toMatch(
+      /#ff00ff|rgb\(255,\s*0,\s*255\)/i,
+    );
+  });
+
+  it('uses dark wash composite + first-hex border for gradient frame', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        frameColor="linear-gradient(135deg, #22d3ee 0%, #6366f1 100%)"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    const disc = screen.getByTestId('pa-disc');
+    expect(disc.style.backgroundImage).toMatch(
+      /rgba\(15,\s*23,\s*42,\s*0\.55\)/,
+    );
+    expect(disc.style.backgroundImage).toContain('linear-gradient(135deg');
+    expect(disc.style.borderColor).toMatch(
+      /#22d3ee|rgb\(34,\s*211,\s*238\)/i,
+    );
+  });
+
+  it('renders the rays layer at md+ when aura is set', () => {
+    render(
+      <PlayerAvatar name="J" auraColor="#ff0" size="md" data-testid="pa" />,
+    );
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
+  });
+
+  it('renders the rays layer at md+ using rarityGlow when aura is absent', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        rarityGlow="rgba(168,85,247,0.26)"
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
+  });
+
+  it('renders the rays layer at sm when aura is set', () => {
+    render(
+      <PlayerAvatar name="J" auraColor="#ff0" size="sm" data-testid="pa" />,
+    );
+    expect(screen.getByTestId('pa-rays')).toBeInTheDocument();
+  });
+
+  it('does not render the rays layer when neither aura nor rarityGlow set', () => {
+    render(<PlayerAvatar name="J" size="md" data-testid="pa" />);
+    expect(screen.queryByTestId('pa-rays')).toBeNull();
+  });
+
+  it('renders the skin chip at card/profile when skinChip prop set', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon' }}
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('pa-skin')).toHaveTextContent(/NEON/i);
+  });
+
+  it('prepends the localized prefix to the skin chip when provided', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon', prefix: 'Skin' }}
+        size="card"
+        data-testid="pa"
+      />,
+    );
+    // Component owns only the separator + styling; the words come from props.
+    expect(screen.getByTestId('pa-skin')).toHaveTextContent(/SKIN · NEON/i);
+  });
+
+  it('does not render the skin chip below card', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        skinChip={{ id: 'skin-1', label: 'Neon' }}
+        size="md"
+        data-testid="pa"
+      />,
+    );
+    expect(screen.queryByTestId('pa-skin')).toBeNull();
+  });
+
+  it('renders topLeftOverlay above the disc', () => {
+    render(
+      <PlayerAvatar
+        name="J"
+        size="profile"
+        topLeftOverlay={<span data-testid="overlay">TRY-ON</span>}
+        data-testid="pa"
+      />,
+    );
+    expect(screen.getByTestId('overlay')).toBeInTheDocument();
   });
 });

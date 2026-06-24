@@ -30,6 +30,7 @@ interface UseGameHandlersOptions {
       cards?: string[],
     ) => void;
     playActionCard: (card: string, payload?: Record<string, unknown>) => void;
+    playSeeTheFuture: () => void;
     postHistoryNote: (message: string, scope: ChatScope) => void;
     commitAlterFuture: (orderedCards: CriticalCard[]) => void;
   };
@@ -162,6 +163,8 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
         setStashModal(true);
       } else if (card === 'smite') {
         setSmiteModal(true);
+      } else if (card === 'insight') {
+        actions.playSeeTheFuture();
       } else {
         actions.playActionCard(card);
       }

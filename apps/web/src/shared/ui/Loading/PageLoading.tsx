@@ -81,6 +81,7 @@ function Skel({
 }) {
   return (
     <div
+      className="shimmer-surface"
       style={{
         width: w,
         height: h,
@@ -379,17 +380,14 @@ export const PageLoading = memo(function PageLoading({
 }: PageLoadingProps) {
   const Layout = layouts[layout];
   return (
-    <>
-      <style>{`@keyframes pl-pulse{0%,100%{opacity:.5}50%{opacity:.25}}`}</style>
-      <div style={s.page}>
+    <div style={s.page}>
         <div style={s.container}>
           <div style={s.header}>
             <Skel w="60%" h={56} delay={0.1} />
             <Skel w="40%" h={20} delay={0.2} />
           </div>
           <Layout />
-        </div>
       </div>
-    </>
+    </div>
   );
 });

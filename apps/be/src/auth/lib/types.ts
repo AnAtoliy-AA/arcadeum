@@ -59,6 +59,10 @@ export interface AuthUserProfile {
   equippedAuraId?: string | null;
   /** Currently-equipped banner item id, or null. */
   equippedBannerId?: string | null;
+  /** Currently-equipped game-skin item id, or null. */
+  equippedGameSkinId?: string | null;
+  /** Currently-equipped avatar-background item id, or null. */
+  equippedBackgroundId?: string | null;
 }
 
 /**

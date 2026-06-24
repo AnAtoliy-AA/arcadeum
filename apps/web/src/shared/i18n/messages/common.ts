@@ -43,6 +43,14 @@ export const en = {
     admin: 'Admin',
     user: 'User',
   },
+  cosmetics: {
+    skin: 'Skin',
+  },
+  error: {
+    title: 'Something went wrong!',
+    message: 'An unexpected error has occurred.',
+    retry: 'Try again',
+  },
 };
 
 export const es = {
@@ -87,6 +95,14 @@ export const es = {
     developer: 'Dev',
     admin: 'Admin',
     user: 'Usuario',
+  },
+  cosmetics: {
+    skin: 'Skin',
+  },
+  error: {
+    title: '¡Algo salió mal!',
+    message: 'Ha ocurrido un error inesperado.',
+    retry: 'Intentar de nuevo',
   },
 };
 
@@ -133,6 +149,14 @@ export const fr = {
     admin: 'Admin',
     user: 'Utilisateur',
   },
+  cosmetics: {
+    skin: 'Skin',
+  },
+  error: {
+    title: 'Oups !',
+    message: "Une erreur inattendue s'est produite.",
+    retry: 'Réessayer',
+  },
 };
 
 export const ru = {
@@ -178,6 +202,14 @@ export const ru = {
     admin: 'Админ',
     user: 'Пользователь',
   },
+  cosmetics: {
+    skin: 'Скин',
+  },
+  error: {
+    title: 'Что-то пошло не так!',
+    message: 'Произошла непредвиденная ошибка.',
+    retry: 'Попробовать снова',
+  },
 };
 
 export const by = {
@@ -222,6 +254,14 @@ export const by = {
     developer: 'Распрацоўшчык',
     admin: 'Адмін',
     user: 'Карыстальнік',
+  },
+  cosmetics: {
+    skin: 'Скін',
+  },
+  error: {
+    title: 'Нешта пайшло не так!',
+    message: 'Адбылася нечаканая памылка.',
+    retry: 'Паспрабаваць зноў',
   },
 };
 

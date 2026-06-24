@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
-import { SUPPORTED_LOCALES } from '@/shared/i18n';
+import { SUPPORTED_LOCALES, localeToHreflang } from '@/shared/i18n';
 import { POST_SLUGS, getPost } from '@/features/blog/registry';
 
 type RouteKey =
@@ -33,7 +33,10 @@ type RouteKey =
   | 'wallet'
   | 'seaBattleLanding'
   | 'criticalLanding'
-  | 'glimwormLanding';
+  | 'glimwormLanding'
+  | 'ticTacToeLanding'
+  | 'cascadeLanding'
+  | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
 // underlying copy/feature shifts so Google sees a real lastmod rather
@@ -68,6 +71,9 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   seaBattleLanding: '2026-05-18',
   criticalLanding: '2026-05-21',
   glimwormLanding: '2026-05-21',
+  ticTacToeLanding: '2026-05-21',
+  cascadeLanding: '2026-05-21',
+  shop: '2026-05-21',
 };
 
 /**
@@ -90,12 +96,15 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'payment',
   'wallet',
   'gameCreate',
+  'shop',
 ]);
 
 const GAME_LANDING_KEYS: RouteKey[] = [
   'seaBattleLanding',
   'criticalLanding',
   'glimwormLanding',
+  'ticTacToeLanding',
+  'cascadeLanding',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -118,6 +127,8 @@ const PAGE_CHANGE_FREQ: Partial<
   seaBattleLanding: 'weekly',
   criticalLanding: 'weekly',
   glimwormLanding: 'weekly',
+  ticTacToeLanding: 'weekly',
+  cascadeLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -133,6 +144,7 @@ const PAGE_CHANGE_FREQ: Partial<
   chats: 'monthly',
   referrals: 'weekly',
   gameCreate: 'monthly',
+  shop: 'monthly',
 };
 
 /**
@@ -150,6 +162,8 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   seaBattleLanding: 0.9,
   criticalLanding: 0.9,
   glimwormLanding: 0.9,
+  ticTacToeLanding: 0.9,
+  cascadeLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,
@@ -173,6 +187,7 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   payment: 0.3,
   wallet: 0.3,
   gameCreate: 0.3,
+  shop: 0.3,
 };
 
 function alternatesFor(key: RouteKey): Record<string, string> {
@@ -180,7 +195,10 @@ function alternatesFor(key: RouteKey): Record<string, string> {
     SUPPORTED_LOCALES.map((locale) => {
       const r = buildRoutes(locale);
       const value = r[key];
-      return [locale, `${appConfig.siteUrl}${value as string}`];
+      return [
+        localeToHreflang(locale),
+        `${appConfig.siteUrl}${value as string}`,
+      ];
     }),
   );
 }
@@ -224,7 +242,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       for (const l of SUPPORTED_LOCALES) {
         const localized = getPost(slug, l);
         if (localized && localized.locale === l) {
-          postLanguages[l] =
+          postLanguages[localeToHreflang(l)] =
             `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
         }
       }

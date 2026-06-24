@@ -5,7 +5,8 @@ import {
   getWalletBalance,
   getWalletTransactions,
 } from '@/features/wallet/server/wallet.server';
-import { WalletPageView } from '@/features/wallet/ui/WalletPageView';
+import { WalletBalanceSummary } from '@/features/wallet/ui/WalletBalanceSummary';
+import { WalletHistory } from '@/features/wallet/ui/WalletHistory';
 import type {
   PaginatedWalletTransactions,
   WalletBalance,
@@ -18,7 +19,10 @@ import { getConversionRate } from '@/features/gems/server/gems.server';
 import { DailyRewardCard } from '@/features/daily-rewards/ui/DailyRewardCard';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
-import { isLocale } from '@/shared/i18n';
+import { isLocale, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import type { WalletReason } from '@/features/wallet/server/wallet.types';
+import { TokenInfo } from '@/features/wallet/ui/TokenInfo';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -38,11 +42,19 @@ interface SearchParams {
 }
 
 function parseCurrency(input?: string): WalletCurrency | undefined {
-  return input === 'coins' || input === 'gems' ? input : undefined;
+  return input === 'coins' || input === 'gems' || input === 'arcadeum'
+    ? input
+    : undefined;
 }
 
-const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0 };
+const EMPTY_BALANCE: WalletBalance = { coins: 0, gems: 0, arcadeum: 0 };
 const EMPTY_PAGE: PaginatedWalletTransactions = { items: [], nextCursor: null };
+
+const GEM_SECTIONS_STYLE: React.CSSProperties = {
+  maxWidth: '900px',
+  margin: '0 auto',
+  padding: '0 16px 32px',
+};
 
 export default async function WalletPage({
   params,
@@ -55,12 +67,28 @@ export default async function WalletPage({
   const sp = await searchParams;
   const currency = parseCurrency(sp.currency);
   const cursor = sp.cursor;
+  const typedLocale: Locale | undefined = isLocale(locale) ? locale : undefined;
 
   // Fetch the conversion rate server-side (no auth needed — public endpoint).
   let conversionRate = 100;
+  let tokenMetadata: {
+    name: string;
+    symbol: string;
+    description: string;
+    image: string | null;
+    pumpfunUrl: string | null;
+  } | null = null;
   try {
-    const rateData = await getConversionRate();
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
+    const [rateData, tokenData] = await Promise.all([
+      getConversionRate(),
+      fetch(`${backendUrl}/solana/token-metadata`, { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ]);
     conversionRate = rateData.rate;
+    tokenMetadata = tokenData;
   } catch {
     // Fallback to default if BE is unavailable
   }
@@ -74,25 +102,22 @@ export default async function WalletPage({
     return (
       <div>
         <PageBreadcrumb locale={locale} page="wallet" />
-        <WalletPageView
-          balance={EMPTY_BALANCE}
-          page={EMPTY_PAGE}
-          currency={currency}
-          locale={isLocale(locale) ? locale : undefined}
-        />
-        <div
-          style={{
-            maxWidth: '900px',
-            margin: '0 auto',
-            padding: '0 16px 32px',
-          }}
-          data-testid="gem-sections"
-        >
-          {/* GemStore is always shown — no auth required for browsing */}
-          <div id="gem-store" style={{ marginBottom: '32px' }}>
+        <WalletBalanceSummary balance={EMPTY_BALANCE} locale={typedLocale} />
+        <div style={GEM_SECTIONS_STYLE} data-testid="gem-sections">
+          <div id="gem-store" style={{ marginTop: '32px' }}>
             <GemStore />
           </div>
         </div>
+        <TokenInfo
+          mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+          metadata={tokenMetadata}
+        />
+
+        <WalletHistory
+          page={EMPTY_PAGE}
+          currency={currency}
+          locale={typedLocale}
+        />
       </div>
     );
   }
@@ -115,6 +140,14 @@ export default async function WalletPage({
 
   const { gems: currentGems } = balance;
 
+  let reasonLabels: Partial<Record<WalletReason, string>> = {};
+  try {
+    const messages = await getTranslations(typedLocale);
+    reasonLabels = messages.wallet?.reasons ?? {};
+  } catch {
+    // Fallback to default English labels
+  }
+
   return (
     <div>
       <PageBreadcrumb locale={locale} page="wallet" />
@@ -124,29 +157,30 @@ export default async function WalletPage({
           BalanceChip — so it never blocks the page from rendering. */}
       <DailyRewardCard />
 
-      <WalletPageView
-        balance={balance}
-        page={page}
-        currency={currency}
-        locale={isLocale(locale) ? locale : undefined}
-      />
+      <WalletBalanceSummary balance={balance} locale={typedLocale} />
 
       {/* Gem sections: pending purchases banner, gem store, and conversion form */}
-      <div
-        style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px 48px' }}
-        data-testid="gem-sections"
-      >
-        {/* Pending purchases banner — renders nothing if no pending purchases */}
+      <div style={GEM_SECTIONS_STYLE} data-testid="gem-sections">
         <PendingGemPurchases />
 
-        {/* Gem store — lists purchasable packages */}
-        <div id="gem-store" style={{ marginBottom: '32px' }}>
+        <div id="gem-store" style={{ marginTop: '32px', marginBottom: '32px' }}>
           <GemStore />
         </div>
 
-        {/* Convert gems to coins form */}
         <ConvertGemsForm rate={conversionRate} currentGems={currentGems} />
       </div>
+
+      <TokenInfo
+        mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
+        metadata={tokenMetadata}
+      />
+
+      <WalletHistory
+        page={page}
+        currency={currency}
+        locale={typedLocale}
+        reasonLabels={reasonLabels}
+      />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   SeaBattlePlayer,
   SeaBattleState,
   PlaceShipPayload,
+  MoveShipPayload,
   AttackPayload,
 } from './sea-battle.types';
 import { areCellsValid, areCellsConnected } from './sea-battle.utils';
@@ -59,6 +60,64 @@ export function validatePlaceShip(
       const c = cell.col + dc;
       if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
         if (player.board[r][c] === CELL_STATE.SHIP) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+export function validateMoveShip(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: MoveShipPayload,
+): boolean {
+  if (state.phase !== GAME_PHASE.PLACEMENT) return false;
+  if (player.placementComplete) return false;
+  if (!payload?.shipId || !payload?.cells) return false;
+
+  const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
+  if (!shipConfig) return false;
+  if (payload.cells.length !== shipConfig.size) return false;
+
+  // Ship must already be placed — that's what makes this a *move* and not a place.
+  const existing = player.ships.find((s) => s.id === payload.shipId);
+  if (!existing) return false;
+
+  if (!areCellsValid(payload.cells)) return false;
+  if (!areCellsConnected(payload.cells)) return false;
+
+  // Clone the board and clear the moving ship's existing cells so the overlap
+  // and adjacency checks treat the ship's current position as empty — otherwise
+  // a one-cell nudge along the ship's own axis would always fail.
+  const virtualBoard = player.board.map((row) => row.slice());
+  for (const cell of existing.cells) {
+    virtualBoard[cell.row][cell.col] = CELL_STATE.EMPTY;
+  }
+
+  for (const cell of payload.cells) {
+    if (virtualBoard[cell.row][cell.col] !== CELL_STATE.EMPTY) {
+      return false;
+    }
+
+    const directions = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ];
+
+    for (const [dr, dc] of directions) {
+      const r = cell.row + dr;
+      const c = cell.col + dc;
+      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+        if (virtualBoard[r][c] === CELL_STATE.SHIP) {
           return false;
         }
       }

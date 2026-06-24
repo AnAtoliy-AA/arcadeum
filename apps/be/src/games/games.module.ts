@@ -31,6 +31,9 @@ import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-a
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
+import { GamePostMatchService } from './game-post-match.service';
+import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -41,6 +44,12 @@ import { GlimwormGateway } from './glimworm.gateway';
 import { GlimwormService } from './glimworm/glimworm.service';
 import { GlimwormBotService } from './glimworm/glimworm-bot.service';
 import { GlimwormStateStore } from './glimworm/glimworm.state';
+import { TicTacToeGateway } from './tic-tac-toe.gateway';
+import { TicTacToeService } from './tic-tac-toe/tic-tac-toe.service';
+import { TicTacToeBotService } from './tic-tac-toe/tic-tac-toe-bot.service';
+import { CascadeGateway } from './cascade.gateway';
+import { CascadeService } from './cascade/cascade.service';
+import { CascadeBotService } from './cascade/cascade-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -65,6 +74,8 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     WalletModule,
     EconomyModule,
     GameVisibilityModule,
+    DailyChallengesModule,
+    AchievementsModule,
   ],
   controllers: [GamesController, GamesHistoryController],
   providers: [
@@ -92,12 +103,19 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     GlimwormStateStore,
     GlimwormService,
     GlimwormBotService,
+    // Tic-Tac-Toe
+    TicTacToeService,
+    TicTacToeBotService,
+    // Cascade
+    CascadeService,
+    CascadeBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
     GamesRematchService,
     GamesLeaderboardSyncService,
+    GamePostMatchService,
     // Gateways
     GamesGateway,
     CriticalGateway,
@@ -105,6 +123,8 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
     TexasHoldemGateway,
     SeaBattleGateway,
     GlimwormGateway,
+    TicTacToeGateway,
+    CascadeGateway,
   ],
   exports: [GameHistoryStatsService],
 })

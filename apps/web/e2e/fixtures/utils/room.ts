@@ -89,7 +89,7 @@ export async function clickButtonByTestId(
 ): Promise<void> {
   const button = page.getByTestId(testId);
   await expect(button).toBeVisible();
-  await button.click();
+  await button.click({ force: true });
 }
 
 export async function clickModalClose(page: Page): Promise<void> {

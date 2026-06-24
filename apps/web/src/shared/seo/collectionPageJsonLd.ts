@@ -1,14 +1,7 @@
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
+import { SCHEMA_LANGUAGE_MAP } from './schemaLanguageMap';
 import type { Locale } from '@/shared/i18n';
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
-};
 
 interface CollectionItem {
   /** Display name shown in the rich-result snippet. */
@@ -19,6 +12,8 @@ interface CollectionItem {
   image?: string;
   /** Optional short description. */
   description?: string;
+  /** Schema.org @type for the item. Defaults to 'Thing'. */
+  itemType?: string;
 }
 
 /**
@@ -71,7 +66,7 @@ export function buildCollectionPageJsonLd({
           position: idx + 1,
           url: itemUrl,
           item: {
-            '@type': 'Thing',
+            '@type': (item.itemType as string) ?? 'Thing',
             name: item.name,
             url: itemUrl,
             ...(item.description ? { description: item.description } : {}),

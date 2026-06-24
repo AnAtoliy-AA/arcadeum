@@ -6,11 +6,13 @@ import { BuyGemsButton } from './BuyGemsButton';
 interface GemPackageCardProps {
   pkg: GemPackagePublic;
   locale?: Locale;
+  isAuthenticated?: boolean;
 }
 
 export function GemPackageCard({
   pkg,
   locale = DEFAULT_LOCALE,
+  isAuthenticated = true,
 }: GemPackageCardProps) {
   const priceDisplay = formatCurrency(pkg.priceUsdCents / 100, locale, 'USD');
   const totalGems = pkg['gems'] + pkg['bonusGems'];
@@ -88,7 +90,7 @@ export function GemPackageCard({
         >
           {priceDisplay}
         </div>
-        <BuyGemsButton packageId={pkg.id} />
+        <BuyGemsButton packageId={pkg.id} isAuthenticated={isAuthenticated} />
       </div>
     </div>
   );

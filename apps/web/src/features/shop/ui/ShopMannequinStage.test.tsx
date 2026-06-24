@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import config from '../../../shared/config/tamagui.config';
 import {
@@ -27,6 +27,7 @@ const EMPTY = {
   banner: null,
   aura: null,
   frame: null,
+  background: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
 function item(
@@ -39,7 +40,7 @@ function item(
     rarity: 'common',
     nameKey: `items.${category}.${id}.name`,
     descKey: `items.${category}.${id}.desc`,
-    assetUrl: '/x.png',
+    assetUrl: `/${id}.png`,
     defaultPriceAmount: 0,
     defaultPriceCurrency: 'coins',
     available: true,
@@ -50,9 +51,9 @@ function item(
 }
 
 describe('ShopMannequinStage', () => {
-  it('shows the equipped avatar when no hover', () => {
+  it('renders the equipped avatar image when set', () => {
     const avatar = item('avatar-fox');
-    const { getByTestId } = render(
+    render(
       <Wrapper>
         <ShopMannequinStage
           preview={{ ...EMPTY, avatar }}
@@ -63,12 +64,11 @@ describe('ShopMannequinStage', () => {
         />
       </Wrapper>,
     );
-    // ItemAsset renders with data-testid=shop-asset-<id>
-    expect(getByTestId(`shop-asset-${avatar.id}`)).toBeInTheDocument();
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/avatar-fox.png');
   });
 
-  it('shows only "Online" when level is null', () => {
-    const { getByTestId } = render(
+  it('renders the display name on the stage', () => {
+    render(
       <Wrapper>
         <ShopMannequinStage
           preview={EMPTY}
@@ -79,11 +79,26 @@ describe('ShopMannequinStage', () => {
         />
       </Wrapper>,
     );
-    expect(getByTestId('shop-stage-presence').textContent).toBe('Online');
+    expect(screen.getByTestId('shop-stage-name')).toHaveTextContent('Player');
+  });
+
+  it('shows only "Online" when level is null', () => {
+    render(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={EMPTY}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.getByText('Online')).toBeInTheDocument();
   });
 
   it('shows "LVL N · Online" when level is provided', () => {
-    const { getByTestId } = render(
+    render(
       <Wrapper>
         <ShopMannequinStage
           preview={EMPTY}
@@ -94,15 +109,13 @@ describe('ShopMannequinStage', () => {
         />
       </Wrapper>,
     );
-    expect(getByTestId('shop-stage-presence').textContent).toBe(
-      'LVL 42 · Online',
-    );
+    expect(screen.getByText('LVL 42 · Online')).toBeInTheDocument();
   });
 
-  it('non-matching slots stay equipped when an unrelated item is hovered', () => {
+  it('renders the equipped avatar even when an unrelated slot is hovered', () => {
     const equippedAvatar = item('avatar-default');
     const hover = item('badge-legend', 'badge');
-    const { getByTestId } = render(
+    render(
       <Wrapper>
         <ShopMannequinStage
           preview={{ ...EMPTY, avatar: equippedAvatar, badge: hover }}
@@ -113,6 +126,96 @@ describe('ShopMannequinStage', () => {
         />
       </Wrapper>,
     );
-    expect(getByTestId(`shop-asset-${equippedAvatar.id}`)).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /Player/i })).toHaveAttribute(
+      'src',
+      '/avatar-default.png',
+    );
+  });
+
+  it('renders the badge sentinel only when a badge is equipped', () => {
+    const { rerender } = render(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={EMPTY}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.queryByTestId('shop-stage-badge')).toBeNull();
+
+    const badge = item('badge-star', 'badge');
+    rerender(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={{ ...EMPTY, badge }}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.getByTestId('shop-stage-badge')).toBeInTheDocument();
+  });
+
+  it('renders the SKIN chip only when a skin is equipped', () => {
+    const { rerender } = render(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={EMPTY}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.queryByTestId('shop-stage-skin')).toBeNull();
+
+    const skin = item('skin-neon', 'game_skin');
+    rerender(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={{ ...EMPTY, game_skin: skin }}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.getByTestId('shop-stage-skin')).toBeInTheDocument();
+  });
+
+  it('renders TRY-ON overlay only when hoverItem is set', () => {
+    const { rerender } = render(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={EMPTY}
+          hoverItem={null}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.queryByText(/Try-on/i)).toBeNull();
+
+    const hover = item('avatar-fox');
+    rerender(
+      <Wrapper>
+        <ShopMannequinStage
+          preview={EMPTY}
+          hoverItem={hover}
+          displayName="Player"
+          level={null}
+          labels={labels}
+        />
+      </Wrapper>,
+    );
+    expect(screen.getByText(/Try-on/i)).toBeInTheDocument();
   });
 });

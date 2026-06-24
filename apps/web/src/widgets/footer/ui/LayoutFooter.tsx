@@ -14,6 +14,10 @@ const PAGINATED_ROUTES = new Set<string>([
   '/stats',
 ]);
 
+// Game room routes where the footer should be hidden — players don't need
+// navigation links while actively playing.
+const GAME_ROOM_PATTERN = /\/rooms\//;
+
 export default function LayoutFooter() {
   const pathname = usePathname();
   const mounted = useIsMounted();
@@ -26,5 +30,6 @@ export default function LayoutFooter() {
   // ChunkLoadError on navigation. Static import + mount gate avoids both.
   if (!mounted) return null;
   if (pathname && PAGINATED_ROUTES.has(pathname)) return null;
+  if (pathname && GAME_ROOM_PATTERN.test(pathname)) return null;
   return <AppFooter />;
 }

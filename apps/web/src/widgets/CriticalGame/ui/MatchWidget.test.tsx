@@ -166,6 +166,14 @@ vi.mock('./styles/layout', () => ({
   ),
 }));
 
+vi.mock('./IdleTimerDisplay', () => ({
+  IdleTimerDisplay: () => <div data-testid="idle-timer-stub" />,
+}));
+
+vi.mock('./AutoplayControls', () => ({
+  AutoplayControls: () => <div data-testid="autoplay-controls-stub" />,
+}));
+
 import { MatchWidget, type MatchWidgetProps } from './MatchWidget';
 import type { CriticalCard, CriticalPlayerState } from '../types';
 import { makeProps } from './MatchWidget.test-fixtures';

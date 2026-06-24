@@ -8,6 +8,11 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -26,26 +31,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Generate Changelog
-        run: pnpm changelog
+      - name: Build
+        run: pnpm exec turbo run build --filter web --filter be
 
-      - name: Check if CHANGELOG.md was updated
-        id: check-changelog
-        run: |
-          if git diff --quiet HEAD -- CHANGELOG.md; then
-            echo "no-changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "no-changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and Push Changelog
-        if: steps.check-changelog.outputs.no-changes == 'false'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add CHANGELOG.md
-          git commit -m "chore: update changelog for ${{ github.ref_name }}" --allow-empty
-          git push origin main
+      - name: Install Playwright Browsers
+        run: pnpm --filter web exec playwright install --with-deps
 
       - name: Run E2E Tests
         env:
@@ -53,8 +43,3 @@ jobs:
           AUTH_JWT_SECRET: ${{ secrets.AUTH_JWT_SECRET || 'test_jwt_secret_key_for_e2e_only' }}
           NEXT_PUBLIC_E2E: 'true'
         run: pnpm --filter web test:e2e
-
-      - name: Notify on No Changes
-        if: steps.check-changelog.outputs.no-changes == 'true'
-        run: |
-          echo "No changes to CHANGELOG.md — release tag pushed without changelog update."

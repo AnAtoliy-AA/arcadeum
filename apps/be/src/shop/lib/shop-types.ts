@@ -6,16 +6,23 @@ export const SHOP_CATEGORIES = [
   'banner',
   'aura',
   'frame',
+  'background',
 ] as const;
 export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
 
 export const SHOP_RARITIES = ['common', 'rare', 'epic', 'legendary'] as const;
 export type ShopRarity = (typeof SHOP_RARITIES)[number];
 
-export const SHOP_PRICE_CURRENCIES = ['coins', 'gems'] as const;
+export const SHOP_PRICE_CURRENCIES = ['coins', 'gems', 'arcadeum'] as const;
 export type ShopPriceCurrency = (typeof SHOP_PRICE_CURRENCIES)[number];
 
-export const SHOP_ACQUIRED_VIA = ['coins', 'gems', 'grant', 'starter'] as const;
+export const SHOP_ACQUIRED_VIA = [
+  'coins',
+  'gems',
+  'arcadeum',
+  'grant',
+  'starter',
+] as const;
 export type ShopAcquiredVia = (typeof SHOP_ACQUIRED_VIA)[number];
 
 export interface ShopItemDef {
@@ -61,7 +68,9 @@ export type EquipKey =
   | 'equippedNameColorId'
   | 'equippedBannerId'
   | 'equippedAuraId'
-  | 'equippedFrameId';
+  | 'equippedFrameId'
+  | 'equippedGameSkinId'
+  | 'equippedBackgroundId';
 
 export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'avatar') return 'equippedAvatarId';
@@ -70,5 +79,7 @@ export function equipKeyFor(category: ShopCategory): EquipKey | null {
   if (category === 'banner') return 'equippedBannerId';
   if (category === 'aura') return 'equippedAuraId';
   if (category === 'frame') return 'equippedFrameId';
+  if (category === 'game_skin') return 'equippedGameSkinId';
+  if (category === 'background') return 'equippedBackgroundId';
   return null;
 }

@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoObjectJsonLd } from '@/shared/seo/videoObjectJsonLd';
+import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -33,14 +34,23 @@ export default async function HomeRoute({
     videoJsonLd = buildVideoObjectJsonLd({
       locale: safeLocale,
       youtubeId: videoId,
-      name: `${appConfig.appName} — ${seoHome?.title ?? 'Platform overview'}`,
+      name: seoHome?.title ?? `${appConfig.appName} — Platform overview`,
       description: seoHome?.description ?? appConfig.seoDescription,
+      uploadDate: appConfig.videoUploadDate,
     });
   }
+
+  const messages = await getTranslations(safeLocale);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    locale: safeLocale,
+    homeLabel: messages.navigation?.homeTab ?? 'Home',
+    trail: [],
+  });
 
   return (
     <>
       {videoJsonLd ? <JsonLd data={videoJsonLd} /> : null}
+      <JsonLd id="json-ld-home-breadcrumb" data={breadcrumbJsonLd} />
       <Suspense fallback={<PageLoading layout="home" />}>
         <HomePage />
       </Suspense>

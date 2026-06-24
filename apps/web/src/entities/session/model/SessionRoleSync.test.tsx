@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 
+const INITIAL_SYNC_DEFER_MS = 2000;
+
 // ---- Mock apiClient ----
 // Inline ApiError rather than vi.importActual to avoid an extra module-
 // resolution roundtrip and any side effects from the real api-client
@@ -114,6 +116,9 @@ describe('SessionRoleSync', () => {
   it('fetches /auth/me on mount when hydrated and accessToken present', async () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     expect(apiGetMock).toHaveBeenCalledTimes(1);
@@ -123,6 +128,9 @@ describe('SessionRoleSync', () => {
   it('does not fetch when not hydrated', async () => {
     storeRef.state.hydrated = false;
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
     expect(apiGetMock).not.toHaveBeenCalled();
   });
@@ -130,6 +138,9 @@ describe('SessionRoleSync', () => {
   it('does not fetch when accessToken is null', async () => {
     storeRef.state.snapshot = { accessToken: null };
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
     expect(apiGetMock).not.toHaveBeenCalled();
   });
@@ -148,9 +159,12 @@ describe('SessionRoleSync', () => {
     expect(apiGetMock).toHaveBeenCalledTimes(1);
   });
 
-  it('passes only profile fields to setTokens', async () => {
+  it('passes profile + equipped cosmetic fields to setTokens (no token fields)', async () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     expect(storeRef.state.setTokens).toHaveBeenCalledTimes(1);
@@ -161,10 +175,34 @@ describe('SessionRoleSync', () => {
       username: 'alice',
       displayName: 'Alice',
       role: 'admin',
+      equippedAvatarId: null,
+      equippedBadgeId: null,
+      equippedNameColorId: null,
+      equippedFrameId: null,
+      equippedAuraId: null,
+      equippedBannerId: null,
+      equippedGameSkinId: null,
     });
     expect(arg).not.toHaveProperty('accessToken');
     expect(arg).not.toHaveProperty('refreshToken');
     expect(arg).not.toHaveProperty('accessTokenExpiresAt');
+  });
+
+  it('propagates equipped cosmetics from /auth/me so the header avatar stays fresh', async () => {
+    apiGetMock.mockResolvedValueOnce({
+      ...PROFILE,
+      equippedAvatarId: 'avatar-saturn',
+      equippedFrameId: 'frame-gold',
+    });
+    render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
+    await flushPromises();
+
+    const arg = storeRef.state.setTokens.mock.calls[0][0];
+    expect(arg.equippedAvatarId).toBe('avatar-saturn');
+    expect(arg.equippedFrameId).toBe('frame-gold');
   });
 
   it('logout-during-sync: drops the result if accessToken cleared mid-fetch', async () => {
@@ -175,6 +213,9 @@ describe('SessionRoleSync', () => {
       }),
     );
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     setStoreState({ snapshot: { accessToken: null } });
@@ -188,6 +229,9 @@ describe('SessionRoleSync', () => {
   it('throttle: focus event right after mount does not refetch', async () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
     expect(apiGetMock).toHaveBeenCalledTimes(1);
 
@@ -201,6 +245,9 @@ describe('SessionRoleSync', () => {
   it('throttle: focus event after 30s elapses fires another fetch', async () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
     expect(apiGetMock).toHaveBeenCalledTimes(1);
 
@@ -235,6 +282,9 @@ describe('SessionRoleSync', () => {
   it('on 401, calls refreshTokens and does not call setTokens; throttle slot not consumed', async () => {
     apiGetMock.mockRejectedValueOnce(new ApiError('Unauthorized', 401, null));
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     expect(storeRef.state.refreshTokens).toHaveBeenCalledTimes(1);
@@ -252,6 +302,9 @@ describe('SessionRoleSync', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     apiGetMock.mockRejectedValueOnce(new ApiError('Server error', 500, null));
     render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     expect(storeRef.state.setTokens).not.toHaveBeenCalled();
@@ -272,6 +325,9 @@ describe('SessionRoleSync', () => {
     apiGetMock.mockResolvedValueOnce(PROFILE);
 
     const { unmount } = render(<SessionRoleSync />);
+    act(() => {
+      vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+    });
     await flushPromises();
 
     expect(storeRef.listeners.length).toBe(1);

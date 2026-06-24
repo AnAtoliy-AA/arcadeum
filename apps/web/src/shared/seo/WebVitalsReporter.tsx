@@ -62,7 +62,14 @@ function dispatch(metric: Metric): void {
     process.env.NODE_ENV !== 'production' &&
     window.localStorage?.getItem('debug:web-vitals') === '1'
   ) {
-    console.info('[web-vitals]', metric.name, metric.value, metric);
+    const navTag =
+      metric.navigationType === 'soft-nav' ? ' [soft-nav]' : '';
+    console.info(
+      `[web-vitals]${navTag}`,
+      metric.name,
+      metric.value,
+      metric,
+    );
   }
 }
 

@@ -95,4 +95,26 @@ describe('BuyGemsButton', () => {
       expect(alertMock).toHaveBeenCalledWith('Package not found.');
     });
   });
+
+  it('redirects to /auth when not authenticated, without calling the action', async () => {
+    render(<BuyGemsButton packageId="pkg-1" isAuthenticated={false} />);
+    fireEvent.click(screen.getByTestId('buy-gems-btn-pkg-1'));
+
+    await waitFor(() => {
+      expect(locationMock.href).toBe('/auth');
+    });
+    expect(mockBuyGemsAction).not.toHaveBeenCalled();
+  });
+
+  it('redirects to /auth when the action returns unauthorized', async () => {
+    mockBuyGemsAction.mockResolvedValue({ ok: false, error: 'unauthorized' });
+
+    render(<BuyGemsButton packageId="pkg-1" />);
+    fireEvent.click(screen.getByTestId('buy-gems-btn-pkg-1'));
+
+    await waitFor(() => {
+      expect(locationMock.href).toBe('/auth');
+    });
+    expect(alertMock).not.toHaveBeenCalled();
+  });
 });

@@ -7,10 +7,7 @@ import {
 } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
-import {
-  GameSessionsService,
-  GameSessionSummary,
-} from './sessions/game-sessions.service';
+import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -27,8 +24,7 @@ import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service'
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
-import { WalletService } from '../wallet/wallet.service';
-import { EconomySettingsService } from '../economy/economy-settings.service';
+import { GamePostMatchService } from './game-post-match.service';
 
 @Injectable()
 export class GamesService {
@@ -48,8 +44,7 @@ export class GamesService {
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
-    private readonly wallet: WalletService,
-    private readonly economy: EconomySettingsService,
+    private readonly postMatch: GamePostMatchService,
   ) {}
 
   // ========== Room Operations ==========
@@ -89,9 +84,10 @@ export class GamesService {
     return this.roomsService.getRoom(roomId, userId);
   }
 
-  /**
-   * Get room with session
-   */
+  async findRoomByInviteCode(code: string, viewerId?: string) {
+    return this.roomsService.findByInviteCode(code, viewerId);
+  }
+
   async getRoomSession(roomId: string, userId?: string) {
     const room = await this.roomsService.getRoom(roomId, userId);
     let session = await this.sessionsService.findSessionByRoom(roomId);
@@ -286,7 +282,22 @@ export class GamesService {
         session.roomId,
       );
       await this.leaderboardSync.syncInMatch(players, false);
-      await this.payoutGameWin(session);
+      await this.postMatch.payoutGameWin(session);
+
+      // Post-match side effects (daily challenges, achievements)
+      try {
+        const winners = await this.sessionsService.getWinners(session.id);
+        await this.postMatch.onGameCompleted(
+          players,
+          session.gameId,
+          winners,
+          {},
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Post-match processing failed for session ${session.id}: ${(err as Error).message}`,
+        );
+      }
     }
 
     return session;
@@ -461,37 +472,5 @@ export class GamesService {
     this.realtimeService.emitRoomUpdate(room);
 
     return room;
-  }
-
-  async payoutGameWin(session: GameSessionSummary): Promise<void> {
-    try {
-      const sessionId = session.id;
-      const winners = await this.sessionsService.getWinners(sessionId);
-      if (winners.length === 0) return;
-
-      const reward = await this.economy.getNumber('game_win_coin_reward');
-      if (reward <= 0) return;
-
-      for (const winnerId of winners) {
-        try {
-          await this.wallet.credit(
-            winnerId,
-            'coins',
-            reward,
-            'game_win',
-            `game-${sessionId}-payout-${winnerId}`,
-            { sessionId, gameId: session.gameId },
-          );
-        } catch (err) {
-          this.logger.warn(
-            `Game-win payout failed for session ${sessionId} winner ${winnerId}: ${(err as Error).message}`,
-          );
-        }
-      }
-    } catch (err) {
-      this.logger.warn(
-        `Failed to determine winners for session ${session.id}: ${(err as Error).message}`,
-      );
-    }
   }
 }

@@ -97,9 +97,9 @@ test.describe('Critical Single Player Mode', () => {
     await clickButtonByTestId(page, 'start-with-bots-button');
 
     await closeGameRulesModal(page);
-    await expect(page.getByRole('heading', { name: /your hand/i })).toBeVisible(
-      {},
-    );
+    // The legacy `PlayerHand` heading is gone; the new MatchWidget is
+    // the canonical "game is in progress" marker.
+    await expect(page.locator('[data-testid="match-widget"]')).toBeVisible({});
   });
 
   test('should allow playing a move in single player mode', async ({

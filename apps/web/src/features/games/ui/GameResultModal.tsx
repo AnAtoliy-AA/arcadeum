@@ -1,45 +1,61 @@
 'use client';
 
-import React from 'react';
-import { styled, YStack, XStack, H1, Paragraph, Text } from 'tamagui';
+import React, { useEffect, useRef } from 'react';
+import { styled, YStack, XStack, H1, Paragraph, Text, useMedia } from 'tamagui';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModalStyles';
 import { Dialog, VisuallyHidden } from 'tamagui';
+import { VictoryCelebration } from './VictoryCelebration';
 
 // --- Types ---
 
+type GameResultKind = 'victory' | 'defeat' | 'draw';
+
 interface GameResultModalProps {
   isOpen: boolean;
-  result: 'victory' | 'defeat' | null;
+  result: GameResultKind | null;
   onRematch?: () => void;
   onClose?: () => void;
   rematchLoading?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  /**
+   * Per-game override for the headline + body copy. Use this when the
+   * game has its own end-state vocabulary (e.g. tic-tac-toe ships
+   * `gameOver.won/lost/draw`) and the shared `games.table.*` keys would
+   * be wrong. When omitted, the modal falls back to
+   * `games.table.${result}.title`/`.message`.
+   */
+  messages?: { title: string; message?: string };
 }
 
 // --- Internal Styled Components ---
 
 const StyledBackdrop = styled(YStack, {
-  position: 'absolute',
+  position: 'fixed',
   top: 0,
   left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: -1,
+  width: '100vw',
+  height: '100dvh',
+  zIndex: 1199,
   backgroundColor: 'rgba(0, 0, 0, 0.85)',
   backdropFilter: 'blur(12px)',
 
   variants: {
-    $isVictory: {
-      true: {
+    tone: {
+      victory: {
         background:
           'radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
-      false: {
+      defeat: {
         background:
           'radial-gradient(circle at center, rgba(255, 77, 77, 0.08) 0%, rgba(0, 0, 0, 0.95) 100%)',
+      },
+      draw: {
+        background:
+          'radial-gradient(circle at center, rgba(148, 163, 184, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%)',
       },
     },
   } as const,
@@ -59,6 +75,8 @@ const ContentWrapper = styled(YStack, {
   shadowOffset: { width: 0, height: 40 },
   maxWidth: '90%',
   width: 520,
+  maxHeight: '90dvh',
+  overflowY: 'auto',
   position: 'relative',
   borderTopColor: 'rgba(255, 255, 255, 0.2)',
   borderLeftColor: 'rgba(255, 255, 255, 0.15)',
@@ -73,15 +91,20 @@ const ResultTitleText = styled(H1, {
   letterSpacing: 2,
 
   variants: {
-    $isVictory: {
-      true: {
+    tone: {
+      victory: {
         color: '#FFD700',
         textShadowColor: 'rgba(255, 215, 0, 0.4)',
         textShadowRadius: 20,
       },
-      false: {
+      defeat: {
         color: '#ff4d4d',
         textShadowColor: 'rgba(255, 77, 77, 0.4)',
+        textShadowRadius: 20,
+      },
+      draw: {
+        color: '#cbd5e1',
+        textShadowColor: 'rgba(148, 163, 184, 0.4)',
         textShadowRadius: 20,
       },
     },
@@ -110,46 +133,6 @@ const HomeLink = styled(LinkButton, {
   width: '100%',
 });
 
-const ConfettiWrapper = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  pointerEvents: 'none',
-  overflow: 'hidden',
-  zIndex: 0,
-});
-
-// --- Confetti Component ---
-
-const CONFETTI_PARTICLES = Array.from({ length: 50 }).map((_, i) => ({
-  left: (i * 7) % 100,
-  delay: (i * 0.17) % 3,
-  color: ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'][i % 5],
-}));
-
-const ConfettiContainer = () => {
-  return (
-    <ConfettiWrapper>
-      {CONFETTI_PARTICLES.map((p, i) => (
-        <YStack
-          key={i}
-          position="absolute"
-          top={-10}
-          width={10}
-          height={10}
-          left={`${p.left}%`}
-          backgroundColor={p.color}
-          style={{
-            animation: `fall 4s linear ${p.delay}s infinite`,
-          }}
-        />
-      ))}
-    </ConfettiWrapper>
-  );
-};
-
 // --- Main Component ---
 
 const StyledResultContent = styled(Dialog.Content, {
@@ -157,10 +140,19 @@ const StyledResultContent = styled(Dialog.Content, {
   backgroundColor: 'transparent',
   borderWidth: 0,
   padding: 0,
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100dvh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   x: 0,
   y: 0,
   scale: 1,
   opacity: 1,
+  zIndex: 1200,
 
   variants: {
     animated: {
@@ -191,6 +183,7 @@ export function GameResultModal({
   onClose,
   rematchLoading,
   t,
+  messages,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -198,15 +191,37 @@ export function GameResultModal({
     () => false,
   );
 
+  const media = useMedia();
+  const { play } = useSound();
+  // Play the result sting once when the modal opens (not on every re-render).
+  const playedForRef = useRef<GameResultKind | null>(null);
+  useEffect(() => {
+    if (!isOpen || !result) {
+      playedForRef.current = null;
+      return;
+    }
+    if (playedForRef.current === result) return;
+    playedForRef.current = result;
+    if (result === 'victory') play('win');
+    else if (result === 'defeat') play('lose');
+  }, [isOpen, result, play]);
+
   if (!isOpen || !result || !isClient) return null;
 
   const isVictory = result === 'victory';
+  const isDraw = result === 'draw';
+  const emoji = isVictory ? '🏆' : isDraw ? '🤝' : '💀';
+
+  const title =
+    messages?.title ?? t(`games.table.${result}.title` as TranslationKey);
+  const body =
+    messages?.message ?? t(`games.table.${result}.message` as TranslationKey);
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" backgroundColor="black" />
-        <StyledBackdrop $isVictory={isVictory} />
+        <StyledBackdrop tone={result} />
         <StyledResultContent elevate key="content">
           <VisuallyHidden>
             <Dialog.Title>Game Result</Dialog.Title>
@@ -215,7 +230,12 @@ export function GameResultModal({
             </Dialog.Description>
           </VisuallyHidden>
 
-          <ContentWrapper className="animate-entrance">
+          <ContentWrapper
+            className="animate-entrance"
+            padding={media.sm ? '$5' : '$10'}
+            borderRadius={media.sm ? 24 : 40}
+            width={media.sm ? '95%' : 520}
+          >
             {onClose && (
               <XStack position="absolute" top="$4" right="$4">
                 <CloseButton onClick={onClose} data-testid="modal-close-button">
@@ -226,26 +246,26 @@ export function GameResultModal({
 
             <YStack alignItems="center" gap="$2" marginBottom="$6">
               <Text fontSize={80} marginBottom="$2" className="float">
-                {isVictory ? '🏆' : '💀'}
+                {emoji}
               </Text>
               <ResultTitleText
-                $isVictory={isVictory}
+                tone={result}
                 data-testid="game-result-title"
                 className={isVictory ? 'pulse' : undefined}
               >
-                {t(`games.table.${result}.title` as TranslationKey)}
+                {title}
               </ResultTitleText>
             </YStack>
 
             <ResultMessage className="animate-fade-in-up-delay-2">
-              {t(`games.table.${result}.message` as TranslationKey)}
+              {body}
             </ResultMessage>
 
             <ActionsContainer className="animate-fade-in-up-delay-4">
               {onRematch && (
                 <Button
                   variant={isVictory ? 'primary' : 'secondary'}
-                  size="lg"
+                  size={media.sm ? 'md' : 'lg'}
                   onClick={onRematch}
                   disabled={rematchLoading}
                   data-testid="rematch-button"
@@ -265,7 +285,11 @@ export function GameResultModal({
               </HomeLink>
 
               {onClose && (
-                <Button variant="ghost" onClick={onClose} size="md">
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  size={media.sm ? 'sm' : 'md'}
+                >
                   {t('games.table.modals.common.close' as TranslationKey)}
                 </Button>
               )}
@@ -274,7 +298,7 @@ export function GameResultModal({
         </StyledResultContent>
       </Dialog.Portal>
 
-      {isVictory && <ConfettiContainer />}
+      <VictoryCelebration tone={result} />
     </Modal>
   );
 }

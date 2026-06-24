@@ -84,7 +84,9 @@ async function flushMessageQueue(): Promise<void> {
 function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
   socket.on('socket.encryption_key', async (data: { key?: string }) => {
     if (!data?.key) {
-      console.warn('[socket] Invalid encryption key data from server');
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[socket] Invalid encryption key data from server');
+      }
       return;
     }
 

@@ -1,5 +1,10 @@
 'use client';
 
+// NOTE: This component renders outside the normal app tree (it replaces
+// the entire HTML shell when a root-level error occurs). The LanguageProvider,
+// useTranslation(), and getTranslations() are all unavailable here, so
+// user-facing strings are intentionally hardcoded in English.
+
 export default function GlobalError({
   reset,
 }: {

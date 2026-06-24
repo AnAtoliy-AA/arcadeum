@@ -192,6 +192,33 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     );
   }
 
+  if (item.category === 'background') {
+    // Background preview: a filled rounded disc showing the colorValue wash
+    // (solid hex or gradient) the way it sits behind the avatar art.
+    const value = item.colorValue ?? '#1e293b';
+    const isGradient = value.includes('gradient');
+    return (
+      <YStack
+        width={size}
+        height={size}
+        alignItems="center"
+        justifyContent="center"
+        data-testid={`shop-asset-${item.id}`}
+      >
+        <YStack
+          width={size}
+          height={size}
+          borderRadius={size / 2}
+          borderWidth={1}
+          borderColor="rgba(255,255,255,0.18)"
+          style={
+            isGradient ? { backgroundImage: value } : { backgroundColor: value }
+          }
+        />
+      </YStack>
+    );
+  }
+
   return (
     <YStack
       width={size}
@@ -202,7 +229,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     >
       <Image
         src={item.assetUrl}
-        alt=""
+        alt={`${item.nameKey} preview`}
         width={size}
         height={size}
         style={{ objectFit: 'contain' }}

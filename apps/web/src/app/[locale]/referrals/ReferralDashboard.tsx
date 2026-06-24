@@ -4,7 +4,7 @@ import React from 'react';
 import { useReferralStats } from '@/features/referrals/hooks/useReferralStats';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { LoadingState, EmptyState, CosmeticBadge } from '@/shared/ui';
+import { LoadingState, EmptyState, CosmeticBadge } from '@arcadeum/ui';
 import { ReferralShareCard } from '@/features/referrals/ui/ReferralShareCard';
 import { ReferralProgressCard } from '@/features/referrals/ui/ReferralProgressCard';
 import { ReferralRewardsCard } from '@/features/referrals/ui/ReferralRewardsCard';

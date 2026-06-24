@@ -50,6 +50,9 @@ export class User {
   @Prop({ type: Number, default: 0, min: 0 })
   gems!: number;
 
+  @Prop({ type: Number, default: 0, min: 0 })
+  arcadeum!: number;
+
   @Prop({ type: String, default: null })
   equippedAvatarId?: string | null;
 
@@ -67,6 +70,12 @@ export class User {
 
   @Prop({ type: String, default: null })
   equippedFrameId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedGameSkinId?: string | null;
+
+  @Prop({ type: String, default: null })
+  equippedBackgroundId?: string | null;
 }
 
 export type UserDocument = User & Document;

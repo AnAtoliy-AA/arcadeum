@@ -7,6 +7,7 @@ import {
   isLocale,
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
+  localeToHreflang,
   type Locale,
 } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -49,7 +50,8 @@ export async function generateMetadata({
   const languages: Record<string, string> = {};
   for (const l of SUPPORTED_LOCALES) {
     if (getPost(slug, l)) {
-      languages[l] = `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
+      languages[localeToHreflang(l)] =
+        `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
     }
   }
   languages['x-default'] =
@@ -71,20 +73,11 @@ export async function generateMetadata({
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [post.author],
       tags: post.tags,
-      images: [
-        {
-          url: '/logo.png',
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
-      images: ['/logo.png'],
     },
   };
 }

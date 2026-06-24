@@ -92,13 +92,18 @@ export const en: LegalMessages = {
         content:
           '{{appName}} is provided "as is" without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages arising from your use of the service.',
       },
+      crypto: {
+        title: '11. Cryptocurrency & Digital Assets',
+        content:
+          'ARCADEUM tokens and virtual points are utility assets meant exclusively for entertainment within our skill-based gaming platform. They have no inherent monetary value outside the platform. Users are solely responsible for their local cryptocurrency tax compliance and regulatory obligations. Arcadeum does not guarantee the value of any digital assets and users should not treat them as investments.',
+      },
       governingLaw: {
-        title: '11. Governing Law',
+        title: '12. Governing Law',
         content:
           'These Terms are governed by the laws of Georgia. Any disputes shall be resolved in the courts of Georgia, in accordance with the Georgian Law on Electronic Commerce.',
       },
       contact: {
-        title: '12. Contact Us',
+        title: '13. Contact Us',
         content:
           'If you have questions about these Terms, please contact us through our support page or email us at {{email}}.',
       },

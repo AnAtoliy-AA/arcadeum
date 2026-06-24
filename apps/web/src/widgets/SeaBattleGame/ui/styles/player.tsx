@@ -2,6 +2,12 @@ import { styled, XStack, YStack, Text } from 'tamagui';
 
 export const PlayerSection = styled(YStack, {
   name: 'PlayerSection',
+  // Positioning context for the corner avatar, which is centered ON this
+  // card's top-left corner (so ~3/4 of it sits outside). `overflow: visible`
+  // lets that outside part show; the board grid inside self-clips its own
+  // cells (`.sb-board-grid-layout { overflow: hidden }`), so dropping the
+  // card's clip doesn't let board cells spill.
+  position: 'relative',
   alignItems: 'stretch',
   gap: '$1.5',
   padding: '$3',
@@ -10,7 +16,7 @@ export const PlayerSection = styled(YStack, {
   minWidth: 0,
   minHeight: 0,
   width: '100%',
-  overflow: 'hidden',
+  overflow: 'visible',
 
   variants: {
     isTargetable: {

@@ -181,6 +181,7 @@ export const enMessages = {
         addBot: 'Add Bot',
         removeBot: 'Remove',
         totalSlots: 'Total slots: {{used}} / {{max}}',
+        maxPlayers: 'Max total players:',
         minTeamsHint: 'At least 2 teams required',
         maxTeamsHint: 'Up to 4 teams (each with at least 2 players)',
         minSizeHint: 'Each team needs at least 2 slots',

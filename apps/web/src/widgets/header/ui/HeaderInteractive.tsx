@@ -15,7 +15,16 @@ import {
 } from '@arcadeum/ui/components/Icons/index';
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
+import dynamic from 'next/dynamic';
 import MobileMenu from '@/widgets/header/ui/MobileMenu';
+
+const NotificationBell = dynamic(
+  () =>
+    import('@/features/notifications/NotificationBell').then(
+      (m) => m.NotificationBell,
+    ),
+  { ssr: false },
+);
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 
 import {
@@ -47,6 +56,7 @@ export function HeaderInteractive() {
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
+      { href: routes.token, label: t('navigation.tokenTab') },
       {
         href: routes.shop,
         label: t('navigation.shopTab'),
@@ -65,6 +75,7 @@ export function HeaderInteractive() {
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
+      { href: routes.settings, label: t('navigation.settingsTab') },
     ],
     [navItems, t, routes],
   );
@@ -98,7 +109,6 @@ export function HeaderInteractive() {
             <HeaderMobileHidden>
               <Link
                 href={routes.support}
-                prefetch={false}
                 aria-label={t('common.actions.support')}
                 style={{ textDecoration: 'none', display: 'inline-flex' }}
                 data-testid="header-support-button"
@@ -126,6 +136,12 @@ export function HeaderInteractive() {
                 className="header-language-switcher"
               />
             </HeaderMobileHidden>
+
+            {isAuthenticated && (
+              <HeaderMobileHidden>
+                <NotificationBell />
+              </HeaderMobileHidden>
+            )}
 
             {isAuthenticated && displayName && (
               <HeaderMobileHidden>

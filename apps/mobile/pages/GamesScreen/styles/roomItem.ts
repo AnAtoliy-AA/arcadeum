@@ -31,6 +31,9 @@ export const getRoomItemStyles = (palette: Palette) => {
         elevation: 2,
       }),
     },
+    roomCardCompleted: {
+      opacity: 0.6,
+    },
     roomHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',

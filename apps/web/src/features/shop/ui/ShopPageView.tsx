@@ -66,6 +66,7 @@ export interface ShopPageLabels {
     banners: ShopRowLabels;
     auras: ShopRowLabels;
     frames: ShopRowLabels;
+    backgrounds: ShopRowLabels;
     legendary: ShopRowLabels;
   };
   card: ShopCardLabels;
@@ -149,6 +150,10 @@ export function ShopPageView({
     () => liveCatalog.filter((c) => c.category === 'frame'),
     [liveCatalog],
   );
+  const backgrounds = useMemo(
+    () => liveCatalog.filter((c) => c.category === 'background'),
+    [liveCatalog],
+  );
   const legendaries = useMemo(
     () => liveCatalog.filter((c) => c.rarity === 'legendary'),
     [liveCatalog],
@@ -227,7 +232,13 @@ export function ShopPageView({
             sellLabels={labels.sell}
           />
 
-          <YStack flex={1} width="100%" gap="$5" minWidth={0}>
+          <YStack
+            flex={1}
+            width="100%"
+            gap="$5"
+            minWidth={0}
+            $sm={{ flexGrow: 0, flexBasis: 'auto' }}
+          >
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}
@@ -269,6 +280,18 @@ export function ShopPageView({
               inventory={inventory.items}
               equipped={inventory.equipped}
               labels={labels.row.frames}
+              cardLabels={labels.card}
+              balance={balance}
+              priorityCount={2}
+              onPurchaseFallback={(item) => setPurchaseTarget(item)}
+            />
+            <ShopRow
+              id="row-backgrounds"
+              sectionKey="background"
+              items={backgrounds}
+              inventory={inventory.items}
+              equipped={inventory.equipped}
+              labels={labels.row.backgrounds}
               cardLabels={labels.card}
               balance={balance}
               priorityCount={2}

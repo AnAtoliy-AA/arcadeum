@@ -7,7 +7,7 @@ import { useAuthLabels } from '../hooks/useAuthLabels';
 import { AuthBrandPanel } from './AuthBrandPanel';
 import { AuthFormPanel } from './AuthFormPanel';
 import { AuthPageBackground } from './AuthPageBackground';
-import './auth.css';
+import './auth.scss';
 
 export default function AuthPageContent() {
   const auth = useAuthForm();

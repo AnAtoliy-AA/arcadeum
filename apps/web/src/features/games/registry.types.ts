@@ -6,6 +6,7 @@ export type GameSlug =
   | 'chess_v1'
   | 'checkers_v1'
   | 'tic_tac_toe_v1'
+  | 'cascade_v1'
   | 'connect_four_v1'
   | 'uno_v1'
   | 'go_v1'

@@ -103,6 +103,7 @@ function Profile({
     equippedFrameId,
     equippedAuraId,
     equippedBannerId,
+    equippedGameSkinId,
   } = profile;
   const max = modeRanks[0]?.rating ?? player.rating;
   // PlayerAvatar renders the avatar disc + badge corner + frame + aura.
@@ -136,6 +137,7 @@ function Profile({
           equippedFrameId={equippedFrameId}
           equippedAuraId={equippedAuraId}
           equippedBannerId={equippedBannerId}
+          equippedGameSkinId={equippedGameSkinId}
           fallbackAvatarUrl={player.avatarUrl}
           data-testid="player-profile-avatar"
         />

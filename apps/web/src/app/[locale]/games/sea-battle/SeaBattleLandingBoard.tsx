@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
-import styles from './SeaBattleLandingBoard.module.css';
+import styles from './SeaBattleLandingBoard.module.scss';
 
 const ROTATING_VARIANTS = [
   'classic',
@@ -12,6 +12,10 @@ const ROTATING_VARIANTS = [
   'nebula',
   'pixel',
   'vintage',
+  'forest',
+  'cartoon',
+  'sunset',
+  'monochrome',
 ] as const;
 
 type Variant = (typeof ROTATING_VARIANTS)[number];

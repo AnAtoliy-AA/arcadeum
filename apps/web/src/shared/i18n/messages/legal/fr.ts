@@ -93,13 +93,18 @@ export const fr: LegalMessages = {
         content:
           '{{appName}} est fourni "tel quel" sans garantie d\'aucune sorte. Nous ne sommes pas responsables des dommages indirects, accessoires ou consécutifs résultant de votre utilisation du service.',
       },
+      crypto: {
+        title: '11. Cryptomonnaies et Actifs Numériques',
+        content:
+          "Les jetons ARCADEUM et les points virtuels sont des actifs utilitaires destinés exclusivement au divertissement au sein de notre plateforme de jeux basés sur les compétences. Ils n'ont aucune valeur monétaire intrinsèque en dehors de la plateforme. Les utilisateurs sont seuls responsables de leurs obligations fiscales et réglementaires en matière de cryptomonnaies. Arcadeum ne garantit la valeur d'aucun actif numérique et les utilisateurs ne doivent pas les considérer comme des investissements.",
+      },
       governingLaw: {
-        title: '11. Droit Applicable',
+        title: '12. Droit Applicable',
         content:
           'Ces Conditions sont régies par les lois de la Géorgie. Tout litige sera résolu devant les tribunaux de Géorgie, conformément à la Loi géorgienne sur le Commerce Électronique.',
       },
       contact: {
-        title: '12. Nous Contacter',
+        title: '13. Nous Contacter',
         content:
           'Si vous avez des questions concernant ces Conditions, veuillez nous contacter via notre page de support ou nous envoyer un email à {{email}}.',
       },

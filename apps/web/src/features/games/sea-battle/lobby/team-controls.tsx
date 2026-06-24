@@ -42,9 +42,10 @@ export function ColorPalette({ color, onChange }: ColorPaletteProps) {
 interface SizeStepperProps {
   value: number;
   onChange: (next: number) => void;
+  max?: number;
 }
 
-export function SizeStepper({ value, onChange }: SizeStepperProps) {
+export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
   return (
     <XStack alignItems="center" gap="$1" data-testid="size-stepper">
       <Button
@@ -66,6 +67,7 @@ export function SizeStepper({ value, onChange }: SizeStepperProps) {
         size="sm"
         variant="secondary"
         aria-label="increment"
+        disabled={max !== undefined && value >= max}
         onClick={() => onChange(value + 1)}
       >
         +

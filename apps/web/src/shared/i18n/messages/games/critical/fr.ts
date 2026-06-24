@@ -66,6 +66,34 @@ export const frMessages = {
         name: 'Randonnée en Montagne',
         description: 'Survie dans une aventure en échappant à une avalanche',
       },
+      galaxy: {
+        name: 'Odyssée Cosmique',
+        description:
+          "Explorez les confins de l'espace à bord d'un vaisseau high-tech",
+      },
+      fantasy: {
+        name: 'Repaire du Dragon',
+        description:
+          'Un monde de magie, de bêtes mythiques et de légendes anciennes',
+      },
+      western: {
+        name: 'Vallée Poussiéreuse',
+        description:
+          "La frontière sauvage des hors-la-loi, shérifs et ruées vers l'or",
+      },
+      egypt: {
+        name: 'Malédiction du Pharaon',
+        description: 'Pyramides, chambres cachées et mystères du Nil',
+      },
+      steampunk: {
+        name: 'Machine à Vapeur',
+        description:
+          "Engrenages, mécanismes d'horlogerie et merveilles industrielles de l'ère victorienne",
+      },
+      zen: {
+        name: 'Zen au Clair de Lune',
+        description: 'Sérénité, discipline et la voie du samouraï',
+      },
       random: {
         name: 'Thème Aléatoire',
         description: 'Surprenez-moi avec un thème au hasard !',
@@ -322,6 +350,12 @@ export const frMessages = {
     log: {
       title: 'Journal de la Partie',
       empty: 'Aucune activité pour le moment',
+    },
+    turn: {
+      yourTurn: 'À vous de jouer',
+      otherTurn: 'Au tour de {{name}}',
+      waiting: 'En attente…',
+      gameOver: 'Partie terminée',
     },
     chat: {
       title: 'Chat de Table',

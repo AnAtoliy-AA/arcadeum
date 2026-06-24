@@ -1,0 +1,614 @@
+@keyframes breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(52, 211, 153, 0.3),
+      inset 0 0 20px rgba(52, 211, 153, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(52, 211, 153, 0.6),
+      inset 0 0 30px rgba(52, 211, 153, 0.12);
+  }
+}
+
+@keyframes danger-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(239, 68, 68, 0.3),
+      inset 0 0 20px rgba(239, 68, 68, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(239, 68, 68, 0.6),
+      inset 0 0 30px rgba(239, 68, 68, 0.12);
+  }
+}
+
+@keyframes turn-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes glow-hit {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(239, 68, 68, 0.9),
+      0 0 30px rgba(239, 68, 68, 0.3);
+  }
+}
+
+@keyframes glow-sunk {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow:
+      0 0 24px rgba(239, 68, 68, 1),
+      0 0 40px rgba(239, 68, 68, 0.4);
+  }
+}
+
+@keyframes valid-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(52, 211, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+  }
+}
+
+@keyframes selected-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(96, 165, 250, 0.8),
+      0 0 12px rgba(96, 165, 250, 0.3);
+  }
+}
+
+@keyframes preview-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dot-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.sb-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+.sb-section-danger-breathe {
+  animation: danger-breathe 3s ease-in-out infinite;
+}
+.sb-badge-danger-breathe {
+  animation: danger-breathe 2s ease-in-out infinite;
+}
+.sb-glow-hit {
+  animation: glow-hit 2s ease-in-out infinite;
+}
+.sb-glow-sunk {
+  animation: glow-sunk 1.5s ease-in-out infinite;
+}
+.sb-valid-pulse {
+  animation: valid-pulse 1.2s ease-in-out infinite;
+}
+.sb-selected-glow {
+  animation: selected-glow 1.5s ease-in-out infinite;
+}
+.sb-preview-fade {
+  animation: preview-fade 0.2s ease-out forwards;
+}
+.sb-dot-blink {
+  animation: dot-blink 1.2s ease-in-out infinite;
+}
+.sb-turn-pulse {
+  animation: turn-pulse 2s ease-in-out infinite;
+}
+
+.sb-icon-hit {
+  filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.9));
+}
+.sb-icon-sunk {
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.9));
+}
+
+.sb-board-grid-layout {
+  display: grid !important;
+  grid-template-columns: repeat(10, 1fr) !important;
+  grid-template-rows: repeat(10, 1fr) !important;
+  aspect-ratio: 1;
+  padding: 4px;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.sb-board-with-labels-layout {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  /* `auto minmax(0, 1fr)` so the board row stretches to fill the parent's
+     remaining height. In unconstrained parents (placement screen), 1fr
+     collapses to content size, preserving prior behavior. */
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 2px;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* In multi-board grid mode the ancestor flex chain hands down a definite
+   height. The grids container is a CSS grid; each direct child is a
+   PlayerSectionWrapper that we stretch to fill its cell AND make a
+   size container — so anything deeper can read the wrapper's box via
+   cqi/cqh without depending on Tamagui className passthrough on the
+   styled components inside. In mobile vertical (1-col flex column) the
+   `.sb-fit-grid` class is absent, so neither rule applies and the
+   page scrolls naturally between boards. */
+.sb-fit-grid > * {
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  container-type: size;
+}
+
+/* Inside the wrapper, PlayerSection (which carries the visible card
+   border) needs to stretch vertically so its border traces the full
+   cell height. Horizontally, we let it shrink to its content (board +
+   chrome) so the border doesn't trace a wide empty rectangle around a
+   height-limited board — the leftover slack moves outside the section,
+   centered in the grid cell, instead of inside it. */
+.sb-fit-grid .sb-player-section-fit {
+  height: 100%;
+  min-height: 0;
+  /* Tamagui's `width: 100%` rule from PlayerSection is at higher
+     specificity (`:root ._w-...`), so override needs !important. */
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.sb-fit-grid .sb-board-with-labels-layout {
+  /* Side = min(width-of-cell, height-of-cell - chrome). The 115px chrome
+     budget matches what PlayerSectionWrapper's paddingTop + PlayerSection
+     paddings + border + player name row + ships-remaining strip + gaps
+     actually consume above the board grid — keeps the board strictly
+     inside its section so `overflow: hidden` never crops cells.
+     The 60px floor inside max() is a safety net for absurdly tight
+     cells; layout responsibility is on the row-floor math to keep cells
+     large enough that the board stays playable. */
+  --sb-board-side: min(calc(100cqi - 8px), max(60px, calc(100cqh - 115px)));
+  width: var(--sb-board-side);
+  height: var(--sb-board-side);
+  align-self: center;
+  margin: 0 auto;
+  flex: 0 0 auto;
+}
+
+/* Mobile vertical (1-col flex column container). Each board fills the
+   column width and we cap its side by the dynamic viewport height
+   minus app + widget chrome (~180px) and the in-section chrome (~115)
+   so a single full board fits without clipping, even when the column
+   is wider than the viewport height allows. */
+.sb-grids-container-mobile .sb-board-with-labels-layout {
+  --sb-board-side: min(100%, max(200px, calc(100dvh - 200px)));
+  width: var(--sb-board-side);
+  height: var(--sb-board-side);
+  align-self: center;
+  margin: 0 auto;
+}
+
+.sb-grids-container-mobile .sb-board-with-labels-layout .sb-board-grid-layout {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Mobile / small-tablet landscape: put the ships-remaining strip on the
+   LEFT side of the board instead of above it. The board picks up the
+   reclaimed vertical chrome (~75px), growing ~30% taller in the same
+   viewport. PlayerSection switches to a 2×2 CSS grid; ShipsContainer
+   flips to a vertical bar with the segments stacked. The ships column
+   is narrow (48px) and the player name row is clamped to a single
+   compact line so the board can use as much of the cell as possible. */
+.sb-fit-grid.sb-mobile-landscape .sb-player-section-fit {
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'name name'
+    'ships board';
+  gap: 2px;
+  padding: 2px !important;
+}
+.sb-mobile-landscape .sb-player-section-fit > .is_PlayerName {
+  grid-area: name;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* The name row spans both grid columns, but the ~40px ships strip lives in
+     the left column. Pad the name past that strip so it centers over the
+     BOARD (and clears the top-left corner avatar) rather than the whole card. */
+  padding: 0 4px 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* IMPORTANT: this `sb-mobile-landscape` class is ALSO applied in desktop
+   widget-fullscreen when many boards force the height-tight side layout (see
+   SeaBattleGrids `useSideLayout`). Do NOT add a rule that hides the corner
+   avatar (`.sb-header-avatar`) here — that is what made the chips vanish in
+   fullscreen. The avatar is an absolute overlay (out of grid flow), so it does
+   not disturb the grid areas. */
+.sb-mobile-landscape .sb-player-section-fit > .is_PlayerStats {
+  grid-area: ships;
+  min-height: 0;
+  height: 100%;
+}
+.sb-mobile-landscape .sb-player-section-fit > .sb-board-with-labels-layout {
+  grid-area: board;
+}
+
+/* The ShipsLeft container is a YStack (column) wrapping a label row and
+   a bars row. In side-layout mode we want the visual order:
+     1. "10/10" count at the top (the most useful glanceable stat)
+     2. Ship silhouettes in the middle
+     3. "SHIPS REMAINING" rotated label at the bottom
+   The count and label are siblings inside one row, so we promote that
+   row to `display: contents` (its children become direct children of
+   the container) and then use `order` to position each part. */
+.sb-mobile-landscape .sb-ships-remaining-container {
+  height: 100%;
+  width: 100%;
+  /* Extra top padding so the vertical ships strip ("10/10" + silhouettes +
+     "SHIPS REMAINING" label) starts below the top-left corner avatar instead
+     of being tucked under it. */
+  padding: 36px 4px 4px 4px !important;
+  gap: 4px !important;
+}
+
+/* Label row: stack vertically. "SHIPS REMAINING" text rotated -90deg
+   so it reads bottom-to-top on the left of the strip; "10/10" count
+   sits horizontally below it. We give the rotated label a reserved
+   slot via height + display:flex so it doesn't overflow into the
+   board area. */
+/* Promote the label-row contents into the container so we can order
+   "10/10" and "SHIPS REMAINING" independently of each other AND the
+   bars row below. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:first-child {
+  display: contents;
+}
+/* "SHIPS REMAINING" — rotated, sits at the bottom of the strip. */
+.sb-mobile-landscape
+  .sb-ships-remaining-container
+  > div:first-child
+  > span:first-child {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 9px !important;
+  letter-spacing: 1px;
+  line-height: 1 !important;
+  white-space: nowrap;
+  text-align: center;
+  align-self: center;
+  order: 3;
+}
+/* "10/10" — count at the very top of the strip. */
+.sb-mobile-landscape
+  .sb-ships-remaining-container
+  > div:first-child
+  > span:nth-child(2) {
+  font-size: 13px !important;
+  text-align: center;
+  align-self: center;
+  order: 1;
+}
+/* Bars row stays in the middle (default order: 2). */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) {
+  order: 2;
+}
+
+/* Bars row: stack ships vertically as a list. Each ship stays as a
+   HORIZONTAL row of cells (its natural orientation), just rendered
+   smaller. Left-aligned so a 1-cell patrol doesn't stretch to 60px. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) {
+  flex-direction: column !important;
+  flex: 1;
+  height: auto;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 3px !important;
+}
+
+/* Each ship: keep horizontal cell row (no flex-direction override).
+   Override Tamagui's `flex: size` (which would grow vertically in a
+   column parent) and the inline `height: 10` so ships sit at a fixed
+   compact height. Width is set by data-size below — proportional to
+   ship length so the silhouette is recognizable. */
+.sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) > div {
+  flex: 0 0 auto !important;
+  height: 8px !important;
+}
+
+/* Silhouette widths are sized to fit the 40px ships column minus its 8px
+   horizontal padding (~32px content), so even the longest ship stays inside
+   the strip's rounded border. ~7px per cell; size-5 is capped at the content
+   width (this variant tops out at size-4, but the cap keeps it safe). */
+.sb-mobile-landscape [data-size='5'] {
+  width: 32px !important;
+}
+.sb-mobile-landscape [data-size='4'] {
+  width: 28px !important;
+}
+.sb-mobile-landscape [data-size='3'] {
+  width: 21px !important;
+}
+.sb-mobile-landscape [data-size='2'] {
+  width: 14px !important;
+}
+.sb-mobile-landscape [data-size='1'] {
+  width: 7px !important;
+}
+
+/* Smaller chrome budget when ships is on the side. Horizontal chrome:
+   40 (ships col) + 2 (gap) + 4 (section padding) + 4 (board margin)
+   ≈ 50. Vertical chrome: 18 (name + team pill) + 2 (gap) + 4 (section
+   padding) + 16 (col labels) ≈ 40. */
+.sb-fit-grid.sb-mobile-landscape .sb-board-with-labels-layout {
+  --sb-board-side: min(calc(100cqi - 55px), max(60px, calc(100cqh - 42px)));
+}
+
+.sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.sb-row-labels {
+  display: grid !important;
+  grid-template-rows: repeat(10, 1fr) !important;
+  height: 100% !important;
+}
+
+.sb-col-labels {
+  display: grid !important;
+  grid-template-columns: repeat(10, 1fr) !important;
+  width: 100% !important;
+}
+
+.sb-label {
+  font-size: 11px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.6;
+}
+
+.sb-cell {
+  pointer-events: auto;
+  user-select: none;
+  position: relative;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.sb-cell.sb-cell--ship-draggable {
+  cursor: grab;
+}
+.sb-cell.sb-cell--ship-draggable:active {
+  cursor: grabbing;
+}
+.sb-cell.sb-cell--dragging {
+  opacity: 0.4;
+}
+
+@keyframes sb-moving-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(251, 191, 36, 0.4),
+      0 0 4px rgba(251, 191, 36, 0.25);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(251, 191, 36, 0.8),
+      0 0 10px rgba(251, 191, 36, 0.5);
+  }
+}
+.sb-cell.sb-cell--moving {
+  animation: sb-moving-pulse 1.2s ease-in-out infinite;
+  cursor: pointer;
+}
+
+/* Pending-sync: shown on the optimistically-placed cells of a ship while
+   the server round-trip is in flight. Slow, soft pulse (blue-ish) so it
+   reads as "syncing" rather than a valid-drop preview (which uses the
+   faster green valid-pulse on hover). */
+@keyframes sb-pending-sync {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(96, 165, 250, 0.35),
+      0 0 4px rgba(96, 165, 250, 0.25);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(96, 165, 250, 0.7),
+      0 0 10px rgba(96, 165, 250, 0.5);
+  }
+}
+.sb-cell.sb-cell--pending-sync {
+  animation: sb-pending-sync 1.6s ease-in-out infinite;
+}
+
+/* Small rotate affordance on each placed multi-cell ship's head cell.
+   Always visible so the user spots it without searching; takes up only the
+   top-right corner (~12% of the cell) so the rest of the head cell remains
+   freely draggable. Clicking the icon rotates the ship in place; clicking
+   anywhere else on the cell starts the regular drag. */
+.sb-cell__rotate-btn {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(15, 23, 42, 0.75);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.85;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    background-color 120ms ease;
+  z-index: 2;
+}
+.sb-cell:hover .sb-cell__rotate-btn,
+.sb-cell__rotate-btn:hover {
+  opacity: 1;
+  background: rgba(15, 23, 42, 0.95);
+}
+.sb-cell__rotate-btn:hover {
+  transform: scale(1.1);
+}
+.sb-cell__rotate-btn:active {
+  transform: scale(0.95);
+}
+@media (pointer: coarse) {
+  .sb-cell__rotate-btn {
+    opacity: 0.95;
+  }
+}
+
+/* Responsive labels */
+@media (max-width: 768px) {
+  .sb-label {
+    font-size: 11px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sb-label {
+    font-size: 8px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Performance Cursors */
+.sb-board-grid.sb-my-turn .sb-cell.sb-attackable {
+  cursor: crosshair !important;
+}
+.sb-board-grid:not(.sb-my-turn) .sb-cell {
+  cursor: default !important;
+}
+
+/* Optimistic "shot fired" state — shown until the server confirms the hit/miss.
+   Timeline (one-shot, then calm wait state):
+     0–300ms   : 🎯 snaps onto the cell (aim lock).
+     300–1300ms: 🚀 streaks in from above-right, lands on the cell.
+     1300ms+   : gentle "impact" pulse on 🎯 while the server reply lands.
+   The board grid has overflow:hidden, so the rocket appears to fly in from the
+   "sky" above the targeted spot. */
+@keyframes sb-aim-snap {
+  0% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+@keyframes sb-missile-fly {
+  0% {
+    transform: translate(160%, -460%) rotate(135deg) scale(1.5);
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(255, 200, 80, 0));
+  }
+  20% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 200, 80, 0.85));
+  }
+  85% {
+    transform: translate(0, 0) rotate(135deg) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(255, 120, 60, 0.95));
+  }
+  100% {
+    transform: translate(0, 0) rotate(135deg) scale(0.4);
+    opacity: 0;
+    filter: drop-shadow(0 0 14px rgba(255, 80, 40, 1));
+  }
+}
+@keyframes sb-impact-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+}
+.sb-cell.sb-cell-pending {
+  cursor: wait !important;
+}
+.sb-cell.sb-cell-pending .sb-aim {
+  animation:
+    sb-aim-snap 0.3s ease-out forwards,
+    sb-impact-pulse 1.6s ease-in-out 1.3s infinite;
+}
+.sb-cell.sb-cell-pending .sb-missile {
+  animation: sb-missile-fly 1s cubic-bezier(0.45, 0, 0.9, 0.55) 0.3s both;
+}

@@ -143,4 +143,37 @@ export const fr = {
       refreshToken: "Jeton d'actualisation",
     },
   },
+  forgot: {
+    title: 'Réinitialiser votre mot de passe',
+    description:
+      "Saisissez l'email lié à votre compte et nous vous enverrons un lien de réinitialisation.",
+    emailLabel: 'Adresse e-mail',
+    submit: 'Envoyer le lien',
+    submitting: 'Envoi en cours...',
+    successTitle: 'Vérifiez votre boîte de réception',
+    successBody:
+      "Si un compte existe pour {{email}}, nous avons envoyé un lien de réinitialisation. Le lien expire dans 15 minutes.",
+    backToSignIn: 'Retour à la connexion',
+    error: "Impossible d'envoyer le lien. Réessayez.",
+    invalidEmail: 'Saisissez une adresse e-mail valide.',
+  },
+  reset: {
+    title: 'Choisissez un nouveau mot de passe',
+    description: 'Au moins 8 caractères.',
+    passwordLabel: 'Nouveau mot de passe',
+    confirmLabel: 'Confirmer le mot de passe',
+    submit: 'Mettre à jour le mot de passe',
+    submitting: 'Mise à jour...',
+    successTitle: 'Mot de passe mis à jour',
+    successBody:
+      'Vous pouvez désormais vous connecter avec votre nouveau mot de passe.',
+    signInCta: 'Continuer vers la connexion',
+    missingToken:
+      "Le code de réinitialisation est absent de ce lien. Demandez-en un nouveau depuis la page de connexion.",
+    invalidToken:
+      'Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau.',
+    passwordTooShort: 'Le mot de passe doit faire au moins 8 caractères.',
+    passwordMismatch: 'Les mots de passe ne correspondent pas.',
+    error: 'Impossible de mettre à jour le mot de passe. Réessayez.',
+  },
 };

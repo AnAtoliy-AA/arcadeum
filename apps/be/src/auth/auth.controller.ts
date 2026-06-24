@@ -12,6 +12,7 @@ import {
   Headers,
   HttpCode,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import {
   AuthService,
@@ -25,12 +26,19 @@ import { JwtAuthGuard } from './jwt/jwt.guard';
 import { AuthenticatedUser } from './jwt/jwt.strategy';
 import { OAuthLoginDto } from './dtos/oauth-login.dto';
 import { RefreshTokenRequestDto } from './dtos/refresh-token-request.dto';
+import { ForgotPasswordDto } from './dtos/forgot-password.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { PasswordResetService } from './services/password-reset.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly passwordReset: PasswordResetService,
+  ) {}
 
   @Post('token')
+  @Throttle({ auth: { limit: 10, ttl: 60_000 } })
   async exchange(
     @Body() dto: TokenExchangeDto,
     @Headers('origin') originHeader?: string,
@@ -49,11 +57,13 @@ export class AuthController {
   }
 
   @Post('register')
+  @Throttle({ auth: { limit: 5, ttl: 60_000 } })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
   @Get('check/username/:username')
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   checkUsername(
     @Param('username') username: string,
   ): Promise<{ available: boolean }> {
@@ -61,23 +71,52 @@ export class AuthController {
   }
 
   @Get('check/email/:email')
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   checkEmail(@Param('email') email: string): Promise<{ available: boolean }> {
     return this.authService.checkEmailAvailable(email);
   }
 
   @Post('login')
+  @Throttle({ auth: { limit: 10, ttl: 60_000 } })
   login(@Body() dto: LoginDto): Promise<AuthTokensResponse> {
     return this.authService.login(dto);
   }
 
   @Post('oauth/login')
+  @Throttle({ auth: { limit: 10, ttl: 60_000 } })
   oauthLogin(@Body() dto: OAuthLoginDto): Promise<AuthTokensResponse> {
     return this.authService.loginWithOAuth(dto);
   }
 
   @Post('refresh')
+  @Throttle({ auth: { limit: 20, ttl: 60_000 } })
   refresh(@Body() dto: RefreshTokenRequestDto): Promise<AuthTokensResponse> {
     return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  // Account-enumeration defense: always 204, never reveal whether the email
+  // mapped to a user. Rate-limited tightly because every request triggers
+  // a DB write + outbound email when an account does exist.
+  @Post('forgot')
+  @HttpCode(204)
+  @Throttle({ strict: { limit: 5, ttl: 60 * 60 * 1000 } })
+  async forgot(@Body() dto: ForgotPasswordDto): Promise<void> {
+    await this.passwordReset.requestReset(dto.email);
+  }
+
+  // Slightly more permissive than /forgot because a real user can mistype
+  // a fresh password a few times before getting it right.
+  @Post('reset')
+  @Throttle({ strict: { limit: 10, ttl: 60 * 60 * 1000 } })
+  async reset(@Body() dto: ResetPasswordDto): Promise<{ ok: true }> {
+    const result = await this.passwordReset.consumeReset(
+      dto.token,
+      dto.password,
+    );
+    if (!result.ok) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+    return { ok: true };
   }
 
   @Get('me')
@@ -92,6 +131,7 @@ export class AuthController {
 
   @Get('users/search')
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   async searchUsers(@Req() req: Request, @Query('q') query?: string) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {

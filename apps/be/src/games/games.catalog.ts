@@ -35,12 +35,39 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       'forest',
       'sunset',
       'monochrome',
+      'speed',
+      'battle_royale',
+      'team_2v2',
     ],
   },
   { gameId: 'texas_holdem_v1', variants: [] },
   {
     gameId: 'glimworm_v1',
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
+  },
+  {
+    gameId: 'tic_tac_toe_v1',
+    variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
+  },
+  {
+    // Cascade's `variants` list is the union of visual themes AND gameplay
+    // modes — the admin/game-visibility surface needs every selectable
+    // option here. The engine reads them as separate axes (`variant` vs
+    // `mode` in CascadeOptions); this catalog entry is the source of truth
+    // for admin filtering only.
+    gameId: 'cascade_v1',
+    variants: [
+      'cosmic',
+      'arcane',
+      'cyberpunk',
+      'elemental',
+      'classic',
+      'neon',
+      'tropical',
+      'steampunk',
+      'pure',
+      'speed',
+    ],
   },
 ];
 

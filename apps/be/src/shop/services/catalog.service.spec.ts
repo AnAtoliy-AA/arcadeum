@@ -4,6 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { CatalogService } from './catalog.service';
 import { ShopItemOverride } from '../schemas/shop-item-override.schema';
 import { BadRequestException } from '@nestjs/common';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 
 type OverrideDoc = {
   itemId: string;
@@ -62,6 +63,12 @@ describe('CatalogService', () => {
         {
           provide: ConfigService,
           useValue: { get: jest.fn().mockReturnValue('60') },
+        },
+        {
+          provide: EconomySettingsService,
+          useValue: {
+            getNumber: jest.fn().mockResolvedValue(1),
+          },
         },
       ],
     }).compile();

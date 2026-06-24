@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -8,11 +9,19 @@ import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
 import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
-import { isLocale, SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
+import {
+  isLocale,
+  SUPPORTED_LOCALES,
+  localeToHreflang,
+  type Locale,
+} from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
+import { LayoutShell } from '@/shared/ui/LayoutShell';
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: 'en_US',
@@ -20,14 +29,6 @@ const OG_LOCALE_MAP: Record<Locale, string> = {
   fr: 'fr_FR',
   ru: 'ru_RU',
   by: 'be_BY',
-};
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
 };
 
 export function generateStaticParams() {
@@ -44,7 +45,10 @@ export async function generateMetadata({
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const languages = Object.fromEntries(
-    SUPPORTED_LOCALES.map((l) => [l, `${appConfig.siteUrl}/${l}`]),
+    SUPPORTED_LOCALES.map((l) => [
+      localeToHreflang(l),
+      `${appConfig.siteUrl}/${l}`,
+    ]),
   );
 
   return {
@@ -64,7 +68,7 @@ export async function generateMetadata({
       description: appConfig.seoDescription,
       images: [
         {
-          url: '/logo.png',
+          url: `${appConfig.siteUrl}/logo.png`,
           width: 1200,
           height: 630,
           alt: appConfig.appName,
@@ -108,6 +112,8 @@ export default async function LocaleLayout({
       description: localizedDescription,
       potentialAction: {
         '@type': 'SearchAction',
+        // Client-side filtered games list — no separate search page needed.
+        // Google uses this for sitelinks searchbox in the SERP.
         target: `${appConfig.siteUrl}${routes.games}?q={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
@@ -121,11 +127,6 @@ export default async function LocaleLayout({
       description: localizedDescription,
       operatingSystem: 'Any',
       applicationCategory: 'GameApplication',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '1240',
-      },
       offers: {
         '@type': 'Offer',
         price: '0',
@@ -135,15 +136,23 @@ export default async function LocaleLayout({
   ];
 
   return (
-    <LanguageProvider locale={locale}>
-      <PWAProvider>
-        <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-        <AnnouncementBanner />
-        <Header />
-        {children}
-        <LayoutFooter />
-        {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
-      </PWAProvider>
-    </LanguageProvider>
+    <>
+      <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
+      <LanguageProvider locale={locale}>
+        <PWAProvider>
+          <SoundProvider>
+            <LayoutShell>
+              <AnnouncementBanner />
+              <Header />
+              <main style={{ flex: 1 }}>
+                <Suspense>{children}</Suspense>
+              </main>
+              <LayoutFooter />
+            </LayoutShell>
+            {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+          </SoundProvider>
+        </PWAProvider>
+      </LanguageProvider>
+    </>
   );
 }

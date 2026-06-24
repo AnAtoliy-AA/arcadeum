@@ -29,6 +29,14 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Glimworm · Jeu de serpents en arène gratuit en ligne · ${APP}`,
     description: `Jouez gratuitement à Glimworm en ligne sur ${APP} — un jeu d'arène de vers lumineux en temps réel pour jusqu'à 10 joueurs. Glissez, survivez, mangez les lumières. Dans le navigateur, sans téléchargement.`,
   },
+  ticTacToeLanding: {
+    title: `Morpion · Multijoueur · Plateaux 3×3 – 9×9 · ${APP}`,
+    description: `Jouez au morpion multijoueur sur ${APP} — six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans téléchargement.`,
+  },
+  cascadeLanding: {
+    title: `Cascade · Jeu de cartes multijoueur de défausse · ${APP}`,
+    description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,
@@ -64,6 +72,10 @@ export const fr: DeepPartial<SeoMessages> = {
   wallet: {
     title: `Portefeuille et solde · ${APP}`,
     description: `Gérez votre portefeuille ${APP}: consultez votre solde, l'historique des transactions et votre inventaire cosmétique.`,
+  },
+  token: {
+    title: `Token · ${APP}`,
+    description: `Découvrez le token ${APP} sur Solana: gagnez en jouant ou en prix de tournois, dépensez en boutique.`,
   },
   shop: {
     title: `Boutique · Cosmétiques et boosts · ${APP}`,

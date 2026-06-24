@@ -17,6 +17,7 @@ import {
   ShopItemOverride,
   type ShopItemOverrideDocument,
 } from '../schemas/shop-item-override.schema';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 
 interface CacheEntry {
   value: EffectiveShopItem;
@@ -45,6 +46,7 @@ export class CatalogService {
     @InjectModel(ShopItemOverride.name)
     private readonly overrideModel: Model<ShopItemOverrideDocument>,
     private readonly config: ConfigService,
+    private readonly economy: EconomySettingsService,
   ) {
     const raw = this.config.get<string>('SHOP_CACHE_TTL_SECONDS');
     const parsed = raw !== undefined && raw !== '' ? Number(raw) : 60;
@@ -61,7 +63,7 @@ export class CatalogService {
     if (cached && cached.expiresAt > now) return cached.value;
 
     const override = await this.overrideModel.findOne({ itemId }).lean();
-    const effective = this.applyOverride(def, override);
+    const effective = await this.applyOverride(def, override);
 
     if (this.ttlMs > 0) {
       this.cache.set(itemId, { value: effective, expiresAt: now + this.ttlMs });
@@ -80,7 +82,7 @@ export class CatalogService {
     for (const def of Object.values(SHOP_CATALOG)) {
       if (filter?.category && def.category !== filter.category) continue;
       if (filter?.rarity && def.rarity !== filter.rarity) continue;
-      const effective = this.applyOverride(
+      const effective = await this.applyOverride(
         def,
         overrideMap.get(def.id) ?? null,
       );
@@ -165,26 +167,40 @@ export class CatalogService {
     return value;
   }
 
-  private applyOverride(
+  private async applyOverride(
     def: ShopItemDef,
     override: Partial<{
       available: boolean | null;
       priceAmount: number | null;
       priceCurrency: ShopPriceCurrency | null;
     }> | null,
-  ): EffectiveShopItem {
+  ): Promise<EffectiveShopItem> {
     const available =
       override?.available === null || override?.available === undefined
         ? true
         : override.available;
-    const priceAmount =
+    let priceAmount =
       override?.priceAmount === null || override?.priceAmount === undefined
         ? def.defaultPriceAmount
         : override.priceAmount;
-    const priceCurrency =
+    let priceCurrency =
       override?.priceCurrency === null || override?.priceCurrency === undefined
         ? def.defaultPriceCurrency
         : override.priceCurrency;
+
+    const allowGems = (await this.economy.getNumber('shop_allow_gems')) === 1;
+    const allowArc =
+      (await this.economy.getNumber('shop_allow_arcadeum')) === 1;
+
+    if (priceCurrency === 'gems' && !allowGems) {
+      priceCurrency = 'coins';
+      priceAmount = def.defaultPriceAmount;
+    }
+    if (priceCurrency === 'arcadeum' && !allowArc) {
+      priceCurrency = 'coins';
+      priceAmount = def.defaultPriceAmount;
+    }
+
     const overridden =
       override !== null &&
       override !== undefined &&

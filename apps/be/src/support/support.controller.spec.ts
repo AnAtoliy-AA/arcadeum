@@ -5,7 +5,6 @@ import type { App } from 'supertest/types';
 import { SupportController } from './support.controller';
 import { SupportService } from './support.service';
 import { OriginGuard } from './lib/origin.guard';
-import { SupportThrottlerGuard } from './lib/support-throttler.guard';
 
 type ServerHandle = Parameters<typeof request>[0];
 
@@ -21,8 +20,6 @@ describe('SupportController (integration)', () => {
       controllers: [SupportController],
       providers: [{ provide: SupportService, useValue: support }],
     })
-      .overrideGuard(SupportThrottlerGuard)
-      .useValue({ canActivate: () => true })
       .overrideGuard(OriginGuard)
       .useValue({ canActivate: () => true })
       .compile();

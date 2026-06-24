@@ -17,6 +17,10 @@ import { en as referralsEn } from './referrals';
 import { en as seoEn } from './seo';
 import { en as statsEn } from './stats';
 import { en as supportEn } from './support';
+import { en as notificationsEn } from './notifications';
+import { en as battlePassEn } from './battle-pass';
+import { en as musicPlayerEn } from './music-player';
+import { en as walletEn } from './wallet';
 
 /**
  * Static translations bundle for the default locale.
@@ -41,6 +45,10 @@ export const translations = {
     pwa: pwaEn,
     referrals: referralsEn,
     seo: seoEn,
+    notifications: notificationsEn,
+    battlePass: battlePassEn,
+    musicPlayer: musicPlayerEn,
+    wallet: walletEn,
   },
 } as const;
 
@@ -72,6 +80,10 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     seo,
     stats,
     support,
+    notifications,
+    battlePass,
+    musicPlayer,
+    wallet,
   ] = await Promise.all([
     import('./auth'),
     import('./pages'),
@@ -89,6 +101,10 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./seo'),
     import('./stats'),
     import('./support'),
+    import('./notifications'),
+    import('./battle-pass'),
+    import('./music-player'),
+    import('./wallet'),
   ]);
 
   // Extract the specific locale from each module
@@ -110,5 +126,9 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     pwa: pwa[locale],
     referrals: referrals[locale],
     seo: seo[locale],
+    notifications: notifications[locale],
+    battlePass: battlePass[locale],
+    musicPlayer: musicPlayer[locale],
+    wallet: wallet[locale],
   };
 }

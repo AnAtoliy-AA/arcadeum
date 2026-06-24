@@ -6,6 +6,7 @@ import { apiClient, ApiError } from '@/shared/lib/api-client';
 import type { AuthUserProfile } from '../api/authApi';
 
 const FOCUS_THROTTLE_MS = 30_000;
+const INITIAL_SYNC_DEFER_MS = 2000;
 
 /**
  * Mounted exactly once at the app root. Keeps the persisted session
@@ -41,13 +42,23 @@ export function SessionRoleSync(): null {
 
         // Profile fields ONLY — buildSnapshot preserves token fields via
         // `input.X ?? current.X`, so a refresh that landed during this
-        // fetch survives.
+        // fetch survives. /auth/me is the authoritative profile source, so we
+        // also propagate equipped cosmetics (avatar/badge/frame/aura/etc.) —
+        // otherwise the header avatar stays stale after equipping elsewhere
+        // (it shows initials while the live game resolves the real avatar).
         await statePost.setTokens({
           userId: profile.id,
           email: profile.email,
           username: profile.username,
           displayName: profile.displayName ?? profile.username ?? profile.email,
           role: profile.role,
+          equippedAvatarId: profile.equippedAvatarId ?? null,
+          equippedBadgeId: profile.equippedBadgeId ?? null,
+          equippedNameColorId: profile.equippedNameColorId ?? null,
+          equippedFrameId: profile.equippedFrameId ?? null,
+          equippedAuraId: profile.equippedAuraId ?? null,
+          equippedBannerId: profile.equippedBannerId ?? null,
+          equippedGameSkinId: profile.equippedGameSkinId ?? null,
         });
 
         lastSuccessfulSyncAtRef.current = Date.now();
@@ -63,13 +74,15 @@ export function SessionRoleSync(): null {
         }
         // 5xx / network — keep stale snapshot. Throttle slot NOT
         // consumed; next focus may retry.
-        console.warn('[SessionRoleSync] /auth/me failed:', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[SessionRoleSync] /auth/me failed:', err);
+        }
       } finally {
         inFlightRef.current = false;
       }
     };
 
-    void sync();
+    const timer = setTimeout(() => void sync(), INITIAL_SYNC_DEFER_MS);
 
     const unsubscribe = useSessionStore.subscribe((state, prev) => {
       if (state.hydrated && !prev.hydrated) void sync();
@@ -81,6 +94,7 @@ export function SessionRoleSync(): null {
     window.addEventListener('focus', onFocus);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('focus', onFocus);
       unsubscribe();
     };

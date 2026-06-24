@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.14.25",
+  "version": "1.21.8",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -43,6 +43,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.0",
+    "recharts": "^3.8.1",
     "socket.io-client": "^4.8.1",
     "tamagui": "2.0.0-rc.23",
     "zustand": "^5.0.10"
@@ -73,6 +74,7 @@
     "jsdom": "^27.4.0",
     "mongodb-memory-server": "^11.1.0",
     "playwright": "^1.58.0",
+    "sass": "^1.101.0",
     "storybook": "^10.2.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",

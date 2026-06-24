@@ -24,6 +24,7 @@ export function emitSetTeamConfig(
   env: BaseEnvelope & {
     teams: TeamConfigDraft[];
     hideShipsFromTeammates?: boolean;
+    maxTotalPlayers?: number;
   },
 ): void {
   gameSocket.emit('seaBattle.lobby.set_team_config', env);

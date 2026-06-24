@@ -51,6 +51,12 @@ export class UserInventoryItem {
 
   @Prop({ type: String, default: null })
   revokedReason?: string | null;
+
+  @Prop({ type: String, default: null })
+  walletSignature?: string | null;
+
+  @Prop({ type: String, default: null })
+  walletSender?: string | null;
 }
 
 export type UserInventoryItemDocument = UserInventoryItem & Document;

@@ -1,0 +1,279 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding: 48px 0;
+
+  @media (max-width: 640px) {
+    gap: 40px;
+    padding: 32px 0;
+  }
+}
+
+/* Hero */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: 48px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
+  }
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+}
+
+.heroTitle {
+  font-size: clamp(28px, 4.4vw, 52px);
+  line-height: 1.1;
+  font-weight: 900;
+  margin: 0;
+}
+
+.heroSubtitle {
+  font-size: 18px;
+  opacity: 0.85;
+  margin: 0;
+  max-width: 540px;
+
+  @media (max-width: 768px) {
+    margin: 0 auto;
+  }
+}
+
+.heroButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+}
+
+.heroCta {
+  padding: 14px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c3aed 0%, #4338ca 100%);
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.heroSecondary {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.heroArt {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  background: radial-gradient(circle at 30% 30%, #312e81 0%, #0c0a1e 70%);
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 16px;
+
+  @media (max-width: 768px) {
+    max-width: 300px;
+  }
+}
+
+.heroArtInner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroCard {
+  position: absolute;
+  width: 120px;
+  height: 180px;
+  border-radius: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 900;
+  color: white;
+
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 120px;
+    font-size: 42px;
+  }
+}
+
+/* Highlights */
+
+.highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.highlightCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.08),
+    rgba(124, 58, 237, 0.02)
+  );
+  border: 1px solid rgba(124, 58, 237, 0.18);
+}
+
+.highlightIcon {
+  font-size: 32px;
+}
+
+.highlightTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.highlightBody {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Steps */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.stepCard {
+  position: relative;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.06),
+    rgba(168, 85, 247, 0.02)
+  );
+  border: 1px solid rgba(168, 85, 247, 0.18);
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #4338ca);
+  color: white;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.stepBody {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Themes, Rules, FAQ */
+
+.themes,
+.rules,
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.sectionSubtitle {
+  font-size: 16px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.rules {
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(34, 197, 94, 0.04);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.rulesNote {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.faq {
+  gap: 20px;
+}
+
+.faqItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.faqQuestion {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.faqAnswer {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.breadcrumbs {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: underline;
+}

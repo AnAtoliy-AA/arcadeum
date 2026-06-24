@@ -1,5 +1,11 @@
 'use client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  startTransition,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
@@ -44,6 +50,7 @@ import {
   type Range,
 } from './_components/LeaderboardControls';
 import { FreshnessIndicator } from './_components/FreshnessIndicator';
+import { MythicBloom } from './_components/MythicBloom';
 
 const PAGE_SIZE = 50;
 const SELF_ROW_FALLBACK_HEIGHT = 88;
@@ -124,9 +131,9 @@ export default function LeaderboardsPageContent({
     setFreshnessPulseKey((k) => k + 1);
     if (page === 1) {
       refetch().catch((err: unknown) => {
-        // #20: don't swallow silently. Until we wire telemetry this at
-        // least surfaces a flapping BE in the dev console.
-        console.warn('[leaderboards] refetch on capture failed', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[leaderboards] refetch on capture failed', err);
+        }
       });
     }
   }, [page, refetch]);
@@ -160,22 +167,24 @@ export default function LeaderboardsPageContent({
   );
   useLeaderboardSocket('leaderboards.entry.updated', handleEntryUpdated);
 
+  function resetAndSet<T>(setter: (v: T) => void, next: T) {
+    startTransition(() => {
+      setter(next);
+      setPage(1);
+      setAccumulated([]);
+    });
+  }
+
   function handleModeChange(next: GameMode) {
-    setMode(next);
-    setPage(1);
-    setAccumulated([]);
+    resetAndSet(setMode, next);
   }
 
   function handleScopeChange(next: Scope) {
-    setScope(next);
-    setPage(1);
-    setAccumulated([]);
+    resetAndSet(setScope, next);
   }
 
   function handleRangeChange(next: Range) {
-    setRange(next);
-    setPage(1);
-    setAccumulated([]);
+    resetAndSet(setRange, next);
   }
 
   // Blocker #3: jump to the actual self row inside the table, not the
@@ -318,7 +327,8 @@ export default function LeaderboardsPageContent({
 
           {mythic ? (
             <XStack gap="$4" flexWrap="wrap" alignItems="stretch">
-              <View flex={2} minWidth={360}>
+              <View flex={2} minWidth={360} position="relative">
+                <MythicBloom />
                 <MythicSpotlight
                   rank={mythic.rank}
                   name={mythic.name}
@@ -339,6 +349,7 @@ export default function LeaderboardsPageContent({
                       equippedFrameId={mythic.equippedFrameId}
                       equippedAuraId={mythic.equippedAuraId}
                       equippedBannerId={mythic.equippedBannerId}
+                      role={mythic.role}
                       fallbackAvatarUrl={mythic.avatarUrl}
                       priority
                     />
@@ -382,6 +393,7 @@ export default function LeaderboardsPageContent({
                         equippedAuraId={second.equippedAuraId}
                         equippedBannerId={second.equippedBannerId}
                         fallbackAvatarUrl={second.avatarUrl}
+                        priority
                       />
                     }
                   />
@@ -407,6 +419,7 @@ export default function LeaderboardsPageContent({
                           equippedAuraId={third.equippedAuraId}
                           equippedBannerId={third.equippedBannerId}
                           fallbackAvatarUrl={third.avatarUrl}
+                          priority
                         />
                       }
                     />
@@ -417,7 +430,6 @@ export default function LeaderboardsPageContent({
           ) : null}
 
           <GameModeTabs value={mode} onChange={handleModeChange} t={t} />
-
           <XStack gap="$4" flexWrap="wrap">
             <ClimbersFallersRail
               climbers={data?.climbers ?? []}
@@ -428,7 +440,6 @@ export default function LeaderboardsPageContent({
           </XStack>
 
           <RewardLadder rewards={data?.rewards ?? []} t={t} />
-
           <LeaderboardControls
             scope={scope}
             onScopeChange={handleScopeChange}
@@ -439,7 +450,6 @@ export default function LeaderboardsPageContent({
             onJumpToSelf={data?.self ? jumpToSelf : undefined}
             t={t}
           />
-
           {showEmpty ? (
             <EmptyState
               message={emptyT.body ?? 'Be the first to climb the ladder.'}

@@ -1,4 +1,4 @@
-export const WALLET_CURRENCIES = ['coins', 'gems'] as const;
+export const WALLET_CURRENCIES = ['coins', 'gems', 'arcadeum'] as const;
 export type WalletCurrency = (typeof WALLET_CURRENCIES)[number];
 
 export const WALLET_REASONS = [
@@ -15,6 +15,15 @@ export const WALLET_REASONS = [
   'referral_tier_bonus',
   'daily_reward',
   'shop_purchase',
+  'shop_purchase_arc',
   'shop_sell_refund',
+  'battle_pass_reward',
+  'achievement',
+  'daily_challenge',
+  'token_purchase',
+  'tournament_token_prize',
+  'wager_entry',
+  'wager_prize',
+  'wager_fee',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

@@ -21,9 +21,8 @@ import { GamesFilters } from './components/GamesFilters';
 import { GamesHeader } from './components/GamesHeader';
 import { GamesList } from './components/GamesList';
 import { GamesLoading } from './components/GamesLoading';
-import { PageLayout, Container } from '@/shared/ui';
-import { GlassCard } from '@arcadeum/ui';
-import styles from './GamesPage.module.css';
+import { PageLayout, Container, GlassCard } from '@arcadeum/ui';
+import styles from './GamesPage.module.scss';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,

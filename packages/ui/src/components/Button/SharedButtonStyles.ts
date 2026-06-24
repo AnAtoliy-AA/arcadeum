@@ -87,6 +87,7 @@ export const sharedButtonVariants = {
     },
     glass: {
       backgroundColor: '$glassBg',
+      color: '$color',
       borderColor: '$glassBorder',
       borderTopColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,

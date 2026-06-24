@@ -1,0 +1,524 @@
+@use 'breakpoints' as bp;
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.4);
+  }
+
+  70% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 15px rgba(255, 171, 0, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0);
+  }
+}
+
+/* pulse keyframe — used by .pulse-ring in home-bundle.scss */
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes popupAutoDismiss {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+/* ─── Game Theme Animations ─────────────────────────────── */
+@keyframes icyShimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateX(100%) skewX(-15deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(100%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fadeInUp 0.6s ease-out both 0.2s;
+}
+
+.animate-fade-in-up-delay-4 {
+  animation: fadeInUp 0.6s ease-out both 0.4s;
+}
+
+
+
+.hero-container-main {
+  max-width: var(--container-xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--t-space-4);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--t-space-12);
+  padding-bottom: var(--t-space-12);
+}
+
+@media (min-width: 1151px) {
+  /* gtMd */
+  .hero-container-main {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.hero-content-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-6);
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+  align-items: center;
+}
+
+@media (min-width: 1151px) {
+  /* gtMd */
+  .hero-content-main {
+    align-items: flex-start;
+  }
+}
+
+.hero-visual-main {
+  display: flex;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  padding: 0 var(--t-space-6);
+  margin: var(--t-space-4) 0;
+}
+
+@include bp.narrow {
+  .hero-card-stack-main {
+    transform: scale(0.75);
+  }
+}
+
+@media (min-width: 1151px) {
+  /* gtMd */
+  .hero-visual-main {
+    height: 540px;
+    margin: 0;
+  }
+}
+
+.hero-kicker-main {
+  font-size: var(--t-font-size-3);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: var(--t-space-2) var(--t-space-5);
+  display: inline-flex;
+  opacity: 0.8;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-title-main {
+  display: block;
+  font-size: 140px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -4px;
+  color: var(--color);
+  margin: 0;
+}
+
+@media (max-width: 1150px) {
+  /* md and below */
+  .hero-title-main {
+    font-size: clamp(48px, 15vw, 84px);
+    line-height: 1;
+    text-align: center;
+    letter-spacing: -2px;
+  }
+}
+
+.hero-tagline-main {
+  margin: 0;
+  font-size: var(--t-font-size-8);
+  font-weight: 700;
+  color: var(--color);
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+@media (max-width: 1150px) {
+  .hero-tagline-main {
+    font-size: var(--t-font-size-6);
+    text-align: center;
+  }
+}
+
+.hero-description-main {
+  margin: 0;
+  max-width: 500px;
+  font-size: var(--t-font-size-4);
+  color: var(--color);
+  opacity: 0.75;
+}
+
+.animate-shimmer-mid,
+[data-hydrated="true"] .kicker-hydration-shimmer,
+.is-hydrated .kicker-hydration-shimmer {
+  position: relative;
+  display: inline-block;
+  color: var(--primary);
+}
+
+[data-hydrated="true"] .kicker-hydration-shimmer::after,
+.is-hydrated .kicker-hydration-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: shimmer-glide 4s infinite alternate 1s;
+  pointer-events: none;
+}
+
+@keyframes shimmer-glide {
+  0% {
+    transform: translateX(-100%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-20deg);
+  }
+}
+
+.fade-on-mount {
+  opacity: 0;
+  transition: opacity 0.6s ease-out;
+}
+
+[data-hydrated="true"] .fade-on-mount,
+.is-hydrated .fade-on-mount,
+.fade-on-mount.mounted {
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes playButtonPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: playButtonPulse 3s infinite;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(1.02);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ─── Critical Game Theme Animations ────────────────────── */
+
+@keyframes vignetteFlicker {
+  0% {
+    opacity: 0.4;
+  }
+
+  15% {
+    opacity: 0.7;
+  }
+
+  30% {
+    opacity: 0.3;
+  }
+
+  55% {
+    opacity: 0.6;
+  }
+
+  70% {
+    opacity: 0.2;
+  }
+
+  85% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes snowDrift {
+  0% {
+    transform: translateY(-10px) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  90% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(100vh) translateX(30px);
+    opacity: 0;
+  }
+}
+
+.text-gradient {
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.snowflake-animated {
+  animation-name: snowDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--snowflake-duration);
+  animation-delay: var(--snowflake-delay);
+}
+
+.animate-entrance {
+  animation: fadeInScale 0.4s ease-out both;
+}
+
+@keyframes ambientGlow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(2%, 2%) scale(1.05);
+    opacity: 0.35;
+  }
+  66% {
+    transform: translate(-2%, 1%) scale(0.98);
+    opacity: 0.2;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes spinAvatar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reticleSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reticlePulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Loading shimmer sweep (used by PageLoading globally) --- */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-surface {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* PageLoading skeleton pulse animation (injected globally from PageLoading.tsx). */
+@keyframes pl-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}

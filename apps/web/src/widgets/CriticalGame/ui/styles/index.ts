@@ -1,6 +1,5 @@
 // Layout Components
 export {
-  GameContainer,
   GameBoard,
   TableArea,
   HandSection,
@@ -144,7 +143,6 @@ export {
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalOverlay,
   CloseButton,
   ModalSection,
   SectionLabel,

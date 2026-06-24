@@ -22,6 +22,18 @@ const REASON_LABELS: Record<WalletReason, string> = {
   gem_to_coin_conversion_credit: 'Coins from conversion',
   referral_bonus: 'Referral bonus',
   referral_tier_bonus: 'Referral tier bonus',
+  daily_reward: 'Daily reward',
+  shop_purchase: 'Shop purchase',
+  shop_purchase_arc: 'Shop purchase (ARC)',
+  shop_sell_refund: 'Shop sell refund',
+  battle_pass_reward: 'Battle pass reward',
+  achievement: 'Achievement',
+  daily_challenge: 'Daily challenge',
+  token_purchase: 'Token purchase',
+  tournament_token_prize: 'Tournament token prize',
+  wager_entry: 'Wager entry',
+  wager_prize: 'Wager prize',
+  wager_fee: 'Wager fee',
 };
 
 interface Props {

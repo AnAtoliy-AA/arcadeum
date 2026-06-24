@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
-import styles from './SeaBattleLanding.module.css';
+import styles from './SeaBattleLanding.module.scss';
 import { Icon } from './landingIcons';
 import { QuickplayButton } from './QuickplayButton';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
@@ -82,6 +82,10 @@ export function SeaBattleHero({
           nebula: variantsT?.nebula?.name,
           pixel: variantsT?.pixel?.name,
           vintage: variantsT?.vintage?.name,
+          forest: variantsT?.forest?.name,
+          cartoon: variantsT?.cartoon?.name,
+          sunset: variantsT?.sunset?.name,
+          monochrome: variantsT?.monochrome?.name,
         }}
         label={landing.board.label}
         cycleHint={landing.board.cycleHint}

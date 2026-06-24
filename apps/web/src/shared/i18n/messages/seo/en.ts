@@ -31,6 +31,14 @@ export const en = {
     title: `Glimworm · Free Online Snake Arena Game · ${APP}`,
     description: `Play Glimworm online for free on ${APP} — a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
   },
+  ticTacToeLanding: {
+    title: `Tic-Tac-Toe · Multiplayer · 3×3 – 9×9 boards · ${APP}`,
+    description: `Play multiplayer Tic-Tac-Toe on ${APP} — six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no download.`,
+  },
+  cascadeLanding: {
+    title: `Cascade · Multiplayer shedding card game · ${APP}`,
+    description: `Play Cascade online on ${APP} — a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,
@@ -62,6 +70,10 @@ export const en = {
   wallet: {
     title: `Wallet & Balance · ${APP}`,
     description: `Manage your ${APP} wallet — view your coin balance, transaction history, and current cosmetic inventory.`,
+  },
+  token: {
+    title: `Token · ${APP}`,
+    description: `Learn about the ${APP} token on Solana — earn through gameplay or tournament prizes, spend in the shop.`,
   },
   shop: {
     title: `Shop · Cosmetics & Boosts · ${APP}`,

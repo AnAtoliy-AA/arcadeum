@@ -4,8 +4,11 @@ import {
   FacebookIcon,
   GithubIcon,
   InstagramIcon,
+  LinkedInIcon,
   SupportIcon,
+  TelegramIcon,
   ThreadsIcon,
+  TikTokIcon,
   XIcon,
   YouTubeIcon,
 } from '@arcadeum/ui';
@@ -18,8 +21,11 @@ const SOCIAL_MAPPING = [
   { id: 'instagram', label: 'Instagram', Icon: InstagramIcon },
   { id: 'facebook', label: 'Facebook', Icon: FacebookIcon },
   { id: 'youtube', label: 'YouTube', Icon: YouTubeIcon },
+  { id: 'tiktok', label: 'TikTok', Icon: TikTokIcon },
+  { id: 'linkedin', label: 'LinkedIn', Icon: LinkedInIcon },
   { id: 'threads', label: 'Threads', Icon: ThreadsIcon },
   { id: 'x', label: 'X', Icon: XIcon },
+  { id: 'telegram', label: 'Telegram', Icon: TelegramIcon },
   { id: 'discord', label: 'Discord', Icon: DiscordIcon },
   { id: 'github', label: 'GitHub', Icon: GithubIcon },
 ] as const;
@@ -37,6 +43,7 @@ export default function AppFooter() {
         { href: '/tournaments', label: t('home.footerTournaments') },
         { href: '/leaderboards', label: t('home.footerLeaderboards') },
         { href: '/rewards', label: t('home.footerRewards') },
+        { href: '/token', label: t('home.footerToken') },
       ],
     },
     {

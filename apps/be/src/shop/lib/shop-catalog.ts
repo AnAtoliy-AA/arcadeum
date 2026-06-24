@@ -1,4 +1,5 @@
 import type { ShopItemDef } from './shop-types';
+import { SHOP_BACKGROUND_ITEMS } from './shop-catalog.backgrounds';
 
 /**
  * Static catalog seed. The full list of shop items lives here; admin override
@@ -586,6 +587,8 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
     defaultPriceAmount: 48,
     defaultPriceCurrency: 'gems',
   },
+
+  ...SHOP_BACKGROUND_ITEMS,
 };
 
 export const SHOP_CATALOG_IDS = Object.keys(SHOP_CATALOG);

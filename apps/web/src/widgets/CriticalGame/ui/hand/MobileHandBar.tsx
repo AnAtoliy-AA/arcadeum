@@ -81,7 +81,9 @@ export function MobileHandBar({
     background: 'rgba(7, 10, 17, 0.94)',
     borderTop: '1px solid rgba(255,255,255,0.10)',
     boxShadow: '0 -8px 24px rgba(0,0,0,0.45)',
-    zIndex: 40,
+    // Above `.critical-game-widget.is-fullscreen` (z-index 1100), so the
+    // sticky bar stays visible when the widget is in fullscreen mode.
+    zIndex: isFullscreen ? 1200 : 40,
     backdropFilter: 'blur(8px)',
   };
 
@@ -130,18 +132,18 @@ export function MobileHandBar({
       borderRadius: 10,
       border: opts.primary
         ? `1px solid ${accent}`
-        : '1px solid rgba(255,255,255,0.10)',
+        : '1px solid rgba(255,255,255,0.22)',
       background: opts.primary
         ? opts.enabled
           ? accent
-          : 'rgba(255,255,255,0.08)'
-        : 'rgba(255,255,255,0.06)',
-      color: opts.primary && opts.enabled ? '#0b0b0b' : '#e2e8f0',
+          : 'rgba(255,255,255,0.12)'
+        : 'rgba(255,255,255,0.10)',
+      color: opts.primary && opts.enabled ? '#0b0b0b' : '#ffffff',
       fontSize: 12,
       fontWeight: 800,
       letterSpacing: 0.3,
       textTransform: 'uppercase',
-      opacity: opts.enabled ? 1 : 0.5,
+      opacity: opts.enabled ? 1 : 0.6,
       cursor: opts.enabled ? 'pointer' : 'default',
     };
   }
@@ -150,12 +152,13 @@ export function MobileHandBar({
     width: 40,
     height: 40,
     borderRadius: 9999,
-    border: '1px solid rgba(255,255,255,0.10)',
-    background: 'rgba(255,255,255,0.06)',
-    color: '#e2e8f0',
-    fontSize: 16,
+    border: '1px solid rgba(255,255,255,0.22)',
+    background: 'rgba(255,255,255,0.12)',
+    color: '#ffffff',
+    fontSize: 18,
     fontWeight: 800,
     cursor: 'pointer',
+    lineHeight: '40px',
   };
 
   const popoverStyle: CSSProperties = {

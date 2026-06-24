@@ -1,12 +1,5 @@
+import { SCHEMA_LANGUAGE_MAP } from './schemaLanguageMap';
 import type { Locale } from '@/shared/i18n';
-
-const SCHEMA_LANGUAGE_MAP: Record<Locale, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  ru: 'ru-RU',
-  by: 'be-BY',
-};
 
 /**
  * Build a schema.org VideoObject for an embedded YouTube clip (e.g. the
@@ -29,8 +22,8 @@ export function buildVideoObjectJsonLd({
   youtubeId: string;
   name: string;
   description: string;
-  /** ISO date the video was published. Optional but recommended by Google. */
-  uploadDate?: string;
+  /** ISO date the video was published. Required by Google for VideoObject rich results. */
+  uploadDate: string;
 }): Record<string, unknown> {
   const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
   const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
@@ -45,7 +38,7 @@ export function buildVideoObjectJsonLd({
     thumbnailUrl: [thumbnail],
     contentUrl: watchUrl,
     embedUrl,
+    uploadDate,
   };
-  if (uploadDate) node.uploadDate = uploadDate;
   return node;
 }

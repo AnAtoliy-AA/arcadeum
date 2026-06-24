@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { TranslationKey, useTranslation } from '@/shared/lib/useTranslation';
-import { LoadingState, EmptyState, ErrorState, Spinner } from '@/shared/ui';
+import { LoadingState, EmptyState, ErrorState, Spinner } from '@arcadeum/ui';
 import type { HistorySummary, HistoryParticipant } from '../types';
 import { HistoryCard } from './HistoryCard';
 import { EntriesGrid, PaginationSpinner, EndOfListText } from '../styles';

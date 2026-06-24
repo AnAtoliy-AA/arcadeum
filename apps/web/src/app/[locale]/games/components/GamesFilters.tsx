@@ -74,7 +74,7 @@ export function GamesFilters({
           </FilterLabel>
           {!isAuthenticated && (
             <Text
-              fontSize="$1"
+              fontSize="$2"
               color="$color"
               opacity={0.6}
               fontStyle="italic"

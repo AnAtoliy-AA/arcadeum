@@ -20,12 +20,28 @@ export interface MusicTrack {
   title: string;
 }
 
-// Real royalty-free tracks (added to public/sounds). Add more entries here and
-// they join the player's rotation automatically.
-const TRACKS: readonly MusicTrack[] = [
-  { src: '/sounds/fleet-at-dawn-1.mp3', title: 'Fleet at Dawn' },
-  { src: '/sounds/fleet-at-dawn-2.mp3', title: 'Fleet at Dawn — Reprise' },
+// Royalty-free tracks stored in public/music/. Add more entries and they join
+// the player's rotation automatically.
+export const TRACKS: readonly MusicTrack[] = [
+  { src: '/music/clockwork-horizon.mp3', title: 'Clockwork Horizon' },
+  { src: '/music/clockwork-horizon-v2.mp3', title: 'Brass Meridian' },
+  { src: '/music/glass-grid.mp3', title: 'Glass Grid' },
+  { src: '/music/glass-grid-v2.mp3', title: 'Crystal Dispatch' },
+  { src: '/music/iron-tide.mp3', title: 'Iron Tide' },
+  { src: '/music/iron-tide-v2.mp3', title: 'Steel Current' },
+  { src: '/music/iron-wake.mp3', title: 'Iron Wake' },
+  { src: '/music/iron-wake-v2.mp3', title: 'Ember Drift' },
+  { src: '/music/iron-wake-v3.mp3', title: 'Ashen Signal' },
+  { src: '/music/iron-wake-v4.mp3', title: 'Final Surge' },
 ] as const;
+
+if (process.env.NODE_ENV !== 'production') {
+  const titles = TRACKS.map((t) => t.title);
+  const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
+  if (dupes.length > 0) {
+    console.error('[GameMusic] Duplicate track titles:', dupes);
+  }
+}
 
 const DEFAULT_VOLUME = 0.3;
 

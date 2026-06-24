@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.8] - 2026-06-24
+
+### Fixed
+- improve sea battle game theme contrast and preview board (ARC-832)
+
+
 ## [1.21.7] - 2026-06-23
 
 ### Fixed

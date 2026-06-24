@@ -29,6 +29,15 @@ export interface GameOptions {
   [key: string]: unknown;
 }
 
+export const GAME_ROOM_STATUS = {
+  LOBBY: 'lobby',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+} as const;
+
+export type GameRoomStatus =
+  (typeof GAME_ROOM_STATUS)[keyof typeof GAME_ROOM_STATUS];
+
 export interface GameRoomSummary {
   id: string;
   gameId: string;
@@ -38,7 +47,7 @@ export interface GameRoomSummary {
   playerCount: number;
   maxPlayers: number | null;
   createdAt: string;
-  status: 'lobby' | 'in_progress' | 'completed';
+  status: GameRoomStatus;
   notes?: string | null;
   inviteCode?: string;
   gameOptions?: GameOptions;

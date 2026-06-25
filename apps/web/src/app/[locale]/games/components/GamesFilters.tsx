@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { GamesSearch } from '@/features/games';
 import { XStack, Text } from 'tamagui';
 import {
@@ -19,6 +20,8 @@ interface GamesFiltersProps {
   isAuthenticated: boolean;
 }
 
+const ALL_STATUSES_COUNT = 3;
+
 export function GamesFilters({
   searchQuery,
   onSearch,
@@ -29,7 +32,25 @@ export function GamesFilters({
   isAuthenticated,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
-  const ALL_STATUSES_COUNT = 3;
+
+  const handleStatusToggle = useCallback(
+    (value: 'all' | 'lobby' | 'in_progress' | 'completed') => {
+      const allSelected =
+        statusFilter.length === 0 || statusFilter.length === ALL_STATUSES_COUNT;
+
+      if (value === 'all') {
+        onStatusChange([]);
+      } else if (allSelected) {
+        onStatusChange(STATUS_VALUES.filter((s) => s !== value));
+      } else {
+        const next = statusFilter.includes(value)
+          ? statusFilter.filter((s) => s !== value)
+          : [...statusFilter, value];
+        onStatusChange(next);
+      }
+    },
+    [statusFilter, onStatusChange],
+  );
 
   return (
     <Filters>
@@ -62,18 +83,7 @@ export function GamesFilters({
                 <FilterChip
                   key={value}
                   active={isActive}
-                  onClick={() => {
-                    if (value === 'all') {
-                      onStatusChange([]);
-                    } else if (allSelected) {
-                      onStatusChange(STATUS_VALUES.filter((s) => s !== value));
-                    } else {
-                      const next = statusFilter.includes(value)
-                        ? statusFilter.filter((s) => s !== value)
-                        : [...statusFilter, value];
-                      onStatusChange(next);
-                    }
-                  }}
+                  onClick={() => handleStatusToggle(value)}
                   aria-label={`Filter by status: ${label || value}`}
                   aria-pressed={isActive}
                 >

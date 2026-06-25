@@ -3,17 +3,24 @@ export interface MusicTrack {
   title: string;
 }
 
+const CDN_BASE = 'https://pub-xxx.r2.dev/music';
+
+const REMOTE_TRACKS: MusicTrack[] = [
+  { src: `${CDN_BASE}/clockwork-horizon-v2.mp3`, title: 'Brass Meridian' },
+  { src: `${CDN_BASE}/glass-grid.mp3`, title: 'Glass Grid' },
+  { src: `${CDN_BASE}/glass-grid-v2.mp3`, title: 'Crystal Dispatch' },
+  { src: `${CDN_BASE}/iron-tide.mp3`, title: 'Iron Tide' },
+  { src: `${CDN_BASE}/iron-tide-v2.mp3`, title: 'Steel Current' },
+  { src: `${CDN_BASE}/iron-wake.mp3`, title: 'Iron Wake' },
+  { src: `${CDN_BASE}/iron-wake-v2.mp3`, title: 'Ember Drift' },
+  { src: `${CDN_BASE}/iron-wake-v3.mp3`, title: 'Ashen Signal' },
+  { src: `${CDN_BASE}/iron-wake-v4.mp3`, title: 'Final Surge' },
+];
+
 export const TRACKS: readonly MusicTrack[] = [
   { src: '/music/clockwork-horizon.mp3', title: 'Clockwork Horizon' },
   { src: '/music/clockwork-horizon-v2.mp3', title: 'Brass Meridian' },
-  { src: '/music/glass-grid.mp3', title: 'Glass Grid' },
-  { src: '/music/glass-grid-v2.mp3', title: 'Crystal Dispatch' },
-  { src: '/music/iron-tide.mp3', title: 'Iron Tide' },
-  { src: '/music/iron-tide-v2.mp3', title: 'Steel Current' },
-  { src: '/music/iron-wake.mp3', title: 'Iron Wake' },
-  { src: '/music/iron-wake-v2.mp3', title: 'Ember Drift' },
-  { src: '/music/iron-wake-v3.mp3', title: 'Ashen Signal' },
-  { src: '/music/iron-wake-v4.mp3', title: 'Final Surge' },
+  ...REMOTE_TRACKS,
 ] as const;
 
 if (process.env.NODE_ENV !== 'production') {

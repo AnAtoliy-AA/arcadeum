@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.15] - 2026-06-25
+
+### Added
+- add FilterChip component, use it in games status filter (ARC-838) (ARC-838)
+- games list multi-select status filter with visible borders (ARC-838) (ARC-838)
+
+### Fixed
+- update games list filter selector for FilterChip component (ARC-838) (ARC-838)
+- deselect chip when clicking from all-selected state (ARC-838) (ARC-838)
+- highlight all chips when All filter is selected (ARC-838) (ARC-838)
+- increase FilterChip size and font (ARC-838) (ARC-838)
+
+### Refactored
+- use shared STATUS_VALUES/ALL_STATUS_VALUES constants, remove magic numbers (ARC-838) (ARC-838)
+- extract status toggle into handleStatusToggle callback (ARC-838) (ARC-838)
+
+
 ## [1.21.14] - 2026-06-25
 
 ### Fixed

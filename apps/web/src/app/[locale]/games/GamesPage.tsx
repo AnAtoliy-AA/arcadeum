@@ -28,6 +28,7 @@ import type {
   GamesStatusFilter,
   GamesViewMode,
 } from './types';
+import { parseStatusFilterFromUrl, serializeStatusFilterToUrl } from './types';
 
 const PAGE_SIZE = 12;
 
@@ -48,11 +49,19 @@ export default function GamesPage({
   const pathname = usePathname();
 
   // URL state management
-  const statusFilter =
-    (searchParams?.get('status') as GamesStatusFilter) || 'all';
+  const [selectedStatuses, setSelectedStatuses] = useState<GamesStatusFilter>(
+    parseStatusFilterFromUrl(searchParams?.get('status') ?? null),
+  );
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const initialSearchQuery = searchParams?.get('search') || '';
+
+  // Re-sync selectedStatuses from URL whenever search params change
+  useEffect(() => {
+    setSelectedStatuses(
+      parseStatusFilterFromUrl(searchParams?.get('status') ?? null),
+    );
+  }, [searchParams, pathname]);
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -96,8 +105,10 @@ export default function GamesPage({
   );
 
   const handleStatusChange = useCallback(
-    (status: GamesStatusFilter) => {
-      updateParams({ status });
+    (statuses: GamesStatusFilter) => {
+      setSelectedStatuses(statuses);
+      const serialized = serializeStatusFilterToUrl(statuses);
+      updateParams({ status: serialized });
     },
     [updateParams],
   );
@@ -153,6 +164,11 @@ export default function GamesPage({
     return initialData ? { pages: [initialData] } : null;
   }, [initialData]);
 
+  const serializedStatus = useMemo(
+    () => serializeStatusFilterToUrl(selectedStatuses),
+    [selectedStatuses],
+  );
+
   const {
     data,
     isLoading,
@@ -164,7 +180,7 @@ export default function GamesPage({
     queryKey: [
       'games',
       'list',
-      statusFilter,
+      serializedStatus ?? 'all',
       participationFilter,
       deferredSearchQuery,
       gameId ?? null,
@@ -173,7 +189,7 @@ export default function GamesPage({
     queryFn: async ({ pageParam = 0 }) => {
       return gamesApi.getRooms(
         {
-          status: statusFilter,
+          status: serializedStatus,
           participation: participationFilter,
           search: deferredSearchQuery || undefined,
           page: pageParam as number,
@@ -245,7 +261,7 @@ export default function GamesPage({
         <GamesFilters
           searchQuery={searchQuery}
           onSearch={handleSearch}
-          statusFilter={statusFilter}
+          statusFilter={selectedStatuses}
           onStatusChange={handleStatusChange}
           participationFilter={participationFilter}
           onParticipationChange={handleParticipationChange}

@@ -93,6 +93,18 @@ export function parseYouTubeVideoId(input?: string): string | undefined {
   return trimmed; // Return as-is if fallback
 }
 
+/**
+ * Ensure the upload date includes a time zone offset so Google's
+ * Structured Data validator doesn't flag it as missing/invalid.
+ * Accepts "YYYY-MM-DD" or full ISO 8601; always returns with time + tz.
+ */
+function normalizeUploadDate(value: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return `${value}T00:00:00+00:00`;
+  }
+  return value;
+}
+
 function readAppConfig(): WebAppConfig {
   const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
   const appVersion = trim(process.env.NEXT_PUBLIC_APP_VERSION) ?? '0.0.0';
@@ -100,8 +112,9 @@ function readAppConfig(): WebAppConfig {
     process.env.NEXT_PUBLIC_PRESENTATION_VIDEO_ID,
   );
 
-  const videoUploadDate =
-    trim(process.env.NEXT_PUBLIC_VIDEO_UPLOAD_DATE) ?? '2025-01-01';
+  const videoUploadDate = normalizeUploadDate(
+    trim(process.env.NEXT_PUBLIC_VIDEO_UPLOAD_DATE) ?? '2025-01-01',
+  );
 
   const primaryCtaHref =
     trim(process.env.NEXT_PUBLIC_WEB_PRIMARY_CTA_HREF) ?? routes.auth;

@@ -83,7 +83,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
  * URLs it will refuse to index, and surfaces a "submitted URL marked
  * noindex" warning in Search Console.
  *
- * Keep this set in sync with `PRIVATE_SLUG_KEYS` in `src/middleware.ts`.
+ * Keep this set in sync with `PRIVATE_SLUG_KEYS` in `src/proxy.ts`.
  */
 const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'auth',

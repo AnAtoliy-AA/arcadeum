@@ -78,11 +78,34 @@ function TicTacToeGameImpl({
     userId: currentUserId,
   });
 
+  const resolveDisplayNameBound = useCallback(
+    (id?: string | null) => {
+      if (!currentUserId || !room) return id || '';
+      if (id === currentUserId) return 'You';
+      if (id?.startsWith('bot-')) {
+        const botOrder =
+          snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
+        const botIndex = botOrder.indexOf(id);
+        if (botIndex !== -1) return `Bot ${botIndex + 1}`;
+        return 'Bot';
+      }
+      const member = room.members?.find((m) => m.id === id);
+      if (member?.displayName && member.displayName !== 'Unknown')
+        return member.displayName;
+      return id || '';
+    },
+    [currentUserId, room, snapshot],
+  );
+
   // Pipe engine logs into the shared GameChat and send chat via the generic
   // session history-note event (the BE appends it to the session logs and
   // rebroadcasts, so it shows in the shared panel + popup).
   const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
-  useGameChatIntegration(snapshot?.logs as never, sendChat);
+  useGameChatIntegration(
+    snapshot?.logs as never,
+    sendChat,
+    resolveDisplayNameBound,
+  );
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
@@ -166,6 +189,7 @@ function TicTacToeGameImpl({
             players={snapshot.players}
             teams={snapshot.teams}
             myTurn={myTurn}
+            resolveName={resolveDisplayNameBound}
           />
           <TicTacToeBoard
             board={snapshot.board}

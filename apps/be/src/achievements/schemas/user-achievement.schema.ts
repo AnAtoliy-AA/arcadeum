@@ -5,7 +5,7 @@ import { Document, Types } from 'mongoose';
 export class UserAchievement extends Document {
   declare _id: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
 
   @Prop({

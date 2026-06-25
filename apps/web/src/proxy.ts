@@ -81,7 +81,7 @@ function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   return false;
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   if (SKIP_PREFIXES.some((p) => pathname.startsWith(p))) {

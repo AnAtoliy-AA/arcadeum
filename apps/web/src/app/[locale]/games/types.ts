@@ -18,6 +18,8 @@ export const STATUS_VALUES: GamesStatusValue[] = [
   'completed',
 ];
 
+export const ALL_STATUS_VALUES = ['all', ...STATUS_VALUES] as const;
+
 export function parseStatusFilterFromUrl(
   raw: string | null,
 ): GamesStatusFilter {

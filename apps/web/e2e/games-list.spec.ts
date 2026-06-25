@@ -49,8 +49,11 @@ test.describe('Games List Page', () => {
       await expect(searchInput).toBeVisible();
     }
     const filters = page
-      .locator('button')
-      .filter({ hasText: /all|lobby|active|finished|все|все|всего/i });
+      .getByRole('checkbox')
+      .filter({
+        hasText:
+          /all|lobby|in progress|completed|все|лобби|в процессе|завершено/i,
+      });
 
     await expect(async () => {
       expect(await filters.count()).toBeGreaterThan(0);

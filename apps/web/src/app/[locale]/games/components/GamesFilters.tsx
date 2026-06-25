@@ -12,11 +12,21 @@ interface GamesFiltersProps {
   searchQuery: string;
   onSearch: (query: string) => void;
   statusFilter: GamesStatusFilter;
-  onStatusChange: (status: GamesStatusFilter) => void;
+  onStatusChange: (statuses: GamesStatusFilter) => void;
   participationFilter: GamesParticipationFilter;
   onParticipationChange: (participation: GamesParticipationFilter) => void;
   isAuthenticated: boolean;
 }
+
+const STATUS_CHIP_ACTIVE_STYLE = {
+  borderColor: 'rgba(255,255,255,0.4)',
+  borderWidth: 1,
+} as const;
+
+const STATUS_CHIP_INACTIVE_STYLE = {
+  borderColor: 'rgba(255,255,255,0.1)',
+  borderWidth: 1,
+} as const;
 
 export function GamesFilters({
   searchQuery,
@@ -28,6 +38,7 @@ export function GamesFilters({
   isAuthenticated,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
+  const ALL_STATUSES_COUNT = 3;
 
   return (
     <Filters>
@@ -49,17 +60,37 @@ export function GamesFilters({
                 completed: 'games.lounge.filters.status.completed',
               } as const;
               const label = t(statusKeys[value] as TranslationKey);
+              const isActive =
+                value === 'all'
+                  ? statusFilter.length === 0 ||
+                    statusFilter.length === ALL_STATUSES_COUNT
+                  : statusFilter.includes(value);
               return (
                 <Button
                   key={value}
                   variant="chip"
                   size="sm"
-                  isActive={statusFilter === value}
-                  onClick={() => onStatusChange(value)}
+                  isActive={isActive}
+                  style={
+                    isActive
+                      ? STATUS_CHIP_ACTIVE_STYLE
+                      : STATUS_CHIP_INACTIVE_STYLE
+                  }
+                  onClick={() => {
+                    if (value === 'all') {
+                      onStatusChange([]);
+                    } else {
+                      const next = statusFilter.includes(value)
+                        ? statusFilter.filter((s) => s !== value)
+                        : [...statusFilter, value];
+                      onStatusChange(next);
+                    }
+                  }}
                   aria-label={`Filter by status: ${label || value}`}
-                  aria-pressed={statusFilter === value}
+                  aria-pressed={isActive}
                 >
                   {label || value}
+                  {isActive ? ' ✓' : ''}
                 </Button>
               );
             },
@@ -94,18 +125,25 @@ export function GamesFilters({
                 not_joined: 'games.lounge.filters.participation.not_joined',
               } as const;
               const label = t(participationKeys[value] as TranslationKey);
+              const isActive = participationFilter === value;
               return (
                 <Button
                   key={value}
                   variant="chip"
                   size="sm"
-                  isActive={participationFilter === value}
+                  isActive={isActive}
+                  style={
+                    isActive
+                      ? STATUS_CHIP_ACTIVE_STYLE
+                      : STATUS_CHIP_INACTIVE_STYLE
+                  }
                   disabled={value !== 'all' && !isAuthenticated}
                   onClick={() => onParticipationChange(value)}
                   aria-label={`Filter by participation: ${label || value}`}
-                  aria-pressed={participationFilter === value}
+                  aria-pressed={isActive}
                 >
                   {label || value}
+                  {isActive ? ' ✓' : ''}
                 </Button>
               );
             },

@@ -9,7 +9,33 @@ export interface GamesClientProps {
   pageTitle?: string;
 }
 
-export type GamesStatusFilter = 'all' | 'lobby' | 'in_progress' | 'completed';
+export type GamesStatusValue = 'lobby' | 'in_progress' | 'completed';
+export type GamesStatusFilter = GamesStatusValue[];
+
+export const STATUS_VALUES: GamesStatusValue[] = [
+  'lobby',
+  'in_progress',
+  'completed',
+];
+
+export function parseStatusFilterFromUrl(
+  raw: string | null,
+): GamesStatusFilter {
+  if (!raw || raw === 'all') return [];
+  return raw
+    .split(',')
+    .filter((s): s is GamesStatusValue =>
+      STATUS_VALUES.includes(s as GamesStatusValue),
+    );
+}
+
+export function serializeStatusFilterToUrl(
+  statuses: GamesStatusFilter,
+): string | undefined {
+  if (statuses.length === 0 || statuses.length === STATUS_VALUES.length)
+    return undefined;
+  return statuses.join(',');
+}
 
 export type GamesParticipationFilter =
   | 'all'

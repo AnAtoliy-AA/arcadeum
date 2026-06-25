@@ -6,8 +6,8 @@ const ChipRoot = styled(XStack, {
   alignItems: 'center',
   justifyContent: 'center',
   gap: '$1',
-  paddingHorizontal: '$3',
-  paddingVertical: 5,
+  paddingHorizontal: '$4',
+  paddingVertical: 8,
   borderRadius: '$4',
   borderWidth: 1,
   cursor: 'pointer',
@@ -87,7 +87,7 @@ export function FilterChip({
       testID={testId}
     >
       <Text
-        fontSize="$2"
+        fontSize="$3"
         fontWeight="600"
         color={active ? '#ffffff' : 'rgba(255,255,255,0.7)'}
       >

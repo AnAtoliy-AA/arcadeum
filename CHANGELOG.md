@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.12] - 2026-06-25
+
+### Fixed
+- remove border override from isActive variant (ARC-836)
+- remove custom active border, use chip variant default (ARC-836)
+- add visible border to active filter chips (ARC-836)
+- increase participation filter hint font size from $1 to $2 (ARC-836)
+- update participation filter login hint to say filter rooms (ARC-836)
+
+
 ## [1.21.11] - 2026-06-24
 
 

@@ -7,6 +7,7 @@ import {
 import { FilterChips, FilterGroup, FilterLabel, Filters } from '../styles';
 import { FilterChip } from '@arcadeum/ui';
 import type { GamesParticipationFilter, GamesStatusFilter } from '../types';
+import { STATUS_VALUES } from '../types';
 
 interface GamesFiltersProps {
   searchQuery: string;
@@ -64,6 +65,8 @@ export function GamesFilters({
                   onClick={() => {
                     if (value === 'all') {
                       onStatusChange([]);
+                    } else if (allSelected) {
+                      onStatusChange(STATUS_VALUES.filter((s) => s !== value));
                     } else {
                       const next = statusFilter.includes(value)
                         ? statusFilter.filter((s) => s !== value)

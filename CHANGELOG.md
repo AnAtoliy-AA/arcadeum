@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.13] - 2026-06-25
+
+### Fixed
+- improve tic tac toe turn badge visibility and name display (ARC-839) (ARC-839)
+
+### Refactored
+- extract shared resolveDisplayName utility (ARC-839) (ARC-839)
+
+
 ## [1.21.12] - 2026-06-25
 
 ### Fixed

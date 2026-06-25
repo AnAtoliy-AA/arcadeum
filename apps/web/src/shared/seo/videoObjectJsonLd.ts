@@ -29,6 +29,10 @@ export function buildVideoObjectJsonLd({
   const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
   const thumbnail = `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`;
 
+  const normalizedDate = /^\d{4}-\d{2}-\d{2}$/.test(uploadDate)
+    ? `${uploadDate}T00:00:00+00:00`
+    : uploadDate;
+
   const node: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
@@ -38,7 +42,7 @@ export function buildVideoObjectJsonLd({
     thumbnailUrl: [thumbnail],
     contentUrl: watchUrl,
     embedUrl,
-    uploadDate,
+    uploadDate: normalizedDate,
   };
   return node;
 }

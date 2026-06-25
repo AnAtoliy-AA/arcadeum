@@ -12,6 +12,7 @@ import {
   useGameResultModal,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
+import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -79,21 +80,12 @@ function TicTacToeGameImpl({
   });
 
   const resolveDisplayNameBound = useCallback(
-    (id?: string | null) => {
-      if (!currentUserId || !room) return id || '';
-      if (id === currentUserId) return 'You';
-      if (id?.startsWith('bot-')) {
-        const botOrder =
-          snapshot?.playerOrder.filter((pId) => pId.startsWith('bot-')) || [];
-        const botIndex = botOrder.indexOf(id);
-        if (botIndex !== -1) return `Bot ${botIndex + 1}`;
-        return 'Bot';
-      }
-      const member = room.members?.find((m) => m.id === id);
-      if (member?.displayName && member.displayName !== 'Unknown')
-        return member.displayName;
-      return id || '';
-    },
+    (id?: string | null) =>
+      resolveDisplayName(id, {
+        currentUserId,
+        members: room?.members,
+        playerOrder: snapshot?.playerOrder,
+      }),
     [currentUserId, room, snapshot],
   );
 

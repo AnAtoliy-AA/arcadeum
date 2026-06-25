@@ -1,17 +1,12 @@
 // Export all game libraries
-export {
-  GameFactory,
-  gameFactory,
-  useGameFactory
-} from "./gameFactory";
+export { GameFactory, gameFactory, useGameFactory } from './gameFactory';
 
 export {
   GameConfigManager,
   gameConfigManager,
-  useGameConfig
-} from "./gameConfig";
+  useGameConfig,
+} from './gameConfig';
 
-export {
-  GamePropsFactory,
-  GamePropsGuards
-} from "./gameProps";
+export { GamePropsFactory, GamePropsGuards } from './gameProps';
+
+export { resolveDisplayName } from './resolveDisplayName';

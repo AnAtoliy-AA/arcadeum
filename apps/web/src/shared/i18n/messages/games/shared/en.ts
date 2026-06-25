@@ -137,7 +137,7 @@ export const enMessages = {
     clearExtras: 'Clear extras',
     showPacks: 'Show',
     hidePacks: 'Hide',
-    loginRequired: 'You need to be logged in to create a room.',
+    loginRequired: 'You need to be logged in to filter rooms.',
     loginButton: 'Login',
     // Redesign (ARC-744)
     eyebrow: 'New room',

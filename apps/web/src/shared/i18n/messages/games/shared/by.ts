@@ -137,7 +137,7 @@ export const byMessages = {
     clearExtras: 'Ачысціць',
     showPacks: 'Паказаць',
     hidePacks: 'Схаваць',
-    loginRequired: 'Вы павінны ўвайсці ў сістэму, каб стварыць зал.',
+    loginRequired: 'Увайдзіце, каб фільтраваць залы.',
     loginButton: 'Увайсці',
     // Redesign (ARC-744)
     eyebrow: 'Новы зал',

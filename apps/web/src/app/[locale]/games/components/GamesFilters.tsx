@@ -50,11 +50,13 @@ export function GamesFilters({
                 completed: 'games.lounge.filters.status.completed',
               } as const;
               const label = t(statusKeys[value] as TranslationKey);
+              const allSelected =
+                statusFilter.length === 0 ||
+                statusFilter.length === ALL_STATUSES_COUNT;
               const isActive =
                 value === 'all'
-                  ? statusFilter.length === 0 ||
-                    statusFilter.length === ALL_STATUSES_COUNT
-                  : statusFilter.includes(value);
+                  ? allSelected
+                  : allSelected || statusFilter.includes(value);
               return (
                 <FilterChip
                   key={value}

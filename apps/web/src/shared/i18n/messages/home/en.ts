@@ -68,7 +68,7 @@ export const en = {
   tokenTitle: 'Our Token',
   tokenSubtitle: 'Powering the Arcadeum ecosystem on Solana',
   tokenDescription:
-    'Earn tokens through gameplay, purchase them in the shop, or withdraw them to your Phantom wallet on Solana.',
+    'Earn tokens through gameplay or tournament prizes. Spend them in the shop.',
   stepCreateTitle: 'Create or Join a Room',
   stepCreateDescription:
     'Start a new game room or enter an invite code to join an existing session.',

@@ -5,7 +5,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import type { GameRoomSummary } from '@/shared/types/games';
+import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import cardStyles from './RoomCardComponent.module.scss';
 import {
@@ -74,10 +74,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     [],
   );
 
+  const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
+
   return (
     <StyledRoomCard
       viewMode={viewMode}
-      className={cardStyles.roomCard}
+      status={isCompleted ? 'completed' : undefined}
+      className={`${cardStyles.roomCard} ${isCompleted ? cardStyles.completed : ''}`}
       data-testid="room-card"
     >
       <StyledRoomHeader viewMode={viewMode}>
@@ -235,14 +238,16 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       )}
 
       <StyledRoomActions viewMode={viewMode}>
-        <LinkButton
-          href={routes.gameRoom(room.id)}
-          variant="primary"
-          size="md"
-          flex={viewMode === 'grid' ? 1 : 0}
-        >
-          {t('games.common.joinRoom')}
-        </LinkButton>
+        {room.status === GAME_ROOM_STATUS.LOBBY && (
+          <LinkButton
+            href={routes.gameRoom(room.id)}
+            variant="primary"
+            size="md"
+            flex={viewMode === 'grid' ? 1 : 0}
+          >
+            {t('games.common.joinRoom')}
+          </LinkButton>
+        )}
         <LinkButton
           href={`${routes.gameRoom(room.id)}?mode=watch`}
           variant="secondary"

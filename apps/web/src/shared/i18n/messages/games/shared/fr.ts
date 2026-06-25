@@ -137,7 +137,7 @@ export const frMessages = {
     clearExtras: 'Effacer les extras',
     showPacks: 'Afficher',
     hidePacks: 'Masquer',
-    loginRequired: 'Vous devez être connecté pour créer une salle.',
+    loginRequired: 'Vous devez être connecté pour filtrer les salles.',
     loginButton: 'Se connecter',
     // Redesign (ARC-744)
     eyebrow: 'Nouvelle salle',

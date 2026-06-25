@@ -210,6 +210,8 @@ export const shopEn = {
       },
       tiger01: { name: 'Cyber Tiger', desc: 'A hyperrealistic cybernetic tiger.' },
       eagle01: { name: 'Cyber Eagle', desc: 'A hyperrealistic cybernetic eagle.' },
+      lion01: { name: 'Cyber Lion', desc: 'A hyperrealistic cybernetic lion.' },
+      shark01: { name: 'Cyber Shark', desc: 'A hyperrealistic cybernetic shark.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },
@@ -229,6 +231,8 @@ export const shopEn = {
       violet: { name: 'Violet', desc: 'A vivid violet.' },
       sunset: { name: 'Sunset', desc: 'A warm sunset gradient.' },
       aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
+      nebula: { name: 'Nebula', desc: 'A brilliant cosmic gradient.' },
+      glitch: { name: 'Glitch', desc: 'A shifting digital artifact color.' },
     },
     game_skin: {
       default: { name: 'Default', desc: 'The starter game theme.' },
@@ -239,6 +243,8 @@ export const shopEn = {
       tide: { name: 'Tide', desc: 'A cool teal-to-cyan wash.' },
       twilight: { name: 'Twilight', desc: 'Indigo melting into hot pink.' },
       nebula: { name: 'Nebula', desc: 'A cosmic multi-color gradient.' },
+      cyberpunk: { name: 'Cyberpunk', desc: 'A neon-drenched futuristic skyline gradient.' },
+      void: { name: 'Void', desc: 'A deep space black hole backdrop.' },
     },
     aura: {
       default: { name: 'Default', desc: 'The starter aura.' },
@@ -246,6 +252,8 @@ export const shopEn = {
       cyan: { name: 'Cyan Aura', desc: 'A crisp electric glow.' },
       violet: { name: 'Violet Aura', desc: 'A rich violet shine.' },
       prism: { name: 'Prism Aura', desc: 'A shifting prism radiance.' },
+      gold: { name: 'Gold Aura', desc: 'A prestigious shining golden aura.' },
+      glitch: { name: 'Glitch Aura', desc: 'An animated digital distortion glow.' },
     },
     frame: {
       default: { name: 'Default', desc: 'The starter frame.' },
@@ -253,6 +261,8 @@ export const shopEn = {
       emerald: { name: 'Emerald Frame', desc: 'A vivid emerald ring.' },
       violet: { name: 'Violet Frame', desc: 'A polished violet ring.' },
       prism: { name: 'Prism Frame', desc: 'A shifting prism ring.' },
+      gold: { name: 'Gold Frame', desc: 'A shining polished golden ring.' },
+      cyberpunk: { name: 'Cyberpunk Frame', desc: 'A vibrant neon cyberpunk frame.' },
     },
     background: {
       default: { name: 'Default', desc: 'The starter backdrop.' },

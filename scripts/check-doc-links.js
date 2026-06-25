@@ -17,7 +17,12 @@ function findMdFiles(dir) {
 
   for (const item of items) {
     const fullPath = path.join(dir, item);
-    const stat = fs.statSync(fullPath);
+    let stat;
+    try {
+      stat = fs.statSync(fullPath);
+    } catch {
+      continue;
+    }
 
     if (stat.isDirectory()) {
       // Skip node_modules, .git, .next, .turbo, etc.

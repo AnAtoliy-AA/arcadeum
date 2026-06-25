@@ -7,6 +7,152 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.15] - 2026-06-25
+
+### Added
+- add FilterChip component, use it in games status filter (ARC-838) (ARC-838)
+- games list multi-select status filter with visible borders (ARC-838) (ARC-838)
+
+### Fixed
+- update games list filter selector for FilterChip component (ARC-838) (ARC-838)
+- deselect chip when clicking from all-selected state (ARC-838) (ARC-838)
+- highlight all chips when All filter is selected (ARC-838) (ARC-838)
+- increase FilterChip size and font (ARC-838) (ARC-838)
+
+### Refactored
+- use shared STATUS_VALUES/ALL_STATUS_VALUES constants, remove magic numbers (ARC-838) (ARC-838)
+- extract status toggle into handleStatusToggle callback (ARC-838) (ARC-838)
+
+
+## [1.21.14] - 2026-06-25
+
+### Fixed
+- normalize VideoObject uploadDate to include time zone (N/A)
+
+
+## [1.21.13] - 2026-06-25
+
+### Fixed
+- improve tic tac toe turn badge visibility and name display (ARC-839) (ARC-839)
+
+### Refactored
+- extract shared resolveDisplayName utility (ARC-839) (ARC-839)
+
+
+## [1.21.12] - 2026-06-25
+
+### Fixed
+- remove border override from isActive variant (ARC-836)
+- remove custom active border, use chip variant default (ARC-836)
+- add visible border to active filter chips (ARC-836)
+- increase participation filter hint font size from $1 to $2 (ARC-836)
+- update participation filter login hint to say filter rooms (ARC-836)
+
+
+## [1.21.11] - 2026-06-24
+
+
+## [1.21.10] - 2026-06-24
+
+### Added
+- reorganize in-game music into public/music with unique track names (N/A)
+
+
+## [1.21.9] - 2026-06-24
+
+### Added
+- add cyber lion/shark avatars, premium name colors, banners, auras, and frames (N/A)
+
+### Fixed
+- split shop-catalog.ts to stay under 500-line lint limit (N/A)
+
+
+## [1.21.8] - 2026-06-24
+
+### Fixed
+- improve sea battle game theme contrast and preview board (ARC-832)
+
+
+## [1.21.7] - 2026-06-23
+
+### Fixed
+- enable touch drag and tap-to-move for ship placement on mobile (ARC-831) (ARC-831)
+
+
+## [1.21.6] - 2026-06-23
+
+### Added
+- add classic, neon, tropical, steampunk themes to cascade (ARC-833)
+
+
+## [1.21.5] - 2026-06-23
+
+### Fixed
+- visually differentiate completed rooms from active ones (ARC-834) (ARC-834)
+
+
+## [1.21.4] - 2026-06-23
+
+### Fixed
+- prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
+- prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
+
+### Refactored
+- merge two useEffects into one in useIdleReconnect (N/A)
+
+
+## [1.21.3] - 2026-06-22
+
+### Fixed
+- update pnpm-lock.yaml after removing @nestjs/schedule (N/A)
+- improve buy/sell detection with phase2 token balance fallback (N/A)
+- improve buy/sell detection, add retry logic and health check (N/A)
+
+
+## [1.21.2] - 2026-06-22
+
+### Added
+- add token price chart with GeckoTerminal API and i18n (N/A)
+- redesign token page with premium UI/UX (N/A)
+- add wallet-based shop purchase endpoint (N/A)
+- add admin controls for shop currencies (N/A)
+- add ARC as shop currency and new wallet reasons (N/A)
+
+### Fixed
+- move connect wallet to spend section and add i18n translations (N/A)
+- replace gameplay rewards with wallet connection in token page (N/A)
+- update token page to show real ways to earn ARC (N/A)
+- type-assert res.body in solana controller spec (N/A)
+- mock @solana/web3.js in shop controller spec (N/A)
+- update tests for withdrawal removal and ARC shop support (N/A)
+- add arcadeum to admin shop override type (N/A)
+
+### Refactored
+- split chart into helpers, styles, and component files (N/A)
+- add utility token disclaimers to wallet and token pages (N/A)
+- add shop disclaimer and remove Jupiter exchange link (N/A)
+- update SEO descriptions to remove withdrawal references (N/A)
+- update i18n messages to remove withdrawal references (N/A)
+- remove withdrawal UI from wallet page (N/A)
+- remove withdrawal endpoint and transfer methods (N/A)
+
+
+## [1.21.1] - 2026-06-21
+
+### Added
+- add PumpFun transaction monitor Telegram bot (N/A)
+
+### Fixed
+- remove unused accounts variable (N/A)
+- detect trades without PumpFun program in accounts (N/A)
+- add eslint config and fix lint errors (N/A)
+
+
+## [1.21.0] - 2026-06-20
+
+
+
+
 ## [1.20.5] - 2026-06-20
 
 ### Added

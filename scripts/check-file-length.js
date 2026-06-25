@@ -36,7 +36,12 @@ function scanDirectory(dir) {
 
   for (const file of files) {
     const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
+    let stat;
+    try {
+      stat = fs.statSync(fullPath);
+    } catch {
+      continue;
+    }
 
     if (stat.isDirectory()) {
       if (!IGNORE_DIRS.has(file)) {

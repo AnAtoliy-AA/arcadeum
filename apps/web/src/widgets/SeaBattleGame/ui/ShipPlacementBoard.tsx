@@ -15,6 +15,10 @@ import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
 import { useMobileShipMove } from '../hooks/useMobileShipMove';
+import {
+  createEmptyBoard,
+  getCellsForPlacement,
+} from './ShipPlacement/placement-utils';
 
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
@@ -45,6 +49,8 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const [isInvalidHover, setIsInvalidHover] = useState(false);
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
+  const media = useMedia();
+  const isMobile = !media.gtMd;
 
   const serverShips = useMemo<Ship[]>(
     () => currentPlayer?.ships ?? [],
@@ -131,6 +137,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     ships,
     board,
     isPlacementComplete,
+    isMobile,
     onMoveShip: handleMoveShip,
     setHoveredCells,
     setIsInvalidHover,
@@ -156,6 +163,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     onDragLeave,
     handleDragEnd,
     draggingCells,
+    onTouchBoardPointerDown,
+    touchDragJustEnded,
+    resetTouchDragJustEnded,
   } = useDragPlacement({
     board,
     isVertical,
@@ -310,7 +320,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     setIsInvalidHover(false);
   }, [handleCellHover]);
 
-  const handleCellClick = useCallback(
+  const handleCellClickInner = useCallback(
     (row: number, col: number) => {
       // Mobile tap-to-move: handled by hook; returns true if consumed
       if (handleMobileCellClick(row, col)) {
@@ -349,13 +359,19 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     ],
   );
 
+  const handleCellClick = (row: number, col: number) => {
+    if (touchDragJustEnded.current) {
+      resetTouchDragJustEnded();
+      return;
+    }
+    handleCellClickInner(row, col);
+  };
+
   const handleRotate = useCallback(() => {
     setIsVertical((prev) => !prev);
   }, []);
 
   const isAllShipsPlaced = unplacedShips.length === 0;
-  const media = useMedia();
-  const isMobile = !media.gtMd;
 
   const shipPaletteEl = (
     <ShipPaletteSection
@@ -423,6 +439,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       onMouseLeave={handleMouseLeave}
       onCellClick={handleCellClick}
       onCellRotateInPlace={handleRotateInPlace}
+      onTouchBoardPointerDown={onTouchBoardPointerDown}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragLeave={onDragLeave}
@@ -472,27 +489,3 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   );
 });
 ShipPlacementBoard.displayName = 'ShipPlacementBoard';
-
-function createEmptyBoard(): CellState[][] {
-  return Array(BOARD_SIZE)
-    .fill(null)
-    .map(() => Array(BOARD_SIZE).fill(CELL_STATE.EMPTY));
-}
-
-function getCellsForPlacement(
-  startRow: number,
-  startCol: number,
-  size: number,
-  isVertical: boolean,
-): ShipCell[] | null {
-  const cells: ShipCell[] = [];
-  for (let i = 0; i < size; i++) {
-    const row = isVertical ? startRow + i : startRow;
-    const col = isVertical ? startCol : startCol + i;
-    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
-      return null;
-    }
-    cells.push({ row, col });
-  }
-  return cells;
-}

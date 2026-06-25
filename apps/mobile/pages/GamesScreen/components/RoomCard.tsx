@@ -11,7 +11,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import { useTranslation } from '@/lib/i18n';
 import { platformShadow } from '@/lib/platformShadow';
-import type { GameRoomSummary } from '../api/gamesApi';
+import { GAME_ROOM_STATUS, type GameRoomSummary } from '../api/gamesApi';
 import {
   formatRoomGame,
   formatRoomHost,
@@ -39,9 +39,9 @@ export function RoomCard({
   const { t } = useTranslation();
 
   const statusStyle =
-    room.status === 'lobby'
+    room.status === GAME_ROOM_STATUS.LOBBY
       ? styles.statusLobby
-      : room.status === 'in_progress'
+      : room.status === GAME_ROOM_STATUS.IN_PROGRESS
         ? styles.statusInProgress
         : styles.statusCompleted;
 
@@ -83,8 +83,10 @@ export function RoomCard({
   const gameLabel =
     gameName === 'Unknown game' ? t('games.rooms.unknownGame') : gameName;
 
+  const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
+
   return (
-    <ThemedView style={styles.card}>
+    <ThemedView style={[styles.card, isCompleted && styles.cardCompleted]}>
       <View style={styles.header}>
         <ThemedText type="defaultSemiBold" style={styles.title}>
           {room.name}
@@ -162,29 +164,34 @@ export function RoomCard({
               {t('games.common.watchRoom')}
             </ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.joinButton, isJoining && styles.joinButtonDisabled]}
-            onPress={onJoin}
-            disabled={isJoining}
-          >
-            {isJoining ? (
-              <ActivityIndicator
-                size="small"
-                color={styles.joinButtonText.color as string}
-              />
-            ) : (
-              <>
-                <IconSymbol
-                  name="arrow.right.circle.fill"
-                  size={18}
+          {room.status === GAME_ROOM_STATUS.LOBBY && (
+            <TouchableOpacity
+              style={[
+                styles.joinButton,
+                isJoining && styles.joinButtonDisabled,
+              ]}
+              onPress={onJoin}
+              disabled={isJoining}
+            >
+              {isJoining ? (
+                <ActivityIndicator
+                  size="small"
                   color={styles.joinButtonText.color as string}
                 />
-                <ThemedText style={styles.joinButtonText}>
-                  {t('games.common.joinRoom')}
-                </ThemedText>
-              </>
-            )}
-          </TouchableOpacity>
+              ) : (
+                <>
+                  <IconSymbol
+                    name="arrow.right.circle.fill"
+                    size={18}
+                    color={styles.joinButtonText.color as string}
+                  />
+                  <ThemedText style={styles.joinButtonText}>
+                    {t('games.common.joinRoom')}
+                  </ThemedText>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </ThemedView>
@@ -207,6 +214,9 @@ function createStyles(palette: Palette) {
         offset: { width: 0, height: 4 },
         elevation: 2,
       }),
+    },
+    cardCompleted: {
+      opacity: 0.6,
     },
     header: {
       flexDirection: 'row',

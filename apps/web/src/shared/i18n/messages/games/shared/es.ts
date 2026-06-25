@@ -137,7 +137,7 @@ export const esMessages = {
     clearExtras: 'Quitar extras',
     showPacks: 'Mostrar',
     hidePacks: 'Ocultar',
-    loginRequired: 'Necesitas iniciar sesión para crear una sala.',
+    loginRequired: 'Necesitas iniciar sesión para filtrar salas.',
     loginButton: 'Iniciar sesión',
     // Redesign (ARC-744)
     eyebrow: 'Sala nueva',

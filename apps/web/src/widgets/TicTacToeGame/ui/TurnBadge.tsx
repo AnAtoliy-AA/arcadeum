@@ -51,7 +51,9 @@ export function TurnBadge({
       paddingVertical="$2"
       paddingHorizontal="$3"
       borderRadius={999}
-      backgroundColor={myTurn ? '$green5' : '$backgroundHover'}
+      backgroundColor={myTurn ? '$green10' : '$backgroundHover'}
+      borderWidth={myTurn ? 0 : 1}
+      borderColor="$borderColor"
       alignSelf="center"
       alignItems="center"
       gap="$2"
@@ -64,7 +66,7 @@ export function TurnBadge({
           data-testid="ttt-turn-avatar"
         />
       ) : null}
-      <Text fontWeight="700" color={theme.textColor}>
+      <Text fontWeight="700" color={myTurn ? '$white' : theme.textColor}>
         {myTurn ? 'Your turn' : `${display}'s turn`}
       </Text>
     </XStack>

@@ -72,7 +72,7 @@ export const es = {
   tokenTitle: 'Nuestro Token',
   tokenSubtitle: 'Impulsando el ecosistema Arcadeum en Solana',
   tokenDescription:
-    'Gana tokens jugando, comprándolos en la tienda o retíralos a tu monedero Phantom en Solana.',
+    'Gana tokens jugando o en premios de torneos. Gástalos en la tienda.',
   stepCreateTitle: 'Crea o Únete a una Sala',
   stepCreateDescription:
     'Inicia una nueva sala de juego o introduce un código de invitación para unirte a una sesión existente.',

@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.20.5",
+  "version": "1.21.15",
   "private": true,
   "browserslist": [
     "chrome >= 87",
@@ -43,6 +43,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.0",
+    "recharts": "^3.8.1",
     "socket.io-client": "^4.8.1",
     "tamagui": "2.0.0-rc.23",
     "zustand": "^5.0.10"

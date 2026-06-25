@@ -82,6 +82,10 @@ export function SeaBattleHero({
           nebula: variantsT?.nebula?.name,
           pixel: variantsT?.pixel?.name,
           vintage: variantsT?.vintage?.name,
+          forest: variantsT?.forest?.name,
+          cartoon: variantsT?.cartoon?.name,
+          sunset: variantsT?.sunset?.name,
+          monochrome: variantsT?.monochrome?.name,
         }}
         label={landing.board.label}
         cycleHint={landing.board.cycleHint}

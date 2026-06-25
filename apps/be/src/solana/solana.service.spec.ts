@@ -9,6 +9,7 @@ jest.mock('@solana/web3.js', () => {
       getLatestBlockhash: jest.fn(),
       sendRawTransaction: jest.fn(),
       confirmTransaction: jest.fn(),
+      getTransaction: jest.fn(),
     })),
     PublicKey: jest.fn().mockImplementation((key: string) => ({
       toBase58: () => key,
@@ -125,78 +126,6 @@ describe('SolanaService', () => {
 
       expect(result.sol).toBe(1);
       expect(result.arcadeum).toBe(0);
-    });
-  });
-
-  describe('transferArcadeum', () => {
-    it('builds and sends a transaction correctly', async () => {
-      const recipient = new PublicKey('recipient-key');
-      const signature = 'mock-signature-arc';
-
-      (getAssociatedTokenAddress as jest.Mock)
-        .mockResolvedValue(new PublicKey('ata-1'))
-        .mockResolvedValueOnce(new PublicKey('ata-from'))
-        .mockResolvedValueOnce(new PublicKey('ata-to'));
-
-      const mockConn = connection as unknown as {
-        getLatestBlockhash: jest.Mock;
-        sendRawTransaction: jest.Mock;
-        confirmTransaction: jest.Mock;
-      };
-      mockConn.getLatestBlockhash.mockResolvedValue({
-        blockhash: 'block123',
-        lastValidBlockHeight: 42,
-      });
-      mockConn.sendRawTransaction.mockResolvedValue(signature);
-      mockConn.confirmTransaction.mockResolvedValue({});
-
-      const result = await service.transferArcadeum(recipient.toBase58(), 50);
-
-      expect(result).toBe(signature);
-      expect(mockConn.sendRawTransaction).toHaveBeenCalled();
-      expect(mockConn.confirmTransaction).toHaveBeenCalled();
-    });
-
-    it('throws on invalid PublicKey', async () => {
-      (getAssociatedTokenAddress as jest.Mock).mockRejectedValue(
-        new Error('Invalid public key'),
-      );
-
-      await expect(
-        service.transferArcadeum('not-a-valid-key', 10),
-      ).rejects.toThrow();
-    });
-  });
-
-  describe('transferSol', () => {
-    it('builds and sends a SOL transfer correctly', async () => {
-      const recipient = new PublicKey('recipient-key');
-      const signature = 'mock-signature-sol';
-      const lamports = 1_000_000;
-
-      const mockConn = connection as unknown as {
-        getLatestBlockhash: jest.Mock;
-        sendRawTransaction: jest.Mock;
-        confirmTransaction: jest.Mock;
-      };
-      mockConn.getLatestBlockhash.mockResolvedValue({
-        blockhash: 'block456',
-        lastValidBlockHeight: 100,
-      });
-      mockConn.sendRawTransaction.mockResolvedValue(signature);
-      mockConn.confirmTransaction.mockResolvedValue({});
-
-      const result = await service.transferSol(recipient.toBase58(), lamports);
-
-      expect(result).toBe(signature);
-      expect(mockConn.sendRawTransaction).toHaveBeenCalled();
-      expect(mockConn.confirmTransaction).toHaveBeenCalled();
-    });
-
-    it('throws on invalid PublicKey', async () => {
-      await expect(
-        service.transferSol('not-a-valid-key', 1_000_000),
-      ).rejects.toThrow();
     });
   });
 

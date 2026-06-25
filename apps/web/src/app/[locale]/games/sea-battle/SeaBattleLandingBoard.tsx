@@ -12,6 +12,10 @@ const ROTATING_VARIANTS = [
   'nebula',
   'pixel',
   'vintage',
+  'forest',
+  'cartoon',
+  'sunset',
+  'monochrome',
 ] as const;
 
 type Variant = (typeof ROTATING_VARIANTS)[number];

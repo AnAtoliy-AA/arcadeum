@@ -2,6 +2,7 @@
 
 import { XStack, YStack } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
+import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import styles from './CascadeGame.module.css';
@@ -41,7 +42,7 @@ export function TurnBadge({
         {currentEntryId ? (
           <InGameAvatar
             playerId={currentEntryId}
-            name={shortId(currentEntryId, members)}
+            name={resolveDisplayName(currentEntryId, { members })}
             size="sm"
             data-testid="cascade-turn-avatar"
           />
@@ -52,7 +53,7 @@ export function TurnBadge({
               ? t('games.cascade_v1.board.yourTurn')
               : currentEntryId
                 ? t('games.cascade_v1.board.waitingOn', {
-                    player: shortId(currentEntryId, members),
+                    player: resolveDisplayName(currentEntryId, { members }),
                   })
                 : t('games.cascade_v1.board.waiting')}
           </span>
@@ -94,14 +95,4 @@ export function TurnBadge({
       </XStack>
     </XStack>
   );
-}
-
-function shortId(
-  id: string,
-  members?: Array<{ id: string; displayName: string }>,
-): string {
-  if (id.startsWith('bot-')) return 'Bot';
-  const member = members?.find((m) => m.id === id);
-  if (member?.displayName) return member.displayName;
-  return id.slice(0, 6) + '…';
 }

@@ -11,7 +11,7 @@ import {
   formatRoomTimestamp,
   getRoomStatusLabel,
 } from './roomUtils';
-import type { GameRoomSummary } from './api/gamesApi';
+import { GAME_ROOM_STATUS, type GameRoomSummary } from './api/gamesApi';
 
 export function Section({
   title,
@@ -99,9 +99,12 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
     hostRaw === 'mystery captain' ? t('games.rooms.mysteryHost') : hostRaw;
   const isJoining = joiningRoomId === room.id;
   const isPrivate = room.visibility === 'private';
+  const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
 
   return (
-    <ThemedView style={styles.roomCard}>
+    <ThemedView
+      style={[styles.roomCard, isCompleted && styles.roomCardCompleted]}
+    >
       <View style={styles.roomHeader}>
         <ThemedText type="defaultSemiBold" style={styles.roomTitle}>
           {room.name}
@@ -153,32 +156,34 @@ export function RoomCard({ room, joiningRoomId, onJoinRoom }: RoomCardProps) {
             {t('games.rooms.created', { timestamp: createdLabel })}
           </ThemedText>
         </View>
-        <TouchableOpacity
-          style={[
-            styles.roomJoinButton,
-            isJoining && styles.roomJoinButtonDisabled,
-          ]}
-          onPress={() => onJoinRoom(room)}
-          disabled={isJoining}
-        >
-          {isJoining ? (
-            <ActivityIndicator
-              size="small"
-              color={styles.roomJoinButtonText.color as string}
-            />
-          ) : (
-            <>
-              <IconSymbol
-                name="arrow.right.circle.fill"
-                size={18}
+        {room.status === GAME_ROOM_STATUS.LOBBY && (
+          <TouchableOpacity
+            style={[
+              styles.roomJoinButton,
+              isJoining && styles.roomJoinButtonDisabled,
+            ]}
+            onPress={() => onJoinRoom(room)}
+            disabled={isJoining}
+          >
+            {isJoining ? (
+              <ActivityIndicator
+                size="small"
                 color={styles.roomJoinButtonText.color as string}
               />
-              <ThemedText style={styles.roomJoinButtonText}>
-                {t('games.common.joinRoom')}
-              </ThemedText>
-            </>
-          )}
-        </TouchableOpacity>
+            ) : (
+              <>
+                <IconSymbol
+                  name="arrow.right.circle.fill"
+                  size={18}
+                  color={styles.roomJoinButtonText.color as string}
+                />
+                <ThemedText style={styles.roomJoinButtonText}>
+                  {t('games.common.joinRoom')}
+                </ThemedText>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </ThemedView>
   );

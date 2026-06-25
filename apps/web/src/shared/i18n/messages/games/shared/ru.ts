@@ -137,7 +137,7 @@ export const ruMessages = {
     clearExtras: 'Очистить',
     showPacks: 'Показать',
     hidePacks: 'Скрыть',
-    loginRequired: 'Вы должны войти в систему, чтобы создать зал.',
+    loginRequired: 'Войдите, чтобы фильтровать залы.',
     loginButton: 'Войти',
     // Redesign (ARC-744)
     eyebrow: 'Новый зал',

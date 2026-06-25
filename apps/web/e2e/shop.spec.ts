@@ -119,6 +119,8 @@ test.describe('Shop redesign · Showcase Locker', () => {
       { id: 'avatar-panther-01', name: 'Cyber Panther' },
       { id: 'avatar-tiger-01', name: 'Cyber Tiger' },
       { id: 'avatar-eagle-01', name: 'Cyber Eagle' },
+      { id: 'avatar-lion-01', name: 'Cyber Lion' },
+      { id: 'avatar-shark-01', name: 'Cyber Shark' },
       { id: 'badge-elite', name: 'Elite Shield' },
       { id: 'badge-mythic', name: 'Mythic Star' },
       { id: 'badge-vanguard', name: 'Vanguard Shield' },

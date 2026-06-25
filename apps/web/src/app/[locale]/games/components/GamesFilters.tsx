@@ -5,7 +5,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { FilterChips, FilterGroup, FilterLabel, Filters } from '../styles';
-import { Button } from '@arcadeum/ui';
+import { FilterChip } from '@arcadeum/ui';
 import type { GamesParticipationFilter, GamesStatusFilter } from '../types';
 
 interface GamesFiltersProps {
@@ -17,16 +17,6 @@ interface GamesFiltersProps {
   onParticipationChange: (participation: GamesParticipationFilter) => void;
   isAuthenticated: boolean;
 }
-
-const STATUS_CHIP_ACTIVE_STYLE = {
-  borderColor: 'rgba(255,255,255,0.4)',
-  borderWidth: 1,
-} as const;
-
-const STATUS_CHIP_INACTIVE_STYLE = {
-  borderColor: 'rgba(255,255,255,0.1)',
-  borderWidth: 1,
-} as const;
 
 export function GamesFilters({
   searchQuery,
@@ -66,16 +56,9 @@ export function GamesFilters({
                     statusFilter.length === ALL_STATUSES_COUNT
                   : statusFilter.includes(value);
               return (
-                <Button
+                <FilterChip
                   key={value}
-                  variant="chip"
-                  size="sm"
-                  isActive={isActive}
-                  style={
-                    isActive
-                      ? STATUS_CHIP_ACTIVE_STYLE
-                      : STATUS_CHIP_INACTIVE_STYLE
-                  }
+                  active={isActive}
                   onClick={() => {
                     if (value === 'all') {
                       onStatusChange([]);
@@ -91,7 +74,7 @@ export function GamesFilters({
                 >
                   {label || value}
                   {isActive ? ' ✓' : ''}
-                </Button>
+                </FilterChip>
               );
             },
           )}
@@ -127,16 +110,9 @@ export function GamesFilters({
               const label = t(participationKeys[value] as TranslationKey);
               const isActive = participationFilter === value;
               return (
-                <Button
+                <FilterChip
                   key={value}
-                  variant="chip"
-                  size="sm"
-                  isActive={isActive}
-                  style={
-                    isActive
-                      ? STATUS_CHIP_ACTIVE_STYLE
-                      : STATUS_CHIP_INACTIVE_STYLE
-                  }
+                  active={isActive}
                   disabled={value !== 'all' && !isAuthenticated}
                   onClick={() => onParticipationChange(value)}
                   aria-label={`Filter by participation: ${label || value}`}
@@ -144,7 +120,7 @@ export function GamesFilters({
                 >
                   {label || value}
                   {isActive ? ' ✓' : ''}
-                </Button>
+                </FilterChip>
               );
             },
           )}

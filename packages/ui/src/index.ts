@@ -61,6 +61,7 @@ export * from './components/Header/LogoInner';
 
 export * from './components/CountdownClock';
 export * from './components/FormPips';
+export * from './components/FilterChip/FilterChip';
 export * from './components/LiveChip';
 export * from './components/MythicSpotlight';
 export * from './components/RankBadge';

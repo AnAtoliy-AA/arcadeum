@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.14] - 2026-06-25
+
+### Fixed
+- normalize VideoObject uploadDate to include time zone (N/A)
+
+
 ## [1.21.13] - 2026-06-25
 
 ### Fixed

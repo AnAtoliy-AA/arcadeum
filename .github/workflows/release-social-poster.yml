@@ -192,13 +192,14 @@ jobs:
                       print(f"Skipping Buffer post to {name} — channel ID not set")
                       continue
                   query = """
-                  mutation CreatePost($text: String!, $channelId: ChannelId!) {
+                  mutation CreatePost($text: String!, $channelId: ChannelId!, $metadata: PostInputMetaData) {
                     createPost(input: {
                       text: $text
                       channelId: $channelId
                       schedulingType: automatic
                       mode: shareNow
                       assets: []
+                      metadata: $metadata
                     }) {
                       ... on PostActionSuccess {
                         post { id text status }
@@ -213,6 +214,8 @@ jobs:
                       "text": text,
                       "channelId": channel_id,
                   }
+                  metadata_json = "{}"
+                  variables["metadata"] = json.loads(metadata_json)
                   payload = {"query": query, "variables": variables}
                   resp = requests.post(buffer_url, headers=headers, json=payload)
                   if resp.status_code == 200:

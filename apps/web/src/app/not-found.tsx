@@ -1,18 +1,4 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
-import { buildRoutes } from '@/shared/config/routes';
-import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-
-// `not-found.tsx` is rendered outside the normal segment context, so we
-// can't read params. We use a hardcoded default locale for the 404 page
-// since translations aren't critical for a not-found page.
-const locale: Locale = DEFAULT_LOCALE;
-const routes = buildRoutes(locale);
-
-export async function generateMetadata(): Promise<Metadata> {
-  return buildPageMetadata({ locale, page: 'notFound', noIndex: true });
-}
 
 export default function NotFound() {
   return (
@@ -42,14 +28,11 @@ export default function NotFound() {
         head back home.
       </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <Link
-          href={routes.home}
-          className="home-link-button home-link-button-primary"
-        >
+        <Link href="/en" className="home-link-button home-link-button-primary">
           Open app
         </Link>
         <Link
-          href={routes.games}
+          href="/en/games"
           className="home-link-button"
           style={{ opacity: 0.85 }}
         >

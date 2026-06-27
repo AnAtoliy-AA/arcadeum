@@ -242,6 +242,9 @@ export const playerStyles = `
 }
 .game-music-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease, box-shadow 200ms ease;
+  height: 44px !important;
+  width: 44px !important;
+  padding: 0 !important;
 }
 .game-music-btn:hover {
   background-color: rgba(255,255,255,0.1);
@@ -253,6 +256,9 @@ export const playerStyles = `
 .game-music-play-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, box-shadow 200ms ease;
   box-shadow: 0 2px 12px rgba(129,140,248,0.3);
+  height: 52px !important;
+  width: 52px !important;
+  padding: 0 !important;
 }
 .game-music-play-btn:hover {
   background-color: rgba(255,255,255,0.15) !important;

@@ -204,9 +204,17 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           : (idx + 1) % tracks.length;
         safety--;
       }
+      if (idx === index) {
+        const audio = audioRef.current;
+        if (audio && audio.paused) {
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+        }
+        return;
+      }
       setIndex(idx);
     },
-    [enabledTracks, shuffle, shuffleOrder, tracks.length],
+    [index, enabledTracks, shuffle, shuffleOrder, tracks.length],
   );
 
   const next = useCallback(() => {

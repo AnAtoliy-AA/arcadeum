@@ -95,7 +95,7 @@ export function TransportControls({
   labels,
 }: TransportControlsProps) {
   return (
-    <YStack gap="$2.5">
+    <YStack gap="$2.5" marginBottom="$1">
       <XStack alignItems="center" gap="$2" paddingHorizontal={2}>
         <XStack className="game-music-volume-icon" flexShrink={0} style={{ color: 'rgba(255,255,255,0.4)' }}>
           <VolumeIcon level={volume} />

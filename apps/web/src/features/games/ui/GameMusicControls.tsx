@@ -118,7 +118,7 @@ export function TransportControls({
       </XStack>
 
       <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap={6}>
+        <XStack alignItems="center" gap={8}>
           <IconButton
             circular
             size="md"
@@ -255,7 +255,7 @@ export function MiniControls({
   labels,
 }: MiniControlsProps) {
   return (
-    <XStack alignItems="center" justifyContent="center" gap={8}>
+    <XStack alignItems="center" justifyContent="center" gap={10}>
       <IconButton
         circular
         size="lg"

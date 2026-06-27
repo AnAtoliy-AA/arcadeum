@@ -121,33 +121,28 @@ export function TransportControls({
         <XStack alignItems="center" gap={8}>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onToggleShuffle}
             testId="game-music-shuffle"
             aria-label={shuffle ? labels.shuffleOn : labels.shuffleOff}
             hoverStyle={btnHover}
             color={shuffle ? '#818cf8' : 'rgba(255,255,255,0.4)'}
-            style={{ width: 42, height: 42 }}
           >
             <ShuffleIcon size={18} />
           </IconButton>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onPrev}
             testId="game-music-prev"
             aria-label={labels.prev}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
-            style={{ width: 42, height: 42 }}
           >
             <SkipBackIcon size={18} />
           </IconButton>
           <IconButton
             circular
-            size="xl"
             className="game-music-btn game-music-play-btn"
             onClick={onTogglePlay}
             testId="game-music-playpause"
@@ -157,39 +152,33 @@ export function TransportControls({
             backgroundColor="rgba(129,140,248,0.25)"
             borderWidth={1}
             borderColor="rgba(129,140,248,0.3)"
-            style={{ width: 52, height: 52 }}
           >
             {isPlaying ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
           </IconButton>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onStop}
             testId="game-music-stop"
             aria-label={labels.stop}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
-            style={{ width: 42, height: 42 }}
           >
             <StopIcon size={16} />
           </IconButton>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onNext}
             testId="game-music-next"
             aria-label={labels.next}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
-            style={{ width: 42, height: 42 }}
           >
             <SkipForwardIcon size={18} />
           </IconButton>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onCycleRepeat}
             testId="game-music-repeat"
@@ -202,7 +191,6 @@ export function TransportControls({
             }
             hoverStyle={btnHover}
             color={repeat !== 'off' ? '#818cf8' : 'rgba(255,255,255,0.4)'}
-            style={{ width: 42, height: 42 }}
           >
             {repeat === 'one' ? (
               <RepeatOneIcon size={18} />
@@ -212,7 +200,6 @@ export function TransportControls({
           </IconButton>
           <IconButton
             circular
-            size="lg"
             className="game-music-btn"
             onClick={onTogglePlaylist}
             testId="game-music-playlist-toggle"
@@ -221,7 +208,6 @@ export function TransportControls({
             }
             hoverStyle={btnHover}
             color={playlistOpen ? '#818cf8' : 'rgba(255,255,255,0.4)'}
-            style={{ width: 42, height: 42 }}
           >
             <PlaylistIcon size={18} />
           </IconButton>
@@ -229,14 +215,12 @@ export function TransportControls({
 
         <IconButton
           circular
-          size="lg"
           className="game-music-btn"
           onClick={onToggleMiniMode}
           testId="game-music-minimize"
           aria-label={labels.minimize}
           hoverStyle={btnHover}
           color="rgba(255,255,255,0.3)"
-          style={{ width: 42, height: 42 }}
         >
           <MinimizeIcon size={16} />
         </IconButton>
@@ -266,7 +250,6 @@ export function MiniControls({
     <XStack alignItems="center" justifyContent="center" gap={10}>
       <IconButton
         circular
-        size="xl"
         className="game-music-btn game-music-play-btn"
         onClick={onTogglePlay}
         testId="game-music-playpause"
@@ -276,20 +259,17 @@ export function MiniControls({
         backgroundColor="rgba(129,140,248,0.25)"
         borderWidth={1}
         borderColor="rgba(129,140,248,0.3)"
-        style={{ width: 48, height: 48 }}
       >
         {isPlaying ? <PauseIcon size={18} /> : <PlayIcon size={18} />}
       </IconButton>
       <IconButton
         circular
-        size="lg"
         className="game-music-btn"
         onClick={onToggleMiniMode}
         testId="game-music-maximize"
         aria-label={labels.maximize}
         hoverStyle={btnHover}
         color="rgba(255,255,255,0.4)"
-        style={{ width: 42, height: 42 }}
       >
         <MaximizeIcon size={16} />
       </IconButton>

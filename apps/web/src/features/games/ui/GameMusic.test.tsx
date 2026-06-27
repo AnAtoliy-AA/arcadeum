@@ -9,7 +9,7 @@ import {
 import { TamaguiProvider } from 'tamagui';
 import { config } from '@/shared/config/tamagui.config';
 import { GameMusic } from './GameMusic';
-import { trackForGame, trackIndexForGame, TRACKS } from './GameMusicUtils';
+import { trackIndexForGame, FALLBACK_TRACKS } from './GameMusicUtils';
 
 const render = (ui: React.ReactElement) =>
   rtlRender(
@@ -201,18 +201,19 @@ describe('GameMusic', () => {
     expect(audio.src).toBe('');
   });
 
-  it('trackIndexForGame / trackForGame are deterministic with a safe fallback', () => {
-    expect(trackForGame().src).toContain('battleship-grid.mp3');
-    expect(trackIndexForGame()).toBe(0);
-    expect(trackIndexForGame('sea_battle_v1')).toBe(
-      trackIndexForGame('sea_battle_v1'),
+  it('trackIndexForGame is deterministic with a safe fallback', () => {
+    const trackCount = FALLBACK_TRACKS.length;
+    expect(trackIndexForGame(null, trackCount)).toBe(0);
+    expect(trackIndexForGame('sea_battle_v1', trackCount)).toBe(
+      trackIndexForGame('sea_battle_v1', trackCount),
     );
-    expect(trackForGame('sea_battle_v1').src).toContain('/music/');
-    expect(trackForGame('sea_battle_v1').title).toBeTruthy();
+    expect(
+      FALLBACK_TRACKS[trackIndexForGame('sea_battle_v1', trackCount)].src,
+    ).toContain('/music/');
   });
 
   it('all track titles are unique', () => {
-    const titles = TRACKS.map((t) => t.title);
+    const titles = FALLBACK_TRACKS.map((t) => t.title);
     expect(new Set(titles).size).toBe(titles.length);
   });
 });

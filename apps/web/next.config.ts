@@ -83,6 +83,8 @@ const cspFontSrc = "'self' data:";
 const cspFrameSrc =
   "'self' https://www.youtube-nocookie.com https://vercel.com https://vercel.live";
 
+const cspMediaSrc = `'self' ${process.env.NEXT_PUBLIC_CDN_URL || ''}`;
+
 const nextConfig: NextConfig = {
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
@@ -112,6 +114,7 @@ const nextConfig: NextConfig = {
       `img-src ${cspImgSrc};`,
       `font-src ${cspFontSrc};`,
       "object-src 'none';",
+      `media-src ${cspMediaSrc};`,
       "base-uri 'self';",
       "form-action 'self';",
       "frame-ancestors 'self';",

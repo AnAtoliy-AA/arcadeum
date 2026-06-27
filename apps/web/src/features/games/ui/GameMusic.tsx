@@ -5,9 +5,11 @@ import { Text, XStack, YStack } from 'tamagui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
-  TRACKS,
+  fetchTracks,
+  FALLBACK_TRACKS,
   trackIndexForGame,
   DEFAULT_VOLUME,
+  type MusicTrack,
   type RepeatMode,
 } from './GameMusicUtils';
 import {
@@ -33,7 +35,8 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const { musicEnabled } = useMusicSetting();
   const { t } = useTranslation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [index, setIndex] = useState(() => trackIndexForGame(gameId));
+  const [tracks, setTracks] = useState<readonly MusicTrack[]>(FALLBACK_TRACKS);
+  const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(DEFAULT_VOLUME);
   const [shuffle, setShuffle] = useState(false);
@@ -43,14 +46,23 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [enabledTracks, setEnabledTracks] = useState<Set<number>>(
-    () => new Set(TRACKS.map((_, i) => i)),
+    () => new Set(FALLBACK_TRACKS.map((_, i) => i)),
   );
   const [shuffleOrder, setShuffleOrder] = useState<number[]>(() =>
-    shuffleArray(TRACKS.length),
+    shuffleArray(FALLBACK_TRACKS.length),
   );
 
+  useEffect(() => {
+    fetchTracks().then((data) => {
+      setTracks(data);
+      setIndex(trackIndexForGame(gameId, data.length));
+      setEnabledTracks(new Set(data.map((_, i) => i)));
+      setShuffleOrder(shuffleArray(data.length));
+    });
+  }, [gameId]);
+
   const volumeRef = useRef(volume);
-  const track = TRACKS[index];
+  const track = tracks[index];
   const { pos, onPointerDown, onPointerMove, onPointerUp } = useDraggable({
     x: 16,
     y: typeof window !== 'undefined' ? window.innerHeight - 200 : 600,
@@ -75,7 +87,11 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
 
     const result = audio.play();
-    if (result && typeof result.catch === 'function') result.catch(() => {});
+    if (result && typeof result.catch === 'function') {
+      result.catch(() => {
+        // Autoplay blocked — user must click play manually
+      });
+    }
 
     return () => {
       audio.removeEventListener('play', onPlay);
@@ -92,14 +108,14 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     if (!musicEnabled) return;
     const nextIdx = shuffle
       ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
-      : (index + 1) % TRACKS.length;
-    const nextSrc = TRACKS[nextIdx].src;
+      : (index + 1) % tracks.length;
+    const nextSrc = tracks[nextIdx].src;
     const preloader = new Audio(nextSrc);
     preloader.preload = 'auto';
     return () => {
       preloader.src = '';
     };
-  }, [index, musicEnabled, shuffle, shuffleOrder]);
+  }, [index, musicEnabled, shuffle, shuffleOrder, tracks]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -122,24 +138,24 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const playIndex = useCallback(
     (nextIndex: number) => {
       let idx = nextIndex;
-      let safety = TRACKS.length;
+      let safety = tracks.length;
       while (!enabledTracks.has(idx) && safety > 0) {
         idx = shuffle
           ? shuffleOrder[(shuffleOrder.indexOf(idx) + 1) % shuffleOrder.length]
-          : (idx + 1) % TRACKS.length;
+          : (idx + 1) % tracks.length;
         safety--;
       }
       setIndex(idx);
     },
-    [enabledTracks, shuffle, shuffleOrder],
+    [enabledTracks, shuffle, shuffleOrder, tracks.length],
   );
 
   const next = useCallback(() => {
     const nextIdx = shuffle
       ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
-      : (index + 1) % TRACKS.length;
+      : (index + 1) % tracks.length;
     playIndex(nextIdx);
-  }, [index, shuffle, shuffleOrder, playIndex]);
+  }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
 
   const prev = useCallback(() => {
     const prevIdx = shuffle
@@ -147,9 +163,9 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           (shuffleOrder.indexOf(index) - 1 + shuffleOrder.length) %
             shuffleOrder.length
         ]
-      : (index - 1 + TRACKS.length) % TRACKS.length;
+      : (index - 1 + tracks.length) % tracks.length;
     playIndex(prevIdx);
-  }, [index, shuffle, shuffleOrder, playIndex]);
+  }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
 
   useEffect(() => {
     if (!isPlaying || repeat !== 'all') return;
@@ -178,10 +194,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   const toggleShuffle = useCallback(() => {
     setShuffle((s) => {
-      if (!s) setShuffleOrder(shuffleArray(TRACKS.length));
+      if (!s) setShuffleOrder(shuffleArray(tracks.length));
       return !s;
     });
-  }, []);
+  }, [tracks.length]);
 
   const cycleRepeat = useCallback(() => {
     setRepeat((r) => (r === 'off' ? 'all' : r === 'all' ? 'one' : 'off'));
@@ -316,6 +332,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           <>
             {playlistOpen && (
               <Playlist
+                tracks={tracks}
                 index={index}
                 isPlaying={isPlaying}
                 enabledTracks={enabledTracks}

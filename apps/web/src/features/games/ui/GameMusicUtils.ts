@@ -8,7 +8,7 @@ export const MUSIC_FOLDER = 'music';
 export const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
 export const TRACKS_JSON_URL = `${MUSIC_CDN_URL}/tracks.json`;
 
-const FALLBACK_TRACKS: MusicTrack[] = [
+export const FALLBACK_TRACKS: MusicTrack[] = [
   { src: `${MUSIC_CDN_URL}/battleship-grid.mp3`, title: 'Battleship Grid' },
   {
     src: `${MUSIC_CDN_URL}/battleship-grid-v2.mp3`,
@@ -52,28 +52,31 @@ const FALLBACK_TRACKS: MusicTrack[] = [
   },
 ];
 
-export let TRACKS: readonly MusicTrack[] = [...FALLBACK_TRACKS];
-
-if (typeof window !== 'undefined' && CDN_BASE) {
-  fetch(TRACKS_JSON_URL)
-    .then((res) => {
-      if (!res.ok) throw new Error(`Failed to fetch tracks: ${res.status}`);
-      return res.json();
-    })
-    .then((data: MusicTrack[]) => {
-      if (Array.isArray(data) && data.length > 0) {
-        TRACKS = data;
-      }
-    })
-    .catch(() => {});
-}
-
 if (process.env.NODE_ENV !== 'production') {
-  const titles = TRACKS.map((t) => t.title);
+  const titles = FALLBACK_TRACKS.map((t) => t.title);
   const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
   if (dupes.length > 0) {
     console.error('[GameMusic] Duplicate track titles:', dupes);
   }
+}
+
+let cachedTracks: readonly MusicTrack[] | null = null;
+
+export async function fetchTracks(): Promise<readonly MusicTrack[]> {
+  if (cachedTracks) return cachedTracks;
+  if (!CDN_BASE) return FALLBACK_TRACKS;
+  try {
+    const res = await fetch(TRACKS_JSON_URL);
+    if (!res.ok) throw new Error(`Failed to fetch tracks: ${res.status}`);
+    const data: MusicTrack[] = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      cachedTracks = data;
+      return data;
+    }
+  } catch {
+    // Fall through to fallback
+  }
+  return FALLBACK_TRACKS;
 }
 
 export const DEFAULT_VOLUME = 0.3;
@@ -83,18 +86,17 @@ export type RepeatMode = 'off' | 'all' | 'one';
 const HASH_PRIME = 31;
 const SECONDS_PER_MINUTE = 60;
 
-export function trackIndexForGame(gameId?: string | null): number {
+export function trackIndexForGame(
+  gameId: string | null | undefined,
+  trackCount: number,
+): number {
   const id = gameId ?? '';
   if (!id) return 0;
   let hash = 0;
   for (let i = 0; i < id.length; i += 1) {
     hash = (hash * HASH_PRIME + id.charCodeAt(i)) >>> 0;
   }
-  return hash % TRACKS.length;
-}
-
-export function trackForGame(gameId?: string | null): MusicTrack {
-  return TRACKS[trackIndexForGame(gameId)];
+  return hash % trackCount;
 }
 
 export function formatTime(seconds: number): string {

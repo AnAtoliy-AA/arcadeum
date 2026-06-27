@@ -1,10 +1,11 @@
 'use client';
 
 import { Text, XStack, YStack } from 'tamagui';
-import { TRACKS } from './GameMusicUtils';
+import { type MusicTrack } from './GameMusicUtils';
 import { PlayingBars } from './GameMusicVisuals';
 
 interface PlaylistProps {
+  tracks: readonly MusicTrack[];
   index: number;
   isPlaying: boolean;
   enabledTracks: Set<number>;
@@ -12,6 +13,7 @@ interface PlaylistProps {
 }
 
 export function Playlist({
+  tracks,
   index,
   isPlaying,
   enabledTracks,
@@ -38,7 +40,7 @@ export function Playlist({
       >
         Playlist
       </Text>
-      {TRACKS.map((track, i) => {
+      {tracks.map((track, i) => {
         const isActive = i === index;
         const isEnabled = enabledTracks.has(i);
 

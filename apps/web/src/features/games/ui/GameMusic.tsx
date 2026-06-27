@@ -91,10 +91,15 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   }, [gameId]);
 
   const volumeRef = useRef(volume);
+  const enabledTracksRef = useRef(enabledTracks);
   const track = tracks[index];
   const { pos, onPointerDown, onPointerMove, onPointerUp } = useDraggable({
     x: 16,
     y: typeof window !== 'undefined' ? window.innerHeight - 200 : 600,
+  });
+
+  useEffect(() => {
+    enabledTracksRef.current = enabledTracks;
   });
 
   useEffect(() => {
@@ -116,7 +121,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         : (index + 1) % tracks.length;
       let idx = nextIdx;
       let safety = tracks.length;
-      while (!enabledTracks.has(idx) && safety > 0) {
+      while (!enabledTracksRef.current.has(idx) && safety > 0) {
         idx = shuffle
           ? shuffleOrder[(shuffleOrder.indexOf(idx) + 1) % shuffleOrder.length]
           : (idx + 1) % tracks.length;
@@ -156,7 +161,6 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     shuffle,
     shuffleOrder,
     tracks.length,
-    enabledTracks,
   ]);
 
   useEffect(() => {

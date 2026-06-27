@@ -118,7 +118,7 @@ export function TransportControls({
       </XStack>
 
       <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap={4}>
+        <XStack alignItems="center" gap={6}>
           <IconButton
             circular
             size="md"

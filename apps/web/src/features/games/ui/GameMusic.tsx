@@ -459,7 +459,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         </XStack>
 
         {!miniMode && (
-          <YStack gap="$2.5" marginTop="$2">
+          <YStack gap="$3" marginTop="$2">
             {playlistOpen && (
               <Playlist
                 tracks={tracks}

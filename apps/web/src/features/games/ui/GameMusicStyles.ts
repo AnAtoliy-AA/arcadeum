@@ -148,7 +148,7 @@ export const playerStyles = `
   background: rgba(255,255,255,0.2);
 }
 .game-music-track {
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   transition: background-color 150ms ease, opacity 150ms ease, transform 150ms ease;
   cursor: pointer;

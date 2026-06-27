@@ -193,7 +193,7 @@ export function Playlist({
     <YStack
       testID="game-music-playlist"
       className="game-music-playlist"
-      gap={2}
+      gap={4}
       paddingBottom="$1.5"
       marginBottom="$1"
       borderBottomWidth={1}

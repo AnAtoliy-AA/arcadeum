@@ -92,6 +92,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   const volumeRef = useRef(volume);
   const enabledTracksRef = useRef(enabledTracks);
+  const repeatRef = useRef(repeat);
+  const shuffleRef = useRef(shuffle);
+  const shuffleOrderRef = useRef(shuffleOrder);
+  const tracksLengthRef = useRef(tracks.length);
   const track = tracks[index];
   const { pos, onPointerDown, onPointerMove, onPointerUp } = useDraggable({
     x: 16,
@@ -100,12 +104,16 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   useEffect(() => {
     enabledTracksRef.current = enabledTracks;
+    repeatRef.current = repeat;
+    shuffleRef.current = shuffle;
+    shuffleOrderRef.current = shuffleOrder;
+    tracksLengthRef.current = tracks.length;
   });
 
   useEffect(() => {
     if (!musicEnabled) return;
     const audio = new Audio(track.src);
-    audio.loop = repeat === 'one';
+    audio.loop = repeatRef.current === 'one';
     audio.volume = volumeRef.current;
     audio.preload = 'metadata';
     audioRef.current = audio;
@@ -115,16 +123,16 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onLoadedMetadata = () => setDuration(audio.duration);
     const onEnded = () => {
-      if (repeat === 'one') return;
-      const nextIdx = shuffle
-        ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
-        : (index + 1) % tracks.length;
+      if (repeatRef.current === 'one') return;
+      const nextIdx = shuffleRef.current
+        ? shuffleOrderRef.current[(shuffleOrderRef.current.indexOf(index) + 1) % shuffleOrderRef.current.length]
+        : (index + 1) % tracksLengthRef.current;
       let idx = nextIdx;
-      let safety = tracks.length;
+      let safety = tracksLengthRef.current;
       while (!enabledTracksRef.current.has(idx) && safety > 0) {
-        idx = shuffle
-          ? shuffleOrder[(shuffleOrder.indexOf(idx) + 1) % shuffleOrder.length]
-          : (idx + 1) % tracks.length;
+        idx = shuffleRef.current
+          ? shuffleOrderRef.current[(shuffleOrderRef.current.indexOf(idx) + 1) % shuffleOrderRef.current.length]
+          : (idx + 1) % tracksLengthRef.current;
         safety--;
       }
       setIndex(idx);
@@ -153,15 +161,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       audio.src = '';
       audioRef.current = null;
     };
-  }, [
-    track.src,
-    musicEnabled,
-    repeat,
-    index,
-    shuffle,
-    shuffleOrder,
-    tracks.length,
-  ]);
+  }, [track.src, musicEnabled, index]);
 
   useEffect(() => {
     if (!musicEnabled) return;

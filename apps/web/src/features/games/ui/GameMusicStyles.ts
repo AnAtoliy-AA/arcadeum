@@ -213,6 +213,15 @@ export const playerStyles = `
 .game-music-btn:active {
   transform: scale(0.92);
 }
+@media (max-width: 480px) {
+  .game-music-player {
+    padding-bottom: 12px !important;
+  }
+  .game-music-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .playing-bar { animation: none; height: 6px; }
   .game-music-player,

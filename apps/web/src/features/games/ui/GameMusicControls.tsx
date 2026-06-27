@@ -95,7 +95,7 @@ export function TransportControls({
   labels,
 }: TransportControlsProps) {
   return (
-    <YStack gap="$2.5">
+    <YStack gap={12}>
       <XStack alignItems="center" gap="$2" paddingHorizontal={2}>
         <XStack className="game-music-volume-icon" flexShrink={0} style={{ color: 'rgba(255,255,255,0.4)' }}>
           <VolumeIcon level={volume} />
@@ -128,6 +128,7 @@ export function TransportControls({
             aria-label={shuffle ? labels.shuffleOn : labels.shuffleOff}
             hoverStyle={btnHover}
             color={shuffle ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+            style={{ width: 42, height: 42 }}
           >
             <ShuffleIcon size={18} />
           </IconButton>
@@ -140,6 +141,7 @@ export function TransportControls({
             aria-label={labels.prev}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
+            style={{ width: 42, height: 42 }}
           >
             <SkipBackIcon size={18} />
           </IconButton>
@@ -155,6 +157,7 @@ export function TransportControls({
             backgroundColor="rgba(129,140,248,0.25)"
             borderWidth={1}
             borderColor="rgba(129,140,248,0.3)"
+            style={{ width: 52, height: 52 }}
           >
             {isPlaying ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
           </IconButton>
@@ -167,6 +170,7 @@ export function TransportControls({
             aria-label={labels.stop}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
+            style={{ width: 42, height: 42 }}
           >
             <StopIcon size={16} />
           </IconButton>
@@ -179,6 +183,7 @@ export function TransportControls({
             aria-label={labels.next}
             hoverStyle={btnHover}
             color="rgba(255,255,255,0.8)"
+            style={{ width: 42, height: 42 }}
           >
             <SkipForwardIcon size={18} />
           </IconButton>
@@ -197,6 +202,7 @@ export function TransportControls({
             }
             hoverStyle={btnHover}
             color={repeat !== 'off' ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+            style={{ width: 42, height: 42 }}
           >
             {repeat === 'one' ? (
               <RepeatOneIcon size={18} />
@@ -215,6 +221,7 @@ export function TransportControls({
             }
             hoverStyle={btnHover}
             color={playlistOpen ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+            style={{ width: 42, height: 42 }}
           >
             <PlaylistIcon size={18} />
           </IconButton>
@@ -229,6 +236,7 @@ export function TransportControls({
           aria-label={labels.minimize}
           hoverStyle={btnHover}
           color="rgba(255,255,255,0.3)"
+          style={{ width: 42, height: 42 }}
         >
           <MinimizeIcon size={16} />
         </IconButton>
@@ -268,6 +276,7 @@ export function MiniControls({
         backgroundColor="rgba(129,140,248,0.25)"
         borderWidth={1}
         borderColor="rgba(129,140,248,0.3)"
+        style={{ width: 48, height: 48 }}
       >
         {isPlaying ? <PauseIcon size={18} /> : <PlayIcon size={18} />}
       </IconButton>
@@ -280,6 +289,7 @@ export function MiniControls({
         aria-label={labels.maximize}
         hoverStyle={btnHover}
         color="rgba(255,255,255,0.4)"
+        style={{ width: 42, height: 42 }}
       >
         <MaximizeIcon size={16} />
       </IconButton>

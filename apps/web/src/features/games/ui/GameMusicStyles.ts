@@ -276,12 +276,16 @@ export const playerStyles = `
     border-radius: 24px !important;
   }
   .game-music-btn {
-    min-width: 48px !important;
-    min-height: 48px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
   .game-music-play-btn {
-    min-width: 56px !important;
-    min-height: 56px !important;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
   }
   .game-music-volume,
   .game-music-progress {

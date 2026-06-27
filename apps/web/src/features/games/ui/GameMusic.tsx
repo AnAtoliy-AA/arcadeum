@@ -369,11 +369,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         gap={0}
         paddingVertical="$3"
         paddingHorizontal="$3"
-        borderRadius={24}
+        borderRadius={28}
         backgroundColor="rgba(255,255,255,0.18)"
         borderWidth={1}
         borderColor="rgba(255,255,255,0.5)"
-        borderRadius={28}
         style={{
           backdropFilter: 'blur(50px) saturate(1.6)',
           WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
@@ -415,7 +414,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               className="game-music-title"
               fontSize={13}
               fontWeight="600"
-              color="#ffffff"
+              color="rgba(255,255,255,0.95)"
               numberOfLines={1}
             >
               {track.title}
@@ -423,7 +422,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             <Text
               fontSize={10}
               fontWeight="400"
-              color="rgba(255,255,255,0.35)"
+              color="rgba(255,255,255,0.55)"
               numberOfLines={1}
             >
               Arcadeum
@@ -442,16 +441,16 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'rgba(255,255,255,0.35)',
+              color: 'rgba(255,255,255,0.5)',
               transition: 'color 150ms ease, background-color 150ms ease',
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.35)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >

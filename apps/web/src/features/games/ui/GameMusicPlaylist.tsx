@@ -109,7 +109,7 @@ function SortableTrackItem({
         />
         <Text
           fontSize={10}
-          color={isActive ? 'rgba(129,140,248,0.7)' : 'rgba(255,255,255,0.3)'}
+          color={isActive ? 'rgba(165,180,252,0.9)' : 'rgba(255,255,255,0.45)'}
           minWidth={16}
           fontWeight="500"
         >
@@ -120,10 +120,10 @@ function SortableTrackItem({
           fontSize={12}
           color={
             isActive
-              ? '#a5b4fc'
+              ? '#c4d0fc'
               : isEnabled
-                ? 'rgba(255,255,255,0.75)'
-                : 'rgba(255,255,255,0.4)'
+                ? 'rgba(255,255,255,0.85)'
+                : 'rgba(255,255,255,0.5)'
           }
           fontWeight={isActive ? '600' : '400'}
           numberOfLines={1}
@@ -202,7 +202,7 @@ export function Playlist({
       <Text
         fontSize={10}
         fontWeight="600"
-        color="rgba(255,255,255,0.45)"
+        color="rgba(255,255,255,0.6)"
         letterSpacing={0.5}
         textTransform="uppercase"
         paddingHorizontal="$1"

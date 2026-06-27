@@ -176,7 +176,7 @@ export function TransportControls({
             background: `linear-gradient(to right, rgba(129,140,248,0.8) 0%, rgba(129,140,248,0.8) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) 100%)`,
           }}
         />
-        <Text fontSize={10} className="game-music-time" color="rgba(255,255,255,0.35)" minWidth={32} fontWeight="500" textAlign="right">
+        <Text fontSize={10} className="game-music-time" color="rgba(255,255,255,0.55)" minWidth={32} fontWeight="500" textAlign="right">
           {Math.round(volume * 100)}%
         </Text>
       </XStack>
@@ -335,7 +335,7 @@ export function ProgressBar({
       <Text
         fontSize={10}
         className="game-music-time"
-        color="rgba(255,255,255,0.4)"
+        color="rgba(255,255,255,0.55)"
         minWidth={32}
         fontWeight="500"
       >
@@ -353,13 +353,13 @@ export function ProgressBar({
         aria-label={label}
         style={{
           flex: 1,
-          background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.1) ${pct}%)`,
+          background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.12) ${pct}%)`,
         }}
       />
       <Text
         fontSize={10}
         className="game-music-time"
-        color="rgba(255,255,255,0.4)"
+        color="rgba(255,255,255,0.55)"
         minWidth={32}
         fontWeight="500"
         textAlign="right"

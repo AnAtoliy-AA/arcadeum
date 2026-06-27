@@ -20,6 +20,10 @@ export const playerStyles = `
     inset 0 0 0 0.5px rgba(255,255,255,0.3);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
   background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 35%, rgba(255,255,255,0.15) 100%);
+  cursor: grab;
+}
+.game-music-player:active {
+  cursor: grabbing;
 }
 .game-music-player.is-playing {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1), gameMusicGlow 3s ease-in-out infinite;

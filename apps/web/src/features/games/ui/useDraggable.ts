@@ -37,15 +37,16 @@ export function useDraggable(initial: Position) {
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (e.button !== 0) return;
-      const el = (e.target as HTMLElement).closest('[data-drag-handle]');
-      if (!el) return;
+      const target = e.target as HTMLElement;
+      const interactive = target.closest('button, input, a, select, textarea, [role="button"]');
+      if (interactive) return;
 
       dragging.current = true;
       offset.current = {
         x: e.clientX - pos.x,
         y: e.clientY - pos.y,
       };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      target.setPointerCapture(e.pointerId);
       e.preventDefault();
     },
     [pos],

@@ -102,11 +102,27 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onLoadedMetadata = () => setDuration(audio.duration);
+    const onEnded = () => {
+      if (repeat === 'one') return;
+      const nextIdx = shuffle
+        ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
+        : (index + 1) % tracks.length;
+      let idx = nextIdx;
+      let safety = tracks.length;
+      while (!enabledTracks.has(idx) && safety > 0) {
+        idx = shuffle
+          ? shuffleOrder[(shuffleOrder.indexOf(idx) + 1) % shuffleOrder.length]
+          : (idx + 1) % tracks.length;
+        safety--;
+      }
+      setIndex(idx);
+    };
 
     audio.addEventListener('play', onPlay);
     audio.addEventListener('pause', onPause);
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
+    audio.addEventListener('ended', onEnded);
 
     const result = audio.play();
     if (result && typeof result.catch === 'function') {
@@ -120,11 +136,21 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       audio.removeEventListener('pause', onPause);
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+      audio.removeEventListener('ended', onEnded);
       audio.pause();
       audio.src = '';
       audioRef.current = null;
     };
-  }, [track.src, musicEnabled, repeat]);
+  }, [
+    track.src,
+    musicEnabled,
+    repeat,
+    index,
+    shuffle,
+    shuffleOrder,
+    tracks.length,
+    enabledTracks,
+  ]);
 
   useEffect(() => {
     if (!musicEnabled) return;
@@ -188,16 +214,6 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       : (index - 1 + tracks.length) % tracks.length;
     playIndex(prevIdx);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (repeat === 'one') return;
-    const onEnded = () => next();
-    audio.addEventListener('ended', onEnded);
-    return () => audio.removeEventListener('ended', onEnded);
-  }, [isPlaying, repeat, next]);
 
   const onVolumeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

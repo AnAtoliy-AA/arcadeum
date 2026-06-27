@@ -2,8 +2,16 @@
 import { useState } from 'react';
 import { Container, PageLayout, PageTitle, YStack } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
-import { useAdminUsers, useUpdateUserRole } from '@/features/admin-users/hooks';
+import {
+  useAdminUsers,
+  useUpdateUserRole,
+  useBlockUser,
+  useUnblockUser,
+  useDeleteUser,
+  useRestoreUser,
+} from '@/features/admin-users/hooks';
 import type { UserRole } from '@/entities/session/model/types';
+import type { AdminUserStatus } from '@/features/admin-users/api';
 import { ApiError } from '@/shared/lib/api-client';
 import { UsersFilters } from '@/features/admin-users/ui/UsersFilters';
 import { UsersTable } from '@/features/admin-users/ui/UsersTable';
@@ -13,7 +21,10 @@ import type { AdminWalletI18n } from '@/shared/i18n/messages/pages/admin-wallet/
 interface UsersI18n {
   title: string;
   search: { placeholder: string };
-  filter: { role: { all: string; placeholder: string } };
+  filter: {
+    role: { all: string; placeholder: string };
+    status: { all: string; placeholder: string };
+  };
   table: {
     username: string;
     email: string;
@@ -26,11 +37,20 @@ interface UsersI18n {
   totalLabel: string;
   selfTooltip: string;
   role: Record<UserRole, string>;
+  status: Record<AdminUserStatus, string>;
+  actions: {
+    block: string;
+    unblock: string;
+    remove: string;
+    restore: string;
+  };
   errors: {
     SELF_ROLE_CHANGE_FORBIDDEN: string;
     LAST_ADMIN_PROTECTED: string;
     USER_NOT_FOUND: string;
     INVALID_USER_ID: string;
+    CANNOT_BLOCK_SELF: string;
+    CANNOT_DELETE_SELF: string;
     generic: string;
   };
 }
@@ -48,6 +68,7 @@ export default function AdminUsersClient({
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
   const [role, setRole] = useState<UserRole | null>(null);
+  const [status, setStatus] = useState<AdminUserStatus | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pendingUserId, setPendingUserId] = useState<string | undefined>();
   const [walletTarget, setWalletTarget] = useState<{ userId: string } | null>(
@@ -63,13 +84,23 @@ export default function AdminUsersClient({
     pageSize: PAGE_SIZE,
     q,
     role,
+    status,
   });
 
-  const mutation = useUpdateUserRole();
+  const roleMutation = useUpdateUserRole();
+  const blockMutation = useBlockUser();
+  const unblockMutation = useUnblockUser();
+  const deleteMutation = useDeleteUser();
+  const restoreMutation = useRestoreUser();
 
-  const onFilterChange = (next: { q: string; role: UserRole | null }) => {
+  const onFilterChange = (next: {
+    q: string;
+    role: UserRole | null;
+    status: AdminUserStatus | null;
+  }) => {
     setQ(next.q);
     setRole(next.role);
+    setStatus(next.status);
     setPage(1);
   };
 
@@ -78,7 +109,75 @@ export default function AdminUsersClient({
     setPendingUserId(userId);
     setErrorMsg(null);
     try {
-      await mutation.mutateAsync({ userId, role: newRole });
+      await roleMutation.mutateAsync({ userId, role: newRole });
+    } catch (err) {
+      const apiErr = err instanceof ApiError ? err : null;
+      const code = (apiErr?.data as { code?: string } | undefined)?.code;
+      const msg =
+        (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
+      setErrorMsg(msg);
+    } finally {
+      setPendingUserId(undefined);
+    }
+  };
+
+  const handleBlock = async (userId: string) => {
+    if (!t) return;
+    setPendingUserId(userId);
+    setErrorMsg(null);
+    try {
+      await blockMutation.mutateAsync({ userId });
+    } catch (err) {
+      const apiErr = err instanceof ApiError ? err : null;
+      const code = (apiErr?.data as { code?: string } | undefined)?.code;
+      const msg =
+        (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
+      setErrorMsg(msg);
+    } finally {
+      setPendingUserId(undefined);
+    }
+  };
+
+  const handleUnblock = async (userId: string) => {
+    if (!t) return;
+    setPendingUserId(userId);
+    setErrorMsg(null);
+    try {
+      await unblockMutation.mutateAsync({ userId });
+    } catch (err) {
+      const apiErr = err instanceof ApiError ? err : null;
+      const code = (apiErr?.data as { code?: string } | undefined)?.code;
+      const msg =
+        (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
+      setErrorMsg(msg);
+    } finally {
+      setPendingUserId(undefined);
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!t) return;
+    setPendingUserId(userId);
+    setErrorMsg(null);
+    try {
+      await deleteMutation.mutateAsync({ userId });
+    } catch (err) {
+      const apiErr = err instanceof ApiError ? err : null;
+      const code = (apiErr?.data as { code?: string } | undefined)?.code;
+      const msg =
+        (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
+      setErrorMsg(msg);
+    } finally {
+      setPendingUserId(undefined);
+    }
+  };
+
+  const handleRestore = async (userId: string) => {
+    if (!t) return;
+    setPendingUserId(userId);
+    setErrorMsg(null);
+    try {
+      await restoreMutation.mutateAsync({ userId });
     } catch (err) {
       const apiErr = err instanceof ApiError ? err : null;
       const code = (apiErr?.data as { code?: string } | undefined)?.code;
@@ -118,6 +217,10 @@ export default function AdminUsersClient({
         roleLabels: t.role,
         selfTooltip: t.selfTooltip,
         walletButtonLabel: tWallet?.drawer.openButton ?? 'Wallet',
+        blockLabel: t.actions.block,
+        unblockLabel: t.actions.unblock,
+        removeLabel: t.actions.remove,
+        restoreLabel: t.actions.restore,
       }
     : null;
   const filtersLabels = t
@@ -125,6 +228,8 @@ export default function AdminUsersClient({
         searchPlaceholder: t.search.placeholder,
         roleFilterPlaceholder: t.filter.role.placeholder,
         roleFilterAll: t.filter.role.all,
+        statusFilterAll: t.filter.status.all,
+        statusLabels: t.status,
         roleLabels: t.role,
       }
     : null;
@@ -138,6 +243,7 @@ export default function AdminUsersClient({
             <UsersFilters
               q={q}
               role={role}
+              status={status}
               onChange={onFilterChange}
               labels={filtersLabels}
             />
@@ -161,9 +267,13 @@ export default function AdminUsersClient({
               isLoading={isLoading}
               isError={!!queryError}
               currentUserId={currentUserId}
-              hasFilter={!!q || !!role}
+              hasFilter={!!q || !!role || !!status}
               onRoleChange={handleRoleChange}
               onWalletOpen={(userId) => setWalletTarget({ userId })}
+              onBlock={handleBlock}
+              onUnblock={handleUnblock}
+              onDelete={handleDelete}
+              onRestore={handleRestore}
               onPageChange={setPage}
               pendingUserId={pendingUserId}
               labels={labels}

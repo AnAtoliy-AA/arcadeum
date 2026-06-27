@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.7] - 2026-06-27
+
+### Added
+- add admin ability to block, remove, restore users (ARC-842)
+- add admin ability to block, remove, restore users (ARC-842)
+
+
 ## [1.22.6] - 2026-06-27
 
 ### Fixed

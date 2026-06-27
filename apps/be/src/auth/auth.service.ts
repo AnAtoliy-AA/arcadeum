@@ -155,6 +155,14 @@ export class AuthService {
 
     const user = await this.ensureUserUsername(userDoc);
 
+    if (user.isBlocked) {
+      throw new UnauthorizedException('Account is blocked');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been removed');
+    }
+
     const passwordOk = await bcrypt.compare(data.password, user.passwordHash);
     if (!passwordOk) throw new UnauthorizedException('Invalid credentials');
 
@@ -203,6 +211,14 @@ export class AuthService {
     }
 
     const user = await this.getOrCreateOAuthUser(googleProfile);
+
+    if (user.isBlocked) {
+      throw new UnauthorizedException('Account is blocked');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been removed');
+    }
 
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
@@ -299,10 +315,6 @@ export class AuthService {
     return this.buildAuthUserProfile(ensured);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Block User Management
-  // ─────────────────────────────────────────────────────────────────────────────
-
   async blockUser(userId: string, blockedUserId: string): Promise<void> {
     await this.userModel.updateOne(
       { _id: userId },
@@ -326,8 +338,9 @@ export class AuthService {
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user) return false;
-    return (user.blockedUsers || []).includes(potentiallyBlockedUserId);
+    return user
+      ? (user.blockedUsers || []).includes(potentiallyBlockedUserId)
+      : false;
   }
 
   async getBlockedUsers(userId: string): Promise<string[]> {
@@ -336,31 +349,23 @@ export class AuthService {
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user) return [];
-    return user.blockedUsers || [];
+    return user?.blockedUsers || [];
   }
 
-  async getBlockedUsersWithDetails(userId: string): Promise<
-    Array<{
-      id: string;
-      displayName: string;
-      username: string;
-    }>
-  > {
+  async getBlockedUsersWithDetails(
+    userId: string,
+  ): Promise<Array<{ id: string; displayName: string; username: string }>> {
     if (!Types.ObjectId.isValid(userId)) return [];
     const user = await this.userModel
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user || !user.blockedUsers || user.blockedUsers.length === 0)
-      return [];
-
-    const blockedUsersDetails = await this.userModel
+    if (!user?.blockedUsers?.length) return [];
+    const blocked = await this.userModel
       .find({ _id: { $in: user.blockedUsers } })
       .select('displayName username email')
       .lean();
-
-    return blockedUsersDetails.map((u) => ({
+    return blocked.map((u) => ({
       id: (u._id as Types.ObjectId).toString(),
       displayName: u.displayName || u.username || u.email || 'Unknown',
       username: u.username || '',

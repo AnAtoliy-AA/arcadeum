@@ -49,29 +49,31 @@ export const EqualizerVisualization = ({
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
-    const barWidth = 2;
+    const barWidth = 2.5;
     const gap = 2;
-    const barsCount = 8;
+    const barsCount = 5;
+    const totalWidth = barsCount * barWidth + (barsCount - 1) * gap;
+    const startX = (w - totalWidth) / 2;
 
     for (let i = 0; i < barsCount; i++) {
-      let barH = 2;
+      let barH = 3;
       if (isPlaying && audio && !audio.paused) {
-        const base = Math.sin(Date.now() / (200 + i * 50)) * 0.5 + 0.5;
-        const freq = audio.currentTime * (2 + i * 0.5);
-        const wave = Math.sin(freq) * 0.3 + 0.5;
+        const base = Math.sin(Date.now() / (180 + i * 45)) * 0.5 + 0.5;
+        const freq = audio.currentTime * (2.5 + i * 0.6);
+        const wave = Math.sin(freq) * 0.35 + 0.5;
         barH = Math.max(
-          2,
-          Math.min(h, (base * 0.4 + wave * 0.6) * audio.volume * h),
+          3,
+          Math.min(h - 2, (base * 0.35 + wave * 0.65) * audio.volume * h),
         );
       }
-      const x = i * (barWidth + gap);
+      const x = startX + i * (barWidth + gap);
       const y = h - barH;
       const gradient = ctx.createLinearGradient(x, h, x, y);
-      gradient.addColorStop(0, '#818cf8');
-      gradient.addColorStop(1, '#c084fc');
+      gradient.addColorStop(0, 'rgba(129,140,248,0.9)');
+      gradient.addColorStop(1, 'rgba(165,180,252,0.9)');
       ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.roundRect(x, y, barWidth, barH, 1);
+      ctx.roundRect(x, y, barWidth, barH, 1.5);
       ctx.fill();
     }
   }, [isPlaying, audioRef]);
@@ -89,8 +91,8 @@ export const EqualizerVisualization = ({
   return (
     <canvas
       ref={canvasRef}
-      width={30}
-      height={18}
+      width={28}
+      height={20}
       style={{ display: 'block' }}
       aria-hidden="true"
     />

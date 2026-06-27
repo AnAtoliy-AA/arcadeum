@@ -346,20 +346,21 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     <>
       <style>{playerStyles}</style>
       <YStack
-        className="game-music-player"
+        className={`game-music-player${isPlaying ? ' is-playing' : ''}`}
         testID="game-music-player"
         position="fixed"
         zIndex={1000}
-        width={miniMode ? 160 : 280}
-        gap="$2"
-        paddingVertical="$2.5"
+        width={miniMode ? 160 : 320}
+        gap={0}
+        paddingVertical="$3"
         paddingHorizontal="$3"
-        borderRadius={16}
-        backgroundColor="rgba(15,17,26,0.92)"
+        borderRadius={20}
+        backgroundColor="rgba(12,14,22,0.88)"
         borderWidth={1}
-        borderColor="rgba(255,255,255,0.1)"
+        borderColor="rgba(255,255,255,0.08)"
         style={{
-          backdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(24px) saturate(1.5)',
+          WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
           left: pos.x,
           top: pos.y,
           touchAction: 'none',
@@ -371,25 +372,48 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         <XStack
           data-drag-handle
           alignItems="center"
-          gap="$2"
+          gap="$3"
           cursor="grab"
-          paddingVertical={2}
+          paddingVertical="$1"
+          paddingHorizontal="$1"
         >
-          <EqualizerVisualization isPlaying={isPlaying} audioRef={audioRef} />
-          <YStack flex={1} overflow="hidden">
+          <XStack
+            width={40}
+            height={40}
+            borderRadius={10}
+            backgroundColor="rgba(129,140,248,0.12)"
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+            style={{
+              border: '1px solid rgba(129,140,248,0.15)',
+            }}
+          >
+            <EqualizerVisualization isPlaying={isPlaying} audioRef={audioRef} />
+          </XStack>
+          <YStack flex={1} overflow="hidden" gap={1}>
             <Text
               className="game-music-title"
-              fontSize={12}
+              fontSize={13}
               fontWeight="600"
               color="#ffffff"
+              numberOfLines={1}
             >
               {track.title}
+            </Text>
+            <Text
+              fontSize={10}
+              fontWeight="400"
+              color="rgba(255,255,255,0.35)"
+              numberOfLines={1}
+            >
+              Arcadeum
             </Text>
           </YStack>
         </XStack>
 
         {!miniMode && (
-          <>
+          <YStack gap="$2.5" marginTop="$2">
             {playlistOpen && (
               <Playlist
                 tracks={tracks}
@@ -423,7 +447,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               onVolumeChange={onVolumeChange}
               labels={labels}
             />
-          </>
+          </YStack>
         )}
 
         {miniMode && (

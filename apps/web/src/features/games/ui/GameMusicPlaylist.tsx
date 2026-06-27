@@ -30,6 +30,7 @@ interface SortableTrackItemProps {
   isPlaying: boolean;
   isEnabled: boolean;
   onToggleTrack: (trackIndex: number) => void;
+  onPlay: (trackIndex: number) => void;
 }
 
 function SortableTrackItem({
@@ -39,6 +40,7 @@ function SortableTrackItem({
   isPlaying,
   isEnabled,
   onToggleTrack,
+  onPlay,
 }: SortableTrackItemProps) {
   const {
     attributes,
@@ -63,6 +65,7 @@ function SortableTrackItem({
         alignItems="center"
         gap="$2"
         opacity={isEnabled ? 1 : 0.35}
+        onDoubleClick={() => onPlay(index)}
       >
         <div
           className="game-music-drag-handle"
@@ -133,7 +136,45 @@ function SortableTrackItem({
         >
           {track.title}
         </Text>
-        {isActive && isPlaying && <PlayingBars />}
+        {isActive && isPlaying ? (
+          <PlayingBars />
+        ) : (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlay(index);
+            }}
+            data-testid={`game-music-track-play-${index}`}
+            aria-label={`Play ${track.title}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.6)',
+              cursor: 'pointer',
+              flexShrink: 0,
+              padding: 0,
+              transition: 'background-color 150ms ease, color 150ms ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.18)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 4.5v15a1 1 0 0 0 1.54.84l11.5-7.5a1 1 0 0 0 0-1.68L8.54 3.66A1 1 0 0 0 7 4.5Z" />
+            </svg>
+          </button>
+        )}
       </XStack>
     </div>
   );
@@ -146,6 +187,7 @@ interface PlaylistProps {
   enabledTracks: Set<number>;
   onToggleTrack: (trackIndex: number) => void;
   onReorder: (newTracks: readonly MusicTrack[]) => void;
+  onPlay: (trackIndex: number) => void;
 }
 
 export function Playlist({
@@ -155,6 +197,7 @@ export function Playlist({
   enabledTracks,
   onToggleTrack,
   onReorder,
+  onPlay,
 }: PlaylistProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -232,6 +275,7 @@ export function Playlist({
                 isPlaying={isPlaying}
                 isEnabled={isEnabled}
                 onToggleTrack={onToggleTrack}
+                onPlay={onPlay}
               />
             );
           })}

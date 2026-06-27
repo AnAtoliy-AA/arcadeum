@@ -475,6 +475,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 enabledTracks={enabledTracks}
                 onToggleTrack={toggleTrack}
                 onReorder={reorderTracks}
+                onPlay={playIndex}
               />
             )}
             <ProgressBar

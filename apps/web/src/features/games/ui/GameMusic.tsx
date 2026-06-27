@@ -207,7 +207,6 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       if (idx === index) {
         const audio = audioRef.current;
         if (audio && audio.paused) {
-          audio.currentTime = 0;
           audio.play().catch(() => {});
         }
         return;

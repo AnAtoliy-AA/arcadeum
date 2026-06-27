@@ -177,7 +177,7 @@ export function TransportControls({
       </XStack>
 
       <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap={6}>
+        <XStack alignItems="center" gap={4}>
           <MusicBtn
             onClick={onToggleShuffle}
             testId="game-music-shuffle"

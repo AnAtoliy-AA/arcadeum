@@ -242,8 +242,10 @@ export const playerStyles = `
 }
 .game-music-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease, box-shadow 200ms ease;
-  width: 32px !important;
-  height: 32px !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
   padding: 0 !important;
   flex-shrink: 0;
 }
@@ -257,8 +259,10 @@ export const playerStyles = `
 .game-music-play-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, box-shadow 200ms ease;
   box-shadow: 0 2px 12px rgba(129,140,248,0.3);
-  width: 38px !important;
-  height: 38px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
   padding: 0 !important;
   flex-shrink: 0;
 }
@@ -284,12 +288,16 @@ export const playerStyles = `
     border-radius: 24px !important;
   }
   .game-music-btn {
-    width: 40px !important;
-    height: 40px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
   }
   .game-music-play-btn {
-    width: 46px !important;
-    height: 46px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
   }
   .game-music-volume,
   .game-music-progress {

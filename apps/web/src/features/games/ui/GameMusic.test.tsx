@@ -83,6 +83,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const showPlayer = () => {
+  act(() => {
+    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
+  });
+};
+
 describe('GameMusic', () => {
   it('renders nothing and creates no audio while music is disabled', () => {
     musicEnabled = false;
@@ -94,6 +100,7 @@ describe('GameMusic', () => {
   it('shows the player and auto-plays a track when enabled', () => {
     musicEnabled = true;
     render(<GameMusic gameId="cascade_v1" />);
+    showPlayer();
     expect(screen.getByTestId('game-music-player')).toBeTruthy();
     expect(mainAudioEl().volume).toBeGreaterThan(0);
     expect(mainAudioEl().volume).toBeLessThanOrEqual(1);
@@ -104,6 +111,7 @@ describe('GameMusic', () => {
   it('starts at the default volume and applies slider changes to the audio', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
     const audio = mainAudioEl();
     expect(audio.volume).toBeCloseTo(0.3);
 
@@ -116,6 +124,7 @@ describe('GameMusic', () => {
   it('pauses and resumes via the play/pause control', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
     const audio = mainAudioEl();
     // Autoplay leaves it playing.
     expect(audio.paused).toBe(false);
@@ -131,6 +140,7 @@ describe('GameMusic', () => {
   it('stops playback and rewinds to the start', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
     const audio = mainAudioEl();
     audio.currentTime = 42;
     fireEvent.click(screen.getByTestId('game-music-stop'));
@@ -141,6 +151,7 @@ describe('GameMusic', () => {
   it('skips to a different track with next', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
     const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-next'));
     const after = mainAudioEl().src;
@@ -151,6 +162,7 @@ describe('GameMusic', () => {
   it('goes back to a different track with prev', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
     const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-prev'));
     expect(mainAudioEl().src).not.toBe(before);
@@ -177,6 +189,7 @@ describe('GameMusic', () => {
     );
 
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
 
     expect(mediaSession.setActionHandler).toHaveBeenCalledWith(
       'nexttrack',
@@ -195,6 +208,7 @@ describe('GameMusic', () => {
   it('stops and releases the track on unmount', () => {
     musicEnabled = true;
     const { unmount } = render(<GameMusic gameId="tic_tac_toe_v1" />);
+    showPlayer();
     const audio = mainAudioEl();
     unmount();
     expect(audio.pause).toHaveBeenCalled();

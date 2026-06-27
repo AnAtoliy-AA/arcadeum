@@ -47,6 +47,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const [repeat, setRepeat] = useState<RepeatMode>('off');
   const [miniMode, setMiniMode] = useState(false);
   const [playlistOpen, setPlaylistOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [enabledTracks, setEnabledTracks] = useState<Set<number>>(() => {
@@ -57,6 +58,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const [shuffleOrder, setShuffleOrder] = useState<number[]>(() =>
     shuffleArray(FALLBACK_TRACKS.length),
   );
+
+  useEffect(() => {
+    const handleToggle = () => setVisible((v) => !v);
+    window.addEventListener('arcadeum:toggle-music', handleToggle);
+    return () => window.removeEventListener('arcadeum:toggle-music', handleToggle);
+  }, []);
 
   useEffect(() => {
     fetchTracks().then((data) => {
@@ -321,7 +328,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     ms.playbackState = isPlaying ? 'playing' : 'paused';
   }, [isPlaying]);
 
-  if (!musicEnabled) return null;
+  if (!musicEnabled || !visible) return null;
 
   const labels = {
     play: t('musicPlayer.play'),

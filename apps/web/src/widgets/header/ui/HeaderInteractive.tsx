@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -13,6 +13,14 @@ import {
   SupportIcon,
   GiftIcon,
 } from '@arcadeum/ui/components/Icons/index';
+
+const MusicIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 18V5l12-2v13" />
+    <circle cx="6" cy="18" r="3" />
+    <circle cx="18" cy="16" r="3" />
+  </svg>
+);
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
 import dynamic from 'next/dynamic';
@@ -52,11 +60,23 @@ export function HeaderInteractive() {
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
 
+  const toggleMusic = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
+  }, []);
+
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
-      { href: routes.token, label: t('navigation.tokenTab') },
+      {
+        href: '#',
+        label: t('navigation.musicTab'),
+        onClick: (e: React.MouseEvent) => {
+          e.preventDefault();
+          toggleMusic();
+        },
+        icon: <MusicIcon size={16} />,
+      },
       {
         href: routes.shop,
         label: t('navigation.shopTab'),
@@ -64,14 +84,21 @@ export function HeaderInteractive() {
         accent: true,
       },
     ],
-    [t, routes],
+    [t, routes, toggleMusic],
   );
 
   const mobileNavItems = useMemo(
     () => [
-      // Strip desktop-only emphasis (icon/accent) from mobile — mobile drawer
-      // already styles items uniformly with icons.
-      ...navItems.map(({ href, label }) => ({ href, label })),
+      ...navItems.map(({ label, onClick }) => ({
+        href: '#',
+        label,
+        onClick: onClick
+          ? (e: React.MouseEvent) => {
+              e.preventDefault();
+              onClick(e);
+            }
+          : undefined,
+      })),
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
@@ -85,20 +112,36 @@ export function HeaderInteractive() {
       <nav className="nav-styled" aria-label="Main navigation">
         {isMounted &&
           navItems.map((item) => (
-            <NavLinkWrapper key={item.href}>
-              <NavHeaderLink
-                href={item.href}
-                variant="ghost"
-                size="sm"
-                isActive={pathname === item.href}
-                accent={item.accent}
-                icon={item.icon}
-                gap="$2"
-                data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
-                data-active={pathname === item.href ? 'true' : undefined}
-              >
-                {item.label}
-              </NavHeaderLink>
+            <NavLinkWrapper key={item.label}>
+              {item.onClick ? (
+                <NavHeaderLink
+                  href={item.href}
+                  variant="ghost"
+                  size="sm"
+                  isActive={false}
+                  accent={item.accent}
+                  icon={item.icon}
+                  gap="$2"
+                  onClick={item.onClick}
+                  data-testid={`nav-${item.label.toLowerCase()}`}
+                >
+                  {item.label}
+                </NavHeaderLink>
+              ) : (
+                <NavHeaderLink
+                  href={item.href}
+                  variant="ghost"
+                  size="sm"
+                  isActive={pathname === item.href}
+                  accent={item.accent}
+                  icon={item.icon}
+                  gap="$2"
+                  data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
+                  data-active={pathname === item.href ? 'true' : undefined}
+                >
+                  {item.label}
+                </NavHeaderLink>
+              )}
             </NavLinkWrapper>
           ))}
       </nav>

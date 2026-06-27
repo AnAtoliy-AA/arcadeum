@@ -174,7 +174,7 @@ export function TransportControls({
             background: `linear-gradient(to right, rgba(129,140,248,0.8) 0%, rgba(129,140,248,0.8) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) 100%)`,
           }}
         />
-        <Text fontSize={10} className="game-music-time" color="rgba(255,255,255,0.35)" minWidth={32} fontWeight="500">
+        <Text fontSize={10} className="game-music-time" color="rgba(255,255,255,0.35)" minWidth={32} fontWeight="500" textAlign="right">
           {Math.round(volume * 100)}%
         </Text>
       </XStack>

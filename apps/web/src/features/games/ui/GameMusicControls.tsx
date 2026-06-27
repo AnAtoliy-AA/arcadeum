@@ -91,11 +91,12 @@ const PlayBtn = ({
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '50%',
-      border: '1px solid rgba(129,140,248,0.3)',
-      background: 'rgba(129,140,248,0.25)',
+      border: '1px solid rgba(255,255,255,0.25)',
+      background: 'rgba(255,255,255,0.12)',
       color: '#ffffff',
       cursor: 'pointer',
       flexShrink: 0,
+      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.1)',
     }}
   >
     {children}
@@ -156,7 +157,7 @@ export function TransportControls({
   return (
     <YStack gap={12}>
       <XStack alignItems="center" gap="$2" paddingHorizontal={4}>
-        <XStack className="game-music-volume-icon" flexShrink={0} minWidth={32} justifyContent="flex-start" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <XStack className="game-music-volume-icon" flexShrink={0} minWidth={32} justifyContent="flex-start" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <VolumeIcon level={volume} />
         </XStack>
         <input

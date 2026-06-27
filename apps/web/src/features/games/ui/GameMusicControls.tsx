@@ -326,7 +326,7 @@ export function ProgressBar({
   const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={4}>
+    <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={12}>
       <Text
         fontSize={10}
         className="game-music-time"

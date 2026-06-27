@@ -69,12 +69,15 @@ export const EqualizerVisualization = ({
       const x = startX + i * (barWidth + gap);
       const y = h - barH;
       const gradient = ctx.createLinearGradient(x, h, x, y);
-      gradient.addColorStop(0, 'rgba(129,140,248,0.9)');
-      gradient.addColorStop(1, 'rgba(165,180,252,0.9)');
+      gradient.addColorStop(0, 'rgba(255,255,255,0.5)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0.9)');
       ctx.fillStyle = gradient;
+      ctx.shadowColor = 'rgba(255,255,255,0.3)';
+      ctx.shadowBlur = 2;
       ctx.beginPath();
       ctx.roundRect(x, y, barWidth, barH, 1.5);
       ctx.fill();
+      ctx.shadowBlur = 0;
     }
   }, [isPlaying, audioRef]);
 

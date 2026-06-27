@@ -239,9 +239,10 @@ export const playerStyles = `
 .playing-bar {
   display: inline-block;
   width: 2.5px;
-  background: linear-gradient(to top, #818cf8, #a5b4fc);
+  background: rgba(255,255,255,0.8);
   border-radius: 1px;
   animation: playingBars 0.8s ease-in-out infinite;
+  box-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
 .playing-bar-1 { height: 8px; animation-delay: 0s; }
 .playing-bar-2 { height: 12px; animation-delay: 0.15s; }

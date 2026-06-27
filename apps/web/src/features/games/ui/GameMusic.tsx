@@ -402,13 +402,13 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             width={40}
             height={40}
             borderRadius={10}
-            backgroundColor="rgba(255,255,255,0.2)"
+            backgroundColor="rgba(255,255,255,0.25)"
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
             style={{
-              border: '1px solid rgba(255,255,255,0.4)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5)',
+              border: '1px solid rgba(255,255,255,0.45)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.08)',
             }}
           >
             <EqualizerVisualization isPlaying={isPlaying} audioRef={audioRef} />

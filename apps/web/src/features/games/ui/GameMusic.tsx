@@ -370,12 +370,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         paddingVertical="$3"
         paddingHorizontal="$3"
         borderRadius={20}
-        backgroundColor="rgba(12,14,22,0.88)"
+        backgroundColor="rgba(12,14,22,0.55)"
         borderWidth={1}
-        borderColor="rgba(255,255,255,0.08)"
+        borderColor="rgba(255,255,255,0.12)"
         style={{
-          backdropFilter: 'blur(24px) saturate(1.5)',
-          WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
+          backdropFilter: 'blur(40px) saturate(1.8) brightness(1.1)',
+          WebkitBackdropFilter: 'blur(40px) saturate(1.8) brightness(1.1)',
           left: pos.x,
           top: pos.y,
         }}
@@ -396,12 +396,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             width={40}
             height={40}
             borderRadius={10}
-            backgroundColor="rgba(129,140,248,0.12)"
+            backgroundColor="rgba(129,140,248,0.08)"
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
             style={{
-              border: '1px solid rgba(129,140,248,0.15)',
+              border: '1px solid rgba(129,140,248,0.12)',
             }}
           >
             <EqualizerVisualization isPlaying={isPlaying} audioRef={audioRef} />

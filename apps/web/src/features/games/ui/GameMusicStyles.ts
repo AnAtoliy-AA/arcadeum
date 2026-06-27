@@ -8,12 +8,16 @@ export const playerStyles = `
   50% { opacity: 1; }
 }
 @keyframes gameMusicGlow {
-  0%, 100% { box-shadow: 0 8px 32px rgba(129,140,248,0.15), 0 2px 8px rgba(0,0,0,0.3); }
-  50% { box-shadow: 0 8px 40px rgba(129,140,248,0.25), 0 2px 8px rgba(0,0,0,0.3); }
+  0%, 100% { box-shadow: 0 8px 32px rgba(129,140,248,0.1), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1); }
+  50% { box-shadow: 0 8px 40px rgba(129,140,248,0.2), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12); }
 }
 .game-music-player {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.3), 
+    0 2px 8px rgba(0,0,0,0.2), 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(255,255,255,0.05);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
 }
 .game-music-player.is-playing {

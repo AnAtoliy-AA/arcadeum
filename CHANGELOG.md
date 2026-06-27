@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.6] - 2026-06-27
+
+### Fixed
+- room join/watch button visibility based on lobby status and participation (N/A)
+
+
+## [1.22.5] - 2026-06-27
+
+### Fixed
+- add custom 404 page with navigation (N/A)
+
+
 ## [1.22.4] - 2026-06-26
 
 

@@ -46,7 +46,7 @@ describe('EconomySettingsService (integration)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(uri),
-        ConfigModule.forRoot({ isGlobal: true }),
+        ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
         AuthModule,
         WalletModule,
         EconomyModule,

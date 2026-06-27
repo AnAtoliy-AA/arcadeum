@@ -168,9 +168,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
 
   useEffect(() => {
-    if (!isPlaying || repeat !== 'all') return;
+    if (!isPlaying) return;
     const audio = audioRef.current;
     if (!audio) return;
+    if (repeat === 'one') return;
     const onEnded = () => next();
     audio.addEventListener('ended', onEnded);
     return () => audio.removeEventListener('ended', onEnded);

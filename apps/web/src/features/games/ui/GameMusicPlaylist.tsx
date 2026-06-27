@@ -1,8 +1,137 @@
 'use client';
 
+import { useCallback } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Text, XStack, YStack } from 'tamagui';
 import { type MusicTrack } from './GameMusicUtils';
 import { PlayingBars } from './GameMusicVisuals';
+
+interface SortableTrackItemProps {
+  track: MusicTrack;
+  index: number;
+  isActive: boolean;
+  isPlaying: boolean;
+  isEnabled: boolean;
+  onToggleTrack: (trackIndex: number) => void;
+}
+
+function SortableTrackItem({
+  track,
+  index,
+  isActive,
+  isPlaying,
+  isEnabled,
+  onToggleTrack,
+}: SortableTrackItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: track.src });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <XStack
+        className={`game-music-track${isActive ? ' active' : ''}`}
+        alignItems="center"
+        gap="$2"
+        opacity={isEnabled ? 1 : 0.35}
+      >
+        <div
+          className="game-music-drag-handle"
+          {...attributes}
+          {...listeners}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'grab',
+            padding: '2px',
+          }}
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="5" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="8" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="2" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="8" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="2" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="5" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="8" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
+          </svg>
+        </div>
+        <input
+          className="game-music-checkbox"
+          type="checkbox"
+          checked={isEnabled}
+          disabled={isActive && isEnabled}
+          onChange={() => onToggleTrack(index)}
+          aria-label={`Toggle ${track.title}`}
+          data-testid={`game-music-track-toggle-${index}`}
+        />
+        <Text
+          fontSize={10}
+          color={isActive ? 'rgba(129,140,248,0.7)' : 'rgba(255,255,255,0.3)'}
+          minWidth={16}
+          fontWeight="500"
+        >
+          {String(index + 1).padStart(2, '0')}
+        </Text>
+        <Text
+          flex={1}
+          fontSize={12}
+          color={
+            isActive
+              ? '#a5b4fc'
+              : isEnabled
+                ? 'rgba(255,255,255,0.75)'
+                : 'rgba(255,255,255,0.4)'
+          }
+          fontWeight={isActive ? '600' : '400'}
+          numberOfLines={1}
+          overflow="hidden"
+          textOverflow="ellipsis"
+          whiteSpace="nowrap"
+        >
+          {track.title}
+        </Text>
+        {isActive && isPlaying && <PlayingBars />}
+      </XStack>
+    </div>
+  );
+}
 
 interface PlaylistProps {
   tracks: readonly MusicTrack[];
@@ -10,6 +139,7 @@ interface PlaylistProps {
   isPlaying: boolean;
   enabledTracks: Set<number>;
   onToggleTrack: (trackIndex: number) => void;
+  onReorder: (newTracks: readonly MusicTrack[]) => void;
 }
 
 export function Playlist({
@@ -18,7 +148,35 @@ export function Playlist({
   isPlaying,
   enabledTracks,
   onToggleTrack,
+  onReorder,
 }: PlaylistProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = tracks.findIndex((t) => t.src === active.id);
+      const newIndex = tracks.findIndex((t) => t.src === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newTracks = arrayMove([...tracks], oldIndex, newIndex);
+        onReorder(newTracks);
+      }
+    },
+    [tracks, onReorder],
+  );
+
   return (
     <YStack
       testID="game-music-playlist"
@@ -40,59 +198,33 @@ export function Playlist({
       >
         Playlist
       </Text>
-      {tracks.map((track, i) => {
-        const isActive = i === index;
-        const isEnabled = enabledTracks.has(i);
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={tracks.map((t) => t.src)}
+          strategy={verticalListSortingStrategy}
+        >
+          {tracks.map((track, i) => {
+            const isActive = i === index;
+            const isEnabled = enabledTracks.has(i);
 
-        return (
-          <XStack
-            key={track.src}
-            className={`game-music-track${isActive ? ' active' : ''}`}
-            alignItems="center"
-            gap="$2"
-            opacity={isEnabled ? 1 : 0.35}
-          >
-            <input
-              className="game-music-checkbox"
-              type="checkbox"
-              checked={isEnabled}
-              disabled={isActive && enabledTracks.size === 1}
-              onChange={() => onToggleTrack(i)}
-              aria-label={`Toggle ${track.title}`}
-              data-testid={`game-music-track-toggle-${i}`}
-            />
-            <Text
-              fontSize={10}
-              color={
-                isActive ? 'rgba(129,140,248,0.7)' : 'rgba(255,255,255,0.3)'
-              }
-              minWidth={16}
-              fontWeight="500"
-            >
-              {String(i + 1).padStart(2, '0')}
-            </Text>
-            <Text
-              flex={1}
-              fontSize={12}
-              color={
-                isActive
-                  ? '#a5b4fc'
-                  : isEnabled
-                    ? 'rgba(255,255,255,0.75)'
-                    : 'rgba(255,255,255,0.4)'
-              }
-              fontWeight={isActive ? '600' : '400'}
-              numberOfLines={1}
-              overflow="hidden"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-            >
-              {track.title}
-            </Text>
-            {isActive && isPlaying && <PlayingBars />}
-          </XStack>
-        );
-      })}
+            return (
+              <SortableTrackItem
+                key={track.src}
+                track={track}
+                index={i}
+                isActive={isActive}
+                isPlaying={isPlaying}
+                isEnabled={isEnabled}
+                onToggleTrack={onToggleTrack}
+              />
+            );
+          })}
+        </SortableContext>
+      </DndContext>
     </YStack>
   );
 }

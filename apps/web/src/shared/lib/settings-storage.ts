@@ -10,6 +10,7 @@ export type StoredSettings = {
   musicShuffle?: boolean;
   musicRepeat?: 'off' | 'all' | 'one';
   musicEnabledTracks?: number[];
+  musicTrackOrder?: number[];
 };
 
 const listeners = new Set<() => void>();
@@ -74,6 +75,13 @@ export function loadStoredSettings(): StoredSettings {
       parsed.musicEnabledTracks.every((t) => typeof t === 'number')
     ) {
       settings.musicEnabledTracks = parsed.musicEnabledTracks;
+    }
+
+    if (
+      Array.isArray(parsed.musicTrackOrder) &&
+      parsed.musicTrackOrder.every((t) => typeof t === 'number')
+    ) {
+      settings.musicTrackOrder = parsed.musicTrackOrder;
     }
 
     return settings;

@@ -60,18 +60,26 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   useEffect(() => {
     fetchTracks().then((data) => {
-      setTracks(data);
-      setIndex(trackIndexForGame(gameId, data.length));
+      const savedOrder = loadStoredSettings().musicTrackOrder;
+      let orderedData = data;
+      if (savedOrder && savedOrder.length === data.length) {
+        orderedData = savedOrder.map((i) => data[i]).filter(Boolean);
+        if (orderedData.length !== data.length) {
+          orderedData = data;
+        }
+      }
+      setTracks(orderedData);
+      setIndex(trackIndexForGame(gameId, orderedData.length));
       const saved = loadStoredSettings().musicEnabledTracks;
       if (saved && saved.length > 0) {
-        const valid = saved.filter((i) => i < data.length);
+        const valid = saved.filter((i) => i < orderedData.length);
         setEnabledTracks(
-          new Set(valid.length > 0 ? valid : data.map((_, i) => i)),
+          new Set(valid.length > 0 ? valid : orderedData.map((_, i) => i)),
         );
       } else {
-        setEnabledTracks(new Set(data.map((_, i) => i)));
+        setEnabledTracks(new Set(orderedData.map((_, i) => i)));
       }
-      setShuffleOrder(shuffleArray(data.length));
+      setShuffleOrder(shuffleArray(orderedData.length));
     });
   }, [gameId]);
 
@@ -231,6 +239,26 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     });
   }, []);
 
+  const reorderTracks = useCallback(
+    (newTracks: readonly MusicTrack[]) => {
+      const currentSrc = tracks[index].src;
+      setTracks(newTracks);
+      const newIndex = newTracks.findIndex((t) => t.src === currentSrc);
+      if (newIndex !== -1) {
+        setIndex(newIndex);
+      }
+      saveStoredSettings({
+        musicTrackOrder: newTracks.map((_, i) => {
+          const originalIndex = tracks.findIndex(
+            (t) => t.src === newTracks[i].src,
+          );
+          return originalIndex;
+        }),
+      });
+    },
+    [tracks, index],
+  );
+
   useEffect(() => {
     if (!musicEnabled) return;
     const ms =
@@ -353,6 +381,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 isPlaying={isPlaying}
                 enabledTracks={enabledTracks}
                 onToggleTrack={toggleTrack}
+                onReorder={reorderTracks}
               />
             )}
             <ProgressBar

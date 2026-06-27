@@ -304,7 +304,7 @@ export const playerStyles = `
 @media (max-width: 480px) {
   .game-music-player {
     padding-bottom: 14px !important;
-    width: 300px !important;
+    width: 320px !important;
     border-radius: 24px !important;
   }
   .game-music-btn {

@@ -70,6 +70,7 @@ const cspConnectSrc = [
   'https://vercel.live',
   'wss://*.vercel.live',
   'https://*.vercel.app',
+  process.env.NEXT_PUBLIC_CDN_URL || '',
 ];
 
 const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";

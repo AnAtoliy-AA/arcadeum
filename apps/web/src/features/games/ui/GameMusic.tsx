@@ -368,6 +368,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         width={miniMode ? 160 : 320}
         gap={0}
         paddingVertical="$3"
+        paddingBottom="$4"
         paddingHorizontal="$3"
         borderRadius={20}
         backgroundColor="rgba(12,14,22,0.88)"

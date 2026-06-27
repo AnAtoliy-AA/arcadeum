@@ -328,6 +328,14 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     ms.playbackState = isPlaying ? 'playing' : 'paused';
   }, [isPlaying]);
 
+  const closePlayer = useCallback(() => {
+    const audio = audioRef.current;
+    if (audio && !audio.paused) {
+      audio.pause();
+    }
+    setVisible(false);
+  }, []);
+
   if (!musicEnabled || !visible) return null;
 
   const labels = {
@@ -417,6 +425,37 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               Arcadeum
             </Text>
           </YStack>
+          <button
+            onClick={closePlayer}
+            data-testid="game-music-close"
+            aria-label="Close player"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '6px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'rgba(255,255,255,0.35)',
+              transition: 'color 150ms ease, background-color 150ms ease',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'rgba(255,255,255,0.35)';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </XStack>
 
         {!miniMode && (

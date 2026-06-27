@@ -33,6 +33,7 @@ export function useDraggable(initial: Position) {
   const [pos, setPos] = useState<Position>(() => loadPosition() ?? initial);
   const dragging = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
+  const playerRef = useRef<HTMLElement | null>(null);
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -40,6 +41,12 @@ export function useDraggable(initial: Position) {
       const target = e.target as HTMLElement;
       const interactive = target.closest('button, input, a, select, textarea, [role="button"]');
       if (interactive) return;
+
+      const player = target.closest('.game-music-player') as HTMLElement | null;
+      if (player) {
+        player.classList.add('is-dragging');
+        playerRef.current = player;
+      }
 
       dragging.current = true;
       offset.current = {
@@ -64,6 +71,10 @@ export function useDraggable(initial: Position) {
   const onPointerUp = useCallback((e: React.PointerEvent) => {
     if (!dragging.current) return;
     dragging.current = false;
+    if (playerRef.current) {
+      playerRef.current.classList.remove('is-dragging');
+      playerRef.current = null;
+    }
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
     setPos((p) => {
       savePosition(p);

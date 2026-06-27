@@ -25,6 +25,10 @@ export const playerStyles = `
 .game-music-player:active {
   cursor: grabbing;
 }
+.game-music-player.is-dragging,
+.game-music-player.is-dragging * {
+  cursor: grabbing !important;
+}
 .game-music-player.is-playing {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1), gameMusicGlow 3s ease-in-out infinite;
 }

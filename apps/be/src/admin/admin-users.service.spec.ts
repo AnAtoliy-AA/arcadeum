@@ -21,6 +21,10 @@ const buildUserDoc = (
     role: string;
     createdAt: Date;
     updatedAt: Date;
+    isBlocked: boolean;
+    blockedAt: Date | null;
+    blockedReason: string | null;
+    deletedAt: Date | null;
   }> = {},
 ) => {
   const _id =
@@ -37,6 +41,10 @@ const buildUserDoc = (
     role: overrides.role ?? 'free',
     createdAt: overrides.createdAt ?? new Date('2026-01-01T00:00:00Z'),
     updatedAt: overrides.updatedAt ?? new Date('2026-01-02T00:00:00Z'),
+    isBlocked: overrides.isBlocked ?? false,
+    blockedAt: overrides.blockedAt ?? null,
+    blockedReason: overrides.blockedReason ?? null,
+    deletedAt: overrides.deletedAt ?? null,
   };
 };
 
@@ -88,7 +96,7 @@ describe('AdminUsersService', () => {
 
       const result = await service.list({ page: 1, pageSize: 50 });
 
-      expect(userModel.find).toHaveBeenCalledWith({});
+      expect(userModel.find).toHaveBeenCalledWith({ deletedAt: null });
       expect(findChain.select).toHaveBeenCalledWith(
         '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers',
       );
@@ -117,8 +125,14 @@ describe('AdminUsersService', () => {
 
       await service.list({ role: 'admin' });
 
-      expect(userModel.find).toHaveBeenCalledWith({ role: 'admin' });
-      expect(userModel.countDocuments).toHaveBeenCalledWith({ role: 'admin' });
+      expect(userModel.find).toHaveBeenCalledWith({
+        role: 'admin',
+        deletedAt: null,
+      });
+      expect(userModel.countDocuments).toHaveBeenCalledWith({
+        role: 'admin',
+        deletedAt: null,
+      });
     });
 
     it('applies q across username/email/displayName with case-insensitive regex', async () => {
@@ -138,6 +152,7 @@ describe('AdminUsersService', () => {
           { email: { $regex: 'alice', $options: 'i' } },
           { displayName: { $regex: 'alice', $options: 'i' } },
         ],
+        deletedAt: null,
       });
     });
 
@@ -210,6 +225,10 @@ describe('AdminUsersService', () => {
         role: 'admin',
         createdAt: doc.createdAt.toISOString(),
         updatedAt: doc.updatedAt.toISOString(),
+        isBlocked: false,
+        blockedAt: null,
+        blockedReason: null,
+        deletedAt: null,
       });
       expect(Object.keys(item)).not.toContain('passwordHash');
       expect(Object.keys(item)).not.toContain('referralCode');

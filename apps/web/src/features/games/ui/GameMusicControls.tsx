@@ -156,7 +156,7 @@ export function TransportControls({
   return (
     <YStack gap={12}>
       <XStack alignItems="center" gap="$2" paddingHorizontal={4}>
-        <XStack className="game-music-volume-icon" flexShrink={0} minWidth={32} justifyContent="center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <XStack className="game-music-volume-icon" flexShrink={0} minWidth={32} justifyContent="flex-start" style={{ color: 'rgba(255,255,255,0.4)' }}>
           <VolumeIcon level={volume} />
         </XStack>
         <input

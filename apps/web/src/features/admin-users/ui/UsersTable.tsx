@@ -18,6 +18,10 @@ export interface UsersTableLabels {
   roleLabels: Record<UserRole, string>;
   selfTooltip: string;
   walletButtonLabel: string;
+  blockLabel: string;
+  unblockLabel: string;
+  removeLabel: string;
+  restoreLabel: string;
 }
 
 export interface UsersTableProps {
@@ -31,6 +35,10 @@ export interface UsersTableProps {
   hasFilter: boolean;
   onRoleChange: (userId: string, role: UserRole) => void;
   onWalletOpen: (userId: string) => void;
+  onBlock: (userId: string) => void;
+  onUnblock: (userId: string) => void;
+  onDelete: (userId: string) => void;
+  onRestore: (userId: string) => void;
   onPageChange: (next: number) => void;
   pendingUserId?: string;
   labels: UsersTableLabels;
@@ -46,6 +54,10 @@ export function UsersTable({
   hasFilter,
   onRoleChange,
   onWalletOpen,
+  onBlock,
+  onUnblock,
+  onDelete,
+  onRestore,
   onPageChange,
   pendingUserId,
   labels,
@@ -112,9 +124,17 @@ export function UsersTable({
             currentUserId={currentUserId}
             onRoleChange={onRoleChange}
             onWalletOpen={onWalletOpen}
+            onBlock={onBlock}
+            onUnblock={onUnblock}
+            onDelete={onDelete}
+            onRestore={onRestore}
             roleLabels={labels.roleLabels}
             selfTooltip={labels.selfTooltip}
             walletButtonLabel={labels.walletButtonLabel}
+            blockLabel={labels.blockLabel}
+            unblockLabel={labels.unblockLabel}
+            removeLabel={labels.removeLabel}
+            restoreLabel={labels.restoreLabel}
             isPending={pendingUserId === it.id}
             zebra={i % 2 === 1}
           />

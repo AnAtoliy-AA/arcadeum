@@ -5,6 +5,10 @@ import { Text, XStack, YStack } from 'tamagui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
+  loadStoredSettings,
+  saveStoredSettings,
+} from '@/shared/lib/settings-storage';
+import {
   fetchTracks,
   FALLBACK_TRACKS,
   trackIndexForGame,
@@ -45,9 +49,11 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [enabledTracks, setEnabledTracks] = useState<Set<number>>(
-    () => new Set(FALLBACK_TRACKS.map((_, i) => i)),
-  );
+  const [enabledTracks, setEnabledTracks] = useState<Set<number>>(() => {
+    const saved = loadStoredSettings().musicEnabledTracks;
+    if (saved && saved.length > 0) return new Set(saved);
+    return new Set(FALLBACK_TRACKS.map((_, i) => i));
+  });
   const [shuffleOrder, setShuffleOrder] = useState<number[]>(() =>
     shuffleArray(FALLBACK_TRACKS.length),
   );
@@ -56,7 +62,15 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     fetchTracks().then((data) => {
       setTracks(data);
       setIndex(trackIndexForGame(gameId, data.length));
-      setEnabledTracks(new Set(data.map((_, i) => i)));
+      const saved = loadStoredSettings().musicEnabledTracks;
+      if (saved && saved.length > 0) {
+        const valid = saved.filter((i) => i < data.length);
+        setEnabledTracks(
+          new Set(valid.length > 0 ? valid : data.map((_, i) => i)),
+        );
+      } else {
+        setEnabledTracks(new Set(data.map((_, i) => i)));
+      }
       setShuffleOrder(shuffleArray(data.length));
     });
   }, [gameId]);
@@ -212,6 +226,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       } else {
         next.add(trackIndex);
       }
+      saveStoredSettings({ musicEnabledTracks: Array.from(next) });
       return next;
     });
   }, []);

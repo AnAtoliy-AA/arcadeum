@@ -242,8 +242,8 @@ export const playerStyles = `
 }
 .game-music-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease, box-shadow 200ms ease;
-  width: 36px !important;
-  height: 36px !important;
+  width: 32px !important;
+  height: 32px !important;
   padding: 0 !important;
   flex-shrink: 0;
 }
@@ -257,8 +257,8 @@ export const playerStyles = `
 .game-music-play-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, box-shadow 200ms ease;
   box-shadow: 0 2px 12px rgba(129,140,248,0.3);
-  width: 42px !important;
-  height: 42px !important;
+  width: 38px !important;
+  height: 38px !important;
   padding: 0 !important;
   flex-shrink: 0;
 }

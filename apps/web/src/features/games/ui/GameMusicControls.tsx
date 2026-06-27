@@ -155,10 +155,13 @@ export function TransportControls({
 }: TransportControlsProps) {
   return (
     <YStack gap={12}>
-      <XStack alignItems="center" gap="$2" paddingHorizontal={2}>
+      <XStack alignItems="center" gap="$2" paddingHorizontal={8}>
         <XStack className="game-music-volume-icon" flexShrink={0} style={{ color: 'rgba(255,255,255,0.4)' }}>
           <VolumeIcon level={volume} />
         </XStack>
+        <Text fontSize={10} color="rgba(255,255,255,0.35)" minWidth={28} textAlign="right" fontWeight="500" style={{ fontVariantNumeric: 'tabular-nums' }}>
+          {Math.round(volume * 100)}%
+        </Text>
         <input
           className="game-music-volume"
           data-testid="game-music-volume"
@@ -326,7 +329,7 @@ export function ProgressBar({
   const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={12}>
+    <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={4}>
       <Text
         fontSize={10}
         className="game-music-time"

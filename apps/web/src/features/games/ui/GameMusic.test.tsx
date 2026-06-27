@@ -36,8 +36,10 @@ class FakeAudio {
   volume = 1;
   preload = 'none';
   currentTime = 0;
+  duration = 180;
   paused = true;
   src: string;
+  _isPreloader = false;
   private listeners: Record<string, Array<() => void>> = {};
   play = vi.fn(() => {
     this.paused = false;
@@ -63,7 +65,12 @@ class FakeAudio {
   }
 }
 
-const lastAudioEl = () => created[created.length - 1];
+const mainAudioEl = () => {
+  for (let i = created.length - 1; i >= 0; i--) {
+    if (created[i].src && created[i].preload !== 'auto') return created[i];
+  }
+  return created[0];
+};
 
 beforeEach(() => {
   musicEnabled = false;
@@ -84,21 +91,20 @@ describe('GameMusic', () => {
     expect(screen.queryByTestId('game-music-player')).toBeNull();
   });
 
-  it('shows the player and auto-plays a looping track when enabled', () => {
+  it('shows the player and auto-plays a track when enabled', () => {
     musicEnabled = true;
     render(<GameMusic gameId="cascade_v1" />);
     expect(screen.getByTestId('game-music-player')).toBeTruthy();
-    expect(lastAudioEl().loop).toBe(true);
-    expect(lastAudioEl().volume).toBeGreaterThan(0);
-    expect(lastAudioEl().volume).toBeLessThanOrEqual(1);
-    expect(lastAudioEl().src).toContain('/music/');
-    expect(lastAudioEl().play).toHaveBeenCalledTimes(1);
+    expect(mainAudioEl().volume).toBeGreaterThan(0);
+    expect(mainAudioEl().volume).toBeLessThanOrEqual(1);
+    expect(mainAudioEl().src).toContain('/music/');
+    expect(mainAudioEl().play).toHaveBeenCalledTimes(1);
   });
 
   it('starts at the default volume and applies slider changes to the audio', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    const audio = mainAudioEl();
     expect(audio.volume).toBeCloseTo(0.3);
 
     fireEvent.change(screen.getByTestId('game-music-volume'), {
@@ -110,7 +116,7 @@ describe('GameMusic', () => {
   it('pauses and resumes via the play/pause control', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    const audio = mainAudioEl();
     // Autoplay leaves it playing.
     expect(audio.paused).toBe(false);
 
@@ -125,7 +131,7 @@ describe('GameMusic', () => {
   it('stops playback and rewinds to the start', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    const audio = mainAudioEl();
     audio.currentTime = 42;
     fireEvent.click(screen.getByTestId('game-music-stop'));
     expect(audio.pause).toHaveBeenCalled();
@@ -135,19 +141,19 @@ describe('GameMusic', () => {
   it('skips to a different track with next', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const before = lastAudioEl().src;
+    const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-next'));
-    const after = lastAudioEl().src;
+    const after = mainAudioEl().src;
     expect(after).not.toBe(before);
-    expect(after).toContain('/music/');
+    expect(after).toContain('.mp3');
   });
 
   it('goes back to a different track with prev', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const before = lastAudioEl().src;
+    const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-prev'));
-    expect(lastAudioEl().src).not.toBe(before);
+    expect(mainAudioEl().src).not.toBe(before);
   });
 
   it('registers media-key handlers so F7/F9 (prev/next) change the track', () => {
@@ -181,15 +187,15 @@ describe('GameMusic', () => {
       expect.any(Function),
     );
 
-    const before = lastAudioEl().src;
+    const before = mainAudioEl().src;
     act(() => handlers.nexttrack?.(undefined as never));
-    expect(lastAudioEl().src).not.toBe(before);
+    expect(mainAudioEl().src).not.toBe(before);
   });
 
   it('stops and releases the track on unmount', () => {
     musicEnabled = true;
     const { unmount } = render(<GameMusic gameId="tic_tac_toe_v1" />);
-    const audio = lastAudioEl();
+    const audio = mainAudioEl();
     unmount();
     expect(audio.pause).toHaveBeenCalled();
     expect(audio.src).toBe('');

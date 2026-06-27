@@ -14,13 +14,12 @@ export const playerStyles = `
 .game-music-player {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 
-    0 8px 32px rgba(0,0,0,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    inset 0 -1px 0 rgba(255,255,255,0.08),
-    inset 1px 0 0 rgba(255,255,255,0.12),
-    inset -1px 0 0 rgba(255,255,255,0.12);
+    0 8px 32px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(0,0,0,0.04),
+    inset 0 0 0 0.5px rgba(255,255,255,0.2);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
-  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.06) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.12) 100%);
 }
 .game-music-player.is-playing {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1), gameMusicGlow 3s ease-in-out infinite;
@@ -40,7 +39,7 @@ export const playerStyles = `
   cursor: grabbing;
 }
 .game-music-drag-handle:hover {
-  background-color: rgba(255,255,255,0.08);
+  background-color: rgba(255,255,255,0.1);
 }
 .game-music-track-number {
   font-variant-numeric: tabular-nums;
@@ -51,7 +50,7 @@ export const playerStyles = `
   height: 4px;
   width: 100%;
   border-radius: 999px;
-  background: linear-gradient(to right, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.2) 100%);
+  background: rgba(255,255,255,0.15);
   cursor: pointer;
   transition: height 200ms cubic-bezier(0.16, 1, 0.3, 1);
   outline: none;
@@ -64,8 +63,8 @@ export const playerStyles = `
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.3), inset 0 1px 0 rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
   cursor: pointer;
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
 }
@@ -91,10 +90,24 @@ export const playerStyles = `
   height: 4px;
   width: 100%;
   border-radius: 999px;
-  background: linear-gradient(to right, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.15) 100%);
+  background: rgba(255,255,255,0.15);
   cursor: pointer;
   transition: height 200ms cubic-bezier(0.16, 1, 0.3, 1);
   outline: none;
+}
+.game-music-progress:hover {
+  height: 6px;
+}
+.game-music-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .game-music-progress:hover {
   height: 6px;
@@ -161,31 +174,31 @@ export const playerStyles = `
   margin: 0 4px;
 }
 .game-music-track:hover {
-  background-color: rgba(255,255,255,0.08);
+  background-color: rgba(255,255,255,0.1);
 }
 .game-music-track:active {
   transform: scale(0.98);
 }
 .game-music-track.active {
-  background-color: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
+  background-color: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 .game-music-track.active:hover {
-  background-color: rgba(255,255,255,0.14);
+  background-color: rgba(255,255,255,0.2);
 }
 .game-music-checkbox {
   -webkit-appearance: none;
   appearance: none;
   width: 14px;
   height: 14px;
-  border: 1.5px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 4px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.1);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
   transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .game-music-checkbox:hover {
   border-color: rgba(255,255,255,0.5);

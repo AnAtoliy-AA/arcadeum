@@ -369,14 +369,15 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         gap={0}
         paddingVertical="$3"
         paddingHorizontal="$3"
-        borderRadius={20}
-        backgroundColor="rgba(255,255,255,0.06)"
+        borderRadius={24}
+        backgroundColor="rgba(255,255,255,0.12)"
         borderWidth={1}
-        borderColor="rgba(255,255,255,0.2)"
+        borderColor="rgba(255,255,255,0.4)"
         style={{
-          backdropFilter: 'blur(80px) saturate(1.8)',
-          WebkitBackdropFilter: 'blur(80px) saturate(1.8)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(40px) saturate(1.4)',
+          WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.04), inset 0 0 0 0.5px rgba(255,255,255,0.2)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.12) 100%)',
           left: pos.x,
           top: pos.y,
         }}
@@ -397,13 +398,13 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             width={40}
             height={40}
             borderRadius={10}
-            backgroundColor="rgba(255,255,255,0.1)"
+            backgroundColor="rgba(255,255,255,0.15)"
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
             style={{
-              border: '1px solid rgba(255,255,255,0.2)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)',
             }}
           >
             <EqualizerVisualization isPlaying={isPlaying} audioRef={audioRef} />

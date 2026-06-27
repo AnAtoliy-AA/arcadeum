@@ -378,7 +378,6 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
           left: pos.x,
           top: pos.y,
-          touchAction: 'none',
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -391,6 +390,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           cursor="grab"
           paddingVertical="$1"
           paddingHorizontal="$1"
+          style={{ touchAction: 'none' }}
         >
           <XStack
             width={40}

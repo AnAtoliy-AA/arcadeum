@@ -71,26 +71,31 @@ function SortableTrackItem({
           style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             cursor: 'grab',
-            padding: '2px',
+            padding: '8px 6px',
+            margin: '-8px -6px',
+            touchAction: 'none',
+            minWidth: '32px',
+            minHeight: '32px',
           }}
         >
           <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="5" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="8" cy="2" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="2" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="8" cy="5" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="2" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="5" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
-            <circle cx="8" cy="8" r="1" fill="rgba(255,255,255,0.4)" />
+            <circle cx="2" cy="2" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="6" cy="2" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="10" cy="2" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="2" cy="6" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="6" cy="6" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="10" cy="6" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="2" cy="10" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="6" cy="10" r="1.2" fill="rgba(255,255,255,0.5)" />
+            <circle cx="10" cy="10" r="1.2" fill="rgba(255,255,255,0.5)" />
           </svg>
         </div>
         <input

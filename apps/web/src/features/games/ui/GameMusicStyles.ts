@@ -126,10 +126,13 @@ export const playerStyles = `
 .game-music-playlist {
   max-height: 220px;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.12) transparent;
   padding: 2px 0;
   margin: 0 -4px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 .game-music-playlist::-webkit-scrollbar {
   width: 4px;

@@ -12,38 +12,7 @@ import {
 } from '@arcadeum/ui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
-
-export interface MusicTrack {
-  /** Public URL of the audio file. */
-  src: string;
-  /** Display name shown in the player (a proper noun, not i18n). */
-  title: string;
-}
-
-// Royalty-free tracks stored in public/music/. Add more entries and they join
-// the player's rotation automatically.
-export const TRACKS: readonly MusicTrack[] = [
-  { src: '/music/clockwork-horizon.mp3', title: 'Clockwork Horizon' },
-  { src: '/music/clockwork-horizon-v2.mp3', title: 'Brass Meridian' },
-  { src: '/music/glass-grid.mp3', title: 'Glass Grid' },
-  { src: '/music/glass-grid-v2.mp3', title: 'Crystal Dispatch' },
-  { src: '/music/iron-tide.mp3', title: 'Iron Tide' },
-  { src: '/music/iron-tide-v2.mp3', title: 'Steel Current' },
-  { src: '/music/iron-wake.mp3', title: 'Iron Wake' },
-  { src: '/music/iron-wake-v2.mp3', title: 'Ember Drift' },
-  { src: '/music/iron-wake-v3.mp3', title: 'Ashen Signal' },
-  { src: '/music/iron-wake-v4.mp3', title: 'Final Surge' },
-] as const;
-
-if (process.env.NODE_ENV !== 'production') {
-  const titles = TRACKS.map((t) => t.title);
-  const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
-  if (dupes.length > 0) {
-    console.error('[GameMusic] Duplicate track titles:', dupes);
-  }
-}
-
-const DEFAULT_VOLUME = 0.3;
+import { TRACKS, trackIndexForGame, DEFAULT_VOLUME } from './GameMusicUtils';
 
 // Entrance animation (reduced-motion aware) + the volume range styling. The
 // player is a fixed-width card so a long title truncates instead of pushing the
@@ -73,26 +42,6 @@ const playerStyles = `
   text-overflow: ellipsis;
 }
 `;
-
-/**
- * Index of the starting track for a game. Deterministic per game id (stable
- * hash) so a given game opens on the same song; different games vary across the
- * set. Falls back to the first track when no game id is available.
- */
-export function trackIndexForGame(gameId?: string | null): number {
-  const id = gameId ?? '';
-  if (!id) return 0;
-  let hash = 0;
-  for (let i = 0; i < id.length; i += 1) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  }
-  return hash % TRACKS.length;
-}
-
-/** The starting track for a game (see {@link trackIndexForGame}). */
-export function trackForGame(gameId?: string | null): MusicTrack {
-  return TRACKS[trackIndexForGame(gameId)];
-}
 
 /**
  * In-game background music with a compact transport player (prev / play-pause /

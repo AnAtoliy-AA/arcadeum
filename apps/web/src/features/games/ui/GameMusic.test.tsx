@@ -8,12 +8,8 @@ import {
 } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import { config } from '@/shared/config/tamagui.config';
-import {
-  GameMusic,
-  trackForGame,
-  trackIndexForGame,
-  TRACKS,
-} from './GameMusic';
+import { GameMusic } from './GameMusic';
+import { trackForGame, trackIndexForGame, TRACKS } from './GameMusicUtils';
 
 const render = (ui: React.ReactElement) =>
   rtlRender(
@@ -200,7 +196,7 @@ describe('GameMusic', () => {
   });
 
   it('trackIndexForGame / trackForGame are deterministic with a safe fallback', () => {
-    expect(trackForGame().src).toBe('/music/clockwork-horizon.mp3');
+    expect(trackForGame().src).toContain('battleship-grid.mp3');
     expect(trackIndexForGame()).toBe(0);
     expect(trackIndexForGame('sea_battle_v1')).toBe(
       trackIndexForGame('sea_battle_v1'),

@@ -138,60 +138,75 @@ export function useAudioPlayer(
 
   useEffect(() => {
     if (!musicEnabled) return;
-    const audio = new Audio(track.src);
-    audio.loop = repeatRef.current === 'one';
-    audio.volume = volumeRef.current;
-    audio.preload = 'metadata';
-    audioRef.current = audio;
 
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const onLoadedMetadata = () => setDuration(audio.duration);
-    const onEnded = () => {
-      if (repeatRef.current === 'one') return;
-      const nextIdx = shuffleRef.current
-        ? shuffleOrderRef.current[
-            (shuffleOrderRef.current.indexOf(index) + 1) %
-              shuffleOrderRef.current.length
-          ]
-        : (index + 1) % tracksLengthRef.current;
-      let idx = nextIdx;
-      let safety = tracksLengthRef.current;
-      while (!enabledTracksRef.current.has(idx) && safety > 0) {
-        idx = shuffleRef.current
+    let audio = audioRef.current;
+    if (!audio) {
+      audio = new Audio();
+      audio.preload = 'metadata';
+      audio.volume = volumeRef.current;
+      audioRef.current = audio;
+
+      const onPlay = () => setIsPlaying(true);
+      const onPause = () => setIsPlaying(false);
+      const onTimeUpdate = () => {
+        if (audio) setCurrentTime(audio.currentTime);
+      };
+      const onLoadedMetadata = () => {
+        if (audio) setDuration(audio.duration);
+      };
+      const onEnded = () => {
+        if (repeatRef.current === 'one') return;
+        const nextIdx = shuffleRef.current
           ? shuffleOrderRef.current[
-              (shuffleOrderRef.current.indexOf(idx) + 1) %
+              (shuffleOrderRef.current.indexOf(index) + 1) %
                 shuffleOrderRef.current.length
             ]
-          : (idx + 1) % tracksLengthRef.current;
-        safety--;
-      }
-      setIndex(idx);
-    };
+          : (index + 1) % tracksLengthRef.current;
+        let idx = nextIdx;
+        let safety = tracksLengthRef.current;
+        while (!enabledTracksRef.current.has(idx) && safety > 0) {
+          idx = shuffleRef.current
+            ? shuffleOrderRef.current[
+                (shuffleOrderRef.current.indexOf(idx) + 1) %
+                  shuffleOrderRef.current.length
+              ]
+            : (idx + 1) % tracksLengthRef.current;
+          safety--;
+        }
+        setIndex(idx);
+      };
 
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-    audio.addEventListener('timeupdate', onTimeUpdate);
-    audio.addEventListener('loadedmetadata', onLoadedMetadata);
-    audio.addEventListener('ended', onEnded);
+      audio.addEventListener('play', onPlay);
+      audio.addEventListener('pause', onPause);
+      audio.addEventListener('timeupdate', onTimeUpdate);
+      audio.addEventListener('loadedmetadata', onLoadedMetadata);
+      audio.addEventListener('ended', onEnded);
+    }
 
+    audio.loop = repeatRef.current === 'one';
+    audio.src = track.src;
     const result = audio.play();
     if (result && typeof result.catch === 'function') {
       result.catch(() => {});
     }
 
     return () => {
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
-      audio.removeEventListener('timeupdate', onTimeUpdate);
-      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
-      audio.removeEventListener('ended', onEnded);
-      audio.pause();
-      audio.src = '';
-      audioRef.current = null;
+      if (audio) {
+        audio.pause();
+      }
     };
   }, [track.src, musicEnabled, index]);
+
+  useEffect(() => {
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.src = '';
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!musicEnabled) return;

@@ -61,9 +61,7 @@ export class AuthService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // OAuth Code Exchange (delegated to GoogleOAuthService)
-  // ─────────────────────────────────────────────────────────────────────────────
+  // ── OAuth Code Exchange (delegated to GoogleOAuthService) ────────────────
 
   async exchangeCode(params: {
     code: string;
@@ -74,9 +72,7 @@ export class AuthService {
     return this.googleOAuth.exchangeCode(params);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Local Auth (email/password)
-  // ─────────────────────────────────────────────────────────────────────────────
+  // ── Local Auth (email/password) ─────────────────────────────────────────
 
   async register(data: RegisterDto): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();

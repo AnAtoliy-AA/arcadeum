@@ -15,6 +15,8 @@ import {
   type RepeatMode,
 } from './GameMusicUtils';
 
+const CROSSFADE_MS = 1200;
+
 function shuffleArray(n: number): number[] {
   const arr = Array.from({ length: n }, (_, i) => i);
   for (let i = arr.length - 1; i > 0; i--) {
@@ -40,9 +42,6 @@ export interface AudioPlayerState {
   shuffleOrder: number[];
   track: MusicTrack | undefined;
   audioRef: React.RefObject<HTMLAudioElement | null>;
-}
-
-export interface AudioPlayerActions {
   togglePlay: () => void;
   stop: () => void;
   playIndex: (nextIndex: number) => void;
@@ -63,10 +62,12 @@ export interface AudioPlayerActions {
   skipBack: () => void;
 }
 
-export function useAudioPlayer(
-  gameId?: string | null,
-): AudioPlayerState & AudioPlayerActions {
+export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const { musicEnabled } = useMusicSetting();
+  const audioARef = useRef<HTMLAudioElement | null>(null);
+  const audioBRef = useRef<HTMLAudioElement | null>(null);
+  const activeSlotRef = useRef<'A' | 'B'>('A');
+  const crossfadeRafRef = useRef<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [tracks, setTracks] = useState<readonly MusicTrack[]>(FALLBACK_TRACKS);
   const [index, setIndex] = useState(0);
@@ -136,90 +137,117 @@ export function useAudioPlayer(
     tracksLengthRef.current = tracks.length;
   });
 
-  useEffect(() => {
-    if (!musicEnabled) return;
+  const crossfadeTo = useCallback((newSrc: string, newVolume: number) => {
+    const oldAudio =
+      activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
+    const newAudio =
+      activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
+    if (!newAudio || !oldAudio) return;
 
-    let audio = audioRef.current;
-    if (!audio) {
-      audio = new Audio();
-      audio.preload = 'metadata';
-      audio.volume = volumeRef.current;
-      audioRef.current = audio;
+    cancelAnimationFrame(crossfadeRafRef.current);
+    activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
 
-      const onPlay = () => setIsPlaying(true);
-      const onPause = () => setIsPlaying(false);
-      const onTimeUpdate = () => {
-        if (audio) setCurrentTime(audio.currentTime);
-      };
-      const onLoadedMetadata = () => {
-        if (audio) setDuration(audio.duration);
-      };
-      const onEnded = () => {
-        if (repeatRef.current === 'one') return;
-        const nextIdx = shuffleRef.current
-          ? shuffleOrderRef.current[
-              (shuffleOrderRef.current.indexOf(index) + 1) %
-                shuffleOrderRef.current.length
-            ]
-          : (index + 1) % tracksLengthRef.current;
-        let idx = nextIdx;
-        let safety = tracksLengthRef.current;
-        while (!enabledTracksRef.current.has(idx) && safety > 0) {
-          idx = shuffleRef.current
-            ? shuffleOrderRef.current[
-                (shuffleOrderRef.current.indexOf(idx) + 1) %
-                  shuffleOrderRef.current.length
-              ]
-            : (idx + 1) % tracksLengthRef.current;
-          safety--;
-        }
-        setIndex(idx);
-      };
+    newAudio.src = newSrc;
+    newAudio.volume = 0;
+    newAudio.loop = repeatRef.current === 'one';
+    newAudio.play().catch(() => {});
 
-      audio.addEventListener('play', onPlay);
-      audio.addEventListener('pause', onPause);
-      audio.addEventListener('timeupdate', onTimeUpdate);
-      audio.addEventListener('loadedmetadata', onLoadedMetadata);
-      audio.addEventListener('ended', onEnded);
-    }
+    let start = -1;
+    const oldStartVol = oldAudio.volume;
 
-    audio.loop = repeatRef.current === 'one';
-    audio.src = track.src;
-    const result = audio.play();
-    if (result && typeof result.catch === 'function') {
-      result.catch(() => {});
-    }
-
-    return () => {
-      if (audio) {
-        audio.pause();
+    const step = (now: number) => {
+      if (start < 0) start = now;
+      const elapsed = now - start;
+      const t = Math.min(elapsed / CROSSFADE_MS, 1);
+      oldAudio.volume = oldStartVol * (1 - t);
+      newAudio.volume = newVolume * t;
+      if (t < 1) {
+        crossfadeRafRef.current = requestAnimationFrame(step);
+      } else {
+        oldAudio.pause();
+        oldAudio.currentTime = 0;
+        oldAudio.volume = 0;
       }
     };
-  }, [track.src, musicEnabled, index]);
-
-  useEffect(() => {
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-        audioRef.current = null;
-      }
-    };
+    crossfadeRafRef.current = requestAnimationFrame(step);
+    audioRef.current = newAudio;
   }, []);
 
   useEffect(() => {
     if (!musicEnabled) return;
-    const nextIdx = shuffle
-      ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
-      : (index + 1) % tracks.length;
-    const nextSrc = tracks[nextIdx].src;
-    const preloader = new Audio(nextSrc);
-    preloader.preload = 'auto';
-    return () => {
-      preloader.src = '';
+
+    if (!audioARef.current) {
+      audioARef.current = new Audio();
+      audioARef.current.preload = 'metadata';
+      audioBRef.current = new Audio();
+      audioBRef.current.preload = 'metadata';
+      audioRef.current = audioARef.current;
+    }
+
+    const audio = audioARef.current;
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onLoadedMetadata = () => setDuration(audio.duration);
+    const onEnded = () => {
+      if (repeatRef.current === 'one') return;
+      const nextIdx = shuffleRef.current
+        ? shuffleOrderRef.current[
+            (shuffleOrderRef.current.indexOf(index) + 1) %
+              shuffleOrderRef.current.length
+          ]
+        : (index + 1) % tracksLengthRef.current;
+      let idx = nextIdx;
+      let safety = tracksLengthRef.current;
+      while (!enabledTracksRef.current.has(idx) && safety > 0) {
+        idx = shuffleRef.current
+          ? shuffleOrderRef.current[
+              (shuffleOrderRef.current.indexOf(idx) + 1) %
+                shuffleOrderRef.current.length
+            ]
+          : (idx + 1) % tracksLengthRef.current;
+        safety--;
+      }
+      setIndex(idx);
     };
-  }, [index, musicEnabled, shuffle, shuffleOrder, tracks]);
+
+    [audioARef.current, audioBRef.current].forEach((a) => {
+      if (!a) return;
+      a.addEventListener('play', onPlay);
+      a.addEventListener('pause', onPause);
+      a.addEventListener('timeupdate', onTimeUpdate);
+      a.addEventListener('loadedmetadata', onLoadedMetadata);
+      a.addEventListener('ended', onEnded);
+    });
+
+    crossfadeTo(track.src, volumeRef.current);
+
+    return () => {
+      [audioARef.current, audioBRef.current].forEach((a) => {
+        if (!a) return;
+        a.removeEventListener('play', onPlay);
+        a.removeEventListener('pause', onPause);
+        a.removeEventListener('timeupdate', onTimeUpdate);
+        a.removeEventListener('loadedmetadata', onLoadedMetadata);
+        a.removeEventListener('ended', onEnded);
+      });
+    };
+  }, [musicEnabled, index, crossfadeTo, track.src]);
+
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(crossfadeRafRef.current);
+      [audioARef.current, audioBRef.current].forEach((a) => {
+        if (a) {
+          a.pause();
+          a.src = '';
+        }
+      });
+      audioARef.current = null;
+      audioBRef.current = null;
+      audioRef.current = null;
+    };
+  }, []);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -360,14 +388,12 @@ export function useAudioPlayer(
     const ms =
       typeof navigator !== 'undefined' ? navigator.mediaSession : undefined;
     if (!ms) return;
-
     if (typeof MediaMetadata !== 'undefined') {
       ms.metadata = new MediaMetadata({
         title: track.title,
         artist: 'Arcadeum',
       });
     }
-
     const setHandler = (
       action: MediaSessionAction,
       handler: MediaSessionActionHandler | null,
@@ -376,7 +402,6 @@ export function useAudioPlayer(
         ms.setActionHandler(action, handler);
       } catch {}
     };
-
     setHandler('play', () => {
       if (audioRef.current?.paused) togglePlay();
     });
@@ -386,7 +411,6 @@ export function useAudioPlayer(
     setHandler('previoustrack', prev);
     setHandler('nexttrack', next);
     setHandler('stop', stop);
-
     return () => {
       (
         ['play', 'pause', 'previoustrack', 'nexttrack', 'stop'] as const
@@ -411,11 +435,9 @@ export function useAudioPlayer(
 
   useEffect(() => {
     if (!musicEnabled || !visible) return;
-
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-
       switch (e.code) {
         case 'Space':
           e.preventDefault();
@@ -451,7 +473,6 @@ export function useAudioPlayer(
           break;
       }
     };
-
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [musicEnabled, visible, togglePlay, seekTo, prev, next]);

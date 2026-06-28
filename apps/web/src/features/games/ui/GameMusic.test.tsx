@@ -38,7 +38,7 @@ class FakeAudio {
   currentTime = 0;
   duration = 180;
   paused = true;
-  src: string;
+  src = '';
   _isPreloader = false;
   private listeners: Record<string, Array<() => void>> = {};
   play = vi.fn(() => {
@@ -50,8 +50,8 @@ class FakeAudio {
     this.paused = true;
     this.emit('pause');
   });
-  constructor(src: string) {
-    this.src = src;
+  constructor(src?: string) {
+    if (src) this.src = src;
     created.push(this);
   }
   addEventListener(type: string, cb: () => void) {
@@ -67,15 +67,45 @@ class FakeAudio {
 
 const mainAudioEl = () => {
   for (let i = created.length - 1; i >= 0; i--) {
-    if (created[i].src && created[i].preload !== 'auto') return created[i];
+    if (created[i].src && !created[i].paused) return created[i];
+  }
+  for (let i = created.length - 1; i >= 0; i--) {
+    if (created[i].src) return created[i];
   }
   return created[0];
 };
 
+const rafQueue: Array<{ id: number; cb: FrameRequestCallback }> = [];
+let rafId = 0;
+let rafTime = 0;
+
+function flushRaf(maxFrames = 20) {
+  for (let i = 0; i < maxFrames && rafQueue.length > 0; i++) {
+    const batch = [...rafQueue];
+    rafQueue.length = 0;
+    for (const { cb } of batch) {
+      rafTime += 100;
+      cb(rafTime);
+    }
+  }
+}
+
 beforeEach(() => {
   musicEnabled = false;
   created.length = 0;
+  rafQueue.length = 0;
+  rafId = 0;
+  rafTime = 0;
   vi.stubGlobal('Audio', FakeAudio);
+  vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+    const id = ++rafId;
+    rafQueue.push({ id, cb });
+    return id;
+  });
+  vi.stubGlobal('cancelAnimationFrame', (id: number) => {
+    const idx = rafQueue.findIndex((r) => r.id === id);
+    if (idx !== -1) rafQueue.splice(idx, 1);
+  });
 });
 
 afterEach(() => {
@@ -86,6 +116,13 @@ afterEach(() => {
 const showPlayer = () => {
   act(() => {
     window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
+  });
+  flushAct();
+};
+
+const flushAct = () => {
+  act(() => {
+    flushRaf();
   });
 };
 
@@ -154,6 +191,7 @@ describe('GameMusic', () => {
     showPlayer();
     const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-next'));
+    flushAct();
     const after = mainAudioEl().src;
     expect(after).not.toBe(before);
     expect(after).toContain('.mp3');
@@ -165,6 +203,7 @@ describe('GameMusic', () => {
     showPlayer();
     const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-prev'));
+    flushAct();
     expect(mainAudioEl().src).not.toBe(before);
   });
 
@@ -202,6 +241,7 @@ describe('GameMusic', () => {
 
     const before = mainAudioEl().src;
     act(() => handlers.nexttrack?.(undefined as never));
+    flushAct();
     expect(mainAudioEl().src).not.toBe(before);
   });
 

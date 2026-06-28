@@ -160,27 +160,21 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     const newAudio =
       activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
     if (!newAudio || !oldAudio) return;
-
     cancelAnimationFrame(crossfadeRafRef.current);
     activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
-
     newAudio.src = newSrc;
     newAudio.volume = 0;
     newAudio.loop = repeatRef.current === 'one';
     newAudio.play().catch(() => {});
-
     let start = -1;
     const oldStartVol = oldAudio.volume;
-
     const step = (now: number) => {
       if (start < 0) start = now;
-      const elapsed = now - start;
-      const t = Math.min(elapsed / CROSSFADE_MS, 1);
+      const t = Math.min((now - start) / CROSSFADE_MS, 1);
       oldAudio.volume = oldStartVol * (1 - t);
       newAudio.volume = newVolume * t;
-      if (t < 1) {
-        crossfadeRafRef.current = requestAnimationFrame(step);
-      } else {
+      if (t < 1) crossfadeRafRef.current = requestAnimationFrame(step);
+      else {
         oldAudio.pause();
         oldAudio.currentTime = 0;
         oldAudio.volume = 0;
@@ -337,28 +331,22 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     },
     [],
   );
-
   const onSeek = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(event.target.value);
     if (audioRef.current) audioRef.current.currentTime = time;
     setCurrentTime(time);
   }, []);
-
   const seekTo = useCallback((time: number) => {
     if (audioRef.current) audioRef.current.currentTime = time;
     setCurrentTime(time);
   }, []);
-
   const skipForward = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.min(audio.currentTime + 10, audio.duration || 0);
+    const a = audioRef.current;
+    if (a) a.currentTime = Math.min(a.currentTime + 10, a.duration || 0);
   }, []);
-
   const skipBack = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.max(audio.currentTime - 10, 0);
+    const a = audioRef.current;
+    if (a) a.currentTime = Math.max(a.currentTime - 10, 0);
   }, []);
 
   const toggleShuffle = useCallback(() => {

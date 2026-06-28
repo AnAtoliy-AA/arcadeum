@@ -173,6 +173,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 index={player.index}
                 isPlaying={player.isPlaying}
                 enabledTracks={player.enabledTracks}
+                trackDurations={player.trackDurations}
                 onToggleTrack={player.toggleTrack}
                 onReorder={player.reorderTracks}
                 onPlay={player.playIndex}

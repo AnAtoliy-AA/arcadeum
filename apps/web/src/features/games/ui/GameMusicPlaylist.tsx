@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Text, XStack, YStack } from 'tamagui';
-import { type MusicTrack } from './GameMusicUtils';
+import { type MusicTrack, formatTime } from './GameMusicUtils';
 import { PlayingBars } from './GameMusicVisuals';
 
 interface SortableTrackItemProps {
@@ -29,6 +29,7 @@ interface SortableTrackItemProps {
   isActive: boolean;
   isPlaying: boolean;
   isEnabled: boolean;
+  duration: number;
   onToggleTrack: (trackIndex: number) => void;
   onPlay: (trackIndex: number) => void;
 }
@@ -39,6 +40,7 @@ function SortableTrackItem({
   isActive,
   isPlaying,
   isEnabled,
+  duration,
   onToggleTrack,
   onPlay,
 }: SortableTrackItemProps) {
@@ -136,6 +138,17 @@ function SortableTrackItem({
         >
           {track.title}
         </Text>
+        {duration > 0 && (
+          <Text
+            fontSize={10}
+            color="rgba(255,255,255,0.35)"
+            minWidth={32}
+            textAlign="right"
+            flexShrink={0}
+          >
+            {formatTime(duration)}
+          </Text>
+        )}
         {isActive && isPlaying ? (
           <PlayingBars />
         ) : (
@@ -185,6 +198,7 @@ interface PlaylistProps {
   index: number;
   isPlaying: boolean;
   enabledTracks: Set<number>;
+  trackDurations: Record<string, number>;
   onToggleTrack: (trackIndex: number) => void;
   onReorder: (newTracks: readonly MusicTrack[]) => void;
   onPlay: (trackIndex: number) => void;
@@ -195,6 +209,7 @@ export function Playlist({
   index,
   isPlaying,
   enabledTracks,
+  trackDurations,
   onToggleTrack,
   onReorder,
   onPlay,
@@ -274,6 +289,7 @@ export function Playlist({
                 isActive={isActive}
                 isPlaying={isPlaying}
                 isEnabled={isEnabled}
+                duration={trackDurations[track.src] ?? 0}
                 onToggleTrack={onToggleTrack}
                 onPlay={onPlay}
               />

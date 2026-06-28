@@ -38,6 +38,7 @@ export interface AudioPlayerState {
   visible: boolean;
   currentTime: number;
   duration: number;
+  trackDurations: Record<string, number>;
   enabledTracks: Set<number>;
   shuffleOrder: number[];
   track: MusicTrack | undefined;
@@ -80,6 +81,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const [visible, setVisible] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [trackDurations, setTrackDurations] = useState<Record<string, number>>(
+    {},
+  );
   const [enabledTracks, setEnabledTracks] = useState<Set<number>>(() => {
     const saved = loadStoredSettings().musicEnabledTracks;
     if (saved && saved.length > 0) return new Set(saved);
@@ -175,7 +179,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
 
   useEffect(() => {
     if (!musicEnabled) return;
-
     if (!audioARef.current) {
       audioARef.current = new Audio();
       audioARef.current.preload = 'metadata';
@@ -183,12 +186,15 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioBRef.current.preload = 'metadata';
       audioRef.current = audioARef.current;
     }
-
     const audio = audioARef.current;
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const onLoadedMetadata = () => setDuration(audio.duration);
+    const onLoadedMetadata = () => {
+      setDuration(audio.duration);
+      if (audio.src)
+        setTrackDurations((prev) => ({ ...prev, [audio.src]: audio.duration }));
+    };
     const onEnded = () => {
       if (repeatRef.current === 'one') return;
       const nextIdx = shuffleRef.current
@@ -234,8 +240,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     };
   }, [musicEnabled, index, crossfadeTo, track.src]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       cancelAnimationFrame(crossfadeRafRef.current);
       [audioARef.current, audioBRef.current].forEach((a) => {
         if (a) {
@@ -246,18 +252,15 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioARef.current = null;
       audioBRef.current = null;
       audioRef.current = null;
-    };
-  }, []);
+    },
+    [],
+  );
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (audio.paused) {
-      const result = audio.play();
-      if (result && typeof result.catch === 'function') result.catch(() => {});
-    } else {
-      audio.pause();
-    }
+    if (audio.paused) audio.play().catch(() => {});
+    else audio.pause();
   }, []);
 
   const stop = useCallback(() => {
@@ -367,17 +370,12 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     (newTracks: readonly MusicTrack[]) => {
       const currentSrc = tracks[index].src;
       setTracks(newTracks);
-      const newIndex = newTracks.findIndex((t) => t.src === currentSrc);
-      if (newIndex !== -1) {
-        setIndex(newIndex);
-      }
+      const ni = newTracks.findIndex((t) => t.src === currentSrc);
+      if (ni !== -1) setIndex(ni);
       saveStoredSettings({
-        musicTrackOrder: newTracks.map((_, i) => {
-          const originalIndex = tracks.findIndex(
-            (t) => t.src === newTracks[i].src,
-          );
-          return originalIndex;
-        }),
+        musicTrackOrder: newTracks.map((_, i) =>
+          tracks.findIndex((t) => t.src === newTracks[i].src),
+        ),
       });
     },
     [tracks, index],
@@ -489,6 +487,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     visible,
     currentTime,
     duration,
+    trackDurations,
     enabledTracks,
     shuffleOrder,
     track,

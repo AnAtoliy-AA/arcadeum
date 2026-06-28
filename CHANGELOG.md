@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.9] - 2026-06-28
+
+### Added
+- add native tooltips to all player buttons (N/A)
+- per-track gradient backgrounds and smooth progress bar (N/A)
+- add error/loading states for track fetch and playback (N/A)
+- show track duration in playlist (N/A)
+- add crossfade between tracks (N/A)
+- allow dragging player from any empty space with grab cursor (N/A)
+- add play button and double-click to play tracks in playlist (N/A)
+- stronger liquid glass with more transparency and white highlights (N/A)
+- Apple liquid glass effect with transparent white gradient (N/A)
+- liquid glass effect with see-through transparency (N/A)
+- increase blur to 60px and reduce opacity to 0.35 for deeper glass effect (N/A)
+- liquid glass effect with stronger blur and transparency (N/A)
+- add volume percentage display and narrow volume slider (N/A)
+- add close button to music player that stops playback (N/A)
+- replace Token nav link with Music toggle button (N/A)
+- make music player global across all pages (N/A)
+- premium audio player UI with larger buttons (N/A)
+- add drag-and-drop reordering for music playlist (N/A)
+- persist music playlist track toggles in localStorage (N/A)
+- add mobile-friendly music player styles (N/A)
+- load music tracks from CDN json and add media-src CSP (N/A)
+- integrate transport controls, playlist, draggable and polished styles into music player (N/A)
+- move music to cloudflare r2 and add dynamic track loading (N/A)
+- keep 2 fallback tracks in repo, load rest from R2 CDN (ARC-840)
+- add transport controls, playlist, and draggable hook (ARC-840)
+- add i18n keys for shuffle, repeat, playlist, minimize, maximize (ARC-840)
+- add polished music player CSS with animations and transitions (ARC-840)
+- add playlist, minimize, maximize icons and canvas equalizer (ARC-840)
+- extract music player types and utilities into GameMusicUtils (ARC-840)
+- add shuffle and repeat icons to MediaIcons (ARC-840)
+
+### Fixed
+- remove duplicate declarations in useAudioPlayer and fix mobile nav href (N/A)
+- remove leftover seekOnReorderRef from crossfade (N/A)
+- fix isPlaying flicker and playlist click-to-play (N/A)
+- add stop to mini mode and gap before expand button (N/A)
+- use double-chevron icons for skip ±10s (N/A)
+- restore big play button and add transport to mini mode (N/A)
+- use small button variant for primary transport row (N/A)
+- restructure transport controls layout and fix skip icons (N/A)
+- prevent track restart when toggling shuffle or repeat (N/A)
+- resume playback from paused position instead of beginning (N/A)
+- resume playback when clicking play on already-selected paused track (N/A)
+- increase equalizer and playing bars contrast for glass background (N/A)
+- show grabbing cursor on entire player while dragging (N/A)
+- prevent track restart when toggling enabled tracks (N/A)
+- improve text contrast and visibility in glass player (N/A)
+- set mobile player width to 320px (N/A)
+- left-align volume icon (N/A)
+- match volume and progress bar widths with aligned icon (N/A)
+- right-align volume percentage (N/A)
+- align volume percentage with track time labels (N/A)
+- adjust volume slider horizontal padding to 6px (N/A)
+- move volume percentage to right side of slider (N/A)
+- make progress bar narrower than volume slider (N/A)
+- shrink buttons to 28px/34px and reduce gap to 4px (N/A)
+- resize buttons to 32px/38px to fit inside player (N/A)
+- replace IconButton with plain buttons for correct sizing (N/A)
+- remove size prop from IconButton to let CSS control button dimensions (N/A)
+- force button sizes with CSS !important to override Tamagui variants (N/A)
+- force button sizes via inline styles and increase control gap (N/A)
+- increase music player button sizes (N/A)
+- add margin under transport controls (N/A)
+- add more bottom padding to music player (N/A)
+- increase gap between transport buttons to 8px (N/A)
+- increase spacing between music player controls (N/A)
+- improve mobile touch drag for playlist songs (N/A)
+- add TouchSensor for mobile drag-and-drop in playlist (N/A)
+- use label as key in mobile menu to avoid duplicate keys (N/A)
+- auto-advance to next track when song ends (N/A)
+- add CDN URL to connect-src CSP for tracks.json fetch (N/A)
+- auto-advance to next track when song ends (N/A)
+
+### Improved
+- reuse Audio element across track changes (N/A)
+
+### Refactored
+- extract TransportRow reusable component (N/A)
+- extract useAudioPlayer hook, add skip ±10s, mini track name, keyboard shortcuts (N/A)
+
+
 ## [1.22.8] - 2026-06-28
 
 ### Refactored

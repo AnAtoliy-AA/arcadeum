@@ -41,6 +41,8 @@ export interface AudioPlayerState {
   trackDurations: Record<string, number>;
   enabledTracks: Set<number>;
   shuffleOrder: number[];
+  loading: boolean;
+  error: string | null;
   track: MusicTrack | undefined;
   audioRef: React.RefObject<HTMLAudioElement | null>;
   togglePlay: () => void;
@@ -92,6 +94,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const [shuffleOrder, setShuffleOrder] = useState<number[]>(() =>
     shuffleArray(FALLBACK_TRACKS.length),
   );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleToggle = () => setVisible((v) => !v);
@@ -101,28 +105,36 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   }, []);
 
   useEffect(() => {
-    fetchTracks().then((data) => {
-      const savedOrder = loadStoredSettings().musicTrackOrder;
-      let orderedData = data;
-      if (savedOrder && savedOrder.length === data.length) {
-        orderedData = savedOrder.map((i) => data[i]).filter(Boolean);
-        if (orderedData.length !== data.length) {
-          orderedData = data;
+    let dead = false;
+    fetchTracks()
+      .then((data) => {
+        if (dead) return;
+        const order = loadStoredSettings().musicTrackOrder;
+        let d = data;
+        if (order && order.length === data.length) {
+          d = order.map((i) => data[i]).filter(Boolean);
+          if (d.length !== data.length) d = data;
         }
-      }
-      setTracks(orderedData);
-      setIndex(trackIndexForGame(gameId, orderedData.length));
-      const saved = loadStoredSettings().musicEnabledTracks;
-      if (saved && saved.length > 0) {
-        const valid = saved.filter((i) => i < orderedData.length);
+        setTracks(d);
+        setIndex(trackIndexForGame(gameId, d.length));
+        const saved = loadStoredSettings().musicEnabledTracks;
         setEnabledTracks(
-          new Set(valid.length > 0 ? valid : orderedData.map((_, i) => i)),
+          saved?.length
+            ? new Set(saved.filter((i) => i < d.length))
+            : new Set(d.map((_, i) => i)),
         );
-      } else {
-        setEnabledTracks(new Set(orderedData.map((_, i) => i)));
-      }
-      setShuffleOrder(shuffleArray(orderedData.length));
-    });
+        setShuffleOrder(shuffleArray(d.length));
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!dead) {
+          setError('Failed to load music tracks');
+          setLoading(false);
+        }
+      });
+    return () => {
+      dead = true;
+    };
   }, [gameId]);
 
   const volumeRef = useRef(volume);
@@ -187,7 +199,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioRef.current = audioARef.current;
     }
     const audio = audioARef.current;
-    const onPlay = () => setIsPlaying(true);
+    const onPlay = () => {
+      setIsPlaying(true);
+      setError(null);
+    };
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onLoadedMetadata = () => {
@@ -195,35 +210,33 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       if (audio.src)
         setTrackDurations((prev) => ({ ...prev, [audio.src]: audio.duration }));
     };
+    const onError = () => setError('Failed to load track');
     const onEnded = () => {
       if (repeatRef.current === 'one') return;
-      const nextIdx = shuffleRef.current
-        ? shuffleOrderRef.current[
-            (shuffleOrderRef.current.indexOf(index) + 1) %
-              shuffleOrderRef.current.length
-          ]
-        : (index + 1) % tracksLengthRef.current;
-      let idx = nextIdx;
-      let safety = tracksLengthRef.current;
-      while (!enabledTracksRef.current.has(idx) && safety > 0) {
-        idx = shuffleRef.current
+      const dir = (i: number) =>
+        shuffleRef.current
           ? shuffleOrderRef.current[
-              (shuffleOrderRef.current.indexOf(idx) + 1) %
+              (shuffleOrderRef.current.indexOf(i) + 1) %
                 shuffleOrderRef.current.length
             ]
-          : (idx + 1) % tracksLengthRef.current;
-        safety--;
-      }
+          : (i + 1) % tracksLengthRef.current;
+      let idx = dir(index);
+      let safety = tracksLengthRef.current;
+      while (!enabledTracksRef.current.has(idx) && safety-- > 0) idx = dir(idx);
       setIndex(idx);
     };
 
+    const events = [
+      ['play', onPlay],
+      ['pause', onPause],
+      ['timeupdate', onTimeUpdate],
+      ['loadedmetadata', onLoadedMetadata],
+      ['ended', onEnded],
+      ['error', onError],
+    ] as const;
     [audioARef.current, audioBRef.current].forEach((a) => {
       if (!a) return;
-      a.addEventListener('play', onPlay);
-      a.addEventListener('pause', onPause);
-      a.addEventListener('timeupdate', onTimeUpdate);
-      a.addEventListener('loadedmetadata', onLoadedMetadata);
-      a.addEventListener('ended', onEnded);
+      events.forEach(([evt, fn]) => a.addEventListener(evt, fn));
     });
 
     crossfadeTo(track.src, volumeRef.current);
@@ -231,11 +244,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     return () => {
       [audioARef.current, audioBRef.current].forEach((a) => {
         if (!a) return;
-        a.removeEventListener('play', onPlay);
-        a.removeEventListener('pause', onPause);
-        a.removeEventListener('timeupdate', onTimeUpdate);
-        a.removeEventListener('loadedmetadata', onLoadedMetadata);
-        a.removeEventListener('ended', onEnded);
+        events.forEach(([evt, fn]) => a.removeEventListener(evt, fn));
       });
     };
   }, [musicEnabled, index, crossfadeTo, track.src]);
@@ -262,7 +271,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (audio.paused) audio.play().catch(() => {});
     else audio.pause();
   }, []);
-
   const stop = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -274,17 +282,13 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     (nextIndex: number) => {
       let idx = nextIndex;
       let safety = tracks.length;
-      while (!enabledTracks.has(idx) && safety > 0) {
+      while (!enabledTracks.has(idx) && safety-- > 0) {
         idx = shuffle
           ? shuffleOrder[(shuffleOrder.indexOf(idx) + 1) % shuffleOrder.length]
           : (idx + 1) % tracks.length;
-        safety--;
       }
       if (idx === index) {
-        const audio = audioRef.current;
-        if (audio && audio.paused) {
-          audio.play().catch(() => {});
-        }
+        audioRef.current?.play().catch(() => {});
         return;
       }
       setIndex(idx);
@@ -293,20 +297,20 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   );
 
   const next = useCallback(() => {
-    const nextIdx = shuffle
+    const ni = shuffle
       ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
       : (index + 1) % tracks.length;
-    playIndex(nextIdx);
+    playIndex(ni);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
 
   const prev = useCallback(() => {
-    const prevIdx = shuffle
+    const pi = shuffle
       ? shuffleOrder[
           (shuffleOrder.indexOf(index) - 1 + shuffleOrder.length) %
             shuffleOrder.length
         ]
       : (index - 1 + tracks.length) % tracks.length;
-    playIndex(prevIdx);
+    playIndex(pi);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
 
   const onVolumeChange = useCallback(
@@ -488,6 +492,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     currentTime,
     duration,
     trackDurations,
+    loading,
+    error,
     enabledTracks,
     shuffleOrder,
     track,

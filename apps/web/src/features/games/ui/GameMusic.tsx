@@ -165,6 +165,17 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           </button>
         </XStack>
 
+        {player.error && (
+          <Text
+            fontSize={11}
+            color="#f87171"
+            paddingHorizontal="$2"
+            marginTop="$1"
+          >
+            {player.error}
+          </Text>
+        )}
+
         {!player.miniMode && (
           <YStack gap="$3" marginTop="$2">
             {player.playlistOpen && (

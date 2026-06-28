@@ -64,7 +64,7 @@ export function TransportControls({
   labels,
 }: TransportControlsProps) {
   return (
-    <YStack gap={12}>
+    <YStack gap={10}>
       <XStack alignItems="center" gap="$2" paddingHorizontal={4}>
         <XStack
           className="game-music-volume-icon"
@@ -102,7 +102,56 @@ export function TransportControls({
         </Text>
       </XStack>
 
-      <XStack alignItems="center" justifyContent="space-between">
+      <XStack alignItems="center" justifyContent="center" gap={6}>
+        <MusicBtn
+          onClick={onPrev}
+          testId="game-music-prev"
+          ariaLabel={labels.prev}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+          </svg>
+        </MusicBtn>
+        <PlayBtn
+          onClick={onTogglePlay}
+          testId="game-music-playpause"
+          ariaLabel={isPlaying ? labels.pause : labels.play}
+        >
+          {isPlaying ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 4.5v15a1 1 0 0 0 1.54.84l11.5-7.5a1 1 0 0 0 0-1.68L8.54 3.66A1 1 0 0 0 7 4.5Z" />
+            </svg>
+          )}
+        </PlayBtn>
+        <MusicBtn
+          onClick={onNext}
+          testId="game-music-next"
+          ariaLabel={labels.next}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z" />
+          </svg>
+        </MusicBtn>
+        <MusicBtn
+          onClick={onStop}
+          testId="game-music-stop"
+          ariaLabel={labels.stop}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+          </svg>
+        </MusicBtn>
+      </XStack>
+
+      <XStack
+        alignItems="center"
+        justifyContent="space-between"
+        paddingHorizontal={2}
+      >
         <XStack alignItems="center" gap={4}>
           <MusicBtn
             onClick={onToggleShuffle}
@@ -111,8 +160,8 @@ export function TransportControls({
             color={shuffle ? '#818cf8' : 'rgba(255,255,255,0.4)'}
           >
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -128,91 +177,21 @@ export function TransportControls({
             </svg>
           </MusicBtn>
           <MusicBtn
-            onClick={onPrev}
-            testId="game-music-prev"
-            ariaLabel={labels.prev}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
-            </svg>
-          </MusicBtn>
-          <MusicBtn
             onClick={onSkipBack}
             testId="game-music-skip-back"
             ariaLabel={labels.skipBack}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M11 17a1 1 0 0 1-1-1v-4l-5 3V9l5 3V8a1 1 0 0 1 1.5-.86l6 4a1 1 0 0 1 0 1.72l-6 4A1 1 0 0 1 11 17z" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 20 9 12l10-8v16zM5 19V5h2v14H5z" />
             </svg>
           </MusicBtn>
-          <PlayBtn
-            onClick={onTogglePlay}
-            testId="game-music-playpause"
-            ariaLabel={isPlaying ? labels.pause : labels.play}
-          >
-            {isPlaying ? (
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-              </svg>
-            ) : (
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M7 4.5v15a1 1 0 0 0 1.54.84l11.5-7.5a1 1 0 0 0 0-1.68L8.54 3.66A1 1 0 0 0 7 4.5Z" />
-              </svg>
-            )}
-          </PlayBtn>
           <MusicBtn
             onClick={onSkipForward}
             testId="game-music-skip-forward"
             ariaLabel={labels.skipForward}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M13 17a1 1 0 0 0 1-1v-4l5 3V9l-5 3V8a1 1 0 0 0-1.5-.86l-6 4a1 1 0 0 0 0 1.72l6 4A1 1 0 0 0 13 17z" />
-            </svg>
-          </MusicBtn>
-          <MusicBtn
-            onClick={onStop}
-            testId="game-music-stop"
-            ariaLabel={labels.stop}
-          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="4" y="4" width="16" height="16" rx="2" />
-            </svg>
-          </MusicBtn>
-          <MusicBtn
-            onClick={onNext}
-            testId="game-music-next"
-            ariaLabel={labels.next}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z" />
+              <path d="M5 4l10 8-10 8V4zM19 5v14h-2V5h2z" />
             </svg>
           </MusicBtn>
           <MusicBtn
@@ -229,8 +208,8 @@ export function TransportControls({
           >
             {repeat === 'one' ? (
               <svg
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -256,8 +235,8 @@ export function TransportControls({
               </svg>
             ) : (
               <svg
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -272,29 +251,29 @@ export function TransportControls({
               </svg>
             )}
           </MusicBtn>
+        </XStack>
+        <XStack alignItems="center" gap={4}>
           <MusicBtn
             onClick={onTogglePlaylist}
             testId="game-music-playlist-toggle"
             ariaLabel={playlistOpen ? labels.playlistHide : labels.playlistShow}
             color={playlistOpen ? '#818cf8' : 'rgba(255,255,255,0.4)'}
           >
-            <PlaylistIcon size={18} />
+            <PlaylistIcon size={16} />
+          </MusicBtn>
+          <MusicBtn
+            onClick={onToggleMiniMode}
+            testId="game-music-minimize"
+            ariaLabel={labels.minimize}
+            color="rgba(255,255,255,0.3)"
+          >
+            <MinimizeIcon size={14} />
           </MusicBtn>
         </XStack>
-
-        <MusicBtn
-          onClick={onToggleMiniMode}
-          testId="game-music-minimize"
-          ariaLabel={labels.minimize}
-          color="rgba(255,255,255,0.3)"
-        >
-          <MinimizeIcon size={16} />
-        </MusicBtn>
       </XStack>
     </YStack>
   );
 }
-
 interface MiniControlsProps {
   isPlaying: boolean;
   onTogglePlay: () => void;

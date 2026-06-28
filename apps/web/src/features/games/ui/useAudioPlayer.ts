@@ -248,7 +248,13 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       events.forEach(([evt, fn]) => a.addEventListener(evt, fn));
     });
 
+    const seekPos = audioRef.current?.currentTime ?? 0;
+    const isReorder = audioRef.current?.src === track.src;
     crossfadeTo(track.src, volumeRef.current);
+    if (isReorder && seekPos > 0) {
+      const a = audioRef.current;
+      if (a) a.currentTime = seekPos;
+    }
 
     return () => {
       [audioARef.current, audioBRef.current].forEach((a) => {
@@ -378,7 +384,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       return next;
     });
   }, []);
-
   const reorderTracks = useCallback(
     (newTracks: readonly MusicTrack[]) => {
       const currentSrc = tracks[index].src;

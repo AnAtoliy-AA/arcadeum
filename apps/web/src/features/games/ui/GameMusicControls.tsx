@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { Text, XStack, YStack } from 'tamagui';
 import type { RepeatMode } from './GameMusicUtils';
 import { PlaylistIcon, MinimizeIcon, MaximizeIcon } from './GameMusicVisuals';
@@ -353,6 +354,31 @@ export function ProgressBar({
   onSeek,
   label,
 }: ProgressBarProps) {
+  const [smoothTime, setSmoothTime] = useState(currentTime);
+  const lastUpdateRef = useRef(currentTime);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    lastUpdateRef.current = currentTime;
+  });
+
+  useEffect(() => {
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      setSmoothTime((prev) => {
+        const target = lastUpdateRef.current;
+        if (Math.abs(prev - target) > 0.5) return target;
+        if (duration <= 0) return target;
+        const next = prev + dt;
+        return next > duration ? duration : next;
+      });
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [duration]);
   const formatTime = (s: number) => {
     if (!isFinite(s)) return '0:00';
     const m = Math.floor(s / 60);
@@ -360,7 +386,7 @@ export function ProgressBar({
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
 
   return (
     <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={4}>
@@ -371,7 +397,7 @@ export function ProgressBar({
         minWidth={32}
         fontWeight="500"
       >
-        {formatTime(currentTime)}
+        {formatTime(smoothTime)}
       </Text>
       <input
         className="game-music-progress"

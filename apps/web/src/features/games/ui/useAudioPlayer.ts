@@ -14,6 +14,7 @@ import {
   type MusicTrack,
   type RepeatMode,
 } from './GameMusicUtils';
+import { usePlayerKeyboard } from './usePlayerKeyboard';
 
 const CROSSFADE_MS = 1200;
 
@@ -435,49 +436,17 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     setVisible(false);
   }, []);
 
-  useEffect(() => {
-    if (!musicEnabled || !visible) return;
-    const handler = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      switch (e.code) {
-        case 'Space':
-          e.preventDefault();
-          togglePlay();
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          if (e.shiftKey) prev();
-          else seekTo(Math.max((audioRef.current?.currentTime ?? 0) - 10, 0));
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          if (e.shiftKey) next();
-          else
-            seekTo(
-              Math.min(
-                (audioRef.current?.currentTime ?? 0) + 10,
-                audioRef.current?.duration ?? 0,
-              ),
-            );
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          volumeRef.current = Math.min(volumeRef.current + 0.05, 1);
-          setVolume(volumeRef.current);
-          if (audioRef.current) audioRef.current.volume = volumeRef.current;
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          volumeRef.current = Math.max(volumeRef.current - 0.05, 0);
-          setVolume(volumeRef.current);
-          if (audioRef.current) audioRef.current.volume = volumeRef.current;
-          break;
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [musicEnabled, visible, togglePlay, seekTo, prev, next]);
+  usePlayerKeyboard({
+    enabled: musicEnabled,
+    visible,
+    audioRef,
+    volumeRef,
+    togglePlay,
+    seekTo,
+    prev,
+    next,
+    setVolume,
+  });
 
   return {
     tracks,

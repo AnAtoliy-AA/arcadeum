@@ -67,8 +67,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
           boxShadow:
             '0 8px 40px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 0 0.5px rgba(255,255,255,0.3)',
-          background:
-            'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 35%, rgba(255,255,255,0.15) 100%)',
+          background: (() => {
+            const hue = (player.index * 47) % 360;
+            return `linear-gradient(180deg, hsla(${hue},40%,70%,0.2) 0%, rgba(255,255,255,0.1) 35%, hsla(${hue},30%,60%,0.15) 100%)`;
+          })(),
           left: pos.x,
           top: pos.y,
         }}

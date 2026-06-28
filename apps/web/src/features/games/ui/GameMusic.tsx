@@ -237,6 +237,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               onTogglePlay={player.togglePlay}
               onPrev={player.prev}
               onNext={player.next}
+              onStop={player.stop}
               onToggleMiniMode={() => player.setMiniMode(false)}
               labels={labels}
             />

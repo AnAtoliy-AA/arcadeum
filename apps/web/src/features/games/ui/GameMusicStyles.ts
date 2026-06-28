@@ -269,6 +269,9 @@ export const playerStyles = `
 .game-music-mini > div:nth-child(3) {
   display: none !important;
 }
+.game-music-mini-expand {
+  margin-left: 8px !important;
+}
 .game-music-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease, box-shadow 200ms ease;
   width: 28px !important;

@@ -368,6 +368,7 @@ interface MiniControlsProps {
   onTogglePlay: () => void;
   onPrev: () => void;
   onNext: () => void;
+  onStop: () => void;
   onToggleMiniMode: () => void;
   labels: {
     play: string;
@@ -384,6 +385,7 @@ export function MiniControls({
   onTogglePlay,
   onPrev,
   onNext,
+  onStop,
   onToggleMiniMode,
   labels,
 }: MiniControlsProps) {
@@ -394,6 +396,7 @@ export function MiniControls({
         onPrev={onPrev}
         onTogglePlay={onTogglePlay}
         onNext={onNext}
+        onStop={onStop}
         labels={labels}
         size="sm"
       />
@@ -402,6 +405,7 @@ export function MiniControls({
         testId="game-music-maximize"
         ariaLabel={labels.maximize}
         color="rgba(255,255,255,0.4)"
+        className="game-music-mini-expand"
       >
         <MaximizeIcon size={14} />
       </MusicBtn>
@@ -449,11 +453,10 @@ export function ProgressBar({
   }, [duration]);
   const formatTime = (s: number) => {
     if (!isFinite(s)) return '0:00';
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60)
+      .toString()
+      .padStart(2, '0')}`;
   };
-
   const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
 
   return (

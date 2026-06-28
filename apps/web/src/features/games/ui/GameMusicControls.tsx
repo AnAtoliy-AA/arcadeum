@@ -250,8 +250,18 @@ export function TransportControls({
             testId="game-music-skip-back"
             ariaLabel={labels.skipBack}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 20 9 12l10-8v16zM5 19V5h2v14H5z" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m11 17-5-5 5-5" />
+              <path d="m18 17-5-5 5-5" />
             </svg>
           </MusicBtn>
           <MusicBtn
@@ -259,8 +269,18 @@ export function TransportControls({
             testId="game-music-skip-forward"
             ariaLabel={labels.skipForward}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M5 4l10 8-10 8V4zM19 5v14h-2V5h2z" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m13 17 5-5-5-5" />
+              <path d="m6 17 5-5-5-5" />
             </svg>
           </MusicBtn>
           <MusicBtn

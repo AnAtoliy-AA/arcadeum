@@ -235,6 +235,8 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             <MiniControls
               isPlaying={player.isPlaying}
               onTogglePlay={player.togglePlay}
+              onPrev={player.prev}
+              onNext={player.next}
               onToggleMiniMode={() => player.setMiniMode(false)}
               labels={labels}
             />

@@ -129,6 +129,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
             onClick={player.closePlayer}
             data-testid="game-music-close"
             aria-label="Close player"
+            title="Close player"
             style={{
               background: 'none',
               border: 'none',

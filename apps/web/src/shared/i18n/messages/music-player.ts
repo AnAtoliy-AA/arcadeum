@@ -21,6 +21,8 @@ export const en = {
   playlistHide: 'Hide playlist',
   minimize: 'Minimize player',
   maximize: 'Expand player',
+  skipForward: 'Skip forward 10s',
+  skipBack: 'Skip back 10s',
 };
 
 export type MusicPlayerMessages = DeepPartial<typeof en>;
@@ -46,6 +48,8 @@ export const es: MusicPlayerMessages = {
   playlistHide: 'Ocultar lista',
   minimize: 'Minimizar reproductor',
   maximize: 'Expandir reproductor',
+  skipForward: 'Adelantar 10s',
+  skipBack: 'Retroceder 10s',
 };
 
 export const fr: MusicPlayerMessages = {
@@ -69,6 +73,8 @@ export const fr: MusicPlayerMessages = {
   playlistHide: 'Masquer la playlist',
   minimize: 'Minimiser le lecteur',
   maximize: 'Agrandir le lecteur',
+  skipForward: 'Avancer de 10s',
+  skipBack: 'Reculer de 10s',
 };
 
 export const ru: MusicPlayerMessages = {
@@ -92,6 +98,8 @@ export const ru: MusicPlayerMessages = {
   playlistHide: 'Скрыть плейлист',
   minimize: 'Свернуть плеер',
   maximize: 'Развернуть плеер',
+  skipForward: 'Перемотка +10с',
+  skipBack: 'Перемотка -10с',
 };
 
 export const by: MusicPlayerMessages = {
@@ -115,4 +123,6 @@ export const by: MusicPlayerMessages = {
   playlistHide: 'Схаваць плэйліст',
   minimize: 'Згарнуць плэер',
   maximize: 'Разгарнуць плэер',
+  skipForward: 'Перамотка +10с',
+  skipBack: 'Перамотка -10с',
 };

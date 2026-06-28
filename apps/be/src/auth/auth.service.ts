@@ -458,21 +458,12 @@ export class AuthService {
     user: Pick<User, 'displayName' | 'username' | 'email'>,
   ): string {
     const preferred = user.displayName?.trim?.();
-    if (preferred) {
-      return preferred;
-    }
-
+    if (preferred) return preferred;
     const username = user.username?.trim?.();
-    if (username) {
-      return username;
-    }
-
+    if (username) return username;
     const [localPart] = user.email?.split?.('@') ?? [];
     const local = localPart?.trim?.();
-    if (local) {
-      return local;
-    }
-
+    if (local) return local;
     return user.email;
   }
 
@@ -494,10 +485,7 @@ export class AuthService {
     };
 
     const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;
-    if (createdAt instanceof Date) {
-      profile.createdAt = createdAt;
-    }
-
+    if (createdAt instanceof Date) profile.createdAt = createdAt;
     return profile;
   }
 }

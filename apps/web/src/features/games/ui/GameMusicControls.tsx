@@ -108,31 +108,31 @@ export function TransportControls({
           testId="game-music-prev"
           ariaLabel={labels.prev}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
           </svg>
         </MusicBtn>
-        <PlayBtn
+        <MusicBtn
           onClick={onTogglePlay}
           testId="game-music-playpause"
           ariaLabel={isPlaying ? labels.pause : labels.play}
         >
           {isPlaying ? (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
             </svg>
           ) : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7 4.5v15a1 1 0 0 0 1.54.84l11.5-7.5a1 1 0 0 0 0-1.68L8.54 3.66A1 1 0 0 0 7 4.5Z" />
             </svg>
           )}
-        </PlayBtn>
+        </MusicBtn>
         <MusicBtn
           onClick={onNext}
           testId="game-music-next"
           ariaLabel={labels.next}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z" />
           </svg>
         </MusicBtn>
@@ -141,7 +141,7 @@ export function TransportControls({
           testId="game-music-stop"
           ariaLabel={labels.stop}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <rect x="4" y="4" width="16" height="16" rx="2" />
           </svg>
         </MusicBtn>

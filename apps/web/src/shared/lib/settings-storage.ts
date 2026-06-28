@@ -6,6 +6,11 @@ export type StoredSettings = {
   hapticsEnabled?: boolean;
   soundEnabled?: boolean;
   musicEnabled?: boolean;
+  musicVolume?: number;
+  musicShuffle?: boolean;
+  musicRepeat?: 'off' | 'all' | 'one';
+  musicEnabledTracks?: number[];
+  musicTrackOrder?: number[];
 };
 
 const listeners = new Set<() => void>();
@@ -47,6 +52,36 @@ export function loadStoredSettings(): StoredSettings {
 
     if (typeof parsed.musicEnabled === 'boolean') {
       settings.musicEnabled = parsed.musicEnabled;
+    }
+
+    if (typeof parsed.musicVolume === 'number') {
+      settings.musicVolume = parsed.musicVolume;
+    }
+
+    if (parsed.musicShuffle === true || parsed.musicShuffle === false) {
+      settings.musicShuffle = parsed.musicShuffle;
+    }
+
+    if (
+      parsed.musicRepeat === 'off' ||
+      parsed.musicRepeat === 'all' ||
+      parsed.musicRepeat === 'one'
+    ) {
+      settings.musicRepeat = parsed.musicRepeat;
+    }
+
+    if (
+      Array.isArray(parsed.musicEnabledTracks) &&
+      parsed.musicEnabledTracks.every((t) => typeof t === 'number')
+    ) {
+      settings.musicEnabledTracks = parsed.musicEnabledTracks;
+    }
+
+    if (
+      Array.isArray(parsed.musicTrackOrder) &&
+      parsed.musicTrackOrder.every((t) => typeof t === 'number')
+    ) {
+      settings.musicTrackOrder = parsed.musicTrackOrder;
     }
 
     return settings;

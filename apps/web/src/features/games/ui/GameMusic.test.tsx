@@ -8,12 +8,8 @@ import {
 } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import { config } from '@/shared/config/tamagui.config';
-import {
-  GameMusic,
-  trackForGame,
-  trackIndexForGame,
-  TRACKS,
-} from './GameMusic';
+import { GameMusic } from './GameMusic';
+import { trackIndexForGame, FALLBACK_TRACKS } from './GameMusicUtils';
 
 const render = (ui: React.ReactElement) =>
   rtlRender(
@@ -40,8 +36,10 @@ class FakeAudio {
   volume = 1;
   preload = 'none';
   currentTime = 0;
+  duration = 180;
   paused = true;
-  src: string;
+  src = '';
+  _isPreloader = false;
   private listeners: Record<string, Array<() => void>> = {};
   play = vi.fn(() => {
     this.paused = false;
@@ -52,8 +50,8 @@ class FakeAudio {
     this.paused = true;
     this.emit('pause');
   });
-  constructor(src: string) {
-    this.src = src;
+  constructor(src?: string) {
+    if (src) this.src = src;
     created.push(this);
   }
   addEventListener(type: string, cb: () => void) {
@@ -67,18 +65,66 @@ class FakeAudio {
   }
 }
 
-const lastAudioEl = () => created[created.length - 1];
+const mainAudioEl = () => {
+  for (let i = created.length - 1; i >= 0; i--) {
+    if (created[i].src && !created[i].paused) return created[i];
+  }
+  for (let i = created.length - 1; i >= 0; i--) {
+    if (created[i].src) return created[i];
+  }
+  return created[0];
+};
+
+const rafQueue: Array<{ id: number; cb: FrameRequestCallback }> = [];
+let rafId = 0;
+let rafTime = 0;
+
+function flushRaf(maxFrames = 20) {
+  for (let i = 0; i < maxFrames && rafQueue.length > 0; i++) {
+    const batch = [...rafQueue];
+    rafQueue.length = 0;
+    for (const { cb } of batch) {
+      rafTime += 100;
+      cb(rafTime);
+    }
+  }
+}
 
 beforeEach(() => {
   musicEnabled = false;
   created.length = 0;
+  rafQueue.length = 0;
+  rafId = 0;
+  rafTime = 0;
   vi.stubGlobal('Audio', FakeAudio);
+  vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+    const id = ++rafId;
+    rafQueue.push({ id, cb });
+    return id;
+  });
+  vi.stubGlobal('cancelAnimationFrame', (id: number) => {
+    const idx = rafQueue.findIndex((r) => r.id === id);
+    if (idx !== -1) rafQueue.splice(idx, 1);
+  });
 });
 
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
+
+const showPlayer = () => {
+  act(() => {
+    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
+  });
+  flushAct();
+};
+
+const flushAct = () => {
+  act(() => {
+    flushRaf();
+  });
+};
 
 describe('GameMusic', () => {
   it('renders nothing and creates no audio while music is disabled', () => {
@@ -88,21 +134,22 @@ describe('GameMusic', () => {
     expect(screen.queryByTestId('game-music-player')).toBeNull();
   });
 
-  it('shows the player and auto-plays a looping track when enabled', () => {
+  it('shows the player and auto-plays a track when enabled', () => {
     musicEnabled = true;
     render(<GameMusic gameId="cascade_v1" />);
+    showPlayer();
     expect(screen.getByTestId('game-music-player')).toBeTruthy();
-    expect(lastAudioEl().loop).toBe(true);
-    expect(lastAudioEl().volume).toBeGreaterThan(0);
-    expect(lastAudioEl().volume).toBeLessThanOrEqual(1);
-    expect(lastAudioEl().src).toContain('/music/');
-    expect(lastAudioEl().play).toHaveBeenCalledTimes(1);
+    expect(mainAudioEl().volume).toBeGreaterThan(0);
+    expect(mainAudioEl().volume).toBeLessThanOrEqual(1);
+    expect(mainAudioEl().src).toContain('/music/');
+    expect(mainAudioEl().play).toHaveBeenCalledTimes(1);
   });
 
   it('starts at the default volume and applies slider changes to the audio', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    showPlayer();
+    const audio = mainAudioEl();
     expect(audio.volume).toBeCloseTo(0.3);
 
     fireEvent.change(screen.getByTestId('game-music-volume'), {
@@ -114,7 +161,8 @@ describe('GameMusic', () => {
   it('pauses and resumes via the play/pause control', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    showPlayer();
+    const audio = mainAudioEl();
     // Autoplay leaves it playing.
     expect(audio.paused).toBe(false);
 
@@ -129,7 +177,8 @@ describe('GameMusic', () => {
   it('stops playback and rewinds to the start', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const audio = lastAudioEl();
+    showPlayer();
+    const audio = mainAudioEl();
     audio.currentTime = 42;
     fireEvent.click(screen.getByTestId('game-music-stop'));
     expect(audio.pause).toHaveBeenCalled();
@@ -139,19 +188,23 @@ describe('GameMusic', () => {
   it('skips to a different track with next', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const before = lastAudioEl().src;
+    showPlayer();
+    const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-next'));
-    const after = lastAudioEl().src;
+    flushAct();
+    const after = mainAudioEl().src;
     expect(after).not.toBe(before);
-    expect(after).toContain('/music/');
+    expect(after).toContain('.mp3');
   });
 
   it('goes back to a different track with prev', () => {
     musicEnabled = true;
     render(<GameMusic gameId="sea_battle_v1" />);
-    const before = lastAudioEl().src;
+    showPlayer();
+    const before = mainAudioEl().src;
     fireEvent.click(screen.getByTestId('game-music-prev'));
-    expect(lastAudioEl().src).not.toBe(before);
+    flushAct();
+    expect(mainAudioEl().src).not.toBe(before);
   });
 
   it('registers media-key handlers so F7/F9 (prev/next) change the track', () => {
@@ -175,6 +228,7 @@ describe('GameMusic', () => {
     );
 
     render(<GameMusic gameId="sea_battle_v1" />);
+    showPlayer();
 
     expect(mediaSession.setActionHandler).toHaveBeenCalledWith(
       'nexttrack',
@@ -185,32 +239,35 @@ describe('GameMusic', () => {
       expect.any(Function),
     );
 
-    const before = lastAudioEl().src;
+    const before = mainAudioEl().src;
     act(() => handlers.nexttrack?.(undefined as never));
-    expect(lastAudioEl().src).not.toBe(before);
+    flushAct();
+    expect(mainAudioEl().src).not.toBe(before);
   });
 
   it('stops and releases the track on unmount', () => {
     musicEnabled = true;
     const { unmount } = render(<GameMusic gameId="tic_tac_toe_v1" />);
-    const audio = lastAudioEl();
+    showPlayer();
+    const audio = mainAudioEl();
     unmount();
     expect(audio.pause).toHaveBeenCalled();
     expect(audio.src).toBe('');
   });
 
-  it('trackIndexForGame / trackForGame are deterministic with a safe fallback', () => {
-    expect(trackForGame().src).toBe('/music/clockwork-horizon.mp3');
-    expect(trackIndexForGame()).toBe(0);
-    expect(trackIndexForGame('sea_battle_v1')).toBe(
-      trackIndexForGame('sea_battle_v1'),
+  it('trackIndexForGame is deterministic with a safe fallback', () => {
+    const trackCount = FALLBACK_TRACKS.length;
+    expect(trackIndexForGame(null, trackCount)).toBe(0);
+    expect(trackIndexForGame('sea_battle_v1', trackCount)).toBe(
+      trackIndexForGame('sea_battle_v1', trackCount),
     );
-    expect(trackForGame('sea_battle_v1').src).toContain('/music/');
-    expect(trackForGame('sea_battle_v1').title).toBeTruthy();
+    expect(
+      FALLBACK_TRACKS[trackIndexForGame('sea_battle_v1', trackCount)].src,
+    ).toContain('/music/');
   });
 
   it('all track titles are unique', () => {
-    const titles = TRACKS.map((t) => t.title);
+    const titles = FALLBACK_TRACKS.map((t) => t.title);
     expect(new Set(titles).size).toBe(titles.length);
   });
 });

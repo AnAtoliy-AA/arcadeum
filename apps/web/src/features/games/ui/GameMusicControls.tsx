@@ -458,7 +458,6 @@ export function ProgressBar({
       .padStart(2, '0')}`;
   };
   const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
-
   return (
     <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={4}>
       <Text

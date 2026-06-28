@@ -199,17 +199,25 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioBRef.current.preload = 'metadata';
       audioRef.current = audioARef.current;
     }
-    const audio = audioARef.current;
     const onPlay = () => {
       setIsPlaying(true);
       setError(null);
     };
-    const onPause = () => setIsPlaying(false);
-    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onPause = () => {
+      if (audioRef.current && !audioRef.current.paused) return;
+      setIsPlaying(false);
+    };
+    const onTimeUpdate = () => {
+      const a = audioRef.current;
+      if (a) setCurrentTime(a.currentTime);
+    };
     const onLoadedMetadata = () => {
-      setDuration(audio.duration);
-      if (audio.src)
-        setTrackDurations((prev) => ({ ...prev, [audio.src]: audio.duration }));
+      const a = audioRef.current;
+      if (a) {
+        setDuration(a.duration);
+        if (a.src)
+          setTrackDurations((prev) => ({ ...prev, [a.src]: a.duration }));
+      }
     };
     const onError = () => setError('Failed to load track');
     const onEnded = () => {

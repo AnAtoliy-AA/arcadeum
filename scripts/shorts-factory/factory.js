@@ -277,13 +277,26 @@ async function captureBrowsing() {
     log('info', `Navigating to ${startUrl}`);
 
     await page.goto(startUrl, {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: 60000,
     });
     log('info', 'Page loaded successfully');
 
-    // Wait for page to settle
-    await sleep(1500);
+    // Wait for React/Next.js hydration and real content
+    await page.waitForFunction(
+      () => {
+        const body = document.body;
+        if (!body) return false;
+        const text = body.innerText || '';
+        // Page has meaningful content (not just loading spinner)
+        return text.length > 50;
+      },
+      { timeout: 15000 },
+    );
+    log('info', 'Page content rendered');
+
+    // Wait for page to fully settle
+    await sleep(2000);
 
     // Perform random interactions until we reach target duration
     const interactionCount = randomInt(
@@ -348,10 +361,19 @@ async function captureBrowsing() {
 
           try {
             await page.goto(nextUrl, {
-              waitUntil: 'domcontentloaded',
+              waitUntil: 'networkidle',
               timeout: 30000,
             });
-            await sleep(1000);
+            // Wait for content to render
+            await page.waitForFunction(
+              () => {
+                const body = document.body;
+                if (!body) return false;
+                return (body.innerText || '').length > 50;
+              },
+              { timeout: 10000 },
+            ).catch(() => {});
+            await sleep(1500);
           } catch (navError) {
             log('warn', `Navigation failed, staying on current page`, {
               error: navError.message,

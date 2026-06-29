@@ -228,6 +228,11 @@ const SCENARIOS = [
     { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 200, wait: 600 },
     { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
   ]},
+  { name: 'contactPage', caption: 'Get in touch with the team! 📬', steps: [
+    { type: 'navigate', url: '/en/contact', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
+    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
 ];
 
 // ============================================================================

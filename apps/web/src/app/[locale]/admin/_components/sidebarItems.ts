@@ -8,6 +8,7 @@ export interface AdminSidebarItem {
     | 'economy'
     | 'shop'
     | 'games'
+    | 'bulkRewards'
     | 'blockedIps';
   href: string | null;
   enabled: boolean;
@@ -22,5 +23,6 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'economy', href: '/admin/economy', enabled: true },
   { id: 'shop', href: '/admin/shop', enabled: true },
   { id: 'games', href: '/admin/games', enabled: true },
+  { id: 'bulkRewards', href: '/admin/bulk-rewards', enabled: true },
   { id: 'blockedIps', href: '/admin/blocked-ips', enabled: true },
 ];

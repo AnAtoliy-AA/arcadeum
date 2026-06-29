@@ -47,11 +47,6 @@ const CONFIG = {
   fadeOutDuration: 2, // seconds
   fadeOutStartOffset: 2, // seconds before end to start fade
 
-  // Interaction settings
-  interactionCount: { min: 8, max: 15 },
-  pauseBetweenInteractions: { min: 300, max: 800 }, // milliseconds
-  scrollAmount: { min: 100, max: 400 }, // pixels
-
   // Postiz API
   postizBaseUrl:
     process.env.POSTIZ_BASE_URL ||
@@ -76,25 +71,167 @@ const CAPTIONS = [
 ];
 
 // ============================================================================
-// PAGES TO VISIT (random browsing targets)
+// SCENARIOS - 30 pre-defined user journeys (one per day, no repeats)
 // ============================================================================
 
-const PAGES = [
-  '/en',
-  '/en/games',
-  '/en/games/create',
-  '/en/games/sea-battle',
-  '/en/games/critical',
-  '/en/games/tic-tac-toe',
-  '/en/games/glimworm',
-  '/en/games/cascade',
-  '/en/blog',
-  '/en/community',
-  '/en/leaderboards',
-  '/en/rewards',
-  '/en/tournaments',
-  '/en/shop',
-  '/en/developers',
+const SCENARIOS = [
+  // --- Week 1: Game Discovery ---
+  { name: 'gameExplorer', caption: 'Which game will you play first? 🎮', steps: [
+    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'scroll', y: 400, wait: 600 }, { type: 'click', x: 540, y: 800, wait: 3000 },
+    { type: 'scroll', y: 200, wait: 800 }, { type: 'scroll', y: -100, wait: 600 },
+  ]},
+  { name: 'seaBattleIntro', caption: 'Sea Battle - classic naval warfare ⚓', steps: [
+    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
+    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'hover', x: 300, y: 900, wait: 1000 }, { type: 'hover', x: 780, y: 900, wait: 1000 },
+  ]},
+  { name: 'criticalClicks', caption: 'Critical - how fast can you react? ⚡', steps: [
+    { type: 'navigate', url: '/en/games/critical', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'click', x: 540, y: 800, wait: 2000 }, { type: 'hover', x: 540, y: 600, wait: 1500 },
+    { type: 'scroll', y: 150, wait: 600 }, { type: 'click', x: 540, y: 1000, wait: 2000 },
+  ]},
+  { name: 'tictactoeFun', caption: 'Tic Tac Toe - classic battle of minds ❌⭕', steps: [
+    { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'click', x: 360, y: 700, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 800 },
+    { type: 'click', x: 720, y: 700, wait: 1500 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
+  { name: 'glimwormGlow', caption: 'Glimworm - light up the grid 🐛✨', steps: [
+    { type: 'navigate', url: '/en/games/glimworm', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'click', x: 400, y: 800, wait: 1000 }, { type: 'click', x: 600, y: 900, wait: 1000 },
+    { type: 'hover', x: 540, y: 700, wait: 1500 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+  { name: 'cascadeChaos', caption: 'Cascade - match and conquer 🎲', steps: [
+    { type: 'navigate', url: '/en/games/cascade', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'click', x: 350, y: 750, wait: 800 }, { type: 'click', x: 540, y: 850, wait: 800 },
+    { type: 'click', x: 730, y: 750, wait: 1500 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
+  { name: 'createYourGame', caption: 'Create your own game on Arcadeum! 🛠️', steps: [
+    { type: 'navigate', url: '/en/games/create', wait: 3000 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 300, wait: 600 },
+    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+
+  // --- Week 2: Social & Community ---
+  { name: 'leaderboardClimb', caption: 'Top players on Arcadeum 🏆', steps: [
+    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 250, wait: 800 },
+  ]},
+  { name: 'communityBuzz', caption: 'Join the Arcadeum community! 💬', steps: [
+    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 350, wait: 600 },
+    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'tournamentTime', caption: 'Compete in tournaments! 🏅', steps: [
+    { type: 'navigate', url: '/en/tournaments', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'click', x: 540, y: 700, wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'hover', x: 540, y: 900, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+  { name: 'chatHighlights', caption: 'Real-time chats with fellow gamers 🗣️', steps: [
+    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 200, wait: 800 },
+    { type: 'click', x: 540, y: 600, wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
+    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+  { name: 'playerProfiles', caption: 'Check out top player profiles 👤', steps: [
+    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
+    { type: 'click', x: 540, y: 500, wait: 3000 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
+  { name: 'statsDeepDive', caption: 'Your gaming stats, all in one place 📊', steps: [
+    { type: 'navigate', url: '/en/stats', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'referralRewards', caption: 'Invite friends, earn rewards! 🎁', steps: [
+    { type: 'navigate', url: '/en/referrals', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 300, wait: 600 },
+    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+
+  // --- Week 3: Rewards & Economy ---
+  { name: 'rewardHunter', caption: 'Earn rewards while you play! 💰', steps: [
+    { type: 'navigate', url: '/en/rewards', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'scroll', y: 350, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1200 },
+    { type: 'scroll', y: 250, wait: 800 }, { type: 'click', x: 540, y: 800, wait: 2000 },
+  ]},
+  { name: 'shopWindow', caption: 'Check out the Arcadeum shop! 🛒', steps: [
+    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 350, wait: 800 },
+    { type: 'scroll', y: 300, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
+    { type: 'scroll', y: 250, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 2000 },
+  ]},
+  { name: 'shopInventory', caption: 'Your inventory awaits! 🎒', steps: [
+    { type: 'navigate', url: '/en/shop/inventory', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'click', x: 540, y: 800, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+  { name: 'walletWatch', caption: 'Track your tokens in the wallet 💎', steps: [
+    { type: 'navigate', url: '/en/wallet', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
+    { type: 'scroll', y: 200, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'tokenInfo', caption: 'Learn about the Arcadeum token 🪙', steps: [
+    { type: 'navigate', url: '/en/token', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'scroll', y: 350, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'battlePass', caption: 'Battle Pass - unlock exclusive rewards! 🎫', steps: [
+    { type: 'navigate', url: '/en/battle-pass', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
+  { name: 'shopBrowse', caption: 'So many items to choose from! 🎨', steps: [
+    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
+    { type: 'hover', x: 300, y: 600, wait: 800 }, { type: 'hover', x: 780, y: 600, wait: 800 },
+    { type: 'scroll', y: 300, wait: 600 }, { type: 'hover', x: 540, y: 800, wait: 1000 },
+  ]},
+
+  // --- Week 4: Exploration & Flow ---
+  { name: 'homepageTour', caption: 'Welcome to Arcadeum! 🚀', steps: [
+    { type: 'navigate', url: '/en', wait: 3000 }, { type: 'scroll', y: 400, wait: 800 },
+    { type: 'scroll', y: 500, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
+    { type: 'scroll', y: 300, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 2500 },
+  ]},
+  { name: 'blogRead', caption: 'Read the latest from Arcadeum 📰', steps: [
+    { type: 'navigate', url: '/en/blog', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'scroll', y: 300, wait: 800 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
+  { name: 'multiPageFlow', caption: 'So much to explore on Arcadeum! ✨', steps: [
+    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+  ]},
+  { name: 'gameToLeaderboard', caption: 'Play games, climb the leaderboard! 📈', steps: [
+    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'click', x: 540, y: 700, wait: 2500 }, { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+    { type: 'scroll', y: 200, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'shopToRewards', caption: 'Shop and earn rewards! 🛍️', steps: [
+    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'scroll', y: 250, wait: 600 }, { type: 'navigate', url: '/en/rewards', wait: 2500 },
+    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
+  ]},
+  { name: 'communityToTournament', caption: 'From community to tournament! 🏆', steps: [
+    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 600, wait: 1000 }, { type: 'navigate', url: '/en/tournaments', wait: 2500 },
+    { type: 'scroll', y: 200, wait: 600 }, { type: 'click', x: 540, y: 700, wait: 2500 },
+  ]},
+  { name: 'settingsCheck', caption: 'Customize your Arcadeum experience ⚙️', steps: [
+    { type: 'navigate', url: '/en/settings', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
+    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
+    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
+  ]},
+  { name: 'developersPortal', caption: 'Build on Arcadeum - developers welcome! 👨‍💻', steps: [
+    { type: 'navigate', url: '/en/developers', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
+    { type: 'scroll', y: 350, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
+  ]},
+  { name: 'historyReplay', caption: 'Relive your best game moments 🎬', steps: [
+    { type: 'navigate', url: '/en/history', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
+    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 200, wait: 600 },
+    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
+  ]},
 ];
 
 // ============================================================================
@@ -226,7 +363,62 @@ async function cleanDirectory(dirPath) {
 // ============================================================================
 
 /**
- * Captures random browsing video using Playwright
+ * Waits for page content to be rendered (not just loading spinner)
+ */
+async function waitForContent(page, timeout = 10000) {
+  try {
+    await page.waitForFunction(
+      () => {
+        const body = document.body;
+        if (!body) return false;
+        return (body.innerText || '').length > 50;
+      },
+      { timeout },
+    );
+  } catch {
+    // Continue even if timeout — page might still be usable
+  }
+}
+
+/**
+ * Executes a single scenario step
+ */
+async function executeStep(page, step) {
+  switch (step.type) {
+    case 'navigate': {
+      const url = `${CONFIG.baseUrl}${step.url}`;
+      log('info', `Step: Navigate to ${url}`);
+      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+      await waitForContent(page);
+      if (step.wait) await sleep(step.wait);
+      break;
+    }
+    case 'scroll': {
+      log('info', `Step: Scroll ${step.y}px`);
+      await page.mouse.wheel(0, step.y);
+      if (step.wait) await sleep(step.wait);
+      break;
+    }
+    case 'click': {
+      log('info', `Step: Click at (${step.x}, ${step.y})`);
+      await page.mouse.move(step.x, step.y, { steps: 5 });
+      await sleep(200);
+      await page.mouse.click(step.x, step.y);
+      await waitForContent(page).catch(() => {});
+      if (step.wait) await sleep(step.wait);
+      break;
+    }
+    case 'hover': {
+      log('info', `Step: Hover at (${step.x}, ${step.y})`);
+      await page.mouse.move(step.x, step.y, { steps: 8 });
+      if (step.wait) await sleep(step.wait);
+      break;
+    }
+  }
+}
+
+/**
+ * Captures video using a pre-defined scenario
  */
 async function captureBrowsing() {
   log('info', 'Starting Playwright automation...');
@@ -234,10 +426,8 @@ async function captureBrowsing() {
   let browser = null;
 
   try {
-    // Ensure raw captures directory exists
     await ensureDir(CONFIG.rawCapturesDir);
 
-    // Launch Chromium browser in headless mode
     browser = await chromium.launch({
       headless: true,
       args: [
@@ -247,10 +437,8 @@ async function captureBrowsing() {
         '--disable-gpu',
       ],
     });
-
     log('info', 'Browser launched successfully');
 
-    // Create browser context with video recording
     const context = await browser.newContext({
       viewport: CONFIG.viewport,
       recordVideo: {
@@ -258,163 +446,51 @@ async function captureBrowsing() {
         size: CONFIG.viewport,
       },
     });
-
     log('info', 'Browser context created with video recording');
 
-    // Create a new page
     const page = await context.newPage();
     log('info', 'New page created');
 
-    // Start recording duration tracking
+    // Pick a random scenario
+    const scenario = randomElement(SCENARIOS);
+    log('info', `Running scenario: ${scenario.name}`);
+    log('info', `Caption will be: "${scenario.caption}"`);
+
+    // Execute all steps in the scenario
     const startTime = Date.now();
-    const targetDuration =
-      randomInt(CONFIG.videoDuration.min, CONFIG.videoDuration.max) * 1000;
-    log('info', `Target recording duration: ${targetDuration / 1000}s`);
-
-    // Navigate to a random starting page
-    const startPage = randomElement(PAGES);
-    const startUrl = `${CONFIG.baseUrl}${startPage}`;
-    log('info', `Navigating to ${startUrl}`);
-
-    await page.goto(startUrl, {
-      waitUntil: 'networkidle',
-      timeout: 60000,
-    });
-    log('info', 'Page loaded successfully');
-
-    // Wait for React/Next.js hydration and real content
-    await page.waitForFunction(
-      () => {
-        const body = document.body;
-        if (!body) return false;
-        const text = body.innerText || '';
-        // Page has meaningful content (not just loading spinner)
-        return text.length > 50;
-      },
-      { timeout: 15000 },
-    );
-    log('info', 'Page content rendered');
-
-    // Wait for page to fully settle
-    await sleep(2000);
-
-    // Perform random interactions until we reach target duration
-    const interactionCount = randomInt(
-      CONFIG.interactionCount.min,
-      CONFIG.interactionCount.max,
-    );
-    log('info', `Performing up to ${interactionCount} random interactions...`);
-
-    for (let i = 0; i < interactionCount; i++) {
-      // Check if we've exceeded target duration
+    for (let i = 0; i < scenario.steps.length; i++) {
       const elapsed = Date.now() - startTime;
-      if (elapsed >= targetDuration) {
-        log('info', `Target duration reached (${elapsed}ms)`);
+      if (elapsed >= CONFIG.videoDuration.max * 1000) {
+        log('info', `Max duration reached, stopping at step ${i + 1}`);
         break;
       }
-
-      // Randomly choose an action type
-      const actionType = randomElement([
-        'click',
-        'scroll',
-        'hover',
-        'navigate',
-      ]);
-
-      switch (actionType) {
-        case 'click': {
-          // Click a random visible element or coordinate
-          const x = randomInt(50, CONFIG.viewport.width - 50);
-          const y = randomInt(100, CONFIG.viewport.height - 100);
-          log('info', `Interaction ${i + 1}: Click at (${x}, ${y})`);
-
-          const steps = randomInt(3, 8);
-          await page.mouse.move(x, y, { steps });
-          await page.mouse.click(x, y);
-          break;
-        }
-
-        case 'scroll': {
-          const direction = randomElement([1, -1]);
-          const amount =
-            randomInt(CONFIG.scrollAmount.min, CONFIG.scrollAmount.max) *
-            direction;
-          log('info', `Interaction ${i + 1}: Scroll ${amount}px`);
-
-          await page.mouse.wheel(0, amount);
-          break;
-        }
-
-        case 'hover': {
-          const hoverX = randomInt(50, CONFIG.viewport.width - 50);
-          const hoverY = randomInt(100, CONFIG.viewport.height - 100);
-          log('info', `Interaction ${i + 1}: Hover at (${hoverX}, ${hoverY})`);
-
-          await page.mouse.move(hoverX, hoverY, { steps: 5 });
-          break;
-        }
-
-        case 'navigate': {
-          const nextPage = randomElement(PAGES);
-          const nextUrl = `${CONFIG.baseUrl}${nextPage}`;
-          log('info', `Interaction ${i + 1}: Navigate to ${nextUrl}`);
-
-          try {
-            await page.goto(nextUrl, {
-              waitUntil: 'networkidle',
-              timeout: 30000,
-            });
-            // Wait for content to render
-            await page.waitForFunction(
-              () => {
-                const body = document.body;
-                if (!body) return false;
-                return (body.innerText || '').length > 50;
-              },
-              { timeout: 10000 },
-            ).catch(() => {});
-            await sleep(1500);
-          } catch (navError) {
-            log('warn', `Navigation failed, staying on current page`, {
-              error: navError.message,
-            });
-          }
-          break;
-        }
-      }
-
-      // Random pause between interactions
-      const pauseDuration = randomInt(
-        CONFIG.pauseBetweenInteractions.min,
-        CONFIG.pauseBetweenInteractions.max,
-      );
-      await sleep(pauseDuration);
+      log('info', `Executing step ${i + 1}/${scenario.steps.length}`);
+      await executeStep(page, scenario.steps[i]);
     }
 
-    // Log final duration
     const finalDuration = Date.now() - startTime;
-    log('info', `Browsing simulation complete (${finalDuration}ms total)`);
+    log('info', `Scenario complete (${finalDuration}ms total)`);
 
-    // Close the context to save the video
     await context.close();
     log('info', 'Browser context closed, video saved');
 
-    // Close browser
     await browser.close();
     browser = null;
     log('info', 'Browser closed successfully');
 
-    // Wait for file system to sync
     await sleep(1000);
 
-    // Get the latest video file
     const latestVideo = await getLatestFile(CONFIG.rawCapturesDir);
     if (!latestVideo) {
       throw new Error('No video file found in raw captures directory');
     }
 
     log('info', `Raw video captured: ${latestVideo}`);
-    return { videoPath: latestVideo, duration: finalDuration };
+    return {
+      videoPath: latestVideo,
+      duration: finalDuration,
+      caption: scenario.caption,
+    };
   } catch (error) {
     log('error', 'Failed to capture browsing', {
       error: error.message,
@@ -422,7 +498,6 @@ async function captureBrowsing() {
     });
     throw error;
   } finally {
-    // Ensure browser is closed even on error
     if (browser) {
       await browser.close();
       log('info', 'Browser closed in finally block');
@@ -663,7 +738,7 @@ async function main() {
 
     // Step 3: Prepare for social media posting
     log('info', 'Step 3: Preparing social media post...');
-    const caption = randomElement(CAPTIONS);
+    const caption = captureResult.caption || randomElement(CAPTIONS);
     log('info', `Selected caption: "${caption}"`);
     await publishToSocials(outputVideoPath, caption);
 

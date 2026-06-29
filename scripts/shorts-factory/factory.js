@@ -96,11 +96,7 @@ const SCENARIOS = [
     { type: 'click', x: 360, y: 700, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 800 },
     { type: 'click', x: 720, y: 700, wait: 1500 }, { type: 'scroll', y: 200, wait: 600 },
   ]},
-  { name: 'glimwormGlow', caption: 'Glimworm - light up the grid 🐛✨', steps: [
-    { type: 'navigate', url: '/en/games/glimworm', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'click', x: 400, y: 800, wait: 1000 }, { type: 'click', x: 600, y: 900, wait: 1000 },
-    { type: 'hover', x: 540, y: 700, wait: 1500 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
+
   { name: 'cascadeChaos', caption: 'Cascade - match and conquer 🎲', steps: [
     { type: 'navigate', url: '/en/games/cascade', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
     { type: 'click', x: 350, y: 750, wait: 800 }, { type: 'click', x: 540, y: 850, wait: 800 },

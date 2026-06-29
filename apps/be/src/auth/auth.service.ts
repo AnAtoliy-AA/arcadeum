@@ -29,6 +29,7 @@ import type {
 } from './lib/types';
 import { ReferralService } from '../referrals/referral.service';
 import { InventoryService } from '../shop/services/inventory.service';
+import { SignupRewardService } from './services';
 import { ModuleRef } from '@nestjs/core';
 
 export type {
@@ -47,6 +48,7 @@ export class AuthService {
     private readonly googleOAuth: GoogleOAuthService,
     @Inject(forwardRef(() => ReferralService))
     private readonly referralService: ReferralService,
+    private readonly signupReward: SignupRewardService,
     private readonly moduleRef: ModuleRef,
   ) {}
 
@@ -118,6 +120,7 @@ export class AuthService {
     // recovered by `ShopInventoryBootstrap` on next boot. Failure is
     // non-critical to registration itself.
     await this.grantStarterItems((created as UserDocument).id as string);
+    await this.signupReward.grant((created as UserDocument).id as string);
 
     return this.buildAuthUserProfile(created);
   }
@@ -446,6 +449,7 @@ export class AuthService {
     // Grant starter shop items on first OAuth sign-up. Same un-sessioned
     // approach as `register()`; bootstrap is the safety net.
     await this.grantStarterItems((created as UserDocument).id as string);
+    await this.signupReward.grant((created as UserDocument).id as string);
 
     return created;
   }

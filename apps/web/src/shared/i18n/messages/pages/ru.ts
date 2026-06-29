@@ -14,6 +14,7 @@ import { adminShopRu } from './admin-shop/ru';
 import { adminGamesRu } from './admin-games/ru';
 import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
+import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -30,6 +31,7 @@ export const ru = {
       economy: 'Экономика',
       shop: 'Магазин',
       games: 'Игры',
+      bulkRewards: 'Массовые Награды',
       blockedIps: 'Заблокированные IP',
       comingSoon: 'Скоро',
     },
@@ -78,6 +80,7 @@ export const ru = {
     tournaments: adminTournamentsRu,
     wallet: adminWalletRu,
     blockedIps: adminBlockedIpsRu,
+    bulkRewards: adminBulkRewardsRu,
   },
   tournaments: {
     title: 'Турниры',

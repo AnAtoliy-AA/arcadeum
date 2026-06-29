@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.11] - 2026-06-29
+
+### Added
+- add configurable signup reward for coins and gems (N/A)
+
+
+## [1.22.10] - 2026-06-29
+
+### Added
+- add bulk rewards for all registered users (ARC-870)
+
+
 ## [1.22.9] - 2026-06-28
 
 ### Added

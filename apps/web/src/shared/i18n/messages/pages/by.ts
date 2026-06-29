@@ -14,6 +14,7 @@ import { adminShopBy } from './admin-shop/by';
 import { adminGamesBy } from './admin-games/by';
 import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
+import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 
 export const by = {
   admin: {
@@ -31,6 +32,7 @@ export const by = {
       economy: 'Эканоміка',
       shop: 'Крама',
       games: 'Гульні',
+      bulkRewards: 'Масавыя Ўзнагароды',
       blockedIps: 'Заблакіраваныя IP',
       comingSoon: 'Хутка',
     },
@@ -79,6 +81,7 @@ export const by = {
     tournaments: adminTournamentsBy,
     wallet: adminWalletBy,
     blockedIps: adminBlockedIpsBy,
+    bulkRewards: adminBulkRewardsBy,
   },
   tournaments: {
     title: 'Турніры',

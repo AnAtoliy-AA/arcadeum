@@ -123,8 +123,6 @@ const AUDIO_TRACKS = [
   `${MUSIC_CDN_URL}/iron-wake.mp3`,
   `${MUSIC_CDN_URL}/iron-wake-v2.mp3`,
   `${MUSIC_CDN_URL}/iron-wake-v3.mp3`,
-  `${MUSIC_CDN_URL}/iron-wake-v4.mp3`,
-  `${MUSIC_CDN_URL}/saltwater-coordinates.mp3`,
   `${MUSIC_CDN_URL}/saltwater-coordinates-v2.mp3`,
 ];
 

@@ -15,9 +15,9 @@ jobs:
       - name: Deploy to OCI via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.OCI_HOST }}
-          username: ubuntu
-          key: ${{ secrets.OCI_SSH_KEY }}
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
           script: |
             set -e
             cd /opt/arcadeum

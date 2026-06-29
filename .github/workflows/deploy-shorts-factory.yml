@@ -1,0 +1,35 @@
+name: Deploy Shorts Factory to OCI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/shorts-factory/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to OCI via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.OCI_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/arcadeum
+
+            echo "==> Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "==> Installing dependencies..."
+            pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+            echo "==> Restarting shorts-factory timer..."
+            sudo systemctl restart shorts-factory.timer 2>/dev/null || true
+
+            echo "==> Deploy complete"

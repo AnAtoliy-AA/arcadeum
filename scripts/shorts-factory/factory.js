@@ -22,6 +22,7 @@ const { readdir, unlink, mkdir, stat, readFile } = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 // ============================================================================
 // CONFIGURATION
@@ -100,8 +101,7 @@ const PAGES = [
 // AUDIO TRACKS (same as in-game music player)
 // ============================================================================
 
-const CDN_BASE =
-  process.env.SHORTS_CDN_URL;
+const CDN_BASE = process.env.SHORTS_CDN_URL;
 const MUSIC_FOLDER = 'music';
 const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
 

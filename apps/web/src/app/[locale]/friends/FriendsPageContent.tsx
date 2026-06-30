@@ -74,8 +74,8 @@ export default function FriendsPageContent({
   accessToken?: string;
 }) {
   const tt = (t ?? {}) as FriendsTranslations;
-  const { accessToken: sessionToken } = useSessionTokens();
-  const token = sessionToken ?? accessToken;
+  const { snapshot } = useSessionTokens();
+  const token = snapshot.accessToken ?? accessToken;
   const router = useRouter();
   const routes = useRoutes();
 
@@ -216,8 +216,10 @@ export default function FriendsPageContent({
                 borderColor="$borderColor"
               >
                 <EquippedPlayerAvatar
+                  name={req.displayName ?? req.username}
                   equippedAvatarId={req.equippedAvatarId}
-                  size={32}
+                  equippedBadgeId={null}
+                  size="sm"
                 />
                 <Text flex={1} fontSize="$3">
                   {req.displayName ?? req.username}
@@ -259,8 +261,10 @@ export default function FriendsPageContent({
                 borderColor="$borderColor"
               >
                 <EquippedPlayerAvatar
+                  name={req.displayName ?? req.username}
                   equippedAvatarId={req.equippedAvatarId}
-                  size={32}
+                  equippedBadgeId={null}
+                  size="sm"
                 />
                 <Text flex={1} fontSize="$3">
                   {req.displayName ?? req.username}
@@ -296,8 +300,10 @@ export default function FriendsPageContent({
                 borderColor="$borderColor"
               >
                 <EquippedPlayerAvatar
+                  name={friend.displayName ?? friend.username}
                   equippedAvatarId={friend.equippedAvatarId}
-                  size={32}
+                  equippedBadgeId={null}
+                  size="sm"
                 />
                 <YStack flex={1}>
                   <Text fontSize="$3" fontWeight="500">

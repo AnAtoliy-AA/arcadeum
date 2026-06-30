@@ -18,4 +18,4 @@ export const friendsEn = {
   offline: 'Offline',
   removeFriend: 'Remove Friend',
   inviteToGame: 'Invite to Game',
-} as const;
+};

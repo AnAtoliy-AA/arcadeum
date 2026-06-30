@@ -18,4 +18,4 @@ export const friendsRu = {
   offline: 'Офлайн',
   removeFriend: 'Удалить из друзей',
   inviteToGame: 'Пригласить в игру',
-} as const;
+};

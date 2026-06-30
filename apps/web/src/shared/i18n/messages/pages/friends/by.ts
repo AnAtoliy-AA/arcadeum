@@ -18,4 +18,4 @@ export const friendsBy = {
   offline: 'Офлайн',
   removeFriend: 'Выдаліць сябра',
   inviteToGame: 'Запрасіць у гульню',
-} as const;
+};

@@ -388,6 +388,8 @@ The hardest game to implement well.
 
 **Effort: Hard (7-10 days)**
 
+> **EXCLUDED FOR NOW** — Discord integration already works well. Revisit when the platform has a larger user base.
+
 Full voice infrastructure needed.
 
 - WebRTC peer-to-peer with TURN server fallback
@@ -395,7 +397,6 @@ Full voice infrastructure needed.
 - Push-to-talk and voice activity detection
 - Mute/deafen controls per player
 - Room-based audio channels
-- Consider: may be better as a future phase given Discord integration already works
 
 ---
 
@@ -890,8 +891,8 @@ Revenue without compromising the free, frictionless core.
 | **Phase 5** | Go + Clans + Game nights + Replays + Spectator mode                       | 28-38     | Community + hardcore depth        |
 | **Phase 6** | Tournaments + Seasons + Daily challenges + Colorblind + A11y              | 20-28     | Retention + accessibility         |
 | **Phase 7** | PWA + Offline + Push notifications + Share + Timer system                 | 10-16     | Platform maturity                 |
-| **Phase 8** | Voice chat + Board game creator + Mobile port + Monetization              | 42-61     | Full platform vision              |
+| **Phase 8** | Board game creator + Mobile port + Monetization                           | 35-51     | Full platform vision              |
 
-**Total estimated: 159-223 working days for all features.**
+**Total estimated: 152-213 working days for all features.**
 
 Phase 1 alone (under 2 weeks) delivers immediate value: players track progress, react to each other, customize games, and get quality-of-life improvements — making the platform feel alive before the big game additions land.

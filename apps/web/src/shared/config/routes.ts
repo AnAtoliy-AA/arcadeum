@@ -57,6 +57,7 @@ export const buildRoutes = (locale: Locale) => {
     contact: `/${locale}/${s('contact')}`,
     cookies: `/${locale}/${s('cookies')}`,
     help: `/${locale}/${s('help')}`,
+    roadmap: `/${locale}/${s('roadmap')}`,
 
     // Community & Content
     blog: `/${locale}/${s('blog')}`,

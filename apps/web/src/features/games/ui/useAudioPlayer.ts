@@ -119,8 +119,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
         setTracks(d);
         setIndex(trackIndexForGame(gameId, d.length));
         const saved = loadStoredSettings().musicEnabledTracks;
+        const savedLength = loadStoredSettings().musicTrackOrder?.length;
         setEnabledTracks(
-          saved?.length
+          saved?.length && savedLength === d.length
             ? new Set(saved.filter((i) => i < d.length))
             : new Set(d.map((_, i) => i)),
         );
@@ -144,6 +145,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const shuffleRef = useRef(shuffle);
   const shuffleOrderRef = useRef(shuffleOrder);
   const tracksLengthRef = useRef(tracks.length);
+  const indexRef = useRef(index);
   const track = tracks[index];
 
   useEffect(() => {
@@ -152,6 +154,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     shuffleRef.current = shuffle;
     shuffleOrderRef.current = shuffleOrder;
     tracksLengthRef.current = tracks.length;
+    indexRef.current = index;
   });
 
   const crossfadeTo = useCallback((newSrc: string, newVolume: number) => {
@@ -360,18 +363,21 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     setRepeat((r) => (r === 'off' ? 'all' : r === 'all' ? 'one' : 'off'));
   }, []);
 
-  const toggleTrack = useCallback((trackIndex: number) => {
-    setEnabledTracks((prev) => {
-      const next = new Set(prev);
-      if (next.has(trackIndex)) {
-        if (next.size > 1) next.delete(trackIndex);
-      } else {
-        next.add(trackIndex);
-      }
-      saveStoredSettings({ musicEnabledTracks: Array.from(next) });
-      return next;
-    });
-  }, []);
+  const toggleTrack = useCallback(
+    (trackIndex: number) => {
+      setEnabledTracks((prev) => {
+        const next = new Set(prev);
+        if (next.has(trackIndex)) {
+          if (next.size > 1) next.delete(trackIndex);
+        } else {
+          next.add(trackIndex);
+        }
+        saveStoredSettings({ musicEnabledTracks: Array.from(next) });
+        return next;
+      });
+    },
+    [],
+  );
   const reorderTracks = useCallback(
     (newTracks: readonly MusicTrack[]) => {
       const currentSrc = tracks[index].src;

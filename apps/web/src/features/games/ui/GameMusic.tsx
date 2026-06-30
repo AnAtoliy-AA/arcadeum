@@ -54,7 +54,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         testID="game-music-player"
         position="fixed"
         zIndex={1000}
-        width={player.miniMode ? 160 : 320}
+        width={player.miniMode ? 200 : 320}
         gap={0}
         paddingVertical="$3"
         paddingHorizontal="$3"

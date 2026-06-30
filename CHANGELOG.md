@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.15] - 2026-06-30
+
+### Fixed
+- use numeric borderRadius instead of $full token in roadmap page (N/A)
+
+### Refactored
+- split roadmap page data into roadmap-data.ts to stay under 500 lines (N/A)
+
+### Documentation
+- add platform expansion roadmap (N/A)
+
+
 ## [1.22.14] - 2026-06-30
 
 ### Added

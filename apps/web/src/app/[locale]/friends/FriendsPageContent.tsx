@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   YStack,
   XStack,
@@ -11,6 +12,7 @@ import {
 import { Button } from '@arcadeum/ui';
 import { useSession } from '@/shared/lib/useTranslation';
 import { connectFriendsSocket, useFriendsSocket } from '@/shared/lib/socket';
+import { useRoutes } from '@/shared/config/useRoutes';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import {
   getFriends,
@@ -52,6 +54,8 @@ export default function FriendsPageContent({
   const tt = (t ?? {}) as FriendsTranslations;
   const { user } = useSession();
   const token = user?.accessToken ?? accessToken;
+  const router = useRouter();
+  const routes = useRoutes();
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pending, setPending] = useState<{
@@ -134,6 +138,10 @@ export default function FriendsPageContent({
     await removeFriend(token, id);
     void loadData();
   };
+
+  const handleInviteToGame = useCallback(() => {
+    router.push(routes.gameCreate);
+  }, [router, routes.gameCreate]);
 
   return (
     <ScrollView padding="$4" maxWidth={600} mx="auto" width="100%">
@@ -277,6 +285,14 @@ export default function FriendsPageContent({
                       : (tt.offline ?? 'Offline')}
                   </Text>
                 </YStack>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleInviteToGame}
+                  testID={`invite-${friend.userId}`}
+                >
+                  {tt.inviteToGame ?? 'Invite'}
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"

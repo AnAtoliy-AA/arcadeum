@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'tamagui';
 import { Button } from '@arcadeum/ui';
-import { useSession } from '@/shared/lib/useTranslation';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { connectFriendsSocket, useFriendsSocket } from '@/shared/lib/socket';
 import { useRoutes } from '@/shared/config/useRoutes';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
@@ -74,8 +74,8 @@ export default function FriendsPageContent({
   accessToken?: string;
 }) {
   const tt = (t ?? {}) as FriendsTranslations;
-  const { user } = useSession();
-  const token = user?.accessToken ?? accessToken;
+  const { accessToken: sessionToken } = useSessionTokens();
+  const token = sessionToken ?? accessToken;
   const router = useRouter();
   const routes = useRoutes();
 

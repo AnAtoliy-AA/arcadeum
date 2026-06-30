@@ -112,6 +112,7 @@ function SortableTrackItem({
           onChange={() => onToggleTrack(index)}
           aria-label={`Toggle ${track.title}`}
           data-testid={`game-music-track-toggle-${index}`}
+          onClick={(e) => e.stopPropagation()}
         />
         <Text
           fontSize={10}

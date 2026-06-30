@@ -146,7 +146,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const shuffleOrderRef = useRef(shuffleOrder);
   const tracksLengthRef = useRef(tracks.length);
   const indexRef = useRef(index);
-  const skipNextCrossfadeRef = useRef(false);
   const track = tracks[index];
 
   useEffect(() => {
@@ -248,17 +247,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
 
     const seekPos = audioRef.current?.currentTime ?? 0;
     const isReorder = audioRef.current?.src === track.src;
-    if (skipNextCrossfadeRef.current) {
-      skipNextCrossfadeRef.current = false;
-      audioRef.current?.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    } else {
-      crossfadeTo(track.src, volumeRef.current);
-      if (isReorder && seekPos > 0) {
-        const a = audioRef.current;
-        if (a) a.currentTime = seekPos;
-      }
+    crossfadeTo(track.src, volumeRef.current);
+    if (isReorder && seekPos > 0) {
+      const a = audioRef.current;
+      if (a) a.currentTime = seekPos;
     }
 
     return () => {
@@ -381,20 +373,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
           next.add(trackIndex);
         }
         saveStoredSettings({ musicEnabledTracks: Array.from(next) });
-        if (next.has(trackIndex) === false && trackIndex === indexRef.current) {
-          const dir = (i: number) => (i + 1) % tracksLengthRef.current;
-          let idx = dir(trackIndex);
-          let safety = tracksLengthRef.current;
-          while (!next.has(idx) && safety-- > 0) idx = dir(idx);
-          if (next.has(idx)) {
-            skipNextCrossfadeRef.current = true;
-            setIndex(idx);
-          } else {
-            audioRef.current?.pause();
-            audioRef.current.currentTime = 0;
-            setIsPlaying(false);
-          }
-        }
         return next;
       });
     },

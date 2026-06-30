@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.13] - 2026-06-30
+
+### Added
+- add contact page scenario (N/A)
+- add 30 scenario journeys (one per day) (N/A)
+
+### Fixed
+- remove glimworm scenario (N/A)
+- wait for page content to render before recording (N/A)
+
+
 ## [1.22.12] - 2026-06-29
 
 ### Added

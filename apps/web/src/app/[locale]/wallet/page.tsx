@@ -22,7 +22,6 @@ import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale, type Locale } from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import type { WalletReason } from '@/features/wallet/server/wallet.types';
-import { TokenInfo } from '@/features/wallet/ui/TokenInfo';
 
 // <WalletLiveBridge /> is mounted once in apps/web/src/app/layout.tsx — no
 // need to render it here.
@@ -71,24 +70,9 @@ export default async function WalletPage({
 
   // Fetch the conversion rate server-side (no auth needed — public endpoint).
   let conversionRate = 100;
-  let tokenMetadata: {
-    name: string;
-    symbol: string;
-    description: string;
-    image: string | null;
-    pumpfunUrl: string | null;
-  } | null = null;
   try {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    const [rateData, tokenData] = await Promise.all([
-      getConversionRate(),
-      fetch(`${backendUrl}/solana/token-metadata`, { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
-    ]);
+    const rateData = await getConversionRate();
     conversionRate = rateData.rate;
-    tokenMetadata = tokenData;
   } catch {
     // Fallback to default if BE is unavailable
   }
@@ -108,10 +92,6 @@ export default async function WalletPage({
             <GemStore />
           </div>
         </div>
-        <TokenInfo
-          mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
-          metadata={tokenMetadata}
-        />
 
         <WalletHistory
           page={EMPTY_PAGE}
@@ -169,11 +149,6 @@ export default async function WalletPage({
 
         <ConvertGemsForm rate={conversionRate} currentGems={currentGems} />
       </div>
-
-      <TokenInfo
-        mintAddress={process.env.ARCADEUM_MINT_ADDRESS}
-        metadata={tokenMetadata}
-      />
 
       <WalletHistory
         page={page}

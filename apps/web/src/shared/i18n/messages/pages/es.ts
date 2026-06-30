@@ -15,6 +15,7 @@ import { adminGamesEs } from './admin-games/es';
 import { adminBlockedIpsEs } from './admin-blocked-ips/es';
 import { adminUsersEs } from './admin-users/es';
 import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
+import { friendsEs } from './friends/es';
 
 export const es = {
   admin: {
@@ -457,4 +458,5 @@ export const es = {
   shop: shopEs,
   adminShop: adminShopEs,
   adminGames: adminGamesEs,
+  friends: friendsEs,
 };

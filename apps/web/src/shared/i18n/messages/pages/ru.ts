@@ -15,6 +15,7 @@ import { adminGamesRu } from './admin-games/ru';
 import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
+import { friendsRu } from './friends/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -457,4 +458,5 @@ export const ru = {
   shop: shopRu,
   adminShop: adminShopRu,
   adminGames: adminGamesRu,
+  friends: friendsRu,
 };

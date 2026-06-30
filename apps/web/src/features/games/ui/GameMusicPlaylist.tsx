@@ -67,6 +67,7 @@ function SortableTrackItem({
         alignItems="center"
         gap="$2"
         opacity={isEnabled ? 1 : 0.35}
+        onDoubleClick={() => onPlay(index)}
       >
         <div
           className="game-music-drag-handle"

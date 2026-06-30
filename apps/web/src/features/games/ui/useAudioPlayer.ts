@@ -119,8 +119,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
         setTracks(d);
         setIndex(trackIndexForGame(gameId, d.length));
         const saved = loadStoredSettings().musicEnabledTracks;
+        const savedLength = loadStoredSettings().musicTrackOrder?.length;
         setEnabledTracks(
-          saved?.length
+          saved?.length && savedLength === d.length
             ? new Set(saved.filter((i) => i < d.length))
             : new Set(d.map((_, i) => i)),
         );

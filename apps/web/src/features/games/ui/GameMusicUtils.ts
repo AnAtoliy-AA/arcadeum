@@ -10,46 +10,18 @@ export const TRACKS_JSON_URL = `${MUSIC_CDN_URL}/tracks.json`;
 
 export const FALLBACK_TRACKS: MusicTrack[] = [
   { src: `${MUSIC_CDN_URL}/battleship-grid.mp3`, title: 'Battleship Grid' },
-  {
-    src: `${MUSIC_CDN_URL}/battleship-grid-v2.mp3`,
-    title: 'Battleship Grid v2',
-  },
-  { src: `${MUSIC_CDN_URL}/clockwork-horizon.mp3`, title: 'Clockwork Horizon' },
-  {
-    src: `${MUSIC_CDN_URL}/clockwork-horizon-v2.mp3`,
-    title: 'Clockwork Horizon v2',
-  },
+  { src: `${MUSIC_CDN_URL}/clockwork-thesis.mp3`, title: 'Clockwork Thesis' },
   { src: `${MUSIC_CDN_URL}/glass-grid.mp3`, title: 'Glass Grid' },
-  { src: `${MUSIC_CDN_URL}/glass-grid-v2.mp3`, title: 'Glass Grid v2' },
   { src: `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`, title: 'Grid of Torpedoes' },
-  {
-    src: `${MUSIC_CDN_URL}/grid-of-torpedoes-v2.mp3`,
-    title: 'Grid of Torpedoes v2',
-  },
   { src: `${MUSIC_CDN_URL}/gridline-armada.mp3`, title: 'Gridline Armada' },
-  {
-    src: `${MUSIC_CDN_URL}/gridline-armada-v2.mp3`,
-    title: 'Gridline Armada v2',
-  },
-  { src: `${MUSIC_CDN_URL}/gridwater-clash.mp3`, title: 'Gridwater Clash' },
-  {
-    src: `${MUSIC_CDN_URL}/gridwater-clash-v2.mp3`,
-    title: 'Gridwater Clash v2',
-  },
   { src: `${MUSIC_CDN_URL}/iron-tide.mp3`, title: 'Iron Tide' },
-  { src: `${MUSIC_CDN_URL}/iron-tide-v2.mp3`, title: 'Iron Tide v2' },
   { src: `${MUSIC_CDN_URL}/iron-wake.mp3`, title: 'Iron Wake' },
-  { src: `${MUSIC_CDN_URL}/iron-wake-v2.mp3`, title: 'Iron Wake v2' },
-  { src: `${MUSIC_CDN_URL}/iron-wake-v3.mp3`, title: 'Iron Wake v3' },
-  { src: `${MUSIC_CDN_URL}/iron-wake-v4.mp3`, title: 'Iron Wake v4' },
   {
     src: `${MUSIC_CDN_URL}/saltwater-coordinates.mp3`,
     title: 'Saltwater Coordinates',
   },
-  {
-    src: `${MUSIC_CDN_URL}/saltwater-coordinates-v2.mp3`,
-    title: 'Saltwater Coordinates v2',
-  },
+  { src: `${MUSIC_CDN_URL}/lobby-glow.mp3`, title: 'Lobby Glow' },
+  { src: `${MUSIC_CDN_URL}/victory-bloom.mp3`, title: 'Victory Bloom' },
 ];
 
 if (process.env.NODE_ENV !== 'production') {
@@ -62,16 +34,28 @@ if (process.env.NODE_ENV !== 'production') {
 
 let cachedTracks: readonly MusicTrack[] | null = null;
 
+async function loadTracksJson(): Promise<MusicTrack[] | null> {
+  const res = await fetch(TRACKS_JSON_URL);
+  if (!res.ok) throw new Error(`Failed to fetch tracks: ${res.status}`);
+  const data: MusicTrack[] = await res.json();
+  return Array.isArray(data) && data.length > 0 ? data : null;
+}
+
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  if (!CDN_BASE) return FALLBACK_TRACKS;
   try {
-    const res = await fetch(TRACKS_JSON_URL);
-    if (!res.ok) throw new Error(`Failed to fetch tracks: ${res.status}`);
-    const data: MusicTrack[] = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      cachedTracks = data;
-      return data;
+    const data = await loadTracksJson();
+    if (data) {
+      const resolved = data.map((t) => ({
+        ...t,
+        src: t.src.startsWith('http')
+          ? t.src
+          : CDN_BASE
+            ? `${CDN_BASE}/${t.src}`
+            : t.src,
+      }));
+      cachedTracks = resolved;
+      return resolved;
     }
   } catch {
     // Fall through to fallback

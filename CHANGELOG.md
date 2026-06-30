@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.16] - 2026-06-30
+
+### Added
+- improve token chart, wallet balance, and home page (N/A)
+
+
 ## [1.22.15] - 2026-06-30
 
 ### Fixed

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.14] - 2026-06-30
+
+### Added
+- add remove friend confirmation dialog (N/A)
+- add invite to game button on friends page (N/A)
+- add friends SEO metadata for all locales (N/A)
+- add friends link to navigation (N/A)
+- add friends i18n for all locales (N/A)
+- add friends page with real-time updates (N/A)
+- add friends i18n keys (N/A)
+- add friends socket to shared infrastructure (N/A)
+- add friends API client (N/A)
+- wire gateway events into FriendsService (N/A)
+
+### Fixed
+- resolve FriendsGateway circular dependency and missing JwtModule (N/A)
+- resolve CI failures across lint, tests, and e2e (N/A)
+- fix build errors in friends page (N/A)
+- use useSessionTokens instead of nonexistent useSession (N/A)
+
+
 ## [1.22.13] - 2026-06-30
 
 ### Added

@@ -95,6 +95,7 @@ export const en = {
   footerToken: 'Token',
   footerResourcesTitle: 'Resources',
   footerHelpCenter: 'Help Center',
+  footerRoadmap: 'Roadmap',
   footerGamingBlog: 'Gaming Blog',
   footerDevelopers: 'Developers (API)',
   footerLegalTitle: 'Legal',

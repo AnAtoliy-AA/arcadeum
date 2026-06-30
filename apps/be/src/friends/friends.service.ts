@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  forwardRef,
   Inject,
   Injectable,
   Logger,
@@ -50,7 +49,7 @@ export class FriendsService {
     private readonly friendshipModel: Model<FriendshipDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-    @Inject(forwardRef(() => FriendsGateway))
+    @Inject(FriendsGateway)
     private readonly gateway: FriendsGateway,
   ) {}
 

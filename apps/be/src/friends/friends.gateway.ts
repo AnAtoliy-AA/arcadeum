@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -26,6 +27,7 @@ export class FriendsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(FriendsGateway.name);
+  private friendsService: FriendsService | null = null;
 
   @WebSocketServer()
   private readonly server!: Server;
@@ -33,8 +35,17 @@ export class FriendsGateway
   constructor(
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly friendsService: FriendsService,
+    private readonly moduleRef: ModuleRef,
   ) {}
+
+  private getFriendsService(): FriendsService {
+    if (!this.friendsService) {
+      this.friendsService = this.moduleRef.get<FriendsService>(FriendsService, {
+        strict: false,
+      });
+    }
+    return this.friendsService;
+  }
 
   async handleConnection(client: Socket): Promise<void> {
     const token: unknown = client.handshake.auth['token'];
@@ -55,7 +66,7 @@ export class FriendsGateway
       await client.join(userId);
       await client.join('presence');
 
-      this.friendsService.setUserOnline(userId);
+      this.getFriendsService().setUserOnline(userId);
       this.broadcastPresence(userId, true);
 
       this.logger.debug(
@@ -77,7 +88,7 @@ export class FriendsGateway
 
     const hasOtherSockets = await this.server.in(userId).fetchSockets();
     if (hasOtherSockets.length === 0) {
-      this.friendsService.setUserOffline(userId);
+      this.getFriendsService().setUserOffline(userId);
       this.broadcastPresence(userId, false);
     }
 

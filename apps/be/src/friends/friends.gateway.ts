@@ -1,5 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -11,7 +10,6 @@ import {
 import { Server, Socket } from 'socket.io';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
-import { FriendsService } from './friends.service';
 
 interface JwtPayload {
   sub: string;
@@ -27,7 +25,6 @@ export class FriendsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(FriendsGateway.name);
-  private friendsService: FriendsService | null = null;
 
   @WebSocketServer()
   private readonly server!: Server;
@@ -35,17 +32,7 @@ export class FriendsGateway
   constructor(
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly moduleRef: ModuleRef,
   ) {}
-
-  private getFriendsService(): FriendsService {
-    if (!this.friendsService) {
-      this.friendsService = this.moduleRef.get<FriendsService>(FriendsService, {
-        strict: false,
-      });
-    }
-    return this.friendsService;
-  }
 
   async handleConnection(client: Socket): Promise<void> {
     const token: unknown = client.handshake.auth['token'];
@@ -66,7 +53,6 @@ export class FriendsGateway
       await client.join(userId);
       await client.join('presence');
 
-      this.getFriendsService().setUserOnline(userId);
       this.broadcastPresence(userId, true);
 
       this.logger.debug(
@@ -88,7 +74,6 @@ export class FriendsGateway
 
     const hasOtherSockets = await this.server.in(userId).fetchSockets();
     if (hasOtherSockets.length === 0) {
-      this.getFriendsService().setUserOffline(userId);
       this.broadcastPresence(userId, false);
     }
 
@@ -125,7 +110,7 @@ export class FriendsGateway
     this.server.to(friendId).emit('friend:removed', { userId: removedUserId });
   }
 
-  private broadcastPresence(userId: string, online: boolean): void {
+  broadcastPresence(userId: string, online: boolean): void {
     this.server.to('presence').emit('presence:update', { userId, online });
   }
 }

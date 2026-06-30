@@ -26,6 +26,28 @@ import {
 } from '@/shared/api/friends';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 
+const OVERLAY_STYLE = {
+  position: 'fixed' as const,
+  inset: 0,
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1000,
+  padding: 16,
+};
+
+const DIALOG_STYLE = {
+  background: 'var(--background, #1a1a2e)',
+  border: '1px solid var(--borderColor, #444)',
+  borderRadius: 12,
+  padding: 24,
+  minWidth: 340,
+  maxWidth: 400,
+  width: '100%',
+  color: 'var(--color, inherit)',
+};
+
 type FriendsTranslations = {
   title?: string;
   emptyState?: string;
@@ -65,6 +87,7 @@ export default function FriendsPageContent({
   const [username, setUsername] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<Friend | null>(null);
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -136,6 +159,7 @@ export default function FriendsPageContent({
   const handleRemove = async (id: string) => {
     if (!token) return;
     await removeFriend(token, id);
+    setRemoveTarget(null);
     void loadData();
   };
 
@@ -296,7 +320,7 @@ export default function FriendsPageContent({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleRemove(friend.userId)}
+                  onClick={() => setRemoveTarget(friend)}
                   testID={`remove-${friend.userId}`}
                 >
                   {tt.removeFriend ?? 'Remove'}
@@ -306,6 +330,47 @@ export default function FriendsPageContent({
           </YStack>
         )}
       </YStack>
+
+      {removeTarget && (
+        <div
+          style={OVERLAY_STYLE}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setRemoveTarget(null);
+          }}
+          data-testid="remove-friend-dialog"
+        >
+          <div
+            style={DIALOG_STYLE}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="600">
+                {tt.removeFriend ?? 'Remove Friend'}
+              </Text>
+              <Text fontSize="$3">
+                Remove {removeTarget.displayName ?? removeTarget.username} from your friends?
+              </Text>
+              <XStack gap="$2" justifyContent="flex-end">
+                <Button
+                  variant="ghost"
+                  onClick={() => setRemoveTarget(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => handleRemove(removeTarget.userId)}
+                  testID="confirm-remove-friend"
+                >
+                  {tt.removeFriend ?? 'Remove'}
+                </Button>
+              </XStack>
+            </YStack>
+          </div>
+        </div>
+      )}
     </ScrollView>
   );
 }

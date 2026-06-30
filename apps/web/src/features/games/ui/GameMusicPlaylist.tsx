@@ -67,8 +67,6 @@ function SortableTrackItem({
         alignItems="center"
         gap="$2"
         opacity={isEnabled ? 1 : 0.35}
-        cursor="pointer"
-        onClick={() => onPlay(index)}
       >
         <div
           className="game-music-drag-handle"
@@ -112,7 +110,6 @@ function SortableTrackItem({
           onChange={() => onToggleTrack(index)}
           aria-label={`Toggle ${track.title}`}
           data-testid={`game-music-track-toggle-${index}`}
-          onClick={(e) => e.stopPropagation()}
         />
         <Text
           fontSize={10}

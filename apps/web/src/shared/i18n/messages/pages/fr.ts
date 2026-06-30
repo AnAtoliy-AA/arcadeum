@@ -15,6 +15,7 @@ import { adminGamesFr } from './admin-games/fr';
 import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 import { adminUsersFr } from './admin-users/fr';
 import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
+import { friendsFr } from './friends/fr';
 export const fr = {
   admin: {
     title: 'Administration',
@@ -455,4 +456,5 @@ export const fr = {
   shop: shopFr,
   adminShop: adminShopFr,
   adminGames: adminGamesFr,
+  friends: friendsFr,
 };

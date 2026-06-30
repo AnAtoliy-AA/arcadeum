@@ -15,6 +15,7 @@ import { adminGamesBy } from './admin-games/by';
 import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
+import { friendsBy } from './friends/by';
 
 export const by = {
   admin: {
@@ -459,4 +460,5 @@ export const by = {
   shop: shopBy,
   adminShop: adminShopBy,
   adminGames: adminGamesBy,
+  friends: friendsBy,
 };

@@ -53,6 +53,7 @@ type IconComponent = ComponentType<{ size?: number }>;
 const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
   games: CardsIcon,
   leaderboards: TrophyIcon,
+  friends: UserIcon,
   shop: GiftIcon,
   token: WalletIcon,
   chats: MailIcon,

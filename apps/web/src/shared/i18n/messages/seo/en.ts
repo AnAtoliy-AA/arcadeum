@@ -59,6 +59,10 @@ export const en = {
     title: `Leaderboards · ${APP}`,
     description: `See who's on top across every ${APP} game mode. Climb the rankings, compare with friends, and chase the mythic spotlight.`,
   },
+  friends: {
+    title: `Friends · ${APP}`,
+    description: `Manage your ${APP} friends list, send friend requests, and see who's online.`,
+  },
   tournaments: {
     title: `Tournaments · ${APP}`,
     description: `Compete in scheduled ${APP} tournaments, follow live brackets, and track upcoming events across our supported games.`,

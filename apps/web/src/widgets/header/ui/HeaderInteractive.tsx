@@ -77,6 +77,7 @@ export function HeaderInteractive() {
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
+      { href: routes.friends, label: t('navigation.friendsTab') },
       {
         href: '#',
         label: t('navigation.musicTab'),

@@ -71,6 +71,7 @@ export const buildRoutes = (locale: Locale) => {
     battlePass: `/${locale}/battle-pass`,
     shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
+    friends: `/${locale}/${s('friends')}`,
     developers: `/${locale}/${s('developers')}`,
 
     // System (locale-free)

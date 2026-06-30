@@ -9,6 +9,7 @@ import { Squad } from './schemas/squad.schema';
 import { TickerEvent } from './schemas/ticker-event.schema';
 import { User } from '../auth/schemas/user.schema';
 import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
+import { FriendsService } from '../friends/friends.service';
 
 function makeQuery<T>(result: T) {
   return {
@@ -86,6 +87,10 @@ describe('LeaderboardsService', () => {
         },
         LeaderboardsCacheService,
         { provide: GameHistoryStatsService, useValue: historyStats },
+        {
+          provide: FriendsService,
+          useValue: { getFriendIds: jest.fn().mockResolvedValue([]) },
+        },
       ],
     }).compile();
 

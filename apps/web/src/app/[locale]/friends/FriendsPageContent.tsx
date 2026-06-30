@@ -1,0 +1,382 @@
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  Separator,
+  ScrollView,
+} from 'tamagui';
+import { Button } from '@arcadeum/ui';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { connectFriendsSocket, useFriendsSocket } from '@/shared/lib/socket';
+import { useRoutes } from '@/shared/config/useRoutes';
+import type { PageTranslations } from '@/shared/i18n/page-translations';
+import {
+  getFriends,
+  getPendingRequests,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
+  removeFriend,
+  type Friend,
+  type FriendRequest,
+} from '@/shared/api/friends';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
+
+const OVERLAY_STYLE = {
+  position: 'fixed' as const,
+  inset: 0,
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1000,
+  padding: 16,
+};
+
+const DIALOG_STYLE = {
+  background: 'var(--background, #1a1a2e)',
+  border: '1px solid var(--borderColor, #444)',
+  borderRadius: 12,
+  padding: 24,
+  minWidth: 340,
+  maxWidth: 400,
+  width: '100%',
+  color: 'var(--color, inherit)',
+};
+
+type FriendsTranslations = {
+  title?: string;
+  emptyState?: string;
+  addFriend?: { placeholder?: string; button?: string; sending?: string };
+  requests?: {
+    incoming?: string;
+    outgoing?: string;
+    accept?: string;
+    decline?: string;
+    pending?: string;
+    empty?: string;
+  };
+  online?: string;
+  offline?: string;
+  removeFriend?: string;
+  inviteToGame?: string;
+};
+
+export default function FriendsPageContent({
+  t,
+  accessToken,
+}: {
+  t?: PageTranslations;
+  accessToken?: string;
+}) {
+  const tt = (t ?? {}) as FriendsTranslations;
+  const { snapshot } = useSessionTokens();
+  const token = snapshot.accessToken ?? accessToken;
+  const router = useRouter();
+  const routes = useRoutes();
+
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [pending, setPending] = useState<{
+    incoming: FriendRequest[];
+    outgoing: FriendRequest[];
+  }>({ incoming: [], outgoing: [] });
+  const [username, setUsername] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<Friend | null>(null);
+
+  const loadData = useCallback(async () => {
+    if (!token) return;
+    try {
+      const [friendsData, pendingData] = await Promise.all([
+        getFriends(token),
+        getPendingRequests(token),
+      ]);
+      setFriends(friendsData);
+      setPending(pendingData);
+    } catch {
+      setError('Failed to load friends');
+    }
+  }, [token]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    if (!token) return;
+    const disconnect = connectFriendsSocket(token);
+    return disconnect;
+  }, [token]);
+
+  useFriendsSocket('friend:request', () => {
+    void loadData();
+  });
+
+  useFriendsSocket('friend:accepted', () => {
+    void loadData();
+  });
+
+  useFriendsSocket('friend:removed', () => {
+    void loadData();
+  });
+
+  useFriendsSocket('presence:update', () => {
+    void loadData();
+  });
+
+  const handleSendRequest = async () => {
+    if (!token || !username.trim()) return;
+    setSending(true);
+    setError(null);
+    try {
+      await sendFriendRequest(token, username.trim());
+      setUsername('');
+      void loadData();
+    } catch {
+      setError('Could not send friend request');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleAccept = async (id: string) => {
+    if (!token) return;
+    await acceptFriendRequest(token, id);
+    void loadData();
+  };
+
+  const handleDecline = async (id: string) => {
+    if (!token) return;
+    await declineFriendRequest(token, id);
+    void loadData();
+  };
+
+  const handleRemove = async (id: string) => {
+    if (!token) return;
+    await removeFriend(token, id);
+    setRemoveTarget(null);
+    void loadData();
+  };
+
+  const handleInviteToGame = useCallback(() => {
+    router.push(routes.gameCreate);
+  }, [router, routes.gameCreate]);
+
+  return (
+    <ScrollView padding="$4" maxWidth={600} mx="auto" width="100%">
+      <YStack gap="$4">
+        <Text fontSize="$6" fontWeight="700">
+          {tt.title ?? 'Friends'}
+        </Text>
+
+        <XStack gap="$2" alignItems="center">
+          <Input
+            flex={1}
+            placeholder={tt.addFriend?.placeholder ?? 'Enter username'}
+            value={username}
+            onChangeText={setUsername}
+            testID="add-friend-input"
+          />
+          <Button
+            variant="primary"
+            onClick={handleSendRequest}
+            disabled={sending || !username.trim()}
+            testID="add-friend-button"
+          >
+            {sending
+              ? (tt.addFriend?.sending ?? 'Sending…')
+              : (tt.addFriend?.button ?? 'Add Friend')}
+          </Button>
+        </XStack>
+
+        {error ? (
+          <Text color="$red10" fontSize="$3">
+            {error}
+          </Text>
+        ) : null}
+
+        {pending.incoming.length > 0 && (
+          <YStack gap="$2">
+            <Text fontSize="$4" fontWeight="600">
+              {tt.requests?.incoming ?? 'Incoming Requests'}
+            </Text>
+            {pending.incoming.map((req) => (
+              <XStack
+                key={req.id}
+                gap="$3"
+                alignItems="center"
+                padding="$3"
+                borderRadius="$3"
+                borderWidth={1}
+                borderColor="$borderColor"
+              >
+                <EquippedPlayerAvatar
+                  name={req.displayName ?? req.username}
+                  equippedAvatarId={req.equippedAvatarId}
+                  equippedBadgeId={null}
+                  size="sm"
+                />
+                <Text flex={1} fontSize="$3">
+                  {req.displayName ?? req.username}
+                </Text>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleAccept(req.id)}
+                  testID={`accept-${req.id}`}
+                >
+                  {tt.requests?.accept ?? 'Accept'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDecline(req.id)}
+                  testID={`decline-${req.id}`}
+                >
+                  {tt.requests?.decline ?? 'Decline'}
+                </Button>
+              </XStack>
+            ))}
+          </YStack>
+        )}
+
+        {pending.outgoing.length > 0 && (
+          <YStack gap="$2">
+            <Text fontSize="$4" fontWeight="600">
+              {tt.requests?.outgoing ?? 'Outgoing Requests'}
+            </Text>
+            {pending.outgoing.map((req) => (
+              <XStack
+                key={req.id}
+                gap="$3"
+                alignItems="center"
+                padding="$3"
+                borderRadius="$3"
+                borderWidth={1}
+                borderColor="$borderColor"
+              >
+                <EquippedPlayerAvatar
+                  name={req.displayName ?? req.username}
+                  equippedAvatarId={req.equippedAvatarId}
+                  equippedBadgeId={null}
+                  size="sm"
+                />
+                <Text flex={1} fontSize="$3">
+                  {req.displayName ?? req.username}
+                </Text>
+                <Text fontSize="$2" color="$gray10">
+                  {tt.requests?.pending ?? 'Pending'}
+                </Text>
+              </XStack>
+            ))}
+          </YStack>
+        )}
+
+        <Separator />
+
+        <Text fontSize="$4" fontWeight="600">
+          {tt.title ?? 'Friends'}
+        </Text>
+
+        {friends.length === 0 ? (
+          <Text color="$gray10" fontSize="$3" textAlign="center" padding="$4">
+            {tt.emptyState ?? 'No friends yet. Add friends to see them here.'}
+          </Text>
+        ) : (
+          <YStack gap="$2">
+            {friends.map((friend) => (
+              <XStack
+                key={friend.id}
+                gap="$3"
+                alignItems="center"
+                padding="$3"
+                borderRadius="$3"
+                borderWidth={1}
+                borderColor="$borderColor"
+              >
+                <EquippedPlayerAvatar
+                  name={friend.displayName ?? friend.username}
+                  equippedAvatarId={friend.equippedAvatarId}
+                  equippedBadgeId={null}
+                  size="sm"
+                />
+                <YStack flex={1}>
+                  <Text fontSize="$3" fontWeight="500">
+                    {friend.displayName ?? friend.username}
+                  </Text>
+                  <Text fontSize="$2" color={friend.online ? '$green10' : '$gray10'}>
+                    {friend.online
+                      ? (tt.online ?? 'Online')
+                      : (tt.offline ?? 'Offline')}
+                  </Text>
+                </YStack>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleInviteToGame}
+                  testID={`invite-${friend.userId}`}
+                >
+                  {tt.inviteToGame ?? 'Invite'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setRemoveTarget(friend)}
+                  testID={`remove-${friend.userId}`}
+                >
+                  {tt.removeFriend ?? 'Remove'}
+                </Button>
+              </XStack>
+            ))}
+          </YStack>
+        )}
+      </YStack>
+
+      {removeTarget && (
+        <div
+          style={OVERLAY_STYLE}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setRemoveTarget(null);
+          }}
+          data-testid="remove-friend-dialog"
+        >
+          <div
+            style={DIALOG_STYLE}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="600">
+                {tt.removeFriend ?? 'Remove Friend'}
+              </Text>
+              <Text fontSize="$3">
+                Remove {removeTarget.displayName ?? removeTarget.username} from your friends?
+              </Text>
+              <XStack gap="$2" justifyContent="flex-end">
+                <Button
+                  variant="ghost"
+                  onClick={() => setRemoveTarget(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => handleRemove(removeTarget.userId)}
+                  testID="confirm-remove-friend"
+                >
+                  {tt.removeFriend ?? 'Remove'}
+                </Button>
+              </XStack>
+            </YStack>
+          </div>
+        </div>
+      )}
+    </ScrollView>
+  );
+}

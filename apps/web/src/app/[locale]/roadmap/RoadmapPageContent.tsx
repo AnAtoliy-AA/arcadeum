@@ -304,6 +304,19 @@ export default function RoadmapPageContent() {
                 From niche casual tool to a universally recommended platform for
                 everyone — hardcore board gamers to party-game lovers.
               </Typography>
+              <View
+                px="$3"
+                py="$1"
+                borderRadius={9999}
+                backgroundColor="rgba(255,255,255,0.06)"
+                borderWidth={1}
+                borderColor="rgba(255,255,255,0.1)"
+                alignSelf="flex-start"
+              >
+                <Typography variant="caption" uiSize="xs" alpha="medium">
+                  English is the canonical version
+                </Typography>
+              </View>
             </YStack>
             <XStack flexWrap="wrap" gap="$3">
               {STATS.map((stat) => (

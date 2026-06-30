@@ -23,7 +23,7 @@ export default async function TokenPage({
   return (
     <>
       <PageBreadcrumb locale={locale} page="token" />
-      <TokenClient />
+      <TokenClient mintAddress={process.env.ARCADEUM_MINT_ADDRESS} />
     </>
   );
 }

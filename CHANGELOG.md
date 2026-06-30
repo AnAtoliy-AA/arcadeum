@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.17] - 2026-06-30
+
+### Added
+- double-click on playlist track to play (N/A)
+- update music player to use 160-track R2 catalog (N/A)
+
+### Fixed
+- remove row click-to-play from playlist tracks (N/A)
+- checkbox toggle should not affect current playback (N/A)
+- suppress auto-play when disabling currently playing track (N/A)
+- disable currently playing track when unchecked in playlist (N/A)
+- widen mini mode music player to prevent button overflow (N/A)
+
+
 ## [1.22.16] - 2026-06-30
 
 ### Added

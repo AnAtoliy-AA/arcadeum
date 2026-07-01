@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { TamaguiElement, YStack, XStack, Text } from 'tamagui';
+import React, { useCallback, useMemo, useState } from 'react';
+import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { GameRoomSummary } from '@/shared/types/games';
 import { gamesApi } from '@/features/games/api';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
@@ -40,89 +39,14 @@ import {
 } from './lobbyStyles';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
+import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
 // Re-export all styles for games to use
 export * from './lobbyStyles';
-
-// ============ Types ============
-
-export interface GameLobbyTheme {
-  titleGradient?: string;
-  variantGradient?: string;
-  buttonGradient?: string;
-}
-
-export interface ReusableGameLobbyProps {
-  // Core props
-  room: GameRoomSummary;
-  isHost: boolean;
-  startBusy: boolean;
-  startDisabled?: boolean;
-  isFullscreen?: boolean;
-  containerRef?: React.RefObject<TamaguiElement | null>;
-  onToggleFullscreen?: () => void;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
-  onReorderPlayers?: (newOrder: string[]) => void;
-  onReinvite?: (userIds: string[]) => void;
-  onDeleteRoom?: () => void;
-  onKickPlayer?: (userId: string) => void;
-  onLeaveRoom?: () => void;
-  onRefresh?: () => void;
-
-  // Game info
-  gameName: string;
-  gameIcon: string;
-  variantName?: string;
-  roomIcon?: string;
-
-  // Player limits
-  minPlayers?: number;
-
-  // Labels (with sensible defaults)
-  labels?: {
-    waitingLabel?: string;
-    subtitleText?: string;
-    playersLabel?: string;
-    hostControlsLabel?: string;
-    startLabel?: string;
-    startingLabel?: string;
-    roomInfoLabel?: string;
-    statusLabel?: string;
-    visibilityLabel?: string;
-    visibilityPublicLabel?: string;
-    visibilityPrivateLabel?: string;
-    inviteCodeLabel?: string;
-    waitingForPlayerLabel?: string;
-    invitedPlayersLabel?: string;
-    declinedLabel?: string;
-    reinviteLabel?: string;
-    fastRoomLabel?: string;
-    botCountLabel?: string;
-    startWithBotsLabel?: string;
-    deleteRoomLabel?: string;
-    kickPlayerLabel?: string;
-    leaveRoomLabel?: string;
-  };
-  // Theme
-  theme?: GameLobbyTheme;
-
-  // Fast mode
-  isFastMode?: boolean;
-
-  // Slots for game-specific content
-  optionsSlot?: React.ReactNode;
-  headerActionsSlot?: React.ReactNode;
-  rulesModalSlot?: React.ReactNode;
-  extraPlayersCardSlot?: React.ReactNode;
-
-  // Enable/disable features
-  showFullscreenButton?: boolean;
-  showReorderControls?: boolean;
-  showInvitedPlayers?: boolean;
-  enableBots?: boolean;
-}
-
-// Styles
+export type {
+  GameLobbyTheme,
+  ReusableGameLobbyProps,
+} from './ReusableGameLobby.types';
 
 const floatStyle: React.CSSProperties = {
   animation: 'float 3s ease-in-out infinite',
@@ -193,10 +117,12 @@ export function ReusableGameLobby({
   const [optIdle, setOptIdle] = useState<boolean | null>(null);
   const [optSpectators, setOptSpectators] = useState<boolean | null>(null);
 
-  useEffect(() => {
+  const [prevGameOptions, setPrevGameOptions] = useState(room.gameOptions);
+  if (prevGameOptions !== room.gameOptions) {
+    setPrevGameOptions(room.gameOptions);
     setOptIdle(null);
     setOptSpectators(null);
-  }, [room.gameOptions]);
+  }
 
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -404,36 +330,71 @@ export function ReusableGameLobby({
               <Text fontSize="$4" fontWeight="600">
                 {t('games.create.sectionHouseRules') || 'House Rules'}
               </Text>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: 'pointer',
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptIdle(val);
-                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: val }, { token: snapshot?.accessToken ?? undefined })
+                    gamesApi
+                      .updateRoomOptions(
+                        room.id,
+                        { idleTimerAutoplay: val },
+                        { token: snapshot?.accessToken ?? undefined },
+                      )
                       .then(() => onRefresh?.());
                   }}
-                  style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    accentColor: 'var(--gc-accent, #ffd166)',
+                  }}
                 />
                 <Text fontSize="$3">
                   {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
                 </Text>
               </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: 'pointer',
+                }}
+              >
                 <input
                   type="checkbox"
-                  checked={optSpectators ?? (room.gameOptions?.allowSpectators !== false)}
+                  checked={
+                    optSpectators ?? room.gameOptions?.allowSpectators !== false
+                  }
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptSpectators(val);
-                    gamesApi.updateRoomOptions(room.id, { allowSpectators: val }, { token: snapshot?.accessToken ?? undefined })
+                    gamesApi
+                      .updateRoomOptions(
+                        room.id,
+                        { allowSpectators: val },
+                        { token: snapshot?.accessToken ?? undefined },
+                      )
                       .then(() => onRefresh?.());
                   }}
-                  style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    accentColor: 'var(--gc-accent, #ffd166)',
+                  }}
                 />
                 <Text fontSize="$3">
-                  {t('games.create.rules.spectators.title') || 'Allow spectators'}
+                  {t('games.create.rules.spectators.title') ||
+                    'Allow spectators'}
                 </Text>
               </label>
             </YStack>

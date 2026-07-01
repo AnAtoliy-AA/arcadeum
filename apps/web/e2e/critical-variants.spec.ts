@@ -88,14 +88,7 @@ test.describe('Critical Variant Selection', () => {
     await expect(criticalTile).toBeVisible({});
     await criticalTile.click({ force: true });
 
-    // Select High-Altitude Hike variant tile
-    const hikeVariant = page
-      .locator('button')
-      .filter({ hasText: /High-Altitude Hike/i });
-    await expect(hikeVariant).toBeVisible({});
-    await hikeVariant.click();
-
-    // Create room
+    // Create room (variant is now selected in lobby, not create page)
     const createBtn = page.getByTestId('create-room-button');
     await expect(createBtn).toBeEnabled({});
     await createBtn.click({ force: true });
@@ -111,6 +104,13 @@ test.describe('Critical Variant Selection', () => {
       .filter({ hasText: /Critical/i })
       .first();
     await expect(gameHeading).toBeVisible({});
+
+    // Select High-Altitude Hike variant in the lobby
+    const hikeVariant = page
+      .locator('button')
+      .filter({ hasText: /High-Altitude Hike/i });
+    await expect(hikeVariant).toBeVisible({});
+    await hikeVariant.click();
 
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();

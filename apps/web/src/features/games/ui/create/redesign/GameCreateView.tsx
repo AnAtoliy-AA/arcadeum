@@ -22,7 +22,6 @@ import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { ThemePicker } from './ThemePicker';
-import { HouseRules } from './HouseRules';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
@@ -85,43 +84,18 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     return {
       cardVariant: form.themeId || undefined,
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
-      houseRules: {
-        actionCardCombos: form.rules.combos,
-        idleTimerAutoplay: form.rules.idle,
-      },
-      allowSpectators: form.rules.spectators,
     };
   }
   if (form.gameId === 'sea_battle_v1') {
-    return {
-      variant: form.themeId || undefined,
-      teams: form.rules.teams,
-      idleTimerAutoplay: form.rules.idle,
-      allowSpectators: form.rules.spectators,
-    };
+    return { variant: form.themeId || undefined };
   }
   if (form.gameId === 'tic_tac_toe_v1') {
-    return {
-      variant: form.themeId || 'classic',
-      boardSize: 3,
-      teamMode: form.rules.teams,
-      allowSpectators: form.rules.spectators,
-    };
+    return { variant: form.themeId || 'classic' };
   }
   if (form.gameId === 'cascade_v1') {
-    return {
-      variant: form.themeId || 'cosmic',
-      mode: 'classic',
-      stackingEnabled: true,
-      lastCardCallEnabled: true,
-      idleTimerAutoplay: form.rules.idle,
-      allowSpectators: form.rules.spectators,
-    };
+    return { variant: form.themeId || 'cosmic' };
   }
-  return {
-    idleTimerAutoplay: form.rules.idle,
-    allowSpectators: form.rules.spectators,
-  };
+  return {};
 }
 
 export function GameCreateView() {
@@ -234,10 +208,6 @@ export function GameCreateView() {
     }));
   }
 
-  function setRules(rules: CreateRoomForm['rules']) {
-    setForm((prev) => ({ ...prev, rules, preset: 'custom' }));
-  }
-
   function pickPreset(preset: Exclude<PresetId, 'custom'>) {
     setForm((prev) => applyPreset(prev, preset));
   }
@@ -325,7 +295,6 @@ export function GameCreateView() {
   const numGame = String(n++).padStart(2, '0');
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
   const numTheme = game.hasThemes ? String(n++).padStart(2, '0') : null;
-  const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
 
   return (
@@ -392,19 +361,6 @@ export function GameCreateView() {
                     />
                   </SectionGroup>
                 ) : null}
-
-                <SectionGroup
-                  num={numRules}
-                  title={L.sectionRules}
-                  hint={L.optional}
-                >
-                  <HouseRules
-                    gameId={form.gameId}
-                    value={form.rules}
-                    labels={L.rules}
-                    onChange={setRules}
-                  />
-                </SectionGroup>
 
                 <SectionGroup num={numDetails} title={L.sectionDetails}>
                   <RoomDetails

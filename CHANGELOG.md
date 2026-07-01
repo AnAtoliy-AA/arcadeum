@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.21] - 2026-07-01
+
+### Added
+- fix emote encryption and expand emote system (N/A)
+
+### Fixed
+- correct isLandscape on mount to fix webkit layout (N/A)
+- correct isLandscape on mount to fix webkit layout (N/A)
+- compute isLandscape synchronously from window to fix SSR hydration (N/A)
+- use synchronous isMobilePortrait check for cols floor (N/A)
+- add containerWidth=0 floor for landscape multi-player grids (N/A)
+- default to 2 cols when containerWidth is 0 in media.short branch (N/A)
+- wait for ResizeObserver before asserting grid layout in sea-battle-6-players test (N/A)
+- handle invalid ARCADEUM_MINT_ADDRESS gracefully (N/A)
+
+
 ## [1.22.20] - 2026-07-01
 
 ### Added

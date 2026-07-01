@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { TamaguiElement, YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -188,6 +188,16 @@ export function ReusableGameLobby({
   } = labels;
   const { t } = useTranslation();
   const { snapshot } = useSessionTokens();
+
+  // Optimistic state for house rules — updates instantly, clears when room syncs
+  const [optIdle, setOptIdle] = useState<boolean | null>(null);
+  const [optSpectators, setOptSpectators] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setOptIdle(null);
+    setOptSpectators(null);
+  }, [room.gameOptions]);
+
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
@@ -397,9 +407,11 @@ export function ReusableGameLobby({
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                 <input
                   type="checkbox"
-                  checked={!!room.gameOptions?.idleTimerAutoplay}
+                  checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
                   onChange={(e) => {
-                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
+                    const val = e.target.checked;
+                    setOptIdle(val);
+                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: val }, { token: snapshot?.accessToken ?? undefined })
                       .then(() => onRefresh?.());
                   }}
                   style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
@@ -411,9 +423,11 @@ export function ReusableGameLobby({
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                 <input
                   type="checkbox"
-                  checked={room.gameOptions?.allowSpectators !== false}
+                  checked={optSpectators ?? (room.gameOptions?.allowSpectators !== false)}
                   onChange={(e) => {
-                    gamesApi.updateRoomOptions(room.id, { allowSpectators: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
+                    const val = e.target.checked;
+                    setOptSpectators(val);
+                    gamesApi.updateRoomOptions(room.id, { allowSpectators: val }, { token: snapshot?.accessToken ?? undefined })
                       .then(() => onRefresh?.());
                   }}
                   style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}

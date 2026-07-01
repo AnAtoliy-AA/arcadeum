@@ -180,6 +180,17 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = 2;
   }
 
+  // Safety floor: in landscape with multiple children, never drop to 1
+  // column. The else (desktop) branch can produce cols=1 when
+  // containerWidth is 0 (before ResizeObserver fires) because
+  // `fits || ideal` evaluates to 1 (truthy). The short branch has its
+  // own `containerWidth > 0 ? … : 2` guard, but the desktop path lacks
+  // one. This covers all stale-media-query combinations (e.g. WebKit
+  // headless where Tamagui matchMedia may not fire).
+  if (cols === 1 && count > 1 && isLandscape) {
+    cols = 2;
+  }
+
   if (cols === 1) {
     return (
       <div

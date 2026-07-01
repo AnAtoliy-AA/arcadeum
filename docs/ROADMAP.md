@@ -15,11 +15,59 @@
 
 ---
 
+## ARC Ticket Reference
+
+| Feature | ARC | Branch | Status |
+|---------|-----|--------|--------|
+| 1A. Stat Tracking | ARC-871 | `ARC-871-stat-tracking` | Partial |
+| 1B. Emotes | ARC-872 | `ARC-872-emotes` | Not started |
+| 1C. House Rules | ARC-873 | `ARC-873-house-rules` | Partial |
+| 1D. Dark Mode | — | — | **Implemented** |
+| 1E. Undo/Take-Back | ARC-874 | `ARC-874-undo-takeback` | Not started |
+| 1F. Password Rooms | ARC-875 | `ARC-875-password-rooms` | Not started |
+| 2A. Matchmaking Queue | ARC-876 | `ARC-876-matchmaking` | Not started |
+| 2B. Chess Engine | ARC-877 | `ARC-877-chess-engine` | Not started |
+| 2C. Checkers Engine | ARC-878 | `ARC-878-checkers-engine` | Not started |
+| 2D. Audio Cues | ARC-879 | `ARC-879-audio-cues` | Partial |
+| 2E. AI Difficulty | ARC-880 | `ARC-880-ai-difficulty` | Not started |
+| 2F. Ranked/ELO | ARC-881 | `ARC-881-ranked-elo` | Not started |
+| 2G. Achievements | — | — | **Implemented** |
+| 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | Not started |
+| 2I. Coach Mode | ARC-883 | `ARC-883-coach-mode` | Not started |
+| 3A. Hearts/Spades | ARC-884 | `ARC-884-hearts-spades` | Not started |
+| 3B. Backgammon | ARC-885 | `ARC-885-backgammon` | Not started |
+| 3C. Pachisi | ARC-886 | `ARC-886-pachisi` | Not started |
+| 3D. Go | ARC-887 | `ARC-887-go` | Not started |
+| 3F. Game Replays | ARC-888 | `ARC-888-game-replays` | Not started |
+| 3G. Spectator Mode | ARC-889 | `ARC-889-spectator-mode` | Partial |
+| 3H. AI-vs-AI | ARC-890 | `ARC-890-ai-vs-ai` | Not started |
+| 3I. Clans | ARC-891 | `ARC-891-clans` | Not started |
+| 3J. Game Nights | ARC-892 | `ARC-892-game-nights` | Not started |
+| 4A. Chess Clock | ARC-893 | `ARC-893-chess-clock` | Not started |
+| 4B. Stats Dashboard | ARC-894 | `ARC-894-stats-dashboard` | Partial |
+| 4C. Tutorials | ARC-895 | `ARC-895-tutorials` | Not started |
+| 4D. Colorblind | ARC-896 | `ARC-896-colorblind` | Not started |
+| 4E. Screen Reader | ARC-897 | `ARC-897-screen-reader` | Partial |
+| 4F. Keyboard Nav | ARC-898 | `ARC-898-keyboard-nav` | Not started |
+| 4G. Daily Challenges | — | — | **Implemented** |
+| 4H. Season System | ARC-899 | `ARC-899-season-system` | Not started |
+| 4I. PWA Support | ARC-903 | `ARC-903-pwa-support` | Partial |
+| 4J. Offline Mode | ARC-900 | `ARC-900-offline-mode` | Not started |
+| 4K. Web Share | — | — | **Implemented** |
+| 4L. Push Notifications | — | — | **Implemented** |
+| 4M. Tournaments | — | — | **Implemented** |
+| 4N. Leaderboards | — | — | **Implemented** |
+| 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | Not started |
+| 4P. Mobile Games | ARC-902 | `ARC-902-mobile-games` | Partial |
+| 5B. Monetization | — | — | **Implemented** |
+
+---
+
 ## Feature Roadmap
 
 ### TIER 1 — Low Effort, High Impact (Implement First)
 
-#### 1A. Persistent Account-less Stat Tracking
+#### 1A. Persistent Account-less Stat Tracking `ARC-871`
 
 **Effort: Easy (1-2 days)**
 
@@ -40,7 +88,7 @@ Pure frontend feature. No backend changes needed.
 
 ---
 
-#### 1B. In-game Emotes & Quick Reactions
+#### 1B. In-game Emotes & Quick Reactions `ARC-872`
 
 **Effort: Easy (1-2 days)**
 
@@ -61,7 +109,7 @@ Extend the existing `history_notes` system with predefined emote actions.
 
 ---
 
-#### 1C. Structured House Rules / Game Config
+#### 1C. Structured House Rules / Game Config `ARC-873`
 
 **Effort: Easy-Medium (2-3 days)**
 
@@ -98,7 +146,7 @@ Extend the existing `gameOptions` system with per-game structured configs.
 
 ---
 
-#### 1E. Undo / Take-Back
+#### 1E. Undo / Take-Back `ARC-874`
 
 **Effort: Easy-Medium (1-2 days)**
 
@@ -119,7 +167,7 @@ Allow players to request an undo in casual games.
 
 ---
 
-#### 1F. Invite-Only Rooms with Passwords
+#### 1F. Invite-Only Rooms with Passwords `ARC-875`
 
 **Effort: Easy (1 day)**
 
@@ -138,7 +186,7 @@ Allow players to request an undo in casual games.
 
 ### TIER 2 — Medium Effort, Major Value
 
-#### 2A. Improved Matchmaking with Queue System
+#### 2A. Improved Matchmaking with Queue System `ARC-876`
 
 **Effort: Medium (3-5 days)**
 
@@ -160,7 +208,7 @@ The basic `findHumanMatch()` exists but is simple. Enhance it.
 
 ---
 
-#### 2B. Chess Engine
+#### 2B. Chess Engine `ARC-877`
 
 **Effort: Medium-Hard (5-7 days)**
 
@@ -186,7 +234,7 @@ Well-defined rules, huge audience. This is the #1 game to add.
 
 ---
 
-#### 2C. Checkers Engine
+#### 2C. Checkers Engine `ARC-878`
 
 **Effort: Medium (4-5 days)**
 
@@ -207,7 +255,7 @@ Simpler than chess, well-understood rules.
 
 ---
 
-#### 2D. Emote Sound Effects / Audio Cues
+#### 2D. Emote Sound Effects / Audio Cues `ARC-879`
 
 **Effort: Easy (1 day)**
 
@@ -226,7 +274,7 @@ Lightweight audio feedback without full voice chat.
 
 ---
 
-#### 2E. AI Difficulty Tiers
+#### 2E. AI Difficulty Tiers `ARC-880`
 
 **Effort: Medium (2-3 days per game)**
 
@@ -247,7 +295,7 @@ Currently bots appear to be single-difficulty. Add Easy/Medium/Hard/Expert level
 
 ---
 
-#### 2F. Ranked Play / ELO Rating
+#### 2F. Ranked Play / ELO Rating `ARC-881`
 
 **Effort: Medium-Hard (5-7 days)**
 
@@ -291,7 +339,7 @@ Collectible achievements tied to gameplay milestones.
 
 ---
 
-#### 2H. Post-Game Analysis
+#### 2H. Post-Game Analysis `ARC-882`
 
 **Effort: Medium (3-5 days)**
 
@@ -311,7 +359,7 @@ Show players where mistakes were made after a game ends.
 
 ---
 
-#### 2I. Move Hints / Coach Mode
+#### 2I. Move Hints / Coach Mode `ARC-883`
 
 **Effort: Medium (2-3 days)**
 
@@ -334,7 +382,7 @@ Optional AI hints during gameplay.
 
 ### TIER 3 — Hard but High Value
 
-#### 3A. Hearts / Spades (Trick-taking Card Games)
+#### 3A. Hearts / Spades (Trick-taking Card Games) `ARC-884`
 
 **Effort: Medium-Hard (5-7 days each)**
 
@@ -347,7 +395,7 @@ Optional AI hints during gameplay.
 
 ---
 
-#### 3B. Backgammon
+#### 3B. Backgammon `ARC-885`
 
 **Effort: Medium-Hard (5-7 days)**
 
@@ -359,7 +407,7 @@ Dice-based, unique mechanics.
 
 ---
 
-#### 3C. Pachisi (originally Ludo)
+#### 3C. Pachisi (originally Ludo) `ARC-886`
 
 **Effort: Medium (4-5 days)**
 
@@ -370,7 +418,7 @@ Simple rules, popular globally. Using original name "Pachisi" to avoid Ludo trad
 
 ---
 
-#### 3D. Go (Baduk)
+#### 3D. Go (Baduk) `ARC-887`
 
 **Effort: Very Hard (10-14 days)**
 
@@ -400,7 +448,7 @@ Full voice infrastructure needed.
 
 ---
 
-#### 3F. Game Replays
+#### 3F. Game Replays `ARC-888`
 
 **Effort: Medium (4-5 days)**
 
@@ -420,7 +468,7 @@ Record and share game replays.
 
 ---
 
-#### 3G. Spectator Mode with Live Reactions
+#### 3G. Spectator Mode with Live Reactions `ARC-889`
 
 **Effort: Medium (3-4 days)**
 
@@ -440,7 +488,7 @@ Let viewers watch ongoing matches with real-time interaction.
 
 ---
 
-#### 3H. AI-vs-AI Spectator Mode
+#### 3H. AI-vs-AI Spectator Mode `ARC-890`
 
 **Effort: Easy-Medium (1-2 days)**
 
@@ -460,7 +508,7 @@ Let two bots play each other at max difficulty.
 
 ---
 
-#### 3I. Clans / Groups
+#### 3I. Clans / Groups `ARC-891`
 
 **Effort: Medium-Hard (5-7 days)**
 
@@ -484,7 +532,7 @@ Persistent groups for communities.
 
 ---
 
-#### 3J. Community Game Nights
+#### 3J. Community Game Nights `ARC-892`
 
 **Effort: Medium (3-4 days)**
 
@@ -510,7 +558,7 @@ Scheduled events where players queue simultaneously for a featured game.
 
 ### TIER 4 — Advanced Platform Features
 
-#### 4A. Chess Clock (Universal Timer System)
+#### 4A. Chess Clock (Universal Timer System) `ARC-893`
 
 **Effort: Medium (3-4 days)**
 
@@ -530,7 +578,7 @@ Chess-style timers for any turn-based game.
 
 ---
 
-#### 4B. Cross-Game Stats Dashboard
+#### 4B. Cross-Game Stats Dashboard `ARC-894`
 
 **Effort: Easy-Medium (2-3 days)**
 
@@ -551,7 +599,7 @@ Single view of all your stats across every game.
 
 ---
 
-#### 4C. Interactive Tutorials
+#### 4C. Interactive Tutorials `ARC-895`
 
 **Effort: Medium (3-5 days)**
 
@@ -571,7 +619,7 @@ Teach each game with a guided walkthrough before first play.
 
 ---
 
-#### 4D. Colorblind Modes
+#### 4D. Colorblind Modes `ARC-896`
 
 **Effort: Easy (1-2 days)**
 
@@ -591,7 +639,7 @@ Accessibility for board games with colored pieces.
 
 ---
 
-#### 4E. Screen Reader Support
+#### 4E. Screen Reader Support `ARC-897`
 
 **Effort: Medium (2-3 days)**
 
@@ -610,7 +658,7 @@ ARIA labels on all game boards.
 
 ---
 
-#### 4F. Keyboard-Only Navigation
+#### 4F. Keyboard-Only Navigation `ARC-898`
 
 **Effort: Medium (2-3 days)**
 
@@ -650,7 +698,7 @@ Daily rotating challenges to drive return visits.
 
 ---
 
-#### 4H. Season System
+#### 4H. Season System `ARC-899`
 
 **Effort: Medium-Hard (5-7 days)**
 
@@ -674,7 +722,7 @@ Monthly/quarterly seasons with soft resets.
 
 ---
 
-#### 4I. PWA Support
+#### 4I. PWA Support `ARC-903`
 
 **Effort: Easy-Medium (2-3 days)**
 
@@ -695,7 +743,7 @@ Installable as an app on mobile/desktop without app store.
 
 ---
 
-#### 4J. Offline Mode (Bot Play without Internet)
+#### 4J. Offline Mode (Bot Play without Internet) `ARC-900`
 
 **Effort: Medium (3-5 days)**
 
@@ -802,7 +850,7 @@ Global and per-game leaderboards.
 
 ---
 
-#### 4O. Board Game Creator (Community Games)
+#### 4O. Board Game Creator (Community Games) `ARC-901`
 
 **Effort: Very Hard (14-21 days)**
 
@@ -824,7 +872,7 @@ Let community members define simple custom games.
 
 ---
 
-#### 4P. Mobile App Games (Expo Port)
+#### 4P. Mobile App Games (Expo Port) `ARC-902`
 
 **Effort: Very Hard (21-30 days)**
 

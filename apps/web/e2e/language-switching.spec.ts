@@ -46,7 +46,9 @@ test.describe('Language Switching', () => {
     );
 
     // 5. Reload page and verify language persists
-    await page.reload();
+    // Use domcontentloaded to avoid hanging on ChunkLoadError in slow CI.
+    // The data-hydrated check below handles waiting for full hydration.
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
     // Wait for hydration after reload
     await expect(page.locator('html')).toHaveAttribute(
       'data-hydrated',

@@ -19,6 +19,8 @@ import { useChatCollapsed } from '../hooks/useChatCollapsed';
 import { GameChatRow } from './GameChatRow';
 import { GameChatSystemRow, type SystemRowKind } from './GameChatSystemRow';
 import type { EquippedResolver } from './types';
+import type { EmoteId } from './EmotePicker';
+import { ChatQuickBar } from './ChatQuickBar';
 import {
   ACCENT_GRADIENT,
   ACCENT_PINK,
@@ -36,9 +38,6 @@ import {
   MetaLine,
   MetaText,
   Panel,
-  QuickButton,
-  QuickButtonText,
-  QuickRow,
   Tab,
   TabCount,
   TabLabel,
@@ -56,6 +55,7 @@ interface GameChatProps {
   currentUserId?: string | null;
   onClose?: () => void;
   teamMode?: boolean;
+  onEmote?: (emoteId: EmoteId) => void;
 }
 
 const FFA_SCOPES: ChatScope[] = ['all', 'players', 'private'];
@@ -88,8 +88,6 @@ const SCOPE_CHIP_COLOR: Record<ChatScope, string> = {
   players: '#22D3EE',
   private: '#A78BFA',
 };
-
-const QUICK_PHRASES = ['gl hf', 'nice play', 'thinking…', 'gg'];
 
 const RESULT_COLORS: Record<string, string> = {
   HIT: '#F97316',
@@ -153,6 +151,7 @@ export function GameChat({
   currentUserId,
   onClose,
   teamMode,
+  onEmote,
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
@@ -410,17 +409,10 @@ export function GameChat({
       </Body>
 
       <Foot>
-        <QuickRow role="toolbar" aria-label="Quick phrases">
-          {QUICK_PHRASES.map((p) => (
-            <QuickButton
-              key={p}
-              onPress={() => setDraft((d) => (d ? `${d} ${p}` : p))}
-              aria-label={p}
-            >
-              <QuickButtonText>{p}</QuickButtonText>
-            </QuickButton>
-          ))}
-        </QuickRow>
+        <ChatQuickBar
+          onEmote={onEmote}
+          onQuickPhrase={(p) => setDraft((d) => (d ? `${d} ${p}` : p))}
+        />
 
         <InputPill
           focusStyle={{

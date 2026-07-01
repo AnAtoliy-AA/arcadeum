@@ -148,5 +148,25 @@ describe('GamesGateway – emote handler', () => {
         );
       }
     });
+
+    it('decrypts encrypted payload when encryption is enabled', () => {
+      const encrypted = maybeEncrypt({
+        roomId: 'room-1',
+        userId: 'user-a',
+        emoteId: 'good_move',
+      });
+
+      gateway.handleEmote(client, encrypted);
+
+      expect(mockServerTo).toHaveBeenCalledWith('game-room:room-1');
+      expect(mockServerEmit).toHaveBeenCalledWith(
+        'games.session.emote',
+        maybeEncrypt({
+          userId: 'user-a',
+          emoteId: 'good_move',
+          ts: expect.any(Number) as unknown,
+        }),
+      );
+    });
   });
 });

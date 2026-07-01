@@ -10,6 +10,16 @@ export const EMOTES = [
   { id: 'nice', emoji: '🎉', label: 'Nice!' },
   { id: 'unlucky', emoji: '😤', label: 'Unlucky' },
   { id: 'rip', emoji: '💀', label: 'RIP' },
+  { id: 'fire', emoji: '🔥', label: 'Fire!' },
+  { id: 'clap', emoji: '👏', label: 'Clap!' },
+  { id: 'cry', emoji: '😢', label: 'Sad' },
+  { id: 'angry', emoji: '😡', label: 'Angry' },
+  { id: 'rocket', emoji: '🚀', label: 'Rocket!' },
+  { id: 'heart', emoji: '❤️', label: 'Love' },
+  { id: 'brain', emoji: '🧠', label: 'Big Brain' },
+  { id: 'skull', emoji: '☠️', label: 'Dead' },
+  { id: 'sweat', emoji: '😅', label: 'Close One' },
+  { id: 'clown', emoji: '🤡', label: 'Clown' },
 ] as const;
 
 export type EmoteId = (typeof EMOTES)[number]['id'];

@@ -168,6 +168,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
     cols = 2;
   }
 
+  // Floor: when containerWidth is 0 (before ResizeObserver fires), the
+  // fits-based calculation may produce cols=1 even for multi-player
+  // landscape views. Force at least 2 cols so the grid layout renders
+  // immediately instead of falling back to single-column flex.
+  if (containerWidth === 0 && count > 1 && isLandscape && cols < 2) {
+    cols = 2;
+  }
+
   if (cols === 1) {
     return (
       <div

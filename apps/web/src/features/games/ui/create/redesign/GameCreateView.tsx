@@ -23,7 +23,6 @@ import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { ThemePicker } from './ThemePicker';
 import { HouseRules } from './HouseRules';
-import { GameSpecificConfig } from './GameSpecificConfig';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
@@ -73,7 +72,6 @@ function initialForm(
       teams: false,
       spectators: true,
     },
-    gameConfig: {},
     preset: 'custom',
   };
 }
@@ -97,8 +95,6 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'sea_battle_v1') {
     return {
       variant: form.themeId || undefined,
-      gridSize: form.gameConfig.gridSize,
-      specialWeapons: form.gameConfig.specialWeapons,
       teams: form.rules.teams,
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
@@ -107,7 +103,7 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'tic_tac_toe_v1') {
     return {
       variant: form.themeId || 'classic',
-      options: { boardSize: form.gameConfig.boardSize ?? 3 },
+      boardSize: 3,
       teamMode: form.rules.teams,
       allowSpectators: form.rules.spectators,
     };
@@ -115,11 +111,9 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'cascade_v1') {
     return {
       variant: form.themeId || 'cosmic',
-      options: {
-        mode: form.gameConfig.cascadeMode ?? 'classic',
-        lastCardCallEnabled: form.gameConfig.lastCardCallEnabled !== false,
-      },
-      stackingEnabled: form.gameConfig.cascadeMode !== 'pure',
+      mode: 'classic',
+      stackingEnabled: true,
+      lastCardCallEnabled: true,
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
     };
@@ -242,10 +236,6 @@ export function GameCreateView() {
 
   function setRules(rules: CreateRoomForm['rules']) {
     setForm((prev) => ({ ...prev, rules, preset: 'custom' }));
-  }
-
-  function setGameConfig(gameConfig: CreateRoomForm['gameConfig']) {
-    setForm((prev) => ({ ...prev, gameConfig, preset: 'custom' }));
   }
 
   function pickPreset(preset: Exclude<PresetId, 'custom'>) {
@@ -413,18 +403,6 @@ export function GameCreateView() {
                     value={form.rules}
                     labels={L.rules}
                     onChange={setRules}
-                  />
-                </SectionGroup>
-
-                <SectionGroup
-                  num={String(n++).padStart(2, '0')}
-                  title={L.sectionGameConfig || 'Game Settings'}
-                  hint={L.optional}
-                >
-                  <GameSpecificConfig
-                    gameId={form.gameId}
-                    value={form.gameConfig}
-                    onChange={setGameConfig}
                   />
                 </SectionGroup>
 

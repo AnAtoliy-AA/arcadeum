@@ -19,13 +19,6 @@ export interface CreateRoomForm {
     spectators: boolean;
   };
   preset: PresetId;
-  gameConfig: {
-    gridSize?: number;
-    specialWeapons?: { sonar?: boolean; radar?: boolean };
-    boardSize?: number;
-    cascadeMode?: string;
-    lastCardCallEnabled?: boolean;
-  };
 }
 
 export const ROOM_NAME_MAX = 40;

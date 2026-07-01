@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { YStack, XStack, Text, Switch } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -16,6 +16,8 @@ import {
   MIN_PLAYERS,
 } from '../types';
 import { RulesModal } from './RulesModal';
+import { gamesApi } from '@/features/games/api';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 interface CascadeLobbyProps {
   room: GameRoomSummary;
@@ -59,9 +61,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     mode,
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
-      typeof r.lastCardCallEnabled === 'boolean'
-        ? r.lastCardCallEnabled
-        : true,
+      typeof r.lastCardCallEnabled === 'boolean' ? r.lastCardCallEnabled : true,
   };
 }
 
@@ -78,38 +78,88 @@ export function CascadeLobby({
   onShowRulesClose,
 }: CascadeLobbyProps) {
   const { t } = useTranslation();
+  const { snapshot } = useSessionTokens();
   const options = useMemo(
     () => resolveOptions(room.gameOptions),
     [room.gameOptions],
   );
+
+  const handleOptionChange = useCallback(
+    (opts: Record<string, unknown>) => {
+      gamesApi.updateRoomOptions(room.id, opts, {
+        token: snapshot.accessToken ?? undefined,
+      });
+    },
+    [room.id, snapshot.accessToken],
+  );
+
   const variantTokens = useMemo(
     () =>
       CASCADE_VARIANTS.find((v) => v.id === options.variant) ??
       CASCADE_VARIANTS[0],
     [options.variant],
   );
-  const modeTokens = useMemo(
-    () =>
-      CASCADE_MODES.find((m) => m.id === options.mode) ?? CASCADE_MODES[0],
-    [options.mode],
-  );
 
   const optionsSlot = (
-    <YStack gap="$3" padding="$3" borderRadius="$3" backgroundColor="rgba(0,0,0,0.18)">
+    <YStack
+      gap="$3"
+      padding="$3"
+      borderRadius="$3"
+      backgroundColor="rgba(0,0,0,0.18)"
+    >
       <Text color="#fff" fontWeight="600">
         {t(variantTokens.name)}
       </Text>
       <Text color="#cbd5e1" fontSize={13}>
         {t(variantTokens.description)}
       </Text>
-      <XStack alignItems="center" gap="$2" paddingTop="$2">
-        <Text color="#fbbf24" fontWeight="600">
-          {modeTokens.emoji} {t(modeTokens.name)}
-        </Text>
-        <Text color="#cbd5e1" fontSize={12}>
-          · {t(modeTokens.description)}
-        </Text>
-      </XStack>
+
+      {isHost && (
+        <YStack gap="$2">
+          <Text color="#fbbf24" fontWeight="600" fontSize={13}>
+            {t('games.create.cascadeMode') || 'Game Mode'}
+          </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {(['classic', 'pure', 'speed'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => handleOptionChange({ mode })}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 8,
+                  border: `1px solid ${options.mode === mode ? '#fbbf24' : 'rgba(255,255,255,0.2)'}`,
+                  backgroundColor:
+                    options.mode === mode
+                      ? 'rgba(251,191,36,0.15)'
+                      : 'transparent',
+                  color: options.mode === mode ? '#fbbf24' : '#e2e8f0',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                {mode === 'classic'
+                  ? t('games.create.cascadeModeClassic') || 'Classic'
+                  : mode === 'pure'
+                    ? t('games.create.cascadeModePure') || 'Pure'
+                    : t('games.create.cascadeModeSpeed') || 'Speed'}
+              </button>
+            ))}
+          </XStack>
+          <Text color="#94a3b8" fontSize={12}>
+            {options.mode === 'pure'
+              ? t('games.create.cascadeModePureHint') ||
+                'No stacking — draw cards resolve immediately'
+              : options.mode === 'speed'
+                ? t('games.create.cascadeModeSpeedHint') ||
+                  'Stacking enabled with per-turn timer'
+                : t('games.create.cascadeModeClassicHint') ||
+                  'Full ruleset with stacking'}
+          </Text>
+        </YStack>
+      )}
+
       <XStack alignItems="center" gap="$2">
         <Switch
           checked={options.stackingEnabled}
@@ -121,19 +171,38 @@ export function CascadeLobby({
         </Switch>
         <Text color="#e2e8f0">{t('games.cascade_v1.lobby.stacking')}</Text>
       </XStack>
-      <XStack alignItems="center" gap="$2">
-        <Switch
-          checked={options.lastCardCallEnabled}
-          disabled
-          size="$2"
-          aria-label="Last-Card race"
-        >
-          <Switch.Thumb />
-        </Switch>
-        <Text color="#e2e8f0">
-          {t('games.cascade_v1.lobby.lastCardCall')}
-        </Text>
-      </XStack>
+
+      {isHost ? (
+        <XStack alignItems="center" gap="$2">
+          <Switch
+            checked={options.lastCardCallEnabled}
+            onCheckedChange={(val) =>
+              handleOptionChange({ lastCardCallEnabled: val })
+            }
+            size="$2"
+            aria-label="Last-Card race"
+          >
+            <Switch.Thumb />
+          </Switch>
+          <Text color="#e2e8f0">
+            {t('games.cascade_v1.lobby.lastCardCall')}
+          </Text>
+        </XStack>
+      ) : (
+        <XStack alignItems="center" gap="$2">
+          <Switch
+            checked={options.lastCardCallEnabled}
+            disabled
+            size="$2"
+            aria-label="Last-Card race"
+          >
+            <Switch.Thumb />
+          </Switch>
+          <Text color="#e2e8f0">
+            {t('games.cascade_v1.lobby.lastCardCall')}
+          </Text>
+        </XStack>
+      )}
     </YStack>
   );
 

@@ -62,8 +62,50 @@ export default function StatsPage({
     initialData: initialStats,
   });
 
-  const localStats = useLocalStatsStore((s) => s.getOverview());
-  const localBreakdown = useLocalStatsStore((s) => s.getByGameType());
+  const records = useLocalStatsStore((s) => s.records);
+  const localBreakdown = useMemo(() => {
+    const byGame = new Map<
+      string,
+      { totalGames: number; wins: number; losses: number; draws: number }
+    >();
+    for (const record of records) {
+      const existing = byGame.get(record.gameId) ?? {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+      };
+      existing.totalGames++;
+      if (record.result === 'won') existing.wins++;
+      else if (record.result === 'lost') existing.losses++;
+      else existing.draws++;
+      byGame.set(record.gameId, existing);
+    }
+    return Array.from(byGame.entries())
+      .map(([gameId, stats]) => ({
+        gameId,
+        ...stats,
+        winRate:
+          stats.totalGames > 0
+            ? Math.round((stats.wins / stats.totalGames) * 100)
+            : 0,
+      }))
+      .sort((a, b) => b.totalGames - a.totalGames);
+  }, [records]);
+  const localStats = useMemo(() => {
+    const wins = records.filter((r) => r.result === 'won').length;
+    const losses = records.filter((r) => r.result === 'lost').length;
+    const draws = records.filter((r) => r.result === 'draw').length;
+    const totalGames = records.length;
+    return {
+      totalGames,
+      wins,
+      losses,
+      draws,
+      winRate: totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0,
+      byGameType: localBreakdown,
+    };
+  }, [records, localBreakdown]);
   const hasLocalStats = localStats.totalGames > 0;
 
   const {

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.20] - 2026-07-01
+
+### Added
+- in-game emotes & quick reactions (ARC-872) (ARC-872)
+
+### Fixed
+- use domcontentloaded in E2E page.reload() to prevent ChunkLoadError flake (ARC-872)
+
+
 ## [1.22.19] - 2026-07-01
 
 ### Added

@@ -7,6 +7,11 @@ export const en = {
   loginRequired: 'Please log in to view your statistics.',
   errorLoading: 'Error loading stats',
   loginRequiredBarrier: 'Login required to view statistics',
+  localStatsNotice:
+    'Stats stored locally on this device. Log in to sync across devices.',
+  noLocalStats: 'Play some games to see your stats here!',
+  logInToTrack: 'Log In to Track',
+  syncToAccount: 'Log In to Sync Stats',
   // Overview cards
   totalGames: 'Total Games',
   wins: 'Wins',
@@ -35,6 +40,11 @@ export const es = {
   loginRequired: 'Por favor inicia sesión para ver tus estadísticas.',
   errorLoading: 'Error al cargar estadísticas',
   loginRequiredBarrier: 'Inicia sesión para ver las estadísticas',
+  localStatsNotice:
+    'Estadísticas guardadas localmente en este dispositivo. Inicia sesión para sincronizar.',
+  noLocalStats: '¡Juega algunas partidas para ver tus estadísticas aquí!',
+  logInToTrack: 'Iniciar Sesión para Registrar',
+  syncToAccount: 'Iniciar Sesión para Sincronizar',
   // Overview cards
   totalGames: 'Juegos Totales',
   wins: 'Victorias',
@@ -63,6 +73,11 @@ export const fr = {
   loginRequired: 'Veuillez vous connecter pour voir vos statistiques.',
   errorLoading: 'Erreur de chargement des statistiques',
   loginRequiredBarrier: 'Connexion requise pour voir les statistiques',
+  localStatsNotice:
+    'Stats enregistrées localement sur cet appareil. Connectez-vous pour synchroniser.',
+  noLocalStats: 'Jouez quelques parties pour voir vos stats ici !',
+  logInToTrack: 'Se Connecter pour Suivre',
+  syncToAccount: 'Se Connecter pour Synchroniser',
   // Overview cards
   totalGames: 'Total des Parties',
   wins: 'Victoires',
@@ -91,6 +106,11 @@ export const ru = {
   loginRequired: 'Пожалуйста, войдите, чтобы просмотреть статистику.',
   errorLoading: 'Ошибка загрузки статистики',
   loginRequiredBarrier: 'Войдите, чтобы просмотреть статистику',
+  localStatsNotice:
+    'Статистика сохранена локально на этом устройстве. Войдите для синхронизации.',
+  noLocalStats: 'Сыграйте несколько партий, чтобы увидеть статистику здесь!',
+  logInToTrack: 'Войти для отслеживания',
+  syncToAccount: 'Войти для синхронизации',
   // Overview cards
   totalGames: 'Всего игр',
   wins: 'Победы',
@@ -119,6 +139,11 @@ export const by = {
   loginRequired: 'Калі ласка, увайдзіце, каб праглядзець статыстыку.',
   errorLoading: 'Памылка загрузкі статыстыкі',
   loginRequiredBarrier: 'Увайдзіце, каб прагледзець статыстыку',
+  localStatsNotice:
+    'Статыстыка захавана лакальна на гэтым прыладзе. Увайдзіце для сінхранізацыі.',
+  noLocalStats: 'Згуляйце некалькі партый, каб убачыць статыстыку тут!',
+  logInToTrack: 'Увайсці для адсочвання',
+  syncToAccount: 'Увайсці для сінхранізацыі',
   // Overview cards
   totalGames: 'Усяго гульняў',
   wins: 'Перамогі',

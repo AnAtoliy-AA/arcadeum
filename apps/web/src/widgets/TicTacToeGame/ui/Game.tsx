@@ -13,6 +13,7 @@ import {
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -108,6 +109,8 @@ function TicTacToeGameImpl({
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
   });
+
+  useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
 
   const { showResultModal, sharedResult, resultMessages, dismiss } =
     useGameResultModal(

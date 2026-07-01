@@ -111,6 +111,34 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     [roomId, userId],
   );
 
+  const useSonar = useCallback(
+    (targetPlayerId: string) => {
+      if (!userId) return;
+      onActionStart?.('useSonar');
+      gameSocket.emit('seaBattle.session.use_sonar', {
+        roomId,
+        userId,
+        targetPlayerId,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
+  const useRadar = useCallback(
+    (targetPlayerId: string, row?: number, col?: number) => {
+      if (!userId) return;
+      onActionStart?.('useRadar');
+      gameSocket.emit('seaBattle.session.use_radar', {
+        roomId,
+        userId,
+        targetPlayerId,
+        row,
+        col,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
   return {
     startSession,
     placeShip,
@@ -120,5 +148,7 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     postHistoryNote,
     resetPlacement,
     autoPlace,
+    useSonar,
+    useRadar,
   };
 }

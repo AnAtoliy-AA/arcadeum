@@ -10,6 +10,8 @@ import {
   PlaceShipPayload,
   MoveShipPayload,
   AttackPayload,
+  SonarPayload,
+  RadarPayload,
 } from './sea-battle.types';
 import { areCellsValid, areCellsConnected } from './sea-battle.utils';
 import {
@@ -202,6 +204,83 @@ export function validateAttack(
   if (cellState === CELL_STATE.HIT || cellState === CELL_STATE.MISS) {
     return false;
   }
+
+  return true;
+}
+
+export function validateUseSonar(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: SonarPayload,
+): boolean {
+  if (state.phase !== GAME_PHASE.BATTLE) return false;
+  if (!state.specialWeapons?.sonar) return false;
+
+  const activeId = state.teams
+    ? getActiveShooterId(state)
+    : state.playerOrder[state.currentTurnIndex];
+  if (player.playerId !== activeId) return false;
+
+  const usage = state.specialWeaponUsage?.[player.playerId];
+  if (usage?.sonarUsed) return false;
+
+  if (!payload?.targetPlayerId) return false;
+  if (payload.targetPlayerId === player.playerId) return false;
+
+  if (
+    state.teams &&
+    arePlayersOnSameTeam(state, player.playerId, payload.targetPlayerId)
+  ) {
+    return false;
+  }
+
+  const target = state.players.find(
+    (p) => p.playerId === payload.targetPlayerId,
+  );
+  if (!target || !target.alive) return false;
+
+  return true;
+}
+
+export function validateUseRadar(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: RadarPayload,
+): boolean {
+  if (state.phase !== GAME_PHASE.BATTLE) return false;
+  if (!state.specialWeapons?.radar) return false;
+
+  const activeId = state.teams
+    ? getActiveShooterId(state)
+    : state.playerOrder[state.currentTurnIndex];
+  if (player.playerId !== activeId) return false;
+
+  const usage = state.specialWeaponUsage?.[player.playerId];
+  if (usage?.radarUsed) return false;
+
+  if (!payload?.targetPlayerId) return false;
+  if (payload.targetPlayerId === player.playerId) return false;
+
+  if (
+    state.teams &&
+    arePlayersOnSameTeam(state, player.playerId, payload.targetPlayerId)
+  ) {
+    return false;
+  }
+
+  const target = state.players.find(
+    (p) => p.playerId === payload.targetPlayerId,
+  );
+  if (!target || !target.alive) return false;
+
+  const hasRow = payload.row !== undefined;
+  const hasCol = payload.col !== undefined;
+  if (!hasRow && !hasCol) return false;
+  if (hasRow && hasCol) return false;
+
+  const gSize = state.gridSize ?? BOARD_SIZE;
+  if (hasRow && (payload.row! < 0 || payload.row! >= gSize)) return false;
+  if (hasCol && (payload.col! < 0 || payload.col! >= gSize)) return false;
 
   return true;
 }

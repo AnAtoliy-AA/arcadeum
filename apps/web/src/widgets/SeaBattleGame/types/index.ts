@@ -124,6 +124,23 @@ export interface SeaBattleSnapshot {
   teamOrder?: string[];
   currentTeamIndex?: number;
   hideShipsFromTeammates?: boolean;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeaponUsage?: Record<
+    string,
+    { sonarUsed?: boolean; radarUsed?: boolean }
+  >;
+  lastSonar?: {
+    attackerId: string;
+    targetId: string;
+    shipPositions: ShipCell[];
+  };
+  lastRadar?: {
+    attackerId: string;
+    targetId: string;
+    row?: number;
+    col?: number;
+    cells: { row: number; col: number; state: CellState }[];
+  };
 }
 
 export interface SeaBattleGameProps extends BaseGameWidgetProps {}

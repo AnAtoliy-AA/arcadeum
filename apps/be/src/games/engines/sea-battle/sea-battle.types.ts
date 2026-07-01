@@ -63,6 +63,19 @@ export interface SeaBattleState {
   hideShipsFromTeammates?: boolean;
   mode?: GameModeVariant;
   roundNumber?: number;
+  specialWeaponUsage?: Record<string, SpecialWeaponUsage>;
+  lastSonar?: {
+    attackerId: string;
+    targetId: string;
+    shipPositions: ShipCell[];
+  };
+  lastRadar?: {
+    attackerId: string;
+    targetId: string;
+    row?: number;
+    col?: number;
+    cells: { row: number; col: number; state: CellState }[];
+  };
   [key: string]: unknown;
 }
 
@@ -96,7 +109,22 @@ export interface AttackPayload {
   col: number;
 }
 
+export interface SonarPayload {
+  targetPlayerId: string;
+}
+
+export interface RadarPayload {
+  targetPlayerId: string;
+  row?: number;
+  col?: number;
+}
+
 export interface ChatPayload {
   message: string;
   scope?: ChatScope;
+}
+
+export interface SpecialWeaponUsage {
+  sonarUsed?: boolean;
+  radarUsed?: boolean;
 }

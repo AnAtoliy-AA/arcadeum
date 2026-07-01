@@ -86,6 +86,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     resetPlacement,
     postHistoryNote: postHistoryNoteAction,
     autoPlace,
+    useSonar,
+    useRadar,
   } = useSeaBattleActions({
     roomId,
     userId: currentUserId,
@@ -418,6 +420,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
             isMyTurn={isMyTurn}
             attack={attack}
+            onSonar={useSonar}
+            onRadar={useRadar}
             resolveDisplayNameBound={resolveDisplayNameBound}
             teammateIds={teammateIds}
             teams={teams}

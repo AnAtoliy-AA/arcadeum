@@ -133,6 +133,18 @@ export function sanitizeSeaBattleState(
     return true;
   });
 
+  if (sanitized.lastSonar && sanitized.lastSonar.attackerId !== playerId) {
+    delete sanitized.lastSonar;
+  }
+  if (sanitized.lastRadar && sanitized.lastRadar.attackerId !== playerId) {
+    delete sanitized.lastRadar;
+  }
+
+  if (sanitized.specialWeaponUsage) {
+    const myUsage = sanitized.specialWeaponUsage[playerId];
+    sanitized.specialWeaponUsage = myUsage ? { [playerId]: myUsage } : {};
+  }
+
   return sanitized;
 }
 
@@ -166,6 +178,14 @@ export function getSeaBattleAvailableActions(
       : state.playerOrder[state.currentTurnIndex];
     if (playerId === activeId) {
       actions.push('attack');
+
+      const usage = state.specialWeaponUsage?.[playerId];
+      if (state.specialWeapons?.sonar && !usage?.sonarUsed) {
+        actions.push('useSonar');
+      }
+      if (state.specialWeapons?.radar && !usage?.radarUsed) {
+        actions.push('useRadar');
+      }
     }
   }
 

@@ -24,6 +24,8 @@ import {
   PlaceShipPayload,
   MoveShipPayload,
   AttackPayload,
+  SonarPayload,
+  RadarPayload,
   ChatPayload,
 } from './sea-battle.types';
 import {
@@ -39,7 +41,10 @@ import {
   validateConfirmPlacement,
   validateResetPlacement,
   validateAttack,
+  validateUseSonar,
+  validateUseRadar,
 } from './sea-battle.validators';
+import { executeSonar, executeRadar } from './sea-battle.special-weapons';
 import { validateSeaBattleConfig } from './sea-battle.config';
 import {
   advanceTeamRotationOnMiss,
@@ -132,9 +137,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     const { userId } = context;
     const player = state.players.find((p) => p.playerId === userId);
 
-    if (!player || !player.alive) {
-      return false;
-    }
+    if (!player || !player.alive) return false;
 
     switch (action) {
       case 'placeShip':
@@ -154,7 +157,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       }
       case 'attack':
         return validateAttack(state, player, payload as AttackPayload);
-
+      case 'useSonar':
+        return validateUseSonar(state, player, payload as SonarPayload);
+      case 'useRadar':
+        return validateUseRadar(state, player, payload as RadarPayload);
       case 'resetPlacement':
         return validateResetPlacement(state, player);
       case 'chat':
@@ -165,9 +171,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   }
 
   normalizeState(state: SeaBattleState): SeaBattleState {
-    // Heal team rotations that may have drifted (e.g. a team's shooter pointer
-    // left on a dead player by a pre-ARC-646 server). Mutates in place and
-    // returns the same reference. Idempotent on healthy state.
     if (state.phase === GAME_PHASE.BATTLE && state.teams) {
       healStuckTeamRotation(state);
     }
@@ -182,10 +185,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   ): GameActionResult<SeaBattleState> {
     const newState = this.cloneState(state);
     const player = newState.players.find((p) => p.playerId === context.userId);
-
-    if (!player) {
-      return this.errorResult('Player not found');
-    }
+    if (!player) return this.errorResult('Player not found');
 
     switch (action) {
       case 'placeShip':
@@ -200,6 +200,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return runResetPlacement(newState, player);
       case 'attack':
         return this.executeAttack(newState, player, payload as AttackPayload);
+      case 'useSonar':
+        return executeSonar(newState, player, payload as SonarPayload);
+      case 'useRadar':
+        return executeRadar(newState, player, payload as RadarPayload);
       case 'chat':
         return this.executeChat(newState, player, payload as ChatPayload);
       default:
@@ -370,11 +374,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
   isGameOver(state: SeaBattleState): boolean {
     if (state.phase !== GAME_PHASE.BATTLE) return false;
-    if (state.teams) {
-      return countAliveTeams(state) <= 1;
-    }
-    const alivePlayers = state.players.filter((p) => p.alive);
-    return alivePlayers.length <= 1;
+    if (state.teams) return countAliveTeams(state) <= 1;
+    return state.players.filter((p) => p.alive).length <= 1;
   }
 
   getWinners(state: SeaBattleState): string[] {

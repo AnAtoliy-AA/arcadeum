@@ -7,6 +7,16 @@ export const EMOTE_IDS = [
   'nice',
   'unlucky',
   'rip',
+  'fire',
+  'clap',
+  'cry',
+  'angry',
+  'rocket',
+  'heart',
+  'brain',
+  'skull',
+  'sweat',
+  'clown',
 ] as const;
 
 export type EmoteId = (typeof EMOTE_IDS)[number];

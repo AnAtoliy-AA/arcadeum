@@ -14,6 +14,7 @@ import { extractString } from './games.gateway.utils';
 import { EMOTE_IDS, type EmoteId } from './dtos/send-emote.dto';
 import {
   maybeEncrypt,
+  maybeDecrypt,
   isSocketEncryptionEnabled,
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
@@ -435,11 +436,16 @@ export class GamesGateway {
   handleEmote(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; emoteId?: string },
+    payload: unknown,
   ): void {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-    const emoteId = extractString(payload, 'emoteId');
+    const decrypted = maybeDecrypt<{
+      roomId?: string;
+      userId?: string;
+      emoteId?: string;
+    }>(payload);
+    const roomId = extractString(decrypted, 'roomId');
+    const userId = extractString(decrypted, 'userId');
+    const emoteId = extractString(decrypted, 'emoteId');
 
     if (!roomId || !userId || !emoteId) return;
 

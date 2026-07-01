@@ -129,11 +129,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   } else if (media.short) {
     // Phone-sized landscape (very short viewport): cap at 2 cols so boards
     // stay playable when there are many players.
-    const fits = Math.max(
-      1,
-      Math.floor(containerWidth / MIN_BOARD_WIDTH_MOBILE_LANDSCAPE),
-    );
-    cols = Math.min(2, count, fits || 2);
+    // When containerWidth is 0 (before ResizeObserver fires), default to
+    // 2 cols so the grid layout renders immediately instead of falling
+    // back to the single-column flex layout.
+    const fits =
+      containerWidth > 0
+        ? Math.floor(containerWidth / MIN_BOARD_WIDTH_MOBILE_LANDSCAPE)
+        : 2;
+    cols = Math.min(2, count, Math.max(1, fits));
   } else if (isCompact && isLandscape) {
     // Small-tablet / narrow landscape that isn't "short" (e.g. 800×600).
     // Always at least 2 boards in a row, but otherwise use the balanced

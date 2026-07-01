@@ -17,6 +17,7 @@ import {
   GameWidgetContainer,
   type TurnStatusVariant,
 } from '@/features/games/ui';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
@@ -309,6 +310,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
     return 'defeat';
   }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
+
+  const localGameResult = useMemo(() => {
+    if (!gameResult) return null;
+    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
+  }, [gameResult]);
+  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
 
   const headerTitle = useMemo(
     () =>

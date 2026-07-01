@@ -13,6 +13,7 @@ import {
   usePendingStart,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
@@ -113,6 +114,8 @@ function CascadeGameImpl({
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
   });
+
+  useRecordGameResult(result, 'cascade_v1', session?.id);
 
   const { showResultModal, sharedResult, resultMessages, dismiss } =
     useGameResultModal(

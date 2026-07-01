@@ -1,11 +1,5 @@
 'use client';
-import {
-  Children,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMedia } from 'tamagui';
 
 interface SeaBattleGridsProps {
@@ -89,6 +83,10 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   useEffect(() => {
     const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
+    // Re-evaluate immediately on mount in case the useState initializer
+    // read stale window dimensions (e.g. WebKit headless where the
+    // Playwright viewport may not be reflected at hydration time).
+    update();
     window.addEventListener('resize', update);
     window.addEventListener('orientationchange', update);
     return () => {

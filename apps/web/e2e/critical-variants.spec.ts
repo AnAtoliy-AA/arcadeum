@@ -81,7 +81,9 @@ test.describe('Critical Variant Selection', () => {
 
     // Navigate to game creation page
     await navigateTo(page, '/games/create');
-    await page.waitForLoadState('networkidle');
+    await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible(
+      {},
+    );
 
     // Select Critical game tile
     const criticalTile = page.getByTestId('game-tile-critical_v1');
@@ -105,12 +107,10 @@ test.describe('Critical Variant Selection', () => {
       .first();
     await expect(gameHeading).toBeVisible({});
 
-    // Select High-Altitude Hike variant in the lobby
-    const hikeVariant = page
-      .locator('button')
-      .filter({ hasText: /High-Altitude Hike/i });
-    await expect(hikeVariant).toBeVisible({});
-    await hikeVariant.click();
+    // Select High-Altitude Hike variant in the lobby (it's a dropdown)
+    const variantSelect = page.locator('select[aria-label="Select Game Variant"]');
+    await expect(variantSelect).toBeVisible({});
+    await variantSelect.selectOption({ label: /High-Altitude Hike/i });
 
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();

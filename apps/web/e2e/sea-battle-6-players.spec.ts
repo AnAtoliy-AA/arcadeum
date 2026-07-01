@@ -226,12 +226,16 @@ test.describe('Sea Battle 6 Players Layout', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    // Verify 2 boards are visible in the same row
+    // Verify 2 boards are visible in the same row.
+    // The container starts with display:flex on first render (containerWidth=0
+    // before ResizeObserver fires), then switches to display:grid once the
+    // observer measures the real width. Poll until the grid layout appears.
     const container = page.getByTestId('sea-battle-grids-container');
-    const display = await container.evaluate(
-      (el) => window.getComputedStyle(el).display,
-    );
-    expect(display).toBe('grid');
+    await expect.poll(
+      async () =>
+        container.evaluate((el) => window.getComputedStyle(el).display),
+      { timeout: 5000 },
+    ).toBe('grid');
 
     const gridTemplateColumns = await container.evaluate(
       (el) => window.getComputedStyle(el).gridTemplateColumns,

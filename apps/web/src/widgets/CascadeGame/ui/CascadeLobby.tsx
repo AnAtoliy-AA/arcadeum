@@ -107,12 +107,45 @@ export function CascadeLobby({
       borderRadius="$3"
       backgroundColor="rgba(0,0,0,0.18)"
     >
-      <Text color="#fff" fontWeight="600">
-        {t(variantTokens.name)}
-      </Text>
-      <Text color="#cbd5e1" fontSize={13}>
-        {t(variantTokens.description)}
-      </Text>
+      {isHost && (
+        <YStack gap="$2">
+          <Text color="#fbbf24" fontWeight="600" fontSize={13}>
+            {t('games.create.sectionVariant') || 'Theme'}
+          </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {CASCADE_VARIANTS.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => handleOptionChange({ variant: v.id })}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  border: `1px solid ${options.variant === v.id ? '#fbbf24' : 'rgba(255,255,255,0.2)'}`,
+                  backgroundColor: options.variant === v.id ? 'rgba(251,191,36,0.15)' : 'transparent',
+                  color: options.variant === v.id ? '#fbbf24' : '#e2e8f0',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                {v.emoji} {t(v.name)}
+              </button>
+            ))}
+          </XStack>
+        </YStack>
+      )}
+
+      {!isHost && (
+        <YStack gap="$1">
+          <Text color="#fff" fontWeight="600">
+            {variantTokens.emoji} {t(variantTokens.name)}
+          </Text>
+          <Text color="#cbd5e1" fontSize={13}>
+            {t(variantTokens.description)}
+          </Text>
+        </YStack>
+      )}
 
       {isHost && (
         <YStack gap="$2">

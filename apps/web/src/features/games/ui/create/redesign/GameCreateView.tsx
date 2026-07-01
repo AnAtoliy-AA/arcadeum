@@ -21,7 +21,6 @@ import { SectionGroup } from './SectionGroup';
 import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
-import { ThemePicker } from './ThemePicker';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
@@ -82,18 +81,8 @@ function toApiVisibility(v: Visibility): 'public' | 'private' {
 function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'critical_v1') {
     return {
-      cardVariant: form.themeId || undefined,
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
     };
-  }
-  if (form.gameId === 'sea_battle_v1') {
-    return { variant: form.themeId || undefined };
-  }
-  if (form.gameId === 'tic_tac_toe_v1') {
-    return { variant: form.themeId || 'classic' };
-  }
-  if (form.gameId === 'cascade_v1') {
-    return { variant: form.themeId || 'cosmic' };
   }
   return {};
 }
@@ -194,11 +183,6 @@ export function GameCreateView() {
     updateUrl({ gameId: newGameId, themeId });
   }
 
-  function setThemeId(themeId: string) {
-    setForm({ ...form, themeId });
-    updateUrl({ gameId: form.gameId, themeId });
-  }
-
   function setExpansionPackIds(ids: string[]) {
     const withCore = ids.includes('core') ? ids : ['core', ...ids];
     setForm((prev) => ({
@@ -294,7 +278,6 @@ export function GameCreateView() {
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
-  const numTheme = game.hasThemes ? String(n++).padStart(2, '0') : null;
   const numDetails = String(n++).padStart(2, '0');
 
   return (
@@ -348,16 +331,6 @@ export function GameCreateView() {
                       value={form.expansionPackIds}
                       labels={L.expansion}
                       onChange={setExpansionPackIds}
-                    />
-                  </SectionGroup>
-                ) : null}
-
-                {numTheme ? (
-                  <SectionGroup num={numTheme} title={L.sectionTheme}>
-                    <ThemePicker
-                      gameId={form.gameId}
-                      value={form.themeId}
-                      onChange={setThemeId}
                     />
                   </SectionGroup>
                 ) : null}

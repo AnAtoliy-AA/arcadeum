@@ -104,9 +104,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     (options: Record<string, unknown>) => {
       gamesApi.updateRoomOptions(room.id, options, {
         token: snapshot.accessToken ?? undefined,
-      });
+      }).then(() => onRefresh?.());
     },
-    [room.id, snapshot.accessToken],
+    [room.id, snapshot.accessToken, onRefresh],
   );
 
   // Team mode state derived from room game options

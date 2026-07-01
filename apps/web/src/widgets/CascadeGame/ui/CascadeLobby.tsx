@@ -88,9 +88,9 @@ export function CascadeLobby({
     (opts: Record<string, unknown>) => {
       gamesApi.updateRoomOptions(room.id, opts, {
         token: snapshot.accessToken ?? undefined,
-      });
+      }).then(() => onRefresh?.());
     },
-    [room.id, snapshot.accessToken],
+    [room.id, snapshot.accessToken, onRefresh],
   );
 
   const variantTokens = useMemo(

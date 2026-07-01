@@ -398,9 +398,10 @@ export function ReusableGameLobby({
                 <input
                   type="checkbox"
                   checked={!!room.gameOptions?.idleTimerAutoplay}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
-                  }
+                      .then(() => onRefresh?.());
+                  }}
                   style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
                 />
                 <Text fontSize="$3">
@@ -411,9 +412,10 @@ export function ReusableGameLobby({
                 <input
                   type="checkbox"
                   checked={room.gameOptions?.allowSpectators !== false}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     gamesApi.updateRoomOptions(room.id, { allowSpectators: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
-                  }
+                      .then(() => onRefresh?.());
+                  }}
                   style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
                 />
                 <Text fontSize="$3">

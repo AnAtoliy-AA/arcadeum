@@ -1,5 +1,11 @@
 'use client';
-import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  Children,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useMedia } from 'tamagui';
 
 interface SeaBattleGridsProps {
@@ -42,7 +48,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
-  const [isLandscape, setIsLandscape] = useState(false);
+
+  // Compute landscape synchronously from window dimensions. Tamagui's
+  // useMedia() may hydrate with SSR defaults (all false) and stay stale
+  // if no matchMedia events fire (e.g. viewport set before page load in
+  // CI). Reading window directly avoids the async useEffect + useState
+  // pattern that can leave isLandscape stuck at false.
+  const [isLandscape, setIsLandscape] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth > window.innerHeight;
+  });
   // Widget-level fullscreen: ancestor matches `.game-widget-container.is-fullscreen`
   // (the expand button on the widget header). This is the "fit every
   // board on one screen" state and is the only state where the grid is
@@ -74,7 +89,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   useEffect(() => {
     const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
-    update();
     window.addEventListener('resize', update);
     window.addEventListener('orientationchange', update);
     return () => {
@@ -165,16 +179,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // room, not a different column count.
   const wantsTwoColCap = !media.gtMd && (isWidgetFullscreen || isLandscape);
   if (wantsTwoColCap && cols > 2) {
-    cols = 2;
-  }
-
-  // Floor: when containerWidth is 0 (before ResizeObserver fires) and
-  // isLandscape hasn't been set yet by its useEffect, the fits-based
-  // calculation may produce cols=1 even for multi-player non-portrait
-  // views. Force at least 2 cols so the grid layout renders immediately.
-  // Use the synchronous isMobilePortrait check (media queries + isLandscape
-  // default false) to avoid the single-column flex fallback.
-  if (containerWidth === 0 && count > 1 && !isMobilePortrait && cols < 2) {
     cols = 2;
   }
 

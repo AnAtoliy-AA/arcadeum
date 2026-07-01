@@ -4,7 +4,6 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { gamesApi } from '@/features/games/api';
 import type { CatalogVariant } from '@/features/games/api';
 import { Section } from '@arcadeum/ui/components/Section/Section';
@@ -27,24 +26,21 @@ import {
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
 import { YStack, XStack, Text } from 'tamagui';
+import { CASCADE_VARIANTS } from '../lib/constants';
 
-interface SeaBattleOptions {
+interface CascadeOptions {
   variant?: string;
-  gridSize?: number;
-  shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  options?: {
+    mode?: string;
+    lastCardCallEnabled?: boolean;
+    handLimit?: number;
+  };
 }
 
-const GRID_SIZES = [
-  { value: 10, label: '10×10', description: 'Standard' },
-  { value: 15, label: '15×15', description: 'Large' },
-  { value: 20, label: '20×20', description: 'Huge' },
-] as const;
-
-export default function SeaBattleCreationConfig({
+export default function CascadeCreationConfig({
   options,
   onChange,
-}: GameCreationConfigProps<SeaBattleOptions>) {
+}: GameCreationConfigProps<CascadeOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
   const [allowedVariants, setAllowedVariants] = useState<
@@ -57,7 +53,7 @@ export default function SeaBattleCreationConfig({
       .getCatalog()
       .then((res) => {
         if (cancelled) return;
-        const entry = res.games.find((g) => g.gameId === 'sea_battle_v1');
+        const entry = res.games.find((g) => g.gameId === 'cascade_v1');
         setAllowedVariants(entry?.variants ?? null);
       })
       .catch(() => {
@@ -70,8 +66,8 @@ export default function SeaBattleCreationConfig({
 
   const visibleVariants =
     allowedVariants === null
-      ? SEA_BATTLE_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
-      : SEA_BATTLE_VARIANTS.filter((v) =>
+      ? CASCADE_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
+      : CASCADE_VARIANTS.filter((v) =>
           allowedVariants.some((a) => a.id === v.id),
         ).map((v) => ({
           ...v,
@@ -81,14 +77,24 @@ export default function SeaBattleCreationConfig({
 
   useEffect(() => {
     if (!options.variant) {
-      onChange({ ...options, variant: 'classic' });
+      onChange({ ...options, variant: 'cosmic' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.variant]);
 
-  const handleUpdate = (updates: Partial<SeaBattleOptions>) => {
+  const handleUpdate = (updates: Partial<CascadeOptions>) => {
     onChange({ ...options, ...updates });
   };
+
+  const handleOptionsUpdate = (
+    optionUpdates: Partial<NonNullable<CascadeOptions['options']>>,
+  ) => {
+    handleUpdate({
+      options: { ...options.options, ...optionUpdates },
+    });
+  };
+
+  const currentMode = options.options?.mode ?? 'classic';
 
   return (
     <>
@@ -155,69 +161,60 @@ export default function SeaBattleCreationConfig({
         <YStack gap="$3">
           <YStack gap="$1">
             <Text fontSize="$4" fontWeight="600">
-              {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              {t('games.create.cascadeMode') || 'Game Mode'}
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              {GRID_SIZES.map((gs) => (
+              {(['classic', 'pure', 'speed'] as const).map((mode) => (
                 <Button
-                  key={gs.value}
+                  key={mode}
                   variant="secondary"
                   size="sm"
-                  isActive={(options.gridSize ?? 10) === gs.value}
-                  onClick={() => handleUpdate({ gridSize: gs.value })}
-                  data-testid={`grid-size-${gs.value}`}
+                  isActive={currentMode === mode}
+                  onClick={() => handleOptionsUpdate({ mode })}
+                  data-testid={`cascade-mode-${mode}`}
                 >
-                  {gs.label}
+                  {mode === 'classic'
+                    ? t('games.create.cascadeModeClassic') || 'Classic'
+                    : mode === 'pure'
+                      ? t('games.create.cascadeModePure') || 'Pure'
+                      : t('games.create.cascadeModeSpeed') || 'Speed'}
                 </Button>
               ))}
             </XStack>
+            <Text fontSize="$3" color="$colorSecondary">
+              {currentMode === 'pure'
+                ? t('games.create.cascadeModePureHint') ||
+                  'No stacking — draw cards resolve immediately'
+                : currentMode === 'speed'
+                  ? t('games.create.cascadeModeSpeedHint') ||
+                    'Stacking enabled with per-turn timer'
+                  : t('games.create.cascadeModeClassicHint') ||
+                    'Full ruleset with stacking'}
+            </Text>
           </YStack>
 
           <ExpansionGrid>
             <ExpansionCheckbox>
               <input
                 type="checkbox"
-                checked={!!options.specialWeapons?.sonar}
+                checked={options.options?.lastCardCallEnabled !== false}
                 onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      sonar: !options.specialWeapons?.sonar,
-                    },
+                  handleOptionsUpdate({
+                    lastCardCallEnabled:
+                      options.options?.lastCardCallEnabled !== false
+                        ? false
+                        : true,
                   })
                 }
               />
               <YStack flex={1} gap="$0.5">
                 <ExpansionLabel>
-                  {t('games.create.seaBattleSonar') || 'Sonar'}
+                  {t('games.create.cascadeLastCardCall') ||
+                    'Last-Card Cascade Call'}
                 </ExpansionLabel>
                 <ExpansionBadge>
-                  {t('games.create.seaBattleSonarHint') ||
-                    'Reveal ship locations'}
-                </ExpansionBadge>
-              </YStack>
-            </ExpansionCheckbox>
-
-            <ExpansionCheckbox>
-              <input
-                type="checkbox"
-                checked={!!options.specialWeapons?.radar}
-                onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      radar: !options.specialWeapons?.radar,
-                    },
-                  })
-                }
-              />
-              <YStack flex={1} gap="$0.5">
-                <ExpansionLabel>
-                  {t('games.create.seaBattleRadar') || 'Radar'}
-                </ExpansionLabel>
-                <ExpansionBadge>
-                  {t('games.create.seaBattleRadarHint') ||
-                    'Scan a row or column'}
+                  {t('games.create.cascadeLastCardCallHint') ||
+                    'Race to call when at 1 card'}
                 </ExpansionBadge>
               </YStack>
             </ExpansionCheckbox>
@@ -225,11 +222,7 @@ export default function SeaBattleCreationConfig({
         </YStack>
       </Section>
 
-      <RulesModal
-        isOpen={showRules}
-        onClose={() => setShowRules(false)}
-        t={t}
-      />
+      <RulesModal open={showRules} onClose={() => setShowRules(false)} />
     </>
   );
 }

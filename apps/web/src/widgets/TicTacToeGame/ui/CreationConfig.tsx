@@ -1,10 +1,6 @@
 import { useEffect } from 'react';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { gamesApi } from '@/features/games/api';
 import type { CatalogVariant } from '@/features/games/api';
 import { Section } from '@arcadeum/ui/components/Section/Section';
@@ -19,32 +15,73 @@ import {
   GameTileItem,
   GameTileContainer,
   ComingSoonBadge,
-  ExpansionGrid,
-  ExpansionCheckbox,
-  ExpansionLabel,
-  ExpansionBadge,
 } from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
 import { YStack, XStack, Text } from 'tamagui';
+import {
+  BOARD_SIZES,
+  WIN_LENGTHS,
+  MAX_PLAYERS_BY_BOARD_SIZE,
+  type BoardSize,
+} from '../types';
 
-interface SeaBattleOptions {
+interface TicTacToeOptions {
   variant?: string;
-  gridSize?: number;
-  shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  options?: {
+    boardSize?: BoardSize;
+  };
 }
 
-const GRID_SIZES = [
-  { value: 10, label: '10×10', description: 'Standard' },
-  { value: 15, label: '15×15', description: 'Large' },
-  { value: 20, label: '20×20', description: 'Huge' },
+const TIC_TAC_TOE_VARIANTS = [
+  {
+    id: 'classic',
+    emoji: '⭕',
+    name: 'games.tic_tac_toe_v1.variants.classic.name',
+    description: 'games.tic_tac_toe_v1.variants.classic.description',
+    gradient: '',
+  },
+  {
+    id: 'neon',
+    emoji: '💜',
+    name: 'games.tic_tac_toe_v1.variants.neon.name',
+    description: 'games.tic_tac_toe_v1.variants.neon.description',
+    gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+  },
+  {
+    id: 'paper',
+    emoji: '📝',
+    name: 'games.tic_tac_toe_v1.variants.paper.name',
+    description: 'games.tic_tac_toe_v1.variants.paper.description',
+    gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+  },
+  {
+    id: 'pixel',
+    emoji: '👾',
+    name: 'games.tic_tac_toe_v1.variants.pixel.name',
+    description: 'games.tic_tac_toe_v1.variants.pixel.description',
+    gradient: 'linear-gradient(135deg, #10b981, #34d399)',
+  },
+  {
+    id: 'chalkboard',
+    emoji: '🪧',
+    name: 'games.tic_tac_toe_v1.variants.chalkboard.name',
+    description: 'games.tic_tac_toe_v1.variants.chalkboard.description',
+    gradient: 'linear-gradient(135deg, #374151, #6b7280)',
+  },
+  {
+    id: 'retro',
+    emoji: '🕹️',
+    name: 'games.tic_tac_toe_v1.variants.retro.name',
+    description: 'games.tic_tac_toe_v1.variants.retro.description',
+    gradient: 'linear-gradient(135deg, #ef4444, #f97316)',
+  },
 ] as const;
 
-export default function SeaBattleCreationConfig({
+export default function TicTacToeCreationConfig({
   options,
   onChange,
-}: GameCreationConfigProps<SeaBattleOptions>) {
+}: GameCreationConfigProps<TicTacToeOptions>) {
   const { t } = useTranslation();
   const [showRules, setShowRules] = useState(false);
   const [allowedVariants, setAllowedVariants] = useState<
@@ -57,7 +94,7 @@ export default function SeaBattleCreationConfig({
       .getCatalog()
       .then((res) => {
         if (cancelled) return;
-        const entry = res.games.find((g) => g.gameId === 'sea_battle_v1');
+        const entry = res.games.find((g) => g.gameId === 'tic_tac_toe_v1');
         setAllowedVariants(entry?.variants ?? null);
       })
       .catch(() => {
@@ -70,8 +107,8 @@ export default function SeaBattleCreationConfig({
 
   const visibleVariants =
     allowedVariants === null
-      ? SEA_BATTLE_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
-      : SEA_BATTLE_VARIANTS.filter((v) =>
+      ? TIC_TAC_TOE_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
+      : TIC_TAC_TOE_VARIANTS.filter((v) =>
           allowedVariants.some((a) => a.id === v.id),
         ).map((v) => ({
           ...v,
@@ -86,9 +123,11 @@ export default function SeaBattleCreationConfig({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.variant]);
 
-  const handleUpdate = (updates: Partial<SeaBattleOptions>) => {
+  const handleUpdate = (updates: Partial<TicTacToeOptions>) => {
     onChange({ ...options, ...updates });
   };
+
+  const currentBoardSize = options.options?.boardSize ?? 3;
 
   return (
     <>
@@ -101,6 +140,7 @@ export default function SeaBattleCreationConfig({
             type="button"
             color="$accent"
             onClick={() => setShowRules(true)}
+            data-testid="view-rules-button"
           >
             📖 {t('games.rules.button') || 'View Game Rules'}
           </Button>
@@ -108,26 +148,27 @@ export default function SeaBattleCreationConfig({
         <GameSelector>
           {visibleVariants.map((variant) => {
             const isComingSoon = variant.comingSoon;
+            const isDisabled = isComingSoon;
             return (
               <GameTileContainer
                 key={variant.id}
                 data-testid={`variant-tile-${variant.id}`}
-                aria-disabled={isComingSoon || undefined}
-                disabled={isComingSoon}
+                aria-disabled={isDisabled || undefined}
+                disabled={isDisabled}
                 onClick={() =>
-                  !isComingSoon && handleUpdate({ variant: variant.id })
+                  !isDisabled && handleUpdate({ variant: variant.id })
                 }
               >
                 <GameTileItem
                   active={options.variant === variant.id}
-                  disabled={isComingSoon}
+                  disabled={isDisabled}
                 >
-                  {!isComingSoon && (
+                  {!isDisabled && (
                     <SelectionIndicator
                       active={options.variant === variant.id}
                     />
                   )}
-                  {isComingSoon && (
+                  {isDisabled && (
                     <ComingSoonBadge data-testid="coming-soon-badge">
                       {t('games.create.comingSoon') || 'Coming Soon'}
                     </ComingSoonBadge>
@@ -138,12 +179,8 @@ export default function SeaBattleCreationConfig({
                   >
                     {variant.emoji}
                   </GameTileIcon>
-                  <GameTileName>
-                    {t(variant.name as TranslationKey)}
-                  </GameTileName>
-                  <GameTileSummary>
-                    {t(variant.description as TranslationKey)}
-                  </GameTileSummary>
+                  <GameTileName>{variant.name}</GameTileName>
+                  <GameTileSummary>{variant.description}</GameTileSummary>
                 </GameTileItem>
               </GameTileContainer>
             );
@@ -155,80 +192,46 @@ export default function SeaBattleCreationConfig({
         <YStack gap="$3">
           <YStack gap="$1">
             <Text fontSize="$4" fontWeight="600">
-              {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              {t('games.create.tttBoardSize') || 'Board Size'}
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              {GRID_SIZES.map((gs) => (
+              {BOARD_SIZES.map((size) => (
                 <Button
-                  key={gs.value}
+                  key={size}
                   variant="secondary"
                   size="sm"
-                  isActive={(options.gridSize ?? 10) === gs.value}
-                  onClick={() => handleUpdate({ gridSize: gs.value })}
-                  data-testid={`grid-size-${gs.value}`}
+                  isActive={currentBoardSize === size}
+                  onClick={() =>
+                    handleUpdate({
+                      options: { ...options.options, boardSize: size },
+                    })
+                  }
+                  data-testid={`board-size-${size}`}
                 >
-                  {gs.label}
+                  {size}×{size}
                 </Button>
               ))}
             </XStack>
+            <Text fontSize="$3" color="$colorSecondary">
+              {t('games.create.tttWinLength', {
+                n: String(WIN_LENGTHS[currentBoardSize]),
+              }) || `${WIN_LENGTHS[currentBoardSize]} in a row to win`}
+            </Text>
+            <Text fontSize="$2" color="$colorTertiary">
+              {t('games.create.tttMaxPlayers', {
+                n: String(MAX_PLAYERS_BY_BOARD_SIZE[currentBoardSize]),
+              }) ||
+                `Up to ${MAX_PLAYERS_BY_BOARD_SIZE[currentBoardSize]} players`}
+            </Text>
           </YStack>
-
-          <ExpansionGrid>
-            <ExpansionCheckbox>
-              <input
-                type="checkbox"
-                checked={!!options.specialWeapons?.sonar}
-                onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      sonar: !options.specialWeapons?.sonar,
-                    },
-                  })
-                }
-              />
-              <YStack flex={1} gap="$0.5">
-                <ExpansionLabel>
-                  {t('games.create.seaBattleSonar') || 'Sonar'}
-                </ExpansionLabel>
-                <ExpansionBadge>
-                  {t('games.create.seaBattleSonarHint') ||
-                    'Reveal ship locations'}
-                </ExpansionBadge>
-              </YStack>
-            </ExpansionCheckbox>
-
-            <ExpansionCheckbox>
-              <input
-                type="checkbox"
-                checked={!!options.specialWeapons?.radar}
-                onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      radar: !options.specialWeapons?.radar,
-                    },
-                  })
-                }
-              />
-              <YStack flex={1} gap="$0.5">
-                <ExpansionLabel>
-                  {t('games.create.seaBattleRadar') || 'Radar'}
-                </ExpansionLabel>
-                <ExpansionBadge>
-                  {t('games.create.seaBattleRadarHint') ||
-                    'Scan a row or column'}
-                </ExpansionBadge>
-              </YStack>
-            </ExpansionCheckbox>
-          </ExpansionGrid>
         </YStack>
       </Section>
 
       <RulesModal
-        isOpen={showRules}
+        open={showRules}
         onClose={() => setShowRules(false)}
-        t={t}
+        boardSize={currentBoardSize}
+        winLength={WIN_LENGTHS[currentBoardSize]}
       />
     </>
   );

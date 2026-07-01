@@ -8,13 +8,24 @@ import React, { HTMLAttributes } from 'react';
 
 interface BoardComponentProps extends HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
+  gridSize?: number;
 }
 
 export const BoardGrid = ({
   className = '',
+  gridSize,
+  style,
   ...props
 }: BoardComponentProps) => (
-  <div className={`sb-board-grid-layout ${className}`} {...props} />
+  <div
+    className={`sb-board-grid-layout ${className}`}
+    style={
+      gridSize
+        ? ({ ...style, '--sb-grid-size': gridSize } as React.CSSProperties)
+        : style
+    }
+    {...props}
+  />
 );
 
 export const BoardWithLabels = ({
@@ -26,16 +37,36 @@ export const BoardWithLabels = ({
 
 export const RowLabels = ({
   className = '',
+  gridSize,
+  style,
   ...props
 }: BoardComponentProps) => (
-  <div className={`sb-row-labels ${className}`} {...props} />
+  <div
+    className={`sb-row-labels ${className}`}
+    style={
+      gridSize
+        ? ({ ...style, '--sb-grid-size': gridSize } as React.CSSProperties)
+        : style
+    }
+    {...props}
+  />
 );
 
 export const ColLabels = ({
   className = '',
+  gridSize,
+  style,
   ...props
 }: BoardComponentProps) => (
-  <div className={`sb-col-labels ${className}`} {...props} />
+  <div
+    className={`sb-col-labels ${className}`}
+    style={
+      gridSize
+        ? ({ ...style, '--sb-grid-size': gridSize } as React.CSSProperties)
+        : style
+    }
+    {...props}
+  />
 );
 
 export const Label = ({ className = '', ...props }: BoardComponentProps) => (

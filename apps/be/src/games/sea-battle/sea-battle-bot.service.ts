@@ -202,6 +202,7 @@ export class SeaBattleBotService {
         await this.randomDelay(ATTACK_DELAY_MS);
 
         const state = currentSession.state as unknown as SeaBattleState;
+        const gridSize = state.gridSize ?? BOARD_SIZE;
         const botPlayer = state.players.find(
           (p: SeaBattlePlayer) => p.playerId === botId,
         );
@@ -247,14 +248,16 @@ export class SeaBattleBotService {
           ];
 
         // Smart Target Logic: Finish off damaged ships
-        let choice: { r: number; c: number } | null =
-          this.getSmartTarget(target);
+        let choice: { r: number; c: number } | null = this.getSmartTarget(
+          target,
+          gridSize,
+        );
 
         if (!choice) {
           // Use Hunt Mode (Random)
           const validCells: { r: number; c: number }[] = [];
-          for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+          for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
               const cell = target.board[r][c];
               if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
                 validCells.push({ r, c });
@@ -292,6 +295,7 @@ export class SeaBattleBotService {
 
   private getSmartTarget(
     target: SeaBattlePlayer,
+    gridSize: number = BOARD_SIZE,
   ): { r: number; c: number } | null {
     // Cells of already-sunk ships are public info; exclude them so we focus
     // on hits that still belong to damaged-but-unsunk ships.
@@ -304,8 +308,8 @@ export class SeaBattleBotService {
     }
 
     const activeHits: { row: number; col: number }[] = [];
-    for (let r = 0; r < BOARD_SIZE; r++) {
-      for (let c = 0; c < BOARD_SIZE; c++) {
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
         if (target.board[r][c] !== CELL_STATE.HIT) continue;
         if (sunkCells.has(`${r},${c}`)) continue;
         activeHits.push({ row: r, col: c });
@@ -315,7 +319,7 @@ export class SeaBattleBotService {
     if (activeHits.length === 0) return null;
 
     const isOpen = (r: number, c: number): boolean => {
-      if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) return false;
+      if (r < 0 || r >= gridSize || c < 0 || c >= gridSize) return false;
       const cell = target.board[r][c];
       return cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS;
     };

@@ -58,7 +58,8 @@ export function validatePlaceShip(
     for (const [dr, dc] of directions) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      const gSize = state.gridSize ?? BOARD_SIZE;
+      if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         if (player.board[r][c] === CELL_STATE.SHIP) {
           return false;
         }
@@ -116,7 +117,8 @@ export function validateMoveShip(
     for (const [dr, dc] of directions) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      const gSize = state.gridSize ?? BOARD_SIZE;
+      if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         if (virtualBoard[r][c] === CELL_STATE.SHIP) {
           return false;
         }
@@ -189,9 +191,9 @@ export function validateAttack(
 
   if (
     payload.row < 0 ||
-    payload.row >= BOARD_SIZE ||
+    payload.row >= (state.gridSize ?? BOARD_SIZE) ||
     payload.col < 0 ||
-    payload.col >= BOARD_SIZE
+    payload.col >= (state.gridSize ?? BOARD_SIZE)
   ) {
     return false;
   }

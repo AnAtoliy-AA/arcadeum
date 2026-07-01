@@ -76,6 +76,7 @@ export function SeaBattleBoards({
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}
           onAutoPlace={handleAutoPlace}
+          gridSize={snapshot?.gridSize}
         />
       )}
 
@@ -123,6 +124,7 @@ export function SeaBattleBoards({
           resolveDisplayName={resolveDisplayNameBound}
           teammateIds={teammateIds}
           teams={teams}
+          gridSize={snapshot.gridSize}
         />
       )}
     </>

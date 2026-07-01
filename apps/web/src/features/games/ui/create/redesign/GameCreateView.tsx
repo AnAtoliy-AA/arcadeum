@@ -23,6 +23,7 @@ import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { ThemePicker } from './ThemePicker';
 import { HouseRules } from './HouseRules';
+import { GameSpecificConfig } from './GameSpecificConfig';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
@@ -72,6 +73,7 @@ function initialForm(
       teams: false,
       spectators: true,
     },
+    gameConfig: {},
     preset: 'custom',
   };
 }
@@ -95,6 +97,8 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'sea_battle_v1') {
     return {
       variant: form.themeId || undefined,
+      gridSize: form.gameConfig.gridSize,
+      specialWeapons: form.gameConfig.specialWeapons,
       teams: form.rules.teams,
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
@@ -103,25 +107,19 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'tic_tac_toe_v1') {
     return {
       variant: form.themeId || 'classic',
-      boardSize: 3,
+      options: { boardSize: form.gameConfig.boardSize ?? 3 },
       teamMode: form.rules.teams,
       allowSpectators: form.rules.spectators,
     };
   }
   if (form.gameId === 'cascade_v1') {
-    // The create page picker currently surfaces only the visual theme.
-    // Mode defaults to 'classic' from here; the lobby ModeSelector lets
-    // the host override before starting. Pure mode forces stacking off
-    // on the BE; the create-page initial `stackingEnabled: true` is
-    // informational only and is recomputed from mode in the engine.
     return {
       variant: form.themeId || 'cosmic',
-      mode: 'classic',
-      stackingEnabled: true,
-      // Last-Card race defaults ON when creating a room. Host can toggle
-      // it off in the lobby (lobby option is the source of truth at
-      // session-start; engine honours the value it sees).
-      lastCardCallEnabled: true,
+      options: {
+        mode: form.gameConfig.cascadeMode ?? 'classic',
+        lastCardCallEnabled: form.gameConfig.lastCardCallEnabled !== false,
+      },
+      stackingEnabled: form.gameConfig.cascadeMode !== 'pure',
       idleTimerAutoplay: form.rules.idle,
       allowSpectators: form.rules.spectators,
     };
@@ -244,6 +242,10 @@ export function GameCreateView() {
 
   function setRules(rules: CreateRoomForm['rules']) {
     setForm((prev) => ({ ...prev, rules, preset: 'custom' }));
+  }
+
+  function setGameConfig(gameConfig: CreateRoomForm['gameConfig']) {
+    setForm((prev) => ({ ...prev, gameConfig, preset: 'custom' }));
   }
 
   function pickPreset(preset: Exclude<PresetId, 'custom'>) {
@@ -411,6 +413,18 @@ export function GameCreateView() {
                     value={form.rules}
                     labels={L.rules}
                     onChange={setRules}
+                  />
+                </SectionGroup>
+
+                <SectionGroup
+                  num={String(n++).padStart(2, '0')}
+                  title={L.sectionGameConfig || 'Game Settings'}
+                  hint={L.optional}
+                >
+                  <GameSpecificConfig
+                    gameId={form.gameId}
+                    value={form.gameConfig}
+                    onChange={setGameConfig}
                   />
                 </SectionGroup>
 

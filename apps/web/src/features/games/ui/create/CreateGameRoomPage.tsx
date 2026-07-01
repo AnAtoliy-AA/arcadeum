@@ -30,16 +30,6 @@ const SeaBattleCreationConfig = dynamic(
   () => import('@/widgets/SeaBattleGame/ui/CreationConfig'),
   { ssr: false },
 );
-
-const TicTacToeCreationConfig = dynamic(
-  () => import('@/widgets/TicTacToeGame/ui/CreationConfig'),
-  { ssr: false },
-);
-
-const CascadeCreationConfig = dynamic(
-  () => import('@/widgets/CascadeGame/ui/CreationConfig'),
-  { ssr: false },
-);
 import { GameCreationConfigProps } from '@/features/games/types';
 
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -63,12 +53,6 @@ const GAME_CONFIGS: Record<
     GameCreationConfigProps<Record<string, unknown>>
   >,
   sea_battle_v1: SeaBattleCreationConfig as unknown as React.ComponentType<
-    GameCreationConfigProps<Record<string, unknown>>
-  >,
-  tic_tac_toe_v1: TicTacToeCreationConfig as unknown as React.ComponentType<
-    GameCreationConfigProps<Record<string, unknown>>
-  >,
-  cascade_v1: CascadeCreationConfig as unknown as React.ComponentType<
     GameCreationConfigProps<Record<string, unknown>>
   >,
 };

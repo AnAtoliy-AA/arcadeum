@@ -28,6 +28,7 @@ export function buildLabels(t: (k: TranslationKey) => string) {
     sectionExpansions: tr('games.create.sectionExpansions', 'Expansion packs'),
     sectionTheme: tr('games.create.sectionVariant', 'Game theme'),
     sectionRules: tr('games.create.sectionHouseRules', 'House rules'),
+    sectionGameConfig: tr('games.create.sectionGameConfig', 'Game settings'),
     sectionDetails: tr('games.create.sectionDetails', 'Room details'),
     coreOnly: tr('games.create.coreOnly', 'Core only'),
     presets: [

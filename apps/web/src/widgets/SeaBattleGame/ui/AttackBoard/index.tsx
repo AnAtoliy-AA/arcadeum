@@ -18,6 +18,7 @@ export interface AttackBoardProps {
   disabled?: boolean;
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
+  gridSize?: number;
 }
 
 export const AttackBoard = memo(function AttackBoard({

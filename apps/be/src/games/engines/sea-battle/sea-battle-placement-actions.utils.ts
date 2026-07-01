@@ -107,8 +107,9 @@ export function runAutoPlace(
   state: SeaBattleState,
   player: SeaBattlePlayer,
 ): GameActionResult<SeaBattleState> {
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    for (let c = 0; c < BOARD_SIZE; c++) {
+  const gridSize = state.gridSize ?? BOARD_SIZE;
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
       if (player.board[r][c] === CELL_STATE.SHIP) {
         player.board[r][c] = CELL_STATE.EMPTY;
       }
@@ -116,7 +117,7 @@ export function runAutoPlace(
   }
   player.ships = [];
   player.placementComplete = false;
-  const placements = randomlyPlaceShips();
+  const placements = randomlyPlaceShips(gridSize);
   if (Object.keys(placements).length === 0) {
     return { success: false, error: 'Failed to generate ship placement' };
   }
@@ -174,8 +175,9 @@ export function runResetPlacement(
   state: SeaBattleState,
   player: SeaBattlePlayer,
 ): GameActionResult<SeaBattleState> {
-  for (let r = 0; r < BOARD_SIZE; r++) {
-    for (let c = 0; c < BOARD_SIZE; c++) {
+  const gridSize = state.gridSize ?? BOARD_SIZE;
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
       if (player.board[r][c] === CELL_STATE.SHIP) {
         player.board[r][c] = CELL_STATE.EMPTY;
       }

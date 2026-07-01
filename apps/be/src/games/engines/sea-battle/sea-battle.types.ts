@@ -46,6 +46,9 @@ export interface SeaBattleState {
   currentTurnIndex: number;
   winnerId?: string;
   logs: GameLogEntry[];
+  gridSize: number;
+  shipCount?: number;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
   lastAttack?: {
     attackerId: string;
     targetId: string;
@@ -72,6 +75,9 @@ export interface SeaBattleConfig {
   }>;
   hideShipsFromTeammates?: boolean;
   mode?: GameModeVariant;
+  gridSize?: number;
+  shipCount?: number;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
 }
 
 export interface PlaceShipPayload {

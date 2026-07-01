@@ -6,6 +6,7 @@ import {
   GameActionContext,
 } from '../base/game-engine.interface';
 import {
+  BOARD_SIZE,
   CELL_STATE,
   SHIPS,
   GAME_PHASE,
@@ -39,6 +40,7 @@ import {
   validateResetPlacement,
   validateAttack,
 } from './sea-battle.validators';
+import { validateSeaBattleConfig } from './sea-battle.config';
 import {
   advanceTeamRotationOnMiss,
   countAliveTeams,
@@ -55,11 +57,9 @@ import {
   runConfirmPlacement,
   runResetPlacement,
 } from './sea-battle-placement-actions.utils';
-
 @Injectable()
 export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   private readonly logger = new Logger(SeaBattleEngine.name);
-
   getMetadata(): GameMetadata {
     return {
       gameId: 'sea_battle_v1',
@@ -77,11 +77,12 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     config?: SeaBattleConfig & Record<string, unknown>,
   ): SeaBattleState {
     const mode = config?.mode ?? GAME_MODE_VARIANTS.CLASSIC;
+    const gridSize = config?.gridSize ?? BOARD_SIZE;
 
     const players: SeaBattlePlayer[] = playerIds.map((id) => ({
       playerId: id,
       alive: true,
-      board: createEmptyBoard(),
+      board: createEmptyBoard(gridSize),
       ships: [],
       shipsRemaining: SHIPS.length,
       placementComplete: false,
@@ -100,8 +101,10 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       ],
       mode,
       roundNumber: 1,
+      gridSize,
+      shipCount: config?.shipCount,
+      specialWeapons: config?.specialWeapons,
     };
-
     if (config?.teams && config.teams.length > 0) {
       baseState.teams = config.teams.map((t) => ({
         id: t.id,
@@ -117,7 +120,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
 
     return baseState;
   }
-
+  validateConfig(config: Record<string, unknown>): boolean {
+    return validateSeaBattleConfig(config);
+  }
   validateAction(
     state: SeaBattleState,
     action: string,

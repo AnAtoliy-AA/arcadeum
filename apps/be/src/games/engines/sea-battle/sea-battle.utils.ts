@@ -13,10 +13,10 @@ import {
 } from './sea-battle.types';
 import { getActiveShooterId } from './team-rotation.utils';
 
-export function createEmptyBoard(): CellState[][] {
+export function createEmptyBoard(size: number = BOARD_SIZE): CellState[][] {
   return Array.from(
-    { length: BOARD_SIZE },
-    () => Array(BOARD_SIZE).fill(CELL_STATE.EMPTY) as CellState[],
+    { length: size },
+    () => Array(size).fill(CELL_STATE.EMPTY) as CellState[],
   );
 }
 

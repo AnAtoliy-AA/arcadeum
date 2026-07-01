@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.19] - 2026-07-01
+
+### Added
+- add persistent account-less stat tracking (ARC-871)
+
+### Fixed
+- compute local stats with useMemo to prevent re-render loop (ARC-871)
+
+### Documentation
+- add implement-roadmap-feature skill (N/A)
+
+
 ## [1.22.18] - 2026-07-01
 
 ### Documentation

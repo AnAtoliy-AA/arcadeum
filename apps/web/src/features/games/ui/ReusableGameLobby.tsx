@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { TamaguiElement, YStack, XStack, Text, Switch } from 'tamagui';
+import { TamaguiElement, YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { gamesApi } from '@/features/games/api';
@@ -394,34 +394,32 @@ export function ReusableGameLobby({
               <Text fontSize="$4" fontWeight="600">
                 {t('games.create.sectionHouseRules') || 'House Rules'}
               </Text>
-              <XStack alignItems="center" gap="$2">
-                <Switch
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
                   checked={!!room.gameOptions?.idleTimerAutoplay}
-                  onCheckedChange={(val) =>
-                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: val }, { token: snapshot?.accessToken ?? undefined })
+                  onChange={(e) =>
+                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
                   }
-                  size="$2"
-                >
-                  <Switch.Thumb />
-                </Switch>
+                  style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
+                />
                 <Text fontSize="$3">
                   {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
                 </Text>
-              </XStack>
-              <XStack alignItems="center" gap="$2">
-                <Switch
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
                   checked={room.gameOptions?.allowSpectators !== false}
-                  onCheckedChange={(val) =>
-                    gamesApi.updateRoomOptions(room.id, { allowSpectators: val }, { token: snapshot?.accessToken ?? undefined })
+                  onChange={(e) =>
+                    gamesApi.updateRoomOptions(room.id, { allowSpectators: e.target.checked }, { token: snapshot?.accessToken ?? undefined })
                   }
-                  size="$2"
-                >
-                  <Switch.Thumb />
-                </Switch>
+                  style={{ width: 16, height: 16, accentColor: 'var(--gc-accent, #ffd166)' }}
+                />
                 <Text fontSize="$3">
                   {t('games.create.rules.spectators.title') || 'Allow spectators'}
                 </Text>
-              </XStack>
+              </label>
             </YStack>
           )}
         </CenterSection>

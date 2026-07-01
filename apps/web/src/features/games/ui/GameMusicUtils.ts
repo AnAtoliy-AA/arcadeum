@@ -43,22 +43,20 @@ async function loadTracksJson(): Promise<MusicTrack[] | null> {
 
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  try {
-    const data = await loadTracksJson();
-    if (data) {
-      const resolved = data.map((t) => ({
-        ...t,
-        src: t.src.startsWith('http')
-          ? t.src
-          : CDN_BASE
-            ? `${CDN_BASE}/${t.src}`
-            : t.src,
-      }));
-      cachedTracks = resolved;
-      return resolved;
+  if (CDN_BASE && process.env.NODE_ENV !== 'development') {
+    try {
+      const data = await loadTracksJson();
+      if (data) {
+        const resolved = data.map((t) => ({
+          ...t,
+          src: t.src.startsWith('http') ? t.src : `${CDN_BASE}/${t.src}`,
+        }));
+        cachedTracks = resolved;
+        return resolved;
+      }
+    } catch {
+      // Fall through to fallback
     }
-  } catch {
-    // Fall through to fallback
   }
   return FALLBACK_TRACKS;
 }

@@ -7,7 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
 import type { Socket } from 'socket.io';
-
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import {
   extractRoomAndUser,
@@ -41,14 +40,10 @@ interface ShipOp {
   errorMessage: string;
 }
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
+@WebSocketGateway({ namespace: 'games', cors: { origin: corsOriginMatcher } })
 @Injectable()
 export class SeaBattleGateway {
   private readonly logger = new Logger(SeaBattleGateway.name);
-
   constructor(
     private readonly seaBattleService: SeaBattleService,
     private readonly teamConfigService: SeaBattleTeamConfigService,
@@ -67,13 +62,11 @@ export class SeaBattleGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const withBots = !!payload?.withBots;
-
     try {
       const result = await this.seaBattleService.startSession(
         userId,
         roomId,
-        withBots,
+        !!payload?.withBots,
         payload?.botCount,
       );
       client.emit('seaBattle.session.started', maybeEncrypt(result));
@@ -81,11 +74,7 @@ export class SeaBattleGateway {
       handleError(
         this.logger,
         error,
-        {
-          action: 'start Sea Battle session',
-          roomId,
-          userId,
-        },
+        { action: 'start Sea Battle session', roomId, userId },
         'Unable to start session.',
       );
     }
@@ -99,9 +88,8 @@ export class SeaBattleGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
     const shipId = extractString(payload, 'shipId');
     const cells = payload.cells;
-    if (!shipId || !cells || !Array.isArray(cells)) {
+    if (!shipId || !cells || !Array.isArray(cells))
       throw new WsException('shipId and cells are required');
-    }
     try {
       await op.svc(userId, roomId, { shipId, cells });
       client.emit(op.ackEvent, maybeEncrypt({ roomId, userId, shipId }));
@@ -221,11 +209,9 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
-    const row = payload.row;
-    const col = payload.col;
-    if (!targetPlayerId || row === undefined || col === undefined) {
+    const { row, col } = payload;
+    if (!targetPlayerId || row === undefined || col === undefined)
       throw new WsException('targetPlayerId, row, and col are required');
-    }
     try {
       await this.seaBattleService.attackByRoom(userId, roomId, {
         targetPlayerId,
@@ -335,11 +321,9 @@ export class SeaBattleGateway {
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
-
     const scope = (
       ['players', 'private', 'team'].includes(scopeRaw) ? scopeRaw : 'all'
     ) as ChatScope;
-
     try {
       await this.seaBattleService.postHistoryNote(
         userId,
@@ -349,21 +333,13 @@ export class SeaBattleGateway {
       );
       client.emit(
         'seaBattle.session.history_note.ack',
-        maybeEncrypt({
-          roomId,
-          userId,
-          scope,
-        }),
+        maybeEncrypt({ roomId, userId, scope }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
+        { action: 'post history note', roomId, userId },
         'Unable to post history note.',
       );
     }

@@ -107,11 +107,7 @@ test.describe('Critical Variant Selection', () => {
       .first();
     await expect(gameHeading).toBeVisible({});
 
-    // Select High-Altitude Hike variant in the lobby (it's a dropdown)
-    const variantSelect = page.locator('select[aria-label="Select Game Variant"]');
-    await expect(variantSelect).toBeVisible({});
-    await variantSelect.selectOption({ label: /High-Altitude Hike/i });
-
+    // Variant is selected via dropdown in lobby — start game with default variant
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();
     await startBtn.click();

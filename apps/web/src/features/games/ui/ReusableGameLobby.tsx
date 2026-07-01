@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { TamaguiElement } from 'tamagui';
+import { TamaguiElement, YStack, XStack, Text, Switch } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { gamesApi } from '@/features/games/api';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   LobbyContent,
   CenterSection,
@@ -185,6 +187,7 @@ export function ReusableGameLobby({
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
+  const { snapshot } = useSessionTokens();
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
@@ -385,6 +388,42 @@ export function ReusableGameLobby({
           )}
 
           {optionsSlot}
+
+          {isHost && room.status === 'lobby' && (
+            <YStack gap="$3" paddingTop="$2">
+              <Text fontSize="$4" fontWeight="600">
+                {t('games.create.sectionHouseRules') || 'House Rules'}
+              </Text>
+              <XStack alignItems="center" gap="$2">
+                <Switch
+                  checked={!!room.gameOptions?.idleTimerAutoplay}
+                  onCheckedChange={(val) =>
+                    gamesApi.updateRoomOptions(room.id, { idleTimerAutoplay: val }, { token: snapshot?.accessToken ?? undefined })
+                  }
+                  size="$2"
+                >
+                  <Switch.Thumb />
+                </Switch>
+                <Text fontSize="$3">
+                  {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
+                </Text>
+              </XStack>
+              <XStack alignItems="center" gap="$2">
+                <Switch
+                  checked={room.gameOptions?.allowSpectators !== false}
+                  onCheckedChange={(val) =>
+                    gamesApi.updateRoomOptions(room.id, { allowSpectators: val }, { token: snapshot?.accessToken ?? undefined })
+                  }
+                  size="$2"
+                >
+                  <Switch.Thumb />
+                </Switch>
+                <Text fontSize="$3">
+                  {t('games.create.rules.spectators.title') || 'Allow spectators'}
+                </Text>
+              </XStack>
+            </YStack>
+          )}
         </CenterSection>
 
         <LobbySidebar

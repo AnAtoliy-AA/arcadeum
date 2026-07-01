@@ -6,8 +6,10 @@ import {
   type GameLobbyTheme,
   IconButton,
 } from '@/features/games/ui/ReusableGameLobby';
-import { TamaguiElement } from 'tamagui';
+import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { gamesApi } from '@/features/games/api';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
@@ -75,6 +77,7 @@ export function CriticalLobby({
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
+  const { snapshot } = useSessionTokens();
 
   const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const variantInfo = getVariantInfo(cardVariant);
@@ -97,6 +100,20 @@ export function CriticalLobby({
     isHost && room.status === 'lobby' ? (
       <VariantSelectorWrapper>
         <VariantSelector roomId={room.id} currentVariant={cardVariant} />
+        <XStack alignItems="center" gap="$2" paddingTop="$2">
+          <Switch
+            checked={!!(room.gameOptions as Record<string, unknown>)?.allowActionCardCombos}
+            onCheckedChange={(val) =>
+              gamesApi.updateRoomOptions(room.id, { allowActionCardCombos: val }, { token: snapshot?.accessToken ?? undefined })
+            }
+            size="$2"
+          >
+            <Switch.Thumb />
+          </Switch>
+          <Text fontSize="$3">
+            {t('games.create.houseRuleActionCardCombos') || 'Action Card Combos'}
+          </Text>
+        </XStack>
       </VariantSelectorWrapper>
     ) : null;
 

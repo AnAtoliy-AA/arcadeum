@@ -114,13 +114,20 @@ jobs:
           python - <<'EOF'
           import json
           import os
-          import re
           import requests
           import subprocess
           import time
 
-          with open('/tmp/changelog.txt', 'r') as f:
-              changelog_text = f.read()
+          try:
+              with open('/tmp/changelog.txt', 'r') as f:
+                  changelog_text = f.read()
+          except FileNotFoundError:
+              print("No changelog file found. Skipping social posts.")
+              exit(0)
+
+          if not changelog_text.strip():
+              print("Changelog is empty. Skipping social posts.")
+              exit(0)
 
           try:
               full_version = subprocess.check_output(

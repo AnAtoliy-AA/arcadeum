@@ -133,12 +133,33 @@ jobs:
               app_version = "unknown"
 
           try:
-              facebook_text = (
+              facebook_header = (
                   f"🚀 Daily Development Update!\n\n"
                   f"Here is what we added to develop — coming in release v{app_version}:\n\n"
-                  f"{changelog_text}\n\n"
-                  f"#buildinpublic #indiedev #gamedevelopment"
               )
+              facebook_footer = "\n\n#buildinpublic #indiedev #gamedevelopment"
+              facebook_max = 63206
+
+              facebook_chunks = []
+              remaining = changelog_text
+              while remaining:
+                  budget = facebook_max - len(facebook_header) - len(facebook_footer) if not facebook_chunks else facebook_max
+                  if len(remaining) <= budget:
+                      facebook_chunks.append(remaining)
+                      break
+                  cut = remaining.rfind('\n', 0, budget)
+                  if cut <= 0:
+                      cut = budget
+                  facebook_chunks.append(remaining[:cut])
+                  remaining = remaining[cut:].lstrip('\n')
+
+              facebook_texts = []
+              for i, chunk in enumerate(facebook_chunks):
+                  if i == 0:
+                      facebook_texts.append(facebook_header + chunk + facebook_footer)
+                  else:
+                      facebook_texts.append(f"🚀 Daily Development Update (continued)\n\n{chunk}")
+
               threads_header = "Another productive day in the books. Added to develop:\n\n"
               threads_footer = "\n\nComing in release v" + app_version + " — stay tuned! 🛠️"
               threads_max = 480
@@ -151,7 +172,7 @@ jobs:
                       threads_chunks.append(remaining)
                       break
                   cut = remaining.rfind('\n', 0, budget)
-                  if cut == -1:
+                  if cut <= 0:
                       cut = budget
                   threads_chunks.append(remaining[:cut])
                   remaining = remaining[cut:].lstrip('\n')
@@ -179,7 +200,7 @@ jobs:
                   }
 
                   channels = [
-                      (os.environ.get('FACEBOOK_ID', ''), [facebook_text], "Facebook", "facebook", "addToQueue"),
+                      (os.environ.get('FACEBOOK_ID', ''), facebook_texts, "Facebook", "facebook", "addToQueue"),
                       (os.environ.get('THREADS_ID', ''), threads_texts, "Threads", None, "shareNow"),
                       (os.environ.get('LINKEDIN_ID', ''), [linkedin_text], "LinkedIn", None, "shareNow"),
                   ]
@@ -306,7 +327,7 @@ jobs:
                       if i == 0:
                           content = header + chunk + footer
                       else:
-                          content = f"## 🚀 Daily Development Update (continued)\n\n{chunk}"
+                          content = f"## 🚀 Daily Development Update (continued)\n\n{chunk}\n\n{footer}"
                       dc_resp = requests.post(
                           discord_webhook,
                           json={"content": content},

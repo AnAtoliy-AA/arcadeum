@@ -20,6 +20,9 @@ import {
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 
+const emoteRateLimits = new Map<string, number>();
+const EMOTE_RATE_LIMIT_MS = 2000;
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -30,7 +33,6 @@ export class GamesGateway {
 
   @WebSocketServer()
   private server: Server;
-
   constructor(
     private readonly gamesService: GamesService,
     private readonly realtime: GamesRealtimeService,
@@ -75,7 +77,6 @@ export class GamesGateway {
       }
     }
   }
-
   handleDisconnect(client: Socket): void {
     this.logger.verbose(`Client disconnected ${client.id}`);
 
@@ -161,7 +162,6 @@ export class GamesGateway {
           );
         }
       }
-
       client.emit(
         'games.room.joined',
         maybeEncrypt({
@@ -169,7 +169,6 @@ export class GamesGateway {
           session: diffSession,
         }),
       );
-
       if (diffSession) {
         this.logger.log(
           `Sending session snapshot to client for session ${diffSession.id}`,
@@ -477,17 +476,21 @@ export class GamesGateway {
     const emoteId = extractString(decrypted, 'emoteId');
 
     if (!roomId || !userId || !emoteId) return;
-
     if (!(EMOTE_IDS as readonly string[]).includes(emoteId)) {
       this.logger.warn(
         `Invalid emoteId "${emoteId}" from user ${userId} in room ${roomId}`,
       );
       return;
     }
-
+    const rateKey = `${roomId}:${userId}`;
+    const now = Date.now();
+    const lastEmote = emoteRateLimits.get(rateKey);
+    if (lastEmote && now - lastEmote < EMOTE_RATE_LIMIT_MS) {
+      return;
+    }
+    emoteRateLimits.set(rateKey, now);
     const channel = this.realtime.roomChannel(roomId);
     if (!client.rooms.has(channel)) return;
-
     const data = { userId, emoteId: emoteId as EmoteId, ts: Date.now() };
     this.server.to(channel).emit('games.session.emote', maybeEncrypt(data));
     const specChannel = this.realtime.spectatorChannel(roomId);

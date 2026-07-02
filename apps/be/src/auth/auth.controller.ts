@@ -179,7 +179,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const result = await this.authService.refreshToken(dto.refreshToken);
+    const rawToken =
+      dto.refreshToken ||
+      (req.cookies as Record<string, string>)?.refresh_token ||
+      '';
+    const result = await this.authService.refreshToken(rawToken);
     setTokenCookies(
       res,
       req,

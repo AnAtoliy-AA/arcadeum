@@ -183,16 +183,12 @@ export const useSessionStore = create<SessionState>()(
           return state.snapshot;
         }
 
-        const refreshToken = state.snapshot.refreshToken;
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
         if (state.refreshTimeoutId) clearTimeout(state.refreshTimeoutId);
         set({ refreshInFlight: true, refreshTimeoutId: null });
 
         try {
-          const response = await refreshSession(refreshToken);
+          const refreshToken = state.snapshot.refreshToken;
+          const response = await refreshSession(refreshToken ?? '');
           const merged = enrichWithResponse(
             state.snapshot,
             response,
@@ -221,10 +217,17 @@ export const useSessionStore = create<SessionState>()(
     {
       name: 'web_session_tokens_v1',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        snapshot: (state as SessionState).snapshot,
-        mode: (state as SessionState).mode,
-      }),
+      partialize: (state) => {
+        const s = state as SessionState;
+        return {
+          snapshot: {
+            ...s.snapshot,
+            accessToken: null,
+            refreshToken: null,
+          },
+          mode: s.mode,
+        };
+      },
     },
   ),
 );

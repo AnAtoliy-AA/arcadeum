@@ -110,6 +110,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     await this.sendMessage(message);
   }
 
+  async sendAlert(text: string): Promise<void> {
+    await this.sendMessage(`<b>${text}</b>`);
+  }
+
   private async sendMessage(message: string): Promise<void> {
     try {
       await this.waitForRateLimit();

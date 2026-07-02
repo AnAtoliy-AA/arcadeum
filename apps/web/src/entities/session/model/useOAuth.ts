@@ -290,6 +290,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         return;
       }
       processingRef.current = true;
+      let navigatedAway = false;
       try {
         if (error) {
           setState((current) => ({
@@ -360,8 +361,11 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         // Navigate home without a hard page reload.
         // SessionRoleSync will recover the session from httpOnly
         // cookies if Zustand tokens aren't available yet.
+        clearOAuthSessionState();
+        navigatedAway = true;
         router.replace('/');
         router.refresh();
+        return;
       } catch (callbackError) {
         setState((current) => ({
           ...current,
@@ -374,19 +378,22 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         }));
         await session.clearTokens();
       } finally {
-        clearOAuthSessionState();
+        if (!navigatedAway) {
+          clearOAuthSessionState();
+        }
         processingRef.current = false;
-        try {
-          // Instead of forcing a redirect to /auth, we just clear the URL parameters
-          // to prevent the callback from firing again on reload.
-          const url = new URL(window.location.href);
-          url.searchParams.delete('code');
-          url.searchParams.delete('state');
-          url.searchParams.delete('error');
-          url.searchParams.delete('error_description');
-          window.history.replaceState({}, '', url.toString());
-        } catch {
-          // ignore window history failures
+        if (!navigatedAway) {
+          try {
+            // Clear URL parameters to prevent the callback from firing again on reload.
+            const url = new URL(window.location.href);
+            url.searchParams.delete('code');
+            url.searchParams.delete('state');
+            url.searchParams.delete('error');
+            url.searchParams.delete('error_description');
+            window.history.replaceState({}, '', url.toString());
+          } catch {
+            // ignore window history failures
+          }
         }
       }
     },

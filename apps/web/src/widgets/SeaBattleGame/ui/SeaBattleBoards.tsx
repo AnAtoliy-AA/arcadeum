@@ -274,6 +274,7 @@ export function SeaBattleBoards({
             teammateIds={teammateIds}
             teams={teams}
             gridSize={snapshot.gridSize}
+            snapshot={snapshot}
           />
         </>
       )}

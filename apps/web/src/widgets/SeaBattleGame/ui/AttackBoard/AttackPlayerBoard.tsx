@@ -36,6 +36,8 @@ interface AttackPlayerBoardProps {
   isTeammate?: boolean;
   team?: SeaBattleTeam;
   sunkCellSet: Set<string>;
+  sonarHighlightCells?: Set<string> | null;
+  radarHighlightCells?: Set<string> | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
   t: (key: TranslationKey) => string;
 }
@@ -52,6 +54,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   isTeammate = false,
   team,
   sunkCellSet,
+  sonarHighlightCells,
+  radarHighlightCells,
   onAttack,
   t,
 }: AttackPlayerBoardProps) {
@@ -129,6 +133,13 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             cellState !== CELL_STATE.MISS &&
             !isSunk &&
             !isPending;
+          const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
+          const highlight: 'sonar' | 'radar' | null =
+            !isMe && sonarHighlightCells?.has(cellKey)
+              ? 'sonar'
+              : !isMe && radarHighlightCells?.has(cellKey)
+                ? 'radar'
+                : null;
 
           return (
             <AttackBoardCell
@@ -138,6 +149,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isSunk={isSunk}
               isAttackable={isAttackable}
               isPending={isPending}
+              highlight={highlight}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}

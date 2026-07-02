@@ -18,4 +18,6 @@ export const friendsEs = {
   offline: 'Desconectado',
   removeFriend: 'Eliminar amigo',
   inviteToGame: 'Invitar a jugar',
+  loginPrompt: 'Inicia sesión para gestionar tu lista de amigos.',
+  loginButton: 'Iniciar sesión',
 };

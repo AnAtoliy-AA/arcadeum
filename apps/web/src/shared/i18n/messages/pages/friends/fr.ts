@@ -18,4 +18,6 @@ export const friendsFr = {
   offline: 'Hors ligne',
   removeFriend: 'Supprimer un ami',
   inviteToGame: 'Inviter à jouer',
+  loginPrompt: 'Connectez-vous pour gérer votre liste d\'amis.',
+  loginButton: 'Se connecter',
 };

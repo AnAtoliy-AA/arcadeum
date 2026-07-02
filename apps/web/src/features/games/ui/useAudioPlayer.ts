@@ -187,6 +187,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       crossfadeRafRef.current = requestAnimationFrame(step);
     } else {
       newAudio.volume = newVolume;
+      oldAudio.src = '';
+      oldAudio.currentTime = 0;
+      oldAudio.volume = 0;
     }
     audioRef.current = newAudio;
   }, []);

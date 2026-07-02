@@ -40,17 +40,6 @@ interface ShipOpPayload {
   [key: string]: unknown;
 }
 
-interface ShipOp {
-  svc: (
-    userId: string,
-    roomId: string,
-    body: { shipId: string; cells: { row: number; col: number }[] },
-  ) => Promise<unknown>;
-  ackEvent: string;
-  errorAction: string;
-  errorMessage: string;
-}
-
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },

@@ -1,26 +1,11 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
-
-const EMOTE_LABELS: Record<EmoteId, string> = {
-  good_move: 'Nice!',
-  lol: 'LOL',
-  thinking: 'Hmm...',
-  nice: 'GG!',
-  unlucky: 'Oof!',
-  rip: 'RIP',
-  fire: 'Fire!',
-  clap: 'Bravo!',
-  cry: 'Sad',
-  angry: 'Mad',
-  rocket: "Let's go!",
-  heart: 'Love',
-  brain: 'Galaxy Brain',
-  skull: 'Dead',
-  sweat: 'Close!',
-  clown: 'Clown',
-};
 
 const KEYFRAMES_CSS = `
 @keyframes emoteFloat {
@@ -89,6 +74,7 @@ let stylesInjected = false;
 
 export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!stylesInjected) {
@@ -111,7 +97,7 @@ export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
   const current = activeEmotes.find((e) => e.id === playerId);
   if (!current) return null;
 
-  const label = EMOTE_LABELS[current.emoteId] ?? '';
+  const label = t(`games.emotes.${current.emoteId}` as TranslationKey);
 
   return (
     <div

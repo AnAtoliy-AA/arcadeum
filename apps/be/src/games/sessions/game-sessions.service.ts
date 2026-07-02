@@ -227,6 +227,26 @@ export class GameSessionsService {
   }
 
   /**
+   * Revert session state to the previous snapshot (undo).
+   * Returns the updated session or null if no history exists.
+   */
+  async revertToPreviousState(
+    sessionId: string,
+  ): Promise<GameSessionSummary | null> {
+    const session = await this.gameSessionModel.findById(sessionId).exec();
+    if (!session) return null;
+    const state = session.state;
+    const history = state.stateHistory as unknown[] | undefined;
+    if (!history || history.length === 0) return null;
+    const previousState = history[history.length - 1];
+    state.stateHistory = history.slice(0, -1);
+    session.state = previousState as Record<string, unknown>;
+    session.updatedAt = new Date();
+    await session.save();
+    return this.toSessionSummary(session);
+  }
+
+  /**
    * Get sanitized state for a specific player
    */
   async getSanitizedStateForPlayer(

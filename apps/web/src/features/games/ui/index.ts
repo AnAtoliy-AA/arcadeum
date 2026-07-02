@@ -17,3 +17,4 @@ export {
   resolveTurnStatus,
   type TurnContract,
 } from './TurnIndicator';
+export { UndoButton } from './UndoButton';

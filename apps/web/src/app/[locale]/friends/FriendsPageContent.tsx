@@ -1,12 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  YStack,
-  XStack,
-  Text,
-  ScrollView,
-} from 'tamagui';
+import { YStack, XStack, Text, ScrollView } from 'tamagui';
 import {
   Button,
   Card,
@@ -378,33 +373,24 @@ export default function FriendsPageContent({
         )}
       </YStack>
 
-      <Modal
-        open={!!removeTarget}
-        onClose={() => setRemoveTarget(null)}
-      >
+      <Modal open={!!removeTarget} onClose={() => setRemoveTarget(null)}>
         <ModalContent maxWidth={400}>
           <ModalHeader onClose={() => setRemoveTarget(null)}>
             <ModalTitle>{tt.removeFriend ?? 'Remove Friend'}</ModalTitle>
           </ModalHeader>
           <ModalBody>
             <Text fontSize="$3">
-              Remove{' '}
-              {removeTarget?.displayName ?? removeTarget?.username} from your
-              friends?
+              Remove {removeTarget?.displayName ?? removeTarget?.username} from
+              your friends?
             </Text>
           </ModalBody>
           <ModalFooter>
-            <Button
-              variant="ghost"
-              onClick={() => setRemoveTarget(null)}
-            >
+            <Button variant="ghost" onClick={() => setRemoveTarget(null)}>
               Cancel
             </Button>
             <Button
               variant="primary"
-              onClick={() =>
-                removeTarget && handleRemove(removeTarget.userId)
-              }
+              onClick={() => removeTarget && handleRemove(removeTarget.userId)}
               testID="confirm-remove-friend"
             >
               {tt.removeFriend ?? 'Remove'}

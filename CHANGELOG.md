@@ -10,24 +10,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.22.27] - 2026-07-02
 
 ### Added
+
 - add game rules visibility control for lobby settings (N/A)
 
 ### Fixed
-- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
 
+- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
 
 ## [1.22.26] - 2026-07-02
 
 ### Added
-- update friends page UI/UX and move to profile menu (N/A)
 
+- update friends page UI/UX and move to profile menu (N/A)
 
 ## [1.22.25] - 2026-07-02
 
 ### Added
+
 - add backend health monitoring with Telegram and Discord alerts (N/A)
 
 ### Fixed
+
 - handle missing changelog file in daily workflow (N/A)
 - add LinkedIn and Facebook chunking for long messages (N/A)
 - add Facebook chunking, version in Threads header, footer in Discord continued (N/A)
@@ -36,16 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improve social bot messages across all platforms (N/A)
 - rework social media bot messages (N/A)
 
-
 ## [1.22.24] - 2026-07-02
 
 ### Added
-- add Siamese, Persian, and Bengal cyber cat avatars (N/A)
 
+- add Siamese, Persian, and Bengal cyber cat avatars (N/A)
 
 ## [1.22.23] - 2026-07-02
 
 ### Fixed
+
 - add X-Requested-With header to server action fetch calls (N/A)
 - remove unused ShipOp interface (N/A)
 - fix Logger type mismatch in sea-battle gateway (N/A)
@@ -58,14 +61,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - override vulnerable deps react-server-dom-webpack and shell-quote (N/A)
 
 ### Documentation
+
 - add comprehensive security audit skills from Anthropic-Cybersecurity-Skills (N/A)
 - clarify socket encryption key naming and document security posture (N/A)
 - add cybersecurity audit skills from Anthropic-Cybersecurity-Skills (N/A)
 
-
 ## [1.22.22] - 2026-07-02
 
 ### Added
+
 - make sonar radius-based instead of full board (ARC-1)
 - add sonar/radar result visualization in sea battle (ARC-1)
 - implement sonar and radar special weapons in sea battle (ARC-1)
@@ -76,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add per-game config schemas and validation for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
 
 ### Fixed
+
 - skip CDN music fetch in dev to avoid CORS 404 in e2e tests (N/A)
 - fix lint errors and extract types to stay under 500 lines (ARC-1)
 - refresh room data after updating house rules in lobby (ARC-1)
@@ -87,18 +92,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extract drag helpers to fix file length, add missing i18n keys (ARC-1)
 
 ### Refactored
+
 - replace HTTP lobby config updates with socket-based sync (ARC-1)
 - move theme/variant selection from create page to lobby (ARC-1)
 - remove House Rules from create page, all config in lobby (ARC-1)
 - move game config from create page to lobby (ARC-1)
 
-
 ## [1.22.21] - 2026-07-01
 
 ### Added
+
 - fix emote encryption and expand emote system (N/A)
 
 ### Fixed
+
 - correct isLandscape on mount to fix webkit layout (N/A)
 - correct isLandscape on mount to fix webkit layout (N/A)
 - compute isLandscape synchronously from window to fix SSR hydration (N/A)
@@ -108,69 +115,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wait for ResizeObserver before asserting grid layout in sea-battle-6-players test (N/A)
 - handle invalid ARCADEUM_MINT_ADDRESS gracefully (N/A)
 
-
 ## [1.22.20] - 2026-07-01
 
 ### Added
+
 - in-game emotes & quick reactions (ARC-872) (ARC-872)
 
 ### Fixed
-- use domcontentloaded in E2E page.reload() to prevent ChunkLoadError flake (ARC-872)
 
+- use domcontentloaded in E2E page.reload() to prevent ChunkLoadError flake (ARC-872)
 
 ## [1.22.19] - 2026-07-01
 
 ### Added
+
 - add persistent account-less stat tracking (ARC-871)
 
 ### Fixed
+
 - compute local stats with useMemo to prevent re-render loop (ARC-871)
 
 ### Documentation
-- add implement-roadmap-feature skill (N/A)
 
+- add implement-roadmap-feature skill (N/A)
 
 ## [1.22.18] - 2026-07-01
 
 ### Documentation
-- add ARC ticket references for all features (N/A)
 
+- add ARC ticket references for all features (N/A)
 
 ## [1.22.17] - 2026-06-30
 
 ### Added
+
 - double-click on playlist track to play (N/A)
 - update music player to use 160-track R2 catalog (N/A)
 
 ### Fixed
+
 - remove row click-to-play from playlist tracks (N/A)
 - checkbox toggle should not affect current playback (N/A)
 - suppress auto-play when disabling currently playing track (N/A)
 - disable currently playing track when unchecked in playlist (N/A)
 - widen mini mode music player to prevent button overflow (N/A)
 
-
 ## [1.22.16] - 2026-06-30
 
 ### Added
-- improve token chart, wallet balance, and home page (N/A)
 
+- improve token chart, wallet balance, and home page (N/A)
 
 ## [1.22.15] - 2026-06-30
 
 ### Fixed
+
 - use numeric borderRadius instead of $full token in roadmap page (N/A)
 
 ### Refactored
+
 - split roadmap page data into roadmap-data.ts to stay under 500 lines (N/A)
 
 ### Documentation
-- add platform expansion roadmap (N/A)
 
+- add platform expansion roadmap (N/A)
 
 ## [1.22.14] - 2026-06-30
 
 ### Added
+
 - add remove friend confirmation dialog (N/A)
 - add invite to game button on friends page (N/A)
 - add friends SEO metadata for all locales (N/A)
@@ -183,47 +196,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - wire gateway events into FriendsService (N/A)
 
 ### Fixed
+
 - resolve FriendsGateway circular dependency and missing JwtModule (N/A)
 - resolve CI failures across lint, tests, and e2e (N/A)
 - fix build errors in friends page (N/A)
 - use useSessionTokens instead of nonexistent useSession (N/A)
 
-
 ## [1.22.13] - 2026-06-30
 
 ### Added
+
 - add contact page scenario (N/A)
 - add 30 scenario journeys (one per day) (N/A)
 
 ### Fixed
+
 - remove glimworm scenario (N/A)
 - wait for page content to render before recording (N/A)
-
 
 ## [1.22.12] - 2026-06-29
 
 ### Added
+
 - video generator + Postiz YouTube publisher (N/A)
 
 ### Fixed
-- remove non-existent CDN music tracks (N/A)
 
+- remove non-existent CDN music tracks (N/A)
 
 ## [1.22.11] - 2026-06-29
 
 ### Added
-- add configurable signup reward for coins and gems (N/A)
 
+- add configurable signup reward for coins and gems (N/A)
 
 ## [1.22.10] - 2026-06-29
 
 ### Added
-- add bulk rewards for all registered users (ARC-870)
 
+- add bulk rewards for all registered users (ARC-870)
 
 ## [1.22.9] - 2026-06-28
 
 ### Added
+
 - add native tooltips to all player buttons (N/A)
 - per-track gradient backgrounds and smooth progress bar (N/A)
 - add error/loading states for track fetch and playback (N/A)
@@ -256,6 +272,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add shuffle and repeat icons to MediaIcons (ARC-840)
 
 ### Fixed
+
 - remove duplicate declarations in useAudioPlayer and fix mobile nav href (N/A)
 - remove leftover seekOnReorderRef from crossfade (N/A)
 - fix isPlaying flicker and playlist click-to-play (N/A)
@@ -298,163 +315,163 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - auto-advance to next track when song ends (N/A)
 
 ### Improved
+
 - reuse Audio element across track changes (N/A)
 
 ### Refactored
+
 - extract TransportRow reusable component (N/A)
 - extract useAudioPlayer hook, add skip ±10s, mini track name, keyboard shortcuts (N/A)
-
 
 ## [1.22.8] - 2026-06-28
 
 ### Refactored
-- extract shared integration test helpers (N/A)
 
+- extract shared integration test helpers (N/A)
 
 ## [1.22.7] - 2026-06-27
 
 ### Added
-- add admin ability to block, remove, restore users (ARC-842)
-- add admin ability to block, remove, restore users (ARC-842)
 
+- add admin ability to block, remove, restore users (ARC-842)
+- add admin ability to block, remove, restore users (ARC-842)
 
 ## [1.22.6] - 2026-06-27
 
 ### Fixed
-- room join/watch button visibility based on lobby status and participation (N/A)
 
+- room join/watch button visibility based on lobby status and participation (N/A)
 
 ## [1.22.5] - 2026-06-27
 
 ### Fixed
-- add custom 404 page with navigation (N/A)
 
+- add custom 404 page with navigation (N/A)
 
 ## [1.22.4] - 2026-06-26
 
-
 ## [1.22.3] - 2026-06-26
 
-
 ## [1.22.2] - 2026-06-26
-
 
 ## [1.22.1] - 2026-06-25
 
 ### Fixed
+
 - rename middleware to proxy and remove duplicate mongoose index (N/A)
 
-
 ## [1.22.0] - 2026-06-25
-
-
-
 
 ## [1.21.15] - 2026-06-25
 
 ### Added
+
 - add FilterChip component, use it in games status filter (ARC-838) (ARC-838)
 - games list multi-select status filter with visible borders (ARC-838) (ARC-838)
 
 ### Fixed
+
 - update games list filter selector for FilterChip component (ARC-838) (ARC-838)
 - deselect chip when clicking from all-selected state (ARC-838) (ARC-838)
 - highlight all chips when All filter is selected (ARC-838) (ARC-838)
 - increase FilterChip size and font (ARC-838) (ARC-838)
 
 ### Refactored
+
 - use shared STATUS_VALUES/ALL_STATUS_VALUES constants, remove magic numbers (ARC-838) (ARC-838)
 - extract status toggle into handleStatusToggle callback (ARC-838) (ARC-838)
-
 
 ## [1.21.14] - 2026-06-25
 
 ### Fixed
-- normalize VideoObject uploadDate to include time zone (N/A)
 
+- normalize VideoObject uploadDate to include time zone (N/A)
 
 ## [1.21.13] - 2026-06-25
 
 ### Fixed
+
 - improve tic tac toe turn badge visibility and name display (ARC-839) (ARC-839)
 
 ### Refactored
-- extract shared resolveDisplayName utility (ARC-839) (ARC-839)
 
+- extract shared resolveDisplayName utility (ARC-839) (ARC-839)
 
 ## [1.21.12] - 2026-06-25
 
 ### Fixed
+
 - remove border override from isActive variant (ARC-836)
 - remove custom active border, use chip variant default (ARC-836)
 - add visible border to active filter chips (ARC-836)
 - increase participation filter hint font size from $1 to $2 (ARC-836)
 - update participation filter login hint to say filter rooms (ARC-836)
 
-
 ## [1.21.11] - 2026-06-24
-
 
 ## [1.21.10] - 2026-06-24
 
 ### Added
-- reorganize in-game music into public/music with unique track names (N/A)
 
+- reorganize in-game music into public/music with unique track names (N/A)
 
 ## [1.21.9] - 2026-06-24
 
 ### Added
+
 - add cyber lion/shark avatars, premium name colors, banners, auras, and frames (N/A)
 
 ### Fixed
-- split shop-catalog.ts to stay under 500-line lint limit (N/A)
 
+- split shop-catalog.ts to stay under 500-line lint limit (N/A)
 
 ## [1.21.8] - 2026-06-24
 
 ### Fixed
-- improve sea battle game theme contrast and preview board (ARC-832)
 
+- improve sea battle game theme contrast and preview board (ARC-832)
 
 ## [1.21.7] - 2026-06-23
 
 ### Fixed
-- enable touch drag and tap-to-move for ship placement on mobile (ARC-831) (ARC-831)
 
+- enable touch drag and tap-to-move for ship placement on mobile (ARC-831) (ARC-831)
 
 ## [1.21.6] - 2026-06-23
 
 ### Added
-- add classic, neon, tropical, steampunk themes to cascade (ARC-833)
 
+- add classic, neon, tropical, steampunk themes to cascade (ARC-833)
 
 ## [1.21.5] - 2026-06-23
 
 ### Fixed
-- visually differentiate completed rooms from active ones (ARC-834) (ARC-834)
 
+- visually differentiate completed rooms from active ones (ARC-834) (ARC-834)
 
 ## [1.21.4] - 2026-06-23
 
 ### Fixed
+
 - prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
 - prevent false connection lost overlay on room enter (ARC-830) (ARC-830)
 
 ### Refactored
-- merge two useEffects into one in useIdleReconnect (N/A)
 
+- merge two useEffects into one in useIdleReconnect (N/A)
 
 ## [1.21.3] - 2026-06-22
 
 ### Fixed
+
 - update pnpm-lock.yaml after removing @nestjs/schedule (N/A)
 - improve buy/sell detection with phase2 token balance fallback (N/A)
 - improve buy/sell detection, add retry logic and health check (N/A)
 
-
 ## [1.21.2] - 2026-06-22
 
 ### Added
+
 - add token price chart with GeckoTerminal API and i18n (N/A)
 - redesign token page with premium UI/UX (N/A)
 - add wallet-based shop purchase endpoint (N/A)
@@ -462,6 +479,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add ARC as shop currency and new wallet reasons (N/A)
 
 ### Fixed
+
 - move connect wallet to spend section and add i18n translations (N/A)
 - replace gameplay rewards with wallet connection in token page (N/A)
 - update token page to show real ways to earn ARC (N/A)
@@ -471,6 +489,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add arcadeum to admin shop override type (N/A)
 
 ### Refactored
+
 - split chart into helpers, styles, and component files (N/A)
 - add utility token disclaimers to wallet and token pages (N/A)
 - add shop disclaimer and remove Jupiter exchange link (N/A)
@@ -479,43 +498,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove withdrawal UI from wallet page (N/A)
 - remove withdrawal endpoint and transfer methods (N/A)
 
-
 ## [1.21.1] - 2026-06-21
 
 ### Added
+
 - add PumpFun transaction monitor Telegram bot (N/A)
 
 ### Fixed
+
 - remove unused accounts variable (N/A)
 - detect trades without PumpFun program in accounts (N/A)
 - add eslint config and fix lint errors (N/A)
 
-
 ## [1.21.0] - 2026-06-20
-
-
-
 
 ## [1.20.5] - 2026-06-20
 
 ### Added
+
 - add token page, home section, header nav link, and pump.fun link (N/A)
 - add Arcadeum filter to wallet history and fix filter scroll (N/A)
 - display real token image, name and ticker from pump.fun (N/A)
 
 ### Fixed
+
 - add missing useState import in TokenInfo (N/A)
 - fix mobile language pill click by scrolling container (N/A)
 - update e2e tests for wallet filter anchors and mobile language scroll (N/A)
 - add wallet icon to token link in mobile menu (N/A)
 
-
 ## [1.20.4] - 2026-06-19
-
 
 ## [1.20.3] - 2026-06-19
 
 ### Added
+
 - add ARCADEUM GAMES token info section with ARC ticker (N/A)
 - complete Solana withdraw feature with security hardening (N/A)
 - add admin buy-back endpoint for token purchases (N/A)
@@ -525,6 +542,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add arcadeum currency to wallet system (N/A)
 
 ### Fixed
+
 - rewrite withdraw e2e tests for server-side auth (N/A)
 - fix lint errors in withdraw e2e test (N/A)
 - use individual expect assertions to avoid any lint errors (N/A)
@@ -541,17 +559,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add missing User model to SolanaModule imports (N/A)
 
 ### Refactored
+
 - extract TokenInfo inline styles to CSS module (N/A)
 
 ### Documentation
+
 - add ARCADEUM_MINT_ADDRESS to web .env.example (N/A)
 - add Solana environment variable documentation (N/A)
 - add Solana token ecosystem final report (N/A)
 
-
 ## [1.20.2] - 2026-06-19
 
 ### Fixed
+
 - use addToQueue for Facebook manual publish (N/A)
 - use shareNow for Facebook immediate publish (N/A)
 - use addToQueue for Facebook to bypass identity check (N/A)
@@ -564,27 +584,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use GraphQL variables for Buffer API in release poster too (N/A)
 - use GraphQL variables for Buffer API to fix string escaping (N/A)
 
-
 ## [1.20.1] - 2026-06-19
 
 ### Fixed
+
 - use CHANGELOG.md content for release social posts instead of merge commits (N/A)
 
-
 ## [1.20.0] - 2026-06-19
-
-
-
 
 ## [1.19.3] - 2026-06-19
 
 ### Fixed
-- use domcontentloaded instead of load for Mobile Safari reliability (N/A)
 
+- use domcontentloaded instead of load for Mobile Safari reliability (N/A)
 
 ## [1.19.2] - 2026-06-18
 
 ### Fixed
+
 - add minHeight 400 on mobile for shop hero card (N/A)
 - improve shop hero card mobile layout and buy button styling (N/A)
 - restore min-height on page-layout-base to fix chat e2e test (N/A)
@@ -593,114 +610,112 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - revert overflow auto on main — breaks chat page layout (N/A)
 - keep footer at bottom of page with overflow auto on main (N/A)
 
-
 ## [1.19.1] - 2026-06-18
 
 ### Added
+
 - add LinkedIn channel to Buffer social posting (N/A)
 
 ### Fixed
+
 - migrate Buffer integration from deprecated REST API to GraphQL API (N/A)
 - validate Buffer token before posting to avoid OIDC 401 errors (N/A)
 - add MongoDB service container to release workflow (N/A)
 - override CI to falsy so Playwright uses dev mode for BE (N/A)
 
-
 ## [1.19.0] - 2026-06-17
-
-
-
 
 ## [1.18.2] - 2026-06-17
 
 ### Added
+
 - add Telegram group posting to social workflows (N/A)
 
 ### Fixed
-- fix Buffer social posts and release E2E tests (N/A)
 
+- fix Buffer social posts and release E2E tests (N/A)
 
 ## [1.18.1] - 2026-06-17
 
 ### Fixed
+
 - use double curly braces for appName interpolation in HomeHero (N/A)
 
-
 ## [1.18.0] - 2026-06-17
-
-
-
 
 ## [1.17.10] - 2026-06-17
 
 ### Fixed
-- show play badge only on hero card hover (N/A)
 
+- show play badge only on hero card hover (N/A)
 
 ## [1.17.9] - 2026-06-17
 
 ### Fixed
+
 - make entire hero card clickable, play label is just a badge (N/A)
 - remove hoveredIndex recalc on pointerup so click reaches play button (N/A)
 - freeze hero card hover during click to prevent play button disappearing (N/A)
 - hero card hover overlap race condition (N/A)
 - prevent hero card overlap blocking play button on hover (N/A)
 
-
 ## [1.17.8] - 2026-06-17
 
 ### Fixed
+
 - resolve hydration mismatch in layout caused by Turbopack streaming SSR (N/A)
 
 ### Improved
-- defer non-critical hydration work to reduce main-thread contention (N/A)
 
+- defer non-critical hydration work to reduce main-thread contention (N/A)
 
 ## [1.17.7] - 2026-06-17
 
 ### Improved
-- optimize LCP by splitting hero to server component and deferring notification init (N/A)
 
+- optimize LCP by splitting hero to server component and deferring notification init (N/A)
 
 ## [1.17.6] - 2026-06-16
 
 ### Fixed
-- fix cascade lobby double-click start and hydration mismatch (N/A)
 
+- fix cascade lobby double-click start and hydration mismatch (N/A)
 
 ## [1.17.5] - 2026-06-16
 
 ### Fixed
+
 - scroll mobile nav to bottom before clicking language pill (N/A)
 - use force click for mobile language pill in fixed scroll container (N/A)
 - fix social media workflow bugs and e2e test (N/A)
 
 ### Improved
-- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
 
+- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
 
 ## [1.17.4] - 2026-06-16
 
 ### Fixed
+
 - sticky footer on mobile and hide during gameplay (N/A)
 - fix game result modal positioning and sizing on mobile (N/A)
-
 
 ## [1.17.3] - 2026-06-16
 
 ### Fixed
-- cascade game fixes — styles, padding, fullscreen, tests, i18n (N/A)
 
+- cascade game fixes — styles, padding, fullscreen, tests, i18n (N/A)
 
 ## [1.17.2] - 2026-06-16
 
 ### Fixed
-- wrap children in Suspense to prevent async cleanup error (N/A)
 
+- wrap children in Suspense to prevent async cleanup error (N/A)
 
 ## [1.17.1] - 2026-06-16
 
 ### Fixed
+
 - always show copied feedback after clipboard attempt (N/A)
 - add clipboard fallback for referral copy button in e2e (N/A)
 - remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
@@ -710,69 +725,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improve SEO metadata and AI search readiness (N/A)
 
 ### Refactored
+
 - migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
 
-
 ## [1.17.0] - 2026-06-15
-
-
-
 
 ## [1.16.15] - 2026-06-15
 
 ### Fixed
+
 - remove 180deg rotation on notifications bell hover (N/A)
 
 ### Documentation
+
 - clarify PRs must target develop branch (N/A)
 - add rule to pull develop before opening PR (N/A)
-
 
 ## [1.16.14] - 2026-06-15
 
 ### Fixed
+
 - propagate actual validation error messages from game engines (N/A)
 - update cascade bot race-error detection and tighten reflex delays (N/A)
 - enforce first-click-wins for cascade call race condition (N/A)
 
-
 ## [1.16.13] - 2026-06-15
 
 ### Fixed
-- comprehensive SEO audit fixes across 26 files (N/A)
 
+- comprehensive SEO audit fixes across 26 files (N/A)
 
 ## [1.16.12] - 2026-06-15
 
 ### Added
-- add rate limiting, helmet, IP blocking, and security hardening (N/A)
 
+- add rate limiting, helmet, IP blocking, and security hardening (N/A)
 
 ## [1.16.11] - 2026-06-15
 
 ### Added
+
 - replace basic SEO with Agentic SEO Skill v3.0.1 (N/A)
 - add SEO, a11y, and performance Claude skills (N/A)
-
 
 ## [1.16.10] - 2026-06-15
 
 ### Added
+
 - add social media auto-posting for daily changelogs and releases (N/A)
 
 ### Fixed
+
 - randomize daily post time within 2-hour window (N/A)
 - add pip install requests, expand emoji map, pin develop branch for daily fetch (N/A)
-
 
 ## [1.16.9] - 2026-06-15
 
 ### Added
+
 - configurable max total players + fix team panel scroll (N/A)
 - add explicit og:image and twitter:image to all game landing pages (N/A)
 - add tap-to-move for placed ships on mobile (N/A)
 
 ### Fixed
+
 - move team panel into optionsSlot so it scrolls with lobby (N/A)
 - remove all CSS overrides, use plain flex layout for team lobby (N/A)
 - team panel and lobby scroll together as one unit (N/A)
@@ -785,25 +801,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - raise GameResultModal and shared modal z-index above fullscreen container (N/A)
 
 ### Refactored
-- remove redundant max players stepper from lobby (N/A)
 
+- remove redundant max players stepper from lobby (N/A)
 
 ## [1.16.8] - 2026-06-14
 
 ### Added
-- add tiktok and linkedin social links to footer and support page (N/A)
 
+- add tiktok and linkedin social links to footer and support page (N/A)
 
 ## [1.16.7] - 2026-06-14
 
 ### Fixed
+
 - refactor modals to render inline within widget and fix insight card routing (N/A)
 - improve modals, mobile UX, fullscreen, defaults (N/A)
-
 
 ## [1.16.6] - 2026-06-14
 
 ### Fixed
+
 - rewrite sea battle bot-count test to use mock response instead of event recording (N/A)
 - use force click in sea battle e2e tests to bypass pointer event interception (N/A)
 - reduce fullscreen padding on mobile screens (ARC-779) (ARC-779)
@@ -816,32 +833,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improve games/create mobile UX (N/A)
 
 ### Refactored
-- convert all CSS to SCSS with breakpoint mixins (N/A)
 
+- convert all CSS to SCSS with breakpoint mixins (N/A)
 
 ## [1.16.5] - 2026-06-13
 
 ### Added
-- add daily challenges, achievements, and sea battle variants (N/A)
 
+- add daily challenges, achievements, and sea battle variants (N/A)
 
 ## [1.16.4] - 2026-06-13
 
 ### Added
-- add additional premium shop items and fix E2E tests (N/A)
 
+- add additional premium shop items and fix E2E tests (N/A)
 
 ## [1.16.3] - 2026-06-13
 
 ### Added
+
 - wire TicTacToe chat send via shared useGameChatSend hook (N/A)
 - add shared TurnIndicator + turn contract to GameWidgetContainer (N/A)
 
 ### Fixed
+
 - wire Cascade chat and add generic history_note handler (N/A)
 - avoid double chat popups in Critical on the shared shell (N/A)
 
 ### Refactored
+
 - add standardized gameResult to session state (N/A)
 - extract shared hooks and utilities from game widgets (N/A)
 - render Glimworm inside the shared GameWidgetContainer (N/A)
@@ -849,17 +869,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - adopt shared turn contract in TicTacToe and Cascade headers (N/A)
 
 ### Documentation
+
 - add git rules — no force push, no amend (N/A)
 - tighten shared game shell spec after review (N/A)
 - add shared game shell refactor design (N/A)
 
-
 ## [1.16.2] - 2026-06-13
-
 
 ## [1.16.1] - 2026-05-29
 
 ### Added
+
 - add optional aurora card style for Cascade (ARC-760) (ARC-760)
 - bring full prototype polish to the Cascade table (ARC-760) (ARC-760)
 - rework Cascade cards into on-brand dark-glass faces (ARC-760) (ARC-760)
@@ -867,17 +887,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - modernize the Cascade board for a more playable table (ARC-760) (ARC-760)
 
 ### Documentation
+
 - add the Cascade board card-rework handoff (ARC-760) (ARC-760)
 
-
 ## [1.16.0] - 2026-05-29
-
-
-
 
 ## [1.15.11] - 2026-05-29
 
 ### Added
+
 - wire media keys to the music player (Mac F7/F9, lock screen) (ARC-760) (ARC-760)
 - add a transport mini-player to in-game music (ARC-760) (ARC-760)
 - show a "Now playing" chip when game music starts (ARC-760) (ARC-760)
@@ -885,34 +903,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - in-game background music with real tracks (ARC-760) (ARC-760)
 
 ### Fixed
-- stack the music player so long titles don't shift controls (ARC-760) (ARC-760)
 
+- stack the music player so long titles don't shift controls (ARC-760) (ARC-760)
 
 ## [1.15.10] - 2026-05-29
 
 ### Added
-- pay out tier rewards on claim + add e2e/integration coverage (ARC-759) (ARC-759)
 
+- pay out tier rewards on claim + add e2e/integration coverage (ARC-759) (ARC-759)
 
 ## [1.15.9] - 2026-05-29
 
 ### Added
-- premium experience pack — celebration, sound/music, VIP identity, battle pass (ARC-758) (ARC-758)
 
+- premium experience pack — celebration, sound/music, VIP identity, battle pass (ARC-758) (ARC-758)
 
 ## [1.15.8] - 2026-05-29
 
 ### Added
+
 - auto-exit fullscreen after a game finishes (ARC-757) (ARC-757)
 
 ### Fixed
+
 - auto-exit the widget-level fullscreen on finish too (ARC-757) (ARC-757)
 - trigger fullscreen auto-exit off session status, not room status (ARC-757) (ARC-757)
-
 
 ## [1.15.7] - 2026-05-29
 
 ### Added
+
 - show equipped avatars across games + cosmetic-less fallback disc (ARC-755) (ARC-755)
 - add equippable avatar background cosmetic category (ARC-755) (ARC-755)
 - thread equippedGameSkinId to profile menu, profile page, session (ARC-755) (ARC-755)
@@ -926,6 +946,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add profile size to PlayerAvatar (ARC-755) (ARC-755)
 
 ### Fixed
+
 - stack PlayerAvatar badge above the avatar art (ARC-755) (ARC-755)
 - localize skin-chip prefix for all PlayerAvatar consumers (ARC-755) (ARC-755)
 - sync equipped cosmetics to header + fix critical opponent card height (ARC-755) (ARC-755)
@@ -933,54 +954,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - center rays halo on avatar disc + restore shop proportions (ARC-755) (ARC-755)
 
 ### Refactored
+
 - split PlayerAvatar into modules + i18n the skin chip (ARC-755) (ARC-755)
 - route preview through shared PlayerAvatar (ARC-755) (ARC-755)
 - extract RaysHalo + symmetric pickSwatchColor + drop useMemo (ARC-755) (ARC-755)
 
 ### Documentation
+
 - stories for PlayerAvatar profile size + skin chip (ARC-755) (ARC-755)
 - implementation plan for equipped avatar everywhere (ARC-755) (ARC-755)
 - design for equipped avatar everywhere (ARC-755) (ARC-755)
 
-
 ## [1.15.6] - 2026-05-27
 
 ### Added
+
 - visible rotate icon on placed ships (ARC-754) (ARC-754)
 - optimistic move + rotate placed ships (ARC-754) (ARC-754)
 - drag placed ships to reposition (ARC-754) (ARC-754)
 
 ### Documentation
+
 - address spec review feedback (ARC-754) (ARC-754)
 - design for dragging placed ships (ARC-754) (ARC-754)
-
 
 ## [1.15.5] - 2026-05-27
 
 ### Refactored
-- move Buy Gems above history and anchor Next link (ARC-756) (ARC-756)
 
+- move Buy Gems above history and anchor Next link (ARC-756) (ARC-756)
 
 ## [1.15.4] - 2026-05-27
 
 ### Fixed
+
 - wire opponent chat bubbles + Sea Battle popup in widget UI; retire legacy-only e2e tests (ARC-753) (ARC-753)
 - anchor autoplay dropdown to its right edge so it stays on-screen (ARC-753) (ARC-753)
 - keep MobileHandBar above widget fullscreen layer (ARC-753) (ARC-753)
 
 ### Refactored
-- drop widget-mode flag, ship the new widget UI everywhere (ARC-753) (ARC-753)
 
+- drop widget-mode flag, ship the new widget UI everywhere (ARC-753) (ARC-753)
 
 ## [1.15.3] - 2026-05-27
 
 ### Fixed
-- sea battle lobby crash when gameOptions.teams is not an array (ARC-752) (ARC-752)
 
+- sea battle lobby crash when gameOptions.teams is not an array (ARC-752) (ARC-752)
 
 ## [1.15.2] - 2026-05-27
 
 ### Added
+
 - cascade Last-Card race (option-toggled, with bot reflex) (ARC-751) (ARC-751)
 - per-theme action-card names (Eclipse/Banish/Firewall/Block) (ARC-751) (ARC-751)
 - cascade gameplay modes (classic/pure/speed) + e2e flatten fix (ARC-751) (ARC-751)
@@ -991,20 +1016,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Cascade backend engine, service, bot, and gateway (ARC-751) (ARC-751)
 
 ### Fixed
+
 - cascade pendingStart used stale initial session, rules modal lacked close (ARC-751) (ARC-751)
 - cascade pendingStart reset uses inline reset, not effect setState (ARC-751) (ARC-751)
 - cascade start button needed two clicks to register (ARC-751) (ARC-751)
 - cascade +2/+4 stacking coverage + pure-mode skip consistency (ARC-751) (ARC-751)
 
 ### Documentation
-- assign ARC-751 to cascade design spec (ARC-751) (ARC-751
-ARC-751)
-- cascade card game design spec (ARC-751) (ARC-751)
 
+- assign ARC-751 to cascade design spec (ARC-751) (ARC-751
+  ARC-751)
+- cascade card game design spec (ARC-751) (ARC-751)
 
 ## [1.15.1] - 2026-05-26
 
 ### Added
+
 - scale tic-tac-toe player cap by board size (ARC-750) (ARC-750)
 - polish tic-tac-toe theme previews, rules, and end-game (ARC-750) (ARC-750)
 - list tic-tac-toe in admin game-visibility catalog (ARC-750) (ARC-750)
@@ -1021,28 +1048,28 @@ ARC-751)
 - add tic-tac-toe with 3×3, 5×5, 7×7, 9×9 boards (ARC-750) (ARC-750)
 
 ### Fixed
+
 - mount tic-tac-toe rules modal in-game, not only in lobby (ARC-750) (ARC-750)
 - give tic-tac-toe board explicit width so cells render (ARC-750) (ARC-750)
 - render tic-tac-toe lobby outside GameWidgetContainer (ARC-750) (ARC-750)
 - register tic_tac_toe_v1 in GameType unions so the widget loads (ARC-750) (ARC-750)
 
 ### Documentation
+
 - add tic-tac-toe full-game implementation plan (ARC-750) (ARC-750)
 - add full-game design for tic-tac-toe (ARC-750) (ARC-750)
 
-
 ## [1.15.0] - 2026-05-25
-
-
-
 
 ## [1.14.36] - 2026-05-25
 
 ### Added
+
 - implement forgot/reset password flow end-to-end (ARC-748) (ARC-748)
 
 ### Fixed
-- drop _rsc-cancel + opaque 'Error' noise from pageerror path too (ARC-748) (ARC-748)
+
+- drop \_rsc-cancel + opaque 'Error' noise from pageerror path too (ARC-748) (ARC-748)
 - un-gate chunk-load suppression + drop opaque 'Error' pageerror noise (ARC-748) (ARC-748)
 - suppress CI noise on /payment 401s, Safari aborts, RSC fetch cancels (ARC-748) (ARC-748)
 - stop AuthModule from pulling SupportController into integration tests (ARC-748) (ARC-748)
@@ -1053,24 +1080,26 @@ ARC-751)
 - add missing critical variant names for ru/fr/by (ARC-748) (ARC-748)
 
 ### Improved
-- priority on rank-2/3 avatars to fix LCP (ARC-748) (ARC-748)
 
+- priority on rank-2/3 avatars to fix LCP (ARC-748) (ARC-748)
 
 ## [1.14.35] - 2026-05-24
 
 ### Added
+
 - rework featured games section with V2 cover-led card (ARC-747) (ARC-747)
 
 ### Fixed
+
 - pin rules + create-room buttons in preview rail (ARC-747) (ARC-747)
 - keep slider arrows below cards (ARC-747) (ARC-747)
 - always render featured-games pager (ARC-747) (ARC-747)
 - prefix play CTA href with active locale (ARC-747) (ARC-747)
 
-
 ## [1.14.34] - 2026-05-24
 
 ### Added
+
 - notify subscribers of new public announcement (ARC-740) (ARC-740)
 - notify on starting soon + registration opened (ARC-740) (ARC-740)
 - notify users when streak window opens (ARC-740) (ARC-740)
@@ -1090,26 +1119,29 @@ ARC-751)
 - add notification category enum (ARC-740) (ARC-740)
 
 ### Fixed
+
 - use ts-node instead of tsx for VAPID script (ARC-740) (ARC-740)
 
 ### Documentation
+
 - add PWA notifications implementation plan (ARC-740) (ARC-740)
 - clarify vapid-public-key endpoint is public (ARC-740) (ARC-740)
 - add PWA notifications design spec (ARC-740) (ARC-740)
 
-
 ## [1.14.33] - 2026-05-24
 
 ### Added
+
 - generate invite code for all rooms (ARC-745) (ARC-745)
 
 ### Fixed
-- look up rooms by invite code without anon-host filter (ARC-745) (ARC-745)
 
+- look up rooms by invite code without anon-host filter (ARC-745) (ARC-745)
 
 ## [1.14.32] - 2026-05-23
 
 ### Added
+
 - View Game Rules link in preview rail (ARC-744) (ARC-744)
 - sticky bottom Create Room CTA on mobile (ARC-744) (ARC-744)
 - use shared CreateRoomButton in preview rail (ARC-744) (ARC-744)
@@ -1119,6 +1151,7 @@ ARC-751)
 - rework /games/create with editorial two-column layout (ARC-744) (ARC-744)
 
 ### Fixed
+
 - cap sticky rail height so Create Room CTA stays reachable (ARC-744) (ARC-744)
 - restore e2e contract with redesigned /games/create (ARC-744) (ARC-744)
 - emit valid hreflang code for Belarusian locale (N/A)
@@ -1132,65 +1165,69 @@ ARC-751)
 - real Sea Battle field anchored top-left in picker tiles + move LIVE PREVIEW pill (ARC-744) (ARC-744)
 - show A–J / 1–10 coordinate labels in Sea Battle theme tiles (ARC-744) (ARC-744)
 
-
 ## [1.14.31] - 2026-05-23
 
 ### Fixed
-- redirect unauthenticated users to /auth when buying gems (ARC-742) (ARC-742)
 
+- redirect unauthenticated users to /auth when buying gems (ARC-742) (ARC-742)
 
 ## [1.14.30] - 2026-05-23
 
 ### Fixed
-- add missing $error theme tokens to silence Tamagui warning and stabilize SSR (ARC-737, ARC-738) (ARC-737
-ARC-738)
-- clear dist before nest start --watch to avoid stale module race (ARC-739) (ARC-739)
 
+- add missing $error theme tokens to silence Tamagui warning and stabilize SSR (ARC-737, ARC-738) (ARC-737
+  ARC-738)
+- clear dist before nest start --watch to avoid stale module race (ARC-739) (ARC-739)
 
 ## [1.14.29] - 2026-05-23
 
 ### Added
+
 - show Play CTA on hover of every hero card (N/A)
 - show 'Play' CTA on hover of front hero card linking to variant create (ARC-734) (ARC-734)
 - render hero cards with full-bleed variant artwork (ARC-734) (ARC-734)
 - add optional bgImage to CARD_VARIANTS for shipped artwork (ARC-734) (ARC-734)
 
 ### Fixed
+
 - rename Play CTA testid to avoid hero-card- prefix collision (N/A)
 
 ### Refactored
+
 - alias isLast as isFront for hero card LCP priority (ARC-734) (ARC-734)
 
 ### Documentation
+
 - add ARC-734 hero cards implementation plan (ARC-734)
 - add ARC-734 hero cards premium design spec (ARC-734)
-
 
 ## [1.14.28] - 2026-05-23
 
 ### Fixed
+
 - tighten system row layout and drop generic 'A player' prefix (ARC-736) (ARC-736)
 - render sender (and target) on system/action rows (ARC-736) (ARC-736)
-
 
 ## [1.14.27] - 2026-05-23
 
 ### Added
+
 - additional shop avatar and badge items (ARC-712)
 
 ### Fixed
-- pin .first() for duplicated legendary card testids in e2e (ARC-712) (ARC-712)
 
+- pin .first() for duplicated legendary card testids in e2e (ARC-712) (ARC-712)
 
 ## [1.14.26] - 2026-05-23
 
 ### Added
-- in-game share menu via telegram/whatsapp/x/facebook (ARC-732) (ARC-732)
 
+- in-game share menu via telegram/whatsapp/x/facebook (ARC-732) (ARC-732)
 
 ## [1.14.25] - 2026-05-23
 
 ### Added
+
 - horizontal ship rows + vertical label in side strip (ARC-729) (ARC-729)
 - side ships-remaining in mobile landscape (ARC-729) (ARC-729)
 - cap mobile/tablet landscape grid at 2 cols (ARC-729) (ARC-729)
@@ -1198,6 +1235,7 @@ ARC-738)
 - adaptive board sizing + 2-col min in landscape (ARC-729) (ARC-729)
 
 ### Fixed
+
 - only desktop widget-fs shrinks grid cells (ARC-729) (ARC-729)
 - prefer bigger cells with scroll outside fullscreen (ARC-729) (ARC-729)
 - CSS-only row fit so boards never overflow viewport (ARC-729) (ARC-729)
@@ -1216,24 +1254,25 @@ ARC-738)
 - measure remaining viewport height instead of guessing (ARC-729) (ARC-729)
 
 ### Refactored
-- pure-CSS fit-grid sizing for boards (ARC-729) (ARC-729)
 
+- pure-CSS fit-grid sizing for boards (ARC-729) (ARC-729)
 
 ## [1.14.24] - 2026-05-22
 
 ### Fixed
-- unblock app e2e cold bootstrap (ARC-732) (ARC-732)
 
+- unblock app e2e cold bootstrap (ARC-732) (ARC-732)
 
 ## [1.14.23] - 2026-05-21
 
 ### Added
-- in-game player avatars for critical + sea-battle (ARC-728) (ARC-728)
 
+- in-game player avatars for critical + sea-battle (ARC-728) (ARC-728)
 
 ## [1.14.22] - 2026-05-21
 
 ### Added
+
 - premium in-game chat redesign per handoff (ARC-735) (ARC-735)
 - wire GamePageLayout to chat store; remove local popup (ARC-735) (ARC-735)
 - mount chat popup overlay inside game widget (ARC-735) (ARC-735)
@@ -1241,66 +1280,72 @@ ARC-738)
 - extend chat store with userId, equipped, panelOpen, fallback resolver (ARC-735) (ARC-735)
 
 ### Fixed
+
 - popup-on-refresh + theme-aware chat surfaces (ARC-735) (ARC-735)
 
 ### Refactored
+
 - anchor popup to nearest positioned ancestor (ARC-735) (ARC-735)
 
 ### Documentation
+
 - implementation plan for chat popup inside game widget (ARC-735) (ARC-735)
 - design for chat popup inside game widget (ARC-735) (ARC-735)
-
 
 ## [1.14.21] - 2026-05-21
 
 ### Added
-- HowTo on landings + Speakable + RUM ingestion (ARC-727) (ARC-727)
 
+- HowTo on landings + Speakable + RUM ingestion (ARC-727) (ARC-727)
 
 ## [1.14.20] - 2026-05-21
 
 ### Added
-- HowTo schema + related articles + dynamic OG images (ARC-727) (ARC-727)
 
+- HowTo schema + related articles + dynamic OG images (ARC-727) (ARC-727)
 
 ## [1.14.19] - 2026-05-21
 
 ### Added
+
 - blog content cluster — infra + first article (ARC-727) (ARC-727)
 - /games/glimworm landing page (ARC-727) (ARC-727)
 - /games/critical landing page (ARC-727) (ARC-727)
 
-
 ## [1.14.18] - 2026-05-21
 
 ### Added
+
 - SEO copy — inject "free" keyword into home + games (ARC-727) (ARC-727)
 - more SEO — resource hints, FAQ JSON-LD, sitemap+robots audit (ARC-727) (ARC-727)
 - additive SEO — VideoObject, Person, Org enrichment, Web Vitals, cache + x-robots-tag (ARC-727) (ARC-727)
 
-
 ## [1.14.17] - 2026-05-20
 
 ### Added
+
 - taller profile chip — more breathable avatar section (ARC-726) (ARC-726)
 - friendlier profile chip — first-name only + outlined role badge (ARC-726) (ARC-726)
 - scrollable profile dropdown + Support icon + Shop emphasis (ARC-726) (ARC-726)
 
 ### Fixed
+
 - profile chip honors size override (56px, no clipping) (ARC-726) (ARC-726)
 - Support icon button — render via Button+Link, no spin on hover (ARC-726) (ARC-726)
 
 ### Refactored
+
 - slim desktop nav to Games + Leaderboards + Shop (ARC-726) (ARC-726)
 - slim desktop nav, compact profile chip + language switcher (ARC-726) (ARC-726)
 
 ### Documentation
-- app header rework design spec (ARC-726) (ARC-726)
 
+- app header rework design spec (ARC-726) (ARC-726)
 
 ## [1.14.16] - 2026-05-20
 
 ### Added
+
 - PlayerAvatar 'lg' size — full composition without card chrome (ARC-730) (ARC-730)
 - MythicSpotlight + RunnerUpCard show equipped cosmetics (ARC-730) (ARC-730)
 - ChatMessage adds optional senderAvatar slot (ARC-730) (ARC-730)
@@ -1315,6 +1360,7 @@ ARC-738)
 - expose equipped frame/aura/banner ids on AuthUserProfile (ARC-730) (ARC-730)
 
 ### Refactored
+
 - history modal + stats leaderboard use EquippedPlayerAvatar (ARC-730) (ARC-730)
 - chat list search result uses EquippedPlayerAvatar (ARC-730) (ARC-730)
 - profile + mobile menu use EquippedPlayerAvatar (ARC-730) (ARC-730)
@@ -1324,27 +1370,28 @@ ARC-738)
 - use EquippedPlayerAvatar in locale chat (ARC-730) (ARC-730)
 
 ### Documentation
+
 - PlayerAvatar implementation plan (ARC-730) (ARC-730)
 - PlayerAvatar component design (ARC-730) (ARC-730)
-
 
 ## [1.14.15] - 2026-05-20
 
 ### Added
+
 - harden contact form against spam/abuse (ARC-725) (ARC-725)
 - support module — Discord webhook + Gmail SMTP delivery (ARC-725) (ARC-725)
 
 ### Fixed
+
 - E2E bypass for Mailer/Discord/Throttler + dev OriginGuard fallback (ARC-725) (ARC-725)
 - OriginGuard accepts server-action via shared token + e2e fixes (ARC-725) (ARC-725)
 - contact form delivers to NEXT_PUBLIC_SUPPORT_EMAIL (ARC-725) (ARC-725)
 
-
 ## [1.14.14] - 2026-05-19
 
 ### Added
-- clear file length allow list (N/A)
 
+- clear file length allow list (N/A)
 
 ## [1.14.13] - 2026-05-19
 

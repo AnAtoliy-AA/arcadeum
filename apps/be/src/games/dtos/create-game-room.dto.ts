@@ -38,6 +38,11 @@ export class CreateGameRoomDto {
   notes?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  password?: string;
+
+  @IsOptional()
   @IsObject()
   gameOptions?: Record<string, unknown>;
 }

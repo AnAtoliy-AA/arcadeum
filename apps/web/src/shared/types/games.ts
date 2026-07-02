@@ -50,6 +50,7 @@ export interface GameRoomSummary {
   status: GameRoomStatus;
   notes?: string | null;
   inviteCode?: string;
+  hasPassword?: boolean;
   gameOptions?: GameOptions;
   rematchInvitedUsers?: GameRoomMemberSummary[];
   rematchDeclinedUsers?: GameRoomMemberSummary[];

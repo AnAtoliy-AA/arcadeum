@@ -150,6 +150,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                   {room.visibility === 'private'
                     ? t('games.rooms.visibility.private')
                     : t('games.rooms.visibility.public')}
+                  {room.hasPassword ? ' 🔑' : ''}
                 </MetaValue>
               </YStack>
             </MetaRow>
@@ -232,6 +233,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               {room.visibility === 'private'
                 ? t('games.rooms.visibility.private')
                 : t('games.rooms.visibility.public')}
+              {room.hasPassword ? ' 🔑' : ''}
             </MetaValue>
           </MetaRow>
           {room.members && room.members.length > 0 && (

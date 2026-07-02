@@ -26,7 +26,6 @@ function shuffleArray(n: number): number[] {
   }
   return arr;
 }
-
 export interface AudioPlayerState {
   tracks: readonly MusicTrack[];
   index: number;
@@ -163,30 +162,37 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     const newAudio =
       activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
     if (!newAudio || !oldAudio) return;
+    const wasPlaying = !oldAudio.paused;
     cancelAnimationFrame(crossfadeRafRef.current);
     activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
     newAudio.src = newSrc;
     newAudio.volume = 0;
     newAudio.loop = repeatRef.current === 'one';
-    newAudio.play().catch(() => {});
-    let start = -1;
-    const oldStartVol = oldAudio.volume;
-    const step = (now: number) => {
-      if (start < 0) start = now;
-      const t = Math.min((now - start) / CROSSFADE_MS, 1);
-      oldAudio.volume = oldStartVol * (1 - t);
-      newAudio.volume = newVolume * t;
-      if (t < 1) crossfadeRafRef.current = requestAnimationFrame(step);
-      else {
-        oldAudio.pause();
-        oldAudio.currentTime = 0;
-        oldAudio.volume = 0;
-      }
-    };
-    crossfadeRafRef.current = requestAnimationFrame(step);
+    if (wasPlaying) newAudio.play().catch(() => {});
+    if (wasPlaying) {
+      let start = -1;
+      const oldStartVol = oldAudio.volume;
+      const step = (now: number) => {
+        if (start < 0) start = now;
+        const t = Math.min((now - start) / CROSSFADE_MS, 1);
+        oldAudio.volume = oldStartVol * (1 - t);
+        newAudio.volume = newVolume * t;
+        if (t < 1) crossfadeRafRef.current = requestAnimationFrame(step);
+        else {
+          oldAudio.pause();
+          oldAudio.currentTime = 0;
+          oldAudio.volume = 0;
+        }
+      };
+      crossfadeRafRef.current = requestAnimationFrame(step);
+    } else {
+      newAudio.volume = newVolume;
+      oldAudio.src = '';
+      oldAudio.currentTime = 0;
+      oldAudio.volume = 0;
+    }
     audioRef.current = newAudio;
   }, []);
-
   useEffect(() => {
     if (!musicEnabled) return;
     if (!audioARef.current) {
@@ -363,21 +369,18 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     setRepeat((r) => (r === 'off' ? 'all' : r === 'all' ? 'one' : 'off'));
   }, []);
 
-  const toggleTrack = useCallback(
-    (trackIndex: number) => {
-      setEnabledTracks((prev) => {
-        const next = new Set(prev);
-        if (next.has(trackIndex)) {
-          if (next.size > 1) next.delete(trackIndex);
-        } else {
-          next.add(trackIndex);
-        }
-        saveStoredSettings({ musicEnabledTracks: Array.from(next) });
-        return next;
-      });
-    },
-    [],
-  );
+  const toggleTrack = useCallback((trackIndex: number) => {
+    setEnabledTracks((prev) => {
+      const next = new Set(prev);
+      if (next.has(trackIndex)) {
+        if (next.size > 1) next.delete(trackIndex);
+      } else {
+        next.add(trackIndex);
+      }
+      saveStoredSettings({ musicEnabledTracks: Array.from(next) });
+      return next;
+    });
+  }, []);
   const reorderTracks = useCallback(
     (newTracks: readonly MusicTrack[]) => {
       const currentSrc = tracks[index].src;

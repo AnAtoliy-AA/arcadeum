@@ -13,6 +13,8 @@ import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { extractRoomAndUser, extractString } from './games.gateway.utils';
+import { handleEmote } from './games.gateway.emote';
+import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
 import {
   maybeEncrypt,
   isSocketEncryptionEnabled,
@@ -20,7 +22,6 @@ import {
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
-import { handleEmote } from './games.gateway.emote';
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -28,17 +29,14 @@ import { handleEmote } from './games.gateway.emote';
 @Injectable()
 export class GamesGateway {
   private readonly logger = new Logger(GamesGateway.name);
-
   @WebSocketServer()
   private server: Server;
-
   constructor(
     private readonly gamesService: GamesService,
     private readonly realtime: GamesRealtimeService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
-
   afterInit(): void {
     this.realtime.registerServer(this.server);
 
@@ -126,7 +124,6 @@ export class GamesGateway {
       | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
-
     if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
       this.logger.warn(
         `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
@@ -152,16 +149,12 @@ export class GamesGateway {
     if (!userId) {
       throw new WsException('userId is required.');
     }
-
     this.validateUserId(client, userId);
-
     const inviteCode =
       typeof payload?.inviteCode === 'string'
         ? payload.inviteCode.trim()
         : undefined;
-
     this.logger.log(`User ${userId} joining room ${roomId}`);
-
     try {
       const { room, session } = await this.gamesService.joinRoom(
         { roomId, inviteCode },
@@ -237,7 +230,6 @@ export class GamesGateway {
 
     this.validateUserId(client, userId);
     this.logger.log(`User ${userId} leaving room ${roomId}`);
-
     try {
       const result = await this.gamesService.leaveRoom({ roomId }, userId);
 
@@ -245,7 +237,6 @@ export class GamesGateway {
       await client.leave(channel);
       const specChannel = this.realtime.spectatorChannel(roomId);
       await client.leave(specChannel);
-
       if (result.deleted) {
         this.realtime.emitRoomDeleted(roomId);
       } else {
@@ -302,7 +293,6 @@ export class GamesGateway {
       return { success: false };
     }
   }
-
   @SubscribeMessage('games.room.watch')
   async handleWatchRoom(
     @ConnectedSocket() client: Socket,
@@ -354,15 +344,12 @@ export class GamesGateway {
     if (!client.rooms.has(channel)) {
       throw new WsException('Join the room before requesting the session.');
     }
-
     const session = await this.gamesService.findSessionByRoom(roomId);
     if (!session) return;
-
     const userId = (client.data as Record<string, unknown>)?.userId as
       | string
       | undefined;
     let diffSession = session;
-
     if (userId) {
       try {
         const sanitizedState = await this.gamesService.getSanitizedState(
@@ -394,15 +381,12 @@ export class GamesGateway {
     const userId = extractString(payload, 'userId');
     this.validateUserId(client, userId);
     const channel = this.realtime.roomChannel(roomId);
-
     if (!client.rooms.has(channel)) return;
-
     const data = { userId, idle: true };
     this.server.to(channel).emit('games.player.idle_changed', data);
     const specChannel = this.realtime.spectatorChannel(roomId);
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
-
   @SubscribeMessage('games.player.active')
   handlePlayerActive(
     @ConnectedSocket() client: Socket,
@@ -412,15 +396,12 @@ export class GamesGateway {
     const userId = extractString(payload, 'userId');
     this.validateUserId(client, userId);
     const channel = this.realtime.roomChannel(roomId);
-
     if (!client.rooms.has(channel)) return;
-
     const data = { userId, idle: false };
     this.server.to(channel).emit('games.player.idle_changed', data);
     const specChannel = this.realtime.spectatorChannel(roomId);
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
-
   @SubscribeMessage('games.room.set_option')
   async handleSetOption(
     @ConnectedSocket() client: Socket,
@@ -437,7 +418,6 @@ export class GamesGateway {
     if (!options || typeof options !== 'object') {
       throw new WsException('options object is required.');
     }
-
     try {
       await this.gamesService.updateRoomOptions(roomId, userId, options);
     } catch (error) {
@@ -487,7 +467,27 @@ export class GamesGateway {
       );
     }
   }
-
+  @SubscribeMessage('games.session.undo_request')
+  onUndoRequest(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): void {
+    handleUndoRequest(this.logger, this.server, client, this.realtime, payload);
+  }
+  @SubscribeMessage('games.session.undo_response')
+  async onUndoResponse(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): Promise<void> {
+    await handleUndoResponse(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      payload,
+      this.gamesService,
+    );
+  }
   @SubscribeMessage('games.session.emote')
   handleEmote(
     @ConnectedSocket() client: Socket,

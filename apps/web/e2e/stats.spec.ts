@@ -6,19 +6,7 @@ test.describe('Player Stats', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
 
-    // Prevention of 500s for other stats/games requests
-    await page.route('**/games/*', async (route) => {
-      if (route.request().resourceType() === 'document') {
-        return route.continue();
-      }
-      const url = route.request().url();
-      if (url.includes('stats') || url.includes('leaderboard')) {
-        return route.continue();
-      }
-      await handleRoute(route, {});
-    });
-
-    // Mock stats API
+    // Mock stats API (must be registered BEFORE the catch-all below)
     await page.route('**/games/stats', async (route) => {
       await handleRoute(route, {
         totalGames: 10,
@@ -71,16 +59,18 @@ test.describe('Player Stats', () => {
     // Stats page now defaults to the leaderboard tab — switch to My Stats
     // before asserting on the overview metrics.
     const myStatsTab = page.getByTestId('stats-tab-my-stats');
-    await myStatsTab
-      .click({ force: true })
-      .catch(() => myStatsTab.dispatchEvent('click'));
 
-    await expect(
-      page.locator('h1, h2, [class*="Title"]').first(),
-    ).toBeVisible();
-    await expect(page.getByTestId('stats-total-games')).toHaveText('10'); // Total games
-    await expect(page.getByTestId('stats-wins')).toHaveText('7'); // Wins
-    await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
+    await expect(async () => {
+      if ((await myStatsTab.getAttribute('aria-pressed')) !== 'true') {
+        await myStatsTab
+          .click({ force: true })
+          .catch(() => myStatsTab.dispatchEvent('click'));
+      }
+      await expect(page.getByTestId('stats-total-games')).toBeVisible();
+      await expect(page.getByTestId('stats-total-games')).toHaveText('10'); // Total games
+      await expect(page.getByTestId('stats-wins')).toHaveText('7'); // Wins
+      await expect(page.getByText('70%').first()).toBeVisible(); // Win rate
+    }).toPass({});
 
     // Use a more specific locator for the game name in the breakdown table
     await expect(

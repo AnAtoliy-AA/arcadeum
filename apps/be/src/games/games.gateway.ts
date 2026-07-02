@@ -52,7 +52,7 @@ export class GamesGateway {
 
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
-  // Verify JWT if present (optional — guest mode allowed without token)
+    // Verify JWT if present (optional — guest mode allowed without token)
     const authUserId = await verifySocketJwt(
       client,
       this.jwt,
@@ -124,7 +124,6 @@ export class GamesGateway {
       | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
-
     if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
       this.logger.warn(
         `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
@@ -155,9 +154,7 @@ export class GamesGateway {
       typeof payload?.inviteCode === 'string'
         ? payload.inviteCode.trim()
         : undefined;
-
     this.logger.log(`User ${userId} joining room ${roomId}`);
-
     try {
       const { room, session } = await this.gamesService.joinRoom(
         { roomId, inviteCode },
@@ -296,7 +293,6 @@ export class GamesGateway {
       return { success: false };
     }
   }
-
   @SubscribeMessage('games.room.watch')
   async handleWatchRoom(
     @ConnectedSocket() client: Socket,
@@ -348,15 +344,12 @@ export class GamesGateway {
     if (!client.rooms.has(channel)) {
       throw new WsException('Join the room before requesting the session.');
     }
-
     const session = await this.gamesService.findSessionByRoom(roomId);
     if (!session) return;
-
     const userId = (client.data as Record<string, unknown>)?.userId as
       | string
       | undefined;
     let diffSession = session;
-
     if (userId) {
       try {
         const sanitizedState = await this.gamesService.getSanitizedState(
@@ -425,7 +418,6 @@ export class GamesGateway {
     if (!options || typeof options !== 'object') {
       throw new WsException('options object is required.');
     }
-
     try {
       await this.gamesService.updateRoomOptions(roomId, userId, options);
     } catch (error) {
@@ -483,11 +475,18 @@ export class GamesGateway {
     handleUndoRequest(this.logger, this.server, client, this.realtime, payload);
   }
   @SubscribeMessage('games.session.undo_response')
-  onUndoResponse(
+  async onUndoResponse(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: unknown,
-  ): void {
-    handleUndoResponse(this.logger, this.server, client, this.realtime, payload);
+  ): Promise<void> {
+    await handleUndoResponse(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      payload,
+      this.gamesService,
+    );
   }
   @SubscribeMessage('games.session.emote')
   handleEmote(

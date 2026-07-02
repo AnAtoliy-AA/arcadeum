@@ -72,7 +72,7 @@ const mainAudioEl = () => {
   for (let i = created.length - 1; i >= 0; i--) {
     if (created[i].src) return created[i];
   }
-  return created[0];
+  return created[created.length - 1] ?? created[0];
 };
 
 const rafQueue: Array<{ id: number; cb: FrameRequestCallback }> = [];
@@ -134,7 +134,7 @@ describe('GameMusic', () => {
     expect(screen.queryByTestId('game-music-player')).toBeNull();
   });
 
-  it('shows the player and auto-plays a track when enabled', () => {
+  it('shows the player and loads a track when enabled', () => {
     musicEnabled = true;
     render(<GameMusic gameId="cascade_v1" />);
     showPlayer();
@@ -142,7 +142,6 @@ describe('GameMusic', () => {
     expect(mainAudioEl().volume).toBeGreaterThan(0);
     expect(mainAudioEl().volume).toBeLessThanOrEqual(1);
     expect(mainAudioEl().src).toContain('/music/');
-    expect(mainAudioEl().play).toHaveBeenCalledTimes(1);
   });
 
   it('starts at the default volume and applies slider changes to the audio', () => {
@@ -163,15 +162,15 @@ describe('GameMusic', () => {
     render(<GameMusic gameId="sea_battle_v1" />);
     showPlayer();
     const audio = mainAudioEl();
-    // Autoplay leaves it playing.
-    expect(audio.paused).toBe(false);
-
-    fireEvent.click(screen.getByTestId('game-music-playpause'));
-    expect(audio.pause).toHaveBeenCalled();
+    // Music does not auto-play on mount — starts paused.
     expect(audio.paused).toBe(true);
 
     fireEvent.click(screen.getByTestId('game-music-playpause'));
+    expect(audio.play).toHaveBeenCalled();
     expect(audio.paused).toBe(false);
+
+    fireEvent.click(screen.getByTestId('game-music-playpause'));
+    expect(audio.paused).toBe(true);
   });
 
   it('stops playback and rewinds to the start', () => {

@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { XStack, YStack, Text } from 'tamagui';
-import { useMutation } from '@/shared/hooks/useMutation';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { gamesApi } from '@/features/games/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   BOARD_SIZES,
   MAX_PLAYERS_BY_BOARD_SIZE,
   type BoardSize,
 } from '../types';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 interface BoardSizeSelectorProps {
   roomId: string;
+  hostId?: string;
   currentSize: BoardSize;
   disabled?: boolean;
   onSizeChange?: (size: BoardSize) => void;
@@ -21,12 +20,13 @@ interface BoardSizeSelectorProps {
 
 export function BoardSizeSelector({
   roomId,
+  hostId,
   currentSize,
   disabled = false,
   onSizeChange,
 }: BoardSizeSelectorProps) {
-  const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
+  const { setOption } = useRoomOptions({ roomId, userId: hostId ?? '' });
 
   const [internalSize, setInternalSize] = useState<BoardSize>(currentSize);
 
@@ -34,24 +34,11 @@ export function BoardSizeSelector({
     setInternalSize(currentSize);
   }, [currentSize]);
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: (size: BoardSize) =>
-      gamesApi.updateRoomOptions(
-        roomId,
-        { boardSize: size },
-        { token: snapshot.accessToken ?? undefined },
-      ),
-    onError: () => {
-      // Revert on failure
-      setInternalSize(currentSize);
-    },
-  });
-
   const handlePick = (size: BoardSize) => {
-    if (disabled || isLoading || size === internalSize) return;
+    if (disabled || size === internalSize) return;
     setInternalSize(size);
     onSizeChange?.(size);
-    void mutate(size);
+    setOption({ boardSize: size });
   };
 
   return (
@@ -67,7 +54,7 @@ export function BoardSizeSelector({
               key={size}
               type="button"
               data-testid={`ttt-board-size-${size}`}
-              disabled={disabled || isLoading}
+              disabled={disabled}
               onClick={() => handlePick(size)}
               style={{
                 display: 'flex',
@@ -84,7 +71,7 @@ export function BoardSizeSelector({
                   : 'transparent',
                 color: isActive ? '#fff' : 'inherit',
                 fontWeight: 600,
-                cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
+                cursor: disabled ? 'not-allowed' : 'pointer',
                 opacity: disabled ? 0.6 : 1,
                 minWidth: 72,
                 lineHeight: 1.1,

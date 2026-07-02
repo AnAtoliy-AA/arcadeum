@@ -43,6 +43,7 @@ import {
   validateNameColor,
   validatePlayCard,
 } from './cascade.validators';
+import { validateCascadeConfig } from './cascade.config';
 
 const ACTION = {
   PLAY_CARD: 'play_card',
@@ -110,6 +111,10 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
       winnerId: null,
       logs: [this.createLogEntry('system', 'Cascade started.')],
     };
+  }
+
+  validateConfig(config: Record<string, unknown>): boolean {
+    return validateCascadeConfig(config);
   }
 
   validateAction(

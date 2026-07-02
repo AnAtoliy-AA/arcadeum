@@ -163,6 +163,7 @@ function CascadeGameImpl({
       <CascadeThemeProvider variant={options.variant}>
         <CascadeLobby
           room={room}
+          userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy || pendingStart}
           onStartGame={handleStartGame}

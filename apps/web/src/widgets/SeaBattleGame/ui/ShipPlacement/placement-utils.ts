@@ -1,10 +1,10 @@
 import type { ShipCell, CellState } from '../../types';
-import { BOARD_SIZE, CELL_STATE } from '../../types';
+import { CELL_STATE } from '../../types';
 
-export function createEmptyBoard(): CellState[][] {
-  return Array(BOARD_SIZE)
+export function createEmptyBoard(size: number = 10): CellState[][] {
+  return Array(size)
     .fill(null)
-    .map(() => Array(BOARD_SIZE).fill(CELL_STATE.EMPTY));
+    .map(() => Array(size).fill(CELL_STATE.EMPTY));
 }
 
 export function getCellsForPlacement(
@@ -12,12 +12,13 @@ export function getCellsForPlacement(
   startCol: number,
   size: number,
   isVertical: boolean,
+  boardSize: number = 10,
 ): ShipCell[] | null {
   const cells: ShipCell[] = [];
   for (let i = 0; i < size; i++) {
     const row = isVertical ? startRow + i : startRow;
     const col = isVertical ? startCol : startCol + i;
-    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+    if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
       return null;
     }
     cells.push({ row, col });

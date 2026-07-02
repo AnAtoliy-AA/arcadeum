@@ -7,7 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
 import type { Socket } from 'socket.io';
-
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import {
   extractRoomAndUser,
@@ -41,14 +40,10 @@ interface ShipOp {
   errorMessage: string;
 }
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
+@WebSocketGateway({ namespace: 'games', cors: { origin: corsOriginMatcher } })
 @Injectable()
 export class SeaBattleGateway {
   private readonly logger = new Logger(SeaBattleGateway.name);
-
   constructor(
     private readonly seaBattleService: SeaBattleService,
     private readonly teamConfigService: SeaBattleTeamConfigService,
@@ -67,13 +62,11 @@ export class SeaBattleGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const withBots = !!payload?.withBots;
-
     try {
       const result = await this.seaBattleService.startSession(
         userId,
         roomId,
-        withBots,
+        !!payload?.withBots,
         payload?.botCount,
       );
       client.emit('seaBattle.session.started', maybeEncrypt(result));
@@ -81,11 +74,7 @@ export class SeaBattleGateway {
       handleError(
         this.logger,
         error,
-        {
-          action: 'start Sea Battle session',
-          roomId,
-          userId,
-        },
+        { action: 'start Sea Battle session', roomId, userId },
         'Unable to start session.',
       );
     }
@@ -99,9 +88,8 @@ export class SeaBattleGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
     const shipId = extractString(payload, 'shipId');
     const cells = payload.cells;
-    if (!shipId || !cells || !Array.isArray(cells)) {
+    if (!shipId || !cells || !Array.isArray(cells))
       throw new WsException('shipId and cells are required');
-    }
     try {
       await op.svc(userId, roomId, { shipId, cells });
       client.emit(op.ackEvent, maybeEncrypt({ roomId, userId, shipId }));
@@ -147,25 +135,17 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-
     try {
       await this.seaBattleService.confirmPlacementByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.placement_confirmed',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'confirm placement',
-          roomId,
-          userId,
-        },
+        { action: 'confirm placement', roomId, userId },
         'Unable to confirm placement.',
       );
     }
@@ -177,25 +157,17 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-
     try {
       await this.seaBattleService.resetPlacementByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.placement_reset',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'reset placement',
-          roomId,
-          userId,
-        },
+        { action: 'reset placement', roomId, userId },
         'Unable to reset placement.',
       );
     }
@@ -207,25 +179,17 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-
     try {
       await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.ships_auto_placed',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'auto place ships',
-          roomId,
-          userId,
-        },
+        { action: 'auto place ships', roomId, userId },
         'Unable to auto place ships.',
       );
     }
@@ -245,13 +209,9 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
-    const row = payload.row;
-    const col = payload.col;
-
-    if (!targetPlayerId || row === undefined || col === undefined) {
+    const { row, col } = payload;
+    if (!targetPlayerId || row === undefined || col === undefined)
       throw new WsException('targetPlayerId, row, and col are required');
-    }
-
     try {
       await this.seaBattleService.attackByRoom(userId, roomId, {
         targetPlayerId,
@@ -260,24 +220,86 @@ export class SeaBattleGateway {
       });
       client.emit(
         'seaBattle.session.attack_result',
+        maybeEncrypt({ roomId, userId, targetPlayerId, row, col }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'attack', roomId, userId },
+        'Unable to attack.',
+      );
+    }
+  }
+
+  @SubscribeMessage('seaBattle.session.use_sonar')
+  async handleUseSonar(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: { roomId?: string; userId?: string; targetPlayerId?: string },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const targetPlayerId = extractString(payload, 'targetPlayerId');
+    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    try {
+      await this.seaBattleService.executeActionByRoom(
+        userId,
+        roomId,
+        'useSonar',
+        { targetPlayerId },
+      );
+      client.emit(
+        'seaBattle.session.sonar_result',
+        maybeEncrypt({ roomId, userId, targetPlayerId }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'useSonar', roomId, userId },
+        'Unable to use sonar.',
+      );
+    }
+  }
+
+  @SubscribeMessage('seaBattle.session.use_radar')
+  async handleUseRadar(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      targetPlayerId?: string;
+      row?: number;
+      col?: number;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const targetPlayerId = extractString(payload, 'targetPlayerId');
+    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    try {
+      await this.seaBattleService.executeActionByRoom(
+        userId,
+        roomId,
+        'useRadar',
+        { targetPlayerId, row: payload.row, col: payload.col },
+      );
+      client.emit(
+        'seaBattle.session.radar_result',
         maybeEncrypt({
           roomId,
           userId,
           targetPlayerId,
-          row,
-          col,
+          row: payload.row,
+          col: payload.col,
         }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'attack',
-          roomId,
-          userId,
-        },
-        'Unable to attack.',
+        { action: 'useRadar', roomId, userId },
+        'Unable to use radar.',
       );
     }
   }
@@ -299,11 +321,9 @@ export class SeaBattleGateway {
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
-
     const scope = (
       ['players', 'private', 'team'].includes(scopeRaw) ? scopeRaw : 'all'
     ) as ChatScope;
-
     try {
       await this.seaBattleService.postHistoryNote(
         userId,
@@ -313,21 +333,13 @@ export class SeaBattleGateway {
       );
       client.emit(
         'seaBattle.session.history_note.ack',
-        maybeEncrypt({
-          roomId,
-          userId,
-          scope,
-        }),
+        maybeEncrypt({ roomId, userId, scope }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
+        { action: 'post history note', roomId, userId },
         'Unable to post history note.',
       );
     }
@@ -358,17 +370,14 @@ export class SeaBattleGateway {
     payload: { roomId?: string; userId?: string; enabled?: boolean },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    if (typeof payload?.enabled !== 'boolean') {
+    if (typeof payload?.enabled !== 'boolean')
       throw new WsException('enabled is required (boolean).');
-    }
-    const enabled = payload.enabled;
-
     await this.runTeamAction(
       client,
       { action: 'set team mode', roomId, userId },
       'Unable to set team mode.',
       () =>
-        enabled
+        payload.enabled
           ? this.teamConfigService.enableTeamMode(roomId, userId)
           : this.teamConfigService.disableTeamMode(roomId, userId),
     );
@@ -386,12 +395,8 @@ export class SeaBattleGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    if (!Array.isArray(payload?.teams)) {
+    if (!Array.isArray(payload?.teams))
       throw new WsException('teams is required (array).');
-    }
-    const teams = payload.teams;
-    const hideShipsFromTeammates = payload.hideShipsFromTeammates;
-
     await this.runTeamAction(
       client,
       { action: 'set team config', roomId, userId },
@@ -399,8 +404,8 @@ export class SeaBattleGateway {
       () =>
         this.teamConfigService.setTeamConfig(userId, {
           roomId,
-          teams,
-          hideShipsFromTeammates,
+          teams: payload.teams!,
+          hideShipsFromTeammates: payload.hideShipsFromTeammates,
         }),
     );
   }
@@ -421,11 +426,8 @@ export class SeaBattleGateway {
       typeof payload.targetUserId === 'string' && payload.targetUserId.trim()
         ? payload.targetUserId.trim()
         : userId;
-    if (typeof payload.teamId === 'undefined') {
+    if (typeof payload.teamId === 'undefined')
       throw new WsException('teamId is required (string or null).');
-    }
-    const teamId = payload.teamId ?? null;
-
     await this.runTeamAction(
       client,
       { action: 'assign team', roomId, userId },
@@ -434,7 +436,7 @@ export class SeaBattleGateway {
         this.teamConfigService.assignPlayerToTeam(userId, {
           roomId,
           userId: targetUserId,
-          teamId,
+          teamId: payload.teamId ?? null,
         }),
     );
   }
@@ -447,7 +449,6 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const teamId = extractString(payload, 'teamId');
-
     await this.runTeamAction(
       client,
       { action: 'add bot to team', roomId, userId },
@@ -464,7 +465,6 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetUserId = extractString(payload, 'targetUserId');
-
     await this.runTeamAction(
       client,
       { action: 'remove bot from team', roomId, userId },
@@ -481,16 +481,18 @@ export class SeaBattleGateway {
     payload: { roomId?: string; userId?: string; enabled?: boolean },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    if (typeof payload?.enabled !== 'boolean') {
+    if (typeof payload?.enabled !== 'boolean')
       throw new WsException('enabled is required (boolean).');
-    }
-    const enabled = payload.enabled;
-
     await this.runTeamAction(
       client,
       { action: 'toggle hide ships', roomId, userId },
       'Unable to toggle hide ships.',
-      () => this.teamConfigService.toggleHideShips(userId, roomId, enabled),
+      () =>
+        this.teamConfigService.toggleHideShips(
+          userId,
+          roomId,
+          payload.enabled!,
+        ),
     );
   }
 }

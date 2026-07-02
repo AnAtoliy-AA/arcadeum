@@ -281,7 +281,7 @@ export class GamesRealtimeService {
       return;
     }
     this.server.to(this.roomChannel(room.id)).emit(
-      'games.room.updated',
+      'games.room.update',
       maybeEncrypt({
         room,
       }),

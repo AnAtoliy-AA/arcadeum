@@ -6,6 +6,16 @@ export const MAX_PLAYERS = 6;
 
 export const BOARD_SIZE = 10;
 
+export function rowLabels(size: number): string[] {
+  return Array.from({ length: size }, (_, i) => String.fromCharCode(65 + i));
+}
+export function colLabels(size: number): string[] {
+  return Array.from({ length: size }, (_, i) => String(i + 1));
+}
+
+export const ROW_LABELS = rowLabels(BOARD_SIZE);
+export const COL_LABELS = colLabels(BOARD_SIZE);
+
 export const CELL_STATE = {
   EMPTY: 0,
   SHIP: 1,
@@ -31,9 +41,6 @@ export const ATTACK_RESULT = {
 } as const;
 
 export type AttackResult = (typeof ATTACK_RESULT)[keyof typeof ATTACK_RESULT];
-
-export const ROW_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-export const COL_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 export interface ShipConfig {
   id: string;
@@ -111,11 +118,32 @@ export interface SeaBattleSnapshot {
   currentTurnIndex: number;
   winnerId?: string;
   logs: GameLogEntry[];
+  gridSize?: number;
   lastAttack?: LastAttack;
   teams?: SeaBattleTeam[];
   teamOrder?: string[];
   currentTeamIndex?: number;
   hideShipsFromTeammates?: boolean;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeaponUsage?: Record<
+    string,
+    { sonarUsed?: boolean; radarUsed?: boolean }
+  >;
+  lastSonar?: {
+    attackerId: string;
+    targetId: string;
+    centerRow: number;
+    centerCol: number;
+    radius: number;
+    shipPositions: ShipCell[];
+  };
+  lastRadar?: {
+    attackerId: string;
+    targetId: string;
+    row?: number;
+    col?: number;
+    cells: { row: number; col: number; state: CellState }[];
+  };
 }
 
 export interface SeaBattleGameProps extends BaseGameWidgetProps {}

@@ -46,6 +46,9 @@ export interface SeaBattleState {
   currentTurnIndex: number;
   winnerId?: string;
   logs: GameLogEntry[];
+  gridSize: number;
+  shipCount?: number;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
   lastAttack?: {
     attackerId: string;
     targetId: string;
@@ -60,6 +63,22 @@ export interface SeaBattleState {
   hideShipsFromTeammates?: boolean;
   mode?: GameModeVariant;
   roundNumber?: number;
+  specialWeaponUsage?: Record<string, SpecialWeaponUsage>;
+  lastSonar?: {
+    attackerId: string;
+    targetId: string;
+    centerRow: number;
+    centerCol: number;
+    radius: number;
+    shipPositions: ShipCell[];
+  };
+  lastRadar?: {
+    attackerId: string;
+    targetId: string;
+    row?: number;
+    col?: number;
+    cells: { row: number; col: number; state: CellState }[];
+  };
   [key: string]: unknown;
 }
 
@@ -72,6 +91,9 @@ export interface SeaBattleConfig {
   }>;
   hideShipsFromTeammates?: boolean;
   mode?: GameModeVariant;
+  gridSize?: number;
+  shipCount?: number;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
 }
 
 export interface PlaceShipPayload {
@@ -90,7 +112,24 @@ export interface AttackPayload {
   col: number;
 }
 
+export interface SonarPayload {
+  targetPlayerId: string;
+  row?: number;
+  col?: number;
+}
+
+export interface RadarPayload {
+  targetPlayerId: string;
+  row?: number;
+  col?: number;
+}
+
 export interface ChatPayload {
   message: string;
   scope?: ChatScope;
+}
+
+export interface SpecialWeaponUsage {
+  sonarUsed?: boolean;
+  radarUsed?: boolean;
 }

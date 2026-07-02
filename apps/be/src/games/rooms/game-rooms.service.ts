@@ -25,7 +25,8 @@ import {
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
-
+import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
+import { validateGameOptions } from './game-rooms.config-validator';
 /**
  * Game Rooms Service
  * Handles all room-related operations (CRUD, joining, leaving)
@@ -39,8 +40,8 @@ export class GameRoomsService {
     private readonly userModel: Model<User>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsRematchService: GameRoomsRematchService,
+    private readonly engineRegistry: GameEngineRegistry,
   ) {}
-
   /**
    * Create a new game room
    */
@@ -49,6 +50,8 @@ export class GameRoomsService {
     dto: CreateGameRoomDto,
   ): Promise<GameRoomSummary> {
     const inviteCode = await this.generateInviteCode();
+
+    validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,

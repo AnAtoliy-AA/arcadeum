@@ -357,13 +357,10 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
             }
           }
         }
-        // Hard-navigate home. SessionRoleSync will recover the session
-        // from httpOnly cookies after the reload if Zustand tokens
-        // aren't available yet.
-        if (typeof window !== 'undefined') {
-          window.location.assign('/');
-          return;
-        }
+        // Navigate home without a hard page reload.
+        // SessionRoleSync will recover the session from httpOnly
+        // cookies if Zustand tokens aren't available yet.
+        router.replace('/');
         router.refresh();
       } catch (callbackError) {
         setState((current) => ({

@@ -13,6 +13,9 @@ import { shopFr } from './shop/fr';
 import { adminShopFr } from './admin-shop/fr';
 import { adminGamesFr } from './admin-games/fr';
 import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
+import { adminUsersFr } from './admin-users/fr';
+import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
+import { friendsFr } from './friends/fr';
 export const fr = {
   admin: {
     title: 'Administration',
@@ -29,6 +32,7 @@ export const fr = {
       economy: 'Économie',
       shop: 'Boutique',
       games: 'Jeux',
+      bulkRewards: 'Récompenses en Masse',
       blockedIps: 'IPs Bloqués',
       comingSoon: 'Bientôt',
     },
@@ -37,52 +41,7 @@ export const fr = {
       body: 'Une erreur est survenue lors du chargement de cette page.',
       retry: 'Réessayer',
     },
-    users: {
-      title: 'Utilisateurs',
-      search: {
-        placeholder: "Recherche par nom d'utilisateur, email ou nom",
-      },
-      filter: {
-        role: { all: 'Tous les rôles', placeholder: 'Filtrer par rôle' },
-      },
-      table: {
-        username: "Nom d'utilisateur",
-        email: 'Email',
-        role: 'Rôle',
-        createdAt: 'Créé le',
-        actions: 'Actions',
-      },
-      empty: {
-        noResults: 'Aucun utilisateur ne correspond aux filtres.',
-        noUsers: 'Aucun utilisateur pour le moment.',
-      },
-      pagination: {
-        prev: 'Précédent',
-        next: 'Suivant',
-        of: 'Page {current} sur {total}',
-      },
-      totalLabel: '{total} utilisateurs',
-      selfTooltip: 'Vous ne pouvez pas changer votre propre rôle.',
-      role: {
-        free: 'Gratuit',
-        premium: 'Premium',
-        vip: 'VIP',
-        supporter: 'Soutien',
-        moderator: 'Modérateur',
-        tester: 'Testeur',
-        developer: 'Développeur',
-        admin: 'Admin',
-      },
-      errors: {
-        SELF_ROLE_CHANGE_FORBIDDEN:
-          'Vous ne pouvez pas changer votre propre rôle.',
-        LAST_ADMIN_PROTECTED:
-          'Impossible de rétrograder le dernier administrateur.',
-        USER_NOT_FOUND: 'Utilisateur introuvable.',
-        INVALID_USER_ID: 'Identifiant utilisateur invalide.',
-        generic: "Quelque chose s'est mal passé. Veuillez réessayer.",
-      },
-    },
+    users: adminUsersFr,
     payments: {
       title: 'Paiements',
       search: { placeholder: 'Recherche par note, nom ou ID de transaction' },
@@ -118,6 +77,7 @@ export const fr = {
     tournaments: adminTournamentsFr,
     wallet: adminWalletFr,
     blockedIps: adminBlockedIpsFr,
+    bulkRewards: adminBulkRewardsFr,
   },
   tournaments: {
     title: 'Tournois',
@@ -496,4 +456,5 @@ export const fr = {
   shop: shopFr,
   adminShop: adminShopFr,
   adminGames: adminGamesFr,
+  friends: friendsFr,
 };

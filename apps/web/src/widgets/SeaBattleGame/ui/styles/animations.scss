@@ -143,8 +143,8 @@
 
 .sb-board-grid-layout {
   display: grid !important;
-  grid-template-columns: repeat(10, 1fr) !important;
-  grid-template-rows: repeat(10, 1fr) !important;
+  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr) !important;
+  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr) !important;
   aspect-ratio: 1;
   padding: 4px;
   width: 100%;
@@ -400,13 +400,13 @@
 
 .sb-row-labels {
   display: grid !important;
-  grid-template-rows: repeat(10, 1fr) !important;
+  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr) !important;
   height: 100% !important;
 }
 
 .sb-col-labels {
   display: grid !important;
-  grid-template-columns: repeat(10, 1fr) !important;
+  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr) !important;
   width: 100% !important;
 }
 

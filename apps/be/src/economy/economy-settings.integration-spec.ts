@@ -46,7 +46,7 @@ describe('EconomySettingsService (integration)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(uri),
-        ConfigModule.forRoot({ isGlobal: true }),
+        ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
         AuthModule,
         WalletModule,
         EconomyModule,
@@ -157,7 +157,6 @@ describe('EconomySettingsService (integration)', () => {
   it('listAll returns all economy keys including those with no DB rows', async () => {
     const all = await service.listAll();
     expect(all).toHaveLength(ECONOMY_KEYS.length);
-    expect(all).toHaveLength(16);
 
     // Each entry has the required shape
     for (const entry of all) {

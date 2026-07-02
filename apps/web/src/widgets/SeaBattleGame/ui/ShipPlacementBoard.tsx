@@ -10,7 +10,7 @@ import type {
   CellState,
   Ship,
 } from '../types';
-import { SHIPS, BOARD_SIZE, CELL_STATE } from '../types';
+import { SHIPS, CELL_STATE } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
@@ -28,6 +28,7 @@ interface ShipPlacementBoardProps {
   onResetPlacement: () => void;
   isPlacementComplete: boolean;
   onAutoPlace?: () => void;
+  gridSize?: number;
 }
 
 import { ShipPaletteSection } from './ShipPlacement/ShipPaletteSection';
@@ -42,7 +43,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   onResetPlacement,
   isPlacementComplete,
   onAutoPlace,
+  gridSize,
 }: ShipPlacementBoardProps) {
+  const boardSize = gridSize ?? currentPlayer?.board.length ?? 10;
   const [selectedShipId, setSelectedShipId] = useState<string | null>(null);
   const [isVertical, setIsVertical] = useState(false);
   const [hoveredCells, setHoveredCells] = useState<ShipCell[]>([]);
@@ -113,7 +116,6 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     const timer = setTimeout(() => setPendingMove(null), 2000);
     return () => clearTimeout(timer);
   }, [pendingMove]);
-
   const handleMoveShip = useCallback(
     (shipId: string, cells: ShipCell[]) => {
       const ship = serverShips.find((s) => s.id === shipId);
@@ -204,9 +206,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
           : { row: row + offset, col };
         if (
           cell.row < 0 ||
-          cell.row >= BOARD_SIZE ||
+          cell.row >= boardSize ||
           cell.col < 0 ||
-          cell.col >= BOARD_SIZE
+          cell.col >= boardSize
         ) {
           return;
         }
@@ -233,7 +235,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         for (const [dr, dc] of dirs) {
           const r = cell.row + (dr ?? 0);
           const c = cell.col + (dc ?? 0);
-          if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+          if (r >= 0 && r < boardSize && c >= 0 && c < boardSize) {
             if (virtual[r][c] === CELL_STATE.SHIP) return;
           }
         }
@@ -241,14 +243,20 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
       handleMoveShip(ship.id, newCells);
     },
-    [ships, board, isPlacementComplete, handleMoveShip],
+    [ships, board, boardSize, isPlacementComplete, handleMoveShip],
   );
 
   const canPlaceAt = useCallback(
     (row: number, col: number, ship: ShipConfig): boolean => {
       if (!ship) return false;
 
-      const cells = getCellsForPlacement(row, col, ship.size, isVertical);
+      const cells = getCellsForPlacement(
+        row,
+        col,
+        ship.size,
+        isVertical,
+        boardSize,
+      );
       if (!cells) return false;
 
       for (const cell of cells) {
@@ -270,7 +278,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         for (const [dr, dc] of directions) {
           const r = cell.row + (dr ?? 0);
           const c = cell.col + (dc ?? 0);
-          if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+          if (r >= 0 && r < boardSize && c >= 0 && c < boardSize) {
             if (board[r][c] === CELL_STATE.SHIP) {
               return false;
             }
@@ -280,7 +288,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
       return true;
     },
-    [board, isVertical],
+    [board, boardSize, isVertical],
   );
 
   const handleCellHover = useCallback(
@@ -366,7 +374,6 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     }
     handleCellClickInner(row, col);
   };
-
   const handleRotate = useCallback(() => {
     setIsVertical((prev) => !prev);
   }, []);
@@ -425,6 +432,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       hoveredCells={hoveredCells}
       isInvalidHover={isInvalidHover}
       selectedShip={selectedShip}
+      gridSize={gridSize}
       getBoardCellDragProps={getBoardCellDragProps}
       draggingCells={draggingCells}
       pendingCells={pendingCells}

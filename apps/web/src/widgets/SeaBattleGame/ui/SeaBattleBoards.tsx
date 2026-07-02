@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -32,6 +33,8 @@ interface SeaBattleBoardsProps {
   currentTurnPlayerId: string | null;
   isMyTurn: boolean;
   attack: (targetPlayerId: string, row: number, col: number) => void;
+  onSonar?: (targetPlayerId: string, row?: number, col?: number) => void;
+  onRadar?: (targetPlayerId: string, row?: number, col?: number) => void;
   resolveDisplayNameBound: (
     id?: string | null,
     fallback?: string | null,
@@ -58,11 +61,30 @@ export function SeaBattleBoards({
   currentTurnPlayerId,
   isMyTurn,
   attack,
+  onSonar,
+  onRadar,
   resolveDisplayNameBound,
   teammateIds,
   teams,
 }: SeaBattleBoardsProps) {
   const { t } = useTranslation();
+  const [radarMode, setRadarMode] = useState<'row' | 'col' | null>(null);
+  const [radarTarget, setRadarTarget] = useState<string | null>(null);
+  const [sonarTarget, setSonarTarget] = useState<string | null>(null);
+
+  const opponents = snapshot?.players.filter(
+    (p) =>
+      p.playerId !== currentUserId &&
+      p.alive &&
+      (!teammateIds || !teammateIds.includes(p.playerId)),
+  );
+
+  const sonarUsed =
+    snapshot?.specialWeaponUsage?.[currentUserId ?? '']?.sonarUsed ?? false;
+  const radarUsed =
+    snapshot?.specialWeaponUsage?.[currentUserId ?? '']?.radarUsed ?? false;
+  const hasSonar = !!snapshot?.specialWeapons?.sonar;
+  const hasRadar = !!snapshot?.specialWeapons?.radar;
 
   return (
     <>
@@ -76,6 +98,7 @@ export function SeaBattleBoards({
           onResetPlacement={resetPlacement}
           isPlacementComplete={isPlacementComplete}
           onAutoPlace={handleAutoPlace}
+          gridSize={snapshot?.gridSize}
         />
       )}
 
@@ -113,17 +136,203 @@ export function SeaBattleBoards({
       )}
 
       {isBattlePhase && snapshot && (
-        <AttackBoard
-          key="attack-board"
-          players={snapshot.players}
-          currentUserId={currentUserId}
-          currentTurnPlayerId={currentTurnPlayerId}
-          isMyTurn={isMyTurn}
-          onAttack={attack}
-          resolveDisplayName={resolveDisplayNameBound}
-          teammateIds={teammateIds}
-          teams={teams}
-        />
+        <>
+          {isMyTurn && (hasSonar || hasRadar) && (
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                padding: '8px 16px',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              {hasSonar && !sonarUsed && (
+                <>
+                  {sonarTarget ? (
+                    <div
+                      style={{ display: 'flex', gap: 4, alignItems: 'center' }}
+                    >
+                      <span style={{ fontSize: 12, color: '#aaa' }}>
+                        Sonar cell:
+                      </span>
+                      {Array.from(
+                        { length: snapshot.gridSize ?? 10 },
+                        (_, i) => i,
+                      ).map((r) =>
+                        Array.from(
+                          { length: snapshot.gridSize ?? 10 },
+                          (_, i) => i,
+                        ).map((c) => (
+                          <button
+                            key={`${r}-${c}`}
+                            style={{
+                              width: 20,
+                              height: 20,
+                              borderRadius: 3,
+                              border: '1px solid #555',
+                              background: '#1a1a2e',
+                              color: '#e0e0e0',
+                              fontSize: 9,
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => {
+                              if (onSonar) {
+                                onSonar(sonarTarget, r, c);
+                                setSonarTarget(null);
+                              }
+                            }}
+                          >
+                            {r},{c}
+                          </button>
+                        )),
+                      )}
+                      <button
+                        style={{
+                          fontSize: 11,
+                          color: '#f87171',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => setSonarTarget(null)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: 6,
+                        border: '1px solid #555',
+                        background: '#1a1a2e',
+                        color: '#e0e0e0',
+                        fontSize: 13,
+                        cursor: 'pointer',
+                      }}
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setSonarTarget(e.target.value);
+                        }
+                      }}
+                    >
+                      <option value="">
+                        {t('games.create.seaBattleSonar') || 'Sonar'}
+                      </option>
+                      {opponents?.map((p) => (
+                        <option key={p.playerId} value={p.playerId}>
+                          {resolveDisplayNameBound(p.playerId, p.playerId)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </>
+              )}
+              {hasRadar && !radarUsed && (
+                <>
+                  {radarMode && radarTarget ? (
+                    <div
+                      style={{ display: 'flex', gap: 4, alignItems: 'center' }}
+                    >
+                      <span style={{ fontSize: 12, color: '#aaa' }}>
+                        {radarMode === 'row' ? 'Row' : 'Col'}:
+                      </span>
+                      {Array.from(
+                        { length: snapshot.gridSize ?? 10 },
+                        (_, i) => i,
+                      ).map((i) => (
+                        <button
+                          key={i}
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: 4,
+                            border: '1px solid #555',
+                            background: '#1a1a2e',
+                            color: '#e0e0e0',
+                            fontSize: 11,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            if (onRadar) {
+                              onRadar(
+                                radarTarget,
+                                radarMode === 'row' ? i : undefined,
+                                radarMode === 'col' ? i : undefined,
+                              );
+                              setRadarMode(null);
+                              setRadarTarget(null);
+                            }
+                          }}
+                        >
+                          {i}
+                        </button>
+                      ))}
+                      <button
+                        style={{
+                          fontSize: 11,
+                          color: '#f87171',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          setRadarMode(null);
+                          setRadarTarget(null);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: 6,
+                        border: '1px solid #555',
+                        background: '#1a1a2e',
+                        color: '#e0e0e0',
+                        fontSize: 13,
+                        cursor: 'pointer',
+                      }}
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setRadarTarget(e.target.value);
+                          setRadarMode('row');
+                        }
+                      }}
+                    >
+                      <option value="">
+                        {t('games.create.seaBattleRadar') || 'Radar'}
+                      </option>
+                      {opponents?.map((p) => (
+                        <option key={p.playerId} value={p.playerId}>
+                          {resolveDisplayNameBound(p.playerId, p.playerId)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+          <AttackBoard
+            key="attack-board"
+            players={snapshot.players}
+            currentUserId={currentUserId}
+            currentTurnPlayerId={currentTurnPlayerId}
+            isMyTurn={isMyTurn}
+            onAttack={attack}
+            resolveDisplayName={resolveDisplayNameBound}
+            teammateIds={teammateIds}
+            teams={teams}
+            gridSize={snapshot.gridSize}
+            snapshot={snapshot}
+          />
+        </>
       )}
     </>
   );

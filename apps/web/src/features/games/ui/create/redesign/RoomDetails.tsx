@@ -124,6 +124,18 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
             >
               +
             </button>
+            {form.maxPlayers !== 'auto' && (
+              <button
+                type="button"
+                className={s.stepperBtn}
+                aria-label="Reset to Auto"
+                data-testid="stepper-auto"
+                onClick={() => setMaxPlayers('auto')}
+                style={{ marginLeft: 4, fontSize: 11, padding: '4px 8px' }}
+              >
+                Auto
+              </button>
+            )}
           </div>
         </div>
 

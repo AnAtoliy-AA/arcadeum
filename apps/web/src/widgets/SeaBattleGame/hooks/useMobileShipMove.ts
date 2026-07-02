@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import type { ShipCell, CellState, Ship } from '../types';
-import { BOARD_SIZE, CELL_STATE } from '../types';
+import { CELL_STATE } from '../types';
 
 interface UseMobileShipMoveArgs {
   ships: Ship[];
@@ -19,12 +19,13 @@ function getCells(
   col: number,
   size: number,
   vertical: boolean,
+  boardSize: number = 10,
 ): ShipCell[] | null {
   const cells: ShipCell[] = [];
   for (let i = 0; i < size; i++) {
     const r = vertical ? row + i : row;
     const c = vertical ? col : col + i;
-    if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) return null;
+    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize) return null;
     cells.push({ row: r, col: c });
   }
   return cells;
@@ -46,6 +47,7 @@ function canPlaceOnVirtualBoard(
   board: CellState[][],
   excludeCells: ShipCell[],
 ): boolean {
+  const boardSize = board.length || 10;
   const virtual = board.map((r) => r.slice());
   for (const c of excludeCells) {
     virtual[c.row][c.col] = CELL_STATE.EMPTY;
@@ -55,7 +57,7 @@ function canPlaceOnVirtualBoard(
     for (const [dr, dc] of DIRS) {
       const r = cell.row + (dr ?? 0);
       const c = cell.col + (dc ?? 0);
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      if (r >= 0 && r < boardSize && c >= 0 && c < boardSize) {
         if (virtual[r][c] === CELL_STATE.SHIP) return false;
       }
     }

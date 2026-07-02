@@ -42,7 +42,16 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
-  const [isLandscape, setIsLandscape] = useState(false);
+
+  // Compute landscape synchronously from window dimensions. Tamagui's
+  // useMedia() may hydrate with SSR defaults (all false) and stay stale
+  // if no matchMedia events fire (e.g. viewport set before page load in
+  // CI). Reading window directly avoids the async useEffect + useState
+  // pattern that can leave isLandscape stuck at false.
+  const [isLandscape, setIsLandscape] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth > window.innerHeight;
+  });
   // Widget-level fullscreen: ancestor matches `.game-widget-container.is-fullscreen`
   // (the expand button on the widget header). This is the "fit every
   // board on one screen" state and is the only state where the grid is
@@ -74,6 +83,9 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   useEffect(() => {
     const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
+    // Re-evaluate immediately on mount in case the useState initializer
+    // read stale window dimensions (e.g. WebKit headless where the
+    // Playwright viewport may not be reflected at hydration time).
     update();
     window.addEventListener('resize', update);
     window.addEventListener('orientationchange', update);
@@ -129,11 +141,14 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   } else if (media.short) {
     // Phone-sized landscape (very short viewport): cap at 2 cols so boards
     // stay playable when there are many players.
-    const fits = Math.max(
-      1,
-      Math.floor(containerWidth / MIN_BOARD_WIDTH_MOBILE_LANDSCAPE),
-    );
-    cols = Math.min(2, count, fits || 2);
+    // When containerWidth is 0 (before ResizeObserver fires), default to
+    // 2 cols so the grid layout renders immediately instead of falling
+    // back to the single-column flex layout.
+    const fits =
+      containerWidth > 0
+        ? Math.floor(containerWidth / MIN_BOARD_WIDTH_MOBILE_LANDSCAPE)
+        : 2;
+    cols = Math.min(2, count, Math.max(1, fits));
   } else if (isCompact && isLandscape) {
     // Small-tablet / narrow landscape that isn't "short" (e.g. 800×600).
     // Always at least 2 boards in a row, but otherwise use the balanced
@@ -162,6 +177,17 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // room, not a different column count.
   const wantsTwoColCap = !media.gtMd && (isWidgetFullscreen || isLandscape);
   if (wantsTwoColCap && cols > 2) {
+    cols = 2;
+  }
+
+  // Safety floor: in landscape with multiple children, never drop to 1
+  // column. The else (desktop) branch can produce cols=1 when
+  // containerWidth is 0 (before ResizeObserver fires) because
+  // `fits || ideal` evaluates to 1 (truthy). The short branch has its
+  // own `containerWidth > 0 ? … : 2` guard, but the desktop path lacks
+  // one. This covers all stale-media-query combinations (e.g. WebKit
+  // headless where Tamagui matchMedia may not fire).
+  if (cols === 1 && count > 1 && isLandscape) {
     cols = 2;
   }
 

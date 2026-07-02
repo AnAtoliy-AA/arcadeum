@@ -13,6 +13,9 @@ import { shopBy } from './shop/by';
 import { adminShopBy } from './admin-shop/by';
 import { adminGamesBy } from './admin-games/by';
 import { adminBlockedIpsBy } from './admin-blocked-ips/by';
+import { adminUsersBy } from './admin-users/by';
+import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
+import { friendsBy } from './friends/by';
 
 export const by = {
   admin: {
@@ -30,6 +33,7 @@ export const by = {
       economy: 'Эканоміка',
       shop: 'Крама',
       games: 'Гульні',
+      bulkRewards: 'Масавыя Ўзнагароды',
       blockedIps: 'Заблакіраваныя IP',
       comingSoon: 'Хутка',
     },
@@ -38,48 +42,7 @@ export const by = {
       body: 'Адбылася памылка пры загрузцы гэтай старонкі.',
       retry: 'Паўтарыць',
     },
-    users: {
-      title: 'Карыстальнікі',
-      search: { placeholder: 'Пошук па імі, email або псеўданіме' },
-      filter: {
-        role: { all: 'Усе ролі', placeholder: 'Фільтр па ролі' },
-      },
-      table: {
-        username: 'Імя карыстальніка',
-        email: 'Email',
-        role: 'Роля',
-        createdAt: 'Створаны',
-        actions: 'Дзеянні',
-      },
-      empty: {
-        noResults: 'Няма карыстальнікаў па фільтру.',
-        noUsers: 'Карыстальнікаў пакуль няма.',
-      },
-      pagination: {
-        prev: 'Назад',
-        next: 'Наперад',
-        of: 'Старонка {current} з {total}',
-      },
-      totalLabel: '{total} карыстальнікаў',
-      selfTooltip: 'Вы не можаце змяніць сваю ўласную ролю.',
-      role: {
-        free: 'Бясплатны',
-        premium: 'Прэміум',
-        vip: 'VIP',
-        supporter: 'Спонсар',
-        moderator: 'Мадэратар',
-        tester: 'Тэстар',
-        developer: 'Распрацоўшчык',
-        admin: 'Адмін',
-      },
-      errors: {
-        SELF_ROLE_CHANGE_FORBIDDEN: 'Вы не можаце змяніць сваю ўласную ролю.',
-        LAST_ADMIN_PROTECTED: 'Нельга паніжаць апошняга адміністратара.',
-        USER_NOT_FOUND: 'Карыстальнік не знойдзены.',
-        INVALID_USER_ID: 'Няправільны ідэнтыфікатар карыстальніка.',
-        generic: 'Нешта пайшло не так. Калі ласка, паспрабуйце яшчэ раз.',
-      },
-    },
+    users: adminUsersBy,
     payments: {
       title: 'Плацяжы',
       search: { placeholder: 'Пошук па нататцы, імі або ID транзакцыі' },
@@ -119,6 +82,7 @@ export const by = {
     tournaments: adminTournamentsBy,
     wallet: adminWalletBy,
     blockedIps: adminBlockedIpsBy,
+    bulkRewards: adminBulkRewardsBy,
   },
   tournaments: {
     title: 'Турніры',
@@ -496,4 +460,5 @@ export const by = {
   shop: shopBy,
   adminShop: adminShopBy,
   adminGames: adminGamesBy,
+  friends: friendsBy,
 };

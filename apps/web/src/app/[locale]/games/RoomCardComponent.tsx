@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import type { GameRoomSummary } from '@/shared/types/games';
+import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import cardStyles from './RoomCardComponent.module.scss';
 import {
@@ -42,6 +43,15 @@ interface RoomCardComponentProps {
 export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { t } = useTranslation();
   const routes = useRoutes();
+  const { snapshot } = useSessionTokens();
+
+  const isParticipant = useMemo(() => {
+    if (!snapshot.userId) return false;
+    return (
+      room.hostId === snapshot.userId ||
+      room.members?.some((m) => m.id === snapshot.userId) === true
+    );
+  }, [snapshot.userId, room.hostId, room.members]);
 
   const {
     displayName: rawDisplayName,
@@ -74,7 +84,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     [],
   );
 
-  const isCompleted = room.status === 'completed';
+  const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
 
   return (
     <StyledRoomCard
@@ -238,22 +248,26 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       )}
 
       <StyledRoomActions viewMode={viewMode}>
-        <LinkButton
-          href={routes.gameRoom(room.id)}
-          variant="primary"
-          size="md"
-          flex={viewMode === 'grid' ? 1 : 0}
-        >
-          {t('games.common.joinRoom')}
-        </LinkButton>
-        <LinkButton
-          href={`${routes.gameRoom(room.id)}?mode=watch`}
-          variant="secondary"
-          size="md"
-          flex={viewMode === 'grid' ? 1 : 0}
-        >
-          {t('games.common.watchRoom')}
-        </LinkButton>
+        {(room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
+          <LinkButton
+            href={routes.gameRoom(room.id)}
+            variant="primary"
+            size="md"
+            flex={viewMode === 'grid' ? 1 : 0}
+          >
+            {t('games.common.joinRoom')}
+          </LinkButton>
+        )}
+        {room.status === GAME_ROOM_STATUS.LOBBY || !isParticipant ? (
+          <LinkButton
+            href={`${routes.gameRoom(room.id)}?mode=watch`}
+            variant="secondary"
+            size="md"
+            flex={viewMode === 'grid' ? 1 : 0}
+          >
+            {t('games.common.watchRoom')}
+          </LinkButton>
+        ) : null}
       </StyledRoomActions>
     </StyledRoomCard>
   );

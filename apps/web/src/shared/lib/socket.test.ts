@@ -130,9 +130,9 @@ describe('socket', () => {
     expect(mockSocket.auth).toEqual({});
   });
 
-  it('disconnects games + chat + leaderboards sockets when connected', () => {
+  it('disconnects games + chat + leaderboards + friends sockets when connected', () => {
     mockSocket.connected = true;
-    // Override strict behavior for this test to allow all three checks to
+    // Override strict behavior for this test to allow all four checks to
     // pass on the shared mock instance.
     (mockSocket.disconnect as unknown as Mock).mockImplementation(
       function (this: { connected: boolean }) {
@@ -142,7 +142,7 @@ describe('socket', () => {
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(3);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(4);
 
     // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DragEvent } from 'react';
 import type { ShipCell, CellState, Ship } from '../types';
-import { BOARD_SIZE, CELL_STATE, SHIPS } from '../types';
+import { CELL_STATE, SHIPS } from '../types';
+import { getCells, canPlace, cellsEqual } from './drag-helpers';
 
 interface UseDragPlacementArgs {
   board: CellState[][];
@@ -30,54 +31,6 @@ interface BoardDragOrigin {
   originalCells: ShipCell[];
   orientation: 'h' | 'v';
   anchorOffset: number;
-}
-
-function getCells(
-  row: number,
-  col: number,
-  size: number,
-  vertical: boolean,
-): ShipCell[] | null {
-  const cells: ShipCell[] = [];
-  for (let i = 0; i < size; i++) {
-    const r = vertical ? row + i : row;
-    const c = vertical ? col : col + i;
-    if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) return null;
-    cells.push({ row: r, col: c });
-  }
-  return cells;
-}
-
-function canPlace(cells: ShipCell[], board: CellState[][]): boolean {
-  for (const cell of cells) {
-    if (board[cell.row]?.[cell.col] !== CELL_STATE.EMPTY) return false;
-    const dirs = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ];
-    for (const [dr, dc] of dirs) {
-      const r = cell.row + (dr ?? 0);
-      const c = cell.col + (dc ?? 0);
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-        if (board[r][c] === CELL_STATE.SHIP) return false;
-      }
-    }
-  }
-  return true;
-}
-
-function cellsEqual(a: ShipCell[], b: ShipCell[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].row !== b[i].row || a[i].col !== b[i].col) return false;
-  }
-  return true;
 }
 
 function getOrientation(cells: ShipCell[]): 'h' | 'v' {

@@ -13,6 +13,9 @@ import { shopRu } from './shop/ru';
 import { adminShopRu } from './admin-shop/ru';
 import { adminGamesRu } from './admin-games/ru';
 import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
+import { adminUsersRu } from './admin-users/ru';
+import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
+import { friendsRu } from './friends/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -29,6 +32,7 @@ export const ru = {
       economy: 'Экономика',
       shop: 'Магазин',
       games: 'Игры',
+      bulkRewards: 'Массовые Награды',
       blockedIps: 'Заблокированные IP',
       comingSoon: 'Скоро',
     },
@@ -37,50 +41,7 @@ export const ru = {
       body: 'Произошла ошибка при загрузке этой страницы.',
       retry: 'Повторить',
     },
-    users: {
-      title: 'Пользователи',
-      search: {
-        placeholder: 'Поиск по имени, email или отображаемому имени',
-      },
-      filter: {
-        role: { all: 'Все роли', placeholder: 'Фильтр по роли' },
-      },
-      table: {
-        username: 'Имя пользователя',
-        email: 'Email',
-        role: 'Роль',
-        createdAt: 'Создан',
-        actions: 'Действия',
-      },
-      empty: {
-        noResults: 'Нет пользователей по фильтру.',
-        noUsers: 'Пользователей пока нет.',
-      },
-      pagination: {
-        prev: 'Назад',
-        next: 'Вперёд',
-        of: 'Страница {current} из {total}',
-      },
-      totalLabel: '{total} пользователей',
-      selfTooltip: 'Нельзя изменить свою собственную роль.',
-      role: {
-        free: 'Бесплатный',
-        premium: 'Премиум',
-        vip: 'VIP',
-        supporter: 'Спонсор',
-        moderator: 'Модератор',
-        tester: 'Тестер',
-        developer: 'Разработчик',
-        admin: 'Админ',
-      },
-      errors: {
-        SELF_ROLE_CHANGE_FORBIDDEN: 'Нельзя изменить свою собственную роль.',
-        LAST_ADMIN_PROTECTED: 'Нельзя понизить последнего администратора.',
-        USER_NOT_FOUND: 'Пользователь не найден.',
-        INVALID_USER_ID: 'Неверный идентификатор пользователя.',
-        generic: 'Что-то пошло не так. Попробуйте ещё раз.',
-      },
-    },
+    users: adminUsersRu,
     payments: {
       title: 'Платежи',
       search: { placeholder: 'Поиск по тексту, имени или ID транзакции' },
@@ -120,6 +81,7 @@ export const ru = {
     tournaments: adminTournamentsRu,
     wallet: adminWalletRu,
     blockedIps: adminBlockedIpsRu,
+    bulkRewards: adminBulkRewardsRu,
   },
   tournaments: {
     title: 'Турниры',
@@ -496,4 +458,5 @@ export const ru = {
   shop: shopRu,
   adminShop: adminShopRu,
   adminGames: adminGamesRu,
+  friends: friendsRu,
 };

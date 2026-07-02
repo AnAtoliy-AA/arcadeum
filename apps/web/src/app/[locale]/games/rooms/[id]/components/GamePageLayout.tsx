@@ -8,10 +8,11 @@ import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
+import { useEmotes } from '@/features/games/hooks/useEmotes';
+import { EmoteBubble } from '@/features/games/ui/EmoteBubble';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
-import { GameMusic } from '@/features/games/ui/GameMusic';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 
@@ -73,6 +74,8 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   // Chat visibility — wide screens default visible, narrow hidden
   const [showChat, setShowChat] = useState(false);
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
+
+  const { activeEmotes, sendEmote } = useEmotes();
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -143,11 +146,6 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         ref={gameContainerRef as React.RefObject<never>}
         className="games-room-container"
       >
-        {/* Background music — a per-game track with a compact transport player
-            (prev / play-pause / next / stop), shown while Music is enabled.
-            Mounted inside Container so it stays reachable in native fullscreen. */}
-        <GameMusic gameId={session?.gameId} />
-
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
         <AutoExitFullscreenOnFinish
@@ -189,7 +187,34 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         />
 
         <GameRow flexDirection={roomFlexDirection}>
-          {children({ isFullscreen, toggleFullscreen })}
+          <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
+            {children({ isFullscreen, toggleFullscreen })}
+
+            {activeEmotes.length > 0 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 12,
+                  right: 12,
+                  zIndex: 20,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  pointerEvents: 'none',
+                }}
+              >
+                {activeEmotes.map((emote) => (
+                  <EmoteBubble
+                    key={emote.key}
+                    playerId={emote.userId}
+                    activeEmotes={[
+                      { id: emote.userId, emoteId: emote.emoteId },
+                    ]}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
             <GameChat
@@ -198,6 +223,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               resolveDisplayName={resolveDisplayNameForList}
               resolveEquipped={resolveEquipped}
               currentUserId={userId}
+              onEmote={sendEmote}
             />
           </ChatPanel>
         </GameRow>

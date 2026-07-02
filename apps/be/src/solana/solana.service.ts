@@ -26,10 +26,17 @@ export class SolanaService {
       'https://api.mainnet-beta.solana.com';
     this.connection = new Connection(rpcUrl, 'confirmed');
 
-    const mintAddress =
-      this.config.get<string>('ARCADEUM_MINT_ADDRESS') ??
-      '11111111111111111111111111111111';
-    this.arcadeumMint = getArcadeumMint(mintAddress);
+    const mintAddress = this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
+    const isValidMint =
+      mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
+    if (!isValidMint && mintAddress) {
+      this.logger.warn(
+        `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
+      );
+    }
+    this.arcadeumMint = isValidMint
+      ? getArcadeumMint(mintAddress)
+      : new PublicKey('11111111111111111111111111111111');
   }
 
   private getKeypair() {

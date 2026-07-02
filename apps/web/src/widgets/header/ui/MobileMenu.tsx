@@ -45,7 +45,7 @@ import LanguagePills from './LanguagePills';
 import { usePWAOptional } from '@/features/pwa/context';
 
 interface MobileMenuProps {
-  navItems: Array<{ href: string; label: string }>;
+  navItems: Array<{ href: string; label: string; onClick?: (e: React.MouseEvent) => void }>;
 }
 
 type IconComponent = ComponentType<{ size?: number }>;
@@ -53,6 +53,7 @@ type IconComponent = ComponentType<{ size?: number }>;
 const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
   games: CardsIcon,
   leaderboards: TrophyIcon,
+  friends: UserIcon,
   shop: GiftIcon,
   token: WalletIcon,
   chats: MailIcon,
@@ -165,15 +166,16 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
           const Icon = iconForHref(item.href);
           return (
             <NavMobileLink
-              key={item.href}
+              key={item.label}
               href={item.href}
-              data-testid={`mobile-nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
+              data-testid={`mobile-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               variant="ghost"
               size="md"
               isActive={isActive}
               fullWidth
               icon={Icon ? <Icon size={18} /> : undefined}
               gap="$3"
+              onClick={item.onClick}
             >
               {item.label}
             </NavMobileLink>

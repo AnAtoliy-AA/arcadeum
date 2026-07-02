@@ -13,6 +13,9 @@ import { shopEs } from './shop/es';
 import { adminShopEs } from './admin-shop/es';
 import { adminGamesEs } from './admin-games/es';
 import { adminBlockedIpsEs } from './admin-blocked-ips/es';
+import { adminUsersEs } from './admin-users/es';
+import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
+import { friendsEs } from './friends/es';
 
 export const es = {
   admin: {
@@ -30,6 +33,7 @@ export const es = {
       economy: 'Economía',
       shop: 'Tienda',
       games: 'Juegos',
+      bulkRewards: 'Recompensas Masivas',
       blockedIps: 'IPs Bloqueados',
       comingSoon: 'Próximamente',
     },
@@ -38,48 +42,7 @@ export const es = {
       body: 'Se produjo un error al cargar esta página.',
       retry: 'Reintentar',
     },
-    users: {
-      title: 'Usuarios',
-      search: { placeholder: 'Buscar por usuario, email o nombre' },
-      filter: {
-        role: { all: 'Todos los roles', placeholder: 'Filtrar por rol' },
-      },
-      table: {
-        username: 'Usuario',
-        email: 'Email',
-        role: 'Rol',
-        createdAt: 'Creado',
-        actions: 'Acciones',
-      },
-      empty: {
-        noResults: 'No hay usuarios que coincidan con los filtros.',
-        noUsers: 'Aún no hay usuarios.',
-      },
-      pagination: {
-        prev: 'Anterior',
-        next: 'Siguiente',
-        of: 'Página {current} de {total}',
-      },
-      totalLabel: '{total} usuarios',
-      selfTooltip: 'No puedes cambiar tu propio rol.',
-      role: {
-        free: 'Gratis',
-        premium: 'Premium',
-        vip: 'VIP',
-        supporter: 'Patrocinador',
-        moderator: 'Moderador',
-        tester: 'Tester',
-        developer: 'Desarrollador',
-        admin: 'Admin',
-      },
-      errors: {
-        SELF_ROLE_CHANGE_FORBIDDEN: 'No puedes cambiar tu propio rol.',
-        LAST_ADMIN_PROTECTED: 'No se puede degradar al último administrador.',
-        USER_NOT_FOUND: 'Usuario no encontrado.',
-        INVALID_USER_ID: 'Identificador de usuario no válido.',
-        generic: 'Algo salió mal. Inténtalo de nuevo.',
-      },
-    },
+    users: adminUsersEs,
     payments: {
       title: 'Pagos',
       search: { placeholder: 'Buscar por nota, nombre o ID de transacción' },
@@ -115,6 +78,7 @@ export const es = {
     tournaments: adminTournamentsEs,
     wallet: adminWalletEs,
     blockedIps: adminBlockedIpsEs,
+    bulkRewards: adminBulkRewardsEs,
   },
   tournaments: {
     title: 'Torneos',
@@ -494,4 +458,5 @@ export const es = {
   shop: shopEs,
   adminShop: adminShopEs,
   adminGames: adminGamesEs,
+  friends: friendsEs,
 };

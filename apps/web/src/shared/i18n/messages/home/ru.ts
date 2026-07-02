@@ -97,6 +97,7 @@ export const ru = {
   footerToken: 'Токен',
   footerResourcesTitle: 'Ресурсы',
   footerHelpCenter: 'Центр помощи',
+  footerRoadmap: 'Дорожная карта',
   footerGamingBlog: 'Блог о играх',
   footerDevelopers: 'Разработчикам (API)',
   footerLegalTitle: 'Юридическая информация',

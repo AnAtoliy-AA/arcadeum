@@ -76,6 +76,18 @@ export class User {
 
   @Prop({ type: String, default: null })
   equippedBackgroundId?: string | null;
+
+  @Prop({ type: Boolean, default: false })
+  isBlocked!: boolean;
+
+  @Prop({ type: Date, default: null })
+  blockedAt?: Date | null;
+
+  @Prop({ type: String, default: null })
+  blockedReason?: string | null;
+
+  @Prop({ type: Date, default: null })
+  deletedAt?: Date | null;
 }
 
 export type UserDocument = User & Document;

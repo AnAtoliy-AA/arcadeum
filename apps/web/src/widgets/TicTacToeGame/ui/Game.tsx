@@ -12,6 +12,8 @@ import {
   useGameResultModal,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
+import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -78,11 +80,25 @@ function TicTacToeGameImpl({
     userId: currentUserId,
   });
 
+  const resolveDisplayNameBound = useCallback(
+    (id?: string | null) =>
+      resolveDisplayName(id, {
+        currentUserId,
+        members: room?.members,
+        playerOrder: snapshot?.playerOrder,
+      }),
+    [currentUserId, room, snapshot],
+  );
+
   // Pipe engine logs into the shared GameChat and send chat via the generic
   // session history-note event (the BE appends it to the session logs and
   // rebroadcasts, so it shows in the shared panel + popup).
   const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
-  useGameChatIntegration(snapshot?.logs as never, sendChat);
+  useGameChatIntegration(
+    snapshot?.logs as never,
+    sendChat,
+    resolveDisplayNameBound,
+  );
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
@@ -93,6 +109,8 @@ function TicTacToeGameImpl({
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
   });
+
+  useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
 
   const { showResultModal, sharedResult, resultMessages, dismiss } =
     useGameResultModal(
@@ -136,6 +154,7 @@ function TicTacToeGameImpl({
       <TicTacToeThemeProvider variant={options.variant}>
         <TicTacToeLobby
           room={room}
+          userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
           onStartGame={(opts) =>
@@ -166,6 +185,7 @@ function TicTacToeGameImpl({
             players={snapshot.players}
             teams={snapshot.teams}
             myTurn={myTurn}
+            resolveName={resolveDisplayNameBound}
           />
           <TicTacToeBoard
             board={snapshot.board}

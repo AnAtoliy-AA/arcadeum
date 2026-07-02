@@ -8,7 +8,7 @@
 import { Test } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { ReferralService } from './referral.service';
 import { ReferralModule } from './referral.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -21,6 +21,7 @@ import {
   WalletTransaction,
   WalletTransactionDocument,
 } from '../wallet/schemas/wallet-transaction.schema';
+import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
 
 describe('ReferralService (integration)', () => {
   let replSet: MongoMemoryReplSet;
@@ -68,18 +69,9 @@ describe('ReferralService (integration)', () => {
 
   // Helper to create a user with a given referral code.
   const createUser = async (referralCode?: string): Promise<string> => {
-    const uid = new Types.ObjectId().toHexString();
-    const u = await userModel.create({
-      email: `u-${uid}@test.com`,
-      passwordHash: 'hash',
-      username: `u_${uid}`,
-      usernameNormalized: `u_${uid}`,
-      coins: 0,
-      gems: 0,
-      blockedUsers: [],
-      ...(referralCode ? { referralCode } : {}),
-    });
-    return u._id.toHexString();
+    const overrides: Partial<User> = referralCode ? { referralCode } : {};
+    const { id } = await createTestUser(userModel, overrides);
+    return id;
   };
 
   beforeEach(async () => {
@@ -87,6 +79,7 @@ describe('ReferralService (integration)', () => {
     await userModel.deleteMany({});
     await referralModel.deleteMany({});
     await txModel.deleteMany({});
+    resetTestUsers();
 
     referrerId = await createUser('TESTCODE');
   });

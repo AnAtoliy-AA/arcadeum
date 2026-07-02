@@ -13,20 +13,23 @@ import {
 } from './sea-battle.types';
 import { getActiveShooterId } from './team-rotation.utils';
 
-export function createEmptyBoard(): CellState[][] {
+export function createEmptyBoard(size: number = BOARD_SIZE): CellState[][] {
   return Array.from(
-    { length: BOARD_SIZE },
-    () => Array(BOARD_SIZE).fill(CELL_STATE.EMPTY) as CellState[],
+    { length: size },
+    () => Array(size).fill(CELL_STATE.EMPTY) as CellState[],
   );
 }
 
-export function areCellsValid(cells: ShipCell[]): boolean {
+export function areCellsValid(
+  cells: ShipCell[],
+  gridSize: number = BOARD_SIZE,
+): boolean {
   return cells.every(
     (cell) =>
       cell.row >= 0 &&
-      cell.row < BOARD_SIZE &&
+      cell.row < gridSize &&
       cell.col >= 0 &&
-      cell.col < BOARD_SIZE,
+      cell.col < gridSize,
   );
 }
 
@@ -56,6 +59,7 @@ export function areCellsConnected(cells: ShipCell[]): boolean {
 export function markSurroundingCellsAsMiss(
   player: SeaBattlePlayer,
   ship: Ship,
+  gridSize: number = BOARD_SIZE,
 ): void {
   const directions = [
     [-1, -1],
@@ -73,7 +77,7 @@ export function markSurroundingCellsAsMiss(
       const r = cell.row + dr;
       const c = cell.col + dc;
 
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
         if (player.board[r][c] === CELL_STATE.EMPTY) {
           player.board[r][c] = CELL_STATE.MISS;
         }
@@ -100,8 +104,9 @@ export function sanitizeSeaBattleState(
     const reveal = sameTeam && sanitized.hideShipsFromTeammates !== true;
 
     if (!reveal) {
-      for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
+      const gSize = sanitized.gridSize ?? BOARD_SIZE;
+      for (let row = 0; row < gSize; row++) {
+        for (let col = 0; col < gSize; col++) {
           if (p.board[row][col] === CELL_STATE.SHIP) {
             p.board[row][col] = CELL_STATE.EMPTY;
           }
@@ -127,6 +132,18 @@ export function sanitizeSeaBattleState(
     }
     return true;
   });
+
+  if (sanitized.lastSonar && sanitized.lastSonar.attackerId !== playerId) {
+    delete sanitized.lastSonar;
+  }
+  if (sanitized.lastRadar && sanitized.lastRadar.attackerId !== playerId) {
+    delete sanitized.lastRadar;
+  }
+
+  if (sanitized.specialWeaponUsage) {
+    const myUsage = sanitized.specialWeaponUsage[playerId];
+    sanitized.specialWeaponUsage = myUsage ? { [playerId]: myUsage } : {};
+  }
 
   return sanitized;
 }
@@ -161,6 +178,14 @@ export function getSeaBattleAvailableActions(
       : state.playerOrder[state.currentTurnIndex];
     if (playerId === activeId) {
       actions.push('attack');
+
+      const usage = state.specialWeaponUsage?.[playerId];
+      if (state.specialWeapons?.sonar && !usage?.sonarUsed) {
+        actions.push('useSonar');
+      }
+      if (state.specialWeapons?.radar && !usage?.radarUsed) {
+        actions.push('useRadar');
+      }
     }
   }
 
@@ -172,13 +197,14 @@ function getShipCells(
   startCol: number,
   size: number,
   isVertical: boolean,
+  gridSize: number = BOARD_SIZE,
 ): ShipCell[] | null {
   const cells: ShipCell[] = [];
   for (let i = 0; i < size; i++) {
     const row = isVertical ? startRow + i : startRow;
     const col = isVertical ? startCol : startCol + i;
 
-    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+    if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
       return null;
     }
     cells.push({ row, col });
@@ -192,8 +218,9 @@ function canPlaceShip(
   col: number,
   size: number,
   isVertical: boolean,
+  gridSize: number = BOARD_SIZE,
 ): boolean {
-  const cells = getShipCells(row, col, size, isVertical);
+  const cells = getShipCells(row, col, size, isVertical, gridSize);
 
   // Check bounds
   if (!cells) return false;
@@ -226,8 +253,10 @@ function canPlaceShip(
   return true;
 }
 
-export function randomlyPlaceShips(): Record<string, ShipCell[]> {
-  const board = createEmptyBoard();
+export function randomlyPlaceShips(
+  gridSize: number = BOARD_SIZE,
+): Record<string, ShipCell[]> {
+  const board = createEmptyBoard(gridSize);
   const placements: Record<string, ShipCell[]> = {};
 
   // Sort ships by size descending to make placement easier
@@ -241,11 +270,11 @@ export function randomlyPlaceShips(): Record<string, ShipCell[]> {
     while (!placed && attempts < maxAttempts) {
       attempts++;
       const isVertical = Math.random() < 0.5;
-      const row = Math.floor(Math.random() * BOARD_SIZE);
-      const col = Math.floor(Math.random() * BOARD_SIZE);
+      const row = Math.floor(Math.random() * gridSize);
+      const col = Math.floor(Math.random() * gridSize);
 
-      if (canPlaceShip(board, row, col, ship.size, isVertical)) {
-        const cells = getShipCells(row, col, ship.size, isVertical);
+      if (canPlaceShip(board, row, col, ship.size, isVertical, gridSize)) {
+        const cells = getShipCells(row, col, ship.size, isVertical, gridSize);
 
         if (cells) {
           // Update local board

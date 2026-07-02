@@ -1,6 +1,10 @@
 'use client';
 import { memo, useMemo } from 'react';
-import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
+import type {
+  SeaBattlePlayerState,
+  SeaBattleSnapshot,
+  SeaBattleTeam,
+} from '../../types';
 import { MainGameArea } from '../styles';
 import { SeaBattleGrids } from '../SeaBattleGrids';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -18,6 +22,8 @@ export interface AttackBoardProps {
   disabled?: boolean;
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
+  gridSize?: number;
+  snapshot?: SeaBattleSnapshot | null;
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -30,6 +36,7 @@ export const AttackBoard = memo(function AttackBoard({
   disabled = false,
   teammateIds,
   teams,
+  snapshot,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -58,6 +65,24 @@ export const AttackBoard = memo(function AttackBoard({
     return set;
   }, [players]);
 
+  const sonarHighlightSet = (() => {
+    const ls = snapshot?.lastSonar;
+    if (!ls) return null;
+    const set = new Set<string>();
+    ls.shipPositions.forEach((c) =>
+      set.add(`${ls.targetId}-${c.row}-${c.col}`),
+    );
+    return set;
+  })();
+
+  const radarHighlightSet = (() => {
+    const lr = snapshot?.lastRadar;
+    if (!lr) return null;
+    const set = new Set<string>();
+    lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
+    return set;
+  })();
+
   return (
     <MainGameArea data-testid="game-main-area">
       <SeaBattleGrids>
@@ -84,6 +109,10 @@ export const AttackBoard = memo(function AttackBoard({
           const team = teams?.find((tt) =>
             tt.playerIds.includes(opponent.playerId),
           );
+          const isSonarTarget =
+            snapshot?.lastSonar?.targetId === opponent.playerId;
+          const isRadarTarget =
+            snapshot?.lastRadar?.targetId === opponent.playerId;
           return (
             <AttackPlayerBoard
               key={opponent.playerId}
@@ -99,6 +128,8 @@ export const AttackBoard = memo(function AttackBoard({
               team={team}
               sunkCellSet={sunkCellSet}
               onAttack={isTeammate ? undefined : onAttack}
+              sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
+              radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
               t={t}
             />
           );

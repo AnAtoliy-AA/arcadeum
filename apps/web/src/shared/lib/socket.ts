@@ -57,6 +57,11 @@ const leaderboardsSocket = io(
   LEADERBOARD_SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
+const friendsSock = io(
+  `${SOCKET_BASE_URL}/friends`,
+  SOCKET_OPTIONS,
+) as AuthenticatedSocket;
+
 let currentAuthToken: string | null = null;
 
 /**
@@ -128,12 +133,16 @@ export function connectSockets(token: string | null | undefined): void {
 
   applyAuth(gamesSocket, token);
   applyAuth(chatsSocket, token);
+  applyAuth(friendsSock, token);
 
   if (!gamesSocket.connected) {
     gamesSocket.connect();
   }
   if (!chatsSocket.connected) {
     chatsSocket.connect();
+  }
+  if (!friendsSock.connected) {
+    friendsSock.connect();
   }
 }
 
@@ -151,6 +160,17 @@ export function connectLeaderboardSocket(
   if (!leaderboardsSocket.connected) leaderboardsSocket.connect();
   return () => {
     if (leaderboardsSocket.connected) leaderboardsSocket.disconnect();
+  };
+}
+
+export function connectFriendsSocket(
+  token: string | null | undefined,
+): () => void {
+  if (token) applyAuth(friendsSock, token);
+  else friendsSock.auth = {};
+  if (!friendsSock.connected) friendsSock.connect();
+  return () => {
+    if (friendsSock.connected) friendsSock.disconnect();
   };
 }
 
@@ -183,16 +203,21 @@ export function disconnectSockets(): void {
   if (leaderboardsSocket) {
     leaderboardsSocket.disconnect();
   }
+  if (friendsSock) {
+    friendsSock.disconnect();
+  }
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
   leaderboardsSocket.auth = {};
+  friendsSock.auth = {};
   resetEncryptionKey();
 }
 
 export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 export const leaderboardSocket: Socket = leaderboardsSocket;
+export const friendsSocket: Socket = friendsSock;
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
@@ -267,6 +292,19 @@ export function useLeaderboardSocket(
     leaderboardSocket.on(event, listener);
     return () => {
       leaderboardSocket.off(event, listener);
+    };
+  }, [event, handler]);
+}
+
+export function useFriendsSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    const listener = (...args: unknown[]) => handler(...args);
+    friendsSocket.on(event, listener);
+    return () => {
+      friendsSocket.off(event, listener);
     };
   }, [event, handler]);
 }

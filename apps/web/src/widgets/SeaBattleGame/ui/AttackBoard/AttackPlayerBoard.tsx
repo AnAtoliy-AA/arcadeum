@@ -2,7 +2,7 @@
 import { memo, useCallback, useState } from 'react';
 import { Text, XStack, YStack } from 'tamagui';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
-import { CELL_STATE, COL_LABELS, ROW_LABELS } from '../../types';
+import { CELL_STATE, colLabels, rowLabels } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
 import {
   BadgeWrapper,
@@ -36,6 +36,8 @@ interface AttackPlayerBoardProps {
   isTeammate?: boolean;
   team?: SeaBattleTeam;
   sunkCellSet: Set<string>;
+  sonarHighlightCells?: Set<string> | null;
+  radarHighlightCells?: Set<string> | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
   t: (key: TranslationKey) => string;
 }
@@ -52,11 +54,16 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   isTeammate = false,
   team,
   sunkCellSet,
+  sonarHighlightCells,
+  radarHighlightCells,
   onAttack,
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
   const showTargeting = isMyTurn && !isTeammate;
+  const boardSize = player.board.length || 10;
+  const rowLbls = rowLabels(boardSize);
+  const colLbls = colLabels(boardSize);
 
   // Optimistic "shot fired" state: instantly mark the clicked cell as pending
   // so the player sees feedback without waiting for the server round-trip,
@@ -95,6 +102,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
 
   const boardGrid = (
     <BoardGrid
+      gridSize={boardSize}
       className={`sb-board-grid ${!isMe && showTargeting ? 'sb-my-turn' : ''}`}
       style={{
         backgroundColor: theme.boardBackground,
@@ -125,6 +133,13 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             cellState !== CELL_STATE.MISS &&
             !isSunk &&
             !isPending;
+          const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
+          const highlight: 'sonar' | 'radar' | null =
+            !isMe && sonarHighlightCells?.has(cellKey)
+              ? 'sonar'
+              : !isMe && radarHighlightCells?.has(cellKey)
+                ? 'radar'
+                : null;
 
           return (
             <AttackBoardCell
@@ -134,6 +149,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isSunk={isSunk}
               isAttackable={isAttackable}
               isPending={isPending}
+              highlight={highlight}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}
@@ -239,15 +255,15 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           </PlayerStats>
           <BoardWithLabels>
             <div />
-            <ColLabels>
-              {COL_LABELS.map((label) => (
+            <ColLabels gridSize={boardSize}>
+              {colLbls.map((label) => (
                 <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
               ))}
             </ColLabels>
-            <RowLabels>
-              {ROW_LABELS.map((label) => (
+            <RowLabels gridSize={boardSize}>
+              {rowLbls.map((label) => (
                 <Label key={label} style={{ color: theme.textSecondaryColor }}>
                   {label}
                 </Label>
@@ -333,15 +349,15 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         </PlayerStats>
         <BoardWithLabels>
           <div />
-          <ColLabels>
-            {COL_LABELS.map((label) => (
+          <ColLabels gridSize={boardSize}>
+            {colLbls.map((label) => (
               <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>
             ))}
           </ColLabels>
-          <RowLabels>
-            {ROW_LABELS.map((label) => (
+          <RowLabels gridSize={boardSize}>
+            {rowLbls.map((label) => (
               <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>

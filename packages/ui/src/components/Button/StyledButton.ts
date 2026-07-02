@@ -64,7 +64,6 @@ export const StyledButton: TamaguiComponent = styled(TButton, {
         backgroundColor: '$primary',
         background: 'linear-gradient(160deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
         color: '$primaryText',
-        borderColor: '$glassBorder',
         y: -3,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 3,

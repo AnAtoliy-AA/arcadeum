@@ -10,9 +10,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
-import { extractString } from './games.gateway.utils';
+import { extractRoomAndUser, extractString } from './games.gateway.utils';
+import { EMOTE_IDS, type EmoteId } from './dtos/send-emote.dto';
 import {
   maybeEncrypt,
+  maybeDecrypt,
   isSocketEncryptionEnabled,
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
@@ -392,6 +394,35 @@ export class GamesGateway {
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
 
+  @SubscribeMessage('games.room.set_option')
+  async handleSetOption(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      options?: Record<string, unknown>;
+    },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const options = payload?.options;
+
+    if (!options || typeof options !== 'object') {
+      throw new WsException('options object is required.');
+    }
+
+    try {
+      await this.gamesService.updateRoomOptions(roomId, userId, options);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to update options';
+      this.logger.warn(
+        `set_option failed for room ${roomId}, user ${userId}: ${message}`,
+      );
+      throw new WsException(message);
+    }
+  }
+
   @SubscribeMessage('games.session.history_note')
   async handleHistoryNote(
     @MessageBody()
@@ -428,5 +459,38 @@ export class GamesGateway {
         `handleHistoryNote failed for room ${roomId}: ${error}`,
       );
     }
+  }
+
+  @SubscribeMessage('games.session.emote')
+  handleEmote(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: unknown,
+  ): void {
+    const decrypted = maybeDecrypt<{
+      roomId?: string;
+      userId?: string;
+      emoteId?: string;
+    }>(payload);
+    const roomId = extractString(decrypted, 'roomId');
+    const userId = extractString(decrypted, 'userId');
+    const emoteId = extractString(decrypted, 'emoteId');
+
+    if (!roomId || !userId || !emoteId) return;
+
+    if (!(EMOTE_IDS as readonly string[]).includes(emoteId)) {
+      this.logger.warn(
+        `Invalid emoteId "${emoteId}" from user ${userId} in room ${roomId}`,
+      );
+      return;
+    }
+
+    const channel = this.realtime.roomChannel(roomId);
+    if (!client.rooms.has(channel)) return;
+
+    const data = { userId, emoteId: emoteId as EmoteId, ts: Date.now() };
+    this.server.to(channel).emit('games.session.emote', maybeEncrypt(data));
+    const specChannel = this.realtime.spectatorChannel(roomId);
+    this.server.to(specChannel).emit('games.session.emote', maybeEncrypt(data));
   }
 }

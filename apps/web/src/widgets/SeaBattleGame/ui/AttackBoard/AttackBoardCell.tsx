@@ -1,5 +1,6 @@
 'use client';
 import { memo } from 'react';
+import type React from 'react';
 import { Text } from 'tamagui';
 import { CELL_STATE } from '../../types';
 import { BoardCell } from '../styles';
@@ -16,6 +17,7 @@ interface AttackBoardCellProps {
   isAttackable: boolean;
   isPending?: boolean;
   isMe: boolean;
+  highlight?: 'sonar' | 'radar' | null;
 }
 
 export const AttackBoardCell = memo(function AttackBoardCell({
@@ -27,9 +29,23 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isAttackable,
   isPending = false,
   isMe,
+  highlight,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
+
+  const highlightStyle: React.CSSProperties =
+    highlight === 'sonar'
+      ? {
+          boxShadow: '0 0 8px 2px rgba(6, 182, 212, 0.7)',
+          borderColor: '#06b6d4',
+        }
+      : highlight === 'radar'
+        ? {
+            boxShadow: '0 0 8px 2px rgba(168, 85, 247, 0.7)',
+            borderColor: '#a855f7',
+          }
+        : {};
 
   return (
     <BoardCell
@@ -37,8 +53,9 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         backgroundColor: getCellBg(displayState, theme),
         borderColor: theme.cellBorder,
         borderRadius: parseInt(theme.borderRadius) || 4,
+        ...highlightStyle,
       }}
-      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${animClass || ''}`}
+      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${animClass || ''}`}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
     >
@@ -116,6 +133,21 @@ export const AttackBoardCell = memo(function AttackBoardCell({
               opacity: 0.7,
             }}
           />
+        </div>
+      )}
+      {highlight && !isPending && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 1,
+            right: 1,
+            fontSize: 8,
+            lineHeight: 1,
+            pointerEvents: 'none',
+            opacity: 0.9,
+          }}
+        >
+          {highlight === 'sonar' ? '🔊' : '📡'}
         </div>
       )}
     </BoardCell>

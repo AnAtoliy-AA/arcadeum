@@ -13,6 +13,9 @@ import { shopEn } from './shop/en';
 import { adminShopEn } from './admin-shop/en';
 import { adminGamesEn } from './admin-games/en';
 import { adminBlockedIpsEn } from './admin-blocked-ips/en';
+import { adminUsersEn } from './admin-users/en';
+import { adminBulkRewardsEn } from './admin-bulk-rewards/en';
+import { friendsEn } from './friends/en';
 
 export const en = {
   admin: {
@@ -30,6 +33,7 @@ export const en = {
       economy: 'Economy',
       shop: 'Shop',
       games: 'Games',
+      bulkRewards: 'Bulk Rewards',
       blockedIps: 'Blocked IPs',
       comingSoon: 'Coming soon',
     },
@@ -38,48 +42,7 @@ export const en = {
       body: 'An error occurred while loading this admin page.',
       retry: 'Try again',
     },
-    users: {
-      title: 'Users',
-      search: { placeholder: 'Search by username, email, or display name' },
-      filter: {
-        role: { all: 'All roles', placeholder: 'Filter by role' },
-      },
-      table: {
-        username: 'Username',
-        email: 'Email',
-        role: 'Role',
-        createdAt: 'Created',
-        actions: 'Actions',
-      },
-      empty: {
-        noResults: 'No users match your filters.',
-        noUsers: 'No users yet.',
-      },
-      pagination: {
-        prev: 'Previous',
-        next: 'Next',
-        of: 'Page {current} of {total}',
-      },
-      totalLabel: '{total} users',
-      selfTooltip: "You can't change your own role.",
-      role: {
-        free: 'Free',
-        premium: 'Premium',
-        vip: 'VIP',
-        supporter: 'Supporter',
-        moderator: 'Moderator',
-        tester: 'Tester',
-        developer: 'Developer',
-        admin: 'Admin',
-      },
-      errors: {
-        SELF_ROLE_CHANGE_FORBIDDEN: "You can't change your own role.",
-        LAST_ADMIN_PROTECTED: "Can't demote the last admin.",
-        USER_NOT_FOUND: 'User not found.',
-        INVALID_USER_ID: 'Invalid user id.',
-        generic: 'Something went wrong. Please try again.',
-      },
-    },
+    users: adminUsersEn,
     payments: {
       title: 'Payments',
       search: { placeholder: 'Search by note, name, or transaction id' },
@@ -119,6 +82,7 @@ export const en = {
     tournaments: adminTournamentsEn,
     wallet: adminWalletEn,
     blockedIps: adminBlockedIpsEn,
+    bulkRewards: adminBulkRewardsEn,
   },
   tournaments: {
     title: 'Tournaments',
@@ -493,4 +457,5 @@ export const en = {
   shop: shopEn,
   adminShop: adminShopEn,
   adminGames: adminGamesEn,
+  friends: friendsEn,
 };

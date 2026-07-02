@@ -4,9 +4,14 @@ import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
+
+const ruleVis = {
+  getAllRules: jest.fn().mockResolvedValue(new Map()),
+} as unknown as GameRuleVisibilityService;
 
 function buildController(
   games: GamesService,
@@ -18,6 +23,7 @@ function buildController(
     {} as unknown as CriticalService,
     {} as unknown as TexasHoldemService,
     vis,
+    ruleVis,
     resolver,
   );
 }

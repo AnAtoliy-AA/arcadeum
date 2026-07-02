@@ -1,6 +1,12 @@
+export interface GameCatalogRule {
+  ruleId: string;
+  label: string;
+}
+
 export interface GameCatalogEntry {
   gameId: string;
   variants: ReadonlyArray<string>;
+  rules: ReadonlyArray<GameCatalogRule>;
 }
 
 export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
@@ -21,6 +27,11 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       'zen',
       'random',
     ],
+    rules: [
+      { ruleId: 'combos', label: 'Action card combos' },
+      { ruleId: 'idle', label: 'Idle timer autoplay' },
+      { ruleId: 'spectators', label: 'Allow spectators' },
+    ],
   },
   {
     gameId: 'sea_battle_v1',
@@ -39,15 +50,32 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       'battle_royale',
       'team_2v2',
     ],
+    rules: [
+      { ruleId: 'idle', label: 'Idle timer autoplay' },
+      { ruleId: 'teams', label: 'Team mode' },
+      { ruleId: 'spectators', label: 'Allow spectators' },
+    ],
   },
-  { gameId: 'texas_holdem_v1', variants: [] },
+  {
+    gameId: 'texas_holdem_v1',
+    variants: [],
+    rules: [],
+  },
   {
     gameId: 'glimworm_v1',
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
+    rules: [
+      { ruleId: 'idle', label: 'Idle timer autoplay' },
+      { ruleId: 'spectators', label: 'Allow spectators' },
+    ],
   },
   {
     gameId: 'tic_tac_toe_v1',
     variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
+    rules: [
+      { ruleId: 'teams', label: 'Team mode' },
+      { ruleId: 'spectators', label: 'Allow spectators' },
+    ],
   },
   {
     // Cascade's `variants` list is the union of visual themes AND gameplay
@@ -67,6 +95,10 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       'steampunk',
       'pure',
       'speed',
+    ],
+    rules: [
+      { ruleId: 'idle', label: 'Idle timer autoplay' },
+      { ruleId: 'spectators', label: 'Allow spectators' },
     ],
   },
 ];

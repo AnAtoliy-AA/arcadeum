@@ -21,7 +21,6 @@ import {
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { handleEmote } from './games.gateway.emote';
-
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -55,7 +54,7 @@ export class GamesGateway {
 
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
-  // Verify JWT if present (optional — guest mode allowed without token)
+    // Verify JWT if present (optional — guest mode allowed without token)
     const authUserId = await verifySocketJwt(
       client,
       this.jwt,

@@ -43,18 +43,39 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
   }
 
   describe('useSonar', () => {
-    it('reveals ship positions on target board', () => {
+    it('reveals ship positions within radius on target board', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 1,
       });
 
       expect(result.success).toBe(true);
       expect(result.state!.lastSonar).toBeDefined();
       expect(result.state!.lastSonar!.attackerId).toBe('a');
       expect(result.state!.lastSonar!.targetId).toBe('b');
+      expect(result.state!.lastSonar!.centerRow).toBe(0);
+      expect(result.state!.lastSonar!.centerCol).toBe(1);
+      expect(result.state!.lastSonar!.radius).toBe(2);
       expect(result.state!.lastSonar!.shipPositions).toEqual([
         { row: 0, col: 0 },
+        { row: 0, col: 1 },
+        { row: 0, col: 2 },
+        { row: 0, col: 3 },
+      ]);
+    });
+
+    it('only reveals ships within radius', () => {
+      const s = battleState({ sonar: true });
+      const result = engine.executeAction(s, 'useSonar', ctx('a'), {
+        targetPlayerId: 'b',
+        row: 0,
+        col: 3,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.state!.lastSonar!.shipPositions).toEqual([
         { row: 0, col: 1 },
         { row: 0, col: 2 },
         { row: 0, col: 3 },
@@ -65,6 +86,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
 
       expect(result.state!.specialWeaponUsage?.['a']?.sonarUsed).toBe(true);
@@ -74,10 +97,14 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
 
       const ok = engine.validateAction(result.state!, 'useSonar', ctx('a'), {
         targetPlayerId: 'c',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -86,6 +113,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
 
       expect(result.state!.currentTurnIndex).not.toBe(s.currentTurnIndex);
@@ -95,6 +124,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({});
       const ok = engine.validateAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -103,6 +134,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const ok = engine.validateAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'a',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -112,6 +145,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       s.phase = GAME_PHASE.PLACEMENT;
       const ok = engine.validateAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -120,6 +155,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const ok = engine.validateAction(s, 'useSonar', ctx('b'), {
         targetPlayerId: 'c',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -129,6 +166,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       s.players[1].alive = false;
       const ok = engine.validateAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
       expect(ok).toBe(false);
     });
@@ -138,6 +177,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       s.players[1].ships[0].sunk = true;
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
 
       expect(result.state!.lastSonar!.shipPositions).toEqual([]);
@@ -147,6 +188,8 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
+        row: 0,
+        col: 0,
       });
       const state = result.state!;
 

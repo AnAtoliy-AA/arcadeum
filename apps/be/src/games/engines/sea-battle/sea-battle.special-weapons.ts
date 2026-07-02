@@ -16,6 +16,8 @@ import {
   getActiveShooterId,
 } from './team-rotation.utils';
 
+const SONAR_RADIUS = 2;
+
 export function executeSonar(
   state: SeaBattleState,
   player: SeaBattlePlayer,
@@ -33,20 +35,31 @@ export function executeSonar(
   }
   state.specialWeaponUsage[player.playerId].sonarUsed = true;
 
+  const centerRow = payload.row!;
+  const centerCol = payload.col!;
+
   const shipPositions = target.ships
     .filter((s) => !s.sunk)
-    .flatMap((s) => s.cells);
+    .flatMap((s) => s.cells)
+    .filter(
+      (c) =>
+        Math.abs(c.row - centerRow) <= SONAR_RADIUS &&
+        Math.abs(c.col - centerCol) <= SONAR_RADIUS,
+    );
 
   state.lastSonar = {
     attackerId: player.playerId,
     targetId: target.playerId,
+    centerRow,
+    centerCol,
+    radius: SONAR_RADIUS,
     shipPositions,
   };
 
   state.logs.push({
     id: `sonar-${Date.now()}`,
     type: 'action',
-    message: 'used sonar to reveal ship positions',
+    message: `used sonar on area around row ${centerRow}, col ${centerCol}`,
     createdAt: new Date().toISOString(),
     senderId: player.playerId,
     targetId: target.playerId,

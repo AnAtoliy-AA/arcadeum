@@ -112,13 +112,15 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
   );
 
   const useSonar = useCallback(
-    (targetPlayerId: string) => {
+    (targetPlayerId: string, row?: number, col?: number) => {
       if (!userId) return;
       onActionStart?.('useSonar');
       gameSocket.emit('seaBattle.session.use_sonar', {
         roomId,
         userId,
         targetPlayerId,
+        row,
+        col,
       });
     },
     [roomId, userId, onActionStart],

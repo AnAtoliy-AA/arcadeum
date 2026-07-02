@@ -239,6 +239,12 @@ export function validateUseSonar(
   );
   if (!target || !target.alive) return false;
 
+  const gSize = state.gridSize ?? BOARD_SIZE;
+  if (typeof payload.row !== 'number' || typeof payload.col !== 'number')
+    return false;
+  if (payload.row < 0 || payload.row >= gSize) return false;
+  if (payload.col < 0 || payload.col >= gSize) return false;
+
   return true;
 }
 

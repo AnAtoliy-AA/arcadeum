@@ -132,6 +132,9 @@ export interface SeaBattleSnapshot {
   lastSonar?: {
     attackerId: string;
     targetId: string;
+    centerRow: number;
+    centerCol: number;
+    radius: number;
     shipPositions: ShipCell[];
   };
   lastRadar?: {

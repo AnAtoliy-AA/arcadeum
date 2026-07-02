@@ -67,6 +67,9 @@ export interface SeaBattleState {
   lastSonar?: {
     attackerId: string;
     targetId: string;
+    centerRow: number;
+    centerCol: number;
+    radius: number;
     shipPositions: ShipCell[];
   };
   lastRadar?: {
@@ -111,6 +114,8 @@ export interface AttackPayload {
 
 export interface SonarPayload {
   targetPlayerId: string;
+  row?: number;
+  col?: number;
 }
 
 export interface RadarPayload {

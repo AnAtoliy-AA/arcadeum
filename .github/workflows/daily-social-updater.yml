@@ -240,7 +240,7 @@ jobs:
               telegram_chat = os.environ.get('TELEGRAM_CHAT_ID', '')
               if telegram_token and telegram_chat:
                   tg_header = "🚀 <b>Daily Development Update</b>\n\nAdded to develop — will be in release <b>v" + app_version + "</b>:\n\n"
-                  tg_footer = '\n\nTry it now at <a href="https://arcadeum.games">arcadeum.games</a>'
+                  tg_footer = ""
                   tg_max = 4096
 
                   def escape_html(text):
@@ -286,7 +286,7 @@ jobs:
               discord_webhook = os.environ.get('DISCORD_WEBHOOK_DAILY', '')
               if discord_webhook:
                   header = "## 🚀 Daily Development Update\n\nAdded to develop — will be in release **v" + app_version + "**:\n\n"
-                  footer = "\n\nTry it now at [arcadeum.games](https://arcadeum.games)"
+                  footer = ""
                   max_len = 2000
 
                   chunks = []

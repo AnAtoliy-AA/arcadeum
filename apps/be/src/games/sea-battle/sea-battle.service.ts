@@ -329,6 +329,30 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
+   * Execute a generic action (e.g. useSonar, useRadar)
+   */
+  async executeActionByRoom(
+    userId: string,
+    roomId: string,
+    action: string,
+    payload: Record<string, unknown>,
+  ) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (!session) throw new Error('Session not found');
+
+    const updatedSession = await this.sessionsService.executeAction({
+      sessionId: session.id,
+      userId,
+      action,
+      payload,
+    });
+
+    await this.checkAndSyncRoomStatus(updatedSession);
+    await this.emitSessionUpdate(updatedSession);
+    return updatedSession;
+  }
+
+  /**
    * Reset ship placement
    */
   async resetPlacementByRoom(userId: string, roomId: string) {

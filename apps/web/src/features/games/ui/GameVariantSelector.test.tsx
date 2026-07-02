@@ -2,19 +2,14 @@ import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
-import { gamesApi } from '../api';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { config } from '@/shared/config/tamagui.config';
 
-// Mock dependencies
-vi.mock('../api', () => ({
-  gamesApi: {
-    updateRoomOptions: vi.fn(),
-  },
+const mockEmit = vi.fn();
+vi.mock('@/shared/lib/socket', () => ({
+  gameSocket: { emit: (...args: unknown[]) => mockEmit(...args) },
 }));
 
-// Mock Next.js navigation hooks so LanguageProvider can mount in a
-// non-App-Router test environment.
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: vi.fn() }),
   usePathname: () => '/en',
@@ -28,12 +23,6 @@ interface MockSelectProps {
   disabled?: boolean;
   'aria-label'?: string;
   id?: string;
-}
-
-interface MockButtonProps {
-  children?: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
 }
 
 vi.mock('@arcadeum/ui', () => ({
@@ -59,36 +48,6 @@ vi.mock('@arcadeum/ui', () => ({
       ))}
     </select>
   ),
-  Button: ({ children, onClick, disabled }: MockButtonProps) => (
-    <button onClick={onClick} disabled={disabled}>
-      {children}
-    </button>
-  ),
-}));
-
-vi.mock('@/entities/session/model/useSessionTokens', () => ({
-  useSessionTokens: () => ({
-    snapshot: { accessToken: 'fake-token' },
-  }),
-}));
-
-// Mock custom useMutation hook
-vi.mock('@/shared/hooks/useMutation', () => ({
-  useMutation: ({
-    mutationFn,
-  }: {
-    mutationFn: (variables: unknown) => Promise<unknown>;
-  }) => ({
-    mutate: (variables: unknown) => mutationFn(variables),
-    mutateAsync: (variables: unknown) => mutationFn(variables),
-    isLoading: false,
-    isPending: false,
-    error: null,
-    data: null,
-    isSuccess: false,
-    isError: false,
-    reset: vi.fn(),
-  }),
 }));
 
 const render = (ui: React.ReactElement) => {
@@ -111,6 +70,7 @@ describe('GameVariantSelector', () => {
     render(
       <GameVariantSelector
         roomId="room-123"
+        hostId="host-1"
         currentVariant="variant1"
         variants={mockVariants}
       />,
@@ -125,20 +85,20 @@ describe('GameVariantSelector', () => {
     render(
       <GameVariantSelector
         roomId="room-123"
+        hostId="host-1"
         currentVariant="invalid-variant"
         variants={mockVariants}
       />,
     );
 
-    // Check if the "invalid-variant" is somehow represented or if we have a fallback.
-    // The desired behavior is to see "Unknown Variant".
     expect(screen.getByText(/Unknown Variant/i)).toBeInTheDocument();
   });
 
-  it('allows changing variant when valid', () => {
+  it('emits games.room.set_option when variant changes', () => {
     render(
       <GameVariantSelector
         roomId="room-123"
+        hostId="host-1"
         currentVariant="variant1"
         variants={mockVariants}
       />,
@@ -147,10 +107,10 @@ describe('GameVariantSelector', () => {
     const select = screen.getByRole('combobox');
     fireEvent.change(select, { target: { value: 'variant2' } });
 
-    expect(gamesApi.updateRoomOptions).toHaveBeenCalledWith(
-      'room-123',
-      { variant: 'variant2' },
-      expect.anything(),
-    );
+    expect(mockEmit).toHaveBeenCalledWith('games.room.set_option', {
+      roomId: 'room-123',
+      userId: 'host-1',
+      options: { variant: 'variant2' },
+    });
   });
 });

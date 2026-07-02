@@ -27,6 +27,7 @@ import {
   nextTurnIndex,
 } from './tic-tac-toe.utils';
 import { validateForfeit, validatePlaceMark } from './tic-tac-toe.validators';
+import { validateTicTacToeConfig } from './tic-tac-toe.config';
 
 const ACTION = {
   PLACE_MARK: 'place_mark',
@@ -88,6 +89,10 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       isDraw: false,
       logs: [this.createLogEntry('system', 'Game started.')],
     };
+  }
+
+  validateConfig(config: Record<string, unknown>): boolean {
+    return validateTicTacToeConfig(config);
   }
 
   validateAction(

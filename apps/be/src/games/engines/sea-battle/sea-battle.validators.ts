@@ -10,6 +10,8 @@ import {
   PlaceShipPayload,
   MoveShipPayload,
   AttackPayload,
+  SonarPayload,
+  RadarPayload,
 } from './sea-battle.types';
 import { areCellsValid, areCellsConnected } from './sea-battle.utils';
 import {
@@ -58,7 +60,8 @@ export function validatePlaceShip(
     for (const [dr, dc] of directions) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      const gSize = state.gridSize ?? BOARD_SIZE;
+      if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         if (player.board[r][c] === CELL_STATE.SHIP) {
           return false;
         }
@@ -116,7 +119,8 @@ export function validateMoveShip(
     for (const [dr, dc] of directions) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      const gSize = state.gridSize ?? BOARD_SIZE;
+      if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         if (virtualBoard[r][c] === CELL_STATE.SHIP) {
           return false;
         }
@@ -189,9 +193,9 @@ export function validateAttack(
 
   if (
     payload.row < 0 ||
-    payload.row >= BOARD_SIZE ||
+    payload.row >= (state.gridSize ?? BOARD_SIZE) ||
     payload.col < 0 ||
-    payload.col >= BOARD_SIZE
+    payload.col >= (state.gridSize ?? BOARD_SIZE)
   ) {
     return false;
   }
@@ -200,6 +204,89 @@ export function validateAttack(
   if (cellState === CELL_STATE.HIT || cellState === CELL_STATE.MISS) {
     return false;
   }
+
+  return true;
+}
+
+export function validateUseSonar(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: SonarPayload,
+): boolean {
+  if (state.phase !== GAME_PHASE.BATTLE) return false;
+  if (!state.specialWeapons?.sonar) return false;
+
+  const activeId = state.teams
+    ? getActiveShooterId(state)
+    : state.playerOrder[state.currentTurnIndex];
+  if (player.playerId !== activeId) return false;
+
+  const usage = state.specialWeaponUsage?.[player.playerId];
+  if (usage?.sonarUsed) return false;
+
+  if (!payload?.targetPlayerId) return false;
+  if (payload.targetPlayerId === player.playerId) return false;
+
+  if (
+    state.teams &&
+    arePlayersOnSameTeam(state, player.playerId, payload.targetPlayerId)
+  ) {
+    return false;
+  }
+
+  const target = state.players.find(
+    (p) => p.playerId === payload.targetPlayerId,
+  );
+  if (!target || !target.alive) return false;
+
+  const gSize = state.gridSize ?? BOARD_SIZE;
+  if (typeof payload.row !== 'number' || typeof payload.col !== 'number')
+    return false;
+  if (payload.row < 0 || payload.row >= gSize) return false;
+  if (payload.col < 0 || payload.col >= gSize) return false;
+
+  return true;
+}
+
+export function validateUseRadar(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: RadarPayload,
+): boolean {
+  if (state.phase !== GAME_PHASE.BATTLE) return false;
+  if (!state.specialWeapons?.radar) return false;
+
+  const activeId = state.teams
+    ? getActiveShooterId(state)
+    : state.playerOrder[state.currentTurnIndex];
+  if (player.playerId !== activeId) return false;
+
+  const usage = state.specialWeaponUsage?.[player.playerId];
+  if (usage?.radarUsed) return false;
+
+  if (!payload?.targetPlayerId) return false;
+  if (payload.targetPlayerId === player.playerId) return false;
+
+  if (
+    state.teams &&
+    arePlayersOnSameTeam(state, player.playerId, payload.targetPlayerId)
+  ) {
+    return false;
+  }
+
+  const target = state.players.find(
+    (p) => p.playerId === payload.targetPlayerId,
+  );
+  if (!target || !target.alive) return false;
+
+  const hasRow = payload.row !== undefined;
+  const hasCol = payload.col !== undefined;
+  if (!hasRow && !hasCol) return false;
+  if (hasRow && hasCol) return false;
+
+  const gSize = state.gridSize ?? BOARD_SIZE;
+  if (hasRow && (payload.row! < 0 || payload.row! >= gSize)) return false;
+  if (hasCol && (payload.col! < 0 || payload.col! >= gSize)) return false;
 
   return true;
 }

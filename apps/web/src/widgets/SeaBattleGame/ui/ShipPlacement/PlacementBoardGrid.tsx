@@ -2,7 +2,7 @@
 
 import { memo, useCallback } from 'react';
 import type { DragEvent } from 'react';
-import { ROW_LABELS, COL_LABELS, CELL_STATE } from '../../types';
+import { colLabels, rowLabels, CELL_STATE } from '../../types';
 import type { ShipCell, ShipConfig, CellState } from '../../types';
 import {
   BoardGrid,
@@ -208,6 +208,7 @@ interface PlacementBoardGridProps {
   hoveredCells: ShipCell[];
   isInvalidHover: boolean;
   selectedShip: ShipConfig | null;
+  gridSize?: number;
   getBoardCellDragProps: (
     row: number,
     col: number,
@@ -239,6 +240,7 @@ export const PlacementBoardGrid = memo(
     hoveredCells,
     isInvalidHover,
     selectedShip,
+    gridSize,
     getBoardCellDragProps,
     draggingCells,
     pendingCells,
@@ -260,6 +262,9 @@ export const PlacementBoardGrid = memo(
     const movingKeys = new Set(
       (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
     );
+    const boardSize = gridSize ?? (board.length || 10);
+    const rowLbls = rowLabels(boardSize);
+    const colLbls = colLabels(boardSize);
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}
@@ -270,21 +275,22 @@ export const PlacementBoardGrid = memo(
         </PlayerName>
         <BoardWithLabels>
           <div />
-          <ColLabels>
-            {COL_LABELS.map((label) => (
+          <ColLabels gridSize={boardSize}>
+            {colLbls.map((label) => (
               <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>
             ))}
           </ColLabels>
-          <RowLabels>
-            {ROW_LABELS.map((label) => (
+          <RowLabels gridSize={boardSize}>
+            {rowLbls.map((label) => (
               <Label key={label} style={{ color: theme.textSecondaryColor }}>
                 {label}
               </Label>
             ))}
           </RowLabels>
           <BoardGrid
+            gridSize={boardSize}
             style={{
               backgroundColor: theme.boardBackground,
               borderColor: theme.cellBorder,

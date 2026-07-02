@@ -62,13 +62,14 @@ test.describe('Player Stats', () => {
 
     await expect(myStatsTab).toBeVisible();
 
+    // Click the tab to switch to My Stats view
+    if (!(await myStatsTab.getAttribute('aria-pressed'))) {
+      await myStatsTab
+        .click({ force: true })
+        .catch(() => myStatsTab.dispatchEvent('click'));
+    }
+
     await expect(async () => {
-      const pressed = await myStatsTab.getAttribute('aria-pressed');
-      if (pressed !== 'true') {
-        await myStatsTab
-          .click({ force: true })
-          .catch(() => myStatsTab.dispatchEvent('click'));
-      }
       await expect(page.getByTestId('stats-total-games')).toHaveText('10'); // Total games
       await expect(page.getByTestId('stats-wins')).toHaveText('7'); // Wins
       await expect(page.getByText('70%').first()).toBeVisible(); // Win rate

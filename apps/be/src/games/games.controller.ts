@@ -37,6 +37,7 @@ import {
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 import { GAME_CATALOG } from './games.catalog';
 import { extractVariantFromOptions } from './game-options';
@@ -48,6 +49,7 @@ export class GamesController {
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
     private readonly visibility: GameVisibilityService,
+    private readonly ruleVisibility: GameRuleVisibilityService,
     private readonly roleResolver: UserRoleResolver,
   ) {}
 
@@ -56,15 +58,19 @@ export class GamesController {
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const role = await this.roleResolver.resolveRole(user?.userId);
+    const allRuleMaps = await this.ruleVisibility.getAllRules();
     const games: CatalogGame[] = [];
     for (const entry of GAME_CATALOG) {
       const visible = await this.visibility.canSee(role, entry.gameId);
       if (!visible) {
-        // Game restricted for this caller — include as coming-soon, no variants surfaced
         games.push({
           gameId: entry.gameId,
           comingSoon: true,
           variants: [],
+          rules: entry.rules.map((r) => ({
+            ruleId: r.ruleId,
+            comingSoon: true,
+          })),
         });
         continue;
       }
@@ -75,10 +81,17 @@ export class GamesController {
         variants.push({ id: v, comingSoon: !visible });
       }
 
+      const ruleMap = allRuleMaps.get(entry.gameId);
+      const rules = entry.rules.map((r) => ({
+        ruleId: r.ruleId,
+        comingSoon: ruleMap ? !ruleMap.get(r.ruleId) : false,
+      }));
+
       games.push({
         gameId: entry.gameId,
         comingSoon: false,
         variants,
+        rules,
       });
     }
     return { games };

@@ -1,21 +1,24 @@
 import type { CatalogResponse } from '@/features/games/api';
 
 /**
- * Builds two look-up maps from a catalog response:
+ * Builds look-up maps from a catalog response:
  * - gameComingSoon: gameId → boolean
  * - variantComingSoon: "gameId::variantId" → boolean
+ * - ruleComingSoon: "gameId::ruleId" → boolean
  *
  * Returns empty maps when catalog is null (fetch not yet complete or failed).
  */
 export function buildComingSoonMaps(catalog: CatalogResponse | null): {
   gameComingSoon: Map<string, boolean>;
   variantComingSoon: Map<string, boolean>;
+  ruleComingSoon: Map<string, boolean>;
 } {
   const gameComingSoon = new Map<string, boolean>();
   const variantComingSoon = new Map<string, boolean>();
+  const ruleComingSoon = new Map<string, boolean>();
 
   if (!catalog || !Array.isArray(catalog.games)) {
-    return { gameComingSoon, variantComingSoon };
+    return { gameComingSoon, variantComingSoon, ruleComingSoon };
   }
 
   for (const g of catalog.games) {
@@ -25,9 +28,14 @@ export function buildComingSoonMaps(catalog: CatalogResponse | null): {
         variantComingSoon.set(`${g.gameId}::${v.id}`, v.comingSoon);
       }
     }
+    if (Array.isArray(g.rules)) {
+      for (const r of g.rules) {
+        ruleComingSoon.set(`${g.gameId}::${r.ruleId}`, r.comingSoon);
+      }
+    }
   }
 
-  return { gameComingSoon, variantComingSoon };
+  return { gameComingSoon, variantComingSoon, ruleComingSoon };
 }
 
 /**

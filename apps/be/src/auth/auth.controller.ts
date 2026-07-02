@@ -59,14 +59,14 @@ function setTokenCookies(
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite: 'none',
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite: 'none',
     path: '/',
     maxAge: Math.max(maxAgeRefresh, 0),
   });

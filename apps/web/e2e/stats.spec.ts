@@ -63,7 +63,7 @@ test.describe('Player Stats', () => {
     await expect(myStatsTab).toBeVisible();
 
     // Click the tab to switch to My Stats view
-    if (!(await myStatsTab.getAttribute('aria-pressed'))) {
+    if ((await myStatsTab.getAttribute('aria-pressed')) !== 'true') {
       await myStatsTab
         .click({ force: true })
         .catch(() => myStatsTab.dispatchEvent('click'));

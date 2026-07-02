@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -20,8 +20,17 @@ interface StatsOverviewProps {
 
 export function StatsOverview({ stats, loading }: StatsOverviewProps) {
   const { t } = useTranslation();
-  const streaks = useLocalStatsStore((s) => s.getStreaks());
-  const favoriteGame = useLocalStatsStore((s) => s.getFavoriteGame());
+  const records = useLocalStatsStore((s) => s.records);
+  const streaks = useMemo(
+    () => useLocalStatsStore.getState().getStreaks(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
+  const favoriteGame = useMemo(
+    () => useLocalStatsStore.getState().getFavoriteGame(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
 
   if (loading && !stats) {
     return (

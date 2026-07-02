@@ -37,6 +37,7 @@ jobs:
           import subprocess
           import re
           import requests
+          import time
 
           # 1. Find the latest tag (the version just released)
           try:
@@ -156,7 +157,7 @@ jobs:
           try:
               facebook_text = (
                   f"🚀 New Release: v{version}\n\n"
-                  f"What shipped:\n{updates_text}\n\n"
+                  f"What's new in this release:\n{updates_text}\n\n"
                   f"Try it now at arcadeum.games\n\n"
                   f"#arcadeum #gamedev #newrelease #boardgames"
               )
@@ -262,15 +263,17 @@ jobs:
                   tg_header = f"🚀 <b>New Release: v{version}</b>\n\n<b>What shipped:</b>\n"
                   tg_footer = '\n\nTry it now at <a href="https://arcadeum.games">arcadeum.games</a>'
                   tg_max = 4096
-                  pre_tag_len = len('<pre></pre>')
 
                   def escape_html(text):
                       return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
+                  tg_lines = [f"<b>{escape_html(line)}</b>" if line.startswith('- ') else escape_html(line) for line in updates_text.split('\n') if line.strip()]
+                  tg_body = "\n".join(tg_lines)
+
                   tg_chunks = []
-                  remaining = updates_text
+                  remaining = tg_body
                   while remaining:
-                      budget = tg_max - len(tg_header) - pre_tag_len - len(tg_footer) if not tg_chunks else tg_max - pre_tag_len
+                      budget = tg_max - len(tg_header) - len(tg_footer) if not tg_chunks else tg_max
                       if len(remaining) <= budget:
                           tg_chunks.append(remaining)
                           break
@@ -281,11 +284,10 @@ jobs:
                       remaining = remaining[cut:].lstrip('\n')
 
                   for i, chunk in enumerate(tg_chunks):
-                      escaped = escape_html(chunk)
                       if i == 0:
-                          tg_text = tg_header + f"<pre>{escaped}</pre>" + tg_footer
+                          tg_text = tg_header + chunk + tg_footer
                       else:
-                          tg_text = f"🚀 <b>New Release: v{version} (continued)</b>\n\n<pre>{escaped}</pre>"
+                          tg_text = f"🚀 <b>New Release: v{version} (continued)</b>\n\n{chunk}"
                       tg_resp = requests.post(
                           f"https://api.telegram.org/bot{telegram_token}/sendMessage",
                           data={"chat_id": telegram_chat, "text": tg_text, "parse_mode": "HTML"},
@@ -294,6 +296,8 @@ jobs:
                           print(f"Posted release v{version} to Telegram (part {i + 1}/{len(tg_chunks)})")
                       else:
                           print(f"Failed to post to Telegram: {tg_resp.text}")
+                      if i < len(tg_chunks) - 1:
+                          time.sleep(1)
               else:
                   print("Telegram not configured, skipping.")
           except Exception as e:

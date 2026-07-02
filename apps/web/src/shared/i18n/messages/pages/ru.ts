@@ -32,6 +32,7 @@ export const ru = {
       economy: 'Экономика',
       shop: 'Магазин',
       games: 'Игры',
+      gameRules: 'Правила игр',
       bulkRewards: 'Массовые Награды',
       blockedIps: 'Заблокированные IP',
       comingSoon: 'Скоро',

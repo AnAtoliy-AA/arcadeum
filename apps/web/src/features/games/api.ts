@@ -11,10 +11,16 @@ export interface CatalogVariant {
   comingSoon: boolean;
 }
 
+export interface CatalogRule {
+  ruleId: string;
+  comingSoon: boolean;
+}
+
 export interface CatalogGame {
   gameId: string;
   comingSoon: boolean;
   variants: CatalogVariant[];
+  rules: CatalogRule[];
 }
 
 export interface CatalogResponse {

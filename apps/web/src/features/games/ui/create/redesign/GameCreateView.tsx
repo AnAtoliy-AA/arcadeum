@@ -22,6 +22,7 @@ import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { RoomDetails } from './RoomDetails';
+import { HouseRules } from './HouseRules';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
 import { applyPreset } from './data/presets';
@@ -154,7 +155,12 @@ export function GameCreateView() {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'password' | 'preset'
+        | 'roomName'
+        | 'maxPlayers'
+        | 'visibility'
+        | 'notes'
+        | 'password'
+        | 'preset'
       >
     >,
   ) {
@@ -210,7 +216,7 @@ export function GameCreateView() {
       cancelled = true;
     };
   }, []);
-  const { gameComingSoon, variantComingSoon } = useMemo(
+  const { gameComingSoon, variantComingSoon, ruleComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],
   );
@@ -280,6 +286,7 @@ export function GameCreateView() {
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
+  const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
 
   return (
@@ -336,6 +343,18 @@ export function GameCreateView() {
                     />
                   </SectionGroup>
                 ) : null}
+
+                <SectionGroup num={numRules} title={L.sectionRules}>
+                  <HouseRules
+                    gameId={form.gameId}
+                    value={form.rules}
+                    labels={L.rules}
+                    ruleComingSoon={ruleComingSoon}
+                    onChange={(rules) =>
+                      setForm((prev) => ({ ...prev, rules }))
+                    }
+                  />
+                </SectionGroup>
 
                 <SectionGroup num={numDetails} title={L.sectionDetails}>
                   <RoomDetails

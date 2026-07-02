@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.25] - 2026-07-02
+
+### Added
+- add backend health monitoring with Telegram and Discord alerts (N/A)
+
+### Fixed
+- handle missing changelog file in daily workflow (N/A)
+- add LinkedIn and Facebook chunking for long messages (N/A)
+- add Facebook chunking, version in Threads header, footer in Discord continued (N/A)
+- add stay tuned footer to daily messages (N/A)
+- remove arcadeum.games link from daily messages (N/A)
+- improve social bot messages across all platforms (N/A)
+- rework social media bot messages (N/A)
+
+
 ## [1.22.24] - 2026-07-02
 
 ### Added

@@ -17,6 +17,12 @@ export interface GameTypeStats {
   winRate: number;
 }
 
+export interface StreakInfo {
+  currentStreak: number;
+  currentStreakType: 'won' | 'lost' | null;
+  bestWinStreak: number;
+}
+
 interface LocalStatsState {
   records: LocalGameRecord[];
   recordGameResult: (record: LocalGameRecord) => void;
@@ -29,6 +35,8 @@ interface LocalStatsState {
     winRate: number;
   };
   getByGameType: () => GameTypeStats[];
+  getStreaks: () => StreakInfo;
+  getFavoriteGame: () => string | null;
 }
 
 const MAX_RECORDS = 1000;
@@ -94,6 +102,66 @@ export const useLocalStatsStore = create<LocalStatsState>()(
                 : 0,
           }))
           .sort((a, b) => b.totalGames - a.totalGames);
+      },
+
+      getStreaks: () => {
+        const { records } = get();
+        if (records.length === 0) {
+          return {
+            currentStreak: 0,
+            currentStreakType: null,
+            bestWinStreak: 0,
+          };
+        }
+
+        let currentStreak = 0;
+        let currentStreakType: 'won' | 'lost' | null = null;
+        let bestWinStreak = 0;
+        let tempWinStreak = 0;
+
+        for (let i = records.length - 1; i >= 0; i--) {
+          const result = records[i].result;
+          if (result === 'draw') break;
+          if (currentStreakType === null) {
+            currentStreakType = result;
+            currentStreak = 1;
+          } else if (result === currentStreakType) {
+            currentStreak++;
+          } else {
+            break;
+          }
+        }
+
+        for (const record of records) {
+          if (record.result === 'won') {
+            tempWinStreak++;
+            if (tempWinStreak > bestWinStreak) {
+              bestWinStreak = tempWinStreak;
+            }
+          } else {
+            tempWinStreak = 0;
+          }
+        }
+
+        return { currentStreak, currentStreakType, bestWinStreak };
+      },
+
+      getFavoriteGame: () => {
+        const { records } = get();
+        if (records.length === 0) return null;
+        const counts = new Map<string, number>();
+        for (const record of records) {
+          counts.set(record.gameId, (counts.get(record.gameId) ?? 0) + 1);
+        }
+        let maxId = '';
+        let maxCount = 0;
+        for (const [id, count] of counts) {
+          if (count > maxCount) {
+            maxCount = count;
+            maxId = id;
+          }
+        }
+        return maxId || null;
       },
     }),
     {

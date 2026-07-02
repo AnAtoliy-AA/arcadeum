@@ -357,17 +357,9 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
             }
           }
         }
-        // Hard-navigate home so the new auth cookie is guaranteed to be
-        // picked up by SSR for the destination route. router.refresh() only
-        // invalidates the current /auth/callback route; cached RSC payloads
-        // for other pages (e.g., prefetched links on the auth page) would
-        // otherwise serve a "no-cookie" render until the user manually
-        // reloads. A full navigation also lands the user on a useful page
-        // instead of leaving them on /auth/callback.
-        if (typeof window !== 'undefined') {
-          window.location.assign('/');
-          return;
-        }
+        // Navigate home. SessionRoleSync will recover the session from
+        // httpOnly cookies if Zustand tokens aren't available yet.
+        router.push('/');
         router.refresh();
       } catch (callbackError) {
         setState((current) => ({

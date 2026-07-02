@@ -1,3 +1,4 @@
+import type { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 import { extractString, handleError } from './games.gateway.utils';
@@ -15,7 +16,7 @@ export type RunTeamAction = (
 ) => Promise<void>;
 
 export function createRunTeamAction(
-  logger: { error(msg: string, trace?: string): void; warn(msg: string): void },
+  logger: Logger,
   realtimeService: GamesRealtimeService,
 ): RunTeamAction {
   return async (client, context, failureMessage, operation) => {

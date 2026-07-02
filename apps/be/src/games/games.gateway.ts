@@ -64,14 +64,27 @@ export class GamesGateway {
   handleConnection(client: Socket): void {
     this.logger.verbose(`Client connected ${client.id}`);
 
-    // Send encryption key to authenticated client if encryption is enabled
+    // Only send encryption key to clients with a valid identity
+    // (JWT-authenticated or anonymous with a proper anon_ ID).
+    // Never broadcast the key to completely unauthenticated connections.
     if (isSocketEncryptionEnabled()) {
-      try {
-        const encryptionKey = getEncryptionKeyHex();
-        client.emit('socket.encryption_key', { key: encryptionKey });
-        this.logger.debug(`Encryption key sent to ${client.id}`);
-      } catch (error) {
-        this.logger.error(`Failed to send encryption key: ${error}`);
+      const hasIdentity =
+        client.handshake?.auth?.token ||
+        (typeof client.handshake?.query?.anonId === 'string' &&
+          (client.handshake.query.anonId as string).startsWith('anon_'));
+
+      if (hasIdentity) {
+        try {
+          const encryptionKey = getEncryptionKeyHex();
+          client.emit('socket.encryption_key', { key: encryptionKey });
+          this.logger.debug(`Encryption key sent to ${client.id}`);
+        } catch (error) {
+          this.logger.error(`Failed to send encryption key: ${error}`);
+        }
+      } else {
+        this.logger.warn(
+          `Encryption key withheld from unauthenticated client ${client.id}`,
+        );
       }
     }
   }

@@ -48,11 +48,9 @@ function createBrowserStore(): SecureStoreLike | null {
 
 function resolveSecureStore(): SecureStoreLike {
   try {
-    // Attempt indirect dynamic access without eval/require; if a global named expoSecureStore is injected we use it.
-    const loader = new Function(
-      "return typeof expoSecureStore !== 'undefined' ? expoSecureStore : undefined;",
-    );
-    const maybe = loader() as SecureStoreLike | undefined;
+    // Access expo-secure-store via globalThis to avoid eval/new Function.
+    const g = globalThis as Record<string, unknown>;
+    const maybe = g.expoSecureStore as SecureStoreLike | undefined;
     if (maybe && typeof maybe.setItemAsync === 'function') {
       return maybe;
     }

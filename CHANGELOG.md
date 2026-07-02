@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.27] - 2026-07-02
+
+### Added
+- add game rules visibility control for lobby settings (N/A)
+
+### Fixed
+- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
+
+
 ## [1.22.26] - 2026-07-02
 
 ### Added

@@ -76,7 +76,7 @@ function validateGrantDeductInput(input: unknown): ValidationResult {
 
 async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
   const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
+  const token = cookieJar.get('access_token')?.value;
   const url = resolveApiUrl(path);
 
   return fetch(url, {

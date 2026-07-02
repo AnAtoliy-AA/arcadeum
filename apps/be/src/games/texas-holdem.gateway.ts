@@ -3,10 +3,13 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import {
   extractRoomAndUser,
@@ -16,6 +19,7 @@ import {
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
 @WebSocketGateway({
@@ -26,10 +30,36 @@ import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 export class TexasHoldemGateway {
   private readonly logger = new Logger(TexasHoldemGateway.name);
 
+  @WebSocketServer() server: Server;
+
   constructor(
     private readonly gamesService: GamesService,
     private readonly texasHoldemService: TexasHoldemService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'TexasHoldemGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to TexasHoldem namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to TexasHoldem namespace: ${client.id}`,
+      );
+    }
+  }
 
   @SubscribeMessage('games.session.start_holdem')
   async handleStartTexasHoldem(

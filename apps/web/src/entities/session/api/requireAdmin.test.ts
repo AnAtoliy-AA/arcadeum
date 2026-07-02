@@ -22,7 +22,7 @@ vi.mock('@/shared/lib/api-base', () => ({
 const setCookie = (token: string | null) => {
   cookiesMock.mockResolvedValue({
     get: (name: string) =>
-      name === 'web_access_token' && token ? { value: token } : undefined,
+      name === 'access_token' && token ? { value: token } : undefined,
   });
 };
 

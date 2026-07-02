@@ -16,8 +16,6 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { PaymentSession } from './interfaces/payment-session.interface';
 import type { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 
 interface JwtPayload {
   sub: string;
@@ -26,17 +24,11 @@ interface JwtPayload {
 
 @Controller('payments')
 export class PaymentsController {
-  private readonly jwtService: JwtService;
-
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly notesService: PaymentNotesService,
-    private readonly config: ConfigService,
-  ) {
-    this.jwtService = new JwtService({
-      secret: resolveJwtSecret(this.config),
-    });
-  }
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post('session')
   @HttpCode(HttpStatus.CREATED)

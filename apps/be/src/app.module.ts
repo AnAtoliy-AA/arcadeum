@@ -42,8 +42,8 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ChatModule,
     AuthModule,
+    ChatModule,
     GamesModule,
     PaymentsModule,
     ReferralModule,

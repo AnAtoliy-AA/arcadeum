@@ -3,10 +3,13 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import {
@@ -16,6 +19,7 @@ import {
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { ChatScope } from './engines';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GamesRealtimeService } from './games.realtime.service';
@@ -30,17 +34,6 @@ interface ShipOpPayload {
   [key: string]: unknown;
 }
 
-interface ShipOp {
-  svc: (
-    userId: string,
-    roomId: string,
-    body: { shipId: string; cells: { row: number; col: number }[] },
-  ) => Promise<unknown>;
-  ackEvent: string;
-  errorAction: string;
-  errorMessage: string;
-}
-
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -49,11 +42,37 @@ interface ShipOp {
 export class SeaBattleGateway {
   private readonly logger = new Logger(SeaBattleGateway.name);
 
+  @WebSocketServer() server: Server;
+
   constructor(
     private readonly seaBattleService: SeaBattleService,
     private readonly teamConfigService: SeaBattleTeamConfigService,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'SeaBattleGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to SeaBattle namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to SeaBattle namespace: ${client.id}`,
+      );
+    }
+  }
 
   @SubscribeMessage('seaBattle.session.start')
   async handleSessionStart(
@@ -94,7 +113,16 @@ export class SeaBattleGateway {
   private async dispatchShipOp(
     client: Socket,
     payload: ShipOpPayload,
-    op: ShipOp,
+    op: {
+      svc: (
+        userId: string,
+        roomId: string,
+        body: { shipId: string; cells: { row: number; col: number }[] },
+      ) => Promise<unknown>;
+      ackEvent: string;
+      errorAction: string;
+      errorMessage: string;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const shipId = extractString(payload, 'shipId');
@@ -152,20 +180,13 @@ export class SeaBattleGateway {
       await this.seaBattleService.confirmPlacementByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.placement_confirmed',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'confirm placement',
-          roomId,
-          userId,
-        },
+        { action: 'confirm placement', roomId, userId },
         'Unable to confirm placement.',
       );
     }
@@ -182,20 +203,13 @@ export class SeaBattleGateway {
       await this.seaBattleService.resetPlacementByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.placement_reset',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'reset placement',
-          roomId,
-          userId,
-        },
+        { action: 'reset placement', roomId, userId },
         'Unable to reset placement.',
       );
     }
@@ -212,20 +226,13 @@ export class SeaBattleGateway {
       await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
       client.emit(
         'seaBattle.session.ships_auto_placed',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
+        maybeEncrypt({ roomId, userId }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'auto place ships',
-          roomId,
-          userId,
-        },
+        { action: 'auto place ships', roomId, userId },
         'Unable to auto place ships.',
       );
     }
@@ -260,23 +267,13 @@ export class SeaBattleGateway {
       });
       client.emit(
         'seaBattle.session.attack_result',
-        maybeEncrypt({
-          roomId,
-          userId,
-          targetPlayerId,
-          row,
-          col,
-        }),
+        maybeEncrypt({ roomId, userId, targetPlayerId, row, col }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'attack',
-          roomId,
-          userId,
-        },
+        { action: 'attack', roomId, userId },
         'Unable to attack.',
       );
     }
@@ -299,7 +296,6 @@ export class SeaBattleGateway {
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
-
     const scope = (
       ['players', 'private', 'team'].includes(scopeRaw) ? scopeRaw : 'all'
     ) as ChatScope;
@@ -313,21 +309,13 @@ export class SeaBattleGateway {
       );
       client.emit(
         'seaBattle.session.history_note.ack',
-        maybeEncrypt({
-          roomId,
-          userId,
-          scope,
-        }),
+        maybeEncrypt({ roomId, userId, scope }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
+        { action: 'post history note', roomId, userId },
         'Unable to post history note.',
       );
     }

@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { ChatService } from './chat.service'; // Import the chat service
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { ChatService } from './chat.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -17,6 +19,7 @@ import {
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 
 @WebSocketGateway({
   cors: {
@@ -24,22 +27,44 @@ import { corsOriginMatcher } from '../common/utils/cors.util';
   },
 })
 export class ChatGateway {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
 
   private readonly logger = new Logger(ChatGateway.name);
 
   @WebSocketServer() server: Server;
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'ChatGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Chat namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Chat namespace: ${client.id}`,
+      );
+    }
 
     // Only send encryption key to clients with a valid identity.
     // Never broadcast the key to completely unauthenticated connections.
     if (isSocketEncryptionEnabled()) {
       const hasIdentity =
-        client.handshake?.auth?.token ||
+        authUserId ||
         (typeof client.handshake?.query?.anonId === 'string' &&
-          (client.handshake.query.anonId as string).startsWith('anon_'));
+          client.handshake.query.anonId.startsWith('anon_'));
 
       if (hasIdentity) {
         try {

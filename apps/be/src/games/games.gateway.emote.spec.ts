@@ -5,6 +5,9 @@ import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 
+const mockJwt = {} as never;
+const mockConfig = {} as never;
+
 describe('GamesGateway – emote handler', () => {
   let gateway: GamesGateway;
   let gamesService: jest.Mocked<GamesService>;
@@ -38,7 +41,7 @@ describe('GamesGateway – emote handler', () => {
       data: {},
     } as unknown as jest.Mocked<Socket>;
 
-    gateway = new GamesGateway(gamesService, realtime);
+    gateway = new GamesGateway(gamesService, realtime, mockJwt, mockConfig);
     (gateway as unknown as { server: Server }).server = server;
   });
 

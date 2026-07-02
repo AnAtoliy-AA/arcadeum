@@ -175,7 +175,8 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     nameKey: 'items.banner.cyberpunk.name',
     descKey: 'items.banner.cyberpunk.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #0f172a 0%, #f43f5e 50%, #eab308 100%)',
+    colorValue:
+      'linear-gradient(135deg, #0f172a 0%, #f43f5e 50%, #eab308 100%)',
     defaultPriceAmount: 15,
     defaultPriceCurrency: 'gems',
   },
@@ -186,7 +187,8 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     nameKey: 'items.banner.void.name',
     descKey: 'items.banner.void.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #030712 0%, #111827 50%, #312e81 100%)',
+    colorValue:
+      'linear-gradient(135deg, #030712 0%, #111827 50%, #312e81 100%)',
     defaultPriceAmount: 40,
     defaultPriceCurrency: 'gems',
   },
@@ -347,7 +349,8 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     nameKey: 'items.frame.cyberpunk.name',
     descKey: 'items.frame.cyberpunk.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 50%, #06b6d4 100%)',
+    colorValue:
+      'linear-gradient(135deg, #ec4899 0%, #f43f5e 50%, #06b6d4 100%)',
     defaultPriceAmount: 48,
     defaultPriceCurrency: 'gems',
   },

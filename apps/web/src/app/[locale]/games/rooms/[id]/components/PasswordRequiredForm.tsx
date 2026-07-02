@@ -14,55 +14,51 @@ import {
   NoticeMessage,
 } from './styles';
 
-interface PrivateRoomFormProps {
-  onJoin: (code: string, password?: string) => void;
+interface PasswordRequiredFormProps {
+  onJoin: (password: string) => void;
   isLoading: boolean;
   isLongPending: boolean;
   error: string | null;
-  hasPassword?: boolean;
 }
 
-export function PrivateRoomForm({
+export function PasswordRequiredForm({
   onJoin,
   isLoading,
   isLongPending,
   error,
-  hasPassword,
-}: PrivateRoomFormProps) {
+}: PasswordRequiredFormProps) {
   const { t } = useTranslation();
-  const [inviteCode, setInviteCode] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteCode.trim()) return;
+    if (!password.trim()) return;
 
     setLocalError(null);
-    onJoin(inviteCode, password || undefined);
+    onJoin(password);
   };
 
   const isSubmitting = isLoading;
 
   return (
     <Card>
-      <LockIcon>🔒</LockIcon>
+      <LockIcon>🔑</LockIcon>
       <Title style={titleGradientStyle}>
-        {t('games.roomPage.privateRoom.title')}
+        {t('games.password.joinTitle')}
       </Title>
-      <Description>{t('games.roomPage.privateRoom.description')}</Description>
+      <Description>{t('games.password.joinDescription')}</Description>
 
       <Form {...({ onSubmit: handleSubmit } as Record<string, unknown>)}>
         <InputGroup>
           <Input
-            type="text"
-            value={inviteCode}
+            type="password"
+            value={password}
             onChange={(e) => {
-              setInviteCode(e.target.value);
-              // Clear local error when typing
+              setPassword(e.target.value);
               if (localError) setLocalError(null);
             }}
-            placeholder={t('games.roomPage.privateRoom.placeholder')}
+            placeholder={t('games.password.placeholder')}
             disabled={isSubmitting}
             autoFocus
           />
@@ -70,27 +66,12 @@ export function PrivateRoomForm({
             variant="primary"
             size="md"
             type="submit"
-            disabled={isSubmitting || !inviteCode.trim()}
+            disabled={isSubmitting || !password.trim()}
             style={{ padding: '0 1.5rem' }}
           >
             {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
           </Button>
         </InputGroup>
-
-        {hasPassword && (
-          <InputGroup style={{ marginTop: '0.75rem' }}>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (localError) setLocalError(null);
-              }}
-              placeholder={t('games.password.placeholder')}
-              disabled={isSubmitting}
-            />
-          </InputGroup>
-        )}
 
         {isSubmitting && isLongPending && (
           <NoticeMessage>{t('games.room.pendingNotice.message')}</NoticeMessage>

@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcryptjs';
 import {
   Injectable,
   BadRequestException,
@@ -53,6 +54,10 @@ export class GameRoomsService {
 
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
+    const hashedPassword = dto.password
+      ? await bcrypt.hash(dto.password, 10)
+      : undefined;
+
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,
       name: dto.name,
@@ -60,6 +65,7 @@ export class GameRoomsService {
       visibility: dto.visibility,
       maxPlayers: dto.maxPlayers || null,
       inviteCode,
+      password: hashedPassword,
       participants: [
         {
           userId,
@@ -151,7 +157,10 @@ export class GameRoomsService {
     dto: JoinGameRoomDto,
     userId: string,
   ): Promise<JoinGameRoomResult> {
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    const room = await this.gameRoomModel
+      .findById(dto.roomId)
+      .select('+password')
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -176,7 +185,13 @@ export class GameRoomsService {
     if (room.visibility === 'private' && room.inviteCode !== dto.inviteCode) {
       throw new ForbiddenException('Invalid invite code');
     }
-
+    // Validate password if room is password-protected
+    if (room.password) {
+      if (!dto.password)
+        throw new ForbiddenException('Room requires a password');
+      const passwordValid = await bcrypt.compare(dto.password, room.password);
+      if (!passwordValid) throw new ForbiddenException('Invalid room password');
+    }
     // Check max players
     if (room.maxPlayers && room.participants.length >= room.maxPlayers) {
       throw new BadRequestException('Room is full');
@@ -425,25 +440,10 @@ export class GameRoomsService {
   // ========== Private Helper Methods ==========
 
   private canViewRoom(room: GameRoom, userId?: string | null): boolean {
-    if (room.visibility === 'public') {
-      return true;
-    }
-
-    if (!userId) {
-      return false;
-    }
-
-    // Host can always view
-    if (room.hostId === userId) {
-      return true;
-    }
-
-    // Participants can view
-    if (room.participants.some((p) => p.userId === userId)) {
-      return true;
-    }
-
-    // Private rooms require invite code (handled in join)
+    if (room.visibility === 'public') return true;
+    if (!userId) return false;
+    if (room.hostId === userId) return true;
+    if (room.participants.some((p) => p.userId === userId)) return true;
     return false;
   }
 

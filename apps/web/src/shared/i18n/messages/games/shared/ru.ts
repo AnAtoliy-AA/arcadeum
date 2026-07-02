@@ -51,6 +51,13 @@ export const ruMessages = {
     fastRoom: 'Быстрая игра',
     gameLabel: 'Игра',
   },
+  password: {
+    label: 'Пароль зала (опционально)',
+    placeholder: 'Установите пароль',
+    joinTitle: 'Введите пароль зала',
+    joinDescription: 'Для входа в этот зал требуется пароль.',
+    incorrect: 'Неверный пароль',
+  },
   room: {
     gameArea: 'Игровая зона — интеграция в реальном времени скоро появится',
     loading: 'Загрузка сервера...',
@@ -336,6 +343,14 @@ export const ruMessages = {
         accept: 'Принять',
       },
     },
+  },
+  undo: {
+    request: 'Запросить отмену',
+    approve: 'Одобрить отмену',
+    deny: 'Отклонить отмену',
+    pending: 'Ожидание ответа на отмену...',
+    accepted: 'Отмена принята!',
+    denied: 'Отмена отклонена',
   },
   emotes: {
     good_move: 'Круто!',

@@ -120,13 +120,29 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     context: GameActionContext,
     payload?: unknown,
   ): GameActionResult<TicTacToeState> {
+    let result: GameActionResult<TicTacToeState>;
     if (action === ACTION.PLACE_MARK) {
-      return this.executePlaceMark(state, context, payload as PlaceMarkPayload);
+      result = this.executePlaceMark(
+        state,
+        context,
+        payload as PlaceMarkPayload,
+      );
+    } else if (action === ACTION.FORFEIT) {
+      result = this.executeForfeit(state, context);
+    } else {
+      return this.errorResult(`Unknown action: ${action}`);
     }
-    if (action === ACTION.FORFEIT) {
-      return this.executeForfeit(state, context);
+
+    if (result.success && result.state) {
+      const history =
+        ((state as Record<string, unknown>).stateHistory as unknown[]) ?? [];
+      result.state = {
+        ...result.state,
+        stateHistory: [...history.slice(-10), structuredClone(state)],
+      };
     }
-    return this.errorResult(`Unknown action: ${action}`);
+
+    return result;
   }
 
   isGameOver(state: TicTacToeState): boolean {

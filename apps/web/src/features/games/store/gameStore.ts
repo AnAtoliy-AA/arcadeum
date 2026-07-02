@@ -33,6 +33,7 @@ export interface GameState {
     userId: string | null,
     mode: 'play' | 'watch',
     inviteCode?: string,
+    password?: string,
   ) => void;
   leaveRoom: (roomId: string, userId: string | null) => void;
   kickPlayer: (roomId: string, targetUserId: string, callerId: string) => void;
@@ -271,13 +272,18 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   },
 
-  joinRoom: (roomId, userId, mode, inviteCode) => {
+  joinRoom: (roomId, userId, mode, inviteCode, password) => {
     if (mode === 'watch') {
       if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.watch', { roomId, inviteCode });
     } else if (userId) {
       if (!get().room) set({ loading: true, error: null });
-      gameSocket.emit('games.room.join', { roomId, userId, inviteCode });
+      gameSocket.emit('games.room.join', {
+        roomId,
+        userId,
+        inviteCode,
+        password,
+      });
     } else {
       set({ loading: false, error: null });
     }

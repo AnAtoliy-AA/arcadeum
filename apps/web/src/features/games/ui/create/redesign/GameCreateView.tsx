@@ -64,6 +64,7 @@ function initialForm(
     visibility: 'public',
     roomName: defaultRoomName,
     notes: '',
+    password: '',
     rules: {
       combos: false,
       idle: false,
@@ -153,7 +154,7 @@ export function GameCreateView() {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'preset'
+        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'password' | 'preset'
       >
     >,
   ) {
@@ -238,6 +239,7 @@ export function GameCreateView() {
           visibility: toApiVisibility(form.visibility),
           maxPlayers: form.maxPlayers === 'auto' ? undefined : form.maxPlayers,
           notes: form.notes.trim() || undefined,
+          password: form.password.trim() || undefined,
           gameOptions: buildGameOptions(form),
         },
         { token: snapshot.accessToken || undefined },

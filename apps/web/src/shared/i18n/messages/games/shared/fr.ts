@@ -51,6 +51,13 @@ export const frMessages = {
     fastRoom: 'Partie rapide',
     gameLabel: 'Jeu',
   },
+  password: {
+    label: 'Mot de passe de la salle (optionnel)',
+    placeholder: 'Définir un mot de passe',
+    joinTitle: 'Entrez le mot de passe de la salle',
+    joinDescription: 'Cette salle nécessite un mot de passe pour rejoindre.',
+    incorrect: 'Mot de passe incorrect',
+  },
   room: {
     gameArea: 'Zone de jeu - Intégration en temps réel bientôt disponible',
     loading: 'Serveur en cours de chargement...',
@@ -343,6 +350,14 @@ export const frMessages = {
         accept: 'Accepter',
       },
     },
+  },
+  undo: {
+    request: 'Demander annulation',
+    approve: 'Approuver annulation',
+    deny: 'Refuser annulation',
+    pending: 'En attente de réponse...',
+    accepted: 'Annulation acceptée !',
+    denied: 'Annulation refusée',
   },
   emotes: {
     good_move: 'Bien joué !',

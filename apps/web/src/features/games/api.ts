@@ -41,6 +41,7 @@ interface CreateRoomPayload {
   visibility: 'public' | 'private';
   maxPlayers?: number;
   notes?: string;
+  password?: string;
   gameOptions?: Record<string, unknown>;
 }
 

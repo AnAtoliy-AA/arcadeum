@@ -51,6 +51,13 @@ export const esMessages = {
     fastRoom: 'Partida rápida',
     gameLabel: 'Juego',
   },
+  password: {
+    label: 'Contraseña de la sala (opcional)',
+    placeholder: 'Establecer una contraseña',
+    joinTitle: 'Ingrese la contraseña de la sala',
+    joinDescription: 'Esta sala requiere contraseña para unirse.',
+    incorrect: 'Contraseña incorrecta',
+  },
   room: {
     gameArea: 'Área de juego - Integración en tiempo real próximamente',
     loading: 'Cargando servidor...',
@@ -341,6 +348,14 @@ export const esMessages = {
         accept: 'Aceptar',
       },
     },
+  },
+  undo: {
+    request: 'Solicitar deshacer',
+    approve: 'Aprobar deshacer',
+    deny: 'Rechazar deshacer',
+    pending: 'Esperando respuesta de deshacer...',
+    accepted: '¡Deshacer aceptado!',
+    denied: 'Deshacer rechazado',
   },
   emotes: {
     good_move: '¡Bien!',

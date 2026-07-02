@@ -16,6 +16,8 @@ interface Labels {
   notes: string;
   notesShownTo: string;
   notesPlaceholder: string;
+  password: string;
+  passwordPlaceholder: string;
 }
 
 interface Props {
@@ -26,7 +28,7 @@ interface Props {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'preset'
+        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'password' | 'preset'
       >
     >,
   ) => void;
@@ -192,6 +194,24 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
           data-testid="notes-input"
           onChange={(e) =>
             onChange({ notes: e.target.value, preset: 'custom' })
+          }
+        />
+      </div>
+
+      <div className={s.field}>
+        <label className={s.fieldLabel} htmlFor="gc-password">
+          <span>{labels.password}</span>
+        </label>
+        <input
+          id="gc-password"
+          type="password"
+          className={s.input}
+          value={form.password}
+          maxLength={64}
+          placeholder={labels.passwordPlaceholder}
+          data-testid="password-input"
+          onChange={(e) =>
+            onChange({ password: e.target.value, preset: 'custom' })
           }
         />
       </div>

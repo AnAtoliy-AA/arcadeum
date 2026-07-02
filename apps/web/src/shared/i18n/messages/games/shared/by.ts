@@ -51,6 +51,13 @@ export const byMessages = {
     fastRoom: 'Хуткая гульня',
     gameLabel: 'Гульня',
   },
+  password: {
+    label: 'Пароль зала (опцыянальна)',
+    placeholder: 'Усталюйце пароль',
+    joinTitle: 'Увядзіце пароль зала',
+    joinDescription: 'Для ўваходу ў гэты зал патрабуецца пароль.',
+    incorrect: 'Няправільны пароль',
+  },
   room: {
     gameArea: 'Гульнявая зона — інтэграцыя ў рэальным часе хутка з’явіцца',
     loading: 'Загрузка сервера...',
@@ -335,6 +342,14 @@ export const byMessages = {
         accept: 'Прыняць',
       },
     },
+  },
+  undo: {
+    request: 'Запытаць адмену',
+    approve: 'Адабраць адмену',
+    deny: 'Адхіліць адмену',
+    pending: 'Чаканне адказу на адмену...',
+    accepted: 'Адмена прынята!',
+    denied: 'Адмена адхілена',
   },
   emotes: {
     good_move: 'Крута!',

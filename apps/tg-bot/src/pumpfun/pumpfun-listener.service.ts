@@ -263,7 +263,13 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
 
         const walletIdx = accounts.indexOf(post.owner);
 
-        deltas.push({ owner: post.owner, walletIdx, delta, preAmount, postAmount });
+        deltas.push({
+          owner: post.owner,
+          walletIdx,
+          delta,
+          preAmount,
+          postAmount,
+        });
       }
 
       if (deltas.length > 0) {
@@ -289,9 +295,7 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
         // Phase 2: use token direction without SOL confirmation
         if (!type) {
           // Exclude bonding curve — it's always the counterparty, not the user
-          const userDeltas = deltas.filter(
-            (d) => d.owner !== BONDING_CURVE,
-          );
+          const userDeltas = deltas.filter((d) => d.owner !== BONDING_CURVE);
 
           if (userDeltas.length >= 1) {
             const d = userDeltas[0];
@@ -345,7 +349,9 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
         return {
           type,
           wallet: bestWallet,
-          tokenAmount: Math.abs(this.extractTokenAmount(tx, bestWallet, mintBase58)),
+          tokenAmount: Math.abs(
+            this.extractTokenAmount(tx, bestWallet, mintBase58),
+          ),
           solAmount: bestSolChange / LAMPORTS_PER_SOL,
           signature,
         };
@@ -355,7 +361,7 @@ export class PumpFunListenerService implements OnModuleInit, OnModuleDestroy {
     }
 
     let solAmount = this.extractSolAmount(tx, wallet);
-    let tokenAmount = this.extractTokenAmount(tx, wallet, mintBase58);
+    const tokenAmount = this.extractTokenAmount(tx, wallet, mintBase58);
 
     if (solAmount === 0 && tokenAmount === 0) return null;
 

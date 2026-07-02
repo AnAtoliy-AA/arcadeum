@@ -51,6 +51,13 @@ export const enMessages = {
     fastRoom: 'Fast Room',
     gameLabel: 'Game',
   },
+  password: {
+    label: 'Room Password (optional)',
+    placeholder: 'Set a password',
+    joinTitle: 'Enter Room Password',
+    joinDescription: 'This room requires a password to join.',
+    incorrect: 'Incorrect password',
+  },
   room: {
     gameArea: 'Game area - Real-time game integration coming soon',
     loading: 'Server is loading...',
@@ -335,6 +342,14 @@ export const enMessages = {
         accept: 'Accept',
       },
     },
+  },
+  undo: {
+    request: 'Request Undo',
+    approve: 'Approve Undo',
+    deny: 'Deny Undo',
+    pending: 'Undo request pending...',
+    accepted: 'Undo accepted!',
+    denied: 'Undo denied',
   },
   emotes: {
     good_move: 'Nice!',

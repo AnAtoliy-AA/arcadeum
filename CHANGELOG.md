@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.22] - 2026-07-02
+
+### Added
+- make sonar radius-based instead of full board (ARC-1)
+- add sonar/radar result visualization in sea battle (ARC-1)
+- implement sonar and radar special weapons in sea battle (ARC-1)
+- add optimistic updates for house rules checkboxes in lobby (ARC-1)
+- add Auto reset button to max players stepper (ARC-1)
+- add idle timer, spectators, and action card combos toggles to lobbies (ARC-1)
+- add house rules UI panels for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
+- add per-game config schemas and validation for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
+
+### Fixed
+- skip CDN music fetch in dev to avoid CORS 404 in e2e tests (N/A)
+- fix lint errors and extract types to stay under 500 lines (ARC-1)
+- refresh room data after updating house rules in lobby (ARC-1)
+- replace Switch with native checkboxes for house rules in lobby (ARC-1)
+- update e2e test to use Auto reset button (ARC-1)
+- simplify e2e test — skip variant dropdown, test game flow (ARC-1)
+- fix e2e test to use dropdown variant selector and avoid networkidle (ARC-1)
+- update e2e test to select variant in lobby instead of create page (ARC-1)
+- extract drag helpers to fix file length, add missing i18n keys (ARC-1)
+
+### Refactored
+- replace HTTP lobby config updates with socket-based sync (ARC-1)
+- move theme/variant selection from create page to lobby (ARC-1)
+- remove House Rules from create page, all config in lobby (ARC-1)
+- move game config from create page to lobby (ARC-1)
+
+
 ## [1.22.21] - 2026-07-01
 
 ### Added

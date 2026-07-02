@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.26] - 2026-07-02
+
+### Added
+- update friends page UI/UX and move to profile menu (N/A)
+
+
 ## [1.22.25] - 2026-07-02
 
 ### Added

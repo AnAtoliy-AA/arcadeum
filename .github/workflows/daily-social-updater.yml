@@ -184,12 +184,32 @@ jobs:
                   else:
                       threads_texts.append(f"Added to develop (continued):\n\n{chunk}")
 
-              linkedin_text = (
+              linkedin_header = (
                   f"🚀 Daily Development Update\n\n"
                   f"Here's what we added to develop — coming in release v{app_version}:\n\n"
-                  f"{changelog_text}\n\n"
-                  f"#buildinpublic #indiedev #gamedevelopment #softwareengineering"
               )
+              linkedin_footer = "\n\n#buildinpublic #indiedev #gamedevelopment #softwareengineering"
+              linkedin_max = 3000
+
+              linkedin_chunks = []
+              remaining = changelog_text
+              while remaining:
+                  budget = linkedin_max - len(linkedin_header) - len(linkedin_footer) if not linkedin_chunks else linkedin_max
+                  if len(remaining) <= budget:
+                      linkedin_chunks.append(remaining)
+                      break
+                  cut = remaining.rfind('\n', 0, budget)
+                  if cut <= 0:
+                      cut = budget
+                  linkedin_chunks.append(remaining[:cut])
+                  remaining = remaining[cut:].lstrip('\n')
+
+              linkedin_texts = []
+              for i, chunk in enumerate(linkedin_chunks):
+                  if i == 0:
+                      linkedin_texts.append(linkedin_header + chunk + linkedin_footer)
+                  else:
+                      linkedin_texts.append(f"🚀 Daily Development Update (continued)\n\n{chunk}")
 
               buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
               if buffer_token:
@@ -202,7 +222,7 @@ jobs:
                   channels = [
                       (os.environ.get('FACEBOOK_ID', ''), facebook_texts, "Facebook", "facebook", "addToQueue"),
                       (os.environ.get('THREADS_ID', ''), threads_texts, "Threads", None, "shareNow"),
-                      (os.environ.get('LINKEDIN_ID', ''), [linkedin_text], "LinkedIn", None, "shareNow"),
+                      (os.environ.get('LINKEDIN_ID', ''), linkedin_texts, "LinkedIn", None, "shareNow"),
                   ]
 
                   for channel_id, texts, name, metadata_key, mode in channels:

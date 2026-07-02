@@ -155,12 +155,35 @@ jobs:
 
           # 5. Build platform-specific posts
           try:
-              facebook_text = (
+              facebook_header = (
                   f"🚀 New Release: v{version}\n\n"
-                  f"What's new in this release:\n{updates_text}\n\n"
-                  f"Try it now at arcadeum.games\n\n"
+                  f"What's new in this release:\n"
+              )
+              facebook_footer = (
+                  f"\n\nTry it now at arcadeum.games\n\n"
                   f"#arcadeum #gamedev #newrelease #boardgames"
               )
+              facebook_max = 63206
+
+              facebook_chunks = []
+              remaining = updates_text
+              while remaining:
+                  budget = facebook_max - len(facebook_header) - len(facebook_footer) if not facebook_chunks else facebook_max
+                  if len(remaining) <= budget:
+                      facebook_chunks.append(remaining)
+                      break
+                  cut = remaining.rfind('\n', 0, budget)
+                  if cut <= 0:
+                      cut = budget
+                  facebook_chunks.append(remaining[:cut])
+                  remaining = remaining[cut:].lstrip('\n')
+
+              facebook_texts = []
+              for i, chunk in enumerate(facebook_chunks):
+                  if i == 0:
+                      facebook_texts.append(facebook_header + chunk + facebook_footer)
+                  else:
+                      facebook_texts.append(f"🚀 New Release: v{version} (continued)\n\n{chunk}")
 
               threads_header = f"Shipped v{version} 🚀\n\n"
               threads_footer = "\n\nPlay now → arcadeum.games"
@@ -174,7 +197,7 @@ jobs:
                       threads_chunks.append(remaining)
                       break
                   cut = remaining.rfind('\n', 0, budget)
-                  if cut == -1:
+                  if cut <= 0:
                       cut = budget
                   threads_chunks.append(remaining[:cut])
                   remaining = remaining[cut:].lstrip('\n')
@@ -186,13 +209,35 @@ jobs:
                   else:
                       threads_texts.append(f"Shipped v{version} 🚀 (continued)\n\n{chunk}")
 
-              linkedin_text = (
+              linkedin_header = (
                   f"🚀 New Release: v{version}\n\n"
                   f"We just shipped updates to Arcadeum:\n\n"
-                  f"{updates_text}\n\n"
-                  f"Try it now at arcadeum.games\n\n"
+              )
+              linkedin_footer = (
+                  f"\n\nTry it now at arcadeum.games\n\n"
                   f"#gamedev #newrelease #boardgames #indiegame"
               )
+              linkedin_max = 3000
+
+              linkedin_chunks = []
+              remaining = updates_text
+              while remaining:
+                  budget = linkedin_max - len(linkedin_header) - len(linkedin_footer) if not linkedin_chunks else linkedin_max
+                  if len(remaining) <= budget:
+                      linkedin_chunks.append(remaining)
+                      break
+                  cut = remaining.rfind('\n', 0, budget)
+                  if cut <= 0:
+                      cut = budget
+                  linkedin_chunks.append(remaining[:cut])
+                  remaining = remaining[cut:].lstrip('\n')
+
+              linkedin_texts = []
+              for i, chunk in enumerate(linkedin_chunks):
+                  if i == 0:
+                      linkedin_texts.append(linkedin_header + chunk + linkedin_footer)
+                  else:
+                      linkedin_texts.append(f"🚀 New Release: v{version} (continued)\n\n{chunk}")
 
               # 6. Post to Buffer (new GraphQL API)
               buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
@@ -204,9 +249,9 @@ jobs:
                   }
 
                   channels = [
-                      (os.environ.get('FACEBOOK_ID', ''), [facebook_text], "Facebook"),
+                      (os.environ.get('FACEBOOK_ID', ''), facebook_texts, "Facebook"),
                       (os.environ.get('THREADS_ID', ''), threads_texts, "Threads"),
-                      (os.environ.get('LINKEDIN_ID', ''), [linkedin_text], "LinkedIn"),
+                      (os.environ.get('LINKEDIN_ID', ''), linkedin_texts, "LinkedIn"),
                   ]
 
                   for channel_id, texts, name in channels:

@@ -42,6 +42,7 @@ export async function claimAchievementReward(
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
       },
       body: JSON.stringify({ achievementId }),
       cache: 'no-store',

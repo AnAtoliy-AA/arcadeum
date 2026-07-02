@@ -43,6 +43,7 @@ export async function claimChallengeReward(
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
       },
       body: JSON.stringify({ challengeId, date }),
       cache: 'no-store',

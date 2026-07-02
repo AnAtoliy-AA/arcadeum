@@ -127,6 +127,7 @@ export const apiClient = {
     const config: RequestInit = {
       ...fetchOptions,
       headers,
+      credentials: 'include',
       cache: 'no-cache', // Use no-cache instead of no-store to allow bfcache while still revalidating
       signal: customSignal || controller.signal,
     };

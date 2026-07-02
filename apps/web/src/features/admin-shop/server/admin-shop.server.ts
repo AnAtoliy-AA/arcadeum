@@ -9,7 +9,7 @@ import type {
 
 async function adminFetch<T>(path: string): Promise<T> {
   const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
+  const token = cookieJar.get('access_token')?.value;
   const url = resolveApiUrl(path);
   const res = await fetch(url, {
     cache: 'no-store',

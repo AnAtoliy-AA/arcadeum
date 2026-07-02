@@ -8,7 +8,7 @@ import type {
 
 async function getToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('web_access_token')?.value ?? null;
+  return cookieStore.get('access_token')?.value ?? null;
 }
 
 export async function getAchievementsStatus(): Promise<AchievementsStatus | null> {

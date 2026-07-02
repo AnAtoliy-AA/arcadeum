@@ -227,6 +227,18 @@ export const shopEs = {
         name: 'Tiburón Cibernético',
         desc: 'Un tiburón cibernético hiperrealista.',
       },
+      catsiam: {
+        name: 'Gato Siamés Cibernético',
+        desc: 'Un gato siamés cibernético hiperrealista.',
+      },
+      catpersian: {
+        name: 'Gato Persa Cibernético',
+        desc: 'Un gato persa cibernético hiperrealista.',
+      },
+      catbengal: {
+        name: 'Gato Bengalí Cibernético',
+        desc: 'Un gato bengalí cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },

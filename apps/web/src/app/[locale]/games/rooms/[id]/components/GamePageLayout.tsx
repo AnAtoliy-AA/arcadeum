@@ -187,34 +187,15 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         />
 
         <GameRow flexDirection={roomFlexDirection}>
-          <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
-            {children({ isFullscreen, toggleFullscreen })}
+          {children({ isFullscreen, toggleFullscreen })}
 
-            {activeEmotes.length > 0 && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 12,
-                  right: 12,
-                  zIndex: 20,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                  pointerEvents: 'none',
-                }}
-              >
-                {activeEmotes.map((emote) => (
-                  <EmoteBubble
-                    key={emote.key}
-                    playerId={emote.userId}
-                    activeEmotes={[
-                      { id: emote.userId, emoteId: emote.emoteId },
-                    ]}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          {activeEmotes.map((emote) => (
+            <EmoteBubble
+              key={emote.key}
+              playerId={emote.userId}
+              activeEmotes={[{ id: emote.userId, emoteId: emote.emoteId }]}
+            />
+          ))}
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
             <GameChat

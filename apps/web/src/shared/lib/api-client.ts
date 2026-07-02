@@ -16,7 +16,38 @@ interface NetworkError extends Error {
 
 const ANONYMOUS_ID_KEY = 'arcadeum_anon_id';
 
-export function getAnonymousId() {
+async function deriveSigningKey(secret: string): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+  return crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign', 'verify'],
+  );
+}
+
+async function signAnonymousId(id: string): Promise<string> {
+  const secret =
+    typeof process !== 'undefined'
+      ? (process.env.NEXT_PUBLIC_ANON_SECRET ?? '')
+      : '';
+  if (!secret) return '';
+  const key = await deriveSigningKey(secret);
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    new TextEncoder().encode(id),
+  );
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export async function getAnonymousIdWithSignature(): Promise<{
+  id: string;
+  signature: string;
+} | null> {
   if (typeof window === 'undefined') return null;
 
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
@@ -26,7 +57,13 @@ export function getAnonymousId() {
     localStorage.setItem(ANONYMOUS_ID_KEY, id);
   }
 
-  return id;
+  const signature = await signAnonymousId(id);
+  return { id, signature };
+}
+
+export function getAnonymousId() {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(ANONYMOUS_ID_KEY);
 }
 
 export interface ApiClientOptions extends RequestInit {
@@ -112,6 +149,7 @@ export const apiClient = {
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       ...customHeaders,
     };
 
@@ -119,14 +157,19 @@ export const apiClient = {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
 
-    const anonId = getAnonymousId();
-    if (anonId) {
-      (headers as Record<string, string>)['x-anonymous-id'] = anonId;
+    const anon = await getAnonymousIdWithSignature();
+    if (anon) {
+      (headers as Record<string, string>)['x-anonymous-id'] = anon.id;
+      if (anon.signature) {
+        (headers as Record<string, string>)['x-anonymous-signature'] =
+          anon.signature;
+      }
     }
 
     const config: RequestInit = {
       ...fetchOptions,
       headers,
+      credentials: 'include',
       cache: 'no-cache', // Use no-cache instead of no-store to allow bfcache while still revalidating
       signal: customSignal || controller.signal,
     };

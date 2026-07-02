@@ -17,7 +17,7 @@ export class WalletUnauthorizedError extends Error {
 async function fetchWithAuth<T>(path: string, init?: RequestInit): Promise<T> {
   const cookieJar = await cookies();
   // Cookie name confirmed from apps/web/src/entities/session/api/serverTokens.ts
-  const token = cookieJar.get('web_access_token')?.value;
+  const token = cookieJar.get('access_token')?.value;
   const url = resolveApiUrl(path);
 
   const res = await fetch(url, {

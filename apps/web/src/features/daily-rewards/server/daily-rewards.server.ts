@@ -11,7 +11,7 @@ import type { DailyRewardStatus } from './daily-rewards.types';
  */
 export async function getDailyRewardStatus(): Promise<DailyRewardStatus | null> {
   const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
+  const token = cookieJar.get('access_token')?.value;
   if (!token) return null;
 
   const url = resolveApiUrl('/daily-rewards/me');

@@ -7,13 +7,14 @@ import {
   Param,
   UseGuards,
   Req,
+  Res,
   UnauthorizedException,
   Query,
   Headers,
   HttpCode,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import {
   AuthService,
   AuthTokensResponse,
@@ -30,6 +31,52 @@ import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { PasswordResetService } from './services/password-reset.service';
 
+const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
+const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+function isSecureOrigin(req: Request): boolean {
+  return req.protocol === 'https' || req.get('x-forwarded-proto') === 'https';
+}
+
+function setTokenCookies(
+  res: Response,
+  req: Request,
+  accessToken: string,
+  accessTokenExpiresAt: Date | null,
+  refreshToken: string,
+  refreshTokenExpiresAt: Date,
+): void {
+  const secure = isSecureOrigin(req);
+  const maxAgeAccess = accessTokenExpiresAt
+    ? Math.min(
+        accessTokenExpiresAt.getTime() - Date.now(),
+        COOKIE_MAX_AGE_15_MIN,
+      )
+    : COOKIE_MAX_AGE_15_MIN;
+  const maxAgeRefresh =
+    refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
+
+  res.cookie('access_token', accessToken, {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: Math.max(maxAgeAccess, 0),
+  });
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: Math.max(maxAgeRefresh, 0),
+  });
+}
+
+function clearTokenCookies(res: Response): void {
+  res.clearCookie('access_token', { path: '/' });
+  res.clearCookie('refresh_token', { path: '/' });
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -41,6 +88,8 @@ export class AuthController {
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
   async exchange(
     @Body() dto: TokenExchangeDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
     @Headers('origin') originHeader?: string,
     @Headers('referer') refererHeader?: string,
   ): Promise<OAuthTokenResponse> {
@@ -48,12 +97,21 @@ export class AuthController {
       originHeader,
       refererHeader,
     );
-    return await this.authService.exchangeCode({
+    const result = await this.authService.exchangeCode({
       code: dto.code,
       codeVerifier: dto.codeVerifier,
       redirectUri: dto.redirectUri,
       requestOrigin,
     });
+    setTokenCookies(
+      res,
+      req,
+      result.accessToken,
+      null,
+      result.refreshToken ?? '',
+      new Date(Date.now() + COOKIE_MAX_AGE_30_DAYS),
+    );
+    return result;
   }
 
   @Post('register')
@@ -78,20 +136,69 @@ export class AuthController {
 
   @Post('login')
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
-  login(@Body() dto: LoginDto): Promise<AuthTokensResponse> {
-    return this.authService.login(dto);
+  async login(
+    @Body() dto: LoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthTokensResponse> {
+    const result = await this.authService.login(dto);
+    setTokenCookies(
+      res,
+      req,
+      result.accessToken,
+      result.accessTokenExpiresAt,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+    );
+    return result;
   }
 
   @Post('oauth/login')
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
-  oauthLogin(@Body() dto: OAuthLoginDto): Promise<AuthTokensResponse> {
-    return this.authService.loginWithOAuth(dto);
+  async oauthLogin(
+    @Body() dto: OAuthLoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthTokensResponse> {
+    const result = await this.authService.loginWithOAuth(dto);
+    setTokenCookies(
+      res,
+      req,
+      result.accessToken,
+      result.accessTokenExpiresAt,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+    );
+    return result;
   }
 
   @Post('refresh')
   @Throttle({ auth: { limit: 20, ttl: 60_000 } })
-  refresh(@Body() dto: RefreshTokenRequestDto): Promise<AuthTokensResponse> {
-    return this.authService.refreshToken(dto.refreshToken);
+  async refresh(
+    @Body() dto: RefreshTokenRequestDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthTokensResponse> {
+    const rawToken =
+      dto.refreshToken ||
+      (req.cookies as Record<string, string>)?.refresh_token ||
+      '';
+    const result = await this.authService.refreshToken(rawToken);
+    setTokenCookies(
+      res,
+      req,
+      result.accessToken,
+      result.accessTokenExpiresAt,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+    );
+    return result;
+  }
+
+  @Post('logout')
+  @HttpCode(204)
+  logout(@Res({ passthrough: true }) res: Response): void {
+    clearTokenCookies(res);
   }
 
   // Account-enumeration defense: always 204, never reveal whether the email

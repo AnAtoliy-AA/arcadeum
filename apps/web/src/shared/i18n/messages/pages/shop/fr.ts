@@ -227,6 +227,18 @@ export const shopFr = {
         name: 'Requin Cybernétique',
         desc: 'Un requin cybernétique hyperréaliste.',
       },
+      catsiam: {
+        name: 'Chat Siamois Cybernétique',
+        desc: 'Un chat siamois cybernétique hyperréaliste.',
+      },
+      catpersian: {
+        name: 'Chat Persan Cybernétique',
+        desc: 'Un chat persan cybernétique hyperréaliste.',
+      },
+      catbengal: {
+        name: 'Chat du Bengale Cybernétique',
+        desc: 'Un chat du Bengale cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },

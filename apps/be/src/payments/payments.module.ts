@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { PaymentNote, PaymentNoteSchema } from './schemas/payment-note.schema';
 import { PaymentNotesService } from './payment-notes.service';
 import { User, UserSchema } from '../auth/schemas/user.schema';
@@ -15,6 +16,7 @@ import { PaypalGateway } from './lib/paypal.gateway';
   imports: [
     ConfigModule,
     AuthModule,
+    JwtModule,
     MongooseModule.forFeature([
       { name: PaymentNote.name, schema: PaymentNoteSchema },
       { name: User.name, schema: UserSchema },

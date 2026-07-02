@@ -17,7 +17,7 @@ export type ClaimDailyRewardResult =
  */
 export async function claimDailyRewardAction(): Promise<ClaimDailyRewardResult> {
   const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
+  const token = cookieJar.get('access_token')?.value;
   const url = resolveApiUrl('/daily-rewards/claim');
 
   let res: Response;

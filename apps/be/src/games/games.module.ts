@@ -1,5 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { GamesController } from './games.controller';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
@@ -55,6 +57,7 @@ import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
 // start/end; LeaderboardsService.getSnapshot now reads stats from
@@ -62,6 +65,13 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
 
 @Module({
   imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: resolveJwtSecret(config),
+      }),
+    }),
     MongooseModule.forFeature([
       { name: GameRoom.name, schema: GameRoomSchema },
       { name: GameSession.name, schema: GameSessionSchema },

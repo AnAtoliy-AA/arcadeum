@@ -51,6 +51,14 @@ async function readJson<T>(res: Response): Promise<T> {
   return (await res.json()) as T;
 }
 
+function apiHeaders(extra?: Record<string, string>): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    ...extra,
+  };
+}
+
 export async function registerLocal(params: {
   email: string;
   password: string;
@@ -59,7 +67,8 @@ export async function registerLocal(params: {
 }): Promise<AuthUserProfile> {
   const res = await fetch(api('/auth/register'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<AuthUserProfile>(res);
@@ -89,7 +98,8 @@ export async function loginLocal(params: {
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/login'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<LoginResponse>(res);
@@ -102,7 +112,8 @@ export async function exchangeOAuthCode(params: {
 }): Promise<TokenExchangeResponse> {
   const res = await fetch(api('/auth/token'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<TokenExchangeResponse>(res);
@@ -115,7 +126,8 @@ export async function loginOAuthSession(params: {
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/oauth/login'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<LoginResponse>(res);
@@ -128,7 +140,8 @@ export async function requestPasswordReset(email: string): Promise<void> {
   // server detail.
   const res = await fetch(api('/auth/forgot'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify({ email }),
   });
   if (!res.ok) {
@@ -142,7 +155,8 @@ export async function confirmPasswordReset(params: {
 }): Promise<void> {
   const res = await fetch(api('/auth/reset'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   if (!res.ok) {
@@ -161,19 +175,18 @@ export async function refreshSession(
 ): Promise<LoginResponse> {
   const res = await fetch(api('/auth/refresh'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify({ refreshToken }),
   });
   return readJson<LoginResponse>(res);
 }
 
 export async function fetchProfile(
-  accessToken: string,
+  _accessToken?: string,
 ): Promise<AuthUserProfile> {
   const res = await fetch(api('/auth/me'), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    credentials: 'include',
   });
   return readJson<AuthUserProfile>(res);
 }

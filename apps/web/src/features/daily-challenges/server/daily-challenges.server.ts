@@ -8,7 +8,7 @@ import type {
 
 async function getToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('web_access_token')?.value ?? null;
+  return cookieStore.get('access_token')?.value ?? null;
 }
 
 export async function getDailyChallengesStatus(): Promise<DailyChallengesStatus | null> {
@@ -43,6 +43,7 @@ export async function claimChallengeReward(
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
       },
       body: JSON.stringify({ challengeId, date }),
       cache: 'no-store',

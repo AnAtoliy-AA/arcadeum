@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.23] - 2026-07-02
+
+### Fixed
+- add X-Requested-With header to server action fetch calls (N/A)
+- remove unused ShipOp interface (N/A)
+- fix Logger type mismatch in sea-battle gateway (N/A)
+- add JwtModule imports to ChatModule and GamesModule (N/A)
+- reorder AuthModule before ChatModule in AppModule imports (N/A)
+- add CSRF guard, anonymous ID verification, remove tokens from localStorage (N/A)
+- migrate JWTs to httpOnly cookies (N/A)
+- add JWT verification to WebSocket gateways and enable Helmet CSP (N/A)
+- patch critical vulnerabilities found during security audit (N/A)
+- override vulnerable deps react-server-dom-webpack and shell-quote (N/A)
+
+### Documentation
+- add comprehensive security audit skills from Anthropic-Cybersecurity-Skills (N/A)
+- clarify socket encryption key naming and document security posture (N/A)
+- add cybersecurity audit skills from Anthropic-Cybersecurity-Skills (N/A)
+
+
 ## [1.22.22] - 2026-07-02
 
 ### Added

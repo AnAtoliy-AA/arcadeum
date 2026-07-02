@@ -3,8 +3,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { gamesApi } from '@/features/games/api';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import {
   LobbyContent,
   CenterSection,
@@ -68,6 +67,7 @@ const dotPulseStyle = (delayMs: number): React.CSSProperties => ({
 
 export function ReusableGameLobby({
   room,
+  userId,
   isHost,
   startBusy,
   startDisabled = false,
@@ -111,7 +111,7 @@ export function ReusableGameLobby({
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   // Optimistic state for house rules — updates instantly, clears when room syncs
   const [optIdle, setOptIdle] = useState<boolean | null>(null);
@@ -344,13 +344,7 @@ export function ReusableGameLobby({
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptIdle(val);
-                    gamesApi
-                      .updateRoomOptions(
-                        room.id,
-                        { idleTimerAutoplay: val },
-                        { token: snapshot?.accessToken ?? undefined },
-                      )
-                      .then(() => onRefresh?.());
+                    setOption({ idleTimerAutoplay: val });
                   }}
                   style={{
                     width: 16,
@@ -378,13 +372,7 @@ export function ReusableGameLobby({
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptSpectators(val);
-                    gamesApi
-                      .updateRoomOptions(
-                        room.id,
-                        { allowSpectators: val },
-                        { token: snapshot?.accessToken ?? undefined },
-                      )
-                      .then(() => onRefresh?.());
+                    setOption({ allowSpectators: val });
                   }}
                   style={{
                     width: 16,

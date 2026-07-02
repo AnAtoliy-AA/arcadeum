@@ -2,9 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import { YStack, XStack, Text, Switch } from 'tamagui';
-import { useMutation } from '@/shared/hooks/useMutation';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { gamesApi } from '@/features/games/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -23,6 +20,7 @@ import {
   type TicTacToeVariant,
   WIN_LENGTHS,
 } from '../types';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
   const variant = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variantId);
@@ -38,6 +36,7 @@ const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
 
 interface TicTacToeLobbyProps {
   room: GameRoomSummary;
+  userId: string;
   isHost: boolean;
   startBusy: boolean;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
@@ -66,6 +65,7 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
 
 export function TicTacToeLobby({
   room,
+  userId,
   isHost,
   startBusy,
   onStartGame,
@@ -77,7 +77,7 @@ export function TicTacToeLobby({
   onShowRulesClose,
 }: TicTacToeLobbyProps) {
   const { t } = useTranslation();
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   const options = useMemo(
     () => resolveOptions(room.gameOptions),
@@ -92,31 +92,23 @@ export function TicTacToeLobby({
 
   const [internalTeamMode, setInternalTeamMode] = useState(options.teamMode);
 
-  const teamModeMutation = useMutation({
-    mutationFn: (val: boolean) =>
-      gamesApi.updateRoomOptions(
-        room.id,
-        { teamMode: val },
-        { token: snapshot.accessToken ?? undefined },
-      ),
-    onError: () => setInternalTeamMode(options.teamMode),
-  });
-
   const handleTeamModeToggle = (val: boolean) => {
     if (!isHost) return;
     setInternalTeamMode(val);
-    void teamModeMutation.mutate(val);
+    setOption({ teamMode: val });
   };
 
   const optionsSlot = (
     <YStack gap="$4">
       <VariantSelector
         roomId={room.id}
+        hostId={userId}
         currentVariant={variant}
         disabled={!isHost}
       />
       <BoardSizeSelector
         roomId={room.id}
+        hostId={userId}
         currentSize={options.boardSize}
         disabled={!isHost}
       />
@@ -125,7 +117,7 @@ export function TicTacToeLobby({
         <Switch
           checked={internalTeamMode}
           onCheckedChange={handleTeamModeToggle}
-          disabled={!isHost || teamModeMutation.isLoading}
+          disabled={!isHost}
           size="$2"
         >
           <Switch.Thumb />
@@ -144,6 +136,7 @@ export function TicTacToeLobby({
     <>
       <ReusableGameLobby
         room={room}
+        userId={userId}
         isHost={isHost}
         startBusy={startBusy}
         onStartGame={onStartGame}

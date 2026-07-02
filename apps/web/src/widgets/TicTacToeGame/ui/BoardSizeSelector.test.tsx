@@ -1,23 +1,14 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TamaguiProvider, createTamagui } from 'tamagui';
 import { defaultConfig } from '@tamagui/config/v4';
 
 const tamaguiConfig = createTamagui(defaultConfig);
 
-const mockUpdate = vi.fn();
-vi.mock('@/features/games/api', () => ({
-  gamesApi: {
-    updateRoomOptions: (...args: unknown[]) => {
-      mockUpdate(...args);
-      return Promise.resolve({});
-    },
-  },
-}));
-
-vi.mock('@/entities/session/model/useSessionTokens', () => ({
-  useSessionTokens: () => ({ snapshot: { accessToken: 'tok' } }),
+const mockEmit = vi.fn();
+vi.mock('@/shared/lib/socket', () => ({
+  gameSocket: { emit: (...args: unknown[]) => mockEmit(...args) },
 }));
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -36,7 +27,7 @@ function renderWithProvider(ui: React.ReactElement) {
 
 describe('BoardSizeSelector', () => {
   beforeEach(() => {
-    mockUpdate.mockClear();
+    mockEmit.mockClear();
   });
 
   it('renders all four board sizes', () => {
@@ -46,22 +37,22 @@ describe('BoardSizeSelector', () => {
     });
   });
 
-  it('calls gamesApi.updateRoomOptions when a different size is picked', async () => {
-    renderWithProvider(<BoardSizeSelector roomId="r1" currentSize={3} />);
+  it('emits games.room.set_option when a different size is picked', () => {
+    renderWithProvider(
+      <BoardSizeSelector roomId="r1" hostId="host-1" currentSize={3} />,
+    );
     fireEvent.click(screen.getByTestId('ttt-board-size-5'));
-    await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith(
-        'r1',
-        { boardSize: 5 },
-        { token: 'tok' },
-      );
+    expect(mockEmit).toHaveBeenCalledWith('games.room.set_option', {
+      roomId: 'r1',
+      userId: 'host-1',
+      options: { boardSize: 5 },
     });
   });
 
-  it('does not call API when clicking the already-active size', () => {
+  it('does not emit when clicking the already-active size', () => {
     renderWithProvider(<BoardSizeSelector roomId="r1" currentSize={3} />);
     fireEvent.click(screen.getByTestId('ttt-board-size-3'));
-    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockEmit).not.toHaveBeenCalled();
   });
 
   it('is non-interactive when disabled', () => {
@@ -69,6 +60,6 @@ describe('BoardSizeSelector', () => {
       <BoardSizeSelector roomId="r1" currentSize={3} disabled />,
     );
     fireEvent.click(screen.getByTestId('ttt-board-size-5'));
-    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockEmit).not.toHaveBeenCalled();
   });
 });

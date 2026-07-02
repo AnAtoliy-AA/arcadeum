@@ -10,6 +10,7 @@ export interface GameLobbyTheme {
 export interface ReusableGameLobbyProps {
   // Core props
   room: import('@/shared/types/games').GameRoomSummary;
+  userId: string;
   isHost: boolean;
   startBusy: boolean;
   startDisabled?: boolean;

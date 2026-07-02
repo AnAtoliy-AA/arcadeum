@@ -16,11 +16,11 @@ import {
   MIN_PLAYERS,
 } from '../types';
 import { RulesModal } from './RulesModal';
-import { gamesApi } from '@/features/games/api';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 interface CascadeLobbyProps {
   room: GameRoomSummary;
+  userId: string;
   isHost: boolean;
   startBusy: boolean;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
@@ -67,6 +67,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
 
 export function CascadeLobby({
   room,
+  userId,
   isHost,
   startBusy,
   onStartGame,
@@ -78,7 +79,7 @@ export function CascadeLobby({
   onShowRulesClose,
 }: CascadeLobbyProps) {
   const { t } = useTranslation();
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
   const options = useMemo(
     () => resolveOptions(room.gameOptions),
     [room.gameOptions],
@@ -86,11 +87,9 @@ export function CascadeLobby({
 
   const handleOptionChange = useCallback(
     (opts: Record<string, unknown>) => {
-      gamesApi.updateRoomOptions(room.id, opts, {
-        token: snapshot.accessToken ?? undefined,
-      }).then(() => onRefresh?.());
+      setOption(opts);
     },
-    [room.id, snapshot.accessToken, onRefresh],
+    [setOption],
   );
 
   const variantTokens = useMemo(
@@ -122,7 +121,10 @@ export function CascadeLobby({
                   padding: '6px 12px',
                   borderRadius: 8,
                   border: `1px solid ${options.variant === v.id ? '#fbbf24' : 'rgba(255,255,255,0.2)'}`,
-                  backgroundColor: options.variant === v.id ? 'rgba(251,191,36,0.15)' : 'transparent',
+                  backgroundColor:
+                    options.variant === v.id
+                      ? 'rgba(251,191,36,0.15)'
+                      : 'transparent',
                   color: options.variant === v.id ? '#fbbf24' : '#e2e8f0',
                   fontWeight: 600,
                   fontSize: 13,
@@ -242,6 +244,7 @@ export function CascadeLobby({
   return (
     <ReusableGameLobby
       room={room}
+      userId={userId}
       isHost={isHost}
       startBusy={startBusy}
       minPlayers={MIN_PLAYERS}

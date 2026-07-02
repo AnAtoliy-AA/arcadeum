@@ -8,13 +8,12 @@ import {
 } from '@/features/games/ui/ReusableGameLobby';
 import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { gamesApi } from '@/features/games/api';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { VariantSelectorWrapper } from './styles/lobby';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 // Get theme based on card variant
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {
@@ -45,6 +44,7 @@ const getVariantInfo = (variant?: string) => {
 
 export interface CriticalLobbyProps {
   room: GameRoomSummary;
+  userId: string;
   isHost: boolean;
   startBusy: boolean;
   isFullscreen: boolean;
@@ -62,6 +62,7 @@ export interface CriticalLobbyProps {
 
 export function CriticalLobby({
   room,
+  userId,
   isHost,
   startBusy,
   isFullscreen,
@@ -77,7 +78,7 @@ export function CriticalLobby({
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const variantInfo = getVariantInfo(cardVariant);
@@ -99,19 +100,25 @@ export function CriticalLobby({
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
       <VariantSelectorWrapper>
-        <VariantSelector roomId={room.id} currentVariant={cardVariant} />
+        <VariantSelector
+          roomId={room.id}
+          hostId={userId}
+          currentVariant={cardVariant}
+        />
         <XStack alignItems="center" gap="$2" paddingTop="$2">
           <Switch
-            checked={!!(room.gameOptions as Record<string, unknown>)?.allowActionCardCombos}
-            onCheckedChange={(val) =>
-              gamesApi.updateRoomOptions(room.id, { allowActionCardCombos: val }, { token: snapshot?.accessToken ?? undefined })
+            checked={
+              !!(room.gameOptions as Record<string, unknown>)
+                ?.allowActionCardCombos
             }
+            onCheckedChange={(val) => setOption({ allowActionCardCombos: val })}
             size="$2"
           >
             <Switch.Thumb />
           </Switch>
           <Text fontSize="$3">
-            {t('games.create.houseRuleActionCardCombos') || 'Action Card Combos'}
+            {t('games.create.houseRuleActionCardCombos') ||
+              'Action Card Combos'}
           </Text>
         </XStack>
       </VariantSelectorWrapper>
@@ -139,6 +146,7 @@ export function CriticalLobby({
   return (
     <ReusableGameLobby
       room={room}
+      userId={userId}
       isHost={isHost}
       startBusy={startBusy}
       isFullscreen={isFullscreen}

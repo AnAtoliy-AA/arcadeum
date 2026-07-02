@@ -154,6 +154,7 @@ function TicTacToeGameImpl({
       <TicTacToeThemeProvider variant={options.variant}>
         <TicTacToeLobby
           room={room}
+          userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
           onStartGame={(opts) =>

@@ -15,9 +15,7 @@ import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
-import { gamesApi } from '@/features/games/api';
-import { useMutation } from '@/shared/hooks/useMutation';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
@@ -71,42 +69,30 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({
+    roomId: room.id,
+    userId: userId ?? '',
+  });
   const media = useMedia();
   // gtSm = wide enough for side-by-side preview + vertical list. Below that
   // (web mobile / narrow tablets) we flip to a horizontal scrollable list
   // sitting above the preview so the field doesn't get squeezed.
   const themeListHorizontal = !media.gtSm;
 
-  const { mutate: persistVariant } = useMutation({
-    mutationFn: async (newVariant: string) => {
-      await gamesApi.updateRoomOptions(
-        room.id,
-        { variant: newVariant },
-        { token: snapshot.accessToken ?? undefined },
-      );
-    },
-    onError: () => {
-      setSelectedVariant(roomVariant);
-    },
-  });
-
   const handleVariantSelect = React.useCallback(
     (variantId: string) => {
       if (variantId === selectedVariant) return;
       setSelectedVariant(variantId);
-      persistVariant(variantId);
+      setOption({ variant: variantId });
     },
-    [persistVariant, selectedVariant],
+    [setOption, selectedVariant],
   );
 
   const handleOptionChange = React.useCallback(
     (options: Record<string, unknown>) => {
-      gamesApi.updateRoomOptions(room.id, options, {
-        token: snapshot.accessToken ?? undefined,
-      }).then(() => onRefresh?.());
+      setOption(options);
     },
-    [room.id, snapshot.accessToken, onRefresh],
+    [setOption],
   );
 
   // Team mode state derived from room game options
@@ -398,6 +384,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     <YStack flex={1} minHeight={0}>
       <ReusableGameLobby
         room={effectiveRoom}
+        userId={userId ?? ''}
         isHost={isHost}
         startBusy={startBusy}
         startDisabled={teamStartBlocked}

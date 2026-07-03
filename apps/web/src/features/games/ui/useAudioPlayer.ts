@@ -217,7 +217,11 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
           setTrackDurations((prev) => ({ ...prev, [a.src]: a.duration }));
       }
     };
-    const onError = () => setError('Failed to load track');
+    const onError = (e: Event) => {
+      const a = e.target as HTMLAudioElement;
+      console.error('[GameMusic]', a?.error?.code, a?.error?.message, a?.src);
+      setError('Failed to load track');
+    };
     const onEnded = () => {
       if (repeatRef.current === 'one') return;
       const dir = (i: number) =>

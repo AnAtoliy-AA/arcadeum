@@ -35,7 +35,12 @@ export class GameRuleVisibilityController {
     const allRules = await this.ruleVisibility.getAllRules();
     const rules: Record<
       string,
-      Array<{ ruleId: string; label: string; description?: string; enabled: boolean }>
+      Array<{
+        ruleId: string;
+        label: string;
+        description?: string;
+        enabled: boolean;
+      }>
     > = {};
 
     for (const entry of GAME_CATALOG) {

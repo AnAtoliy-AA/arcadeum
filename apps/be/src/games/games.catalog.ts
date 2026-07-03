@@ -32,17 +32,20 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'combos',
         label: 'Action card combos',
-        description: 'Players can combine cards for special actions and bonus effects.',
+        description:
+          'Players can combine cards for special actions and bonus effects.',
       },
       {
         ruleId: 'idle',
         label: 'Idle timer autoplay',
-        description: 'Automatically play a random card if the player does not act within the timer.',
+        description:
+          'Automatically play a random card if the player does not act within the timer.',
       },
       {
         ruleId: 'spectators',
         label: 'Allow spectators',
-        description: 'Other users can watch the match in real time without joining.',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
     ],
   },
@@ -67,32 +70,38 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'idle',
         label: 'Idle timer autoplay',
-        description: 'Automatically fire at a random cell if the player does not act within the timer.',
+        description:
+          'Automatically fire at a random cell if the player does not act within the timer.',
       },
       {
         ruleId: 'teams',
         label: 'Team mode',
-        description: 'Players are divided into teams that share a board and take turns together.',
+        description:
+          'Players are divided into teams that share a board and take turns together.',
       },
       {
         ruleId: 'spectators',
         label: 'Allow spectators',
-        description: 'Other users can watch the match in real time without joining.',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
       {
         ruleId: 'sonar',
         label: 'Sonar scan',
-        description: 'Each player can reveal a 3×3 area on the opponent\'s board once per game to detect ships.',
+        description:
+          "Each player can reveal a 3×3 area on the opponent's board once per game to detect ships.",
       },
       {
         ruleId: 'radar',
         label: 'Radar sweep',
-        description: 'Each player can scan an entire row or column on the opponent\'s board once per game.',
+        description:
+          "Each player can scan an entire row or column on the opponent's board once per game.",
       },
       {
         ruleId: 'gridSize',
         label: 'Board size selection',
-        description: 'Allow players to choose the grid size (10×10, 15×15, or 20×20) before the match starts.',
+        description:
+          'Allow players to choose the grid size (10×10, 15×15, or 20×20) before the match starts.',
       },
     ],
   },
@@ -108,12 +117,14 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'idle',
         label: 'Idle timer autoplay',
-        description: 'Automatically shoot in a random direction if the player does not act within the timer.',
+        description:
+          'Automatically shoot in a random direction if the player does not act within the timer.',
       },
       {
         ruleId: 'spectators',
         label: 'Allow spectators',
-        description: 'Other users can watch the match in real time without joining.',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
     ],
   },
@@ -124,12 +135,14 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'teams',
         label: 'Team mode',
-        description: 'Players are divided into teams and take turns on a shared board.',
+        description:
+          'Players are divided into teams and take turns on a shared board.',
       },
       {
         ruleId: 'spectators',
         label: 'Allow spectators',
-        description: 'Other users can watch the match in real time without joining.',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
     ],
   },
@@ -151,12 +164,14 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'idle',
         label: 'Idle timer autoplay',
-        description: 'Automatically drop a piece if the player does not act within the timer.',
+        description:
+          'Automatically drop a piece if the player does not act within the timer.',
       },
       {
         ruleId: 'spectators',
         label: 'Allow spectators',
-        description: 'Other users can watch the match in real time without joining.',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
     ],
   },

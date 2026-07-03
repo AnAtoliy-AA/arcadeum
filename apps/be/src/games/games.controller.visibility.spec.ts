@@ -11,6 +11,7 @@ import { QuickplayGameDto } from './dtos/quickplay-game.dto';
 
 const ruleVis = {
   getAllRules: jest.fn().mockResolvedValue(new Map()),
+  getRulesForGame: jest.fn().mockResolvedValue(new Map()),
 } as unknown as GameRuleVisibilityService;
 
 function buildController(

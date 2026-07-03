@@ -103,6 +103,11 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
         description:
           'Allow players to choose the grid size (10×10, 15×15, or 20×20) before the match starts.',
       },
+      {
+        ruleId: 'botWeapons',
+        label: 'Bot special weapons',
+        description: 'Allow bots to use sonar and radar during their turn.',
+      },
     ],
   },
   {

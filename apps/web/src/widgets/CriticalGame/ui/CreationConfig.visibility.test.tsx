@@ -44,6 +44,7 @@ describe('Critical CreationConfig — variant visibility filter', () => {
             { id: 'cyberpunk', comingSoon: false },
             { id: 'galaxy', comingSoon: false },
           ],
+          rules: [],
         }, // crime hidden
       ],
     });
@@ -84,6 +85,7 @@ describe('Critical CreationConfig — variant visibility filter', () => {
             { id: 'cyberpunk', comingSoon: false },
             { id: 'crime', comingSoon: true },
           ],
+          rules: [],
         },
       ],
     });

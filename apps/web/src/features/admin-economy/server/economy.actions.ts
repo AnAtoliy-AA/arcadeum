@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   EconomyAuditView,
   EconomyKey,
@@ -20,22 +19,6 @@ export type EconomyActionResult<T> =
 
 // ─── Internal fetch helper ────────────────────────────────────────────────────
 
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export async function setEconomyValueAction(input: {
@@ -46,7 +29,7 @@ export async function setEconomyValueAction(input: {
     return { ok: false, error: 'validation' };
   }
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/economy/${encodeURIComponent(input.key)}`,
     {
       method: 'PUT',
@@ -67,7 +50,7 @@ export async function setEconomyValueAction(input: {
 export async function resetEconomyValueAction(input: {
   key: EconomyKey;
 }): Promise<EconomyActionResult<{ reset: true }>> {
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/economy/${encodeURIComponent(input.key)}`,
     { method: 'DELETE' },
   );
@@ -83,7 +66,7 @@ export async function resetEconomyValueAction(input: {
 export async function refreshCacheAction(): Promise<
   EconomyActionResult<{ refreshed: true }>
 > {
-  const res = await adminFetch('/admin/economy/refresh-cache', {
+  const res = await serverAuthFetch('/admin/economy/refresh-cache', {
     method: 'POST',
   });
 
@@ -97,7 +80,7 @@ export async function refreshCacheAction(): Promise<
 export async function loadEconomyHistoryAction(input: {
   key: EconomyKey;
 }): Promise<EconomyActionResult<EconomyAuditView[]>> {
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/economy/${encodeURIComponent(input.key)}/audit`,
   );
 

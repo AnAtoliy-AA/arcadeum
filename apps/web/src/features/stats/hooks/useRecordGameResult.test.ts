@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useRecordGameResult } from './useRecordGameResult';
 import { useLocalStatsStore } from '../store/statsStore';
+import type { GameResult } from '@/features/games/hooks/useGameResultModal';
 
 describe('useRecordGameResult', () => {
   beforeEach(() => {
@@ -71,7 +72,7 @@ describe('useRecordGameResult', () => {
     const { rerender } = renderHook(
       ({ result, sessionId }) =>
         useRecordGameResult(result, 'tic_tac_toe_v1', sessionId),
-      { initialProps: { result: 'won' as const, sessionId: 'session-1' } },
+      { initialProps: { result: 'won' as GameResult, sessionId: 'session-1' } },
     );
 
     rerender({ result: 'lost', sessionId: 'session-2' });

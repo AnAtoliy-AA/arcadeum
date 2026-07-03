@@ -18,9 +18,9 @@ export function AdminGameRulesTable() {
 
   useEffect(() => {
     apiClient
-      .get<RulesByGame>('/admin/game-rules')
+      .get<{ rules: RulesByGame }>('/admin/game-rules')
       .then((data) => {
-        setRules(data);
+        setRules(data.rules);
         setLoading(false);
       })
       .catch(() => setLoading(false));

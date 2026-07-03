@@ -1,7 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 
 export type BulkRewardType = 'coins' | 'gems' | 'arcadeum' | 'item';
 
@@ -20,21 +19,6 @@ export type AdminBulkRewardsActionError =
 export type AdminBulkRewardsActionResult =
   | { ok: true; data: BulkRewardResult }
   | { ok: false; error: AdminBulkRewardsActionError };
-
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
 
 function classify(status: number): AdminBulkRewardsActionError {
   if (status === 400) return 'validation';
@@ -56,7 +40,7 @@ export async function sendBulkRewardsAction(input: {
     return { ok: false, error: 'validation' };
   }
 
-  const res = await adminFetch('/admin/bulk-rewards', {
+  const res = await serverAuthFetch('/admin/bulk-rewards', {
     method: 'POST',
     body: JSON.stringify(input),
   });

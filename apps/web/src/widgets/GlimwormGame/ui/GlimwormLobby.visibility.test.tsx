@@ -70,6 +70,7 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
             { id: 'battle_royale', comingSoon: false },
             { id: 'time_attack', comingSoon: false },
           ],
+          rules: [],
         },
       ],
     });
@@ -100,6 +101,7 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
             { id: 'battle_royale', comingSoon: false },
             { id: 'time_attack', comingSoon: true },
           ],
+          rules: [],
         },
       ],
     });

@@ -57,7 +57,7 @@ const labels: AdminWalletDrawerLabels = {
   },
 };
 
-const mockBalance = { coins: 500, gems: 10 };
+const mockBalance = { coins: 500, gems: 10, arcadeum: 0 };
 const mockRecent = {
   items: [
     {

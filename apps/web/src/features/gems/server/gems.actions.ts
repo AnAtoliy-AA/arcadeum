@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { ConversionResult } from './gems.types';
 
 // ─── Result types ──────────────────────────────────────────────────────────────
@@ -38,24 +37,6 @@ export type CancelGemPurchaseResult =
   | { ok: true }
   | { ok: false; error: 'not_found' | 'generic' };
 
-// ─── Internal fetch helper ────────────────────────────────────────────────────
-
-async function authFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 /**
@@ -69,7 +50,7 @@ export async function buyGemsAction(input: {
     return { ok: false, error: 'generic' };
   }
 
-  const res = await authFetch('/payments/gems/orders', {
+  const res = await serverAuthFetch('/payments/gems/orders', {
     method: 'POST',
     body: JSON.stringify({ packageId: input.packageId }),
   });
@@ -118,7 +99,7 @@ export async function finalizeGemPurchase(input: {
     return { ok: false, error: 'generic' };
   }
 
-  const res = await authFetch(
+  const res = await serverAuthFetch(
     `/payments/gems/orders/${encodeURIComponent(input.orderId)}/finalize`,
     { method: 'POST' },
   );
@@ -177,7 +158,7 @@ export async function cancelGemPurchase(input: {
   if (!input.orderId || typeof input.orderId !== 'string') {
     return { ok: false, error: 'generic' };
   }
-  const res = await authFetch(
+  const res = await serverAuthFetch(
     `/payments/gems/orders/${encodeURIComponent(input.orderId)}/cancel`,
     { method: 'POST' },
   );
@@ -219,7 +200,7 @@ export async function convertGemsAction(input: {
     return { ok: false, error: 'invalid' };
   }
 
-  const res = await authFetch('/wallet/convert-gems-to-coins', {
+  const res = await serverAuthFetch('/wallet/convert-gems-to-coins', {
     method: 'POST',
     body: JSON.stringify({
       gems: gemsAmount,

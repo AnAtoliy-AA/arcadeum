@@ -228,23 +228,12 @@ export const useSessionStore = create<SessionState>()(
           snapshot: {
             ...s.snapshot,
             accessToken: null,
+            refreshToken: null,
+            accessTokenExpiresAt: null,
+            refreshTokenExpiresAt: null,
           },
           mode: s.mode,
         };
-      },
-      onRehydrateStorage: () => (state) => {
-        if (!state) return;
-        const s = state as SessionState;
-        if (
-          !s.snapshot.refreshToken ||
-          typeof s.snapshot.refreshToken !== 'string'
-        )
-          return;
-
-        useSessionStore
-          .getState()
-          .refreshTokens()
-          .catch(() => {});
       },
     },
   ),

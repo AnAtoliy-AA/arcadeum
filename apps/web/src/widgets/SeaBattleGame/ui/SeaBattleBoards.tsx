@@ -15,7 +15,7 @@ import type {
   ShipCell,
 } from '../types';
 
-type WeaponMode = null | { weapon: 'sonar' | 'radar'; targetPlayerId: string };
+type WeaponMode = null | { weapon: 'sonar' | 'radar'; targetPlayerId: string; radarAxis?: 'row' | 'col' };
 
 interface SeaBattleBoardsProps {
   isPlacementPhase: boolean;
@@ -98,8 +98,12 @@ export function SeaBattleBoards({
       if (weaponMode.weapon === 'sonar' && onSonar) {
         onSonar(targetPlayerId, row, col);
       } else if (weaponMode.weapon === 'radar' && onRadar) {
-        // Radar scans the row of the clicked cell
-        onRadar(targetPlayerId, row, undefined);
+        const axis = weaponMode.radarAxis ?? 'row';
+        onRadar(
+          targetPlayerId,
+          axis === 'row' ? row : undefined,
+          axis === 'col' ? col : undefined,
+        );
       }
       setWeaponMode(null);
       setHoveredCell(null);
@@ -128,14 +132,19 @@ export function SeaBattleBoards({
     return cells;
   })();
 
-  // Compute preview cells for radar (entire row of hovered cell)
+  // Compute preview cells for radar (row or column of hovered cell)
   const radarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
     const cells = new Set<string>();
-    for (let c = 0; c < gridSize; c++) {
-      cells.add(
-        `${weaponMode.targetPlayerId}-${hoveredCell.row}-${c}`,
-      );
+    const axis = weaponMode.radarAxis ?? 'row';
+    if (axis === 'row') {
+      for (let c = 0; c < gridSize; c++) {
+        cells.add(`${weaponMode.targetPlayerId}-${hoveredCell.row}-${c}`);
+      }
+    } else {
+      for (let r = 0; r < gridSize; r++) {
+        cells.add(`${weaponMode.targetPlayerId}-${r}-${hoveredCell.col}`);
+      }
     }
     return cells;
   })();
@@ -252,37 +261,76 @@ export function SeaBattleBoards({
                 </button>
               )}
               {hasRadar && !radarUsed && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (opponents?.length === 1) {
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (opponents?.length === 1) {
+                        setWeaponMode({
+                          weapon: 'radar',
+                          targetPlayerId: opponents[0].playerId,
+                          radarAxis: 'row',
+                        });
+                      } else if (opponents && opponents.length > 1) {
+                        setWeaponMode({
+                          weapon: 'radar',
+                          targetPlayerId: opponents[0].playerId,
+                          radarAxis: 'row',
+                        });
+                      }
+                    }}
+                    style={{
+                      ...buttonBase,
+                      color:
+                        weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
+                      borderColor:
+                        weaponMode?.weapon === 'radar'
+                          ? '#a855f7'
+                          : 'rgba(168,85,247,0.3)',
+                      background:
+                        weaponMode?.weapon === 'radar'
+                          ? 'rgba(168,85,247,0.15)'
+                          : 'rgba(168,85,247,0.05)',
+                      borderRight: 'none',
+                      borderRadius: '8px 0 0 8px',
+                    }}
+                  >
+                    📡 {t('games.create.seaBattleRadar') || 'Radar'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetId = opponents?.[0]?.playerId;
+                      if (!targetId) return;
                       setWeaponMode({
                         weapon: 'radar',
-                        targetPlayerId: opponents[0].playerId,
+                        targetPlayerId: targetId,
+                        radarAxis: weaponMode?.radarAxis === 'col' ? 'row' : 'col',
                       });
-                    } else if (opponents && opponents.length > 1) {
-                      setWeaponMode({
-                        weapon: 'radar',
-                        targetPlayerId: opponents[0].playerId,
-                      });
-                    }
-                  }}
-                  style={{
-                    ...buttonBase,
-                    color:
-                      weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
-                    borderColor:
-                      weaponMode?.weapon === 'radar'
-                        ? '#a855f7'
-                        : 'rgba(168,85,247,0.3)',
-                    background:
-                      weaponMode?.weapon === 'radar'
-                        ? 'rgba(168,85,247,0.15)'
-                        : 'rgba(168,85,247,0.05)',
-                  }}
-                >
-                  📡 {t('games.create.seaBattleRadar') || 'Radar'}
-                </button>
+                    }}
+                    style={{
+                      ...buttonBase,
+                      padding: '8px 10px',
+                      color:
+                        weaponMode?.weapon === 'radar'
+                          ? '#c084fc'
+                          : '#a0a0a0',
+                      borderColor:
+                        weaponMode?.weapon === 'radar'
+                          ? '#a855f7'
+                          : 'rgba(168,85,247,0.3)',
+                      background:
+                        weaponMode?.weapon === 'radar'
+                          ? 'rgba(168,85,247,0.15)'
+                          : 'rgba(168,85,247,0.05)',
+                      borderRadius: '0 8px 8px 0',
+                      fontSize: 11,
+                    }}
+                    title="Toggle row / column"
+                  >
+                    {weaponMode?.radarAxis === 'col' ? '↕' : '↔'}
+                  </button>
+                </div>
               )}
               {isWeaponMode && (
                 <button
@@ -308,7 +356,7 @@ export function SeaBattleBoards({
                 >
                   {weaponMode.weapon === 'sonar'
                     ? 'Tap a cell on the target board'
-                    : 'Tap a cell to scan its row'}
+                    : `Tap a cell to scan its ${weaponMode.radarAxis === 'col' ? 'column' : 'row'}`}
                 </span>
               )}
             </div>

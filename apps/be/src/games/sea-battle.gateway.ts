@@ -275,7 +275,13 @@ export class SeaBattleGateway {
   async handleUseSonar(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; targetPlayerId?: string },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      targetPlayerId?: string;
+      row?: number;
+      col?: number;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
@@ -285,7 +291,7 @@ export class SeaBattleGateway {
         userId,
         roomId,
         'useSonar',
-        { targetPlayerId },
+        { targetPlayerId, row: payload.row, col: payload.col },
       );
       client.emit(
         'seaBattle.session.sonar_result',

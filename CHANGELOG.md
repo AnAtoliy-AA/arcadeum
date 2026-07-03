@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.31] - 2026-07-03
+
+### Fixed
+- enable music from header nav without in-game toggle (N/A)
+
+
 ## [1.22.30] - 2026-07-03
 
 ### Added

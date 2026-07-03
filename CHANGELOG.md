@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.28] - 2026-07-03
+
+### Added
+- add undo/take-back and password-protected rooms (N/A)
+- add CreationConfig for TicTacToe and Cascade (N/A)
+- add i18n for emote labels (N/A)
+- add server-side emote rate limiting (N/A)
+- add streaks and favorite game to local stats (N/A)
+
+### Fixed
+- skip finally URL cleanup on successful OAuth redirect (N/A)
+- use router.replace after OAuth to avoid hard page reload (N/A)
+- restore hard navigation after OAuth, session survives via cookies (N/A)
+- use soft navigation after OAuth instead of hard page reload (N/A)
+- recover session from cookies in SessionRoleSync (N/A)
+- use lax sameSite on HTTP to prevent cookie rejection (N/A)
+- fix session persistence and e2e stats test (N/A)
+- move getAttribute outside toPass to avoid 15s retry timeout (N/A)
+- fix stats e2e test by removing catch-all route that bypassed stats mock (N/A)
+- sync pnpm-lock.yaml with be/package.json (N/A)
+- clean up old audio element during paused crossfade to fix next/prev track detection (N/A)
+- update GameMusic tests for no-auto-play behavior (N/A)
+- prevent music auto-playing on page load/refresh (N/A)
+- wire undo to actually revert game state on acceptance (N/A)
+
+
 ## [1.22.27] - 2026-07-02
 
 ### Added

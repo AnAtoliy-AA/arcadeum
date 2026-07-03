@@ -116,12 +116,12 @@ export function SeaBattleBoards({
     setHoveredCell(null);
   }, []);
 
-  // Compute preview cells for sonar (3×3 area around hovered cell)
+  // Compute preview cells for sonar (5×5 area around hovered cell, matching SONAR_RADIUS=2)
   const sonarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
     const cells = new Set<string>();
-    for (let dr = -1; dr <= 1; dr++) {
-      for (let dc = -1; dc <= 1; dc++) {
+    for (let dr = -2; dr <= 2; dr++) {
+      for (let dc = -2; dc <= 2; dc++) {
         const r = hoveredCell.row + dr;
         const c = hoveredCell.col + dc;
         if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {

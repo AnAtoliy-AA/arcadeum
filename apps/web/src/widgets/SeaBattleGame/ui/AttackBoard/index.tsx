@@ -89,7 +89,9 @@ export const AttackBoard = memo(function AttackBoard({
     const lr = snapshot?.lastRadar;
     if (!lr) return null;
     const set = new Set<string>();
-    lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
+    lr.cells
+      .filter((c) => c.state === 1) // CellState.SHIP = 1
+      .forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
     return set;
   })();
 

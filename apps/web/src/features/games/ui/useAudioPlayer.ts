@@ -156,13 +156,14 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
     if (!newAudio || !oldAudio) return;
     const wasPlaying = !oldAudio.paused;
+    const trackEnded = oldAudio.ended;
     cancelAnimationFrame(crossfadeRafRef.current);
     activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
     newAudio.src = newSrc;
     newAudio.volume = 0;
     newAudio.loop = repeatRef.current === 'one';
-    if (wasPlaying) newAudio.play().catch(() => {});
-    if (wasPlaying) {
+    if (wasPlaying || trackEnded) newAudio.play().catch(() => {});
+    if (wasPlaying || trackEnded) {
       let start = -1;
       const oldStartVol = oldAudio.volume;
       const step = (now: number) => {

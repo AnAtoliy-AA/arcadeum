@@ -43,7 +43,7 @@ async function loadTracksJson(): Promise<MusicTrack[] | null> {
 
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  if (CDN_BASE && process.env.NODE_ENV !== 'development') {
+  if (CDN_BASE) {
     try {
       const data = await loadTracksJson();
       if (data) {

@@ -154,7 +154,6 @@ export function SeaBattleBoards({
   const buttonBase: React.CSSProperties = {
     padding: '8px 16px',
     borderRadius: 8,
-    border: '1px solid',
     fontSize: 13,
     fontWeight: 600,
     cursor: 'pointer',
@@ -236,7 +235,6 @@ export function SeaBattleBoards({
                         targetPlayerId: opponents[0].playerId,
                       });
                     } else if (opponents && opponents.length > 1) {
-                      // Multi-opponent: cycle through or use first
                       setWeaponMode({
                         weapon: 'sonar',
                         targetPlayerId: opponents[0].playerId,
@@ -247,10 +245,10 @@ export function SeaBattleBoards({
                     ...buttonBase,
                     color:
                       weaponMode?.weapon === 'sonar' ? '#06b6d4' : '#e0e0e0',
-                    borderColor:
-                      weaponMode?.weapon === 'sonar'
-                        ? '#06b6d4'
-                        : 'rgba(6,182,212,0.3)',
+                    borderTop: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderBottom: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderLeft: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderRight: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
                     background:
                       weaponMode?.weapon === 'sonar'
                         ? 'rgba(6,182,212,0.15)'
@@ -283,15 +281,14 @@ export function SeaBattleBoards({
                       ...buttonBase,
                       color:
                         weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
-                      borderColor:
-                        weaponMode?.weapon === 'radar'
-                          ? '#a855f7'
-                          : 'rgba(168,85,247,0.3)',
+                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderRight: 'none',
                       background:
                         weaponMode?.weapon === 'radar'
                           ? 'rgba(168,85,247,0.15)'
                           : 'rgba(168,85,247,0.05)',
-                      borderRight: 'none',
                       borderRadius: '8px 0 0 8px',
                     }}
                   >
@@ -315,10 +312,10 @@ export function SeaBattleBoards({
                         weaponMode?.weapon === 'radar'
                           ? '#c084fc'
                           : '#a0a0a0',
-                      borderColor:
-                        weaponMode?.weapon === 'radar'
-                          ? '#a855f7'
-                          : 'rgba(168,85,247,0.3)',
+                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderRight: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
                       background:
                         weaponMode?.weapon === 'radar'
                           ? 'rgba(168,85,247,0.15)'
@@ -339,7 +336,10 @@ export function SeaBattleBoards({
                   style={{
                     ...buttonBase,
                     color: '#f87171',
-                    borderColor: 'rgba(239,68,68,0.4)',
+                    borderTop: '1px solid rgba(239,68,68,0.4)',
+                    borderBottom: '1px solid rgba(239,68,68,0.4)',
+                    borderLeft: '1px solid rgba(239,68,68,0.4)',
+                    borderRight: '1px solid rgba(239,68,68,0.4)',
                     background: 'rgba(239,68,68,0.1)',
                   }}
                 >

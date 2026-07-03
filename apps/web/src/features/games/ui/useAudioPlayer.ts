@@ -180,7 +180,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       crossfadeRafRef.current = requestAnimationFrame(step);
     } else {
       newAudio.volume = newVolume;
-      oldAudio.src = '';
+      oldAudio.pause();
+      oldAudio.removeAttribute('src');
       oldAudio.currentTime = 0;
       oldAudio.volume = 0;
     }
@@ -190,10 +191,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (!musicEnabled) return;
     if (!audioARef.current) {
       audioARef.current = new Audio();
-      audioARef.current.crossOrigin = 'anonymous';
       audioARef.current.preload = 'metadata';
       audioBRef.current = new Audio();
-      audioBRef.current.crossOrigin = 'anonymous';
       audioBRef.current.preload = 'metadata';
       audioRef.current = audioARef.current;
     }
@@ -219,6 +218,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     };
     const onError = (e: Event) => {
       const a = e.target as HTMLAudioElement;
+      if (!a?.src || a.src === window.location.href) return;
       console.error('[GameMusic]', a?.error?.code, a?.error?.message, a?.src);
       setError('Failed to load track');
     };

@@ -190,8 +190,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (!musicEnabled) return;
     if (!audioARef.current) {
       audioARef.current = new Audio();
+      audioARef.current.crossOrigin = 'anonymous';
       audioARef.current.preload = 'metadata';
       audioBRef.current = new Audio();
+      audioBRef.current.crossOrigin = 'anonymous';
       audioBRef.current.preload = 'metadata';
       audioRef.current = audioARef.current;
     }

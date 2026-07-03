@@ -1,5 +1,5 @@
 'use client';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import type {
   SeaBattlePlayerState,
   SeaBattleSnapshot,
@@ -75,8 +75,24 @@ export const AttackBoard = memo(function AttackBoard({
     return set;
   }, [players]);
 
+  // Cache lastSonar/lastRadar across state updates — they may disappear
+  // from the snapshot after a re-broadcast but should remain visible until
+  // a new weapon is used or the game ends.
+  const cachedLastSonar = useRef(snapshot?.lastSonar ?? null);
+  const cachedLastRadar = useRef(snapshot?.lastRadar ?? null);
+
+  if (snapshot?.lastSonar) cachedLastSonar.current = snapshot.lastSonar;
+  if (snapshot?.lastRadar) cachedLastRadar.current = snapshot.lastRadar;
+  if (snapshot?.phase !== 'battle') {
+    cachedLastSonar.current = null;
+    cachedLastRadar.current = null;
+  }
+
+  const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar.current;
+  const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar.current;
+
   const sonarHighlightSet = (() => {
-    const ls = snapshot?.lastSonar;
+    const ls = effectiveLastSonar;
     if (!ls) return null;
     const set = new Set<string>();
     ls.cells.forEach((c) => set.add(`${ls.targetId}-${c.row}-${c.col}`));
@@ -85,7 +101,7 @@ export const AttackBoard = memo(function AttackBoard({
 
   // Map cellKey → state for sonar scanned cells (SHIP=1, EMPTY=0, etc.)
   const sonarCellStates = (() => {
-    const ls = snapshot?.lastSonar;
+    const ls = effectiveLastSonar;
     if (!ls) return null;
     const map = new Map<string, number>();
     ls.cells.forEach((c) => map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state));
@@ -93,7 +109,7 @@ export const AttackBoard = memo(function AttackBoard({
   })();
 
   const radarHighlightSet = (() => {
-    const lr = snapshot?.lastRadar;
+    const lr = effectiveLastRadar;
     if (!lr) return null;
     const set = new Set<string>();
     lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
@@ -102,7 +118,7 @@ export const AttackBoard = memo(function AttackBoard({
 
   // Map cellKey → state for radar scanned cells
   const radarCellStates = (() => {
-    const lr = snapshot?.lastRadar;
+    const lr = effectiveLastRadar;
     if (!lr) return null;
     const map = new Map<string, number>();
     lr.cells.forEach((c) => map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state));
@@ -136,9 +152,9 @@ export const AttackBoard = memo(function AttackBoard({
             tt.playerIds.includes(opponent.playerId),
           );
           const isSonarTarget =
-            snapshot?.lastSonar?.targetId === opponent.playerId;
+            effectiveLastSonar?.targetId === opponent.playerId;
           const isRadarTarget =
-            snapshot?.lastRadar?.targetId === opponent.playerId;
+            effectiveLastRadar?.targetId === opponent.playerId;
           return (
             <AttackPlayerBoard
               key={opponent.playerId}

@@ -168,7 +168,11 @@ export default function SeaBattleCreationConfig({
               <Text fontSize="$4" fontWeight="600">
                 {t('games.create.seaBattleGridSize') || 'Grid Size'}
               </Text>
-              {ruleComingSoon.get('gridSize') && <ComingSoonBadge />}
+              {ruleComingSoon.get('gridSize') && (
+                <ComingSoonBadge>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </ComingSoonBadge>
+              )}
             </XStack>
             <XStack gap="$2" flexWrap="wrap">
               {GRID_SIZES.map((gs) => (
@@ -214,7 +218,11 @@ export default function SeaBattleCreationConfig({
                   <ExpansionLabel>
                     {t('games.create.seaBattleSonar') || 'Sonar'}
                   </ExpansionLabel>
-                  {ruleComingSoon.get('sonar') && <ComingSoonBadge />}
+                  {ruleComingSoon.get('sonar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
                 </XStack>
                 <ExpansionBadge>
                   {t('games.create.seaBattleSonarHint') ||
@@ -246,7 +254,11 @@ export default function SeaBattleCreationConfig({
                   <ExpansionLabel>
                     {t('games.create.seaBattleRadar') || 'Radar'}
                   </ExpansionLabel>
-                  {ruleComingSoon.get('radar') && <ComingSoonBadge />}
+                  {ruleComingSoon.get('radar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
                 </XStack>
                 <ExpansionBadge>
                   {t('games.create.seaBattleRadarHint') ||

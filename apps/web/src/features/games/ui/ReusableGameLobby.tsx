@@ -381,7 +381,7 @@ export function ReusableGameLobby({
                 </Text>
                 {ruleComingSoon.get('idle') && (
                   <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    Coming Soon
+                    {t('games.create.comingSoon') || 'Coming Soon'}
                   </Text>
                 )}
               </label>
@@ -419,7 +419,7 @@ export function ReusableGameLobby({
                 </Text>
                 {ruleComingSoon.get('spectators') && (
                   <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    Coming Soon
+                    {t('games.create.comingSoon') || 'Coming Soon'}
                   </Text>
                 )}
               </label>

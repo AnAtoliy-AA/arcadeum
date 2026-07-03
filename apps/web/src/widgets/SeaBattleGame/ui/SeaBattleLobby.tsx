@@ -299,7 +299,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
               </Text>
               {ruleComingSoon.get('gridSize') && (
                 <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                  Coming Soon
+                  {t('games.create.comingSoon') || 'Coming Soon'}
                 </Text>
               )}
             </XStack>
@@ -344,7 +344,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
               </Text>
               {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
                 <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                  Coming Soon
+                  {t('games.create.comingSoon') || 'Coming Soon'}
                 </Text>
               )}
             </XStack>

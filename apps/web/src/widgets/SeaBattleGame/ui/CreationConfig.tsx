@@ -50,6 +50,9 @@ export default function SeaBattleCreationConfig({
   const [allowedVariants, setAllowedVariants] = useState<
     CatalogVariant[] | null
   >(null);
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -59,6 +62,13 @@ export default function SeaBattleCreationConfig({
         if (cancelled) return;
         const entry = res.games.find((g) => g.gameId === 'sea_battle_v1');
         setAllowedVariants(entry?.variants ?? null);
+        if (entry?.rules) {
+          const map = new Map<string, boolean>();
+          for (const r of entry.rules) {
+            map.set(r.ruleId, r.comingSoon);
+          }
+          setRuleComingSoon(map);
+        }
       })
       .catch(() => {
         if (!cancelled) setAllowedVariants(null);
@@ -154,9 +164,16 @@ export default function SeaBattleCreationConfig({
       <Section title={t('games.create.sectionHouseRules')}>
         <YStack gap="$3">
           <YStack gap="$1">
-            <Text fontSize="$4" fontWeight="600">
-              {t('games.create.seaBattleGridSize') || 'Grid Size'}
-            </Text>
+            <XStack alignItems="center" gap="$2">
+              <Text fontSize="$4" fontWeight="600">
+                {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              </Text>
+              {ruleComingSoon.get('gridSize') && (
+                <ComingSoonBadge>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </ComingSoonBadge>
+              )}
+            </XStack>
             <XStack gap="$2" flexWrap="wrap">
               {GRID_SIZES.map((gs) => (
                 <Button
@@ -164,7 +181,11 @@ export default function SeaBattleCreationConfig({
                   variant="secondary"
                   size="sm"
                   isActive={(options.gridSize ?? 10) === gs.value}
-                  onClick={() => handleUpdate({ gridSize: gs.value })}
+                  disabled={!!ruleComingSoon.get('gridSize')}
+                  onClick={() =>
+                    !ruleComingSoon.get('gridSize') &&
+                    handleUpdate({ gridSize: gs.value })
+                  }
                   data-testid={`grid-size-${gs.value}`}
                 >
                   {gs.label}
@@ -174,10 +195,15 @@ export default function SeaBattleCreationConfig({
           </YStack>
 
           <ExpansionGrid>
-            <ExpansionCheckbox>
+            <ExpansionCheckbox
+              style={{
+                opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
+              }}
+            >
               <input
                 type="checkbox"
                 checked={!!options.specialWeapons?.sonar}
+                disabled={!!ruleComingSoon.get('sonar')}
                 onChange={() =>
                   handleUpdate({
                     specialWeapons: {
@@ -188,9 +214,16 @@ export default function SeaBattleCreationConfig({
                 }
               />
               <YStack flex={1} gap="$0.5">
-                <ExpansionLabel>
-                  {t('games.create.seaBattleSonar') || 'Sonar'}
-                </ExpansionLabel>
+                <XStack alignItems="center" gap="$2">
+                  <ExpansionLabel>
+                    {t('games.create.seaBattleSonar') || 'Sonar'}
+                  </ExpansionLabel>
+                  {ruleComingSoon.get('sonar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                </XStack>
                 <ExpansionBadge>
                   {t('games.create.seaBattleSonarHint') ||
                     'Reveal ship locations'}
@@ -198,10 +231,15 @@ export default function SeaBattleCreationConfig({
               </YStack>
             </ExpansionCheckbox>
 
-            <ExpansionCheckbox>
+            <ExpansionCheckbox
+              style={{
+                opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
+              }}
+            >
               <input
                 type="checkbox"
                 checked={!!options.specialWeapons?.radar}
+                disabled={!!ruleComingSoon.get('radar')}
                 onChange={() =>
                   handleUpdate({
                     specialWeapons: {
@@ -212,9 +250,16 @@ export default function SeaBattleCreationConfig({
                 }
               />
               <YStack flex={1} gap="$0.5">
-                <ExpansionLabel>
-                  {t('games.create.seaBattleRadar') || 'Radar'}
-                </ExpansionLabel>
+                <XStack alignItems="center" gap="$2">
+                  <ExpansionLabel>
+                    {t('games.create.seaBattleRadar') || 'Radar'}
+                  </ExpansionLabel>
+                  {ruleComingSoon.get('radar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                </XStack>
                 <ExpansionBadge>
                   {t('games.create.seaBattleRadarHint') ||
                     'Scan a row or column'}

@@ -8,10 +8,12 @@ import {
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { AuthService } from '../auth/auth.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
@@ -45,7 +47,22 @@ export class GamesService {
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
+    private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
+
+  private async sanitizeForPlayer(
+    s: GameSessionSummary,
+    pId: string,
+  ): Promise<GameSessionSummary> {
+    const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+      s.id,
+      pId,
+    );
+    if (sanitized && typeof sanitized === 'object') {
+      return { ...s, state: sanitized as Record<string, unknown> };
+    }
+    return s;
+  }
 
   // ========== Room Operations ==========
 
@@ -94,16 +111,9 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          session.id,
-          userId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          session = { ...session, state: sanitized as Record<string, unknown> };
-        }
+        session = await this.sanitizeForPlayer(session, userId);
       } catch {
-        // If sanitization fails, return null session or handle appropriately;
-        // safely continue with the unsanitized session state
+        // safely continue with unsanitized session state
       }
     }
 
@@ -224,19 +234,8 @@ export class GamesService {
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(
-      room,
-      session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+    await this.realtimeService.emitGameStarted(room, session, async (s, pId) =>
+      this.sanitizeForPlayer(s, pId),
     );
 
     return { room, session };
@@ -263,16 +262,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+      async (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -350,9 +340,6 @@ export class GamesService {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
 
-  /**
-   * Create a rematch
-   */
   async createRematchFromHistory(
     userId: string,
     roomId: string,
@@ -389,9 +376,6 @@ export class GamesService {
     return this.rematchService.reinvitePlayers(roomId, hostId, userIds);
   }
 
-  /**
-   * Post a note to game history
-   */
   async postHistoryNote(
     roomId: string,
     userId: string,
@@ -406,14 +390,7 @@ export class GamesService {
       await this.realtimeService.emitSessionSnapshot(
         roomId,
         session,
-        async (s, pId) => {
-          const sanitized =
-            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
-          if (sanitized && typeof sanitized === 'object') {
-            return { ...s, state: sanitized as Record<string, unknown> };
-          }
-          return s;
-        },
+        async (s, pId) => this.sanitizeForPlayer(s, pId),
       );
     }
   }
@@ -452,13 +429,51 @@ export class GamesService {
     userId: string,
     options: Record<string, unknown>,
   ) {
-    const room = await this.roomsService.updateRoomOptions(
+    // Strip disabled rules before persisting.
+    try {
+      const room = await this.roomsService.getRoom(roomId);
+      const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
+      this.stripDisabledRules(options, ruleMap);
+    } catch {
+      // Room not found or inaccessible — proceed without stripping.
+    }
+
+    const updated = await this.roomsService.updateRoomOptions(
       roomId,
       userId,
       options,
     );
-    this.realtimeService.emitRoomUpdated(room);
-    return room;
+    this.realtimeService.emitRoomUpdated(updated);
+    return updated;
+  }
+
+  private stripDisabledRules(
+    options: Record<string, unknown>,
+    ruleMap: Map<string, boolean>,
+  ): void {
+    if (ruleMap.get('gridSize') === false) {
+      delete options.gridSize;
+    }
+
+    const sw = options.specialWeapons;
+    if (typeof sw === 'object' && sw !== null) {
+      const weapons = sw as Record<string, unknown>;
+      if (ruleMap.get('sonar') === false) delete weapons.sonar;
+      if (ruleMap.get('radar') === false) delete weapons.radar;
+      if (Object.keys(weapons).length === 0) {
+        delete options.specialWeapons;
+      }
+    }
+
+    if (ruleMap.get('teams') === false) {
+      delete options.teams;
+      delete options.teamConfig;
+      if (options.mode === 'team') delete options.mode;
+    }
+
+    if (ruleMap.get('combos') === false) {
+      delete options.expansions;
+    }
   }
 
   async reorderParticipants(

@@ -37,8 +37,15 @@ interface AttackPlayerBoardProps {
   team?: SeaBattleTeam;
   sunkCellSet: Set<string>;
   sonarHighlightCells?: Set<string> | null;
+  sonarCellStates?: Map<string, number> | null;
   radarHighlightCells?: Set<string> | null;
+  radarCellStates?: Map<string, number> | null;
+  weaponPreviewCells?: Set<string> | null;
+  weaponPreviewType?: 'sonar' | 'radar' | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
+  onCellHover?: (playerId: string, row: number, col: number) => void;
+  onCellHoverEnd?: () => void;
+  weaponMode?: boolean;
   t: (key: TranslationKey) => string;
 }
 
@@ -55,8 +62,15 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   team,
   sunkCellSet,
   sonarHighlightCells,
+  sonarCellStates,
   radarHighlightCells,
+  radarCellStates,
+  weaponPreviewCells,
+  weaponPreviewType,
   onAttack,
+  onCellHover,
+  onCellHoverEnd,
+  weaponMode = false,
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
@@ -86,18 +100,24 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const handleGridClick = useCallback(
     (e: React.MouseEvent) => {
       if (!isMyTurn || isAttackDisabled || !onAttack) return;
-      const cell = (e.target as HTMLElement).closest('.sb-cell.sb-attackable');
+      const cell = (e.target as HTMLElement).closest(
+        weaponMode
+          ? '.sb-cell[data-row]'
+          : '.sb-cell.sb-attackable',
+      );
       if (!cell) return;
       const row = cell.getAttribute('data-row');
       const col = cell.getAttribute('data-col');
       if (row !== null && col !== null) {
         const r = parseInt(row);
         const c = parseInt(col);
-        setPendingCell({ r, c });
+        if (!weaponMode) {
+          setPendingCell({ r, c });
+        }
         onAttack(player.playerId, r, c);
       }
     },
-    [isMyTurn, isAttackDisabled, onAttack, player.playerId],
+    [isMyTurn, isAttackDisabled, onAttack, player.playerId, weaponMode],
   );
 
   const boardGrid = (
@@ -133,13 +153,20 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             cellState !== CELL_STATE.MISS &&
             !isSunk &&
             !isPending;
+          const isWeaponClickable = !isMe && !isTeammate && !!weaponMode;
           const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
+          const isSonarCell = !isMe && sonarHighlightCells?.has(cellKey);
+          const isRadarCell = !isMe && radarHighlightCells?.has(cellKey);
           const highlight: 'sonar' | 'radar' | null =
-            !isMe && sonarHighlightCells?.has(cellKey)
-              ? 'sonar'
-              : !isMe && radarHighlightCells?.has(cellKey)
-                ? 'radar'
-                : null;
+            isSonarCell ? 'sonar' : isRadarCell ? 'radar' : null;
+          const highlightCellState =
+            isSonarCell && sonarCellStates
+              ? sonarCellStates.get(cellKey)
+              : isRadarCell && radarCellStates
+                ? radarCellStates.get(cellKey)
+                : undefined;
+          const isWeaponPreview =
+            !isMe && weaponPreviewCells?.has(cellKey);
 
           return (
             <AttackBoardCell
@@ -150,10 +177,20 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isAttackable={isAttackable}
               isPending={isPending}
               highlight={highlight}
+              highlightCellState={highlightCellState}
+              isWeaponPreview={!!isWeaponPreview}
+              weaponPreviewType={!isMe ? weaponPreviewType : null}
+              isWeaponClickable={isWeaponClickable}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}
               isMe={isMe}
+              onMouseEnter={
+                !isMe && onCellHover
+                  ? () => onCellHover(player.playerId, rIndex, cIndex)
+                  : undefined
+              }
+              onMouseLeave={!isMe && onCellHoverEnd ? onCellHoverEnd : undefined}
             />
           );
         }),

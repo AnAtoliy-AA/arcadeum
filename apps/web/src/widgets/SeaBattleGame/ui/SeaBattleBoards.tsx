@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -14,6 +14,8 @@ import type {
   SeaBattleTeam,
   ShipCell,
 } from '../types';
+
+type WeaponMode = null | { weapon: 'sonar' | 'radar'; targetPlayerId: string; radarAxis?: 'row' | 'col' };
 
 interface SeaBattleBoardsProps {
   isPlacementPhase: boolean;
@@ -68,9 +70,11 @@ export function SeaBattleBoards({
   teams,
 }: SeaBattleBoardsProps) {
   const { t } = useTranslation();
-  const [radarMode, setRadarMode] = useState<'row' | 'col' | null>(null);
-  const [radarTarget, setRadarTarget] = useState<string | null>(null);
-  const [sonarTarget, setSonarTarget] = useState<string | null>(null);
+  const [weaponMode, setWeaponMode] = useState<WeaponMode>(null);
+  const [hoveredCell, setHoveredCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
 
   const opponents = snapshot?.players.filter(
     (p) =>
@@ -85,6 +89,79 @@ export function SeaBattleBoards({
     snapshot?.specialWeaponUsage?.[currentUserId ?? '']?.radarUsed ?? false;
   const hasSonar = !!snapshot?.specialWeapons?.sonar;
   const hasRadar = !!snapshot?.specialWeapons?.radar;
+
+  const gridSize = snapshot?.gridSize ?? 10;
+
+  const handleWeaponFire = useCallback(
+    (targetPlayerId: string, row: number, col: number) => {
+      if (!weaponMode) return;
+      if (weaponMode.weapon === 'sonar' && onSonar) {
+        onSonar(targetPlayerId, row, col);
+      } else if (weaponMode.weapon === 'radar' && onRadar) {
+        const axis = weaponMode.radarAxis ?? 'row';
+        onRadar(
+          targetPlayerId,
+          axis === 'row' ? row : undefined,
+          axis === 'col' ? col : undefined,
+        );
+      }
+      setWeaponMode(null);
+      setHoveredCell(null);
+    },
+    [weaponMode, onSonar, onRadar],
+  );
+
+  const cancelWeaponMode = useCallback(() => {
+    setWeaponMode(null);
+    setHoveredCell(null);
+  }, []);
+
+  // Compute preview cells for sonar (3×3 area around hovered cell, matching SONAR_RADIUS=1)
+  const sonarPreviewCells = (() => {
+    if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
+    const cells = new Set<string>();
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const r = hoveredCell.row + dr;
+        const c = hoveredCell.col + dc;
+        if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+          cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
+        }
+      }
+    }
+    return cells;
+  })();
+
+  // Compute preview cells for radar (row or column of hovered cell)
+  const radarPreviewCells = (() => {
+    if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
+    const cells = new Set<string>();
+    const axis = weaponMode.radarAxis ?? 'row';
+    if (axis === 'row') {
+      for (let c = 0; c < gridSize; c++) {
+        cells.add(`${weaponMode.targetPlayerId}-${hoveredCell.row}-${c}`);
+      }
+    } else {
+      for (let r = 0; r < gridSize; r++) {
+        cells.add(`${weaponMode.targetPlayerId}-${r}-${hoveredCell.col}`);
+      }
+    }
+    return cells;
+  })();
+
+  const isWeaponMode = weaponMode !== null;
+
+  const buttonBase: React.CSSProperties = {
+    padding: '8px 16px',
+    borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  };
 
   return (
     <>
@@ -145,177 +222,142 @@ export function SeaBattleBoards({
                 padding: '8px 16px',
                 justifyContent: 'center',
                 flexWrap: 'wrap',
+                alignItems: 'center',
               }}
             >
               {hasSonar && !sonarUsed && (
-                <>
-                  {sonarTarget ? (
-                    <div
-                      style={{ display: 'flex', gap: 4, alignItems: 'center' }}
-                    >
-                      <span style={{ fontSize: 12, color: '#aaa' }}>
-                        Sonar cell:
-                      </span>
-                      {Array.from(
-                        { length: snapshot.gridSize ?? 10 },
-                        (_, i) => i,
-                      ).map((r) =>
-                        Array.from(
-                          { length: snapshot.gridSize ?? 10 },
-                          (_, i) => i,
-                        ).map((c) => (
-                          <button
-                            key={`${r}-${c}`}
-                            style={{
-                              width: 20,
-                              height: 20,
-                              borderRadius: 3,
-                              border: '1px solid #555',
-                              background: '#1a1a2e',
-                              color: '#e0e0e0',
-                              fontSize: 9,
-                              cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                              if (onSonar) {
-                                onSonar(sonarTarget, r, c);
-                                setSonarTarget(null);
-                              }
-                            }}
-                          >
-                            {r},{c}
-                          </button>
-                        )),
-                      )}
-                      <button
-                        style={{
-                          fontSize: 11,
-                          color: '#f87171',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => setSonarTarget(null)}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: 6,
-                        border: '1px solid #555',
-                        background: '#1a1a2e',
-                        color: '#e0e0e0',
-                        fontSize: 13,
-                        cursor: 'pointer',
-                      }}
-                      value=""
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          setSonarTarget(e.target.value);
-                        }
-                      }}
-                    >
-                      <option value="">
-                        {t('games.create.seaBattleSonar') || 'Sonar'}
-                      </option>
-                      {opponents?.map((p) => (
-                        <option key={p.playerId} value={p.playerId}>
-                          {resolveDisplayNameBound(p.playerId, p.playerId)}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (opponents?.length === 1) {
+                      setWeaponMode({
+                        weapon: 'sonar',
+                        targetPlayerId: opponents[0].playerId,
+                      });
+                    } else if (opponents && opponents.length > 1) {
+                      setWeaponMode({
+                        weapon: 'sonar',
+                        targetPlayerId: opponents[0].playerId,
+                      });
+                    }
+                  }}
+                  style={{
+                    ...buttonBase,
+                    color:
+                      weaponMode?.weapon === 'sonar' ? '#06b6d4' : '#e0e0e0',
+                    borderTop: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderBottom: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderLeft: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    borderRight: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
+                    background:
+                      weaponMode?.weapon === 'sonar'
+                        ? 'rgba(6,182,212,0.15)'
+                        : 'rgba(6,182,212,0.05)',
+                  }}
+                >
+                  🔊 {t('games.create.seaBattleSonar') || 'Sonar'}
+                </button>
               )}
               {hasRadar && !radarUsed && (
-                <>
-                  {radarMode && radarTarget ? (
-                    <div
-                      style={{ display: 'flex', gap: 4, alignItems: 'center' }}
-                    >
-                      <span style={{ fontSize: 12, color: '#aaa' }}>
-                        {radarMode === 'row' ? 'Row' : 'Col'}:
-                      </span>
-                      {Array.from(
-                        { length: snapshot.gridSize ?? 10 },
-                        (_, i) => i,
-                      ).map((i) => (
-                        <button
-                          key={i}
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: 4,
-                            border: '1px solid #555',
-                            background: '#1a1a2e',
-                            color: '#e0e0e0',
-                            fontSize: 11,
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            if (onRadar) {
-                              onRadar(
-                                radarTarget,
-                                radarMode === 'row' ? i : undefined,
-                                radarMode === 'col' ? i : undefined,
-                              );
-                              setRadarMode(null);
-                              setRadarTarget(null);
-                            }
-                          }}
-                        >
-                          {i}
-                        </button>
-                      ))}
-                      <button
-                        style={{
-                          fontSize: 11,
-                          color: '#f87171',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          setRadarMode(null);
-                          setRadarTarget(null);
-                        }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: 6,
-                        border: '1px solid #555',
-                        background: '#1a1a2e',
-                        color: '#e0e0e0',
-                        fontSize: 13,
-                        cursor: 'pointer',
-                      }}
-                      value=""
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          setRadarTarget(e.target.value);
-                          setRadarMode('row');
-                        }
-                      }}
-                    >
-                      <option value="">
-                        {t('games.create.seaBattleRadar') || 'Radar'}
-                      </option>
-                      {opponents?.map((p) => (
-                        <option key={p.playerId} value={p.playerId}>
-                          {resolveDisplayNameBound(p.playerId, p.playerId)}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (opponents?.length === 1) {
+                        setWeaponMode({
+                          weapon: 'radar',
+                          targetPlayerId: opponents[0].playerId,
+                          radarAxis: 'row',
+                        });
+                      } else if (opponents && opponents.length > 1) {
+                        setWeaponMode({
+                          weapon: 'radar',
+                          targetPlayerId: opponents[0].playerId,
+                          radarAxis: 'row',
+                        });
+                      }
+                    }}
+                    style={{
+                      ...buttonBase,
+                      color:
+                        weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
+                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderRight: 'none',
+                      background:
+                        weaponMode?.weapon === 'radar'
+                          ? 'rgba(168,85,247,0.15)'
+                          : 'rgba(168,85,247,0.05)',
+                      borderRadius: '8px 0 0 8px',
+                    }}
+                  >
+                    📡 {t('games.create.seaBattleRadar') || 'Radar'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetId = opponents?.[0]?.playerId;
+                      if (!targetId) return;
+                      setWeaponMode({
+                        weapon: 'radar',
+                        targetPlayerId: targetId,
+                        radarAxis: weaponMode?.radarAxis === 'col' ? 'row' : 'col',
+                      });
+                    }}
+                    style={{
+                      ...buttonBase,
+                      padding: '8px 10px',
+                      color:
+                        weaponMode?.weapon === 'radar'
+                          ? '#c084fc'
+                          : '#a0a0a0',
+                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      borderRight: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
+                      background:
+                        weaponMode?.weapon === 'radar'
+                          ? 'rgba(168,85,247,0.15)'
+                          : 'rgba(168,85,247,0.05)',
+                      borderRadius: '0 8px 8px 0',
+                      fontSize: 11,
+                    }}
+                    title="Toggle row / column"
+                  >
+                    {weaponMode?.radarAxis === 'col' ? '↕' : '↔'}
+                  </button>
+                </div>
+              )}
+              {isWeaponMode && (
+                <button
+                  type="button"
+                  onClick={cancelWeaponMode}
+                  style={{
+                    ...buttonBase,
+                    color: '#f87171',
+                    borderTop: '1px solid rgba(239,68,68,0.4)',
+                    borderBottom: '1px solid rgba(239,68,68,0.4)',
+                    borderLeft: '1px solid rgba(239,68,68,0.4)',
+                    borderRight: '1px solid rgba(239,68,68,0.4)',
+                    background: 'rgba(239,68,68,0.1)',
+                  }}
+                >
+                  ✕ Cancel
+                </button>
+              )}
+              {isWeaponMode && (
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: weaponMode.weapon === 'sonar' ? '#06b6d4' : '#a855f7',
+                    fontWeight: 600,
+                  }}
+                >
+                  {weaponMode.weapon === 'sonar'
+                    ? 'Tap a cell on the target board'
+                    : `Tap a cell to scan its ${weaponMode.radarAxis === 'col' ? 'column' : 'row'}`}
+                </span>
               )}
             </div>
           )}
@@ -325,12 +367,30 @@ export function SeaBattleBoards({
             currentUserId={currentUserId}
             currentTurnPlayerId={currentTurnPlayerId}
             isMyTurn={isMyTurn}
-            onAttack={attack}
+            onAttack={isWeaponMode ? handleWeaponFire : attack}
             resolveDisplayName={resolveDisplayNameBound}
             teammateIds={teammateIds}
             teams={teams}
             gridSize={snapshot.gridSize}
             snapshot={snapshot}
+            weaponPreviewCells={
+              weaponMode?.weapon === 'sonar'
+                ? sonarPreviewCells
+                : radarPreviewCells
+            }
+            weaponPreviewType={weaponMode?.weapon ?? null}
+            onCellHover={
+              isWeaponMode
+                ? (playerId: string, row: number, col: number) => {
+                    setWeaponMode((prev) =>
+                      prev ? { ...prev, targetPlayerId: playerId } : prev,
+                    );
+                    setHoveredCell({ row, col });
+                  }
+                : undefined
+            }
+            onCellHoverEnd={isWeaponMode ? () => setHoveredCell(null) : undefined}
+            weaponMode={isWeaponMode}
           />
         </>
       )}

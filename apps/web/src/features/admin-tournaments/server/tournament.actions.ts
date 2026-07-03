@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { AdminTournamentItem } from '../api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -20,22 +19,6 @@ export interface MarkCompleteInput {
 }
 
 // ─── Internal fetch helper ─────────────────────────────────────────────────────
-
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
 
 // ─── Action ───────────────────────────────────────────────────────────────────
 
@@ -59,7 +42,7 @@ export async function markCompleteAction(
   const tournamentId = obj.tournamentId as string;
   const winnerUserId = obj.winnerUserId as string;
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/tournaments/${encodeURIComponent(tournamentId)}/complete`,
     {
       method: 'POST',

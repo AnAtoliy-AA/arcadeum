@@ -147,6 +147,7 @@ export class GameSessionsService {
     }
 
     session.state = state;
+    session.markModified('state');
     if (status) {
       session.status = status;
     }
@@ -184,6 +185,7 @@ export class GameSessionsService {
       session.state = engine.normalizeState(
         session.state as unknown as BaseGameState,
       ) as unknown as Record<string, unknown>;
+      session.markModified('state');
     }
 
     // Create action context
@@ -210,6 +212,7 @@ export class GameSessionsService {
     // Update session with new state
     if (result.state) {
       session.state = result.state as unknown as Record<string, unknown>;
+      session.markModified('state');
     }
 
     // Check if game is over
@@ -240,7 +243,8 @@ export class GameSessionsService {
     if (!history || history.length === 0) return null;
     const previousState = history[history.length - 1];
     state.stateHistory = history.slice(0, -1);
-    session.state = previousState as Record<string, unknown>;
+      session.state = previousState as Record<string, unknown>;
+      session.markModified('state');
     session.updatedAt = new Date();
     await session.save();
     return this.toSessionSummary(session);
@@ -366,6 +370,7 @@ export class GameSessionsService {
 
     if (result.state) {
       session.state = result.state as unknown as Record<string, unknown>;
+      session.markModified('state');
     }
     session.updatedAt = new Date();
 

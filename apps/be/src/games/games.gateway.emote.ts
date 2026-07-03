@@ -14,7 +14,10 @@ export function handleEmote(
   logger: Logger,
   server: Server,
   client: Socket,
-  realtime: { roomChannel(id: string): string; spectatorChannel(id: string): string },
+  realtime: {
+    roomChannel(id: string): string;
+    spectatorChannel(id: string): string;
+  },
   payload: unknown,
 ): void {
   const decrypted = maybeDecrypt<{

@@ -45,7 +45,7 @@ import LanguagePills from './LanguagePills';
 import { usePWAOptional } from '@/features/pwa/context';
 
 interface MobileMenuProps {
-  navItems: Array<{ href: string; label: string; onClick?: (e: React.MouseEvent) => void }>;
+  navItems: Array<{ href: string; label: string; onClick?: (e: React.MouseEvent) => void; icon?: React.ReactNode }>;
 }
 
 type IconComponent = ComponentType<{ size?: number }>;
@@ -173,7 +173,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               size="md"
               isActive={isActive}
               fullWidth
-              icon={Icon ? <Icon size={18} /> : undefined}
+              icon={Icon ? <Icon size={18} /> : item.icon ? <>{item.icon}</> : undefined}
               gap="$3"
               onClick={item.onClick}
             >

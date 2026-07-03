@@ -20,6 +20,7 @@ interface AttackBoardCellProps {
   highlight?: 'sonar' | 'radar' | null;
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
+  isWeaponClickable?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }
@@ -36,6 +37,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   highlight,
   isWeaponPreview = false,
   weaponPreviewType,
+  isWeaponClickable = false,
   onMouseEnter,
   onMouseLeave,
 }: AttackBoardCellProps) {
@@ -80,7 +82,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         ...previewStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
       }}
-      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
+      className={`sb-cell ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
       onMouseEnter={onMouseEnter}

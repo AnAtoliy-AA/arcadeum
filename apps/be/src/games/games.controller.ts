@@ -130,7 +130,7 @@ export class GamesController {
       const ruleMap = allRuleMaps.get(entry.gameId);
       const rules = entry.rules.map((r) => ({
         ruleId: r.ruleId,
-        comingSoon: ruleMap ? !ruleMap.get(r.ruleId) : false,
+        comingSoon: ruleMap ? !(ruleMap.get(r.ruleId) ?? true) : false,
       }));
 
       games.push({

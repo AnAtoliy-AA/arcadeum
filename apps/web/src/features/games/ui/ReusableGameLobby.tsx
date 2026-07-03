@@ -347,84 +347,79 @@ export function ReusableGameLobby({
 
           {optionsSlot}
 
-          {isHost && room.status === 'lobby' && (
-            <YStack gap="$3" paddingTop="$2">
-              <Text fontSize="$4" fontWeight="600">
-                {t('games.create.sectionHouseRules') || 'House Rules'}
-              </Text>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: ruleComingSoon.get('idle') ? 'not-allowed' : 'pointer',
-                  opacity: ruleComingSoon.get('idle') ? 0.4 : 1,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
-                  disabled={!!ruleComingSoon.get('idle')}
-                  onChange={(e) => {
-                    const val = e.target.checked;
-                    setOptIdle(val);
-                    setOption({ idleTimerAutoplay: val });
-                  }}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    accentColor: 'var(--gc-accent, #ffd166)',
-                  }}
-                />
-                <Text fontSize="$3">
-                  {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
+          {isHost &&
+            room.status === 'lobby' &&
+            (!ruleComingSoon.get('idle') ||
+              !ruleComingSoon.get('spectators')) && (
+              <YStack gap="$3" paddingTop="$2">
+                <Text fontSize="$4" fontWeight="600">
+                  {t('games.create.sectionHouseRules') || 'House Rules'}
                 </Text>
-                {ruleComingSoon.get('idle') && (
-                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    {t('games.create.comingSoon') || 'Coming Soon'}
-                  </Text>
+                {!ruleComingSoon.get('idle') && (
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        optIdle ?? !!room.gameOptions?.idleTimerAutoplay
+                      }
+                      onChange={(e) => {
+                        const val = e.target.checked;
+                        setOptIdle(val);
+                        setOption({ idleTimerAutoplay: val });
+                      }}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        accentColor: 'var(--gc-accent, #ffd166)',
+                      }}
+                    />
+                    <Text fontSize="$3">
+                      {t('games.create.rules.idle.title') ||
+                        'Idle timer autoplay'}
+                    </Text>
+                  </label>
                 )}
-              </label>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: ruleComingSoon.get('spectators')
-                    ? 'not-allowed'
-                    : 'pointer',
-                  opacity: ruleComingSoon.get('spectators') ? 0.4 : 1,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={
-                    optSpectators ?? room.gameOptions?.allowSpectators !== false
-                  }
-                  disabled={!!ruleComingSoon.get('spectators')}
-                  onChange={(e) => {
-                    const val = e.target.checked;
-                    setOptSpectators(val);
-                    setOption({ allowSpectators: val });
-                  }}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    accentColor: 'var(--gc-accent, #ffd166)',
-                  }}
-                />
-                <Text fontSize="$3">
-                  {t('games.create.rules.spectators.title') ||
-                    'Allow spectators'}
-                </Text>
-                {ruleComingSoon.get('spectators') && (
-                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    {t('games.create.comingSoon') || 'Coming Soon'}
-                  </Text>
+                {!ruleComingSoon.get('spectators') && (
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        optSpectators ??
+                        room.gameOptions?.allowSpectators !== false
+                      }
+                      onChange={(e) => {
+                        const val = e.target.checked;
+                        setOptSpectators(val);
+                        setOption({ allowSpectators: val });
+                      }}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        accentColor: 'var(--gc-accent, #ffd166)',
+                      }}
+                    />
+                    <Text fontSize="$3">
+                      {t('games.create.rules.spectators.title') ||
+                        'Allow spectators'}
+                    </Text>
+                  </label>
                 )}
-              </label>
-            </YStack>
-          )}
+              </YStack>
+            )}
         </CenterSection>
 
         <LobbySidebar

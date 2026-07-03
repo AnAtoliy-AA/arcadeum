@@ -223,10 +223,27 @@ export const useSessionStore = create<SessionState>()(
           snapshot: {
             ...s.snapshot,
             accessToken: null,
-            refreshToken: null,
           },
           mode: s.mode,
         };
+      },
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const s = state as SessionState;
+        if (!s.snapshot.refreshToken) return;
+
+        refreshSession(s.snapshot.refreshToken)
+          .then((response) => {
+            const merged = enrichWithResponse(
+              useSessionStore.getState().snapshot,
+              response,
+              s.snapshot.provider ?? 'local',
+            );
+            useSessionStore.setState({ snapshot: merged });
+          })
+          .catch(() => {
+            useSessionStore.getState().clearTokens();
+          });
       },
     },
   ),

@@ -8,6 +8,7 @@ import {
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -48,6 +49,20 @@ export class GamesService {
     private readonly postMatch: GamePostMatchService,
     private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
+
+  private async sanitizeForPlayer(
+    s: GameSessionSummary,
+    pId: string,
+  ): Promise<GameSessionSummary> {
+    const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
+      s.id,
+      pId,
+    );
+    if (sanitized && typeof sanitized === 'object') {
+      return { ...s, state: sanitized as Record<string, unknown> };
+    }
+    return s;
+  }
 
   // ========== Room Operations ==========
 
@@ -96,16 +111,9 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          session.id,
-          userId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          session = { ...session, state: sanitized as Record<string, unknown> };
-        }
+        session = await this.sanitizeForPlayer(session, userId);
       } catch {
-        // If sanitization fails, return null session or handle appropriately;
-        // safely continue with the unsanitized session state
+        // safely continue with unsanitized session state
       }
     }
 
@@ -226,19 +234,8 @@ export class GamesService {
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(
-      room,
-      session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+    await this.realtimeService.emitGameStarted(room, session, async (s, pId) =>
+      this.sanitizeForPlayer(s, pId),
     );
 
     return { room, session };
@@ -265,16 +262,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+      async (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -352,9 +340,6 @@ export class GamesService {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
 
-  /**
-   * Create a rematch
-   */
   async createRematchFromHistory(
     userId: string,
     roomId: string,
@@ -391,9 +376,6 @@ export class GamesService {
     return this.rematchService.reinvitePlayers(roomId, hostId, userIds);
   }
 
-  /**
-   * Post a note to game history
-   */
   async postHistoryNote(
     roomId: string,
     userId: string,
@@ -408,14 +390,7 @@ export class GamesService {
       await this.realtimeService.emitSessionSnapshot(
         roomId,
         session,
-        async (s, pId) => {
-          const sanitized =
-            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
-          if (sanitized && typeof sanitized === 'object') {
-            return { ...s, state: sanitized as Record<string, unknown> };
-          }
-          return s;
-        },
+        async (s, pId) => this.sanitizeForPlayer(s, pId),
       );
     }
   }
@@ -472,10 +447,6 @@ export class GamesService {
     return updated;
   }
 
-  /**
-   * Remove disabled rule options so the engine cannot use features
-   * that have been excluded by an admin.
-   */
   private stripDisabledRules(
     options: Record<string, unknown>,
     ruleMap: Map<string, boolean>,

@@ -137,7 +137,7 @@ export function ReusableGameLobby({
         onRuleComingSoonChange?.(map);
       })
       .catch(() => {});
-  }, [room.gameId]);
+  }, [room.gameId, onRuleComingSoonChange]);
 
   const [prevGameOptions, setPrevGameOptions] = useState(room.gameOptions);
   if (prevGameOptions !== room.gameOptions) {
@@ -357,7 +357,9 @@ export function ReusableGameLobby({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  cursor: ruleComingSoon.get('idle') ? 'not-allowed' : 'pointer',
+                  cursor: ruleComingSoon.get('idle')
+                    ? 'not-allowed'
+                    : 'pointer',
                   opacity: ruleComingSoon.get('idle') ? 0.4 : 1,
                 }}
               >

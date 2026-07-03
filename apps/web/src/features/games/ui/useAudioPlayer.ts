@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
+import { usePersistedState } from '@/shared/hooks/usePersistedState';
 import {
   loadStoredSettings,
   saveStoredSettings,
@@ -68,9 +69,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const [tracks, setTracks] = useState<readonly MusicTrack[]>(FALLBACK_TRACKS);
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(DEFAULT_VOLUME);
-  const [shuffle, setShuffle] = useState(false);
-  const [repeat, setRepeat] = useState<RepeatMode>('off');
+  const [volume, setVolume] = usePersistedState('musicVolume', DEFAULT_VOLUME);
+  const [shuffle, setShuffle] = usePersistedState('musicShuffle', false);
+  const [repeat, setRepeat] = usePersistedState('musicRepeat', 'off');
   const [miniMode, setMiniMode] = useState(false);
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -148,7 +149,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     tracksLengthRef.current = tracks.length;
     indexRef.current = index;
   });
-
   const crossfadeTo = useCallback((newSrc: string, newVolume: number) => {
     const oldAudio =
       activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
@@ -330,15 +330,14 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       : (index - 1 + tracks.length) % tracks.length;
     playIndex(pi);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
-
   const onVolumeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const v = Number(event.target.value) / 100;
       volumeRef.current = v;
-      setVolume(v);
       if (audioRef.current) audioRef.current.volume = v;
+      setVolume(v);
     },
-    [],
+    [setVolume],
   );
   const onSeek = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(event.target.value);
@@ -359,15 +358,16 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   }, []);
 
   const toggleShuffle = useCallback(() => {
-    setShuffle((s) => {
-      if (!s) setShuffleOrder(shuffleArray(tracks.length));
-      return !s;
-    });
-  }, [tracks.length]);
+    if (!shuffle) setShuffleOrder(shuffleArray(tracks.length));
+    setShuffle(!shuffle);
+  }, [shuffle, tracks.length, setShuffle]);
 
   const cycleRepeat = useCallback(() => {
-    setRepeat((r) => (r === 'off' ? 'all' : r === 'all' ? 'one' : 'off'));
-  }, []);
+    const next = repeat === 'off' ? 'all' : repeat === 'all' ? 'one' : 'off';
+    const a = audioRef.current;
+    if (a) a.loop = next === 'one';
+    setRepeat(next);
+  }, [repeat, setRepeat]);
 
   const toggleTrack = useCallback((trackIndex: number) => {
     setEnabledTracks((prev) => {

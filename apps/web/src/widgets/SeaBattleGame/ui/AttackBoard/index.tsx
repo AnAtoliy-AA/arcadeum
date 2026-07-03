@@ -1,5 +1,5 @@
 'use client';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useMemo, useState } from 'react';
 import type {
   SeaBattlePlayerState,
   SeaBattleSnapshot,
@@ -78,18 +78,26 @@ export const AttackBoard = memo(function AttackBoard({
   // Cache lastSonar/lastRadar across state updates — they may disappear
   // from the snapshot after a re-broadcast but should remain visible until
   // a new weapon is used or the game ends.
-  const cachedLastSonar = useRef(snapshot?.lastSonar ?? null);
-  const cachedLastRadar = useRef(snapshot?.lastRadar ?? null);
+  const [cachedLastSonar, setCachedLastSonar] = useState(
+    () => snapshot?.lastSonar ?? null,
+  );
+  const [cachedLastRadar, setCachedLastRadar] = useState(
+    () => snapshot?.lastRadar ?? null,
+  );
 
-  if (snapshot?.lastSonar) cachedLastSonar.current = snapshot.lastSonar;
-  if (snapshot?.lastRadar) cachedLastRadar.current = snapshot.lastRadar;
-  if (snapshot?.phase !== 'battle') {
-    cachedLastSonar.current = null;
-    cachedLastRadar.current = null;
-  }
+  const nextCachedSonar =
+    snapshot?.phase !== 'battle'
+      ? null
+      : (snapshot?.lastSonar ?? cachedLastSonar);
+  const nextCachedRadar =
+    snapshot?.phase !== 'battle'
+      ? null
+      : (snapshot?.lastRadar ?? cachedLastRadar);
+  if (nextCachedSonar !== cachedLastSonar) setCachedLastSonar(nextCachedSonar);
+  if (nextCachedRadar !== cachedLastRadar) setCachedLastRadar(nextCachedRadar);
 
-  const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar.current;
-  const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar.current;
+  const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar;
+  const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar;
 
   const sonarHighlightSet = (() => {
     const ls = effectiveLastSonar;
@@ -104,7 +112,9 @@ export const AttackBoard = memo(function AttackBoard({
     const ls = effectiveLastSonar;
     if (!ls) return null;
     const map = new Map<string, number>();
-    ls.cells.forEach((c) => map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state));
+    ls.cells.forEach((c) =>
+      map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state),
+    );
     return map;
   })();
 
@@ -121,7 +131,9 @@ export const AttackBoard = memo(function AttackBoard({
     const lr = effectiveLastRadar;
     if (!lr) return null;
     const map = new Map<string, number>();
-    lr.cells.forEach((c) => map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state));
+    lr.cells.forEach((c) =>
+      map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state),
+    );
     return map;
   })();
 
@@ -184,9 +196,7 @@ export const AttackBoard = memo(function AttackBoard({
                   ? weaponPreviewType
                   : null
               }
-              onCellHover={
-                isTeammate ? undefined : onCellHover
-              }
+              onCellHover={isTeammate ? undefined : onCellHover}
               onCellHoverEnd={onCellHoverEnd}
               weaponMode={weaponMode}
               t={t}

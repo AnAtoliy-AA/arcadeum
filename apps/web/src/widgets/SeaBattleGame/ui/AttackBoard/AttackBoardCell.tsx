@@ -27,7 +27,7 @@ interface AttackBoardCellProps {
 }
 
 export const AttackBoardCell = memo(function AttackBoardCell({
-  cellState,
+  cellState: _cellState,
   displayState,
   isSunk,
   theme,

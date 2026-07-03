@@ -9,6 +9,7 @@ import {
   loginOAuthSession,
   fetchDiscovery,
   revokeProviderToken,
+  logoutSession,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { type SessionTokensValue } from '@/entities/session/model/useSessionTokens';
@@ -259,7 +260,6 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
     setState(defaultState);
     clearOAuthSessionState();
     if (providerToken) {
-      // Attempt to revoke using discovery endpoint if available
       try {
         const discovery = await getCachedDiscovery(authConfig.issuer);
         if (discovery.revocation_endpoint) {
@@ -273,6 +273,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         // Ignore errors during logout
       }
     }
+    await logoutSession().catch(() => {});
     await session.clearTokens();
   }, [session]);
 

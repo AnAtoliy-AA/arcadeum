@@ -13,6 +13,10 @@ export const adminUsersRu = {
     role: 'Роль',
     createdAt: 'Создан',
     actions: 'Действия',
+    selectAll: 'Выбать всех на странице',
+    selectedCount: '{count} выбрано',
+    deleteSelected: 'Удалить выбранные',
+    deselectAll: 'Снять выделение',
   },
   empty: {
     noResults: 'Нет пользователей по фильтру.',

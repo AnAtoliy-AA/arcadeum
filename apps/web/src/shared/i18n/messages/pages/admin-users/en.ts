@@ -11,6 +11,10 @@ export const adminUsersEn = {
     role: 'Role',
     createdAt: 'Created',
     actions: 'Actions',
+    selectAll: 'Select all on page',
+    selectedCount: '{count} selected',
+    deleteSelected: 'Delete selected',
+    deselectAll: 'Deselect all',
   },
   empty: {
     noResults: 'No users match your filters.',

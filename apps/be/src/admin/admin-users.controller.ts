@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -82,5 +83,14 @@ export class AdminUsersController {
   ): Promise<AdminUserItem> {
     const requesterUserId = req.user?.userId ?? '';
     return this.service.restore(id, requesterUserId);
+  }
+
+  @Post('bulk-delete')
+  bulkDelete(
+    @Body() body: { userIds: string[] },
+    @Req() req: RequestWithUser,
+  ): Promise<{ deleted: number; skipped: string[] }> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.bulkDelete(body.userIds ?? [], requesterUserId);
   }
 }

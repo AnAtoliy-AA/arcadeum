@@ -12,6 +12,7 @@ import {
   unblockUser,
   deleteUser,
   restoreUser,
+  bulkDeleteUsers,
   type AdminUserItem,
   type AdminUsersResponse,
   type ListAdminUsersArgs,
@@ -78,6 +79,18 @@ export function useRestoreUser() {
   const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
   return useMutation<AdminUserItem, { userId: string }>({
     mutationFn: ({ userId }) => restoreUser(userId, accessToken!),
+    onSettled: () => triggerRefresh(ADMIN_USERS_REFRESH_KEY),
+  });
+}
+
+export function useBulkDeleteUsers() {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
+  return useMutation<
+    { deleted: number; skipped: string[] },
+    { userIds: string[] }
+  >({
+    mutationFn: ({ userIds }) => bulkDeleteUsers(userIds, accessToken!),
     onSettled: () => triggerRefresh(ADMIN_USERS_REFRESH_KEY),
   });
 }

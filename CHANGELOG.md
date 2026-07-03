@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.29] - 2026-07-03
+
+### Fixed
+- play next track when previous ends (wasPlaying was false after ended) (N/A)
+- show music icon in mobile menu by using navItem.icon fallback (N/A)
+- remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
+- add audio error logging for CDN debugging (N/A)
+- restore crossOrigin on audio elements — CDN supports CORS (N/A)
+- load full music catalog in dev mode instead of 10-track fallback (N/A)
+- remove crossOrigin from audio elements to fix CDN CORS error (N/A)
+- make refreshToken optional in refresh DTO to allow cookie-based refresh (N/A)
+- use store refreshTokens in checkSession instead of refreshSessionFromCookie (N/A)
+- clear session when refresh token is missing instead of sending empty string (N/A)
+- use store refreshTokens with proper guards on rehydration (N/A)
+- change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
+- persist refresh token and restore session on page reload (N/A)
+
+
 ## [1.22.28] - 2026-07-03
 
 ### Added

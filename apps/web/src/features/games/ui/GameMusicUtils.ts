@@ -43,7 +43,7 @@ async function loadTracksJson(): Promise<MusicTrack[] | null> {
 
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  if (CDN_BASE && process.env.NODE_ENV !== 'development') {
+  if (CDN_BASE) {
     try {
       const data = await loadTracksJson();
       if (data) {
@@ -86,4 +86,13 @@ export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / SECONDS_PER_MINUTE);
   const s = Math.floor(seconds % SECONDS_PER_MINUTE);
   return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+export function shuffleArray(n: number): number[] {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }

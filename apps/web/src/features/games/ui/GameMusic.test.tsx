@@ -54,6 +54,9 @@ class FakeAudio {
     if (src) this.src = src;
     created.push(this);
   }
+  removeAttribute(name: string) {
+    if (name === 'src') this.src = '';
+  }
   addEventListener(type: string, cb: () => void) {
     (this.listeners[type] ??= []).push(cb);
   }

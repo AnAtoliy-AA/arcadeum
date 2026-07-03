@@ -7,7 +7,6 @@ import {
   fetchProfile,
   loginLocal,
   registerLocal,
-  refreshSessionFromCookie,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
@@ -225,26 +224,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         : await session.reload();
       if (!baseSnapshot.accessToken) {
         try {
-          const refreshed = await refreshSessionFromCookie();
+          const refreshed = await useSessionStore.getState().refreshTokens();
           if (refreshed.accessToken) {
-            const merged = await session.setTokens({
-              provider: 'local',
-              accessToken: refreshed.accessToken,
-              accessTokenExpiresAt: refreshed.accessTokenExpiresAt,
-              refreshToken: refreshed.refreshToken,
-              refreshTokenExpiresAt: refreshed.refreshTokenExpiresAt,
-              tokenType: 'Bearer',
-              userId: refreshed.user?.id ?? null,
-              email: refreshed.user?.email ?? storedEmail ?? null,
-              username: refreshed.user?.username ?? null,
-              displayName:
-                refreshed.user?.displayName ??
-                refreshed.user?.username ??
-                refreshed.user?.email ??
-                null,
-              role: refreshed.user?.role ?? null,
-            });
-            applySnapshot(merged);
+            applySnapshot(refreshed);
             return;
           }
         } catch {

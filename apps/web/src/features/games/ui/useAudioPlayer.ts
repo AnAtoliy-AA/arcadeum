@@ -10,6 +10,7 @@ import {
   fetchTracks,
   FALLBACK_TRACKS,
   trackIndexForGame,
+  shuffleArray,
   DEFAULT_VOLUME,
   type MusicTrack,
   type RepeatMode,
@@ -18,14 +19,6 @@ import { usePlayerKeyboard } from './usePlayerKeyboard';
 
 const CROSSFADE_MS = 1200;
 
-function shuffleArray(n: number): number[] {
-  const arr = Array.from({ length: n }, (_, i) => i);
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 export interface AudioPlayerState {
   tracks: readonly MusicTrack[];
   index: number;
@@ -163,13 +156,14 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
     if (!newAudio || !oldAudio) return;
     const wasPlaying = !oldAudio.paused;
+    const trackEnded = oldAudio.ended;
     cancelAnimationFrame(crossfadeRafRef.current);
     activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
     newAudio.src = newSrc;
     newAudio.volume = 0;
     newAudio.loop = repeatRef.current === 'one';
-    if (wasPlaying) newAudio.play().catch(() => {});
-    if (wasPlaying) {
+    if (wasPlaying || trackEnded) newAudio.play().catch(() => {});
+    if (wasPlaying || trackEnded) {
       let start = -1;
       const oldStartVol = oldAudio.volume;
       const step = (now: number) => {
@@ -187,7 +181,8 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       crossfadeRafRef.current = requestAnimationFrame(step);
     } else {
       newAudio.volume = newVolume;
-      oldAudio.src = '';
+      oldAudio.pause();
+      oldAudio.removeAttribute('src');
       oldAudio.currentTime = 0;
       oldAudio.volume = 0;
     }
@@ -222,7 +217,12 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
           setTrackDurations((prev) => ({ ...prev, [a.src]: a.duration }));
       }
     };
-    const onError = () => setError('Failed to load track');
+    const onError = (e: Event) => {
+      const a = e.target as HTMLAudioElement;
+      if (!a?.src || a.src === window.location.href) return;
+      console.error('[GameMusic]', a?.error?.code, a?.error?.message, a?.src);
+      setError('Failed to load track');
+    };
     const onEnded = () => {
       if (repeatRef.current === 'one') return;
       const dir = (i: number) =>

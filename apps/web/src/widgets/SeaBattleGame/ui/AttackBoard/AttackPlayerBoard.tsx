@@ -38,7 +38,11 @@ interface AttackPlayerBoardProps {
   sunkCellSet: Set<string>;
   sonarHighlightCells?: Set<string> | null;
   radarHighlightCells?: Set<string> | null;
+  weaponPreviewCells?: Set<string> | null;
+  weaponPreviewType?: 'sonar' | 'radar' | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
+  onCellHover?: (playerId: string, row: number, col: number) => void;
+  onCellHoverEnd?: () => void;
   t: (key: TranslationKey) => string;
 }
 
@@ -56,7 +60,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   sunkCellSet,
   sonarHighlightCells,
   radarHighlightCells,
+  weaponPreviewCells,
+  weaponPreviewType,
   onAttack,
+  onCellHover,
+  onCellHoverEnd,
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
@@ -140,6 +148,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               : !isMe && radarHighlightCells?.has(cellKey)
                 ? 'radar'
                 : null;
+          const isWeaponPreview =
+            !isMe && weaponPreviewCells?.has(cellKey);
 
           return (
             <AttackBoardCell
@@ -150,10 +160,18 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isAttackable={isAttackable}
               isPending={isPending}
               highlight={highlight}
+              isWeaponPreview={!!isWeaponPreview}
+              weaponPreviewType={!isMe ? weaponPreviewType : null}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}
               isMe={isMe}
+              onMouseEnter={
+                !isMe && onCellHover
+                  ? () => onCellHover(player.playerId, rIndex, cIndex)
+                  : undefined
+              }
+              onMouseLeave={!isMe && onCellHoverEnd ? onCellHoverEnd : undefined}
             />
           );
         }),

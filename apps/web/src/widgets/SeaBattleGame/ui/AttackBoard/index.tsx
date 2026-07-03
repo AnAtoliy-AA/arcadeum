@@ -24,6 +24,10 @@ export interface AttackBoardProps {
   teams?: SeaBattleTeam[];
   gridSize?: number;
   snapshot?: SeaBattleSnapshot | null;
+  weaponPreviewCells?: Set<string> | null;
+  weaponPreviewType?: 'sonar' | 'radar' | null;
+  onCellHover?: (playerId: string, row: number, col: number) => void;
+  onCellHoverEnd?: () => void;
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -37,6 +41,10 @@ export const AttackBoard = memo(function AttackBoard({
   teammateIds,
   teams,
   snapshot,
+  weaponPreviewCells,
+  weaponPreviewType,
+  onCellHover,
+  onCellHoverEnd,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -130,6 +138,20 @@ export const AttackBoard = memo(function AttackBoard({
               onAttack={isTeammate ? undefined : onAttack}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
               radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
+              weaponPreviewCells={
+                weaponPreviewType && weaponPreviewCells
+                  ? weaponPreviewCells
+                  : null
+              }
+              weaponPreviewType={
+                weaponPreviewType && weaponPreviewCells
+                  ? weaponPreviewType
+                  : null
+              }
+              onCellHover={
+                isTeammate ? undefined : onCellHover
+              }
+              onCellHoverEnd={onCellHoverEnd}
               t={t}
             />
           );

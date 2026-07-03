@@ -18,6 +18,10 @@ interface AttackBoardCellProps {
   isPending?: boolean;
   isMe: boolean;
   highlight?: 'sonar' | 'radar' | null;
+  isWeaponPreview?: boolean;
+  weaponPreviewType?: 'sonar' | 'radar' | null;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export const AttackBoardCell = memo(function AttackBoardCell({
@@ -30,6 +34,10 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isPending = false,
   isMe,
   highlight,
+  isWeaponPreview = false,
+  weaponPreviewType,
+  onMouseEnter,
+  onMouseLeave,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
@@ -47,6 +55,21 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           }
         : {};
 
+  const previewStyle: React.CSSProperties =
+    isWeaponPreview && weaponPreviewType === 'sonar'
+      ? {
+          boxShadow: '0 0 6px 1px rgba(6, 182, 212, 0.4)',
+          borderColor: 'rgba(6, 182, 212, 0.5)',
+          backgroundColor: 'rgba(6, 182, 212, 0.08)',
+        }
+      : isWeaponPreview && weaponPreviewType === 'radar'
+        ? {
+            boxShadow: '0 0 6px 1px rgba(168, 85, 247, 0.4)',
+            borderColor: 'rgba(168, 85, 247, 0.5)',
+            backgroundColor: 'rgba(168, 85, 247, 0.08)',
+          }
+        : {};
+
   return (
     <BoardCell
       style={{
@@ -54,10 +77,14 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         borderColor: theme.cellBorder,
         borderRadius: parseInt(theme.borderRadius) || 4,
         ...highlightStyle,
+        ...previewStyle,
+        ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
       }}
-      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${animClass || ''}`}
+      className={`sb-cell ${isAttackable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {icon && (
         <Text

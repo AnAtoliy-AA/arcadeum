@@ -10,6 +10,7 @@ import {
   fetchTracks,
   FALLBACK_TRACKS,
   trackIndexForGame,
+  shuffleArray,
   DEFAULT_VOLUME,
   type MusicTrack,
   type RepeatMode,
@@ -18,14 +19,6 @@ import { usePlayerKeyboard } from './usePlayerKeyboard';
 
 const CROSSFADE_MS = 1200;
 
-function shuffleArray(n: number): number[] {
-  const arr = Array.from({ length: n }, (_, i) => i);
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 export interface AudioPlayerState {
   tracks: readonly MusicTrack[];
   index: number;
@@ -197,8 +190,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (!musicEnabled) return;
     if (!audioARef.current) {
       audioARef.current = new Audio();
+      audioARef.current.crossOrigin = 'anonymous';
       audioARef.current.preload = 'metadata';
       audioBRef.current = new Audio();
+      audioBRef.current.crossOrigin = 'anonymous';
       audioBRef.current.preload = 'metadata';
       audioRef.current = audioARef.current;
     }

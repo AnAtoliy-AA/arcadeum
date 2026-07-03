@@ -87,3 +87,12 @@ export function formatTime(seconds: number): string {
   const s = Math.floor(seconds % SECONDS_PER_MINUTE);
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+export function shuffleArray(n: number): number[] {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}

@@ -47,6 +47,7 @@ export interface BaseGameState {
   logs: GameLogEntry[];
   currentTurnIndex?: number;
   gameResult?: GameResult;
+  stateHistory?: unknown[];
   [key: string]: unknown;
 }
 

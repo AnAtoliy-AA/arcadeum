@@ -7,6 +7,9 @@ import {
 } from '../common/utils/socket-encryption.util';
 import { extractString } from './games.gateway.utils';
 
+const emoteRateLimits = new Map<string, number>();
+const EMOTE_RATE_LIMIT_MS = 2000;
+
 export function handleEmote(
   logger: Logger,
   server: Server,
@@ -31,6 +34,12 @@ export function handleEmote(
     );
     return;
   }
+
+  const rateKey = `${roomId}:${userId}`;
+  const now = Date.now();
+  const lastEmote = emoteRateLimits.get(rateKey);
+  if (lastEmote && now - lastEmote < EMOTE_RATE_LIMIT_MS) return;
+  emoteRateLimits.set(rateKey, now);
 
   const channel = realtime.roomChannel(roomId);
   if (!client.rooms.has(channel)) return;

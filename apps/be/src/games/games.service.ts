@@ -311,6 +311,10 @@ export class GamesService {
     return this.sessionsService.getAvailableActions(sessionId, playerId);
   }
 
+  async revertLastMove(sessionId: string) {
+    return this.sessionsService.revertToPreviousState(sessionId);
+  }
+
   // ========== History Operations ==========
 
   /**

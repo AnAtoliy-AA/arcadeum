@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useSessionStore } from '../store/sessionStore';
 import { apiClient, ApiError } from '@/shared/lib/api-client';
+import { refreshSessionFromCookie } from '../api/authApi';
 import type { AuthUserProfile } from '../api/authApi';
 
 const FOCUS_THROTTLE_MS = 30_000;
@@ -25,7 +26,35 @@ export function SessionRoleSync(): null {
       if (inFlightRef.current) return;
 
       const stateBefore = useSessionStore.getState();
-      if (!stateBefore.hydrated || !stateBefore.snapshot.accessToken) return;
+      if (!stateBefore.hydrated) return;
+
+      if (!stateBefore.snapshot.accessToken) {
+        try {
+          const refreshed = await refreshSessionFromCookie();
+          if (refreshed.accessToken) {
+            await stateBefore.setTokens({
+              provider: 'local',
+              accessToken: refreshed.accessToken,
+              accessTokenExpiresAt: refreshed.accessTokenExpiresAt,
+              refreshToken: refreshed.refreshToken,
+              refreshTokenExpiresAt: refreshed.refreshTokenExpiresAt,
+              tokenType: 'Bearer',
+              userId: refreshed.user?.id ?? null,
+              email: refreshed.user?.email ?? null,
+              username: refreshed.user?.username ?? null,
+              displayName:
+                refreshed.user?.displayName ??
+                refreshed.user?.username ??
+                refreshed.user?.email ??
+                null,
+              role: refreshed.user?.role ?? null,
+            });
+          }
+        } catch {
+          // Cookie refresh failed — no session to recover
+        }
+        return;
+      }
 
       const now = Date.now();
       if (now - lastSuccessfulSyncAtRef.current < FOCUS_THROTTLE_MS) return;

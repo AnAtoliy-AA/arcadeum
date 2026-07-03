@@ -76,6 +76,7 @@ export class GameRoomsMapper {
       createdAt: room.createdAt.toISOString(),
       status: room.status,
       inviteCode: room.inviteCode,
+      hasPassword: !!(room as unknown as { password?: string }).password,
       gameOptions: room.gameOptions ? structuredClone(room.gameOptions) : {},
       rematchInvitedUsers,
       rematchDeclinedUsers,

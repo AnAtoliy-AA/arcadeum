@@ -54,6 +54,7 @@ import {
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
+import { saveStoredSettings } from '@/shared/lib/settings-storage';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();
@@ -70,6 +71,7 @@ export function HeaderInteractive() {
     useMobileMenu();
 
   const toggleMusic = useCallback(() => {
+    saveStoredSettings({ musicEnabled: true });
     window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
   }, []);
 

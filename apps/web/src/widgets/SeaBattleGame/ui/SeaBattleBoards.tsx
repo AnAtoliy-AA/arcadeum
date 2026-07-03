@@ -382,9 +382,10 @@ export function SeaBattleBoards({
             onCellHover={
               isWeaponMode
                 ? (playerId: string, row: number, col: number) => {
-                    if (playerId === weaponMode.targetPlayerId) {
-                      setHoveredCell({ row, col });
-                    }
+                    setWeaponMode((prev) =>
+                      prev ? { ...prev, targetPlayerId: playerId } : prev,
+                    );
+                    setHoveredCell({ row, col });
                   }
                 : undefined
             }

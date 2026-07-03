@@ -230,20 +230,16 @@ export const useSessionStore = create<SessionState>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
         const s = state as SessionState;
-        if (!s.snapshot.refreshToken) return;
+        if (
+          !s.snapshot.refreshToken ||
+          typeof s.snapshot.refreshToken !== 'string'
+        )
+          return;
 
-        refreshSession(s.snapshot.refreshToken)
-          .then((response) => {
-            const merged = enrichWithResponse(
-              useSessionStore.getState().snapshot,
-              response,
-              s.snapshot.provider ?? 'local',
-            );
-            useSessionStore.setState({ snapshot: merged });
-          })
-          .catch(() => {
-            useSessionStore.getState().clearTokens();
-          });
+        useSessionStore
+          .getState()
+          .refreshTokens()
+          .catch(() => {});
       },
     },
   ),

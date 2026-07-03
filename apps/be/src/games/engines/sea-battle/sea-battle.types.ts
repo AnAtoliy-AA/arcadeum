@@ -70,7 +70,7 @@ export interface SeaBattleState {
     centerRow: number;
     centerCol: number;
     radius: number;
-    shipPositions: ShipCell[];
+    cells: { row: number; col: number; state: CellState }[];
   };
   lastRadar?: {
     attackerId: string;

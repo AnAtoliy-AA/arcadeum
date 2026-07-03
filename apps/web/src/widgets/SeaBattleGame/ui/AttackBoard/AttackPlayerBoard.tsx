@@ -37,7 +37,9 @@ interface AttackPlayerBoardProps {
   team?: SeaBattleTeam;
   sunkCellSet: Set<string>;
   sonarHighlightCells?: Set<string> | null;
+  sonarCellStates?: Map<string, number> | null;
   radarHighlightCells?: Set<string> | null;
+  radarCellStates?: Map<string, number> | null;
   weaponPreviewCells?: Set<string> | null;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
@@ -60,7 +62,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   team,
   sunkCellSet,
   sonarHighlightCells,
+  sonarCellStates,
   radarHighlightCells,
+  radarCellStates,
   weaponPreviewCells,
   weaponPreviewType,
   onAttack,
@@ -151,12 +155,16 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             !isPending;
           const isWeaponClickable = !isMe && !isTeammate && !!weaponMode;
           const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
+          const isSonarCell = !isMe && sonarHighlightCells?.has(cellKey);
+          const isRadarCell = !isMe && radarHighlightCells?.has(cellKey);
           const highlight: 'sonar' | 'radar' | null =
-            !isMe && sonarHighlightCells?.has(cellKey)
-              ? 'sonar'
-              : !isMe && radarHighlightCells?.has(cellKey)
-                ? 'radar'
-                : null;
+            isSonarCell ? 'sonar' : isRadarCell ? 'radar' : null;
+          const highlightCellState =
+            isSonarCell && sonarCellStates
+              ? sonarCellStates.get(cellKey)
+              : isRadarCell && radarCellStates
+                ? radarCellStates.get(cellKey)
+                : undefined;
           const isWeaponPreview =
             !isMe && weaponPreviewCells?.has(cellKey);
 
@@ -169,6 +177,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isAttackable={isAttackable}
               isPending={isPending}
               highlight={highlight}
+              highlightCellState={highlightCellState}
               isWeaponPreview={!!isWeaponPreview}
               weaponPreviewType={!isMe ? weaponPreviewType : null}
               isWeaponClickable={isWeaponClickable}

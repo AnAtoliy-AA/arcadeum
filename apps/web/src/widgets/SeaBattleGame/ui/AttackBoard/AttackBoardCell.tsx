@@ -18,6 +18,7 @@ interface AttackBoardCellProps {
   isPending?: boolean;
   isMe: boolean;
   highlight?: 'sonar' | 'radar' | null;
+  highlightCellState?: number;
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   isWeaponClickable?: boolean;
@@ -36,6 +37,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isPending = false,
   isMe,
   highlight,
+  highlightCellState,
   isWeaponPreview = false,
   weaponPreviewType,
   isWeaponClickable = false,
@@ -45,7 +47,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
 
-  const isShip = cellState === 1; // CellState.SHIP
+  const isShip = highlightCellState === 1; // CellState.SHIP
 
   const highlightStyle: React.CSSProperties =
     highlight === 'sonar'

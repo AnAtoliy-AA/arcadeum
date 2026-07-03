@@ -79,20 +79,34 @@ export const AttackBoard = memo(function AttackBoard({
     const ls = snapshot?.lastSonar;
     if (!ls) return null;
     const set = new Set<string>();
-    ls.shipPositions.forEach((c) =>
-      set.add(`${ls.targetId}-${c.row}-${c.col}`),
-    );
+    ls.cells.forEach((c) => set.add(`${ls.targetId}-${c.row}-${c.col}`));
     return set;
+  })();
+
+  // Map cellKey → state for sonar scanned cells (SHIP=1, EMPTY=0, etc.)
+  const sonarCellStates = (() => {
+    const ls = snapshot?.lastSonar;
+    if (!ls) return null;
+    const map = new Map<string, number>();
+    ls.cells.forEach((c) => map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state));
+    return map;
   })();
 
   const radarHighlightSet = (() => {
     const lr = snapshot?.lastRadar;
     if (!lr) return null;
     const set = new Set<string>();
-    lr.cells
-      .filter((c) => c.state === 1) // CellState.SHIP = 1
-      .forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
+    lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
     return set;
+  })();
+
+  // Map cellKey → state for radar scanned cells
+  const radarCellStates = (() => {
+    const lr = snapshot?.lastRadar;
+    if (!lr) return null;
+    const map = new Map<string, number>();
+    lr.cells.forEach((c) => map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state));
+    return map;
   })();
 
   return (
@@ -141,7 +155,9 @@ export const AttackBoard = memo(function AttackBoard({
               sunkCellSet={sunkCellSet}
               onAttack={isTeammate ? undefined : onAttack}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
+              sonarCellStates={isSonarTarget ? sonarCellStates : null}
               radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
+              radarCellStates={isRadarTarget ? radarCellStates : null}
               weaponPreviewCells={
                 weaponPreviewType && weaponPreviewCells
                   ? weaponPreviewCells

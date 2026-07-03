@@ -264,10 +264,11 @@ export class SeaBattleBotService {
             'useSonar',
             { targetPlayerId: target.playerId, row: centerRow, col: centerCol },
           );
-          currentSession = await this.seaBattleService.findSessionByRoom(
+          const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
           );
-          if (!currentSession) break;
+          if (!refreshed) break;
+          currentSession = refreshed;
           const postSonar = currentSession.state as unknown as SeaBattleState;
           const nextAfterSonar =
             postSonar.playerOrder[postSonar.currentTurnIndex];
@@ -285,10 +286,11 @@ export class SeaBattleBotService {
             'useRadar',
             { targetPlayerId: target.playerId, row },
           );
-          currentSession = await this.seaBattleService.findSessionByRoom(
+          const refreshedRadar = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
           );
-          if (!currentSession) break;
+          if (!refreshedRadar) break;
+          currentSession = refreshedRadar;
           const postRadar = currentSession.state as unknown as SeaBattleState;
           const nextAfterRadar =
             postRadar.playerOrder[postRadar.currentTurnIndex];

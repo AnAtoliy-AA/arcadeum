@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.30] - 2026-07-03
+
+### Added
+- bots use sonar/radar when enabled in game state (N/A)
+- improve sonar/radar UX with board hover preview (N/A)
+- add missing sea battle rules and rule descriptions to game catalog (N/A)
+
+### Fixed
+- audio player repeat one and lint issues (N/A)
+- weapon preview works on any opponent board (N/A)
+- cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
+- sonar 3×3, radar shows all cells, highlights persist (N/A)
+- show all scanned cells, ship cells stand out from empty (N/A)
+- match sonar preview to backend radius, filter radar to ship cells only (N/A)
+- remove border shorthand/non-shorthand mixing in weapon buttons (N/A)
+- pass row/col to sonar handler, add radar row/col toggle (N/A)
+- pass weaponMode prop through AttackBoard to opponent boards (N/A)
+- fix sonar/radar not firing, remove bomb animation in weapon mode (N/A)
+- show all rules in lobby, disabled + Coming Soon when excluded (N/A)
+- default unmentioned rules to enabled, hide excluded rules (N/A)
+- use i18n key for Coming Soon badge text (N/A)
+- enforce rule visibility in lobby UI and updateRoomOptions (N/A)
+- enforce game rule visibility in createRoom (N/A)
+- add CSRF header to server actions and fix game rules response (N/A)
+
+
 ## [1.22.29] - 2026-07-03
 
 ### Fixed

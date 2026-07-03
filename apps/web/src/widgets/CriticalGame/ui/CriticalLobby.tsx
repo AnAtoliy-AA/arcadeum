@@ -80,6 +80,10 @@ export function CriticalLobby({
   const [showRules, setShowRules] = useState(false);
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
+
   const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const variantInfo = getVariantInfo(cardVariant);
   const theme = getCriticalTheme(cardVariant);
@@ -111,15 +115,24 @@ export function CriticalLobby({
               !!(room.gameOptions as Record<string, unknown>)
                 ?.allowActionCardCombos
             }
+            disabled={!!ruleComingSoon.get('combos')}
             onCheckedChange={(val) => setOption({ allowActionCardCombos: val })}
             size="$2"
           >
             <Switch.Thumb />
           </Switch>
-          <Text fontSize="$3">
+          <Text
+            fontSize="$3"
+            opacity={ruleComingSoon.get('combos') ? 0.4 : 1}
+          >
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
           </Text>
+          {ruleComingSoon.get('combos') && (
+            <Text fontSize={10} color="#f59e0b" fontWeight="600">
+              Coming Soon
+            </Text>
+          )}
         </XStack>
       </VariantSelectorWrapper>
     ) : null;
@@ -199,6 +212,7 @@ export function CriticalLobby({
       showReorderControls={true}
       showInvitedPlayers={true}
       enableBots={true}
+      onRuleComingSoonChange={setRuleComingSoon}
     />
   );
 }

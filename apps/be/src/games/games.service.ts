@@ -12,6 +12,7 @@ import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { AuthService } from '../auth/auth.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
@@ -45,6 +46,7 @@ export class GamesService {
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
+    private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
 
   // ========== Room Operations ==========
@@ -452,13 +454,55 @@ export class GamesService {
     userId: string,
     options: Record<string, unknown>,
   ) {
-    const room = await this.roomsService.updateRoomOptions(
+    // Strip disabled rules before persisting.
+    try {
+      const room = await this.roomsService.getRoom(roomId);
+      const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
+      this.stripDisabledRules(options, ruleMap);
+    } catch {
+      // Room not found or inaccessible — proceed without stripping.
+    }
+
+    const updated = await this.roomsService.updateRoomOptions(
       roomId,
       userId,
       options,
     );
-    this.realtimeService.emitRoomUpdated(room);
-    return room;
+    this.realtimeService.emitRoomUpdated(updated);
+    return updated;
+  }
+
+  /**
+   * Remove disabled rule options so the engine cannot use features
+   * that have been excluded by an admin.
+   */
+  private stripDisabledRules(
+    options: Record<string, unknown>,
+    ruleMap: Map<string, boolean>,
+  ): void {
+    if (ruleMap.get('gridSize') === false) {
+      delete options.gridSize;
+    }
+
+    const sw = options.specialWeapons;
+    if (typeof sw === 'object' && sw !== null) {
+      const weapons = sw as Record<string, unknown>;
+      if (ruleMap.get('sonar') === false) delete weapons.sonar;
+      if (ruleMap.get('radar') === false) delete weapons.radar;
+      if (Object.keys(weapons).length === 0) {
+        delete options.specialWeapons;
+      }
+    }
+
+    if (ruleMap.get('teams') === false) {
+      delete options.teams;
+      delete options.teamConfig;
+      if (options.mode === 'team') delete options.mode;
+    }
+
+    if (ruleMap.get('combos') === false) {
+      delete options.expansions;
+    }
   }
 
   async reorderParticipants(

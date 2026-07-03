@@ -28,6 +28,7 @@ export interface AttackBoardProps {
   weaponPreviewType?: 'sonar' | 'radar' | null;
   onCellHover?: (playerId: string, row: number, col: number) => void;
   onCellHoverEnd?: () => void;
+  weaponMode?: boolean;
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -45,6 +46,7 @@ export const AttackBoard = memo(function AttackBoard({
   weaponPreviewType,
   onCellHover,
   onCellHoverEnd,
+  weaponMode,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -152,6 +154,7 @@ export const AttackBoard = memo(function AttackBoard({
                 isTeammate ? undefined : onCellHover
               }
               onCellHoverEnd={onCellHoverEnd}
+              weaponMode={weaponMode}
               t={t}
             />
           );

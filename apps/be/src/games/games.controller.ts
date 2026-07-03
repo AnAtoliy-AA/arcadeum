@@ -37,6 +37,7 @@ import {
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 import { GAME_CATALOG } from './games.catalog';
 import { extractVariantFromOptions } from './game-options';
@@ -48,23 +49,74 @@ export class GamesController {
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
     private readonly visibility: GameVisibilityService,
+    private readonly ruleVisibility: GameRuleVisibilityService,
     private readonly roleResolver: UserRoleResolver,
   ) {}
+
+  /**
+   * Remove disabled rule options from gameOptions so the engine cannot use
+   * features that have been excluded by an admin.
+   */
+  private stripDisabledRules(
+    gameOptions: Record<string, unknown>,
+    ruleMap: Map<string, boolean>,
+  ): void {
+    // gridSize — used by sea_battle_v1
+    if (ruleMap.get('gridSize') === false) {
+      delete gameOptions.gridSize;
+    }
+
+    // specialWeapons (sonar / radar) — used by sea_battle_v1
+    const sw = gameOptions.specialWeapons;
+    if (typeof sw === 'object' && sw !== null) {
+      const weapons = sw as Record<string, unknown>;
+      if (ruleMap.get('sonar') === false) {
+        delete weapons.sonar;
+      }
+      if (ruleMap.get('radar') === false) {
+        delete weapons.radar;
+      }
+      // Remove the whole object if empty
+      if (Object.keys(weapons).length === 0) {
+        delete gameOptions.specialWeapons;
+      }
+    }
+
+    // teams — used by sea_battle_v1, tic_tac_toe_v1
+    if (ruleMap.get('teams') === false) {
+      delete gameOptions.teams;
+      delete gameOptions.teamConfig;
+      if (gameOptions.mode === 'team') {
+        delete gameOptions.mode;
+      }
+    }
+
+    // idle — used by multiple games (timer behavior, not a gameOptions key)
+    // spectators — not a gameOptions key (lobby-level setting)
+    // combos — used by critical_v1
+    if (ruleMap.get('combos') === false) {
+      delete gameOptions.expansions;
+    }
+  }
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const role = await this.roleResolver.resolveRole(user?.userId);
+    const allRuleMaps = await this.ruleVisibility.getAllRules();
     const games: CatalogGame[] = [];
     for (const entry of GAME_CATALOG) {
       const visible = await this.visibility.canSee(role, entry.gameId);
       if (!visible) {
-        // Game restricted for this caller — include as coming-soon, no variants surfaced
         games.push({
           gameId: entry.gameId,
           comingSoon: true,
           variants: [],
+          rules: entry.rules.map((r) => ({
+            ruleId: r.ruleId,
+            comingSoon: true,
+          })),
         });
         continue;
       }
@@ -75,10 +127,17 @@ export class GamesController {
         variants.push({ id: v, comingSoon: !visible });
       }
 
+      const ruleMap = allRuleMaps.get(entry.gameId);
+      const rules = entry.rules.map((r) => ({
+        ruleId: r.ruleId,
+        comingSoon: ruleMap ? !(ruleMap.get(r.ruleId) ?? true) : false,
+      }));
+
       games.push({
         gameId: entry.gameId,
         comingSoon: false,
         variants,
+        rules,
       });
     }
     return { games };
@@ -98,6 +157,12 @@ export class GamesController {
     const role = await this.roleResolver.resolveRole(user.userId);
     const variant = extractVariantFromOptions(dto.gameOptions);
     await this.visibility.assertVisible(role, dto.gameId, variant);
+
+    // Strip disabled rules from gameOptions so the engine can't use them.
+    if (dto.gameOptions) {
+      const ruleMap = await this.ruleVisibility.getRulesForGame(dto.gameId);
+      this.stripDisabledRules(dto.gameOptions, ruleMap);
+    }
 
     const room = await this.gamesService.createRoom(user.userId, dto);
     return { room };

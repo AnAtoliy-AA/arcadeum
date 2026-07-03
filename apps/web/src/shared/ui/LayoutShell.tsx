@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { GameMusic } from '@/features/games/ui/GameMusic';
 
 function RouteChangeAnnouncer() {
   const pathname = usePathname();
@@ -55,6 +56,7 @@ export function LayoutShell({ children }: { children: ReactNode }) {
     >
       <RouteChangeAnnouncer />
       {children}
+      <GameMusic />
     </div>
   );
 }

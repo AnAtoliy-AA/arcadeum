@@ -2,6 +2,10 @@ import { FilterQuery } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
 import { ListRoomsFilters } from './game-rooms.types';
 
+function escapeRegExp(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class GameRoomsQueryBuilder {
   static buildListQuery(filters: ListRoomsFilters): FilterQuery<GameRoom> {
     const query: FilterQuery<GameRoom> = {};
@@ -11,7 +15,8 @@ export class GameRoomsQueryBuilder {
     }
 
     if (filters.search) {
-      const searchRegex = { $regex: filters.search, $options: 'i' };
+      const escaped = escapeRegExp(filters.search);
+      const searchRegex = { $regex: escaped, $options: 'i' };
       query.$or = [{ name: searchRegex }, { inviteCode: filters.search }];
     }
 

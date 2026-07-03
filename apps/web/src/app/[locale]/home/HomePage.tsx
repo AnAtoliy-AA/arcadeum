@@ -14,7 +14,7 @@ import '@/app/styles/animations-pages.scss';
 const HomeGames = dynamic(() => import('./components/HomeGames'));
 const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
 const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
-const HomeTokenInfo = dynamic(() => import('./components/HomeTokenInfo'));
+
 const HomePresentation = dynamic(() => import('./components/HomePresentation'));
 const HomePitchDeck = dynamic(() => import('./components/HomePitchDeck'));
 const InstallAppCta = dynamic(() =>
@@ -31,7 +31,6 @@ export default function HomePage() {
       <HomeGames />
       <HomeHowItWorks />
       <HomeFeatures />
-      <HomeTokenInfo />
       <HomePresentation />
       <HomePitchDeck />
       <InstallAppCta />

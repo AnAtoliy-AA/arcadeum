@@ -12,6 +12,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -87,6 +88,9 @@ describe('GamesService', () => {
       onGameCompleted: jest.fn().mockResolvedValue(undefined),
       payoutGameWin: jest.fn().mockResolvedValue(undefined),
     };
+    const mockRuleVisibility = {
+      getRulesForGame: jest.fn().mockResolvedValue(new Map()),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -109,6 +113,7 @@ describe('GamesService', () => {
           useValue: mockLeaderboardSync,
         },
         { provide: GamePostMatchService, useValue: mockPostMatchService },
+        { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
       ],
     }).compile();
 

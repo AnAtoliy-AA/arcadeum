@@ -3,12 +3,14 @@ import { GameVariantSelector } from '@/features/games/ui/GameVariantSelector';
 
 interface VariantSelectorProps {
   roomId: string;
+  hostId?: string;
   currentVariant: string;
   disabled?: boolean;
 }
 
 export function VariantSelector({
   roomId,
+  hostId,
   currentVariant,
   disabled = false,
 }: VariantSelectorProps) {
@@ -17,6 +19,7 @@ export function VariantSelector({
   return (
     <GameVariantSelector
       roomId={roomId}
+      hostId={hostId}
       currentVariant={safeVariant}
       variants={CRITICAL_VARIANTS}
       optionKey="cardVariant"

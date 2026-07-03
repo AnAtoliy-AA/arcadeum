@@ -24,6 +24,8 @@ import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
 import { SolanaModule } from './solana/solana.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { BulkRewardsModule } from './bulk-rewards/bulk-rewards.module';
+import { FriendsModule } from './friends/friends.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -40,8 +42,8 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ChatModule,
     AuthModule,
+    ChatModule,
     GamesModule,
     PaymentsModule,
     ReferralModule,
@@ -66,6 +68,8 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ]),
     SupportModule,
     SolanaModule,
+    BulkRewardsModule,
+    FriendsModule,
     MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
   ],
   controllers: [AppController],

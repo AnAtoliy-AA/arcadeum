@@ -27,6 +27,7 @@ export interface GameRoomSummary {
   status: GameRoomStatus;
   inviteCode?: string;
   gameOptions?: Record<string, unknown>;
+  hasPassword?: boolean;
   rematchInvitedUsers?: GameRoomMemberSummary[]; // Re-using member summary or partial
   rematchDeclinedUsers?: GameRoomMemberSummary[];
   invitationTimeout?: number;

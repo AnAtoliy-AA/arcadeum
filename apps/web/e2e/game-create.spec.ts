@@ -142,20 +142,17 @@ test.describe('Game Room Creation', () => {
   });
 
   test('should clear max players with Auto button', async ({ page }) => {
-    // ARC-744 redesign: there's no standalone "Auto" reset button — the
-    // stepper cycles back to "Auto" when the user decrements below the
-    // game minimum. Drive that path directly.
     const incBtn = page.getByTestId('stepper-inc');
-    const decBtn = page.getByTestId('stepper-dec');
-    const stepper = page.getByTestId('max-players-stepper');
+    const autoBtn = page.getByTestId('stepper-auto');
 
+    // Click increment: Auto → 2 (game min for Critical)
     await incBtn.click();
-    // Stepper starts at Auto → first click yields the game min (2 for
-    // Critical), so the visible value is a number now.
-    await expect(stepper).not.toContainText(/auto/i);
+    // The Auto reset button should now be visible
+    await expect(autoBtn).toBeVisible();
 
-    // Decrement once: at the minimum the stepper snaps back to Auto.
-    await decBtn.click();
-    await expect(stepper).toContainText(/auto/i);
+    // Click Auto button to reset back to Auto
+    await autoBtn.click();
+    // The Auto button should disappear and value should show "Auto"
+    await expect(autoBtn).not.toBeVisible();
   });
 });

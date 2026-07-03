@@ -26,6 +26,7 @@ import {
   WalletTransaction,
   WalletTransactionDocument,
 } from '../wallet/schemas/wallet-transaction.schema';
+import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
 
 describe('TournamentsService (integration)', () => {
   let replSet: MongoMemoryReplSet;
@@ -74,22 +75,14 @@ describe('TournamentsService (integration)', () => {
     await userModel.deleteMany({});
     await tournamentModel.deleteMany({});
     await txModel.deleteMany({});
+    resetTestUsers();
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   const createUser = async (initialCoins = 0): Promise<string> => {
-    const uid = new Types.ObjectId().toHexString();
-    const u = await userModel.create({
-      email: `u-${uid}@test.com`,
-      passwordHash: 'hash',
-      username: `u_${uid}`,
-      usernameNormalized: `u_${uid}`,
-      coins: initialCoins,
-      gems: 0,
-      blockedUsers: [],
-    });
-    return u._id.toHexString();
+    const { id } = await createTestUser(userModel, { coins: initialCoins });
+    return id;
   };
 
   const createTournament = async (overrides: {

@@ -9,7 +9,7 @@ import {
 /**
  * Slug keys whose pages we never want indexed (per-user dashboards,
  * payment flows, the OAuth callback, admin). Mirrors `PRIVATE_SLUG_KEYS`
- * in `src/middleware.ts` so robots.txt, the `x-robots-tag` header, and
+ * in `src/proxy.ts` so robots.txt, the `x-robots-tag` header, and
  * the sitemap give Google the same signal in three places. Belt and
  * braces — but cheap, and search-console reports get cleaner.
  */

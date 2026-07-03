@@ -1,0 +1,56 @@
+export const adminUsersEn = {
+  title: 'Users',
+  search: { placeholder: 'Search by username, email, or display name' },
+  filter: {
+    role: { all: 'All roles', placeholder: 'Filter by role' },
+    status: { all: 'All statuses', placeholder: 'Filter by status' },
+  },
+  table: {
+    username: 'Username',
+    email: 'Email',
+    role: 'Role',
+    createdAt: 'Created',
+    actions: 'Actions',
+  },
+  empty: {
+    noResults: 'No users match your filters.',
+    noUsers: 'No users yet.',
+  },
+  pagination: {
+    prev: 'Previous',
+    next: 'Next',
+    of: 'Page {current} of {total}',
+  },
+  totalLabel: '{total} users',
+  selfTooltip: "You can't change your own role.",
+  role: {
+    free: 'Free',
+    premium: 'Premium',
+    vip: 'VIP',
+    supporter: 'Supporter',
+    moderator: 'Moderator',
+    tester: 'Tester',
+    developer: 'Developer',
+    admin: 'Admin',
+  },
+  status: {
+    active: 'Active',
+    blocked: 'Blocked',
+    deleted: 'Removed',
+  },
+  actions: {
+    block: 'Block',
+    unblock: 'Unblock',
+    remove: 'Remove',
+    restore: 'Restore',
+  },
+  errors: {
+    SELF_ROLE_CHANGE_FORBIDDEN: "You can't change your own role.",
+    LAST_ADMIN_PROTECTED: "Can't demote the last admin.",
+    USER_NOT_FOUND: 'User not found.',
+    INVALID_USER_ID: 'Invalid user id.',
+    CANNOT_BLOCK_SELF: "You can't block yourself.",
+    CANNOT_DELETE_SELF: "You can't remove yourself.",
+    generic: 'Something went wrong. Please try again.',
+  },
+};

@@ -36,8 +36,8 @@ describe('buildComingSoonMaps', () => {
   it('maps game comingSoon flags correctly', () => {
     const catalog: CatalogResponse = {
       games: [
-        { gameId: 'critical_v1', comingSoon: true, variants: [] },
-        { gameId: 'sea_battle_v1', comingSoon: false, variants: [] },
+        { gameId: 'critical_v1', comingSoon: true, variants: [], rules: [] },
+        { gameId: 'sea_battle_v1', comingSoon: false, variants: [], rules: [] },
       ],
     };
     const { gameComingSoon } = buildComingSoonMaps(catalog);
@@ -55,6 +55,7 @@ describe('buildComingSoonMaps', () => {
             { id: 'standard', comingSoon: false },
             { id: 'premium', comingSoon: true },
           ],
+          rules: [],
         },
       ],
     };
@@ -70,11 +71,13 @@ describe('buildComingSoonMaps', () => {
           gameId: 'game_a',
           comingSoon: false,
           variants: [{ id: 'v1', comingSoon: true }],
+          rules: [],
         },
         {
           gameId: 'game_b',
           comingSoon: false,
           variants: [{ id: 'v1', comingSoon: false }],
+          rules: [],
         },
       ],
     };

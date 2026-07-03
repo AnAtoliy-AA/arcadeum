@@ -40,3 +40,8 @@ test-results/
 /*.png
 /*.jpg
 /*.jpeg
+
+# Music files — hosted on Cloudflare R2 (2 local fallbacks kept)
+apps/web/public/music/*.mp3
+!apps/web/public/music/clockwork-horizon.mp3
+!apps/web/public/music/clockwork-horizon-v2.mp3

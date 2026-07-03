@@ -6,13 +6,14 @@ import {
   type GameLobbyTheme,
   IconButton,
 } from '@/features/games/ui/ReusableGameLobby';
-import { TamaguiElement } from 'tamagui';
+import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { VariantSelectorWrapper } from './styles/lobby';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 // Get theme based on card variant
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {
@@ -43,6 +44,7 @@ const getVariantInfo = (variant?: string) => {
 
 export interface CriticalLobbyProps {
   room: GameRoomSummary;
+  userId: string;
   isHost: boolean;
   startBusy: boolean;
   isFullscreen: boolean;
@@ -60,6 +62,7 @@ export interface CriticalLobbyProps {
 
 export function CriticalLobby({
   room,
+  userId,
   isHost,
   startBusy,
   isFullscreen,
@@ -75,6 +78,11 @@ export function CriticalLobby({
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
+
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
 
   const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const variantInfo = getVariantInfo(cardVariant);
@@ -96,7 +104,36 @@ export function CriticalLobby({
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
       <VariantSelectorWrapper>
-        <VariantSelector roomId={room.id} currentVariant={cardVariant} />
+        <VariantSelector
+          roomId={room.id}
+          hostId={userId}
+          currentVariant={cardVariant}
+        />
+        <XStack alignItems="center" gap="$2" paddingTop="$2">
+          <Switch
+            checked={
+              !!(room.gameOptions as Record<string, unknown>)
+                ?.allowActionCardCombos
+            }
+            disabled={!!ruleComingSoon.get('combos')}
+            onCheckedChange={(val) => setOption({ allowActionCardCombos: val })}
+            size="$2"
+          >
+            <Switch.Thumb />
+          </Switch>
+          <Text
+            fontSize="$3"
+            opacity={ruleComingSoon.get('combos') ? 0.4 : 1}
+          >
+            {t('games.create.houseRuleActionCardCombos') ||
+              'Action Card Combos'}
+          </Text>
+          {ruleComingSoon.get('combos') && (
+            <Text fontSize={10} color="#f59e0b" fontWeight="600">
+              {t('games.create.comingSoon') || 'Coming Soon'}
+            </Text>
+          )}
+        </XStack>
       </VariantSelectorWrapper>
     ) : null;
 
@@ -122,6 +159,7 @@ export function CriticalLobby({
   return (
     <ReusableGameLobby
       room={room}
+      userId={userId}
       isHost={isHost}
       startBusy={startBusy}
       isFullscreen={isFullscreen}
@@ -174,6 +212,7 @@ export function CriticalLobby({
       showReorderControls={true}
       showInvitedPlayers={true}
       enableBots={true}
+      onRuleComingSoonChange={setRuleComingSoon}
     />
   );
 }

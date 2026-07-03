@@ -17,6 +17,7 @@ import {
   GameWidgetContainer,
   type TurnStatusVariant,
 } from '@/features/games/ui';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
@@ -85,6 +86,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     resetPlacement,
     postHistoryNote: postHistoryNoteAction,
     autoPlace,
+    useSonar,
+    useRadar,
   } = useSeaBattleActions({
     roomId,
     userId: currentUserId,
@@ -310,6 +313,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     return 'defeat';
   }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
 
+  const localGameResult = useMemo(() => {
+    if (!gameResult) return null;
+    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
+  }, [gameResult]);
+  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
+
   const headerTitle = useMemo(
     () =>
       currentVariant
@@ -411,6 +420,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             currentTurnPlayerId={currentTurnPlayer?.playerId ?? null}
             isMyTurn={isMyTurn}
             attack={attack}
+            onSonar={useSonar}
+            onRadar={useRadar}
             resolveDisplayNameBound={resolveDisplayNameBound}
             teammateIds={teammateIds}
             teams={teams}

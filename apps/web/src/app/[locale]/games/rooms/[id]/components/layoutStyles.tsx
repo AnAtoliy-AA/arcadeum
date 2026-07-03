@@ -10,6 +10,7 @@ export const GameRow = styled(YStack, {
   minHeight: 0,
   gap: '$4',
   alignItems: 'stretch',
+  position: 'relative',
 
   // Switch to horizontal layout only on wide screens (> 1150px)
   $md: {

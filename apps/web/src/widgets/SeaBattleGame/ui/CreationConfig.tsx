@@ -19,13 +19,27 @@ import {
   GameTileItem,
   GameTileContainer,
   ComingSoonBadge,
+  ExpansionGrid,
+  ExpansionCheckbox,
+  ExpansionLabel,
+  ExpansionBadge,
 } from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
+import { YStack, XStack, Text } from 'tamagui';
 
 interface SeaBattleOptions {
   variant?: string;
+  gridSize?: number;
+  shipCount?: number;
+  specialWeapons?: { sonar?: boolean; radar?: boolean };
 }
+
+const GRID_SIZES = [
+  { value: 10, label: '10×10', description: 'Standard' },
+  { value: 15, label: '15×15', description: 'Large' },
+  { value: 20, label: '20×20', description: 'Huge' },
+] as const;
 
 export default function SeaBattleCreationConfig({
   options,
@@ -36,10 +50,10 @@ export default function SeaBattleCreationConfig({
   const [allowedVariants, setAllowedVariants] = useState<
     CatalogVariant[] | null
   >(null);
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
 
-  // One-shot catalog fetch on mount to filter the variant picker by what
-  // the caller's role can actually see (ARC-710). Failure is silent: the
-  // full list is shown and the BE will reject any restricted creation.
   useEffect(() => {
     let cancelled = false;
     gamesApi
@@ -48,6 +62,13 @@ export default function SeaBattleCreationConfig({
         if (cancelled) return;
         const entry = res.games.find((g) => g.gameId === 'sea_battle_v1');
         setAllowedVariants(entry?.variants ?? null);
+        if (entry?.rules) {
+          const map = new Map<string, boolean>();
+          for (const r of entry.rules) {
+            map.set(r.ruleId, r.comingSoon);
+          }
+          setRuleComingSoon(map);
+        }
       })
       .catch(() => {
         if (!cancelled) setAllowedVariants(null);
@@ -72,9 +93,12 @@ export default function SeaBattleCreationConfig({
     if (!options.variant) {
       onChange({ ...options, variant: 'classic' });
     }
-    // Only run when variant is truly missing to avoid re-triggering parent URL sync
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.variant]);
+
+  const handleUpdate = (updates: Partial<SeaBattleOptions>) => {
+    onChange({ ...options, ...updates });
+  };
 
   return (
     <>
@@ -101,7 +125,7 @@ export default function SeaBattleCreationConfig({
                 aria-disabled={isComingSoon || undefined}
                 disabled={isComingSoon}
                 onClick={() =>
-                  !isComingSoon && onChange({ ...options, variant: variant.id })
+                  !isComingSoon && handleUpdate({ variant: variant.id })
                 }
               >
                 <GameTileItem
@@ -135,6 +159,115 @@ export default function SeaBattleCreationConfig({
             );
           })}
         </GameSelector>
+      </Section>
+
+      <Section title={t('games.create.sectionHouseRules')}>
+        <YStack gap="$3">
+          <YStack gap="$1">
+            <XStack alignItems="center" gap="$2">
+              <Text fontSize="$4" fontWeight="600">
+                {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              </Text>
+              {ruleComingSoon.get('gridSize') && (
+                <ComingSoonBadge>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </ComingSoonBadge>
+              )}
+            </XStack>
+            <XStack gap="$2" flexWrap="wrap">
+              {GRID_SIZES.map((gs) => (
+                <Button
+                  key={gs.value}
+                  variant="secondary"
+                  size="sm"
+                  isActive={(options.gridSize ?? 10) === gs.value}
+                  disabled={!!ruleComingSoon.get('gridSize')}
+                  onClick={() =>
+                    !ruleComingSoon.get('gridSize') &&
+                    handleUpdate({ gridSize: gs.value })
+                  }
+                  data-testid={`grid-size-${gs.value}`}
+                >
+                  {gs.label}
+                </Button>
+              ))}
+            </XStack>
+          </YStack>
+
+          <ExpansionGrid>
+            <ExpansionCheckbox
+              style={{
+                opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={!!options.specialWeapons?.sonar}
+                disabled={!!ruleComingSoon.get('sonar')}
+                onChange={() =>
+                  handleUpdate({
+                    specialWeapons: {
+                      ...options.specialWeapons,
+                      sonar: !options.specialWeapons?.sonar,
+                    },
+                  })
+                }
+              />
+              <YStack flex={1} gap="$0.5">
+                <XStack alignItems="center" gap="$2">
+                  <ExpansionLabel>
+                    {t('games.create.seaBattleSonar') || 'Sonar'}
+                  </ExpansionLabel>
+                  {ruleComingSoon.get('sonar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                </XStack>
+                <ExpansionBadge>
+                  {t('games.create.seaBattleSonarHint') ||
+                    'Reveal ship locations'}
+                </ExpansionBadge>
+              </YStack>
+            </ExpansionCheckbox>
+
+            <ExpansionCheckbox
+              style={{
+                opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={!!options.specialWeapons?.radar}
+                disabled={!!ruleComingSoon.get('radar')}
+                onChange={() =>
+                  handleUpdate({
+                    specialWeapons: {
+                      ...options.specialWeapons,
+                      radar: !options.specialWeapons?.radar,
+                    },
+                  })
+                }
+              />
+              <YStack flex={1} gap="$0.5">
+                <XStack alignItems="center" gap="$2">
+                  <ExpansionLabel>
+                    {t('games.create.seaBattleRadar') || 'Radar'}
+                  </ExpansionLabel>
+                  {ruleComingSoon.get('radar') && (
+                    <ComingSoonBadge>
+                      {t('games.create.comingSoon') || 'Coming Soon'}
+                    </ComingSoonBadge>
+                  )}
+                </XStack>
+                <ExpansionBadge>
+                  {t('games.create.seaBattleRadarHint') ||
+                    'Scan a row or column'}
+                </ExpansionBadge>
+              </YStack>
+            </ExpansionCheckbox>
+          </ExpansionGrid>
+        </YStack>
       </Section>
 
       <RulesModal

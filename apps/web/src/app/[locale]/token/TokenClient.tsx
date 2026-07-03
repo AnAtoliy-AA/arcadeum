@@ -35,21 +35,23 @@ function formatSupply(s: string): string {
 }
 
 function formatDate(ts: number): string {
-  return new Date(ts).toLocaleDateString('en-US', {
+  return new Date(ts * 1000).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
 }
 
-export default function TokenClient() {
+interface Props {
+  mintAddress?: string;
+}
+
+export default function TokenClient({ mintAddress = '' }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [metadata, setMetadata] = useState<TokenMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const mintAddress = process.env.NEXT_PUBLIC_ARCADEUM_MINT_ADDRESS ?? '';
 
   const fetchMetadata = (signal?: AbortSignal) => {
     const base =
@@ -152,6 +154,21 @@ export default function TokenClient() {
           )}
         </div>
       </div>
+
+      {mintAddress && (
+        <div className={styles.mintRow}>
+          <span className={styles.mintLabel}>
+            {t('wallet.tokenInfo.mint')}:
+          </span>
+          <code className={styles.mintValue}>{mintAddress}</code>
+          <button
+            onClick={handleCopy}
+            className={copied ? styles.copyBtnCopied : styles.copyBtn}
+          >
+            {copied ? t('wallet.tokenInfo.copied') : t('wallet.tokenInfo.copy')}
+          </button>
+        </div>
+      )}
 
       <MarketCapSparkline />
 
@@ -259,7 +276,9 @@ export default function TokenClient() {
               {t('wallet.tokenPage.howToSpend.profileCustomization.title')}
             </h3>
             <p className={styles.infoCardDesc}>
-              {t('wallet.tokenPage.howToSpend.profileCustomization.description')}
+              {t(
+                'wallet.tokenPage.howToSpend.profileCustomization.description',
+              )}
             </p>
           </div>
           <div className={styles.infoCard}>
@@ -273,23 +292,6 @@ export default function TokenClient() {
           </div>
         </div>
       </div>
-
-      {mintAddress && (
-        <div className={styles.mintRow}>
-          <span className={styles.mintLabel}>
-            {t('wallet.tokenInfo.mint')}:
-          </span>
-          <code className={styles.mintValue}>{mintAddress}</code>
-          <button
-            onClick={handleCopy}
-            className={copied ? styles.copyBtnCopied : styles.copyBtn}
-          >
-            {copied
-              ? t('wallet.tokenInfo.copied')
-              : t('wallet.tokenInfo.copy')}
-          </button>
-        </div>
-      )}
 
       {(metadata?.twitter || metadata?.website) && (
         <div className={styles.socialSection}>
@@ -324,9 +326,7 @@ export default function TokenClient() {
         </div>
       )}
 
-      <p className={styles.disclaimer}>
-        {t('wallet.tokenPage.disclaimer')}
-      </p>
+      <p className={styles.disclaimer}>{t('wallet.tokenPage.disclaimer')}</p>
     </div>
   );
 }

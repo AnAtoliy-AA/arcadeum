@@ -16,6 +16,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { useStats } from './hooks/useStats';
 import { useLeaderboard } from './hooks/useLeaderboard';
 import {
@@ -60,6 +61,52 @@ export default function StatsPage({
     accessToken: snapshot.accessToken,
     initialData: initialStats,
   });
+
+  const records = useLocalStatsStore((s) => s.records);
+  const localBreakdown = useMemo(() => {
+    const byGame = new Map<
+      string,
+      { totalGames: number; wins: number; losses: number; draws: number }
+    >();
+    for (const record of records) {
+      const existing = byGame.get(record.gameId) ?? {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+      };
+      existing.totalGames++;
+      if (record.result === 'won') existing.wins++;
+      else if (record.result === 'lost') existing.losses++;
+      else existing.draws++;
+      byGame.set(record.gameId, existing);
+    }
+    return Array.from(byGame.entries())
+      .map(([gameId, stats]) => ({
+        gameId,
+        ...stats,
+        winRate:
+          stats.totalGames > 0
+            ? Math.round((stats.wins / stats.totalGames) * 100)
+            : 0,
+      }))
+      .sort((a, b) => b.totalGames - a.totalGames);
+  }, [records]);
+  const localStats = useMemo(() => {
+    const wins = records.filter((r) => r.result === 'won').length;
+    const losses = records.filter((r) => r.result === 'lost').length;
+    const draws = records.filter((r) => r.result === 'draw').length;
+    const totalGames = records.length;
+    return {
+      totalGames,
+      wins,
+      losses,
+      draws,
+      winRate: totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0,
+      byGameType: localBreakdown,
+    };
+  }, [records, localBreakdown]);
+  const hasLocalStats = localStats.totalGames > 0;
 
   const {
     leaderboard,
@@ -144,15 +191,52 @@ export default function StatsPage({
               <StatsOverview stats={stats} loading={loading} />
               <GameBreakdown stats={stats} loading={loading} />
             </>
+          ) : hasLocalStats ? (
+            <>
+              <LocalStatsBanner>
+                <Text fontSize="$2" color="rgba(236,239,238,0.6)">
+                  {t('stats.localStatsNotice')}
+                </Text>
+              </LocalStatsBanner>
+              <StatsOverview
+                stats={{
+                  totalGames: localStats.totalGames,
+                  wins: localStats.wins,
+                  losses: localStats.losses,
+                  winRate: localStats.winRate,
+                  byGameType: localBreakdown,
+                }}
+                loading={false}
+              />
+              <GameBreakdown
+                stats={{
+                  totalGames: localStats.totalGames,
+                  wins: localStats.wins,
+                  losses: localStats.losses,
+                  winRate: localStats.winRate,
+                  byGameType: localBreakdown,
+                }}
+                loading={false}
+              />
+              <YStack ai="center" gap="$3" mt="$4">
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => router.push('/auth')}
+                >
+                  {t('stats.syncToAccount')}
+                </Button>
+              </YStack>
+            </>
           ) : (
             <YStack ai="center" gap="$5" p="$10">
-              <EmptyState icon="🔒" message={t('stats.loginRequired')} />
+              <EmptyState icon="📊" message={t('stats.noLocalStats')} />
               <Button
                 variant="primary"
                 size="lg"
                 onClick={() => router.push('/auth')}
               >
-                Log In
+                {t('stats.logInToTrack')}
               </Button>
             </YStack>
           )
@@ -235,4 +319,15 @@ const FilterLabel = styled(Text, {
   color: '$color',
   letterSpacing: 0.5,
   userSelect: 'none',
+} as unknown as Record<string, unknown>);
+
+const LocalStatsBanner = styled(XStack, {
+  name: 'LocalStatsBanner',
+  padding: '$4',
+  paddingHorizontal: '$5',
+  backgroundColor: 'rgba(255,200,50,0.08)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,200,50,0.2)',
+  borderRadius: 12,
+  alignItems: 'center',
 } as unknown as Record<string, unknown>);

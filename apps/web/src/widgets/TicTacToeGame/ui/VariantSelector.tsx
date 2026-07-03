@@ -5,6 +5,7 @@ import { GameVariantSelector } from '@/features/games/ui/GameVariantSelector';
 
 interface VariantSelectorProps {
   roomId: string;
+  hostId?: string;
   currentVariant: string;
   disabled?: boolean;
   onVariantChange?: (variant: string) => void;
@@ -12,6 +13,7 @@ interface VariantSelectorProps {
 
 export function VariantSelector({
   roomId,
+  hostId,
   currentVariant,
   disabled = false,
   onVariantChange,
@@ -19,6 +21,7 @@ export function VariantSelector({
   return (
     <GameVariantSelector
       roomId={roomId}
+      hostId={hostId}
       currentVariant={currentVariant}
       variants={TIC_TAC_TOE_VARIANTS}
       optionKey="variant"

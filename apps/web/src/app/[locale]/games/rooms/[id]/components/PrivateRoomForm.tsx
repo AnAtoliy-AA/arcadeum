@@ -15,10 +15,11 @@ import {
 } from './styles';
 
 interface PrivateRoomFormProps {
-  onJoin: (code: string) => void;
+  onJoin: (code: string, password?: string) => void;
   isLoading: boolean;
   isLongPending: boolean;
   error: string | null;
+  hasPassword?: boolean;
 }
 
 export function PrivateRoomForm({
@@ -26,9 +27,11 @@ export function PrivateRoomForm({
   isLoading,
   isLongPending,
   error,
+  hasPassword,
 }: PrivateRoomFormProps) {
   const { t } = useTranslation();
   const [inviteCode, setInviteCode] = useState('');
+  const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,7 +39,7 @@ export function PrivateRoomForm({
     if (!inviteCode.trim()) return;
 
     setLocalError(null);
-    onJoin(inviteCode);
+    onJoin(inviteCode, password || undefined);
   };
 
   const isSubmitting = isLoading;
@@ -73,6 +76,21 @@ export function PrivateRoomForm({
             {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
           </Button>
         </InputGroup>
+
+        {hasPassword && (
+          <InputGroup style={{ marginTop: '0.75rem' }}>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (localError) setLocalError(null);
+              }}
+              placeholder={t('games.password.placeholder')}
+              disabled={isSubmitting}
+            />
+          </InputGroup>
+        )}
 
         {isSubmitting && isLongPending && (
           <NoticeMessage>{t('games.room.pendingNotice.message')}</NoticeMessage>

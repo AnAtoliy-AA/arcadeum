@@ -9,6 +9,10 @@ import {
   Min,
 } from 'class-validator';
 import { USER_ROLES, type UserRole } from '../../auth/lib/roles';
+import {
+  ADMIN_USER_STATUSES,
+  type AdminUserStatus,
+} from './admin-user-status.dto';
 
 export class ListAdminUsersDto {
   @IsOptional()
@@ -32,4 +36,8 @@ export class ListAdminUsersDto {
   @IsOptional()
   @IsIn(USER_ROLES)
   role?: UserRole;
+
+  @IsOptional()
+  @IsIn(ADMIN_USER_STATUSES)
+  status?: AdminUserStatus;
 }

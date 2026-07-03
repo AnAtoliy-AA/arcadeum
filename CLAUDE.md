@@ -84,6 +84,7 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 - `/new-mobile-screen` — add an Expo Router screen with i18n and Tamagui UI
 - `/new-ui-component` — add a shared Tamagui component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`
+- `/implement-roadmap-feature` — implement a roadmap feature end-to-end: branch, code, test, commit, push, open PR, fix CI
 
 ### Global superpowers skills
 

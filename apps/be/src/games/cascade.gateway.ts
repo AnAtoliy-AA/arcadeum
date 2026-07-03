@@ -3,15 +3,19 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 
 import { CascadeService } from './cascade/cascade.service';
 import { extractRoomAndUser, handleError } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { isActiveColor } from './engines/cascade/cascade.utils';
 
 @WebSocketGateway({
@@ -22,7 +26,35 @@ import { isActiveColor } from './engines/cascade/cascade.utils';
 export class CascadeGateway {
   private readonly logger = new Logger(CascadeGateway.name);
 
-  constructor(private readonly cascadeService: CascadeService) {}
+  @WebSocketServer() server: Server;
+
+  constructor(
+    private readonly cascadeService: CascadeService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'CascadeGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Cascade namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Cascade namespace: ${client.id}`,
+      );
+    }
+  }
 
   @SubscribeMessage('cascade.session.start')
   async handleSessionStart(

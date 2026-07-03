@@ -275,13 +275,35 @@ export class GamesRealtimeService {
       }),
     );
   }
+  emitUndoRequest(roomId: string, requesterId: string): void {
+    if (!this.server) return;
+    this.server
+      .to(this.roomChannel(roomId))
+      .emit(
+        'games.session.undo_request',
+        maybeEncrypt({ roomId, requesterId }),
+      );
+  }
+  emitUndoResponse(
+    roomId: string,
+    acceptorId: string,
+    accepted: boolean,
+  ): void {
+    if (!this.server) return;
+    this.server
+      .to(this.roomChannel(roomId))
+      .emit(
+        'games.session.undo_response',
+        maybeEncrypt({ roomId, acceptorId, accepted }),
+      );
+  }
 
   emitRoomUpdated(room: GameRoomSummary): void {
     if (!this.server) {
       return;
     }
     this.server.to(this.roomChannel(room.id)).emit(
-      'games.room.updated',
+      'games.room.update',
       maybeEncrypt({
         room,
       }),

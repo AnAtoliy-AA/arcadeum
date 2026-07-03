@@ -223,6 +223,15 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         ? session.snapshot
         : await session.reload();
       if (!baseSnapshot.accessToken) {
+        try {
+          const refreshed = await useSessionStore.getState().refreshTokens();
+          if (refreshed.accessToken) {
+            applySnapshot(refreshed);
+            return;
+          }
+        } catch {
+          // Cookie refresh failed — no session to recover
+        }
         setState((current) => ({
           ...current,
           loading: false,

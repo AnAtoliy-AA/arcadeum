@@ -11,6 +11,7 @@ function baseForm(): CreateRoomForm {
     visibility: 'private',
     roomName: "Anatoli's game",
     notes: '',
+    password: '',
     rules: {
       combos: false,
       idle: false,

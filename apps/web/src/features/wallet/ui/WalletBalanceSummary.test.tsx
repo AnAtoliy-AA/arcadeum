@@ -20,7 +20,7 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 
 describe('WalletBalanceSummary', () => {
   it('renders coin and gem balances', () => {
-    const balance: WalletBalance = { coins: 1_250, gems: 30 };
+    const balance: WalletBalance = { coins: 1_250, gems: 30, arcadeum: 0 };
     render(<WalletBalanceSummary balance={balance} />);
     expect(screen.getByTestId('balance-coins-value').textContent).toContain(
       '1,250',
@@ -31,7 +31,7 @@ describe('WalletBalanceSummary', () => {
   });
 
   it('renders zero balances for an empty wallet', () => {
-    render(<WalletBalanceSummary balance={{ coins: 0, gems: 0 }} />);
+    render(<WalletBalanceSummary balance={{ coins: 0, gems: 0, arcadeum: 0 }} />);
     expect(screen.getByTestId('balance-coins-value').textContent).toContain(
       '0',
     );

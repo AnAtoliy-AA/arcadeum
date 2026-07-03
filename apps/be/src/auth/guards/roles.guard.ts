@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
@@ -32,9 +33,22 @@ export class RolesGuard implements CanActivate {
 
     const user = await this.userModel
       .findById(userId)
-      .select('role')
-      .lean<{ role: UserRole } | null>();
+      .select('role isBlocked deletedAt')
+      .lean<{
+        role: UserRole;
+        isBlocked?: boolean;
+        deletedAt?: Date | null;
+      } | null>();
     if (!user) throw new ForbiddenException();
+
+    if (user.isBlocked) {
+      throw new UnauthorizedException('Account is blocked');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been removed');
+    }
+
     return required.includes(user.role);
   }
 }

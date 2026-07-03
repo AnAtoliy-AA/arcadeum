@@ -206,6 +206,15 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <DropdownLink
+          href={routes.friends}
+          onClick={closeMenu}
+          data-testid="header-friends-link"
+          icon={<UserIcon size={18} />}
+        >
+          {t('navigation.friendsTab')}
+        </DropdownLink>
+
+        <DropdownLink
           href={routes.battlePass}
           onClick={closeMenu}
           data-testid="header-battle-pass-link"

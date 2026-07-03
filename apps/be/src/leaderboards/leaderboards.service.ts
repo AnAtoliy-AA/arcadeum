@@ -13,6 +13,7 @@ import { User } from '../auth/schemas/user.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardsCacheService } from './leaderboards.cache';
 import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
+import { FriendsService } from '../friends/friends.service';
 import {
   MODE_TO_GAME_ID,
   aggregateRegionsFromReal,
@@ -100,6 +101,8 @@ export class LeaderboardsService {
     private readonly cache: LeaderboardsCacheService,
     @Inject(forwardRef(() => GameHistoryStatsService))
     private readonly historyStats: GameHistoryStatsService,
+    @Inject(forwardRef(() => FriendsService))
+    private readonly friendsService: FriendsService,
   ) {}
 
   // De-dupe in-flight upstream calls so concurrent requests don't all run
@@ -289,10 +292,6 @@ export class LeaderboardsService {
       Math.max(1, args.pageSize ?? DEFAULT_PAGE_SIZE),
     );
     const trimmedQ = args.q?.trim();
-    // TODO(ARC-588-scope-range): scope ('global'|'friends'|...) and range
-    // ('week'|'month'|...) are accepted on the wire and bust the cache, but
-    // are not yet applied to the upstream filter. Implement once the
-    // games-history layer supports them.
 
     const cacheKey = LeaderboardsCacheService.keyFor({
       mode,
@@ -313,11 +312,19 @@ export class LeaderboardsService {
     const realLimit = Math.min(500, pageSize * page + pageSize);
     const real = await this.cachedRealLeaderboard(realLimit, 0, gameId);
 
+    let scopeFiltered = real.entries;
+    if (args.scope === 'friends' && args.selfUserId) {
+      const friendIds = await this.friendsService.getFriendIds(args.selfUserId);
+      const friendIdSet = new Set(friendIds);
+      friendIdSet.add(args.selfUserId);
+      scopeFiltered = real.entries.filter((e) => friendIdSet.has(e.playerId));
+    }
+
     const filtered = trimmedQ
-      ? real.entries.filter((e) =>
+      ? scopeFiltered.filter((e) =>
           e.username.toLowerCase().includes(trimmedQ.toLowerCase()),
         )
-      : real.entries;
+      : scopeFiltered;
 
     const totalRows = trimmedQ ? filtered.length : real.total;
     const start = (page - 1) * pageSize;

@@ -37,6 +37,8 @@ export const ECONOMY_KEYS_CONFIG = {
   },
   shop_allow_gems: { env: 'SHOP_ALLOW_GEMS', default: 1 },
   shop_allow_arcadeum: { env: 'SHOP_ALLOW_ARCADEUM', default: 1 },
+  signup_reward_coins: { env: 'SIGNUP_REWARD_COINS', default: 0 },
+  signup_reward_gems: { env: 'SIGNUP_REWARD_GEMS', default: 0 },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

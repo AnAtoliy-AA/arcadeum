@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { TamaguiElement } from 'tamagui';
+import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { GameRoomSummary } from '@/shared/types/games';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { gamesApi } from '@/features/games/api';
 import {
   LobbyContent,
   CenterSection,
@@ -38,89 +39,14 @@ import {
 } from './lobbyStyles';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
+import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
 // Re-export all styles for games to use
 export * from './lobbyStyles';
-
-// ============ Types ============
-
-export interface GameLobbyTheme {
-  titleGradient?: string;
-  variantGradient?: string;
-  buttonGradient?: string;
-}
-
-export interface ReusableGameLobbyProps {
-  // Core props
-  room: GameRoomSummary;
-  isHost: boolean;
-  startBusy: boolean;
-  startDisabled?: boolean;
-  isFullscreen?: boolean;
-  containerRef?: React.RefObject<TamaguiElement | null>;
-  onToggleFullscreen?: () => void;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
-  onReorderPlayers?: (newOrder: string[]) => void;
-  onReinvite?: (userIds: string[]) => void;
-  onDeleteRoom?: () => void;
-  onKickPlayer?: (userId: string) => void;
-  onLeaveRoom?: () => void;
-  onRefresh?: () => void;
-
-  // Game info
-  gameName: string;
-  gameIcon: string;
-  variantName?: string;
-  roomIcon?: string;
-
-  // Player limits
-  minPlayers?: number;
-
-  // Labels (with sensible defaults)
-  labels?: {
-    waitingLabel?: string;
-    subtitleText?: string;
-    playersLabel?: string;
-    hostControlsLabel?: string;
-    startLabel?: string;
-    startingLabel?: string;
-    roomInfoLabel?: string;
-    statusLabel?: string;
-    visibilityLabel?: string;
-    visibilityPublicLabel?: string;
-    visibilityPrivateLabel?: string;
-    inviteCodeLabel?: string;
-    waitingForPlayerLabel?: string;
-    invitedPlayersLabel?: string;
-    declinedLabel?: string;
-    reinviteLabel?: string;
-    fastRoomLabel?: string;
-    botCountLabel?: string;
-    startWithBotsLabel?: string;
-    deleteRoomLabel?: string;
-    kickPlayerLabel?: string;
-    leaveRoomLabel?: string;
-  };
-  // Theme
-  theme?: GameLobbyTheme;
-
-  // Fast mode
-  isFastMode?: boolean;
-
-  // Slots for game-specific content
-  optionsSlot?: React.ReactNode;
-  headerActionsSlot?: React.ReactNode;
-  rulesModalSlot?: React.ReactNode;
-  extraPlayersCardSlot?: React.ReactNode;
-
-  // Enable/disable features
-  showFullscreenButton?: boolean;
-  showReorderControls?: boolean;
-  showInvitedPlayers?: boolean;
-  enableBots?: boolean;
-}
-
-// Styles
+export type {
+  GameLobbyTheme,
+  ReusableGameLobbyProps,
+} from './ReusableGameLobby.types';
 
 const floatStyle: React.CSSProperties = {
   animation: 'float 3s ease-in-out infinite',
@@ -142,6 +68,7 @@ const dotPulseStyle = (delayMs: number): React.CSSProperties => ({
 
 export function ReusableGameLobby({
   room,
+  userId,
   isHost,
   startBusy,
   startDisabled = false,
@@ -171,6 +98,7 @@ export function ReusableGameLobby({
   showReorderControls = true,
   showInvitedPlayers = true,
   enableBots = false,
+  onRuleComingSoonChange,
 }: ReusableGameLobbyProps) {
   const {
     waitingLabel = 'Waiting for game to start...',
@@ -185,6 +113,39 @@ export function ReusableGameLobby({
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
+
+  // Optimistic state for house rules — updates instantly, clears when room syncs
+  const [optIdle, setOptIdle] = useState<boolean | null>(null);
+  const [optSpectators, setOptSpectators] = useState<boolean | null>(null);
+
+  // Fetch catalog to determine which rules are excluded
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
+  React.useEffect(() => {
+    gamesApi
+      .getCatalog()
+      .then((catalog) => {
+        const game = catalog.games.find((g) => g.gameId === room.gameId);
+        if (!game) return;
+        const map = new Map<string, boolean>();
+        for (const r of game.rules) {
+          map.set(r.ruleId, r.comingSoon);
+        }
+        setRuleComingSoon(map);
+        onRuleComingSoonChange?.(map);
+      })
+      .catch(() => {});
+  }, [room.gameId, onRuleComingSoonChange]);
+
+  const [prevGameOptions, setPrevGameOptions] = useState(room.gameOptions);
+  if (prevGameOptions !== room.gameOptions) {
+    setPrevGameOptions(room.gameOptions);
+    setOptIdle(null);
+    setOptSpectators(null);
+  }
+
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
@@ -385,6 +346,87 @@ export function ReusableGameLobby({
           )}
 
           {optionsSlot}
+
+          {isHost && room.status === 'lobby' && (
+            <YStack gap="$3" paddingTop="$2">
+              <Text fontSize="$4" fontWeight="600">
+                {t('games.create.sectionHouseRules') || 'House Rules'}
+              </Text>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: ruleComingSoon.get('idle')
+                    ? 'not-allowed'
+                    : 'pointer',
+                  opacity: ruleComingSoon.get('idle') ? 0.4 : 1,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
+                  disabled={!!ruleComingSoon.get('idle')}
+                  onChange={(e) => {
+                    const val = e.target.checked;
+                    setOptIdle(val);
+                    setOption({ idleTimerAutoplay: val });
+                  }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    accentColor: 'var(--gc-accent, #ffd166)',
+                  }}
+                />
+                <Text fontSize="$3">
+                  {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
+                </Text>
+                {ruleComingSoon.get('idle') && (
+                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
+                    {t('games.create.comingSoon') || 'Coming Soon'}
+                  </Text>
+                )}
+              </label>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  cursor: ruleComingSoon.get('spectators')
+                    ? 'not-allowed'
+                    : 'pointer',
+                  opacity: ruleComingSoon.get('spectators') ? 0.4 : 1,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={
+                    optSpectators ?? room.gameOptions?.allowSpectators !== false
+                  }
+                  disabled={!!ruleComingSoon.get('spectators')}
+                  onChange={(e) => {
+                    const val = e.target.checked;
+                    setOptSpectators(val);
+                    setOption({ allowSpectators: val });
+                  }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    accentColor: 'var(--gc-accent, #ffd166)',
+                  }}
+                />
+                <Text fontSize="$3">
+                  {t('games.create.rules.spectators.title') ||
+                    'Allow spectators'}
+                </Text>
+                {ruleComingSoon.get('spectators') && (
+                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
+                    {t('games.create.comingSoon') || 'Coming Soon'}
+                  </Text>
+                )}
+              </label>
+            </YStack>
+          )}
         </CenterSection>
 
         <LobbySidebar

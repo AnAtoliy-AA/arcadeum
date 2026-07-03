@@ -40,6 +40,10 @@ const labels: UsersTableLabels = {
   },
   selfTooltip: 'cant edit',
   walletButtonLabel: 'Wallet',
+  blockLabel: 'Block',
+  unblockLabel: 'Unblock',
+  removeLabel: 'Remove',
+  restoreLabel: 'Restore',
 };
 
 const baseProps = {
@@ -53,6 +57,10 @@ const baseProps = {
   hasFilter: false,
   onRoleChange: () => {},
   onWalletOpen: () => {},
+  onBlock: () => {},
+  onUnblock: () => {},
+  onDelete: () => {},
+  onRestore: () => {},
   onPageChange: () => {},
   labels,
 };
@@ -65,6 +73,10 @@ const sampleItem: AdminUserItem = {
   role: 'free',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-02T00:00:00Z',
+  isBlocked: false,
+  blockedAt: null,
+  blockedReason: null,
+  deletedAt: null,
 };
 
 describe('UsersTable', () => {

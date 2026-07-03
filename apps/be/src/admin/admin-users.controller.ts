@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -15,6 +16,7 @@ import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { AdminUsersService } from './admin-users.service';
 import { ListAdminUsersDto } from './dto/list-admin-users.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { BlockUserDto } from './dto/block-user.dto';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -43,5 +45,42 @@ export class AdminUsersController {
   ): Promise<AdminUserItem> {
     const requesterUserId = req.user?.userId ?? '';
     return this.service.updateRole(id, body.role, requesterUserId);
+  }
+
+  @Patch(':id/block')
+  block(
+    @Param('id') id: string,
+    @Body() body: BlockUserDto,
+    @Req() req: RequestWithUser,
+  ): Promise<AdminUserItem> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.block(id, requesterUserId, body.reason);
+  }
+
+  @Patch(':id/unblock')
+  unblock(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ): Promise<AdminUserItem> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.unblock(id, requesterUserId);
+  }
+
+  @Delete(':id')
+  softDelete(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ): Promise<AdminUserItem> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.softDelete(id, requesterUserId);
+  }
+
+  @Patch(':id/restore')
+  restore(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ): Promise<AdminUserItem> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.restore(id, requesterUserId);
   }
 }

@@ -6,6 +6,7 @@ import { apiClient } from '@/shared/lib/api-client';
 interface RuleItem {
   ruleId: string;
   label: string;
+  description?: string;
   enabled: boolean;
 }
 
@@ -136,7 +137,9 @@ export function AdminGameRulesTable() {
                         color: rule.enabled
                           ? 'var(--color-text, #e4e4e7)'
                           : '#71717a',
+                        cursor: rule.description ? 'help' : 'default',
                       }}
+                      title={rule.description}
                     >
                       {rule.label}
                     </div>

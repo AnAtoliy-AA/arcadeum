@@ -197,12 +197,11 @@ export const IconEmoji = styled(Text, {
 
 export const Title = styled(Text, {
   name: 'Title',
-  tag: 'h2',
   fontSize: '1.625rem',
   fontWeight: '700',
   marginBottom: '0.625rem',
   textAlign: 'center',
-  letterSpacing: '-0.015em',
+  letterSpacing: -0.15,
   color: '$accent',
 });
 

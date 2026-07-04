@@ -169,7 +169,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             className="game-widget-container"
             $isMyTurn={!!isMyTurn}
             isFullscreen={isFullscreen}
-            $variant={variant}
+            $variant={variant as Parameters<typeof Container>[0]['$variant']}
             data-testid="game-widget-container"
           >
             {renderedHeader}

@@ -85,37 +85,42 @@ jobs:
               print("No commit messages found. Skipping.")
               exit(0)
 
-          # 3. Read the CHANGELOG section for this version
-          changelog_section = ""
+          # 3. Read CHANGELOG sections for ALL versions in this minor range
+          version = tag.lstrip('v')
+          minor_match = re.match(r'^(\d+\.\d+)', version)
+          minor = minor_match.group(1) if minor_match else version
+
+          all_entries = []
           try:
               with open("CHANGELOG.md", "r") as f:
                   content = f.read()
-              match = re.search(
-                  rf"## \[{re.escape(tag.lstrip('v'))}\].*?(?=## \[|\Z)",
+              # Find all sections matching this minor version (e.g. 1.22.*)
+              for m in re.finditer(
+                  rf"## \[{re.escape(minor)}\.\d+\].*?(?=## \[|\Z)",
                   content,
                   re.DOTALL,
-              )
-              if match:
-                  changelog_section = match.group(0).strip()
+              ):
+                  section = m.group(0).strip()
+                  for line in section.split('\n'):
+                      line = line.strip()
+                      if line.startswith('- '):
+                          all_entries.append(line)
           except FileNotFoundError:
               pass
 
-          # 4. Build updates text — prefer CHANGELOG, fall back to git log
-          version = tag.lstrip('v')
+          # Deduplicate entries
+          seen = set()
+          unique_entries = []
+          for entry in all_entries:
+              if entry not in seen:
+                  seen.add(entry)
+                  unique_entries.append(entry)
 
+          # 4. Build updates text — prefer CHANGELOG, fall back to git log
           use_changelog = False
-          if changelog_section:
-              # Strip the header line and formatting, keep bullet items
-              lines = changelog_section.split('\n')
-              clean_lines = []
-              for line in lines:
-                  line = line.strip()
-                  if not line or line.startswith('## ['):
-                      continue
-                  clean_lines.append(line)
-              updates_text = "\n".join(clean_lines)
-              if updates_text.strip():
-                  use_changelog = True
+          if unique_entries:
+              updates_text = "\n".join(unique_entries)
+              use_changelog = True
 
           if not use_changelog:
               # Fall back to parsed git commits

@@ -3,6 +3,7 @@
 import { useCallback, useMemo, type ComponentType } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { logoutSession } from '@/entities/session/api/authApi';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
@@ -45,7 +46,12 @@ import LanguagePills from './LanguagePills';
 import { usePWAOptional } from '@/features/pwa/context';
 
 interface MobileMenuProps {
-  navItems: Array<{ href: string; label: string; onClick?: (e: React.MouseEvent) => void; icon?: React.ReactNode }>;
+  navItems: Array<{
+    href: string;
+    label: string;
+    onClick?: (e: React.MouseEvent) => void;
+    icon?: React.ReactNode;
+  }>;
 }
 
 type IconComponent = ComponentType<{ size?: number }>;
@@ -80,6 +86,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
   const pwa = usePWAOptional();
 
   const handleLogout = useCallback(async () => {
+    await logoutSession().catch(() => {});
     await clearTokens();
     window.location.replace(routes.home);
   }, [clearTokens, routes.home]);
@@ -173,7 +180,13 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               size="md"
               isActive={isActive}
               fullWidth
-              icon={Icon ? <Icon size={18} /> : item.icon ? <>{item.icon}</> : undefined}
+              icon={
+                Icon ? (
+                  <Icon size={18} />
+                ) : item.icon ? (
+                  <>{item.icon}</>
+                ) : undefined
+              }
               gap="$3"
               onClick={item.onClick}
             >

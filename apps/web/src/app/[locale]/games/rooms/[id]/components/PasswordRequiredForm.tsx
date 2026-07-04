@@ -3,15 +3,21 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,
+  IconCircle,
+  IconEmoji,
   Title,
-  titleGradientStyle,
   Description,
+  DescriptionText,
   Form,
-  InputGroup,
+  InputRow,
   Input,
   ErrorMessage,
-  LockIcon,
+  ErrorText,
   NoticeMessage,
+  cardEnterStyle,
+  fadeInUpDelayed,
+  errorShakeStyle,
+  formAnimationsCss,
 } from './styles';
 
 interface PasswordRequiredFormProps {
@@ -40,46 +46,69 @@ export function PasswordRequiredForm({
   };
 
   const isSubmitting = isLoading;
+  const displayError = localError || error;
 
   return (
-    <Card>
-      <LockIcon>🔑</LockIcon>
-      <Title style={titleGradientStyle}>
-        {t('games.password.joinTitle')}
-      </Title>
-      <Description>{t('games.password.joinDescription')}</Description>
+    <>
+      <style>{formAnimationsCss}</style>
+      <Card style={cardEnterStyle}>
+        <IconCircle className="icon-pulse">
+          <IconEmoji>🔑</IconEmoji>
+        </IconCircle>
 
-      <Form {...({ onSubmit: handleSubmit } as Record<string, unknown>)}>
-        <InputGroup>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (localError) setLocalError(null);
-            }}
-            placeholder={t('games.password.placeholder')}
-            disabled={isSubmitting}
-            autoFocus
-          />
-          <Button
-            variant="primary"
-            size="md"
-            type="submit"
-            disabled={isSubmitting || !password.trim()}
-            style={{ padding: '0 1.5rem' }}
-          >
-            {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
-          </Button>
-        </InputGroup>
+        <Title style={fadeInUpDelayed('100ms')}>
+          {t('games.password.joinTitle')}
+        </Title>
+        <Description style={fadeInUpDelayed('200ms')}>
+          <DescriptionText>
+            {t('games.password.joinDescription')}
+          </DescriptionText>
+        </Description>
 
-        {isSubmitting && isLongPending && (
-          <NoticeMessage>{t('games.room.pendingNotice.message')}</NoticeMessage>
-        )}
+        <Form
+          {...({ onSubmit: handleSubmit } as Record<string, unknown>)}
+          style={fadeInUpDelayed('300ms')}
+        >
+          <InputRow>
+            <Input
+              type="password"
+              size="md"
+              fullWidth
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (localError) setLocalError(null);
+              }}
+              placeholder={t('games.password.placeholder')}
+              disabled={isSubmitting}
+              autoFocus
+            />
 
-        {localError && <ErrorMessage>{localError}</ErrorMessage>}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-      </Form>
-    </Card>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              type="submit"
+              disabled={isSubmitting || !password.trim()}
+              loading={isSubmitting}
+            >
+              {t('games.roomPage.privateRoom.joinButton')}
+            </Button>
+          </InputRow>
+
+          {isSubmitting && isLongPending && (
+            <NoticeMessage>
+              {t('games.room.pendingNotice.message')}
+            </NoticeMessage>
+          )}
+
+          {displayError && (
+            <ErrorMessage style={errorShakeStyle}>
+              <ErrorText>{displayError}</ErrorText>
+            </ErrorMessage>
+          )}
+        </Form>
+      </Card>
+    </>
   );
 }

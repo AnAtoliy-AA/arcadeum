@@ -188,9 +188,11 @@ export default function SettingsContent({
 
   const handleAccountAction = useCallback(async () => {
     if (snapshot.email) {
-      const { useSessionStore } = await import(
-        '@/entities/session/store/sessionStore'
-      );
+      const [{ useSessionStore }, { logoutSession }] = await Promise.all([
+        import('@/entities/session/store/sessionStore'),
+        import('@/entities/session/api/authApi'),
+      ]);
+      await logoutSession().catch(() => {});
       useSessionStore.getState().clearTokens();
       window.location.replace('/');
     } else {

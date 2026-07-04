@@ -3,15 +3,21 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   Card,
+  IconCircle,
+  IconEmoji,
   Title,
-  titleGradientStyle,
   Description,
+  DescriptionText,
   Form,
-  InputGroup,
+  InputRow,
   Input,
   ErrorMessage,
-  LockIcon,
+  ErrorText,
   NoticeMessage,
+  cardEnterStyle,
+  fadeInUpDelayed,
+  errorShakeStyle,
+  formAnimationsCss,
 } from './styles';
 
 interface PrivateRoomFormProps {
@@ -43,62 +49,84 @@ export function PrivateRoomForm({
   };
 
   const isSubmitting = isLoading;
+  const displayError = localError || error;
 
   return (
-    <Card>
-      <LockIcon>🔒</LockIcon>
-      <Title style={titleGradientStyle}>
-        {t('games.roomPage.privateRoom.title')}
-      </Title>
-      <Description>{t('games.roomPage.privateRoom.description')}</Description>
+    <>
+      <style>{formAnimationsCss}</style>
+      <Card style={cardEnterStyle}>
+        <IconCircle className="icon-pulse">
+          <IconEmoji>🔒</IconEmoji>
+        </IconCircle>
 
-      <Form {...({ onSubmit: handleSubmit } as Record<string, unknown>)}>
-        <InputGroup>
-          <Input
-            type="text"
-            value={inviteCode}
-            onChange={(e) => {
-              setInviteCode(e.target.value);
-              // Clear local error when typing
-              if (localError) setLocalError(null);
-            }}
-            placeholder={t('games.roomPage.privateRoom.placeholder')}
-            disabled={isSubmitting}
-            autoFocus
-          />
-          <Button
-            variant="primary"
-            size="md"
-            type="submit"
-            disabled={isSubmitting || !inviteCode.trim()}
-            style={{ padding: '0 1.5rem' }}
-          >
-            {isSubmitting ? '...' : t('games.roomPage.privateRoom.joinButton')}
-          </Button>
-        </InputGroup>
+        <Title style={fadeInUpDelayed('100ms')}>
+          {t('games.roomPage.privateRoom.title')}
+        </Title>
+        <Description style={fadeInUpDelayed('200ms')}>
+          <DescriptionText>
+            {t('games.roomPage.privateRoom.description')}
+          </DescriptionText>
+        </Description>
 
-        {hasPassword && (
-          <InputGroup style={{ marginTop: '0.75rem' }}>
+        <Form
+          {...({ onSubmit: handleSubmit } as Record<string, unknown>)}
+          style={fadeInUpDelayed('300ms')}
+        >
+          <InputRow>
             <Input
-              type="password"
-              value={password}
+              type="text"
+              size="md"
+              fullWidth
+              value={inviteCode}
               onChange={(e) => {
-                setPassword(e.target.value);
+                setInviteCode(e.target.value);
                 if (localError) setLocalError(null);
               }}
-              placeholder={t('games.password.placeholder')}
+              placeholder={t('games.roomPage.privateRoom.placeholder')}
               disabled={isSubmitting}
+              autoFocus
             />
-          </InputGroup>
-        )}
 
-        {isSubmitting && isLongPending && (
-          <NoticeMessage>{t('games.room.pendingNotice.message')}</NoticeMessage>
-        )}
+            {hasPassword && (
+              <Input
+                type="password"
+                size="md"
+                fullWidth
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (localError) setLocalError(null);
+                }}
+                placeholder={t('games.password.placeholder')}
+                disabled={isSubmitting}
+              />
+            )}
 
-        {localError && <ErrorMessage>{localError}</ErrorMessage>}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-      </Form>
-    </Card>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              type="submit"
+              disabled={isSubmitting || !inviteCode.trim()}
+              loading={isSubmitting}
+            >
+              {t('games.roomPage.privateRoom.joinButton')}
+            </Button>
+          </InputRow>
+
+          {isSubmitting && isLongPending && (
+            <NoticeMessage>
+              {t('games.room.pendingNotice.message')}
+            </NoticeMessage>
+          )}
+
+          {displayError && (
+            <ErrorMessage style={errorShakeStyle}>
+              <ErrorText>{displayError}</ErrorText>
+            </ErrorMessage>
+          )}
+        </Form>
+      </Card>
+    </>
   );
 }

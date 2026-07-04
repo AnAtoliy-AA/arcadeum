@@ -9,50 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.23.0] - 2026-07-04
 
-
-
-
 ## [1.22.34] - 2026-07-04
 
 ### Fixed
+
 - clear httpOnly cookies on logout from header and settings (N/A)
 - modernize private room and password form UI (N/A)
-
 
 ## [1.22.33] - 2026-07-04
 
 ### Added
+
 - show emotes and messages as floating bubbles in game room (N/A)
 
 ### Fixed
-- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
 ## [1.22.32] - 2026-07-04
 
 ### Added
+
 - add bulk user delete with select all on page (N/A)
 
 ### Fixed
+
 - handle unknown user roles in RoleBadge fallback (N/A)
 - call backend /auth/logout to clear httpOnly cookies on signout (N/A)
 - prevent session loss on page refresh by removing race condition (N/A)
 
-
 ## [1.22.31] - 2026-07-03
 
 ### Fixed
-- enable music from header nav without in-game toggle (N/A)
 
+- enable music from header nav without in-game toggle (N/A)
 
 ## [1.22.30] - 2026-07-03
 
 ### Added
+
 - bots use sonar/radar when enabled in game state (N/A)
 - improve sonar/radar UX with board hover preview (N/A)
 - add missing sea battle rules and rule descriptions to game catalog (N/A)
 
 ### Fixed
+
 - audio player repeat one and lint issues (N/A)
 - weapon preview works on any opponent board (N/A)
 - cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
@@ -70,10 +71,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - enforce game rule visibility in createRoom (N/A)
 - add CSRF header to server actions and fix game rules response (N/A)
 
-
 ## [1.22.29] - 2026-07-03
 
 ### Fixed
+
 - play next track when previous ends (wasPlaying was false after ended) (N/A)
 - show music icon in mobile menu by using navItem.icon fallback (N/A)
 - remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
@@ -88,10 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
 - persist refresh token and restore session on page reload (N/A)
 
-
 ## [1.22.28] - 2026-07-03
 
 ### Added
+
 - add undo/take-back and password-protected rooms (N/A)
 - add CreationConfig for TicTacToe and Cascade (N/A)
 - add i18n for emote labels (N/A)
@@ -99,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add streaks and favorite game to local stats (N/A)
 
 ### Fixed
+
 - skip finally URL cleanup on successful OAuth redirect (N/A)
 - use router.replace after OAuth to avoid hard page reload (N/A)
 - restore hard navigation after OAuth, session survives via cookies (N/A)
@@ -113,7 +115,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update GameMusic tests for no-auto-play behavior (N/A)
 - prevent music auto-playing on page load/refresh (N/A)
 - wire undo to actually revert game state on acceptance (N/A)
-
 
 ## [1.22.27] - 2026-07-02
 

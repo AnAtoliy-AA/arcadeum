@@ -30,7 +30,7 @@ import type { GameInitialData, GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
 import { Text } from 'tamagui';
-import { Container, LoadingContainer, GameWrapper } from './styles';
+import { CenteredContainer, LoadingContainer, GameWrapper } from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
@@ -109,7 +109,13 @@ export default function GameRoomPage({
     )
       return 'watch';
     return 'play';
-  }, [roomInfoLoading, roomInfo, snapshot.userId, isAuthenticated, searchParams]);
+  }, [
+    roomInfoLoading,
+    roomInfo,
+    snapshot.userId,
+    isAuthenticated,
+    searchParams,
+  ]);
 
   useEffect(() => {
     if (roomInfoLoading || visibilityError) return;
@@ -157,8 +163,7 @@ export default function GameRoomPage({
   const isPasswordRequiredError = useMemo(() => {
     if (!error) return false;
     return (
-      error === 'Room requires a password' ||
-      error === 'Invalid room password'
+      error === 'Room requires a password' || error === 'Invalid room password'
     );
   }, [error]);
 
@@ -278,9 +283,9 @@ export default function GameRoomPage({
   if (!hydrated || (roomInfoLoading && !serverInitialData)) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <GameRoomLoading />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -288,12 +293,12 @@ export default function GameRoomPage({
   if (visibilityError) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <GameRoomError
             error={visibilityError}
             isPrivateRoomError={visibilityError === 'private_room_error'}
           />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -301,7 +306,7 @@ export default function GameRoomPage({
   if (isAutoJoining || (roomLoading && !room && !manualSubmitPending)) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <GameRoomLoading
             isLongPending={isRoomLoadingLongPending}
             actionBusy={roomLoading ? 'joining_room' : null}
@@ -311,7 +316,7 @@ export default function GameRoomPage({
                 : t('games.roomPage.errors.loadingRoom')
             }
           />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -319,7 +324,7 @@ export default function GameRoomPage({
   if (roomVisibility === 'private' && !room) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <PrivateRoomForm
             onJoin={handleInviteCodeSubmit}
             isLoading={isManualSubmitting}
@@ -329,7 +334,7 @@ export default function GameRoomPage({
             }
             hasPassword={roomInfo?.hasPassword}
           />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -337,7 +342,7 @@ export default function GameRoomPage({
   if (isPasswordRequiredError && !room && roomInfo) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <PasswordRequiredForm
             onJoin={handlePasswordSubmit}
             isLoading={isManualSubmitting}
@@ -350,7 +355,7 @@ export default function GameRoomPage({
                   : error
             }
           />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -358,9 +363,9 @@ export default function GameRoomPage({
   if (error && !room) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <GameRoomError error={error} />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }
@@ -368,9 +373,9 @@ export default function GameRoomPage({
   if (!room) {
     return (
       <Page fixedHeight>
-        <Container>
+        <CenteredContainer>
           <GameRoomError error={t('games.roomPage.errors.roomNotFound')} />
-        </Container>
+        </CenteredContainer>
       </Page>
     );
   }

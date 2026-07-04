@@ -9,340 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.23.0] - 2026-07-04
 
+## [1.22.0] - 2026-06-25
 
-
-
-## [1.22.34] - 2026-07-04
-
-### Fixed
-- clear httpOnly cookies on logout from header and settings (N/A)
-- modernize private room and password form UI (N/A)
-
-
-## [1.22.33] - 2026-07-04
-
-### Added
-- show emotes and messages as floating bubbles in game room (N/A)
+## [1.22.1] - 2026-06-25
 
 ### Fixed
-- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
+- rename middleware to proxy and remove duplicate mongoose index (N/A)
 
-## [1.22.32] - 2026-07-04
+## [1.22.2] - 2026-06-26
 
-### Added
-- add bulk user delete with select all on page (N/A)
+## [1.22.3] - 2026-06-26
 
-### Fixed
-- handle unknown user roles in RoleBadge fallback (N/A)
-- call backend /auth/logout to clear httpOnly cookies on signout (N/A)
-- prevent session loss on page refresh by removing race condition (N/A)
+## [1.22.4] - 2026-06-26
 
-
-## [1.22.31] - 2026-07-03
+## [1.22.5] - 2026-06-27
 
 ### Fixed
-- enable music from header nav without in-game toggle (N/A)
 
+- add custom 404 page with navigation (N/A)
 
-## [1.22.30] - 2026-07-03
-
-### Added
-- bots use sonar/radar when enabled in game state (N/A)
-- improve sonar/radar UX with board hover preview (N/A)
-- add missing sea battle rules and rule descriptions to game catalog (N/A)
+## [1.22.6] - 2026-06-27
 
 ### Fixed
-- audio player repeat one and lint issues (N/A)
-- weapon preview works on any opponent board (N/A)
-- cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
-- sonar 3×3, radar shows all cells, highlights persist (N/A)
-- show all scanned cells, ship cells stand out from empty (N/A)
-- match sonar preview to backend radius, filter radar to ship cells only (N/A)
-- remove border shorthand/non-shorthand mixing in weapon buttons (N/A)
-- pass row/col to sonar handler, add radar row/col toggle (N/A)
-- pass weaponMode prop through AttackBoard to opponent boards (N/A)
-- fix sonar/radar not firing, remove bomb animation in weapon mode (N/A)
-- show all rules in lobby, disabled + Coming Soon when excluded (N/A)
-- default unmentioned rules to enabled, hide excluded rules (N/A)
-- use i18n key for Coming Soon badge text (N/A)
-- enforce rule visibility in lobby UI and updateRoomOptions (N/A)
-- enforce game rule visibility in createRoom (N/A)
-- add CSRF header to server actions and fix game rules response (N/A)
 
+- room join/watch button visibility based on lobby status and participation (N/A)
 
-## [1.22.29] - 2026-07-03
-
-### Fixed
-- play next track when previous ends (wasPlaying was false after ended) (N/A)
-- show music icon in mobile menu by using navItem.icon fallback (N/A)
-- remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
-- add audio error logging for CDN debugging (N/A)
-- restore crossOrigin on audio elements — CDN supports CORS (N/A)
-- load full music catalog in dev mode instead of 10-track fallback (N/A)
-- remove crossOrigin from audio elements to fix CDN CORS error (N/A)
-- make refreshToken optional in refresh DTO to allow cookie-based refresh (N/A)
-- use store refreshTokens in checkSession instead of refreshSessionFromCookie (N/A)
-- clear session when refresh token is missing instead of sending empty string (N/A)
-- use store refreshTokens with proper guards on rehydration (N/A)
-- change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
-- persist refresh token and restore session on page reload (N/A)
-
-
-## [1.22.28] - 2026-07-03
-
-### Added
-- add undo/take-back and password-protected rooms (N/A)
-- add CreationConfig for TicTacToe and Cascade (N/A)
-- add i18n for emote labels (N/A)
-- add server-side emote rate limiting (N/A)
-- add streaks and favorite game to local stats (N/A)
-
-### Fixed
-- skip finally URL cleanup on successful OAuth redirect (N/A)
-- use router.replace after OAuth to avoid hard page reload (N/A)
-- restore hard navigation after OAuth, session survives via cookies (N/A)
-- use soft navigation after OAuth instead of hard page reload (N/A)
-- recover session from cookies in SessionRoleSync (N/A)
-- use lax sameSite on HTTP to prevent cookie rejection (N/A)
-- fix session persistence and e2e stats test (N/A)
-- move getAttribute outside toPass to avoid 15s retry timeout (N/A)
-- fix stats e2e test by removing catch-all route that bypassed stats mock (N/A)
-- sync pnpm-lock.yaml with be/package.json (N/A)
-- clean up old audio element during paused crossfade to fix next/prev track detection (N/A)
-- update GameMusic tests for no-auto-play behavior (N/A)
-- prevent music auto-playing on page load/refresh (N/A)
-- wire undo to actually revert game state on acceptance (N/A)
-
-
-## [1.22.27] - 2026-07-02
+## [1.22.7] - 2026-06-27
 
 ### Added
 
-- add game rules visibility control for lobby settings (N/A)
+- add admin ability to block, remove, restore users (ARC-842)
+- add admin ability to block, remove, restore users (ARC-842)
 
-### Fixed
-
-- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
-
-## [1.22.26] - 2026-07-02
-
-### Added
-
-- update friends page UI/UX and move to profile menu (N/A)
-
-## [1.22.25] - 2026-07-02
-
-### Added
-
-- add backend health monitoring with Telegram and Discord alerts (N/A)
-
-### Fixed
-
-- handle missing changelog file in daily workflow (N/A)
-- add LinkedIn and Facebook chunking for long messages (N/A)
-- add Facebook chunking, version in Threads header, footer in Discord continued (N/A)
-- add stay tuned footer to daily messages (N/A)
-- remove arcadeum.games link from daily messages (N/A)
-- improve social bot messages across all platforms (N/A)
-- rework social media bot messages (N/A)
-
-## [1.22.24] - 2026-07-02
-
-### Added
-
-- add Siamese, Persian, and Bengal cyber cat avatars (N/A)
-
-## [1.22.23] - 2026-07-02
-
-### Fixed
-
-- add X-Requested-With header to server action fetch calls (N/A)
-- remove unused ShipOp interface (N/A)
-- fix Logger type mismatch in sea-battle gateway (N/A)
-- add JwtModule imports to ChatModule and GamesModule (N/A)
-- reorder AuthModule before ChatModule in AppModule imports (N/A)
-- add CSRF guard, anonymous ID verification, remove tokens from localStorage (N/A)
-- migrate JWTs to httpOnly cookies (N/A)
-- add JWT verification to WebSocket gateways and enable Helmet CSP (N/A)
-- patch critical vulnerabilities found during security audit (N/A)
-- override vulnerable deps react-server-dom-webpack and shell-quote (N/A)
-
-### Documentation
-
-- add comprehensive security audit skills from Anthropic-Cybersecurity-Skills (N/A)
-- clarify socket encryption key naming and document security posture (N/A)
-- add cybersecurity audit skills from Anthropic-Cybersecurity-Skills (N/A)
-
-## [1.22.22] - 2026-07-02
-
-### Added
-
-- make sonar radius-based instead of full board (ARC-1)
-- add sonar/radar result visualization in sea battle (ARC-1)
-- implement sonar and radar special weapons in sea battle (ARC-1)
-- add optimistic updates for house rules checkboxes in lobby (ARC-1)
-- add Auto reset button to max players stepper (ARC-1)
-- add idle timer, spectators, and action card combos toggles to lobbies (ARC-1)
-- add house rules UI panels for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
-- add per-game config schemas and validation for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
-
-### Fixed
-
-- skip CDN music fetch in dev to avoid CORS 404 in e2e tests (N/A)
-- fix lint errors and extract types to stay under 500 lines (ARC-1)
-- refresh room data after updating house rules in lobby (ARC-1)
-- replace Switch with native checkboxes for house rules in lobby (ARC-1)
-- update e2e test to use Auto reset button (ARC-1)
-- simplify e2e test — skip variant dropdown, test game flow (ARC-1)
-- fix e2e test to use dropdown variant selector and avoid networkidle (ARC-1)
-- update e2e test to select variant in lobby instead of create page (ARC-1)
-- extract drag helpers to fix file length, add missing i18n keys (ARC-1)
+## [1.22.8] - 2026-06-28
 
 ### Refactored
 
-- replace HTTP lobby config updates with socket-based sync (ARC-1)
-- move theme/variant selection from create page to lobby (ARC-1)
-- remove House Rules from create page, all config in lobby (ARC-1)
-- move game config from create page to lobby (ARC-1)
-
-## [1.22.21] - 2026-07-01
-
-### Added
-
-- fix emote encryption and expand emote system (N/A)
-
-### Fixed
-
-- correct isLandscape on mount to fix webkit layout (N/A)
-- correct isLandscape on mount to fix webkit layout (N/A)
-- compute isLandscape synchronously from window to fix SSR hydration (N/A)
-- use synchronous isMobilePortrait check for cols floor (N/A)
-- add containerWidth=0 floor for landscape multi-player grids (N/A)
-- default to 2 cols when containerWidth is 0 in media.short branch (N/A)
-- wait for ResizeObserver before asserting grid layout in sea-battle-6-players test (N/A)
-- handle invalid ARCADEUM_MINT_ADDRESS gracefully (N/A)
-
-## [1.22.20] - 2026-07-01
-
-### Added
-
-- in-game emotes & quick reactions (ARC-872) (ARC-872)
-
-### Fixed
-
-- use domcontentloaded in E2E page.reload() to prevent ChunkLoadError flake (ARC-872)
-
-## [1.22.19] - 2026-07-01
-
-### Added
-
-- add persistent account-less stat tracking (ARC-871)
-
-### Fixed
-
-- compute local stats with useMemo to prevent re-render loop (ARC-871)
-
-### Documentation
-
-- add implement-roadmap-feature skill (N/A)
-
-## [1.22.18] - 2026-07-01
-
-### Documentation
-
-- add ARC ticket references for all features (N/A)
-
-## [1.22.17] - 2026-06-30
-
-### Added
-
-- double-click on playlist track to play (N/A)
-- update music player to use 160-track R2 catalog (N/A)
-
-### Fixed
-
-- remove row click-to-play from playlist tracks (N/A)
-- checkbox toggle should not affect current playback (N/A)
-- suppress auto-play when disabling currently playing track (N/A)
-- disable currently playing track when unchecked in playlist (N/A)
-- widen mini mode music player to prevent button overflow (N/A)
-
-## [1.22.16] - 2026-06-30
-
-### Added
-
-- improve token chart, wallet balance, and home page (N/A)
-
-## [1.22.15] - 2026-06-30
-
-### Fixed
-
-- use numeric borderRadius instead of $full token in roadmap page (N/A)
-
-### Refactored
-
-- split roadmap page data into roadmap-data.ts to stay under 500 lines (N/A)
-
-### Documentation
-
-- add platform expansion roadmap (N/A)
-
-## [1.22.14] - 2026-06-30
-
-### Added
-
-- add remove friend confirmation dialog (N/A)
-- add invite to game button on friends page (N/A)
-- add friends SEO metadata for all locales (N/A)
-- add friends link to navigation (N/A)
-- add friends i18n for all locales (N/A)
-- add friends page with real-time updates (N/A)
-- add friends i18n keys (N/A)
-- add friends socket to shared infrastructure (N/A)
-- add friends API client (N/A)
-- wire gateway events into FriendsService (N/A)
-
-### Fixed
-
-- resolve FriendsGateway circular dependency and missing JwtModule (N/A)
-- resolve CI failures across lint, tests, and e2e (N/A)
-- fix build errors in friends page (N/A)
-- use useSessionTokens instead of nonexistent useSession (N/A)
-
-## [1.22.13] - 2026-06-30
-
-### Added
-
-- add contact page scenario (N/A)
-- add 30 scenario journeys (one per day) (N/A)
-
-### Fixed
-
-- remove glimworm scenario (N/A)
-- wait for page content to render before recording (N/A)
-
-## [1.22.12] - 2026-06-29
-
-### Added
-
-- video generator + Postiz YouTube publisher (N/A)
-
-### Fixed
-
-- remove non-existent CDN music tracks (N/A)
-
-## [1.22.11] - 2026-06-29
-
-### Added
-
-- add configurable signup reward for coins and gems (N/A)
-
-## [1.22.10] - 2026-06-29
-
-### Added
-
-- add bulk rewards for all registered users (ARC-870)
+- extract shared integration test helpers (N/A)
 
 ## [1.22.9] - 2026-06-28
 
@@ -431,44 +135,341 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extract TransportRow reusable component (N/A)
 - extract useAudioPlayer hook, add skip ±10s, mini track name, keyboard shortcuts (N/A)
 
-## [1.22.8] - 2026-06-28
-
-### Refactored
-
-- extract shared integration test helpers (N/A)
-
-## [1.22.7] - 2026-06-27
+## [1.22.10] - 2026-06-29
 
 ### Added
 
-- add admin ability to block, remove, restore users (ARC-842)
-- add admin ability to block, remove, restore users (ARC-842)
+- add bulk rewards for all registered users (ARC-870)
 
-## [1.22.6] - 2026-06-27
+## [1.22.11] - 2026-06-29
 
-### Fixed
+### Added
 
-- room join/watch button visibility based on lobby status and participation (N/A)
+- add configurable signup reward for coins and gems (N/A)
 
-## [1.22.5] - 2026-06-27
+## [1.22.12] - 2026-06-29
 
-### Fixed
+### Added
 
-- add custom 404 page with navigation (N/A)
-
-## [1.22.4] - 2026-06-26
-
-## [1.22.3] - 2026-06-26
-
-## [1.22.2] - 2026-06-26
-
-## [1.22.1] - 2026-06-25
+- video generator + Postiz YouTube publisher (N/A)
 
 ### Fixed
 
-- rename middleware to proxy and remove duplicate mongoose index (N/A)
+- remove non-existent CDN music tracks (N/A)
 
-## [1.22.0] - 2026-06-25
+## [1.22.13] - 2026-06-30
+
+### Added
+
+- add contact page scenario (N/A)
+- add 30 scenario journeys (one per day) (N/A)
+
+### Fixed
+
+- remove glimworm scenario (N/A)
+- wait for page content to render before recording (N/A)
+
+## [1.22.14] - 2026-06-30
+
+### Added
+
+- add remove friend confirmation dialog (N/A)
+- add invite to game button on friends page (N/A)
+- add friends SEO metadata for all locales (N/A)
+- add friends link to navigation (N/A)
+- add friends i18n for all locales (N/A)
+- add friends page with real-time updates (N/A)
+- add friends i18n keys (N/A)
+- add friends socket to shared infrastructure (N/A)
+- add friends API client (N/A)
+- wire gateway events into FriendsService (N/A)
+
+### Fixed
+
+- resolve FriendsGateway circular dependency and missing JwtModule (N/A)
+- resolve CI failures across lint, tests, and e2e (N/A)
+- fix build errors in friends page (N/A)
+- use useSessionTokens instead of nonexistent useSession (N/A)
+
+## [1.22.15] - 2026-06-30
+
+### Fixed
+
+- use numeric borderRadius instead of $full token in roadmap page (N/A)
+
+### Refactored
+
+- split roadmap page data into roadmap-data.ts to stay under 500 lines (N/A)
+
+### Documentation
+
+- add platform expansion roadmap (N/A)
+
+## [1.22.16] - 2026-06-30
+
+### Added
+
+- improve token chart, wallet balance, and home page (N/A)
+
+## [1.22.17] - 2026-06-30
+
+### Added
+
+- double-click on playlist track to play (N/A)
+- update music player to use 160-track R2 catalog (N/A)
+
+### Fixed
+
+- remove row click-to-play from playlist tracks (N/A)
+- checkbox toggle should not affect current playback (N/A)
+- suppress auto-play when disabling currently playing track (N/A)
+- disable currently playing track when unchecked in playlist (N/A)
+- widen mini mode music player to prevent button overflow (N/A)
+
+## [1.22.18] - 2026-07-01
+
+### Documentation
+
+- add ARC ticket references for all features (N/A)
+
+## [1.22.19] - 2026-07-01
+
+### Added
+
+- add persistent account-less stat tracking (ARC-871)
+
+### Fixed
+
+- compute local stats with useMemo to prevent re-render loop (ARC-871)
+
+### Documentation
+
+- add implement-roadmap-feature skill (N/A)
+
+## [1.22.20] - 2026-07-01
+
+### Added
+
+- in-game emotes & quick reactions (ARC-872) (ARC-872)
+
+### Fixed
+
+- use domcontentloaded in E2E page.reload() to prevent ChunkLoadError flake (ARC-872)
+
+## [1.22.21] - 2026-07-01
+
+### Added
+
+- fix emote encryption and expand emote system (N/A)
+
+### Fixed
+
+- correct isLandscape on mount to fix webkit layout (N/A)
+- correct isLandscape on mount to fix webkit layout (N/A)
+- compute isLandscape synchronously from window to fix SSR hydration (N/A)
+- use synchronous isMobilePortrait check for cols floor (N/A)
+- add containerWidth=0 floor for landscape multi-player grids (N/A)
+- default to 2 cols when containerWidth is 0 in media.short branch (N/A)
+- wait for ResizeObserver before asserting grid layout in sea-battle-6-players test (N/A)
+- handle invalid ARCADEUM_MINT_ADDRESS gracefully (N/A)
+
+## [1.22.22] - 2026-07-02
+
+### Added
+
+- make sonar radius-based instead of full board (ARC-1)
+- add sonar/radar result visualization in sea battle (ARC-1)
+- implement sonar and radar special weapons in sea battle (ARC-1)
+- add optimistic updates for house rules checkboxes in lobby (ARC-1)
+- add Auto reset button to max players stepper (ARC-1)
+- add idle timer, spectators, and action card combos toggles to lobbies (ARC-1)
+- add house rules UI panels for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
+- add per-game config schemas and validation for Sea Battle, Tic-Tac-Toe, and Cascade (ARC-1)
+
+### Fixed
+
+- skip CDN music fetch in dev to avoid CORS 404 in e2e tests (N/A)
+- fix lint errors and extract types to stay under 500 lines (ARC-1)
+- refresh room data after updating house rules in lobby (ARC-1)
+- replace Switch with native checkboxes for house rules in lobby (ARC-1)
+- update e2e test to use Auto reset button (ARC-1)
+- simplify e2e test — skip variant dropdown, test game flow (ARC-1)
+- fix e2e test to use dropdown variant selector and avoid networkidle (ARC-1)
+- update e2e test to select variant in lobby instead of create page (ARC-1)
+- extract drag helpers to fix file length, add missing i18n keys (ARC-1)
+
+### Refactored
+
+- replace HTTP lobby config updates with socket-based sync (ARC-1)
+- move theme/variant selection from create page to lobby (ARC-1)
+- remove House Rules from create page, all config in lobby (ARC-1)
+- move game config from create page to lobby (ARC-1)
+
+## [1.22.23] - 2026-07-02
+
+### Fixed
+
+- add X-Requested-With header to server action fetch calls (N/A)
+- remove unused ShipOp interface (N/A)
+- fix Logger type mismatch in sea-battle gateway (N/A)
+- add JwtModule imports to ChatModule and GamesModule (N/A)
+- reorder AuthModule before ChatModule in AppModule imports (N/A)
+- add CSRF guard, anonymous ID verification, remove tokens from localStorage (N/A)
+- migrate JWTs to httpOnly cookies (N/A)
+- add JWT verification to WebSocket gateways and enable Helmet CSP (N/A)
+- patch critical vulnerabilities found during security audit (N/A)
+- override vulnerable deps react-server-dom-webpack and shell-quote (N/A)
+
+### Documentation
+
+- add comprehensive security audit skills from Anthropic-Cybersecurity-Skills (N/A)
+- clarify socket encryption key naming and document security posture (N/A)
+- add cybersecurity audit skills from Anthropic-Cybersecurity-Skills (N/A)
+
+## [1.22.24] - 2026-07-02
+
+### Added
+
+- add Siamese, Persian, and Bengal cyber cat avatars (N/A)
+
+## [1.22.25] - 2026-07-02
+
+### Added
+
+- add backend health monitoring with Telegram and Discord alerts (N/A)
+
+### Fixed
+
+- handle missing changelog file in daily workflow (N/A)
+- add LinkedIn and Facebook chunking for long messages (N/A)
+- add Facebook chunking, version in Threads header, footer in Discord continued (N/A)
+- add stay tuned footer to daily messages (N/A)
+- remove arcadeum.games link from daily messages (N/A)
+- improve social bot messages across all platforms (N/A)
+- rework social media bot messages (N/A)
+
+## [1.22.26] - 2026-07-02
+
+### Added
+
+- update friends page UI/UX and move to profile menu (N/A)
+
+## [1.22.27] - 2026-07-02
+
+### Added
+
+- add game rules visibility control for lobby settings (N/A)
+
+### Fixed
+
+- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
+
+## [1.22.28] - 2026-07-03
+
+### Added
+
+- add undo/take-back and password-protected rooms (N/A)
+- add CreationConfig for TicTacToe and Cascade (N/A)
+- add i18n for emote labels (N/A)
+- add server-side emote rate limiting (N/A)
+- add streaks and favorite game to local stats (N/A)
+
+### Fixed
+
+- skip finally URL cleanup on successful OAuth redirect (N/A)
+- use router.replace after OAuth to avoid hard page reload (N/A)
+- restore hard navigation after OAuth, session survives via cookies (N/A)
+- use soft navigation after OAuth instead of hard page reload (N/A)
+- recover session from cookies in SessionRoleSync (N/A)
+- use lax sameSite on HTTP to prevent cookie rejection (N/A)
+- fix session persistence and e2e stats test (N/A)
+- move getAttribute outside toPass to avoid 15s retry timeout (N/A)
+- fix stats e2e test by removing catch-all route that bypassed stats mock (N/A)
+- sync pnpm-lock.yaml with be/package.json (N/A)
+- clean up old audio element during paused crossfade to fix next/prev track detection (N/A)
+- update GameMusic tests for no-auto-play behavior (N/A)
+- prevent music auto-playing on page load/refresh (N/A)
+- wire undo to actually revert game state on acceptance (N/A)
+
+## [1.22.29] - 2026-07-03
+
+### Fixed
+
+- play next track when previous ends (wasPlaying was false after ended) (N/A)
+- show music icon in mobile menu by using navItem.icon fallback (N/A)
+- remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
+- add audio error logging for CDN debugging (N/A)
+- restore crossOrigin on audio elements — CDN supports CORS (N/A)
+- load full music catalog in dev mode instead of 10-track fallback (N/A)
+- remove crossOrigin from audio elements to fix CDN CORS error (N/A)
+- make refreshToken optional in refresh DTO to allow cookie-based refresh (N/A)
+- use store refreshTokens in checkSession instead of refreshSessionFromCookie (N/A)
+- clear session when refresh token is missing instead of sending empty string (N/A)
+- use store refreshTokens with proper guards on rehydration (N/A)
+- change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
+- persist refresh token and restore session on page reload (N/A)
+
+## [1.22.30] - 2026-07-03
+
+### Added
+
+- bots use sonar/radar when enabled in game state (N/A)
+- improve sonar/radar UX with board hover preview (N/A)
+- add missing sea battle rules and rule descriptions to game catalog (N/A)
+
+### Fixed
+
+- audio player repeat one and lint issues (N/A)
+- weapon preview works on any opponent board (N/A)
+- cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
+- sonar 3×3, radar shows all cells, highlights persist (N/A)
+- show all scanned cells, ship cells stand out from empty (N/A)
+- match sonar preview to backend radius, filter radar to ship cells only (N/A)
+- remove border shorthand/non-shorthand mixing in weapon buttons (N/A)
+- pass row/col to sonar handler, add radar row/col toggle (N/A)
+- pass weaponMode prop through AttackBoard to opponent boards (N/A)
+- fix sonar/radar not firing, remove bomb animation in weapon mode (N/A)
+- show all rules in lobby, disabled + Coming Soon when excluded (N/A)
+- default unmentioned rules to enabled, hide excluded rules (N/A)
+- use i18n key for Coming Soon badge text (N/A)
+- enforce rule visibility in lobby UI and updateRoomOptions (N/A)
+- enforce game rule visibility in createRoom (N/A)
+- add CSRF header to server actions and fix game rules response (N/A)
+
+## [1.22.31] - 2026-07-03
+
+### Fixed
+
+- enable music from header nav without in-game toggle (N/A)
+
+## [1.22.32] - 2026-07-04
+
+### Added
+
+- add bulk user delete with select all on page (N/A)
+
+### Fixed
+
+- handle unknown user roles in RoleBadge fallback (N/A)
+- call backend /auth/logout to clear httpOnly cookies on signout (N/A)
+- prevent session loss on page refresh by removing race condition (N/A)
+
+## [1.22.33] - 2026-07-04
+
+### Added
+
+- show emotes and messages as floating bubbles in game room (N/A)
+
+### Fixed
+
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
+
+## [1.22.34] - 2026-07-04
+
+### Fixed
+
+- clear httpOnly cookies on logout from header and settings (N/A)
+- modernize private room and password form UI (N/A)
 
 ## [1.21.15] - 2026-06-25
 

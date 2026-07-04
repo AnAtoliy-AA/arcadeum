@@ -3,6 +3,12 @@ name: Release Social Poster
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to post (e.g. v1.22.34). Leave empty for latest.'
+        required: false
+        type: string
 
 jobs:
   post-release:
@@ -40,14 +46,19 @@ jobs:
           import time
 
           # 1. Find the latest tag (the version just released)
-          try:
-              tag = subprocess.check_output(
-                  ['git', 'describe', '--tags', '--abbrev=0'],
-                  text=True
-              ).strip()
-          except Exception:
-              print("No tags found. Skipping release post.")
-              exit(0)
+          INPUT_TAG = '${{ github.event.inputs.tag }}'
+          if INPUT_TAG:
+              tag = INPUT_TAG.strip()
+              print(f"Using manually specified tag: {tag}")
+          else:
+              try:
+                  tag = subprocess.check_output(
+                      ['git', 'describe', '--tags', '--abbrev=0'],
+                      text=True
+                  ).strip()
+              except Exception:
+                  print("No tags found. Skipping release post.")
+                  exit(0)
 
           # 2. Get all commits included in this release (since previous tag)
           try:

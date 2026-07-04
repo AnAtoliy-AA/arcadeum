@@ -20,6 +20,7 @@ import {
   type TurnContract,
 } from './TurnIndicator';
 import { EmoteBubble } from './EmoteBubble';
+import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 
 /**
  * Exposes the widget's fullscreen state to children (e.g. MatchWidget →
@@ -514,7 +515,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             <EmoteBubble
               key={emote.key}
               playerId={emote.userId}
-              activeEmotes={[{ id: emote.userId, emoteId: emote.emoteId }]}
+              activeEmotes={[{ id: emote.userId, emoteId: emote.emoteId as EmoteId }]}
               senderName={activeEmotes.resolveDisplayName?.(emote.userId)}
             />
           ))}

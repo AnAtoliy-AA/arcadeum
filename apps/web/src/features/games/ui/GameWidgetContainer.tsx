@@ -19,6 +19,8 @@ import {
   resolveTurnStatus,
   type TurnContract,
 } from './TurnIndicator';
+import { EmoteBubble } from './EmoteBubble';
+import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 
 /**
  * Exposes the widget's fullscreen state to children (e.g. MatchWidget →
@@ -29,6 +31,39 @@ const WidgetFullscreenContext = createContext<boolean>(false);
 
 export function useWidgetFullscreen(): boolean {
   return useContext(WidgetFullscreenContext);
+}
+
+interface ActiveEmote {
+  key: string;
+  userId: string;
+  emoteId: string;
+}
+
+interface ActiveEmotesContextValue {
+  emotes: ActiveEmote[];
+  resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
+}
+
+const ActiveEmotesContext = createContext<ActiveEmotesContextValue>({
+  emotes: [],
+});
+
+export function useActiveEmotes(): ActiveEmotesContextValue {
+  return useContext(ActiveEmotesContext);
+}
+
+export function ActiveEmotesProvider({
+  value,
+  children,
+}: {
+  value: ActiveEmotesContextValue;
+  children: React.ReactNode;
+}) {
+  return (
+    <ActiveEmotesContext.Provider value={value}>
+      {children}
+    </ActiveEmotesContext.Provider>
+  );
 }
 
 // --- Styled components (based on CriticalGame's layout.tsx) ---
@@ -357,6 +392,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   showChatPopup = true,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const activeEmotes = useActiveEmotes();
   // Widget-only fullscreen — independent of the page-level toggle in
   // `GamePageLayout`. Page level expands [control panel + widget + chat];
   // this expands only the widget. Keyboard disabled so the global `f`
@@ -449,31 +485,41 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   return (
     <>
       <WidgetFullscreenContext.Provider value={isFullscreen}>
-        <Container
-          ref={containerRef as React.RefObject<never>}
-          className="game-widget-container"
-          $isMyTurn={!!isMyTurn}
-          isFullscreen={isFullscreen}
-          $variant={variant as GameVariant}
-          data-testid="game-widget-container"
-        >
-          {renderedHeader}
-          <SharedGameBoard data-testid="game-board-section">
-            {board}
-          </SharedGameBoard>
-          {tableArea && (
-            <SharedTableArea data-testid="game-table-section">
-              {tableArea}
-            </SharedTableArea>
-          )}
-          {handSection && (
-            <SharedHandSection data-testid="game-hand-section">
-              {handSection}
-            </SharedHandSection>
-          )}
-          {modals}
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          <Container
+            ref={containerRef as React.RefObject<never>}
+            className="game-widget-container"
+            $isMyTurn={!!isMyTurn}
+            isFullscreen={isFullscreen}
+            $variant={variant as GameVariant}
+            data-testid="game-widget-container"
+          >
+            {renderedHeader}
+            <SharedGameBoard data-testid="game-board-section">
+              {board}
+            </SharedGameBoard>
+            {tableArea && (
+              <SharedTableArea data-testid="game-table-section">
+                {tableArea}
+              </SharedTableArea>
+            )}
+            {handSection && (
+              <SharedHandSection data-testid="game-hand-section">
+                {handSection}
+              </SharedHandSection>
+            )}
+            {modals}
+          </Container>
           {showChatPopup && <GameChatPopupOverlay />}
-        </Container>
+          {activeEmotes.emotes.map((emote) => (
+            <EmoteBubble
+              key={emote.key}
+              playerId={emote.userId}
+              activeEmotes={[{ id: emote.userId, emoteId: emote.emoteId as EmoteId }]}
+              senderName={activeEmotes.resolveDisplayName?.(emote.userId)}
+            />
+          ))}
+        </div>
       </WidgetFullscreenContext.Provider>
     </>
   );

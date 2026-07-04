@@ -9,7 +9,7 @@ import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/Con
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
-import { EmoteBubble } from '@/features/games/ui/EmoteBubble';
+import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
@@ -187,15 +187,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
         />
 
         <GameRow flexDirection={roomFlexDirection}>
-          {children({ isFullscreen, toggleFullscreen })}
-
-          {activeEmotes.map((emote) => (
-            <EmoteBubble
-              key={emote.key}
-              playerId={emote.userId}
-              activeEmotes={[{ id: emote.userId, emoteId: emote.emoteId }]}
-            />
-          ))}
+          <ActiveEmotesProvider value={{ emotes: activeEmotes, resolveDisplayName }}>
+            {children({ isFullscreen, toggleFullscreen })}
+          </ActiveEmotesProvider>
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">
             <GameChat

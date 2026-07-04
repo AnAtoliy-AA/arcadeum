@@ -12,11 +12,9 @@ export function GameChatPopupOverlay() {
   );
   const resolveEquipped = useGameChatStore((s) => s.resolveEquipped);
   const currentUserId = useGameChatStore((s) => s.currentUserId);
-  const chatPanelOpen = useGameChatStore((s) => s.chatPanelOpen);
 
   const { latestMessage, dismiss } = useLatestChatMessage(logs);
 
-  if (chatPanelOpen) return null;
   if (!latestMessage) return null;
 
   const senderIdArg = latestMessage.senderId ?? undefined;

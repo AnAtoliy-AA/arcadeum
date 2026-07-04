@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.32] - 2026-07-04
+
+### Added
+- add bulk user delete with select all on page (N/A)
+
+### Fixed
+- handle unknown user roles in RoleBadge fallback (N/A)
+- call backend /auth/logout to clear httpOnly cookies on signout (N/A)
+- prevent session loss on page refresh by removing race condition (N/A)
+
+
 ## [1.22.31] - 2026-07-03
 
 ### Fixed

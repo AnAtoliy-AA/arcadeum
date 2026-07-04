@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.34] - 2026-07-04
+
+### Fixed
+- clear httpOnly cookies on logout from header and settings (N/A)
+- modernize private room and password form UI (N/A)
+
+
 ## [1.22.33] - 2026-07-04
 
 ### Added

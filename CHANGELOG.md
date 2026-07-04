@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.1] - 2026-07-04
+
+### Fixed
+- aggregate all minor version changes in release posts (N/A)
+- add workflow_dispatch to release poster for manual triggering (N/A)
+- order v1.22.x changelog entries descending (newest first) (N/A)
+- regenerate CHANGELOG with complete scoped commit entries (N/A)
+- handle scoped commits in changelog generation (N/A)
+
+
 ## [1.23.0] - 2026-07-04
 
 ## [1.22.34] - 2026-07-04

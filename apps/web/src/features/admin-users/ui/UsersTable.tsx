@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
 import { Spinner, Text } from 'tamagui';
 import type { AdminUserItem } from '../api';
@@ -12,6 +13,10 @@ export interface UsersTableLabels {
     email: string;
     role: string;
     actions: string;
+    selectAll: string;
+    selectedCount: string;
+    deleteSelected: string;
+    deselectAll: string;
   };
   pagination: { prev: string; next: string; of: string };
   totalLabel: string;
@@ -39,6 +44,7 @@ export interface UsersTableProps {
   onUnblock: (userId: string) => void;
   onDelete: (userId: string) => void;
   onRestore: (userId: string) => void;
+  onBulkDelete: (userIds: string[]) => void;
   onPageChange: (next: number) => void;
   pendingUserId?: string;
   labels: UsersTableLabels;
@@ -58,10 +64,47 @@ export function UsersTable({
   onUnblock,
   onDelete,
   onRestore,
+  onBulkDelete,
   onPageChange,
   pendingUserId,
   labels,
 }: UsersTableProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const handleToggleSelect = (userId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleAll = () => {
+    const selectableIds = items
+      .filter((it) => !it.deletedAt && it.id !== currentUserId)
+      .map((it) => it.id);
+
+    if (selectableIds.length === 0) return;
+
+    setSelectedIds((prev) => {
+      const allSelected = selectableIds.every((id) => prev.has(id));
+      if (allSelected) {
+        return new Set();
+      }
+      return new Set(selectableIds);
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    onBulkDelete(Array.from(selectedIds));
+    setSelectedIds(new Set());
+  };
+
   if (isLoading && items.length === 0) {
     return (
       <YStack alignItems="center" padding="$5">
@@ -81,6 +124,14 @@ export function UsersTable({
   }
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const selectableCount = items.filter(
+    (it) => !it.deletedAt && it.id !== currentUserId,
+  ).length;
+  const allSelectableSelected =
+    selectableCount > 0 &&
+    items
+      .filter((it) => !it.deletedAt && it.id !== currentUserId)
+      .every((it) => selectedIds.has(it.id));
 
   return (
     <YStack gap="$3" data-testid="users-table">
@@ -105,7 +156,14 @@ export function UsersTable({
           borderColor="$borderColor"
           data-testid="users-table-header"
         >
-          <YStack width={32} />
+          <YStack width={32} alignItems="center">
+            <input
+              type="checkbox"
+              checked={allSelectableSelected}
+              onChange={handleToggleAll}
+              data-testid="select-all-checkbox"
+            />
+          </YStack>
           <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
             {labels.table.username}
           </Text>
@@ -137,9 +195,48 @@ export function UsersTable({
             restoreLabel={labels.restoreLabel}
             isPending={pendingUserId === it.id}
             zebra={i % 2 === 1}
+            isSelected={selectedIds.has(it.id)}
+            onSelectToggle={handleToggleSelect}
           />
         ))}
       </GlassCard>
+
+      {selectedIds.size > 0 && (
+        <XStack
+          gap="$3"
+          alignItems="center"
+          justifyContent="space-between"
+          padding="$3"
+          borderRadius="$3"
+          backgroundColor="$backgroundFocus"
+          data-testid="bulk-actions-bar"
+        >
+          <Text fontSize="$2" opacity={0.8}>
+            {labels.table.selectedCount.replace(
+              '{count}',
+              String(selectedIds.size),
+            )}
+          </Text>
+          <XStack gap="$2">
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={() => setSelectedIds(new Set())}
+            >
+              {labels.table.deselectAll}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              color="$red10"
+              onPress={handleBulkDelete}
+              data-testid="bulk-delete-button"
+            >
+              {labels.table.deleteSelected}
+            </Button>
+          </XStack>
+        </XStack>
+      )}
 
       <XStack
         gap="$3"

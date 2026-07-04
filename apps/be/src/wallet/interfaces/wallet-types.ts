@@ -25,5 +25,6 @@ export const WALLET_REASONS = [
   'wager_entry',
   'wager_prize',
   'wager_fee',
+  'signup_reward',
 ] as const;
 export type WalletReason = (typeof WALLET_REASONS)[number];

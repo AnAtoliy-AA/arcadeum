@@ -20,6 +20,7 @@ interface ListArgs {
   pageSize?: number;
   q?: string;
   role?: UserRole;
+  status?: 'active' | 'blocked' | 'deleted';
 }
 
 interface UserDocLean {
@@ -30,6 +31,10 @@ interface UserDocLean {
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
+  isBlocked?: boolean;
+  blockedAt?: Date | null;
+  blockedReason?: string | null;
+  deletedAt?: Date | null;
 }
 
 @Injectable()
@@ -50,6 +55,18 @@ export class AdminUsersService {
         { email: { $regex: escaped, $options: 'i' } },
         { displayName: { $regex: escaped, $options: 'i' } },
       ];
+    }
+
+    if (args.status === 'blocked') {
+      filter.isBlocked = true;
+      filter.deletedAt = null;
+    } else if (args.status === 'deleted') {
+      filter.deletedAt = { $ne: null };
+    } else if (args.status === 'active') {
+      filter.isBlocked = { $ne: true };
+      filter.deletedAt = null;
+    } else {
+      filter.deletedAt = null;
     }
 
     const skip = (page - 1) * pageSize;
@@ -119,6 +136,216 @@ export class AdminUsersService {
     return this.toAdminUserItem(updated as unknown as UserDocLean);
   }
 
+  async block(
+    targetId: string,
+    requesterUserId: string,
+    reason?: string,
+  ): Promise<AdminUserItem> {
+    if (!Types.ObjectId.isValid(targetId)) {
+      throw new BadRequestException({ code: 'INVALID_USER_ID' });
+    }
+
+    if (targetId === requesterUserId) {
+      throw new ForbiddenException({ code: 'CANNOT_BLOCK_SELF' });
+    }
+
+    const target = await this.userModel
+      .findById(targetId)
+      .lean<UserDocLean | null>();
+    if (!target) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+
+    if (target.isBlocked) {
+      return this.toAdminUserItem(target);
+    }
+
+    if (target.role === 'admin') {
+      const otherAdminCount = await this.userModel.countDocuments({
+        role: 'admin',
+        _id: { $ne: target._id },
+        isBlocked: { $ne: true },
+        deletedAt: null,
+      });
+      if (otherAdminCount === 0) {
+        throw new ConflictException({ code: 'LAST_ADMIN_PROTECTED' });
+      }
+    }
+
+    const updated = await this.userModel.findByIdAndUpdate(
+      targetId,
+      {
+        $set: {
+          isBlocked: true,
+          blockedAt: new Date(),
+          blockedReason: reason ?? null,
+        },
+      },
+      { new: true, lean: true },
+    );
+    if (!updated) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+    return this.toAdminUserItem(updated as unknown as UserDocLean);
+  }
+
+  async unblock(
+    targetId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    requesterUserId: string,
+  ): Promise<AdminUserItem> {
+    if (!Types.ObjectId.isValid(targetId)) {
+      throw new BadRequestException({ code: 'INVALID_USER_ID' });
+    }
+
+    const target = await this.userModel
+      .findById(targetId)
+      .lean<UserDocLean | null>();
+    if (!target) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+
+    if (!target.isBlocked) {
+      return this.toAdminUserItem(target);
+    }
+
+    const updated = await this.userModel.findByIdAndUpdate(
+      targetId,
+      {
+        $set: {
+          isBlocked: false,
+          blockedAt: null,
+          blockedReason: null,
+        },
+      },
+      { new: true, lean: true },
+    );
+    if (!updated) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+    return this.toAdminUserItem(updated as unknown as UserDocLean);
+  }
+
+  async softDelete(
+    targetId: string,
+    requesterUserId: string,
+  ): Promise<AdminUserItem> {
+    if (!Types.ObjectId.isValid(targetId)) {
+      throw new BadRequestException({ code: 'INVALID_USER_ID' });
+    }
+
+    if (targetId === requesterUserId) {
+      throw new ForbiddenException({ code: 'CANNOT_DELETE_SELF' });
+    }
+
+    const target = await this.userModel
+      .findById(targetId)
+      .lean<UserDocLean | null>();
+    if (!target) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+
+    if (target.deletedAt) {
+      return this.toAdminUserItem(target);
+    }
+
+    if (target.role === 'admin') {
+      const otherAdminCount = await this.userModel.countDocuments({
+        role: 'admin',
+        _id: { $ne: target._id },
+        deletedAt: null,
+      });
+      if (otherAdminCount === 0) {
+        throw new ConflictException({ code: 'LAST_ADMIN_PROTECTED' });
+      }
+    }
+
+    const updated = await this.userModel.findByIdAndUpdate(
+      targetId,
+      { $set: { deletedAt: new Date() } },
+      { new: true, lean: true },
+    );
+    if (!updated) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+    return this.toAdminUserItem(updated as unknown as UserDocLean);
+  }
+
+  async restore(
+    targetId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    requesterUserId: string,
+  ): Promise<AdminUserItem> {
+    if (!Types.ObjectId.isValid(targetId)) {
+      throw new BadRequestException({ code: 'INVALID_USER_ID' });
+    }
+
+    const target = await this.userModel
+      .findById(targetId)
+      .lean<UserDocLean | null>();
+    if (!target) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+
+    if (!target.deletedAt) {
+      return this.toAdminUserItem(target);
+    }
+
+    const updated = await this.userModel.findByIdAndUpdate(
+      targetId,
+      { $set: { deletedAt: null } },
+      { new: true, lean: true },
+    );
+    if (!updated) {
+      throw new NotFoundException({ code: 'USER_NOT_FOUND' });
+    }
+    return this.toAdminUserItem(updated as unknown as UserDocLean);
+  }
+
+  async bulkDelete(
+    userIds: string[],
+    requesterUserId: string,
+  ): Promise<{ deleted: number; skipped: string[] }> {
+    const validIds = userIds.filter((id) => Types.ObjectId.isValid(id));
+    if (validIds.length === 0) {
+      return { deleted: 0, skipped: userIds };
+    }
+
+    const targets = await this.userModel
+      .find({ _id: { $in: validIds } })
+      .lean<UserDocLean[]>();
+
+    const targetMap = new Map(targets.map((t) => [t._id.toString(), t]));
+    const deletable: string[] = [];
+    const skipped: string[] = [];
+
+    for (const id of validIds) {
+      const target = targetMap.get(id);
+      if (!target || target.deletedAt) {
+        skipped.push(id);
+        continue;
+      }
+      if (target._id.toString() === requesterUserId) {
+        skipped.push(id);
+        continue;
+      }
+      if (target.role === 'admin') {
+        skipped.push(id);
+        continue;
+      }
+      deletable.push(id);
+    }
+
+    if (deletable.length > 0) {
+      await this.userModel.updateMany(
+        { _id: { $in: deletable } },
+        { $set: { deletedAt: new Date() } },
+      );
+    }
+
+    return { deleted: deletable.length, skipped };
+  }
+
   private toAdminUserItem(doc: UserDocLean): AdminUserItem {
     return {
       id: doc._id.toString(),
@@ -128,6 +355,10 @@ export class AdminUsersService {
       role: doc.role,
       createdAt: doc.createdAt.toISOString(),
       updatedAt: doc.updatedAt.toISOString(),
+      isBlocked: doc.isBlocked ?? false,
+      blockedAt: doc.blockedAt?.toISOString() ?? null,
+      blockedReason: doc.blockedReason ?? null,
+      deletedAt: doc.deletedAt?.toISOString() ?? null,
     };
   }
 }

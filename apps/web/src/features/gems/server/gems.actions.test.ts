@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/headers', () => ({
-  cookies: vi.fn().mockResolvedValue({ get: () => ({ value: 'test-token' }) }),
-}));
-vi.mock('@/shared/lib/api-base', () => ({
-  resolveApiUrl: (path: string) => `http://localhost:4000${path}`,
+
+const TEST_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+vi.mock('@/shared/lib/server-auth-fetch', () => ({
+  serverAuthFetch: vi.fn().mockImplementation(async (path: string, init?: RequestInit) => {
+    return fetchMock(`${TEST_API_BASE}${path}`, init);
+  }),
 }));
 
 const fetchMock = vi.fn();

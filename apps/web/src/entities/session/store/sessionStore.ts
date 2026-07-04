@@ -8,7 +8,6 @@ import type {
   SetSessionTokensInput,
   LocalAuthMode,
 } from '../model/types';
-import { cookies } from '@/shared/lib/cookies';
 
 const defaultSnapshot: SessionTokensSnapshot = {
   provider: null,
@@ -165,14 +164,6 @@ export const useSessionStore = create<SessionState>()(
         const next = buildSnapshot(state.snapshot, input);
         set({ snapshot: next });
 
-        // Sync with cookies for SSR
-        if (next.accessToken) {
-          cookies.set('web_access_token', next.accessToken);
-        }
-        if (next.refreshToken) {
-          cookies.set('web_refresh_token', next.refreshToken);
-        }
-
         return next;
       },
 
@@ -180,10 +171,6 @@ export const useSessionStore = create<SessionState>()(
         const { refreshTimeoutId } = get();
         if (refreshTimeoutId) clearTimeout(refreshTimeoutId);
         set({ snapshot: defaultSnapshot, refreshTimeoutId: null });
-
-        // Clear cookies
-        cookies.remove('web_access_token');
-        cookies.remove('web_refresh_token');
 
         if (typeof window !== 'undefined') {
           localStorage.removeItem('web_session_tokens_v1');
@@ -196,15 +183,16 @@ export const useSessionStore = create<SessionState>()(
           return state.snapshot;
         }
 
-        const refreshToken = state.snapshot.refreshToken;
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
         if (state.refreshTimeoutId) clearTimeout(state.refreshTimeoutId);
         set({ refreshInFlight: true, refreshTimeoutId: null });
 
         try {
+          const refreshToken = state.snapshot.refreshToken;
+          if (!refreshToken) {
+            (get() as SessionState).clearTokens();
+            set({ refreshInFlight: false });
+            return state.snapshot;
+          }
           const response = await refreshSession(refreshToken);
           const merged = enrichWithResponse(
             state.snapshot,
@@ -234,10 +222,19 @@ export const useSessionStore = create<SessionState>()(
     {
       name: 'web_session_tokens_v1',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        snapshot: (state as SessionState).snapshot,
-        mode: (state as SessionState).mode,
-      }),
+      partialize: (state) => {
+        const s = state as SessionState;
+        return {
+          snapshot: {
+            ...s.snapshot,
+            accessToken: null,
+            refreshToken: null,
+            accessTokenExpiresAt: null,
+            refreshTokenExpiresAt: null,
+          },
+          mode: s.mode,
+        };
+      },
     },
   ),
 );

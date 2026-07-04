@@ -37,9 +37,8 @@ export function useSessionTokens(): SessionTokensValue {
   // Keeping it here allows the hook to drive the refresh cycle based on component lifecycle,
   // while the store handles the actual async operation and state update.
   useEffect(() => {
-    const token = snapshot.refreshToken;
     const expiresAt = snapshot.accessTokenExpiresAt;
-    if (!token || !expiresAt) {
+    if (!expiresAt) {
       return;
     }
 
@@ -61,11 +60,7 @@ export function useSessionTokens(): SessionTokensValue {
 
     const { scheduleRefresh } = useSessionStore.getState();
     scheduleRefresh(delay);
-  }, [
-    snapshot.accessTokenExpiresAt,
-    snapshot.refreshToken,
-    storeRefreshTokens,
-  ]);
+  }, [snapshot.accessTokenExpiresAt, storeRefreshTokens]);
 
   const userId = useMemo(() => {
     if (snapshot.userId) return snapshot.userId;

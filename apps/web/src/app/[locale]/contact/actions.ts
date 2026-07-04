@@ -82,6 +82,7 @@ export async function submitContactAction(
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
     };
     // Shared secret with the BE: lets OriginGuard accept this fetch even
     // though Next.js server actions are server-to-server (no Origin

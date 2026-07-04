@@ -7,6 +7,7 @@ import {
   fetchProfile,
   loginLocal,
   registerLocal,
+  logoutSession,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
@@ -203,6 +204,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   );
 
   const logout = useCallback(async () => {
+    await logoutSession().catch(() => {});
     await session.clearTokens();
     persistEmail(null);
     hasCheckedOnceRef.current = false;
@@ -223,6 +225,15 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         ? session.snapshot
         : await session.reload();
       if (!baseSnapshot.accessToken) {
+        try {
+          const refreshed = await useSessionStore.getState().refreshTokens();
+          if (refreshed.accessToken) {
+            applySnapshot(refreshed);
+            return;
+          }
+        } catch {
+          // Cookie refresh failed — no session to recover
+        }
         setState((current) => ({
           ...current,
           loading: false,

@@ -816,6 +816,39 @@
   line-height: 1.45;
 }
 
+.ruleComingSoon {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.comingSoonBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.comingSoonTag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .toggle {
   width: 40px;
   height: 22px;
@@ -864,6 +897,80 @@
 .toggleOn .toggleHandle {
   transform: translateX(18px);
   background: var(--gc-ink);
+}
+
+/* Game-specific config */
+
+.gameConfig {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.configGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.configLabel {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gc-text);
+  margin: 0;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.configBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--gc-line-strong);
+  background: transparent;
+  color: var(--gc-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.configBtnActive {
+  background: var(--gc-accent);
+  border-color: var(--gc-accent);
+  color: var(--gc-ink);
+
+  &:hover {
+    background: var(--gc-accent);
+  }
+}
+
+.configHint {
+  font-size: 12px;
+  color: var(--gc-text-dim);
+  margin: 0;
+}
+
+.configToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gc-text);
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gc-accent);
+  }
 }
 
 /* Room details */

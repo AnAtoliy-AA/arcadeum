@@ -37,6 +37,7 @@ interface GameChatStore {
   currentUserId: string | null;
   chatPanelOpen: boolean;
   setLogs: (logs: ChatLogEntry[]) => void;
+  addLog: (entry: ChatLogEntry) => void;
   registerSendMessage: (
     fn: (message: string, scope: ChatScope) => void,
   ) => void;
@@ -61,6 +62,7 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   currentUserId: null,
   chatPanelOpen: false,
   setLogs: (logs) => set({ logs }),
+  addLog: (entry) => set((s) => ({ logs: [...s.logs, entry] })),
   registerSendMessage: (fn) => set({ sendMessage: fn }),
   registerResolveDisplayName: (fn) => set({ resolveDisplayName: fn }),
   registerFallbackResolveDisplayName: (fn) =>

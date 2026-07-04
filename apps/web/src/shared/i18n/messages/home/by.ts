@@ -97,6 +97,7 @@ export const by = {
   footerToken: 'Токен',
   footerResourcesTitle: 'Рэсурсы',
   footerHelpCenter: 'Цэнтр дапамогі',
+  footerRoadmap: 'Дарожная карта',
   footerGamingBlog: 'Блог пра гульні',
   footerDevelopers: 'Распрацоўшчыкам (API)',
   footerLegalTitle: 'Юрыдычная інфармацыя',

@@ -50,6 +50,7 @@ export default function AppFooter() {
       title: t('home.footerResourcesTitle'),
       links: [
         { href: '/help', label: t('home.footerHelpCenter') },
+        { href: '/roadmap', label: t('home.footerRoadmap') },
         { href: '/blog', label: t('home.footerGamingBlog') },
         { href: '/community', label: t('home.footerCommunity') },
         { href: '/developers', label: t('home.footerDevelopers') },

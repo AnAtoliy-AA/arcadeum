@@ -16,6 +16,7 @@ import { TickerEvent, TickerEventSchema } from './schemas/ticker-event.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 import { GamesModule } from '../games/games.module';
+import { FriendsModule } from '../friends/friends.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { GamesModule } from '../games/games.module';
     ]),
     AuthModule,
     forwardRef(() => GamesModule),
+    forwardRef(() => FriendsModule),
   ],
   controllers: [LeaderboardsController],
   providers: [

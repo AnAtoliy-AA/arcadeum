@@ -19,14 +19,7 @@ export interface PoolStats {
 
 export type TimeRange = '1H' | '1D' | '1W' | '1M' | '3M' | 'ALL';
 
-export const TIME_RANGES: TimeRange[] = [
-  '1H',
-  '1D',
-  '1W',
-  '1M',
-  '3M',
-  'ALL',
-];
+export const TIME_RANGES: TimeRange[] = ['1H', '1D', '1W', '1M', '3M', 'ALL'];
 
 export const RANGE_LABEL: Record<TimeRange, string> = {
   '1H': '1 Hour',
@@ -37,31 +30,35 @@ export const RANGE_LABEL: Record<TimeRange, string> = {
   ALL: 'All Time',
 };
 
-const RANGE_CONFIG: Array<{
-  key: TimeRange;
-  timeframe: string;
-  aggregate: string;
-  limit: number;
-}> = [
-  { key: '1H', timeframe: 'minute', aggregate: '5', limit: 12 },
-  { key: '1D', timeframe: 'minute', aggregate: '15', limit: 96 },
-  { key: '1W', timeframe: 'hour', aggregate: '1', limit: 168 },
-  { key: '1M', timeframe: 'day', aggregate: '1', limit: 30 },
-  { key: '3M', timeframe: 'day', aggregate: '1', limit: 90 },
-  { key: 'ALL', timeframe: 'day', aggregate: '1', limit: 365 },
-];
-
-const FALLBACK_CONFIG: Array<{
-  timeframe: string;
-  aggregate: string;
-  limit: number;
-}> = [
-  { timeframe: 'minute', aggregate: '5', limit: 200 },
-  { timeframe: 'minute', aggregate: '15', limit: 200 },
-  { timeframe: 'hour', aggregate: '1', limit: 200 },
-  { timeframe: 'hour', aggregate: '4', limit: 200 },
-  { timeframe: 'day', aggregate: '1', limit: 200 },
-];
+const RANGE_CONFIG: Record<
+  TimeRange,
+  Array<{ timeframe: string; aggregate: string; limit: number }>
+> = {
+  '1H': [
+    { timeframe: 'minute', aggregate: '5', limit: 12 },
+    { timeframe: 'minute', aggregate: '15', limit: 4 },
+  ],
+  '1D': [
+    { timeframe: 'minute', aggregate: '15', limit: 96 },
+    { timeframe: 'minute', aggregate: '30', limit: 48 },
+  ],
+  '1W': [
+    { timeframe: 'hour', aggregate: '1', limit: 168 },
+    { timeframe: 'hour', aggregate: '4', limit: 42 },
+  ],
+  '1M': [
+    { timeframe: 'day', aggregate: '1', limit: 30 },
+    { timeframe: 'hour', aggregate: '4', limit: 180 },
+  ],
+  '3M': [
+    { timeframe: 'day', aggregate: '1', limit: 90 },
+    { timeframe: 'day', aggregate: '3', limit: 30 },
+  ],
+  ALL: [
+    { timeframe: 'day', aggregate: '1', limit: 365 },
+    { timeframe: 'week', aggregate: '1', limit: 52 },
+  ],
+};
 
 export function formatPrice(n: number): string {
   if (!Number.isFinite(n) || n === 0) return '—';
@@ -81,7 +78,7 @@ export function formatVolume(n: number): string {
 }
 
 export function formatTooltipLabel(ts: number): string {
-  const date = new Date(ts);
+  const date = new Date(ts * 1000);
   return date.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -91,7 +88,7 @@ export function formatTooltipLabel(ts: number): string {
 }
 
 export function formatXTick(ts: number, range: TimeRange): string {
-  const date = new Date(ts);
+  const date = new Date(ts * 1000);
   if (range === '1H' || range === '1D') {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -150,77 +147,103 @@ export async function fetchPoolStats(
   }
 }
 
+const RANGE_SECONDS: Record<TimeRange, number> = {
+  '1H': 3600,
+  '1D': 86400,
+  '1W': 604800,
+  '1M': 2592000,
+  '3M': 7776000,
+  ALL: 31536000,
+};
+
 export async function fetchOHLCV(
   poolAddress: string,
   range: TimeRange,
 ): Promise<DataPoint[]> {
-  const config = RANGE_CONFIG.find((c) => c.key === range);
-  if (!config) return [];
+  const configs = RANGE_CONFIG[range];
+  if (!configs) return [];
 
-  let ohlcvList: Array<
-    [number, number, number, number, number, number]
-  > = [];
+  let ohlcvList: Array<[number, number, number, number, number, number]> = [];
 
-  try {
-    const res = await fetch(
-      `/api/token-chart?pool=${poolAddress}&timeframe=${config.timeframe}&aggregate=${config.aggregate}&limit=${config.limit}`,
-    );
-    if (res.ok) {
-      const data = await res.json();
-      ohlcvList = data?.data?.attributes?.ohlcv_list ?? [];
-    }
-  } catch {
-    ohlcvList = [];
-  }
-
-  if (ohlcvList.length === 0) {
-    for (const fb of FALLBACK_CONFIG) {
-      try {
-        const res = await fetch(
-          `/api/token-chart?pool=${poolAddress}&timeframe=${fb.timeframe}&aggregate=${fb.aggregate}&limit=${fb.limit}`,
-        );
-        if (res.ok) {
-          const data = await res.json();
-          ohlcvList = data?.data?.attributes?.ohlcv_list ?? [];
-          if (ohlcvList.length > 0) break;
-        }
-      } catch {
-        // continue
+  for (const cfg of configs) {
+    try {
+      const res = await fetch(
+        `/api/token-chart?pool=${poolAddress}&timeframe=${cfg.timeframe}&aggregate=${cfg.aggregate}&limit=${cfg.limit}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        ohlcvList = data?.data?.attributes?.ohlcv_list ?? [];
+        if (ohlcvList.length > 0) break;
       }
+    } catch {
+      // try next config
     }
   }
 
   if (!Array.isArray(ohlcvList) || ohlcvList.length === 0) return [];
 
-  return ohlcvList
-    .map(
-      (candle: [number, number, number, number, number, number]) => {
-        const [timestamp, open, high, low, close, vol] = candle;
-        const date = new Date(timestamp * 1000);
+  const now = Math.floor(Date.now() / 1000);
+  const cutoff = now - RANGE_SECONDS[range];
 
-        let timeLabel: string;
-        if (range === '1H' || range === '1D') {
-          timeLabel = date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-        } else {
-          timeLabel = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          });
-        }
-
-        return {
-          time: timeLabel,
-          ts: timestamp,
-          value: close,
-          open,
-          high,
-          low,
-          volume: vol,
-        };
-      },
+  const points = ohlcvList
+    .filter(
+      (candle: [number, number, number, number, number, number]) =>
+        candle[0] >= cutoff,
     )
+    .map((candle: [number, number, number, number, number, number]) => {
+      const [timestamp, open, high, low, close, vol] = candle;
+
+      let timeLabel: string;
+      if (range === '1H' || range === '1D') {
+        timeLabel = new Date(timestamp * 1000).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      } else {
+        timeLabel = new Date(timestamp * 1000).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        });
+      }
+
+      return {
+        time: timeLabel,
+        ts: timestamp,
+        value: close,
+        open,
+        high,
+        low,
+        volume: vol,
+      };
+    })
     .reverse();
+
+  if (points.length === 0) {
+    const last = ohlcvList[ohlcvList.length - 1];
+    if (!last) return [];
+    const [ts, , , , close] = last;
+    points.push({
+      time: '',
+      ts,
+      value: close,
+      open: close,
+      high: close,
+      low: close,
+      volume: 0,
+    });
+  }
+  if (points.length === 1) {
+    const p = points[0];
+    points.unshift({
+      ...p,
+      ts: cutoff,
+      time: '',
+      open: p.value,
+      high: p.value,
+      low: p.value,
+      volume: 0,
+    });
+  }
+
+  return points;
 }

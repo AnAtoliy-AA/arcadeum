@@ -51,6 +51,7 @@ export default function CriticalGame({
     return (
       <CriticalLobby
         room={room}
+        userId={currentUserId ?? ''}
         isHost={isHost}
         startBusy={startBusy}
         isFullscreen={isFullscreen}

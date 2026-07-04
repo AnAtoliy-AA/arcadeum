@@ -29,6 +29,7 @@ import type {
 } from './lib/types';
 import { ReferralService } from '../referrals/referral.service';
 import { InventoryService } from '../shop/services/inventory.service';
+import { SignupRewardService } from './services';
 import { ModuleRef } from '@nestjs/core';
 
 export type {
@@ -47,6 +48,7 @@ export class AuthService {
     private readonly googleOAuth: GoogleOAuthService,
     @Inject(forwardRef(() => ReferralService))
     private readonly referralService: ReferralService,
+    private readonly signupReward: SignupRewardService,
     private readonly moduleRef: ModuleRef,
   ) {}
 
@@ -61,9 +63,7 @@ export class AuthService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // OAuth Code Exchange (delegated to GoogleOAuthService)
-  // ─────────────────────────────────────────────────────────────────────────────
+  // ── OAuth Code Exchange (delegated to GoogleOAuthService) ────────────────
 
   async exchangeCode(params: {
     code: string;
@@ -74,9 +74,7 @@ export class AuthService {
     return this.googleOAuth.exchangeCode(params);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Local Auth (email/password)
-  // ─────────────────────────────────────────────────────────────────────────────
+  // ── Local Auth (email/password) ─────────────────────────────────────────
 
   async register(data: RegisterDto): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();
@@ -122,6 +120,7 @@ export class AuthService {
     // recovered by `ShopInventoryBootstrap` on next boot. Failure is
     // non-critical to registration itself.
     await this.grantStarterItems((created as UserDocument).id as string);
+    await this.signupReward.grant((created as UserDocument).id as string);
 
     return this.buildAuthUserProfile(created);
   }
@@ -154,6 +153,14 @@ export class AuthService {
     if (!userDoc) throw new UnauthorizedException('Invalid credentials');
 
     const user = await this.ensureUserUsername(userDoc);
+
+    if (user.isBlocked) {
+      throw new UnauthorizedException('Account is blocked');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been removed');
+    }
 
     const passwordOk = await bcrypt.compare(data.password, user.passwordHash);
     if (!passwordOk) throw new UnauthorizedException('Invalid credentials');
@@ -203,6 +210,14 @@ export class AuthService {
     }
 
     const user = await this.getOrCreateOAuthUser(googleProfile);
+
+    if (user.isBlocked) {
+      throw new UnauthorizedException('Account is blocked');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been removed');
+    }
 
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
@@ -299,10 +314,6 @@ export class AuthService {
     return this.buildAuthUserProfile(ensured);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Block User Management
-  // ─────────────────────────────────────────────────────────────────────────────
-
   async blockUser(userId: string, blockedUserId: string): Promise<void> {
     await this.userModel.updateOne(
       { _id: userId },
@@ -326,8 +337,9 @@ export class AuthService {
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user) return false;
-    return (user.blockedUsers || []).includes(potentiallyBlockedUserId);
+    return user
+      ? (user.blockedUsers || []).includes(potentiallyBlockedUserId)
+      : false;
   }
 
   async getBlockedUsers(userId: string): Promise<string[]> {
@@ -336,31 +348,23 @@ export class AuthService {
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user) return [];
-    return user.blockedUsers || [];
+    return user?.blockedUsers || [];
   }
 
-  async getBlockedUsersWithDetails(userId: string): Promise<
-    Array<{
-      id: string;
-      displayName: string;
-      username: string;
-    }>
-  > {
+  async getBlockedUsersWithDetails(
+    userId: string,
+  ): Promise<Array<{ id: string; displayName: string; username: string }>> {
     if (!Types.ObjectId.isValid(userId)) return [];
     const user = await this.userModel
       .findById(userId)
       .select('blockedUsers')
       .lean();
-    if (!user || !user.blockedUsers || user.blockedUsers.length === 0)
-      return [];
-
-    const blockedUsersDetails = await this.userModel
+    if (!user?.blockedUsers?.length) return [];
+    const blocked = await this.userModel
       .find({ _id: { $in: user.blockedUsers } })
       .select('displayName username email')
       .lean();
-
-    return blockedUsersDetails.map((u) => ({
+    return blocked.map((u) => ({
       id: (u._id as Types.ObjectId).toString(),
       displayName: u.displayName || u.username || u.email || 'Unknown',
       username: u.username || '',
@@ -445,6 +449,7 @@ export class AuthService {
     // Grant starter shop items on first OAuth sign-up. Same un-sessioned
     // approach as `register()`; bootstrap is the safety net.
     await this.grantStarterItems((created as UserDocument).id as string);
+    await this.signupReward.grant((created as UserDocument).id as string);
 
     return created;
   }
@@ -453,21 +458,12 @@ export class AuthService {
     user: Pick<User, 'displayName' | 'username' | 'email'>,
   ): string {
     const preferred = user.displayName?.trim?.();
-    if (preferred) {
-      return preferred;
-    }
-
+    if (preferred) return preferred;
     const username = user.username?.trim?.();
-    if (username) {
-      return username;
-    }
-
+    if (username) return username;
     const [localPart] = user.email?.split?.('@') ?? [];
     const local = localPart?.trim?.();
-    if (local) {
-      return local;
-    }
-
+    if (local) return local;
     return user.email;
   }
 
@@ -489,10 +485,7 @@ export class AuthService {
     };
 
     const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;
-    if (createdAt instanceof Date) {
-      profile.createdAt = createdAt;
-    }
-
+    if (createdAt instanceof Date) profile.createdAt = createdAt;
     return profile;
   }
 }

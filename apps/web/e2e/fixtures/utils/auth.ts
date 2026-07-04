@@ -72,6 +72,7 @@ export async function mockSession(
         email: 'test@example.com',
         username: 'testuser',
         displayName: 'Test User',
+        role: options.role ?? 'free',
       },
     });
   });

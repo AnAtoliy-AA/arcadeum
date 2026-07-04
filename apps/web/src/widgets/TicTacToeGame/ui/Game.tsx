@@ -13,6 +13,7 @@ import {
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -109,6 +110,8 @@ function TicTacToeGameImpl({
       | undefined,
   });
 
+  useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
+
   const { showResultModal, sharedResult, resultMessages, dismiss } =
     useGameResultModal(
       session,
@@ -151,6 +154,7 @@ function TicTacToeGameImpl({
       <TicTacToeThemeProvider variant={options.variant}>
         <TicTacToeLobby
           room={room}
+          userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
           onStartGame={(opts) =>

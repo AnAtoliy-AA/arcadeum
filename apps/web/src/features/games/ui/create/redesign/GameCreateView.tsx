@@ -21,9 +21,8 @@ import { SectionGroup } from './SectionGroup';
 import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
-import { ThemePicker } from './ThemePicker';
-import { HouseRules } from './HouseRules';
 import { RoomDetails } from './RoomDetails';
+import { HouseRules } from './HouseRules';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
 import { applyPreset } from './data/presets';
@@ -66,6 +65,7 @@ function initialForm(
     visibility: 'public',
     roomName: defaultRoomName,
     notes: '',
+    password: '',
     rules: {
       combos: false,
       idle: false,
@@ -83,53 +83,10 @@ function toApiVisibility(v: Visibility): 'public' | 'private' {
 function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'critical_v1') {
     return {
-      cardVariant: form.themeId || undefined,
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
-      houseRules: {
-        actionCardCombos: form.rules.combos,
-        idleTimerAutoplay: form.rules.idle,
-      },
-      allowSpectators: form.rules.spectators,
     };
   }
-  if (form.gameId === 'sea_battle_v1') {
-    return {
-      variant: form.themeId || undefined,
-      teams: form.rules.teams,
-      idleTimerAutoplay: form.rules.idle,
-      allowSpectators: form.rules.spectators,
-    };
-  }
-  if (form.gameId === 'tic_tac_toe_v1') {
-    return {
-      variant: form.themeId || 'classic',
-      boardSize: 3,
-      teamMode: form.rules.teams,
-      allowSpectators: form.rules.spectators,
-    };
-  }
-  if (form.gameId === 'cascade_v1') {
-    // The create page picker currently surfaces only the visual theme.
-    // Mode defaults to 'classic' from here; the lobby ModeSelector lets
-    // the host override before starting. Pure mode forces stacking off
-    // on the BE; the create-page initial `stackingEnabled: true` is
-    // informational only and is recomputed from mode in the engine.
-    return {
-      variant: form.themeId || 'cosmic',
-      mode: 'classic',
-      stackingEnabled: true,
-      // Last-Card race defaults ON when creating a room. Host can toggle
-      // it off in the lobby (lobby option is the source of truth at
-      // session-start; engine honours the value it sees).
-      lastCardCallEnabled: true,
-      idleTimerAutoplay: form.rules.idle,
-      allowSpectators: form.rules.spectators,
-    };
-  }
-  return {
-    idleTimerAutoplay: form.rules.idle,
-    allowSpectators: form.rules.spectators,
-  };
+  return {};
 }
 
 export function GameCreateView() {
@@ -198,7 +155,12 @@ export function GameCreateView() {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'preset'
+        | 'roomName'
+        | 'maxPlayers'
+        | 'visibility'
+        | 'notes'
+        | 'password'
+        | 'preset'
       >
     >,
   ) {
@@ -228,11 +190,6 @@ export function GameCreateView() {
     updateUrl({ gameId: newGameId, themeId });
   }
 
-  function setThemeId(themeId: string) {
-    setForm({ ...form, themeId });
-    updateUrl({ gameId: form.gameId, themeId });
-  }
-
   function setExpansionPackIds(ids: string[]) {
     const withCore = ids.includes('core') ? ids : ['core', ...ids];
     setForm((prev) => ({
@@ -240,10 +197,6 @@ export function GameCreateView() {
       expansionPackIds: withCore,
       preset: 'custom',
     }));
-  }
-
-  function setRules(rules: CreateRoomForm['rules']) {
-    setForm((prev) => ({ ...prev, rules, preset: 'custom' }));
   }
 
   function pickPreset(preset: Exclude<PresetId, 'custom'>) {
@@ -263,7 +216,7 @@ export function GameCreateView() {
       cancelled = true;
     };
   }, []);
-  const { gameComingSoon, variantComingSoon } = useMemo(
+  const { gameComingSoon, variantComingSoon, ruleComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],
   );
@@ -292,6 +245,7 @@ export function GameCreateView() {
           visibility: toApiVisibility(form.visibility),
           maxPlayers: form.maxPlayers === 'auto' ? undefined : form.maxPlayers,
           notes: form.notes.trim() || undefined,
+          password: form.password.trim() || undefined,
           gameOptions: buildGameOptions(form),
         },
         { token: snapshot.accessToken || undefined },
@@ -332,7 +286,6 @@ export function GameCreateView() {
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
-  const numTheme = game.hasThemes ? String(n++).padStart(2, '0') : null;
   const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
 
@@ -391,26 +344,15 @@ export function GameCreateView() {
                   </SectionGroup>
                 ) : null}
 
-                {numTheme ? (
-                  <SectionGroup num={numTheme} title={L.sectionTheme}>
-                    <ThemePicker
-                      gameId={form.gameId}
-                      value={form.themeId}
-                      onChange={setThemeId}
-                    />
-                  </SectionGroup>
-                ) : null}
-
-                <SectionGroup
-                  num={numRules}
-                  title={L.sectionRules}
-                  hint={L.optional}
-                >
+                <SectionGroup num={numRules} title={L.sectionRules}>
                   <HouseRules
                     gameId={form.gameId}
                     value={form.rules}
                     labels={L.rules}
-                    onChange={setRules}
+                    ruleComingSoon={ruleComingSoon}
+                    onChange={(rules) =>
+                      setForm((prev) => ({ ...prev, rules }))
+                    }
                   />
                 </SectionGroup>
 

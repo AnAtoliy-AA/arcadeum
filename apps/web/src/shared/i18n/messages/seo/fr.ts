@@ -59,7 +59,11 @@ export const fr: DeepPartial<SeoMessages> = {
   },
   leaderboards: {
     title: `Classements · ${APP}`,
-    description: `Découvrez qui domine chaque mode de jeu sur ${APP}. Grimpez le classement et défiez vos amis.`,
+    description: `Voyez qui est en tête dans chaque mode de jeu de ${APP}. Montez dans le classement et affrontez vos amis.`,
+  },
+  friends: {
+    title: `Amis · ${APP}`,
+    description: `Gérez votre liste d'amis sur ${APP}, envoyez des demandes et voyez qui est en ligne.`,
   },
   tournaments: {
     title: `Tournois · ${APP}`,

@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { WalletService } from './wallet.service';
 import { WalletModule } from './wallet.module';
 import { WalletGateway } from './wallet.gateway';
@@ -12,6 +12,7 @@ import {
   WalletTransactionDocument,
 } from './schemas/wallet-transaction.schema';
 import { AuthModule } from '../auth/auth.module';
+import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
 
 describe('WalletService (integration)', () => {
   let replSet: MongoMemoryReplSet;
@@ -47,20 +48,12 @@ describe('WalletService (integration)', () => {
   afterEach(async () => {
     await userModel.deleteMany({});
     await txModel.deleteMany({});
+    resetTestUsers();
   });
 
   const createUser = async (overrides: Partial<User> = {}) => {
-    const uid = new Types.ObjectId().toHexString();
-    return userModel.create({
-      email: `user-${uid}@test.com`,
-      passwordHash: 'hash',
-      username: `user_${uid}`,
-      usernameNormalized: `user_${uid}`,
-      coins: 0,
-      gems: 0,
-      blockedUsers: [],
-      ...overrides,
-    });
+    const { doc } = await createTestUser(userModel, overrides);
+    return doc;
   };
 
   describe('round-trip credit + debit + idempotency', () => {

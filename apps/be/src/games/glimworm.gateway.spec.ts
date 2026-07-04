@@ -4,6 +4,9 @@ import type { Socket } from 'socket.io';
 import type { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
 import type { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 
+const mockJwt = {} as never;
+const mockConfig = {} as never;
+
 const makeService = () =>
   ({
     submitInput: jest.fn(),
@@ -39,7 +42,8 @@ const buildGateway = (
   service: GlimwormService,
   vis: GameVisibilityService = makeVisibility(),
   resolver: UserRoleResolver = makeResolver(),
-): GlimwormGateway => new GlimwormGateway(service, vis, resolver);
+): GlimwormGateway =>
+  new GlimwormGateway(service, vis, resolver, mockJwt, mockConfig);
 
 describe('GlimwormGateway', () => {
   describe('handleInput', () => {

@@ -36,6 +36,7 @@ export interface CascadeOptions {
    * one card, every alive player can press Cascade — first press wins.
    */
   lastCardCallEnabled: boolean;
+  handLimit?: number;
 }
 
 /**

@@ -12,6 +12,7 @@ export interface CreateRoomForm {
   visibility: Visibility;
   roomName: string;
   notes: string;
+  password: string;
   rules: {
     combos: boolean;
     idle: boolean;

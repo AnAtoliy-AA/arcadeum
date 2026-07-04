@@ -7,6 +7,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import type {
   CriticalCard,
   CriticalPlayerState,
@@ -121,6 +122,15 @@ export function ActiveGameView({
 
   const showResultModal = isGameOver && !modalDismissed;
   useWebGameHaptics(isMyTurn);
+
+  // Record game result to local stats
+  const criticalResult = useMemo(() => {
+    if (!isGameOver || !currentUserId) return null;
+    const alivePlayer = snapshot.players.find((p) => p.alive)?.playerId;
+    if (!alivePlayer) return 'draw' as const;
+    return alivePlayer === currentUserId ? ('won' as const) : ('lost' as const);
+  }, [isGameOver, currentUserId, snapshot.players]);
+  useRecordGameResult(criticalResult, 'critical_v1');
 
   const {
     eventComboModal,

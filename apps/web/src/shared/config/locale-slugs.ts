@@ -4,7 +4,7 @@
 // `rewrites()` in next.config (URL → filesystem) and `redirects()`
 // (English-slug-in-locale → localized canonical).
 //
-// Imported by routes.ts, middleware.ts, and next.config.ts. Keep this
+// Imported by routes.ts, proxy.ts, and next.config.ts. Keep this
 // file dependency-free — routes.ts is imported transitively by
 // app-config.ts, which would create a cycle if we pulled in the i18n
 // message bundles here.
@@ -35,6 +35,7 @@ export const EN_SLUGS = {
   contact: 'contact',
   cookies: 'cookies',
   help: 'help',
+  roadmap: 'roadmap',
   blog: 'blog',
   community: 'community',
   rewards: 'rewards',
@@ -43,6 +44,7 @@ export const EN_SLUGS = {
   token: 'token',
   shop: 'shop',
   leaderboards: 'leaderboards',
+  friends: 'friends',
   developers: 'developers',
   players: 'players',
 } as const;
@@ -77,6 +79,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     contact: 'contacto',
     cookies: 'cookies',
     help: 'ayuda',
+    roadmap: 'hoja-de-ruta',
     blog: 'blog',
     community: 'comunidad',
     rewards: 'recompensas',
@@ -85,6 +88,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     token: 'token',
     shop: 'tienda',
     leaderboards: 'clasificaciones',
+    friends: 'amigos',
     developers: 'desarrolladores',
     players: 'jugadores',
   },
@@ -106,6 +110,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     contact: 'contact',
     cookies: 'cookies',
     help: 'aide',
+    roadmap: 'feuille-de-route',
     blog: 'blog',
     community: 'communaute',
     rewards: 'recompenses',
@@ -114,6 +119,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     token: 'token',
     shop: 'boutique',
     leaderboards: 'classements',
+    friends: 'amis',
     developers: 'developpeurs',
     players: 'joueurs',
   },
@@ -135,6 +141,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     contact: 'kontakty',
     cookies: 'cookies',
     help: 'pomoshch',
+    roadmap: 'dorozhnaya-karta',
     blog: 'blog',
     community: 'soobshchestvo',
     rewards: 'nagrady',
@@ -143,6 +150,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     token: 'token',
     shop: 'magazin',
     leaderboards: 'lidery',
+    friends: 'druzia',
     developers: 'razrabotchiki',
     players: 'igroki',
   },
@@ -164,6 +172,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     contact: 'kantakty',
     cookies: 'cookies',
     help: 'dapamoga',
+    roadmap: 'darozhnaya-karta',
     blog: 'blog',
     community: 'supolnasc',
     rewards: 'uznagarody',
@@ -172,6 +181,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     token: 'token',
     shop: 'krama',
     leaderboards: 'lidery',
+    friends: 'siaqry',
     developers: 'raspracoushchyki',
     players: 'hultsy',
   },

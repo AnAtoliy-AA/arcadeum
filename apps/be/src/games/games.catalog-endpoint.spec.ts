@@ -4,6 +4,7 @@ import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 
 function reqWithUser(userId: string | undefined): Request {
@@ -11,6 +12,10 @@ function reqWithUser(userId: string | undefined): Request {
     ? { user: { userId } }
     : { user: undefined }) as unknown as Request;
 }
+
+const ruleVis = {
+  getAllRules: jest.fn().mockResolvedValue(new Map()),
+} as unknown as GameRuleVisibilityService;
 
 function buildController(
   visibility: GameVisibilityService,
@@ -21,6 +26,7 @@ function buildController(
     {} as unknown as CriticalService,
     {} as unknown as TexasHoldemService,
     visibility,
+    ruleVis,
     resolver,
   );
 }
@@ -96,6 +102,10 @@ describe('GamesController.getCatalog', () => {
       gameId: 'glimworm_v1',
       comingSoon: true,
       variants: [],
+      rules: [
+        { ruleId: 'idle', comingSoon: true },
+        { ruleId: 'spectators', comingSoon: true },
+      ],
     });
   });
 
@@ -235,6 +245,11 @@ describe('getCatalog (comingSoon + new tiers)', () => {
         gameId: 'critical_v1',
         comingSoon: true,
         variants: [],
+        rules: [
+          { ruleId: 'combos', comingSoon: true },
+          { ruleId: 'idle', comingSoon: true },
+          { ruleId: 'spectators', comingSoon: true },
+        ],
       });
     }
   });

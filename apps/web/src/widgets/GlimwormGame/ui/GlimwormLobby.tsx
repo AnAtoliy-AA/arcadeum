@@ -343,6 +343,7 @@ export function GlimwormLobby({
   return (
     <ReusableGameLobby
       room={room}
+      userId={currentUserId}
       isHost={isHost}
       startBusy={busy}
       onStartGame={handleStartGame}

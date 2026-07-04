@@ -57,6 +57,7 @@ export const buildRoutes = (locale: Locale) => {
     contact: `/${locale}/${s('contact')}`,
     cookies: `/${locale}/${s('cookies')}`,
     help: `/${locale}/${s('help')}`,
+    roadmap: `/${locale}/${s('roadmap')}`,
 
     // Community & Content
     blog: `/${locale}/${s('blog')}`,
@@ -71,6 +72,7 @@ export const buildRoutes = (locale: Locale) => {
     battlePass: `/${locale}/battle-pass`,
     shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
+    friends: `/${locale}/${s('friends')}`,
     developers: `/${locale}/${s('developers')}`,
 
     // System (locale-free)

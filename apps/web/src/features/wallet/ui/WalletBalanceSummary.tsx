@@ -3,6 +3,7 @@
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import Link from 'next/link';
 import type { WalletBalance } from '../server/wallet.types';
 
 interface Props {
@@ -104,8 +105,32 @@ export function WalletBalanceSummary({
             borderRadius: '12px',
             background: 'rgba(52,211,153,0.08)',
             border: '1px solid rgba(52,211,153,0.2)',
+            position: 'relative',
           }}
         >
+          <Link
+            href="/token"
+            aria-label="Learn about Arcadeum token"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: 'rgba(52,211,153,0.15)',
+              color: '#34d399',
+              fontSize: '12px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textDecoration: 'none',
+              lineHeight: 1,
+            }}
+          >
+            ?
+          </Link>
           <div
             style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
           >
@@ -129,8 +154,8 @@ export function WalletBalanceSummary({
         }}
       >
         All balances are in-platform virtual currency with no real-world
-        monetary value. They cannot be exchanged for cash or transferred
-        outside the platform.
+        monetary value. They cannot be exchanged for cash or transferred outside
+        the platform.
       </p>
     </section>
   );

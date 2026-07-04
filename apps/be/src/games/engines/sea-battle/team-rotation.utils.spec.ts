@@ -36,6 +36,7 @@ function makeState(opts: {
     teamOrder: teams.map((t) => t.id),
     currentTeamIndex: opts.currentTeamIndex ?? 0,
     logs: [],
+    gridSize: 10,
   } as SeaBattleState;
 }
 

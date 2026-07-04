@@ -1,6 +1,10 @@
 'use client';
-import { memo, useMemo } from 'react';
-import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
+import { memo, useMemo, useState } from 'react';
+import type {
+  SeaBattlePlayerState,
+  SeaBattleSnapshot,
+  SeaBattleTeam,
+} from '../../types';
 import { MainGameArea } from '../styles';
 import { SeaBattleGrids } from '../SeaBattleGrids';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -18,6 +22,13 @@ export interface AttackBoardProps {
   disabled?: boolean;
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
+  gridSize?: number;
+  snapshot?: SeaBattleSnapshot | null;
+  weaponPreviewCells?: Set<string> | null;
+  weaponPreviewType?: 'sonar' | 'radar' | null;
+  onCellHover?: (playerId: string, row: number, col: number) => void;
+  onCellHoverEnd?: () => void;
+  weaponMode?: boolean;
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -30,6 +41,12 @@ export const AttackBoard = memo(function AttackBoard({
   disabled = false,
   teammateIds,
   teams,
+  snapshot,
+  weaponPreviewCells,
+  weaponPreviewType,
+  onCellHover,
+  onCellHoverEnd,
+  weaponMode,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -58,6 +75,68 @@ export const AttackBoard = memo(function AttackBoard({
     return set;
   }, [players]);
 
+  // Cache lastSonar/lastRadar across state updates — they may disappear
+  // from the snapshot after a re-broadcast but should remain visible until
+  // a new weapon is used or the game ends.
+  const [cachedLastSonar, setCachedLastSonar] = useState(
+    () => snapshot?.lastSonar ?? null,
+  );
+  const [cachedLastRadar, setCachedLastRadar] = useState(
+    () => snapshot?.lastRadar ?? null,
+  );
+
+  const nextCachedSonar =
+    snapshot?.phase !== 'battle'
+      ? null
+      : (snapshot?.lastSonar ?? cachedLastSonar);
+  const nextCachedRadar =
+    snapshot?.phase !== 'battle'
+      ? null
+      : (snapshot?.lastRadar ?? cachedLastRadar);
+  if (nextCachedSonar !== cachedLastSonar) setCachedLastSonar(nextCachedSonar);
+  if (nextCachedRadar !== cachedLastRadar) setCachedLastRadar(nextCachedRadar);
+
+  const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar;
+  const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar;
+
+  const sonarHighlightSet = (() => {
+    const ls = effectiveLastSonar;
+    if (!ls) return null;
+    const set = new Set<string>();
+    ls.cells.forEach((c) => set.add(`${ls.targetId}-${c.row}-${c.col}`));
+    return set;
+  })();
+
+  // Map cellKey → state for sonar scanned cells (SHIP=1, EMPTY=0, etc.)
+  const sonarCellStates = (() => {
+    const ls = effectiveLastSonar;
+    if (!ls) return null;
+    const map = new Map<string, number>();
+    ls.cells.forEach((c) =>
+      map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state),
+    );
+    return map;
+  })();
+
+  const radarHighlightSet = (() => {
+    const lr = effectiveLastRadar;
+    if (!lr) return null;
+    const set = new Set<string>();
+    lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
+    return set;
+  })();
+
+  // Map cellKey → state for radar scanned cells
+  const radarCellStates = (() => {
+    const lr = effectiveLastRadar;
+    if (!lr) return null;
+    const map = new Map<string, number>();
+    lr.cells.forEach((c) =>
+      map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state),
+    );
+    return map;
+  })();
+
   return (
     <MainGameArea data-testid="game-main-area">
       <SeaBattleGrids>
@@ -84,6 +163,10 @@ export const AttackBoard = memo(function AttackBoard({
           const team = teams?.find((tt) =>
             tt.playerIds.includes(opponent.playerId),
           );
+          const isSonarTarget =
+            effectiveLastSonar?.targetId === opponent.playerId;
+          const isRadarTarget =
+            effectiveLastRadar?.targetId === opponent.playerId;
           return (
             <AttackPlayerBoard
               key={opponent.playerId}
@@ -99,6 +182,23 @@ export const AttackBoard = memo(function AttackBoard({
               team={team}
               sunkCellSet={sunkCellSet}
               onAttack={isTeammate ? undefined : onAttack}
+              sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
+              sonarCellStates={isSonarTarget ? sonarCellStates : null}
+              radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
+              radarCellStates={isRadarTarget ? radarCellStates : null}
+              weaponPreviewCells={
+                weaponPreviewType && weaponPreviewCells
+                  ? weaponPreviewCells
+                  : null
+              }
+              weaponPreviewType={
+                weaponPreviewType && weaponPreviewCells
+                  ? weaponPreviewType
+                  : null
+              }
+              onCellHover={isTeammate ? undefined : onCellHover}
+              onCellHoverEnd={onCellHoverEnd}
+              weaponMode={weaponMode}
               t={t}
             />
           );

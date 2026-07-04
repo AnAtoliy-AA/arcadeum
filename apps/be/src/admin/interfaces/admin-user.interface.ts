@@ -8,6 +8,10 @@ export interface AdminUserItem {
   role: UserRole;
   createdAt: string;
   updatedAt: string;
+  isBlocked: boolean;
+  blockedAt: string | null;
+  blockedReason: string | null;
+  deletedAt: string | null;
 }
 
 export interface AdminUsersResponse {

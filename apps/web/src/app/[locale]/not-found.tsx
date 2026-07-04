@@ -1,37 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
-import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { buildRoutes } from '@/shared/config/routes';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 
 // `not-found.tsx` is rendered outside the normal segment context, so we
-// can't read params here. Fall back to the language cookie that the
-// middleware/LanguageProvider keeps in sync with the URL.
-async function getLocale(): Promise<Locale> {
-  const store = await cookies();
-  const raw = store.get('app-language')?.value;
-  return isLocale(raw) ? raw : DEFAULT_LOCALE;
-}
+// can't read params. We use a hardcoded default locale for the 404 page
+// since translations aren't critical for a not-found page.
+const locale: Locale = DEFAULT_LOCALE;
+const routes = buildRoutes(locale);
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  // 404 should not be indexed even though it's technically discoverable.
   return buildPageMetadata({ locale, page: 'notFound', noIndex: true });
 }
 
-export default async function NotFound() {
-  const locale = await getLocale();
-  const messages = await getTranslations(locale);
-  const seo = messages.seo?.notFound;
-  const routes = buildRoutes(locale);
-
-  const title = seo?.title ?? 'Page not found';
-  const description =
-    seo?.description ??
-    "The page you're looking for doesn't exist. Browse our games or head back home.";
-
+export default function NotFound() {
   return (
     <main
       style={{
@@ -52,24 +35,25 @@ export default async function NotFound() {
           fontWeight: 700,
         }}
       >
-        {title}
+        Page not found
       </h1>
       <p style={{ maxWidth: 560, margin: 0, opacity: 0.8, lineHeight: 1.5 }}>
-        {description}
+        The page you&apos;re looking for doesn&apos;t exist. Browse our games or
+        head back home.
       </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Link
           href={routes.home}
           className="home-link-button home-link-button-primary"
         >
-          {messages.common?.actions?.openApp ?? 'Open app'}
+          Open app
         </Link>
         <Link
           href={routes.games}
           className="home-link-button"
           style={{ opacity: 0.85 }}
         >
-          {messages.navigation?.gamesTab ?? 'Games'}
+          Games
         </Link>
       </div>
     </main>

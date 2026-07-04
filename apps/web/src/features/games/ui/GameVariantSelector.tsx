@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useMutation } from '@/shared/hooks/useMutation';
 import { Select } from '@arcadeum/ui';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { gamesApi } from '../api';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 export interface GameVariantOption {
   id: string;
@@ -18,6 +16,7 @@ export interface GameVariantOption {
 
 export interface GameVariantSelectorProps {
   roomId: string;
+  hostId?: string;
   currentUserId?: string; // Add if needed, but not required for now
   currentVariant: string;
   variants: ReadonlyArray<GameVariantOption>;
@@ -29,6 +28,7 @@ export interface GameVariantSelectorProps {
 
 export function GameVariantSelector({
   roomId,
+  hostId,
   currentVariant,
   variants,
   optionKey = 'variant',
@@ -36,8 +36,8 @@ export function GameVariantSelector({
   className,
   onVariantChange,
 }: GameVariantSelectorProps) {
-  const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
+  const { setOption } = useRoomOptions({ roomId, userId: hostId ?? '' });
 
   // Local state for optimistic updates
   const [internalVariant, setInternalVariant] = useState(currentVariant);
@@ -47,26 +47,12 @@ export function GameVariantSelector({
     setInternalVariant(currentVariant);
   }, [currentVariant]);
 
-  const { mutate, isLoading: isPending } = useMutation({
-    mutationFn: async (newVariant: string) => {
-      await gamesApi.updateRoomOptions(
-        roomId,
-        { [optionKey]: newVariant },
-        { token: snapshot.accessToken ?? undefined },
-      );
-    },
-    onError: (_err) => {
-      // Revert to prop value on error
-      setInternalVariant(currentVariant);
-    },
-  });
-
   const handleVariantChange = (e: { target: { value: string } }) => {
     const newVariant = e.target.value;
     // Optimistic update
     setInternalVariant(newVariant);
     onVariantChange?.(newVariant);
-    mutate(newVariant);
+    setOption({ [optionKey]: newVariant });
   };
 
   // Check if internalVariant exists in the list
@@ -114,7 +100,7 @@ export function GameVariantSelector({
       name={optionKey}
       value={internalVariant || ''}
       onChange={handleVariantChange}
-      disabled={disabled || isPending}
+      disabled={disabled}
       style={{ minWidth: '200px' }}
       className={className}
       aria-label="Select Game Variant"

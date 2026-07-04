@@ -3,13 +3,17 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 
 import { extractRoomAndUser, handleError } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { GlimwormService } from './glimworm/glimworm.service';
 import type { GlimwormVariant } from './glimworm/glimworm.types';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
@@ -70,11 +74,37 @@ const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
 export class GlimwormGateway {
   private readonly logger = new Logger(GlimwormGateway.name);
 
+  @WebSocketServer() server: Server;
+
   constructor(
     private readonly glimwormService: GlimwormService,
     private readonly visibility: GameVisibilityService,
     private readonly roleResolver: UserRoleResolver,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'GlimwormGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Glimworm namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Glimworm namespace: ${client.id}`,
+      );
+    }
+  }
 
   private async assertCanSee(
     userId: string | undefined,

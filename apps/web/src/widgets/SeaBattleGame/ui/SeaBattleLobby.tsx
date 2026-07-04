@@ -15,9 +15,7 @@ import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
-import { gamesApi } from '@/features/games/api';
-import { useMutation } from '@/shared/hooks/useMutation';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
@@ -71,33 +69,34 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 }: SeaBattleLobbyProps) {
   const roomVariant = (room.gameOptions?.variant as string) || 'classic';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
-  const { snapshot } = useSessionTokens();
+  const { setOption } = useRoomOptions({
+    roomId: room.id,
+    userId: userId ?? '',
+  });
   const media = useMedia();
+
+  const [ruleComingSoon, setRuleComingSoon] = React.useState<
+    Map<string, boolean>
+  >(new Map());
   // gtSm = wide enough for side-by-side preview + vertical list. Below that
   // (web mobile / narrow tablets) we flip to a horizontal scrollable list
   // sitting above the preview so the field doesn't get squeezed.
   const themeListHorizontal = !media.gtSm;
 
-  const { mutate: persistVariant } = useMutation({
-    mutationFn: async (newVariant: string) => {
-      await gamesApi.updateRoomOptions(
-        room.id,
-        { variant: newVariant },
-        { token: snapshot.accessToken ?? undefined },
-      );
-    },
-    onError: () => {
-      setSelectedVariant(roomVariant);
-    },
-  });
-
   const handleVariantSelect = React.useCallback(
     (variantId: string) => {
       if (variantId === selectedVariant) return;
       setSelectedVariant(variantId);
-      persistVariant(variantId);
+      setOption({ variant: variantId });
     },
-    [persistVariant, selectedVariant],
+    [setOption, selectedVariant],
+  );
+
+  const handleOptionChange = React.useCallback(
+    (options: Record<string, unknown>) => {
+      setOption(options);
+    },
+    [setOption],
   );
 
   // Team mode state derived from room game options
@@ -135,6 +134,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         : room,
     [room, teamMode, teamCap, maxTotalPlayers],
   );
+
+  const sw = ((effectiveRoom.gameOptions ?? {}) as Record<string, unknown>)
+    .specialWeapons as Record<string, unknown> | undefined;
 
   const allTeamsFull =
     teams.length >= 2 &&
@@ -227,21 +229,20 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
 
-  const teamPanelSlot =
-    showTeamPanel ? (
-      <SeaBattleTeamPanel
-        roomId={room.id}
-        userId={userId ?? ''}
-        hostId={room.hostId}
-        isHost={isHost}
-        teamMode={teamMode}
-        teams={teams}
-        hideShipsFromTeammates={hideShipsFromTeammates}
-        members={roomMembers}
-        teamStartBlocked={teamStartBlocked}
-        maxTotalPlayers={maxTotalPlayers}
-      />
-    ) : null;
+  const teamPanelSlot = showTeamPanel ? (
+    <SeaBattleTeamPanel
+      roomId={room.id}
+      userId={userId ?? ''}
+      hostId={room.hostId}
+      isHost={isHost}
+      teamMode={teamMode}
+      teams={teams}
+      hideShipsFromTeammates={hideShipsFromTeammates}
+      members={roomMembers}
+      teamStartBlocked={teamStartBlocked}
+      maxTotalPlayers={maxTotalPlayers}
+    />
+  ) : null;
 
   const optionsSlot = (
     <>
@@ -285,6 +286,113 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           </XStack>
         )
       ) : null}
+
+      {isHost && room.status === 'lobby' && (
+          <YStack gap="$3" paddingVertical="$2">
+          <Text fontSize="$4" fontWeight="600">
+            {t('games.create.sectionHouseRules') || 'House Rules'}
+          </Text>
+          <YStack gap="$2">
+            <Text fontSize="$3" fontWeight="600">
+              {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              {ruleComingSoon.get('gridSize') && (
+                <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </Text>
+              )}
+            </Text>
+            <XStack gap="$2" flexWrap="wrap">
+              {([10, 15, 20] as const).map((gs) => {
+                const disabled = !!ruleComingSoon.get('gridSize');
+                const active = (effectiveRoom.gameOptions?.gridSize ?? 10) === gs;
+                return (
+                  <button
+                    key={gs}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => !disabled && handleOptionChange({ gridSize: gs })}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: 8,
+                      border: `1px solid ${active ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'}`,
+                      backgroundColor: active
+                        ? 'rgba(59,130,246,0.15)'
+                        : 'transparent',
+                      color: disabled
+                        ? '#52525b'
+                        : active
+                          ? 'var(--color, #3b82f6)'
+                          : '#e2e8f0',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: disabled ? 'not-allowed' : 'pointer',
+                      opacity: disabled ? 0.4 : 1,
+                    }}
+                  >
+                    {gs}×{gs}
+                  </button>
+                );
+              })}
+            </XStack>
+          </YStack>
+          <YStack gap="$2">
+            <Text fontSize="$3" fontWeight="600">
+              {t('games.create.specialWeapons') || 'Special Weapons'}
+              {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
+                <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </Text>
+              )}
+            </Text>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                fontSize: 13,
+                opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
+                cursor: ruleComingSoon.get('sonar') ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={!!sw?.sonar}
+                disabled={!!ruleComingSoon.get('sonar')}
+                onChange={() =>
+                  handleOptionChange({
+                    specialWeapons: { ...sw, sonar: !sw?.sonar },
+                  })
+                }
+              />
+              {t('games.create.seaBattleSonar') || 'Sonar'} —{' '}
+              {t('games.create.seaBattleSonarHint') || 'Reveal ship locations'}
+            </label>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                fontSize: 13,
+                opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
+                cursor: ruleComingSoon.get('radar') ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={!!sw?.radar}
+                disabled={!!ruleComingSoon.get('radar')}
+                onChange={() =>
+                  handleOptionChange({
+                    specialWeapons: { ...sw, radar: !sw?.radar },
+                  })
+                }
+              />
+              {t('games.create.seaBattleRadar') || 'Radar'} —{' '}
+              {t('games.create.seaBattleRadarHint') || 'Scan a row or column'}
+            </label>
+          </YStack>
+        </YStack>
+      )}
     </>
   );
 
@@ -301,52 +409,44 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   return (
     <YStack flex={1} minHeight={0}>
       <ReusableGameLobby
-          room={effectiveRoom}
-          isHost={isHost}
-          startBusy={startBusy}
-          startDisabled={teamStartBlocked}
-          onStartGame={handleStart}
-          onReorderPlayers={onReorderPlayers}
-          onDeleteRoom={onDeleteRoom}
-          onKickPlayer={onKickPlayer}
-          onLeaveRoom={onLeaveRoom}
-          onRefresh={onRefresh}
-          gameName={t('games.sea_battle_v1.name' as TranslationKey)}
-          gameIcon="🚢"
-          roomIcon={variantInfo.emoji || '⚓'}
-          variantName={
-            variantInfo.name
-              ? t(variantInfo.name as TranslationKey)
-              : undefined
-          }
-          minPlayers={MIN_PLAYERS}
-          labels={{
-            waitingLabel: t(
-              'games.sea_battle_v1.table.lobby.waitingToStart',
-            ),
-            subtitleText: getSubtitleText(),
-            playersLabel: t('games.rooms.playersLabel'),
-            hostControlsLabel: t(
-              'games.sea_battle_v1.table.lobby.hostControls',
-            ),
-            startLabel: t('games.sea_battle_v1.table.actions.start'),
-            startingLabel: t(
-              'games.sea_battle_v1.table.actions.starting',
-            ),
-            roomInfoLabel: t(
-              'games.sea_battle_v1.table.lobby.roomInfo',
-            ),
-            fastRoomLabel: t('games.rooms.fastRoom'),
-            botCountLabel: t('games.lobby.botCountLabel'),
-            startWithBotsLabel: t('games.lobby.startWithBots'),
-          }}
-          theme={theme}
-          showReorderControls={true}
-          showInvitedPlayers={false}
-          optionsSlot={optionsSlot}
-          headerActionsSlot={headerActionsSlot}
-          enableBots={true}
-        />
+        room={effectiveRoom}
+        userId={userId ?? ''}
+        isHost={isHost}
+        startBusy={startBusy}
+        startDisabled={teamStartBlocked}
+        onStartGame={handleStart}
+        onReorderPlayers={onReorderPlayers}
+        onDeleteRoom={onDeleteRoom}
+        onKickPlayer={onKickPlayer}
+        onLeaveRoom={onLeaveRoom}
+        onRefresh={onRefresh}
+        gameName={t('games.sea_battle_v1.name' as TranslationKey)}
+        gameIcon="🚢"
+        roomIcon={variantInfo.emoji || '⚓'}
+        variantName={
+          variantInfo.name ? t(variantInfo.name as TranslationKey) : undefined
+        }
+        minPlayers={MIN_PLAYERS}
+        labels={{
+          waitingLabel: t('games.sea_battle_v1.table.lobby.waitingToStart'),
+          subtitleText: getSubtitleText(),
+          playersLabel: t('games.rooms.playersLabel'),
+          hostControlsLabel: t('games.sea_battle_v1.table.lobby.hostControls'),
+          startLabel: t('games.sea_battle_v1.table.actions.start'),
+          startingLabel: t('games.sea_battle_v1.table.actions.starting'),
+          roomInfoLabel: t('games.sea_battle_v1.table.lobby.roomInfo'),
+          fastRoomLabel: t('games.rooms.fastRoom'),
+          botCountLabel: t('games.lobby.botCountLabel'),
+          startWithBotsLabel: t('games.lobby.startWithBots'),
+        }}
+        theme={theme}
+        showReorderControls={true}
+        showInvitedPlayers={false}
+        optionsSlot={optionsSlot}
+        headerActionsSlot={headerActionsSlot}
+        enableBots={true}
+        onRuleComingSoonChange={setRuleComingSoon}
+      />
     </YStack>
   );
 });

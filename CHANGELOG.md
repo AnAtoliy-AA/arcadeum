@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.34] - 2026-07-04
+
+### Fixed
+- clear httpOnly cookies on logout from header and settings (N/A)
+- modernize private room and password form UI (N/A)
+
+
+## [1.22.33] - 2026-07-04
+
+### Added
+- show emotes and messages as floating bubbles in game room (N/A)
+
+### Fixed
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
+
+
+## [1.22.32] - 2026-07-04
+
+### Added
+- add bulk user delete with select all on page (N/A)
+
+### Fixed
+- handle unknown user roles in RoleBadge fallback (N/A)
+- call backend /auth/logout to clear httpOnly cookies on signout (N/A)
+- prevent session loss on page refresh by removing race condition (N/A)
+
+
+## [1.22.31] - 2026-07-03
+
+### Fixed
+- enable music from header nav without in-game toggle (N/A)
+
+
 ## [1.22.30] - 2026-07-03
 
 ### Added

@@ -57,11 +57,11 @@ describe('GameChatPopupOverlay', () => {
     );
   });
 
-  it('renders nothing when chat panel is open', () => {
+  it('renders popup even when chat panel is open', () => {
     useGameChatStore.getState().setLogs([baseLog]);
     useGameChatStore.getState().setChatPanelOpen(true);
     render(<GameChatPopupOverlay />);
-    expect(screen.queryByTestId('chat-message-popup')).toBeNull();
+    expect(screen.getByTestId('chat-message-popup')).toBeTruthy();
   });
 
   it('prefers game resolver over fallback for sender name', () => {

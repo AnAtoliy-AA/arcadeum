@@ -21,6 +21,10 @@ const labels: UsersTableLabels = {
     email: 'Email',
     role: 'Role',
     actions: 'Actions',
+    selectAll: 'Select all',
+    selectedCount: '{count} selected',
+    deleteSelected: 'Delete selected',
+    deselectAll: 'Deselect all',
   },
   pagination: {
     prev: 'Prev',
@@ -61,6 +65,7 @@ const baseProps = {
   onUnblock: () => {},
   onDelete: () => {},
   onRestore: () => {},
+  onBulkDelete: () => {},
   onPageChange: () => {},
   labels,
 };

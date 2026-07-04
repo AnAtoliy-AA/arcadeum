@@ -16,6 +16,10 @@ export const adminUsersFr = {
     role: 'Rôle',
     createdAt: 'Créé le',
     actions: 'Actions',
+    selectAll: 'Tout sélectionner sur la page',
+    selectedCount: '{count} sélectionnés',
+    deleteSelected: 'Supprimer la sélection',
+    deselectAll: 'Tout désélectionner',
   },
   empty: {
     noResults: 'Aucun utilisateur ne correspond aux filtres.',

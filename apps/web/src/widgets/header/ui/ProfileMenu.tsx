@@ -20,6 +20,7 @@ import {
   SmartphoneIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { logoutSession } from '@/entities/session/api/authApi';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
@@ -63,6 +64,7 @@ export default function ProfileMenu() {
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
 
   const handleLogout = useCallback(async () => {
+    await logoutSession().catch(() => {});
     await clearTokens();
     window.location.replace(routes.home);
   }, [clearTokens, routes.home]);

@@ -192,6 +192,14 @@ export async function refreshSessionFromCookie(): Promise<LoginResponse> {
   return readJson<LoginResponse>(res);
 }
 
+export async function logoutSession(): Promise<void> {
+  await fetch(api('/auth/logout'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+  });
+}
+
 export async function fetchProfile(
   accessToken?: string,
 ): Promise<AuthUserProfile> {

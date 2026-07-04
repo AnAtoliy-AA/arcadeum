@@ -7,6 +7,7 @@ import {
   fetchProfile,
   loginLocal,
   registerLocal,
+  logoutSession,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
@@ -203,6 +204,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   );
 
   const logout = useCallback(async () => {
+    await logoutSession().catch(() => {});
     await session.clearTokens();
     persistEmail(null);
     hasCheckedOnceRef.current = false;

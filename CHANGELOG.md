@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.33] - 2026-07-04
+
+### Added
+- show emotes and messages as floating bubbles in game room (N/A)
+
+### Fixed
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
+
+
 ## [1.22.32] - 2026-07-04
 
 ### Added

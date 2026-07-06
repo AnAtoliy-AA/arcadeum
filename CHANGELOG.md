@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.6] - 2026-07-06
+
+### Fixed
+- remove duplicate border in game chat panel
+
+
 ## [1.23.5] - 2026-07-06
 
 ### Fixed

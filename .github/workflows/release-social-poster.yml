@@ -255,43 +255,63 @@ jobs:
                   else:
                       linkedin_texts.append(f"🚀 New Release: v{version} (continued)\n\n{chunk}")
 
-              # 6. Post to Buffer (REST API)
+              # 6. Post to Buffer (GraphQL API)
               buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
               if buffer_token:
-                  buffer_url = "https://api.bufferapp.com"
+                  buffer_url = "https://api.buffer.com"
                   headers = {
                       "Authorization": f"Bearer {buffer_token}",
                       "Content-Type": "application/json",
                   }
 
                   channels = [
-                      (os.environ.get('FACEBOOK_ID', ''), facebook_texts, "Facebook"),
-                      (os.environ.get('THREADS_ID', ''), threads_texts, "Threads"),
-                      (os.environ.get('LINKEDIN_ID', ''), linkedin_texts, "LinkedIn"),
+                      (os.environ.get('FACEBOOK_ID', ''), facebook_texts, "Facebook", "facebook"),
+                      (os.environ.get('THREADS_ID', ''), threads_texts, "Threads", "threads"),
+                      (os.environ.get('LINKEDIN_ID', ''), linkedin_texts, "LinkedIn", "linkedin"),
                   ]
 
-                  for channel_id, texts, name in channels:
+                  for channel_id, texts, name, platform in channels:
                       if not channel_id:
                           print(f"Skipping Buffer post to {name} — channel ID not set")
                           continue
+                      metadata_key = platform
+                      metadata_json = json.dumps({metadata_key: {"type": "post"}})
                       for i, text in enumerate(texts):
-                          payload = {
-                              "profile_ids": [channel_id],
+                          variables = {
                               "text": text,
-                              "now": True,
+                              "channelId": channel_id,
+                              "metadata": json.loads(metadata_json),
                           }
-                          resp = requests.post(
-                              f"{buffer_url}/1/updates/create.json",
-                              headers=headers,
-                              data=payload,
-                          )
+                          query = """
+                          mutation CreatePost($text: String!, $channelId: ChannelId!, $metadata: PostInputMetaData) {
+                            createPost(input: {
+                              text: $text
+                              channelId: $channelId
+                              schedulingType: automatic
+                              mode: now
+                              assets: []
+                              metadata: $metadata
+                            }) {
+                              ... on PostActionSuccess {
+                                post { id text status }
+                              }
+                              ... on MutationError {
+                                message
+                              }
+                            }
+                          }
+                          """
+                          payload = {"query": query, "variables": variables}
+                          resp = requests.post(buffer_url, headers=headers, json=payload)
                           if resp.status_code == 200:
                               result = resp.json()
-                              if result.get("success"):
+                              if "errors" in result:
+                                  print(f"Failed to post to {name}: {result['errors']}")
+                              elif result.get("data", {}).get("createPost", {}).get("message"):
+                                  print(f"Failed to post to {name}: {result['data']['createPost']['message']}")
+                              else:
                                   suffix = f" (part {i + 1}/{len(texts)})" if len(texts) > 1 else ""
                                   print(f"Posted release v{version} to {name}{suffix}")
-                              else:
-                                  print(f"Failed to post to {name}: {result}")
                           else:
                               print(f"Failed to post to {name}: {resp.text}")
               else:

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-07-06
+
+### Added
+- add task-bot automation with dual engine support (N/A)
+
+### Fixed
+- add eslint config and dependencies (N/A)
+- update deploy workflow paths for bots/ (N/A)
+
+
+
+
 ## [1.23.2] - 2026-07-06
 
 ### Fixed

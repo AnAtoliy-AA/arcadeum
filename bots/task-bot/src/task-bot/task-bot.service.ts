@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { execSync } from 'child_process';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { InjectBot } from './telegram.decorator';
+import { TelegramService } from '../telegram/telegram.service';
 import { Bot, type Context, InlineKeyboard } from 'grammy';
 
 type Engine = 'opencode' | 'mimo';
@@ -21,10 +21,11 @@ export class TaskBotService implements OnApplicationBootstrap {
   private readonly logger = new Logger(TaskBotService.name);
   private readonly allowedUserIds: Set<number>;
   private readonly pendingTasks = new Map<string, { text: string; userId: number }>();
+  private bot!: Bot;
 
   constructor(
     private readonly config: ConfigService,
-    @InjectBot() private readonly bot: Bot,
+    private readonly telegramService: TelegramService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -36,6 +37,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   }
 
   onApplicationBootstrap() {
+    this.bot = this.telegramService.getBot();
     this.registerCommands();
     this.logger.log(
       `Task bot ready. Allowed users: ${this.allowedUserIds.size === 0 ? 'anyone (set TELEGRAM_ALLOWED_USERS)' : [...this.allowedUserIds].join(', ')}`,

@@ -255,10 +255,10 @@ jobs:
                   else:
                       linkedin_texts.append(f"🚀 New Release: v{version} (continued)\n\n{chunk}")
 
-              # 6. Post to Buffer (new GraphQL API)
+              # 6. Post to Buffer (REST API)
               buffer_token = os.environ.get('BUFFER_API_TOKEN', '')
               if buffer_token:
-                  buffer_url = "https://api.buffer.com"
+                  buffer_url = "https://api.bufferapp.com"
                   headers = {
                       "Authorization": f"Bearer {buffer_token}",
                       "Content-Type": "application/json",
@@ -275,40 +275,23 @@ jobs:
                           print(f"Skipping Buffer post to {name} — channel ID not set")
                           continue
                       for i, text in enumerate(texts):
-                          query = """
-                          mutation CreatePost($text: String!, $channelId: ChannelId!, $metadata: PostInputMetaData) {
-                            createPost(input: {
-                              text: $text
-                              channelId: $channelId
-                              schedulingType: automatic
-                              mode: shareNow
-                              assets: []
-                              metadata: $metadata
-                            }) {
-                              ... on PostActionSuccess {
-                                post { id text status }
-                              }
-                              ... on MutationError {
-                                message
-                              }
-                            }
-                          }
-                          """
-                          variables = {
+                          payload = {
+                              "profile_ids": [channel_id],
                               "text": text,
-                              "channelId": channel_id,
+                              "now": True,
                           }
-                          metadata_json = "{}"
-                          variables["metadata"] = json.loads(metadata_json)
-                          payload = {"query": query, "variables": variables}
-                          resp = requests.post(buffer_url, headers=headers, json=payload)
+                          resp = requests.post(
+                              f"{buffer_url}/1/updates/create.json",
+                              headers=headers,
+                              data=payload,
+                          )
                           if resp.status_code == 200:
                               result = resp.json()
-                              if "errors" in result:
-                                  print(f"Failed to post to {name}: {result['errors']}")
-                              else:
+                              if result.get("success"):
                                   suffix = f" (part {i + 1}/{len(texts)})" if len(texts) > 1 else ""
                                   print(f"Posted release v{version} to {name}{suffix}")
+                              else:
+                                  print(f"Failed to post to {name}: {result}")
                           else:
                               print(f"Failed to post to {name}: {resp.text}")
               else:
@@ -364,18 +347,22 @@ jobs:
           except Exception as e:
               print(f"Telegram posting failed: {e}")
 
-          try:
+              try:
               # 8. Post to Discord (direct webhook, no Buffer)
               discord_webhook = os.environ.get('DISCORD_WEBHOOK_RELEASE', '')
               if discord_webhook:
                   header = f"## 🚀 New Release: v{version}\n\n**What shipped:**\n"
                   footer = f"\n\nTry it now at [arcadeum.games](https://arcadeum.games)"
+                  cont_header = f"## 🚀 New Release: v{version} (continued)\n\n"
                   max_len = 2000
 
                   chunks = []
                   remaining = updates_text
                   while remaining:
-                      budget = max_len - len(header) - len(footer) if not chunks else max_len
+                      if not chunks:
+                          budget = max_len - len(header) - len(footer)
+                      else:
+                          budget = max_len - len(cont_header)
                       if len(remaining) <= budget:
                           chunks.append(remaining)
                           break
@@ -389,7 +376,7 @@ jobs:
                       if i == 0:
                           content = header + chunk + footer
                       else:
-                          content = f"## 🚀 New Release: v{version} (continued)\n\n{chunk}"
+                          content = cont_header + chunk
                       dc_resp = requests.post(
                           discord_webhook,
                           json={"content": content},

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.2] - 2026-07-06
+
+### Fixed
+- fix Discord chunking and Buffer REST API for release poster (N/A)
+
+
 ## [1.23.1] - 2026-07-04
 
 ### Fixed

@@ -247,6 +247,61 @@ export class SeaBattleBotService {
             Math.floor(Math.random() * eligibleOpponents.length)
           ];
 
+        // --- Special weapons: sonar / radar ---
+        // Weapons are available if state.specialWeapons has them enabled.
+        // Admin exclusion via stripDisabledRules already removes excluded
+        // weapons from gameOptions before engine init, so we just check state.
+        const myUsage = state.specialWeaponUsage?.[botId];
+        const hasSonar = !!state.specialWeapons?.sonar && !myUsage?.sonarUsed;
+        const hasRadar = !!state.specialWeapons?.radar && !myUsage?.radarUsed;
+
+        if (hasSonar) {
+          const centerRow = Math.floor(gridSize / 2);
+          const centerCol = Math.floor(gridSize / 2);
+          await this.seaBattleService.executeActionByRoom(
+            botId,
+            currentSession.roomId,
+            'useSonar',
+            { targetPlayerId: target.playerId, row: centerRow, col: centerCol },
+          );
+          const refreshed = await this.seaBattleService.findSessionByRoom(
+            currentSession.roomId,
+          );
+          if (!refreshed) break;
+          currentSession = refreshed;
+          const postSonar = currentSession.state as unknown as SeaBattleState;
+          const nextAfterSonar =
+            postSonar.playerOrder[postSonar.currentTurnIndex];
+          if (
+            nextAfterSonar !== botId ||
+            postSonar.phase !== GAME_PHASE.BATTLE
+          ) {
+            break;
+          }
+        } else if (hasRadar) {
+          const row = Math.floor(Math.random() * gridSize);
+          await this.seaBattleService.executeActionByRoom(
+            botId,
+            currentSession.roomId,
+            'useRadar',
+            { targetPlayerId: target.playerId, row },
+          );
+          const refreshedRadar = await this.seaBattleService.findSessionByRoom(
+            currentSession.roomId,
+          );
+          if (!refreshedRadar) break;
+          currentSession = refreshedRadar;
+          const postRadar = currentSession.state as unknown as SeaBattleState;
+          const nextAfterRadar =
+            postRadar.playerOrder[postRadar.currentTurnIndex];
+          if (
+            nextAfterRadar !== botId ||
+            postRadar.phase !== GAME_PHASE.BATTLE
+          ) {
+            break;
+          }
+        }
+
         // Smart Target Logic: Finish off damaged ships
         let choice: { r: number; c: number } | null = this.getSmartTarget(
           target,

@@ -56,17 +56,19 @@ function setTokenCookies(
   const maxAgeRefresh =
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
+  const sameSite = secure ? 'none' : 'lax';
+
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite,
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure,
-    sameSite: 'lax',
+    sameSite,
     path: '/',
     maxAge: Math.max(maxAgeRefresh, 0),
   });

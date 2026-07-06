@@ -74,6 +74,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     userId: userId ?? '',
   });
   const media = useMedia();
+
+  const [ruleComingSoon, setRuleComingSoon] = React.useState<
+    Map<string, boolean>
+  >(new Map());
   // gtSm = wide enough for side-by-side preview + vertical list. Below that
   // (web mobile / narrow tablets) we flip to a horizontal scrollable list
   // sitting above the preview so the field doesn't get squeezed.
@@ -284,45 +288,61 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       ) : null}
 
       {isHost && room.status === 'lobby' && (
-        <YStack gap="$3" paddingVertical="$2">
+          <YStack gap="$3" paddingVertical="$2">
           <Text fontSize="$4" fontWeight="600">
             {t('games.create.sectionHouseRules') || 'House Rules'}
           </Text>
           <YStack gap="$2">
             <Text fontSize="$3" fontWeight="600">
               {t('games.create.seaBattleGridSize') || 'Grid Size'}
+              {ruleComingSoon.get('gridSize') && (
+                <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </Text>
+              )}
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              {([10, 15, 20] as const).map((gs) => (
-                <button
-                  key={gs}
-                  type="button"
-                  onClick={() => handleOptionChange({ gridSize: gs })}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 8,
-                    border: `1px solid ${(effectiveRoom.gameOptions?.gridSize ?? 10) === gs ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'}`,
-                    backgroundColor:
-                      (effectiveRoom.gameOptions?.gridSize ?? 10) === gs
+              {([10, 15, 20] as const).map((gs) => {
+                const disabled = !!ruleComingSoon.get('gridSize');
+                const active = (effectiveRoom.gameOptions?.gridSize ?? 10) === gs;
+                return (
+                  <button
+                    key={gs}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => !disabled && handleOptionChange({ gridSize: gs })}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: 8,
+                      border: `1px solid ${active ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'}`,
+                      backgroundColor: active
                         ? 'rgba(59,130,246,0.15)'
                         : 'transparent',
-                    color:
-                      (effectiveRoom.gameOptions?.gridSize ?? 10) === gs
-                        ? 'var(--color, #3b82f6)'
-                        : '#e2e8f0',
-                    fontWeight: 600,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {gs}×{gs}
-                </button>
-              ))}
+                      color: disabled
+                        ? '#52525b'
+                        : active
+                          ? 'var(--color, #3b82f6)'
+                          : '#e2e8f0',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: disabled ? 'not-allowed' : 'pointer',
+                      opacity: disabled ? 0.4 : 1,
+                    }}
+                  >
+                    {gs}×{gs}
+                  </button>
+                );
+              })}
             </XStack>
           </YStack>
           <YStack gap="$2">
             <Text fontSize="$3" fontWeight="600">
               {t('games.create.specialWeapons') || 'Special Weapons'}
+              {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
+                <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </Text>
+              )}
             </Text>
             <label
               style={{
@@ -330,11 +350,14 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 alignItems: 'center',
                 gap: 8,
                 fontSize: 13,
+                opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
+                cursor: ruleComingSoon.get('sonar') ? 'not-allowed' : 'pointer',
               }}
             >
               <input
                 type="checkbox"
                 checked={!!sw?.sonar}
+                disabled={!!ruleComingSoon.get('sonar')}
                 onChange={() =>
                   handleOptionChange({
                     specialWeapons: { ...sw, sonar: !sw?.sonar },
@@ -350,11 +373,14 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 alignItems: 'center',
                 gap: 8,
                 fontSize: 13,
+                opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
+                cursor: ruleComingSoon.get('radar') ? 'not-allowed' : 'pointer',
               }}
             >
               <input
                 type="checkbox"
                 checked={!!sw?.radar}
+                disabled={!!ruleComingSoon.get('radar')}
                 onChange={() =>
                   handleOptionChange({
                     specialWeapons: { ...sw, radar: !sw?.radar },
@@ -419,6 +445,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         optionsSlot={optionsSlot}
         headerActionsSlot={headerActionsSlot}
         enableBots={true}
+        onRuleComingSoonChange={setRuleComingSoon}
       />
     </YStack>
   );

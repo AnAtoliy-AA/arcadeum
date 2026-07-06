@@ -14,6 +14,10 @@ export const adminUsersBy = {
     role: 'Роля',
     createdAt: 'Створаны',
     actions: 'Дзеянні',
+    selectAll: 'Выбраць усё на старонцы',
+    selectedCount: '{count} выбрана',
+    deleteSelected: 'Выдаліць выбраныя',
+    deselectAll: 'Зняць вылучэнне',
   },
   empty: {
     noResults: 'Няма карыстальнікаў па фільтру.',

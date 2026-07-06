@@ -6,6 +6,7 @@ import { apiClient } from '@/shared/lib/api-client';
 interface RuleItem {
   ruleId: string;
   label: string;
+  description?: string;
   enabled: boolean;
 }
 
@@ -18,9 +19,9 @@ export function AdminGameRulesTable() {
 
   useEffect(() => {
     apiClient
-      .get<RulesByGame>('/admin/game-rules')
+      .get<{ rules: RulesByGame }>('/admin/game-rules')
       .then((data) => {
-        setRules(data);
+        setRules(data.rules);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -136,7 +137,9 @@ export function AdminGameRulesTable() {
                         color: rule.enabled
                           ? 'var(--color-text, #e4e4e7)'
                           : '#71717a',
+                        cursor: rule.description ? 'help' : 'default',
                       }}
+                      title={rule.description}
                     >
                       {rule.label}
                     </div>

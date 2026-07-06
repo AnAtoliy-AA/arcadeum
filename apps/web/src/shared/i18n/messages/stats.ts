@@ -17,6 +17,9 @@ export const en = {
   wins: 'Wins',
   losses: 'Losses',
   winRate: 'Win Rate',
+  currentStreak: 'Current Streak',
+  bestWinStreak: 'Best Win Streak',
+  favoriteGame: 'Favorite Game',
   // Game breakdown
   gameBreakdownTitle: 'Game Breakdown',
   game: 'Game',
@@ -50,6 +53,9 @@ export const es = {
   wins: 'Victorias',
   losses: 'Derrotas',
   winRate: 'Tasa de Victoria',
+  currentStreak: 'Racha Actual',
+  bestWinStreak: 'Mejor Racha de Victorias',
+  favoriteGame: 'Juego Favorito',
   // Game breakdown
   gameBreakdownTitle: 'Desglose por Juego',
   game: 'Juego',
@@ -83,6 +89,9 @@ export const fr = {
   wins: 'Victoires',
   losses: 'Défaites',
   winRate: 'Taux de Victoire',
+  currentStreak: 'Série en Cours',
+  bestWinStreak: 'Meilleure Série de Victoires',
+  favoriteGame: 'Jeu Préféré',
   // Game breakdown
   gameBreakdownTitle: 'Détail par Jeu',
   game: 'Jeu',
@@ -116,6 +125,9 @@ export const ru = {
   wins: 'Победы',
   losses: 'Поражения',
   winRate: 'Процент побед',
+  currentStreak: 'Текущая серия',
+  bestWinStreak: 'Лучшая серия побед',
+  favoriteGame: 'Любимая игра',
   // Game breakdown
   gameBreakdownTitle: 'Детализация по играм',
   game: 'Игра',
@@ -149,6 +161,9 @@ export const by = {
   wins: 'Перамогі',
   losses: 'Паражэнні',
   winRate: 'Працэнт перамог',
+  currentStreak: 'Бягучая серыя',
+  bestWinStreak: 'Лепшая серыя перамог',
+  favoriteGame: 'Улюбёная гульня',
   // Game breakdown
   gameBreakdownTitle: 'Дэталізацыя па гульнях',
   game: 'Гульня',

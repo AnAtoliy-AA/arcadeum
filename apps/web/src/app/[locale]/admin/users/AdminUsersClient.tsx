@@ -9,6 +9,7 @@ import {
   useUnblockUser,
   useDeleteUser,
   useRestoreUser,
+  useBulkDeleteUsers,
 } from '@/features/admin-users/hooks';
 import type { UserRole } from '@/entities/session/model/types';
 import type { AdminUserStatus } from '@/features/admin-users/api';
@@ -92,6 +93,7 @@ export default function AdminUsersClient({
   const unblockMutation = useUnblockUser();
   const deleteMutation = useDeleteUser();
   const restoreMutation = useRestoreUser();
+  const bulkDeleteMutation = useBulkDeleteUsers();
 
   const onFilterChange = (next: {
     q: string;
@@ -189,6 +191,25 @@ export default function AdminUsersClient({
     }
   };
 
+  const handleBulkDelete = async (userIds: string[]) => {
+    if (!t) return;
+    setErrorMsg(null);
+    try {
+      const result = await bulkDeleteMutation.mutateAsync({ userIds });
+      if (result.skipped.length > 0) {
+        setErrorMsg(
+          `Deleted ${result.deleted} users. Skipped ${result.skipped.length} users (self, admins, or already deleted).`,
+        );
+      }
+    } catch (err) {
+      const apiErr = err instanceof ApiError ? err : null;
+      const code = (apiErr?.data as { code?: string } | undefined)?.code;
+      const msg =
+        (code && t.errors[code as keyof typeof t.errors]) || t.errors.generic;
+      setErrorMsg(msg);
+    }
+  };
+
   const tWallet = messages.pages?.admin?.wallet as AdminWalletI18n | undefined;
 
   const walletDrawerLabels = tWallet
@@ -211,7 +232,23 @@ export default function AdminUsersClient({
   const labels = t
     ? {
         empty: t.empty,
-        table: t.table,
+        table: {
+          username: t.table.username,
+          email: t.table.email,
+          role: t.table.role,
+          createdAt: t.table.createdAt,
+          actions: t.table.actions,
+          selectAll:
+            (t.table as Record<string, string>).selectAll ?? 'Select all',
+          selectedCount:
+            (t.table as Record<string, string>).selectedCount ??
+            '{count} selected',
+          deleteSelected:
+            (t.table as Record<string, string>).deleteSelected ??
+            'Delete selected',
+          deselectAll:
+            (t.table as Record<string, string>).deselectAll ?? 'Deselect all',
+        },
         pagination: t.pagination,
         totalLabel: t.totalLabel,
         roleLabels: t.role,
@@ -274,6 +311,7 @@ export default function AdminUsersClient({
               onUnblock={handleUnblock}
               onDelete={handleDelete}
               onRestore={handleRestore}
+              onBulkDelete={handleBulkDelete}
               onPageChange={setPage}
               pendingUserId={pendingUserId}
               labels={labels}

@@ -188,7 +188,12 @@ export const useSessionStore = create<SessionState>()(
 
         try {
           const refreshToken = state.snapshot.refreshToken;
-          const response = await refreshSession(refreshToken ?? '');
+          if (!refreshToken) {
+            (get() as SessionState).clearTokens();
+            set({ refreshInFlight: false });
+            return state.snapshot;
+          }
+          const response = await refreshSession(refreshToken);
           const merged = enrichWithResponse(
             state.snapshot,
             response,
@@ -224,6 +229,8 @@ export const useSessionStore = create<SessionState>()(
             ...s.snapshot,
             accessToken: null,
             refreshToken: null,
+            accessTokenExpiresAt: null,
+            refreshTokenExpiresAt: null,
           },
           mode: s.mode,
         };

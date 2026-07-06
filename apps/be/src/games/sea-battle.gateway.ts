@@ -275,7 +275,13 @@ export class SeaBattleGateway {
   async handleUseSonar(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    payload: { roomId?: string; userId?: string; targetPlayerId?: string },
+    payload: {
+      roomId?: string;
+      userId?: string;
+      targetPlayerId?: string;
+      row?: number;
+      col?: number;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
@@ -285,7 +291,7 @@ export class SeaBattleGateway {
         userId,
         roomId,
         'useSonar',
-        { targetPlayerId },
+        { targetPlayerId, row: payload.row, col: payload.col },
       );
       client.emit(
         'seaBattle.session.sonar_result',
@@ -394,7 +400,12 @@ export class SeaBattleGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; enabled?: boolean },
   ): Promise<void> {
-    await handleSetTeamMode(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleSetTeamMode(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 
   @SubscribeMessage('seaBattle.lobby.set_team_config')
@@ -408,7 +419,12 @@ export class SeaBattleGateway {
       hideShipsFromTeammates?: boolean;
     },
   ): Promise<void> {
-    await handleSetTeamConfig(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleSetTeamConfig(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 
   @SubscribeMessage('seaBattle.lobby.assign_team')
@@ -422,7 +438,12 @@ export class SeaBattleGateway {
       teamId?: string | null;
     },
   ): Promise<void> {
-    await handleAssignTeam(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleAssignTeam(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 
   @SubscribeMessage('seaBattle.lobby.add_bot_to_team')
@@ -431,7 +452,12 @@ export class SeaBattleGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; teamId?: string },
   ): Promise<void> {
-    await handleAddBotToTeam(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleAddBotToTeam(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 
   @SubscribeMessage('seaBattle.lobby.remove_bot_from_team')
@@ -440,7 +466,12 @@ export class SeaBattleGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; targetUserId?: string },
   ): Promise<void> {
-    await handleRemoveBotFromTeam(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleRemoveBotFromTeam(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 
   @SubscribeMessage('seaBattle.lobby.toggle_hide_ships')
@@ -449,6 +480,11 @@ export class SeaBattleGateway {
     @MessageBody()
     payload: { roomId?: string; userId?: string; enabled?: boolean },
   ): Promise<void> {
-    await handleToggleHideShips(this.runTeamAction, client, payload, this.teamConfigService);
+    await handleToggleHideShips(
+      this.runTeamAction,
+      client,
+      payload,
+      this.teamConfigService,
+    );
   }
 }

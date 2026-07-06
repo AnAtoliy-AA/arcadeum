@@ -76,4 +76,8 @@ export interface ReusableGameLobbyProps {
   showReorderControls?: boolean;
   showInvitedPlayers?: boolean;
   enableBots?: boolean;
+
+  // Catalog rule visibility — fired once after catalog loads so game-specific
+  // lobbies can disable/exclude options without fetching the catalog themselves.
+  onRuleComingSoonChange?: (map: Map<string, boolean>) => void;
 }

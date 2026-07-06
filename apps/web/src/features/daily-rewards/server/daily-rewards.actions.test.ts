@@ -5,8 +5,16 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/headers', () => ({
   cookies: vi.fn().mockResolvedValue({ get: () => ({ value: 'test-token' }) }),
 }));
+
+const TEST_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 vi.mock('@/shared/lib/api-base', () => ({
-  resolveApiUrl: (path: string) => `http://localhost:4000${path}`,
+  resolveApiUrl: (path: string) => `${TEST_API_BASE}${path}`,
+}));
+vi.mock('@/shared/lib/server-auth-fetch', () => ({
+  serverAuthFetch: vi.fn().mockImplementation(async (path: string, init?: RequestInit) => {
+    return fetchMock(`${TEST_API_BASE}${path}`, init);
+  }),
 }));
 
 // Mock global fetch
@@ -72,9 +80,11 @@ describe('claimDailyRewardAction', () => {
 
     await claimDailyRewardAction();
 
-    const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect((opts.headers as Record<string, string>)['Authorization']).toBe(
-      'Bearer test-token',
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:4000/daily-rewards/claim',
+      expect.objectContaining({
+        method: 'POST',
+      }),
     );
   });
 

@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { DailyRewardClaimResult } from './daily-rewards.types';
 
 export type ClaimDailyRewardResult =
@@ -16,22 +15,12 @@ export type ClaimDailyRewardResult =
  * chip in real time.
  */
 export async function claimDailyRewardAction(): Promise<ClaimDailyRewardResult> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl('/daily-rewards/claim');
-
   let res: Response;
   try {
-    res = await fetch(url, {
+    res = await serverAuthFetch('/daily-rewards/claim', {
       method: 'POST',
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
     });
   } catch {
-    // Network failure, BE unreachable, etc.
     return { ok: false, code: 'unknown' };
   }
 

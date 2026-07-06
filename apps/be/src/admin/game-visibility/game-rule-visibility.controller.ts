@@ -33,22 +33,28 @@ export class GameRuleVisibilityController {
   @Get()
   async getAllRules() {
     const allRules = await this.ruleVisibility.getAllRules();
-    const result: Record<
+    const rules: Record<
       string,
-      Array<{ ruleId: string; label: string; enabled: boolean }>
+      Array<{
+        ruleId: string;
+        label: string;
+        description?: string;
+        enabled: boolean;
+      }>
     > = {};
 
     for (const entry of GAME_CATALOG) {
       if (entry.rules.length === 0) continue;
       const ruleMap = allRules.get(entry.gameId) ?? new Map<string, boolean>();
-      result[entry.gameId] = entry.rules.map((r) => ({
+      rules[entry.gameId] = entry.rules.map((r) => ({
         ruleId: r.ruleId,
         label: r.label,
+        ...(r.description ? { description: r.description } : {}),
         enabled: ruleMap.get(r.ruleId) ?? true,
       }));
     }
 
-    return result;
+    return { rules };
   }
 
   @Put(':gameId/:ruleId')

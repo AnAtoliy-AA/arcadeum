@@ -3,25 +3,6 @@
 import { useRef, useEffect } from 'react';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 
-const EMOTE_LABELS: Record<EmoteId, string> = {
-  good_move: 'Nice!',
-  lol: 'LOL',
-  thinking: 'Hmm...',
-  nice: 'GG!',
-  unlucky: 'Oof!',
-  rip: 'RIP',
-  fire: 'Fire!',
-  clap: 'Bravo!',
-  cry: 'Sad',
-  angry: 'Mad',
-  rocket: "Let's go!",
-  heart: 'Love',
-  brain: 'Galaxy Brain',
-  skull: 'Dead',
-  sweat: 'Close!',
-  clown: 'Clown',
-};
-
 const KEYFRAMES_CSS = `
 @keyframes emoteFloat {
   0% {
@@ -79,6 +60,7 @@ interface ActiveEmote {
 interface EmoteBubbleProps {
   playerId: string;
   activeEmotes: ActiveEmote[];
+  senderName?: string;
 }
 
 function findEmoji(emoteId: EmoteId): string {
@@ -87,7 +69,7 @@ function findEmoji(emoteId: EmoteId): string {
 
 let stylesInjected = false;
 
-export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
+export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -111,14 +93,12 @@ export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
   const current = activeEmotes.find((e) => e.id === playerId);
   if (!current) return null;
 
-  const label = EMOTE_LABELS[current.emoteId] ?? '';
-
   return (
     <div
       ref={ref}
       style={{
         position: 'absolute',
-        top: '50%',
+        top: 24,
         right: 24,
         zIndex: 10,
         pointerEvents: 'none',
@@ -148,12 +128,12 @@ export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
       >
         {findEmoji(current.emoteId)}
       </div>
-      {label && (
+      {senderName && (
         <div
           data-emote-label=""
           style={{
             color: '#fff',
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: 800,
             textShadow:
               '0 0 8px rgba(236,72,153,0.9), 0 2px 10px rgba(0,0,0,0.8)',
@@ -165,7 +145,7 @@ export function EmoteBubble({ playerId, activeEmotes }: EmoteBubbleProps) {
             opacity: 0,
           }}
         >
-          {label}
+          {senderName}
         </div>
       )}
     </div>

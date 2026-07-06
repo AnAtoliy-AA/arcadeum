@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
+import { usePersistedState } from '@/shared/hooks/usePersistedState';
 import {
   loadStoredSettings,
   saveStoredSettings,
@@ -10,6 +11,7 @@ import {
   fetchTracks,
   FALLBACK_TRACKS,
   trackIndexForGame,
+  shuffleArray,
   DEFAULT_VOLUME,
   type MusicTrack,
   type RepeatMode,
@@ -17,15 +19,6 @@ import {
 import { usePlayerKeyboard } from './usePlayerKeyboard';
 
 const CROSSFADE_MS = 1200;
-
-function shuffleArray(n: number): number[] {
-  const arr = Array.from({ length: n }, (_, i) => i);
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 
 export interface AudioPlayerState {
   tracks: readonly MusicTrack[];
@@ -76,9 +69,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const [tracks, setTracks] = useState<readonly MusicTrack[]>(FALLBACK_TRACKS);
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(DEFAULT_VOLUME);
-  const [shuffle, setShuffle] = useState(false);
-  const [repeat, setRepeat] = useState<RepeatMode>('off');
+  const [volume, setVolume] = usePersistedState('musicVolume', DEFAULT_VOLUME);
+  const [shuffle, setShuffle] = usePersistedState('musicShuffle', false);
+  const [repeat, setRepeat] = usePersistedState('musicRepeat', 'off');
   const [miniMode, setMiniMode] = useState(false);
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -156,37 +149,45 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     tracksLengthRef.current = tracks.length;
     indexRef.current = index;
   });
-
   const crossfadeTo = useCallback((newSrc: string, newVolume: number) => {
     const oldAudio =
       activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
     const newAudio =
       activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
     if (!newAudio || !oldAudio) return;
+    const wasPlaying = !oldAudio.paused;
+    const trackEnded = oldAudio.ended;
     cancelAnimationFrame(crossfadeRafRef.current);
     activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
     newAudio.src = newSrc;
     newAudio.volume = 0;
     newAudio.loop = repeatRef.current === 'one';
-    newAudio.play().catch(() => {});
-    let start = -1;
-    const oldStartVol = oldAudio.volume;
-    const step = (now: number) => {
-      if (start < 0) start = now;
-      const t = Math.min((now - start) / CROSSFADE_MS, 1);
-      oldAudio.volume = oldStartVol * (1 - t);
-      newAudio.volume = newVolume * t;
-      if (t < 1) crossfadeRafRef.current = requestAnimationFrame(step);
-      else {
-        oldAudio.pause();
-        oldAudio.currentTime = 0;
-        oldAudio.volume = 0;
-      }
-    };
-    crossfadeRafRef.current = requestAnimationFrame(step);
+    if (wasPlaying || trackEnded) newAudio.play().catch(() => {});
+    if (wasPlaying || trackEnded) {
+      let start = -1;
+      const oldStartVol = oldAudio.volume;
+      const step = (now: number) => {
+        if (start < 0) start = now;
+        const t = Math.min((now - start) / CROSSFADE_MS, 1);
+        oldAudio.volume = oldStartVol * (1 - t);
+        newAudio.volume = newVolume * t;
+        if (t < 1) crossfadeRafRef.current = requestAnimationFrame(step);
+        else {
+          oldAudio.pause();
+          oldAudio.currentTime = 0;
+          oldAudio.volume = 0;
+        }
+      };
+      crossfadeRafRef.current = requestAnimationFrame(step);
+    } else {
+      newAudio.volume = newVolume;
+      oldAudio.pause();
+      oldAudio.removeAttribute('src');
+      oldAudio.currentTime = 0;
+      oldAudio.volume = 0;
+    }
     audioRef.current = newAudio;
   }, []);
-
   useEffect(() => {
     if (!musicEnabled) return;
     if (!audioARef.current) {
@@ -216,7 +217,12 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
           setTrackDurations((prev) => ({ ...prev, [a.src]: a.duration }));
       }
     };
-    const onError = () => setError('Failed to load track');
+    const onError = (e: Event) => {
+      const a = e.target as HTMLAudioElement;
+      if (!a?.src || a.src === window.location.href) return;
+      console.error('[GameMusic]', a?.error?.code, a?.error?.message, a?.src);
+      setError('Failed to load track');
+    };
     const onEnded = () => {
       if (repeatRef.current === 'one') return;
       const dir = (i: number) =>
@@ -324,15 +330,14 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       : (index - 1 + tracks.length) % tracks.length;
     playIndex(pi);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
-
   const onVolumeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const v = Number(event.target.value) / 100;
       volumeRef.current = v;
-      setVolume(v);
       if (audioRef.current) audioRef.current.volume = v;
+      setVolume(v);
     },
-    [],
+    [setVolume],
   );
   const onSeek = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const time = Number(event.target.value);
@@ -353,31 +358,29 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   }, []);
 
   const toggleShuffle = useCallback(() => {
-    setShuffle((s) => {
-      if (!s) setShuffleOrder(shuffleArray(tracks.length));
-      return !s;
-    });
-  }, [tracks.length]);
+    if (!shuffle) setShuffleOrder(shuffleArray(tracks.length));
+    setShuffle(!shuffle);
+  }, [shuffle, tracks.length, setShuffle]);
 
   const cycleRepeat = useCallback(() => {
-    setRepeat((r) => (r === 'off' ? 'all' : r === 'all' ? 'one' : 'off'));
-  }, []);
+    const next = repeat === 'off' ? 'all' : repeat === 'all' ? 'one' : 'off';
+    const a = audioRef.current;
+    if (a) a.loop = next === 'one';
+    setRepeat(next);
+  }, [repeat, setRepeat]);
 
-  const toggleTrack = useCallback(
-    (trackIndex: number) => {
-      setEnabledTracks((prev) => {
-        const next = new Set(prev);
-        if (next.has(trackIndex)) {
-          if (next.size > 1) next.delete(trackIndex);
-        } else {
-          next.add(trackIndex);
-        }
-        saveStoredSettings({ musicEnabledTracks: Array.from(next) });
-        return next;
-      });
-    },
-    [],
-  );
+  const toggleTrack = useCallback((trackIndex: number) => {
+    setEnabledTracks((prev) => {
+      const next = new Set(prev);
+      if (next.has(trackIndex)) {
+        if (next.size > 1) next.delete(trackIndex);
+      } else {
+        next.add(trackIndex);
+      }
+      saveStoredSettings({ musicEnabledTracks: Array.from(next) });
+      return next;
+    });
+  }, []);
   const reorderTracks = useCallback(
     (newTracks: readonly MusicTrack[]) => {
       const currentSrc = tracks[index].src;

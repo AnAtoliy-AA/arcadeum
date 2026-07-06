@@ -107,3 +107,14 @@ export async function restoreUser(
     { token: accessToken },
   );
 }
+
+export async function bulkDeleteUsers(
+  userIds: string[],
+  accessToken: string,
+): Promise<{ deleted: number; skipped: string[] }> {
+  return apiClient.post<{ deleted: number; skipped: string[] }>(
+    '/admin/users/bulk-delete',
+    { userIds },
+    { token: accessToken },
+  );
+}

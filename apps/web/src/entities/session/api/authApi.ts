@@ -182,10 +182,35 @@ export async function refreshSession(
   return readJson<LoginResponse>(res);
 }
 
+export async function refreshSessionFromCookie(): Promise<LoginResponse> {
+  const res = await fetch(api('/auth/refresh'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+    body: JSON.stringify({}),
+  });
+  return readJson<LoginResponse>(res);
+}
+
+export async function logoutSession(): Promise<void> {
+  await fetch(api('/auth/logout'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+  });
+}
+
 export async function fetchProfile(
-  _accessToken?: string,
+  accessToken?: string,
 ): Promise<AuthUserProfile> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
   const res = await fetch(api('/auth/me'), {
+    headers,
     credentials: 'include',
   });
   return readJson<AuthUserProfile>(res);

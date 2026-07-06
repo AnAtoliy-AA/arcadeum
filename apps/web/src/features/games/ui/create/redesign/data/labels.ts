@@ -115,6 +115,8 @@ export function buildLabels(t: (k: TranslationKey) => string) {
         'games.create.notesPlaceholder',
         'No bots · EU evenings · first-timers welcome.',
       ),
+      password: tr('games.password.label', 'Room Password (optional)'),
+      passwordPlaceholder: tr('games.password.placeholder', 'Set a password'),
     },
     rail: (defaultRoomName: string) => ({
       livePreview: tr('games.create.livePreview', 'LIVE PREVIEW'),

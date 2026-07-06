@@ -1,6 +1,5 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { DailyRewardStatus } from './daily-rewards.types';
 
 /**
@@ -10,20 +9,8 @@ import type { DailyRewardStatus } from './daily-rewards.types';
  * 5xx page — same defensive pattern as `BalanceChip`.
  */
 export async function getDailyRewardStatus(): Promise<DailyRewardStatus | null> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  if (!token) return null;
-
-  const url = resolveApiUrl('/daily-rewards/me');
-
   try {
-    const res = await fetch(url, {
-      cache: 'no-store',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const res = await serverAuthFetch('/daily-rewards/me');
     if (!res.ok) return null;
     return (await res.json()) as DailyRewardStatus;
   } catch {

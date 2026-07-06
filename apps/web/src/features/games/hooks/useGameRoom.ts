@@ -18,7 +18,7 @@ interface UseGameRoomReturn {
   loading: boolean;
   error: string | null;
   isHost: boolean;
-  joinRoom: (code?: string) => void;
+  joinRoom: (code?: string, password?: string) => void;
   leaveRoom: () => void;
   deleteRoom: (roomId: string) => Promise<void>;
 }
@@ -77,8 +77,8 @@ export function useGameRoom(options: UseGameRoomOptions): UseGameRoomReturn {
   ]);
 
   const handleJoinRoom = useCallback(
-    (code?: string) => {
-      joinRoom(roomId, userId, mode, code || inviteCode);
+    (code?: string, password?: string) => {
+      joinRoom(roomId, userId, mode, code || inviteCode, password);
     },
     [roomId, userId, mode, inviteCode, joinRoom],
   );

@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { gamesApi } from '@/features/games/api';
 import {
   LobbyContent,
   CenterSection,
@@ -97,6 +98,7 @@ export function ReusableGameLobby({
   showReorderControls = true,
   showInvitedPlayers = true,
   enableBots = false,
+  onRuleComingSoonChange,
 }: ReusableGameLobbyProps) {
   const {
     waitingLabel = 'Waiting for game to start...',
@@ -116,6 +118,26 @@ export function ReusableGameLobby({
   // Optimistic state for house rules — updates instantly, clears when room syncs
   const [optIdle, setOptIdle] = useState<boolean | null>(null);
   const [optSpectators, setOptSpectators] = useState<boolean | null>(null);
+
+  // Fetch catalog to determine which rules are excluded
+  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
+    new Map(),
+  );
+  React.useEffect(() => {
+    gamesApi
+      .getCatalog()
+      .then((catalog) => {
+        const game = catalog.games.find((g) => g.gameId === room.gameId);
+        if (!game) return;
+        const map = new Map<string, boolean>();
+        for (const r of game.rules) {
+          map.set(r.ruleId, r.comingSoon);
+        }
+        setRuleComingSoon(map);
+        onRuleComingSoonChange?.(map);
+      })
+      .catch(() => {});
+  }, [room.gameId, onRuleComingSoonChange]);
 
   const [prevGameOptions, setPrevGameOptions] = useState(room.gameOptions);
   if (prevGameOptions !== room.gameOptions) {
@@ -335,12 +357,16 @@ export function ReusableGameLobby({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  cursor: 'pointer',
+                  cursor: ruleComingSoon.get('idle')
+                    ? 'not-allowed'
+                    : 'pointer',
+                  opacity: ruleComingSoon.get('idle') ? 0.4 : 1,
                 }}
               >
                 <input
                   type="checkbox"
                   checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
+                  disabled={!!ruleComingSoon.get('idle')}
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptIdle(val);
@@ -355,13 +381,21 @@ export function ReusableGameLobby({
                 <Text fontSize="$3">
                   {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
                 </Text>
+                {ruleComingSoon.get('idle') && (
+                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
+                    {t('games.create.comingSoon') || 'Coming Soon'}
+                  </Text>
+                )}
               </label>
               <label
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  cursor: 'pointer',
+                  cursor: ruleComingSoon.get('spectators')
+                    ? 'not-allowed'
+                    : 'pointer',
+                  opacity: ruleComingSoon.get('spectators') ? 0.4 : 1,
                 }}
               >
                 <input
@@ -369,6 +403,7 @@ export function ReusableGameLobby({
                   checked={
                     optSpectators ?? room.gameOptions?.allowSpectators !== false
                   }
+                  disabled={!!ruleComingSoon.get('spectators')}
                   onChange={(e) => {
                     const val = e.target.checked;
                     setOptSpectators(val);
@@ -384,6 +419,11 @@ export function ReusableGameLobby({
                   {t('games.create.rules.spectators.title') ||
                     'Allow spectators'}
                 </Text>
+                {ruleComingSoon.get('spectators') && (
+                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
+                    {t('games.create.comingSoon') || 'Coming Soon'}
+                  </Text>
+                )}
               </label>
             </YStack>
           )}

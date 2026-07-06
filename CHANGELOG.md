@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.4] - 2026-07-06
+
+### Fixed
+- use Buffer GraphQL API for release social posting
+- fix game not showing after start and tic-tac-toe cell overflow
+- inject TelegramService directly instead of BOT_TOKEN factory
+- use OnApplicationBootstrap to ensure bot is ready
+
+### Documentation
+- fix pr-description skill to target develop instead of main
+
+
 ## [1.24.1] - 2026-07-06
 
 ### Added

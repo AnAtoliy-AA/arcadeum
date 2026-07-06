@@ -2,7 +2,7 @@ name: Version Bump & Changelog
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, main ]
 
 jobs:
   bump-version:
@@ -24,12 +24,20 @@ jobs:
         shell: bash
         run: |
           CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
+          BRANCH_NAME="${{ github.ref_name }}"
           
           echo "Current Version: $CURRENT_VERSION"
+          echo "Branch: $BRANCH_NAME"
           
-          # Patch bump: 1.7.18 -> 1.7.19
-          NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
-          COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            # Minor bump: 1.23.4 -> 1.24.0
+            NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[1]++; v[2]=0; v.join('.')")
+            COMMIT_MSG="chore: start next minor version v${NEW_VERSION} [skip ci]"
+          else
+            # Patch bump: 1.23.4 -> 1.23.5
+            NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
+            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+          fi
           
           echo "New Version: $NEW_VERSION"
           echo "Commit Message: $COMMIT_MSG"
@@ -55,6 +63,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
+          BRANCH_NAME="${{ github.ref_name }}"
+          
           # Stage changes
           find . -name "package.json" -not -path "*/node_modules/*" -exec git add {} +
           git add CHANGELOG.md
@@ -62,6 +72,11 @@ jobs:
           git commit -m "$COMMIT_MSG"
           git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
           
-          echo "Pushing patch bump to develop"
-          git push origin HEAD:develop --follow-tags
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "Pushing minor bump to develop"
+            git push origin HEAD:develop --follow-tags
+          else
+            echo "Pushing patch bump to develop"
+            git push origin HEAD:develop --follow-tags
+          fi
 

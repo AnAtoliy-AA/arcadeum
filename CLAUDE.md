@@ -76,7 +76,7 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
 ### Project skills
 
-- `/pr-description` — write PR descriptions (runs `git diff main...HEAD`, formats as What/Why/Changes)
+- `/pr-description` — write PR descriptions (runs `git diff develop...HEAD`, formats as What/Why/Changes)
 - `/commit` — create a commit following Conventional Commits with ARC-XXX scope
 - `/new-web-page` — add a Next.js App Router page (`page.tsx` + `*Client.tsx` + `*View.tsx` + i18n)
 - `/new-be-module` — add a NestJS module (controller, service, module, DTOs, Mongoose schema)

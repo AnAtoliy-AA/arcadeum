@@ -237,11 +237,14 @@ describe('GamesService', () => {
         'in_progress',
       );
       expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(
-        room,
+        { ...room, status: 'in_progress' },
         session,
         expect.any(Function),
       );
-      expect(result).toEqual({ room, session });
+      expect(result).toEqual({
+        room: { ...room, status: 'in_progress' },
+        session,
+      });
     });
 
     it('should throw if user is not host', async () => {

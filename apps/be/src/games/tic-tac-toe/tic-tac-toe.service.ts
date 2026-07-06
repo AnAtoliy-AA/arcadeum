@@ -107,8 +107,9 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
     await this.realtimeService.emitGameStarted(
-      room,
+      updatedRoom,
       session,
       async (s, pId) => {
         const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
@@ -123,7 +124,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     );
 
     const updatedSession = await this.afterSessionStep(session);
-    return { room, session: updatedSession };
+    return { room: updatedRoom, session: updatedSession };
   }
 
   async placeMark(userId: string, roomId: string, payload: PlaceMarkPayload) {

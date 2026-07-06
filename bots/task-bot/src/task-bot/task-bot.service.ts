@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { execSync } from 'child_process';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
@@ -17,7 +17,7 @@ interface ParsedTask {
 }
 
 @Injectable()
-export class TaskBotService implements OnModuleInit {
+export class TaskBotService implements OnApplicationBootstrap {
   private readonly logger = new Logger(TaskBotService.name);
   private readonly allowedUserIds: Set<number>;
   private readonly pendingTasks = new Map<string, { text: string; userId: number }>();
@@ -35,7 +35,7 @@ export class TaskBotService implements OnModuleInit {
     );
   }
 
-  onModuleInit() {
+  onApplicationBootstrap() {
     this.registerCommands();
     this.logger.log(
       `Task bot ready. Allowed users: ${this.allowedUserIds.size === 0 ? 'anyone (set TELEGRAM_ALLOWED_USERS)' : [...this.allowedUserIds].join(', ')}`,

@@ -31,12 +31,5 @@ node scripts/check_translation.js || {
   exit 1
 }
 
-# Run web e2e tests before pushing
-echo "Running e2e tests..."
-cd apps/web
-pnpm run test:e2e || {
-  echo "❌ E2E tests failed. Please fix them before pushing."
-  exit 1
-}
-cd ../..
-echo "✅ E2E tests passed"
+# E2e tests run in CI only — too slow for local pre-push
+# echo "Skipping local e2e tests (runs in CI)"

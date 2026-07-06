@@ -69,7 +69,7 @@ async function bootstrap() {
     ],
   });
 
-  const port = process.env.BE_PORT ?? 4000;
+  const port = process.env.PORT ?? process.env.BE_PORT ?? 4000;
   await app.listen(port, '0.0.0.0');
   console.log(`[Backend] Listening on port ${port}`);
 }

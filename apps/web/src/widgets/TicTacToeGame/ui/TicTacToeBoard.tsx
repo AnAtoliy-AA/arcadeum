@@ -80,6 +80,7 @@ function TicTacToeBoardImpl({
         aspectRatio: '1 / 1',
         margin: '0 auto',
         boxSizing: 'border-box',
+        containerType: 'inline-size',
       }}
     >
       {board.map((row, rowIdx) =>
@@ -108,9 +109,10 @@ function TicTacToeBoardImpl({
                 borderRadius: theme.borderRadius,
                 fontFamily: theme.markFont,
                 fontWeight: 700,
-                fontSize: `clamp(1rem, ${Math.max(2, 6 - size * 0.3)}vmin, 3rem)`,
+                fontSize: `clamp(0.8rem, ${(55 / size).toFixed(1)}cqw, 3rem)`,
                 cursor: cellDisabled ? 'default' : 'pointer',
                 transition: 'background-color 120ms ease',
+                overflow: 'hidden',
               }}
               onMouseEnter={(e) => {
                 if (!cellDisabled) {

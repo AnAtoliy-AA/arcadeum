@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.5] - 2026-07-06
+
+### Fixed
+- use Render PORT env var for port binding
+
+
 ## [1.23.4] - 2026-07-06
 
 ### Fixed

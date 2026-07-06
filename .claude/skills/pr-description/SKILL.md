@@ -5,7 +5,7 @@ description: Writes pull request descriptions. Use when creating a PR, writing a
 
 When writing a PR description:
 
-1. Run `git diff main...HEAD` to see all changes on this branch
+1. Run `git diff develop...HEAD` to see all changes on this branch
 2. Write a description following this format:
 
 ## What

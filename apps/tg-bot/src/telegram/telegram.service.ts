@@ -55,10 +55,6 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('Telegram bot initialized');
   }
 
-  getBot(): Bot {
-    return this.bot;
-  }
-
   async onModuleDestroy() {
     if (this.retryTimer) {
       clearInterval(this.retryTimer);

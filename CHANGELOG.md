@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.1] - 2026-07-06
+
+### Added
+- add changelog page with version badges and fix (N/A) entries
+- add task-bot automation with dual engine support
+
+### Fixed
+- use flexible deck size assertion for CI compatibility
+- add eslint config and dependencies
+- update deploy workflow paths for bots/
+
+
 ## [1.24.0] - 2026-07-06
 
 ### Added

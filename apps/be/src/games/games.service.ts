@@ -229,16 +229,19 @@ export class GamesService {
 
     // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
 
     // Mark players as in-match for the leaderboard LIVE chip.
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(room, session, async (s, pId) =>
-      this.sanitizeForPlayer(s, pId),
+    await this.realtimeService.emitGameStarted(
+      updatedRoom,
+      session,
+      async (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**

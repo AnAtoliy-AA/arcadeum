@@ -76,10 +76,11 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         }
       : null;
 
-    return {
+    const initialBoard = parseFen(INITIAL_BOARD_FEN);
+    const initialState = {
       variant: config?.variant ?? 'standard',
-      board: parseFen(INITIAL_BOARD_FEN),
-      currentTurnColor: 'white',
+      board: initialBoard,
+      currentTurnColor: 'white' as const,
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
       enPassantTarget: null,
       halfMoveClock: 0,
@@ -99,7 +100,17 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       logs: [
         this.createLogEntry('system', 'Chess game started. White moves first.'),
       ],
+      legalMovesForCurrentPlayer: getLegalMoves(
+        {
+          board: initialBoard,
+          currentTurnColor: 'white',
+          castlingRights: { ...INITIAL_CASTLING_RIGHTS },
+          enPassantTarget: null,
+        } as ChessState,
+        'white',
+      ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion })),
     };
+    return initialState;
   }
 
   validateAction(
@@ -358,6 +369,11 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         this.createLogEntry('system', 'Draw by threefold repetition.'),
       );
     }
+
+    newState.legalMovesForCurrentPlayer = getLegalMoves(
+      newState,
+      newState.currentTurnColor,
+    ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
 
     return this.successResult(newState);
   }

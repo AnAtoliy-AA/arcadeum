@@ -62,6 +62,12 @@ export interface PlayerClock {
   lastMoveTimestamp: number;
 }
 
+export interface LegalMove {
+  from: BoardPosition;
+  to: BoardPosition;
+  promotion: PieceType | null;
+}
+
 export interface ChessState extends BaseGameState {
   variant: ChessVariant;
   board: Board;
@@ -81,6 +87,7 @@ export interface ChessState extends BaseGameState {
   isInsufficientMaterial: boolean;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
+  legalMovesForCurrentPlayer: LegalMove[];
 }
 
 export interface MovePayload {

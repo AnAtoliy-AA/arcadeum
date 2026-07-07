@@ -65,6 +65,7 @@ export class GamesGateway {
       this.logger.debug(
         `Authenticated user ${authUserId} connected to games namespace`,
       );
+      this.realtime.trackSocket(authUserId, client.id);
     } else {
       this.logger.verbose(
         `Anonymous client connected to games namespace: ${client.id}`,
@@ -94,6 +95,8 @@ export class GamesGateway {
         );
       }
     }
+
+    client.join(this.realtime.lobbyChannel());
   }
 
   handleDisconnect(client: Socket): void {
@@ -102,6 +105,9 @@ export class GamesGateway {
     const userId = (client.data as Record<string, unknown>)?.userId as
       | string
       | undefined;
+    if (userId) {
+      this.realtime.untrackSocket(userId, client.id);
+    }
     if (!userId || !this.server) return;
 
     for (const room of client.rooms) {
@@ -174,6 +180,7 @@ export class GamesGateway {
         client.data = {};
       }
       (client.data as Record<string, unknown>).userId = userId;
+      this.realtime.trackSocket(userId, client.id);
 
       let diffSession = session;
       if (session) {

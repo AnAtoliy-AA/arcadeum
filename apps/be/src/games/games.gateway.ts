@@ -96,7 +96,7 @@ export class GamesGateway {
       }
     }
 
-    client.join(this.realtime.lobbyChannel());
+    client.join(this.realtime.lobbyChannel()).catch(() => {});
   }
 
   handleDisconnect(client: Socket): void {

@@ -32,6 +32,7 @@ export {
 } from './chess.constants';
 export type { ChessVariant, PieceColor, PieceType } from './chess.constants';
 export * from './chess.board';
+export * from './chess.attacks';
 export * from './chess.move-generator';
 export { ChessEngine } from './chess.engine';
 export { ChessBotService } from './chess-bot.service';

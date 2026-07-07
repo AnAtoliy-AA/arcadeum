@@ -210,11 +210,10 @@ jobs:
         run: |
           sudo rm -f /etc/apt/sources.list.d/microsoft-*.list
           sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
-          sudo rm -f /etc/apt/sources.list.d/microsoft-ubuntu-noble-*.sources
           sudo apt-get update || true
 
       - name: Install Playwright Browsers
-        run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }} --with-deps
+        run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
         run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/2

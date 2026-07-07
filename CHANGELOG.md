@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.16] - 2026-07-07
+
+### Added
+- enhance commands with richer info and add /chart /holders
+- add /ca command to show contract address
+
+### Fixed
+- use pre block for /ca so address is tap-to-copy
+
+
 ## [1.23.15] - 2026-07-07
 
 ### Fixed

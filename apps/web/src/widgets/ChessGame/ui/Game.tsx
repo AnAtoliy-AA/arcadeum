@@ -128,7 +128,7 @@ function ChessGameImpl({
   const legalMoves = useMemo(() => {
     if (!selectedSquare || !snapshot) return [];
     const moves: BoardPosition[] = [];
-    for (const m of snapshot.legalMovesForCurrentPlayer) {
+    for (const m of snapshot.legalMovesForCurrentPlayer ?? []) {
       if (
         m.from.file === selectedSquare.file &&
         m.from.rank === selectedSquare.rank

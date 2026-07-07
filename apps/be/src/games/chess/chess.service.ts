@@ -22,8 +22,10 @@ import type {
   ChessOptions,
   TimeControlType,
   TimeIncrement,
+  ChessState,
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
+import { getLegalMoves } from '../engines/chess/chess.move-generator';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
@@ -75,6 +77,7 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
   async findSessionByRoom(roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) return null;
+    this.backfillLegalMoves(session);
     return this.afterSessionStep(session);
   }
 
@@ -206,6 +209,7 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async emitSessionUpdate(session: GameSessionSummary) {
+    this.backfillLegalMoves(session);
     await this.realtimeService.emitSessionSnapshot(
       session.roomId,
       session,
@@ -273,5 +277,14 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
       };
     }
     return { variant, timeControl };
+  }
+
+  private backfillLegalMoves(session: GameSessionSummary) {
+    const state = session.state as ChessState | undefined;
+    if (!state || state.legalMovesForCurrentPlayer) return;
+    state.legalMovesForCurrentPlayer = getLegalMoves(
+      state,
+      state.currentTurnColor,
+    ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
   }
 }

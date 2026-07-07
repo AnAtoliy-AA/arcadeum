@@ -43,6 +43,10 @@ export function resolveMongoUri(): string {
  * mongoose default of 100 queues at ~100 concurrent active players.
  * Override via `MONGODB_MAX_POOL_SIZE` per environment — keep within
  * the connection cap of the mongo deployment.
+ *
+ * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (5s).
+ * `heartbeatFrequencyMS` — detect recovery faster (10s vs default 10s).
+ * `retryWrites` — auto-retry transient network errors on writes.
  */
 export function resolveMongoOptions(): MongooseModuleOptions {
   const raw = process.env.MONGODB_MAX_POOL_SIZE?.trim();
@@ -58,5 +62,10 @@ export function resolveMongoOptions(): MongooseModuleOptions {
     );
   }
 
-  return { maxPoolSize };
+  return {
+    maxPoolSize,
+    serverSelectionTimeoutMS: 5_000,
+    heartbeatFrequencyMS: 10_000,
+    retryWrites: true,
+  };
 }

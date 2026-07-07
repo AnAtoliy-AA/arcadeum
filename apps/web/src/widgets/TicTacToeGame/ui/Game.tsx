@@ -15,6 +15,7 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
 import { useTicTacToeActions } from '../hooks/useTicTacToeActions';
@@ -141,6 +142,10 @@ function TicTacToeGameImpl({
     [room?.gameOptions],
   );
 
+  const highlightedCell = useGameChatStore((s) => s.highlightedCell);
+  const persistedCell = useGameChatStore((s) => s.persistedCell);
+  const effectiveHighlight = highlightedCell ?? persistedCell;
+
   const variantTokens = useMemo(
     () =>
       TIC_TAC_TOE_VARIANTS.find((v) => v.id === options.variant) ??
@@ -204,12 +209,16 @@ function TicTacToeGameImpl({
             teamMode={snapshot.options.teamMode}
             origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
+            highlightedCell={effectiveHighlight}
             ariaLabel={
               snapshot.options.boardSize === 'infinity'
                 ? 'Tic-Tac-Toe Infinity board'
                 : `Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`
             }
-            onCellClick={(row, col) => placeMark(row, col)}
+            onCellClick={(row, col) => {
+              useGameChatStore.getState().setPersistedCell(null);
+              placeMark(row, col);
+            }}
           />
         </>
       ) : null}

@@ -46,6 +46,7 @@ import {
   TitleDot,
   UnreadBadge,
 } from './GameChat.styled';
+import { parseMoveCell, renderResultHighlights } from './chatHelpers';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -89,33 +90,10 @@ const SCOPE_CHIP_COLOR: Record<ChatScope, string> = {
   private: '#A78BFA',
 };
 
-const RESULT_COLORS: Record<string, string> = {
-  HIT: '#F97316',
-  MISS: '#94A3B8',
-  SUNK: '#EF4444',
-};
-
-const RESULT_PATTERN = /\b(HIT|MISS|SUNK)\b/;
-
 const MONO_STYLE: React.CSSProperties = {
   fontFamily:
     "ui-monospace, SFMono-Regular, 'JetBrains Mono', 'Menlo', monospace",
 };
-
-function renderResultHighlights(message: string): ReactNode {
-  const match = RESULT_PATTERN.exec(message);
-  if (!match) return message;
-  const idx = match.index;
-  const keyword = match[0];
-  const color = RESULT_COLORS[keyword];
-  return (
-    <>
-      {message.slice(0, idx)}
-      <span style={{ color, fontWeight: 800 }}>{keyword}</span>
-      {message.slice(idx + keyword.length)}
-    </>
-  );
-}
 
 function inferSysKind(log: ChatLogEntry): SystemRowKind {
   const msg = log.message?.toLowerCase() ?? '';
@@ -375,6 +353,28 @@ export function GameChat({
                   ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
                   : undefined;
                 if (log.type === 'system' || log.type === 'action') {
+                  const moveCell = parseMoveCell(log.message);
+                  if (moveCell) {
+                    return (
+                      <GameChatRow
+                        key={log.id}
+                        senderId={log.senderId ?? null}
+                        senderName={log.senderId ? senderName : undefined}
+                        senderColor={senderColor}
+                        content={log.message}
+                        type="action"
+                        isOwn={false}
+                        resolveEquipped={resolveEquipped}
+                        moveCell={moveCell}
+                        onMoveHover={(cell) =>
+                          useGameChatStore.getState().setHighlightedCell(cell)
+                        }
+                        onMoveClick={(cell) =>
+                          useGameChatStore.getState().setPersistedCell(cell)
+                        }
+                      />
+                    );
+                  }
                   return (
                     <GameChatSystemRow
                       key={log.id}

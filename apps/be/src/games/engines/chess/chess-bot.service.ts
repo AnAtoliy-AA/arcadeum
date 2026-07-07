@@ -5,6 +5,7 @@ import type { ChessMove, ChessState, Rank } from './chess.types';
 import { posToBoardCoords, oppositeColor } from './chess.board';
 import { getLegalMoves } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
+import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 
 const MAX_DEPTH = 4;
 const INFINITY = 999999;
@@ -75,6 +76,76 @@ const PIECE_SQUARE_TABLES: Record<PieceType, number[][]> = {
 @Injectable()
 export class ChessBotService {
   private readonly logger = new Logger(ChessBotService.name);
+  private readonly processing = new Set<string>();
+  private moveFn:
+    | ((
+        userId: string,
+        roomId: string,
+        payload: {
+          fromFile: string;
+          fromRank: number;
+          toFile: string;
+          toRank: number;
+          promotion?: string;
+        },
+      ) => Promise<unknown>)
+    | null = null;
+
+  setMoveFn(
+    fn: (
+      userId: string,
+      roomId: string,
+      payload: {
+        fromFile: string;
+        fromRank: number;
+        toFile: string;
+        toRank: number;
+        promotion?: string;
+      },
+    ) => Promise<unknown>,
+  ) {
+    this.moveFn = fn;
+  }
+
+  isBot(userId: string): boolean {
+    return userId.startsWith('bot-');
+  }
+
+  async checkAndPlay(session: GameSessionSummary): Promise<void> {
+    if (session.status !== 'active') return;
+    const state = session.state as unknown as ChessState | undefined;
+    if (!state) return;
+
+    const currentId = state.players.find(
+      (p) => p.color === state.currentTurnColor,
+    )?.playerId;
+    if (!currentId || !this.isBot(currentId)) return;
+
+    if (this.processing.has(session.roomId)) return;
+    this.processing.add(session.roomId);
+
+    try {
+      const move = this.findBestMove(state);
+      if (!move) return;
+
+      const delay = 400 + Math.random() * 700;
+      await new Promise((r) => setTimeout(r, delay));
+
+      if (this.moveFn) {
+        await this.moveFn(currentId, session.roomId, {
+          fromFile: move.from.file,
+          fromRank: move.from.rank,
+          toFile: move.to.file,
+          toRank: move.to.rank,
+          promotion: move.promotion ?? undefined,
+        });
+      }
+    } catch (err) {
+      this.logger.error(`Bot move failed for room ${session.roomId}: ${err}`);
+    } finally {
+      this.processing.delete(session.roomId);
+    }
+  }
 
   findBestMove(state: ChessState): ChessMove | null {
     const legalMoves = getLegalMoves(state, state.currentTurnColor);

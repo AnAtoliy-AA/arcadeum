@@ -21,6 +21,7 @@ import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoard } from './ChessBoard';
+import { ChessClock } from './ChessClock';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
 
@@ -253,6 +254,11 @@ function ChessGameImpl({
     <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
       {snapshot ? (
         <>
+          <ChessClock
+            clocks={snapshot.clocks}
+            currentTurnColor={snapshot.currentTurnColor}
+            isGameOver={isGameOver}
+          />
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" fontWeight="600" opacity={0.8}>
               {snapshot.currentTurnColor === 'white' ? '♔ White' : '♚ Black'} to

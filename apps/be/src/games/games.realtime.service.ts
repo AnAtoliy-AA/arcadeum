@@ -11,9 +11,30 @@ export class GamesRealtimeService {
 
   private server: Server | null = null;
 
+  private readonly userIdToSockets = new Map<string, Set<string>>();
+
   registerServer(server: Server): void {
     this.server = server;
     this.logger.debug('Socket server registered for games gateway.');
+  }
+
+  trackSocket(userId: string, socketId: string): void {
+    let sockets = this.userIdToSockets.get(userId);
+    if (!sockets) {
+      sockets = new Set();
+      this.userIdToSockets.set(userId, sockets);
+    }
+    sockets.add(socketId);
+  }
+
+  untrackSocket(userId: string, socketId: string): void {
+    const sockets = this.userIdToSockets.get(userId);
+    if (sockets) {
+      sockets.delete(socketId);
+      if (sockets.size === 0) {
+        this.userIdToSockets.delete(userId);
+      }
+    }
   }
 
   roomChannel(roomId: string): string {
@@ -22,6 +43,10 @@ export class GamesRealtimeService {
 
   spectatorChannel(roomId: string): string {
     return `game-room-spectators:${roomId}`;
+  }
+
+  lobbyChannel(): string {
+    return 'games-lobby';
   }
 
   emitRoomUpdate(room: GameRoomSummary): void {
@@ -47,13 +72,9 @@ export class GamesRealtimeService {
     if (!this.server) {
       return;
     }
-    // Broadcast globally so the lobby list updates
-    this.server.emit(
-      'games.room.deleted',
-      maybeEncrypt({
-        roomId,
-      }),
-    );
+    this.server
+      .to(this.lobbyChannel())
+      .emit('games.room.deleted', maybeEncrypt({ roomId }));
   }
 
   /**
@@ -202,7 +223,9 @@ export class GamesRealtimeService {
     if (!this.server) {
       return;
     }
-    this.server.emit('games.room.created', maybeEncrypt({ room }));
+    this.server
+      .to(this.lobbyChannel())
+      .emit('games.room.created', maybeEncrypt({ room }));
   }
 
   emitPlayerJoined(room: GameRoomSummary, userId: string): void {
@@ -216,8 +239,9 @@ export class GamesRealtimeService {
         userId,
       }),
     );
-    // Also broadcast global update for lobbies
-    this.server.emit('games.room.updated', maybeEncrypt({ room }));
+    this.server
+      .to(this.lobbyChannel())
+      .emit('games.room.updated', maybeEncrypt({ room }));
   }
 
   emitPlayerLeft(
@@ -238,8 +262,9 @@ export class GamesRealtimeService {
         kicked,
       }),
     );
-    // Also broadcast global update for lobbies
-    this.server.emit('games.room.updated', maybeEncrypt({ room }));
+    this.server
+      .to(this.lobbyChannel())
+      .emit('games.room.updated', maybeEncrypt({ room }));
   }
 
   emitRematchStarted(oldRoomId: string, newRoomId: string): void {
@@ -524,6 +549,19 @@ export class GamesRealtimeService {
     if (!this.server) {
       return false;
     }
+
+    const trackedIds = this.userIdToSockets.get(userId);
+    if (trackedIds && trackedIds.size > 0) {
+      const sockets = await this.server
+        .in(this.roomChannel(roomId))
+        .fetchSockets();
+      const targetSockets = sockets.filter((s) => trackedIds.has(s.id));
+      for (const socket of targetSockets) {
+        socket.emit(event, maybeEncrypt(payload as Record<string, unknown>));
+      }
+      return targetSockets.length > 0;
+    }
+
     const sockets = await this.server
       .in(this.roomChannel(roomId))
       .fetchSockets();

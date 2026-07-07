@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.15] - 2026-07-07
+
+### Fixed
+- improve tic-tac-toe infinity board UX and chat move highlighting
+
+
 ## [1.23.14] - 2026-07-07
 
 ### Fixed

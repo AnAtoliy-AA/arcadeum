@@ -4,6 +4,7 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
 const DEFAULT_MAX_POOL_SIZE = 200;
+const DEV_MAX_POOL_SIZE = 20;
 const MIN_MAX_POOL_SIZE = 1;
 
 /**
@@ -47,10 +48,12 @@ export function resolveMongoUri(): string {
 export function resolveMongoOptions(): MongooseModuleOptions {
   const raw = process.env.MONGODB_MAX_POOL_SIZE?.trim();
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
+  const isProd = process.env.NODE_ENV === 'production';
+  const defaultPool = isProd ? DEFAULT_MAX_POOL_SIZE : DEV_MAX_POOL_SIZE;
   const maxPoolSize =
     Number.isFinite(parsed) && parsed >= MIN_MAX_POOL_SIZE
       ? parsed
-      : DEFAULT_MAX_POOL_SIZE;
+      : defaultPool;
 
   if (raw && maxPoolSize !== parsed) {
     logger.warn(
@@ -58,5 +61,10 @@ export function resolveMongoOptions(): MongooseModuleOptions {
     );
   }
 
-  return { maxPoolSize };
+  return {
+    maxPoolSize,
+    serverSelectionTimeoutMS: 10_000,
+    heartbeatFrequencyMS: 30_000,
+    autoIndex: process.env.NODE_ENV !== 'production',
+  };
 }

@@ -4,7 +4,7 @@ export const MIN_PLAYERS = 2;
 // past what any board variant can support.
 export const MAX_PLAYERS = 5;
 
-export const BOARD_SIZES = [3, 5, 7, 9] as const;
+export const BOARD_SIZES = [3, 5, 7, 9, 'infinity'] as const;
 export type BoardSize = (typeof BOARD_SIZES)[number];
 
 export const WIN_LENGTH: Record<BoardSize, 3 | 4 | 5> = {
@@ -12,6 +12,7 @@ export const WIN_LENGTH: Record<BoardSize, 3 | 4 | 5> = {
   5: 4,
   7: 5,
   9: 5,
+  infinity: 5,
 };
 
 // Larger boards leave room for more players without making any single
@@ -21,7 +22,14 @@ export const MAX_PLAYERS_BY_BOARD_SIZE: Record<BoardSize, number> = {
   5: 3,
   7: 4,
   9: 5,
+  infinity: 5,
 };
+
+export const INFINITY_MARGIN_OPTIONS = [1, 2, 3] as const;
+export type InfinityMargin = (typeof INFINITY_MARGIN_OPTIONS)[number];
+
+export const INFINITY_WIN_LENGTH_OPTIONS = [4, 5] as const;
+export type InfinityWinLength = (typeof INFINITY_WIN_LENGTH_OPTIONS)[number];
 
 export const VARIANTS = [
   'classic',
@@ -51,4 +59,6 @@ export const DEFAULT_OPTIONS = {
   variant: 'classic' as Variant,
   boardSize: 3 as BoardSize,
   teamMode: false,
+  expansionMargin: 3 as InfinityMargin,
+  infinityWinLength: 5 as InfinityWinLength,
 };

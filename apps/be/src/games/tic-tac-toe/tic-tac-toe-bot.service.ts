@@ -63,15 +63,16 @@ export class TicTacToeBotService {
    * Pick a move for the bot. Strategy varies by boardSize:
    * - 3 → perfect minimax (only ~9 cells, trivially fast)
    * - 5 → heuristic: win → block → center bias
-   * - 7, 9 → heuristic: win → block → random
+   * - 7, 9, infinity → heuristic: win → block → random
    */
   pickMove(state: TicTacToeState, botId: string): PlaceMarkPayload | null {
     const ownerId = this.getOwnerId(state, botId);
     if (!ownerId) return null;
     const opponentIds = this.getOpponentIds(state, ownerId);
-    const size = state.options.boardSize;
+    const size = state.board.length;
+    const boardSize = state.options.boardSize;
 
-    if (size === 3) {
+    if (boardSize === 3) {
       return this.minimaxMove(state, ownerId, opponentIds);
     }
 
@@ -95,7 +96,7 @@ export class TicTacToeBotService {
     state: TicTacToeState,
     ownerId: string,
   ): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
         if (state.board[row][col] !== null) continue;
@@ -128,7 +129,7 @@ export class TicTacToeBotService {
     let bestScore = -Infinity;
     let bestMove: PlaceMarkPayload | null = null;
 
-    const size = state.options.boardSize;
+    const size = state.board.length;
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
         if (state.board[row][col] !== null) continue;
@@ -189,7 +190,7 @@ export class TicTacToeBotService {
   }
 
   private centerBiasedRandom(state: TicTacToeState): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     const center = Math.floor(size / 2);
     const empties: Array<PlaceMarkPayload & { weight: number }> = [];
     for (let row = 0; row < size; row++) {
@@ -210,7 +211,7 @@ export class TicTacToeBotService {
   }
 
   private randomEmptyCell(state: TicTacToeState): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     const empties: PlaceMarkPayload[] = [];
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
@@ -257,7 +258,13 @@ export class TicTacToeBotService {
 
   // Exposed for test inspection; not part of the public API.
   /** @internal */
-  _boardSizeGuard(size: number): size is BoardSize {
-    return size === 3 || size === 5 || size === 7 || size === 9;
+  _boardSizeGuard(size: number | string): size is BoardSize {
+    return (
+      size === 3 ||
+      size === 5 ||
+      size === 7 ||
+      size === 9 ||
+      size === 'infinity'
+    );
   }
 }

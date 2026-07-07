@@ -2,12 +2,20 @@ import type {
   BaseGameState,
   GamePlayerState,
 } from '../base/game-engine.interface';
-import type { BoardSize, GamePhase, Variant } from './tic-tac-toe.constants';
+import type {
+  BoardSize,
+  GamePhase,
+  InfinityMargin,
+  InfinityWinLength,
+  Variant,
+} from './tic-tac-toe.constants';
 
 export interface TicTacToeOptions {
   variant: Variant;
   boardSize: BoardSize;
   teamMode: boolean;
+  expansionMargin: InfinityMargin;
+  infinityWinLength: InfinityWinLength;
 }
 
 export type CellValue = string | null;

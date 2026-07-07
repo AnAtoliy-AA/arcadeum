@@ -215,16 +215,34 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
       variant: string;
       boardSize: number | string;
       teamMode: boolean;
+      expansionMargin: number;
+      infinityWinLength: number;
     }>;
     const allowedSizes: number[] = [3, 5, 7, 9];
-    const rawSize = Number(r.boardSize) || DEFAULT_OPTIONS.boardSize;
-    const boardSize = (
-      allowedSizes.includes(rawSize) ? rawSize : DEFAULT_OPTIONS.boardSize
-    ) as BoardSize;
+    const rawSize = r.boardSize;
+    let boardSize: BoardSize;
+    if (rawSize === 'infinity') {
+      boardSize = 'infinity';
+    } else {
+      const numSize: number =
+        Number(rawSize) || (DEFAULT_OPTIONS.boardSize as number);
+      boardSize = (
+        allowedSizes.includes(numSize) ? numSize : DEFAULT_OPTIONS.boardSize
+      ) as BoardSize;
+    }
+    const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+      n === 1 || n === 2 || n === 3;
+    const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
     return {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
       boardSize,
       teamMode: !!r.teamMode,
+      expansionMargin: isMargin(r.expansionMargin)
+        ? r.expansionMargin
+        : DEFAULT_OPTIONS.expansionMargin,
+      infinityWinLength: isWinLen(r.infinityWinLength)
+        ? r.infinityWinLength
+        : DEFAULT_OPTIONS.infinityWinLength,
     };
   }
 }

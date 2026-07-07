@@ -6,6 +6,44 @@ export function createEmptyBoard(size: number): CellValue[][] {
   );
 }
 
+export function expandBoard(
+  board: CellValue[][],
+  row: number,
+  col: number,
+  margin: number,
+): CellValue[][] {
+  const size = board.length;
+  let newRowsTop = 0;
+  let newRowsBottom = 0;
+  let newColsLeft = 0;
+  let newColsRight = 0;
+
+  if (row < margin) newRowsTop = margin - row;
+  if (row >= size - margin) newRowsBottom = margin - (size - 1 - row);
+  if (col < margin) newColsLeft = margin - col;
+  if (col >= size - margin) newColsRight = margin - (size - 1 - col);
+
+  if (
+    newRowsTop === 0 &&
+    newRowsBottom === 0 &&
+    newColsLeft === 0 &&
+    newColsRight === 0
+  ) {
+    return board;
+  }
+
+  const newSize = size + newRowsTop + newRowsBottom;
+  const newBoard = createEmptyBoard(newSize);
+
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      newBoard[r + newRowsTop][c + newColsLeft] = board[r][c];
+    }
+  }
+
+  return newBoard;
+}
+
 const DIRECTIONS: Array<[number, number]> = [
   [0, 1],
   [1, 0],

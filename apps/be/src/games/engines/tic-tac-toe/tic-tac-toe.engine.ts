@@ -22,6 +22,7 @@ import type {
 } from './tic-tac-toe.types';
 import {
   createEmptyBoard,
+  expandBoard,
   findWinningLine,
   isBoardFull,
   nextTurnIndex,
@@ -57,7 +58,11 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
   ): TicTacToeState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
     const boardSize = options.boardSize;
-    const winLength = WIN_LENGTH[boardSize];
+    const isInfinity = boardSize === 'infinity';
+    const initialSize = isInfinity ? 9 : boardSize;
+    const winLength = isInfinity
+      ? options.infinityWinLength
+      : WIN_LENGTH[boardSize];
 
     const teamMode = options.teamMode === true;
     const teams: TicTacToeTeam[] = teamMode
@@ -78,7 +83,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     return {
       phase: GAME_PHASE.PLAYING,
       options: { ...options, boardSize },
-      board: createEmptyBoard(boardSize),
+      board: createEmptyBoard(initialSize),
       winLength,
       playerOrder,
       currentTurnIndex: 0,
@@ -199,6 +204,17 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
 
     newState.board[payload.row][payload.col] = ownerId as CellValue;
 
+    const isInfinity = newState.options.boardSize === 'infinity';
+    if (isInfinity) {
+      const expanded = expandBoard(
+        newState.board,
+        payload.row,
+        payload.col,
+        newState.options.expansionMargin,
+      );
+      newState.board = expanded;
+    }
+
     const placedLog = this.createLogEntry(
       'action',
       `Mark placed at (${payload.row + 1}, ${payload.col + 1})`,
@@ -206,9 +222,10 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     );
     newState.logs.push(placedLog);
 
+    const boardSize = newState.board.length;
     const winLine = findWinningLine(
       newState.board,
-      newState.options.boardSize,
+      boardSize,
       newState.winLength,
       ownerId,
     );

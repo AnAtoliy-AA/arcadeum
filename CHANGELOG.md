@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.13] - 2026-07-07
+
+### Added
+- use centered coordinates (0,0 at center) for infinity board
+- add infinity board mode to Tic-Tac-Toe with configurable settings
+
+### Fixed
+- prevent BSON document overflow in infinity mode
+- fix infinity board log coordinates and add hover preview
+- improve tic tac toe infinity board
+- add explicit grid rows to TicTacToe board for uniform cell sizing
+
+
 ## [1.23.12] - 2026-07-07
 
 ### Added

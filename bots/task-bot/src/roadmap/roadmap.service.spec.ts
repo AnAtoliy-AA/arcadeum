@@ -7,7 +7,9 @@ import { execSync } from 'child_process';
 jest.mock('fs');
 jest.mock('child_process');
 
-const mockReadFileSync = readFileSync as jest.MockedFunction<typeof readFileSync>;
+const mockReadFileSync = readFileSync as jest.MockedFunction<
+  typeof readFileSync
+>;
 const mockExecSync = execSync as jest.MockedFunction<typeof execSync>;
 
 describe('RoadmapService', () => {
@@ -54,7 +56,9 @@ describe('RoadmapService', () => {
     });
 
     it('should return empty set on error', () => {
-      mockReadFileSync.mockImplementation(() => { throw new Error('not found'); });
+      mockReadFileSync.mockImplementation(() => {
+        throw new Error('not found');
+      });
 
       const result = service.getArcNumbersFromRoadmap();
 
@@ -64,10 +68,12 @@ describe('RoadmapService', () => {
 
   describe('getArcNumbersFromIssues', () => {
     it('should parse ARC numbers from issues', () => {
-      mockExecSync.mockReturnValue(JSON.stringify([
-        { body: 'ARC-871 stat tracking' },
-        { body: 'Some ARC-999 issue' },
-      ]));
+      mockExecSync.mockReturnValue(
+        JSON.stringify([
+          { body: 'ARC-871 stat tracking' },
+          { body: 'Some ARC-999 issue' },
+        ]),
+      );
 
       const result = service.getArcNumbersFromIssues();
 
@@ -77,7 +83,9 @@ describe('RoadmapService', () => {
     });
 
     it('should return empty set on error', () => {
-      mockExecSync.mockImplementation(() => { throw new Error('gh not found'); });
+      mockExecSync.mockImplementation(() => {
+        throw new Error('gh not found');
+      });
 
       const result = service.getArcNumbersFromIssues();
 
@@ -97,10 +105,12 @@ describe('RoadmapService', () => {
 
     it('should skip numbers used in issues', () => {
       mockReadFileSync.mockReturnValue(MOCK_ROADMAP);
-      mockExecSync.mockReturnValue(JSON.stringify([
-        { body: 'ARC-873 some issue' },
-        { body: 'ARC-874 another' },
-      ]));
+      mockExecSync.mockReturnValue(
+        JSON.stringify([
+          { body: 'ARC-873 some issue' },
+          { body: 'ARC-874 another' },
+        ]),
+      );
 
       const result = service.getNextArcNumber();
 

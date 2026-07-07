@@ -77,19 +77,25 @@ export class RoadmapService {
         const arcMatch = line.match(/ARC-(\d+)/i);
         if (!arcMatch) continue;
 
-        const descMatch = line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*\|)/i)
-          ?? line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*`?ARC-\d+`?)?$/i);
+        const descMatch =
+          line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*\|)/i) ??
+          line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*`?ARC-\d+`?)?$/i);
         if (!descMatch) continue;
 
         const desc = descMatch[1].trim().toLowerCase();
         const descWords = desc.split(/\s+/).filter((w) => w.length > 2);
         if (descWords.length === 0) continue;
 
-        const matchCount = descWords.filter((w) => titleLower.includes(w)).length;
+        const matchCount = descWords.filter((w) =>
+          titleLower.includes(w),
+        ).length;
         const matchRatio = matchCount / descWords.length;
 
         if (matchRatio >= 0.5) {
-          return { arc: `ARC-${arcMatch[1]}`, description: descMatch[1].trim() };
+          return {
+            arc: `ARC-${arcMatch[1]}`,
+            description: descMatch[1].trim(),
+          };
         }
       }
     } catch {

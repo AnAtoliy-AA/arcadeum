@@ -55,7 +55,12 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
       const data: unknown = await resp.json();
-      up = resp.ok && typeof data === 'object' && data !== null && 'ok' in data && (data as { ok: boolean }).ok === true;
+      up =
+        resp.ok &&
+        typeof data === 'object' &&
+        data !== null &&
+        'ok' in data &&
+        (data as { ok: boolean }).ok === true;
     } catch (err) {
       this.logger.warn(`Health check failed: ${err}`);
     }
@@ -69,7 +74,9 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
       } else {
         this.isUp = false;
         this.logger.error('Backend is DOWN on first check');
-        await this.notify('🔴 Backend is DOWN — not responding to health checks');
+        await this.notify(
+          '🔴 Backend is DOWN — not responding to health checks',
+        );
       }
       return;
     }

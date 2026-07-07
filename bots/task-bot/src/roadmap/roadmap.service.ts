@@ -77,11 +77,14 @@ export class RoadmapService {
         const arcMatch = line.match(/ARC-(\d+)/i);
         if (!arcMatch) continue;
 
-        const descMatch = line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*`?ARC-\d+`?)?$/i);
+        const descMatch = line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*\|)/i)
+          ?? line.match(/\d+[A-Z]?\.\s*(.+?)(?:\s*`?ARC-\d+`?)?$/i);
         if (!descMatch) continue;
 
         const desc = descMatch[1].trim().toLowerCase();
-        const descWords = desc.split(/\s+/);
+        const descWords = desc.split(/\s+/).filter((w) => w.length > 2);
+        if (descWords.length === 0) continue;
+
         const matchCount = descWords.filter((w) => titleLower.includes(w)).length;
         const matchRatio = matchCount / descWords.length;
 

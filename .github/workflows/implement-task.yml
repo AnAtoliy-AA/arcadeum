@@ -51,14 +51,14 @@ jobs:
       - name: Install opencode
         if: inputs.engine == 'opencode'
         run: |
-          curl -fsSL https://opencode.ai/install.sh | bash
-          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
+          npm install -g @opencode-ai/opencode
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
 
       - name: Install mimo
         if: inputs.engine == 'mimo'
         run: |
-          curl -fsSL https://mimo.ai/install.sh | bash
-          echo "$HOME/.mimocode/bin" >> $GITHUB_PATH
+          npm install -g @anthropic-ai/mimo
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
 
       - name: Fetch issue details
         id: issue
@@ -66,9 +66,7 @@ jobs:
           ISSUE_json=$(gh issue view ${{ inputs.issue_number }} --json number,title,body,labels)
           echo "number=$(echo $ISSUE_json | jq -r .number)" >> $GITHUB_OUTPUT
           echo "title=$(echo $ISSUE_json | jq -r .title)" >> $GITHUB_OUTPUT
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo $ISSUE_json | jq -r .body >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "body=$(echo $ISSUE_json | jq -r .body | head -c 65536)" >> $GITHUB_OUTPUT
 
       - name: Create feature branch
         run: |

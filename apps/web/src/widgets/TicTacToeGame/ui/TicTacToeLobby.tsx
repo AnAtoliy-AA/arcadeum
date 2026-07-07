@@ -18,6 +18,8 @@ import {
   type BoardSize,
   type TicTacToeOptions,
   type TicTacToeVariant,
+  type InfinityMargin,
+  type InfinityWinLength,
   WIN_LENGTHS,
 } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -51,15 +53,22 @@ interface TicTacToeLobbyProps {
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
-    boardSize: number;
+    boardSize: number | string;
     teamMode: boolean;
+    expansionMargin: number;
+    infinityWinLength: number;
   }>;
-  const isAllowedSize = (n: number | undefined): n is BoardSize =>
-    n === 3 || n === 5 || n === 7 || n === 9;
+  const isAllowedSize = (n: number | string | undefined): n is BoardSize =>
+    n === 3 || n === 5 || n === 7 || n === 9 || n === 'infinity';
+  const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+    n === 1 || n === 2 || n === 3;
+  const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
   return {
     variant: (r.variant ?? 'classic') as TicTacToeVariant,
     boardSize: isAllowedSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
+    expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
+    infinityWinLength: isWinLen(r.infinityWinLength) ? r.infinityWinLength : 5,
   };
 }
 
@@ -98,6 +107,14 @@ export function TicTacToeLobby({
     setOption({ teamMode: val });
   };
 
+  const handleMarginChange = (margin: InfinityMargin) => {
+    setOption({ expansionMargin: margin });
+  };
+
+  const handleWinLengthChange = (winLength: InfinityWinLength) => {
+    setOption({ infinityWinLength: winLength });
+  };
+
   const optionsSlot = (
     <YStack gap="$4">
       <VariantSelector
@@ -110,7 +127,11 @@ export function TicTacToeLobby({
         roomId={room.id}
         hostId={userId}
         currentSize={options.boardSize}
+        currentMargin={options.expansionMargin}
+        currentWinLength={options.infinityWinLength}
         disabled={!isHost}
+        onMarginChange={handleMarginChange}
+        onWinLengthChange={handleWinLengthChange}
       />
       <XStack alignItems="center" gap="$3">
         <Text fontWeight="600">{t('games.tic_tac_toe_v1.lobby.teamMode')}</Text>
@@ -127,7 +148,9 @@ export function TicTacToeLobby({
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
       <Text fontSize="$2" opacity={0.7}>
-        {t('games.tic_tac_toe_v1.rules.winLengths')}
+        {options.boardSize === 'infinity'
+          ? t('games.tic_tac_toe_v1.lobby.winCondition')
+          : t('games.tic_tac_toe_v1.rules.winLengths')}
       </Text>
     </YStack>
   );
@@ -161,7 +184,12 @@ export function TicTacToeLobby({
         open={showRulesOpen}
         onClose={onShowRulesClose}
         boardSize={options.boardSize}
-        winLength={WIN_LENGTHS[options.boardSize]}
+        winLength={
+          options.boardSize === 'infinity'
+            ? options.infinityWinLength
+            : WIN_LENGTHS[options.boardSize]
+        }
+        expansionMargin={options.expansionMargin}
       />
     </>
   );

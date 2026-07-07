@@ -5,7 +5,7 @@ export type TicTacToeGameProps = BaseGameWidgetProps;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 5;
 
-export const BOARD_SIZES = [3, 5, 7, 9] as const;
+export const BOARD_SIZES = [3, 5, 7, 9, 'infinity'] as const;
 export type BoardSize = (typeof BOARD_SIZES)[number];
 
 export const WIN_LENGTHS: Record<BoardSize, 3 | 4 | 5> = {
@@ -13,6 +13,7 @@ export const WIN_LENGTHS: Record<BoardSize, 3 | 4 | 5> = {
   5: 4,
   7: 5,
   9: 5,
+  infinity: 5,
 };
 
 // Per-board-size player caps — must match the BE
@@ -22,7 +23,14 @@ export const MAX_PLAYERS_BY_BOARD_SIZE: Record<BoardSize, number> = {
   5: 3,
   7: 4,
   9: 5,
+  infinity: 5,
 };
+
+export const INFINITY_MARGIN_OPTIONS = [1, 2, 3] as const;
+export type InfinityMargin = (typeof INFINITY_MARGIN_OPTIONS)[number];
+
+export const INFINITY_WIN_LENGTH_OPTIONS = [4, 5] as const;
+export type InfinityWinLength = (typeof INFINITY_WIN_LENGTH_OPTIONS)[number];
 
 export const TIC_TAC_TOE_VARIANT_IDS = [
   'classic',
@@ -67,6 +75,8 @@ export interface TicTacToeOptions {
   variant: TicTacToeVariant;
   boardSize: BoardSize;
   teamMode: boolean;
+  expansionMargin: InfinityMargin;
+  infinityWinLength: InfinityWinLength;
 }
 
 export interface TicTacToeLogEntry {
@@ -85,6 +95,7 @@ export interface TicTacToeClientState {
   options: TicTacToeOptions;
   board: CellValue[][];
   winLength: 3 | 4 | 5;
+  origin: { row: number; col: number };
   playerOrder: string[];
   currentTurnIndex: number;
   players: TicTacToePlayer[];

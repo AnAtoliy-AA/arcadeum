@@ -1,6 +1,8 @@
 import {
   createEmptyBoard,
+  expandBoard,
   findWinningLine,
+  indexToCentered,
   isBoardFull,
   nextTurnIndex,
 } from './tic-tac-toe.utils';
@@ -132,6 +134,116 @@ describe('tic-tac-toe utils', () => {
     it('returns the current index when only one entry is alive', () => {
       const isAlive = (id: string) => id === 'a';
       expect(nextTurnIndex(0, ['a', 'b', 'c'], isAlive)).toBe(0);
+    });
+  });
+
+  describe('expandBoard', () => {
+    it('returns the same board when far from all edges', () => {
+      const board = createEmptyBoard(9);
+      const result = expandBoard(board, 4, 4, 3);
+      expect(result.board).toBe(board);
+      expect(result.originDelta).toEqual({ row: 0, col: 0 });
+    });
+
+    it('expands when mark is placed near the top edge', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 3);
+      expect(result.board.length).toBeGreaterThan(9);
+      expect(result.originDelta.row).toBeGreaterThan(0);
+      expect(
+        result.board[0 + result.originDelta.row][4 + result.originDelta.col],
+      ).toBe('x');
+    });
+
+    it('expands when mark is placed near the bottom edge', () => {
+      const board = createEmptyBoard(9);
+      board[8][4] = 'x';
+      const result = expandBoard(board, 8, 4, 3);
+      expect(result.board.length).toBeGreaterThan(9);
+    });
+
+    it('expands when mark is placed near the left edge', () => {
+      const board = createEmptyBoard(9);
+      board[4][0] = 'x';
+      const result = expandBoard(board, 4, 0, 3);
+      expect(result.board[0].length).toBeGreaterThan(9);
+      expect(result.originDelta.col).toBeGreaterThan(0);
+    });
+
+    it('expands when mark is placed near the right edge', () => {
+      const board = createEmptyBoard(9);
+      board[4][8] = 'x';
+      const result = expandBoard(board, 4, 8, 3);
+      expect(result.board[0].length).toBeGreaterThan(9);
+    });
+
+    it('expands in both axes when placed in a corner', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      const result = expandBoard(board, 0, 0, 3);
+      expect(result.board.length).toBeGreaterThan(9);
+      expect(result.board[0].length).toBeGreaterThan(9);
+    });
+
+    it('preserves existing marks after expansion', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      board[8][8] = 'o';
+      const result = expandBoard(board, 0, 0, 3);
+      const cells = result.board.flat().filter((c) => c !== null);
+      expect(cells).toContain('x');
+      expect(cells).toContain('o');
+    });
+
+    it('rounds expansion to even numbers to prevent origin drift', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 3);
+      const addedRows = result.board.length - 9;
+      expect(addedRows % 2).toBe(0);
+    });
+
+    it('rounds column expansion to even numbers', () => {
+      const board = createEmptyBoard(9);
+      board[4][0] = 'x';
+      const result = expandBoard(board, 4, 0, 3);
+      const addedCols = result.board[0].length - 9;
+      expect(addedCols % 2).toBe(0);
+    });
+
+    it('expands correctly with margin=1', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 1);
+      expect(result.board.length).toBe(11);
+      expect(result.originDelta.row).toBe(1);
+    });
+
+    it('expands correctly with margin=2', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 2);
+      expect(result.board.length).toBe(11);
+      expect(result.originDelta.row).toBe(1);
+    });
+  });
+
+  describe('indexToCentered', () => {
+    it('converts board index to centered coordinates', () => {
+      const origin = { row: 4, col: 4 };
+      expect(indexToCentered({ row: 4, col: 4 }, origin)).toEqual({
+        row: 0,
+        col: 0,
+      });
+      expect(indexToCentered({ row: 0, col: 0 }, origin)).toEqual({
+        row: -4,
+        col: -4,
+      });
+      expect(indexToCentered({ row: 8, col: 8 }, origin)).toEqual({
+        row: 4,
+        col: 4,
+      });
     });
   });
 });

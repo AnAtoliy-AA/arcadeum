@@ -11,7 +11,7 @@ export function validatePlaceMark(
   }
 
   const { row, col } = payload ?? { row: -1, col: -1 };
-  const size = state.options.boardSize;
+  const size = state.board.length;
   if (
     !Number.isInteger(row) ||
     !Number.isInteger(col) ||

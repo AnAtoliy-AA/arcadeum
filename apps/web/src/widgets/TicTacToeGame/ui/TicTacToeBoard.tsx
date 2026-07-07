@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type {
   CellValue,
@@ -51,6 +51,10 @@ function TicTacToeBoardImpl({
     scrollTop: 0,
     moved: false,
   });
+  const [hoveredCell, setHoveredCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
 
   const winSet = useMemo(() => {
     if (!winLine) return new Set<string>();
@@ -205,6 +209,14 @@ function TicTacToeBoardImpl({
             const isWinning = winSet.has(`${rowIdx}:${colIdx}`);
             const ownerInfo = cell ? symbolByOwner.get(cell) : null;
             const cellDisabled = disabled || cell !== null;
+            const isHovered =
+              !cellDisabled &&
+              hoveredCell?.row === rowIdx &&
+              hoveredCell?.col === colIdx;
+            const previewInfo =
+              isHovered && !disabled && players.length > 0
+                ? (symbolByOwner.get(players[0].playerId) ?? null)
+                : null;
             return (
               <button
                 key={`${rowIdx}-${colIdx}`}
@@ -218,17 +230,24 @@ function TicTacToeBoardImpl({
                     : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
                 }
                 onClick={() => handleCellClick(rowIdx, colIdx)}
+                onMouseEnter={() => {
+                  if (!cell && !disabled)
+                    setHoveredCell({ row: rowIdx, col: colIdx });
+                }}
+                onMouseLeave={() => setHoveredCell(null)}
                 className={`ttt-cell${isWinning ? ' ttt-winning' : ''}`}
                 style={{
                   ...cellStyle,
                   backgroundColor: isWinning
                     ? theme.winningCellBg
                     : theme.cellBg,
-                  color: ownerInfo?.color ?? theme.textColor,
+                  color:
+                    ownerInfo?.color ?? previewInfo?.color ?? theme.textColor,
                   border: 'none',
                   borderRadius: theme.borderRadius,
                   fontFamily: theme.markFont,
                   fontWeight: 700,
+                  fontSize: cellStyle.fontSize,
                   cursor: cellDisabled ? 'default' : 'pointer',
                   transition: 'background-color 120ms ease',
                   overflow: 'hidden',
@@ -236,6 +255,8 @@ function TicTacToeBoardImpl({
               >
                 {ownerInfo ? (
                   <span className="ttt-mark">{ownerInfo.mark}</span>
+                ) : previewInfo ? (
+                  <span style={{ opacity: 0.25 }}>{previewInfo.mark}</span>
                 ) : null}
               </button>
             );

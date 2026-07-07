@@ -209,6 +209,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
 
     newState.board[payload.row][payload.col] = ownerId as CellValue;
 
+    let originDelta = { row: 0, col: 0 };
     const isInfinity = newState.options.boardSize === 'infinity';
     if (isInfinity) {
       const expanded = expandBoard(
@@ -218,14 +219,18 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
         newState.options.expansionMargin,
       );
       newState.board = expanded.board;
+      originDelta = expanded.originDelta;
       newState.origin = {
-        row: newState.origin.row + expanded.originDelta.row,
-        col: newState.origin.col + expanded.originDelta.col,
+        row: newState.origin.row + originDelta.row,
+        col: newState.origin.col + originDelta.col,
       };
     }
 
     const centered = indexToCentered(
-      { row: payload.row, col: payload.col },
+      {
+        row: payload.row + originDelta.row,
+        col: payload.col + originDelta.col,
+      },
       newState.origin,
     );
     const placedLog = this.createLogEntry(

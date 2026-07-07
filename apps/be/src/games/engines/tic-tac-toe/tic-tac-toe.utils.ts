@@ -37,10 +37,16 @@ export function expandBoard(
     return { board, originDelta: { row: 0, col: 0 } };
   }
 
-  const totalNewRows = neededTop + neededBottom;
-  const totalNewCols = neededLeft + neededRight;
-  const newRowsTop = Math.ceil(totalNewRows / 2);
-  const newColsLeft = Math.ceil(totalNewCols / 2);
+  const totalNewRows =
+    neededTop + neededBottom === 0
+      ? 0
+      : neededTop + neededBottom + ((neededTop + neededBottom) % 2);
+  const totalNewCols =
+    neededLeft + neededRight === 0
+      ? 0
+      : neededLeft + neededRight + ((neededLeft + neededRight) % 2);
+  const newRowsTop = totalNewRows / 2;
+  const newColsLeft = totalNewCols / 2;
 
   const newSize = size + totalNewRows + totalNewCols;
   const newBoard = createEmptyBoard(newSize);

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type {
   CellValue,
@@ -9,6 +9,12 @@ import type {
   WinLineCell,
 } from '../types';
 import './styles/animations.scss';
+
+const CELL_PX = 40;
+const GAP_PX = 3;
+const BOARD_PADDING_PX = 8;
+const SCROLL_THRESHOLD = 10;
+const DRAG_THRESHOLD = 5;
 
 interface TicTacToeBoardProps {
   board: CellValue[][];
@@ -35,6 +41,16 @@ function TicTacToeBoardImpl({
 }: TicTacToeBoardProps) {
   const theme = useTicTacToeTheme();
   const size = board.length;
+  const isScrollable = size > SCROLL_THRESHOLD;
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({
+    startX: 0,
+    startY: 0,
+    scrollLeft: 0,
+    scrollTop: 0,
+    moved: false,
+  });
 
   const winSet = useMemo(() => {
     if (!winLine) return new Set<string>();
@@ -65,12 +81,72 @@ function TicTacToeBoardImpl({
     return map;
   }, [players, teams, teamMode, theme]);
 
-  return (
-    <div
-      role="grid"
-      aria-label={ariaLabel}
-      data-testid="ttt-board"
-      style={{
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isScrollable) return;
+      const el = wrapperRef.current;
+      if (!el) return;
+      dragState.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        scrollLeft: el.scrollLeft,
+        scrollTop: el.scrollTop,
+        moved: false,
+      };
+    },
+    [isScrollable],
+  );
+
+  useEffect(() => {
+    if (!isScrollable) return;
+
+    const onMove = (e: PointerEvent) => {
+      const ds = dragState.current;
+      const el = wrapperRef.current;
+      if (!el || ds.startX === 0) return;
+      const dx = e.clientX - ds.startX;
+      const dy = e.clientY - ds.startY;
+      if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+        ds.moved = true;
+      }
+      el.scrollLeft = ds.scrollLeft - dx;
+      el.scrollTop = ds.scrollTop - dy;
+    };
+
+    const onUp = () => {
+      dragState.current.startX = 0;
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [isScrollable]);
+
+  const handleCellClick = useCallback(
+    (row: number, col: number) => {
+      if (dragState.current.moved) return;
+      onCellClick(row, col);
+    },
+    [onCellClick],
+  );
+
+  const gridStyle: React.CSSProperties = isScrollable
+    ? {
+        display: 'grid',
+        gridTemplateColumns: `repeat(${size}, ${CELL_PX}px)`,
+        gridTemplateRows: `repeat(${size}, ${CELL_PX}px)`,
+        gap: `${GAP_PX}px`,
+        padding: `${BOARD_PADDING_PX}px`,
+        backgroundColor: theme.gridLine,
+        borderRadius: theme.borderRadius,
+        width: 'max-content',
+        height: 'max-content',
+        boxSizing: 'border-box',
+      }
+    : {
         display: 'grid',
         gridTemplateColumns: `repeat(${size}, 1fr)`,
         gridTemplateRows: `repeat(${size}, 1fr)`,
@@ -83,60 +159,89 @@ function TicTacToeBoardImpl({
         aspectRatio: '1 / 1',
         margin: '0 auto',
         boxSizing: 'border-box',
-        containerType: 'inline-size',
-      }}
+      };
+
+  const cellStyle: React.CSSProperties = isScrollable
+    ? {
+        width: `${CELL_PX}px`,
+        height: `${CELL_PX}px`,
+        fontSize: '1.1rem',
+      }
+    : {
+        fontSize: `clamp(0.85rem, ${(55 / size).toFixed(1)}cqw, 3rem)`,
+      };
+
+  return (
+    <div
+      ref={wrapperRef}
+      data-testid="ttt-board-wrapper"
+      onPointerDown={onPointerDown}
+      style={
+        isScrollable
+          ? {
+              width: '100%',
+              maxWidth: 'min(90vmin, 720px)',
+              height: 'min(90vmin, 720px)',
+              margin: '0 auto',
+              overflow: 'auto',
+              borderRadius: theme.borderRadius,
+              border: `1px solid ${theme.gridLine}`,
+              position: 'relative',
+              touchAction: 'none',
+              cursor: 'grab',
+              userSelect: 'none',
+            }
+          : undefined
+      }
     >
-      {board.map((row, rowIdx) =>
-        row.map((cell, colIdx) => {
-          const isWinning = winSet.has(`${rowIdx}:${colIdx}`);
-          const ownerInfo = cell ? symbolByOwner.get(cell) : null;
-          const cellDisabled = disabled || cell !== null;
-          return (
-            <button
-              key={`${rowIdx}-${colIdx}`}
-              type="button"
-              role="gridcell"
-              data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
-              disabled={cellDisabled}
-              aria-label={
-                ownerInfo
-                  ? `(${rowIdx - origin.row}, ${colIdx - origin.col}): ${ownerInfo.mark}`
-                  : `(${rowIdx - origin.row}, ${colIdx - origin.col}): empty`
-              }
-              onClick={() => onCellClick(rowIdx, colIdx)}
-              className={isWinning ? 'ttt-winning' : undefined}
-              style={{
-                backgroundColor: isWinning ? theme.winningCellBg : theme.cellBg,
-                color: ownerInfo?.color ?? theme.textColor,
-                border: 'none',
-                borderRadius: theme.borderRadius,
-                fontFamily: theme.markFont,
-                fontWeight: 700,
-                fontSize: `clamp(0.8rem, ${(55 / size).toFixed(1)}cqw, 3rem)`,
-                cursor: cellDisabled ? 'default' : 'pointer',
-                transition: 'background-color 120ms ease',
-                overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                if (!cellDisabled) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor =
-                    theme.cellHoverBg;
+      <div
+        role="grid"
+        aria-label={ariaLabel}
+        data-testid="ttt-board"
+        style={gridStyle}
+      >
+        {board.map((row, rowIdx) =>
+          row.map((cell, colIdx) => {
+            const isWinning = winSet.has(`${rowIdx}:${colIdx}`);
+            const ownerInfo = cell ? symbolByOwner.get(cell) : null;
+            const cellDisabled = disabled || cell !== null;
+            return (
+              <button
+                key={`${rowIdx}-${colIdx}`}
+                type="button"
+                role="gridcell"
+                data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
+                disabled={cellDisabled}
+                aria-label={
+                  ownerInfo
+                    ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
+                    : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
                 }
-              }}
-              onMouseLeave={(e) => {
-                if (!cellDisabled) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor =
-                    theme.cellBg;
-                }
-              }}
-            >
-              {ownerInfo ? (
-                <span className="ttt-mark">{ownerInfo.mark}</span>
-              ) : null}
-            </button>
-          );
-        }),
-      )}
+                onClick={() => handleCellClick(rowIdx, colIdx)}
+                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}`}
+                style={{
+                  ...cellStyle,
+                  backgroundColor: isWinning
+                    ? theme.winningCellBg
+                    : theme.cellBg,
+                  color: ownerInfo?.color ?? theme.textColor,
+                  border: 'none',
+                  borderRadius: theme.borderRadius,
+                  fontFamily: theme.markFont,
+                  fontWeight: 700,
+                  cursor: cellDisabled ? 'default' : 'pointer',
+                  transition: 'background-color 120ms ease',
+                  overflow: 'hidden',
+                }}
+              >
+                {ownerInfo ? (
+                  <span className="ttt-mark">{ownerInfo.mark}</span>
+                ) : null}
+              </button>
+            );
+          }),
+        )}
+      </div>
     </div>
   );
 }

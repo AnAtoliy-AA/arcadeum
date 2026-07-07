@@ -27,6 +27,33 @@
   animation: ttt-mark-pop 220ms ease-out both;
 }
 
+.ttt-cell:not(:disabled):hover {
+  filter: brightness(1.15);
+}
+
 .ttt-winning {
   animation: ttt-winning-pulse 1.4s ease-in-out infinite;
+}
+
+[data-testid='ttt-board-wrapper']:active {
+  cursor: grabbing;
+}
+
+[data-testid='ttt-board-wrapper'] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+[data-testid='ttt-board-wrapper']::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-testid='ttt-board-wrapper']::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-testid='ttt-board-wrapper']::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
 }

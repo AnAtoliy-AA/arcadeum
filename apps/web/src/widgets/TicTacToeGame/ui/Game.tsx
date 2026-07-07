@@ -204,7 +204,11 @@ function TicTacToeGameImpl({
             teamMode={snapshot.options.teamMode}
             origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
-            ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
+            ariaLabel={
+              snapshot.options.boardSize === 'infinity'
+                ? 'Tic-Tac-Toe Infinity board'
+                : `Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`
+            }
             onCellClick={(row, col) => placeMark(row, col)}
           />
         </>

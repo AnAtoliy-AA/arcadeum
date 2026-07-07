@@ -256,7 +256,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       return this.successResult(newState);
     }
 
-    if (isBoardFull(newState.board)) {
+    if (!isInfinity && isBoardFull(newState.board)) {
       newState.isDraw = true;
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.logs.push(this.createLogEntry('system', 'Draw.'));

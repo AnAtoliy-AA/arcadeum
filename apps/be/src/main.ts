@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
@@ -38,6 +39,7 @@ async function bootstrap() {
     }),
   );
 
+  app.use(compression());
   app.use(cookieParser());
 
   app.useGlobalPipes(

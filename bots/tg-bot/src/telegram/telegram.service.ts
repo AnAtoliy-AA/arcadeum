@@ -86,9 +86,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     );
 
     this.bot.command('ca', (ctx: Context) =>
-      ctx.reply(`<b>Contract Address:</b>\n<code>${this.mintAddress}</code>`, {
-        parse_mode: 'HTML',
-      }),
+      ctx.reply(
+        `<b>Contract Address:</b>\n<pre>${this.mintAddress}</pre>`,
+        { parse_mode: 'HTML' },
+      ),
     );
 
     this.bot.command('help', (ctx: Context) =>

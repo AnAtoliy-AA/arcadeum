@@ -254,11 +254,17 @@ export class GamesController {
   async getRoomInfoBody(
     @Req() req: Request,
     @Body() body: { roomId: string },
-  ): Promise<{ room: Awaited<ReturnType<GamesService['getRoom']>> }> {
+  ): Promise<{
+    room: Awaited<ReturnType<GamesService['getRoom']>>;
+    session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'];
+  }> {
     const { roomId } = body;
     const user = req.user as AuthenticatedUser | undefined | null;
-    const room = await this.gamesService.getRoom(roomId, user?.userId);
-    return { room };
+    const { room, session } = await this.gamesService.getRoomSession(
+      roomId,
+      user?.userId,
+    );
+    return { room, session };
   }
 
   @UseGuards(JwtOptionalAuthGuard)

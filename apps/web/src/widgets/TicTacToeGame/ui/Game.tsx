@@ -68,6 +68,7 @@ function TicTacToeGameImpl({
     myTurn,
     isGameOver,
     startBusy,
+    setStartBusy,
     session,
   } = useTicTacToeState({
     roomId,
@@ -157,12 +158,13 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onStartGame={(opts) =>
+          onStartGame={(opts) => {
+            setStartBusy(true);
             startSession({
               withBots: !!opts?.withBots,
               botCount: opts?.botCount,
-            })
-          }
+            });
+          }}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
@@ -232,6 +234,7 @@ function TicTacToeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
+        loading={!snapshot}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',

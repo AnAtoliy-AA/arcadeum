@@ -82,8 +82,9 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     const playerIds = [...participants];
 
     if (withBots || playerIds.length === 1) {
+      const needed = Math.max(0, MIN_PLAYERS - playerIds.length);
       const desiredCount =
-        botCount !== undefined ? botCount : Math.max(0, 2 - playerIds.length);
+        botCount !== undefined ? Math.max(botCount, needed) : needed;
       const cap = Math.min(sizeCap - playerIds.length, desiredCount);
       for (let i = 0; i < cap; i++) {
         playerIds.push(`bot-${Math.random().toString(36).slice(2, 10)}`);
@@ -111,11 +112,8 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     await this.realtimeService.emitGameStarted(
       updatedRoom,
       session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
+      (s, pId) => {
+        const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
         if (sanitized && typeof sanitized === 'object') {
           return { ...s, state: sanitized as Record<string, unknown> };
         }
@@ -215,14 +213,13 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
   private resolveOptions(raw: unknown): TicTacToeOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;
-      boardSize: number;
+      boardSize: number | string;
       teamMode: boolean;
     }>;
     const allowedSizes: number[] = [3, 5, 7, 9];
+    const rawSize = Number(r.boardSize) || DEFAULT_OPTIONS.boardSize;
     const boardSize = (
-      allowedSizes.includes(r.boardSize ?? 3)
-        ? r.boardSize
-        : DEFAULT_OPTIONS.boardSize
+      allowedSizes.includes(rawSize) ? rawSize : DEFAULT_OPTIONS.boardSize
     ) as BoardSize;
     return {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,

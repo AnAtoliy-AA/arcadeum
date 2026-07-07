@@ -18,11 +18,12 @@ export function useTicTacToeState({
   currentUserId,
   initialSession,
 }: UseTicTacToeStateOptions) {
-  const { session, actionBusy, setActionBusy, startBusy } = useGameSession({
-    roomId,
-    enabled: true,
-    initialSession,
-  });
+  const { session, actionBusy, setActionBusy, startBusy, setStartBusy } =
+    useGameSession({
+      roomId,
+      enabled: true,
+      initialSession,
+    });
 
   const snapshot: TicTacToeClientState | null = useMemo(() => {
     if (session?.state) {
@@ -60,5 +61,6 @@ export function useTicTacToeState({
     actionBusy,
     setActionBusy,
     startBusy,
+    setStartBusy,
   };
 }

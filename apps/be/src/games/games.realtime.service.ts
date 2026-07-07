@@ -107,7 +107,7 @@ export class GamesRealtimeService {
     sanitizer?: (
       session: GameSessionSummary,
       userId: string,
-    ) => Promise<GameSessionSummary>,
+    ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
     if (!this.server) {
       return;
@@ -316,7 +316,7 @@ export class GamesRealtimeService {
     sanitizer?: (
       session: GameSessionSummary,
       userId: string,
-    ) => Promise<GameSessionSummary>,
+    ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
     if (!this.server) {
       return;
@@ -386,9 +386,6 @@ export class GamesRealtimeService {
         session: filteredSession,
       }),
     );
-
-    // Also emit session snapshot (which already handles both channels)
-    await this.emitSessionSnapshot(room.id, session, sanitizer);
   }
 
   async emitActionExecuted(
@@ -398,7 +395,7 @@ export class GamesRealtimeService {
     sanitizer?: (
       session: GameSessionSummary,
       userId: string,
-    ) => Promise<GameSessionSummary>,
+    ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
     if (!this.server || !session.roomId) {
       return;

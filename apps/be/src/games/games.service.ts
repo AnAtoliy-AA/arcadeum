@@ -50,14 +50,11 @@ export class GamesService {
     private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
 
-  private async sanitizeForPlayer(
+  private sanitizeForPlayer(
     s: GameSessionSummary,
     pId: string,
-  ): Promise<GameSessionSummary> {
-    const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-      s.id,
-      pId,
-    );
+  ): GameSessionSummary {
+    const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
     if (sanitized && typeof sanitized === 'object') {
       return { ...s, state: sanitized as Record<string, unknown> };
     }
@@ -111,7 +108,7 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        session = await this.sanitizeForPlayer(session, userId);
+        session = this.sanitizeForPlayer(session, userId);
       } catch {
         // safely continue with unsanitized session state
       }
@@ -235,10 +232,8 @@ export class GamesService {
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(
-      updatedRoom,
-      session,
-      async (s, pId) => this.sanitizeForPlayer(s, pId),
+    await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
+      this.sanitizeForPlayer(s, pId),
     );
 
     return { room: updatedRoom, session };
@@ -265,7 +260,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => this.sanitizeForPlayer(s, pId),
+      (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -393,7 +388,7 @@ export class GamesService {
       await this.realtimeService.emitSessionSnapshot(
         roomId,
         session,
-        async (s, pId) => this.sanitizeForPlayer(s, pId),
+        (s, pId) => this.sanitizeForPlayer(s, pId),
       );
     }
   }

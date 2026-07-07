@@ -151,7 +151,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       }
     };
 
-    // Decrypt wrapper
+    // Decrypt wrapper — falls through to handler with raw data when
+    // decryption fails (e.g. anonymous clients without encryption key)
     const decryptHandler = <T>(
       handler: (payload: T) => void,
       _name: string,
@@ -160,6 +161,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         const payload = await maybeDecrypt<T>(raw);
         if (payload !== null) {
           handler(payload);
+        } else {
+          handler(raw as T);
         }
       };
     };
@@ -220,6 +223,16 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameSocket.on('connect', handleConnect);
     gameSocket.on('disconnect', handleDisconnect);
 
+    // Raw fallback — when decryption fails (anonymous clients), fetch
+    // updated room data from the API so the UI transitions out of lobby
+    const onRawGameStarted = () => {
+      const currentRoom = get().room;
+      if (currentRoom?.id === roomId) {
+        void get().refreshRoom(roomId);
+      }
+    };
+    gameSocket.on('games.game.started', onRawGameStarted);
+
     const wrappedHandleIdleChanged = decryptHandler<{
       userId?: string;
       idle?: boolean;
@@ -240,6 +253,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       gameSocket.off('games.player.joined', wrappedHandlePlayerJoined);
       gameSocket.off('games.player.left', wrappedHandlePlayerLeft);
       gameSocket.off('games.game.started', wrappedHandleGameStarted);
+      gameSocket.off('games.game.started', onRawGameStarted);
       gameSocket.off('exception', wrappedHandleException);
       gameSocket.off('connect', handleConnect);
       gameSocket.off('disconnect', handleDisconnect);

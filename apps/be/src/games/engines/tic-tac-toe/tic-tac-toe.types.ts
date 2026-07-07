@@ -45,6 +45,7 @@ export interface TicTacToeState extends BaseGameState {
   options: TicTacToeOptions;
   board: CellValue[][];
   winLength: 3 | 4 | 5;
+  origin: { row: number; col: number };
   /** Player ids when teamMode=false, team ids when teamMode=true. */
   playerOrder: string[];
   currentTurnIndex: number;

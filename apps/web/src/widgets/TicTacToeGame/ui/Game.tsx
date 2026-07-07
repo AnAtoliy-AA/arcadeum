@@ -202,6 +202,7 @@ function TicTacToeGameImpl({
             players={snapshot.players}
             teams={snapshot.teams}
             teamMode={snapshot.options.teamMode}
+            origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
             ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
             onCellClick={(row, col) => placeMark(row, col)}

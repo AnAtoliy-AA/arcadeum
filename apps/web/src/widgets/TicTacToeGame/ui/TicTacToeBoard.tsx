@@ -16,6 +16,7 @@ interface TicTacToeBoardProps {
   players: TicTacToePlayer[];
   teams: TicTacToeTeam[];
   teamMode: boolean;
+  origin?: { row: number; col: number };
   disabled?: boolean;
   ariaLabel?: string;
   onCellClick: (row: number, col: number) => void;
@@ -27,6 +28,7 @@ function TicTacToeBoardImpl({
   players,
   teams,
   teamMode,
+  origin = { row: 0, col: 0 },
   disabled = false,
   ariaLabel,
   onCellClick,
@@ -98,8 +100,8 @@ function TicTacToeBoardImpl({
               disabled={cellDisabled}
               aria-label={
                 ownerInfo
-                  ? `Row ${rowIdx + 1}, column ${colIdx + 1}: ${ownerInfo.mark}`
-                  : `Row ${rowIdx + 1}, column ${colIdx + 1}: empty`
+                  ? `(${rowIdx - origin.row}, ${colIdx - origin.col}): ${ownerInfo.mark}`
+                  : `(${rowIdx - origin.row}, ${colIdx - origin.col}): empty`
               }
               onClick={() => onCellClick(rowIdx, colIdx)}
               className={isWinning ? 'ttt-winning' : undefined}

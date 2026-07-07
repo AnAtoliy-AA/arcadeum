@@ -24,6 +24,7 @@ import {
   createEmptyBoard,
   expandBoard,
   findWinningLine,
+  indexToCentered,
   isBoardFull,
   nextTurnIndex,
 } from './tic-tac-toe.utils';
@@ -85,6 +86,10 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       options: { ...options, boardSize },
       board: createEmptyBoard(initialSize),
       winLength,
+      origin: {
+        row: Math.floor(initialSize / 2),
+        col: Math.floor(initialSize / 2),
+      },
       playerOrder,
       currentTurnIndex: 0,
       players,
@@ -212,12 +217,20 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
         payload.col,
         newState.options.expansionMargin,
       );
-      newState.board = expanded;
+      newState.board = expanded.board;
+      newState.origin = {
+        row: newState.origin.row + expanded.originDelta.row,
+        col: newState.origin.col + expanded.originDelta.col,
+      };
     }
 
+    const centered = indexToCentered(
+      { row: payload.row, col: payload.col },
+      newState.origin,
+    );
     const placedLog = this.createLogEntry(
       'action',
-      `Mark placed at (${payload.row + 1}, ${payload.col + 1})`,
+      `Mark placed at (${centered.row}, ${centered.col})`,
       { senderId: context.userId },
     );
     newState.logs.push(placedLog);

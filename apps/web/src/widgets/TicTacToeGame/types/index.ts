@@ -95,6 +95,7 @@ export interface TicTacToeClientState {
   options: TicTacToeOptions;
   board: CellValue[][];
   winLength: 3 | 4 | 5;
+  origin: { row: number; col: number };
   playerOrder: string[];
   currentTurnIndex: number;
   players: TicTacToePlayer[];

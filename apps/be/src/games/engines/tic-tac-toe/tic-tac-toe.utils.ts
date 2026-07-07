@@ -6,33 +6,43 @@ export function createEmptyBoard(size: number): CellValue[][] {
   );
 }
 
+export interface ExpandResult {
+  board: CellValue[][];
+  originDelta: { row: number; col: number };
+}
+
 export function expandBoard(
   board: CellValue[][],
   row: number,
   col: number,
   margin: number,
-): CellValue[][] {
+): ExpandResult {
   const size = board.length;
-  let newRowsTop = 0;
-  let newRowsBottom = 0;
-  let newColsLeft = 0;
-  let newColsRight = 0;
+  let neededTop = 0;
+  let neededBottom = 0;
+  let neededLeft = 0;
+  let neededRight = 0;
 
-  if (row < margin) newRowsTop = margin - row;
-  if (row >= size - margin) newRowsBottom = margin - (size - 1 - row);
-  if (col < margin) newColsLeft = margin - col;
-  if (col >= size - margin) newColsRight = margin - (size - 1 - col);
+  if (row < margin) neededTop = margin - row;
+  if (row >= size - margin) neededBottom = margin - (size - 1 - row);
+  if (col < margin) neededLeft = margin - col;
+  if (col >= size - margin) neededRight = margin - (size - 1 - col);
 
   if (
-    newRowsTop === 0 &&
-    newRowsBottom === 0 &&
-    newColsLeft === 0 &&
-    newColsRight === 0
+    neededTop === 0 &&
+    neededBottom === 0 &&
+    neededLeft === 0 &&
+    neededRight === 0
   ) {
-    return board;
+    return { board, originDelta: { row: 0, col: 0 } };
   }
 
-  const newSize = size + newRowsTop + newRowsBottom;
+  const totalNewRows = neededTop + neededBottom;
+  const totalNewCols = neededLeft + neededRight;
+  const newRowsTop = Math.ceil(totalNewRows / 2);
+  const newColsLeft = Math.ceil(totalNewCols / 2);
+
+  const newSize = size + totalNewRows + totalNewCols;
   const newBoard = createEmptyBoard(newSize);
 
   for (let r = 0; r < size; r++) {
@@ -41,7 +51,30 @@ export function expandBoard(
     }
   }
 
-  return newBoard;
+  return {
+    board: newBoard,
+    originDelta: { row: newRowsTop, col: newColsLeft },
+  };
+}
+
+export function centeredToIndex(
+  centered: { row: number; col: number },
+  origin: { row: number; col: number },
+): { row: number; col: number } {
+  return {
+    row: centered.row + origin.row,
+    col: centered.col + origin.col,
+  };
+}
+
+export function indexToCentered(
+  index: { row: number; col: number },
+  origin: { row: number; col: number },
+): { row: number; col: number } {
+  return {
+    row: index.row - origin.row,
+    col: index.col - origin.col,
+  };
 }
 
 const DIRECTIONS: Array<[number, number]> = [

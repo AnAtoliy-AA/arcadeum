@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { execSync, execFileSync } from 'child_process';
+import { execSync } from 'child_process';
 
 interface GitHubIssue {
   arc: string | null;
@@ -25,17 +25,19 @@ export class GitHubService {
     const title = issue.arc ? `${issue.arc}: ${issue.title}` : issue.title;
     const body = this.buildIssueBody(issue);
     const labels = ['task', 'automated'];
+    if (issue.arc) labels.push(issue.arc);
     if (issue.priority === 'high' || issue.priority === 'urgent') {
       labels.push('priority');
     }
 
-    const args = ['issue', 'create', '--title', title, '--body', body];
-    for (const label of labels) {
-      args.push('--label', label);
-    }
+    const labelFlags = labels.map((l) => `--label "${l}"`).join(' ');
+    const escapedBody = body.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    const escapedTitle = title.replace(/"/g, '\\"');
+
+    const cmd = `gh issue create --title "${escapedTitle}" --body "${escapedBody}" ${labelFlags}`;
 
     try {
-      const result = execFileSync('gh', args, {
+      const result = execSync(cmd, {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -53,9 +55,8 @@ export class GitHubService {
 
   triggerWorkflow(issueNumber: string, engine: string): boolean {
     try {
-      execFileSync(
-        'gh',
-        ['workflow', 'run', 'implement-task.yml', '--ref', 'develop', '-f', `issue_number=${issueNumber}`, '-f', `engine=${engine}`],
+      execSync(
+        `gh workflow run implement-task.yml --ref develop -f issue_number=${issueNumber} -f engine=${engine}`,
         { encoding: 'utf-8', cwd: this.getCwd(), stdio: 'pipe' },
       );
       this.logger.log(

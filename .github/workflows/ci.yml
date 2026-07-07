@@ -206,6 +206,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-${{ steps.engine.outputs.browser }}-
 
+      - name: Disable Broken Microsoft Repos
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.list
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
+          sudo rm -f /etc/apt/sources.list.d/microsoft-ubuntu-noble-*.sources
+          sudo apt-get update || true
+
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }} --with-deps
 

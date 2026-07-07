@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.11] - 2026-07-07
+
+### Added
+- register chess engine in module and catalog (ARC-877)
+- add chess engine and bot with minimax (ARC-877)
+- add chess board utilities, attacks, and move generator (ARC-877)
+- add chess engine types and constants (ARC-877)
+
+
 ## [1.23.10] - 2026-07-07
 
 ### Fixed

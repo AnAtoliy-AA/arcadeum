@@ -55,10 +55,7 @@ export class GameHistoryStatsService {
       {
         $match: {
           status: 'completed',
-          $or: [
-            { 'state.winners': userId },
-            { 'state.winnerId': userId },
-          ],
+          $or: [{ 'state.winners': userId }, { 'state.winnerId': userId }],
         },
       },
       {
@@ -70,10 +67,7 @@ export class GameHistoryStatsService {
           pipeline: [
             {
               $match: {
-                $or: [
-                  { hostId: userId },
-                  { 'participants.userId': userId },
-                ],
+                $or: [{ hostId: userId }, { 'participants.userId': userId }],
               },
             },
             { $project: { _id: 1 } },
@@ -119,16 +113,20 @@ export class GameHistoryStatsService {
     ] as PipelineStage[];
 
     const gameStats = await this.gameSessionModel
-      .aggregate<{ _id: string; total: number; wins: number; winRate: number }>(pipeline)
+      .aggregate<{
+        _id: string;
+        total: number;
+        wins: number;
+        winRate: number;
+      }>(pipeline)
       .exec();
 
     const byGameType: GameTypeStats[] = gameStats.map((g) => ({
-        gameId: g._id,
-        totalGames: g.total,
-        wins: g.wins,
-        winRate: Math.round(g.winRate * 100) / 100,
-      }),
-    );
+      gameId: g._id,
+      totalGames: g.total,
+      wins: g.wins,
+      winRate: Math.round(g.winRate * 100) / 100,
+    }));
 
     const totalGames = byGameType.reduce((s, g) => s + g.totalGames, 0);
     const totalWins = byGameType.reduce((s, g) => s + g.wins, 0);
@@ -252,12 +250,12 @@ export class GameHistoryStatsService {
       .exec();
 
     const allEntries = result.entries.map((entry) => ({
-        playerId: entry.playerId,
-        totalGames: entry.totalGames,
-        wins: entry.wins,
-        winRate: Math.round(entry.winRate * 100) / 100,
-        losses: entry.totalGames - entry.wins,
-      }));
+      playerId: entry.playerId,
+      totalGames: entry.totalGames,
+      wins: entry.wins,
+      winRate: Math.round(entry.winRate * 100) / 100,
+      losses: entry.totalGames - entry.wins,
+    }));
 
     const total = result.total[0]?.count ?? 0;
     const hasMore = offset + limit < total;

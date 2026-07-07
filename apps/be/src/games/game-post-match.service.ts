@@ -38,9 +38,7 @@ export class GamePostMatchService {
     }
 
     try {
-      const humanPlayerIds = playerIds.filter(
-        (id) => !id.startsWith('bot-'),
-      );
+      const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
       await Promise.allSettled(
         humanPlayerIds.map((playerId) =>
           this.achievements.checkAndUnlock(playerId),

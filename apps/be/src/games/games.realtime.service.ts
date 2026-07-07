@@ -148,10 +148,7 @@ export class GamesRealtimeService {
         if (userId && sanitizer) {
           if (!sanitizedByUser.has(userId)) {
             try {
-              sanitizedByUser.set(
-                userId,
-                await sanitizer(session, userId),
-              );
+              sanitizedByUser.set(userId, await sanitizer(session, userId));
             } catch (err) {
               this.logger.error(
                 `Failed to sanitize session for user ${userId}: ${err}`,
@@ -382,10 +379,7 @@ export class GamesRealtimeService {
         if (userId && sanitizer) {
           if (!sanitizedByUser.has(userId)) {
             try {
-              sanitizedByUser.set(
-                userId,
-                await sanitizer(session, userId),
-              );
+              sanitizedByUser.set(userId, await sanitizer(session, userId));
             } catch (err) {
               this.logger.error(
                 `Failed to sanitize session for user ${userId}: ${err}`,
@@ -416,27 +410,25 @@ export class GamesRealtimeService {
             maybeEncrypt({ room, session: diffSession }),
           );
         } else {
-          socket.emit(
-            'games.game.started',
-            maybeEncrypt({ room, session }),
-          );
-          socket.emit(
-            'games.session.started',
-            maybeEncrypt({ room, session }),
-          );
+          socket.emit('games.game.started', maybeEncrypt({ room, session }));
+          socket.emit('games.session.started', maybeEncrypt({ room, session }));
         }
       }),
     );
 
     const filteredSession = this.filterSessionForSpectators(session);
-    this.server.to(this.spectatorChannel(room.id)).emit(
-      'games.game.started',
-      maybeEncrypt({ room, session: filteredSession }),
-    );
-    this.server.to(this.spectatorChannel(room.id)).emit(
-      'games.session.started',
-      maybeEncrypt({ room, session: filteredSession }),
-    );
+    this.server
+      .to(this.spectatorChannel(room.id))
+      .emit(
+        'games.game.started',
+        maybeEncrypt({ room, session: filteredSession }),
+      );
+    this.server
+      .to(this.spectatorChannel(room.id))
+      .emit(
+        'games.session.started',
+        maybeEncrypt({ room, session: filteredSession }),
+      );
   }
 
   async emitActionExecuted(

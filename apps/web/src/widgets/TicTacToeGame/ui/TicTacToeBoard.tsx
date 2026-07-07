@@ -26,6 +26,7 @@ interface TicTacToeBoardProps {
   disabled?: boolean;
   ariaLabel?: string;
   onCellClick: (row: number, col: number) => void;
+  highlightedCell?: { row: number; col: number } | null;
 }
 
 function TicTacToeBoardImpl({
@@ -38,6 +39,7 @@ function TicTacToeBoardImpl({
   disabled = false,
   ariaLabel,
   onCellClick,
+  highlightedCell,
 }: TicTacToeBoardProps) {
   const theme = useTicTacToeTheme();
   const size = board.length;
@@ -55,6 +57,24 @@ function TicTacToeBoardImpl({
     row: number;
     col: number;
   } | null>(null);
+
+  useEffect(() => {
+    if (!highlightedCell || !isScrollable) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    const cellSize = CELL_PX + GAP_PX;
+    const arrayRow = highlightedCell.row + origin.row;
+    const arrayCol = highlightedCell.col + origin.col;
+    const cellX = arrayCol * cellSize + BOARD_PADDING_PX;
+    const cellY = arrayRow * cellSize + BOARD_PADDING_PX;
+    const viewW = el.clientWidth;
+    const viewH = el.clientHeight;
+    el.scrollTo({
+      left: Math.max(0, cellX - viewW / 2 + CELL_PX / 2),
+      top: Math.max(0, cellY - viewH / 2 + CELL_PX / 2),
+      behavior: 'smooth',
+    });
+  }, [highlightedCell, isScrollable, origin.row, origin.col]);
 
   const winSet = useMemo(() => {
     if (!winLine) return new Set<string>();
@@ -117,8 +137,16 @@ function TicTacToeBoardImpl({
       el.scrollTop = ds.scrollTop - dy;
     };
 
-    const onUp = () => {
-      dragState.current.startX = 0;
+    const onUp = (e: PointerEvent) => {
+      const ds = dragState.current;
+      if (ds.startX !== 0) {
+        const dx = Math.abs(e.clientX - ds.startX);
+        const dy = Math.abs(e.clientY - ds.startY);
+        if (dx <= DRAG_THRESHOLD && dy <= DRAG_THRESHOLD) {
+          ds.moved = false;
+        }
+      }
+      ds.startX = 0;
     };
 
     window.addEventListener('pointermove', onMove);
@@ -131,10 +159,10 @@ function TicTacToeBoardImpl({
 
   const handleCellClick = useCallback(
     (row: number, col: number) => {
-      if (dragState.current.moved) return;
+      if (isScrollable && dragState.current.moved) return;
       onCellClick(row, col);
     },
-    [onCellClick],
+    [onCellClick, isScrollable],
   );
 
   const gridStyle: React.CSSProperties = isScrollable
@@ -217,6 +245,11 @@ function TicTacToeBoardImpl({
               isHovered && !disabled && players.length > 0
                 ? (symbolByOwner.get(players[0].playerId) ?? null)
                 : null;
+            const isHighlighted = highlightedCell
+              ? rowIdx === highlightedCell.row + origin.row &&
+                colIdx === highlightedCell.col + origin.col
+              : false;
+            const isOrigin = rowIdx === origin.row && colIdx === origin.col;
             return (
               <button
                 key={`${rowIdx}-${colIdx}`}
@@ -235,21 +268,29 @@ function TicTacToeBoardImpl({
                     setHoveredCell({ row: rowIdx, col: colIdx });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
-                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}`}
+                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}`}
                 style={{
                   ...cellStyle,
                   backgroundColor: isWinning
                     ? theme.winningCellBg
-                    : theme.cellBg,
+                    : isHighlighted
+                      ? 'rgba(99,102,241,0.35)'
+                      : isOrigin
+                        ? 'rgba(255,255,255,0.08)'
+                        : theme.cellBg,
                   color:
                     ownerInfo?.color ?? previewInfo?.color ?? theme.textColor,
-                  border: 'none',
+                  border: isHighlighted
+                    ? '2px solid rgba(129,140,248,0.8)'
+                    : isOrigin && !ownerInfo
+                      ? '1px dashed rgba(255,255,255,0.25)'
+                      : 'none',
                   borderRadius: theme.borderRadius,
                   fontFamily: theme.markFont,
                   fontWeight: 700,
                   fontSize: cellStyle.fontSize,
                   cursor: cellDisabled ? 'default' : 'pointer',
-                  transition: 'background-color 120ms ease',
+                  transition: 'background-color 120ms ease, border 120ms ease',
                   overflow: 'hidden',
                 }}
               >
@@ -258,6 +299,21 @@ function TicTacToeBoardImpl({
                 ) : previewInfo ? (
                   <span style={{ opacity: 0.25 }}>{previewInfo.mark}</span>
                 ) : null}
+                {isOrigin && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: 2,
+                      left: 2,
+                      fontSize: '0.5em',
+                      opacity: 0.35,
+                      lineHeight: 1,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    +
+                  </span>
+                )}
               </button>
             );
           }),

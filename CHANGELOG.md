@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.12] - 2026-07-07
+
+### Added
+- add chess landing page, i18n, and web integration (ARC-877)
+- add chess main game component with board interaction (ARC-877)
+- add chess widget UI components (ARC-877)
+- add chess widget types and hooks (ARC-877)
+
+
 ## [1.23.11] - 2026-07-07
 
 ### Added

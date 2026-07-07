@@ -103,6 +103,12 @@ export interface ChessLogEntry {
   targetId?: string | null;
 }
 
+export interface LegalMove {
+  from: BoardPosition;
+  to: BoardPosition;
+  promotion: PieceType | null;
+}
+
 export interface ChessClientState {
   phase: ChessPhase;
   variant: 'standard' | 'chess960';
@@ -125,6 +131,7 @@ export interface ChessClientState {
   positionHistory: string[];
   currentTurnIndex: number;
   logs: ChessLogEntry[];
+  legalMovesForCurrentPlayer: LegalMove[];
 }
 
 export const PROMOTION_PIECES: PieceType[] = [

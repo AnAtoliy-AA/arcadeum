@@ -40,6 +40,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   glimworm_v1: 'glimworm_v1',
   tic_tac_toe_v1: 'tic_tac_toe_v1',
   cascade_v1: 'cascade_v1',
+  chess_v1: 'chess_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -84,6 +85,11 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'critical_v1') {
     return {
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
+    };
+  }
+  if (form.gameId === 'chess_v1') {
+    return {
+      variant: form.themeId || 'standard',
     };
   }
   return {};

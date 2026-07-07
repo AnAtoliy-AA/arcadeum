@@ -71,6 +71,7 @@ function TicTacToeBoardImpl({
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${size}, 1fr)`,
+        gridTemplateRows: `repeat(${size}, 1fr)`,
         gap: '4px',
         padding: '12px',
         backgroundColor: theme.gridLine,

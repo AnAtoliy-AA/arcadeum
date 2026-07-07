@@ -8,6 +8,7 @@ import type {
 import {
   DEFAULT_OPTIONS,
   GAME_PHASE,
+  INFINITY_MAX_BOARD_SIZE,
   PLAYER_SYMBOLS,
   TEAM_PRESETS,
   WIN_LENGTH,
@@ -146,9 +147,23 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     if (result.success && result.state) {
       const history =
         ((state as Record<string, unknown>).stateHistory as unknown[]) ?? [];
+      // Strip stateHistory from the snapshot to prevent recursive nesting
+      const src = state as Record<string, unknown>;
+      const stateSnapshot: Record<string, unknown> = {};
+      for (const key of Object.keys(src)) {
+        if (key !== 'stateHistory') stateSnapshot[key] = src[key];
+      }
       result.state = {
         ...result.state,
-        stateHistory: [...history.slice(-10), structuredClone(state)],
+        stateHistory: [...history.slice(-10), structuredClone(stateSnapshot)],
+      };
+    }
+
+    // Trim logs to prevent unbounded BSON document growth
+    if (result.state && result.state.logs.length > 200) {
+      result.state = {
+        ...result.state,
+        logs: result.state.logs.slice(-200),
       };
     }
 
@@ -211,7 +226,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
 
     let originDelta = { row: 0, col: 0 };
     const isInfinity = newState.options.boardSize === 'infinity';
-    if (isInfinity) {
+    if (isInfinity && newState.board.length < INFINITY_MAX_BOARD_SIZE) {
       const expanded = expandBoard(
         newState.board,
         payload.row,

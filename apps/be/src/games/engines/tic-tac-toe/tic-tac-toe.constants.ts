@@ -55,6 +55,9 @@ export const TEAM_PRESETS = [
   { id: 'blue', name: 'Blue', color: '#3b82f6' },
 ] as const;
 
+/** Hard cap on infinity board dimensions to prevent BSON document overflow. */
+export const INFINITY_MAX_BOARD_SIZE = 100;
+
 export const DEFAULT_OPTIONS = {
   variant: 'classic' as Variant,
   boardSize: 3 as BoardSize,

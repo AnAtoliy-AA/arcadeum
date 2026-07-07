@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, PipelineStage, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -136,7 +136,12 @@ export class GameHistoryStatsService {
       },
       {
         $match: {
-          playerId: { $exists: true, $ne: null, $ne: '' },
+          playerId: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $match: {
+          playerId: { $ne: '' },
         },
       },
       {
@@ -174,7 +179,8 @@ export class GameHistoryStatsService {
         },
       },
       { $sort: { wins: -1, winRate: -1 } },
-      { $facet: {
+      {
+        $facet: {
           entries: [
             { $skip: offset },
             { $limit: limit },
@@ -191,7 +197,7 @@ export class GameHistoryStatsService {
           total: [{ $count: 'count' }],
         },
       },
-    ];
+    ] as PipelineStage[];
 
     const [result] = await this.gameSessionModel
       .aggregate(aggregationPipeline)

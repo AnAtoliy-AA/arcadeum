@@ -11,6 +11,16 @@ import {
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 
+interface LeaderboardFacetResult {
+  entries: Array<{
+    playerId: string;
+    totalGames: number;
+    wins: number;
+    winRate: number;
+  }>;
+  total: Array<{ count: number }>;
+}
+
 /**
  * Game History Stats Service
  * Handles player statistics and leaderboard functionality
@@ -108,10 +118,11 @@ export class GameHistoryStatsService {
       { $sort: { total: -1 } },
     ] as PipelineStage[];
 
-    const gameStats = await this.gameSessionModel.aggregate(pipeline).exec();
+    const gameStats = await this.gameSessionModel
+      .aggregate<{ _id: string; total: number; wins: number; winRate: number }>(pipeline)
+      .exec();
 
-    const byGameType: GameTypeStats[] = gameStats.map(
-      (g: { _id: string; total: number; wins: number; winRate: number }) => ({
+    const byGameType: GameTypeStats[] = gameStats.map((g) => ({
         gameId: g._id,
         totalGames: g.total,
         wins: g.wins,
@@ -237,18 +248,16 @@ export class GameHistoryStatsService {
     ] as PipelineStage[];
 
     const [result] = await this.gameSessionModel
-      .aggregate(aggregationPipeline)
+      .aggregate<LeaderboardFacetResult>(aggregationPipeline)
       .exec();
 
-    const allEntries = result.entries.map(
-      (entry: { playerId: string; totalGames: number; wins: number; winRate: number }) => ({
+    const allEntries = result.entries.map((entry) => ({
         playerId: entry.playerId,
         totalGames: entry.totalGames,
         wins: entry.wins,
         winRate: Math.round(entry.winRate * 100) / 100,
         losses: entry.totalGames - entry.wins,
-      }),
-    );
+      }));
 
     const total = result.total[0]?.count ?? 0;
     const hasMore = offset + limit < total;

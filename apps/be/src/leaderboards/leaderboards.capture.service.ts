@@ -74,10 +74,9 @@ export class LeaderboardsCaptureService
    */
   async captureAll(): Promise<CaptureResult[]> {
     const season = currentSeason();
-    const results: CaptureResult[] = [];
-    for (const mode of GAME_MODE_VALUES) {
-      results.push(await this.capture(mode, season));
-    }
+    const results = await Promise.all(
+      GAME_MODE_VALUES.map((mode) => this.capture(mode, season)),
+    );
     this.cache.invalidateAll();
     this.gateway.emitCaptured(results);
     return results;

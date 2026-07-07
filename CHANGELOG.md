@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.10] - 2026-07-07
+
+### Fixed
+- pass anonId in socket handshake so anonymous clients receive encryption key
+- fix game start flow for anonymous users
+
+
 ## [1.23.9] - 2026-07-07
 
 ### Fixed

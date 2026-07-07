@@ -43,6 +43,7 @@ import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
 import { CASCADE_VARIANTS } from '@/widgets/CascadeGame/lib/constants';
+import { CHESS_VARIANTS } from '@/widgets/ChessGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -146,6 +147,26 @@ export const featuredGames: FeaturedGame[] = [
     rulesPrefix: 'games.cascade_v1.rules',
     rulesKeys: ['objective', 'steps', 'actionCards', 'stacking'],
     variants: CASCADE_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'chess_v1',
+    nameKey: 'games.chess_v1.name' as TranslationKey,
+    descriptionKey: 'games.chess_v1.description' as TranslationKey,
+    accentColor: '#e2e8f0',
+    genre: 'Board',
+    pace: 'Strategy',
+    players: '2',
+    duration: '15 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/chess',
+    type: 'board',
+    rulesPrefix: 'games.chess_v1.rules',
+    rulesKeys: ['objective', 'pieces', 'special'],
+    variants: CHESS_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),

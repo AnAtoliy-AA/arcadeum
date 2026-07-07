@@ -37,6 +37,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Cascade · Jeu de cartes multijoueur de défausse · ${APP}`,
     description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
   },
+  chessLanding: {
+    title: `Échecs · Multijoueur · Standard et Chess960 · ${APP}`,
+    description: `Jouez aux échecs en ligne sur ${APP} — variantes standard et Chess960, contrôles de temps optionnels, bots IA. Gratuit, salons instantanés, sans téléchargement.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

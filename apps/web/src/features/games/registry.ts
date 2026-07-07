@@ -12,8 +12,7 @@ export const gameLoaders: Record<
   glimworm_v1: () => import('@/widgets/GlimwormGame'),
   tic_tac_toe_v1: () => import('@/widgets/TicTacToeGame'),
   cascade_v1: () => import('@/widgets/CascadeGame'),
-  // Future game implementations will be added here
-  // chess_v1: () => import("@/widgets/ChessGame"),
+  chess_v1: () => import('@/widgets/ChessGame'),
   // checkers_v1: () => import("@/widgets/CheckersGame"),
   // Add more games as they are implemented
 } as const;

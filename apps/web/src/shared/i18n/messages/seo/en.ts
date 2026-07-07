@@ -39,6 +39,10 @@ export const en = {
     title: `Cascade · Multiplayer shedding card game · ${APP}`,
     description: `Play Cascade online on ${APP} — a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
   },
+  chessLanding: {
+    title: `Chess · Multiplayer · Standard & Chess960 · ${APP}`,
+    description: `Play Chess online on ${APP} — standard and Chess960 variants, optional time controls, AI bots. Free, instant rooms, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

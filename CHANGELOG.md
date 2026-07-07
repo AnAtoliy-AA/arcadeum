@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.13] - 2026-07-07
+
+### Added
+- add chess create page, home entry, backend service/gateway, and clock (ARC-877)
+- use centered coordinates (0,0 at center) for infinity board
+- add infinity board mode to Tic-Tac-Toe with configurable settings
+
+### Fixed
+- prevent BSON document overflow in infinity mode
+- fix infinity board log coordinates and add hover preview
+- backfill legalMovesForCurrentPlayer for old sessions and add null fallback
+- improve tic tac toe infinity board
+- add legalMovesForCurrentPlayer to engine state and fix frontend move selection
+- add explicit grid rows to TicTacToe board for uniform cell sizing
+
+
+## [1.23.12] - 2026-07-07
+
+### Added
+- add chess landing page, i18n, and web integration (ARC-877)
+- add chess main game component with board interaction (ARC-877)
+- add chess widget UI components (ARC-877)
+- add chess widget types and hooks (ARC-877)
+
+
+## [1.23.11] - 2026-07-07
+
+### Added
+- register chess engine in module and catalog (ARC-877)
+- add chess engine and bot with minimax (ARC-877)
+- add chess board utilities, attacks, and move generator (ARC-877)
+- add chess engine types and constants (ARC-877)
+
+
 ## [1.23.10] - 2026-07-07
 
 ### Fixed

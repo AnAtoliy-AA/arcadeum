@@ -189,6 +189,25 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'chess_v1',
+    startMode: 'immediate',
+    variants: ['standard', 'chess960'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically make a move if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

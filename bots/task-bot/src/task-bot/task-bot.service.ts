@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { TelegramService } from '../telegram/telegram.service';
+import { RoadmapService } from '../roadmap/roadmap.service';
 import { Bot, type Context, InlineKeyboard } from 'grammy';
 
 type Engine = 'opencode' | 'mimo';
@@ -26,6 +27,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   constructor(
     private readonly config: ConfigService,
     private readonly telegramService: TelegramService,
+    private readonly roadmapService: RoadmapService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -63,6 +65,10 @@ export class TaskBotService implements OnApplicationBootstrap {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
       return this.handleImplement(ctx);
     });
+    this.bot.command('status', (ctx) => {
+      if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
+      return this.handleStatus(ctx);
+    });
 
     this.bot.on('callback_query:data', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.answerCallbackQuery('Access denied.');
@@ -76,7 +82,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     });
   }
 
-  private parseTask(text: string): ParsedTask {
+  private parseTask(text: string, autoArc = false): ParsedTask {
     let cleaned = text.trim();
 
     let engine: Engine = 'opencode';
@@ -93,10 +99,19 @@ export class TaskBotService implements OnApplicationBootstrap {
     const header = lines[0];
 
     const arcMatch = header.match(/ARC-(\d+)/i);
-    const arc = arcMatch ? `ARC-${arcMatch[1]}` : null;
+    let arc = arcMatch ? `ARC-${arcMatch[1]}` : null;
 
     const titleMatch = header.match(/ARC-\d+[:\s]+(.+)/i);
     const title = titleMatch ? titleMatch[1].trim() : header;
+
+    if (autoArc && !arc) {
+      const roadmapMatch = this.roadmapService.matchRoadmapItem(title);
+      if (roadmapMatch) {
+        arc = roadmapMatch.arc;
+      } else {
+        arc = this.roadmapService.getNextArcNumber();
+      }
+    }
 
     const requirements = lines
       .slice(1)
@@ -202,44 +217,53 @@ ${scopeLabels}
     this.logger.log(`Trigger file written: ${fileName}`);
   }
 
+  private triggerWorkflow(issueNumber: string, engine: Engine): boolean {
+    const cwd = this.config.get<string>('REPO_PATH') ?? process.cwd();
+    try {
+      execSync(
+        `gh workflow run implement-task.yml --ref develop -f issue_number=${issueNumber} -f engine=${engine}`,
+        { encoding: 'utf-8', cwd, stdio: 'pipe' },
+      );
+      this.logger.log(`Workflow triggered for issue #${issueNumber} with engine ${engine}`);
+      return true;
+    } catch (err) {
+      this.logger.error(`Failed to trigger workflow: ${err}`);
+      return false;
+    }
+  }
+
   private async handleTask(ctx: Context) {
     const text = ctx.message?.text?.replace(/^\/task\s*/, '');
     if (!text) {
       await ctx.reply(
-        'Usage:\n/task ARC-877: Chess Engine\n- Full rules\n- Bot\nScope: backend, web',
+        'Usage:\n/task Chess Engine\n/task Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\nScope: backend, web',
       );
       return;
     }
 
-    const hasEngine = /--engine=(mimo|opencode)/i.test(text);
-    if (hasEngine) {
-      const task = this.parseTask(text);
-      await ctx.reply(`Creating issue for: *${task.title}* (${task.engine})...`, {
-        parse_mode: 'Markdown',
-      });
+    const task = this.parseTask(text, true);
+    await ctx.reply(`Creating *${task.arc}: ${task.title}* (${task.engine})...`, {
+      parse_mode: 'Markdown',
+    });
 
-      const url = this.createGitHubIssue(task);
-      if (url) {
-        const issueNum = this.extractIssueNumber(url);
-        if (issueNum) {
-          this.writeTriggerFile(task, parseInt(issueNum, 10), url);
-        }
+    const url = this.createGitHubIssue(task);
+    if (url) {
+      const issueNum = this.extractIssueNumber(url);
+      if (issueNum) {
+        this.writeTriggerFile(task, parseInt(issueNum, 10), url);
+        const triggered = this.triggerWorkflow(issueNum, task.engine);
         await ctx.reply(
-          `Issue created: ${url}\n\nImplementing with ${task.engine}...`,
+          `Issue created: ${url}\n\n${triggered ? `Implementing with ${task.engine}...` : 'Issue created but workflow trigger failed. Use /implement to retry.'}`,
           { parse_mode: 'Markdown' },
         );
       } else {
-        await ctx.reply('Failed to create issue. Check gh auth status.');
+        await ctx.reply(
+          `Issue created: ${url}\n\nCould not extract issue number for workflow.`,
+          { parse_mode: 'Markdown' },
+        );
       }
     } else {
-      const taskId = `task_${Date.now()}`;
-      this.pendingTasks.set(taskId, { text, userId: ctx.from?.id ?? 0 });
-
-      await ctx.reply('Select engine:', {
-        reply_markup: new InlineKeyboard()
-          .text('opencode', `engine:${taskId}:opencode`)
-          .text('mimo', `engine:${taskId}:mimo`),
-      });
+      await ctx.reply('Failed to create issue. Check gh auth status.');
     }
   }
 
@@ -267,7 +291,7 @@ ${scopeLabels}
     await ctx.answerCallbackQuery();
 
     const textWithEngine = `${pending.text} --engine=${engine}`;
-    const task = this.parseTask(textWithEngine);
+    const task = this.parseTask(textWithEngine, true);
 
     await ctx.editMessageText(`Creating issue for: *${task.title}* (${task.engine})...`, {
       parse_mode: 'Markdown',
@@ -278,11 +302,17 @@ ${scopeLabels}
       const issueNum = this.extractIssueNumber(url);
       if (issueNum) {
         this.writeTriggerFile(task, parseInt(issueNum, 10), url);
+        const triggered = this.triggerWorkflow(issueNum, task.engine);
+        await ctx.reply(
+          `Issue created: ${url}\n\n${triggered ? `Implementing with ${task.engine}...` : 'Issue created but workflow trigger failed. Use /implement to retry.'}`,
+          { parse_mode: 'Markdown' },
+        );
+      } else {
+        await ctx.reply(
+          `Issue created: ${url}\n\nCould not extract issue number for workflow.`,
+          { parse_mode: 'Markdown' },
+        );
       }
-      await ctx.reply(
-        `Issue created: ${url}\n\nImplementing with ${task.engine}...`,
-        { parse_mode: 'Markdown' },
-      );
     } else {
       await ctx.reply('Failed to create issue. Check gh auth status.');
     }
@@ -297,34 +327,29 @@ ${scopeLabels}
 
     if (hasArc && hasDashLines) {
       const hasEngine = /--engine=(mimo|opencode)/i.test(text);
-      if (hasEngine) {
-        const task = this.parseTask(text);
-        await ctx.reply(`Creating issue for: *${task.title}* (${task.engine})...`, {
-          parse_mode: 'Markdown',
-        });
+      const task = this.parseTask(text, !hasEngine);
+      await ctx.reply(`Creating *${task.arc}: ${task.title}* (${task.engine})...`, {
+        parse_mode: 'Markdown',
+      });
 
-        const url = this.createGitHubIssue(task);
-        if (url) {
-          const issueNum = this.extractIssueNumber(url);
-          if (issueNum) {
-            this.writeTriggerFile(task, parseInt(issueNum, 10), url);
-          }
+      const url = this.createGitHubIssue(task);
+      if (url) {
+        const issueNum = this.extractIssueNumber(url);
+        if (issueNum) {
+          this.writeTriggerFile(task, parseInt(issueNum, 10), url);
+          const triggered = this.triggerWorkflow(issueNum, task.engine);
           await ctx.reply(
-            `Issue created: ${url}\n\nImplementing with ${task.engine}...`,
+            `Issue created: ${url}\n\n${triggered ? `Implementing with ${task.engine}...` : 'Issue created but workflow trigger failed. Use /implement to retry.'}`,
             { parse_mode: 'Markdown' },
           );
         } else {
-          await ctx.reply('Failed to create issue.');
+          await ctx.reply(
+            `Issue created: ${url}\n\nCould not extract issue number for workflow.`,
+            { parse_mode: 'Markdown' },
+          );
         }
       } else {
-        const taskId = `task_${Date.now()}`;
-        this.pendingTasks.set(taskId, { text, userId: ctx.from?.id ?? 0 });
-
-        await ctx.reply('Select engine:', {
-          reply_markup: new InlineKeyboard()
-            .text('opencode', `engine:${taskId}:opencode`)
-            .text('mimo', `engine:${taskId}:mimo`),
-        });
+        await ctx.reply('Failed to create issue.');
       }
     }
   }
@@ -368,9 +393,91 @@ ${scopeLabels}
       engine = engineMatch[1].toLowerCase() as Engine;
     }
 
-    await ctx.reply(
-      `Tell ${engine}:\n\`implement issue #${issueNum}\``,
-      { parse_mode: 'Markdown' },
-    );
+    const cwd = this.config.get<string>('REPO_PATH') ?? process.cwd();
+    try {
+      const issueJson = execSync(
+        `gh issue view ${issueNum} --json state,title`,
+        { encoding: 'utf-8', cwd },
+      );
+      const issue = JSON.parse(issueJson) as { state: string; title: string };
+
+      if (issue.state !== 'OPEN') {
+        await ctx.reply(`Issue #${issueNum} is ${issue.state.toLowerCase()}.`);
+        return;
+      }
+
+      await ctx.reply(`Triggering implementation for #${issueNum} with ${engine}...`);
+      const triggered = this.triggerWorkflow(issueNum, engine);
+
+      if (triggered) {
+        await ctx.reply(
+          `Workflow triggered for #${issueNum} (${engine}).\nTrack progress: /status #${issueNum}`,
+        );
+      } else {
+        await ctx.reply('Failed to trigger workflow. Check gh auth status.');
+      }
+    } catch {
+      await ctx.reply(`Issue #${issueNum} not found.`);
+    }
+  }
+
+  private async handleStatus(ctx: Context) {
+    const text = ctx.message?.text ?? '';
+    const issueNum = text.match(/#?(\d+)/)?.[1];
+    if (!issueNum) {
+      await ctx.reply('Usage: /status #12');
+      return;
+    }
+
+    const cwd = this.config.get<string>('REPO_PATH') ?? process.cwd();
+    try {
+      const issueJson = execSync(
+        `gh issue view ${issueNum} --json state,title,body,comments`,
+        { encoding: 'utf-8', cwd },
+      );
+      const issue = JSON.parse(issueJson) as {
+        state: string;
+        title: string;
+        body: string;
+        comments: Array<{ body: string; createdAt: string }>;
+      };
+
+      const lines = [`*#${issueNum}: ${issue.title}*`];
+      lines.push(`Status: ${issue.state}`);
+
+      const lastComment = issue.comments[issue.comments.length - 1];
+      if (lastComment) {
+        const age = Date.now() - new Date(lastComment.createdAt).getTime();
+        const mins = Math.floor(age / 60000);
+        const ago = mins < 60 ? `${mins}m ago` : `${Math.floor(mins / 60)}h ${mins % 60}m ago`;
+        lines.push(`Last update: ${ago}`);
+        lines.push(`> ${lastComment.body.slice(0, 200)}`);
+      }
+
+      const prMatch = issue.body.match(/#(\d+)/);
+      if (prMatch) {
+        try {
+          const prJson = execSync(
+            `gh pr view ${prMatch[1]} --json state,statusCheckRollup`,
+            { encoding: 'utf-8', cwd },
+          );
+          const pr = JSON.parse(prJson) as {
+            state: string;
+            statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
+          };
+          const checks = pr.statusCheckRollup;
+          const passed = checks.filter((c) => c.conclusion === 'success').length;
+          const failed = checks.filter((c) => c.conclusion === 'failure').length;
+          const pending = checks.filter((c) => c.conclusion === null).length;
+          lines.push(`PR #${prMatch[1]}: ${pr.state} (${passed}/${checks.length} checks, ${failed} failed, ${pending} pending)`);
+        } catch {
+          lines.push(`PR #${prMatch[1]}: unknown status`);
+        }
+      }
+
+      await ctx.reply(lines.join('\n'), { parse_mode: 'Markdown' });
+    } catch {
+      await ctx.reply(`Issue #${issueNum} not found.`);
+    }
   }
 }

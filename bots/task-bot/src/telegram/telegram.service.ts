@@ -39,9 +39,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     this.bot.command('help', (ctx: Context) =>
       ctx.reply(
         'Available commands:\n' +
-          '/task - Create a task\n' +
+          '/task <title> - Create a task (ARC auto-assigned)\n' +
           '/tasks - List open tasks\n' +
           '/implement #12 - Implement an issue\n' +
+          '/status #12 - Check implementation status\n' +
           '/help - Show this message',
       ),
     );

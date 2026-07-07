@@ -15,8 +15,14 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ChessGameProps } from '../types';
-import { FILES, type BoardPosition, type File, type PieceType } from '../types';
+import type { ChessGameProps, ChessClientState } from '../types';
+import {
+  FILES,
+  type BoardPosition,
+  type Board,
+  type File,
+  type PieceType,
+} from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { ChessLobby } from './ChessLobby';
@@ -67,14 +73,81 @@ function ChessGameImpl({
     to: BoardPosition;
   } | null>(null);
 
+  const [optimisticState, setOptimisticState] =
+    useState<ChessClientState | null>(null);
+
+  const displaySnapshot =
+    optimisticState &&
+    snapshot &&
+    optimisticState.moveHistory.length >= snapshot.moveHistory.length
+      ? optimisticState
+      : snapshot;
+
+  const displayMyTurn = !!(
+    displaySnapshot &&
+    currentUserId &&
+    displaySnapshot.players.find(
+      (p) =>
+        p.playerId === currentUserId &&
+        p.color === displaySnapshot.currentTurnColor,
+    )
+  );
+
+  const applyOptimisticMove = useCallback(
+    (
+      fromFile: File,
+      fromRank: import('../types').Rank,
+      toFile: File,
+      toRank: import('../types').Rank,
+      promotion?: PieceType,
+    ) => {
+      if (!snapshot) return;
+      const fromRow = 8 - fromRank;
+      const fromCol = FILES.indexOf(fromFile);
+      const toRow = 8 - toRank;
+      const toCol = FILES.indexOf(toFile);
+      const piece = snapshot.board[fromRow]?.[fromCol];
+      if (!piece) return;
+
+      const newBoard: Board = snapshot.board.map((row) => [...row]);
+      newBoard[toRow][toCol] = promotion
+        ? { type: promotion, color: piece.color }
+        : piece;
+      newBoard[fromRow][fromCol] = null;
+
+      setOptimisticState({
+        ...snapshot,
+        board: newBoard,
+        currentTurnColor:
+          snapshot.currentTurnColor === 'white' ? 'black' : 'white',
+        moveHistory: [
+          ...snapshot.moveHistory,
+          {
+            from: { file: fromFile, rank: fromRank },
+            to: { file: toFile, rank: toRank },
+            piece,
+            captured: snapshot.board[toRow]?.[toCol] ?? null,
+            promotion: promotion ?? null,
+            isCastle: false,
+            isEnPassant: false,
+            notation: '',
+          },
+        ],
+        legalMovesForCurrentPlayer: [],
+        isCheck: false,
+      });
+    },
+    [snapshot],
+  );
+
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
       resolveDisplayName(id, {
         currentUserId,
         members: room?.members,
-        playerOrder: snapshot?.players.map((p) => p.playerId),
+        playerOrder: displaySnapshot?.players.map((p) => p.playerId),
       }),
-    [currentUserId, room, snapshot],
+    [currentUserId, room, displaySnapshot],
   );
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
@@ -87,13 +160,14 @@ function ChessGameImpl({
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
   const result = computeGameResult(isGameOver, currentUserId, {
-    winnerId: snapshot?.players.find((p) => p.color === snapshot.winnerColor)
-      ?.playerId,
+    winnerId: displaySnapshot?.players.find(
+      (p) => p.color === displaySnapshot.winnerColor,
+    )?.playerId,
     isDraw:
-      snapshot?.isStalemate ||
-      snapshot?.isDrawByRepetition ||
-      snapshot?.isDrawByFiftyMoveRule ||
-      snapshot?.isInsufficientMaterial,
+      displaySnapshot?.isStalemate ||
+      displaySnapshot?.isDrawByRepetition ||
+      displaySnapshot?.isDrawByFiftyMoveRule ||
+      displaySnapshot?.isInsufficientMaterial,
     backendResult: (session?.state as Record<string, unknown>)?.gameResult as
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
@@ -120,15 +194,16 @@ function ChessGameImpl({
   const isFlipped = myColor === 'black';
 
   const lastMove = useMemo(() => {
-    if (!snapshot?.moveHistory.length) return null;
-    const last = snapshot.moveHistory[snapshot.moveHistory.length - 1];
+    if (!displaySnapshot?.moveHistory.length) return null;
+    const last =
+      displaySnapshot.moveHistory[displaySnapshot.moveHistory.length - 1];
     return { from: last.from, to: last.to };
-  }, [snapshot?.moveHistory]);
+  }, [displaySnapshot?.moveHistory]);
 
   const legalMoves = useMemo(() => {
-    if (!selectedSquare || !snapshot) return [];
+    if (!selectedSquare || !displaySnapshot) return [];
     const moves: BoardPosition[] = [];
-    for (const m of snapshot.legalMovesForCurrentPlayer ?? []) {
+    for (const m of displaySnapshot.legalMovesForCurrentPlayer ?? []) {
       if (
         m.from.file === selectedSquare.file &&
         m.from.rank === selectedSquare.rank
@@ -137,16 +212,16 @@ function ChessGameImpl({
       }
     }
     return moves;
-  }, [selectedSquare, snapshot]);
+  }, [selectedSquare, displaySnapshot]);
 
   const kingPosition = (() => {
-    if (!snapshot) return null;
+    if (!displaySnapshot) return null;
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        const piece = snapshot.board[row]?.[col];
+        const piece = displaySnapshot.board[row]?.[col];
         if (
           piece?.type === 'king' &&
-          piece.color === snapshot.currentTurnColor
+          piece.color === displaySnapshot.currentTurnColor
         ) {
           return {
             file: FILES[col],
@@ -160,9 +235,9 @@ function ChessGameImpl({
 
   const handleSquareClick = useCallback(
     (file: File, rank: import('../types').Rank) => {
-      if (!snapshot || !myColor || isGameOver) return;
+      if (!displaySnapshot || !myColor || isGameOver) return;
 
-      const piece = snapshot.board[8 - rank]?.[FILES.indexOf(file)];
+      const piece = displaySnapshot.board[8 - rank]?.[FILES.indexOf(file)];
 
       if (selectedSquare) {
         const isLegalTarget = legalMoves.some(
@@ -173,7 +248,7 @@ function ChessGameImpl({
           const isPromotion =
             piece === null &&
             selectedSquare.rank === (myColor === 'white' ? 7 : 2) &&
-            snapshot.board[8 - selectedSquare.rank]?.[
+            displaySnapshot.board[8 - selectedSquare.rank]?.[
               FILES.indexOf(selectedSquare.file)
             ]?.type === 'pawn';
 
@@ -183,6 +258,12 @@ function ChessGameImpl({
               to: { file, rank },
             });
           } else {
+            applyOptimisticMove(
+              selectedSquare.file,
+              selectedSquare.rank,
+              file,
+              rank,
+            );
             movePiece(selectedSquare.file, selectedSquare.rank, file, rank);
           }
           setSelectedSquare(null);
@@ -202,12 +283,27 @@ function ChessGameImpl({
         setSelectedSquare({ file, rank });
       }
     },
-    [snapshot, myColor, selectedSquare, legalMoves, isGameOver, movePiece],
+    [
+      displaySnapshot,
+      myColor,
+      selectedSquare,
+      legalMoves,
+      isGameOver,
+      movePiece,
+      applyOptimisticMove,
+    ],
   );
 
   const handlePromotionSelect = useCallback(
     (pieceType: PieceType) => {
       if (!pendingPromotion) return;
+      applyOptimisticMove(
+        pendingPromotion.from.file,
+        pendingPromotion.from.rank,
+        pendingPromotion.to.file,
+        pendingPromotion.to.rank,
+        pieceType,
+      );
       movePiece(
         pendingPromotion.from.file,
         pendingPromotion.from.rank,
@@ -217,7 +313,7 @@ function ChessGameImpl({
       );
       setPendingPromotion(null);
     },
-    [pendingPromotion, movePiece],
+    [pendingPromotion, movePiece, applyOptimisticMove],
   );
 
   const onRematchClick = useCallback(() => {
@@ -252,34 +348,38 @@ function ChessGameImpl({
 
   const board = (
     <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
-      {snapshot ? (
+      {displaySnapshot ? (
         <>
           <ChessClock
-            clocks={snapshot.clocks}
-            currentTurnColor={snapshot.currentTurnColor}
+            clocks={displaySnapshot.clocks}
+            currentTurnColor={displaySnapshot.currentTurnColor}
             isGameOver={isGameOver}
           />
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" fontWeight="600" opacity={0.8}>
-              {snapshot.currentTurnColor === 'white' ? '♔ White' : '♚ Black'} to
-              move
-              {snapshot.isCheck && !snapshot.isCheckmate ? ' (check!)' : ''}
+              {displaySnapshot.currentTurnColor === 'white'
+                ? '♔ White'
+                : '♚ Black'}{' '}
+              to move
+              {displaySnapshot.isCheck && !displaySnapshot.isCheckmate
+                ? ' (check!)'
+                : ''}
             </Text>
             <Text fontSize="$2" opacity={0.6}>
-              {snapshot.fullMoveNumber}.
+              {displaySnapshot.fullMoveNumber}.
             </Text>
           </XStack>
           <ChessBoard
-            board={snapshot.board}
+            board={displaySnapshot.board}
             myColor={myColor}
             isFlipped={isFlipped}
-            disabled={!myTurn || isGameOver}
+            disabled={!displayMyTurn || isGameOver}
             selectedSquare={selectedSquare}
             legalMoves={legalMoves}
             lastMove={lastMove}
-            isCheck={snapshot.isCheck}
+            isCheck={displaySnapshot.isCheck}
             kingPosition={kingPosition}
-            ariaLabel={`Chess board, ${snapshot.currentTurnColor} to move`}
+            ariaLabel={`Chess board, ${displaySnapshot.currentTurnColor} to move`}
             onSquareClick={handleSquareClick}
           />
           <XStack justifyContent="space-between" alignItems="center" mt="$1">
@@ -292,9 +392,9 @@ function ChessGameImpl({
             >
               Resign
             </Text>
-            {snapshot.moveHistory.length > 0 && (
+            {displaySnapshot.moveHistory.length > 0 && (
               <Text fontSize="$2" opacity={0.5}>
-                {snapshot.moveHistory.length} moves
+                {displaySnapshot.moveHistory.length} moves
               </Text>
             )}
           </XStack>
@@ -328,7 +428,7 @@ function ChessGameImpl({
     <GameWidgetContainer
       board={board}
       modals={modals}
-      isMyTurn={myTurn}
+      isMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       loading={!snapshot}
       headerProps={{
@@ -337,8 +437,9 @@ function ChessGameImpl({
         subtitle: room?.name,
         turn: {
           onClockUserId:
-            snapshot?.players.find((p) => p.color === snapshot.currentTurnColor)
-              ?.playerId ?? null,
+            displaySnapshot?.players.find(
+              (p) => p.color === displaySnapshot.currentTurnColor,
+            )?.playerId ?? null,
           isMyTurn: myTurn,
           isGameOver,
         },

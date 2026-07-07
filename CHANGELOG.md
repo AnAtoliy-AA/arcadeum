@@ -7,14 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.14] - 2026-07-07
+
+### Fixed
+
+- add optimistic updates, fix board squareness, improve mongo timeouts
+
 ## [1.23.13] - 2026-07-07
 
 ### Added
+
 - add chess create page, home entry, backend service/gateway, and clock (ARC-877)
 - use centered coordinates (0,0 at center) for infinity board
 - add infinity board mode to Tic-Tac-Toe with configurable settings
 
 ### Fixed
+
 - prevent BSON document overflow in infinity mode
 - fix infinity board log coordinates and add hover preview
 - backfill legalMovesForCurrentPlayer for old sessions and add null fallback
@@ -22,109 +30,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add legalMovesForCurrentPlayer to engine state and fix frontend move selection
 - add explicit grid rows to TicTacToe board for uniform cell sizing
 
-
 ## [1.23.12] - 2026-07-07
 
 ### Added
+
 - add chess landing page, i18n, and web integration (ARC-877)
 - add chess main game component with board interaction (ARC-877)
 - add chess widget UI components (ARC-877)
 - add chess widget types and hooks (ARC-877)
 
-
 ## [1.23.11] - 2026-07-07
 
 ### Added
+
 - register chess engine in module and catalog (ARC-877)
 - add chess engine and bot with minimax (ARC-877)
 - add chess board utilities, attacks, and move generator (ARC-877)
 - add chess engine types and constants (ARC-877)
 
-
 ## [1.23.10] - 2026-07-07
 
 ### Fixed
+
 - pass anonId in socket handshake so anonymous clients receive encryption key
 - fix game start flow for anonymous users
 - check for duplicate issues before creating
 - use execFileSync to avoid shell backtick interpretation
 
-
 ## [1.23.9] - 2026-07-07
 
 ### Fixed
-- check for duplicate issues before creating
 
+- check for duplicate issues before creating
 
 ## [1.23.8] - 2026-07-07
 
 ### Fixed
-- use execFileSync to avoid shell backtick interpretation
 
+- use execFileSync to avoid shell backtick interpretation
 
 ## [1.23.7] - 2026-07-07
 
 ### Added
+
 - add priority, scope detection, engine prefs, tests
 - add full automation pipeline with ARC auto-assignment
 
 ### Fixed
-- resolve lint errors and reduce file size
 
+- resolve lint errors and reduce file size
 
 ## [1.23.6] - 2026-07-06
 
 ### Fixed
-- remove duplicate border in game chat panel
 
+- remove duplicate border in game chat panel
 
 ## [1.23.5] - 2026-07-06
 
 ### Fixed
-- use Render PORT env var for port binding
 
+- use Render PORT env var for port binding
 
 ## [1.23.4] - 2026-07-06
 
 ### Fixed
+
 - use Buffer GraphQL API for release social posting
 - fix game not showing after start and tic-tac-toe cell overflow
 - inject TelegramService directly instead of BOT_TOKEN factory
 - use OnApplicationBootstrap to ensure bot is ready
 
 ### Documentation
-- fix pr-description skill to target develop instead of main
 
+- fix pr-description skill to target develop instead of main
 
 ## [1.24.1] - 2026-07-06
 
 ### Added
+
 - add changelog page with version badges and fix (N/A) entries
 - add task-bot automation with dual engine support
 
 ### Fixed
+
 - use flexible deck size assertion for CI compatibility
 - add eslint config and dependencies
 - update deploy workflow paths for bots/
 
-
 ## [1.24.0] - 2026-07-06
 
 ### Added
+
 - add task-bot automation with dual engine support (N/A)
 
 ### Fixed
+
 - add eslint config and dependencies (N/A)
 - update deploy workflow paths for bots/ (N/A)
-
-
-
 
 ## [1.23.2] - 2026-07-06
 
 ### Fixed
-- fix Discord chunking and Buffer REST API for release poster (N/A)
 
+- fix Discord chunking and Buffer REST API for release poster (N/A)
 
 ## [1.23.1] - 2026-07-04
 

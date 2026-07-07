@@ -145,6 +145,7 @@ function ChessBoardImpl({
                 onMouseLeave={() => setHoveredSquare(null)}
                 style={{
                   flex: 1,
+                  aspectRatio: '1 / 1',
                   backgroundColor: hovered && legalTarget ? '#d4e157' : bg,
                   border: 'none',
                   display: 'flex',

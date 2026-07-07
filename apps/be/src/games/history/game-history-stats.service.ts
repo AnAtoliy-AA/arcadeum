@@ -41,56 +41,93 @@ export class GameHistoryStatsService {
       };
     }
 
-    const rooms = await this.gameRoomModel
-      .find({
-        $or: [{ hostId: userId }, { 'participants.userId': userId }],
-      })
-      .exec();
+    const pipeline = [
+      {
+        $match: {
+          status: 'completed',
+          $or: [
+            { 'state.winners': userId },
+            { 'state.winnerId': userId },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'gamerooms',
+          localField: 'roomId',
+          foreignField: '_id',
+          as: 'room',
+          pipeline: [
+            {
+              $match: {
+                $or: [
+                  { hostId: userId },
+                  { 'participants.userId': userId },
+                ],
+              },
+            },
+            { $project: { _id: 1 } },
+          ],
+        },
+      },
+      { $unwind: '$room' },
+      {
+        $addFields: {
+          isWinner: {
+            $cond: {
+              if: {
+                $or: [
+                  { $in: [userId, { $ifNull: ['$state.winners', []] }] },
+                  { $eq: ['$state.winnerId', userId] },
+                ],
+              },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$gameId',
+          total: { $sum: 1 },
+          wins: { $sum: '$isWinner' },
+        },
+      },
+      {
+        $addFields: {
+          winRate: {
+            $cond: {
+              if: { $gt: ['$total', 0] },
+              then: { $multiply: [{ $divide: ['$wins', '$total'] }, 100] },
+              else: 0,
+            },
+          },
+        },
+      },
+      { $sort: { total: -1 } },
+    ] as PipelineStage[];
 
-    const roomIds = rooms.map((r) => r._id.toString());
+    const gameStats = await this.gameSessionModel.aggregate(pipeline).exec();
 
-    // 2. Find sessions for these rooms
-    const sessions = await this.gameSessionModel
-      .find({ roomId: { $in: roomIds }, status: 'completed' })
-      .select('roomId gameId state')
-      .exec();
-
-    // 3. Calculate statistics
-    const statsByGame: Record<string, { total: number; wins: number }> = {};
-    let totalWins = 0;
-
-    for (const session of sessions) {
-      const gameId = session.gameId;
-      if (!statsByGame[gameId]) {
-        statsByGame[gameId] = { total: 0, wins: 0 };
-      }
-
-      statsByGame[gameId].total++;
-
-      const winners = this.builder.extractWinners(session);
-      if (winners.includes(userId)) {
-        statsByGame[gameId].wins++;
-        totalWins++;
-      }
-    }
-
-    const byGameType: GameTypeStats[] = Object.entries(statsByGame).map(
-      ([gameId, data]) => ({
-        gameId,
-        totalGames: data.total,
-        wins: data.wins,
-        winRate: data.total > 0 ? (data.wins / data.total) * 100 : 0,
+    const byGameType: GameTypeStats[] = gameStats.map(
+      (g: { _id: string; total: number; wins: number; winRate: number }) => ({
+        gameId: g._id,
+        totalGames: g.total,
+        wins: g.wins,
+        winRate: Math.round(g.winRate * 100) / 100,
       }),
     );
 
-    const totalGames = sessions.length;
+    const totalGames = byGameType.reduce((s, g) => s + g.totalGames, 0);
+    const totalWins = byGameType.reduce((s, g) => s + g.wins, 0);
 
     return {
       totalGames,
       wins: totalWins,
       losses: totalGames - totalWins,
       winRate: totalGames > 0 ? (totalWins / totalGames) * 100 : 0,
-      byGameType: byGameType.sort((a, b) => b.totalGames - a.totalGames),
+      byGameType,
     };
   }
 

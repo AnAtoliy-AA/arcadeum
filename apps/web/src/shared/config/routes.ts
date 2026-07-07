@@ -28,6 +28,8 @@ export const buildRoutes = (locale: Locale) => {
     ticTacToeLanding: `/${locale}/${s('games')}/tic-tac-toe`,
     cascade: `/${locale}/${s('games')}/cascade`,
     cascadeLanding: `/${locale}/${s('games')}/cascade`,
+    chess: `/${locale}/${s('games')}/chess`,
+    chessLanding: `/${locale}/${s('games')}/chess`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

@@ -149,6 +149,22 @@ export class GitHubService {
     }
   }
 
+  findDuplicateIssue(title: string): { number: number; title: string; state: string } | null {
+    try {
+      const result = execSync(
+        `gh issue list --state all --json number,title,state --limit 100`,
+        { encoding: 'utf-8', cwd: this.getCwd() },
+      );
+      const issues = JSON.parse(result) as Array<{ number: number; title: string; state: string }>;
+      const normalizedTitle = title.toLowerCase().replace(/^arc-\d+:\s*/, '');
+      return issues.find(
+        (i) => i.title.toLowerCase().replace(/^arc-\d+:\s*/, '') === normalizedTitle,
+      ) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   private buildIssueBody(issue: GitHubIssue): string {
     const requirements =
       issue.requirements.length > 0

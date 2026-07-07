@@ -51,8 +51,6 @@ export function GameChatRow({
   const resolvedSenderColor = nameProps.color ?? senderColor;
 
   const isMove = !!moveCell;
-  const row = moveCell?.row;
-  const col = moveCell?.col;
 
   return (
     <div

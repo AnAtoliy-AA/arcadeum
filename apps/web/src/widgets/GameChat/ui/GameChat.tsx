@@ -5,7 +5,6 @@ import {
   useRef,
   useEffect,
   useMemo,
-  type ReactNode,
   type KeyboardEvent,
 } from 'react';
 import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';

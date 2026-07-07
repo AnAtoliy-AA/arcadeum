@@ -94,7 +94,7 @@ export class AuthService {
       throw new ConflictException('Username already taken');
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 12);
+    const passwordHash = await bcrypt.hash(data.password, 10);
     const created = await this.userModel.create({
       email,
       passwordHash,
@@ -436,7 +436,7 @@ export class AuthService {
       suffix += 1;
     }
 
-    const placeholderPassword = await bcrypt.hash(crypto.randomUUID(), 12);
+    const placeholderPassword = await bcrypt.hash(crypto.randomUUID(), 10);
 
     const created = await this.userModel.create({
       email,

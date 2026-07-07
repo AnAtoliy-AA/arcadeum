@@ -200,15 +200,6 @@ export class TaskBotService implements OnApplicationBootstrap {
   }
 
   private async createAndTriggerTask(task: ParsedTask, ctx: Context) {
-    const existing = this.githubService.findDuplicateIssue(task.title);
-    if (existing) {
-      await ctx.reply(
-        `Issue already exists: #${existing.number} — ${existing.title} [${existing.state}]\n\nUse /implement #${existing.number} to trigger implementation.`,
-        { parse_mode: 'Markdown' },
-      );
-      return;
-    }
-
     const prioBadge =
       task.priority !== 'normal' ? ` [${task.priority.toUpperCase()}]` : '';
     await ctx.reply(

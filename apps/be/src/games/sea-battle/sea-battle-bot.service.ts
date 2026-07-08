@@ -37,10 +37,13 @@ export class SeaBattleBotService {
   ): Promise<T> {
     const prev = this.placementChain.get(roomId) ?? Promise.resolve();
     const next = prev.catch(() => undefined).then(task);
-    this.placementChain.set(
-      roomId,
-      next.catch(() => undefined),
-    );
+    const tracked = next.catch(() => undefined);
+    void tracked.finally(() => {
+      if (this.placementChain.get(roomId) === tracked) {
+        this.placementChain.delete(roomId);
+      }
+    });
+    this.placementChain.set(roomId, tracked);
     return next;
   }
 

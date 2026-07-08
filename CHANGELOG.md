@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.20] - 2026-07-08
+
+### Fixed
+- send health alerts to DM instead of group chat
+
+
 ## [1.23.19] - 2026-07-08
 
 ### Added

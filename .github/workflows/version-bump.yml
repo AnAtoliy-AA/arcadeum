@@ -32,11 +32,11 @@ jobs:
           if [[ "$BRANCH_NAME" == "main" ]]; then
             # Minor bump: 1.23.4 -> 1.24.0
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[1]++; v[2]=0; v.join('.')")
-            COMMIT_MSG="chore: start next minor version v${NEW_VERSION} [skip ci]"
+            COMMIT_MSG="chore: start next minor version v${NEW_VERSION}"
           else
             # Patch bump: 1.23.4 -> 1.23.5
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
-            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog"
           fi
           
           echo "New Version: $NEW_VERSION"

@@ -5,7 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TelegramService } from '../telegram/telegram.service';
+import { Bot } from 'grammy';
 
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -18,15 +18,20 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
   private isUp = true;
   private beUrl = '';
   private discordWebhook = '';
+  private dmChatId = '';
+  private bot!: Bot;
 
-  constructor(
-    private readonly config: ConfigService,
-    private readonly telegram: TelegramService,
-  ) {}
+  constructor(private readonly config: ConfigService) {}
 
   onModuleInit() {
     this.beUrl = this.config.get<string>('BE_URL') ?? '';
     this.discordWebhook = this.config.get<string>('DISCORD_WEBHOOK_URL') ?? '';
+    this.dmChatId = this.config.get<string>('TELEGRAM_DM_CHAT_ID') ?? '';
+
+    const token = this.config.get<string>('TELEGRAM_BOT_TOKEN');
+    if (token) {
+      this.bot = new Bot(token);
+    }
 
     if (!this.beUrl) {
       this.logger.warn('BE_URL not set, health monitoring disabled');
@@ -94,12 +99,15 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
 
   private async notify(message: string): Promise<void> {
     const timestamp = new Date().toISOString();
-    const full = `${message}\n<code>${timestamp}</code>`;
 
-    try {
-      await this.telegram.sendAlert(full);
-    } catch (err) {
-      this.logger.error(`Failed to send Telegram alert: ${err}`);
+    if (this.dmChatId && this.bot) {
+      try {
+        await this.bot.api.sendMessage(this.dmChatId, `${message}\n<code>${timestamp}</code>`, {
+          parse_mode: 'HTML',
+        });
+      } catch (err) {
+        this.logger.error(`Failed to send Telegram DM: ${err}`);
+      }
     }
 
     if (this.discordWebhook) {

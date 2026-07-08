@@ -256,7 +256,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           { parse_mode: 'Markdown' },
         );
 
-        const result = this.githubService.implementLocally(
+        const result = await this.githubService.implementLocally(
           issueNum,
           task.engine,
         );
@@ -335,7 +335,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           { parse_mode: 'Markdown' },
         );
 
-        const result = this.githubService.implementLocally(
+        const result = await this.githubService.implementLocally(
           issueNum,
           task.engine,
         );
@@ -417,7 +417,7 @@ export class TaskBotService implements OnApplicationBootstrap {
       `Implementing #${issueNum} with ${engine}... This may take a few minutes.`,
     );
 
-    const result = this.githubService.implementLocally(issueNum, engine);
+    const result = await this.githubService.implementLocally(issueNum, engine);
     await ctx.reply(
       result.success
         ? `Done! ${result.message}`

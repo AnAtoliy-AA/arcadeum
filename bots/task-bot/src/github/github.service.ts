@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 
 interface GitHubIssue {
   arc: string | null;
@@ -19,6 +19,30 @@ export class GitHubService {
 
   private getCwd(): string {
     return this.config.get<string>('REPO_PATH') ?? process.cwd();
+  }
+
+  private spawnAsync(
+    cmd: string,
+    args: string[],
+    opts: { cwd: string; timeout?: number },
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const child = spawn(cmd, args, {
+        cwd: opts.cwd,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: true,
+        timeout: opts.timeout,
+      });
+      let stdout = '';
+      let stderr = '';
+      child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
+      child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
+      child.on('close', (code) => {
+        if (code === 0) resolve(stdout.trim());
+        else reject(new Error(stderr || `Exit code ${code}`));
+      });
+      child.on('error', reject);
+    });
   }
 
   createIssue(issue: GitHubIssue): string | null {
@@ -191,10 +215,12 @@ export class GitHubService {
     }
   }
 
-  implementLocally(
+  async implementLocally(
     issueNum: string,
     engine: string,
-  ): { success: boolean; message: string } {
+  ): Promise<{ success: boolean; message: string }> {
+    const cwd = this.getCwd();
+    let branchName = '';
     try {
       const issue = this.viewIssue(issueNum);
       if (!issue) {
@@ -214,9 +240,7 @@ export class GitHubService {
         .replace(/^-|-$/g, '')
         .slice(0, 50);
 
-      const branchName = `task-${issueNum}-${titleSlug}`;
-
-      const cwd = this.getCwd();
+      branchName = `task-${issueNum}-${titleSlug}`;
 
       execSync('git fetch origin', { encoding: 'utf-8', cwd });
       execSync(`git checkout -b ${branchName} origin/develop`, {
@@ -241,8 +265,7 @@ export class GitHubService {
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {
         try {
-          execSync('mimo auth login -p mimo-free', {
-            encoding: 'utf-8',
+          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
             cwd,
             timeout: 30_000,
           });
@@ -250,8 +273,7 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      execSync(`${cli} run "${escapedPrompt}"`, {
-        encoding: 'utf-8',
+      await this.spawnAsync(cli, ['run', escapedPrompt], {
         cwd,
         timeout: 600_000,
       });

@@ -419,6 +419,11 @@ export class GlimwormService implements OnModuleDestroy {
       clearInterval(timer);
       this.tickIntervals.delete(roomId);
     }
+    const countdown = this.countdownTimers.get(roomId);
+    if (countdown) {
+      clearTimeout(countdown);
+      this.countdownTimers.delete(roomId);
+    }
   }
 
   private cancelCountdown(roomId: string): void {

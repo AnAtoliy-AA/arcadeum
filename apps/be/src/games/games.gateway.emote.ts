@@ -9,6 +9,21 @@ import { extractString } from './games.gateway.utils';
 
 const emoteRateLimits = new Map<string, number>();
 const EMOTE_RATE_LIMIT_MS = 2000;
+const EMOTE_CLEANUP_INTERVAL_MS = 60_000;
+const EMOTE_ENTRY_MAX_AGE_MS = 5 * 60_000;
+
+let lastEmoteCleanup = Date.now();
+
+function evictStaleEmoteEntries(): void {
+  const now = Date.now();
+  if (now - lastEmoteCleanup < EMOTE_CLEANUP_INTERVAL_MS) return;
+  lastEmoteCleanup = now;
+  for (const [key, ts] of emoteRateLimits) {
+    if (now - ts > EMOTE_ENTRY_MAX_AGE_MS) {
+      emoteRateLimits.delete(key);
+    }
+  }
+}
 
 export function handleEmote(
   logger: Logger,
@@ -30,6 +45,8 @@ export function handleEmote(
   const emoteId = extractString(decrypted, 'emoteId');
 
   if (!roomId || !userId || !emoteId) return;
+
+  evictStaleEmoteEntries();
 
   if (!(EMOTE_IDS as readonly string[]).includes(emoteId)) {
     logger.warn(

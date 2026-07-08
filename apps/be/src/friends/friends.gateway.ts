@@ -25,6 +25,7 @@ export class FriendsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(FriendsGateway.name);
+  private readonly onlineUsers = new Set<string>();
 
   @WebSocketServer()
   private readonly server!: Server;
@@ -53,6 +54,7 @@ export class FriendsGateway
       await client.join(userId);
       await client.join('presence');
 
+      this.onlineUsers.add(userId);
       this.broadcastPresence(userId, true);
 
       this.logger.debug(
@@ -74,12 +76,17 @@ export class FriendsGateway
 
     const hasOtherSockets = await this.server.in(userId).fetchSockets();
     if (hasOtherSockets.length === 0) {
+      this.onlineUsers.delete(userId);
       this.broadcastPresence(userId, false);
     }
 
     this.logger.debug(
       `FriendsGateway: socket ${client.id} disconnected (${userId})`,
     );
+  }
+
+  isUserOnline(userId: string): boolean {
+    return this.onlineUsers.has(userId);
   }
 
   emitFriendRequest(

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.32] - 2026-07-08
+
+### Fixed
+- auto-increment version when tag already exists on remote
+- wire player stats recording to game completion flow
+- add logging to silent catch blocks and track glimworm countdown timer
+- fix 7 memory leaks across backend services
+- prevent memory leaks in emote rate limits and sea-bot lock maps
+
+### Improved
+- add .lean() to read-only Mongoose queries in hot paths
+- replace slow aggregation pipeline with fast player-stats reads
+
+
 ## [1.23.31] - 2026-07-08
 
 ### Fixed

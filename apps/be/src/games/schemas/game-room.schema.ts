@@ -88,3 +88,7 @@ export class GameRoom extends Document {
 }
 
 export const GameRoomSchema = SchemaFactory.createForClass(GameRoom);
+
+GameRoomSchema.index({ hostId: 1 });
+GameRoomSchema.index({ status: 1, gameId: 1 });
+GameRoomSchema.index({ 'participants.userId': 1 });

@@ -38,11 +38,12 @@ export class GamePostMatchService {
     }
 
     try {
-      for (const playerId of playerIds) {
-        if (!playerId.startsWith('bot-')) {
-          await this.achievements.checkAndUnlock(playerId);
-        }
-      }
+      const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
+      await Promise.allSettled(
+        humanPlayerIds.map((playerId) =>
+          this.achievements.checkAndUnlock(playerId),
+        ),
+      );
     } catch (err) {
       this.logger.warn(`Achievements check failed: ${(err as Error).message}`);
     }

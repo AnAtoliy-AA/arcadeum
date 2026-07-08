@@ -83,8 +83,8 @@ PR titles must follow **Conventional Commits** format:
 | Target branch | Required prefix      | Example                                    |
 | ------------- | -------------------- | ------------------------------------------ |
 | `develop`     | `<type>(scope): ...` | `feat(web): add leaderboard page`          |
-| `staging`     | `demo:`              | `demo: merge develop into staging v1.24.~` |
-| `main`        | `release:`           | `release: v1.24.~`                         |
+| `staging`     | `demo:`              | `demo: merge develop into staging v1.23.~` |
+| `main`        | `release:`           | `release: v1.23.~`                         |
 
 **Rules:**
 

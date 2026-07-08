@@ -9,13 +9,11 @@ jobs:
   gather-and-post:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout develop branch
         uses: actions/checkout@v4
         with:
+          ref: develop
           fetch-depth: 0
-
-      - name: Fetch develop branch
-        run: git fetch origin develop
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -48,6 +46,7 @@ jobs:
           skip_patterns = [
               "Merge pull request",
               "Merge remote-tracking",
+              "Merge branch",
               "chore: bump version",
               "chore: update changelog",
               "chore: start next minor",

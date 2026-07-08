@@ -283,6 +283,26 @@ export class GitHubService {
         { encoding: 'utf-8', cwd },
       );
 
+      const existingLabels = this.listLabels();
+      if (!existingLabels.includes('in-review')) {
+        try {
+          execSync(
+            `gh label create "in-review" --color "D4C5F9" --description "Ready for review"`,
+            { encoding: 'utf-8', cwd },
+          );
+        } catch {
+          // label may already exist
+        }
+      }
+      try {
+        execSync(
+          `gh issue edit ${issueNum} --add-label "in-review"`,
+          { encoding: 'utf-8', cwd },
+        );
+      } catch {
+        // ignore if label add fails
+      }
+
       return { success: true, message: `PR created: ${prUrl}` };
     } catch (err) {
       const cwd = this.getCwd();

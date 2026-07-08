@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.25] - 2026-07-08
+
+### Fixed
+- check branch commits vs origin/develop, not just diff
+- only delete stale branches, preserve in-progress work
+- delete existing branch before creating new one
+
+
 ## [1.23.24] - 2026-07-08
 
 ### Fixed

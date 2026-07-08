@@ -50,6 +50,19 @@ export const ECONOMY_KEYS_CONFIG = {
     env: 'STREAK_FREEZE_PRICE_COINS',
     default: 100,
   },
+  cleanup_session_state_days: {
+    env: 'CLEANUP_SESSION_STATE_DAYS',
+    default: 7,
+  },
+  cleanup_session_delete_days: {
+    env: 'CLEANUP_SESSION_DELETE_DAYS',
+    default: 90,
+  },
+  cleanup_room_delete_days: { env: 'CLEANUP_ROOM_DELETE_DAYS', default: 90 },
+  cleanup_message_delete_days: {
+    env: 'CLEANUP_MESSAGE_DELETE_DAYS',
+    default: 30,
+  },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.17] - 2026-07-08
+
+### Fixed
+- use void operator for lobby join promise
+- suppress floating promise warning on lobby join
+- add proper types to aggregate pipeline results for lint compliance
+- fix TypeScript errors in leaderboard aggregation pipeline
+
+### Improved
+- scope global broadcasts to lobby channel, track userId→socket mapping
+- add userId→socketId map for O(1) emitToClientInRoom lookup
+- replace getPlayerStats sequential queries with aggregation pipeline
+- deduplicate socket sanitization per unique userId
+- parallelize leaderboard capture across game modes
+- batch achievement checks with Promise.allSettled
+- replace leaderboard full-scan with MongoDB aggregation pipeline
+- add chatId+timestamp index to Message schema
+- add users index to Chat schema
+- add indexes to GameRoom schema
+- add compound indexes to GameSession schema
+- reduce bcrypt cost factor from 12 to 10
+- add gzip compression import to bootstrap
+
+### Refactored
+- split gateway and realtime service to stay under 500-line limit
+
+
 ## [1.23.16] - 2026-07-07
 
 ### Added

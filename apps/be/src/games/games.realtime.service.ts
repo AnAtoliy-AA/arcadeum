@@ -2,6 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
 import type { GameRoomSummary, GameSessionSummary } from './games.types';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+import {
+  filterSessionForSpectators as filterForSpectators,
+  emitSessionSnapshot as emitSnapshotFn,
+  emitSessionSnapshotToClient as emitSnapshotToClientFn,
+  emitGameStarted as emitGameStartedFn,
+  emitActionExecuted as emitActionExecutedFn,
+} from './games.session-emitters';
 
 const REMATCH_INVITATION_TIMEOUT_SECONDS = 30;
 
@@ -94,32 +101,8 @@ export class GamesRealtimeService {
     });
   }
 
-  /**
-   * Filter session state for spectator-safe broadcast.
-   * Removes logs that are not visible to spectators (non-'all' scope).
-   */
   filterSessionForSpectators(session: GameSessionSummary): GameSessionSummary {
-    if (!session.state || typeof session.state !== 'object') {
-      return session;
-    }
-
-    const state = session.state;
-    if (!Array.isArray(state.logs)) {
-      return session;
-    }
-
-    // Filter logs to only include public messages (scope: 'all' or undefined)
-    const filteredLogs = state.logs.filter((log: Record<string, unknown>) => {
-      return log.scope === 'all' || log.scope === undefined;
-    });
-
-    return {
-      ...session,
-      state: {
-        ...state,
-        logs: filteredLogs,
-      },
-    };
+    return filterForSpectators(session);
   }
 
   async emitSessionSnapshot(
@@ -130,69 +113,14 @@ export class GamesRealtimeService {
       userId: string,
     ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
-    if (!this.server) {
-      return;
-    }
-
-    const roomSockets = await this.server
-      .in(this.roomChannel(roomId))
-      .fetchSockets();
-
-    const sanitizedByUser = new Map<string, GameSessionSummary>();
-
-    await Promise.all(
-      roomSockets.map(async (socket) => {
-        const socketData = socket.data as Record<string, unknown> | undefined;
-        const userId = socketData?.userId as string | undefined;
-
-        if (userId && sanitizer) {
-          if (!sanitizedByUser.has(userId)) {
-            try {
-              sanitizedByUser.set(userId, await sanitizer(session, userId));
-            } catch (err) {
-              this.logger.error(
-                `Failed to sanitize session for user ${userId}: ${err}`,
-              );
-              sanitizedByUser.set(
-                userId,
-                this.filterSessionForSpectators(session),
-              );
-            }
-          }
-          socket.emit(
-            'games.session.snapshot',
-            maybeEncrypt({
-              roomId,
-              session: sanitizedByUser.get(userId),
-            }),
-          );
-        } else if (sanitizer) {
-          socket.emit(
-            'games.session.snapshot',
-            maybeEncrypt({
-              roomId,
-              session: this.filterSessionForSpectators(session),
-            }),
-          );
-        } else {
-          socket.emit(
-            'games.session.snapshot',
-            maybeEncrypt({
-              roomId,
-              session,
-            }),
-          );
-        }
-      }),
-    );
-
-    const filteredSession = this.filterSessionForSpectators(session);
-    this.server.to(this.spectatorChannel(roomId)).emit(
-      'games.session.snapshot',
-      maybeEncrypt({
-        roomId,
-        session: filteredSession,
-      }),
+    await emitSnapshotFn(
+      this.logger,
+      this.server!,
+      roomId,
+      session,
+      (id) => this.roomChannel(id),
+      (id) => this.spectatorChannel(id),
+      sanitizer,
     );
   }
 
@@ -202,18 +130,7 @@ export class GamesRealtimeService {
     session: GameSessionSummary,
     isSpectator = false,
   ): void {
-    // Filter logs for spectators
-    const sessionToSend = isSpectator
-      ? this.filterSessionForSpectators(session)
-      : session;
-
-    client.emit(
-      'games.session.snapshot',
-      maybeEncrypt({
-        roomId,
-        session: sessionToSend,
-      }),
-    );
+    emitSnapshotToClientFn(client, roomId, session, isSpectator);
   }
 
   emitRoomCreated(room: GameRoomSummary): void {
@@ -357,78 +274,15 @@ export class GamesRealtimeService {
       userId: string,
     ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
-    if (!this.server) {
-      return;
-    }
-
-    this.logger.log(
-      `Emitting game started events for room ${room.id}, session ${session.id}`,
+    await emitGameStartedFn(
+      this.logger,
+      this.server!,
+      room,
+      session,
+      (id) => this.roomChannel(id),
+      (id) => this.spectatorChannel(id),
+      sanitizer,
     );
-
-    const roomSockets = await this.server
-      .in(this.roomChannel(room.id))
-      .fetchSockets();
-
-    const sanitizedByUser = new Map<string, GameSessionSummary>();
-
-    await Promise.all(
-      roomSockets.map(async (socket) => {
-        const socketData = socket.data as Record<string, unknown> | undefined;
-        const userId = socketData?.userId as string | undefined;
-
-        if (userId && sanitizer) {
-          if (!sanitizedByUser.has(userId)) {
-            try {
-              sanitizedByUser.set(userId, await sanitizer(session, userId));
-            } catch (err) {
-              this.logger.error(
-                `Failed to sanitize session for user ${userId}: ${err}`,
-              );
-              sanitizedByUser.set(
-                userId,
-                this.filterSessionForSpectators(session),
-              );
-            }
-          }
-          const diffSession = sanitizedByUser.get(userId)!;
-          socket.emit(
-            'games.game.started',
-            maybeEncrypt({ room, session: diffSession }),
-          );
-          socket.emit(
-            'games.session.started',
-            maybeEncrypt({ room, session: diffSession }),
-          );
-        } else if (sanitizer) {
-          const diffSession = this.filterSessionForSpectators(session);
-          socket.emit(
-            'games.game.started',
-            maybeEncrypt({ room, session: diffSession }),
-          );
-          socket.emit(
-            'games.session.started',
-            maybeEncrypt({ room, session: diffSession }),
-          );
-        } else {
-          socket.emit('games.game.started', maybeEncrypt({ room, session }));
-          socket.emit('games.session.started', maybeEncrypt({ room, session }));
-        }
-      }),
-    );
-
-    const filteredSession = this.filterSessionForSpectators(session);
-    this.server
-      .to(this.spectatorChannel(room.id))
-      .emit(
-        'games.game.started',
-        maybeEncrypt({ room, session: filteredSession }),
-      );
-    this.server
-      .to(this.spectatorChannel(room.id))
-      .emit(
-        'games.session.started',
-        maybeEncrypt({ room, session: filteredSession }),
-      );
   }
 
   async emitActionExecuted(
@@ -440,79 +294,17 @@ export class GamesRealtimeService {
       userId: string,
     ) => GameSessionSummary | Promise<GameSessionSummary>,
   ): Promise<void> {
-    if (!this.server || !session.roomId) {
-      return;
-    }
-
-    const roomSockets = await this.server
-      .in(this.roomChannel(session.roomId))
-      .fetchSockets();
-
-    const sanitizedByUser = new Map<string, GameSessionSummary>();
-
-    await Promise.all(
-      roomSockets.map(async (socket) => {
-        const socketData = socket.data as Record<string, unknown> | undefined;
-        const socketUserId = socketData?.userId as string | undefined;
-
-        if (socketUserId && sanitizer) {
-          if (!sanitizedByUser.has(socketUserId)) {
-            try {
-              sanitizedByUser.set(
-                socketUserId,
-                await sanitizer(session, socketUserId),
-              );
-            } catch (err) {
-              this.logger.error(
-                `Failed to sanitize session for user ${userId}: ${err}`,
-              );
-              sanitizedByUser.set(
-                socketUserId,
-                this.filterSessionForSpectators(session),
-              );
-            }
-          }
-          socket.emit(
-            'games.action.executed',
-            maybeEncrypt({
-              session: sanitizedByUser.get(socketUserId),
-              action,
-              userId,
-            }),
-          );
-        } else if (sanitizer) {
-          socket.emit(
-            'games.action.executed',
-            maybeEncrypt({
-              session: this.filterSessionForSpectators(session),
-              action,
-              userId,
-            }),
-          );
-        } else {
-          socket.emit(
-            'games.action.executed',
-            maybeEncrypt({
-              session,
-              action,
-              userId,
-            }),
-          );
-        }
-      }),
+    await emitActionExecutedFn(
+      this.logger,
+      this.server!,
+      session,
+      action,
+      userId,
+      (id) => this.roomChannel(id),
+      (id) => this.spectatorChannel(id),
+      () => this.emitSessionSnapshot(session.roomId, session, sanitizer),
+      sanitizer,
     );
-
-    const filteredSession = this.filterSessionForSpectators(session);
-    this.server.to(this.spectatorChannel(session.roomId)).emit(
-      'games.action.executed',
-      maybeEncrypt({
-        session: filteredSession,
-        action,
-        userId,
-      }),
-    );
-
-    await this.emitSessionSnapshot(session.roomId, session, sanitizer);
   }
 
   /**

@@ -212,6 +212,9 @@ jobs:
           sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
           sudo apt-get update || true
 
+      - name: Install Playwright System Dependencies
+        run: pnpm --filter web exec playwright install-deps ${{ steps.engine.outputs.browser }}
+
       - name: Install Playwright Browsers
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 

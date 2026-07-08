@@ -12,9 +12,16 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
-import { extractRoomAndUser, extractString } from './games.gateway.utils';
+import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
+import {
+  handleJoinRoom,
+  handleLeaveRoom,
+  handleKickPlayer,
+  handleWatchRoom,
+  handleSetOption,
+} from './games.gateway.room';
 import {
   maybeEncrypt,
   isSocketEncryptionEnabled,
@@ -139,206 +146,66 @@ export class GamesGateway {
   }
 
   @SubscribeMessage('games.room.join')
-  async handleJoinRoom(
+  async onJoinRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: { roomId?: string; userId?: string; inviteCode?: string },
   ): Promise<void> {
-    const roomId =
-      typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-    const userId =
-      typeof payload?.userId === 'string' ? payload.userId.trim() : '';
-
-    if (!roomId) {
-      throw new WsException('roomId is required.');
-    }
-    if (!userId) {
-      throw new WsException('userId is required.');
-    }
-    this.validateUserId(client, userId);
-    const inviteCode =
-      typeof payload?.inviteCode === 'string'
-        ? payload.inviteCode.trim()
-        : undefined;
-    this.logger.log(`User ${userId} joining room ${roomId}`);
-    try {
-      const { room, session } = await this.gamesService.joinRoom(
-        { roomId, inviteCode },
-        userId,
-      );
-
-      this.logger.log(
-        `Room ${roomId}: status=${room.status}, session=${
-          session ? session.id : 'null'
-        }`,
-      );
-
-      const channel = this.realtime.roomChannel(room.id);
-      await client.join(channel);
-
-      if (!client.data) {
-        client.data = {};
-      }
-      (client.data as Record<string, unknown>).userId = userId;
-      this.realtime.trackSocket(userId, client.id);
-
-      let diffSession = session;
-      if (session) {
-        try {
-          const sanitizedState = await this.gamesService.getSanitizedState(
-            session.id,
-            userId,
-          );
-          if (sanitizedState && typeof sanitizedState === 'object') {
-            diffSession = {
-              ...session,
-              state: sanitizedState as Record<string, unknown>,
-            };
-          }
-        } catch (error) {
-          this.logger.error(
-            `Failed to get sanitized state for user ${userId}: ${error}`,
-          );
-        }
-      }
-
-      client.emit(
-        'games.room.joined',
-        maybeEncrypt({
-          room,
-          session: diffSession,
-        }),
-      );
-
-      if (diffSession) {
-        this.logger.log(
-          `Sending session snapshot to client for session ${diffSession.id}`,
-        );
-        this.realtime.emitSessionSnapshotToClient(client, room.id, diffSession);
-      }
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to join room';
-      this.logger.error(`Failed to join room ${roomId}: ${message}`);
-      throw new WsException(message);
-    }
+    await handleJoinRoom(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      this.gamesService,
+      payload,
+      (c, u) => this.validateUserId(c, u),
+    );
   }
 
   @SubscribeMessage('games.room.leave')
-  async handleLeaveRoom(
+  async onLeaveRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<{ success: boolean }> {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-
-    if (!roomId) throw new WsException('roomId is required.');
-    if (!userId) throw new WsException('userId is required.');
-
-    this.validateUserId(client, userId);
-    this.logger.log(`User ${userId} leaving room ${roomId}`);
-    try {
-      const result = await this.gamesService.leaveRoom({ roomId }, userId);
-
-      const channel = this.realtime.roomChannel(roomId);
-      await client.leave(channel);
-      const specChannel = this.realtime.spectatorChannel(roomId);
-      await client.leave(specChannel);
-      if (result.deleted) {
-        this.realtime.emitRoomDeleted(roomId);
-      } else {
-        this.realtime.emitPlayerLeft(result.room, userId, false);
-      }
-
-      client.emit('games.room.left', maybeEncrypt({ roomId }));
-      return { success: true };
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to leave room';
-      this.logger.error(`Failed to leave room ${roomId}: ${message}`);
-      return { success: false };
-    }
+    return handleLeaveRoom(
+      this.logger,
+      client,
+      this.realtime,
+      this.gamesService,
+      payload,
+      (c, u) => this.validateUserId(c, u),
+    );
   }
 
   @SubscribeMessage('games.room.kick')
-  async handleKickPlayer(
+  async onKickPlayer(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: { roomId?: string; targetUserId?: string; callerId?: string },
   ): Promise<{ success: boolean }> {
-    const roomId = extractString(payload, 'roomId');
-    const targetUserId = extractString(payload, 'targetUserId');
-    const callerId = extractString(payload, 'callerId');
-
-    if (!roomId) throw new WsException('roomId is required.');
-    if (!targetUserId) throw new WsException('targetUserId is required.');
-    if (!callerId) throw new WsException('callerId is required.');
-
-    this.validateUserId(client, callerId);
-    this.logger.log(
-      `Host ${callerId} kicking user ${targetUserId} from room ${roomId}`,
+    return handleKickPlayer(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      this.gamesService,
+      payload,
+      (c, u) => this.validateUserId(c, u),
     );
-
-    try {
-      await this.gamesService.leaveRoom(
-        { roomId, kickedBy: callerId },
-        targetUserId,
-      );
-
-      const channel = this.realtime.roomChannel(roomId);
-      this.server
-        .to(channel)
-        .emit('games.room.kicked', maybeEncrypt({ roomId, targetUserId }));
-
-      return { success: true };
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to kick player';
-      this.logger.error(
-        `Failed to kick user ${targetUserId} from room ${roomId}: ${message}`,
-      );
-      return { success: false };
-    }
   }
+
   @SubscribeMessage('games.room.watch')
-  async handleWatchRoom(
+  async onWatchRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId?: string },
   ): Promise<void> {
-    const roomId = extractString(payload, 'roomId');
-
-    try {
-      const room = await this.gamesService.getRoom(roomId);
-      const session = await this.gamesService.findSessionByRoom(room.id);
-      const channel = this.realtime.spectatorChannel(room.id);
-      await client.join(channel);
-      const filteredSession = session
-        ? this.realtime.filterSessionForSpectators(session)
-        : null;
-
-      client.emit(
-        'games.room.watching',
-        maybeEncrypt({ room, session: filteredSession }),
-      );
-
-      if (session) {
-        this.realtime.emitSessionSnapshotToClient(
-          client,
-          room.id,
-          session,
-          true,
-        );
-      }
-    } catch (error) {
-      const message =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to spectate this room.';
-      this.logger.warn(
-        `Failed to register spectator for room ${roomId}: ${message}`,
-      );
-      throw new WsException(message);
-    }
+    await handleWatchRoom(
+      this.logger,
+      client,
+      this.realtime,
+      this.gamesService,
+      payload,
+    );
   }
 
   @SubscribeMessage('games.session.request')
@@ -394,6 +261,7 @@ export class GamesGateway {
     const specChannel = this.realtime.spectatorChannel(roomId);
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
+
   @SubscribeMessage('games.player.active')
   handlePlayerActive(
     @ConnectedSocket() client: Socket,
@@ -409,8 +277,9 @@ export class GamesGateway {
     const specChannel = this.realtime.spectatorChannel(roomId);
     this.server.to(specChannel).emit('games.player.idle_changed', data);
   }
+
   @SubscribeMessage('games.room.set_option')
-  async handleSetOption(
+  async onSetOption(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: {
@@ -419,22 +288,12 @@ export class GamesGateway {
       options?: Record<string, unknown>;
     },
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const options = payload?.options;
-
-    if (!options || typeof options !== 'object') {
-      throw new WsException('options object is required.');
-    }
-    try {
-      await this.gamesService.updateRoomOptions(roomId, userId, options);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to update options';
-      this.logger.warn(
-        `set_option failed for room ${roomId}, user ${userId}: ${message}`,
-      );
-      throw new WsException(message);
-    }
+    await handleSetOption(
+      this.logger,
+      this.realtime,
+      this.gamesService,
+      payload,
+    );
   }
 
   @SubscribeMessage('games.session.history_note')

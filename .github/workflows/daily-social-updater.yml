@@ -46,6 +46,7 @@ jobs:
           skip_patterns = [
               "Merge pull request",
               "Merge remote-tracking",
+              "Merge branch",
               "chore: bump version",
               "chore: update changelog",
               "chore: start next minor",
@@ -133,8 +134,7 @@ jobs:
                   text=True
               ).strip()
               parts = full_version.split('.')
-              next_minor = int(parts[1]) + 1
-              app_version = f"{parts[0]}.{next_minor}.~" if len(parts) >= 2 else full_version
+              app_version = f"{parts[0]}.{parts[1]}.~" if len(parts) >= 2 else full_version
           except Exception:
               app_version = "unknown"
 

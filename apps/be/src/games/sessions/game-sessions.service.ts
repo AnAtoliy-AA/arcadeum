@@ -93,9 +93,12 @@ export class GameSessionsService {
     const session = await this.gameSessionModel
       .findOne({ roomId })
       .sort({ createdAt: -1 })
+      .lean()
       .exec();
 
-    return session ? this.toSessionSummary(session) : null;
+    return session
+      ? this.toSessionSummary(session as unknown as GameSession)
+      : null;
   }
 
   /**
@@ -114,22 +117,28 @@ export class GameSessionsService {
         updatedAt: { $lt: thresholdDate },
       })
       .limit(limit)
+      .lean()
       .exec();
 
-    return sessions.map((s) => this.toSessionSummary(s));
+    return sessions.map((s) =>
+      this.toSessionSummary(s as unknown as GameSession),
+    );
   }
 
   /**
    * Get session by ID
    */
   async getSession(sessionId: string): Promise<GameSessionSummary> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.gameSessionModel
+      .findById(sessionId)
+      .lean()
+      .exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);
     }
 
-    return this.toSessionSummary(session);
+    return this.toSessionSummary(session as unknown as GameSession);
   }
 
   /**

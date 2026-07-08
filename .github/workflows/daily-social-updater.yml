@@ -9,13 +9,11 @@ jobs:
   gather-and-post:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout develop branch
         uses: actions/checkout@v4
         with:
+          ref: develop
           fetch-depth: 0
-
-      - name: Fetch develop branch
-        run: git fetch origin develop
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -135,7 +133,8 @@ jobs:
                   text=True
               ).strip()
               parts = full_version.split('.')
-              app_version = f"{parts[0]}.{parts[1]}.~" if len(parts) >= 2 else full_version
+              next_minor = int(parts[1]) + 1
+              app_version = f"{parts[0]}.{next_minor}.~" if len(parts) >= 2 else full_version
           except Exception:
               app_version = "unknown"
 

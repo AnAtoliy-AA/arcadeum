@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.27] - 2026-07-08
+
+### Documentation
+- use v1.23.~ version format in CONTRIBUTING examples
+- add version format to PR template title hint
+- add PR title conventions for staging and main branches
+
+
 ## [1.23.26] - 2026-07-08
 
 ### Fixed

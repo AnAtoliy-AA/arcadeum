@@ -72,9 +72,14 @@ export class TaskBotService implements OnApplicationBootstrap {
     );
   }
 
-  onApplicationBootstrap() {
+  async onApplicationBootstrap() {
     this.bot = this.telegramService.getBot();
     this.registerCommands();
+
+    await this.bot.start({
+      onStart: () => this.logger.log('Bot polling started'),
+    });
+
     this.logger.log(
       `Task bot ready. Allowed users: ${this.allowedUserIds.size === 0 ? 'anyone (set TELEGRAM_ALLOWED_USERS)' : [...this.allowedUserIds].join(', ')}`,
     );
@@ -87,6 +92,25 @@ export class TaskBotService implements OnApplicationBootstrap {
   }
 
   private registerCommands() {
+    this.bot.command('start', (ctx) =>
+      ctx.reply(
+        'Task Bot is active.\n' +
+          'Send a task with /task or as a message with ARC-XXX prefix.',
+      ),
+    );
+
+    this.bot.command('help', (ctx) =>
+      ctx.reply(
+        'Available commands:\n' +
+          '/task <title> - Create a task (ARC auto-assigned)\n' +
+          '/tasks - List open tasks\n' +
+          '/implement #12 - Implement an issue\n' +
+          '/status #12 - Check implementation status\n' +
+          '/prefs - Set preferences\n' +
+          '/help - Show this message',
+      ),
+    );
+
     this.bot.command('task', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
       return this.handleTask(ctx);
@@ -211,12 +235,9 @@ export class TaskBotService implements OnApplicationBootstrap {
 
     const prioBadge =
       task.priority !== 'normal' ? ` [${task.priority.toUpperCase()}]` : '';
-    await ctx.reply(
-      `Creating *${task.arc}: ${task.title}*${prioBadge} (${task.engine})...`,
-      {
-        parse_mode: 'Markdown',
-      },
-    );
+    await ctx.reply(`Creating *${task.arc}: ${task.title}*${prioBadge}...`, {
+      parse_mode: 'Markdown',
+    });
 
     const url = this.githubService.createIssue({
       arc: task.arc,
@@ -230,20 +251,25 @@ export class TaskBotService implements OnApplicationBootstrap {
     if (url) {
       const issueNum = this.githubService.extractIssueNumber(url);
       if (issueNum) {
-        const triggered = this.githubService.triggerWorkflow(
+        await ctx.reply(
+          `Issue created: ${url}\n\nImplementing with ${task.engine}... This may take a few minutes.`,
+          { parse_mode: 'Markdown' },
+        );
+
+        const result = this.githubService.implementLocally(
           issueNum,
           task.engine,
         );
         await ctx.reply(
-          `Issue created: ${url}\n\n${triggered ? `Implementing with ${task.engine}...` : 'Issue created but workflow trigger failed. Use /implement to retry.'}`,
+          result.success
+            ? `Done! ${result.message}`
+            : `Implementation failed: ${result.message}`,
           { parse_mode: 'Markdown' },
         );
       } else {
         await ctx.reply(
-          `Issue created: ${url}\n\nCould not extract issue number for workflow.`,
-          {
-            parse_mode: 'Markdown',
-          },
+          `Issue created: ${url}\n\nCould not extract issue number.`,
+          { parse_mode: 'Markdown' },
         );
       }
     } else {
@@ -288,12 +314,9 @@ export class TaskBotService implements OnApplicationBootstrap {
     const textWithEngine = `${pending.text} --engine=${engine}`;
     const task = this.parseTask(textWithEngine, true, pending.userId);
 
-    await ctx.editMessageText(
-      `Creating issue for: *${task.title}* (${task.engine})...`,
-      {
-        parse_mode: 'Markdown',
-      },
-    );
+    await ctx.editMessageText(`Creating issue for: *${task.title}*...`, {
+      parse_mode: 'Markdown',
+    });
 
     const url = this.githubService.createIssue({
       arc: task.arc,
@@ -307,20 +330,25 @@ export class TaskBotService implements OnApplicationBootstrap {
     if (url) {
       const issueNum = this.githubService.extractIssueNumber(url);
       if (issueNum) {
-        const triggered = this.githubService.triggerWorkflow(
+        await ctx.reply(
+          `Issue created: ${url}\n\nImplementing with ${task.engine}... This may take a few minutes.`,
+          { parse_mode: 'Markdown' },
+        );
+
+        const result = this.githubService.implementLocally(
           issueNum,
           task.engine,
         );
         await ctx.reply(
-          `Issue created: ${url}\n\n${triggered ? `Implementing with ${task.engine}...` : 'Issue created but workflow trigger failed. Use /implement to retry.'}`,
+          result.success
+            ? `Done! ${result.message}`
+            : `Implementation failed: ${result.message}`,
           { parse_mode: 'Markdown' },
         );
       } else {
         await ctx.reply(
-          `Issue created: ${url}\n\nCould not extract issue number for workflow.`,
-          {
-            parse_mode: 'Markdown',
-          },
+          `Issue created: ${url}\n\nCould not extract issue number.`,
+          { parse_mode: 'Markdown' },
         );
       }
     } else {
@@ -385,27 +413,17 @@ export class TaskBotService implements OnApplicationBootstrap {
       engine = engineMatch[1].toLowerCase() as Engine;
     }
 
-    const issue = this.githubService.viewIssueSimple(issueNum);
-    if (!issue) {
-      await ctx.reply(`Issue #${issueNum} not found.`);
-      return;
-    }
-    if (issue.state !== 'OPEN') {
-      await ctx.reply(`Issue #${issueNum} is ${issue.state.toLowerCase()}.`);
-      return;
-    }
-
     await ctx.reply(
-      `Triggering implementation for #${issueNum} with ${engine}...`,
+      `Implementing #${issueNum} with ${engine}... This may take a few minutes.`,
     );
-    const triggered = this.githubService.triggerWorkflow(issueNum, engine);
-    if (triggered) {
-      await ctx.reply(
-        `Workflow triggered for #${issueNum} (${engine}).\nTrack progress: /status #${issueNum}`,
-      );
-    } else {
-      await ctx.reply('Failed to trigger workflow. Check gh auth status.');
-    }
+
+    const result = this.githubService.implementLocally(issueNum, engine);
+    await ctx.reply(
+      result.success
+        ? `Done! ${result.message}`
+        : `Implementation failed: ${result.message}`,
+      { parse_mode: 'Markdown' },
+    );
   }
 
   private async handleStatus(ctx: Context) {

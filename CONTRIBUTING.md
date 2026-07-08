@@ -72,6 +72,28 @@ Before submitting a Pull Request, please ensure:
 4.  **One Feature Per PR**: Keep PRs focused. If you have multiple unrelated changes, split them into separate PRs.
 5.  **Clear PR Description**: Use our PR template to explain what your changes do and why.
 
+### Pull Request Title Convention
+
+PR titles must follow **Conventional Commits** format:
+
+```
+<type>(<scope>): <description>
+```
+
+| Target branch | Required prefix      | Example                                    |
+| ------------- | -------------------- | ------------------------------------------ |
+| `develop`     | `<type>(scope): ...` | `feat(web): add leaderboard page`          |
+| `staging`     | `demo:`              | `demo: merge develop into staging v1.24.~` |
+| `main`        | `release:`           | `release: v1.24.~`                         |
+
+**Rules:**
+
+- PRs targeting `staging` **must** start with `demo:` — enforced by CI.
+- PRs targeting `main` **must** start with `release:` — enforced by CI.
+- PRs targeting `develop` use the same types as commits: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, `revert`.
+- Scope is optional but recommended (e.g., `web`, `mobile`, `be`, `ci`, `task-bot`).
+- Use lowercase; keep it under 72 characters.
+
 ---
 
 ## Pull Request Description Template

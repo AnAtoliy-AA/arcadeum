@@ -1,3 +1,5 @@
+**PR Title:** Use `<type>(<scope>): <description>` for `develop`, `demo: ...` for `staging`, `release: ...` for `main`. See [CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-title-convention).
+
 ## Description
 Provide a brief summary of the changes and the motivation behind them.
 

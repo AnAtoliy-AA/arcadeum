@@ -219,20 +219,6 @@ export class GitHubService {
       const cwd = this.getCwd();
 
       execSync('git fetch origin', { encoding: 'utf-8', cwd });
-      try {
-        execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
-      } catch {
-        // branch didn't exist locally
-      }
-      try {
-        execSync(`git push origin --delete ${branchName}`, {
-          encoding: 'utf-8',
-          cwd,
-          stdio: 'pipe',
-        });
-      } catch {
-        // branch didn't exist on remote
-      }
       execSync(`git checkout -b ${branchName} origin/develop`, {
         encoding: 'utf-8',
         cwd,

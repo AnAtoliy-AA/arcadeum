@@ -249,16 +249,16 @@ export class GitHubService {
       ).trim();
       if (branchExists) {
         execSync('git checkout main', { encoding: 'utf-8', cwd });
-        const branchDiff = execSync(
-          `git diff ${branchName} --stat`,
+        const aheadCount = execSync(
+          `git log origin/develop..${branchName} --oneline`,
           { encoding: 'utf-8', cwd },
         ).trim();
-        if (!branchDiff) {
+        if (!aheadCount) {
           execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
         } else {
           return {
             success: false,
-            message: `Branch ${branchName} already exists with uncommitted work. Delete it first if stale.`,
+            message: `Branch ${branchName} already has commits. Check /status or delete manually.`,
           };
         }
       }

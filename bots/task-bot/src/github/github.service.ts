@@ -239,6 +239,17 @@ export class GitHubService {
       const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      if (cli === 'mimo') {
+        try {
+          execSync('mimo auth login -p mimo-free', {
+            encoding: 'utf-8',
+            cwd,
+            timeout: 30_000,
+          });
+        } catch {
+          // ignore — token may already be valid
+        }
+      }
       execSync(`${cli} run "${escapedPrompt}"`, {
         encoding: 'utf-8',
         cwd,

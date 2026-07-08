@@ -79,7 +79,8 @@ export class ChatService {
     const users = (await this.userModel
       .find({ _id: { $in: validIds } })
       .select(['username', 'email', 'displayName'])
-      .exec()) as UserDocument[];
+      .lean()
+      .exec()) as unknown as UserDocument[];
 
     for (const user of users) {
       const id =

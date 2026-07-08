@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.18] - 2026-07-08
+
+### Fixed
+- fix crash loop, add local implementation on OCI
+
+
 ## [1.23.17] - 2026-07-08
 
 ### Fixed

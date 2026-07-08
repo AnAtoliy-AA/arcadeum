@@ -60,6 +60,17 @@ jobs:
           npm install -g @anthropic-ai/mimo
           echo "$(npm root -g)/.bin" >> $GITHUB_PATH
 
+      - name: Check if issue is already in progress
+        run: |
+          LABELS=$(gh issue view ${{ inputs.issue_number }} --json labels -q '.labels[].name')
+          if echo "$LABELS" | grep -q "^in-progress$"; then
+            echo "::warning::Issue #${{ inputs.issue_number }} is already in-progress (possibly by a local agent). Skipping."
+            exit 1
+          fi
+
+      - name: Mark issue as in progress
+        run: gh issue edit ${{ inputs.issue_number }} --add-label "in-progress"
+
       - name: Fetch issue details
         id: issue
         run: |
@@ -128,12 +139,17 @@ jobs:
             --head ${{ steps.branch.outputs.branch }})
           echo "url=${PR_URL}" >> $GITHUB_OUTPUT
           echo "number=$(echo ${PR_URL} | grep -oE '[0-9]+$')" >> $GITHUB_OUTPUT
+          gh issue edit ${{ inputs.issue_number }} --remove-label "in-progress" 2>/dev/null || true
 
       - name: Comment on issue
         if: success() && steps.pr.outputs.url
         run: |
           gh issue comment ${{ inputs.issue_number }} --body \
             "Implementation complete (${ENGINE:-opencode}). PR: ${{ steps.pr.outputs.url }}"
+
+      - name: Remove in-progress label on failure
+        if: failure()
+        run: gh issue edit ${{ inputs.issue_number }} --remove-label "in-progress" 2>/dev/null || true
 
       - name: Notify on failure
         if: failure()

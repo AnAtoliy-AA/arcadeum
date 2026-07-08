@@ -39,6 +39,12 @@ jobs:
             COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog"
           fi
           
+          # If tag already exists on remote, auto-increment patch until we find a free version
+          while git ls-remote --tags origin "refs/tags/v$NEW_VERSION" | grep -q "refs/tags/v$NEW_VERSION"; do
+            echo "Tag v$NEW_VERSION already exists on remote, bumping patch"
+            NEW_VERSION=$(node -p "const v = '$NEW_VERSION'.split('.'); v[2]++; v.join('.')")
+          done
+          
           echo "New Version: $NEW_VERSION"
           echo "Commit Message: $COMMIT_MSG"
           
@@ -70,13 +76,8 @@ jobs:
           git add CHANGELOG.md
           
           git commit -m "$COMMIT_MSG"
-          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
           
-          if [[ "$BRANCH_NAME" == "main" ]]; then
-            echo "Pushing minor bump to develop"
-            git push origin HEAD:develop --follow-tags
-          else
-            echo "Pushing patch bump to develop"
-            git push origin HEAD:develop --follow-tags
-          fi
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          git push origin HEAD:develop
+          git push origin "v$NEW_VERSION"
 

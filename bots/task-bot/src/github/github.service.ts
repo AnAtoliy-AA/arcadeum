@@ -292,7 +292,7 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(cli, ['run', escapedPrompt], {
+      await this.spawnAsync(cli, ['run', escapedPrompt, '--dangerously-skip-permissions'], {
         cwd,
         timeout: 600_000,
       });

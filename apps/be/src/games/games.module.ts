@@ -52,6 +52,9 @@ import { TicTacToeBotService } from './tic-tac-toe/tic-tac-toe-bot.service';
 import { CascadeGateway } from './cascade.gateway';
 import { CascadeService } from './cascade/cascade.service';
 import { CascadeBotService } from './cascade/cascade-bot.service';
+import { ChessGateway } from './chess.gateway';
+import { ChessService } from './chess/chess.service';
+import { ChessBotService } from './engines/chess/chess-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -121,6 +124,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Cascade
     CascadeService,
     CascadeBotService,
+    // Chess
+    ChessService,
+    ChessBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -137,6 +143,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GlimwormGateway,
     TicTacToeGateway,
     CascadeGateway,
+    ChessGateway,
   ],
   exports: [GameHistoryStatsService],
 })

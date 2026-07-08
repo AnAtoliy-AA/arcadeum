@@ -257,4 +257,135 @@ describe('TicTacToeEngine', () => {
       expect(m.category).toBe('Board Game');
     });
   });
+
+  describe('infinity mode', () => {
+    it('initializes a 9×9 board with configurable winLength', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity', infinityWinLength: 4 },
+      });
+      expect(state.board).toHaveLength(9);
+      expect(state.winLength).toBe(4);
+      expect(state.options.boardSize).toBe('infinity');
+    });
+
+    it('defaults to winLength 5 for infinity', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity' },
+      });
+      expect(state.winLength).toBe(5);
+    });
+
+    it('expands board when mark is placed near edge', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity', expansionMargin: 3 },
+      });
+      expect(state.board).toHaveLength(9);
+
+      state = engine.executeAction(state, 'place_mark', ctx('a'), {
+        row: 0,
+        col: 4,
+      }).state!;
+      expect(state.board.length).toBeGreaterThan(9);
+      expect(state.board[0].length).toBeGreaterThan(9);
+    });
+
+    it('does not expand when mark is placed away from edges', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity', expansionMargin: 3 },
+      });
+      state = engine.executeAction(state, 'place_mark', ctx('a'), {
+        row: 4,
+        col: 4,
+      }).state!;
+      expect(state.board).toHaveLength(9);
+    });
+
+    it('updates origin after expansion', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity', expansionMargin: 3 },
+      });
+      const origOrigin = { ...state.origin };
+      state = engine.executeAction(state, 'place_mark', ctx('a'), {
+        row: 0,
+        col: 4,
+      }).state!;
+      expect(state.origin.row).not.toBe(origOrigin.row);
+    });
+
+    it('detects win with winLength 5 (not 4)', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: {
+          boardSize: 'infinity',
+          infinityWinLength: 5,
+          expansionMargin: 1,
+        },
+      });
+      expect(state.winLength).toBe(5);
+      // 4 in a row does NOT win with winLength=5
+      const moves: Array<[string, number, number]> = [
+        ['a', 4, 4],
+        ['b', 5, 4],
+        ['a', 4, 5],
+        ['b', 5, 5],
+        ['a', 4, 6],
+        ['b', 5, 6],
+        ['a', 4, 7],
+        ['b', 5, 7],
+      ];
+      for (const [userId, row, col] of moves) {
+        state = engine.executeAction(state, 'place_mark', ctx(userId), {
+          row,
+          col,
+        }).state!;
+      }
+      expect(state.winnerId).toBeNull();
+      expect(state.phase).toBe(GAME_PHASE.PLAYING);
+    });
+
+    it('respects custom expansionMargin', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: { boardSize: 'infinity', expansionMargin: 1 },
+      });
+      // With margin=1, placing at row 1 should NOT expand (1 >= 9-1 is false, 1 < 1 is false)
+      state = engine.executeAction(state, 'place_mark', ctx('a'), {
+        row: 1,
+        col: 4,
+      }).state!;
+      expect(state.board).toHaveLength(9);
+
+      // With margin=1, placing at row 0 SHOULD expand
+      state = engine.executeAction(state, 'place_mark', ctx('b'), {
+        row: 0,
+        col: 4,
+      }).state!;
+      expect(state.board.length).toBeGreaterThan(9);
+    });
+
+    it('never results in a draw', () => {
+      let state = engine.initializeState(['a', 'b'], {
+        options: {
+          boardSize: 'infinity',
+          infinityWinLength: 5,
+          expansionMargin: 3,
+        },
+      });
+      // Place marks in a pattern that would be a draw on fixed board
+      // but infinity expands so game continues
+      const moves: Array<[string, number, number]> = [
+        ['a', 4, 4],
+        ['b', 4, 5],
+        ['a', 4, 3],
+        ['b', 4, 6],
+      ];
+      for (const [userId, row, col] of moves) {
+        state = engine.executeAction(state, 'place_mark', ctx(userId), {
+          row,
+          col,
+        }).state!;
+      }
+      // Board should not be in game_over with isDraw
+      expect(state.isDraw).toBe(false);
+      expect(state.phase).toBe(GAME_PHASE.PLAYING);
+    });
+  });
 });

@@ -15,6 +15,7 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
 import { useTicTacToeActions } from '../hooks/useTicTacToeActions';
@@ -34,15 +35,22 @@ import {
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
-    boardSize: number;
+    boardSize: number | string;
     teamMode: boolean;
+    expansionMargin: number;
+    infinityWinLength: number;
   }>;
-  const isSize = (n: number | undefined): n is BoardSize =>
-    n === 3 || n === 5 || n === 7 || n === 9;
+  const isSize = (n: number | string | undefined): n is BoardSize =>
+    n === 3 || n === 5 || n === 7 || n === 9 || n === 'infinity';
+  const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+    n === 1 || n === 2 || n === 3;
+  const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
   return {
     variant: (r.variant ?? 'classic') as TicTacToeVariant,
     boardSize: isSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
+    expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
+    infinityWinLength: isWinLen(r.infinityWinLength) ? r.infinityWinLength : 5,
   };
 }
 
@@ -68,6 +76,7 @@ function TicTacToeGameImpl({
     myTurn,
     isGameOver,
     startBusy,
+    setStartBusy,
     session,
   } = useTicTacToeState({
     roomId,
@@ -133,6 +142,10 @@ function TicTacToeGameImpl({
     [room?.gameOptions],
   );
 
+  const highlightedCell = useGameChatStore((s) => s.highlightedCell);
+  const persistedCell = useGameChatStore((s) => s.persistedCell);
+  const effectiveHighlight = highlightedCell ?? persistedCell;
+
   const variantTokens = useMemo(
     () =>
       TIC_TAC_TOE_VARIANTS.find((v) => v.id === options.variant) ??
@@ -157,12 +170,13 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onStartGame={(opts) =>
+          onStartGame={(opts) => {
+            setStartBusy(true);
             startSession({
               withBots: !!opts?.withBots,
               botCount: opts?.botCount,
-            })
-          }
+            });
+          }}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
@@ -193,9 +207,18 @@ function TicTacToeGameImpl({
             players={snapshot.players}
             teams={snapshot.teams}
             teamMode={snapshot.options.teamMode}
+            origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
-            ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
-            onCellClick={(row, col) => placeMark(row, col)}
+            highlightedCell={effectiveHighlight}
+            ariaLabel={
+              snapshot.options.boardSize === 'infinity'
+                ? 'Tic-Tac-Toe Infinity board'
+                : `Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`
+            }
+            onCellClick={(row, col) => {
+              useGameChatStore.getState().setPersistedCell(null);
+              placeMark(row, col);
+            }}
           />
         </>
       ) : null}
@@ -203,6 +226,12 @@ function TicTacToeGameImpl({
   );
 
   const inGameBoardSize = snapshot?.options.boardSize ?? options.boardSize;
+  const inGameMargin =
+    snapshot?.options.expansionMargin ?? options.expansionMargin;
+  const inGameWinLength =
+    snapshot?.options.boardSize === 'infinity'
+      ? (snapshot?.options.infinityWinLength ?? options.infinityWinLength)
+      : (WIN_LENGTHS[inGameBoardSize as keyof typeof WIN_LENGTHS] ?? 5);
 
   const modals = (
     <>
@@ -219,7 +248,8 @@ function TicTacToeGameImpl({
         open={showRulesOpen}
         onClose={onShowRulesClose}
         boardSize={inGameBoardSize}
-        winLength={WIN_LENGTHS[inGameBoardSize]}
+        winLength={inGameWinLength}
+        expansionMargin={inGameMargin}
       />
     </>
   );
@@ -232,6 +262,7 @@ function TicTacToeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
+        loading={!snapshot}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',

@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'apps/be/**'
-      - 'apps/tg-bot/**'
+      - 'bots/tg-bot/**'
       - 'packages/**'
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
 
             pm2 restart arcadeum-be arcadeum-tg-bot || \
               (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
-               pm2 start "node apps/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
+               pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
                pm2 save)
 
             echo "==> Done!"

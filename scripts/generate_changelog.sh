@@ -35,62 +35,89 @@ echo "## [$CURRENT_VERSION] - $(date +%Y-%m-%d)" > "$TEMP_CHANGELOG"
 echo "" >> "$TEMP_CHANGELOG"
 
 # Look for features
-FEATURES=$(echo "$COMMITS" | grep -E "^(feat|ARC-[0-9]+ feat)" || true)
+FEATURES=$(echo "$COMMITS" | grep -E "^(feat(\([^)]*\))?!?:|ARC-[0-9]+ feat)" || true)
 if [ -n "$FEATURES" ]; then
   echo "### Added" >> "$TEMP_CHANGELOG"
   echo "$FEATURES" | while read -r line; do
-    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || true)
     DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
-    echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    if [ -n "$ISSUE" ]; then
+      echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    else
+      echo "- $DESC" >> "$TEMP_CHANGELOG"
+    fi
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for fixes
-FIXES=$(echo "$COMMITS" | grep -E "^(fix|ARC-[0-9]+ fix)" || true)
+FIXES=$(echo "$COMMITS" | grep -E "^(fix(\([^)]*\))?!?:|ARC-[0-9]+ fix)" || true)
 if [ -n "$FIXES" ]; then
   echo "### Fixed" >> "$TEMP_CHANGELOG"
   echo "$FIXES" | while read -r line; do
-    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || true)
     DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
-    echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    if [ -n "$ISSUE" ]; then
+      echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    else
+      echo "- $DESC" >> "$TEMP_CHANGELOG"
+    fi
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for improvements
-IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf|improve|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" || true)
+IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf(\([^)]*\))?!?:|improve(\([^)]*\))?!?:|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" || true)
 if [ -n "$IMPROVEMENTS" ]; then
   echo "### Improved" >> "$TEMP_CHANGELOG"
   echo "$IMPROVEMENTS" | while read -r line; do
-    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || true)
     DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
-    echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    if [ -n "$ISSUE" ]; then
+      echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    else
+      echo "- $DESC" >> "$TEMP_CHANGELOG"
+    fi
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for refactors
-REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor|ARC-[0-9]+ refactor)" || true)
+REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor(\([^)]*\))?!?:|ARC-[0-9]+ refactor)" || true)
 if [ -n "$REFACTOR" ]; then
   echo "### Refactored" >> "$TEMP_CHANGELOG"
   echo "$REFACTOR" | while read -r line; do
-    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || true)
     DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
-    echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    if [ -n "$ISSUE" ]; then
+      echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    else
+      echo "- $DESC" >> "$TEMP_CHANGELOG"
+    fi
   done
   echo "" >> "$TEMP_CHANGELOG"
 fi
 
 # Look for documentation
-DOCS=$(echo "$COMMITS" | grep -E "^(docs|ARC-[0-9]+ docs)" || true)
+DOCS=$(echo "$COMMITS" | grep -E "^(docs(\([^)]*\))?!?:|ARC-[0-9]+ docs)" || true)
 if [ -n "$DOCS" ]; then
   echo "### Documentation" >> "$TEMP_CHANGELOG"
   echo "$DOCS" | while read -r line; do
-    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || echo "N/A")
+    ISSUE=$(echo "$line" | grep -oE "ARC-[0-9]+" || true)
     DESC=$(echo "$line" | sed -E 's/^([^:]+: )//')
-    echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    if [ -n "$ISSUE" ]; then
+      echo "- $DESC ($ISSUE)" >> "$TEMP_CHANGELOG"
+    else
+      echo "- $DESC" >> "$TEMP_CHANGELOG"
+    fi
   done
+  echo "" >> "$TEMP_CHANGELOG"
+fi
+
+# If no sections were added, add a placeholder
+if ! grep -q "^### " "$TEMP_CHANGELOG"; then
+  echo "### Changed" >> "$TEMP_CHANGELOG"
+  echo "- Internal improvements and maintenance" >> "$TEMP_CHANGELOG"
   echo "" >> "$TEMP_CHANGELOG"
 fi
 

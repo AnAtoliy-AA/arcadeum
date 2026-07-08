@@ -12,6 +12,7 @@ interface UseGameSessionOptions {
 interface UseGameSessionReturn {
   session: GameSessionSummary | null;
   startBusy: boolean;
+  setStartBusy: (busy: boolean) => void;
   actionBusy: string | null;
   setActionBusy: (action: string | null) => void;
 }
@@ -71,6 +72,17 @@ export function useGameSession(
       setActionBusy(null);
     };
 
+    const handleGameStarted = (payload: {
+      room?: unknown;
+      session?: GameSessionSummary | null;
+    }) => {
+      setStartBusy(false);
+      if (payload?.session) {
+        setSession(payload.session);
+      }
+      setActionBusy(null);
+    };
+
     const handleRoomJoined = (payload: {
       room?: unknown;
       session?: GameSessionSummary | null;
@@ -80,12 +92,20 @@ export function useGameSession(
       }
     };
 
-    // Decrypt wrapper for socket handlers
+    const handleException = () => {
+      setStartBusy(false);
+      setActionBusy(null);
+    };
+
+    // Decrypt wrapper for socket handlers — falls through to handler with
+    // raw data when decryption fails (e.g. anonymous clients without key)
     const decryptHandler = <T>(handler: (payload: T) => void) => {
       return async (raw: unknown) => {
         const payload = await maybeDecrypt<T>(raw);
         if (payload !== null) {
           handler(payload);
+        } else {
+          handler(raw as T);
         }
       };
     };
@@ -93,27 +113,39 @@ export function useGameSession(
     // Create wrapped handlers
     const wrappedHandleSnapshot = decryptHandler(handleSnapshot);
     const wrappedHandleSessionStarted = decryptHandler(handleSessionStarted);
+    const wrappedHandleGameStarted = decryptHandler(handleGameStarted);
     const wrappedHandleRoomJoined = decryptHandler(handleRoomJoined);
 
     // Register listeners
     gameSocket.on('games.session.snapshot', wrappedHandleSnapshot);
     gameSocket.on('games.session.started', wrappedHandleSessionStarted);
+    gameSocket.on('games.game.started', wrappedHandleGameStarted);
     gameSocket.on('games.room.joined', wrappedHandleRoomJoined);
+    gameSocket.on('exception', handleException);
 
-    // Initial check if we should join or sync
-    // (This part is usually handled by the component or a dedicated effect)
+    // Raw listeners — always clear startBusy/actionBusy even if decryption
+    // fails (anonymous clients without encryption key)
+    const onRawGameStarted = () => setStartBusy(false);
+    const onRawSessionStarted = () => setStartBusy(false);
+    gameSocket.on('games.game.started', onRawGameStarted);
+    gameSocket.on('games.session.started', onRawSessionStarted);
 
     // Cleanup
     return () => {
       gameSocket.off('games.session.snapshot', wrappedHandleSnapshot);
       gameSocket.off('games.session.started', wrappedHandleSessionStarted);
+      gameSocket.off('games.game.started', wrappedHandleGameStarted);
       gameSocket.off('games.room.joined', wrappedHandleRoomJoined);
+      gameSocket.off('exception', handleException);
+      gameSocket.off('games.game.started', onRawGameStarted);
+      gameSocket.off('games.session.started', onRawSessionStarted);
     };
   }, [roomId, enabled]);
 
   return {
     session,
     startBusy,
+    setStartBusy,
     actionBusy,
     setActionBusy,
   };

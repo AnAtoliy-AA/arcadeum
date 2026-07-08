@@ -8,6 +8,7 @@ import type {
 import {
   DEFAULT_OPTIONS,
   GAME_PHASE,
+  INFINITY_MAX_BOARD_SIZE,
   PLAYER_SYMBOLS,
   TEAM_PRESETS,
   WIN_LENGTH,
@@ -22,7 +23,9 @@ import type {
 } from './tic-tac-toe.types';
 import {
   createEmptyBoard,
+  expandBoard,
   findWinningLine,
+  indexToCentered,
   isBoardFull,
   nextTurnIndex,
 } from './tic-tac-toe.utils';
@@ -57,7 +60,11 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
   ): TicTacToeState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
     const boardSize = options.boardSize;
-    const winLength = WIN_LENGTH[boardSize];
+    const isInfinity = boardSize === 'infinity';
+    const initialSize = isInfinity ? 9 : boardSize;
+    const winLength = isInfinity
+      ? options.infinityWinLength
+      : WIN_LENGTH[boardSize];
 
     const teamMode = options.teamMode === true;
     const teams: TicTacToeTeam[] = teamMode
@@ -78,8 +85,12 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     return {
       phase: GAME_PHASE.PLAYING,
       options: { ...options, boardSize },
-      board: createEmptyBoard(boardSize),
+      board: createEmptyBoard(initialSize),
       winLength,
+      origin: {
+        row: Math.floor(initialSize / 2),
+        col: Math.floor(initialSize / 2),
+      },
       playerOrder,
       currentTurnIndex: 0,
       players,
@@ -136,9 +147,23 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     if (result.success && result.state) {
       const history =
         ((state as Record<string, unknown>).stateHistory as unknown[]) ?? [];
+      // Strip stateHistory from the snapshot to prevent recursive nesting
+      const src = state as Record<string, unknown>;
+      const stateSnapshot: Record<string, unknown> = {};
+      for (const key of Object.keys(src)) {
+        if (key !== 'stateHistory') stateSnapshot[key] = src[key];
+      }
       result.state = {
         ...result.state,
-        stateHistory: [...history.slice(-10), structuredClone(state)],
+        stateHistory: [...history.slice(-10), structuredClone(stateSnapshot)],
+      };
+    }
+
+    // Trim logs to prevent unbounded BSON document growth
+    if (result.state && result.state.logs.length > 200) {
+      result.state = {
+        ...result.state,
+        logs: result.state.logs.slice(-200),
       };
     }
 
@@ -199,16 +224,41 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
 
     newState.board[payload.row][payload.col] = ownerId as CellValue;
 
+    let originDelta = { row: 0, col: 0 };
+    const isInfinity = newState.options.boardSize === 'infinity';
+    if (isInfinity && newState.board.length < INFINITY_MAX_BOARD_SIZE) {
+      const expanded = expandBoard(
+        newState.board,
+        payload.row,
+        payload.col,
+        newState.options.expansionMargin,
+      );
+      newState.board = expanded.board;
+      originDelta = expanded.originDelta;
+      newState.origin = {
+        row: newState.origin.row + originDelta.row,
+        col: newState.origin.col + originDelta.col,
+      };
+    }
+
+    const centered = indexToCentered(
+      {
+        row: payload.row + originDelta.row,
+        col: payload.col + originDelta.col,
+      },
+      newState.origin,
+    );
     const placedLog = this.createLogEntry(
       'action',
-      `Mark placed at (${payload.row + 1}, ${payload.col + 1})`,
+      `Mark placed at (${centered.row}, ${centered.col})`,
       { senderId: context.userId },
     );
     newState.logs.push(placedLog);
 
+    const boardSize = newState.board.length;
     const winLine = findWinningLine(
       newState.board,
-      newState.options.boardSize,
+      boardSize,
       newState.winLength,
       ownerId,
     );
@@ -226,7 +276,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       return this.successResult(newState);
     }
 
-    if (isBoardFull(newState.board)) {
+    if (!isInfinity && isBoardFull(newState.board)) {
       newState.isDraw = true;
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.logs.push(this.createLogEntry('system', 'Draw.'));

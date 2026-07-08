@@ -243,8 +243,8 @@ export class GameSessionsService {
     if (!history || history.length === 0) return null;
     const previousState = history[history.length - 1];
     state.stateHistory = history.slice(0, -1);
-      session.state = previousState as Record<string, unknown>;
-      session.markModified('state');
+    session.state = previousState as Record<string, unknown>;
+    session.markModified('state');
     session.updatedAt = new Date();
     await session.save();
     return this.toSessionSummary(session);

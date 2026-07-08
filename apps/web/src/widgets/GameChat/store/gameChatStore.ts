@@ -36,6 +36,8 @@ interface GameChatStore {
   resolveEquipped: ChatEquippedResolver | null;
   currentUserId: string | null;
   chatPanelOpen: boolean;
+  highlightedCell: { row: number; col: number } | null;
+  persistedCell: { row: number; col: number } | null;
   setLogs: (logs: ChatLogEntry[]) => void;
   addLog: (entry: ChatLogEntry) => void;
   registerSendMessage: (
@@ -49,6 +51,8 @@ interface GameChatStore {
   registerResolveEquipped: (fn: ChatEquippedResolver | null) => void;
   setCurrentUserId: (id: string | null) => void;
   setChatPanelOpen: (open: boolean) => void;
+  setHighlightedCell: (cell: { row: number; col: number } | null) => void;
+  setPersistedCell: (cell: { row: number; col: number } | null) => void;
   clear: () => void;
 }
 
@@ -61,6 +65,8 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   resolveEquipped: null,
   currentUserId: null,
   chatPanelOpen: false,
+  highlightedCell: null,
+  persistedCell: null,
   setLogs: (logs) => set({ logs }),
   addLog: (entry) => set((s) => ({ logs: [...s.logs, entry] })),
   registerSendMessage: (fn) => set({ sendMessage: fn }),
@@ -71,6 +77,16 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   registerResolveEquipped: (fn) => set({ resolveEquipped: fn }),
   setCurrentUserId: (id) => set({ currentUserId: id }),
   setChatPanelOpen: (open) => set({ chatPanelOpen: open }),
+  setHighlightedCell: (cell) => set({ highlightedCell: cell }),
+  setPersistedCell: (cell) =>
+    set((s) => ({
+      persistedCell:
+        cell &&
+        s.persistedCell?.row === cell.row &&
+        s.persistedCell?.col === cell.col
+          ? null
+          : cell,
+    })),
   clear: () =>
     set({
       logs: [],
@@ -81,6 +97,8 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
       resolveEquipped: null,
       currentUserId: null,
       chatPanelOpen: false,
+      highlightedCell: null,
+      persistedCell: null,
     }),
 }));
 

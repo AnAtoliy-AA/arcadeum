@@ -37,3 +37,6 @@ export class GameSession extends Document {
 }
 
 export const GameSessionSchema = SchemaFactory.createForClass(GameSession);
+
+GameSessionSchema.index({ status: 1, gameId: 1 });
+GameSessionSchema.index({ status: 1, updatedAt: -1 });

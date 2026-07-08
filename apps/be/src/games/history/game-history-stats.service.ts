@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, PipelineStage, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -10,6 +10,16 @@ import {
   LeaderboardEntry,
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
+
+interface LeaderboardFacetResult {
+  entries: Array<{
+    playerId: string;
+    totalGames: number;
+    wins: number;
+    winRate: number;
+  }>;
+  total: Array<{ count: number }>;
+}
 
 /**
  * Game History Stats Service
@@ -41,56 +51,92 @@ export class GameHistoryStatsService {
       };
     }
 
-    const rooms = await this.gameRoomModel
-      .find({
-        $or: [{ hostId: userId }, { 'participants.userId': userId }],
-      })
+    const pipeline = [
+      {
+        $match: {
+          status: 'completed',
+          $or: [{ 'state.winners': userId }, { 'state.winnerId': userId }],
+        },
+      },
+      {
+        $lookup: {
+          from: 'gamerooms',
+          localField: 'roomId',
+          foreignField: '_id',
+          as: 'room',
+          pipeline: [
+            {
+              $match: {
+                $or: [{ hostId: userId }, { 'participants.userId': userId }],
+              },
+            },
+            { $project: { _id: 1 } },
+          ],
+        },
+      },
+      { $unwind: '$room' },
+      {
+        $addFields: {
+          isWinner: {
+            $cond: {
+              if: {
+                $or: [
+                  { $in: [userId, { $ifNull: ['$state.winners', []] }] },
+                  { $eq: ['$state.winnerId', userId] },
+                ],
+              },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$gameId',
+          total: { $sum: 1 },
+          wins: { $sum: '$isWinner' },
+        },
+      },
+      {
+        $addFields: {
+          winRate: {
+            $cond: {
+              if: { $gt: ['$total', 0] },
+              then: { $multiply: [{ $divide: ['$wins', '$total'] }, 100] },
+              else: 0,
+            },
+          },
+        },
+      },
+      { $sort: { total: -1 } },
+    ] as PipelineStage[];
+
+    const gameStats = await this.gameSessionModel
+      .aggregate<{
+        _id: string;
+        total: number;
+        wins: number;
+        winRate: number;
+      }>(pipeline)
       .exec();
 
-    const roomIds = rooms.map((r) => r._id.toString());
+    const byGameType: GameTypeStats[] = gameStats.map((g) => ({
+      gameId: g._id,
+      totalGames: g.total,
+      wins: g.wins,
+      winRate: Math.round(g.winRate * 100) / 100,
+    }));
 
-    // 2. Find sessions for these rooms
-    const sessions = await this.gameSessionModel
-      .find({ roomId: { $in: roomIds }, status: 'completed' })
-      .select('roomId gameId state')
-      .exec();
-
-    // 3. Calculate statistics
-    const statsByGame: Record<string, { total: number; wins: number }> = {};
-    let totalWins = 0;
-
-    for (const session of sessions) {
-      const gameId = session.gameId;
-      if (!statsByGame[gameId]) {
-        statsByGame[gameId] = { total: 0, wins: 0 };
-      }
-
-      statsByGame[gameId].total++;
-
-      const winners = this.builder.extractWinners(session);
-      if (winners.includes(userId)) {
-        statsByGame[gameId].wins++;
-        totalWins++;
-      }
-    }
-
-    const byGameType: GameTypeStats[] = Object.entries(statsByGame).map(
-      ([gameId, data]) => ({
-        gameId,
-        totalGames: data.total,
-        wins: data.wins,
-        winRate: data.total > 0 ? (data.wins / data.total) * 100 : 0,
-      }),
-    );
-
-    const totalGames = sessions.length;
+    const totalGames = byGameType.reduce((s, g) => s + g.totalGames, 0);
+    const totalWins = byGameType.reduce((s, g) => s + g.wins, 0);
 
     return {
       totalGames,
       wins: totalWins,
       losses: totalGames - totalWins,
       winRate: totalGames > 0 ? (totalWins / totalGames) * 100 : 0,
-      byGameType: byGameType.sort((a, b) => b.totalGames - a.totalGames),
+      byGameType,
     };
   }
 
@@ -102,63 +148,119 @@ export class GameHistoryStatsService {
     offset: number = 0,
     gameId?: string,
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
-    // 1. Get all completed sessions (optionally filtered by gameId)
-    const filter: Record<string, unknown> = { status: 'completed' };
+    const matchStage: Record<string, unknown> = { status: 'completed' };
     if (gameId) {
-      filter.gameId = gameId;
+      matchStage.gameId = gameId;
     }
-    const sessions = await this.gameSessionModel.find(filter).exec();
 
-    // 2. Aggregate stats per player
-    const playerStats: Record<string, { wins: number; total: number }> = {};
+    const aggregationPipeline = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'gamerrooms',
+          localField: 'roomId',
+          foreignField: '_id',
+          as: 'room',
+          pipeline: [
+            {
+              $project: {
+                hostId: 1,
+                'participants.userId': 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: '$room' },
+      { $unwind: '$room.participants' },
+      {
+        $addFields: {
+          playerId: {
+            $ifNull: ['$room.participants.userId', '$room.hostId'],
+          },
+        },
+      },
+      {
+        $match: {
+          playerId: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $match: {
+          playerId: { $ne: '' },
+        },
+      },
+      {
+        $addFields: {
+          isWinner: {
+            $cond: {
+              if: {
+                $or: [
+                  { $in: ['$playerId', { $ifNull: ['$state.winners', []] }] },
+                  { $eq: ['$playerId', '$state.winnerId'] },
+                ],
+              },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$playerId',
+          total: { $sum: 1 },
+          wins: { $sum: '$isWinner' },
+        },
+      },
+      {
+        $addFields: {
+          winRate: {
+            $cond: {
+              if: { $gt: ['$total', 0] },
+              then: { $multiply: [{ $divide: ['$wins', '$total'] }, 100] },
+              else: 0,
+            },
+          },
+        },
+      },
+      { $sort: { wins: -1, winRate: -1 } },
+      {
+        $facet: {
+          entries: [
+            { $skip: offset },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 0,
+                playerId: '$_id',
+                totalGames: '$total',
+                wins: 1,
+                winRate: 1,
+              },
+            },
+          ],
+          total: [{ $count: 'count' }],
+        },
+      },
+    ] as PipelineStage[];
 
-    // Batch fetch all required rooms to avoid N+1 queries
-    const roomIds = Array.from(new Set(sessions.map((s) => s.roomId)));
-    const rooms = await this.gameRoomModel
-      .find({ _id: { $in: roomIds } })
-      .select('hostId participants')
+    const [result] = await this.gameSessionModel
+      .aggregate<LeaderboardFacetResult>(aggregationPipeline)
       .exec();
-    const roomMap = new Map(rooms.map((r) => [r._id.toString(), r]));
 
-    for (const session of sessions) {
-      const winners = this.builder.extractWinners(session);
-      const room = roomMap.get(session.roomId);
-      if (!room) continue;
+    const allEntries = result.entries.map((entry) => ({
+      playerId: entry.playerId,
+      totalGames: entry.totalGames,
+      wins: entry.wins,
+      winRate: Math.round(entry.winRate * 100) / 100,
+      losses: entry.totalGames - entry.wins,
+    }));
 
-      const playerIds = [
-        ...new Set([room.hostId, ...room.participants.map((p) => p.userId)]),
-      ].filter((id) => id && !id.startsWith('anon_'));
-
-      for (const playerId of playerIds) {
-        if (!playerStats[playerId]) {
-          playerStats[playerId] = { wins: 0, total: 0 };
-        }
-        playerStats[playerId].total++;
-        if (winners.includes(playerId)) {
-          playerStats[playerId].wins++;
-        }
-      }
-    }
-
-    // 3. Convert to array and sort by wins
-    const allEntries = Object.entries(playerStats)
-      .map(([playerId, stats]) => ({
-        playerId,
-        totalGames: stats.total,
-        wins: stats.wins,
-        winRate: stats.total > 0 ? (stats.wins / stats.total) * 100 : 0,
-      }))
-      .sort((a, b) => b.wins - a.wins || b.winRate - a.winRate);
-
-    const total = allEntries.length;
-    const paginatedEntries = allEntries.slice(offset, offset + limit);
+    const total = result.total[0]?.count ?? 0;
     const hasMore = offset + limit < total;
 
-    // 4. Fetch usernames. Filter out non-ObjectId playerIds (bot rows use
-    // `bot-XXXXXX` synthetic ids and would crash the Mongoose ObjectId cast
-    // inside $in). Bot rows just won't have a User doc — the leaderboard
-    // builder downstream falls back to the entry's own username string.
-    const userIds = paginatedEntries
+    const userIds = allEntries
       .map((e) => e.playerId)
       .filter((id) => Types.ObjectId.isValid(id));
     const users =
@@ -171,9 +273,6 @@ export class GameHistoryStatsService {
             .exec()
         : [];
 
-    // Single batched User read covers username + equipped cosmetics for every
-    // row on the page. Bot rows (synthetic ids) get filtered above and fall
-    // through with null equipped IDs.
     const userMap = new Map(
       users.map((u) => [
         u._id.toString(),
@@ -190,8 +289,7 @@ export class GameHistoryStatsService {
       ]),
     );
 
-    // 5. Build leaderboard with ranks
-    const entries = paginatedEntries.map((entry, index) => {
+    const entries = allEntries.map((entry, index) => {
       const userInfo = userMap.get(entry.playerId);
       return {
         rank: offset + index + 1,
@@ -199,7 +297,7 @@ export class GameHistoryStatsService {
         username: userInfo?.username || 'Unknown',
         totalGames: entry.totalGames,
         wins: entry.wins,
-        losses: entry.totalGames - entry.wins,
+        losses: entry.losses,
         winRate: entry.winRate,
         role: userInfo?.role ?? null,
         equippedAvatarId: userInfo?.equippedAvatarId ?? null,

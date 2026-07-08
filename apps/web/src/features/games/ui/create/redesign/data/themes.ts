@@ -3,7 +3,8 @@ export type GameId =
   | 'sea_battle_v1'
   | 'glimworm_v1'
   | 'tic_tac_toe_v1'
-  | 'cascade_v1';
+  | 'cascade_v1'
+  | 'chess_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -73,6 +74,17 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators'],
   },
+  chess_v1: {
+    id: 'chess_v1',
+    title: 'Chess',
+    desc: 'The classic strategy board game with standard and Chess960 variants.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '15 min',
+    kind: 'Board · strategy',
+    hasExpansion: false,
+    hasThemes: false,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -81,6 +93,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'glimworm_v1',
   'tic_tac_toe_v1',
   'cascade_v1',
+  'chess_v1',
 ];
 
 // Critical theme registry. The `id` here is the value sent to the API
@@ -420,13 +433,21 @@ import {
   type CascadeThemeMeta,
 } from './cascade-themes';
 
+import {
+  CHESS_THEMES,
+  findChessTheme,
+  type ChessThemeMeta,
+} from './chess-themes';
+
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
+export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 
 export function themesFor(gameId: GameId) {
   if (gameId === 'critical_v1') return CRITICAL_THEMES;
   if (gameId === 'sea_battle_v1') return SEA_BATTLE_THEMES;
   if (gameId === 'tic_tac_toe_v1') return TIC_TAC_TOE_THEMES;
   if (gameId === 'cascade_v1') return CASCADE_THEMES;
+  if (gameId === 'chess_v1') return CHESS_THEMES;
   return [];
 }
 
@@ -442,52 +463,4 @@ export function findSeaBattleTheme(id: string | undefined): SeaBattleThemeMeta {
   return SEA_BATTLE_THEMES.find((t) => t.id === id) ?? SEA_BATTLE_THEMES[0];
 }
 
-// Expansion packs surfaced in the redesign. `core` is always selected.
-// Other IDs map to ExpansionId in features/games/ui/create/constants.ts.
-export interface ExpansionPack {
-  id: string;
-  name: string;
-  desc: string;
-  count: number;
-  locked?: boolean;
-}
-
-export const EXPANSION_PACK_LIST: ExpansionPack[] = [
-  {
-    id: 'core',
-    name: 'Core',
-    desc: 'The base 31-card deck.',
-    count: 31,
-    locked: true,
-  },
-  {
-    id: 'attack',
-    name: 'Attack Pack',
-    desc: 'Targeted strikes, mega evade, and invert chaos.',
-    count: 13,
-  },
-  {
-    id: 'future',
-    name: 'Future Pack',
-    desc: 'See, alter, and reveal the top of the deck.',
-    count: 25,
-  },
-  {
-    id: 'theft',
-    name: 'Theft Pack',
-    desc: 'Wildcards, marks, and steal-draw mayhem.',
-    count: 12,
-  },
-  {
-    id: 'chaos',
-    name: 'Chaos Pack',
-    desc: 'Critical implosions, fission, and blackouts.',
-    count: 7,
-  },
-  {
-    id: 'deity',
-    name: 'Deity Pack',
-    desc: 'Omniscience, miracles, smites, and rapture.',
-    count: 9,
-  },
-];
+export { EXPANSION_PACK_LIST, type ExpansionPack } from './expansion-packs';

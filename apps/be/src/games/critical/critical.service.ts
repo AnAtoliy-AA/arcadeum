@@ -264,8 +264,9 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
     await this.realtimeService.emitGameStarted(
-      room,
+      updatedRoom,
       session,
       async (s, pId) => {
         const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
@@ -279,7 +280,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       },
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**

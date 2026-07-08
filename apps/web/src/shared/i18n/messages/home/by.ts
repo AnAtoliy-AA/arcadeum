@@ -98,6 +98,7 @@ export const by = {
   footerResourcesTitle: 'Рэсурсы',
   footerHelpCenter: 'Цэнтр дапамогі',
   footerRoadmap: 'Дарожная карта',
+  footerChangelog: 'Гісторыя зменаў',
   footerGamingBlog: 'Блог пра гульні',
   footerDevelopers: 'Распрацоўшчыкам (API)',
   footerLegalTitle: 'Юрыдычная інфармацыя',

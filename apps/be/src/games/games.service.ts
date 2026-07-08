@@ -109,8 +109,10 @@ export class GamesService {
     if (session && userId) {
       try {
         session = this.sanitizeForPlayer(session, userId);
-      } catch {
-        // safely continue with unsanitized session state
+      } catch (err) {
+        this.logger.warn(
+          `Sanitization failed for user ${userId} in room ${roomId}: ${err}`,
+        );
       }
     }
 
@@ -432,8 +434,10 @@ export class GamesService {
       const room = await this.roomsService.getRoom(roomId);
       const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
       this.stripDisabledRules(options, ruleMap);
-    } catch {
-      // Room not found or inaccessible — proceed without stripping.
+    } catch (err) {
+      this.logger.warn(
+        `Rule stripping failed for room ${roomId}: ${err}. Proceeding without stripping.`,
+      );
     }
 
     const updated = await this.roomsService.updateRoomOptions(

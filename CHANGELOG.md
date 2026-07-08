@@ -10,107 +10,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.23.31] - 2026-07-08
 
 ### Fixed
+
 - correct expandBoard() oversized growth in infinity mode
 - remove [skip ci] from version bump commits
-
 
 ## [1.23.30] - 2026-07-08
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.29] - 2026-07-08
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.28] - 2026-07-08
 
 ### Fixed
-- increase Postiz API timeout to 120s for YouTube uploads
 
+- increase Postiz API timeout to 120s for YouTube uploads
 
 ## [1.23.27] - 2026-07-08
 
 ### Documentation
+
 - use v1.23.~ version format in CONTRIBUTING examples
 - add version format to PR template title hint
 - add PR title conventions for staging and main branches
 
-
 ## [1.23.26] - 2026-07-08
 
 ### Fixed
+
 - add --dangerously-skip-permissions for non-interactive mimo runs
 - fire-and-forget implementation to unblock command processing
-
 
 ## [1.23.25] - 2026-07-08
 
 ### Fixed
+
 - check branch commits vs origin/develop, not just diff
 - only delete stale branches, preserve in-progress work
 - delete existing branch before creating new one
 
-
 ## [1.23.24] - 2026-07-08
 
 ### Fixed
-- use async spawn for CLI commands to unblock event loop
 
+- use async spawn for CLI commands to unblock event loop
 
 ## [1.23.23] - 2026-07-08
 
 ### Fixed
-- refresh mimo auth before each implementation run
 
+- refresh mimo auth before each implementation run
 
 ## [1.23.22] - 2026-07-08
 
 ### Fixed
-- cleanup branch deletion uses actual name and discards uncommitted changes
 
+- cleanup branch deletion uses actual name and discards uncommitted changes
 
 ## [1.23.21] - 2026-07-08
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.20] - 2026-07-08
 
 ### Fixed
-- send health alerts to DM instead of group chat
 
+- send health alerts to DM instead of group chat
 
 ## [1.23.19] - 2026-07-08
 
 ### Added
+
 - add in-review label to issue when PR is created
 
 ### Fixed
+
 - delete existing branch before creating new one in implementLocally
 - ignore merge commits and show correct version in daily updater
 - daily updater reads version from develop and shows next minor
 
-
 ## [1.23.18] - 2026-07-08
 
 ### Fixed
-- fix crash loop, add local implementation on OCI
 
+- fix crash loop, add local implementation on OCI
 
 ## [1.23.17] - 2026-07-08
 
 ### Fixed
+
 - use void operator for lobby join promise
 - suppress floating promise warning on lobby join
 - add proper types to aggregate pipeline results for lint compliance
 - fix TypeScript errors in leaderboard aggregation pipeline
 
 ### Improved
+
 - scope global broadcasts to lobby channel, track userId→socket mapping
 - add userId→socketId map for O(1) emitToClientInRoom lookup
 - replace getPlayerStats sequential queries with aggregation pipeline
@@ -126,24 +129,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add gzip compression import to bootstrap
 
 ### Refactored
-- split gateway and realtime service to stay under 500-line limit
 
+- split gateway and realtime service to stay under 500-line limit
 
 ## [1.23.16] - 2026-07-07
 
 ### Added
+
 - enhance commands with richer info and add /chart /holders
 - add /ca command to show contract address
 
 ### Fixed
-- use pre block for /ca so address is tap-to-copy
 
+- use pre block for /ca so address is tap-to-copy
 
 ## [1.23.15] - 2026-07-07
 
 ### Fixed
-- improve tic-tac-toe infinity board UX and chat move highlighting
 
+- improve tic-tac-toe infinity board UX and chat move highlighting
 
 ## [1.23.14] - 2026-07-07
 

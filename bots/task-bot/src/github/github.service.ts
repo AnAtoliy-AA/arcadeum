@@ -307,17 +307,19 @@ export class GitHubService {
     } catch (err) {
       const cwd = this.getCwd();
       try {
+        execSync('git checkout -- .', { encoding: 'utf-8', cwd });
         execSync('git checkout main', { encoding: 'utf-8', cwd });
       } catch {
-        // cleanup: ignore if checkout fails
+        // ignore
       }
       try {
-        execSync(`git branch -D task-${issueNum}-*`, {
-          encoding: 'utf-8',
-          cwd,
-        });
+        const branches = execSync('git branch', { encoding: 'utf-8', cwd });
+        const match = branches.match(new RegExp(`task-${issueNum}-\\S+`));
+        if (match) {
+          execSync(`git branch -D ${match[0]}`, { encoding: 'utf-8', cwd });
+        }
       } catch {
-        // cleanup: ignore if branch deletion fails
+        // ignore
       }
       return {
         success: false,

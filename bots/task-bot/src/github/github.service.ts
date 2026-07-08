@@ -243,15 +243,24 @@ export class GitHubService {
       branchName = `task-${issueNum}-${titleSlug}`;
 
       execSync('git fetch origin', { encoding: 'utf-8', cwd });
-      try {
-        execSync(`git checkout main`, { encoding: 'utf-8', cwd });
-      } catch {
-        // ignore — may already be on main
-      }
-      try {
-        execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
-      } catch {
-        // ignore — branch may not exist
+      const branchExists = execSync(
+        `git branch --list ${branchName}`,
+        { encoding: 'utf-8', cwd },
+      ).trim();
+      if (branchExists) {
+        execSync('git checkout main', { encoding: 'utf-8', cwd });
+        const branchDiff = execSync(
+          `git diff ${branchName} --stat`,
+          { encoding: 'utf-8', cwd },
+        ).trim();
+        if (!branchDiff) {
+          execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
+        } else {
+          return {
+            success: false,
+            message: `Branch ${branchName} already exists with uncommitted work. Delete it first if stale.`,
+          };
+        }
       }
       execSync(`git checkout -b ${branchName} origin/develop`, {
         encoding: 'utf-8',

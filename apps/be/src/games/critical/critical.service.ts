@@ -16,10 +16,14 @@ import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import { CriticalBotService } from './critical-bot.service';
 
+const WATCHDOG_MAX_BACKOFF_MS = 300_000;
+
 @Injectable()
 export class CriticalService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CriticalService.name);
   private watchdogInterval: NodeJS.Timeout | null = null;
+  private watchdogConsecutiveFailures = 0;
+  private nextWatchdogRun = 0;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -40,33 +44,51 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
   }
 
   private startWatchdog() {
-    // Every 10 seconds, check active Critical sessions that haven't moved for 20 seconds
     this.watchdogInterval = setInterval(() => {
-      void (async () => {
-        try {
-          const staleSessions =
-            await this.sessionsService.findStaleActiveSessions(
-              'critical_v1',
-              20000,
-              100,
-            );
+      void this.runWatchdog();
+    }, 10_000);
+  }
 
-          if (staleSessions.length > 0) {
-            for (const session of staleSessions) {
-              this.botService
-                .checkAndPlay(session)
-                .catch((err) =>
-                  this.logger.error(
-                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-                  ),
-                );
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Watchdog failed: ${error}`);
-        }
-      })();
-    }, 10000);
+  private async runWatchdog() {
+    const now = Date.now();
+    if (now < this.nextWatchdogRun) return;
+
+    try {
+      const staleSessions = await this.sessionsService.findStaleActiveSessions(
+        'critical_v1',
+        20_000,
+        100,
+      );
+
+      for (const session of staleSessions) {
+        this.botService
+          .checkAndPlay(session)
+          .catch((err) =>
+            this.logger.error(
+              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
+            ),
+          );
+      }
+      if (this.watchdogConsecutiveFailures > 0) {
+        this.logger.warn(
+          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
+        );
+      }
+      this.watchdogConsecutiveFailures = 0;
+      this.nextWatchdogRun = 0;
+    } catch (err) {
+      this.watchdogConsecutiveFailures++;
+      const backoffMs = Math.min(
+        10_000 * 2 ** this.watchdogConsecutiveFailures,
+        WATCHDOG_MAX_BACKOFF_MS,
+      );
+      this.nextWatchdogRun = Date.now() + backoffMs;
+      if (this.watchdogConsecutiveFailures <= 3) {
+        this.logger.error(
+          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
+        );
+      }
+    }
   }
 
   private stopWatchdog() {
@@ -87,8 +109,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return null;
   }
 
-  // ========== Core Actions ==========
-
   // ========== Private Helper ==========
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
@@ -107,8 +127,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     }
     return session;
   }
-
-  // ========== Core Actions ==========
 
   async drawCard(sessionId: string, userId: string) {
     const session = await this.criticalActions.drawCard(sessionId, userId);
@@ -383,9 +401,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Play favor card (gateway wrapper)
-   */
   async playFavorByRoom(
     userId: string,
     roomId: string,
@@ -403,9 +418,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Give favor card (gateway wrapper) - target player responds to favor
-   */
   async giveFavorCardByRoom(
     userId: string,
     roomId: string,
@@ -423,9 +435,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * See the future (gateway wrapper)
-   */
   async seeTheFutureByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -442,9 +451,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return { ...result, topCards };
   }
 
-  /**
-   * Play defuse card (gateway wrapper)
-   */
   async defuseByRoom(userId: string, roomId: string, position: number) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -456,17 +462,11 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Play nope card - cancels the last action
-   */
   async playNope(sessionId: string, userId: string) {
     const session = await this.criticalActions.playNope(sessionId, userId);
     return this.checkAndSyncRoomStatus(session);
   }
 
-  /**
-   * Play nope card (gateway wrapper)
-   */
   async playNopeByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -476,9 +476,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     );
     return this.checkAndSyncRoomStatus(updatedSession);
   }
-  /**
-   * Commit Alter the Future (gateway wrapper)
-   */
   async commitAlterFutureByRoom(
     userId: string,
     roomId: string,

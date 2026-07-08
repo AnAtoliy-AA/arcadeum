@@ -24,6 +24,7 @@ export class CleanupService {
     sessionsStateStripped: number;
     sessionsDeleted: number;
     roomsDeleted: number;
+    anonRoomsDeleted: number;
     messagesDeleted: number;
   }> {
     const [
@@ -31,17 +32,20 @@ export class CleanupService {
       sessionDeleteDays,
       roomDeleteDays,
       messageDeleteDays,
+      anonRoomDeleteDays,
     ] = await Promise.all([
       this.economy.getNumber('cleanup_session_state_days'),
       this.economy.getNumber('cleanup_session_delete_days'),
       this.economy.getNumber('cleanup_room_delete_days'),
       this.economy.getNumber('cleanup_message_delete_days'),
+      this.economy.getNumber('cleanup_anon_room_delete_days'),
     ]);
 
     const results = {
       sessionsStateStripped: 0,
       sessionsDeleted: 0,
       roomsDeleted: 0,
+      anonRoomsDeleted: 0,
       messagesDeleted: 0,
     };
 
@@ -96,10 +100,39 @@ export class CleanupService {
       const roomDeleteResult = await this.roomModel.deleteMany({
         status: 'completed',
         updatedAt: { $lt: roomDeleteCutoff },
+        hostId: { $not: /^anon_/ },
       });
       results.roomsDeleted = roomDeleteResult.deletedCount;
     } catch (err) {
       this.logger.warn(`Room delete failed: ${(err as Error).message}`);
+    }
+
+    try {
+      const anonCutoff = new Date(
+        Date.now() - anonRoomDeleteDays * 24 * 60 * 60 * 1000,
+      );
+      const anonRooms = await this.roomModel
+        .find({
+          hostId: { $regex: /^anon_/ },
+          updatedAt: { $lt: anonCutoff },
+        })
+        .select('_id')
+        .lean();
+
+      if (anonRooms.length > 0) {
+        const anonRoomIds = anonRooms.map((r) => r._id.toString());
+        await this.sessionModel.deleteMany({
+          roomId: { $in: anonRoomIds },
+        });
+        const anonResult = await this.roomModel.deleteMany({
+          _id: { $in: anonRoomIds },
+        });
+        results.anonRoomsDeleted = anonResult.deletedCount;
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Anonymous room delete failed: ${(err as Error).message}`,
+      );
     }
 
     try {
@@ -118,12 +151,14 @@ export class CleanupService {
       results.sessionsStateStripped > 0 ||
       results.sessionsDeleted > 0 ||
       results.roomsDeleted > 0 ||
+      results.anonRoomsDeleted > 0 ||
       results.messagesDeleted > 0
     ) {
       this.logger.log(
         `Cleanup done: ${results.sessionsStateStripped} sessions stripped, ` +
           `${results.sessionsDeleted} sessions deleted, ` +
           `${results.roomsDeleted} rooms deleted, ` +
+          `${results.anonRoomsDeleted} anon rooms deleted, ` +
           `${results.messagesDeleted} messages deleted`,
       );
     }

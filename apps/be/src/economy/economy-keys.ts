@@ -63,6 +63,10 @@ export const ECONOMY_KEYS_CONFIG = {
     env: 'CLEANUP_MESSAGE_DELETE_DAYS',
     default: 30,
   },
+  cleanup_anon_room_delete_days: {
+    env: 'CLEANUP_ANON_ROOM_DELETE_DAYS',
+    default: 1,
+  },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

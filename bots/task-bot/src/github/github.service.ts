@@ -243,6 +243,16 @@ export class GitHubService {
       branchName = `task-${issueNum}-${titleSlug}`;
 
       execSync('git fetch origin', { encoding: 'utf-8', cwd });
+      try {
+        execSync(`git checkout main`, { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore — may already be on main
+      }
+      try {
+        execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore — branch may not exist
+      }
       execSync(`git checkout -b ${branchName} origin/develop`, {
         encoding: 'utf-8',
         cwd,

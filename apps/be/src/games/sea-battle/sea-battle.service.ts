@@ -38,10 +38,14 @@ interface AttackPayload {
   col: number;
 }
 
+const WATCHDOG_MAX_BACKOFF_MS = 300_000;
+
 @Injectable()
 export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SeaBattleService.name);
   private watchdogInterval: NodeJS.Timeout | null = null;
+  private watchdogConsecutiveFailures = 0;
+  private nextWatchdogRun = 0;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -68,33 +72,51 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   }
 
   private startWatchdog() {
-    // Every 10 seconds, check active Sea Battle sessions that haven't moved for 20 seconds
     this.watchdogInterval = setInterval(() => {
-      void (async () => {
-        try {
-          const staleSessions =
-            await this.sessionsService.findStaleActiveSessions(
-              'sea_battle_v1',
-              20000, // 20 seconds stale threshold
-              100, // Limit to 100 per cycle for safety
-            );
+      void this.runWatchdog();
+    }, 10_000);
+  }
 
-          if (staleSessions.length > 0) {
-            for (const session of staleSessions) {
-              this.botService
-                .checkAndPlay(session)
-                .catch((err) =>
-                  this.logger.error(
-                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-                  ),
-                );
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Watchdog failed: ${error}`);
-        }
-      })();
-    }, 10000);
+  private async runWatchdog() {
+    const now = Date.now();
+    if (now < this.nextWatchdogRun) return;
+
+    try {
+      const staleSessions = await this.sessionsService.findStaleActiveSessions(
+        'sea_battle_v1',
+        20_000,
+        100,
+      );
+
+      for (const session of staleSessions) {
+        this.botService
+          .checkAndPlay(session)
+          .catch((err) =>
+            this.logger.error(
+              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
+            ),
+          );
+      }
+      if (this.watchdogConsecutiveFailures > 0) {
+        this.logger.warn(
+          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
+        );
+      }
+      this.watchdogConsecutiveFailures = 0;
+      this.nextWatchdogRun = 0;
+    } catch (err) {
+      this.watchdogConsecutiveFailures++;
+      const backoffMs = Math.min(
+        10_000 * 2 ** this.watchdogConsecutiveFailures,
+        WATCHDOG_MAX_BACKOFF_MS,
+      );
+      this.nextWatchdogRun = Date.now() + backoffMs;
+      if (this.watchdogConsecutiveFailures <= 3) {
+        this.logger.error(
+          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
+        );
+      }
+    }
   }
 
   /**

@@ -68,8 +68,11 @@ export function resolveMongoOptions(): MongooseModuleOptions {
   return {
     maxPoolSize,
     serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 10_000,
+    socketTimeoutMS: 30_000,
     heartbeatFrequencyMS: 30_000,
     retryWrites: true,
+    retryReads: true,
     autoIndex: process.env.NODE_ENV !== 'production',
   };
 }

@@ -28,13 +28,16 @@ import type {
 } from '../engines/tic-tac-toe/tic-tac-toe.types';
 import { TicTacToeBotService } from './tic-tac-toe-bot.service';
 
-const WATCHDOG_INTERVAL_MS = 10000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20000;
+const WATCHDOG_INTERVAL_MS = 10_000;
+const WATCHDOG_STALE_THRESHOLD_MS = 20_000;
+const WATCHDOG_MAX_BACKOFF_MS = 300_000;
 
 @Injectable()
 export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TicTacToeService.name);
   private watchdogInterval: NodeJS.Timeout | null = null;
+  private watchdogConsecutiveFailures = 0;
+  private nextWatchdogRun = 0;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -190,6 +193,9 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async runWatchdog() {
+    const now = Date.now();
+    if (now < this.nextWatchdogRun) return;
+
     try {
       const stale = await this.sessionsService.findStaleActiveSessions(
         'tic_tac_toe_v1',
@@ -205,8 +211,25 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
             ),
           );
       }
+      if (this.watchdogConsecutiveFailures > 0) {
+        this.logger.warn(
+          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
+        );
+      }
+      this.watchdogConsecutiveFailures = 0;
+      this.nextWatchdogRun = 0;
     } catch (err) {
-      this.logger.error(`Watchdog failed: ${err}`);
+      this.watchdogConsecutiveFailures++;
+      const backoffMs = Math.min(
+        WATCHDOG_INTERVAL_MS * 2 ** this.watchdogConsecutiveFailures,
+        WATCHDOG_MAX_BACKOFF_MS,
+      );
+      this.nextWatchdogRun = Date.now() + backoffMs;
+      if (this.watchdogConsecutiveFailures <= 3) {
+        this.logger.error(
+          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
+        );
+      }
     }
   }
 

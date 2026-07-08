@@ -5,7 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Bot, type Context } from 'grammy';
+import { Bot } from 'grammy';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {
@@ -21,7 +21,6 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.bot = new Bot(token);
-    this.registerCommands();
     this.logger.log('Task bot initialized');
   }
 
@@ -31,29 +30,5 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     await this.bot.stop();
-  }
-
-  private registerCommands() {
-    this.bot.command('start', (ctx: Context) =>
-      ctx.reply(
-        'Task Bot is active.\n' +
-          'Send a task with /task or as a message with ARC-XXX prefix.',
-      ),
-    );
-
-    this.bot.command('help', (ctx: Context) =>
-      ctx.reply(
-        'Available commands:\n' +
-          '/task <title> - Create a task (ARC auto-assigned)\n' +
-          '/tasks - List open tasks\n' +
-          '/implement #12 - Implement an issue\n' +
-          '/status #12 - Check implementation status\n' +
-          '/help - Show this message',
-      ),
-    );
-
-    void this.bot.start({
-      onStart: () => this.logger.log('Bot polling started'),
-    });
   }
 }

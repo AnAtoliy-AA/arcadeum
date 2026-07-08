@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { execSync, execFileSync } from 'child_process';
+import { execSync } from 'child_process';
 
 interface GitHubIssue {
   arc: string | null;
@@ -28,14 +28,18 @@ export class GitHubService {
     if (issue.priority === 'high' || issue.priority === 'urgent') {
       labels.push('priority');
     }
-
-    const args = ['issue', 'create', '--title', title, '--body', body];
-    for (const label of labels) {
-      args.push('--label', label);
+    if (issue.arc) {
+      const existingLabels = this.listLabels();
+      if (existingLabels.includes(issue.arc)) {
+        labels.push(issue.arc);
+      }
     }
 
+    const labelArgs = labels.map((l) => `--label "${l}"`).join(' ');
+    const cmd = `gh issue create --title "${title.replace(/"/g, '\\"')}" --body "${body.replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
+
     try {
-      const result = execFileSync('gh', args, {
+      const result = execSync(cmd, {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -53,9 +57,8 @@ export class GitHubService {
 
   triggerWorkflow(issueNumber: string, engine: string): boolean {
     try {
-      execFileSync(
-        'gh',
-        ['workflow', 'run', 'implement-task.yml', '--ref', 'develop', '-f', `issue_number=${issueNumber}`, '-f', `engine=${engine}`],
+      execSync(
+        `gh workflow run implement-task.yml --ref develop -f issue_number=${issueNumber} -f engine=${engine}`,
         { encoding: 'utf-8', cwd: this.getCwd(), stdio: 'pipe' },
       );
       this.logger.log(
@@ -149,20 +152,167 @@ export class GitHubService {
     }
   }
 
-  findDuplicateIssue(title: string): { number: number; title: string; state: string } | null {
+  findDuplicateIssue(
+    title: string,
+  ): { number: number; title: string; state: string } | null {
     try {
       const result = execSync(
         `gh issue list --state all --json number,title,state --limit 100`,
         { encoding: 'utf-8', cwd: this.getCwd() },
       );
-      const issues = JSON.parse(result) as Array<{ number: number; title: string; state: string }>;
+      const issues = JSON.parse(result) as Array<{
+        number: number;
+        title: string;
+        state: string;
+      }>;
       const normalizedTitle = title.toLowerCase().replace(/^arc-\d+:\s*/, '');
-      return issues.find(
-        (i) => i.title.toLowerCase().replace(/^arc-\d+:\s*/, '') === normalizedTitle,
-      ) ?? null;
+      return (
+        issues.find(
+          (i) =>
+            i.title.toLowerCase().replace(/^arc-\d+:\s*/, '') ===
+            normalizedTitle,
+        ) ?? null
+      );
     } catch {
       return null;
     }
+  }
+
+  private listLabels(): string[] {
+    try {
+      const result = execSync(`gh label list --json name --limit 100`, {
+        encoding: 'utf-8',
+        cwd: this.getCwd(),
+      });
+      const labels = JSON.parse(result) as Array<{ name: string }>;
+      return labels.map((l) => l.name);
+    } catch {
+      return [];
+    }
+  }
+
+  implementLocally(
+    issueNum: string,
+    engine: string,
+  ): { success: boolean; message: string } {
+    try {
+      const issue = this.viewIssue(issueNum);
+      if (!issue) {
+        return { success: false, message: `Issue #${issueNum} not found` };
+      }
+      if (issue.state !== 'OPEN') {
+        return {
+          success: false,
+          message: `Issue #${issueNum} is ${issue.state.toLowerCase()}`,
+        };
+      }
+
+      const titleSlug = issue.title
+        .toLowerCase()
+        .replace(/^arc-\d+:\s*/, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 50);
+
+      const branchName = `task-${issueNum}-${titleSlug}`;
+
+      const cwd = this.getCwd();
+
+      execSync('git fetch origin', { encoding: 'utf-8', cwd });
+      execSync(`git checkout -b ${branchName} origin/develop`, {
+        encoding: 'utf-8',
+        cwd,
+      });
+
+      const prompt = [
+        `Implement GitHub issue #${issueNum}: ${issue.title}`,
+        '',
+        'Requirements:',
+        ...this.extractRequirements(issue.body).map((r) => `- ${r}`),
+        '',
+        'Follow the project conventions in CLAUDE.md.',
+        'Do not add comments unless asked.',
+        'Run pnpm lint and pnpm typecheck when done.',
+        'Commit with conventional commits when complete.',
+      ].join('\n');
+
+      const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      execSync(`${cli} run "${escapedPrompt}"`, {
+        encoding: 'utf-8',
+        cwd,
+        timeout: 600_000,
+      });
+
+      execSync('git add -A', { encoding: 'utf-8', cwd });
+
+      const diffCheck = execSync('git diff --cached --quiet; echo $?', {
+        encoding: 'utf-8',
+        cwd,
+      }).trim();
+
+      if (diffCheck === '0') {
+        execSync(`git checkout main`, { encoding: 'utf-8', cwd });
+        execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
+        return { success: true, message: 'No changes to commit' };
+      }
+
+      const scope = issue.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;
+      const msg = issue.title
+        .replace(/^ARC-\d+:\s*/, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 72);
+
+      execSync(`git commit -m "feat(${scope}): ${msg}"`, {
+        encoding: 'utf-8',
+        cwd,
+      });
+      execSync(`git push origin ${branchName}`, { encoding: 'utf-8', cwd });
+
+      const prUrl = execSync(
+        `gh pr create --title "${issue.title}" --body "Closes #${issueNum}" --base develop --head ${branchName}`,
+        { encoding: 'utf-8', cwd },
+      ).trim();
+
+      execSync(
+        `gh issue comment ${issueNum} --body "Implementation complete (${engine}). PR: ${prUrl}"`,
+        { encoding: 'utf-8', cwd },
+      );
+
+      return { success: true, message: `PR created: ${prUrl}` };
+    } catch (err) {
+      const cwd = this.getCwd();
+      try {
+        execSync('git checkout main', { encoding: 'utf-8', cwd });
+      } catch {
+        // cleanup: ignore if checkout fails
+      }
+      try {
+        execSync(`git branch -D task-${issueNum}-*`, {
+          encoding: 'utf-8',
+          cwd,
+        });
+      } catch {
+        // cleanup: ignore if branch deletion fails
+      }
+      return {
+        success: false,
+        message: `Implementation failed: ${(err as Error).message}`,
+      };
+    }
+  }
+
+  private extractRequirements(body: string): string[] {
+    const reqSection = body.split('## Requirements')[1];
+    if (!reqSection) return ['TBD'];
+    return reqSection
+      .split('\n')
+      .filter((l) => l.startsWith('- [ ]'))
+      .map((l) => l.replace(/^- \[ \]\s*/, ''));
   }
 
   private buildIssueBody(issue: GitHubIssue): string {

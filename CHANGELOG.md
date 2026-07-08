@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.28] - 2026-07-08
+
+### Fixed
+- increase Postiz API timeout to 120s for YouTube uploads
+
+
 ## [1.23.27] - 2026-07-08
 
 ### Documentation

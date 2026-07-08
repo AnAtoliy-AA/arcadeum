@@ -58,6 +58,7 @@ const INPUT_MIN_INTERVAL_MS = 1000 / GLIMWORM_INPUT_RATE_LIMIT_HZ;
 export class GlimwormService implements OnModuleDestroy {
   private readonly logger = new Logger(GlimwormService.name);
   private readonly tickIntervals = new Map<string, NodeJS.Timeout>();
+  private readonly countdownTimers = new Map<string, NodeJS.Timeout>();
   private readonly strategies = new Map<string, VariantStrategy>();
   private readonly growthTargets = new Map<string, Map<WormId, number>>();
   private readonly random: RandomFn;
@@ -79,6 +80,10 @@ export class GlimwormService implements OnModuleDestroy {
       clearInterval(timer);
     }
     this.tickIntervals.clear();
+    for (const [, timer] of this.countdownTimers) {
+      clearTimeout(timer);
+    }
+    this.countdownTimers.clear();
   }
 
   // ========== Lobby / lifecycle ==========
@@ -377,12 +382,14 @@ export class GlimwormService implements OnModuleDestroy {
     if (this.tickIntervals.has(roomId)) return;
     // Schedule the countdown→playing transition. Until then the tick loop
     // emits snapshots without running the simulation.
-    setTimeout(() => {
+    const countdownTimer = setTimeout(() => {
+      this.countdownTimers.delete(roomId);
       const session = this.stateStore.get(roomId);
       if (session && session.status === 'countdown') {
         session.status = 'playing';
       }
     }, GLIMWORM_COUNTDOWN_MS);
+    this.countdownTimers.set(roomId, countdownTimer);
 
     const timer = setInterval(() => {
       try {
@@ -401,6 +408,11 @@ export class GlimwormService implements OnModuleDestroy {
     if (timer) {
       clearInterval(timer);
       this.tickIntervals.delete(roomId);
+    }
+    const countdown = this.countdownTimers.get(roomId);
+    if (countdown) {
+      clearTimeout(countdown);
+      this.countdownTimers.delete(roomId);
     }
   }
 

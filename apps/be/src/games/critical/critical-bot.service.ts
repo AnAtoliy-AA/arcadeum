@@ -223,8 +223,10 @@ export class CriticalBotService {
       // Fallback: try position 0 if random failed for some reason, or just retry random
       try {
         await this.criticalService.defuseByRoom(botId, session.roomId, 0); // Fallback to top if all else fails
-      } catch {
-        /* ignore */
+      } catch (fallbackErr) {
+        this.logger.error(
+          `Bot ${botId} fallback defuse also failed: ${fallbackErr}`,
+        );
       }
     }
   }

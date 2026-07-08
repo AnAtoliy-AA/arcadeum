@@ -79,12 +79,7 @@ try {
       'Fix any issues found. Run pnpm lint and pnpm typecheck.',
     ].join('\n');
 
-    console.log('Running mimo review...');
-    run(`mimo run "${reviewPrompt.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`);
+    const escapedReview = reviewPrompt.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    console.log('Running review...');
+    run(`mimo run "${escapedReview}"`);
   }
-
-  console.log('Implementation complete');
-} catch (err) {
-  console.error(`Implementation failed: ${err.message}`);
-  process.exit(1);
-}

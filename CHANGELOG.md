@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.24] - 2026-07-08
+
+### Fixed
+- use async spawn for CLI commands to unblock event loop
+
+
 ## [1.23.23] - 2026-07-08
 
 ### Fixed

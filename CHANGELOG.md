@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.19] - 2026-07-08
+
+### Added
+- add in-review label to issue when PR is created
+
+### Fixed
+- delete existing branch before creating new one in implementLocally
+- ignore merge commits and show correct version in daily updater
+- daily updater reads version from develop and shows next minor
+
+
 ## [1.23.18] - 2026-07-08
 
 ### Fixed

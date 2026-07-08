@@ -76,163 +76,373 @@ const CAPTIONS = [
 
 const SCENARIOS = [
   // --- Week 1: Game Discovery ---
-  { name: 'gameExplorer', caption: 'Which game will you play first? 🎮', steps: [
-    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'scroll', y: 400, wait: 600 }, { type: 'click', x: 540, y: 800, wait: 3000 },
-    { type: 'scroll', y: 200, wait: 800 }, { type: 'scroll', y: -100, wait: 600 },
-  ]},
-  { name: 'seaBattleIntro', caption: 'Sea Battle - classic naval warfare ⚓', steps: [
-    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
-    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'hover', x: 300, y: 900, wait: 1000 }, { type: 'hover', x: 780, y: 900, wait: 1000 },
-  ]},
-  { name: 'criticalClicks', caption: 'Critical - how fast can you react? ⚡', steps: [
-    { type: 'navigate', url: '/en/games/critical', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'click', x: 540, y: 800, wait: 2000 }, { type: 'hover', x: 540, y: 600, wait: 1500 },
-    { type: 'scroll', y: 150, wait: 600 }, { type: 'click', x: 540, y: 1000, wait: 2000 },
-  ]},
-  { name: 'tictactoeFun', caption: 'Tic Tac Toe - classic battle of minds ❌⭕', steps: [
-    { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'click', x: 360, y: 700, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 800 },
-    { type: 'click', x: 720, y: 700, wait: 1500 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
+  {
+    name: 'gameExplorer',
+    caption: 'Which game will you play first? 🎮',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 400, wait: 600 },
+      { type: 'click', x: 540, y: 800, wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'scroll', y: -100, wait: 600 },
+    ],
+  },
+  {
+    name: 'seaBattleIntro',
+    caption: 'Sea Battle - classic naval warfare ⚓',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'click', x: 540, y: 600, wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'hover', x: 300, y: 900, wait: 1000 },
+      { type: 'hover', x: 780, y: 900, wait: 1000 },
+    ],
+  },
+  {
+    name: 'criticalClicks',
+    caption: 'Critical - how fast can you react? ⚡',
+    steps: [
+      { type: 'navigate', url: '/en/games/critical', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+      { type: 'hover', x: 540, y: 600, wait: 1500 },
+      { type: 'scroll', y: 150, wait: 600 },
+      { type: 'click', x: 540, y: 1000, wait: 2000 },
+    ],
+  },
+  {
+    name: 'tictactoeFun',
+    caption: 'Tic Tac Toe - classic battle of minds ❌⭕',
+    steps: [
+      { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'click', x: 360, y: 700, wait: 800 },
+      { type: 'click', x: 540, y: 900, wait: 800 },
+      { type: 'click', x: 720, y: 700, wait: 1500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
 
-  { name: 'cascadeChaos', caption: 'Cascade - match and conquer 🎲', steps: [
-    { type: 'navigate', url: '/en/games/cascade', wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'click', x: 350, y: 750, wait: 800 }, { type: 'click', x: 540, y: 850, wait: 800 },
-    { type: 'click', x: 730, y: 750, wait: 1500 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
-  { name: 'createYourGame', caption: 'Create your own game on Arcadeum! 🛠️', steps: [
-    { type: 'navigate', url: '/en/games/create', wait: 3000 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 300, wait: 600 },
-    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
+  {
+    name: 'cascadeChaos',
+    caption: 'Cascade - match and conquer 🎲',
+    steps: [
+      { type: 'navigate', url: '/en/games/cascade', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'click', x: 350, y: 750, wait: 800 },
+      { type: 'click', x: 540, y: 850, wait: 800 },
+      { type: 'click', x: 730, y: 750, wait: 1500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'createYourGame',
+    caption: 'Create your own game on Arcadeum! 🛠️',
+    steps: [
+      { type: 'navigate', url: '/en/games/create', wait: 3000 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
 
   // --- Week 2: Social & Community ---
-  { name: 'leaderboardClimb', caption: 'Top players on Arcadeum 🏆', steps: [
-    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 250, wait: 800 },
-  ]},
-  { name: 'communityBuzz', caption: 'Join the Arcadeum community! 💬', steps: [
-    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 350, wait: 600 },
-    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'tournamentTime', caption: 'Compete in tournaments! 🏅', steps: [
-    { type: 'navigate', url: '/en/tournaments', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'click', x: 540, y: 700, wait: 3000 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'hover', x: 540, y: 900, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
-  { name: 'chatHighlights', caption: 'Real-time chats with fellow gamers 🗣️', steps: [
-    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 200, wait: 800 },
-    { type: 'click', x: 540, y: 600, wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
-    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
-  { name: 'playerProfiles', caption: 'Check out top player profiles 👤', steps: [
-    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
-    { type: 'click', x: 540, y: 500, wait: 3000 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
-  { name: 'statsDeepDive', caption: 'Your gaming stats, all in one place 📊', steps: [
-    { type: 'navigate', url: '/en/stats', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'referralRewards', caption: 'Invite friends, earn rewards! 🎁', steps: [
-    { type: 'navigate', url: '/en/referrals', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1000 }, { type: 'scroll', y: 300, wait: 600 },
-    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
+  {
+    name: 'leaderboardClimb',
+    caption: 'Top players on Arcadeum 🏆',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1200 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'scroll', y: 250, wait: 800 },
+    ],
+  },
+  {
+    name: 'communityBuzz',
+    caption: 'Join the Arcadeum community! 💬',
+    steps: [
+      { type: 'navigate', url: '/en/community', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 350, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'tournamentTime',
+    caption: 'Compete in tournaments! 🏅',
+    steps: [
+      { type: 'navigate', url: '/en/tournaments', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'click', x: 540, y: 700, wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'hover', x: 540, y: 900, wait: 1000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'chatHighlights',
+    caption: 'Real-time chats with fellow gamers 🗣️',
+    steps: [
+      { type: 'navigate', url: '/en/community', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'click', x: 540, y: 600, wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'playerProfiles',
+    caption: 'Check out top player profiles 👤',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'click', x: 540, y: 500, wait: 3000 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'statsDeepDive',
+    caption: 'Your gaming stats, all in one place 📊',
+    steps: [
+      { type: 'navigate', url: '/en/stats', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'referralRewards',
+    caption: 'Invite friends, earn rewards! 🎁',
+    steps: [
+      { type: 'navigate', url: '/en/referrals', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
 
   // --- Week 3: Rewards & Economy ---
-  { name: 'rewardHunter', caption: 'Earn rewards while you play! 💰', steps: [
-    { type: 'navigate', url: '/en/rewards', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'scroll', y: 350, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1200 },
-    { type: 'scroll', y: 250, wait: 800 }, { type: 'click', x: 540, y: 800, wait: 2000 },
-  ]},
-  { name: 'shopWindow', caption: 'Check out the Arcadeum shop! 🛒', steps: [
-    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 350, wait: 800 },
-    { type: 'scroll', y: 300, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
-    { type: 'scroll', y: 250, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 2000 },
-  ]},
-  { name: 'shopInventory', caption: 'Your inventory awaits! 🎒', steps: [
-    { type: 'navigate', url: '/en/shop/inventory', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'click', x: 540, y: 800, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
-  { name: 'walletWatch', caption: 'Track your tokens in the wallet 💎', steps: [
-    { type: 'navigate', url: '/en/wallet', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
-    { type: 'scroll', y: 200, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'tokenInfo', caption: 'Learn about the Arcadeum token 🪙', steps: [
-    { type: 'navigate', url: '/en/token', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'scroll', y: 350, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'battlePass', caption: 'Battle Pass - unlock exclusive rewards! 🎫', steps: [
-    { type: 'navigate', url: '/en/battle-pass', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'click', x: 540, y: 900, wait: 2000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
-  { name: 'shopBrowse', caption: 'So many items to choose from! 🎨', steps: [
-    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 200, wait: 600 },
-    { type: 'hover', x: 300, y: 600, wait: 800 }, { type: 'hover', x: 780, y: 600, wait: 800 },
-    { type: 'scroll', y: 300, wait: 600 }, { type: 'hover', x: 540, y: 800, wait: 1000 },
-  ]},
+  {
+    name: 'rewardHunter',
+    caption: 'Earn rewards while you play! 💰',
+    steps: [
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 350, wait: 600 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+    ],
+  },
+  {
+    name: 'shopWindow',
+    caption: 'Check out the Arcadeum shop! 🛒',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 350, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+    ],
+  },
+  {
+    name: 'shopInventory',
+    caption: 'Your inventory awaits! 🎒',
+    steps: [
+      { type: 'navigate', url: '/en/shop/inventory', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'walletWatch',
+    caption: 'Track your tokens in the wallet 💎',
+    steps: [
+      { type: 'navigate', url: '/en/wallet', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'tokenInfo',
+    caption: 'Learn about the Arcadeum token 🪙',
+    steps: [
+      { type: 'navigate', url: '/en/token', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'scroll', y: 350, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'battlePass',
+    caption: 'Battle Pass - unlock exclusive rewards! 🎫',
+    steps: [
+      { type: 'navigate', url: '/en/battle-pass', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'shopBrowse',
+    caption: 'So many items to choose from! 🎨',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'hover', x: 300, y: 600, wait: 800 },
+      { type: 'hover', x: 780, y: 600, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+    ],
+  },
 
   // --- Week 4: Exploration & Flow ---
-  { name: 'homepageTour', caption: 'Welcome to Arcadeum! 🚀', steps: [
-    { type: 'navigate', url: '/en', wait: 3000 }, { type: 'scroll', y: 400, wait: 800 },
-    { type: 'scroll', y: 500, wait: 600 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
-    { type: 'scroll', y: 300, wait: 800 }, { type: 'click', x: 540, y: 900, wait: 2500 },
-  ]},
-  { name: 'blogRead', caption: 'Read the latest from Arcadeum 📰', steps: [
-    { type: 'navigate', url: '/en/blog', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'scroll', y: 300, wait: 800 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
-  { name: 'multiPageFlow', caption: 'So much to explore on Arcadeum! ✨', steps: [
-    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'navigate', url: '/en/leaderboards', wait: 2500 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-  ]},
-  { name: 'gameToLeaderboard', caption: 'Play games, climb the leaderboard! 📈', steps: [
-    { type: 'navigate', url: '/en/games', wait: 2500 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'click', x: 540, y: 700, wait: 2500 }, { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
-    { type: 'scroll', y: 200, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'shopToRewards', caption: 'Shop and earn rewards! 🛍️', steps: [
-    { type: 'navigate', url: '/en/shop', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'scroll', y: 250, wait: 600 }, { type: 'navigate', url: '/en/rewards', wait: 2500 },
-    { type: 'scroll', y: 300, wait: 800 }, { type: 'hover', x: 540, y: 700, wait: 1000 },
-  ]},
-  { name: 'communityToTournament', caption: 'From community to tournament! 🏆', steps: [
-    { type: 'navigate', url: '/en/community', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 600, wait: 1000 }, { type: 'navigate', url: '/en/tournaments', wait: 2500 },
-    { type: 'scroll', y: 200, wait: 600 }, { type: 'click', x: 540, y: 700, wait: 2500 },
-  ]},
-  { name: 'settingsCheck', caption: 'Customize your Arcadeum experience ⚙️', steps: [
-    { type: 'navigate', url: '/en/settings', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
-    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
-  { name: 'developersPortal', caption: 'Build on Arcadeum - developers welcome! 👨‍💻', steps: [
-    { type: 'navigate', url: '/en/developers', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'hover', x: 540, y: 700, wait: 1200 }, { type: 'scroll', y: 250, wait: 600 },
-    { type: 'scroll', y: 350, wait: 800 }, { type: 'hover', x: 540, y: 600, wait: 1000 },
-  ]},
-  { name: 'historyReplay', caption: 'Relive your best game moments 🎬', steps: [
-    { type: 'navigate', url: '/en/history', wait: 2500 }, { type: 'scroll', y: 300, wait: 800 },
-    { type: 'click', x: 540, y: 600, wait: 3000 }, { type: 'scroll', y: 200, wait: 600 },
-    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 150, wait: 600 },
-  ]},
-  { name: 'contactPage', caption: 'Get in touch with the team! 📬', steps: [
-    { type: 'navigate', url: '/en/contact', wait: 2500 }, { type: 'scroll', y: 250, wait: 800 },
-    { type: 'hover', x: 540, y: 600, wait: 1200 }, { type: 'scroll', y: 300, wait: 600 },
-    { type: 'hover', x: 540, y: 800, wait: 1000 }, { type: 'scroll', y: 200, wait: 600 },
-  ]},
+  {
+    name: 'homepageTour',
+    caption: 'Welcome to Arcadeum! 🚀',
+    steps: [
+      { type: 'navigate', url: '/en', wait: 3000 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 500, wait: 600 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'click', x: 540, y: 900, wait: 2500 },
+    ],
+  },
+  {
+    name: 'blogRead',
+    caption: 'Read the latest from Arcadeum 📰',
+    steps: [
+      { type: 'navigate', url: '/en/blog', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'click', x: 540, y: 600, wait: 3000 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'multiPageFlow',
+    caption: 'So much to explore on Arcadeum! ✨',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+    ],
+  },
+  {
+    name: 'gameToLeaderboard',
+    caption: 'Play games, climb the leaderboard! 📈',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'click', x: 540, y: 700, wait: 2500 },
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'shopToRewards',
+    caption: 'Shop and earn rewards! 🛍️',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+    ],
+  },
+  {
+    name: 'communityToTournament',
+    caption: 'From community to tournament! 🏆',
+    steps: [
+      { type: 'navigate', url: '/en/community', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+      { type: 'navigate', url: '/en/tournaments', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'click', x: 540, y: 700, wait: 2500 },
+    ],
+  },
+  {
+    name: 'settingsCheck',
+    caption: 'Customize your Arcadeum experience ⚙️',
+    steps: [
+      { type: 'navigate', url: '/en/settings', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1200 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'developersPortal',
+    caption: 'Build on Arcadeum - developers welcome! 👨‍💻',
+    steps: [
+      { type: 'navigate', url: '/en/developers', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1200 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'scroll', y: 350, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+    ],
+  },
+  {
+    name: 'historyReplay',
+    caption: 'Relive your best game moments 🎬',
+    steps: [
+      { type: 'navigate', url: '/en/history', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'click', x: 540, y: 600, wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'contactPage',
+    caption: 'Get in touch with the team! 📬',
+    steps: [
+      { type: 'navigate', url: '/en/contact', wait: 2500 },
+      { type: 'scroll', y: 250, wait: 800 },
+      { type: 'hover', x: 540, y: 600, wait: 1200 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
 ];
 
 // ============================================================================
@@ -680,7 +890,7 @@ async function publishToSocials(videoPath, caption) {
         ...headers,
         'Content-Type': 'application/json',
       },
-      timeout: 30000,
+      timeout: 120000,
     },
   );
 

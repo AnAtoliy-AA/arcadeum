@@ -100,13 +100,17 @@ export class GameRoomsService {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
+        .lean()
         .exec(),
       this.gameRoomModel.countDocuments(query).exec(),
     ]);
 
     const summaries = await Promise.all(
       rooms.map((room) =>
-        this.gameRoomsMapper.prepareRoomSummary(room, viewerId),
+        this.gameRoomsMapper.prepareRoomSummary(
+          room as unknown as GameRoom,
+          viewerId,
+        ),
       ),
     );
 
@@ -137,17 +141,20 @@ export class GameRoomsService {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
     }
 
-    if (!this.canViewRoom(room, userId)) {
+    if (!this.canViewRoom(room as unknown as GameRoom, userId)) {
       throw new ForbiddenException('Cannot view this room');
     }
 
-    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as GameRoom,
+      userId,
+    );
   }
 
   /**
@@ -353,7 +360,7 @@ export class GameRoomsService {
    * Get room participants
    */
   async getRoomParticipants(roomId: string): Promise<string[]> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -457,9 +464,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(
     roomId: string,
     userId: string,
@@ -467,9 +471,6 @@ export class GameRoomsService {
     return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
   }
 
-  /**
-   * Re-invite players to a rematch
-   */
   async reinviteRematchPlayers(
     roomId: string,
     hostId: string,
@@ -493,7 +494,6 @@ export class GameRoomsService {
         .exec();
       exists = !!existing;
     }
-
     return code!;
   }
 }

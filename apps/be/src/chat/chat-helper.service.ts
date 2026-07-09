@@ -139,7 +139,8 @@ export class ChatHelperService {
               'equippedGameSkinId',
               'equippedBackgroundId',
             ])
-            .exec()) as UserDocument[])
+            .lean()
+            .exec()) as unknown as UserDocument[])
         : [];
 
       for (const user of users) {

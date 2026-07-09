@@ -14,6 +14,7 @@ import {
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
 const LOCK_TIMEOUT_MS = 60000;
+const PROCESSING_ENTRY_TTL_MS = 120_000;
 
 // Randomised bot delays make matches feel human without dragging on.
 const PLACEMENT_DELAY_MS = { min: 500, max: 1500 };
@@ -37,10 +38,13 @@ export class SeaBattleBotService {
   ): Promise<T> {
     const prev = this.placementChain.get(roomId) ?? Promise.resolve();
     const next = prev.catch(() => undefined).then(task);
-    this.placementChain.set(
-      roomId,
-      next.catch(() => undefined),
-    );
+    const settled = next.catch(() => undefined);
+    this.placementChain.set(roomId, settled);
+    void settled.finally(() => {
+      if (this.placementChain.get(roomId) === settled) {
+        this.placementChain.delete(roomId);
+      }
+    });
     return next;
   }
 
@@ -57,6 +61,11 @@ export class SeaBattleBotService {
       await Promise.resolve(); // Satisfy async requirement
       if (session.status !== 'active') {
         return;
+      }
+
+      const now = Date.now();
+      for (const [key, ts] of this.processing) {
+        if (now - ts > PROCESSING_ENTRY_TTL_MS) this.processing.delete(key);
       }
 
       const state = session.state as unknown as SeaBattleState;

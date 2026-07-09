@@ -196,27 +196,27 @@ describe('tic-tac-toe utils', () => {
       expect(cells).toContain('o');
     });
 
-    it('rounds expansion to even numbers to prevent origin drift', () => {
+    it('guarantees mark is at least margin cells from the expanded edge', () => {
       const board = createEmptyBoard(9);
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 3);
-      const addedRows = result.board.length - 9;
-      expect(addedRows % 2).toBe(0);
+      const markRow = 0 + result.originDelta.row;
+      expect(markRow).toBeGreaterThanOrEqual(3);
     });
 
-    it('rounds column expansion to even numbers', () => {
+    it('guarantees column mark is at least margin cells from the expanded edge', () => {
       const board = createEmptyBoard(9);
       board[4][0] = 'x';
       const result = expandBoard(board, 4, 0, 3);
-      const addedCols = result.board[0].length - 9;
-      expect(addedCols % 2).toBe(0);
+      const markCol = 0 + result.originDelta.col;
+      expect(markCol).toBeGreaterThanOrEqual(3);
     });
 
     it('expands correctly with margin=1', () => {
       const board = createEmptyBoard(9);
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 1);
-      expect(result.board.length).toBe(11);
+      expect(result.board.length).toBe(10);
       expect(result.originDelta.row).toBe(1);
     });
 
@@ -225,7 +225,19 @@ describe('tic-tac-toe utils', () => {
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 2);
       expect(result.board.length).toBe(11);
-      expect(result.originDelta.row).toBe(1);
+      expect(result.originDelta.row).toBe(2);
+    });
+
+    it('does not double-expand when both axes need rows (corner case)', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      const result = expandBoard(board, 0, 0, 3);
+      const addedRows = result.board.length - 9;
+      const addedCols = result.board[0].length - 9;
+      expect(addedRows).toBeLessThanOrEqual(6);
+      expect(addedCols).toBeLessThanOrEqual(6);
+      expect(result.originDelta.row).toBeGreaterThanOrEqual(3);
+      expect(result.originDelta.col).toBeGreaterThanOrEqual(3);
     });
   });
 

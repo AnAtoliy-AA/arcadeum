@@ -143,6 +143,12 @@ export class GlimwormService implements OnModuleDestroy {
       delete session.lastInputAt[userId];
       delete session.damageTickAt[userId];
       this.emitSnapshots(session);
+      if (Object.keys(session.worms).length === 0) {
+        this.cancelCountdown(roomId);
+        this.strategies.delete(roomId);
+        this.growthTargets.delete(roomId);
+        this.stateStore.remove(roomId);
+      }
       return;
     }
 
@@ -333,6 +339,7 @@ export class GlimwormService implements OnModuleDestroy {
       throw new Error('Only host can restart');
     }
     this.stopTickLoop(roomId);
+    this.cancelCountdown(roomId);
     this.strategies.delete(roomId);
     this.growthTargets.delete(roomId);
 
@@ -374,6 +381,9 @@ export class GlimwormService implements OnModuleDestroy {
     ]);
 
     this.stopTickLoop(roomId);
+    this.cancelCountdown(roomId);
+    this.strategies.delete(roomId);
+    this.growthTargets.delete(roomId);
   }
 
   // ========== Tick orchestration ==========
@@ -412,6 +422,14 @@ export class GlimwormService implements OnModuleDestroy {
     const countdown = this.countdownTimers.get(roomId);
     if (countdown) {
       clearTimeout(countdown);
+      this.countdownTimers.delete(roomId);
+    }
+  }
+
+  private cancelCountdown(roomId: string): void {
+    const timer = this.countdownTimers.get(roomId);
+    if (timer) {
+      clearTimeout(timer);
       this.countdownTimers.delete(roomId);
     }
   }

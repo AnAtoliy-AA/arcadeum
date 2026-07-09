@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.95] - 2026-07-09
+
+### Fixed
+- tune MongoDB connection options to prevent periodic failures
+- add watchdog backoff and MongoDB connection resilience
+- increase SSR timeout and bot lock timeout to reduce dev warnings
+
+
 ## [1.23.94] - 2026-07-09
 
 ### Changed

@@ -141,7 +141,11 @@ export class GameRoomsService {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
-    const room = await this.gameRoomModel.findById(roomId).lean().exec();
+    const room = await this.gameRoomModel
+      .findById(roomId)
+      .select('-password')
+      .lean()
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -444,14 +448,13 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  // ========== Private Helper Methods ==========
-
   private canViewRoom(room: GameRoom, userId?: string | null): boolean {
     if (room.visibility === 'public') return true;
     if (!userId) return false;
-    if (room.hostId === userId) return true;
-    if (room.participants.some((p) => p.userId === userId)) return true;
-    return false;
+    return (
+      room.hostId === userId ||
+      room.participants.some((p) => p.userId === userId)
+    );
   }
 
   async declineRematchInvitation(

@@ -39,8 +39,14 @@ async function bootstrap() {
     }),
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(compression());
   app.use(cookieParser());
+
+  // Trust proxy: required for correct client IP resolution behind reverse proxies (nginx, Cloudflare).
+  // Without this, req.ip always returns 127.0.0.1, breaking per-IP rate limiting.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.useGlobalPipes(
     new ValidationPipe({

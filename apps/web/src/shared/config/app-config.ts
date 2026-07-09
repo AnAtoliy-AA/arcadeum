@@ -1,7 +1,7 @@
 import { routes } from './routes';
 
 export const SSR_TIMEOUT =
-  process.env.NODE_ENV === 'development' ? 15000 : 5000;
+  process.env.NODE_ENV === 'development' ? 20000 : 10_000;
 
 // Browser-initiated requests have no SSR render budget, so they get a more
 // generous default. 5s caused spurious "Request timed out" errors on cold

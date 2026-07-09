@@ -30,13 +30,16 @@ import { getLegalMoves } from '../engines/chess/chess.move-generator';
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
-const WATCHDOG_INTERVAL_MS = 10000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20000;
+const WATCHDOG_INTERVAL_MS = 10_000;
+const WATCHDOG_STALE_THRESHOLD_MS = 20_000;
+const WATCHDOG_MAX_BACKOFF_MS = 300_000;
 
 @Injectable()
 export class ChessService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ChessService.name);
   private watchdogInterval: NodeJS.Timeout | null = null;
+  private watchdogConsecutiveFailures = 0;
+  private nextWatchdogRun = 0;
   private readonly roomLocks = new Map<string, Promise<void>>();
 
   constructor(
@@ -227,6 +230,9 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async runWatchdog() {
+    const now = Date.now();
+    if (now < this.nextWatchdogRun) return;
+
     try {
       const stale = await this.sessionsService.findStaleActiveSessions(
         'chess_v1',
@@ -242,8 +248,25 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
             ),
           );
       }
+      if (this.watchdogConsecutiveFailures > 0) {
+        this.logger.warn(
+          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
+        );
+      }
+      this.watchdogConsecutiveFailures = 0;
+      this.nextWatchdogRun = 0;
     } catch (err) {
-      this.logger.error(`Watchdog failed: ${err}`);
+      this.watchdogConsecutiveFailures++;
+      const backoffMs = Math.min(
+        WATCHDOG_INTERVAL_MS * 2 ** this.watchdogConsecutiveFailures,
+        WATCHDOG_MAX_BACKOFF_MS,
+      );
+      this.nextWatchdogRun = Date.now() + backoffMs;
+      if (this.watchdogConsecutiveFailures <= 3) {
+        this.logger.error(
+          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
+        );
+      }
     }
   }
 

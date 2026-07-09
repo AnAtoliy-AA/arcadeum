@@ -13,7 +13,7 @@ import {
 } from '../engines/sea-battle/sea-battle.constants';
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
-const LOCK_TIMEOUT_MS = 30000;
+const LOCK_TIMEOUT_MS = 60000;
 const PROCESSING_ENTRY_TTL_MS = 120_000;
 
 // Randomised bot delays make matches feel human without dragging on.

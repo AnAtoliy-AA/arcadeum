@@ -464,9 +464,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(
     roomId: string,
     userId: string,
@@ -474,9 +471,6 @@ export class GameRoomsService {
     return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
   }
 
-  /**
-   * Re-invite players to a rematch
-   */
   async reinviteRematchPlayers(
     roomId: string,
     hostId: string,

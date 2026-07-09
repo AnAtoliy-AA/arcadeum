@@ -29,6 +29,7 @@ import {
   runGameTick,
   seedWormSpawns,
 } from './glimworm.service.lifecycle';
+import { cleanupStaleSessions } from './glimworm.cleanup';
 import type {
   GlimwormDiscreteEvent,
   GlimwormInputPayload,
@@ -53,6 +54,7 @@ export interface GlimwormStartOpts {
 
 const MAX_WORMS = 10;
 const INPUT_MIN_INTERVAL_MS = 1000 / GLIMWORM_INPUT_RATE_LIMIT_HZ;
+const STALE_SESSION_CLEANUP_MS = 5 * 60_000;
 
 @Injectable()
 export class GlimwormService implements OnModuleDestroy {
@@ -62,6 +64,7 @@ export class GlimwormService implements OnModuleDestroy {
   private readonly strategies = new Map<string, VariantStrategy>();
   private readonly growthTargets = new Map<string, Map<WormId, number>>();
   private readonly random: RandomFn;
+  private readonly staleCleanupInterval: NodeJS.Timeout;
 
   constructor(
     private readonly stateStore: GlimwormStateStore,
@@ -70,12 +73,24 @@ export class GlimwormService implements OnModuleDestroy {
     @Optional() random?: RandomFn,
   ) {
     this.random = random ?? Math.random;
+    this.staleCleanupInterval = setInterval(() => {
+      cleanupStaleSessions({
+        stateStore: this.stateStore,
+        logger: this.logger,
+        stopTickLoop: (id) => this.stopTickLoop(id),
+        cancelCountdown: (id) => this.cancelCountdown(id),
+        strategies: this.strategies,
+        growthTargets: this.growthTargets,
+      });
+    }, STALE_SESSION_CLEANUP_MS);
+    if (this.staleCleanupInterval.unref) this.staleCleanupInterval.unref();
   }
 
   /** Minimum total worms required to start. Used when filling with bots. */
   private static readonly SOLO_FILL_TARGET = 3;
 
   onModuleDestroy(): void {
+    clearInterval(this.staleCleanupInterval);
     for (const [, timer] of this.tickIntervals) {
       clearInterval(timer);
     }
@@ -386,8 +401,6 @@ export class GlimwormService implements OnModuleDestroy {
     this.growthTargets.delete(roomId);
   }
 
-  // ========== Tick orchestration ==========
-
   private startTickLoop(roomId: string): void {
     if (this.tickIntervals.has(roomId)) return;
     // Schedule the countdown→playing transition. Until then the tick loop
@@ -433,7 +446,6 @@ export class GlimwormService implements OnModuleDestroy {
       this.countdownTimers.delete(roomId);
     }
   }
-
   tick(roomId: string): void {
     const session = this.stateStore.get(roomId);
     if (!session) return;

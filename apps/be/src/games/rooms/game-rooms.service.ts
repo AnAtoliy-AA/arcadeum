@@ -223,23 +223,12 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Ensure user is a participant (join if not already)
-   */
   async ensureParticipant(roomId: string, userId: string): Promise<boolean> {
     const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
     const isParticipant = room.participants.some((p) => p.userId === userId);
-
     if (!isParticipant) {
-      room.participants.push({
-        userId,
-        joinedAt: new Date(),
-      });
+      room.participants.push({ userId, joinedAt: new Date() });
       room.updatedAt = new Date();
       await room.save();
       return true;
@@ -456,7 +445,6 @@ export class GameRoomsService {
       room.participants.some((p) => p.userId === userId)
     );
   }
-
   async declineRematchInvitation(
     roomId: string,
     userId: string,
@@ -473,7 +461,6 @@ export class GameRoomsService {
   ): Promise<GameRoomSummary> {
     return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
   }
-
   async reinviteRematchPlayers(
     roomId: string,
     hostId: string,

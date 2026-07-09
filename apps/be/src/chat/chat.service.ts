@@ -294,11 +294,13 @@ export class ChatService {
     return { ...view, tempId: messageDTO.tempId };
   }
 
-  async getMessagesByChatId(chatId: string) {
+  async getMessagesByChatId(chatId: string, limit = 200) {
     const messages = await this.messageModel
       .find({ chatId })
-      .sort({ timestamp: 1 })
+      .sort({ timestamp: -1 })
+      .limit(Math.min(limit, 500))
       .exec();
+    messages.reverse();
     return this.chatHelper.toMessageViews(messages);
   }
 

@@ -109,11 +109,12 @@ export class GameHistoryService {
 
     const roomIds = rooms.map((r) => r._id.toString());
 
-    // Find sessions for these rooms
+    // Find sessions for these rooms (cap at 50 per room to prevent unbounded growth)
     const sessions = await this.gameSessionModel
       .find({ roomId: { $in: roomIds } })
       .select('roomId gameId status state createdAt updatedAt')
       .sort({ createdAt: -1 })
+      .limit(roomIds.length * 50)
       .lean()
       .exec();
 
@@ -185,11 +186,12 @@ export class GameHistoryService {
       throw new BadRequestException('You were not a participant in this game');
     }
 
-    // Get all sessions for this room
+    // Get all sessions for this room (cap at 20)
     const sessions = await this.gameSessionModel
       .find({ roomId })
       .select('roomId gameId status state createdAt updatedAt')
       .sort({ createdAt: -1 })
+      .limit(20)
       .lean()
       .exec();
 
@@ -282,9 +284,6 @@ export class GameHistoryService {
     });
   }
 
-  /**
-   * Create a rematch from a history entry
-   */
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
@@ -472,6 +471,9 @@ export class GameHistoryService {
     }
 
     state.logs.push(logEntry);
+    if (state.logs.length > 500) {
+      state.logs = state.logs.slice(-500);
+    }
     session.markModified('state');
     await session.save();
   }

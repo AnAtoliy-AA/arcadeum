@@ -170,10 +170,13 @@ export abstract class BaseGameEngine<
   }
 
   /**
-   * Helper: Add log to state
+   * Helper: Add log to state (capped at 500 entries to prevent unbounded growth)
    */
   protected addLog(state: TState, log: GameLogEntry): void {
     state.logs.push(log);
+    if (state.logs.length > 500) {
+      state.logs = state.logs.slice(-500);
+    }
   }
 
   /**

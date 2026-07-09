@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.115] - 2026-07-09
+
+### Fixed
+- make sonar/radar free actions so bots can attack after using them
+
+
 ## [1.23.114] - 2026-07-09
 
 ### Changed

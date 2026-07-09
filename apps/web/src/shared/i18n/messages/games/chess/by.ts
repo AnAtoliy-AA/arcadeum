@@ -112,7 +112,7 @@ export const byMessages = {
     },
     errors: {
       notYourTurn: 'Яшчэ не ваш ход.',
-      invalidMove: 'Гэта неLEGALны ход.',
+      invalidMove: 'Гэта недапушчальны ход.',
       gameOver: 'Гульня скончана.',
       gameNotStarted: 'Гульня яшчэ не пачалася.',
     },

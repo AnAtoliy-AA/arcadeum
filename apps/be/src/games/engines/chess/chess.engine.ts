@@ -23,9 +23,12 @@ import {
   parseFen,
   boardToFen,
   boardCoordsToPos,
+  posToBoardCoords,
   oppositeColor,
   isThreefoldRepetition,
   isInsufficientMaterial,
+  generateChess960BackRank,
+  findKing,
 } from './chess.board';
 import { getLegalMoves, simulateMove } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
@@ -76,9 +79,21 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         }
       : null;
 
-    const initialBoard = parseFen(INITIAL_BOARD_FEN);
+    const variant = config?.variant ?? 'standard';
+    const initialBoard =
+      variant === 'chess960'
+        ? (() => {
+            const backRank = generateChess960BackRank();
+            const board = parseFen(INITIAL_BOARD_FEN);
+            board[7] = backRank;
+            board[0] = backRank.map((p) =>
+              p ? { ...p, color: 'black' } : null,
+            );
+            return board;
+          })()
+        : parseFen(INITIAL_BOARD_FEN);
     const initialState = {
-      variant: config?.variant ?? 'standard',
+      variant,
       board: initialBoard,
       currentTurnColor: 'white' as const,
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
@@ -280,27 +295,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
 
     this.updateCastlingRights(newState, move);
 
-    if (move.piece.type === 'king') {
-      if (move.piece.color === 'white') {
-        newState.castlingRights.whiteKingSide = false;
-        newState.castlingRights.whiteQueenSide = false;
-      } else {
-        newState.castlingRights.blackKingSide = false;
-        newState.castlingRights.blackQueenSide = false;
-      }
-    }
-
-    if (move.piece.type === 'rook') {
-      if (move.from.file === 'h' && move.from.rank === 8)
-        newState.castlingRights.whiteKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 8)
-        newState.castlingRights.whiteQueenSide = false;
-      if (move.from.file === 'h' && move.from.rank === 1)
-        newState.castlingRights.blackKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 1)
-        newState.castlingRights.blackQueenSide = false;
-    }
-
     newState.moveHistory = [...state.moveHistory, move];
     newState.currentTurnColor = oppositeColor(state.currentTurnColor);
     if (state.currentTurnColor === 'black') {
@@ -379,15 +373,35 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   }
 
   private updateCastlingRights(state: ChessState, move: ChessMove): void {
-    if (move.piece.type === 'rook') {
-      if (move.from.file === 'h' && move.from.rank === 8)
+    if (move.piece.type === 'king') {
+      if (move.piece.color === 'white') {
         state.castlingRights.whiteKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 8)
         state.castlingRights.whiteQueenSide = false;
-      if (move.from.file === 'h' && move.from.rank === 1)
+      } else {
         state.castlingRights.blackKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 1)
         state.castlingRights.blackQueenSide = false;
+      }
+      return;
+    }
+
+    if (move.piece.type === 'rook') {
+      const { rank: kingRank, file: kingFile } = (() => {
+        const king = findKing(state.board, move.piece.color);
+        return king ? posToBoardCoords(king) : { rank: 7, file: 4 };
+      })();
+
+      const fromCoords = posToBoardCoords(move.from);
+      if (fromCoords.rank === kingRank) {
+        if (fromCoords.file > kingFile) {
+          if (move.piece.color === 'white')
+            state.castlingRights.whiteKingSide = false;
+          else state.castlingRights.blackKingSide = false;
+        } else if (fromCoords.file < kingFile) {
+          if (move.piece.color === 'white')
+            state.castlingRights.whiteQueenSide = false;
+          else state.castlingRights.blackQueenSide = false;
+        }
+      }
     }
   }
 

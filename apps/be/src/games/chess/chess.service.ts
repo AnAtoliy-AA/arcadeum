@@ -161,6 +161,14 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     return this.runAction(userId, roomId, 'forfeit', {});
   }
 
+  async drawOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_offer', {});
+  }
+
+  async drawAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_accept', {});
+  }
+
   private async runAction(
     userId: string,
     roomId: string,

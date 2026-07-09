@@ -97,6 +97,12 @@ export const esMessages = {
       resign: 'Rendirse',
       rematch: 'Revancha',
       leave: 'Salir',
+      draw: 'Empate',
+      drawOffered: 'Empate ofrecido',
+      acceptDraw: 'Aceptar empate',
+      declineDraw: 'Rechazar',
+      moveList: 'Lista de movimientos',
+      copyPGN: 'Copiar PGN',
     },
     chat: {
       move: '{{name}} movió {{notation}}',

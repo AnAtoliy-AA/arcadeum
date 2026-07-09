@@ -85,6 +85,8 @@ export interface ChessState extends BaseGameState {
   isDrawByRepetition: boolean;
   isDrawByFiftyMoveRule: boolean;
   isInsufficientMaterial: boolean;
+  isDrawByAgreement: boolean;
+  drawOfferedBy: string | null;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   legalMovesForCurrentPlayer: LegalMove[];

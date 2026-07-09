@@ -97,6 +97,12 @@ export const enMessages = {
       resign: 'Resign',
       rematch: 'Rematch',
       leave: 'Leave',
+      draw: 'Draw',
+      drawOffered: 'Draw Offered',
+      acceptDraw: 'Accept Draw',
+      declineDraw: 'Decline',
+      moveList: 'Move List',
+      copyPGN: 'Copy PGN',
     },
     chat: {
       move: '{{name}} moved {{notation}}',

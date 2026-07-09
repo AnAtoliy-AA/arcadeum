@@ -36,6 +36,8 @@ import { isInCheck } from './chess.attacks';
 const ACTION = {
   MOVE: 'move',
   RESIGN: 'resign',
+  DRAW_OFFER: 'draw_offer',
+  DRAW_ACCEPT: 'draw_accept',
 } as const;
 
 @Injectable()
@@ -109,6 +111,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       isDrawByRepetition: false,
       isDrawByFiftyMoveRule: false,
       isInsufficientMaterial: false,
+      isDrawByAgreement: false,
+      drawOfferedBy: null,
       clocks,
       positionHistory: [INITIAL_BOARD_FEN],
       currentTurnIndex: 0,
@@ -150,6 +154,21 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       return state.players.some((p) => p.playerId === context.userId);
     }
 
+    if (action === ACTION.DRAW_OFFER) {
+      const player = state.players.find((p) => p.playerId === context.userId);
+      if (!player || player.color !== state.currentTurnColor) return false;
+      if (state.drawOfferedBy) return false;
+      return true;
+    }
+
+    if (action === ACTION.DRAW_ACCEPT) {
+      const player = state.players.find((p) => p.playerId === context.userId);
+      if (!player) return false;
+      return (
+        state.drawOfferedBy !== null && state.drawOfferedBy !== context.userId
+      );
+    }
+
     return false;
   }
 
@@ -165,6 +184,12 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (action === ACTION.RESIGN) {
       return this.executeResign(state, context);
     }
+    if (action === ACTION.DRAW_OFFER) {
+      return this.executeDrawOffer(state, context);
+    }
+    if (action === ACTION.DRAW_ACCEPT) {
+      return this.executeDrawAccept(state, context);
+    }
     return this.errorResult(`Unknown action: ${action}`);
   }
 
@@ -175,7 +200,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       state.winnerColor !== null ||
       state.isDrawByRepetition ||
       state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial
+      state.isInsufficientMaterial ||
+      state.isDrawByAgreement
     );
   }
 
@@ -184,7 +210,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       state.isDrawByRepetition ||
       state.isDrawByFiftyMoveRule ||
       state.isInsufficientMaterial ||
-      state.isStalemate
+      state.isStalemate ||
+      state.isDrawByAgreement
     ) {
       return [];
     }
@@ -203,7 +230,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       state.isDrawByRepetition ||
       state.isDrawByFiftyMoveRule ||
       state.isInsufficientMaterial ||
-      state.isStalemate
+      state.isStalemate ||
+      state.isDrawByAgreement
     ) {
       return { winnerIds: [], isDraw: true };
     }
@@ -423,6 +451,42 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
           senderId: context.userId,
         },
       ),
+    ];
+
+    return this.successResult(newState);
+  }
+
+  private executeDrawOffer(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const player = state.players.find((p) => p.playerId === context.userId);
+    if (!player) return this.errorResult('Player not found');
+
+    const newState = this.cloneState(state);
+    newState.drawOfferedBy = context.userId;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', `${player.color} offers a draw.`, {
+        senderId: context.userId,
+      }),
+    ];
+
+    return this.successResult(newState);
+  }
+
+  private executeDrawAccept(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const newState = this.cloneState(state);
+    newState.isDrawByAgreement = true;
+    newState.drawOfferedBy = null;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', 'Draw by agreement.', {
+        senderId: context.userId,
+      }),
     ];
 
     return this.successResult(newState);

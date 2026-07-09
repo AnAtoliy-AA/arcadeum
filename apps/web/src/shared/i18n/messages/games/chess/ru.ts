@@ -97,6 +97,12 @@ export const ruMessages = {
       resign: 'Сдаться',
       rematch: 'Реванш',
       leave: 'Выйти',
+      draw: 'Ничья',
+      drawOffered: 'Ничья предложена',
+      acceptDraw: 'Принять ничью',
+      declineDraw: 'Отклонить',
+      moveList: 'Список ходов',
+      copyPGN: 'Копировать PGN',
     },
     chat: {
       move: '{{name}} сделал ход {{notation}}',

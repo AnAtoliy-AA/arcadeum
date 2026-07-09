@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.106] - 2026-07-09
+
+### Improved
+- optimize queries and fix CI version-bump workflow
+
+
 ## [1.23.105] - 2026-07-09
 
 ### Changed

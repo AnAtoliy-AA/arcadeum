@@ -4,7 +4,7 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
 const DEFAULT_MAX_POOL_SIZE = 200;
-const DEV_MAX_POOL_SIZE = 20;
+const DEV_MAX_POOL_SIZE = 50;
 const MIN_MAX_POOL_SIZE = 1;
 
 /**
@@ -45,9 +45,8 @@ export function resolveMongoUri(): string {
  * Override via `MONGODB_MAX_POOL_SIZE` per environment — keep within
  * the connection cap of the mongo deployment.
  *
- * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (5s).
- * `heartbeatFrequencyMS` — detect recovery faster (10s vs default 10s).
- * `retryWrites` — auto-retry transient network errors on writes.
+ * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (15s).
+ * `retryWrites` / `retryReads` — auto-retry transient network errors.
  */
 export function resolveMongoOptions(): MongooseModuleOptions {
   const raw = process.env.MONGODB_MAX_POOL_SIZE?.trim();
@@ -67,10 +66,7 @@ export function resolveMongoOptions(): MongooseModuleOptions {
 
   return {
     maxPoolSize,
-    serverSelectionTimeoutMS: 10_000,
-    connectTimeoutMS: 10_000,
-    socketTimeoutMS: 30_000,
-    heartbeatFrequencyMS: 30_000,
+    serverSelectionTimeoutMS: 15_000,
     retryWrites: true,
     retryReads: true,
     autoIndex: process.env.NODE_ENV !== 'production',

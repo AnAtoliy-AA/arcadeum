@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "main": "expo-router/entry",
-  "version": "1.23.120",
+  "version": "1.23.121",
   "scripts": {
     "dev": "node ./scripts/dev.js",
     "start": "expo start",

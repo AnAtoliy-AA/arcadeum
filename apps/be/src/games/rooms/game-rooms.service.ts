@@ -455,9 +455,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(
     roomId: string,
     userId: string,

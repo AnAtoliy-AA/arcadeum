@@ -118,15 +118,16 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(ok).toBe(false);
     });
 
-    it('advances turn after sonar', () => {
+    it('does not advance turn after sonar (free action)', () => {
       const s = battleState({ sonar: true });
+      const beforeIndex = s.currentTurnIndex;
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
         row: 0,
         col: 0,
       });
 
-      expect(result.state!.currentTurnIndex).not.toBe(s.currentTurnIndex);
+      expect(result.state!.currentTurnIndex).toBe(beforeIndex);
     });
 
     it('rejects sonar when not enabled', () => {
@@ -277,14 +278,15 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(ok).toBe(false);
     });
 
-    it('advances turn after radar', () => {
+    it('does not advance turn after radar (free action)', () => {
       const s = battleState({ radar: true });
+      const beforeIndex = s.currentTurnIndex;
       const result = engine.executeAction(s, 'useRadar', ctx('a'), {
         targetPlayerId: 'b',
         row: 0,
       });
 
-      expect(result.state!.currentTurnIndex).not.toBe(s.currentTurnIndex);
+      expect(result.state!.currentTurnIndex).toBe(beforeIndex);
     });
 
     it('rejects radar when not enabled', () => {

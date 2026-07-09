@@ -1,9 +1,4 @@
-import {
-  BOARD_SIZE,
-  CellState,
-  GAME_MODE_VARIANTS,
-  SPEED_TURN_BUDGET_MS,
-} from './sea-battle.constants';
+import { BOARD_SIZE, CellState } from './sea-battle.constants';
 import {
   SeaBattlePlayer,
   SeaBattleState,
@@ -11,10 +6,6 @@ import {
   RadarPayload,
 } from './sea-battle.types';
 import { GameActionResult } from '../base/game-engine.interface';
-import {
-  advanceTeamRotationOnMiss,
-  getActiveShooterId,
-} from './team-rotation.utils';
 
 const SONAR_RADIUS = 1;
 
@@ -68,8 +59,6 @@ export function executeSonar(
     kind: 'sb.sonar',
     scope: 'private',
   });
-
-  advanceTurn(state);
 
   return { success: true, state };
 }
@@ -131,48 +120,5 @@ export function executeRadar(
     scope: 'private',
   });
 
-  advanceTurn(state);
-
   return { success: true, state };
-}
-
-function advanceTurn(state: SeaBattleState): void {
-  if (state.teams) {
-    advanceTeamRotationOnMiss(state);
-    const shooter = getActiveShooterId(state);
-    if (shooter) {
-      state.currentTurnIndex = state.playerOrder.indexOf(shooter);
-    }
-  } else {
-    const alivePlayers = state.players.filter((p) => p.alive);
-    if (alivePlayers.length <= 1) return;
-
-    let nextIndex = state.currentTurnIndex;
-    do {
-      nextIndex = (nextIndex + 1) % state.playerOrder.length;
-      const nextPlayer = state.players.find(
-        (p) => p.playerId === state.playerOrder[nextIndex],
-      );
-      if (nextPlayer?.alive) {
-        state.currentTurnIndex = nextIndex;
-        return;
-      }
-    } while (nextIndex !== state.currentTurnIndex);
-  }
-
-  state.roundNumber = (state.roundNumber ?? 1) + 1;
-
-  if (state.mode === GAME_MODE_VARIANTS.SPEED) {
-    const activePlayerId = state.teams
-      ? getActiveShooterId(state)
-      : state.playerOrder[state.currentTurnIndex];
-    if (activePlayerId) {
-      const speedPlayer = state.players.find(
-        (p) => p.playerId === activePlayerId,
-      );
-      if (speedPlayer) {
-        speedPlayer.turnDeadline = Date.now() + SPEED_TURN_BUDGET_MS;
-      }
-    }
-  }
 }

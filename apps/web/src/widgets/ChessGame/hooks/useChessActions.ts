@@ -56,5 +56,17 @@ export function useChessActions(options: UseChessActionsOptions) {
     gameSocket.emit('chess.session.resign', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, movePiece, resign };
+  const offerDraw = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('draw_offer');
+    gameSocket.emit('chess.session.draw_offer', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const acceptDraw = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('draw_accept');
+    gameSocket.emit('chess.session.draw_accept', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  return { startSession, movePiece, resign, offerDraw, acceptDraw };
 }

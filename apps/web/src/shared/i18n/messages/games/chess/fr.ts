@@ -97,6 +97,12 @@ export const frMessages = {
       resign: 'Abandonner',
       rematch: 'Revanche',
       leave: 'Quitter',
+      draw: 'Nulle',
+      drawOffered: 'Nulle proposée',
+      acceptDraw: 'Accepter la nulle',
+      declineDraw: 'Refuser',
+      moveList: 'Liste des coups',
+      copyPGN: 'Copier PGN',
     },
     chat: {
       move: '{{name}} a joué {{notation}}',

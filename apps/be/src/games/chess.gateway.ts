@@ -155,4 +155,48 @@ export class ChessGateway {
       );
     }
   }
+
+  @SubscribeMessage('chess.session.draw_offer')
+  async handleDrawOffer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    try {
+      await this.chessService.drawOffer(userId, roomId);
+      client.emit(
+        'chess.session.draw_offered',
+        maybeEncrypt({ roomId, userId }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'draw offer', roomId, userId },
+        'Unable to offer draw.',
+      );
+    }
+  }
+
+  @SubscribeMessage('chess.session.draw_accept')
+  async handleDrawAccept(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    try {
+      await this.chessService.drawAccept(userId, roomId);
+      client.emit(
+        'chess.session.draw_accepted',
+        maybeEncrypt({ roomId, userId }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'draw accept', roomId, userId },
+        'Unable to accept draw.',
+      );
+    }
+  }
 }

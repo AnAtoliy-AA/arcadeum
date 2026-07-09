@@ -97,6 +97,12 @@ export const byMessages = {
       resign: 'Здацца',
       rematch: 'Рэванш',
       leave: 'Выйсці',
+      draw: 'Нічыя',
+      drawOffered: 'Нічыя прапанавана',
+      acceptDraw: 'Прыняць нічыю',
+      declineDraw: 'Адхіліць',
+      moveList: 'Спіс хадоў',
+      copyPGN: 'Капіяваць PGN',
     },
     chat: {
       move: '{{name}} зрабіў ход {{notation}}',

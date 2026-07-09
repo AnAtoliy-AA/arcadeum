@@ -3,6 +3,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { YStack, XStack, Text } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
+import { MoveList } from './MoveList';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -60,10 +61,11 @@ function ChessGameImpl({
     initialSession,
   });
 
-  const { startSession, movePiece, resign } = useChessActions({
-    roomId,
-    userId: currentUserId,
-  });
+  const { startSession, movePiece, resign, offerDraw, acceptDraw } =
+    useChessActions({
+      roomId,
+      userId: currentUserId,
+    });
 
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
@@ -383,21 +385,64 @@ function ChessGameImpl({
             onSquareClick={handleSquareClick}
           />
           <XStack justifyContent="space-between" alignItems="center" mt="$1">
-            <Text
-              fontSize="$2"
-              opacity={0.6}
-              cursor="pointer"
-              hoverStyle={{ opacity: 1 }}
-              onPress={resign}
-            >
-              Resign
-            </Text>
-            {displaySnapshot.moveHistory.length > 0 && (
+            {currentUserId && !isGameOver && (
+              <>
+                {displaySnapshot?.drawOfferedBy &&
+                displaySnapshot.drawOfferedBy !== currentUserId ? (
+                  <XStack gap="$2" alignItems="center">
+                    <Text
+                      fontSize="$2"
+                      color="$green10"
+                      cursor="pointer"
+                      hoverStyle={{ opacity: 0.8 }}
+                      onPress={acceptDraw}
+                    >
+                      Accept Draw
+                    </Text>
+                    <Text
+                      fontSize="$2"
+                      opacity={0.6}
+                      cursor="pointer"
+                      hoverStyle={{ opacity: 1 }}
+                      onPress={resign}
+                    >
+                      Decline
+                    </Text>
+                  </XStack>
+                ) : (
+                  <XStack gap="$3" alignItems="center">
+                    <Text
+                      fontSize="$2"
+                      opacity={0.6}
+                      cursor="pointer"
+                      hoverStyle={{ opacity: 1 }}
+                      onPress={offerDraw}
+                      disabled={!!displaySnapshot?.drawOfferedBy}
+                    >
+                      {displaySnapshot?.drawOfferedBy ? 'Draw Offered' : 'Draw'}
+                    </Text>
+                    <Text
+                      fontSize="$2"
+                      opacity={0.6}
+                      cursor="pointer"
+                      hoverStyle={{ opacity: 1 }}
+                      onPress={resign}
+                    >
+                      Resign
+                    </Text>
+                  </XStack>
+                )}
+              </>
+            )}
+            {displaySnapshot && displaySnapshot.moveHistory.length > 0 && (
               <Text fontSize="$2" opacity={0.5}>
                 {displaySnapshot.moveHistory.length} moves
               </Text>
             )}
           </XStack>
+          {displaySnapshot && displaySnapshot.moveHistory.length > 0 && (
+            <MoveList state={displaySnapshot} t={t} />
+          )}
         </>
       ) : null}
     </YStack>

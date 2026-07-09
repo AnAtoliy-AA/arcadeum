@@ -112,7 +112,7 @@ export const ruMessages = {
     },
     errors: {
       notYourTurn: 'Ещё не ваш ход.',
-      invalidMove: 'Это неLEGALный ход.',
+      invalidMove: 'Это недопустимый ход.',
       gameOver: 'Игра закончена.',
       gameNotStarted: 'Игра ещё не началась.',
     },

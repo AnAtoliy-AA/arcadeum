@@ -255,10 +255,7 @@ export class SeaBattleBotService {
             Math.floor(Math.random() * eligibleOpponents.length)
           ];
 
-        // --- Special weapons: sonar / radar ---
-        // Weapons are available if state.specialWeapons has them enabled.
-        // Admin exclusion via stripDisabledRules already removes excluded
-        // weapons from gameOptions before engine init, so we just check state.
+        // --- Special weapons: sonar / radar (free action, no turn advancement) ---
         const myUsage = state.specialWeaponUsage?.[botId];
         const hasSonar = !!state.specialWeapons?.sonar && !myUsage?.sonarUsed;
         const hasRadar = !!state.specialWeapons?.radar && !myUsage?.radarUsed;
@@ -277,15 +274,6 @@ export class SeaBattleBotService {
           );
           if (!refreshed) break;
           currentSession = refreshed;
-          const postSonar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterSonar =
-            postSonar.playerOrder[postSonar.currentTurnIndex];
-          if (
-            nextAfterSonar !== botId ||
-            postSonar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
         } else if (hasRadar) {
           const row = Math.floor(Math.random() * gridSize);
           await this.seaBattleService.executeActionByRoom(
@@ -294,20 +282,11 @@ export class SeaBattleBotService {
             'useRadar',
             { targetPlayerId: target.playerId, row },
           );
-          const refreshedRadar = await this.seaBattleService.findSessionByRoom(
+          const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
           );
-          if (!refreshedRadar) break;
-          currentSession = refreshedRadar;
-          const postRadar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterRadar =
-            postRadar.playerOrder[postRadar.currentTurnIndex];
-          if (
-            nextAfterRadar !== botId ||
-            postRadar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
+          if (!refreshed) break;
+          currentSession = refreshed;
         }
 
         // Smart Target Logic: Finish off damaged ships

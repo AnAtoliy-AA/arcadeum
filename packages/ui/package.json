@@ -1,6 +1,6 @@
 {
   "name": "@arcadeum/ui",
-  "version": "1.23.111",
+  "version": "1.23.112",
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",

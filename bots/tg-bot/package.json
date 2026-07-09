@@ -1,6 +1,6 @@
 {
   "name": "tg-bot",
-  "version": "1.23.146",
+  "version": "1.23.147",
   "description": "Telegram bot for PumpFun transaction monitoring",
   "private": true,
   "license": "UNLICENSED",

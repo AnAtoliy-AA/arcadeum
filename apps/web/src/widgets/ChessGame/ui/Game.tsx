@@ -224,9 +224,9 @@ function ChessGameImpl({
             displaySnapshot.board[8 - selectedSquare.rank]?.[
               FILES.indexOf(selectedSquare.file)
             ]?.type === 'pawn';
-          if (isPromotion) {
+          if (isPromotion)
             setPendingPromotion({ from: selectedSquare, to: { file, rank } });
-          } else {
+          else {
             applyOptimisticMove(
               selectedSquare.file,
               selectedSquare.rank,

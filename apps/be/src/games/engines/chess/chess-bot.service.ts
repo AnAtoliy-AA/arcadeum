@@ -103,10 +103,18 @@ export class ChessBotService {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
 
-      const move = this.findBestMove(state);
+      const timeBudget = this.computeTimeBudget(state);
+      const startTime = Date.now();
+      const move = this.findBestMoveWithTimeBudget(
+        state,
+        timeBudget,
+        startTime,
+      );
       if (!move) return;
 
-      const delay = 300 + Math.random() * 800;
+      const elapsed = Date.now() - startTime;
+      const minDelay = 300;
+      const delay = Math.max(minDelay, Math.min(800, 1500 - elapsed));
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {
@@ -382,6 +390,66 @@ export class ChessBotService {
         scoreMove(a, killers, this.history)
       );
     });
+  }
+
+  private computeTimeBudget(state: ChessState): number {
+    if (!state.clocks) return 2000;
+    const clock = state.clocks[state.currentTurnColor];
+    if (!clock) return 2000;
+    const remaining = clock.remainingSeconds;
+    if (remaining <= 10) return Math.min(500, remaining * 30);
+    if (remaining <= 60) return Math.min(2000, remaining * 15);
+    return Math.min(5000, remaining * 5);
+  }
+
+  private findBestMoveWithTimeBudget(
+    state: ChessState,
+    timeBudgetMs: number,
+    startTime: number,
+  ): ChessMove | null {
+    const cfg = DIFFICULTY[this.currentDifficulty];
+    const legalMoves = getLegalMoves(state, state.currentTurnColor);
+    if (legalMoves.length === 0) return null;
+    if (legalMoves.length === 1) return legalMoves[0];
+
+    let bestMove: ChessMove = legalMoves[0];
+    let bestScore = -INFINITY;
+    const deadline = startTime + timeBudgetMs;
+
+    for (let depth = 1; depth <= cfg.maxDepth; depth++) {
+      const depthCfg = { ...cfg, maxDepth: depth };
+      const ordered = this.orderMoves(state, legalMoves, null, 0);
+      let iterationBest = -INFINITY;
+      let iterationMoves: ChessMove[] = [];
+
+      for (const move of ordered) {
+        if (Date.now() >= deadline) break;
+        const newState = applyBotMove(state, move);
+        const score = -this.alphaBeta(
+          newState,
+          depth - 1,
+          -INFINITY,
+          INFINITY,
+          depthCfg,
+          1,
+        );
+        if (score > iterationBest) {
+          iterationBest = score;
+          iterationMoves = [move];
+        } else if (score === iterationBest) {
+          iterationMoves.push(move);
+        }
+      }
+
+      if (Date.now() >= deadline) break;
+      if (iterationBest > bestScore) {
+        bestScore = iterationBest;
+        bestMove =
+          iterationMoves[Math.floor(Math.random() * iterationMoves.length)];
+      }
+    }
+
+    return bestMove;
   }
 
   private findKingOnRank(

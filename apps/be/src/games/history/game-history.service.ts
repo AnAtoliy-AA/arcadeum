@@ -293,6 +293,7 @@ export class GameHistoryService {
     // Get original room
     const originalRoom = await this.gameRoomModel
       .findById(originalRoomId)
+      .lean()
       .exec();
 
     if (!originalRoom) {

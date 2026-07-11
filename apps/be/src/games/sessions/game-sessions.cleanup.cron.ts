@@ -112,4 +112,29 @@ export class GameSessionsCleanupCron {
       this.logger.warn(`Old session/room deletion cron failed: ${String(err)}`);
     }
   }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async stripLogsFromCompletedSessions(): Promise<void> {
+    try {
+      const result = await this.sessionModel.updateMany(
+        {
+          status: 'completed',
+          'state.logs': { $exists: true, $not: { $size: 0 } },
+        },
+        {
+          $unset: { 'state.logs': 1, 'state.stateHistory': 1 },
+        },
+      );
+
+      if (result.modifiedCount > 0) {
+        this.logger.log(
+          `Stripped logs from ${result.modifiedCount} completed session(s).`,
+        );
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Completed session log strip cron failed: ${String(err)}`,
+      );
+    }
+  }
 }

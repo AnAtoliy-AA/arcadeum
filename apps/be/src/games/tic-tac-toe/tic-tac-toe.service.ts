@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -41,11 +43,13 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => TicTacToeBotService))
     private readonly botService: TicTacToeBotService,
+    @InjectConnection() private readonly mongoConnection: Connection,
   ) {
     this.watchdog = new GameBotWatchdog(
       'tic_tac_toe_v1',
       sessionsService,
       botService,
+      mongoConnection,
     );
   }
 

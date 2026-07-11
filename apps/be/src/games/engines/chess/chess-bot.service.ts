@@ -1,8 +1,7 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
-import { PIECE_VALUES, FILES } from './chess.constants';
-import type { PieceType } from './chess.constants';
-import type { ChessMove, ChessState, Rank } from './chess.types';
-import { posToBoardCoords, oppositeColor } from './chess.board';
+import { PIECE_VALUES } from './chess.constants';
+import type { ChessMove, ChessState } from './chess.types';
+import { oppositeColor } from './chess.board';
 import { getLegalMoves } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
 import { evaluate, CHECKMATE } from './chess-bot-eval';

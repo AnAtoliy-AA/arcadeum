@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.33] - 2026-07-11
+
+### Fixed
+- make sonar/radar free actions so bots can attack after using them
+- resolve memory leaks causing OOM crashes
+- tune MongoDB connection options to prevent periodic failures
+- add watchdog backoff and MongoDB connection resilience
+- increase SSR timeout and bot lock timeout to reduce dev warnings
+- auto-increment version when tag already exists on remote
+- add logging to silent catch blocks and track glimworm countdown timer
+- prevent memory leaks in emote rate limits and sea-bot lock maps
+- wire player stats recording to game completion flow
+- fix 7 memory leaks across backend services
+
+### Improved
+- add lean queries, aggregation optimization, indexes, and async logger
+- optimize queries and fix CI version-bump workflow
+- add .lean() to read-only Mongoose queries in hot paths
+- replace slow aggregation pipeline with fast player-stats reads
+
+
 ## [1.23.32] - 2026-07-10
 
 ### Fixed

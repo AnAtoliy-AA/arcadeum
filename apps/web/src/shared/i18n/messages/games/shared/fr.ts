@@ -76,6 +76,7 @@ export const frMessages = {
     joinRoom: 'Rejoindre une Salle',
     joining: 'Rejoindre...',
     watchRoom: 'Regarder',
+    watchResults: 'Voir les Résultats',
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
     share: 'Partager',

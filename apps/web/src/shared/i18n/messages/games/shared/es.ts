@@ -76,6 +76,7 @@ export const esMessages = {
     joinRoom: 'Unirse a Sala',
     joining: 'Uniéndose...',
     watchRoom: 'Ver',
+    watchResults: 'Ver Resultados',
     joinByCode: 'Unirse con código',
     cancel: 'Cancelar',
     share: 'Compartir',

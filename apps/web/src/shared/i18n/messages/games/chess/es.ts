@@ -72,15 +72,39 @@ export const esMessages = {
       startWithBots: 'Empezar con bots',
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
+      standard: 'Estándar',
+      chess960: 'Chess960',
+      standardDesc: 'Posición inicial clásica',
+      chess960Desc: 'Posición inicial aleatoria',
+      noClock: 'Sin reloj',
+      unlimitedTime: 'Tiempo ilimitado',
+      blitz: 'Blitz',
+      rapid: 'Rápido',
+      classical: 'Clásico',
+      easy: 'Fácil',
+      medium: 'Medio',
+      hard: 'Difícil',
     },
     rules: {
-      title: 'Reglas',
-      objective:
-        'Jaque mate al rey de tu oponente — ponlo en jaque sin posibilidad de escapar.',
-      pieces:
-        'Cada pieza se mueve diferente: rey (1 casilla), dama (cualquier dirección), torre (líneas rectas), alfil (diagonales), caballo (en L), peón (adelante, captura en diagonal).',
-      special:
-        'Movimientos especiales: enroque (rey + torre), captura al paso (captura de peón), promoción (peón llega a la última fila).',
+      title: 'Reglas del Ajedrez',
+      objective: 'Objetivo',
+      objectiveText:
+        'Jaque mate al rey de tu oponente. El rey está en jaque mate cuando está en jaque y no hay movimiento legal para escapar.',
+      pieces: 'Piezas',
+      special: 'Movimientos Especiales',
+      castling:
+        'El rey mueve dos casillas hacia una torre, y la torre salta sobre el rey. Debe estar despejado, el rey no en jaque, y ninguna pieza se ha movido.',
+      enPassant:
+        'Un peón puede capturar un peón oponente que acaba de mover dos casillas adelante, como si hubiera movido solo una.',
+      promotion:
+        'Un peón que alcanza el extremo opuesto se promociona a dama, torre, alfil o caballo.',
+      drawConditions: 'Condiciones de Empate',
+      drawStalemate: 'Tablas (sin movimientos legales, no en jaque)',
+      drawFiftyMove:
+        'Regla de 50 movimientos (50 movimientos sin capturas ni movimientos de peón)',
+      drawRepetition: 'Triple repetición',
+      drawMaterial: 'Material insuficiente',
+      gotIt: 'Entendido',
     },
     gameOver: {
       won: '¡Ganaste!',
@@ -97,6 +121,12 @@ export const esMessages = {
       resign: 'Rendirse',
       rematch: 'Revancha',
       leave: 'Salir',
+      draw: 'Empate',
+      drawOffered: 'Empate ofrecido',
+      acceptDraw: 'Aceptar empate',
+      declineDraw: 'Rechazar',
+      moveList: 'Lista de movimientos',
+      copyPGN: 'Copiar PGN',
     },
     chat: {
       move: '{{name}} movió {{notation}}',
@@ -118,10 +148,19 @@ export const esMessages = {
     },
     status: {
       turn: 'Turno de {{player}}',
+      white: 'Blancas',
+      black: 'Negras',
+      toMove: 'a mover',
       check: '¡Jaque!',
       checkmate: '¡Jaque mate!',
       winner: '{{player}} ganó',
       draw: 'Empate',
+      moves: '{{count}} movimientos',
+      promotionTitle: 'Promocionar peón a:',
+      collapse: 'Colapsar',
+      showAll: 'Mostrar todo ({{count}})',
+      copied: '¡Copiado!',
+      spectating: 'Observando',
     },
   },
 };

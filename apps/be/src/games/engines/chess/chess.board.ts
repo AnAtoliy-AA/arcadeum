@@ -109,6 +109,58 @@ export function setPiece(
   }
 }
 
+export function generateChess960BackRank(): (ChessPiece | null)[] {
+  const pieces: ('rook' | 'knight' | 'bishop' | 'queen' | 'king' | null)[] = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
+
+  const evenSquares = [0, 2, 4, 6];
+  const oddSquares = [1, 3, 5, 7];
+
+  const lightBishop =
+    evenSquares[Math.floor(Math.random() * evenSquares.length)];
+  pieces[lightBishop] = 'bishop';
+
+  const darkBishop = oddSquares[Math.floor(Math.random() * oddSquares.length)];
+  pieces[darkBishop] = 'bishop';
+
+  const remaining = [0, 1, 2, 3, 4, 5, 6, 7].filter(
+    (i) => i !== lightBishop && i !== darkBishop,
+  );
+
+  const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+  const threeSlots = [shuffled[0], shuffled[1], shuffled[2]].sort(
+    (a, b) => a - b,
+  );
+
+  pieces[threeSlots[0]] = 'rook';
+  pieces[threeSlots[1]] = 'king';
+  pieces[threeSlots[2]] = 'rook';
+
+  const afterKingRooks = remaining.filter(
+    (i) => i !== threeSlots[0] && i !== threeSlots[1] && i !== threeSlots[2],
+  );
+  const queenIdx =
+    afterKingRooks[Math.floor(Math.random() * afterKingRooks.length)];
+  pieces[queenIdx] = 'queen';
+
+  const knights = afterKingRooks.filter((i) => i !== queenIdx);
+  for (const k of knights) {
+    pieces[k] = 'knight';
+  }
+
+  return pieces.map((type) =>
+    type ? ({ type, color: 'white' } as ChessPiece) : null,
+  );
+}
+
 export function isThreefoldRepetition(history: string[]): boolean {
   if (history.length < 6) return false;
   const current = history[history.length - 1];

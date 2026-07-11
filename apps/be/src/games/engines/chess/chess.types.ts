@@ -70,6 +70,7 @@ export interface LegalMove {
 
 export interface ChessState extends BaseGameState {
   variant: ChessVariant;
+  timeControl: TimeControl | null;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -85,6 +86,8 @@ export interface ChessState extends BaseGameState {
   isDrawByRepetition: boolean;
   isDrawByFiftyMoveRule: boolean;
   isInsufficientMaterial: boolean;
+  isDrawByAgreement: boolean;
+  drawOfferedBy: string | null;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   legalMovesForCurrentPlayer: LegalMove[];

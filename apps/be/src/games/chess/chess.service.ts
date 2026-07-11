@@ -89,10 +89,17 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
+    botDifficulty?: string,
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
     if (room.hostId !== userId) {
       throw new Error('Only the host can start the game');
+    }
+
+    if (botDifficulty && ['easy', 'medium', 'hard'].includes(botDifficulty)) {
+      this.botService.setDifficulty(
+        botDifficulty as 'easy' | 'medium' | 'hard',
+      );
     }
 
     const options = this.resolveOptions(room.gameOptions);
@@ -159,6 +166,14 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
 
   async forfeit(userId: string, roomId: string) {
     return this.runAction(userId, roomId, 'forfeit', {});
+  }
+
+  async drawOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_offer', {});
+  }
+
+  async drawAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_accept', {});
   }
 
   private async runAction(
@@ -240,6 +255,11 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         100,
       );
       for (const session of stale) {
+        this.checkClockTimeout(session).catch((err) =>
+          this.logger.error(
+            `Clock timeout check failed for room ${session.roomId}: ${err}`,
+          ),
+        );
         this.botService
           .checkAndPlay(session)
           .catch((err) =>
@@ -268,6 +288,43 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         );
       }
     }
+  }
+
+  private async checkClockTimeout(session: GameSessionSummary) {
+    const state = session.state as ChessState | undefined;
+    if (!state || !state.clocks || this.isGameOver(state)) return;
+
+    const currentClock = state.clocks[state.currentTurnColor];
+    if (!currentClock) return;
+
+    const elapsed = Math.floor(
+      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
+    );
+    const remaining = currentClock.remainingSeconds - elapsed;
+
+    if (remaining <= 0) {
+      const loser = state.players.find(
+        (p) => p.color === state.currentTurnColor,
+      );
+      const winner = state.players.find(
+        (p) => p.color !== state.currentTurnColor,
+      );
+      if (loser && winner) {
+        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
+      }
+    }
+  }
+
+  private isGameOver(state: ChessState): boolean {
+    return (
+      state.isCheckmate ||
+      state.isStalemate ||
+      state.winnerColor !== null ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isDrawByAgreement
+    );
   }
 
   private resolveOptions(raw: unknown): ChessOptions {

@@ -89,10 +89,17 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
+    botDifficulty?: string,
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
     if (room.hostId !== userId) {
       throw new Error('Only the host can start the game');
+    }
+
+    if (botDifficulty && ['easy', 'medium', 'hard'].includes(botDifficulty)) {
+      this.botService.setDifficulty(
+        botDifficulty as 'easy' | 'medium' | 'hard',
+      );
     }
 
     const options = this.resolveOptions(room.gameOptions);

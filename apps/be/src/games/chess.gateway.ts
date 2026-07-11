@@ -64,6 +64,7 @@ export class ChessGateway {
       userId?: string;
       withBots?: boolean;
       botCount?: number;
+      botDifficulty?: string;
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
@@ -73,6 +74,7 @@ export class ChessGateway {
         roomId,
         !!payload?.withBots,
         payload?.botCount,
+        payload?.botDifficulty,
       );
       client.emit('chess.session.started', maybeEncrypt(result));
     } catch (error) {

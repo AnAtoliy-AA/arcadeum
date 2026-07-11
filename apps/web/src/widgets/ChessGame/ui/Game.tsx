@@ -194,7 +194,6 @@ function ChessGameImpl({
     );
 
   const isFlipped = myColor === 'black';
-
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
     const last =
@@ -335,6 +334,7 @@ function ChessGameImpl({
           startSession({
             withBots: !!opts?.withBots,
             botCount: opts?.botCount,
+            botDifficulty: opts?.botDifficulty,
           });
         }}
         onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}

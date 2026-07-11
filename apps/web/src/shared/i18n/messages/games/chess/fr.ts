@@ -81,6 +81,9 @@ export const frMessages = {
       blitz: 'Blitz',
       rapid: 'Rapide',
       classical: 'Classique',
+      easy: 'Facile',
+      medium: 'Moyen',
+      hard: 'Difficile',
     },
     rules: {
       title: 'Règles des Échecs',

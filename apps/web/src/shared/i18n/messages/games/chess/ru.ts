@@ -81,6 +81,9 @@ export const ruMessages = {
       blitz: 'Блиц',
       rapid: 'Быстрые',
       classical: 'Классические',
+      easy: 'Лёгкий',
+      medium: 'Средний',
+      hard: 'Сложный',
     },
     rules: {
       title: 'Правила шахмат',

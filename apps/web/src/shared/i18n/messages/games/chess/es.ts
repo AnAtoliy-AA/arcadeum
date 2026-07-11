@@ -81,6 +81,9 @@ export const esMessages = {
       blitz: 'Blitz',
       rapid: 'Rápido',
       classical: 'Clásico',
+      easy: 'Fácil',
+      medium: 'Medio',
+      hard: 'Difícil',
     },
     rules: {
       title: 'Reglas del Ajedrez',

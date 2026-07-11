@@ -81,6 +81,9 @@ export const byMessages = {
       blitz: 'Бліц',
       rapid: 'Хуткія',
       classical: 'Класічныя',
+      easy: 'Лёгкі',
+      medium: 'Сярэдні',
+      hard: 'Складаны',
     },
     rules: {
       title: 'Правілы шахмат',

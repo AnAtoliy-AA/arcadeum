@@ -81,6 +81,9 @@ export const enMessages = {
       blitz: 'Blitz',
       rapid: 'Rapid',
       classical: 'Classical',
+      easy: 'Easy',
+      medium: 'Medium',
+      hard: 'Hard',
     },
     rules: {
       title: 'Chess Rules',

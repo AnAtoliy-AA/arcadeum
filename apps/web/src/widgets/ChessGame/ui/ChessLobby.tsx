@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { YStack, Text } from 'tamagui';
+import { useMemo, useState } from 'react';
+import { YStack, XStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -29,12 +29,18 @@ function formatTimeControl(tc: TimeControl | null): string {
     : `${mins}|0`;
 }
 
+type BotDifficulty = 'easy' | 'medium' | 'hard';
+
 interface ChessLobbyProps {
   room: GameRoomSummary;
   userId: string;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    botDifficulty?: BotDifficulty;
+  }) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
@@ -42,6 +48,8 @@ interface ChessLobbyProps {
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
 }
+
+const DIFFICULTY_OPTIONS: BotDifficulty[] = ['easy', 'medium', 'hard'];
 
 export function ChessLobby({
   room,
@@ -58,6 +66,7 @@ export function ChessLobby({
 }: ChessLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const [botDifficulty, setBotDifficulty] = useState<BotDifficulty>('medium');
 
   const options = useMemo(() => {
     const raw = (room.gameOptions ?? {}) as Partial<{
@@ -147,7 +156,11 @@ export function ChessLobby({
                 {formatTimeControl(tc)}
               </Text>
               <Text fontSize="$2" opacity={0.7}>
-                {t(`games.chess_v1.lobby.${tc.type}`)}
+                {tc.type === 'blitz'
+                  ? t('games.chess_v1.lobby.blitz')
+                  : tc.type === 'rapid'
+                    ? t('games.chess_v1.lobby.rapid')
+                    : t('games.chess_v1.lobby.classical')}
               </Text>
             </button>
           ))}
@@ -181,6 +194,43 @@ export function ChessLobby({
           </button>
         </YStack>
       </YStack>
+
+      <YStack gap="$2">
+        <Text fontWeight="600">Bot Difficulty</Text>
+        <XStack gap="$2">
+          {DIFFICULTY_OPTIONS.map((diff) => (
+            <button
+              key={diff}
+              type="button"
+              onClick={() => setBotDifficulty(diff)}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 10,
+                border:
+                  botDifficulty === diff
+                    ? '2px solid #2563eb'
+                    : '1px solid rgba(255,255,255,0.15)',
+                backgroundColor:
+                  botDifficulty === diff
+                    ? 'rgba(37,99,235,0.15)'
+                    : 'rgba(255,255,255,0.03)',
+                color: 'inherit',
+                cursor: 'pointer',
+                textAlign: 'center' as const,
+              }}
+            >
+              <Text fontWeight="600" fontSize="$2">
+                {diff === 'easy'
+                  ? t('games.chess_v1.lobby.easy')
+                  : diff === 'medium'
+                    ? t('games.chess_v1.lobby.medium')
+                    : t('games.chess_v1.lobby.hard')}
+              </Text>
+            </button>
+          ))}
+        </XStack>
+      </YStack>
     </YStack>
   );
 
@@ -191,7 +241,7 @@ export function ChessLobby({
         userId={userId}
         isHost={isHost}
         startBusy={startBusy}
-        onStartGame={onStartGame}
+        onStartGame={(opts) => onStartGame({ ...opts, botDifficulty })}
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}
         onKickPlayer={onKickPlayer}

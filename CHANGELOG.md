@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.34] - 2026-07-11
+
+### Added
+- add time-based bot thinking budget
+- add spectator mode for non-player viewers
+- add drag-and-drop piece movement on chess board
+- add bot difficulty selection in lobby
+- overhaul bot with quiescence, TT, MVV-LVA, null move, LMR, difficulty levels
+- implement Chess960 variant, fix en passant bug, add tests
+
+### Fixed
+- replace all hardcoded English strings with i18n translations
+- apply clock increment after moves and detect timeout on backend
+- fix MoveList t-prop type for translation function
+
+
 ## [1.23.33] - 2026-07-11
 
 ### Fixed

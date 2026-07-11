@@ -24,6 +24,12 @@ interface ChessBoardProps {
   kingPosition: BoardPosition | null;
   ariaLabel?: string;
   onSquareClick: (file: File, rank: Rank) => void;
+  onPieceDrop?: (
+    fromFile: File,
+    fromRank: Rank,
+    toFile: File,
+    toRank: Rank,
+  ) => void;
 }
 
 function rankToFile(rank: number): number {
@@ -42,8 +48,10 @@ function ChessBoardImpl({
   kingPosition,
   ariaLabel,
   onSquareClick,
+  onPieceDrop,
 }: ChessBoardProps) {
   const [hoveredSquare, setHoveredSquare] = useState<string | null>(null);
+  const [dragOverSquare, setDragOverSquare] = useState<string | null>(null);
 
   const legalMoveSet = useMemo(() => {
     const s = new Set<string>();
@@ -127,6 +135,7 @@ function ChessBoardImpl({
             if (selected) bg = '#82976d';
             else if (kingCheck) bg = '#e74c3c';
             else if (lastMoved) bg = isLight ? '#ced26b' : '#aaa23a';
+            const isDragOver = dragOverSquare === `${file}-${rank}`;
 
             const symbol = piece
               ? PIECE_SYMBOLS[piece.type][piece.color]
@@ -143,10 +152,40 @@ function ChessBoardImpl({
                 onClick={() => onSquareClick(file, rank)}
                 onMouseEnter={() => setHoveredSquare(`${file}-${rank}`)}
                 onMouseLeave={() => setHoveredSquare(null)}
+                draggable={isMyPiece && !disabled}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', `${file}-${rank}`);
+                  e.dataTransfer.effectAllowed = 'move';
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  setDragOverSquare(`${file}-${rank}`);
+                }}
+                onDragLeave={() => setDragOverSquare(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOverSquare(null);
+                  const data = e.dataTransfer.getData('text/plain');
+                  if (data && onPieceDrop) {
+                    const [fromFile, fromRank] = data.split('-');
+                    onPieceDrop(
+                      fromFile as File,
+                      Number(fromRank) as Rank,
+                      file,
+                      rank,
+                    );
+                  }
+                }}
                 style={{
                   flex: 1,
                   aspectRatio: '1 / 1',
-                  backgroundColor: hovered && legalTarget ? '#d4e157' : bg,
+                  backgroundColor:
+                    isDragOver && legalTarget
+                      ? '#d4e157'
+                      : hovered && legalTarget
+                        ? '#d4e157'
+                        : bg,
                   border: 'none',
                   display: 'flex',
                   alignItems: 'center',

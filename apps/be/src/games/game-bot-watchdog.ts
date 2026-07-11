@@ -11,6 +11,8 @@ export interface BotService {
   checkAndPlay(session: GameSessionSummary): Promise<void>;
 }
 
+export type PreCheckFn = (session: GameSessionSummary) => Promise<void>;
+
 /**
  * Shared watchdog that polls for stale active sessions and triggers a bot
  * to play. Used by Critical, Sea Battle, Tic-Tac-Toe, Chess, and Cascade
@@ -26,6 +28,7 @@ export class GameBotWatchdog {
     private readonly gameId: string,
     private readonly sessionsService: GameSessionsService,
     private readonly botService: BotService,
+    private readonly preCheck?: PreCheckFn,
   ) {}
 
   start(): void {
@@ -53,6 +56,13 @@ export class GameBotWatchdog {
       );
 
       for (const session of staleSessions) {
+        if (this.preCheck) {
+          this.preCheck(session).catch((err) =>
+            this.logger.error(
+              `Watchdog pre-check failed for room ${session.roomId}: ${err}`,
+            ),
+          );
+        }
         this.botService
           .checkAndPlay(session)
           .catch((err) =>

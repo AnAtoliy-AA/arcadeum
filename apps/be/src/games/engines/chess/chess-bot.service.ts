@@ -5,116 +5,91 @@ import type { ChessMove, ChessState, Rank } from './chess.types';
 import { posToBoardCoords, oppositeColor } from './chess.board';
 import { getLegalMoves } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
+import { evaluate, CHECKMATE } from './chess-bot-eval';
+import {
+  applyBotMove,
+  hasNonPawnMaterial,
+  hashState,
+  scoreMove,
+} from './chess-bot-utils';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessService } from '../../chess/chess.service';
 
-const MAX_DEPTH = 4;
 const INFINITY = 999999;
+const TT_SIZE = 1 << 20;
+const TT_MASK = TT_SIZE - 1;
 
-const PIECE_SQUARE_TABLES: Record<PieceType, number[][]> = {
-  pawn: [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [50, 50, 50, 50, 50, 50, 50, 50],
-    [10, 10, 20, 30, 30, 20, 10, 10],
-    [5, 5, 10, 25, 25, 10, 5, 5],
-    [0, 0, 0, 20, 20, 0, 0, 0],
-    [5, -5, -10, 0, 0, -10, -5, 5],
-    [5, 10, 10, -20, -20, 10, 10, 5],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ],
-  knight: [
-    [-50, -40, -30, -30, -30, -30, -40, -50],
-    [-40, -20, 0, 0, 0, 0, -20, -40],
-    [-30, 0, 10, 15, 15, 10, 0, -30],
-    [-30, 5, 15, 20, 20, 15, 5, -30],
-    [-30, 0, 15, 20, 20, 15, 0, -30],
-    [-30, 5, 10, 15, 15, 10, 5, -30],
-    [-40, -20, 0, 5, 5, 0, -20, -40],
-    [-50, -40, -30, -30, -30, -30, -40, -50],
-  ],
-  bishop: [
-    [-20, -10, -10, -10, -10, -10, -10, -20],
-    [-10, 0, 0, 0, 0, 0, 0, -10],
-    [-10, 0, 10, 10, 10, 10, 0, -10],
-    [-10, 5, 5, 10, 10, 5, 5, -10],
-    [-10, 0, 10, 10, 10, 10, 0, -10],
-    [-10, 10, 10, 10, 10, 10, 10, -10],
-    [-10, 5, 0, 0, 0, 0, 5, -10],
-    [-20, -10, -10, -10, -10, -10, -10, -20],
-  ],
-  rook: [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [5, 10, 10, 10, 10, 10, 10, 5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [0, 0, 0, 5, 5, 0, 0, 0],
-  ],
-  queen: [
-    [-20, -10, -10, -5, -5, -10, -10, -20],
-    [-10, 0, 0, 0, 0, 0, 0, -10],
-    [-10, 0, 5, 5, 5, 5, 0, -10],
-    [-5, 0, 5, 5, 5, 5, 0, -5],
-    [0, 0, 5, 5, 5, 5, 0, -5],
-    [-10, 5, 5, 5, 5, 5, 0, -10],
-    [-10, 0, 5, 0, 0, 0, 0, -10],
-    [-20, -10, -10, -5, -5, -10, -10, -20],
-  ],
-  king: [
-    [-30, -40, -40, -50, -50, -40, -40, -30],
-    [-30, -40, -40, -50, -50, -40, -40, -30],
-    [-30, -40, -40, -50, -50, -40, -40, -30],
-    [-30, -40, -40, -50, -50, -40, -40, -30],
-    [-20, -30, -30, -40, -40, -30, -30, -20],
-    [-10, -20, -20, -20, -20, -20, -20, -10],
-    [20, 20, 0, 0, 0, 0, 20, 20],
-    [20, 30, 10, 0, 0, 10, 30, 20],
-  ],
+const enum TTFlag {
+  EXACT,
+  LOWER,
+  UPPER,
+}
+
+interface TTEntry {
+  key: number;
+  depth: number;
+  score: number;
+  flag: TTFlag;
+  bestMove: ChessMove | null;
+}
+
+type BotDifficulty = 'easy' | 'medium' | 'hard';
+
+interface DifficultyConfig {
+  maxDepth: number;
+  quiescenceDepth: number;
+  useNullMove: boolean;
+  useLMR: boolean;
+  noiseCentipawns: number;
+}
+
+const DIFFICULTY: Record<BotDifficulty, DifficultyConfig> = {
+  easy: {
+    maxDepth: 2,
+    quiescenceDepth: 0,
+    useNullMove: false,
+    useLMR: false,
+    noiseCentipawns: 80,
+  },
+  medium: {
+    maxDepth: 3,
+    quiescenceDepth: 4,
+    useNullMove: false,
+    useLMR: false,
+    noiseCentipawns: 20,
+  },
+  hard: {
+    maxDepth: 4,
+    quiescenceDepth: 6,
+    useNullMove: true,
+    useLMR: true,
+    noiseCentipawns: 0,
+  },
 };
 
 @Injectable()
 export class ChessBotService {
   private readonly logger = new Logger(ChessBotService.name);
   private readonly processing = new Set<string>();
-  private moveFn:
-    | ((
-        userId: string,
-        roomId: string,
-        payload: {
-          fromFile: string;
-          fromRank: number;
-          toFile: string;
-          toRank: number;
-          promotion?: string;
-        },
-      ) => Promise<unknown>)
-    | null = null;
+  private readonly tt = new Map<number, TTEntry>();
+  private killers: ChessMove[][] = [];
+  private history: number[][] = [];
+  private moveFn: ((...args: unknown[]) => Promise<unknown>) | null = null;
+  private currentDifficulty: BotDifficulty = 'medium';
 
   constructor(
     @Inject(forwardRef(() => ChessService))
     private readonly chessService: ChessService,
   ) {}
 
-  setMoveFn(
-    fn: (
-      userId: string,
-      roomId: string,
-      payload: {
-        fromFile: string;
-        fromRank: number;
-        toFile: string;
-        toRank: number;
-        promotion?: string;
-      },
-    ) => Promise<unknown>,
-  ) {
+  setMoveFn(fn: (...args: unknown[]) => Promise<unknown>) {
     this.moveFn = fn;
   }
-
   isBot(userId: string): boolean {
     return userId.startsWith('bot-');
+  }
+  setDifficulty(d: BotDifficulty) {
+    this.currentDifficulty = d;
   }
 
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
@@ -135,15 +110,28 @@ export class ChessBotService {
       (p) => p.color === state.currentTurnColor,
     )?.playerId;
     if (!currentId || !this.isBot(currentId)) return;
-
     if (this.processing.has(session.roomId)) return;
     this.processing.add(session.roomId);
 
     try {
-      const move = this.findBestMove(state);
+      this.tt.clear();
+      this.killers = Array.from({ length: 20 }, (): ChessMove[] => []);
+      this.history = Array.from({ length: 8 }, (): number[] => [
+        0, 0, 0, 0, 0, 0, 0, 0,
+      ]);
+
+      const timeBudget = this.computeTimeBudget(state);
+      const startTime = Date.now();
+      const move = this.findBestMoveWithTimeBudget(
+        state,
+        timeBudget,
+        startTime,
+      );
       if (!move) return;
 
-      const delay = 400 + Math.random() * 700;
+      const elapsed = Date.now() - startTime;
+      const minDelay = 300;
+      const delay = Math.max(minDelay, Math.min(800, 1500 - elapsed));
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {
@@ -163,19 +151,30 @@ export class ChessBotService {
   }
 
   findBestMove(state: ChessState): ChessMove | null {
+    if (!this.killers.length) {
+      this.killers = Array.from({ length: 20 }, (): ChessMove[] => []);
+      this.history = Array.from({ length: 8 }, (): number[] => [
+        0, 0, 0, 0, 0, 0, 0, 0,
+      ]);
+    }
+    const cfg = DIFFICULTY[this.currentDifficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;
+    if (legalMoves.length === 1) return legalMoves[0];
 
+    const ordered = this.orderMoves(state, legalMoves, null, 0);
     let bestScore = -INFINITY;
     let bestMoves: ChessMove[] = [];
 
-    for (const move of legalMoves) {
-      const newState = this.applyMove(state, move);
-      const score = -this.alphabeta(
+    for (const move of ordered) {
+      const newState = applyBotMove(state, move);
+      const score = -this.alphaBeta(
         newState,
-        MAX_DEPTH - 1,
+        cfg.maxDepth - 1,
         -INFINITY,
         INFINITY,
+        cfg,
+        1,
       );
 
       if (score > bestScore) {
@@ -186,31 +185,197 @@ export class ChessBotService {
       }
     }
 
+    if (cfg.noiseCentipawns > 0 && bestMoves.length > 1) {
+      const noisy = bestMoves.map((m) => ({
+        move: m,
+        score: bestScore + (Math.random() - 0.5) * cfg.noiseCentipawns,
+      }));
+      noisy.sort((a, b) => b.score - a.score);
+      return noisy[0].move;
+    }
+
     return bestMoves[Math.floor(Math.random() * bestMoves.length)];
   }
 
-  private alphabeta(
+  private alphaBeta(
     state: ChessState,
     depth: number,
     alpha: number,
     beta: number,
+    cfg: DifficultyConfig,
+    ply: number,
   ): number {
-    if (
-      depth === 0 ||
-      state.isCheckmate ||
-      state.isStalemate ||
-      state.winnerColor
-    ) {
-      return this.evaluate(state);
+    const inCheck = isInCheck(state.board, state.currentTurnColor);
+
+    if (depth <= 0 && !inCheck) {
+      return this.quiesce(state, alpha, beta, cfg.quiescenceDepth, ply);
     }
 
+    const ttKey = hashState(state);
+    const ttEntry = this.tt.get(ttKey & TT_MASK);
+    if (ttEntry && ttEntry.key === ttKey && ttEntry.depth >= depth) {
+      if (ttEntry.flag === TTFlag.EXACT) return ttEntry.score;
+      if (ttEntry.flag === TTFlag.LOWER && ttEntry.score >= beta)
+        return ttEntry.score;
+      if (ttEntry.flag === TTFlag.UPPER && ttEntry.score <= alpha)
+        return ttEntry.score;
+    }
+
+    if (depth === 0) return evaluate(state);
+
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
-    const ordered = this.orderMoves(legalMoves);
+    if (legalMoves.length === 0) {
+      return inCheck ? -(CHECKMATE - ply) : 0;
+    }
 
-    for (const move of ordered) {
-      const newState = this.applyMove(state, move);
-      const score = -this.alphabeta(newState, depth - 1, -beta, -alpha);
+    if (
+      cfg.useNullMove &&
+      !inCheck &&
+      depth >= 3 &&
+      hasNonPawnMaterial(state)
+    ) {
+      const nullState = {
+        ...state,
+        currentTurnColor: oppositeColor(state.currentTurnColor),
+        enPassantTarget: null,
+      };
+      const nullScore = -this.alphaBeta(
+        nullState,
+        depth - 3,
+        -beta,
+        -beta + 1,
+        cfg,
+        ply + 1,
+      );
+      if (nullScore >= beta) return beta;
+    }
 
+    const bestMove = ttEntry?.key === ttKey ? ttEntry.bestMove : null;
+    const ordered = this.orderMoves(state, legalMoves, bestMove, ply);
+
+    let bestScore = -INFINITY;
+    let bestMoveFound: ChessMove | null = null;
+    let flag = TTFlag.UPPER;
+
+    for (let i = 0; i < ordered.length; i++) {
+      const move = ordered[i];
+      const newState = applyBotMove(state, move);
+
+      let score: number;
+      if (i === 0) {
+        score = -this.alphaBeta(
+          newState,
+          depth - 1,
+          -beta,
+          -alpha,
+          cfg,
+          ply + 1,
+        );
+      } else if (
+        cfg.useLMR &&
+        i >= 4 &&
+        depth >= 3 &&
+        !move.captured &&
+        !move.promotion &&
+        !inCheck
+      ) {
+        score = -this.alphaBeta(
+          newState,
+          depth - 2,
+          -alpha - 1,
+          -alpha,
+          cfg,
+          ply + 1,
+        );
+        if (score > alpha) {
+          score = -this.alphaBeta(
+            newState,
+            depth - 1,
+            -beta,
+            -alpha,
+            cfg,
+            ply + 1,
+          );
+        }
+      } else {
+        score = -this.alphaBeta(
+          newState,
+          depth - 1,
+          -beta,
+          -alpha,
+          cfg,
+          ply + 1,
+        );
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMoveFound = move;
+      }
+      if (score > alpha) alpha = score;
+      if (score >= beta) {
+        if (!move.captured) {
+          this.killers[ply] = this.killers[ply] || [];
+          this.killers[ply].unshift(move);
+          if (this.killers[ply].length > 2) this.killers[ply].pop();
+          const ff = move.from.file.charCodeAt(0) - 97;
+          const fr = 8 - move.from.rank;
+          this.history[fr][ff] += depth * depth;
+        }
+        flag = TTFlag.LOWER;
+        break;
+      }
+    }
+
+    this.tt.set(ttKey & TT_MASK, {
+      key: ttKey,
+      depth,
+      score: bestScore,
+      flag,
+      bestMove: bestMoveFound,
+    });
+    return bestScore;
+  }
+
+  private quiesce(
+    state: ChessState,
+    alpha: number,
+    beta: number,
+    depthLeft: number,
+    ply: number,
+  ): number {
+    const standPat = evaluate(state);
+    if (depthLeft === 0) return standPat;
+    if (standPat >= beta) return beta;
+    if (standPat > alpha) alpha = standPat;
+
+    const captures = getLegalMoves(state, state.currentTurnColor).filter(
+      (m) => m.captured,
+    );
+    captures.sort((a, b) => {
+      const va = a.captured
+        ? PIECE_VALUES[a.captured.type] * 10 - PIECE_VALUES[a.piece.type]
+        : 0;
+      const vb = b.captured
+        ? PIECE_VALUES[b.captured.type] * 10 - PIECE_VALUES[b.piece.type]
+        : 0;
+      return vb - va;
+    });
+
+    for (const move of captures) {
+      if (
+        move.captured &&
+        PIECE_VALUES[move.captured.type] * 100 + standPat < alpha - 200
+      )
+        continue;
+      const newState = applyBotMove(state, move);
+      const score = -this.quiesce(
+        newState,
+        -beta,
+        -alpha,
+        depthLeft - 1,
+        ply + 1,
+      );
       if (score >= beta) return beta;
       if (score > alpha) alpha = score;
     }
@@ -218,125 +383,108 @@ export class ChessBotService {
     return alpha;
   }
 
-  private evaluate(state: ChessState): number {
-    if (state.isCheckmate) {
-      return state.currentTurnColor === 'white' ? -100000 : 100000;
-    }
-    if (
-      state.isStalemate ||
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial
-    ) {
-      return 0;
-    }
-
-    let score = 0;
-    for (let r = 0; r < 8; r++) {
-      for (let f = 0; f < 8; f++) {
-        const piece = state.board[r][f];
-        if (!piece) continue;
-
-        const value = PIECE_VALUES[piece.type] * 100;
-        const table = PIECE_SQUARE_TABLES[piece.type];
-        const pstRow = piece.color === 'white' ? r : 7 - r;
-        const pstBonus = table[pstRow][f];
-
-        score +=
-          piece.color === 'white' ? value + pstBonus : -(value + pstBonus);
-      }
-    }
-
-    return score;
-  }
-
-  private orderMoves(moves: ChessMove[]): ChessMove[] {
+  private orderMoves(
+    state: ChessState,
+    moves: ChessMove[],
+    ttMove: ChessMove | null,
+    ply: number,
+  ): ChessMove[] {
+    const killers = this.killers[ply] || [];
     return [...moves].sort((a, b) => {
-      const scoreA =
-        (a.captured ? PIECE_VALUES[a.captured.type] * 10 : 0) +
-        (a.promotion ? 80 : 0) +
-        (a.isCastle ? 50 : 0);
-      const scoreB =
-        (b.captured ? PIECE_VALUES[b.captured.type] * 10 : 0) +
-        (b.promotion ? 80 : 0) +
-        (b.isCastle ? 50 : 0);
-      return scoreB - scoreA;
+      if (
+        ttMove &&
+        a.from.file === ttMove.from.file &&
+        a.from.rank === ttMove.from.rank &&
+        a.to.file === ttMove.to.file &&
+        a.to.rank === ttMove.to.rank
+      )
+        return -1;
+      if (
+        ttMove &&
+        b.from.file === ttMove.from.file &&
+        b.from.rank === ttMove.from.rank &&
+        b.to.file === ttMove.to.file &&
+        b.to.rank === ttMove.to.rank
+      )
+        return 1;
+
+      return (
+        scoreMove(b, killers, this.history) -
+        scoreMove(a, killers, this.history)
+      );
     });
   }
 
-  private applyMove(state: ChessState, move: ChessMove): ChessState {
-    const newBoard = structuredClone(state.board);
-    const fromCoords = posToBoardCoords(move.from);
-    const toCoords = posToBoardCoords(move.to);
+  private computeTimeBudget(state: ChessState): number {
+    if (!state.clocks) return 2000;
+    const clock = state.clocks[state.currentTurnColor];
+    if (!clock) return 2000;
+    const remaining = clock.remainingSeconds;
+    if (remaining <= 10) return Math.min(500, remaining * 30);
+    if (remaining <= 60) return Math.min(2000, remaining * 15);
+    return Math.min(5000, remaining * 5);
+  }
 
-    if (move.isEnPassant) {
-      newBoard[fromCoords.rank][toCoords.file] = null;
-    }
+  private findBestMoveWithTimeBudget(
+    state: ChessState,
+    timeBudgetMs: number,
+    startTime: number,
+  ): ChessMove | null {
+    const cfg = DIFFICULTY[this.currentDifficulty];
+    const legalMoves = getLegalMoves(state, state.currentTurnColor);
+    if (legalMoves.length === 0) return null;
+    if (legalMoves.length === 1) return legalMoves[0];
 
-    newBoard[toCoords.rank][toCoords.file] = move.promotion
-      ? { type: move.promotion, color: move.piece.color }
-      : newBoard[fromCoords.rank][fromCoords.file];
-    newBoard[fromCoords.rank][fromCoords.file] = null;
+    let bestMove: ChessMove = legalMoves[0];
+    let bestScore = -INFINITY;
+    const deadline = startTime + timeBudgetMs;
 
-    if (move.isCastle) {
-      if (toCoords.file === 6) {
-        newBoard[toCoords.rank][5] = newBoard[toCoords.rank][7];
-        newBoard[toCoords.rank][7] = null;
-      } else if (toCoords.file === 2) {
-        newBoard[toCoords.rank][3] = newBoard[toCoords.rank][0];
-        newBoard[toCoords.rank][0] = null;
+    for (let depth = 1; depth <= cfg.maxDepth; depth++) {
+      const depthCfg = { ...cfg, maxDepth: depth };
+      const ordered = this.orderMoves(state, legalMoves, null, 0);
+      let iterationBest = -INFINITY;
+      let iterationMoves: ChessMove[] = [];
+
+      for (const move of ordered) {
+        if (Date.now() >= deadline) break;
+        const newState = applyBotMove(state, move);
+        const score = -this.alphaBeta(
+          newState,
+          depth - 1,
+          -INFINITY,
+          INFINITY,
+          depthCfg,
+          1,
+        );
+        if (score > iterationBest) {
+          iterationBest = score;
+          iterationMoves = [move];
+        } else if (score === iterationBest) {
+          iterationMoves.push(move);
+        }
+      }
+
+      if (Date.now() >= deadline) break;
+      if (iterationBest > bestScore) {
+        bestScore = iterationBest;
+        bestMove =
+          iterationMoves[Math.floor(Math.random() * iterationMoves.length)];
       }
     }
 
-    const newEnPassant =
-      move.piece.type === 'pawn' &&
-      Math.abs(toCoords.rank - fromCoords.rank) === 2
-        ? {
-            rank: ((fromCoords.rank + toCoords.rank) / 2 + 1) as Rank,
-            file: FILES[fromCoords.file],
-          }
-        : null;
+    return bestMove;
+  }
 
-    const newCastlingRights = structuredClone(state.castlingRights);
-    if (move.piece.type === 'king') {
-      if (move.piece.color === 'white') {
-        newCastlingRights.whiteKingSide = false;
-        newCastlingRights.whiteQueenSide = false;
-      } else {
-        newCastlingRights.blackKingSide = false;
-        newCastlingRights.blackQueenSide = false;
-      }
+  private findKingOnRank(
+    board: ChessState['board'],
+    rank: number,
+    color: 'white' | 'black',
+  ): number | null {
+    const row = 8 - rank;
+    for (let f = 0; f < 8; f++) {
+      if (board[row][f]?.type === 'king' && board[row][f]?.color === color)
+        return f;
     }
-    if (move.piece.type === 'rook') {
-      if (move.from.file === 'h' && move.from.rank === 8)
-        newCastlingRights.whiteKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 8)
-        newCastlingRights.whiteQueenSide = false;
-      if (move.from.file === 'h' && move.from.rank === 1)
-        newCastlingRights.blackKingSide = false;
-      if (move.from.file === 'a' && move.from.rank === 1)
-        newCastlingRights.blackQueenSide = false;
-    }
-
-    const opp = oppositeColor(state.currentTurnColor);
-    const isCheck = isInCheck(newBoard, opp);
-
-    return {
-      ...state,
-      board: newBoard,
-      currentTurnColor: opp,
-      castlingRights: newCastlingRights,
-      enPassantTarget: newEnPassant,
-      halfMoveClock: move.captured ? 0 : state.halfMoveClock + 1,
-      fullMoveNumber:
-        state.currentTurnColor === 'black'
-          ? state.fullMoveNumber + 1
-          : state.fullMoveNumber,
-      moveHistory: [...state.moveHistory, move],
-      isCheck,
-      isCheckmate: false,
-      isStalemate: false,
-      logs: [],
-    };
+    return null;
   }
 }

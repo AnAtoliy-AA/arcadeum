@@ -112,6 +112,7 @@ export interface LegalMove {
 export interface ChessClientState {
   phase: ChessPhase;
   variant: 'standard' | 'chess960';
+  timeControl: TimeControl | null;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -127,6 +128,8 @@ export interface ChessClientState {
   isDrawByRepetition: boolean;
   isDrawByFiftyMoveRule: boolean;
   isInsufficientMaterial: boolean;
+  isDrawByAgreement: boolean;
+  drawOfferedBy: string | null;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   currentTurnIndex: number;

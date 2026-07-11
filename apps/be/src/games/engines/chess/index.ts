@@ -34,5 +34,13 @@ export type { ChessVariant, PieceColor, PieceType } from './chess.constants';
 export * from './chess.board';
 export * from './chess.attacks';
 export * from './chess.move-generator';
+export { simulateMove, createMove } from './chess.move-utils';
 export { ChessEngine } from './chess.engine';
 export { ChessBotService } from './chess-bot.service';
+export { evaluate as evaluatePosition, CHECKMATE } from './chess-bot-eval';
+export {
+  applyBotMove,
+  hasNonPawnMaterial,
+  hashState,
+  scoreMove,
+} from './chess-bot-utils';

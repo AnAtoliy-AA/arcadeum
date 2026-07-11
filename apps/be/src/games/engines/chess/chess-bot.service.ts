@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { PIECE_VALUES, FILES } from './chess.constants';
 import type { PieceType } from './chess.constants';
 import type { ChessMove, ChessState, Rank } from './chess.types';
@@ -6,6 +6,7 @@ import { posToBoardCoords, oppositeColor } from './chess.board';
 import { getLegalMoves } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
+import { ChessService } from '../../chess/chess.service';
 
 const MAX_DEPTH = 4;
 const INFINITY = 999999;
@@ -91,6 +92,11 @@ export class ChessBotService {
       ) => Promise<unknown>)
     | null = null;
 
+  constructor(
+    @Inject(forwardRef(() => ChessService))
+    private readonly chessService: ChessService,
+  ) {}
+
   setMoveFn(
     fn: (
       userId: string,
@@ -115,6 +121,15 @@ export class ChessBotService {
     if (session.status !== 'active') return;
     const state = session.state as unknown as ChessState | undefined;
     if (!state) return;
+
+    const hasHuman = state.players.some((p) => !p.isBot);
+    if (!hasHuman) {
+      this.logger.log(
+        `No humans in room ${session.roomId} — completing session`,
+      );
+      await this.chessService.completeSession(session.id, session.roomId);
+      return;
+    }
 
     const currentId = state.players.find(
       (p) => p.color === state.currentTurnColor,

@@ -78,6 +78,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     return null;
   }
 
+  /**
+   * Complete a game session (e.g. when no human players remain alive)
+   */
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');

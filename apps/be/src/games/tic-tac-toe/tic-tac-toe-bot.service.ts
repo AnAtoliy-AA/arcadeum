@@ -36,6 +36,17 @@ export class TicTacToeBotService {
     const state = session.state as unknown as TicTacToeState | undefined;
     if (!state || state.phase !== GAME_PHASE.PLAYING) return;
 
+    const hasAliveHuman = state.players.some(
+      (p) => p.alive && !this.isBot(p.playerId),
+    );
+    if (!hasAliveHuman) {
+      this.logger.log(
+        `No alive humans in room ${session.roomId} — completing session`,
+      );
+      await this.ticTacToeService.completeSession(session.id, session.roomId);
+      return;
+    }
+
     const currentShooterId = this.getCurrentShooterId(state);
     if (!currentShooterId || !this.isBot(currentShooterId)) return;
 

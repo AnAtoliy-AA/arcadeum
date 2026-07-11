@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.37] - 2026-07-11
+
+### Fixed
+- increase maxPoolSize to 50 and heap cap to 768MB
+- prevent OOM crash on MongoDB connection timeout
+
+
 ## [1.23.36] - 2026-07-11
 
 ### Fixed

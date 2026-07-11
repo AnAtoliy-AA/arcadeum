@@ -159,6 +159,7 @@ export const byMessages = {
       collapse: 'Згарнуць',
       showAll: 'Паказаць усе ({{count}})',
       copied: 'Скапіявана!',
+      spectating: 'Назіранне',
     },
   },
 };

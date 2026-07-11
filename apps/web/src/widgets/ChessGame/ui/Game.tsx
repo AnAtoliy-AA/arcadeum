@@ -44,29 +44,19 @@ function ChessGameImpl({
   const { t } = useTranslation();
   const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
     useGameRoomActions(roomId, initialRoom);
-
   const isLobby = room?.status === 'lobby';
-
   const {
     snapshot,
     myColor,
     myTurn,
+    isSpectator,
     isGameOver,
     startBusy,
     setStartBusy,
     session,
-  } = useChessState({
-    roomId,
-    currentUserId,
-    initialSession,
-  });
-
+  } = useChessState({ roomId, currentUserId, initialSession });
   const { startSession, movePiece, resign, offerDraw, acceptDraw } =
-    useChessActions({
-      roomId,
-      userId: currentUserId,
-    });
-
+    useChessActions({ roomId, userId: currentUserId });
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
   );
@@ -74,17 +64,14 @@ function ChessGameImpl({
     from: BoardPosition;
     to: BoardPosition;
   } | null>(null);
-
   const [optimisticState, setOptimisticState] =
     useState<ChessClientState | null>(null);
-
   const displaySnapshot =
     optimisticState &&
     snapshot &&
     optimisticState.moveHistory.length >= snapshot.moveHistory.length
       ? optimisticState
       : snapshot;
-
   const displayMyTurn = !!(
     displaySnapshot &&
     currentUserId &&
@@ -104,19 +91,17 @@ function ChessGameImpl({
       promotion?: PieceType,
     ) => {
       if (!snapshot) return;
-      const fromRow = 8 - fromRank;
-      const fromCol = FILES.indexOf(fromFile);
-      const toRow = 8 - toRank;
-      const toCol = FILES.indexOf(toFile);
+      const fromRow = 8 - fromRank,
+        fromCol = FILES.indexOf(fromFile),
+        toRow = 8 - toRank,
+        toCol = FILES.indexOf(toFile);
       const piece = snapshot.board[fromRow]?.[fromCol];
       if (!piece) return;
-
       const newBoard: Board = snapshot.board.map((row) => [...row]);
       newBoard[toRow][toCol] = promotion
         ? { type: promotion, color: piece.color }
         : piece;
       newBoard[fromRow][fromCol] = null;
-
       setOptimisticState({
         ...snapshot,
         board: newBoard,
@@ -158,7 +143,6 @@ function ChessGameImpl({
     sendChat,
     resolveDisplayNameBound,
   );
-
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
   const result = computeGameResult(isGameOver, currentUserId, {
@@ -174,9 +158,7 @@ function ChessGameImpl({
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
   });
-
   useRecordGameResult(result, 'chess_v1', session?.id);
-
   const { showResultModal, sharedResult, resultMessages, dismiss } =
     useGameResultModal(
       session,
@@ -217,15 +199,11 @@ function ChessGameImpl({
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const p = displaySnapshot.board[row]?.[col];
-        if (
-          p?.type === 'king' &&
-          p.color === displaySnapshot.currentTurnColor
-        ) {
+        if (p?.type === 'king' && p.color === displaySnapshot.currentTurnColor)
           return {
             file: FILES[col],
             rank: (8 - row) as import('../types').Rank,
           };
-        }
       }
     }
     return null;
@@ -260,19 +238,14 @@ function ChessGameImpl({
           setSelectedSquare(null);
           return;
         }
-
         if (piece?.color === myColor) {
           setSelectedSquare({ file, rank });
           return;
         }
-
         setSelectedSquare(null);
         return;
       }
-
-      if (piece?.color === myColor) {
-        setSelectedSquare({ file, rank });
-      }
+      if (piece?.color === myColor) setSelectedSquare({ file, rank });
     },
     [
       displaySnapshot,
@@ -326,12 +299,12 @@ function ChessGameImpl({
           m.to.rank === toRank,
       );
       if (!moves.length) return;
-      if (moves[0].promotion) {
+      if (moves[0].promotion)
         setPendingPromotion({
           from: { file: fromFile, rank: fromRank },
           to: { file: toFile, rank: toRank },
         });
-      } else {
+      else {
         applyOptimisticMove(fromFile, fromRank, toFile, toRank);
         movePiece(fromFile, fromRank, toFile, toRank);
       }
@@ -349,9 +322,8 @@ function ChessGameImpl({
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
   }, [handleRematch]);
-
   if (!room) return null;
-  if (isLobby) {
+  if (isLobby)
     return (
       <ChessLobby
         room={room}
@@ -374,12 +346,23 @@ function ChessGameImpl({
         onShowRulesClose={onShowRulesClose}
       />
     );
-  }
 
   const board = (
     <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
       {displaySnapshot ? (
         <>
+          {isSpectator && (
+            <XStack
+              justifyContent="center"
+              padding="$2"
+              borderRadius={8}
+              backgroundColor="rgba(255,255,255,0.05)"
+            >
+              <Text fontSize="$2" opacity={0.6} fontWeight="600">
+                {t('games.chess_v1.status.spectating')}
+              </Text>
+            </XStack>
+          )}
           <ChessClock
             clocks={displaySnapshot.clocks}
             currentTurnColor={displaySnapshot.currentTurnColor}
@@ -403,7 +386,7 @@ function ChessGameImpl({
             board={displaySnapshot.board}
             myColor={myColor}
             isFlipped={isFlipped}
-            disabled={!displayMyTurn || isGameOver}
+            disabled={!displayMyTurn || isGameOver || isSpectator}
             selectedSquare={selectedSquare}
             legalMoves={legalMoves}
             lastMove={lastMove}
@@ -414,58 +397,57 @@ function ChessGameImpl({
             onPieceDrop={handlePieceDrop}
           />
           <XStack justifyContent="space-between" alignItems="center" mt="$1">
-            {currentUserId && !isGameOver && (
-              <>
-                {displaySnapshot?.drawOfferedBy &&
-                displaySnapshot.drawOfferedBy !== currentUserId ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Text
-                      fontSize="$2"
-                      color="$green10"
-                      cursor="pointer"
-                      hoverStyle={{ opacity: 0.8 }}
-                      onPress={acceptDraw}
-                    >
-                      {t('games.chess_v1.actions.acceptDraw')}
-                    </Text>
-                    <Text
-                      fontSize="$2"
-                      opacity={0.6}
-                      cursor="pointer"
-                      hoverStyle={{ opacity: 1 }}
-                      onPress={resign}
-                    >
-                      {t('games.chess_v1.actions.declineDraw')}
-                    </Text>
-                  </XStack>
-                ) : (
-                  <XStack gap="$3" alignItems="center">
-                    <Text
-                      fontSize="$2"
-                      opacity={0.6}
-                      cursor="pointer"
-                      hoverStyle={{ opacity: 1 }}
-                      onPress={offerDraw}
-                      disabled={!!displaySnapshot?.drawOfferedBy}
-                    >
-                      {displaySnapshot?.drawOfferedBy
-                        ? t('games.chess_v1.actions.drawOffered')
-                        : t('games.chess_v1.actions.draw')}
-                    </Text>
-                    <Text
-                      fontSize="$2"
-                      opacity={0.6}
-                      cursor="pointer"
-                      hoverStyle={{ opacity: 1 }}
-                      onPress={resign}
-                    >
-                      {t('games.chess_v1.actions.resign')}
-                    </Text>
-                  </XStack>
-                )}
-              </>
-            )}
-            {displaySnapshot && displaySnapshot.moveHistory.length > 0 && (
+            {currentUserId &&
+              !isGameOver &&
+              !isSpectator &&
+              (displaySnapshot?.drawOfferedBy &&
+              displaySnapshot.drawOfferedBy !== currentUserId ? (
+                <XStack gap="$2" alignItems="center">
+                  <Text
+                    fontSize="$2"
+                    color="$green10"
+                    cursor="pointer"
+                    hoverStyle={{ opacity: 0.8 }}
+                    onPress={acceptDraw}
+                  >
+                    {t('games.chess_v1.actions.acceptDraw')}
+                  </Text>
+                  <Text
+                    fontSize="$2"
+                    opacity={0.6}
+                    cursor="pointer"
+                    hoverStyle={{ opacity: 1 }}
+                    onPress={resign}
+                  >
+                    {t('games.chess_v1.actions.declineDraw')}
+                  </Text>
+                </XStack>
+              ) : (
+                <XStack gap="$3" alignItems="center">
+                  <Text
+                    fontSize="$2"
+                    opacity={0.6}
+                    cursor="pointer"
+                    hoverStyle={{ opacity: 1 }}
+                    onPress={offerDraw}
+                    disabled={!!displaySnapshot?.drawOfferedBy}
+                  >
+                    {displaySnapshot?.drawOfferedBy
+                      ? t('games.chess_v1.actions.drawOffered')
+                      : t('games.chess_v1.actions.draw')}
+                  </Text>
+                  <Text
+                    fontSize="$2"
+                    opacity={0.6}
+                    cursor="pointer"
+                    hoverStyle={{ opacity: 1 }}
+                    onPress={resign}
+                  >
+                    {t('games.chess_v1.actions.resign')}
+                  </Text>
+                </XStack>
+              ))}
+            {displaySnapshot.moveHistory.length > 0 && (
               <Text fontSize="$2" opacity={0.5}>
                 {t('games.chess_v1.status.moves', {
                   count: displaySnapshot.moveHistory.length,
@@ -473,14 +455,13 @@ function ChessGameImpl({
               </Text>
             )}
           </XStack>
-          {displaySnapshot && displaySnapshot.moveHistory.length > 0 && (
+          {displaySnapshot.moveHistory.length > 0 && (
             <MoveList state={displaySnapshot} t={t} />
           )}
         </>
       ) : null}
     </YStack>
   );
-
   const modals = (
     <>
       <GameResultModal
@@ -501,7 +482,6 @@ function ChessGameImpl({
       />
     </>
   );
-
   return (
     <GameWidgetContainer
       board={board}

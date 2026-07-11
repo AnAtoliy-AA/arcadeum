@@ -160,6 +160,7 @@ export const esMessages = {
       collapse: 'Colapsar',
       showAll: 'Mostrar todo ({{count}})',
       copied: '¡Copiado!',
+      spectating: 'Observando',
     },
   },
 };

@@ -159,6 +159,7 @@ export const enMessages = {
       collapse: 'Collapse',
       showAll: 'Show all ({{count}})',
       copied: 'Copied!',
+      spectating: 'Spectating',
     },
   },
 };

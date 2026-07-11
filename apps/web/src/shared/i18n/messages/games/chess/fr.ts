@@ -160,6 +160,7 @@ export const frMessages = {
       collapse: 'Réduire',
       showAll: 'Tout afficher ({{count}})',
       copied: 'Copié !',
+      spectating: "En train d'observer",
     },
   },
 };

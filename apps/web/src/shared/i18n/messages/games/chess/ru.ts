@@ -159,6 +159,7 @@ export const ruMessages = {
       collapse: 'Свернуть',
       showAll: 'Показать все ({{count}})',
       copied: 'Скопировано!',
+      spectating: 'Наблюдение',
     },
   },
 };

@@ -40,11 +40,17 @@ export function useChessState({
     return player?.playerId ?? null;
   }, [snapshot]);
 
+  const isSpectator = useMemo(() => {
+    if (!snapshot || !currentUserId) return false;
+    return !snapshot.players.some((p) => p.playerId === currentUserId);
+  }, [snapshot, currentUserId]);
+
   const myColor = useMemo(() => {
     if (!snapshot || !currentUserId) return null;
+    if (isSpectator) return null;
     const player = snapshot.players.find((p) => p.playerId === currentUserId);
     return player?.color ?? null;
-  }, [snapshot, currentUserId]);
+  }, [snapshot, currentUserId, isSpectator]);
 
   const myTurn = !!(
     currentPlayerId &&
@@ -67,6 +73,7 @@ export function useChessState({
     currentPlayerId,
     myColor,
     myTurn,
+    isSpectator,
     isGameOver,
     actionBusy,
     setActionBusy,

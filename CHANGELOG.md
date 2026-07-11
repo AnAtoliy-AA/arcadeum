@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.36] - 2026-07-11
+
+### Fixed
+- lazy-load solana, refactor watchdog, auto-complete stale sessions
+- remove unused imports in chess-bot.service.ts
+- auto-complete all game sessions when no humans remain alive
+- auto-complete Critical sessions when no humans remain alive
+- guard CriticalBotService against empty deck and stale sessions
+- lazy-load @solana/web3.js to reduce startup memory
+
+### Refactored
+- extract shared GameBotWatchdog for all game services
+
+
 ## [1.23.35] - 2026-07-11
 
 ### Fixed

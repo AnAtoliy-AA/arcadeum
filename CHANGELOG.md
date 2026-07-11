@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.35] - 2026-07-11
+
+### Fixed
+- gray out completed game room actions and show Watch Results
+
+
 ## [1.23.34] - 2026-07-11
 
 ### Added

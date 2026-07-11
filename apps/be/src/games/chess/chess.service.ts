@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -44,11 +46,13 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     private readonly botService: ChessBotService,
+    @InjectConnection() private readonly mongoConnection: Connection,
   ) {
     this.watchdog = new GameBotWatchdog(
       'chess_v1',
       sessionsService,
       botService,
+      mongoConnection,
       (session) => this.checkClockTimeout(session),
     );
   }

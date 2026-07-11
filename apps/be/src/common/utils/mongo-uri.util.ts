@@ -3,8 +3,8 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
-const DEFAULT_MAX_POOL_SIZE = 200;
-const DEV_MAX_POOL_SIZE = 50;
+const DEFAULT_MAX_POOL_SIZE = 20;
+const DEV_MAX_POOL_SIZE = 10;
 const MIN_MAX_POOL_SIZE = 1;
 
 /**
@@ -39,13 +39,13 @@ export function resolveMongoUri(): string {
 /**
  * Resolve mongoose connection options.
  *
- * `maxPoolSize` defaults to 200 to handle bursty traffic from concurrent
- * game sessions (each play_action / draw / attack hits the DB). The
- * mongoose default of 100 queues at ~100 concurrent active players.
- * Override via `MONGODB_MAX_POOL_SIZE` per environment — keep within
- * the connection cap of the mongo deployment.
+ * `maxPoolSize` defaults to 20 in production (was 200 — too large for
+ * Render containers with limited RAM and caused OOM on Mongo outages).
+ * Override via `MONGODB_MAX_POOL_SIZE` per environment.
  *
- * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (15s).
+ * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (10s).
+ * `connectTimeoutMS` / `socketTimeoutMS` — prevent hanging on dead
+ * connections, which was the root cause of the OOM crash.
  * `retryWrites` / `retryReads` — auto-retry transient network errors.
  */
 export function resolveMongoOptions(): MongooseModuleOptions {
@@ -66,7 +66,10 @@ export function resolveMongoOptions(): MongooseModuleOptions {
 
   return {
     maxPoolSize,
-    serverSelectionTimeoutMS: 15_000,
+    minPoolSize: Math.max(1, Math.floor(maxPoolSize / 4)),
+    serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 8_000,
+    socketTimeoutMS: 30_000,
     retryWrites: true,
     retryReads: true,
     autoIndex: process.env.NODE_ENV !== 'production',

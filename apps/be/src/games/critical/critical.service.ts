@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
@@ -30,11 +32,13 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     private readonly criticalActions: CriticalActionsService,
     @Inject(forwardRef(() => CriticalBotService))
     private readonly botService: CriticalBotService,
+    @InjectConnection() private readonly mongoConnection: Connection,
   ) {
     this.watchdog = new GameBotWatchdog(
       'critical_v1',
       sessionsService,
       botService,
+      mongoConnection,
     );
   }
 

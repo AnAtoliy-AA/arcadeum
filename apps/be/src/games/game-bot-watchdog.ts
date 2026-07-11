@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import type { Connection } from 'mongoose';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 
@@ -6,6 +7,7 @@ const INTERVAL_MS = 10_000;
 const STALE_THRESHOLD_MS = 20_000;
 const MAX_BACKOFF_MS = 300_000;
 const SESSION_LIMIT = 100;
+const READY_STATE = 1;
 
 export interface BotService {
   checkAndPlay(session: GameSessionSummary): Promise<void>;
@@ -28,6 +30,7 @@ export class GameBotWatchdog {
     private readonly gameId: string,
     private readonly sessionsService: GameSessionsService,
     private readonly botService: BotService,
+    private readonly mongoConnection: Connection,
     private readonly preCheck?: PreCheckFn,
   ) {}
 
@@ -47,6 +50,21 @@ export class GameBotWatchdog {
   private async tick(): Promise<void> {
     const now = Date.now();
     if (now < this.nextRun) return;
+
+    if (Number(this.mongoConnection.readyState) !== READY_STATE) {
+      if (this.consecutiveFailures === 0) {
+        this.logger.warn(
+          `MongoDB not connected (readyState=${String(this.mongoConnection.readyState)}), skipping watchdog tick`,
+        );
+      }
+      this.consecutiveFailures++;
+      const backoffMs = Math.min(
+        INTERVAL_MS * 2 ** this.consecutiveFailures,
+        MAX_BACKOFF_MS,
+      );
+      this.nextRun = Date.now() + backoffMs;
+      return;
+    }
 
     try {
       const staleSessions = await this.sessionsService.findStaleActiveSessions(

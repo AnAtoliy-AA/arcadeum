@@ -51,8 +51,9 @@ export interface ExecuteActionOptions {
  * Game Sessions Service
  * Handles game session lifecycle and state management
  */
-/** Max BSON document size in bytes (10 MB — safety margin below 16 MB limit). */
-const MAX_DOC_SIZE_BYTES = 10 * 1024 * 1024;
+/** Max session document size in bytes. Typical: 2-13KB. Alert at 100KB, strip at 500KB. */
+const WARN_DOC_SIZE_BYTES = 100 * 1024;
+const STRIP_DOC_SIZE_BYTES = 500 * 1024;
 
 @Injectable()
 export class GameSessionsService {
@@ -172,7 +173,7 @@ export class GameSessionsService {
       JSON.stringify(session.state),
       'utf-8',
     );
-    if (approxSize > MAX_DOC_SIZE_BYTES) {
+    if (approxSize > STRIP_DOC_SIZE_BYTES) {
       this.logger.warn(
         `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
       );
@@ -180,6 +181,10 @@ export class GameSessionsService {
       if (Array.isArray(s.stateHistory)) s.stateHistory = [];
       if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
       session.markModified('state');
+    } else if (approxSize > WARN_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
+      );
     }
 
     session.updatedAt = new Date();
@@ -259,7 +264,7 @@ export class GameSessionsService {
       JSON.stringify(session.state),
       'utf-8',
     );
-    if (approxSize > MAX_DOC_SIZE_BYTES) {
+    if (approxSize > STRIP_DOC_SIZE_BYTES) {
       this.logger.warn(
         `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
       );
@@ -267,6 +272,10 @@ export class GameSessionsService {
       if (Array.isArray(s.stateHistory)) s.stateHistory = [];
       if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
       session.markModified('state');
+    } else if (approxSize > WARN_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
+      );
     }
 
     session.updatedAt = new Date();

@@ -15,15 +15,12 @@ import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import { CriticalBotService } from './critical-bot.service';
-
-const WATCHDOG_MAX_BACKOFF_MS = 300_000;
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 @Injectable()
 export class CriticalService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CriticalService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
-  private watchdogConsecutiveFailures = 0;
-  private nextWatchdogRun = 0;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -33,69 +30,20 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     private readonly criticalActions: CriticalActionsService,
     @Inject(forwardRef(() => CriticalBotService))
     private readonly botService: CriticalBotService,
-  ) {}
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'critical_v1',
+      sessionsService,
+      botService,
+    );
+  }
 
   onModuleInit() {
-    this.startWatchdog();
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    this.stopWatchdog();
-  }
-
-  private startWatchdog() {
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, 10_000);
-  }
-
-  private async runWatchdog() {
-    const now = Date.now();
-    if (now < this.nextWatchdogRun) return;
-
-    try {
-      const staleSessions = await this.sessionsService.findStaleActiveSessions(
-        'critical_v1',
-        20_000,
-        100,
-      );
-
-      for (const session of staleSessions) {
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-      if (this.watchdogConsecutiveFailures > 0) {
-        this.logger.warn(
-          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
-        );
-      }
-      this.watchdogConsecutiveFailures = 0;
-      this.nextWatchdogRun = 0;
-    } catch (err) {
-      this.watchdogConsecutiveFailures++;
-      const backoffMs = Math.min(
-        10_000 * 2 ** this.watchdogConsecutiveFailures,
-        WATCHDOG_MAX_BACKOFF_MS,
-      );
-      this.nextWatchdogRun = Date.now() + backoffMs;
-      if (this.watchdogConsecutiveFailures <= 3) {
-        this.logger.error(
-          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
-        );
-      }
-    }
-  }
-
-  private stopWatchdog() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   /**

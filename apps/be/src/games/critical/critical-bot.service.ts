@@ -23,6 +23,18 @@ export class CriticalBotService {
       const state = session.state as unknown as CriticalState;
       if (!state) return;
 
+      // If no human players are alive, auto-complete the session
+      const hasAliveHuman = state.players.some(
+        (p: CriticalPlayerState) => p.alive && !this.isBot(p.playerId),
+      );
+      if (!hasAliveHuman) {
+        this.logger.log(
+          `No alive humans in room ${session.roomId} — completing session`,
+        );
+        await this.criticalService.completeSession(session.id, session.roomId);
+        return;
+      }
+
       // check pending favour
       if (state.pendingFavor) {
         const { targetId } = state.pendingFavor;

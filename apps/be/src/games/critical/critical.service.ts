@@ -109,6 +109,15 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return null;
   }
 
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   // ========== Private Helper ==========
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {

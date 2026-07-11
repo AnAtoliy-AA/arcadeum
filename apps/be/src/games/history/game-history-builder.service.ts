@@ -157,9 +157,10 @@ export class GameHistoryBuilderService {
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
       .select('username email')
+      .lean()
       .exec();
 
-    return new Map(users.map((u) => [u._id.toString(), u]));
+    return new Map(users.map((u) => [u._id.toString(), u as unknown as User]));
   }
 
   private getParticipantSummariesSync(
@@ -194,9 +195,12 @@ export class GameHistoryBuilderService {
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
       .select('username email')
+      .lean()
       .exec();
 
-    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+    const userMap = new Map(
+      users.map((u) => [u._id.toString(), u as unknown as User]),
+    );
 
     return uniqueUserIds.map((uid) => {
       const user = userMap.get(uid);

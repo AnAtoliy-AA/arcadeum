@@ -53,6 +53,7 @@ export class GameHistoryStatsService {
             .select(
               'username role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
             )
+            .lean()
             .exec()
         : [];
 

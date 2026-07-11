@@ -88,10 +88,14 @@ export class DailyChallengesService {
     date: string,
     increment: number = 1,
   ): Promise<void> {
-    const definition = await this.definitionModel.findOne({ challengeId });
+    const definition = await this.definitionModel
+      .findOne({ challengeId })
+      .lean();
     if (!definition) return;
 
-    const progress = await this.getOrCreateProgress(userId, date, [definition]);
+    const progress = await this.getOrCreateProgress(userId, date, [
+      definition as unknown as DailyChallengeDefinitionDocument,
+    ]);
     const userChallenge = progress.challenges.find(
       (c) => c.challengeId === challengeId,
     );
@@ -113,10 +117,14 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
-    const definition = await this.definitionModel.findOne({ challengeId });
+    const definition = await this.definitionModel
+      .findOne({ challengeId })
+      .lean();
     if (!definition) throw new Error('Challenge not found');
 
-    const progress = await this.getOrCreateProgress(userId, date, [definition]);
+    const progress = await this.getOrCreateProgress(userId, date, [
+      definition as unknown as DailyChallengeDefinitionDocument,
+    ]);
     const userChallenge = progress.challenges.find(
       (c) => c.challengeId === challengeId,
     );
@@ -239,10 +247,13 @@ export class DailyChallengesService {
     return new Date(Date.UTC(y, m - 1, d + 1, 0, 0, 0)).toISOString();
   }
 
-  private async getDefinitionsForDay(
+  private getDefinitionsForDay(
     dayOfWeek: number,
-  ): Promise<DailyChallengeDefinitionDocument[]> {
-    return this.definitionModel.find({ dayInWeek: dayOfWeek }).exec();
+  ): Promise<DailyChallengeDefinition[]> {
+    return this.definitionModel
+      .find({ dayInWeek: dayOfWeek })
+      .lean()
+      .exec() as unknown as Promise<DailyChallengeDefinition[]>;
   }
 
   private async getOrCreateProgress(

@@ -266,7 +266,11 @@ export class GameSessionsService {
     sessionId: string,
     playerId: string,
   ): Promise<unknown> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.gameSessionModel
+      .findById(sessionId)
+      .select('gameId state')
+      .lean()
+      .exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);
@@ -303,7 +307,11 @@ export class GameSessionsService {
     sessionId: string,
     playerId: string,
   ): Promise<string[]> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.gameSessionModel
+      .findById(sessionId)
+      .select('gameId state')
+      .lean()
+      .exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);
@@ -321,7 +329,11 @@ export class GameSessionsService {
    * Check if game is over
    */
   async isGameOver(sessionId: string): Promise<boolean> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.gameSessionModel
+      .findById(sessionId)
+      .select('gameId state')
+      .lean()
+      .exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);
@@ -336,7 +348,11 @@ export class GameSessionsService {
    * Get winners if game is over
    */
   async getWinners(sessionId: string): Promise<string[]> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.gameSessionModel
+      .findById(sessionId)
+      .select('gameId state')
+      .lean()
+      .exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);

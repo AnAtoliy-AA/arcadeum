@@ -72,15 +72,36 @@ export const frMessages = {
       startWithBots: 'Commencer avec des bots',
       waitingForPlayers: 'En attente des joueurs…',
       minPlayers: 'Minimum 2 joueurs',
+      standard: 'Standard',
+      chess960: 'Chess960',
+      standardDesc: 'Position de départ classique',
+      chess960Desc: 'Position de départ aléatoire',
+      noClock: 'Sans horloge',
+      unlimitedTime: 'Temps illimité',
+      blitz: 'Blitz',
+      rapid: 'Rapide',
+      classical: 'Classique',
     },
     rules: {
-      title: 'Règles',
-      objective:
-        "Échec et mat au roi de votre adversaire — mettez-le en échec sans possibilité d'échapper.",
-      pieces:
-        'Chaque pièce se déplace différemment : roi (1 case), dame (toute direction), tour (lignes droites), fou (diagonales), cavalier (en L), pion (avant, capture en diagonale).',
-      special:
-        'Coups spéciaux : roque (roi + tour), prise en passant (capture de pion), promotion (pion atteint la dernière rangée).',
+      title: 'Règles des Échecs',
+      objective: 'Objectif',
+      objectiveText:
+        "Échec et mat au roi de votre adversaire. Le roi est en échec et mat lorsqu'il est en échec et qu'aucun coup légal ne permet d'échapper.",
+      pieces: 'Pièces',
+      special: 'Coups Spéciaux',
+      castling:
+        "Le roi se déplace de deux cases vers une tour, et la tour saute par-dessus le roi. Doit être dégagé, roi non en échec, et aucune pièce n'a bougé.",
+      enPassant:
+        "Un pion peut capturer un pion adverse qui vient de se déplacer de deux cases, comme s'il ne s'était dépliqué que d'une case.",
+      promotion:
+        "Un pion atteignant l'extrémité opposée est promu en dame, tour, fou ou cavalier.",
+      drawConditions: 'Conditions de Nulle',
+      drawStalemate: 'Pat (aucun coup légal, pas en échec)',
+      drawFiftyMove:
+        'Règle des 50 coups (50 coups sans captures ni coups de pion)',
+      drawRepetition: 'Triple répétition',
+      drawMaterial: 'Matériel insuffisant',
+      gotIt: 'Compris',
     },
     gameOver: {
       won: 'Vous avez gagné !',
@@ -124,10 +145,18 @@ export const frMessages = {
     },
     status: {
       turn: 'Tour de {{player}}',
+      white: 'Blancs',
+      black: 'Noirs',
+      toMove: 'à jouer',
       check: 'Échec !',
       checkmate: 'Échec et mat !',
       winner: '{{player}} a gagné',
       draw: 'Nulle',
+      moves: '{{count}} coups',
+      promotionTitle: 'Promouvoir le pion en :',
+      collapse: 'Réduire',
+      showAll: 'Tout afficher ({{count}})',
+      copied: 'Copié !',
     },
   },
 };

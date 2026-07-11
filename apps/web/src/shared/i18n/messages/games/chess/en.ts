@@ -72,15 +72,35 @@ export const enMessages = {
       startWithBots: 'Start with bots',
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
+      standard: 'Standard',
+      chess960: 'Chess960',
+      standardDesc: 'Classic starting position',
+      chess960Desc: 'Randomized starting position',
+      noClock: 'No clock',
+      unlimitedTime: 'Unlimited time',
+      blitz: 'Blitz',
+      rapid: 'Rapid',
+      classical: 'Classical',
     },
     rules: {
-      title: 'Rules',
-      objective:
-        "Checkmate your opponent's king — put it in check with no way to escape.",
-      pieces:
-        'Each piece moves differently: king (1 square), queen (any direction), rook (straight lines), bishop (diagonals), knight (L-shape), pawn (forward, captures diagonally).',
-      special:
-        'Special moves: castling (king + rook), en passant (pawn capture), promotion (pawn reaching the back rank).',
+      title: 'Chess Rules',
+      objective: 'Objective',
+      objectiveText:
+        "Checkmate your opponent's king. The king is in checkmate when it is in check and there is no legal move to escape.",
+      pieces: 'Pieces',
+      special: 'Special Moves',
+      castling:
+        'King moves two squares toward a rook, and the rook jumps over the king. Must be unobstructed, king not in check, and neither piece moved.',
+      enPassant:
+        'A pawn can capture an opposing pawn that just moved two squares forward, as if it moved only one.',
+      promotion:
+        'A pawn reaching the opposite end promotes to a queen, rook, bishop, or knight.',
+      drawConditions: 'Draw Conditions',
+      drawStalemate: 'Stalemate (no legal moves, not in check)',
+      drawFiftyMove: '50-move rule (50 moves without captures or pawn moves)',
+      drawRepetition: 'Threefold repetition',
+      drawMaterial: 'Insufficient material',
+      gotIt: 'Got it',
     },
     gameOver: {
       won: 'You won!',
@@ -124,10 +144,18 @@ export const enMessages = {
     },
     status: {
       turn: "{{player}}'s turn",
+      white: 'White',
+      black: 'Black',
+      toMove: 'to move',
       check: 'Check!',
       checkmate: 'Checkmate!',
       winner: '{{player}} won',
       draw: 'Draw',
+      moves: '{{count}} moves',
+      promotionTitle: 'Promote pawn to:',
+      collapse: 'Collapse',
+      showAll: 'Show all ({{count}})',
+      copied: 'Copied!',
     },
   },
 };

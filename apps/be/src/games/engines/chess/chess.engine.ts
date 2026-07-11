@@ -58,29 +58,26 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   }
 
   initializeState(playerIds: string[], config?: ChessEngineConfig): ChessState {
-    if (playerIds.length !== 2) {
+    if (playerIds.length !== 2)
       throw new Error('Chess requires exactly 2 players');
-    }
-
     const players: ChessPlayer[] = playerIds.map((id, idx) => ({
       playerId: id,
-      color: idx === 0 ? 'white' : 'black',
+      color: idx === 0 ? 'white' : ('black' as const),
       isBot: false,
     }));
-
-    const clocks = config?.timeControl
+    const timeControl = config?.timeControl ?? null;
+    const clocks = timeControl
       ? {
           white: {
-            remainingSeconds: config.timeControl.initialSeconds,
+            remainingSeconds: timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
           },
           black: {
-            remainingSeconds: config.timeControl.initialSeconds,
+            remainingSeconds: timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
           },
         }
       : null;
-
     const variant = config?.variant ?? 'standard';
     const initialBoard =
       variant === 'chess960'
@@ -94,12 +91,11 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
             return board;
           })()
         : parseFen(INITIAL_BOARD_FEN);
-    const timeControl = config?.timeControl ?? null;
-    const initialState = {
+    return {
       variant,
       timeControl,
       board: initialBoard,
-      currentTurnColor: 'white' as const,
+      currentTurnColor: 'white',
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
       enPassantTarget: null,
       halfMoveClock: 0,
@@ -131,7 +127,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         'white',
       ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion })),
     };
-    return initialState;
   }
 
   validateAction(
@@ -223,18 +218,14 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   }
 
   getResult(state: ChessState) {
-    if (!this.isGameOver(state)) {
-      return { winnerIds: [], isDraw: false };
-    }
-    if (
+    if (!this.isGameOver(state)) return { winnerIds: [], isDraw: false };
+    const isDraw =
       state.isDrawByRepetition ||
       state.isDrawByFiftyMoveRule ||
       state.isInsufficientMaterial ||
       state.isStalemate ||
-      state.isDrawByAgreement
-    ) {
-      return { winnerIds: [], isDraw: true };
-    }
+      state.isDrawByAgreement;
+    if (isDraw) return { winnerIds: [], isDraw: true };
     return { winnerIds: this.getWinners(state), isDraw: false };
   }
 
@@ -432,20 +423,16 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       }
       return;
     }
-
     if (move.piece.type === 'rook') {
-      const { rank: kingRank, file: kingFile } = (() => {
-        const king = findKing(state.board, move.piece.color);
-        return king ? posToBoardCoords(king) : { rank: 7, file: 4 };
-      })();
-
+      const king = findKing(state.board, move.piece.color);
+      const kingCoords = king ? posToBoardCoords(king) : { rank: 7, file: 4 };
       const fromCoords = posToBoardCoords(move.from);
-      if (fromCoords.rank === kingRank) {
-        if (fromCoords.file > kingFile) {
+      if (fromCoords.rank === kingCoords.rank) {
+        if (fromCoords.file > kingCoords.file) {
           if (move.piece.color === 'white')
             state.castlingRights.whiteKingSide = false;
           else state.castlingRights.blackKingSide = false;
-        } else if (fromCoords.file < kingFile) {
+        } else if (fromCoords.file < kingCoords.file) {
           if (move.piece.color === 'white')
             state.castlingRights.whiteQueenSide = false;
           else state.castlingRights.blackQueenSide = false;
@@ -460,7 +447,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   ): GameActionResult<ChessState> {
     const player = state.players.find((p) => p.playerId === context.userId);
     if (!player) return this.errorResult('Player not found');
-
     const newState = this.cloneState(state);
     newState.winnerColor = oppositeColor(player.color);
     newState.logs = [
@@ -468,12 +454,9 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       this.createLogEntry(
         'system',
         `${player.color} resigned. ${newState.winnerColor} wins!`,
-        {
-          senderId: context.userId,
-        },
+        { senderId: context.userId },
       ),
     ];
-
     return this.successResult(newState);
   }
 
@@ -483,7 +466,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   ): GameActionResult<ChessState> {
     const player = state.players.find((p) => p.playerId === context.userId);
     if (!player) return this.errorResult('Player not found');
-
     const newState = this.cloneState(state);
     newState.drawOfferedBy = context.userId;
     newState.logs = [
@@ -492,7 +474,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         senderId: context.userId,
       }),
     ];
-
     return this.successResult(newState);
   }
 
@@ -509,7 +490,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         senderId: context.userId,
       }),
     ];
-
     return this.successResult(newState);
   }
 }

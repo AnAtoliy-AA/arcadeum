@@ -101,12 +101,14 @@ export function ChessLobby({
               }}
             >
               <Text fontWeight="600" fontSize="$3">
-                {v === 'standard' ? 'Standard' : 'Chess960'}
+                {v === 'standard'
+                  ? t('games.chess_v1.lobby.standard')
+                  : t('games.chess_v1.lobby.chess960')}
               </Text>
               <Text fontSize="$2" opacity={0.7}>
                 {v === 'standard'
-                  ? 'Classic starting position'
-                  : 'Randomized starting position'}
+                  ? t('games.chess_v1.lobby.standardDesc')
+                  : t('games.chess_v1.lobby.chess960Desc')}
               </Text>
             </button>
           ))}
@@ -145,7 +147,7 @@ export function ChessLobby({
                 {formatTimeControl(tc)}
               </Text>
               <Text fontSize="$2" opacity={0.7}>
-                {tc.type}
+                {t(`games.chess_v1.lobby.${tc.type}`)}
               </Text>
             </button>
           ))}
@@ -171,10 +173,10 @@ export function ChessLobby({
             }}
           >
             <Text fontWeight="600" fontSize="$3">
-              No clock
+              {t('games.chess_v1.lobby.noClock')}
             </Text>
             <Text fontSize="$2" opacity={0.7}>
-              Unlimited time
+              {t('games.chess_v1.lobby.unlimitedTime')}
             </Text>
           </button>
         </YStack>

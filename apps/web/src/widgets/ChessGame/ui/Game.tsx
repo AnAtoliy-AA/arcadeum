@@ -323,7 +323,6 @@ function ChessGameImpl({
   }, [handleRematch]);
 
   if (!room) return null;
-
   if (isLobby) {
     return (
       <ChessLobby
@@ -360,11 +359,11 @@ function ChessGameImpl({
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" fontWeight="600" opacity={0.8}>
               {displaySnapshot.currentTurnColor === 'white'
-                ? '♔ White'
-                : '♚ Black'}{' '}
-              to move
+                ? `♔ ${t('games.chess_v1.status.white')}`
+                : `♚ ${t('games.chess_v1.status.black')}`}{' '}
+              {t('games.chess_v1.status.toMove')}
               {displaySnapshot.isCheck && !displaySnapshot.isCheckmate
-                ? ' (check!)'
+                ? ` (${t('games.chess_v1.status.check').toLowerCase()})`
                 : ''}
             </Text>
             <Text fontSize="$2" opacity={0.6}>
@@ -397,7 +396,7 @@ function ChessGameImpl({
                       hoverStyle={{ opacity: 0.8 }}
                       onPress={acceptDraw}
                     >
-                      Accept Draw
+                      {t('games.chess_v1.actions.acceptDraw')}
                     </Text>
                     <Text
                       fontSize="$2"
@@ -406,7 +405,7 @@ function ChessGameImpl({
                       hoverStyle={{ opacity: 1 }}
                       onPress={resign}
                     >
-                      Decline
+                      {t('games.chess_v1.actions.declineDraw')}
                     </Text>
                   </XStack>
                 ) : (
@@ -419,7 +418,9 @@ function ChessGameImpl({
                       onPress={offerDraw}
                       disabled={!!displaySnapshot?.drawOfferedBy}
                     >
-                      {displaySnapshot?.drawOfferedBy ? 'Draw Offered' : 'Draw'}
+                      {displaySnapshot?.drawOfferedBy
+                        ? t('games.chess_v1.actions.drawOffered')
+                        : t('games.chess_v1.actions.draw')}
                     </Text>
                     <Text
                       fontSize="$2"
@@ -428,7 +429,7 @@ function ChessGameImpl({
                       hoverStyle={{ opacity: 1 }}
                       onPress={resign}
                     >
-                      Resign
+                      {t('games.chess_v1.actions.resign')}
                     </Text>
                   </XStack>
                 )}
@@ -436,7 +437,9 @@ function ChessGameImpl({
             )}
             {displaySnapshot && displaySnapshot.moveHistory.length > 0 && (
               <Text fontSize="$2" opacity={0.5}>
-                {displaySnapshot.moveHistory.length} moves
+                {t('games.chess_v1.status.moves', {
+                  count: displaySnapshot.moveHistory.length,
+                })}
               </Text>
             )}
           </XStack>

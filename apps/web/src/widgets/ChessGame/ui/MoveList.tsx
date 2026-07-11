@@ -52,7 +52,9 @@ export function MoveList({ state, t }: MoveListProps) {
               hoverStyle={{ opacity: 1 }}
               onPress={() => setExpanded(!expanded)}
             >
-              {expanded ? 'Collapse' : `Show all (${pairs.length})`}
+              {expanded
+                ? t('games.chess_v1.status.collapse')
+                : t('games.chess_v1.status.showAll', { count: pairs.length })}
             </Text>
           )}
           <Text
@@ -62,7 +64,9 @@ export function MoveList({ state, t }: MoveListProps) {
             hoverStyle={{ opacity: 1 }}
             onPress={handleCopyPGN}
           >
-            {copied ? 'Copied!' : 'Copy PGN'}
+            {copied
+              ? t('games.chess_v1.status.copied')
+              : t('games.chess_v1.actions.copyPGN')}
           </Text>
         </XStack>
       </XStack>

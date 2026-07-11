@@ -203,26 +203,23 @@ function ChessGameImpl({
 
   const legalMoves = useMemo(() => {
     if (!selectedSquare || !displaySnapshot) return [];
-    const moves: BoardPosition[] = [];
-    for (const m of displaySnapshot.legalMovesForCurrentPlayer ?? []) {
-      if (
-        m.from.file === selectedSquare.file &&
-        m.from.rank === selectedSquare.rank
-      ) {
-        moves.push(m.to);
-      }
-    }
-    return moves;
+    return (displaySnapshot.legalMovesForCurrentPlayer ?? [])
+      .filter(
+        (m) =>
+          m.from.file === selectedSquare.file &&
+          m.from.rank === selectedSquare.rank,
+      )
+      .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
 
   const kingPosition = (() => {
     if (!displaySnapshot) return null;
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        const piece = displaySnapshot.board[row]?.[col];
+        const p = displaySnapshot.board[row]?.[col];
         if (
-          piece?.type === 'king' &&
-          piece.color === displaySnapshot.currentTurnColor
+          p?.type === 'king' &&
+          p.color === displaySnapshot.currentTurnColor
         ) {
           return {
             file: FILES[col],
@@ -237,14 +234,11 @@ function ChessGameImpl({
   const handleSquareClick = useCallback(
     (file: File, rank: import('../types').Rank) => {
       if (!displaySnapshot || !myColor || isGameOver) return;
-
       const piece = displaySnapshot.board[8 - rank]?.[FILES.indexOf(file)];
-
       if (selectedSquare) {
         const isLegalTarget = legalMoves.some(
           (m) => m.file === file && m.rank === rank,
         );
-
         if (isLegalTarget) {
           const isPromotion =
             piece === null &&
@@ -252,12 +246,8 @@ function ChessGameImpl({
             displaySnapshot.board[8 - selectedSquare.rank]?.[
               FILES.indexOf(selectedSquare.file)
             ]?.type === 'pawn';
-
           if (isPromotion) {
-            setPendingPromotion({
-              from: selectedSquare,
-              to: { file, rank },
-            });
+            setPendingPromotion({ from: selectedSquare, to: { file, rank } });
           } else {
             applyOptimisticMove(
               selectedSquare.file,
@@ -315,6 +305,45 @@ function ChessGameImpl({
       setPendingPromotion(null);
     },
     [pendingPromotion, movePiece, applyOptimisticMove],
+  );
+
+  const handlePieceDrop = useCallback(
+    (
+      fromFile: File,
+      fromRank: import('../types').Rank,
+      toFile: File,
+      toRank: import('../types').Rank,
+    ) => {
+      if (!displayMyTurn || isGameOver || !myColor || !displaySnapshot) return;
+      const piece =
+        displaySnapshot.board[8 - fromRank]?.[FILES.indexOf(fromFile)];
+      if (!piece || piece.color !== myColor) return;
+      const moves = (displaySnapshot.legalMovesForCurrentPlayer ?? []).filter(
+        (m) =>
+          m.from.file === fromFile &&
+          m.from.rank === fromRank &&
+          m.to.file === toFile &&
+          m.to.rank === toRank,
+      );
+      if (!moves.length) return;
+      if (moves[0].promotion) {
+        setPendingPromotion({
+          from: { file: fromFile, rank: fromRank },
+          to: { file: toFile, rank: toRank },
+        });
+      } else {
+        applyOptimisticMove(fromFile, fromRank, toFile, toRank);
+        movePiece(fromFile, fromRank, toFile, toRank);
+      }
+    },
+    [
+      displaySnapshot,
+      displayMyTurn,
+      isGameOver,
+      myColor,
+      applyOptimisticMove,
+      movePiece,
+    ],
   );
 
   const onRematchClick = useCallback(() => {
@@ -382,6 +411,7 @@ function ChessGameImpl({
             kingPosition={kingPosition}
             ariaLabel={`Chess board, ${displaySnapshot.currentTurnColor} to move`}
             onSquareClick={handleSquareClick}
+            onPieceDrop={handlePieceDrop}
           />
           <XStack justifyContent="space-between" alignItems="center" mt="$1">
             {currentUserId && !isGameOver && (

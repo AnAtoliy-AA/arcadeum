@@ -134,6 +134,12 @@ export class ChessBotService {
   }
 
   findBestMove(state: ChessState): ChessMove | null {
+    if (!this.killers.length) {
+      this.killers = Array.from({ length: 20 }, (): ChessMove[] => []);
+      this.history = Array.from({ length: 8 }, (): number[] => [
+        0, 0, 0, 0, 0, 0, 0, 0,
+      ]);
+    }
     const cfg = DIFFICULTY[this.currentDifficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;

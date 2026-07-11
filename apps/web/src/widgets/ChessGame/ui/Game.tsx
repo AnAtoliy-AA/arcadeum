@@ -136,7 +136,6 @@ function ChessGameImpl({
       }),
     [currentUserId, room, displaySnapshot],
   );
-
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
   useGameChatIntegration(
     snapshot?.logs as never,
@@ -144,7 +143,6 @@ function ChessGameImpl({
     resolveDisplayNameBound,
   );
   const { rematchLoading, handleRematch } = useRematch({ roomId });
-
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: displaySnapshot?.players.find(
       (p) => p.color === displaySnapshot.winnerColor,
@@ -182,7 +180,6 @@ function ChessGameImpl({
       displaySnapshot.moveHistory[displaySnapshot.moveHistory.length - 1];
     return { from: last.from, to: last.to };
   }, [displaySnapshot?.moveHistory]);
-
   const legalMoves = useMemo(() => {
     if (!selectedSquare || !displaySnapshot) return [];
     return (displaySnapshot.legalMovesForCurrentPlayer ?? [])
@@ -193,10 +190,9 @@ function ChessGameImpl({
       )
       .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
-
   const kingPosition = (() => {
     if (!displaySnapshot) return null;
-    for (let row = 0; row < 8; row++) {
+    for (let row = 0; row < 8; row++)
       for (let col = 0; col < 8; col++) {
         const p = displaySnapshot.board[row]?.[col];
         if (p?.type === 'king' && p.color === displaySnapshot.currentTurnColor)
@@ -205,7 +201,6 @@ function ChessGameImpl({
             rank: (8 - row) as import('../types').Rank,
           };
       }
-    }
     return null;
   })();
 
@@ -505,5 +500,4 @@ function ChessGameImpl({
     />
   );
 }
-
 export default memo(ChessGameImpl);

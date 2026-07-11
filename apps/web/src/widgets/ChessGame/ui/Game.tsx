@@ -1,9 +1,7 @@
 'use client';
 
 import { memo, useCallback, useMemo, useState } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { GameWidgetContainer } from '@/features/games/ui';
-import { MoveList } from './MoveList';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -19,16 +17,15 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ChessGameProps, ChessClientState } from '../types';
 import {
   FILES,
-  type BoardPosition,
   type Board,
+  type BoardPosition,
   type File,
   type PieceType,
 } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { ChessLobby } from './ChessLobby';
-import { ChessBoard } from './ChessBoard';
-import { ChessClock } from './ChessClock';
+import { ChessBoardPanel } from './ChessBoardPanel';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
 
@@ -126,7 +123,6 @@ function ChessGameImpl({
     },
     [snapshot],
   );
-
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
       resolveDisplayName(id, {
@@ -343,119 +339,25 @@ function ChessGameImpl({
     );
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
-      {displaySnapshot ? (
-        <>
-          {isSpectator && (
-            <XStack
-              justifyContent="center"
-              padding="$2"
-              borderRadius={8}
-              backgroundColor="rgba(255,255,255,0.05)"
-            >
-              <Text fontSize="$2" opacity={0.6} fontWeight="600">
-                {t('games.chess_v1.status.spectating')}
-              </Text>
-            </XStack>
-          )}
-          <ChessClock
-            clocks={displaySnapshot.clocks}
-            currentTurnColor={displaySnapshot.currentTurnColor}
-            isGameOver={isGameOver}
-          />
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$3" fontWeight="600" opacity={0.8}>
-              {displaySnapshot.currentTurnColor === 'white'
-                ? `♔ ${t('games.chess_v1.status.white')}`
-                : `♚ ${t('games.chess_v1.status.black')}`}{' '}
-              {t('games.chess_v1.status.toMove')}
-              {displaySnapshot.isCheck && !displaySnapshot.isCheckmate
-                ? ` (${t('games.chess_v1.status.check').toLowerCase()})`
-                : ''}
-            </Text>
-            <Text fontSize="$2" opacity={0.6}>
-              {displaySnapshot.fullMoveNumber}.
-            </Text>
-          </XStack>
-          <ChessBoard
-            board={displaySnapshot.board}
-            myColor={myColor}
-            isFlipped={isFlipped}
-            disabled={!displayMyTurn || isGameOver || isSpectator}
-            selectedSquare={selectedSquare}
-            legalMoves={legalMoves}
-            lastMove={lastMove}
-            isCheck={displaySnapshot.isCheck}
-            kingPosition={kingPosition}
-            ariaLabel={`Chess board, ${displaySnapshot.currentTurnColor} to move`}
-            onSquareClick={handleSquareClick}
-            onPieceDrop={handlePieceDrop}
-          />
-          <XStack justifyContent="space-between" alignItems="center" mt="$1">
-            {currentUserId &&
-              !isGameOver &&
-              !isSpectator &&
-              (displaySnapshot?.drawOfferedBy &&
-              displaySnapshot.drawOfferedBy !== currentUserId ? (
-                <XStack gap="$2" alignItems="center">
-                  <Text
-                    fontSize="$2"
-                    color="$green10"
-                    cursor="pointer"
-                    hoverStyle={{ opacity: 0.8 }}
-                    onPress={acceptDraw}
-                  >
-                    {t('games.chess_v1.actions.acceptDraw')}
-                  </Text>
-                  <Text
-                    fontSize="$2"
-                    opacity={0.6}
-                    cursor="pointer"
-                    hoverStyle={{ opacity: 1 }}
-                    onPress={resign}
-                  >
-                    {t('games.chess_v1.actions.declineDraw')}
-                  </Text>
-                </XStack>
-              ) : (
-                <XStack gap="$3" alignItems="center">
-                  <Text
-                    fontSize="$2"
-                    opacity={0.6}
-                    cursor="pointer"
-                    hoverStyle={{ opacity: 1 }}
-                    onPress={offerDraw}
-                    disabled={!!displaySnapshot?.drawOfferedBy}
-                  >
-                    {displaySnapshot?.drawOfferedBy
-                      ? t('games.chess_v1.actions.drawOffered')
-                      : t('games.chess_v1.actions.draw')}
-                  </Text>
-                  <Text
-                    fontSize="$2"
-                    opacity={0.6}
-                    cursor="pointer"
-                    hoverStyle={{ opacity: 1 }}
-                    onPress={resign}
-                  >
-                    {t('games.chess_v1.actions.resign')}
-                  </Text>
-                </XStack>
-              ))}
-            {displaySnapshot.moveHistory.length > 0 && (
-              <Text fontSize="$2" opacity={0.5}>
-                {t('games.chess_v1.status.moves', {
-                  count: displaySnapshot.moveHistory.length,
-                })}
-              </Text>
-            )}
-          </XStack>
-          {displaySnapshot.moveHistory.length > 0 && (
-            <MoveList state={displaySnapshot} t={t} />
-          )}
-        </>
-      ) : null}
-    </YStack>
+    <ChessBoardPanel
+      snapshot={displaySnapshot}
+      myColor={myColor}
+      isFlipped={isFlipped}
+      displayMyTurn={displayMyTurn}
+      isGameOver={isGameOver}
+      isSpectator={isSpectator}
+      selectedSquare={selectedSquare}
+      legalMoves={legalMoves}
+      lastMove={lastMove}
+      kingPosition={kingPosition}
+      currentUserId={currentUserId}
+      t={t}
+      onSquareClick={handleSquareClick}
+      onPieceDrop={handlePieceDrop}
+      onOfferDraw={offerDraw}
+      onResign={resign}
+      onAcceptDraw={acceptDraw}
+    />
   );
   const modals = (
     <>

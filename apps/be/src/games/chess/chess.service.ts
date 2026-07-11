@@ -26,20 +26,15 @@ import type {
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
-const WATCHDOG_INTERVAL_MS = 10_000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20_000;
-const WATCHDOG_MAX_BACKOFF_MS = 300_000;
-
 @Injectable()
 export class ChessService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ChessService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
-  private watchdogConsecutiveFailures = 0;
-  private nextWatchdogRun = 0;
+  private readonly watchdog: GameBotWatchdog;
   private readonly roomLocks = new Map<string, Promise<void>>();
 
   constructor(
@@ -49,7 +44,14 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     private readonly botService: ChessBotService,
-  ) {}
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'chess_v1',
+      sessionsService,
+      botService,
+      (session) => this.checkClockTimeout(session),
+    );
+  }
 
   onModuleInit() {
     this.botService.setMoveFn(
@@ -65,16 +67,11 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         },
       ) => Promise<unknown>,
     );
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, WATCHDOG_INTERVAL_MS);
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   async findSessionByRoom(roomId: string) {
@@ -212,6 +209,15 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   private async afterSessionStep(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
@@ -242,52 +248,6 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         return Promise.resolve(s);
       },
     );
-  }
-
-  private async runWatchdog() {
-    const now = Date.now();
-    if (now < this.nextWatchdogRun) return;
-
-    try {
-      const stale = await this.sessionsService.findStaleActiveSessions(
-        'chess_v1',
-        WATCHDOG_STALE_THRESHOLD_MS,
-        100,
-      );
-      for (const session of stale) {
-        this.checkClockTimeout(session).catch((err) =>
-          this.logger.error(
-            `Clock timeout check failed for room ${session.roomId}: ${err}`,
-          ),
-        );
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-      if (this.watchdogConsecutiveFailures > 0) {
-        this.logger.warn(
-          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
-        );
-      }
-      this.watchdogConsecutiveFailures = 0;
-      this.nextWatchdogRun = 0;
-    } catch (err) {
-      this.watchdogConsecutiveFailures++;
-      const backoffMs = Math.min(
-        WATCHDOG_INTERVAL_MS * 2 ** this.watchdogConsecutiveFailures,
-        WATCHDOG_MAX_BACKOFF_MS,
-      );
-      this.nextWatchdogRun = Date.now() + backoffMs;
-      if (this.watchdogConsecutiveFailures <= 3) {
-        this.logger.error(
-          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
-        );
-      }
-    }
   }
 
   private async checkClockTimeout(session: GameSessionSummary) {

@@ -76,6 +76,7 @@ export const ruMessages = {
     joinRoom: 'Войти в зал',
     joining: 'Вход...',
     watchRoom: 'Смотреть',
+    watchResults: 'Результаты',
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
     share: 'Поделиться',

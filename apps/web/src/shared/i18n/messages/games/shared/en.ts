@@ -76,6 +76,7 @@ export const enMessages = {
     joinRoom: 'Join Room',
     joining: 'Joining...',
     watchRoom: 'Watch',
+    watchResults: 'Watch Results',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
     share: 'Share',

@@ -76,6 +76,7 @@ export const byMessages = {
     joinRoom: 'Увайсці ў зал',
     joining: 'Уваход...',
     watchRoom: 'Глядзець',
+    watchResults: 'Вынікі',
     joinByCode: 'Увайсці па кодзе',
     cancel: 'Адмена',
     share: 'Падзяліцца',

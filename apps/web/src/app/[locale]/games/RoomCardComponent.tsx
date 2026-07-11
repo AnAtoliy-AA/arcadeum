@@ -250,7 +250,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       )}
 
       <StyledRoomActions viewMode={viewMode}>
-        {(room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
+        {!isCompleted && (room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
           <LinkButton
             href={routes.gameRoom(room.id)}
             variant="primary"
@@ -260,16 +260,18 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             {t('games.common.joinRoom')}
           </LinkButton>
         )}
-        {room.status === GAME_ROOM_STATUS.LOBBY || !isParticipant ? (
-          <LinkButton
-            href={`${routes.gameRoom(room.id)}?mode=watch`}
-            variant="secondary"
-            size="md"
-            flex={viewMode === 'grid' ? 1 : 0}
-          >
-            {t('games.common.watchRoom')}
-          </LinkButton>
-        ) : null}
+        {(isCompleted || room.status === GAME_ROOM_STATUS.LOBBY || !isParticipant) && (
+          <YStack opacity={isCompleted ? 0.5 : 1} flex={viewMode === 'grid' ? 1 : 0}>
+            <LinkButton
+              href={`${routes.gameRoom(room.id)}?mode=watch`}
+              variant="secondary"
+              size="md"
+              flex={1}
+            >
+              {isCompleted ? t('games.common.watchResults') : t('games.common.watchRoom')}
+            </LinkButton>
+          </YStack>
+        )}
       </StyledRoomActions>
     </StyledRoomCard>
   );

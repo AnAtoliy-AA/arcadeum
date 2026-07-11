@@ -143,25 +143,27 @@ export class ChatService {
       return new Map<string, MessageView>();
     }
 
-    const results = await Promise.all(
-      chatIds.map(async (chatId) => ({
-        chatId,
-        message: await this.messageModel
-          .findOne({ chatId })
-          .sort({ timestamp: -1 })
-          .exec(),
-      })),
-    );
+    const lastMessages = await this.messageModel.aggregate<{
+      _id: string;
+      doc: Message;
+    }>([
+      { $match: { chatId: { $in: chatIds } } },
+      { $sort: { timestamp: -1 } },
+      {
+        $group: {
+          _id: '$chatId',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+    ]);
 
     const messages: Message[] = [];
     const order: string[] = [];
 
-    results.forEach((result) => {
-      if (result.message) {
-        messages.push(result.message);
-        order.push(result.chatId);
-      }
-    });
+    for (const result of lastMessages) {
+      messages.push(result.doc);
+      order.push(result._id);
+    }
 
     const lookup = new Map<string, MessageView>();
     if (!messages.length) {
@@ -299,9 +301,10 @@ export class ChatService {
       .find({ chatId })
       .sort({ timestamp: -1 })
       .limit(Math.min(limit, 500))
+      .lean()
       .exec();
     messages.reverse();
-    return this.chatHelper.toMessageViews(messages);
+    return this.chatHelper.toMessageViews(messages as unknown as Message[]);
   }
 
   async createChatForUsers(
@@ -353,7 +356,11 @@ export class ChatService {
   }
 
   async listChatsForUser(userId: string): Promise<ChatSummary[]> {
-    const chats = await this.chatModel.find({ users: userId }).exec();
+    const chats = await this.chatModel
+      .find({ users: userId })
+      .select('chatId users')
+      .lean()
+      .exec();
     if (!chats.length) {
       return [];
     }

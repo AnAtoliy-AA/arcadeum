@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -50,8 +51,13 @@ export interface ExecuteActionOptions {
  * Game Sessions Service
  * Handles game session lifecycle and state management
  */
+/** Max BSON document size in bytes (10 MB — safety margin below 16 MB limit). */
+const MAX_DOC_SIZE_BYTES = 10 * 1024 * 1024;
+
 @Injectable()
 export class GameSessionsService {
+  private readonly logger = new Logger(GameSessionsService.name);
+
   constructor(
     @InjectModel(GameSession.name)
     private readonly gameSessionModel: Model<GameSession>,
@@ -160,6 +166,22 @@ export class GameSessionsService {
     if (status) {
       session.status = status;
     }
+
+    // Safety valve: strip stateHistory if document is approaching BSON limit
+    const approxSize = Buffer.byteLength(
+      JSON.stringify(session.state),
+      'utf-8',
+    );
+    if (approxSize > MAX_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
+      );
+      const s = session.state;
+      if (Array.isArray(s.stateHistory)) s.stateHistory = [];
+      if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
+      session.markModified('state');
+    }
+
     session.updatedAt = new Date();
 
     await session.save();
@@ -232,7 +254,23 @@ export class GameSessionsService {
       );
     }
 
+    // Safety valve: strip stateHistory if document is approaching BSON limit
+    const approxSize = Buffer.byteLength(
+      JSON.stringify(session.state),
+      'utf-8',
+    );
+    if (approxSize > MAX_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
+      );
+      const s = session.state;
+      if (Array.isArray(s.stateHistory)) s.stateHistory = [];
+      if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
+      session.markModified('state');
+    }
+
     session.updatedAt = new Date();
+
     await session.save();
 
     return this.toSessionSummary(session);

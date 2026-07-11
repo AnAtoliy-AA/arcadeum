@@ -112,6 +112,7 @@ export interface LegalMove {
 export interface ChessClientState {
   phase: ChessPhase;
   variant: 'standard' | 'chess960';
+  timeControl: TimeControl | null;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;

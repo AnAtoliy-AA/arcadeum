@@ -94,8 +94,10 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
             return board;
           })()
         : parseFen(INITIAL_BOARD_FEN);
+    const timeControl = config?.timeControl ?? null;
     const initialState = {
       variant,
+      timeControl,
       board: initialBoard,
       currentTurnColor: 'white' as const,
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
@@ -206,15 +208,13 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   }
 
   getWinners(state: ChessState): string[] {
-    if (
+    const isDraw =
       state.isDrawByRepetition ||
       state.isDrawByFiftyMoveRule ||
       state.isInsufficientMaterial ||
       state.isStalemate ||
-      state.isDrawByAgreement
-    ) {
-      return [];
-    }
+      state.isDrawByAgreement;
+    if (isDraw) return [];
     if (state.winnerColor) {
       const winner = state.players.find((p) => p.color === state.winnerColor);
       return winner ? [winner.playerId] : [];
@@ -329,6 +329,18 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       newState.fullMoveNumber++;
     }
 
+    if (newState.clocks) {
+      const movingColor = state.currentTurnColor;
+      const clock = { ...newState.clocks[movingColor] };
+      const tc = (
+        state as unknown as { timeControl?: { incrementSeconds?: number } }
+      ).timeControl;
+      const increment = tc?.incrementSeconds ?? 0;
+      clock.remainingSeconds += increment;
+      clock.lastMoveTimestamp = Date.now();
+      newState.clocks = { ...newState.clocks, [movingColor]: clock };
+    }
+
     newState.positionHistory = [
       ...state.positionHistory,
       boardToFen(newState.board),
@@ -372,23 +384,20 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     }
 
     if (newState.halfMoveClock >= 100) {
-      newState.isDrawByFiftyMoveRule = true;
-      newState.logs.push(
-        this.createLogEntry('system', 'Draw by 50-move rule.'),
-      );
+      this.markDraw(newState, 'isDrawByFiftyMoveRule', 'Draw by 50-move rule.');
     }
-
     if (isInsufficientMaterial(newState.board)) {
-      newState.isInsufficientMaterial = true;
-      newState.logs.push(
-        this.createLogEntry('system', 'Draw by insufficient material.'),
+      this.markDraw(
+        newState,
+        'isInsufficientMaterial',
+        'Draw by insufficient material.',
       );
     }
-
     if (isThreefoldRepetition(newState.positionHistory)) {
-      newState.isDrawByRepetition = true;
-      newState.logs.push(
-        this.createLogEntry('system', 'Draw by threefold repetition.'),
+      this.markDraw(
+        newState,
+        'isDrawByRepetition',
+        'Draw by threefold repetition.',
       );
     }
 
@@ -398,6 +407,18 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
 
     return this.successResult(newState);
+  }
+
+  private markDraw(
+    state: ChessState,
+    key:
+      | 'isDrawByFiftyMoveRule'
+      | 'isInsufficientMaterial'
+      | 'isDrawByRepetition',
+    message: string,
+  ): void {
+    (state as Record<string, unknown>)[key] = true;
+    state.logs.push(this.createLogEntry('system', message));
   }
 
   private updateCastlingRights(state: ChessState, move: ChessMove): void {

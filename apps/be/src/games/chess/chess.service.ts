@@ -248,6 +248,11 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         100,
       );
       for (const session of stale) {
+        this.checkClockTimeout(session).catch((err) =>
+          this.logger.error(
+            `Clock timeout check failed for room ${session.roomId}: ${err}`,
+          ),
+        );
         this.botService
           .checkAndPlay(session)
           .catch((err) =>
@@ -276,6 +281,43 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         );
       }
     }
+  }
+
+  private async checkClockTimeout(session: GameSessionSummary) {
+    const state = session.state as ChessState | undefined;
+    if (!state || !state.clocks || this.isGameOver(state)) return;
+
+    const currentClock = state.clocks[state.currentTurnColor];
+    if (!currentClock) return;
+
+    const elapsed = Math.floor(
+      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
+    );
+    const remaining = currentClock.remainingSeconds - elapsed;
+
+    if (remaining <= 0) {
+      const loser = state.players.find(
+        (p) => p.color === state.currentTurnColor,
+      );
+      const winner = state.players.find(
+        (p) => p.color !== state.currentTurnColor,
+      );
+      if (loser && winner) {
+        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
+      }
+    }
+  }
+
+  private isGameOver(state: ChessState): boolean {
+    return (
+      state.isCheckmate ||
+      state.isStalemate ||
+      state.winnerColor !== null ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isDrawByAgreement
+    );
   }
 
   private resolveOptions(raw: unknown): ChessOptions {

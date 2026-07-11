@@ -70,6 +70,7 @@ export interface LegalMove {
 
 export interface ChessState extends BaseGameState {
   variant: ChessVariant;
+  timeControl: TimeControl | null;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;

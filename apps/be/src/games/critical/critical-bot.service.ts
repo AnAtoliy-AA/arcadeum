@@ -82,6 +82,55 @@ export class CriticalBotService {
     );
     if (!botPlayer || !botPlayer.alive) return;
 
+    const deckSize = Array.isArray(state.deck) ? state.deck.length : 0;
+
+    // If deck is empty, bot can only play cards — skip draw logic
+    if (deckSize === 0) {
+      // Try to play a card if possible, otherwise do nothing
+      const hand = botPlayer.hand || [];
+      const playableCards = hand.filter((c: CriticalCard) =>
+        [
+          'strike',
+          'targeted_strike',
+          'private_strike',
+          'recursive_strike',
+          'evade',
+          'mega_evade',
+          'invert',
+          'reorder',
+          'insight',
+          'see_future_5x',
+          'reveal_future_3x',
+          'alter_future_3x',
+          'alter_future_5x',
+          'share_future_3x',
+          'draw_bottom',
+          'swap_top_bottom',
+          'bury',
+          'trade',
+          'mark',
+          'steal_draw',
+        ].includes(c as string),
+      );
+
+      if (playableCards.length > 0) {
+        const card =
+          playableCards[Math.floor(Math.random() * playableCards.length)];
+        const target = this.getRandomOpponent(state, botId);
+        try {
+          await this.criticalService.playActionByRoom(
+            botId,
+            session.roomId,
+            card,
+            { targetPlayerId: target },
+          );
+        } catch {
+          // Can't play and can't draw — nothing to do
+        }
+      }
+      return;
+    }
+
     // Check availability of Nope card
     const hasNope = botPlayer.hand.includes('cancel');
 
@@ -163,13 +212,15 @@ export class CriticalBotService {
         );
       } catch (error) {
         this.logger.error(`Bot ${botId} failed to play card ${card}: ${error}`);
-        // Fallback to draw card if action failed
-        try {
-          await this.criticalService.drawCard(session.id, botId);
-        } catch (drawError) {
-          this.logger.error(
-            `Bot ${botId} failed to fallback draw: ${drawError}`,
-          );
+        // Fallback to draw card if action failed and deck is not empty
+        if (deckSize > 0) {
+          try {
+            await this.criticalService.drawCard(session.id, botId);
+          } catch (drawError) {
+            this.logger.error(
+              `Bot ${botId} failed to fallback draw: ${drawError}`,
+            );
+          }
         }
       }
 
@@ -237,13 +288,13 @@ export class CriticalBotService {
 
     // Get the top cards (count is in pendingAlter)
     const count = state.pendingAlter?.count || 3;
-    const topCards = state.deck.slice(0, count);
+    const deckSize = Array.isArray(state.deck) ? state.deck.length : 0;
+
+    // If deck has fewer cards than requested, return what's available
+    const actualCount = Math.min(count, deckSize);
+    const topCards = state.deck.slice(0, actualCount);
 
     // Simple strategy: Random shuffle
-    // Could be smarter: put diffuse/attack cards on top/bottom?
-    // But for MVP bot, random is fine.
-    // Actually, we should probably keep them as is or shuffle.
-    // Let's shuffle to show "activity".
     const shuffled = [...topCards].sort(() => Math.random() - 0.5);
 
     await this.criticalService.commitAlterFutureByRoom(

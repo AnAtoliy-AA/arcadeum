@@ -3,7 +3,7 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
-const DEFAULT_MAX_POOL_SIZE = 20;
+const DEFAULT_MAX_POOL_SIZE = 50;
 const DEV_MAX_POOL_SIZE = 10;
 const MIN_MAX_POOL_SIZE = 1;
 
@@ -39,8 +39,7 @@ export function resolveMongoUri(): string {
 /**
  * Resolve mongoose connection options.
  *
- * `maxPoolSize` defaults to 20 in production (was 200 — too large for
- * Render containers with limited RAM and caused OOM on Mongo outages).
+ * `maxPoolSize` defaults to 50 (was 200 — caused OOM on Mongo outages).
  * Override via `MONGODB_MAX_POOL_SIZE` per environment.
  *
  * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (10s).

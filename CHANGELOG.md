@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.38] - 2026-07-12
+
+### Added
+- add admin DB health endpoint for monitoring
+
+### Fixed
+- lower session size safety valve from 10MB to 100KB/500KB
+- strip logs from completed sessions to reduce DB size
+- prevent MongoDB OOM from large documents and stale sessions
+
+
 ## [1.23.37] - 2026-07-11
 
 ### Fixed

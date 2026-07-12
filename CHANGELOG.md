@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.41] - 2026-07-12
+
+### Fixed
+- revert sessionWasCompletedFromStart to fix e2e tests
+- suppress result modal for already-completed rooms
+
+### Documentation
+- clarify PR title rules for staging and main
+
+
 ## [1.23.40] - 2026-07-12
 
 ### Changed

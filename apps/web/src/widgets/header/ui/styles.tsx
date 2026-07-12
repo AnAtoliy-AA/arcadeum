@@ -2,7 +2,6 @@
 
 import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
-
 import Link from 'next/link';
 import { styled, XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';

@@ -27,6 +27,7 @@
     /* Deep shadow */ 12px 18px 30px rgba(0, 0, 0, 0.6); /* Soft floor shadow */
 
   animation: hero-float-3d 6s ease-in-out infinite;
+  will-change: transform;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

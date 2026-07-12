@@ -329,6 +329,7 @@
 
 .pulse-ring {
   animation: playButtonPulse 3s infinite;
+  will-change: transform, opacity;
 }
 
 @keyframes scaleIn {

@@ -638,6 +638,7 @@
   display: inline-block;
   font-size: 16px;
   animation: cascade-spin 6s linear infinite;
+  will-change: transform;
 }
 .dirArrowReverse {
   animation-direction: reverse;

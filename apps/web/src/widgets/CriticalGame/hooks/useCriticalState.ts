@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useCallback } from 'react';
+import { useMemo, useEffect, useCallback, useState } from 'react';
 import { useGameSession, useGameActions } from '@/features/games/hooks';
 import { gameSocket } from '@/shared/lib/socket';
 import type { CriticalSnapshot, CriticalPlayerState } from '../types';
@@ -131,6 +131,10 @@ export function useCriticalState({
 
   const isGameOver = session?.status === 'completed';
 
+  const [initialSessionStatus] = useState(() => session?.status);
+
+  const sessionWasCompletedFromStart = initialSessionStatus === 'completed';
+
   return {
     session,
     snapshot,
@@ -145,5 +149,6 @@ export function useCriticalState({
     canPlayNope,
     aliveOpponents,
     isGameOver,
+    sessionWasCompletedFromStart,
   };
 }

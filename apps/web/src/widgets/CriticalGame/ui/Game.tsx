@@ -35,6 +35,7 @@ export default function CriticalGame({
     canPlayNope,
     aliveOpponents,
     isGameOver,
+    sessionWasCompletedFromStart,
   } = useCriticalState({
     roomId,
     currentUserId,
@@ -91,6 +92,7 @@ export default function CriticalGame({
       canPlayNope={!!canPlayNope}
       aliveOpponents={aliveOpponents}
       isGameOver={!!isGameOver}
+      sessionWasCompletedFromStart={sessionWasCompletedFromStart}
       rematch={rematch}
       showRulesOpen={showRulesOpen}
       onShowRulesClose={onShowRulesClose}

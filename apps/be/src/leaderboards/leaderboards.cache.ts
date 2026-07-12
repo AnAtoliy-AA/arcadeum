@@ -3,6 +3,8 @@ import type { LeaderboardSnapshotDto } from './dtos/leaderboard-snapshot.dto';
 
 const DEFAULT_TTL_MS = 30_000;
 const RAW_TTL_MS = 30_000;
+const MAX_STORE_SIZE = 500;
+const MAX_RAW_SIZE = 100;
 
 type Entry = {
   expiresAt: number;
@@ -48,6 +50,9 @@ export class LeaderboardsCacheService {
     value: LeaderboardSnapshotDto,
     ttlMs = DEFAULT_TTL_MS,
   ): void {
+    if (this.store.size >= MAX_STORE_SIZE) {
+      this.evictOldest(this.store);
+    }
     this.store.set(key, { value, expiresAt: Date.now() + ttlMs });
   }
 
@@ -62,6 +67,9 @@ export class LeaderboardsCacheService {
   }
 
   setRaw<T>(key: string, value: T, ttlMs = RAW_TTL_MS): void {
+    if (this.raw.size >= MAX_RAW_SIZE) {
+      this.evictOldest(this.raw);
+    }
     this.raw.set(key, { value, expiresAt: Date.now() + ttlMs });
   }
 
@@ -72,6 +80,20 @@ export class LeaderboardsCacheService {
 
   size(): number {
     return this.store.size + this.raw.size;
+  }
+
+  private evictOldest<V>(
+    map: Map<string, { expiresAt: number; value: V }>,
+  ): void {
+    let oldestKey: string | null = null;
+    let oldestTs = Infinity;
+    for (const [k, v] of map) {
+      if (v.expiresAt < oldestTs) {
+        oldestTs = v.expiresAt;
+        oldestKey = k;
+      }
+    }
+    if (oldestKey !== null) map.delete(oldestKey);
   }
 
   static keyFor(args: {

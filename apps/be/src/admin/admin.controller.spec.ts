@@ -1,6 +1,6 @@
 import { INestApplication, ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
+import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AdminController } from './admin.controller';
@@ -32,6 +32,10 @@ describe('AdminController (integration)', () => {
       providers: [
         RolesGuard,
         { provide: getModelToken(User.name), useValue: userModel },
+        {
+          provide: getConnectionToken(),
+          useValue: { db: null },
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)

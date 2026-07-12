@@ -99,3 +99,5 @@ UserSchema.pre<UserDocument>('save', function setNormalizedUsername(next) {
   }
   next();
 });
+
+UserSchema.index({ username: 1 });

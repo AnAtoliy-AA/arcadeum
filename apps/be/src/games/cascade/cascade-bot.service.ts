@@ -49,6 +49,17 @@ export class CascadeBotService {
     const state = session.state as unknown as CascadeState | undefined;
     if (!state || state.phase !== GAME_PHASE.PLAYING) return;
 
+    const hasAliveHuman = state.players.some(
+      (p) => p.alive && !this.isBot(p.playerId),
+    );
+    if (!hasAliveHuman) {
+      this.logger.log(
+        `No alive humans in room ${session.roomId} — completing session`,
+      );
+      await this.cascadeService.completeSession(session.id, session.roomId);
+      return;
+    }
+
     // Fire-and-forget: any bot can call Cascade independent of whose turn
     // it is. Schedule the reflex now; it'll race against humans and other
     // bots. Self-saves fire on a tighter timer than other-calls.

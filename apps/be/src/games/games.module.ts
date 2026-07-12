@@ -11,6 +11,7 @@ import {
   GameHistoryHidden,
   GameHistoryHiddenSchema,
 } from './schemas/game-history-hidden.schema';
+import { PlayerStats, PlayerStatsSchema } from './schemas/player-stats.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
@@ -25,6 +26,7 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { GameHistoryStatsService } from './history/game-history-stats.service';
@@ -34,6 +36,7 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { PlayerStatsService } from './player-stats.service';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
 
@@ -80,6 +83,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       { name: GameRoom.name, schema: GameRoomSchema },
       { name: GameSession.name, schema: GameSessionSchema },
       { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
+      { name: PlayerStats.name, schema: PlayerStatsSchema },
       { name: User.name, schema: UserSchema },
     ]),
     GameEnginesModule, // Import the game engines module
@@ -101,6 +105,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
+    GameSessionsCleanupCron,
     GameHistoryService,
     GameHistoryBuilderService,
     GameHistoryStatsService,
@@ -134,6 +139,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,
+    PlayerStatsService,
     // Gateways
     GamesGateway,
     CriticalGateway,

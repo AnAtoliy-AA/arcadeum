@@ -14,7 +14,11 @@ export function useChessActions(options: UseChessActionsOptions) {
   const { roomId, userId, onActionStart } = options;
 
   const startSession = useCallback(
-    (startOptions?: { withBots?: boolean; botCount?: number }) => {
+    (startOptions?: {
+      withBots?: boolean;
+      botCount?: number;
+      botDifficulty?: string;
+    }) => {
       if (!userId) return;
       onActionStart?.('start');
       gameSocket.emit('chess.session.start', {
@@ -22,6 +26,7 @@ export function useChessActions(options: UseChessActionsOptions) {
         userId,
         withBots: startOptions?.withBots,
         botCount: startOptions?.botCount,
+        botDifficulty: startOptions?.botDifficulty,
       });
     },
     [roomId, userId, onActionStart],
@@ -56,5 +61,17 @@ export function useChessActions(options: UseChessActionsOptions) {
     gameSocket.emit('chess.session.resign', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, movePiece, resign };
+  const offerDraw = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('draw_offer');
+    gameSocket.emit('chess.session.draw_offer', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const acceptDraw = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('draw_accept');
+    gameSocket.emit('chess.session.draw_accept', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  return { startSession, movePiece, resign, offerDraw, acceptDraw };
 }

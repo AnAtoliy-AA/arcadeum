@@ -13,7 +13,8 @@ import {
 } from '../engines/sea-battle/sea-battle.constants';
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
 
-const LOCK_TIMEOUT_MS = 30000;
+const LOCK_TIMEOUT_MS = 60000;
+const PROCESSING_ENTRY_TTL_MS = 120_000;
 
 // Randomised bot delays make matches feel human without dragging on.
 const PLACEMENT_DELAY_MS = { min: 500, max: 1500 };
@@ -37,10 +38,13 @@ export class SeaBattleBotService {
   ): Promise<T> {
     const prev = this.placementChain.get(roomId) ?? Promise.resolve();
     const next = prev.catch(() => undefined).then(task);
-    this.placementChain.set(
-      roomId,
-      next.catch(() => undefined),
-    );
+    const settled = next.catch(() => undefined);
+    this.placementChain.set(roomId, settled);
+    void settled.finally(() => {
+      if (this.placementChain.get(roomId) === settled) {
+        this.placementChain.delete(roomId);
+      }
+    });
     return next;
   }
 
@@ -60,11 +64,22 @@ export class SeaBattleBotService {
       }
 
       const state = session.state as unknown as SeaBattleState;
-      if (!state) {
-        this.logger.warn(
-          `checkAndPlay skipped: no state for session ${session.roomId}`,
+      if (!state) return;
+
+      const hasAliveHuman = state.players.some(
+        (p: SeaBattlePlayer) => p.alive && !this.isBot(p.playerId),
+      );
+      if (!hasAliveHuman) {
+        this.logger.log(
+          `No alive humans in room ${session.roomId} — completing session`,
         );
+        await this.seaBattleService.completeSession(session.id, session.roomId);
         return;
+      }
+
+      const now = Date.now();
+      for (const [key, ts] of this.processing) {
+        if (now - ts > PROCESSING_ENTRY_TTL_MS) this.processing.delete(key);
       }
 
       const bots = state.players.filter((p: SeaBattlePlayer) =>
@@ -247,10 +262,7 @@ export class SeaBattleBotService {
             Math.floor(Math.random() * eligibleOpponents.length)
           ];
 
-        // --- Special weapons: sonar / radar ---
-        // Weapons are available if state.specialWeapons has them enabled.
-        // Admin exclusion via stripDisabledRules already removes excluded
-        // weapons from gameOptions before engine init, so we just check state.
+        // --- Special weapons: sonar / radar (free action, no turn advancement) ---
         const myUsage = state.specialWeaponUsage?.[botId];
         const hasSonar = !!state.specialWeapons?.sonar && !myUsage?.sonarUsed;
         const hasRadar = !!state.specialWeapons?.radar && !myUsage?.radarUsed;
@@ -269,15 +281,6 @@ export class SeaBattleBotService {
           );
           if (!refreshed) break;
           currentSession = refreshed;
-          const postSonar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterSonar =
-            postSonar.playerOrder[postSonar.currentTurnIndex];
-          if (
-            nextAfterSonar !== botId ||
-            postSonar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
         } else if (hasRadar) {
           const row = Math.floor(Math.random() * gridSize);
           await this.seaBattleService.executeActionByRoom(
@@ -286,20 +289,11 @@ export class SeaBattleBotService {
             'useRadar',
             { targetPlayerId: target.playerId, row },
           );
-          const refreshedRadar = await this.seaBattleService.findSessionByRoom(
+          const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
           );
-          if (!refreshedRadar) break;
-          currentSession = refreshedRadar;
-          const postRadar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterRadar =
-            postRadar.playerOrder[postRadar.currentTurnIndex];
-          if (
-            nextAfterRadar !== botId ||
-            postRadar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
+          if (!refreshed) break;
+          currentSession = refreshed;
         }
 
         // Smart Target Logic: Finish off damaged ships

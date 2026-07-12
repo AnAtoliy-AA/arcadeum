@@ -1,4 +1,4 @@
-import { Keypair } from '@solana/web3.js';
+import type { Keypair } from '@solana/web3.js';
 
 let cachedKeypair: Keypair | null = null;
 
@@ -6,7 +6,9 @@ let cachedKeypair: Keypair | null = null;
  * Load the platform wallet keypair from a JSON-encoded secret key string.
  * The string should contain a JSON array of 64 numbers (the secret key).
  */
-export function getPlatformKeypair(secretKeyJson: string): Keypair {
+export async function getPlatformKeypair(
+  secretKeyJson: string,
+): Promise<Keypair> {
   if (cachedKeypair) return cachedKeypair;
 
   if (!secretKeyJson) {
@@ -17,6 +19,7 @@ export function getPlatformKeypair(secretKeyJson: string): Keypair {
   }
 
   try {
+    const { Keypair } = await import('@solana/web3.js');
     const parsed: number[] = JSON.parse(secretKeyJson) as number[];
     const secretKey = Uint8Array.from(parsed);
     cachedKeypair = Keypair.fromSecretKey(secretKey);

@@ -98,24 +98,37 @@ export class GameHistoryService {
 
     const rooms = await this.gameRoomModel
       .find(query)
+      .select(
+        'hostId gameId name status visibility participants updatedAt gameOptions',
+      )
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)
+      .lean()
       .exec();
 
     const roomIds = rooms.map((r) => r._id.toString());
 
-    // Find sessions for these rooms
+    // Find sessions for these rooms (cap at 50 per room to prevent unbounded growth)
     const sessions = await this.gameSessionModel
       .find({ roomId: { $in: roomIds } })
+      .select('roomId gameId status state createdAt updatedAt')
       .sort({ createdAt: -1 })
+      .limit(roomIds.length * 50)
+      .lean()
       .exec();
 
     let entries: GameHistorySummary[] | GroupedHistorySummary[];
     if (options.grouped) {
-      entries = await this.builder.buildGroupedHistory(rooms, sessions);
+      entries = await this.builder.buildGroupedHistory(
+        rooms as unknown as GameRoom[],
+        sessions as unknown as GameSession[],
+      );
     } else {
-      entries = await this.builder.buildHistoryList(rooms, sessions);
+      entries = await this.builder.buildHistoryList(
+        rooms as unknown as GameRoom[],
+        sessions as unknown as GameSession[],
+      );
     }
 
     return {
@@ -158,7 +171,7 @@ export class GameHistoryService {
       sender?: HistoryParticipantSummary;
     }>;
   }> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -173,14 +186,19 @@ export class GameHistoryService {
       throw new BadRequestException('You were not a participant in this game');
     }
 
-    // Get all sessions for this room
+    // Get all sessions for this room (cap at 20)
     const sessions = await this.gameSessionModel
       .find({ roomId })
+      .select('roomId gameId status state createdAt updatedAt')
       .sort({ createdAt: -1 })
+      .limit(20)
+      .lean()
       .exec();
 
     // Get participant summaries
-    const participants = await this.builder.getParticipantSummaries(room);
+    const participants = await this.builder.getParticipantSummaries(
+      room as unknown as GameRoom,
+    );
 
     // Find the latest session for this room
     const latestSession = sessions[0] || null;
@@ -220,23 +238,22 @@ export class GameHistoryService {
       }
     }
 
-    // Build summary
     const host = participants.find((p) => p.isHost) || participants[0];
-    const summary = {
-      roomId: room._id.toString(),
-      sessionId: latestSession ? latestSession._id.toString() : null,
-      gameId: room.gameId,
-      roomName: room.name,
-      status: room.status,
-      startedAt: latestSession ? latestSession.createdAt.toISOString() : null,
-      completedAt: latestSession ? latestSession.updatedAt.toISOString() : null,
-      lastActivityAt: room.updatedAt.toISOString(),
-      host,
-      participants,
-    };
-
     return {
-      summary,
+      summary: {
+        roomId: room._id.toString(),
+        sessionId: latestSession ? latestSession._id.toString() : null,
+        gameId: room.gameId,
+        roomName: room.name,
+        status: room.status,
+        startedAt: latestSession ? latestSession.createdAt.toISOString() : null,
+        completedAt: latestSession
+          ? latestSession.updatedAt.toISOString()
+          : null,
+        lastActivityAt: room.updatedAt.toISOString(),
+        host,
+        participants,
+      },
       logs,
     };
   }
@@ -245,31 +262,21 @@ export class GameHistoryService {
    * Hide a history entry for a user
    */
   async hideHistoryEntry(userId: string, roomId: string): Promise<void> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
 
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
-    // Check if user was a participant
     const isParticipant =
       room.hostId === userId ||
       room.participants.some((p) => p.userId === userId);
-
-    if (!isParticipant) {
+    if (!isParticipant)
       throw new BadRequestException('You were not a participant in this game');
-    }
 
-    // Check if already hidden
     const existing = await this.historyHiddenModel
       .findOne({ userId, roomId })
+      .lean()
       .exec();
+    if (existing) return;
 
-    if (existing) {
-      return; // Already hidden
-    }
-
-    // Create hidden entry
     await this.historyHiddenModel.create({
       userId,
       roomId,
@@ -277,9 +284,6 @@ export class GameHistoryService {
     });
   }
 
-  /**
-   * Create a rematch from a history entry
-   */
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
@@ -289,6 +293,7 @@ export class GameHistoryService {
     // Get original room
     const originalRoom = await this.gameRoomModel
       .findById(originalRoomId)
+      .lean()
       .exec();
 
     if (!originalRoom) {
@@ -425,7 +430,7 @@ export class GameHistoryService {
     message: string,
     scope: ChatScope,
   ): Promise<void> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -467,6 +472,9 @@ export class GameHistoryService {
     }
 
     state.logs.push(logEntry);
+    if (state.logs.length > 500) {
+      state.logs = state.logs.slice(-500);
+    }
     session.markModified('state');
     await session.save();
   }

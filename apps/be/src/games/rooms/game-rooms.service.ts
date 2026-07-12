@@ -100,13 +100,17 @@ export class GameRoomsService {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
+        .lean()
         .exec(),
       this.gameRoomModel.countDocuments(query).exec(),
     ]);
 
     const summaries = await Promise.all(
       rooms.map((room) =>
-        this.gameRoomsMapper.prepareRoomSummary(room, viewerId),
+        this.gameRoomsMapper.prepareRoomSummary(
+          room as unknown as GameRoom,
+          viewerId,
+        ),
       ),
     );
 
@@ -128,26 +132,37 @@ export class GameRoomsService {
     if (!normalized) throw new NotFoundException('Room not found');
     const room = await this.gameRoomModel
       .findOne({ inviteCode: normalized })
+      .lean()
       .exec();
     if (!room) throw new NotFoundException('Room not found');
-    return this.gameRoomsMapper.prepareRoomSummary(room, viewerId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as import('../schemas/game-room.schema').GameRoom,
+      viewerId,
+    );
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel
+      .findById(roomId)
+      .select('-password')
+      .lean()
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
     }
 
-    if (!this.canViewRoom(room, userId)) {
+    if (!this.canViewRoom(room as unknown as GameRoom, userId)) {
       throw new ForbiddenException('Cannot view this room');
     }
 
-    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as GameRoom,
+      userId,
+    );
   }
 
   /**
@@ -212,23 +227,12 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Ensure user is a participant (join if not already)
-   */
   async ensureParticipant(roomId: string, userId: string): Promise<boolean> {
     const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
     const isParticipant = room.participants.some((p) => p.userId === userId);
-
     if (!isParticipant) {
-      room.participants.push({
-        userId,
-        joinedAt: new Date(),
-      });
+      room.participants.push({ userId, joinedAt: new Date() });
       room.updatedAt = new Date();
       await room.save();
       return true;
@@ -311,7 +315,7 @@ export class GameRoomsService {
     dto: DeleteGameRoomDto,
     userId: string,
   ): Promise<DeleteGameRoomResult> {
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    const room = await this.gameRoomModel.findById(dto.roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -353,7 +357,7 @@ export class GameRoomsService {
    * Get room participants
    */
   async getRoomParticipants(roomId: string): Promise<string[]> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -437,16 +441,14 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  // ========== Private Helper Methods ==========
-
   private canViewRoom(room: GameRoom, userId?: string | null): boolean {
     if (room.visibility === 'public') return true;
     if (!userId) return false;
-    if (room.hostId === userId) return true;
-    if (room.participants.some((p) => p.userId === userId)) return true;
-    return false;
+    return (
+      room.hostId === userId ||
+      room.participants.some((p) => p.userId === userId)
+    );
   }
-
   async declineRematchInvitation(
     roomId: string,
     userId: string,
@@ -457,19 +459,12 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(
     roomId: string,
     userId: string,
   ): Promise<GameRoomSummary> {
     return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
   }
-
-  /**
-   * Re-invite players to a rematch
-   */
   async reinviteRematchPlayers(
     roomId: string,
     hostId: string,
@@ -493,7 +488,6 @@ export class GameRoomsService {
         .exec();
       exists = !!existing;
     }
-
     return code!;
   }
 }

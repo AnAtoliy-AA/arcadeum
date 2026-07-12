@@ -147,23 +147,25 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     if (result.success && result.state) {
       const history =
         ((state as Record<string, unknown>).stateHistory as unknown[]) ?? [];
-      // Strip stateHistory from the snapshot to prevent recursive nesting
+      // Strip stateHistory and logs from the snapshot to prevent unbounded
+      // BSON document growth (especially on infinity boards).
       const src = state as Record<string, unknown>;
       const stateSnapshot: Record<string, unknown> = {};
       for (const key of Object.keys(src)) {
-        if (key !== 'stateHistory') stateSnapshot[key] = src[key];
+        if (key !== 'stateHistory' && key !== 'logs')
+          stateSnapshot[key] = src[key];
       }
       result.state = {
         ...result.state,
-        stateHistory: [...history.slice(-10), structuredClone(stateSnapshot)],
+        stateHistory: [...history.slice(-3), structuredClone(stateSnapshot)],
       };
     }
 
     // Trim logs to prevent unbounded BSON document growth
-    if (result.state && result.state.logs.length > 200) {
+    if (result.state && result.state.logs.length > 100) {
       result.state = {
         ...result.state,
-        logs: result.state.logs.slice(-200),
+        logs: result.state.logs.slice(-100),
       };
     }
 

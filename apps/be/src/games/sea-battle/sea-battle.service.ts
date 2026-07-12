@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -21,6 +23,7 @@ import {
   MAX_PLAYERS_TEAM_MODE,
 } from '../engines/sea-battle/sea-battle.constants';
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -41,7 +44,7 @@ interface AttackPayload {
 @Injectable()
 export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SeaBattleService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -50,51 +53,22 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => SeaBattleBotService))
     private readonly botService: SeaBattleBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'sea_battle_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.startWatchdog();
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    this.stopWatchdog();
-  }
-
-  private stopWatchdog() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
-  }
-
-  private startWatchdog() {
-    // Every 10 seconds, check active Sea Battle sessions that haven't moved for 20 seconds
-    this.watchdogInterval = setInterval(() => {
-      void (async () => {
-        try {
-          const staleSessions =
-            await this.sessionsService.findStaleActiveSessions(
-              'sea_battle_v1',
-              20000, // 20 seconds stale threshold
-              100, // Limit to 100 per cycle for safety
-            );
-
-          if (staleSessions.length > 0) {
-            for (const session of staleSessions) {
-              this.botService
-                .checkAndPlay(session)
-                .catch((err) =>
-                  this.logger.error(
-                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-                  ),
-                );
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Watchdog failed: ${error}`);
-        }
-      })();
-    }, 10000);
+    this.watchdog.stop();
   }
 
   /**
@@ -106,6 +80,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       return this.checkAndSyncRoomStatus(session);
     }
     return null;
+  }
+
+  /**
+   * Complete a game session (e.g. when no human players remain alive)
+   */
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
   }
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {

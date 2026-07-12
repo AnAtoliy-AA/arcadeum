@@ -5,6 +5,7 @@ import { WalletService } from '../wallet/wallet.service';
 import { EconomySettingsService } from '../economy/economy-settings.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { PlayerStatsService } from './player-stats.service';
 
 @Injectable()
 export class GamePostMatchService {
@@ -16,6 +17,7 @@ export class GamePostMatchService {
     private readonly sessionsService: GameSessionsService,
     private readonly wallet: WalletService,
     private readonly economy: EconomySettingsService,
+    private readonly playerStats: PlayerStatsService,
   ) {}
 
   async onGameCompleted(
@@ -39,13 +41,27 @@ export class GamePostMatchService {
 
     try {
       const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
-      await Promise.allSettled(
-        humanPlayerIds.map((playerId) =>
-          this.achievements.checkAndUnlock(playerId),
-        ),
-      );
+      if (humanPlayerIds.length > 0) {
+        const definitions = await this.achievements.getDefinitions();
+        await Promise.allSettled(
+          humanPlayerIds.map((playerId) =>
+            this.achievements.checkAndUnlockWithDefinitions(
+              playerId,
+              definitions,
+            ),
+          ),
+        );
+      }
     } catch (err) {
       this.logger.warn(`Achievements check failed: ${(err as Error).message}`);
+    }
+
+    try {
+      await this.playerStats.recordGameResult(playerIds, gameId, winners);
+    } catch (err) {
+      this.logger.warn(
+        `Player stats recording failed: ${(err as Error).message}`,
+      );
     }
   }
 
@@ -56,22 +72,24 @@ export class GamePostMatchService {
       if (winners.length === 0) return;
       const reward = await this.economy.getNumber('game_win_coin_reward');
       if (reward <= 0) return;
-      for (const winnerId of winners) {
-        try {
-          await this.wallet.credit(
-            winnerId,
-            'coins',
-            reward,
-            'game_win',
-            `game-${sessionId}-payout-${winnerId}`,
-            { sessionId, gameId: session.gameId },
-          );
-        } catch (err) {
-          this.logger.warn(
-            `Game-win payout failed for session ${sessionId} winner ${winnerId}: ${(err as Error).message}`,
-          );
-        }
-      }
+      await Promise.allSettled(
+        winners.map((winnerId) =>
+          this.wallet
+            .credit(
+              winnerId,
+              'coins',
+              reward,
+              'game_win',
+              `game-${sessionId}-payout-${winnerId}`,
+              { sessionId, gameId: session.gameId },
+            )
+            .catch((err) => {
+              this.logger.warn(
+                `Game-win payout failed for session ${sessionId} winner ${winnerId}: ${(err as Error).message}`,
+              );
+            }),
+        ),
+      );
     } catch (err) {
       this.logger.warn(
         `Failed to determine winners for session ${session.id}: ${(err as Error).message}`,

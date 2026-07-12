@@ -19,9 +19,12 @@ export class IpBlockService {
   private readonly FAILURE_WINDOW_MS = 60_000;
   private readonly BLOCK_DURATION_MS = 15 * 60 * 1000;
   private readonly SEVERE_BLOCK_DURATION_MS = 60 * 60 * 1000;
+  private readonly FAILURE_SWEEP_INTERVAL_MS = 5 * 60_000;
+  private lastFailureSweep = Date.now();
 
   record429(ip: string): void {
     const now = Date.now();
+    this.maybeSweepFailures(now);
     const entry = this.failureCounts.get(ip);
 
     if (!entry || now - entry.windowStart > this.FAILURE_WINDOW_MS) {
@@ -80,6 +83,16 @@ export class IpBlockService {
   clearAll(): void {
     this.blocked.clear();
     this.failureCounts.clear();
+  }
+
+  private maybeSweepFailures(now: number): void {
+    if (now - this.lastFailureSweep < this.FAILURE_SWEEP_INTERVAL_MS) return;
+    this.lastFailureSweep = now;
+    for (const [ip, entry] of this.failureCounts) {
+      if (now - entry.windowStart > this.FAILURE_WINDOW_MS) {
+        this.failureCounts.delete(ip);
+      }
+    }
   }
 }
 

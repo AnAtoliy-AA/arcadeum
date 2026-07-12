@@ -1,266 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, PipelineStage, Types } from 'mongoose';
-import { GameSession } from '../schemas/game-session.schema';
-import { GameRoom } from '../schemas/game-room.schema';
+import { Model, Types } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
-import {
-  PlayerStats,
-  GameTypeStats,
-  LeaderboardEntry,
-} from './game-history.types';
-import { GameHistoryBuilderService } from './game-history-builder.service';
-
-interface LeaderboardFacetResult {
-  entries: Array<{
-    playerId: string;
-    totalGames: number;
-    wins: number;
-    winRate: number;
-  }>;
-  total: Array<{ count: number }>;
-}
+import { PlayerStats, LeaderboardEntry } from './game-history.types';
+import { PlayerStatsService } from '../player-stats.service';
 
 /**
  * Game History Stats Service
- * Handles player statistics and leaderboard functionality
+ * Delegates to denormalized player_stats collection for fast reads.
  */
 @Injectable()
 export class GameHistoryStatsService {
   constructor(
-    @InjectModel(GameSession.name)
-    private readonly gameSessionModel: Model<GameSession>,
-    @InjectModel(GameRoom.name)
-    private readonly gameRoomModel: Model<GameRoom>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    private readonly builder: GameHistoryBuilderService,
+    private readonly playerStats: PlayerStatsService,
   ) {}
 
-  /**
-   * Get player statistics
-   */
   async getPlayerStats(userId: string): Promise<PlayerStats> {
-    if (userId.startsWith('anon_')) {
-      return {
-        totalGames: 0,
-        wins: 0,
-        losses: 0,
-        winRate: 0,
-        byGameType: [],
-      };
-    }
-
-    const pipeline = [
-      {
-        $match: {
-          status: 'completed',
-          $or: [{ 'state.winners': userId }, { 'state.winnerId': userId }],
-        },
-      },
-      {
-        $lookup: {
-          from: 'gamerooms',
-          localField: 'roomId',
-          foreignField: '_id',
-          as: 'room',
-          pipeline: [
-            {
-              $match: {
-                $or: [{ hostId: userId }, { 'participants.userId': userId }],
-              },
-            },
-            { $project: { _id: 1 } },
-          ],
-        },
-      },
-      { $unwind: '$room' },
-      {
-        $addFields: {
-          isWinner: {
-            $cond: {
-              if: {
-                $or: [
-                  { $in: [userId, { $ifNull: ['$state.winners', []] }] },
-                  { $eq: ['$state.winnerId', userId] },
-                ],
-              },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: '$gameId',
-          total: { $sum: 1 },
-          wins: { $sum: '$isWinner' },
-        },
-      },
-      {
-        $addFields: {
-          winRate: {
-            $cond: {
-              if: { $gt: ['$total', 0] },
-              then: { $multiply: [{ $divide: ['$wins', '$total'] }, 100] },
-              else: 0,
-            },
-          },
-        },
-      },
-      { $sort: { total: -1 } },
-    ] as PipelineStage[];
-
-    const gameStats = await this.gameSessionModel
-      .aggregate<{
-        _id: string;
-        total: number;
-        wins: number;
-        winRate: number;
-      }>(pipeline)
-      .exec();
-
-    const byGameType: GameTypeStats[] = gameStats.map((g) => ({
-      gameId: g._id,
-      totalGames: g.total,
-      wins: g.wins,
-      winRate: Math.round(g.winRate * 100) / 100,
-    }));
-
-    const totalGames = byGameType.reduce((s, g) => s + g.totalGames, 0);
-    const totalWins = byGameType.reduce((s, g) => s + g.wins, 0);
-
+    const stats = await this.playerStats.getPlayerStats(userId);
     return {
-      totalGames,
-      wins: totalWins,
-      losses: totalGames - totalWins,
-      winRate: totalGames > 0 ? (totalWins / totalGames) * 100 : 0,
-      byGameType,
+      totalGames: stats.totalGames,
+      wins: stats.wins,
+      losses: stats.losses,
+      winRate: stats.winRate,
+      byGameType: stats.byGameType.map((g) => ({
+        gameId: g.gameId,
+        totalGames: g.totalGames,
+        wins: g.wins,
+        winRate: g.winRate,
+      })),
     };
   }
 
-  /**
-   * Get leaderboard of top players with pagination
-   */
   async getLeaderboard(
     limit: number = 20,
     offset: number = 0,
     gameId?: string,
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
-    const matchStage: Record<string, unknown> = { status: 'completed' };
-    if (gameId) {
-      matchStage.gameId = gameId;
-    }
+    const { entries: rawEntries, total } =
+      await this.playerStats.getLeaderboard(limit, offset, gameId);
 
-    const aggregationPipeline = [
-      { $match: matchStage },
-      {
-        $lookup: {
-          from: 'gamerrooms',
-          localField: 'roomId',
-          foreignField: '_id',
-          as: 'room',
-          pipeline: [
-            {
-              $project: {
-                hostId: 1,
-                'participants.userId': 1,
-              },
-            },
-          ],
-        },
-      },
-      { $unwind: '$room' },
-      { $unwind: '$room.participants' },
-      {
-        $addFields: {
-          playerId: {
-            $ifNull: ['$room.participants.userId', '$room.hostId'],
-          },
-        },
-      },
-      {
-        $match: {
-          playerId: { $exists: true, $ne: null },
-        },
-      },
-      {
-        $match: {
-          playerId: { $ne: '' },
-        },
-      },
-      {
-        $addFields: {
-          isWinner: {
-            $cond: {
-              if: {
-                $or: [
-                  { $in: ['$playerId', { $ifNull: ['$state.winners', []] }] },
-                  { $eq: ['$playerId', '$state.winnerId'] },
-                ],
-              },
-              then: 1,
-              else: 0,
-            },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: '$playerId',
-          total: { $sum: 1 },
-          wins: { $sum: '$isWinner' },
-        },
-      },
-      {
-        $addFields: {
-          winRate: {
-            $cond: {
-              if: { $gt: ['$total', 0] },
-              then: { $multiply: [{ $divide: ['$wins', '$total'] }, 100] },
-              else: 0,
-            },
-          },
-        },
-      },
-      { $sort: { wins: -1, winRate: -1 } },
-      {
-        $facet: {
-          entries: [
-            { $skip: offset },
-            { $limit: limit },
-            {
-              $project: {
-                _id: 0,
-                playerId: '$_id',
-                totalGames: '$total',
-                wins: 1,
-                winRate: 1,
-              },
-            },
-          ],
-          total: [{ $count: 'count' }],
-        },
-      },
-    ] as PipelineStage[];
-
-    const [result] = await this.gameSessionModel
-      .aggregate<LeaderboardFacetResult>(aggregationPipeline)
-      .exec();
-
-    const allEntries = result.entries.map((entry) => ({
-      playerId: entry.playerId,
-      totalGames: entry.totalGames,
-      wins: entry.wins,
-      winRate: Math.round(entry.winRate * 100) / 100,
-      losses: entry.totalGames - entry.wins,
-    }));
-
-    const total = result.total[0]?.count ?? 0;
     const hasMore = offset + limit < total;
 
-    const userIds = allEntries
+    const userIds = rawEntries
       .map((e) => e.playerId)
       .filter((id) => Types.ObjectId.isValid(id));
     const users =
@@ -270,6 +53,7 @@ export class GameHistoryStatsService {
             .select(
               'username role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
             )
+            .lean()
             .exec()
         : [];
 
@@ -289,7 +73,7 @@ export class GameHistoryStatsService {
       ]),
     );
 
-    const entries = allEntries.map((entry, index) => {
+    const entries = rawEntries.map((entry, index) => {
       const userInfo = userMap.get(entry.playerId);
       return {
         rank: offset + index + 1,

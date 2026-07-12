@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { YStack, Text, Button, XStack } from 'tamagui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { PIECE_SYMBOLS } from '../types';
 
 interface RulesModalProps {
@@ -10,6 +11,7 @@ interface RulesModalProps {
 }
 
 function RulesModalImpl({ open, onClose }: RulesModalProps) {
+  const { t } = useTranslation();
   if (!open) return null;
 
   return (
@@ -36,18 +38,17 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
         style={{ overflow: 'auto' }}
       >
         <Text fontSize="$6" fontWeight="700">
-          Chess Rules
+          {t('games.chess_v1.rules.title')}
         </Text>
         <YStack gap="$3" width="100%">
           <Text fontSize="$4" fontWeight="600">
-            Objective
+            {t('games.chess_v1.rules.objective')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            Checkmate your opponent&apos;s king. The king is in checkmate when
-            it is in check and there is no legal move to escape.
+            {t('games.chess_v1.rules.objectiveText')}
           </Text>
           <Text fontSize="$4" fontWeight="600" mt="$2">
-            Pieces
+            {t('games.chess_v1.rules.pieces')}
           </Text>
           <XStack flexWrap="wrap" gap="$2">
             {(
@@ -70,40 +71,38 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
             ))}
           </XStack>
           <Text fontSize="$4" fontWeight="600" mt="$2">
-            Special Moves
+            {t('games.chess_v1.rules.special')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Castling:</Text> King moves two squares
-            toward a rook, and the rook jumps over the king. Must be
-            unobstructed, king not in check, and neither piece moved.
+            • <Text fontWeight="600">Castling:</Text>{' '}
+            {t('games.chess_v1.rules.castling')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">En passant:</Text> A pawn can capture an
-            opposing pawn that just moved two squares forward, as if it moved
-            only one.
+            • <Text fontWeight="600">En passant:</Text>{' '}
+            {t('games.chess_v1.rules.enPassant')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Promotion:</Text> A pawn reaching the
-            opposite end promotes to a queen, rook, bishop, or knight.
+            • <Text fontWeight="600">Promotion:</Text>{' '}
+            {t('games.chess_v1.rules.promotion')}
           </Text>
           <Text fontSize="$4" fontWeight="600" mt="$2">
-            Draw Conditions
+            {t('games.chess_v1.rules.drawConditions')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • Stalemate (no legal moves, not in check)
+            • {t('games.chess_v1.rules.drawStalemate')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • 50-move rule (50 moves without captures or pawn moves)
+            • {t('games.chess_v1.rules.drawFiftyMove')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • Threefold repetition
+            • {t('games.chess_v1.rules.drawRepetition')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • Insufficient material
+            • {t('games.chess_v1.rules.drawMaterial')}
           </Text>
         </YStack>
         <Button size="$3" onPress={onClose} mt="$2">
-          Got it
+          {t('games.chess_v1.rules.gotIt')}
         </Button>
       </YStack>
     </div>

@@ -40,3 +40,11 @@ export const GameSessionSchema = SchemaFactory.createForClass(GameSession);
 
 GameSessionSchema.index({ status: 1, gameId: 1 });
 GameSessionSchema.index({ status: 1, updatedAt: -1 });
+// Auto-delete completed sessions after 90 days
+GameSessionSchema.index(
+  { updatedAt: 1 },
+  {
+    expireAfterSeconds: 90 * 24 * 60 * 60,
+    partialFilterExpression: { status: 'completed' },
+  },
+);

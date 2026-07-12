@@ -1,0 +1,31 @@
+name: Lock Resolved Issues
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  lock:
+    name: Lock resolved issues
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Extract and lock linked issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          ISSUES=$(echo "$PR_BODY" | grep -oE '(Closes|Fixes|Resolves) #([0-9]+)' | grep -oE '[0-9]+' || true)
+
+          for ISSUE_NUM in $ISSUES; do
+            echo "Locking issue #$ISSUE_NUM..."
+            gh issue lock "$ISSUE_NUM" --reason completed || true
+            gh issue comment "$ISSUE_NUM" --body \
+              "This issue has been locked because it was resolved by PR #${PR_NUMBER}."
+          done

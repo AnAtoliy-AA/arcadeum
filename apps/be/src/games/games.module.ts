@@ -26,6 +26,7 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { GameHistoryStatsService } from './history/game-history-stats.service';
@@ -104,6 +105,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
+    GameSessionsCleanupCron,
     GameHistoryService,
     GameHistoryBuilderService,
     GameHistoryStatsService,

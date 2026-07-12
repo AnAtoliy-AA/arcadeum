@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -50,8 +51,14 @@ export interface ExecuteActionOptions {
  * Game Sessions Service
  * Handles game session lifecycle and state management
  */
+/** Max session document size in bytes. Typical: 2-13KB. Alert at 100KB, strip at 500KB. */
+const WARN_DOC_SIZE_BYTES = 100 * 1024;
+const STRIP_DOC_SIZE_BYTES = 500 * 1024;
+
 @Injectable()
 export class GameSessionsService {
+  private readonly logger = new Logger(GameSessionsService.name);
+
   constructor(
     @InjectModel(GameSession.name)
     private readonly gameSessionModel: Model<GameSession>,
@@ -160,6 +167,26 @@ export class GameSessionsService {
     if (status) {
       session.status = status;
     }
+
+    // Safety valve: strip stateHistory if document is approaching BSON limit
+    const approxSize = Buffer.byteLength(
+      JSON.stringify(session.state),
+      'utf-8',
+    );
+    if (approxSize > STRIP_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
+      );
+      const s = session.state;
+      if (Array.isArray(s.stateHistory)) s.stateHistory = [];
+      if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
+      session.markModified('state');
+    } else if (approxSize > WARN_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
+      );
+    }
+
     session.updatedAt = new Date();
 
     await session.save();
@@ -232,7 +259,27 @@ export class GameSessionsService {
       );
     }
 
+    // Safety valve: strip stateHistory if document is approaching BSON limit
+    const approxSize = Buffer.byteLength(
+      JSON.stringify(session.state),
+      'utf-8',
+    );
+    if (approxSize > STRIP_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
+      );
+      const s = session.state;
+      if (Array.isArray(s.stateHistory)) s.stateHistory = [];
+      if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
+      session.markModified('state');
+    } else if (approxSize > WARN_DOC_SIZE_BYTES) {
+      this.logger.warn(
+        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
+      );
+    }
+
     session.updatedAt = new Date();
+
     await session.save();
 
     return this.toSessionSummary(session);

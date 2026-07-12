@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.43] - 2026-07-12
+
+### Fixed
+- fix TicTacToe bot stuck in infinite error loop
+
+### Improved
+- deep performance optimizations round 2
+
+
 ## [1.23.42] - 2026-07-12
 
 ### Changed

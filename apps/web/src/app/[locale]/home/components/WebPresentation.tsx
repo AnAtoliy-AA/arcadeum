@@ -139,6 +139,7 @@ export function WebPresentation() {
                 src={slide.image}
                 alt={slide.title}
                 fill
+                priority={index === 0}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
                 style={{
                   objectFit: 'cover',

@@ -256,16 +256,19 @@ export class TaskBotService implements OnApplicationBootstrap {
           { parse_mode: 'Markdown' },
         );
 
-        this.githubService.implementLocally(issueNum, task.engine).then(async (result) => {
-          await ctx.reply(
-            result.success
-              ? `Done! ${result.message}`
-              : `Implementation failed: ${result.message}`,
-            { parse_mode: 'Markdown' },
-          );
-        }).catch(async () => {
-          await ctx.reply('Implementation failed unexpectedly.');
-        });
+        this.githubService
+          .implementLocally(issueNum, task.engine)
+          .then(async (result) => {
+            await ctx.reply(
+              result.success
+                ? `Done! ${result.message}`
+                : `Implementation failed: ${result.message}`,
+              { parse_mode: 'Markdown' },
+            );
+          })
+          .catch(async () => {
+            await ctx.reply('Implementation failed unexpectedly.');
+          });
       } else {
         await ctx.reply(
           `Issue created: ${url}\n\nCould not extract issue number.`,
@@ -335,16 +338,19 @@ export class TaskBotService implements OnApplicationBootstrap {
           { parse_mode: 'Markdown' },
         );
 
-        this.githubService.implementLocally(issueNum, task.engine).then(async (result) => {
-          await ctx.reply(
-            result.success
-              ? `Done! ${result.message}`
-              : `Implementation failed: ${result.message}`,
-            { parse_mode: 'Markdown' },
-          );
-        }).catch(async () => {
-          await ctx.reply('Implementation failed unexpectedly.');
-        });
+        this.githubService
+          .implementLocally(issueNum, task.engine)
+          .then(async (result) => {
+            await ctx.reply(
+              result.success
+                ? `Done! ${result.message}`
+                : `Implementation failed: ${result.message}`,
+              { parse_mode: 'Markdown' },
+            );
+          })
+          .catch(async () => {
+            await ctx.reply('Implementation failed unexpectedly.');
+          });
       } else {
         await ctx.reply(
           `Issue created: ${url}\n\nCould not extract issue number.`,
@@ -417,16 +423,19 @@ export class TaskBotService implements OnApplicationBootstrap {
       `Implementing #${issueNum} with ${engine}... This may take a few minutes.`,
     );
 
-    this.githubService.implementLocally(issueNum, engine).then(async (result) => {
-      await ctx.reply(
-        result.success
-          ? `Done! ${result.message}`
-          : `Implementation failed: ${result.message}`,
-        { parse_mode: 'Markdown' },
-      );
-    }).catch(async () => {
-      await ctx.reply('Implementation failed unexpectedly.');
-    });
+    this.githubService
+      .implementLocally(issueNum, engine)
+      .then(async (result) => {
+        await ctx.reply(
+          result.success
+            ? `Done! ${result.message}`
+            : `Implementation failed: ${result.message}`,
+          { parse_mode: 'Markdown' },
+        );
+      })
+      .catch(async () => {
+        await ctx.reply('Implementation failed unexpectedly.');
+      });
   }
 
   private async handleStatus(ctx: Context) {

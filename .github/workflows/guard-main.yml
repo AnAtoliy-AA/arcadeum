@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - staging
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    branches:
+      - main
+      - staging
+    types: [edited]
 
 jobs:
   check-pr-title:

@@ -88,10 +88,9 @@ PR titles must follow **Conventional Commits** format:
 
 **Rules:**
 
-- PRs targeting `staging` **must** start with `demo:` — enforced by CI.
-- PRs targeting `main` **must** start with `release:` — enforced by CI.
-- PRs targeting `develop` use the same types as commits: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, `revert`.
-- Scope is optional but recommended (e.g., `web`, `mobile`, `be`, `ci`, `task-bot`).
+- PRs targeting `develop` use the same types as commits: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, `revert`. Scope is optional but recommended (e.g., `web`, `mobile`, `be`, `ci`, `task-bot`).
+- PRs targeting `staging` **must** start with `demo:` — enforced by CI. Use `vX.Y.~` version suffix (e.g., `demo: merge develop into staging v1.23.~`).
+- PRs targeting `main` **must** start with `release:` — enforced by CI. Use `vX.Y.~` version suffix (e.g., `release: v1.23.~`).
 - Use lowercase; keep it under 72 characters.
 
 ---

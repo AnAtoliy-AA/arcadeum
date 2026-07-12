@@ -50,7 +50,6 @@ interface ActiveGameViewProps {
   canPlayNope: boolean;
   aliveOpponents: CriticalPlayerState[];
   isGameOver: boolean;
-  sessionWasCompletedFromStart: boolean;
   // Rules modal state from parent
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
@@ -87,7 +86,6 @@ export function ActiveGameView({
   canPlayNope,
   aliveOpponents,
   isGameOver,
-  sessionWasCompletedFromStart,
   rematch,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
@@ -122,8 +120,7 @@ export function ActiveGameView({
     setModalDismissed(false);
   }
 
-  const showResultModal =
-    isGameOver && !modalDismissed && !sessionWasCompletedFromStart;
+  const showResultModal = isGameOver && !modalDismissed;
   useWebGameHaptics(isMyTurn);
 
   // Record game result to local stats

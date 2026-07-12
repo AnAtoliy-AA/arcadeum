@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
 import type {
   SeaBattleSnapshot,
@@ -84,10 +84,6 @@ export function useSeaBattleState({
   const isGameOver =
     gamePhase === 'game_over' || session?.status === 'completed';
 
-  const [initialSessionStatus] = useState(() => session?.status);
-
-  const sessionWasCompletedFromStart = initialSessionStatus === 'completed';
-
   const winnerTeam = useMemo<SeaBattleTeam | undefined>(() => {
     if (!isGameOver || !snapshot || !teams) return undefined;
     if (snapshot.winnerId) {
@@ -124,7 +120,6 @@ export function useSeaBattleState({
     isPlacementPhase,
     isBattlePhase,
     isGameOver,
-    sessionWasCompletedFromStart,
     winner,
     isWinner,
     placedShips,

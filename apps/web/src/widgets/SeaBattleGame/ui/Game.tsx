@@ -108,7 +108,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     currentTurnPlayer,
     isPlacementComplete,
     isGameOver,
-    sessionWasCompletedFromStart,
     isWinner,
     teamMode,
     teams,
@@ -435,7 +434,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             onShowRulesClose={onShowRulesClose}
             setShowRules={setShowRules}
             isGameOver={isGameOver}
-            sessionWasCompletedFromStart={sessionWasCompletedFromStart}
             resultModalDismissed={resultModalDismissed}
             gameResult={gameResult}
             handleRematchClick={handleRematchClick}

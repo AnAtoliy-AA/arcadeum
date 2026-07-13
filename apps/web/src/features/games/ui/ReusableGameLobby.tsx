@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';

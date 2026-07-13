@@ -14,6 +14,7 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
 import {
   FILES,
@@ -35,6 +36,7 @@ function ChessGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: ChessGameProps) {
@@ -139,6 +141,15 @@ function ChessGameImpl({
     resolveDisplayNameBound,
   );
   const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const handleReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !roomId) return;
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken);
+      } catch {}
+    },
+    [roomId, accessToken],
+  );
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: displaySnapshot?.players.find(
       (p) => p.color === displaySnapshot.winnerColor,
@@ -321,6 +332,7 @@ function ChessGameImpl({
         userId={currentUserId ?? ''}
         isHost={isHost}
         startBusy={startBusy}
+        onReorderPlayers={handleReorderPlayers}
         onStartGame={(opts) => {
           setStartBusy(true);
           startSession({

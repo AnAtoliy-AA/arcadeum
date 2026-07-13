@@ -92,7 +92,7 @@ export function HouseRulesSection({
 
       <YStack gap="$1">
         <Text fontSize="$3" fontWeight="500">
-          {t('games.create.rules.firstPlayer.title') || 'Who goes first'}
+          {t('games.create.rules.firstPlayer.title')}
         </Text>
         <select
           value={
@@ -117,10 +117,10 @@ export function HouseRulesSection({
           }}
         >
           <option value="host">
-            {t('games.create.rules.firstPlayer.host') || 'Host (default)'}
+            {t('games.create.rules.firstPlayer.host')}
           </option>
           <option value="random">
-            {t('games.create.rules.firstPlayer.random') || 'Random'}
+            {t('games.create.rules.firstPlayer.random')}
           </option>
         </select>
       </YStack>

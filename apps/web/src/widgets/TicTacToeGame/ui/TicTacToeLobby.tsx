@@ -42,6 +42,7 @@ interface TicTacToeLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
@@ -78,6 +79,7 @@ export function TicTacToeLobby({
   isHost,
   startBusy,
   onStartGame,
+  onReorderPlayers,
   onLeaveRoom,
   onDeleteRoom,
   onKickPlayer,
@@ -178,7 +180,8 @@ export function TicTacToeLobby({
         }}
         optionsSlot={optionsSlot}
         showInvitedPlayers
-        showReorderControls={false}
+        showReorderControls
+        onReorderPlayers={onReorderPlayers}
       />
       <RulesModal
         open={showRulesOpen}

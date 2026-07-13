@@ -17,6 +17,7 @@ interface SeaBattleModalsProps {
   setShowRules: (val: boolean) => void;
   isGameOver: boolean;
   resultModalDismissed: boolean;
+  hasSeenActiveGame: boolean;
   gameResult: 'victory' | 'defeat' | null;
   handleRematchClick: () => void;
   session: GameSessionSummary | null;
@@ -44,6 +45,7 @@ export function SeaBattleModals({
   setShowRules,
   isGameOver,
   resultModalDismissed,
+  hasSeenActiveGame,
   gameResult,
   handleRematchClick,
   session,
@@ -73,7 +75,7 @@ export function SeaBattleModals({
         t={t}
       />
       <GameResultModal
-        isOpen={isGameOver && !resultModalDismissed}
+        isOpen={isGameOver && hasSeenActiveGame && !resultModalDismissed}
         result={gameResult}
         onRematch={handleRematchClick}
         onClose={() => {

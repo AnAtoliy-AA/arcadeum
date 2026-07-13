@@ -178,6 +178,7 @@ function ChessGameImpl({
             ),
           }
         : undefined,
+      isGameOver,
     );
 
   const isFlipped = myColor === 'black';

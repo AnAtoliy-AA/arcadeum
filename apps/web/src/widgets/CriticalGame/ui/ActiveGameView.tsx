@@ -111,6 +111,13 @@ export function ActiveGameView({
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
 
+  const [wasAlreadyOverOnMount] = useState(() => isGameOver === true);
+  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
+
+  if (!wasAlreadyOverOnMount && isGameOver && !hasSeenActiveGame) {
+    setHasSeenActiveGame(true);
+  }
+
   // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
 
@@ -120,7 +127,7 @@ export function ActiveGameView({
     setModalDismissed(false);
   }
 
-  const showResultModal = isGameOver && !modalDismissed;
+  const showResultModal = isGameOver && !modalDismissed && hasSeenActiveGame;
   useWebGameHaptics(isMyTurn);
 
   // Record game result to local stats

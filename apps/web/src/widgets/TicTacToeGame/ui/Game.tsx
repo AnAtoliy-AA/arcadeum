@@ -150,6 +150,7 @@ function TicTacToeGameImpl({
             ),
           }
         : undefined,
+      isGameOver,
     );
 
   const options = useMemo(

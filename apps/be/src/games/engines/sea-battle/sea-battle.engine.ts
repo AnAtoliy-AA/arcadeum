@@ -8,8 +8,8 @@ import {
 import {
   BOARD_SIZE,
   CELL_STATE,
-  SHIPS,
   GAME_PHASE,
+  getActiveShips,
   ATTACK_RESULT,
   ROW_LABELS,
   COL_LABELS,
@@ -87,12 +87,14 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     const orderedIds = shouldRandomize
       ? [...playerIds].sort(() => Math.random() - 0.5)
       : [...playerIds];
+    const shipCount = config?.shipCount;
+    const activeShipCount = getActiveShips(shipCount).length;
     const players: SeaBattlePlayer[] = orderedIds.map((id) => ({
       playerId: id,
       alive: true,
       board: createEmptyBoard(gridSize),
       ships: [],
-      shipsRemaining: SHIPS.length,
+      shipsRemaining: activeShipCount,
       placementComplete: false,
     }));
     const baseState: SeaBattleState = {
@@ -100,7 +102,12 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       players,
       playerOrder: orderedIds,
       currentTurnIndex: 0,
-      logs: [this.createLogEntry('system', `Game started! Mode: ${mode}. Place your ships.`)],
+      logs: [
+        this.createLogEntry(
+          'system',
+          `Game started! Mode: ${mode}. Place your ships.`,
+        ),
+      ],
       mode,
       roundNumber: 1,
       gridSize,
@@ -150,7 +157,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         const isValid = validateConfirmPlacement(state, player);
         if (!isValid) {
           this.logger.error(
-            `[SeaBattleEngine] confirmPlacement validation failed for ${userId}. Phase: ${state.phase}, Ships: ${player.ships.length}/${SHIPS.length}, Ready: ${player.placementComplete}`,
+            `[SeaBattleEngine] confirmPlacement validation failed for ${userId}. Phase: ${state.phase}, Ships: ${player.ships.length}/${getActiveShips(state.shipCount).length}, Ready: ${player.placementComplete}`,
           );
         }
         return isValid;
@@ -262,9 +269,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
             senderId: target.playerId,
           }),
         );
-        // In team mode, make sure the eliminated player isn't left as their
-        // team's active shooter — otherwise their team's next turn deadlocks
-        // on a dead player.
+        // Ensure eliminated player isn't left as team's active shooter
         normalizeTeamShooterAfterDeath(state, target.playerId);
         this.checkAndSetWinner(state);
       }
@@ -311,11 +316,9 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         this.advanceToNextPlayer(state);
       }
 
-      // Increment round number on miss (turn passes)
       state.roundNumber = (state.roundNumber ?? 1) + 1;
     }
 
-    // Set turn deadline for speed mode
     if (state.mode === GAME_MODE_VARIANTS.SPEED) {
       this.setTurnDeadline(state);
     }
@@ -432,12 +435,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       const wasActiveShooter = getActiveShooterId(newState) === playerId;
 
       if (wasActiveShooter) {
-        // Active shooter forfeits the turn — advance like a miss so the
-        // next team plays and the leaver's team rotates to the next teammate.
         advanceTeamRotationOnMiss(newState);
       } else {
-        // Otherwise, only patch up the leaver's own team shooter pointer so
-        // a live teammate is queued up when their team plays again.
         const team = newState.teams.find((t) => t.playerIds.includes(playerId));
         if (team && team.playerIds[team.currentShooterIndex] === playerId) {
           const n = team.playerIds.length;
@@ -455,8 +454,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         }
       }
 
-      // Keep currentTurnIndex in sync with the active shooter so consumers
-      // that read playerOrder[currentTurnIndex] (e.g. the bot service) match.
+      // Keep currentTurnIndex in sync with the active shooter
       const activeTeam = getActiveTeam(newState);
       if (activeTeam) {
         const shooter = getActiveShooterId(newState);

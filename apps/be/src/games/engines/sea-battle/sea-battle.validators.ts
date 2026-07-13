@@ -1,8 +1,8 @@
 import {
   BOARD_SIZE,
   CELL_STATE,
-  SHIPS,
   GAME_PHASE,
+  getActiveShips,
 } from './sea-battle.constants';
 import {
   SeaBattlePlayer,
@@ -28,7 +28,8 @@ export function validatePlaceShip(
   if (player.placementComplete) return false;
   if (!payload?.shipId || !payload?.cells) return false;
 
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find((s) => s.id === payload.shipId);
   if (!shipConfig) return false;
   if (payload.cells.length !== shipConfig.size) return false;
 
@@ -81,7 +82,8 @@ export function validateMoveShip(
   if (player.placementComplete) return false;
   if (!payload?.shipId || !payload?.cells) return false;
 
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find((s) => s.id === payload.shipId);
   if (!shipConfig) return false;
   if (payload.cells.length !== shipConfig.size) return false;
 
@@ -137,7 +139,7 @@ export function validateConfirmPlacement(
 ): boolean {
   if (state.phase !== GAME_PHASE.PLACEMENT) return false;
   if (player.placementComplete) return false;
-  return player.ships.length === SHIPS.length;
+  return player.ships.length === getActiveShips(state.shipCount).length;
 }
 
 export function validateAutoPlace(state: SeaBattleState): boolean {

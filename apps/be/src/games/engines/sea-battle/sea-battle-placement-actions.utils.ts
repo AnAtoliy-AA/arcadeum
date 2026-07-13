@@ -3,8 +3,8 @@ import { Logger } from '@nestjs/common';
 import {
   BOARD_SIZE,
   CELL_STATE,
-  SHIPS,
   GAME_PHASE,
+  getActiveShips,
   type ShipConfig,
 } from './sea-battle.constants';
 import {
@@ -43,7 +43,10 @@ export function runPlaceShip(
   player: SeaBattlePlayer,
   payload: PlaceShipPayload,
 ): GameActionResult<SeaBattleState> {
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId) as ShipConfig;
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find(
+    (s) => s.id === payload.shipId,
+  ) as ShipConfig;
   const ship: Ship = {
     id: payload.shipId,
     name: shipConfig.name,
@@ -80,7 +83,10 @@ export function runMoveShip(
   }
   player.ships = player.ships.filter((s) => s.id !== payload.shipId);
 
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId) as ShipConfig;
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find(
+    (s) => s.id === payload.shipId,
+  ) as ShipConfig;
   const ship: Ship = {
     id: payload.shipId,
     name: shipConfig.name,
@@ -108,6 +114,7 @@ export function runAutoPlace(
   player: SeaBattlePlayer,
 ): GameActionResult<SeaBattleState> {
   const gridSize = state.gridSize ?? BOARD_SIZE;
+  const activeShips = getActiveShips(state.shipCount);
   for (let r = 0; r < gridSize; r++) {
     for (let c = 0; c < gridSize; c++) {
       if (player.board[r][c] === CELL_STATE.SHIP) {
@@ -117,13 +124,13 @@ export function runAutoPlace(
   }
   player.ships = [];
   player.placementComplete = false;
-  const placements = randomlyPlaceShips(gridSize);
+  const placements = randomlyPlaceShips(gridSize, state.shipCount);
   if (Object.keys(placements).length === 0) {
     return { success: false, error: 'Failed to generate ship placement' };
   }
   for (const shipId of Object.keys(placements)) {
     const cells = placements[shipId];
-    const shipConfig = SHIPS.find((s) => s.id === shipId);
+    const shipConfig = activeShips.find((s) => s.id === shipId);
     if (shipConfig) {
       const ship: Ship = {
         id: shipId,

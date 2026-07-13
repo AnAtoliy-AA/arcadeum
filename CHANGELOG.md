@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.47] - 2026-07-13
+
+### Added
+- add first-player selection and drag-and-drop reordering
+- add first-player selection in lobby for all games
+
+### Documentation
+- add onReorderPlayers wiring to new-game skill template
+
+
 ## [1.23.46] - 2026-07-13
 
 ### Added

@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.45] - 2026-07-13
+
+### Fixed
+- limit bots to 1 and fix chess960 castling
+
+
+## [1.23.44] - 2026-07-13
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.43] - 2026-07-12
+
+### Fixed
+- fix TicTacToe bot stuck in infinite error loop
+
+### Improved
+- deep performance optimizations round 2
+
+
+## [1.23.42] - 2026-07-12
+
+### Changed
+- Internal improvements and maintenance
+
+
 ## [1.23.41] - 2026-07-12
 
 ### Fixed

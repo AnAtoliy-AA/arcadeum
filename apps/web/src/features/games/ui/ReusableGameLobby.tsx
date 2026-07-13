@@ -87,6 +87,7 @@ export function ReusableGameLobby({
   variantName,
   roomIcon = '🎲',
   minPlayers = 2,
+  maxPlayers: maxPlayersProp,
   theme = {},
   isFastMode,
   labels = {},
@@ -149,7 +150,7 @@ export function ReusableGameLobby({
   const [botCount, setBotCount] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
-  const maxPlayers = room.maxPlayers ?? 6;
+  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
   const cooldownRef = React.useRef(0);
   const handleStart = React.useCallback(() => {
     const now = Date.now();

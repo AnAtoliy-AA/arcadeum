@@ -213,7 +213,12 @@ export const esMessages = {
       },
       spectators: {
         title: 'Permitir espectadores',
-        desc: 'Cualquiera con el enlace puede mirar en silencio.',
+        desc: 'Cualquiera con el enlace puede observar en silencio.',
+      },
+      firstPlayer: {
+        title: 'Quién va primero',
+        host: 'Anfitrión (predeterminado)',
+        random: 'Aleatorio',
       },
     },
     summary: {

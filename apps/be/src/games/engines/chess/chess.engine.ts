@@ -60,14 +60,21 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   initializeState(playerIds: string[], config?: ChessEngineConfig): ChessState {
     if (playerIds.length !== 2)
       throw new Error('Chess requires exactly 2 players');
-    const players: ChessPlayer[] = playerIds.map((id, idx) => ({
+
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random';
+    const orderedIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+
+    const players: ChessPlayer[] = orderedIds.map((id, idx) => ({
       playerId: id,
       color: idx === 0 ? 'white' : ('black' as const),
       isBot: false,
     }));
     const timeControl = config?.timeControl ?? null;
     const clocks = timeControl
-      ? {
+      ? ({
           white: {
             remainingSeconds: timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
@@ -76,21 +83,18 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
             remainingSeconds: timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
           },
-        }
+        } as const)
       : null;
     const variant = config?.variant ?? 'standard';
-    const initialBoard =
-      variant === 'chess960'
-        ? (() => {
-            const backRank = generateChess960BackRank();
-            const board = parseFen(INITIAL_BOARD_FEN);
-            board[7] = backRank;
-            board[0] = backRank.map((p) =>
-              p ? { ...p, color: 'black' } : null,
-            );
-            return board;
-          })()
-        : parseFen(INITIAL_BOARD_FEN);
+    const initialBoard = variant === 'chess960'
+      ? (() => {
+          const backRank = generateChess960BackRank();
+          const board = parseFen(INITIAL_BOARD_FEN);
+          board[7] = backRank;
+          board[0] = backRank.map((p) => p ? { ...p, color: 'black' } : null);
+          return board;
+        })()
+      : parseFen(INITIAL_BOARD_FEN);
     return {
       variant,
       timeControl,

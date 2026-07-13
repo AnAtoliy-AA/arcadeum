@@ -80,8 +80,14 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
     // on. Any explicit `stackingEnabled` from the lobby is overridden here.
     options.stackingEnabled = options.mode !== 'pure';
 
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random';
+    const orderedIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+
     const deck = shuffle(buildDeck());
-    const players: CascadePlayer[] = playerIds.map((id) => ({
+    const players: CascadePlayer[] = orderedIds.map((id) => ({
       playerId: id,
       alive: true,
       hand: deck.splice(0, STARTING_HAND_SIZE),
@@ -97,7 +103,7 @@ export class CascadeEngine extends BaseGameEngine<CascadeState> {
       phase: GAME_PHASE.PLAYING,
       options,
       players,
-      playerOrder: [...playerIds],
+      playerOrder: orderedIds,
       currentTurnIndex: 0,
       direction: DIRECTION.CLOCKWISE,
       drawPile: deck,

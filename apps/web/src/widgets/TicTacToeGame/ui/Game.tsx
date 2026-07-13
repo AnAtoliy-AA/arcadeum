@@ -15,6 +15,7 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -63,6 +64,7 @@ function TicTacToeGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: TicTacToeGameProps) {
@@ -113,6 +115,16 @@ function TicTacToeGameImpl({
   );
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
+
+  const handleReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !roomId) return;
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken);
+      } catch {}
+    },
+    [roomId, accessToken],
+  );
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
@@ -173,6 +185,7 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
+          onReorderPlayers={handleReorderPlayers}
           onStartGame={(opts) => {
             setStartBusy(true);
             startSession({

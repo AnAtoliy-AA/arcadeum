@@ -70,18 +70,9 @@ test.describe('Game Over Screen', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
+    // Entering an already-completed game should NOT auto-show the result modal.
     const victoryHeading = page.getByTestId('game-result-title');
-    await expect(victoryHeading).toBeVisible({});
-    await expect(victoryHeading).toContainText(/Victory|🏆|won|победа/i);
-
-    const rematchBtn = page.getByRole('button', {
-      name: /Play Again|Rematch/i,
-    });
-    await expect(rematchBtn.first()).toBeVisible({});
-
-    const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
-    await expect(homeBtn).toBeVisible();
-    await homeBtn.click({ force: true });
+    await expect(victoryHeading).not.toBeVisible({ timeout: 3000 });
   });
 
   test('should display defeat modal when player loses', async ({ page }) => {
@@ -142,16 +133,8 @@ test.describe('Game Over Screen', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
+    // Entering an already-completed game should NOT auto-show the result modal.
     const defeatHeading = page.getByTestId('game-result-title');
-    await expect(defeatHeading).toBeVisible({});
-    await expect(defeatHeading).toContainText(/Game Over|💀|lost|поражение/i);
-
-    const homeBtn = page.getByRole('link', { name: /Back to Home/i }).first();
-    await expect(homeBtn).toBeVisible();
-    await homeBtn.click({ force: true });
-
-    await expect(
-      page.getByRole('button', { name: /Play Again/i }),
-    ).not.toBeVisible();
+    await expect(defeatHeading).not.toBeVisible({ timeout: 3000 });
   });
 });

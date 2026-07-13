@@ -118,7 +118,10 @@ function TicTacToeBoardImpl({
       /^(#[0-9a-fA-F]{3,8}|(?:rgb|hsl)a?\([^)]+\)|[a-zA-Z]+)$/.test(info.color)
         ? info.color
         : '#000000';
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='16' y='23' font-size='22' font-weight='bold' fill='${safeColor}' text-anchor='middle' font-family='system-ui,sans-serif'>${info.mark}</text></svg>`;
+    const safeMark = /^[A-Za-z0-9△□▲■○●◆◇★☆♡]+$/.test(info.mark)
+      ? info.mark
+      : '?';
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='16' y='23' font-size='22' font-weight='bold' fill='${safeColor}' text-anchor='middle' font-family='system-ui,sans-serif'>${safeMark}</text></svg>`;
     return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 16 16, pointer` as const;
   }, [disabled, currentPlayerId, symbolByOwner]);
 

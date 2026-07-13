@@ -250,6 +250,7 @@ export function ChessLobby({
         gameIcon="♟"
         variantName={variantLabel}
         minPlayers={2}
+        maxPlayers={2}
         theme={LOBBY_THEME}
         enableBots
         labels={{

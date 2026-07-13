@@ -90,8 +90,8 @@ export function simulateMove(state: ChessState, move: ChessMove): Board {
 
   if (move.isCastle) {
     if (tf === 6) {
-      let rookFrom = 7;
-      for (let f = 7; f > tf; f--) {
+      let rookFrom = ff + 1;
+      for (let f = ff + 1; f < 8; f++) {
         if (board[tr][f]?.type === 'rook') {
           rookFrom = f;
           break;
@@ -100,8 +100,8 @@ export function simulateMove(state: ChessState, move: ChessMove): Board {
       board[tr][5] = board[tr][rookFrom];
       board[tr][rookFrom] = null;
     } else if (tf === 2) {
-      let rookFrom = 0;
-      for (let f = 0; f < tf; f++) {
+      let rookFrom = ff - 1;
+      for (let f = ff - 1; f >= 0; f--) {
         if (board[tr][f]?.type === 'rook') {
           rookFrom = f;
           break;

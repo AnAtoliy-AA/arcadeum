@@ -213,6 +213,11 @@ export const enMessages = {
         title: 'Allow spectators',
         desc: 'Anyone with the link can watch silently.',
       },
+      firstPlayer: {
+        title: 'Who goes first',
+        host: 'Host (default)',
+        random: 'Random',
+      },
     },
     summary: {
       game: 'Game',

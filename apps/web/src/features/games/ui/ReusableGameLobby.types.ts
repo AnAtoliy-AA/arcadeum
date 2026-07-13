@@ -33,6 +33,7 @@ export interface ReusableGameLobbyProps {
 
   // Player limits
   minPlayers?: number;
+  maxPlayers?: number;
 
   // Labels (with sensible defaults)
   labels?: {

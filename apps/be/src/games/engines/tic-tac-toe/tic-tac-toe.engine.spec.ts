@@ -286,7 +286,7 @@ describe('TicTacToeEngine', () => {
         col: 4,
       }).state!;
       expect(state.board.length).toBeGreaterThan(9);
-      expect(state.board[0].length).toBeGreaterThan(9);
+      expect(state.board[0].length).toBe(9);
     });
 
     it('does not expand when mark is placed away from edges', () => {

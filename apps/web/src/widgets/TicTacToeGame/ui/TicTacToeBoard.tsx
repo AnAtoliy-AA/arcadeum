@@ -27,6 +27,8 @@ interface TicTacToeBoardProps {
   ariaLabel?: string;
   onCellClick: (row: number, col: number) => void;
   highlightedCell?: { row: number; col: number } | null;
+  maxBoardSize?: number;
+  currentPlayerId?: string | null;
 }
 
 function TicTacToeBoardImpl({
@@ -40,10 +42,13 @@ function TicTacToeBoardImpl({
   ariaLabel,
   onCellClick,
   highlightedCell,
+  maxBoardSize = 100,
+  currentPlayerId,
 }: TicTacToeBoardProps) {
   const theme = useTicTacToeTheme();
-  const size = board.length;
-  const isScrollable = size > SCROLL_THRESHOLD;
+  const rows = board.length;
+  const cols = board[0]?.length ?? rows;
+  const isScrollable = rows > SCROLL_THRESHOLD || cols > SCROLL_THRESHOLD;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dragState = useRef({
@@ -104,6 +109,21 @@ function TicTacToeBoardImpl({
     }
     return map;
   }, [players, teams, teamMode, theme]);
+
+  const playerCursor = useMemo(() => {
+    if (disabled || !currentPlayerId) return undefined;
+    const info = symbolByOwner.get(currentPlayerId);
+    if (!info) return undefined;
+    const safeColor =
+      /^(#[0-9a-fA-F]{3,8}|(?:rgb|hsl)a?\([^)]+\)|[a-zA-Z]+)$/.test(info.color)
+        ? info.color
+        : '#000000';
+    const safeMark = /^[A-Za-z0-9△□▲■○●◆◇★☆♡]+$/.test(info.mark)
+      ? info.mark
+      : '?';
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='16' y='23' font-size='22' font-weight='bold' fill='${safeColor}' text-anchor='middle' font-family='system-ui,sans-serif'>${safeMark}</text></svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 16 16, pointer` as const;
+  }, [disabled, currentPlayerId, symbolByOwner]);
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -168,8 +188,8 @@ function TicTacToeBoardImpl({
   const gridStyle: React.CSSProperties = isScrollable
     ? {
         display: 'grid',
-        gridTemplateColumns: `repeat(${size}, ${CELL_PX}px)`,
-        gridTemplateRows: `repeat(${size}, ${CELL_PX}px)`,
+        gridTemplateColumns: `repeat(${cols}, ${CELL_PX}px)`,
+        gridTemplateRows: `repeat(${rows}, ${CELL_PX}px)`,
         gap: `${GAP_PX}px`,
         padding: `${BOARD_PADDING_PX}px`,
         backgroundColor: theme.gridLine,
@@ -180,15 +200,15 @@ function TicTacToeBoardImpl({
       }
     : {
         display: 'grid',
-        gridTemplateColumns: `repeat(${size}, 1fr)`,
-        gridTemplateRows: `repeat(${size}, 1fr)`,
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+        gridTemplateRows: `repeat(${rows}, 1fr)`,
         gap: '4px',
         padding: '12px',
         backgroundColor: theme.gridLine,
         borderRadius: theme.borderRadius,
         width: '100%',
         maxWidth: 'min(80vmin, 480px)',
-        aspectRatio: '1 / 1',
+        aspectRatio: `${cols} / ${rows}`,
         margin: '0 auto',
         boxSizing: 'border-box',
       };
@@ -200,7 +220,7 @@ function TicTacToeBoardImpl({
         fontSize: '1.1rem',
       }
     : {
-        fontSize: `clamp(0.85rem, ${(55 / size).toFixed(1)}cqw, 3rem)`,
+        fontSize: `clamp(0.85rem, ${(55 / Math.max(rows, cols)).toFixed(1)}cqw, 3rem)`,
       };
 
   return (
@@ -250,6 +270,11 @@ function TicTacToeBoardImpl({
                 colIdx === highlightedCell.col + origin.col
               : false;
             const isOrigin = rowIdx === origin.row && colIdx === origin.col;
+            const isMaxRows = rows >= maxBoardSize;
+            const isMaxCols = cols >= maxBoardSize;
+            const isAtLimit =
+              (isMaxRows && rowIdx === rows - 1) ||
+              (isMaxCols && colIdx === cols - 1);
             return (
               <button
                 key={`${rowIdx}-${colIdx}`}
@@ -268,28 +293,34 @@ function TicTacToeBoardImpl({
                     setHoveredCell({ row: rowIdx, col: colIdx });
                 }}
                 onMouseLeave={() => setHoveredCell(null)}
-                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}`}
+                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}${isOrigin && !ownerInfo ? ' ttt-origin' : ''}`}
                 style={{
                   ...cellStyle,
                   backgroundColor: isWinning
                     ? theme.winningCellBg
                     : isHighlighted
                       ? 'rgba(99,102,241,0.35)'
-                      : isOrigin
-                        ? 'rgba(255,255,255,0.08)'
-                        : theme.cellBg,
+                      : isAtLimit
+                        ? 'rgba(239,68,68,0.12)'
+                        : isOrigin
+                          ? 'rgba(129,140,248,0.12)'
+                          : theme.cellBg,
                   color:
                     ownerInfo?.color ?? previewInfo?.color ?? theme.textColor,
                   border: isHighlighted
                     ? '2px solid rgba(129,140,248,0.8)'
-                    : isOrigin && !ownerInfo
-                      ? '1px dashed rgba(255,255,255,0.25)'
-                      : 'none',
+                    : isAtLimit
+                      ? '1px dashed rgba(239,68,68,0.45)'
+                      : isOrigin && !ownerInfo
+                        ? '1px solid rgba(129,140,248,0.35)'
+                        : 'none',
                   borderRadius: theme.borderRadius,
                   fontFamily: theme.markFont,
                   fontWeight: 700,
                   fontSize: cellStyle.fontSize,
-                  cursor: cellDisabled ? 'default' : 'pointer',
+                  cursor: cellDisabled
+                    ? 'default'
+                    : (playerCursor ?? 'pointer'),
                   transition: 'background-color 120ms ease, border 120ms ease',
                   overflow: 'hidden',
                 }}

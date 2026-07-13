@@ -145,45 +145,59 @@ describe('tic-tac-toe utils', () => {
       expect(result.originDelta).toEqual({ row: 0, col: 0 });
     });
 
-    it('expands when mark is placed near the top edge', () => {
+    it('expands only at the top when mark is placed near the top edge', () => {
       const board = createEmptyBoard(9);
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 3);
-      expect(result.board.length).toBeGreaterThan(9);
-      expect(result.originDelta.row).toBeGreaterThan(0);
-      expect(
-        result.board[0 + result.originDelta.row][4 + result.originDelta.col],
-      ).toBe('x');
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[3][4]).toBe('x');
     });
 
-    it('expands when mark is placed near the bottom edge', () => {
+    it('expands only at the bottom when mark is placed near the bottom edge', () => {
       const board = createEmptyBoard(9);
       board[8][4] = 'x';
       const result = expandBoard(board, 8, 4, 3);
-      expect(result.board.length).toBeGreaterThan(9);
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[8][4]).toBe('x');
     });
 
-    it('expands when mark is placed near the left edge', () => {
+    it('expands only at the left when mark is placed near the left edge', () => {
       const board = createEmptyBoard(9);
       board[4][0] = 'x';
       const result = expandBoard(board, 4, 0, 3);
-      expect(result.board[0].length).toBeGreaterThan(9);
-      expect(result.originDelta.col).toBeGreaterThan(0);
+      expect(result.board.length).toBe(9);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(3);
+      expect(result.board[4][3]).toBe('x');
     });
 
-    it('expands when mark is placed near the right edge', () => {
+    it('expands only at the right when mark is placed near the right edge', () => {
       const board = createEmptyBoard(9);
       board[4][8] = 'x';
       const result = expandBoard(board, 4, 8, 3);
-      expect(result.board[0].length).toBeGreaterThan(9);
+      expect(result.board.length).toBe(9);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[4][8]).toBe('x');
     });
 
-    it('expands in both axes when placed in a corner', () => {
+    it('expands both axes when placed in a corner', () => {
       const board = createEmptyBoard(9);
       board[0][0] = 'x';
       const result = expandBoard(board, 0, 0, 3);
-      expect(result.board.length).toBeGreaterThan(9);
-      expect(result.board[0].length).toBeGreaterThan(9);
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(3);
+      expect(result.board[3][3]).toBe('x');
     });
 
     it('preserves existing marks after expansion', () => {
@@ -217,6 +231,7 @@ describe('tic-tac-toe utils', () => {
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 1);
       expect(result.board.length).toBe(10);
+      expect(result.board[0].length).toBe(9);
       expect(result.originDelta.row).toBe(1);
     });
 
@@ -225,19 +240,20 @@ describe('tic-tac-toe utils', () => {
       board[0][4] = 'x';
       const result = expandBoard(board, 0, 4, 2);
       expect(result.board.length).toBe(11);
+      expect(result.board[0].length).toBe(9);
       expect(result.originDelta.row).toBe(2);
     });
 
-    it('does not double-expand when both axes need rows (corner case)', () => {
+    it('expands only on needed sides for corner placement', () => {
       const board = createEmptyBoard(9);
       board[0][0] = 'x';
       const result = expandBoard(board, 0, 0, 3);
       const addedRows = result.board.length - 9;
       const addedCols = result.board[0].length - 9;
-      expect(addedRows).toBeLessThanOrEqual(6);
-      expect(addedCols).toBeLessThanOrEqual(6);
-      expect(result.originDelta.row).toBeGreaterThanOrEqual(3);
-      expect(result.originDelta.col).toBeGreaterThanOrEqual(3);
+      expect(addedRows).toBe(3);
+      expect(addedCols).toBe(3);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(3);
     });
   });
 

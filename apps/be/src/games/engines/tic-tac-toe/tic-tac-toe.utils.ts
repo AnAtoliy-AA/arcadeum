@@ -1,8 +1,9 @@
 import type { CellValue, WinLineCell } from './tic-tac-toe.types';
 
-export function createEmptyBoard(size: number): CellValue[][] {
-  return Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => null as CellValue),
+export function createEmptyBoard(rows: number, cols?: number): CellValue[][] {
+  const c = cols ?? rows;
+  return Array.from({ length: rows }, () =>
+    Array.from({ length: c }, () => null as CellValue),
   );
 }
 
@@ -17,16 +18,17 @@ export function expandBoard(
   col: number,
   margin: number,
 ): ExpandResult {
-  const size = board.length;
+  const rows = board.length;
+  const cols = board[0]?.length ?? rows;
   let neededTop = 0;
   let neededBottom = 0;
   let neededLeft = 0;
   let neededRight = 0;
 
   if (row < margin) neededTop = margin - row;
-  if (row >= size - margin) neededBottom = margin - (size - 1 - row);
+  if (row >= rows - margin) neededBottom = margin - (rows - 1 - row);
   if (col < margin) neededLeft = margin - col;
-  if (col >= size - margin) neededRight = margin - (size - 1 - col);
+  if (col >= cols - margin) neededRight = margin - (cols - 1 - col);
 
   if (
     neededTop === 0 &&
@@ -37,30 +39,19 @@ export function expandBoard(
     return { board, originDelta: { row: 0, col: 0 } };
   }
 
-  const totalNewRows = neededTop + neededBottom;
-  const totalNewCols = neededLeft + neededRight;
-  const expansion = Math.max(totalNewRows, totalNewCols);
-  const newSize = size + expansion;
+  const newRows = rows + neededTop + neededBottom;
+  const newCols = cols + neededLeft + neededRight;
+  const newBoard = createEmptyBoard(newRows, newCols);
 
-  const newRowsTop = Math.min(
-    Math.max(neededTop, Math.ceil(expansion / 2)),
-    expansion - neededBottom,
-  );
-  const newColsLeft = Math.min(
-    Math.max(neededLeft, Math.ceil(expansion / 2)),
-    expansion - neededRight,
-  );
-  const newBoard = createEmptyBoard(newSize);
-
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      newBoard[r + newRowsTop][c + newColsLeft] = board[r][c];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      newBoard[r + neededTop][c + neededLeft] = board[r][c];
     }
   }
 
   return {
     board: newBoard,
-    originDelta: { row: newRowsTop, col: newColsLeft },
+    originDelta: { row: neededTop, col: neededLeft },
   };
 }
 
@@ -97,13 +88,15 @@ export function findWinningLine(
   winLength: number,
   owner: string,
 ): WinLineCell[] | null {
-  for (let row = 0; row < size; row++) {
-    for (let col = 0; col < size; col++) {
+  const rows = board.length;
+  const cols = board[0]?.length ?? rows;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
       if (board[row][col] !== owner) continue;
       for (const [dRow, dCol] of DIRECTIONS) {
         const endRow = row + dRow * (winLength - 1);
         const endCol = col + dCol * (winLength - 1);
-        if (endRow < 0 || endRow >= size || endCol < 0 || endCol >= size) {
+        if (endRow < 0 || endRow >= rows || endCol < 0 || endCol >= cols) {
           continue;
         }
         let matched = true;

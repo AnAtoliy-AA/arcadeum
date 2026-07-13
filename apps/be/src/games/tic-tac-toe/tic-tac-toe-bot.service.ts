@@ -79,6 +79,7 @@ export class TicTacToeBotService {
   pickMove(state: TicTacToeState, botId: string): PlaceMarkPayload | null {
     const ownerId = this.getOwnerId(state, botId);
     if (!ownerId) return null;
+    if (!state.board || state.board.length === 0) return null;
     const opponentIds = this.getOpponentIds(state, ownerId);
     const size = state.board.length;
     const boardSize = state.options.boardSize;
@@ -255,7 +256,9 @@ export class TicTacToeBotService {
     if (!currentEntryId) return null;
     if (!state.options.teamMode) return currentEntryId;
     const team = state.teams.find((t) => t.id === currentEntryId);
-    return team ? team.playerIds[team.currentShooterIndex] : null;
+    if (!team) return null;
+    const shooterId = team.playerIds[team.currentShooterIndex];
+    return shooterId ?? null;
   }
 
   private cloneBoard(board: CellValue[][]): CellValue[][] {

@@ -1,5 +1,3 @@
-'use client';
-
 // Lightweight analytics shim. No provider is wired up yet — this exists so
 // product surfaces can call `track('feature.event', { ... })` today and have
 // the call recorded in dev devtools; when a real provider (PostHog, Mixpanel,

@@ -3,7 +3,7 @@ import {
   CELL_STATE,
   CellState,
   GAME_PHASE,
-  SHIPS,
+  getActiveShips,
 } from './sea-battle.constants';
 import {
   ShipCell,
@@ -156,13 +156,14 @@ export function getSeaBattleAvailableActions(
   if (!player || !player.alive) return [];
 
   const actions: string[] = ['chat'];
+  const activeShips = getActiveShips(state.shipCount);
 
   if (state.phase === GAME_PHASE.PLACEMENT) {
     if (!player.placementComplete) {
-      if (player.ships.length < SHIPS.length) {
+      if (player.ships.length < activeShips.length) {
         actions.push('placeShip');
       }
-      if (player.ships.length === SHIPS.length) {
+      if (player.ships.length === activeShips.length) {
         actions.push('confirmPlacement');
       }
       if (player.ships.length > 0) {
@@ -255,12 +256,14 @@ function canPlaceShip(
 
 export function randomlyPlaceShips(
   gridSize: number = BOARD_SIZE,
+  shipCount?: number,
 ): Record<string, ShipCell[]> {
   const board = createEmptyBoard(gridSize);
   const placements: Record<string, ShipCell[]> = {};
+  const activeShips = getActiveShips(shipCount);
 
   // Sort ships by size descending to make placement easier
-  const sortedShips = [...SHIPS].sort((a, b) => b.size - a.size);
+  const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
 
   for (const ship of sortedShips) {
     let placed = false;

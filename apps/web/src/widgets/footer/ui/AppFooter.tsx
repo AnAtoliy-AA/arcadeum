@@ -11,7 +11,7 @@ import {
   TikTokIcon,
   XIcon,
   YouTubeIcon,
-} from '@arcadeum/ui';
+} from '@arcadeum/ui/components/Icons/index';
 import { Footer, type SocialLink } from '@arcadeum/ui/components/Footer/Footer';
 import { View } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';

@@ -41,6 +41,7 @@ interface ChessLobbyProps {
     botCount?: number;
     botDifficulty?: BotDifficulty;
   }) => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
@@ -57,6 +58,7 @@ export function ChessLobby({
   isHost,
   startBusy,
   onStartGame,
+  onReorderPlayers,
   onLeaveRoom,
   onDeleteRoom,
   onKickPlayer,
@@ -250,6 +252,7 @@ export function ChessLobby({
         gameIcon="♟"
         variantName={variantLabel}
         minPlayers={2}
+        maxPlayers={2}
         theme={LOBBY_THEME}
         enableBots
         labels={{
@@ -257,7 +260,8 @@ export function ChessLobby({
         }}
         optionsSlot={optionsSlot}
         showInvitedPlayers
-        showReorderControls={false}
+        showReorderControls
+        onReorderPlayers={onReorderPlayers}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
     </>

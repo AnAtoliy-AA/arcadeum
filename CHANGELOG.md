@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.48] - 2026-07-13
+
+### Fixed
+- fix ship placement race condition and add more ships for bigger fields
+
+
+## [1.23.47] - 2026-07-13
+
+### Added
+- add first-player selection and drag-and-drop reordering
+- add first-player selection in lobby for all games
+
+### Documentation
+- add onReorderPlayers wiring to new-game skill template
+
+
+## [1.23.46] - 2026-07-13
+
+### Added
+- improve Tic Tac Toe Infinity UX
+
+### Fixed
+- sanitize both color and mark in SVG cursor
+- sanitize SVG cursor color against injection
+
+
+## [1.23.45] - 2026-07-13
+
+### Fixed
+- limit bots to 1 and fix chess960 castling
+
+
+## [1.23.44] - 2026-07-13
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.43] - 2026-07-12
+
+### Fixed
+- fix TicTacToe bot stuck in infinite error loop
+
+### Improved
+- deep performance optimizations round 2
+
+
+## [1.23.42] - 2026-07-12
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.41] - 2026-07-12
+
+### Fixed
+- revert sessionWasCompletedFromStart to fix e2e tests
+- suppress result modal for already-completed rooms
+
+### Documentation
+- clarify PR title rules for staging and main
+
+
 ## [1.23.40] - 2026-07-12
 
 ### Changed

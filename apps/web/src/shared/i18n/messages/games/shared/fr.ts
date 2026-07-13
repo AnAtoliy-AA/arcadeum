@@ -213,7 +213,12 @@ export const frMessages = {
       },
       spectators: {
         title: 'Autoriser les spectateurs',
-        desc: 'Tout détenteur du lien peut regarder en silence.',
+        desc: 'Tout le lien peut observer en silence.',
+      },
+      firstPlayer: {
+        title: 'Qui commence',
+        host: 'Hôte (par défaut)',
+        random: 'Aléatoire',
       },
     },
     summary: {

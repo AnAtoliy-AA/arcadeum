@@ -6,14 +6,10 @@ import Link from 'next/link';
 import { useLanguage } from '@/shared/i18n/context';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
-
-interface TokenMetadata {
-  name: string;
-  symbol: string;
-  description: string;
-  image: string | null;
-  pumpfunUrl: string | null;
-}
+import {
+  fetchTokenMetadata,
+  type TokenMetadata,
+} from '@/shared/api/tokenMetadata';
 
 export default function HomeTokenInfo() {
   const { messages } = useLanguage();
@@ -23,14 +19,9 @@ export default function HomeTokenInfo() {
   const [metadata, setMetadata] = useState<TokenMetadata | null>(null);
 
   useEffect(() => {
-    const base =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    void fetch(`${base}/solana/token-metadata`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.name && data?.symbol) setMetadata(data);
-      })
-      .catch(() => {});
+    void fetchTokenMetadata().then((data) => {
+      if (data) setMetadata(data);
+    });
   }, []);
 
   const title = (homeCopy as Record<string, string>).tokenTitle ?? 'Our Token';

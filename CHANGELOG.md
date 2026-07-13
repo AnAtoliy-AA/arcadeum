@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.45] - 2026-07-13
+
+### Fixed
+- limit bots to 1 and fix chess960 castling
+
+
 ## [1.23.44] - 2026-07-13
 
 ### Changed

@@ -27,6 +27,7 @@ export interface ShipConfig {
 }
 
 export const SHIPS: ShipConfig[] = [
+  { id: 'carrier-1', name: 'Carrier', size: 5 },
   { id: 'battleship-1', name: 'Battleship', size: 4 },
   { id: 'cruiser-1', name: 'Cruiser', size: 3 },
   { id: 'cruiser-2', name: 'Cruiser', size: 3 },
@@ -37,7 +38,16 @@ export const SHIPS: ShipConfig[] = [
   { id: 'submarine-2', name: 'Submarine', size: 1 },
   { id: 'submarine-3', name: 'Submarine', size: 1 },
   { id: 'submarine-4', name: 'Submarine', size: 1 },
+  { id: 'patrol-1', name: 'Patrol', size: 2 },
+  { id: 'patrol-2', name: 'Patrol', size: 2 },
+  { id: 'frigate-1', name: 'Frigate', size: 3 },
+  { id: 'frigate-2', name: 'Frigate', size: 3 },
 ];
+
+export function getActiveShips(shipCount?: number): ShipConfig[] {
+  const count = shipCount ?? 10;
+  return SHIPS.slice(0, Math.min(count, SHIPS.length));
+}
 
 export const GAME_PHASE = {
   LOBBY: 'lobby',

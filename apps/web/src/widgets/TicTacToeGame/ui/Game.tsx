@@ -25,7 +25,10 @@ import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { WIN_LENGTHS } from '../types';
-import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
+import {
+  TIC_TAC_TOE_VARIANTS,
+  INFINITY_MAX_BOARD_SIZE,
+} from '../lib/constants';
 import {
   type BoardSize,
   type TicTacToeOptions,
@@ -210,6 +213,8 @@ function TicTacToeGameImpl({
             origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
             highlightedCell={effectiveHighlight}
+            maxBoardSize={INFINITY_MAX_BOARD_SIZE}
+            currentPlayerId={currentShooterId}
             ariaLabel={
               snapshot.options.boardSize === 'infinity'
                 ? 'Tic-Tac-Toe Infinity board'

@@ -1,4 +1,4 @@
-name: Guard main branch
+name: check-pr-title
 
 on:
   pull_request:

@@ -13,7 +13,7 @@ import {
   posToBoardCoords,
   getPiece,
 } from './chess.board';
-import { isInCheck } from './chess.attacks';
+import { isInCheck, isSquareAttacked } from './chess.attacks';
 import { createMove, simulateMove } from './chess.move-utils';
 
 export function generatePseudoLegalMoves(
@@ -302,109 +302,107 @@ function generateKingMoves(
     );
   }
 
-  if (piece.color === 'white') {
-    if (state.castlingRights.whiteKingSide) {
-      const rookFile = findRookFileForCastling(state.board, 7, file, 'right');
+  const opponent = piece.color === 'white' ? 'black' : 'white';
+  const backRank = piece.color === 'white' ? 7 : 0;
+
+  if (!isSquareAttacked(state.board, pos, opponent)) {
+    if (
+      state.castlingRights[
+        piece.color === 'white' ? 'whiteKingSide' : 'blackKingSide'
+      ]
+    ) {
+      const rookFile = findRookFileForCastling(
+        state.board,
+        backRank,
+        file,
+        'right',
+      );
       if (rookFile !== null) {
         let clear = true;
         for (let f = file + 1; f < rookFile; f++) {
-          if (state.board[7][f]) {
+          if (state.board[backRank][f]) {
             clear = false;
             break;
           }
         }
         if (clear) {
-          moves.push(
-            createMove(
-              state,
-              pos,
-              boardCoordsToPos(7, 6),
-              piece,
-              null,
-              null,
-              false,
-              true,
-            ),
-          );
+          let pathSafe = true;
+          for (let f = file + 1; f < 6; f++) {
+            if (
+              isSquareAttacked(
+                state.board,
+                boardCoordsToPos(backRank, f),
+                opponent,
+              )
+            ) {
+              pathSafe = false;
+              break;
+            }
+          }
+          if (pathSafe) {
+            moves.push(
+              createMove(
+                state,
+                pos,
+                boardCoordsToPos(backRank, 6),
+                piece,
+                null,
+                null,
+                false,
+                true,
+              ),
+            );
+          }
         }
       }
     }
-    if (state.castlingRights.whiteQueenSide) {
-      const rookFile = findRookFileForCastling(state.board, 7, file, 'left');
+    if (
+      state.castlingRights[
+        piece.color === 'white' ? 'whiteQueenSide' : 'blackQueenSide'
+      ]
+    ) {
+      const rookFile = findRookFileForCastling(
+        state.board,
+        backRank,
+        file,
+        'left',
+      );
       if (rookFile !== null) {
         let clear = true;
         for (let f = rookFile + 1; f < file; f++) {
-          if (state.board[7][f]) {
+          if (state.board[backRank][f]) {
             clear = false;
             break;
           }
         }
         if (clear) {
-          moves.push(
-            createMove(
-              state,
-              pos,
-              boardCoordsToPos(7, 2),
-              piece,
-              null,
-              null,
-              false,
-              true,
-            ),
-          );
-        }
-      }
-    }
-  } else {
-    if (state.castlingRights.blackKingSide) {
-      const rookFile = findRookFileForCastling(state.board, 0, file, 'right');
-      if (rookFile !== null) {
-        let clear = true;
-        for (let f = file + 1; f < rookFile; f++) {
-          if (state.board[0][f]) {
-            clear = false;
-            break;
+          let pathSafe = true;
+          for (let f = 3; f < file; f++) {
+            if (
+              isSquareAttacked(
+                state.board,
+                boardCoordsToPos(backRank, f),
+                opponent,
+              )
+            ) {
+              pathSafe = false;
+              break;
+            }
           }
-        }
-        if (clear) {
-          moves.push(
-            createMove(
-              state,
-              pos,
-              boardCoordsToPos(0, 6),
-              piece,
-              null,
-              null,
-              false,
-              true,
-            ),
-          );
-        }
-      }
-    }
-    if (state.castlingRights.blackQueenSide) {
-      const rookFile = findRookFileForCastling(state.board, 0, file, 'left');
-      if (rookFile !== null) {
-        let clear = true;
-        for (let f = rookFile + 1; f < file; f++) {
-          if (state.board[0][f]) {
-            clear = false;
-            break;
+          if (pathSafe) {
+            moves.push(
+              createMove(
+                state,
+                pos,
+                boardCoordsToPos(backRank, 2),
+                piece,
+                null,
+                null,
+                false,
+                true,
+              ),
+            );
           }
-        }
-        if (clear) {
-          moves.push(
-            createMove(
-              state,
-              pos,
-              boardCoordsToPos(0, 2),
-              piece,
-              null,
-              null,
-              false,
-              true,
-            ),
-          );
         }
       }
     }

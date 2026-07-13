@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.46] - 2026-07-13
+
+### Added
+- improve Tic Tac Toe Infinity UX
+
+### Fixed
+- sanitize both color and mark in SVG cursor
+- sanitize SVG cursor color against injection
+
+
 ## [1.23.45] - 2026-07-13
 
 ### Fixed

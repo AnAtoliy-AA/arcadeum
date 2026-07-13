@@ -83,8 +83,11 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   ): SeaBattleState {
     const mode = config?.mode ?? GAME_MODE_VARIANTS.CLASSIC;
     const gridSize = config?.gridSize ?? BOARD_SIZE;
-
-    const players: SeaBattlePlayer[] = playerIds.map((id) => ({
+    const shouldRandomize = config?.firstPlayer === 'random';
+    const orderedIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+    const players: SeaBattlePlayer[] = orderedIds.map((id) => ({
       playerId: id,
       alive: true,
       board: createEmptyBoard(gridSize),
@@ -92,18 +95,12 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       shipsRemaining: SHIPS.length,
       placementComplete: false,
     }));
-
     const baseState: SeaBattleState = {
       phase: GAME_PHASE.PLACEMENT,
       players,
-      playerOrder: playerIds,
+      playerOrder: orderedIds,
       currentTurnIndex: 0,
-      logs: [
-        this.createLogEntry(
-          'system',
-          `Game started! Mode: ${mode}. Place your ships.`,
-        ),
-      ],
+      logs: [this.createLogEntry('system', `Game started! Mode: ${mode}. Place your ships.`)],
       mode,
       roundNumber: 1,
       gridSize,
@@ -111,14 +108,17 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       specialWeapons: config?.specialWeapons,
     };
     if (config?.teams && config.teams.length > 0) {
-      baseState.teams = config.teams.map((t) => ({
+      const orderedTeams = shouldRandomize
+        ? [...config.teams].sort(() => Math.random() - 0.5)
+        : config.teams;
+      baseState.teams = orderedTeams.map((t) => ({
         id: t.id,
         name: t.name,
         color: t.color,
         playerIds: [...t.playerIds],
         currentShooterIndex: 0,
       }));
-      baseState.teamOrder = config.teams.map((t) => t.id);
+      baseState.teamOrder = orderedTeams.map((t) => t.id);
       baseState.currentTeamIndex = 0;
       baseState.hideShipsFromTeammates = !!config.hideShipsFromTeammates;
     }

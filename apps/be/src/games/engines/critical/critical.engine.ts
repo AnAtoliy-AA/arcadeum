@@ -71,8 +71,12 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
       (config?.allowActionCardCombos as boolean | undefined) ?? false;
     const customCards =
       (config?.customCards as CustomCardConfig | undefined) ?? undefined;
+    const shouldRandomize = config?.firstPlayer === 'random';
+    const orderedIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
     return createInitialCriticalState(
-      playerIds,
+      orderedIds,
       expansions,
       allowActionCardCombos,
       customCards,

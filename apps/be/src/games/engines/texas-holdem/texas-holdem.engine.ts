@@ -51,7 +51,12 @@ export class TexasHoldemEngine extends BaseGameEngine<TexasHoldemState> {
     const smallBlind = typedConfig?.smallBlind || 5;
     const bigBlind = typedConfig?.bigBlind || 10;
 
-    return createInitialTexasHoldemState(playerIds, {
+    const shouldRandomize = config?.firstPlayer === 'random';
+    const orderedIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+
+    return createInitialTexasHoldemState(orderedIds, {
       initialStack,
       smallBlind,
       bigBlind,

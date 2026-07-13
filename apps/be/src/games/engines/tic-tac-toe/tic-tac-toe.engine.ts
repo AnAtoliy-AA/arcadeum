@@ -71,7 +71,14 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       ? this.buildTeams(playerIds, config?.teams)
       : [];
 
-    const players: TicTacToePlayer[] = playerIds.map((id, idx) => ({
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random';
+
+    const orderedPlayerIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+
+    const players: TicTacToePlayer[] = orderedPlayerIds.map((id, idx) => ({
       playerId: id,
       symbol: PLAYER_SYMBOLS[idx % PLAYER_SYMBOLS.length],
       alive: true,
@@ -80,7 +87,11 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
         : undefined,
     }));
 
-    const playerOrder = teamMode ? teams.map((t) => t.id) : [...playerIds];
+    const playerOrder = teamMode
+      ? shouldRandomize
+        ? [...teams].sort(() => Math.random() - 0.5).map((t) => t.id)
+        : teams.map((t) => t.id)
+      : orderedPlayerIds;
 
     return {
       phase: GAME_PHASE.PLAYING,

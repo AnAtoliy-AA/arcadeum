@@ -15,6 +15,7 @@ export const enMessages = {
     filters: {
       statusLabel: 'Status',
       participationLabel: 'Participation',
+      categoryLabel: 'Category',
       status: {
         all: 'All',
         lobby: 'Lobby',
@@ -296,6 +297,7 @@ export const enMessages = {
     tags: {
       strategy: 'Strategy',
       cards: 'Cards',
+      action: 'Action',
     },
   },
   connectionOverlay: {

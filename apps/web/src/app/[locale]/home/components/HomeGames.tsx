@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { featuredGames } from '../data/games';
@@ -42,6 +42,18 @@ export default function HomeGames() {
       cancelled = true;
     };
   }, []);
+
+  const categories = useMemo(() => {
+    const cats = new Set(featuredGames.map((g) => g.category));
+    return ['All', ...Array.from(cats)];
+  }, []);
+
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const filteredGames = useMemo(() => {
+    if (activeCategory === 'All') return featuredGames;
+    return featuredGames.filter((g) => g.category === activeCategory);
+  }, [activeCategory]);
 
   const {
     sliderRef,
@@ -85,6 +97,20 @@ export default function HomeGames() {
         </p>
       </div>
 
+      <div className="category-tabs-main" data-reveal data-reveal-delay="2">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            className={`category-tab-main${activeCategory === cat ? ' category-tab-active-main' : ''}`}
+            onClick={() => setActiveCategory(cat)}
+            aria-pressed={activeCategory === cat}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       <div className="slider-container-main" data-reveal data-reveal-delay="2">
         <div
           ref={sliderRef}
@@ -99,7 +125,7 @@ export default function HomeGames() {
             userSelect: isDragging ? 'none' : 'auto',
           }}
         >
-          {featuredGames.map((game) => (
+          {filteredGames.map((game) => (
             <div
               key={game.id}
               className="slider-item-main"

@@ -259,6 +259,15 @@
 }
 
 /* Game picker */
+.categoryLabel {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gc-text-dim);
+  margin: 0 0 12px;
+}
+
 .gameGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -15,6 +15,7 @@ export const esMessages = {
     filters: {
       statusLabel: 'Estado',
       participationLabel: 'Participación',
+      categoryLabel: 'Categoría',
       status: {
         all: 'Todos',
         lobby: 'Sala de espera',
@@ -301,6 +302,7 @@ export const esMessages = {
     tags: {
       strategy: 'Estrategia',
       cards: 'Cartas',
+      action: 'Acción',
     },
   },
   connectionOverlay: {

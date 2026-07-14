@@ -357,6 +357,9 @@ export class GameRoomsService {
    * Get room participants
    */
   async getRoomParticipants(roomId: string): Promise<string[]> {
+    if (!Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    }
     const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {

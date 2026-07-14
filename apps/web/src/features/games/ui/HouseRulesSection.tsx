@@ -69,9 +69,7 @@ export function HouseRulesSection({
       <label style={labelStyle(!!ruleComingSoon.get('spectators'))}>
         <input
           type="checkbox"
-          checked={
-            optSpectators ?? room.gameOptions?.allowSpectators !== false
-          }
+          checked={optSpectators ?? room.gameOptions?.allowSpectators !== false}
           disabled={!!ruleComingSoon.get('spectators')}
           onChange={(e) => {
             const val = e.target.checked;

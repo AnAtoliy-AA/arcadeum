@@ -59,33 +59,8 @@ jobs:
           path: build-artifacts.tar
           retention-days: 1
 
-  lint:
-    name: Lint & Docs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Run Documentation Link Checker
-        run: pnpm docs:check
-
-      - name: Run Linting
-        run: pnpm run lint
-
-  test-unit:
-    name: Unit Tests
+  lint-and-test-unit:
+    name: Lint & Unit Tests
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -107,6 +82,12 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
+
+      - name: Run Documentation Link Checker
+        run: pnpm docs:check
+
+      - name: Run Linting
+        run: pnpm run lint
 
       - name: Run Web Unit Tests
         run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests

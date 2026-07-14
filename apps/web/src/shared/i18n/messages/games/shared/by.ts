@@ -15,6 +15,7 @@ export const byMessages = {
     filters: {
       statusLabel: 'Статус',
       participationLabel: 'Удзел',
+      categoryLabel: 'Катэгорыя',
       status: {
         all: 'Усе',
         lobby: 'Лобі',
@@ -296,6 +297,7 @@ export const byMessages = {
     tags: {
       strategy: 'Стратэгія',
       cards: 'Карты',
+      action: 'Экшн',
     },
   },
   connectionOverlay: {

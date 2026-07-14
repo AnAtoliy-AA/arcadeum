@@ -10,7 +10,7 @@ import {
   SEA_BATTLE_THEMES,
   findSeaBattleTheme,
   GAMES,
-  VISIBLE_GAMES,
+  getGamesByCategory,
   type GameId,
 } from './data/themes';
 
@@ -36,53 +36,67 @@ export function GamePicker({
   labels,
   onChange,
 }: GamePickerProps) {
+  const categories = getGamesByCategory();
+
   return (
     <div
-      className={s.gameGrid}
       role="radiogroup"
       aria-label="Game selection"
       data-testid="game-picker"
     >
-      {VISIBLE_GAMES.map((gameId) => {
-        const meta = GAMES[gameId];
-        const active = value === gameId;
-        const blocked = comingSoon.get(gameId) ?? false;
-        const tileTheme = active ? themeId : undefined;
-        return (
-          <button
-            key={gameId}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            disabled={blocked}
-            data-testid={`game-tile-${gameId}`}
-            onClick={() => onChange(gameId)}
-            className={`${s.gameCard} ${active ? s.gameCardActive : ''}`}
-          >
-            {active ? (
-              <span className={s.gameCardBadge}>✓ {labels.selected}</span>
-            ) : null}
-            {blocked ? (
-              <span className={s.gameCardComingSoon}>{labels.comingSoon}</span>
-            ) : null}
-            <div className={s.gameCardArt}>
-              <GameTilePreview gameId={gameId} themeId={tileTheme} />
-            </div>
-            <div className={s.gameCardBody}>
-              <div className={s.gameCardHeader}>
-                <h3 className={s.gameCardTitle}>{meta.title}</h3>
-                <span className={s.gameCardPlayers}>{meta.players.label}</span>
-              </div>
-              <p className={s.gameCardDesc}>{meta.desc}</p>
-              <div className={s.gameCardMeta}>
-                <span>{meta.duration}</span>
-                <span> · </span>
-                <span>{meta.kind}</span>
-              </div>
-            </div>
-          </button>
-        );
-      })}
+      {categories.map(({ category, games }) => (
+        <div key={category} style={{ marginBottom: 20 }}>
+          <h3 className={s.categoryLabel} aria-hidden="true">
+            {category}
+          </h3>
+          <div className={s.gameGrid}>
+            {games.map((gameId) => {
+              const meta = GAMES[gameId];
+              const active = value === gameId;
+              const blocked = comingSoon.get(gameId) ?? false;
+              const tileTheme = active ? themeId : undefined;
+              return (
+                <button
+                  key={gameId}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  disabled={blocked}
+                  data-testid={`game-tile-${gameId}`}
+                  onClick={() => onChange(gameId)}
+                  className={`${s.gameCard} ${active ? s.gameCardActive : ''}`}
+                >
+                  {active ? (
+                    <span className={s.gameCardBadge}>✓ {labels.selected}</span>
+                  ) : null}
+                  {blocked ? (
+                    <span className={s.gameCardComingSoon}>
+                      {labels.comingSoon}
+                    </span>
+                  ) : null}
+                  <div className={s.gameCardArt}>
+                    <GameTilePreview gameId={gameId} themeId={tileTheme} />
+                  </div>
+                  <div className={s.gameCardBody}>
+                    <div className={s.gameCardHeader}>
+                      <h3 className={s.gameCardTitle}>{meta.title}</h3>
+                      <span className={s.gameCardPlayers}>
+                        {meta.players.label}
+                      </span>
+                    </div>
+                    <p className={s.gameCardDesc}>{meta.desc}</p>
+                    <div className={s.gameCardMeta}>
+                      <span>{meta.duration}</span>
+                      <span> · </span>
+                      <span>{meta.kind}</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

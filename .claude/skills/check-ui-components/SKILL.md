@@ -3,6 +3,8 @@ name: check-ui-components
 description: Check existing @arcadeum/ui components before implementing any new UI. Use before writing any component — reuse what exists, add to packages/ui if missing.
 ---
 
+> **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality.
+
 Before writing any UI component, you MUST audit the shared library. Never implement custom UI that duplicates an existing shared component.
 
 ## Step 1 — Read the current component catalog

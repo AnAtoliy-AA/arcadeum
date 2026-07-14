@@ -88,6 +88,8 @@ export class DailyChallengesService {
     date: string,
     increment: number = 1,
   ): Promise<void> {
+    if (!/^[a-z0-9_-]+$/.test(challengeId)) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
     const definition = await this.definitionModel
       .findOne({ challengeId })
       .lean();
@@ -117,6 +119,12 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
+    if (!/^[a-z0-9_-]+$/.test(challengeId)) {
+      throw new Error('Invalid challengeId');
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      throw new Error('Invalid date format');
+    }
     const definition = await this.definitionModel
       .findOne({ challengeId })
       .lean();
@@ -263,7 +271,7 @@ export class DailyChallengesService {
   ): Promise<UserDailyChallengeDocument> {
     let progress = await this.progressModel.findOne({
       userId: new Types.ObjectId(userId),
-      date,
+      date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
     });
     if (!progress) {
       const challenges = definitions.map((def) => ({

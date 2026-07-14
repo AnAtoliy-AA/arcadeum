@@ -181,6 +181,9 @@ export class AchievementsService {
     userId: string,
     achievementId: string,
   ): Promise<ClaimResult> {
+    if (!/^[a-z0-9_]+$/.test(achievementId)) {
+      throw new Error('Invalid achievementId');
+    }
     const definition = await this.definitionModel
       .findOne({ achievementId })
       .lean();

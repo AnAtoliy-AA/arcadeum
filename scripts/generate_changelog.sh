@@ -35,7 +35,7 @@ echo "## [$CURRENT_VERSION] - $(date +%Y-%m-%d)" > "$TEMP_CHANGELOG"
 echo "" >> "$TEMP_CHANGELOG"
 
 # Look for features
-FEATURES=$(echo "$COMMITS" | grep -E "^(feat(\([^)]*\))?!?:|ARC-[0-9]+ feat)" || true)
+FEATURES=$(echo "$COMMITS" | grep -E "^(feat|ARC-[0-9]+ feat)" || true)
 if [ -n "$FEATURES" ]; then
   echo "### Added" >> "$TEMP_CHANGELOG"
   echo "$FEATURES" | while read -r line; do
@@ -51,7 +51,7 @@ if [ -n "$FEATURES" ]; then
 fi
 
 # Look for fixes
-FIXES=$(echo "$COMMITS" | grep -E "^(fix(\([^)]*\))?!?:|ARC-[0-9]+ fix)" || true)
+FIXES=$(echo "$COMMITS" | grep -E "^(fix|ARC-[0-9]+ fix)" || true)
 if [ -n "$FIXES" ]; then
   echo "### Fixed" >> "$TEMP_CHANGELOG"
   echo "$FIXES" | while read -r line; do
@@ -67,7 +67,7 @@ if [ -n "$FIXES" ]; then
 fi
 
 # Look for improvements
-IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf(\([^)]*\))?!?:|improve(\([^)]*\))?!?:|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" || true)
+IMPROVEMENTS=$(echo "$COMMITS" | grep -E "^(perf|improve|ARC-[0-9]+ improve|ARC-[0-9]+ improved)" || true)
 if [ -n "$IMPROVEMENTS" ]; then
   echo "### Improved" >> "$TEMP_CHANGELOG"
   echo "$IMPROVEMENTS" | while read -r line; do
@@ -83,7 +83,7 @@ if [ -n "$IMPROVEMENTS" ]; then
 fi
 
 # Look for refactors
-REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor(\([^)]*\))?!?:|ARC-[0-9]+ refactor)" || true)
+REFACTOR=$(echo "$COMMITS" | grep -E "^(refactor|ARC-[0-9]+ refactor)" || true)
 if [ -n "$REFACTOR" ]; then
   echo "### Refactored" >> "$TEMP_CHANGELOG"
   echo "$REFACTOR" | while read -r line; do
@@ -99,7 +99,7 @@ if [ -n "$REFACTOR" ]; then
 fi
 
 # Look for documentation
-DOCS=$(echo "$COMMITS" | grep -E "^(docs(\([^)]*\))?!?:|ARC-[0-9]+ docs)" || true)
+DOCS=$(echo "$COMMITS" | grep -E "^(docs|ARC-[0-9]+ docs)" || true)
 if [ -n "$DOCS" ]; then
   echo "### Documentation" >> "$TEMP_CHANGELOG"
   echo "$DOCS" | while read -r line; do

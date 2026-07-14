@@ -6,6 +6,12 @@ export const MAX_PLAYERS = 6;
 
 export const BOARD_SIZE = 10;
 
+export function getDefaultShipCount(gridSize: number): number {
+  if (gridSize <= 10) return 10;
+  if (gridSize <= 15) return 12;
+  return 14;
+}
+
 export function rowLabels(size: number): string[] {
   return Array.from({ length: size }, (_, i) => String.fromCharCode(65 + i));
 }
@@ -49,7 +55,6 @@ export interface ShipConfig {
 }
 
 export const SHIPS: ShipConfig[] = [
-  { id: 'carrier-1', name: 'Carrier', size: 5 },
   { id: 'battleship-1', name: 'Battleship', size: 4 },
   { id: 'cruiser-1', name: 'Cruiser', size: 3 },
   { id: 'cruiser-2', name: 'Cruiser', size: 3 },
@@ -173,7 +178,9 @@ export interface ShipPlacementProps {
   placedShips: Ship[];
   currentShip: ShipConfig | null;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
-  onConfirmPlacement: () => void;
+  onConfirmPlacement: (
+    ships?: Array<{ shipId: string; cells: ShipCell[] }>,
+  ) => void;
 }
 
 export interface PlaceShipPayload {

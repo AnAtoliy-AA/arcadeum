@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.55] - 2026-07-14
+
+### Added
+- redesign OG images with richer visuals for social unfurls
+
+
 ## [1.23.54] - 2026-07-14
 
 ### Added

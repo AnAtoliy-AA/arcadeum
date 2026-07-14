@@ -52,9 +52,6 @@ export class GameRoomsService {
     private readonly gameRoomsRematchService: GameRoomsRematchService,
     private readonly engineRegistry: GameEngineRegistry,
   ) {}
-  /**
-   * Create a new game room
-   */
   async createRoom(
     userId: string,
     dto: CreateGameRoomDto,
@@ -90,9 +87,6 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * List game rooms based on filters
-   */
   async listRooms(
     filters: ListRoomsFilters = {},
     viewerId?: string,
@@ -174,9 +168,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Join a game room
-   */
   async joinRoom(
     dto: JoinGameRoomDto,
     userId: string,
@@ -238,9 +229,6 @@ export class GameRoomsService {
     return false;
   }
 
-  /**
-   * Leave a game room
-   */
   async leaveRoom(
     dto: LeaveGameRoomDto,
     userId: string,
@@ -295,9 +283,6 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Delete a game room (host only)
-   */
   async deleteRoom(
     dto: DeleteGameRoomDto,
     userId: string,
@@ -324,9 +309,6 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Update room status
-   */
   async updateRoomStatus(
     roomId: string,
     status: GameRoomStatus,
@@ -344,9 +326,6 @@ export class GameRoomsService {
     return room;
   }
 
-  /**
-   * Get room participants
-   */
   async getRoomParticipants(roomId: string): Promise<string[]> {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
@@ -360,9 +339,6 @@ export class GameRoomsService {
     return room.participants.map((p) => p.userId);
   }
 
-  /**
-   * Update room options (host only, lobby only)
-   */
   async updateRoomOptions(
     roomId: string,
     userId: string,
@@ -395,9 +371,6 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * Reorder participants (host only)
-   */
   async reorderParticipants(
     roomId: string,
     userId: string,

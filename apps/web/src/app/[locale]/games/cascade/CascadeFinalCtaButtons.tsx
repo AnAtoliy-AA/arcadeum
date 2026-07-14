@@ -1,19 +1,24 @@
+'use client';
+
 import Link from 'next/link';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 
 interface Props {
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
   gamesHref: string;
-  createRoomLabel: string;
+  ctaQuickplayLabel: string;
+  ctaQuickplayErrorLabel: string;
   browseRoomsLabel: string;
   backToGamesLabel: string;
 }
 
 export function CascadeFinalCtaButtons({
-  createRoomHref,
+  gameId,
   roomsHref,
   gamesHref,
-  createRoomLabel,
+  ctaQuickplayLabel,
+  ctaQuickplayErrorLabel,
   browseRoomsLabel,
   backToGamesLabel,
 }: Props) {
@@ -26,19 +31,12 @@ export function CascadeFinalCtaButtons({
         justifyContent: 'center',
       }}
     >
-      <Link
-        href={createRoomHref}
-        style={{
-          padding: '14px 28px',
-          borderRadius: 12,
-          background: 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
-          color: 'white',
-          fontWeight: 700,
-          textDecoration: 'none',
-        }}
-      >
-        {createRoomLabel}
-      </Link>
+      <QuickplayButton
+        gameId={gameId}
+        label={ctaQuickplayLabel}
+        mode="ai"
+        errorLabel={ctaQuickplayErrorLabel}
+      />
       <Link
         href={roomsHref}
         style={{

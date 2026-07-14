@@ -11,7 +11,7 @@ type Rules = ChessMsg['rules'];
 interface Props {
   landing?: Landing;
   rules?: Rules;
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
   gamesHref: string;
   homeHref: string;
@@ -20,7 +20,7 @@ interface Props {
 export default function ChessLanding({
   landing,
   rules,
-  createRoomHref,
+  gameId,
   roomsHref,
   gamesHref,
   homeHref,
@@ -44,9 +44,10 @@ export default function ChessLanding({
       <ChessHero
         title={landing.hero.title}
         subtitle={landing.hero.subtitle}
-        createRoomHref={createRoomHref}
+        gameId={gameId}
         roomsHref={roomsHref}
-        createRoomLabel={landing.hero.createRoom}
+        ctaQuickplayLabel={landing.hero.ctaQuickplay}
+        ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
         browseRoomsLabel={landing.hero.browseRooms}
       />
 
@@ -92,10 +93,11 @@ export default function ChessLanding({
       </section>
 
       <ChessFinalCtaButtons
-        createRoomHref={createRoomHref}
+        gameId={gameId}
         roomsHref={roomsHref}
         gamesHref={gamesHref}
-        createRoomLabel={landing.hero.createRoom}
+        ctaQuickplayLabel={landing.hero.ctaQuickplay}
+        ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
         browseRoomsLabel={landing.hero.browseRooms}
       />
 

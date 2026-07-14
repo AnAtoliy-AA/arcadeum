@@ -4,16 +4,21 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt = 'Chess — free multiplayer on Arcadeum';
 
-const PIECES = [
-  { symbol: '♜', color: '#b58863' },
-  { symbol: '♞', color: '#b58863' },
-  { symbol: '♝', color: '#b58863' },
-  { symbol: '♛', color: '#b58863' },
-  { symbol: '♚', color: '#b58863' },
-  { symbol: '♝', color: '#b58863' },
-  { symbol: '♞', color: '#b58863' },
-  { symbol: '♜', color: '#b58863' },
+const BOARD: Array<Array<string | null>> = [
+  ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+  ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, '♟', null, null, null, null],
+  [null, null, null, null, null, '♙', null, null],
+  [null, null, null, null, null, null, null, null],
+  ['♙', '♙', '♙', '♙', null, '♙', '♙', '♙'],
+  ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖'],
 ];
+
+function isBlackPiece(p: string | null): boolean {
+  if (!p) return false;
+  return '♜♞♝♛♚♟'.includes(p);
+}
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -30,14 +35,31 @@ export default function OpengraphImage() {
             'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
           color: 'white',
           fontFamily: 'system-ui, sans-serif',
+          position: 'relative',
         }}
       >
+        {/* Background glow */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -80,
+            top: -80,
+            width: 400,
+            height: 400,
+            borderRadius: 200,
+            background:
+              'radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, transparent 60%)',
+          }}
+        />
+
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: 32,
             maxWidth: 560,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: 2 }}>
@@ -104,30 +126,41 @@ export default function OpengraphImage() {
 
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(8, 1fr)',
-            gap: 4,
-            padding: 20,
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: 28,
-            width: 360,
-            height: 360,
+            display: 'flex',
+            flexDirection: 'column',
+            padding: 16,
+            background: 'rgba(255, 255, 255, 0.06)',
+            borderRadius: 24,
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          {PIECES.map((p, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: 'rgba(0, 0, 0, 0.35)',
-                borderRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 40,
-                color: '#f0d9b5',
-              }}
-            >
-              {p.symbol}
+          {BOARD.map((row, ri) => (
+            <div key={ri} style={{ display: 'flex' }}>
+              {row.map((cell, ci) => {
+                const isLight = (ri + ci) % 2 === 0;
+                return (
+                  <div
+                    key={ci}
+                    style={{
+                      width: 42,
+                      height: 42,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 28,
+                      background: isLight
+                        ? 'rgba(240, 217, 181, 0.25)'
+                        : 'rgba(181, 136, 99, 0.35)',
+                      color: cell && isBlackPiece(cell) ? '#1a1a2e' : '#f0d9b5',
+                    }}
+                  >
+                    {cell ?? ''}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>

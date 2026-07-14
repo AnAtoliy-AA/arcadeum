@@ -15,6 +15,7 @@ interface Props {
   landing?: Landing;
   variants?: Variants;
   rules?: Rules;
+  gameId: string;
   createRoomHref: string;
   roomsHref: string;
   gamesHref: string;
@@ -28,6 +29,7 @@ export default function CascadeLanding({
   landing,
   variants,
   rules,
+  gameId,
   createRoomHref,
   roomsHref,
   gamesHref,
@@ -57,9 +59,10 @@ export default function CascadeLanding({
           <CascadeHero
             title={landing.hero.title}
             subtitle={landing.hero.subtitle}
-            createRoomHref={createRoomHref}
+            gameId={gameId}
             roomsHref={roomsHref}
-            createRoomLabel={landing.hero.createRoom}
+            ctaQuickplayLabel={landing.hero.ctaQuickplay}
+            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
             browseRoomsLabel={landing.hero.browseRooms}
           />
 
@@ -118,10 +121,11 @@ export default function CascadeLanding({
           </section>
 
           <CascadeFinalCtaButtons
-            createRoomHref={createRoomHref}
+            gameId={gameId}
             roomsHref={roomsHref}
             gamesHref={gamesHref}
-            createRoomLabel={landing.hero.createRoom}
+            ctaQuickplayLabel={landing.hero.ctaQuickplay}
+            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
             browseRoomsLabel={landing.hero.browseRooms}
             backToGamesLabel={backToGamesLabel}
           />

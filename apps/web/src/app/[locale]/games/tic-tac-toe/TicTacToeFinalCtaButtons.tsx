@@ -1,18 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 
 interface Props {
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
   gamesHref: string;
-  createRoomLabel: string;
+  ctaQuickplayLabel: string;
+  ctaQuickplayErrorLabel: string;
   browseRoomsLabel: string;
 }
 
 export function TicTacToeFinalCtaButtons({
-  createRoomHref,
+  gameId,
   roomsHref,
   gamesHref,
-  createRoomLabel,
+  ctaQuickplayLabel,
+  ctaQuickplayErrorLabel,
   browseRoomsLabel,
 }: Props) {
   return (
@@ -24,19 +29,12 @@ export function TicTacToeFinalCtaButtons({
         justifyContent: 'center',
       }}
     >
-      <Link
-        href={createRoomHref}
-        style={{
-          padding: '14px 28px',
-          borderRadius: 12,
-          background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-          color: 'white',
-          fontWeight: 700,
-          textDecoration: 'none',
-        }}
-      >
-        {createRoomLabel}
-      </Link>
+      <QuickplayButton
+        gameId={gameId}
+        label={ctaQuickplayLabel}
+        mode="ai"
+        errorLabel={ctaQuickplayErrorLabel}
+      />
       <Link
         href={roomsHref}
         style={{

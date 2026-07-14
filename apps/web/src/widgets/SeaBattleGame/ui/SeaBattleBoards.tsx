@@ -379,6 +379,7 @@ export function SeaBattleBoards({
             teammateIds={teammateIds}
             teams={teams}
             gridSize={snapshot.gridSize}
+            shipCount={snapshot.shipCount}
             snapshot={snapshot}
             weaponPreviewCells={
               weaponMode?.weapon === 'sonar'

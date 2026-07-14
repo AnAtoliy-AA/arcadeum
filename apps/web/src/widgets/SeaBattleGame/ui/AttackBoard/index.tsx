@@ -23,6 +23,7 @@ export interface AttackBoardProps {
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
   gridSize?: number;
+  shipCount?: number;
   snapshot?: SeaBattleSnapshot | null;
   weaponPreviewCells?: Set<string> | null;
   weaponPreviewType?: 'sonar' | 'radar' | null;
@@ -42,6 +43,7 @@ export const AttackBoard = memo(function AttackBoard({
   teammateIds,
   teams,
   snapshot,
+  shipCount,
   weaponPreviewCells,
   weaponPreviewType,
   onCellHover,
@@ -154,6 +156,7 @@ export const AttackBoard = memo(function AttackBoard({
               tt.playerIds.includes(currentPlayer.playerId),
             )}
             sunkCellSet={sunkCellSet}
+            shipCount={shipCount}
             t={t}
           />
         )}
@@ -181,6 +184,7 @@ export const AttackBoard = memo(function AttackBoard({
               isTeammate={isTeammate}
               team={team}
               sunkCellSet={sunkCellSet}
+              shipCount={shipCount}
               onAttack={isTeammate ? undefined : onAttack}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
               sonarCellStates={isSonarTarget ? sonarCellStates : null}

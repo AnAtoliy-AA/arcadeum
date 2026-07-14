@@ -95,6 +95,19 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 - `/dark-mode` — implement dark mode with proper color tokens, contrast ratios, and platform patterns
 - `/form-patterns` — build accessible forms with validation, error handling, and progressive disclosure
 - `/data-visualization` — implement accessible charts, graphs, and data tables with proper color and tooltips
+- `/nestjs-expert` — create and configure NestJS modules, controllers, services, DTOs, guards, and interceptors
+- `/secure-code-guardian` — implement authentication/authorization, secure input, and prevent OWASP Top 10 vulnerabilities
+- `/security-reviewer` — review code for security vulnerabilities, audit auth flows, and identify attack vectors
+- `/database-optimizer` — optimize MongoDB queries, analyze execution plans, and improve database performance
+- `/test-master` — write comprehensive unit, integration, and E2E tests with proper mocking and coverage
+- `/typescript-pro` — write type-safe TypeScript with advanced patterns, generics, and utility types
+- `/react-native-expert` — build cross-platform mobile apps with React Native and Expo
+- `/nextjs-developer` — build modern web apps with Next.js App Router, Server Components, and Server Actions
+- `/websocket-engineer` — implement real-time WebSocket connections with Socket.IO for live updates and chat
+- `/code-reviewer` — review code for quality, best practices, and potential issues
+- `/debugging-wizard` — systematically debug issues with structured root-cause analysis
+- `/api-designer` — design RESTful APIs with proper endpoints, status codes, and Swagger documentation
+- `/microservices-architect` — design and implement microservice architectures with proper boundaries
 - `/implement-roadmap-feature` — implement a roadmap feature end-to-end: branch, code, test, commit, push, open PR, fix CI
 
 ### Global superpowers skills

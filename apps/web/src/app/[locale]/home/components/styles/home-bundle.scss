@@ -447,6 +447,14 @@
     transform: scale(0.85);
   }
 }
+
+@media (max-width: 768px) {
+  .hero-card-main {
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
 /* Static Presentation Styles */
 
 .presentation-container {

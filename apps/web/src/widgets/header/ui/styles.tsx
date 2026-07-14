@@ -152,6 +152,7 @@ export const NavHeaderLink = styled(LinkButton, {
   name: 'NavHeaderLink',
   borderRadius: '$4',
   overflow: 'visible',
+  color: '#e2e8f0',
   hoverStyle: {
     backgroundColor: '$backgroundHover',
     transform: 'translateY(-1px)',
@@ -183,6 +184,7 @@ export const NavMobileLink = styled(LinkButton, {
   paddingVertical: '$3',
   paddingHorizontal: '$4',
   justifyContent: 'flex-start',
+  color: '#e2e8f0',
   hoverStyle: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },

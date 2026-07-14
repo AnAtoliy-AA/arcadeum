@@ -280,7 +280,11 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   /**
    * Confirm ship placement is complete
    */
-  async confirmPlacementByRoom(userId: string, roomId: string) {
+  async confirmPlacementByRoom(
+    userId: string,
+    roomId: string,
+    ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>,
+  ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
 
@@ -288,7 +292,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       sessionId: session.id,
       userId,
       action: 'confirmPlacement',
-      payload: {},
+      payload: ships ? { ships } : {},
     });
 
     await this.checkAndSyncRoomStatus(updatedSession);

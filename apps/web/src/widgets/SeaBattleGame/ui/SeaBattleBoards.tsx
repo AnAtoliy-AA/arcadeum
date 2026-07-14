@@ -26,7 +26,9 @@ interface SeaBattleBoardsProps {
   currentPlayer: SeaBattlePlayerState | null;
   placeShip: (shipId: string, cells: ShipCell[]) => void;
   moveShip: (shipId: string, cells: ShipCell[]) => void;
-  confirmPlacement: () => void;
+  confirmPlacement: (
+    ships?: Array<{ shipId: string; cells: ShipCell[] }>,
+  ) => void;
   resetPlacement: () => void;
   isPlacementComplete: boolean;
   handleAutoPlace: () => void;

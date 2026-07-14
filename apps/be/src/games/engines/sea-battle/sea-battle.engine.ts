@@ -7,15 +7,10 @@ import {
 } from '../base/game-engine.interface';
 import {
   BOARD_SIZE,
-  CELL_STATE,
   GAME_PHASE,
   getActiveShips,
-  ATTACK_RESULT,
-  ROW_LABELS,
-  COL_LABELS,
+  getDefaultShipCount,
   GAME_MODE_VARIANTS,
-  SPEED_TURN_BUDGET_MS,
-  type AttackResult,
 } from './sea-battle.constants';
 import {
   SeaBattlePlayer,
@@ -27,12 +22,12 @@ import {
   SonarPayload,
   RadarPayload,
   ChatPayload,
+  BatchPlacementPayload,
 } from './sea-battle.types';
 import {
   createEmptyBoard,
   sanitizeSeaBattleState,
   getSeaBattleAvailableActions,
-  markSurroundingCellsAsMiss,
 } from './sea-battle.utils';
 import {
   validatePlaceShip,
@@ -45,6 +40,7 @@ import {
   validateUseRadar,
 } from './sea-battle.validators';
 import { executeSonar, executeRadar } from './sea-battle.special-weapons';
+import { executeAttack } from './sea-battle-attack.utils';
 import { validateSeaBattleConfig } from './sea-battle.config';
 import {
   advanceTeamRotationOnMiss,
@@ -53,7 +49,6 @@ import {
   getActiveTeam,
   healStuckTeamRotation,
   isTeamAlive,
-  normalizeTeamShooterAfterDeath,
 } from './team-rotation.utils';
 import {
   runPlaceShip,
@@ -61,6 +56,7 @@ import {
   runAutoPlace,
   runConfirmPlacement,
   runResetPlacement,
+  runBatchPlacement,
 } from './sea-battle-placement-actions.utils';
 @Injectable()
 export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
@@ -87,7 +83,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     const orderedIds = shouldRandomize
       ? [...playerIds].sort(() => Math.random() - 0.5)
       : [...playerIds];
-    const shipCount = config?.shipCount;
+    const shipCount = config?.shipCount ?? getDefaultShipCount(gridSize);
     const activeShipCount = getActiveShips(shipCount).length;
     const players: SeaBattlePlayer[] = orderedIds.map((id) => ({
       playerId: id,
@@ -111,7 +107,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       mode,
       roundNumber: 1,
       gridSize,
-      shipCount: config?.shipCount,
+      shipCount,
       specialWeapons: config?.specialWeapons,
     };
     if (config?.teams && config.teams.length > 0) {
@@ -154,7 +150,11 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       case 'autoPlace':
         return validateAutoPlace(state);
       case 'confirmPlacement': {
-        const isValid = validateConfirmPlacement(state, player);
+        const isValid = validateConfirmPlacement(
+          state,
+          player,
+          payload as BatchPlacementPayload | undefined,
+        );
         if (!isValid) {
           this.logger.error(
             `[SeaBattleEngine] confirmPlacement validation failed for ${userId}. Phase: ${state.phase}, Ships: ${player.ships.length}/${getActiveShips(state.shipCount).length}, Ready: ${player.placementComplete}`,
@@ -201,12 +201,17 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return runMoveShip(newState, player, payload as MoveShipPayload);
       case 'autoPlace':
         return runAutoPlace(newState, player);
-      case 'confirmPlacement':
+      case 'confirmPlacement': {
+        const batchPayload = payload as BatchPlacementPayload | undefined;
+        if (batchPayload?.ships && Array.isArray(batchPayload.ships)) {
+          return runBatchPlacement(newState, player, batchPayload);
+        }
         return runConfirmPlacement(newState, player);
+      }
       case 'resetPlacement':
         return runResetPlacement(newState, player);
       case 'attack':
-        return this.executeAttack(newState, player, payload as AttackPayload);
+        return executeAttack(newState, player, payload as AttackPayload);
       case 'useSonar':
         return executeSonar(newState, player, payload as SonarPayload);
       case 'useRadar':
@@ -218,110 +223,17 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     }
   }
 
-  private executeAttack(
+  private executeChat(
     state: SeaBattleState,
     player: SeaBattlePlayer,
-    payload: AttackPayload,
+    payload: ChatPayload,
   ): GameActionResult<SeaBattleState> {
-    const target = state.players.find(
-      (p) => p.playerId === payload.targetPlayerId,
-    ) as SeaBattlePlayer;
-
-    const { row, col } = payload;
-    const cellLabel = `${ROW_LABELS[row]}${COL_LABELS[col]}`;
-    let result: AttackResult;
-    let shipName: string | undefined;
-
-    const cellState = target.board[row][col];
-
-    if (cellState === CELL_STATE.SHIP) {
-      target.board[row][col] = CELL_STATE.HIT;
-      result = ATTACK_RESULT.HIT;
-
-      const hitShip = target.ships.find((s) =>
-        s.cells.some((c) => c.row === row && c.col === col),
-      );
-
-      if (hitShip) {
-        hitShip.hits++;
-        shipName = hitShip.name;
-
-        if (hitShip.hits === hitShip.size) {
-          hitShip.sunk = true;
-          target.shipsRemaining--;
-          result = ATTACK_RESULT.SUNK;
-
-          markSurroundingCellsAsMiss(target, hitShip);
-          state.logs.push(
-            this.createLogEntry('action', `☠️ sunk ${shipName}!`, {
-              senderId: player.playerId,
-              targetId: target.playerId,
-              kind: 'sb.sunk-ship',
-            }),
-          );
-        }
-      }
-
-      if (target.shipsRemaining === 0) {
-        target.alive = false;
-        state.logs.push(
-          this.createLogEntry('system', 'has been eliminated!', {
-            senderId: target.playerId,
-          }),
-        );
-        // Ensure eliminated player isn't left as team's active shooter
-        normalizeTeamShooterAfterDeath(state, target.playerId);
-        this.checkAndSetWinner(state);
-      }
-    } else {
-      target.board[row][col] = CELL_STATE.MISS;
-      result = ATTACK_RESULT.MISS;
-    }
-
-    state.lastAttack = {
-      attackerId: player.playerId,
-      targetId: target.playerId,
-      row,
-      col,
-      result,
-      shipName,
-    };
-
-    const resultMark =
-      result === ATTACK_RESULT.HIT
-        ? '💥'
-        : result === ATTACK_RESULT.SUNK
-          ? '☠️'
-          : '🌊';
     state.logs.push(
-      this.createLogEntry(
-        'action',
-        `attacked ${cellLabel} — ${resultMark} ${result.toUpperCase()}!`,
-        {
-          senderId: player.playerId,
-          targetId: target.playerId,
-          kind: `sb.attack-${result}`,
-        },
-      ),
+      this.createLogEntry('message', payload.message, {
+        scope: payload.scope || 'all',
+        senderId: player.playerId,
+      }),
     );
-
-    if (result === ATTACK_RESULT.MISS) {
-      if (state.teams) {
-        advanceTeamRotationOnMiss(state);
-        const shooter = getActiveShooterId(state);
-        if (shooter) {
-          state.currentTurnIndex = state.playerOrder.indexOf(shooter);
-        }
-      } else {
-        this.advanceToNextPlayer(state);
-      }
-
-      state.roundNumber = (state.roundNumber ?? 1) + 1;
-    }
-
-    if (state.mode === GAME_MODE_VARIANTS.SPEED) {
-      this.setTurnDeadline(state);
-    }
 
     return this.successResult(state);
   }
@@ -341,38 +253,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return;
       }
     } while (nextIndex !== state.currentTurnIndex);
-  }
-
-  private setTurnDeadline(state: SeaBattleState): void {
-    const activePlayerId = this.getActivePlayerId(state);
-    if (!activePlayerId) return;
-
-    const player = state.players.find((p) => p.playerId === activePlayerId);
-    if (player) {
-      player.turnDeadline = Date.now() + SPEED_TURN_BUDGET_MS;
-    }
-  }
-
-  private getActivePlayerId(state: SeaBattleState): string | undefined {
-    if (state.teams) {
-      return getActiveShooterId(state);
-    }
-    return state.playerOrder[state.currentTurnIndex];
-  }
-
-  private executeChat(
-    state: SeaBattleState,
-    player: SeaBattlePlayer,
-    payload: ChatPayload,
-  ): GameActionResult<SeaBattleState> {
-    state.logs.push(
-      this.createLogEntry('message', payload.message, {
-        scope: payload.scope || 'all',
-        senderId: player.playerId,
-      }),
-    );
-
-    return this.successResult(state);
   }
 
   isGameOver(state: SeaBattleState): boolean {

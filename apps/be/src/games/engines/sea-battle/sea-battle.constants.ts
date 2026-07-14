@@ -27,7 +27,6 @@ export interface ShipConfig {
 }
 
 export const SHIPS: ShipConfig[] = [
-  { id: 'carrier-1', name: 'Carrier', size: 5 },
   { id: 'battleship-1', name: 'Battleship', size: 4 },
   { id: 'cruiser-1', name: 'Cruiser', size: 3 },
   { id: 'cruiser-2', name: 'Cruiser', size: 3 },
@@ -43,6 +42,12 @@ export const SHIPS: ShipConfig[] = [
   { id: 'frigate-1', name: 'Frigate', size: 3 },
   { id: 'frigate-2', name: 'Frigate', size: 3 },
 ];
+
+export function getDefaultShipCount(gridSize: number): number {
+  if (gridSize <= 10) return 10;
+  if (gridSize <= 15) return 12;
+  return 14;
+}
 
 export function getActiveShips(shipCount?: number): ShipConfig[] {
   const count = shipCount ?? 10;

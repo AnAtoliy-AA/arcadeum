@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Checkout enough history to walk both tips
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
         with:
           fetch-depth: 0

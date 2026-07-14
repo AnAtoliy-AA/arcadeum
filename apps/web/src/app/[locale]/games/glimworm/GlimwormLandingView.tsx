@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import type { GlimwormGamesMessages } from '@/shared/i18n/messages/games/glimworm';
 import { Container, PageLayout } from '@arcadeum/ui';

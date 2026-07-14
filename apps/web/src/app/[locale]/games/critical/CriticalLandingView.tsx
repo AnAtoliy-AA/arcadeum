@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import type { CriticalGamesMessages } from '@/shared/i18n/messages/games/critical';
 import { Container, PageLayout } from '@arcadeum/ui';

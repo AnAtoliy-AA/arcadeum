@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.49] - 2026-07-14
+
+### Fixed
+- update e2e tests to expect no auto-modal on completed games
+- suppress result modal when entering an already-completed game
+
+
 ## [1.23.48] - 2026-07-13
 
 ### Fixed

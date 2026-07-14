@@ -8,24 +8,39 @@ permissions:
   issues: write
 
 jobs:
-  close-issue:
+  extract-issue:
+    name: Extract linked issue
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.extract.outputs.issue_number }}
     steps:
       - name: Extract issue number from PR body
         id: extract
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
-          ISSUE_NUM=$(echo "$PR_BODY" | grep -oE 'Closes #([0-9]+)' | grep -oE '[0-9]+' | head -1)
+          ISSUE_NUM=$(echo "$PR_BODY" | grep -oE 'Closes #([0-9]+)' | grep -oE '[0-9]+' | head -1 || true)
           if [ -z "$ISSUE_NUM" ]; then
-            ISSUE_NUM=$(echo "$PR_BODY" | grep -oE 'Fixes #([0-9]+)' | grep -oE '[0-9]+' | head -1)
+            ISSUE_NUM=$(echo "$PR_BODY" | grep -oE 'Fixes #([0-9]+)' | grep -oE '[0-9]+' | head -1 || true)
+          fi
+          if [ -z "$ISSUE_NUM" ]; then
+            ISSUE_NUM=$(echo "$PR_BODY" | grep -oE 'Resolves #([0-9]+)' | grep -oE '[0-9]+' | head -1 || true)
           fi
           echo "issue_number=${ISSUE_NUM}" >> $GITHUB_OUTPUT
 
-      - name: Close linked issue
-        if: steps.extract.outputs.issue_number != ''
+  close-issue:
+    name: Close linked issue
+    needs: extract-issue
+    if: needs.extract-issue.outputs.issue_number != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUM: ${{ needs.extract-issue.outputs.issue_number }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          gh issue close ${{ steps.extract.outputs.issue_number }} \
-            --comment "Closed by PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+          gh issue close "$ISSUE_NUM" \
+            --comment "Closed by PR #${PR_NUM}: ${PR_TITLE}"

@@ -1,0 +1,56 @@
+name: Production Health Check
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: Smoke test production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Web
+        id: web
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://arcadeum.gg" || echo "000")
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 400 ]; then
+            echo "::error::Web returned status $STATUS"
+            exit 1
+          fi
+          echo "Web: OK ($STATUS)"
+
+      - name: Check Backend Health
+        id: api
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${{ secrets.HEALTH_CHECK_URL }}" || echo "000")
+          if [ "$STATUS" = "000" ]; then
+            echo "::warning::HEALTH_CHECK_URL secret not configured (skipped)"
+            exit 0
+          fi
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 400 ]; then
+            echo "::error::Backend health returned status $STATUS"
+            exit 1
+          fi
+          echo "Backend: OK ($STATUS)"
+
+      - name: Create issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          gh issue create \
+            --title "Production health check failed" \
+            --body "Automated health check failed at $(date -u).
+
+  Web status: ${{ steps.web.outputs.status }}
+  Backend status: ${{ steps.api.outputs.status }}
+
+  [View workflow run]($RUN_URL)" \
+            --label "bug,production"

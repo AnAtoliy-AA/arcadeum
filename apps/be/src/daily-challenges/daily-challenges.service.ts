@@ -88,14 +88,9 @@ export class DailyChallengesService {
     date: string,
     increment: number = 1,
   ): Promise<void> {
-    const safeChallengeId = /^[a-z0-9_-]+$/.test(challengeId)
-      ? challengeId
-      : '';
-    if (!safeChallengeId) return;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
-    const definition = await this.definitionModel
-      .findOne({ challengeId: safeChallengeId })
-      .lean();
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.challengeId === challengeId);
     if (!definition) return;
 
     const progress = await this.getOrCreateProgress(userId, date, [
@@ -122,18 +117,11 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
-    const safeChallengeId = /^[a-z0-9_-]+$/.test(challengeId)
-      ? challengeId
-      : '';
-    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
-    if (!safeChallengeId || !safeDate) {
-      throw new Error('Invalid parameters');
-    }
-    const definition = await this.definitionModel
-      .findOne({ challengeId: safeChallengeId })
-      .lean();
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.challengeId === challengeId);
     if (!definition) throw new Error('Challenge not found');
 
+    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
     const progress = await this.getOrCreateProgress(userId, safeDate, [
       definition as unknown as DailyChallengeDefinitionDocument,
     ]);
@@ -274,10 +262,11 @@ export class DailyChallengesService {
     definitions: DailyChallengeDefinitionDocument[],
   ): Promise<UserDailyChallengeDocument> {
     const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
-    let progress = await this.progressModel.findOne({
-      userId: new Types.ObjectId(userId),
-      date: safeDate,
-    });
+    const all = await this.progressModel
+      .find({ userId: new Types.ObjectId(userId) })
+      .lean()
+      .exec();
+    let progress = all.find((p) => p.date === safeDate) ?? null;
     if (!progress) {
       const challenges = definitions.map((def) => ({
         challengeId: def.challengeId,
@@ -287,7 +276,7 @@ export class DailyChallengesService {
       }));
       progress = await this.progressModel.create({
         userId: new Types.ObjectId(userId),
-        date,
+        date: safeDate,
         challenges,
       });
     }

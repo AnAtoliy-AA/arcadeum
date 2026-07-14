@@ -172,8 +172,11 @@ export class GameRoomsService {
     dto: JoinGameRoomDto,
     userId: string,
   ): Promise<JoinGameRoomResult> {
+    if (!dto.roomId || !Types.ObjectId.isValid(dto.roomId)) {
+      throw new BadRequestException('Invalid roomId format');
+    }
     const room = await this.gameRoomModel
-      .findById(dto.roomId)
+      .findById(new Types.ObjectId(dto.roomId))
       .select('+password')
       .exec();
 
@@ -247,9 +250,10 @@ export class GameRoomsService {
     dto: LeaveGameRoomDto,
     userId: string,
   ): Promise<LeaveGameRoomResult> {
-    if (!Types.ObjectId.isValid(dto.roomId))
-      throw new BadRequestException('Invalid room ID');
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    if (!dto.roomId || !Types.ObjectId.isValid(dto.roomId)) {
+      throw new BadRequestException('Invalid roomId format');
+    }
+    const room = await this.gameRoomModel.findById(new Types.ObjectId(dto.roomId)).exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -317,9 +321,10 @@ export class GameRoomsService {
     dto: DeleteGameRoomDto,
     userId: string,
   ): Promise<DeleteGameRoomResult> {
-    if (!Types.ObjectId.isValid(dto.roomId))
-      throw new BadRequestException('Invalid room ID');
-    const room = await this.gameRoomModel.findById(dto.roomId).lean().exec();
+    if (!dto.roomId || !Types.ObjectId.isValid(dto.roomId)) {
+      throw new BadRequestException('Invalid roomId format');
+    }
+    const room = await this.gameRoomModel.findById(new Types.ObjectId(dto.roomId)).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -329,7 +334,7 @@ export class GameRoomsService {
       throw new ForbiddenException('Only the host can delete the room');
     }
 
-    await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
+    await this.gameRoomModel.findByIdAndDelete(new Types.ObjectId(dto.roomId)).exec();
 
     return {
       roomId: dto.roomId,

@@ -3,6 +3,8 @@ name: new-ui-component
 description: Add a new shared UI component to the @arcadeum/ui package (packages/ui). Use when creating reusable components shared across web and mobile.
 ---
 
+> **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality.
+
 The shared UI library (`packages/ui`) uses Tamagui as the component foundation and is consumed by both `apps/web` and `apps/mobile` via `@arcadeum/ui`.
 
 ## Structure

@@ -15,11 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - shared QuickplayButton and QuickplayCta components
 - ctaQuickplay i18n labels for Tic-Tac-Toe, Cascade, Chess
 - attractive Play vs AI button with gradient and glow
+- add backend and fullstack skills
+- add comprehensive UI/UX design skills
 
 ### Fixed
 
 - tic-tac-toe lobby icon clipping and float animation
 - backend quickplay restriction (was sea-battle-only)
+- add explicit ObjectId validation for room queries
+- escape backslashes in shell commands
 
 ## [1.22.38] - 2026-07-14
 

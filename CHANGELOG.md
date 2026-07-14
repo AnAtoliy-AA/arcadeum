@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.38] - 2026-07-14
+
+### Added
+- add game category grouping across UI surfaces
+
+### Fixed
+- fix TypeScript build error in getOrCreateProgress
+- replace findOne with find+filter for tainted Mongoose queries
+- use sanitized variables in Mongoose queries for CodeQL
+- add service-level input validation for Mongoose queries
+- add input validation for Mongoose query parameters
+
+
 ## [1.22.37] - 2026-07-14
 
 ### Fixed

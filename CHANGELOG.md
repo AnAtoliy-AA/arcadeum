@@ -7,102 +7,133 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.52] - 2026-07-14
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.51] - 2026-07-14
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.50] - 2026-07-14
+
+### Fixed
+
+- fix chess960 castling bugs and add attack-path validation
+
+## [1.23.49] - 2026-07-14
+
+### Fixed
+
+- update e2e tests to expect no auto-modal on completed games
+- suppress result modal when entering an already-completed game
+
 ## [1.23.48] - 2026-07-13
 
 ### Fixed
-- fix ship placement race condition and add more ships for bigger fields
 
+- fix ship placement race condition and add more ships for bigger fields
 
 ## [1.23.47] - 2026-07-13
 
 ### Added
+
 - add first-player selection and drag-and-drop reordering
 - add first-player selection in lobby for all games
 
 ### Documentation
-- add onReorderPlayers wiring to new-game skill template
 
+- add onReorderPlayers wiring to new-game skill template
 
 ## [1.23.46] - 2026-07-13
 
 ### Added
+
 - improve Tic Tac Toe Infinity UX
 
 ### Fixed
+
 - sanitize both color and mark in SVG cursor
 - sanitize SVG cursor color against injection
-
 
 ## [1.23.45] - 2026-07-13
 
 ### Fixed
-- limit bots to 1 and fix chess960 castling
 
+- limit bots to 1 and fix chess960 castling
 
 ## [1.23.44] - 2026-07-13
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.43] - 2026-07-12
 
 ### Fixed
+
 - fix TicTacToe bot stuck in infinite error loop
 
 ### Improved
-- deep performance optimizations round 2
 
+- deep performance optimizations round 2
 
 ## [1.23.42] - 2026-07-12
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.41] - 2026-07-12
 
 ### Fixed
+
 - revert sessionWasCompletedFromStart to fix e2e tests
 - suppress result modal for already-completed rooms
 
 ### Documentation
-- clarify PR title rules for staging and main
 
+- clarify PR title rules for staging and main
 
 ## [1.23.40] - 2026-07-12
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.39] - 2026-07-12
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.38] - 2026-07-12
 
 ### Added
+
 - add admin DB health endpoint for monitoring
 
 ### Fixed
+
 - lower session size safety valve from 10MB to 100KB/500KB
 - strip logs from completed sessions to reduce DB size
 - prevent MongoDB OOM from large documents and stale sessions
 
-
 ## [1.23.37] - 2026-07-11
 
 ### Fixed
+
 - increase maxPoolSize to 50 and heap cap to 768MB
 - prevent OOM crash on MongoDB connection timeout
-
 
 ## [1.23.36] - 2026-07-11
 
 ### Fixed
+
 - lazy-load solana, refactor watchdog, auto-complete stale sessions
 - remove unused imports in chess-bot.service.ts
 - auto-complete all game sessions when no humans remain alive
@@ -111,18 +142,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - lazy-load @solana/web3.js to reduce startup memory
 
 ### Refactored
-- extract shared GameBotWatchdog for all game services
 
+- extract shared GameBotWatchdog for all game services
 
 ## [1.23.35] - 2026-07-11
 
 ### Fixed
-- gray out completed game room actions and show Watch Results
 
+- gray out completed game room actions and show Watch Results
 
 ## [1.23.34] - 2026-07-11
 
 ### Added
+
 - add time-based bot thinking budget
 - add spectator mode for non-player viewers
 - add drag-and-drop piece movement on chess board
@@ -131,14 +163,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement Chess960 variant, fix en passant bug, add tests
 
 ### Fixed
+
 - replace all hardcoded English strings with i18n translations
 - apply clock increment after moves and detect timeout on backend
 - fix MoveList t-prop type for translation function
 
-
 ## [1.23.33] - 2026-07-11
 
 ### Fixed
+
 - make sonar/radar free actions so bots can attack after using them
 - resolve memory leaks causing OOM crashes
 - tune MongoDB connection options to prevent periodic failures
@@ -151,11 +184,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix 7 memory leaks across backend services
 
 ### Improved
+
 - add lean queries, aggregation optimization, indexes, and async logger
 - optimize queries and fix CI version-bump workflow
 - add .lean() to read-only Mongoose queries in hot paths
 - replace slow aggregation pipeline with fast player-stats reads
-
 
 ## [1.23.32] - 2026-07-10
 

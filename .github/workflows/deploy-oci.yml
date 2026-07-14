@@ -1,0 +1,73 @@
+name: Deploy to OCI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/be/**'
+      - 'bots/tg-bot/**'
+      - 'scripts/shorts-factory/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  deploy-tg-bot:
+    name: Deploy TG Bot + Backend
+    if: contains(github.event.head_commit.modified, 'apps/be/') || contains(github.event.head_commit.modified, 'bots/tg-bot/') || contains(github.event.head_commit.modified, 'packages/') || contains(github.event.head_commit.added, 'apps/be/') || contains(github.event.head_commit.added, 'bots/tg-bot/') || contains(github.event.head_commit.added, 'packages/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            pnpm install --frozen-lockfile
+
+            pnpm --filter be build
+            pnpm --filter tg-bot build
+
+            pm2 restart arcadeum-be arcadeum-tg-bot || \
+              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
+               pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
+               pm2 save)
+
+            echo "==> Done!"
+            pm2 list
+
+  deploy-shorts-factory:
+    name: Deploy Shorts Factory
+    if: contains(github.event.head_commit.modified, 'scripts/shorts-factory/') || contains(github.event.head_commit.added, 'scripts/shorts-factory/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to OCI via SSH
+        uses: appleboy/ssh-action@v1.2
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /opt/arcadeum
+
+            echo "==> Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "==> Installing dependencies..."
+            pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+            echo "==> Restarting shorts-factory timer..."
+            sudo systemctl restart shorts-factory.timer 2>/dev/null || true
+
+            echo "==> Deploy complete"

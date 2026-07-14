@@ -1,16 +1,8 @@
-name: No dropped commits
-
-# Detects force-pushes on feature branches that *remove* commits — the failure
-# mode behind PR #651, where a force-push rewrote history and the subsequent
-# merge silently dropped 5 of 7 commits from develop. A non-force-push (push
-# with new commits on top) is always safe: the previous tip remains reachable
-# from the new tip. A force-push that drops commits leaves the previous tip
-# unreachable from the new tip — `git merge-base --is-ancestor` catches that.
-#
-# Skipped on main/develop (those are protected and shouldn't see force-pushes
-# at all), and on the initial-push case where `before` is all zeros.
+name: Branch Guard
 
 on:
+  pull_request:
+    branches: [main, staging]
   push:
     branches-ignore:
       - main
@@ -20,8 +12,34 @@ permissions:
   contents: read
 
 jobs:
+  check-pr-title:
+    name: Validate PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title prefix matches target branch
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          BASE="${{ github.event.pull_request.base.ref }}"
+
+          if [[ "$BASE" == "staging" ]]; then
+            if [[ ! "$TITLE" =~ ^demo ]]; then
+              echo "❌ PR title must start with 'demo' to merge to staging."
+              echo "   Got: $TITLE"
+              exit 1
+            fi
+          elif [[ "$BASE" == "main" ]]; then
+            if [[ ! "$TITLE" =~ ^release ]]; then
+              echo "❌ PR title must start with 'release' to merge to main."
+              echo "   Got: $TITLE"
+              exit 1
+            fi
+          fi
+          echo "✅ PR title OK: $TITLE"
+
   detect-dropped-commits:
     name: Verify push preserves history
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Check whether the previous tip is still reachable
@@ -40,7 +58,7 @@ jobs:
           fi
 
       - name: Checkout enough history to walk both tips
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
         with:
           fetch-depth: 0
@@ -52,8 +70,6 @@ jobs:
           AFTER: ${{ github.event.after }}
           REF: ${{ github.ref }}
         run: |
-          # Make sure both tips are actually fetched. checkout@v4 with
-          # fetch-depth: 0 normally covers this, but be explicit.
           git fetch --no-tags --quiet origin "$BEFORE" || true
           git fetch --no-tags --quiet origin "$AFTER"  || true
 

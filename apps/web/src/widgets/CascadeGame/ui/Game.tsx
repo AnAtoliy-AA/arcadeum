@@ -142,6 +142,7 @@ function CascadeGameImpl({
             ),
           }
         : undefined,
+      isGameOver,
     );
 
   const options = useMemo(

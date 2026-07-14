@@ -51,10 +51,11 @@ export const CenterSection = styled(YStack, {
 export const GameIcon = styled(Text, {
   name: 'GameIcon',
   fontSize: 80,
-  lineHeight: 1,
+  lineHeight: 96,
   filter: 'drop-shadow(0 8px 24px rgba(99, 102, 241, 0.3))',
   $sm: {
     fontSize: 60,
+    lineHeight: 72,
   },
 });
 

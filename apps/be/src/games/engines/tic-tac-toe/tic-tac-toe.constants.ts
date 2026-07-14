@@ -48,7 +48,7 @@ export const GAME_PHASE = {
 } as const;
 export type GamePhase = (typeof GAME_PHASE)[keyof typeof GAME_PHASE];
 
-export const PLAYER_SYMBOLS = ['X', 'O', '△', '□'] as const;
+export const PLAYER_SYMBOLS = ['X', 'O', '△', '□', '◇', '☆'] as const;
 
 export const TEAM_PRESETS = [
   { id: 'red', name: 'Red', color: '#ef4444' },

@@ -1,5 +1,5 @@
 import { ChessEngine } from './chess.engine';
-import { parseFen, generateChess960BackRank } from './chess.board';
+import { parseFen, generateChess960BackRank, boardToFen } from './chess.board';
 import type { MovePayload } from './chess.types';
 import { getLegalMoves } from './chess.move-generator';
 
@@ -90,6 +90,67 @@ describe('ChessEngine - Chess960', () => {
     const legalMoves = getLegalMoves(state, 'white');
     const castleMoves = legalMoves.filter((m) => m.isCastle);
     expect(castleMoves.length).toBe(2);
+  });
+
+  it('should initialize positionHistory with actual chess960 board FEN', () => {
+    const state = engine.initializeState(['p1', 'p2'], {
+      variant: 'chess960',
+    });
+    const actualFen = boardToFen(state.board);
+    expect(state.positionHistory[0]).toBe(actualFen);
+    expect(state.positionHistory[0]).not.toBe(
+      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+    );
+  });
+
+  it('should not allow castling through check', () => {
+    const state = engine.initializeState(['p1', 'p2']);
+    state.board = parseFen('r3k2r/pppppppp/8/8/8/8/PPPPPP1P/R3K2R');
+    state.currentTurnColor = 'white';
+
+    state.board[5][7] = { type: 'bishop', color: 'black' };
+
+    const legalMoves = getLegalMoves(state, 'white');
+    const castleMoves = legalMoves.filter((m) => m.isCastle);
+
+    const queenSide = castleMoves.find((m) => m.to.file === 'c');
+    expect(queenSide).toBeDefined();
+
+    const kingSide = castleMoves.find((m) => m.to.file === 'g');
+    expect(kingSide).toBeUndefined();
+  });
+
+  it('should not allow castling when king is in check', () => {
+    const state = engine.initializeState(['p1', 'p2']);
+    state.board = parseFen('r3k2r/pppppppp/8/8/8/8/PPPP1PPP/R3K2R');
+    state.currentTurnColor = 'white';
+    state.board[5][4] = { type: 'rook', color: 'black' };
+
+    const legalMoves = getLegalMoves(state, 'white');
+    const castleMoves = legalMoves.filter((m) => m.isCastle);
+    expect(castleMoves.length).toBe(0);
+  });
+
+  it('should revoke castling rights when opponent captures a rook', () => {
+    const state = engine.initializeState(['p1', 'p2']);
+    state.board = parseFen('r3k2r/8/8/8/8/8/8/R3K2R');
+    state.currentTurnColor = 'black';
+
+    const payload: MovePayload = {
+      fromFile: 'a',
+      fromRank: 8,
+      toFile: 'a',
+      toRank: 1,
+    };
+    const result = engine.executeAction(
+      state,
+      'move',
+      { userId: 'p2', roomId: 'r1', sessionId: 's1', timestamp: new Date() },
+      payload,
+    );
+    expect(result.success).toBe(true);
+    expect(result.state?.castlingRights.whiteQueenSide).toBe(false);
+    expect(result.state?.castlingRights.whiteKingSide).toBe(true);
   });
 });
 

@@ -23,15 +23,14 @@ import {
   parseFen,
   boardToFen,
   boardCoordsToPos,
-  posToBoardCoords,
   oppositeColor,
   isThreefoldRepetition,
   isInsufficientMaterial,
   generateChess960BackRank,
-  findKing,
 } from './chess.board';
 import { getLegalMoves, simulateMove } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
+import { updateCastlingRights } from './chess.castling';
 
 const ACTION = {
   MOVE: 'move',
@@ -86,15 +85,18 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         } as const)
       : null;
     const variant = config?.variant ?? 'standard';
-    const initialBoard = variant === 'chess960'
-      ? (() => {
-          const backRank = generateChess960BackRank();
-          const board = parseFen(INITIAL_BOARD_FEN);
-          board[7] = backRank;
-          board[0] = backRank.map((p) => p ? { ...p, color: 'black' } : null);
-          return board;
-        })()
-      : parseFen(INITIAL_BOARD_FEN);
+    const initialBoard =
+      variant === 'chess960'
+        ? (() => {
+            const backRank = generateChess960BackRank();
+            const board = parseFen(INITIAL_BOARD_FEN);
+            board[7] = backRank;
+            board[0] = backRank.map((p) =>
+              p ? { ...p, color: 'black' } : null,
+            );
+            return board;
+          })()
+        : parseFen(INITIAL_BOARD_FEN);
     return {
       variant,
       timeControl,
@@ -116,7 +118,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       isDrawByAgreement: false,
       drawOfferedBy: null,
       clocks,
-      positionHistory: [INITIAL_BOARD_FEN],
+      positionHistory: [boardToFen(initialBoard)],
       currentTurnIndex: 0,
       logs: [
         this.createLogEntry('system', 'Chess game started. White moves first.'),
@@ -316,7 +318,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       newState.enPassantTarget = null;
     }
 
-    this.updateCastlingRights(newState, move);
+    updateCastlingRights(newState, move);
 
     newState.moveHistory = [...state.moveHistory, move];
     newState.currentTurnColor = oppositeColor(state.currentTurnColor);
@@ -414,35 +416,6 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   ): void {
     (state as Record<string, unknown>)[key] = true;
     state.logs.push(this.createLogEntry('system', message));
-  }
-
-  private updateCastlingRights(state: ChessState, move: ChessMove): void {
-    if (move.piece.type === 'king') {
-      if (move.piece.color === 'white') {
-        state.castlingRights.whiteKingSide = false;
-        state.castlingRights.whiteQueenSide = false;
-      } else {
-        state.castlingRights.blackKingSide = false;
-        state.castlingRights.blackQueenSide = false;
-      }
-      return;
-    }
-    if (move.piece.type === 'rook') {
-      const king = findKing(state.board, move.piece.color);
-      const kingCoords = king ? posToBoardCoords(king) : { rank: 7, file: 4 };
-      const fromCoords = posToBoardCoords(move.from);
-      if (fromCoords.rank === kingCoords.rank) {
-        if (fromCoords.file > kingCoords.file) {
-          if (move.piece.color === 'white')
-            state.castlingRights.whiteKingSide = false;
-          else state.castlingRights.blackKingSide = false;
-        } else if (fromCoords.file < kingCoords.file) {
-          if (move.piece.color === 'white')
-            state.castlingRights.whiteQueenSide = false;
-          else state.castlingRights.blackQueenSide = false;
-        }
-      }
-    }
   }
 
   private executeResign(

@@ -30,6 +30,8 @@ export const enMessages = {
         title: 'Tic-Tac-Toe — picked, polished, multiplayer',
         subtitle:
           'Themed boards, teams, and bots. Hop in alone or with friends, on 3×3 through 9×9.',
+        ctaQuickplay: 'Play vs AI now',
+        ctaQuickplayError: "Couldn't start a game — try again",
         createRoom: 'Create a room',
         browseRooms: 'Browse rooms',
       },

@@ -32,6 +32,8 @@ export const esMessages = {
         subtitle:
           'Tableros temáticos, equipos y bots. Entra solo o con amigos, en tableros del 3×3 al 9×9.',
         createRoom: 'Crear sala',
+        ctaQuickplay: 'Jugar contra la IA',
+        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
         browseRooms: 'Buscar salas',
       },
       highlights: {

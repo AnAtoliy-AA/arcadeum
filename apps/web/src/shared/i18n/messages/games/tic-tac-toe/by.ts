@@ -38,6 +38,8 @@ export const byMessages = {
         subtitle:
           'Тэмы, каманды і боты. Адзін ці з сябрамі, на полях ад 3×3 да 9×9.',
         createRoom: 'Стварыць пакой',
+        ctaQuickplay: 'Згуляць з ШІ',
+        ctaQuickplayError: 'Не атрымалася пачаць гульню — паспрабуйце яшчэ раз',
         browseRooms: 'Знайсці пакой',
       },
       highlights: {

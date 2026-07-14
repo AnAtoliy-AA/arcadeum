@@ -56,6 +56,8 @@ export const esMessages = {
         subtitle:
           'Combina color o número. Encadena penalizaciones. Elige entre ocho temas visuales. 2–10 jugadores.',
         createRoom: 'Crear sala',
+        ctaQuickplay: 'Jugar contra la IA',
+        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
         browseRooms: 'Buscar salas',
       },
       highlights: {

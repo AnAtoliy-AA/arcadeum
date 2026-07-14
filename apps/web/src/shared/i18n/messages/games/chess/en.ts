@@ -18,6 +18,8 @@ export const enMessages = {
         subtitle:
           'Standard rules, Chess960 variant, and optional time controls. Play against friends or bots.',
         createRoom: 'Create a room',
+        ctaQuickplay: 'Play vs AI now',
+        ctaQuickplayError: "Couldn't start a game — try again",
         browseRooms: 'Browse rooms',
       },
       highlights: {

@@ -266,21 +266,21 @@ export class DailyChallengesService {
       .find({ userId: new Types.ObjectId(userId) })
       .lean()
       .exec();
-    let progress = all.find((p) => p.date === safeDate) ?? null;
-    if (!progress) {
-      const challenges = definitions.map((def) => ({
-        challengeId: def.challengeId,
-        progress: 0,
-        completed: false,
-        claimed: false,
-      }));
-      progress = await this.progressModel.create({
-        userId: new Types.ObjectId(userId),
-        date: safeDate,
-        challenges,
-      });
+    const existing = all.find((p) => p.date === safeDate);
+    if (existing) {
+      return existing as unknown as UserDailyChallengeDocument;
     }
-    return progress;
+    const challenges = definitions.map((def) => ({
+      challengeId: def.challengeId,
+      progress: 0,
+      completed: false,
+      claimed: false,
+    }));
+    return this.progressModel.create({
+      userId: new Types.ObjectId(userId),
+      date: safeDate,
+      challenges,
+    });
   }
 
   private getDescription(def: DailyChallengeDefinition): string {

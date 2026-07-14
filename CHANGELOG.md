@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.50] - 2026-07-14
+
+### Fixed
+- fix chess960 castling bugs and add attack-path validation
+
+
 ## [1.23.49] - 2026-07-14
 
 ### Fixed

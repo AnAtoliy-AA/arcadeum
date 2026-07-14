@@ -63,7 +63,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     [currentPlayer?.board],
   );
 
-  const { ships, board, registerPlacement, registerMove } =
+  const { ships, board, registerPlacement, registerMove, clearPendingMoves } =
     usePlacementOptimistic({ serverShips, serverBoard });
 
   const handleMoveShip = useCallback(
@@ -311,6 +311,11 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     onConfirmPlacement(shipsData);
   }, [ships, onConfirmPlacement]);
 
+  const handleReset = useCallback(() => {
+    clearPendingMoves();
+    onResetPlacement();
+  }, [clearPendingMoves, onResetPlacement]);
+
   const isAllShipsPlaced = unplacedShips.length === 0;
   const pendingCells: ShipCell[] = [];
 
@@ -381,7 +386,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
           placedShipIdsSize={placedShipIds.size}
           onRotate={handleRotate}
           onConfirm={handleConfirm}
-          onReset={onResetPlacement}
+          onReset={handleReset}
           onAutoPlace={onAutoPlace}
           onCancelMove={clearMovingState}
           isMovingShip={!!movingShipId}
@@ -430,7 +435,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         placedShipIdsSize={placedShipIds.size}
         onRotate={handleRotate}
         onConfirm={handleConfirm}
-        onReset={onResetPlacement}
+        onReset={handleReset}
         onAutoPlace={onAutoPlace}
         onCancelMove={clearMovingState}
         isMovingShip={!!movingShipId}

@@ -84,6 +84,17 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 - `/new-mobile-screen` — add an Expo Router screen with i18n and Tamagui UI
 - `/new-ui-component` — add a shared Tamagui component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`
+- `/ui-ux-design` — comprehensive UI/UX design intelligence with priority-based rules for accessibility, touch, performance, style, layout, typography, animation, forms, navigation, and data visualization
+- `/baseline-ui` — quick UI cleanup/polish pass for spacing, hierarchy, typography, and layout issues
+- `/fixing-accessibility` — comprehensive a11y audit with priority-based rules and common fixes
+- `/fixing-motion-performance` — animation performance optimization (layout thrashing, compositor props, scroll-linked motion)
+- `/design-system` — generate and maintain design systems with colors, typography, spacing, and effects
+- `/aesthetic-literacy` — understand and characterize any named aesthetic across formal dimensions
+- `/image-analysis` — extract implementable CSS values and design tokens from reference images
+- `/animation` — implement smooth animations using Tamagui transitions, spring physics, and scroll effects
+- `/dark-mode` — implement dark mode with proper color tokens, contrast ratios, and platform patterns
+- `/form-patterns` — build accessible forms with validation, error handling, and progressive disclosure
+- `/data-visualization` — implement accessible charts, graphs, and data tables with proper color and tooltips
 - `/implement-roadmap-feature` — implement a roadmap feature end-to-end: branch, code, test, commit, push, open PR, fix CI
 
 ### Global superpowers skills

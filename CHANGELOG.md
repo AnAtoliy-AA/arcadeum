@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.37] - 2026-07-14
+
+### Fixed
+- ships remaining shows correct count based on game shipCount
+- ship placement moves persist until confirm, no revert on next move
+
+
 ## [1.22.36] - 2026-07-14
 
 ### Fixed

@@ -15,7 +15,7 @@ let catalogResult: EffectiveShopItem[] | null = null;
 
 async function fetchCatalog(): Promise<EffectiveShopItem[]> {
   const res = await fetch(resolveApiUrl('/shop/catalog'), {
-    cache: 'no-store',
+    next: { revalidate: 60 },
     headers: { 'Content-Type': 'application/json' },
   });
   if (!res.ok) return [];

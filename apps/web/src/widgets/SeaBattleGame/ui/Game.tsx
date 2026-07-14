@@ -120,6 +120,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     room: room ?? undefined,
   });
 
+  const [wasAlreadyOverOnMount] = useState(() => isGameOver === true);
+  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
+
+  if (!wasAlreadyOverOnMount && isGameOver && !hasSeenActiveGame) {
+    setHasSeenActiveGame(true);
+  }
+
   const teammateIds = useMemo(() => {
     if (!viewerTeam || !currentUserId) return undefined;
     return viewerTeam.playerIds.filter((id) => id !== currentUserId);
@@ -435,6 +442,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             setShowRules={setShowRules}
             isGameOver={isGameOver}
             resultModalDismissed={resultModalDismissed}
+            hasSeenActiveGame={hasSeenActiveGame}
             gameResult={gameResult}
             handleRematchClick={handleRematchClick}
             session={session}

@@ -63,17 +63,23 @@ export class SeaBattleBotService {
         return;
       }
 
+      const state = session.state as unknown as SeaBattleState;
+      if (!state) return;
+
+      const hasAliveHuman = state.players.some(
+        (p: SeaBattlePlayer) => p.alive && !this.isBot(p.playerId),
+      );
+      if (!hasAliveHuman) {
+        this.logger.log(
+          `No alive humans in room ${session.roomId} — completing session`,
+        );
+        await this.seaBattleService.completeSession(session.id, session.roomId);
+        return;
+      }
+
       const now = Date.now();
       for (const [key, ts] of this.processing) {
         if (now - ts > PROCESSING_ENTRY_TTL_MS) this.processing.delete(key);
-      }
-
-      const state = session.state as unknown as SeaBattleState;
-      if (!state) {
-        this.logger.warn(
-          `checkAndPlay skipped: no state for session ${session.roomId}`,
-        );
-        return;
       }
 
       const bots = state.players.filter((p: SeaBattlePlayer) =>

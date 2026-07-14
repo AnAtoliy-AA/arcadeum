@@ -15,6 +15,7 @@ import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -25,7 +26,10 @@ import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { WIN_LENGTHS } from '../types';
-import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
+import {
+  TIC_TAC_TOE_VARIANTS,
+  INFINITY_MAX_BOARD_SIZE,
+} from '../lib/constants';
 import {
   type BoardSize,
   type TicTacToeOptions,
@@ -60,6 +64,7 @@ function TicTacToeGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: TicTacToeGameProps) {
@@ -111,6 +116,16 @@ function TicTacToeGameImpl({
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
 
+  const handleReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !roomId) return;
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken);
+      } catch {}
+    },
+    [roomId, accessToken],
+  );
+
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
@@ -135,6 +150,7 @@ function TicTacToeGameImpl({
             ),
           }
         : undefined,
+      isGameOver,
     );
 
   const options = useMemo(
@@ -170,6 +186,7 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
+          onReorderPlayers={handleReorderPlayers}
           onStartGame={(opts) => {
             setStartBusy(true);
             startSession({
@@ -210,6 +227,8 @@ function TicTacToeGameImpl({
             origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
             highlightedCell={effectiveHighlight}
+            maxBoardSize={INFINITY_MAX_BOARD_SIZE}
+            currentPlayerId={currentShooterId}
             ariaLabel={
               snapshot.options.boardSize === 'infinity'
                 ? 'Tic-Tac-Toe Infinity board'

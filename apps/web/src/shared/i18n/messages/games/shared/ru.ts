@@ -76,6 +76,7 @@ export const ruMessages = {
     joinRoom: 'Войти в зал',
     joining: 'Вход...',
     watchRoom: 'Смотреть',
+    watchResults: 'Результаты',
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
     share: 'Поделиться',
@@ -210,8 +211,13 @@ export const ruMessages = {
         desc: 'Разделите игроков на флоты — 2v2 или 3v3.',
       },
       spectators: {
-        title: 'Зрители',
-        desc: 'Любой со ссылкой может тихо наблюдать.',
+        title: 'Разрешить зрителей',
+        desc: 'Любой с ссылкой может молча наблюдать.',
+      },
+      firstPlayer: {
+        title: 'Кто ходит первым',
+        host: 'Хозяин (по умолчанию)',
+        random: 'Случайный',
       },
     },
     summary: {

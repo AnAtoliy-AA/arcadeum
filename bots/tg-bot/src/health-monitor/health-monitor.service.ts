@@ -102,9 +102,13 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
 
     if (this.dmChatId && this.bot) {
       try {
-        await this.bot.api.sendMessage(this.dmChatId, `${message}\n<code>${timestamp}</code>`, {
-          parse_mode: 'HTML',
-        });
+        await this.bot.api.sendMessage(
+          this.dmChatId,
+          `${message}\n<code>${timestamp}</code>`,
+          {
+            parse_mode: 'HTML',
+          },
+        );
       } catch (err) {
         this.logger.error(`Failed to send Telegram DM: ${err}`);
       }

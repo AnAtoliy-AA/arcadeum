@@ -2,6 +2,8 @@ import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
 import type { TicTacToeVariant } from '../types';
 
+export const INFINITY_MAX_BOARD_SIZE = 100;
+
 export interface TicTacToeVariantOption extends GameVariantOption {
   id: TicTacToeVariant;
   name: TranslationKey;

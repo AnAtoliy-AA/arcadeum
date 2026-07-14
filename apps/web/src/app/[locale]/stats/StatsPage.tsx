@@ -108,6 +108,17 @@ export default function StatsPage({
   }, [records, localBreakdown]);
   const hasLocalStats = localStats.totalGames > 0;
 
+  const localStreaks = useMemo(
+    () => useLocalStatsStore.getState().getStreaks(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
+  const localFavoriteGame = useMemo(
+    () => useLocalStatsStore.getState().getFavoriteGame(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
+
   const {
     leaderboard,
     loading: leaderboardLoading,
@@ -188,7 +199,14 @@ export default function StatsPage({
         {activeTab === 'my-stats' ? (
           isLoggedIn ? (
             <>
-              <StatsOverview stats={stats} loading={loading} />
+              <StatsOverview
+                stats={stats}
+                loading={loading}
+                currentStreak={localStreaks.currentStreak}
+                currentStreakType={localStreaks.currentStreakType}
+                bestWinStreak={localStreaks.bestWinStreak}
+                favoriteGame={localFavoriteGame}
+              />
               <GameBreakdown stats={stats} loading={loading} />
             </>
           ) : hasLocalStats ? (
@@ -207,6 +225,10 @@ export default function StatsPage({
                   byGameType: localBreakdown,
                 }}
                 loading={false}
+                currentStreak={localStreaks.currentStreak}
+                currentStreakType={localStreaks.currentStreakType}
+                bestWinStreak={localStreaks.bestWinStreak}
+                favoriteGame={localFavoriteGame}
               />
               <GameBreakdown
                 stats={{

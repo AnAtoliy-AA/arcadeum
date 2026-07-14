@@ -69,6 +69,40 @@ class FakeInventoryModel {
     return Promise.resolve(out);
   }
 
+  insertMany(
+    docs: Array<Partial<FakeRow>>,
+    _opts?: { ordered?: boolean },
+  ): Promise<FakeRow[]> {
+    const out: FakeRow[] = [];
+    for (const d of docs) {
+      const purchaseId = d.purchaseId ?? '';
+      const userId = d.userId?.toString() ?? '';
+      const dup = this.rows.find(
+        (r) => r.purchaseId === purchaseId && r.userId.toString() === userId,
+      );
+      if (dup) {
+        if (_opts?.ordered === false) continue;
+        const err = new Error('duplicate') as Error & { code: number };
+        err.code = 11000;
+        throw err;
+      }
+      const row: FakeRow = {
+        _id: new Types.ObjectId(),
+        userId: d.userId as Types.ObjectId,
+        itemId: d.itemId as string,
+        purchaseId,
+        acquiredVia: d.acquiredVia ?? 'starter',
+        soldAt: null,
+        paidAmount: d.paidAmount ?? null,
+        paidCurrency: d.paidCurrency ?? null,
+        createdAt: new Date(),
+      };
+      this.rows.push(row);
+      out.push(row);
+    }
+    return out;
+  }
+
   private matches(row: FakeRow, filter: Record<string, unknown>): boolean {
     for (const [k, v] of Object.entries(filter)) {
       if (k === 'userId') {
@@ -124,6 +158,43 @@ class FakeUserModel {
     }
     Object.assign(user, update.$set);
     return Promise.resolve({ modifiedCount: 1 });
+  }
+
+  bulkWrite(
+    ops: Array<{
+      updateOne: {
+        filter: Record<string, unknown>;
+        update: { $set: Record<string, unknown> };
+      };
+    }>,
+  ): Promise<{ modifiedCount: number }> {
+    let modified = 0;
+    for (const op of ops) {
+      const id = (
+        op.updateOne.filter._id as Types.ObjectId | string
+      ).toString();
+      const user = this.users.get(id);
+      if (!user) continue;
+      let match = true;
+      for (const [k, v] of Object.entries(op.updateOne.filter)) {
+        if (k === '_id') continue;
+        const cur = (user as unknown as Record<string, unknown>)[k];
+        if (typeof v === 'object' && v !== null && '$in' in v) {
+          if (!(v as { $in: unknown[] }).$in.includes(cur)) {
+            match = false;
+            break;
+          }
+        } else if (cur !== v) {
+          match = false;
+          break;
+        }
+      }
+      if (match) {
+        Object.assign(user, op.updateOne.update.$set);
+        modified++;
+      }
+    }
+    return Promise.resolve({ modifiedCount: modified });
   }
 
   findOneAndUpdate(

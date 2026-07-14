@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -21,6 +23,7 @@ import {
   MAX_PLAYERS_TEAM_MODE,
 } from '../engines/sea-battle/sea-battle.constants';
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -38,14 +41,10 @@ interface AttackPayload {
   col: number;
 }
 
-const WATCHDOG_MAX_BACKOFF_MS = 300_000;
-
 @Injectable()
 export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SeaBattleService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
-  private watchdogConsecutiveFailures = 0;
-  private nextWatchdogRun = 0;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -54,69 +53,22 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => SeaBattleBotService))
     private readonly botService: SeaBattleBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'sea_battle_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.startWatchdog();
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    this.stopWatchdog();
-  }
-
-  private stopWatchdog() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
-  }
-
-  private startWatchdog() {
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, 10_000);
-  }
-
-  private async runWatchdog() {
-    const now = Date.now();
-    if (now < this.nextWatchdogRun) return;
-
-    try {
-      const staleSessions = await this.sessionsService.findStaleActiveSessions(
-        'sea_battle_v1',
-        20_000,
-        100,
-      );
-
-      for (const session of staleSessions) {
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-      if (this.watchdogConsecutiveFailures > 0) {
-        this.logger.warn(
-          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
-        );
-      }
-      this.watchdogConsecutiveFailures = 0;
-      this.nextWatchdogRun = 0;
-    } catch (err) {
-      this.watchdogConsecutiveFailures++;
-      const backoffMs = Math.min(
-        10_000 * 2 ** this.watchdogConsecutiveFailures,
-        WATCHDOG_MAX_BACKOFF_MS,
-      );
-      this.nextWatchdogRun = Date.now() + backoffMs;
-      if (this.watchdogConsecutiveFailures <= 3) {
-        this.logger.error(
-          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
-        );
-      }
-    }
+    this.watchdog.stop();
   }
 
   /**
@@ -128,6 +80,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       return this.checkAndSyncRoomStatus(session);
     }
     return null;
+  }
+
+  /**
+   * Complete a game session (e.g. when no human players remain alive)
+   */
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
   }
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {

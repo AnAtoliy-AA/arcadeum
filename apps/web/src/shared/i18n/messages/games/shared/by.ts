@@ -76,6 +76,7 @@ export const byMessages = {
     joinRoom: 'Увайсці ў зал',
     joining: 'Уваход...',
     watchRoom: 'Глядзець',
+    watchResults: 'Вынікі',
     joinByCode: 'Увайсці па кодзе',
     cancel: 'Адмена',
     share: 'Падзяліцца',
@@ -209,8 +210,13 @@ export const byMessages = {
         desc: "Аб'яднайце гульцоў у флоты — 2v2 або 3v3.",
       },
       spectators: {
-        title: 'Гледачы',
-        desc: 'Любы са спасылкай можа ціха назіраць.',
+        title: 'Дазволіць гледачоў',
+        desc: 'Любы з спасылкай можа назіраць маўкліва.',
+      },
+      firstPlayer: {
+        title: 'Хто ходзіць першым',
+        host: 'Гаспадар (па змаўчанні)',
+        random: 'Выпадковы',
       },
     },
     summary: {

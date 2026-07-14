@@ -1,7 +1,6 @@
 import { FILES, PROMOTION_PIECES } from './chess.constants';
-import type { PieceColor, PieceType } from './chess.constants';
+import type { PieceColor } from './chess.constants';
 import type {
-  Board,
   BoardPosition,
   ChessMove,
   ChessPiece,
@@ -14,7 +13,8 @@ import {
   posToBoardCoords,
   getPiece,
 } from './chess.board';
-import { isInCheck } from './chess.attacks';
+import { isInCheck, isSquareAttacked } from './chess.attacks';
+import { createMove, simulateMove } from './chess.move-utils';
 
 export function generatePseudoLegalMoves(
   state: ChessState,
@@ -39,6 +39,7 @@ export function getLegalMoves(
 ): ChessMove[] {
   const pseudoLegal = generatePseudoLegalMoves(state, color);
   return pseudoLegal.filter((move) => {
+    if (move.captured?.type === 'king') return false;
     const simulated = simulateMove(state, move);
     return !isInCheck(simulated, color);
   });
@@ -163,12 +164,12 @@ function generatePawnMoves(
 
     if (
       state.enPassantTarget &&
-      state.enPassantTarget.rank === ((oneStepRank + 1) as Rank) &&
+      state.enPassantTarget.rank === ((8 - oneStepRank) as Rank) &&
       state.enPassantTarget.file === FILES[targetFile]
     ) {
       const capturedPawn = getPiece(
         state.board,
-        boardCoordsToPos(oneStepRank, targetFile),
+        boardCoordsToPos(rank, targetFile),
       );
       if (capturedPawn) {
         moves.push(
@@ -255,6 +256,22 @@ function generateSlidingMoves(
   return moves;
 }
 
+function findRookFileForCastling(
+  board: (ChessPiece | null)[][],
+  rank: number,
+  kingFile: number,
+  direction: 'left' | 'right',
+): number | null {
+  const start = direction === 'left' ? kingFile - 1 : kingFile + 1;
+  const end = direction === 'left' ? -1 : 8;
+  const step = direction === 'left' ? -1 : 1;
+
+  for (let f = start; f !== end; f += step) {
+    if (board[rank][f]?.type === 'rook') return f;
+  }
+  return null;
+}
+
 function generateKingMoves(
   state: ChessState,
   rank: number,
@@ -285,180 +302,113 @@ function generateKingMoves(
     );
   }
 
-  if (piece.color === 'white') {
+  const opponent = piece.color === 'white' ? 'black' : 'white';
+  const backRank = piece.color === 'white' ? 7 : 0;
+
+  if (!isSquareAttacked(state.board, pos, opponent)) {
     if (
-      state.castlingRights.whiteKingSide &&
-      !state.board[7][5] &&
-      !state.board[7][6] &&
-      state.board[7][7]?.type === 'rook'
+      state.castlingRights[
+        piece.color === 'white' ? 'whiteKingSide' : 'blackKingSide'
+      ]
     ) {
-      moves.push(
-        createMove(
-          state,
-          pos,
-          boardCoordsToPos(7, 6),
-          piece,
-          null,
-          null,
-          false,
-          true,
-        ),
+      const rookFile = findRookFileForCastling(
+        state.board,
+        backRank,
+        file,
+        'right',
       );
+      if (rookFile !== null) {
+        let clear = true;
+        for (let f = file + 1; f < rookFile; f++) {
+          if (state.board[backRank][f]) {
+            clear = false;
+            break;
+          }
+        }
+        if (clear) {
+          let pathSafe = true;
+          for (let f = file + 1; f < 6; f++) {
+            if (
+              isSquareAttacked(
+                state.board,
+                boardCoordsToPos(backRank, f),
+                opponent,
+              )
+            ) {
+              pathSafe = false;
+              break;
+            }
+          }
+          if (pathSafe) {
+            moves.push(
+              createMove(
+                state,
+                pos,
+                boardCoordsToPos(backRank, 6),
+                piece,
+                null,
+                null,
+                false,
+                true,
+              ),
+            );
+          }
+        }
+      }
     }
     if (
-      state.castlingRights.whiteQueenSide &&
-      !state.board[7][1] &&
-      !state.board[7][2] &&
-      !state.board[7][3] &&
-      state.board[7][0]?.type === 'rook'
+      state.castlingRights[
+        piece.color === 'white' ? 'whiteQueenSide' : 'blackQueenSide'
+      ]
     ) {
-      moves.push(
-        createMove(
-          state,
-          pos,
-          boardCoordsToPos(7, 2),
-          piece,
-          null,
-          null,
-          false,
-          true,
-        ),
+      const rookFile = findRookFileForCastling(
+        state.board,
+        backRank,
+        file,
+        'left',
       );
-    }
-  } else {
-    if (
-      state.castlingRights.blackKingSide &&
-      !state.board[0][5] &&
-      !state.board[0][6] &&
-      state.board[0][7]?.type === 'rook'
-    ) {
-      moves.push(
-        createMove(
-          state,
-          pos,
-          boardCoordsToPos(0, 6),
-          piece,
-          null,
-          null,
-          false,
-          true,
-        ),
-      );
-    }
-    if (
-      state.castlingRights.blackQueenSide &&
-      !state.board[0][1] &&
-      !state.board[0][2] &&
-      !state.board[0][3] &&
-      state.board[0][0]?.type === 'rook'
-    ) {
-      moves.push(
-        createMove(
-          state,
-          pos,
-          boardCoordsToPos(0, 2),
-          piece,
-          null,
-          null,
-          false,
-          true,
-        ),
-      );
+      if (rookFile !== null) {
+        let clear = true;
+        for (let f = rookFile + 1; f < file; f++) {
+          if (state.board[backRank][f]) {
+            clear = false;
+            break;
+          }
+        }
+        if (clear) {
+          let pathSafe = true;
+          for (let f = 3; f < file; f++) {
+            if (
+              isSquareAttacked(
+                state.board,
+                boardCoordsToPos(backRank, f),
+                opponent,
+              )
+            ) {
+              pathSafe = false;
+              break;
+            }
+          }
+          if (pathSafe) {
+            moves.push(
+              createMove(
+                state,
+                pos,
+                boardCoordsToPos(backRank, 2),
+                piece,
+                null,
+                null,
+                false,
+                true,
+              ),
+            );
+          }
+        }
+      }
     }
   }
 
   return moves;
 }
 
-function createMove(
-  state: ChessState,
-  from: BoardPosition,
-  to: BoardPosition,
-  piece: ChessPiece,
-  captured: ChessPiece | null,
-  promotion: PieceType | null,
-  isEnPassant = false,
-  isCastle = false,
-): ChessMove {
-  const notation = buildNotation(
-    from,
-    to,
-    piece,
-    captured,
-    promotion,
-    isCastle,
-    isEnPassant,
-  );
-  return {
-    from,
-    to,
-    piece,
-    captured,
-    promotion,
-    isCastle,
-    isEnPassant,
-    notation,
-  };
-}
-
-function buildNotation(
-  from: BoardPosition,
-  to: BoardPosition,
-  piece: ChessPiece,
-  captured: ChessPiece | null,
-  promotion: PieceType | null,
-  isCastle: boolean,
-  isEnPassant: boolean,
-): string {
-  if (isCastle) {
-    const toFile = to.file.charCodeAt(0) - 97;
-    return toFile === 6 ? 'O-O' : 'O-O-O';
-  }
-
-  let notation = '';
-  if (piece.type !== 'pawn') {
-    notation += piece.type.charAt(0).toUpperCase();
-  }
-
-  if (captured || isEnPassant) {
-    if (piece.type === 'pawn') {
-      notation += from.file;
-    }
-    notation += 'x';
-  }
-
-  notation += `${to.file}${to.rank}`;
-
-  if (promotion) {
-    notation += `=${promotion.charAt(0).toUpperCase()}`;
-  }
-
-  return notation;
-}
-
-export function simulateMove(state: ChessState, move: ChessMove): Board {
-  const board = structuredClone(state.board);
-  const { rank: fr, file: ff } = posToBoardCoords(move.from);
-  const { rank: tr, file: tf } = posToBoardCoords(move.to);
-
-  if (move.isEnPassant) {
-    board[fr][tf] = null;
-  }
-
-  board[tr][tf] = move.promotion
-    ? { type: move.promotion, color: move.piece.color }
-    : board[fr][ff];
-  board[fr][ff] = null;
-
-  if (move.isCastle) {
-    if (tf === 6) {
-      board[tr][5] = board[tr][7];
-      board[tr][7] = null;
-    } else if (tf === 2) {
-      board[tr][3] = board[tr][0];
-      board[tr][0] = null;
-    }
-  }
-
-  return board;
-}
+export { simulateMove } from './chess.move-utils';

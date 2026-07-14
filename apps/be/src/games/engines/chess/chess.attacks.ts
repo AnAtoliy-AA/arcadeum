@@ -11,21 +11,24 @@ import {
 export function isInCheck(board: Board, color: PieceColor): boolean {
   const kingPos = findKing(board, color);
   if (!kingPos) return false;
-  const opponent = oppositeColor(color);
+  return isSquareAttacked(board, kingPos, oppositeColor(color));
+}
 
+export function isSquareAttacked(
+  board: Board,
+  target: BoardPosition,
+  byColor: PieceColor,
+): boolean {
   for (let r = 0; r < 8; r++) {
     for (let f = 0; f < 8; f++) {
       const piece = board[r][f];
-      if (!piece || piece.color !== opponent) continue;
+      if (!piece || piece.color !== byColor) continue;
       const pos = boardCoordsToPos(r, f);
       const attacks = getSquaresAttacked(board, pos, piece);
-      if (
-        attacks.some((a) => a.rank === kingPos.rank && a.file === kingPos.file)
-      )
+      if (attacks.some((a) => a.rank === target.rank && a.file === target.file))
         return true;
     }
   }
-
   return false;
 }
 

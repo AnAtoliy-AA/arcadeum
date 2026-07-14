@@ -76,6 +76,7 @@ export const frMessages = {
     joinRoom: 'Rejoindre une Salle',
     joining: 'Rejoindre...',
     watchRoom: 'Regarder',
+    watchResults: 'Voir les Résultats',
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
     share: 'Partager',
@@ -212,7 +213,12 @@ export const frMessages = {
       },
       spectators: {
         title: 'Autoriser les spectateurs',
-        desc: 'Tout détenteur du lien peut regarder en silence.',
+        desc: 'Tout le lien peut observer en silence.',
+      },
+      firstPlayer: {
+        title: 'Qui commence',
+        host: 'Hôte (par défaut)',
+        random: 'Aléatoire',
       },
     },
     summary: {

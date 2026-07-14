@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { YStack, XStack, Text, Button } from 'tamagui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   PIECE_SYMBOLS,
   PROMOTION_PIECES,
@@ -22,6 +23,7 @@ function PromotionModalImpl({
   onSelect,
   onCancel,
 }: PromotionModalProps) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -45,7 +47,7 @@ function PromotionModalImpl({
         minWidth={280}
       >
         <Text fontSize="$5" fontWeight="700">
-          Promote pawn to:
+          {t('games.chess_v1.status.promotionTitle')}
         </Text>
         <XStack gap="$3" justifyContent="center">
           {PROMOTION_PIECES.map((pieceType) => (
@@ -63,7 +65,7 @@ function PromotionModalImpl({
           ))}
         </XStack>
         <Button size="$3" variant="outlined" onPress={onCancel}>
-          Cancel
+          {t('games.chess_v1.actions.declineDraw')}
         </Button>
       </YStack>
     </div>

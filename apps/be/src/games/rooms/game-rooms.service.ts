@@ -132,9 +132,13 @@ export class GameRoomsService {
     if (!normalized) throw new NotFoundException('Room not found');
     const room = await this.gameRoomModel
       .findOne({ inviteCode: normalized })
+      .lean()
       .exec();
     if (!room) throw new NotFoundException('Room not found');
-    return this.gameRoomsMapper.prepareRoomSummary(room, viewerId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as import('../schemas/game-room.schema').GameRoom,
+      viewerId,
+    );
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
@@ -311,7 +315,7 @@ export class GameRoomsService {
     dto: DeleteGameRoomDto,
     userId: string,
   ): Promise<DeleteGameRoomResult> {
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    const room = await this.gameRoomModel.findById(dto.roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);

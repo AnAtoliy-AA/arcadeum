@@ -289,8 +289,10 @@ export class AuthService {
           { email: pattern },
         ],
       })
+      .select('username email usernameNormalized displayName role')
       .sort({ usernameNormalized: 1 })
       .limit(limit)
+      .lean()
       .exec();
 
     return users.map((user) => ({

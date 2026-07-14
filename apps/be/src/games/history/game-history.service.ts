@@ -293,6 +293,7 @@ export class GameHistoryService {
     // Get original room
     const originalRoom = await this.gameRoomModel
       .findById(originalRoomId)
+      .lean()
       .exec();
 
     if (!originalRoom) {
@@ -429,7 +430,7 @@ export class GameHistoryService {
     message: string,
     scope: ChatScope,
   ): Promise<void> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);

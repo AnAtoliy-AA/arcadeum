@@ -15,6 +15,7 @@ import {
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -61,6 +62,7 @@ function CascadeGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: CascadeGameProps) {
@@ -107,6 +109,15 @@ function CascadeGameImpl({
   useGameChatIntegration(snapshot?.logs as never, sendChat);
 
   const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const handleReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !roomId) return;
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken);
+      } catch {}
+    },
+    [roomId, accessToken],
+  );
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
@@ -131,6 +142,7 @@ function CascadeGameImpl({
             ),
           }
         : undefined,
+      isGameOver,
     );
 
   const options = useMemo(
@@ -166,6 +178,7 @@ function CascadeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy || pendingStart}
+          onReorderPlayers={handleReorderPlayers}
           onStartGame={handleStartGame}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}

@@ -71,7 +71,14 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       ? this.buildTeams(playerIds, config?.teams)
       : [];
 
-    const players: TicTacToePlayer[] = playerIds.map((id, idx) => ({
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random';
+
+    const orderedPlayerIds = shouldRandomize
+      ? [...playerIds].sort(() => Math.random() - 0.5)
+      : [...playerIds];
+
+    const players: TicTacToePlayer[] = orderedPlayerIds.map((id, idx) => ({
       playerId: id,
       symbol: PLAYER_SYMBOLS[idx % PLAYER_SYMBOLS.length],
       alive: true,
@@ -80,7 +87,11 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
         : undefined,
     }));
 
-    const playerOrder = teamMode ? teams.map((t) => t.id) : [...playerIds];
+    const playerOrder = teamMode
+      ? shouldRandomize
+        ? [...teams].sort(() => Math.random() - 0.5).map((t) => t.id)
+        : teams.map((t) => t.id)
+      : orderedPlayerIds;
 
     return {
       phase: GAME_PHASE.PLAYING,
@@ -147,23 +158,25 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
     if (result.success && result.state) {
       const history =
         ((state as Record<string, unknown>).stateHistory as unknown[]) ?? [];
-      // Strip stateHistory from the snapshot to prevent recursive nesting
+      // Strip stateHistory and logs from the snapshot to prevent unbounded
+      // BSON document growth (especially on infinity boards).
       const src = state as Record<string, unknown>;
       const stateSnapshot: Record<string, unknown> = {};
       for (const key of Object.keys(src)) {
-        if (key !== 'stateHistory') stateSnapshot[key] = src[key];
+        if (key !== 'stateHistory' && key !== 'logs')
+          stateSnapshot[key] = src[key];
       }
       result.state = {
         ...result.state,
-        stateHistory: [...history.slice(-10), structuredClone(stateSnapshot)],
+        stateHistory: [...history.slice(-3), structuredClone(stateSnapshot)],
       };
     }
 
     // Trim logs to prevent unbounded BSON document growth
-    if (result.state && result.state.logs.length > 200) {
+    if (result.state && result.state.logs.length > 100) {
       result.state = {
         ...result.state,
-        logs: result.state.logs.slice(-200),
+        logs: result.state.logs.slice(-100),
       };
     }
 

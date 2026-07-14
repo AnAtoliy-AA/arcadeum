@@ -79,6 +79,7 @@ export async function checkUsernameAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/username/${encodeURIComponent(username)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }
@@ -88,6 +89,7 @@ export async function checkEmailAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/email/${encodeURIComponent(email)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }

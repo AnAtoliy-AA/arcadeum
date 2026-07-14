@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -26,20 +28,15 @@ import type {
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
-const WATCHDOG_INTERVAL_MS = 10_000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20_000;
-const WATCHDOG_MAX_BACKOFF_MS = 300_000;
-
 @Injectable()
 export class ChessService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ChessService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
-  private watchdogConsecutiveFailures = 0;
-  private nextWatchdogRun = 0;
+  private readonly watchdog: GameBotWatchdog;
   private readonly roomLocks = new Map<string, Promise<void>>();
 
   constructor(
@@ -49,7 +46,16 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     private readonly botService: ChessBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'chess_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+      (session) => this.checkClockTimeout(session),
+    );
+  }
 
   onModuleInit() {
     this.botService.setMoveFn(
@@ -65,16 +71,11 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         },
       ) => Promise<unknown>,
     );
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, WATCHDOG_INTERVAL_MS);
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   async findSessionByRoom(roomId: string) {
@@ -89,10 +90,17 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
+    botDifficulty?: string,
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
     if (room.hostId !== userId) {
       throw new Error('Only the host can start the game');
+    }
+
+    if (botDifficulty && ['easy', 'medium', 'hard'].includes(botDifficulty)) {
+      this.botService.setDifficulty(
+        botDifficulty as 'easy' | 'medium' | 'hard',
+      );
     }
 
     const options = this.resolveOptions(room.gameOptions);
@@ -161,6 +169,14 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     return this.runAction(userId, roomId, 'forfeit', {});
   }
 
+  async drawOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_offer', {});
+  }
+
+  async drawAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_accept', {});
+  }
+
   private async runAction(
     userId: string,
     roomId: string,
@@ -197,6 +213,15 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   private async afterSessionStep(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
@@ -229,45 +254,41 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  private async runWatchdog() {
-    const now = Date.now();
-    if (now < this.nextWatchdogRun) return;
+  private async checkClockTimeout(session: GameSessionSummary) {
+    const state = session.state as ChessState | undefined;
+    if (!state || !state.clocks || this.isGameOver(state)) return;
 
-    try {
-      const stale = await this.sessionsService.findStaleActiveSessions(
-        'chess_v1',
-        WATCHDOG_STALE_THRESHOLD_MS,
-        100,
+    const currentClock = state.clocks[state.currentTurnColor];
+    if (!currentClock) return;
+
+    const elapsed = Math.floor(
+      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
+    );
+    const remaining = currentClock.remainingSeconds - elapsed;
+
+    if (remaining <= 0) {
+      const loser = state.players.find(
+        (p) => p.color === state.currentTurnColor,
       );
-      for (const session of stale) {
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-      if (this.watchdogConsecutiveFailures > 0) {
-        this.logger.warn(
-          `Watchdog recovered after ${this.watchdogConsecutiveFailures} failures`,
-        );
-      }
-      this.watchdogConsecutiveFailures = 0;
-      this.nextWatchdogRun = 0;
-    } catch (err) {
-      this.watchdogConsecutiveFailures++;
-      const backoffMs = Math.min(
-        WATCHDOG_INTERVAL_MS * 2 ** this.watchdogConsecutiveFailures,
-        WATCHDOG_MAX_BACKOFF_MS,
+      const winner = state.players.find(
+        (p) => p.color !== state.currentTurnColor,
       );
-      this.nextWatchdogRun = Date.now() + backoffMs;
-      if (this.watchdogConsecutiveFailures <= 3) {
-        this.logger.error(
-          `Watchdog failed (attempt ${this.watchdogConsecutiveFailures}, retrying in ${Math.round(backoffMs / 1000)}s): ${err}`,
-        );
+      if (loser && winner) {
+        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
       }
     }
+  }
+
+  private isGameOver(state: ChessState): boolean {
+    return (
+      state.isCheckmate ||
+      state.isStalemate ||
+      state.winnerColor !== null ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isDrawByAgreement
+    );
   }
 
   private resolveOptions(raw: unknown): ChessOptions {

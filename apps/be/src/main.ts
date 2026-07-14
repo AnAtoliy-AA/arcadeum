@@ -39,7 +39,6 @@ async function bootstrap() {
     }),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(compression());
   app.use(cookieParser());
 
@@ -80,6 +79,14 @@ async function bootstrap() {
   const port = process.env.PORT ?? process.env.BE_PORT ?? 4000;
   await app.listen(port, '0.0.0.0');
   console.log(`[Backend] Listening on port ${port}`);
+
+  const shutdown = async (signal: string) => {
+    console.log(`\n[Backend] ${signal} received — shutting down gracefully`);
+    await app.close();
+    process.exit(0);
+  };
+  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+  process.on('SIGINT', () => void shutdown('SIGINT'));
 }
 
 void bootstrap();

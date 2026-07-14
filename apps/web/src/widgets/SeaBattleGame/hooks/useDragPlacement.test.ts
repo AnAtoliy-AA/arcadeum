@@ -1,7 +1,13 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDragPlacement } from './useDragPlacement';
-import { BOARD_SIZE, CELL_STATE, type CellState, type Ship } from '../types';
+import {
+  BOARD_SIZE,
+  CELL_STATE,
+  SHIPS,
+  type CellState,
+  type Ship,
+} from '../types';
 
 function emptyBoard(): CellState[][] {
   return Array.from({ length: BOARD_SIZE }, () =>
@@ -58,6 +64,7 @@ function setup(
       isVertical: false,
       placedShipIds: new Set([battleship.id]),
       ships: [battleship],
+      activeShips: SHIPS,
       placementComplete: false,
       onPlaceShip,
       onMoveShip,

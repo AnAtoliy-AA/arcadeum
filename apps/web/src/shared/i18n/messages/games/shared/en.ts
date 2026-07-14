@@ -76,6 +76,7 @@ export const enMessages = {
     joinRoom: 'Join Room',
     joining: 'Joining...',
     watchRoom: 'Watch',
+    watchResults: 'Watch Results',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
     share: 'Share',
@@ -211,6 +212,11 @@ export const enMessages = {
       spectators: {
         title: 'Allow spectators',
         desc: 'Anyone with the link can watch silently.',
+      },
+      firstPlayer: {
+        title: 'Who goes first',
+        host: 'Host (default)',
+        random: 'Random',
       },
     },
     summary: {

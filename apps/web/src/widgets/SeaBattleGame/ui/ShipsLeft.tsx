@@ -1,11 +1,12 @@
 import { styled, YStack, XStack, Text, useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Ship, SHIPS } from '../types';
+import { Ship, getActiveShips } from '../types';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 
 interface ShipsLeftProps {
   ships: Ship[];
   isMe: boolean;
+  shipCount?: number;
 }
 
 const ShipsContainer = styled(YStack, {
@@ -28,12 +29,14 @@ const ShipsContainer = styled(YStack, {
   },
 });
 
-export function ShipsLeft({ ships, isMe }: ShipsLeftProps) {
+export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
   const media = useMedia();
   const isMobile = !media.gtSm;
-  const sortedConfig = [...SHIPS].sort((a, b) => b.size - a.size);
+  const sortedConfig = [...getActiveShips(shipCount)].sort(
+    (a, b) => b.size - a.size,
+  );
   const totalShips = sortedConfig.length;
   const sunkCount = ships?.filter((s) => s.sunk).length ?? 0;
   const aliveCount = totalShips - sunkCount;

@@ -7,14 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.53] - 2026-07-14
+
+### Added
+
+- unified quickplay flow across all game landing pages
+- shared QuickplayButton and QuickplayCta components
+- ctaQuickplay i18n labels for Tic-Tac-Toe, Cascade, Chess
+- attractive Play vs AI button with gradient and glow
+
+### Fixed
+
+- tic-tac-toe lobby icon clipping and float animation
+- backend quickplay restriction (was sea-battle-only)
+
 ## [1.22.35] - 2026-07-14
 
 ### Added
+
 - batch placement and grid-based fleet count
 
 ### Fixed
-- suppress compression() lint error in main.ts
 
+- suppress compression() lint error in main.ts
 
 ## [1.22.34] - 2026-07-04
 

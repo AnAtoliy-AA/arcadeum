@@ -43,9 +43,6 @@ export class GameRoomsService {
     private readonly gameRoomsRematchService: GameRoomsRematchService,
     private readonly engineRegistry: GameEngineRegistry,
   ) {}
-  /**
-   * Create a new game room
-   */
   async createRoom(
     userId: string,
     dto: CreateGameRoomDto,
@@ -81,9 +78,6 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * List game rooms based on filters
-   */
   async listRooms(
     filters: ListRoomsFilters = {},
     viewerId?: string,
@@ -165,9 +159,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Join a game room
-   */
   async joinRoom(
     dto: JoinGameRoomDto,
     userId: string,
@@ -243,9 +234,6 @@ export class GameRoomsService {
     return false;
   }
 
-  /**
-   * Leave a game room
-   */
   async leaveRoom(
     dto: LeaveGameRoomDto,
     userId: string,
@@ -253,7 +241,9 @@ export class GameRoomsService {
     if (!dto.roomId || !Types.ObjectId.isValid(dto.roomId)) {
       throw new BadRequestException('Invalid roomId format');
     }
-    const room = await this.gameRoomModel.findById(new Types.ObjectId(dto.roomId)).exec();
+    const room = await this.gameRoomModel
+      .findById(new Types.ObjectId(dto.roomId))
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -314,9 +304,6 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Delete a game room (host only)
-   */
   async deleteRoom(
     dto: DeleteGameRoomDto,
     userId: string,
@@ -324,7 +311,10 @@ export class GameRoomsService {
     if (!dto.roomId || !Types.ObjectId.isValid(dto.roomId)) {
       throw new BadRequestException('Invalid roomId format');
     }
-    const room = await this.gameRoomModel.findById(new Types.ObjectId(dto.roomId)).lean().exec();
+    const room = await this.gameRoomModel
+      .findById(new Types.ObjectId(dto.roomId))
+      .lean()
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -334,7 +324,9 @@ export class GameRoomsService {
       throw new ForbiddenException('Only the host can delete the room');
     }
 
-    await this.gameRoomModel.findByIdAndDelete(new Types.ObjectId(dto.roomId)).exec();
+    await this.gameRoomModel
+      .findByIdAndDelete(new Types.ObjectId(dto.roomId))
+      .exec();
 
     return {
       roomId: dto.roomId,
@@ -342,9 +334,6 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Update room status
-   */
   async updateRoomStatus(
     roomId: string,
     status: GameRoomStatus,
@@ -362,9 +351,6 @@ export class GameRoomsService {
     return room;
   }
 
-  /**
-   * Get room participants
-   */
   async getRoomParticipants(roomId: string): Promise<string[]> {
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
@@ -378,9 +364,6 @@ export class GameRoomsService {
     return room.participants.map((p) => p.userId);
   }
 
-  /**
-   * Update room options (host only, lobby only)
-   */
   async updateRoomOptions(
     roomId: string,
     userId: string,
@@ -413,9 +396,6 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * Reorder participants (host only)
-   */
   async reorderParticipants(
     roomId: string,
     userId: string,

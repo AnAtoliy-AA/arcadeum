@@ -6,36 +6,15 @@ export const OG_CONTENT_TYPE = 'image/png';
 interface RenderOpts {
   kicker: string;
   title: string;
-  /**
-   * Short subtitle. Wraps onto multiple lines naturally; keep it
-   * around 100 characters so it doesn't overflow at 1200×630.
-   */
   subtitle?: string;
-  /** Optional small footer (e.g. reading time + date). */
   footer?: string;
-  /**
-   * Accent color used for the kicker, the corner ribbon, and the
-   * background-glow flourish. Pass a CSS hex (e.g. `#ff6b6b`).
-   */
   accent: string;
-  /**
-   * Optional background gradient pair (start → end). When omitted a
-   * neutral dark gradient is used.
-   */
   gradient?: [string, string];
-  /** Right-edge brand text. Defaults to `arcadeum.games`. */
   brand?: string;
+  /** Optional decorative elements rendered in the right half. */
+  children?: React.ReactNode;
 }
 
-/**
- * Generic Open Graph card renderer. Used by per-post and per-landing
- * `opengraph-image.tsx` files so every social unfurl gets a unique
- * branded 1200×630 card instead of the generic `/logo.png` fallback.
- *
- * The layout is intentionally minimal — title + kicker + accent — so
- * it survives Satori's CSS subset (no transforms, no `background:
- * shorthand` with image-mixed gradients, no `text-overflow`).
- */
 export function renderOgCard(opts: RenderOpts): ImageResponse {
   const [from, to] = opts.gradient ?? ['#0f1729', '#03091a'];
   const brand = opts.brand ?? 'arcadeum.games';
@@ -45,7 +24,6 @@ export function renderOgCard(opts: RenderOpts): ImageResponse {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
           width: '100%',
           height: '100%',
           backgroundImage: `linear-gradient(160deg, ${from} 0%, ${to} 100%)`,
@@ -53,121 +31,190 @@ export function renderOgCard(opts: RenderOpts): ImageResponse {
           color: 'white',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
-          justifyContent: 'space-between',
         }}
       >
-        {/* Accent glow in the top-right corner */}
+        {/* Corner glow */}
         <div
           style={{
             position: 'absolute',
-            right: -160,
-            top: -160,
-            width: 520,
-            height: 520,
-            borderRadius: 260,
-            background: `radial-gradient(circle, ${opts.accent}40 0%, transparent 60%)`,
+            right: -180,
+            top: -180,
+            width: 560,
+            height: 560,
+            borderRadius: 280,
+            background: `radial-gradient(circle, ${opts.accent}30 0%, transparent 60%)`,
           }}
         />
 
-        {/* Header — kicker chip */}
+        {/* Bottom-left subtle glow */}
         <div
           style={{
+            position: 'absolute',
+            left: -120,
+            bottom: -120,
+            width: 400,
+            height: 400,
+            borderRadius: 200,
+            background: `radial-gradient(circle, ${opts.accent}18 0%, transparent 55%)`,
+          }}
+        />
+
+        {/* Decorative grid dots */}
+        <div
+          style={{
+            position: 'absolute',
+            right: 60,
+            top: 60,
             display: 'flex',
-            alignItems: 'center',
-            fontSize: 24,
-            letterSpacing: 6,
-            color: opts.accent,
-            fontWeight: 700,
-            textTransform: 'uppercase',
+            flexDirection: 'column',
+            gap: 28,
+            opacity: 0.12,
           }}
         >
-          {opts.kicker}
+          {Array.from({ length: 6 }).map((_, row) => (
+            <div key={row} style={{ display: 'flex', gap: 28 }}>
+              {Array.from({ length: 6 }).map((_, col) => (
+                <div
+                  key={col}
+                  style={{
+                    width: 5,
+                    height: 5,
+                    borderRadius: 3,
+                    background: 'white',
+                  }}
+                />
+              ))}
+            </div>
+          ))}
         </div>
 
-        {/* Body — title + subtitle */}
+        {/* LEFT — copy column */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            maxWidth: 980,
+            flex: 1,
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
+          {/* Kicker */}
           <div
             style={{
               display: 'flex',
-              fontSize: opts.title.length > 56 ? 64 : 88,
-              lineHeight: 1.05,
+              alignItems: 'center',
+              gap: 12,
+              fontSize: 22,
+              letterSpacing: 5,
+              color: opts.accent,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              marginBottom: 28,
+            }}
+          >
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                background: opts.accent,
+                boxShadow: `0 0 12px ${opts.accent}cc`,
+              }}
+            />
+            {opts.kicker}
+          </div>
+
+          {/* Title */}
+          <div
+            style={{
+              display: 'flex',
+              fontSize: opts.title.length > 40 ? 72 : 96,
+              lineHeight: 1.02,
               fontWeight: 900,
               color: 'white',
-              letterSpacing: -2,
+              letterSpacing: -3,
+              marginBottom: opts.subtitle ? 24 : 0,
             }}
           >
             {opts.title}
           </div>
+
+          {/* Subtitle */}
           {opts.subtitle ? (
             <div
               style={{
                 display: 'flex',
                 fontSize: 28,
                 color: '#b6cee6',
-                lineHeight: 1.35,
-                marginTop: 24,
-                maxWidth: 880,
+                lineHeight: 1.4,
+                maxWidth: 520,
               }}
             >
               {opts.subtitle}
             </div>
           ) : null}
-        </div>
 
-        {/* Footer — accent dot + brand + optional meta */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+          {/* Footer bar */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
+              marginTop: 48,
               gap: 14,
             }}
           >
             <div
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
+                width: 12,
+                height: 12,
+                borderRadius: 6,
                 background: opts.accent,
-                boxShadow: `0 0 16px ${opts.accent}cc`,
+                boxShadow: `0 0 14px ${opts.accent}aa`,
               }}
             />
             <div
               style={{
                 display: 'flex',
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: 700,
                 color: '#ffe866',
               }}
             >
               {brand}
             </div>
+            {opts.footer ? (
+              <div
+                style={{
+                  display: 'flex',
+                  fontSize: 20,
+                  color: '#7a94b0',
+                  fontWeight: 500,
+                  marginLeft: 20,
+                }}
+              >
+                {opts.footer}
+              </div>
+            ) : null}
           </div>
-          {opts.footer ? (
-            <div
-              style={{
-                display: 'flex',
-                fontSize: 22,
-                color: '#9ab3cf',
-                fontWeight: 500,
-              }}
-            >
-              {opts.footer}
-            </div>
-          ) : null}
         </div>
+
+        {/* RIGHT — optional decorative slot */}
+        {opts.children ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 440,
+              marginLeft: 40,
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {opts.children}
+          </div>
+        ) : null}
       </div>
     ),
     { ...OG_SIZE },

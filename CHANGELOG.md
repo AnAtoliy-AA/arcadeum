@@ -21,6 +21,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tic-tac-toe lobby icon clipping and float animation
 - backend quickplay restriction (was sea-battle-only)
 
+## [1.22.38] - 2026-07-14
+
+### Added
+
+- add game category grouping across UI surfaces
+
+### Fixed
+
+- fix TypeScript build error in getOrCreateProgress
+- replace findOne with find+filter for tainted Mongoose queries
+- use sanitized variables in Mongoose queries for CodeQL
+- add service-level input validation for Mongoose queries
+- add input validation for Mongoose query parameters
+
+## [1.22.37] - 2026-07-14
+
+### Fixed
+
+- ships remaining shows correct count based on game shipCount
+- ship placement moves persist until confirm, no revert on next move
+
+## [1.22.36] - 2026-07-14
+
+### Fixed
+
+- daily changelog poster runs on schedule only, not on push
+
 ## [1.22.35] - 2026-07-14
 
 ### Added

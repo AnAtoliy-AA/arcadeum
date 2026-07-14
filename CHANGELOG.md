@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.39] - 2026-07-14
+
+### Added
+- add backend and fullstack skills
+- add comprehensive UI/UX design skills
+
+### Fixed
+- add explicit ObjectId validation for room queries
+- escape backslashes in shell commands
+
+
 ## [1.22.38] - 2026-07-14
 
 ### Added

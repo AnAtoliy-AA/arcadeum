@@ -1,4 +1,5 @@
 import {
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -10,6 +11,7 @@ export class JoinGameRoomDto {
   @ValidateIf(({ inviteCode }) => !inviteCode)
   @IsString()
   @IsNotEmpty()
+  @IsMongoId({ message: 'Invalid roomId format' })
   @MaxLength(64)
   roomId?: string;
 

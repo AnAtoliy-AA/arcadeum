@@ -17,8 +17,7 @@ jobs:
     name: Daily Develop Changelog Poster
     if: >
       (github.event_name == 'schedule') ||
-      (github.event_name == 'workflow_dispatch' && !inputs.tag) ||
-      (github.event_name == 'push' && github.ref_name == 'develop')
+      (github.event_name == 'workflow_dispatch' && !inputs.tag)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout develop branch

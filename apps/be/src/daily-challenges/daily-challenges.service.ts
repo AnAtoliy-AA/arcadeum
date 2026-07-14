@@ -88,10 +88,13 @@ export class DailyChallengesService {
     date: string,
     increment: number = 1,
   ): Promise<void> {
-    if (!/^[a-z0-9_-]+$/.test(challengeId)) return;
+    const safeChallengeId = /^[a-z0-9_-]+$/.test(challengeId)
+      ? challengeId
+      : '';
+    if (!safeChallengeId) return;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
     const definition = await this.definitionModel
-      .findOne({ challengeId })
+      .findOne({ challengeId: safeChallengeId })
       .lean();
     if (!definition) return;
 
@@ -119,18 +122,19 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
-    if (!/^[a-z0-9_-]+$/.test(challengeId)) {
-      throw new Error('Invalid challengeId');
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      throw new Error('Invalid date format');
+    const safeChallengeId = /^[a-z0-9_-]+$/.test(challengeId)
+      ? challengeId
+      : '';
+    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
+    if (!safeChallengeId || !safeDate) {
+      throw new Error('Invalid parameters');
     }
     const definition = await this.definitionModel
-      .findOne({ challengeId })
+      .findOne({ challengeId: safeChallengeId })
       .lean();
     if (!definition) throw new Error('Challenge not found');
 
-    const progress = await this.getOrCreateProgress(userId, date, [
+    const progress = await this.getOrCreateProgress(userId, safeDate, [
       definition as unknown as DailyChallengeDefinitionDocument,
     ]);
     const userChallenge = progress.challenges.find(
@@ -269,9 +273,10 @@ export class DailyChallengesService {
     date: string,
     definitions: DailyChallengeDefinitionDocument[],
   ): Promise<UserDailyChallengeDocument> {
+    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
     let progress = await this.progressModel.findOne({
       userId: new Types.ObjectId(userId),
-      date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
+      date: safeDate,
     });
     if (!progress) {
       const challenges = definitions.map((def) => ({

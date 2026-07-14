@@ -23,7 +23,9 @@ interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
   onMoveShip: (shipId: string, cells: ShipCell[]) => void;
-  onConfirmPlacement: () => void;
+  onConfirmPlacement: (
+    ships?: Array<{ shipId: string; cells: ShipCell[] }>,
+  ) => void;
   onResetPlacement: () => void;
   isPlacementComplete: boolean;
   onAutoPlace?: () => void;
@@ -303,6 +305,12 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   };
 
   const handleRotate = useCallback(() => setIsVertical((p) => !p), []);
+
+  const handleConfirm = useCallback(() => {
+    const shipsData = ships.map((s) => ({ shipId: s.id, cells: s.cells }));
+    onConfirmPlacement(shipsData);
+  }, [ships, onConfirmPlacement]);
+
   const isAllShipsPlaced = unplacedShips.length === 0;
   const pendingCells: ShipCell[] = [];
 
@@ -372,7 +380,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
           isPlacementComplete={isPlacementComplete}
           placedShipIdsSize={placedShipIds.size}
           onRotate={handleRotate}
-          onConfirm={onConfirmPlacement}
+          onConfirm={handleConfirm}
           onReset={onResetPlacement}
           onAutoPlace={onAutoPlace}
           onCancelMove={clearMovingState}
@@ -421,7 +429,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         isPlacementComplete={isPlacementComplete}
         placedShipIdsSize={placedShipIds.size}
         onRotate={handleRotate}
-        onConfirm={onConfirmPlacement}
+        onConfirm={handleConfirm}
         onReset={onResetPlacement}
         onAutoPlace={onAutoPlace}
         onCancelMove={clearMovingState}

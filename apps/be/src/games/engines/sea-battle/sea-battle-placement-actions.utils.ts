@@ -13,6 +13,7 @@ import {
   SeaBattleState,
   PlaceShipPayload,
   MoveShipPayload,
+  BatchPlacementPayload,
 } from './sea-battle.types';
 import { randomlyPlaceShips } from './sea-battle.utils';
 import type {
@@ -198,5 +199,61 @@ export function runResetPlacement(
       senderId: player.playerId,
     }),
   );
+  return { success: true, state };
+}
+
+export function runBatchPlacement(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: BatchPlacementPayload,
+): GameActionResult<SeaBattleState> {
+  const gridSize = state.gridSize ?? BOARD_SIZE;
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      if (player.board[r][c] === CELL_STATE.SHIP) {
+        player.board[r][c] = CELL_STATE.EMPTY;
+      }
+    }
+  }
+  player.ships = [];
+
+  const activeShips = getActiveShips(state.shipCount);
+  for (const shipData of payload.ships) {
+    const shipConfig = activeShips.find((s) => s.id === shipData.shipId);
+    if (shipConfig) {
+      const ship: Ship = {
+        id: shipData.shipId,
+        name: shipConfig.name,
+        size: shipConfig.size,
+        cells: shipData.cells,
+        hits: 0,
+        sunk: false,
+      };
+      player.ships.push(ship);
+      for (const cell of shipData.cells) {
+        player.board[cell.row][cell.col] = CELL_STATE.SHIP;
+      }
+    }
+  }
+
+  player.placementComplete = true;
+  state.logs.push(
+    makeLog('action', 'Placed all ships', {
+      scope: 'private',
+      senderId: player.playerId,
+    }),
+  );
+  state.logs.push(
+    makeLog('system', 'finished placing ships', {
+      senderId: player.playerId,
+    }),
+  );
+
+  const allReady = state.players.every((p) => p.placementComplete);
+  if (allReady) {
+    state.phase = GAME_PHASE.BATTLE;
+    state.logs.push(makeLog('system', 'All ships placed! Battle begins!'));
+  }
+
   return { success: true, state };
 }

@@ -171,11 +171,20 @@ export class SeaBattleGateway {
   @SubscribeMessage('seaBattle.session.confirm_placement')
   async handleConfirmPlacement(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     try {
-      await this.seaBattleService.confirmPlacementByRoom(userId, roomId);
+      await this.seaBattleService.confirmPlacementByRoom(
+        userId,
+        roomId,
+        payload.ships,
+      );
       client.emit(
         'seaBattle.session.placement_confirmed',
         maybeEncrypt({ roomId, userId }),

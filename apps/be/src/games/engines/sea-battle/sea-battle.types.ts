@@ -124,6 +124,10 @@ export interface RadarPayload {
   col?: number;
 }
 
+export interface BatchPlacementPayload {
+  ships: Array<{ shipId: string; cells: ShipCell[] }>;
+}
+
 export interface ChatPayload {
   message: string;
   scope?: ChatScope;

@@ -29,41 +29,33 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
   );
 
   const placeShip = useCallback(
-    (shipId: string, cells: ShipCell[]) => {
+    (_shipId: string, _cells: ShipCell[]) => {
       if (!userId) return;
       onActionStart?.('placeShip');
-      gameSocket.emit('seaBattle.session.place_ship', {
-        roomId,
-        userId,
-        shipId,
-        cells,
-      });
     },
-    [roomId, userId, onActionStart],
+    [userId, onActionStart],
   );
 
   const moveShip = useCallback(
-    (shipId: string, cells: ShipCell[]) => {
+    (_shipId: string, _cells: ShipCell[]) => {
       if (!userId) return;
       onActionStart?.('moveShip');
-      gameSocket.emit('seaBattle.session.move_ship', {
+    },
+    [userId, onActionStart],
+  );
+
+  const confirmPlacement = useCallback(
+    (ships?: Array<{ shipId: string; cells: ShipCell[] }>) => {
+      if (!userId) return;
+      onActionStart?.('confirmPlacement');
+      gameSocket.emit('seaBattle.session.confirm_placement', {
         roomId,
         userId,
-        shipId,
-        cells,
+        ships,
       });
     },
     [roomId, userId, onActionStart],
   );
-
-  const confirmPlacement = useCallback(() => {
-    if (!userId) return;
-    onActionStart?.('confirmPlacement');
-    gameSocket.emit('seaBattle.session.confirm_placement', {
-      roomId,
-      userId,
-    });
-  }, [roomId, userId, onActionStart]);
 
   const resetPlacement = useCallback(() => {
     if (!userId) return;

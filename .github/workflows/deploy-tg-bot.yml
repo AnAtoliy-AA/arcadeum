@@ -1,0 +1,42 @@
+name: Deploy to OCI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/be/**'
+      - 'apps/tg-bot/**'
+      - 'packages/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            pnpm install --frozen-lockfile
+
+            pnpm --filter be build
+            pnpm --filter tg-bot build
+
+            pm2 restart arcadeum-be arcadeum-tg-bot || \
+              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
+               pm2 start "node apps/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
+               pm2 save)
+
+            echo "==> Done!"
+            pm2 list

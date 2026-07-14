@@ -7,661 +7,186 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.23.52] - 2026-07-14
-
-### Changed
-- Internal improvements and maintenance
-
-
-## [1.23.51] - 2026-07-14
-
-### Changed
-- Internal improvements and maintenance
-
-
-## [1.23.50] - 2026-07-14
+## [1.22.36] - 2026-07-14
 
 ### Fixed
+- daily changelog poster runs on schedule only, not on push
 
-- fix chess960 castling bugs and add attack-path validation
 
-## [1.23.49] - 2026-07-14
-
-### Fixed
-
-- update e2e tests to expect no auto-modal on completed games
-- suppress result modal when entering an already-completed game
-
-## [1.23.48] - 2026-07-13
-
-### Fixed
-
-- fix ship placement race condition and add more ships for bigger fields
-
-## [1.23.47] - 2026-07-13
+## [1.22.35] - 2026-07-14
 
 ### Added
-
-- add first-player selection and drag-and-drop reordering
-- add first-player selection in lobby for all games
-
-### Documentation
-
-- add onReorderPlayers wiring to new-game skill template
-
-## [1.23.46] - 2026-07-13
-
-### Added
-
-- improve Tic Tac Toe Infinity UX
+- batch placement and grid-based fleet count
 
 ### Fixed
+- suppress compression() lint error in main.ts
 
-- sanitize both color and mark in SVG cursor
-- sanitize SVG cursor color against injection
-
-## [1.23.45] - 2026-07-13
-
-### Fixed
-
-- limit bots to 1 and fix chess960 castling
-
-## [1.23.44] - 2026-07-13
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.43] - 2026-07-12
-
-### Fixed
-
-- fix TicTacToe bot stuck in infinite error loop
-
-### Improved
-
-- deep performance optimizations round 2
-
-## [1.23.42] - 2026-07-12
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.41] - 2026-07-12
-
-### Fixed
-
-- revert sessionWasCompletedFromStart to fix e2e tests
-- suppress result modal for already-completed rooms
-
-### Documentation
-
-- clarify PR title rules for staging and main
-
-## [1.23.40] - 2026-07-12
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.39] - 2026-07-12
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.38] - 2026-07-12
-
-### Added
-
-- add admin DB health endpoint for monitoring
-
-### Fixed
-
-- lower session size safety valve from 10MB to 100KB/500KB
-- strip logs from completed sessions to reduce DB size
-- prevent MongoDB OOM from large documents and stale sessions
-
-## [1.23.37] - 2026-07-11
-
-### Fixed
-
-- increase maxPoolSize to 50 and heap cap to 768MB
-- prevent OOM crash on MongoDB connection timeout
-
-## [1.23.36] - 2026-07-11
-
-### Fixed
-
-- lazy-load solana, refactor watchdog, auto-complete stale sessions
-- remove unused imports in chess-bot.service.ts
-- auto-complete all game sessions when no humans remain alive
-- auto-complete Critical sessions when no humans remain alive
-- guard CriticalBotService against empty deck and stale sessions
-- lazy-load @solana/web3.js to reduce startup memory
-
-### Refactored
-
-- extract shared GameBotWatchdog for all game services
-
-## [1.23.35] - 2026-07-11
-
-### Fixed
-
-- gray out completed game room actions and show Watch Results
-
-## [1.23.34] - 2026-07-11
-
-### Added
-
-- add time-based bot thinking budget
-- add spectator mode for non-player viewers
-- add drag-and-drop piece movement on chess board
-- add bot difficulty selection in lobby
-- overhaul bot with quiescence, TT, MVV-LVA, null move, LMR, difficulty levels
-- implement Chess960 variant, fix en passant bug, add tests
-
-### Fixed
-
-- replace all hardcoded English strings with i18n translations
-- apply clock increment after moves and detect timeout on backend
-- fix MoveList t-prop type for translation function
-
-## [1.23.33] - 2026-07-11
-
-### Fixed
-
-- make sonar/radar free actions so bots can attack after using them
-- resolve memory leaks causing OOM crashes
-- tune MongoDB connection options to prevent periodic failures
-- add watchdog backoff and MongoDB connection resilience
-- increase SSR timeout and bot lock timeout to reduce dev warnings
-- auto-increment version when tag already exists on remote
-- add logging to silent catch blocks and track glimworm countdown timer
-- prevent memory leaks in emote rate limits and sea-bot lock maps
-- wire player stats recording to game completion flow
-- fix 7 memory leaks across backend services
-
-### Improved
-
-- add lean queries, aggregation optimization, indexes, and async logger
-- optimize queries and fix CI version-bump workflow
-- add .lean() to read-only Mongoose queries in hot paths
-- replace slow aggregation pipeline with fast player-stats reads
-
-## [1.23.32] - 2026-07-10
-
-### Fixed
-
-- resolve memory leaks causing OOM crashes
-- prevent memory leaks in emote rate limits and sea-bot lock maps
-- fix 7 memory leaks across backend services
-- add logging to silent catch blocks and track glimworm countdown timer
-- wire player stats recording to game completion flow
-- tune MongoDB connection options to prevent periodic failures
-- add watchdog backoff and MongoDB connection resilience
-- increase SSR timeout and bot lock timeout to reduce dev warnings
-- auto-increment version when tag already exists on remote
-- make sonar/radar free actions so bots can attack after using them
-
-### Changed
-
-- optimize queries and fix CI version-bump workflow
-- replace slow aggregation pipeline with fast player-stats reads
-- add .lean() to read-only Mongoose queries in hot paths
-
-## [1.23.31] - 2026-07-08
-
-### Fixed
-
-- correct expandBoard() oversized growth in infinity mode
-- remove [skip ci] from version bump commits
-
-## [1.23.30] - 2026-07-08
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.29] - 2026-07-08
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.28] - 2026-07-08
-
-### Fixed
-
-- increase Postiz API timeout to 120s for YouTube uploads
-
-## [1.23.27] - 2026-07-08
-
-### Documentation
-
-- use v1.23.~ version format in CONTRIBUTING examples
-- add version format to PR template title hint
-- add PR title conventions for staging and main branches
-
-## [1.23.26] - 2026-07-08
-
-### Fixed
-
-- add --dangerously-skip-permissions for non-interactive mimo runs
-- fire-and-forget implementation to unblock command processing
-
-## [1.23.25] - 2026-07-08
-
-### Fixed
-
-- check branch commits vs origin/develop, not just diff
-- only delete stale branches, preserve in-progress work
-- delete existing branch before creating new one
-
-## [1.23.24] - 2026-07-08
-
-### Fixed
-
-- use async spawn for CLI commands to unblock event loop
-
-## [1.23.23] - 2026-07-08
-
-### Fixed
-
-- refresh mimo auth before each implementation run
-
-## [1.23.22] - 2026-07-08
-
-### Fixed
-
-- cleanup branch deletion uses actual name and discards uncommitted changes
-
-## [1.23.21] - 2026-07-08
-
-### Changed
-
-- Internal improvements and maintenance
-
-## [1.23.20] - 2026-07-08
-
-### Fixed
-
-- send health alerts to DM instead of group chat
-
-## [1.23.19] - 2026-07-08
-
-### Added
-
-- add in-review label to issue when PR is created
-
-### Fixed
-
-- delete existing branch before creating new one in implementLocally
-- ignore merge commits and show correct version in daily updater
-- daily updater reads version from develop and shows next minor
-
-## [1.23.18] - 2026-07-08
-
-### Fixed
-
-- fix crash loop, add local implementation on OCI
-
-## [1.23.17] - 2026-07-08
-
-### Fixed
-
-- use void operator for lobby join promise
-- suppress floating promise warning on lobby join
-- add proper types to aggregate pipeline results for lint compliance
-- fix TypeScript errors in leaderboard aggregation pipeline
-
-### Improved
-
-- scope global broadcasts to lobby channel, track userId→socket mapping
-- add userId→socketId map for O(1) emitToClientInRoom lookup
-- replace getPlayerStats sequential queries with aggregation pipeline
-- deduplicate socket sanitization per unique userId
-- parallelize leaderboard capture across game modes
-- batch achievement checks with Promise.allSettled
-- replace leaderboard full-scan with MongoDB aggregation pipeline
-- add chatId+timestamp index to Message schema
-- add users index to Chat schema
-- add indexes to GameRoom schema
-- add compound indexes to GameSession schema
-- reduce bcrypt cost factor from 12 to 10
-- add gzip compression import to bootstrap
-
-### Refactored
-
-- split gateway and realtime service to stay under 500-line limit
-
-## [1.23.16] - 2026-07-07
-
-### Added
-
-- enhance commands with richer info and add /chart /holders
-- add /ca command to show contract address
-
-### Fixed
-
-- use pre block for /ca so address is tap-to-copy
-
-## [1.23.15] - 2026-07-07
-
-### Fixed
-
-- improve tic-tac-toe infinity board UX and chat move highlighting
-
-## [1.23.14] - 2026-07-07
-
-### Fixed
-
-- add optimistic updates, fix board squareness, improve mongo timeouts
-
-## [1.23.13] - 2026-07-07
-
-### Added
-
-- add chess create page, home entry, backend service/gateway, and clock (ARC-877)
-- use centered coordinates (0,0 at center) for infinity board
-- add infinity board mode to Tic-Tac-Toe with configurable settings
-
-### Fixed
-
-- prevent BSON document overflow in infinity mode
-- fix infinity board log coordinates and add hover preview
-- backfill legalMovesForCurrentPlayer for old sessions and add null fallback
-- improve tic tac toe infinity board
-- add legalMovesForCurrentPlayer to engine state and fix frontend move selection
-- add explicit grid rows to TicTacToe board for uniform cell sizing
-
-## [1.23.12] - 2026-07-07
-
-### Added
-
-- add chess landing page, i18n, and web integration (ARC-877)
-- add chess main game component with board interaction (ARC-877)
-- add chess widget UI components (ARC-877)
-- add chess widget types and hooks (ARC-877)
-
-## [1.23.11] - 2026-07-07
-
-### Added
-
-- register chess engine in module and catalog (ARC-877)
-- add chess engine and bot with minimax (ARC-877)
-- add chess board utilities, attacks, and move generator (ARC-877)
-- add chess engine types and constants (ARC-877)
-
-## [1.23.10] - 2026-07-07
-
-### Fixed
-
-- pass anonId in socket handshake so anonymous clients receive encryption key
-- fix game start flow for anonymous users
-- check for duplicate issues before creating
-- use execFileSync to avoid shell backtick interpretation
-
-## [1.23.9] - 2026-07-07
-
-### Fixed
-
-- check for duplicate issues before creating
-
-## [1.23.8] - 2026-07-07
-
-### Fixed
-
-- use execFileSync to avoid shell backtick interpretation
-
-## [1.23.7] - 2026-07-07
-
-### Added
-
-- add priority, scope detection, engine prefs, tests
-- add full automation pipeline with ARC auto-assignment
-
-### Fixed
-
-- resolve lint errors and reduce file size
-
-## [1.23.6] - 2026-07-06
-
-### Fixed
-
-- remove duplicate border in game chat panel
-
-## [1.23.5] - 2026-07-06
-
-### Fixed
-
-- use Render PORT env var for port binding
-
-## [1.23.4] - 2026-07-06
-
-### Fixed
-
-- use Buffer GraphQL API for release social posting
-- fix game not showing after start and tic-tac-toe cell overflow
-- inject TelegramService directly instead of BOT_TOKEN factory
-- use OnApplicationBootstrap to ensure bot is ready
-
-### Documentation
-
-- fix pr-description skill to target develop instead of main
-
-## [1.24.1] - 2026-07-06
-
-### Added
-
-- add changelog page with version badges and fix (N/A) entries
-- add task-bot automation with dual engine support
-
-### Fixed
-
-- use flexible deck size assertion for CI compatibility
-- add eslint config and dependencies
-- update deploy workflow paths for bots/
-
-## [1.24.0] - 2026-07-06
-
-### Added
-
-- add task-bot automation with dual engine support (N/A)
-
-### Fixed
-
-- add eslint config and dependencies (N/A)
-- update deploy workflow paths for bots/ (N/A)
-
-## [1.23.2] - 2026-07-06
-
-### Fixed
-
-- fix Discord chunking and Buffer REST API for release poster (N/A)
-
-## [1.23.1] - 2026-07-04
-
-### Fixed
-
-- aggregate all minor version changes in release posts
-- add workflow_dispatch to release poster for manual triggering
-- order v1.22.x changelog entries descending (newest first)
-- regenerate CHANGELOG with complete scoped commit entries
-- handle scoped commits in changelog generation
-
-## [1.23.0] - 2026-07-04
-
-### Changed
-
-- Internal improvements and maintenance
 
 ## [1.22.34] - 2026-07-04
 
 ### Fixed
 
-- clear httpOnly cookies on logout from header and settings
-- modernize private room and password form UI
+- clear httpOnly cookies on logout from header and settings (N/A)
+- modernize private room and password form UI (N/A)
 
 ## [1.22.33] - 2026-07-04
 
 ### Added
 
-- show emotes and messages as floating bubbles in game room
+- show emotes and messages as floating bubbles in game room (N/A)
 
 ### Fixed
 
-- cast emoteId to EmoteId type in GameWidgetContainer
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
 ## [1.22.32] - 2026-07-04
 
 ### Added
 
-- add bulk user delete with select all on page
+- add bulk user delete with select all on page (N/A)
 
 ### Fixed
 
-- handle unknown user roles in RoleBadge fallback
-- call backend /auth/logout to clear httpOnly cookies on signout
-- prevent session loss on page refresh by removing race condition
+- handle unknown user roles in RoleBadge fallback (N/A)
+- call backend /auth/logout to clear httpOnly cookies on signout (N/A)
+- prevent session loss on page refresh by removing race condition (N/A)
 
 ## [1.22.31] - 2026-07-03
 
 ### Fixed
 
-- enable music from header nav without in-game toggle
+- enable music from header nav without in-game toggle (N/A)
 
 ## [1.22.30] - 2026-07-03
 
 ### Added
 
-- bots use sonar/radar when enabled in game state
-- improve sonar/radar UX with board hover preview
-- add missing sea battle rules and rule descriptions to game catalog
+- bots use sonar/radar when enabled in game state (N/A)
+- improve sonar/radar UX with board hover preview (N/A)
+- add missing sea battle rules and rule descriptions to game catalog (N/A)
 
 ### Fixed
 
-- audio player repeat one and lint issues
-- weapon preview works on any opponent board
-- cache lastSonar/lastRadar in ref so highlights persist across state updates
-- sonar 3×3, radar shows all cells, highlights persist
-- show all scanned cells, ship cells stand out from empty
-- match sonar preview to backend radius, filter radar to ship cells only
-- remove border shorthand/non-shorthand mixing in weapon buttons
-- pass row/col to sonar handler, add radar row/col toggle
-- pass weaponMode prop through AttackBoard to opponent boards
-- fix sonar/radar not firing, remove bomb animation in weapon mode
-- show all rules in lobby, disabled + Coming Soon when excluded
-- default unmentioned rules to enabled, hide excluded rules
-- use i18n key for Coming Soon badge text
-- enforce rule visibility in lobby UI and updateRoomOptions
-- enforce game rule visibility in createRoom
-- add CSRF header to server actions and fix game rules response
+- audio player repeat one and lint issues (N/A)
+- weapon preview works on any opponent board (N/A)
+- cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
+- sonar 3×3, radar shows all cells, highlights persist (N/A)
+- show all scanned cells, ship cells stand out from empty (N/A)
+- match sonar preview to backend radius, filter radar to ship cells only (N/A)
+- remove border shorthand/non-shorthand mixing in weapon buttons (N/A)
+- pass row/col to sonar handler, add radar row/col toggle (N/A)
+- pass weaponMode prop through AttackBoard to opponent boards (N/A)
+- fix sonar/radar not firing, remove bomb animation in weapon mode (N/A)
+- show all rules in lobby, disabled + Coming Soon when excluded (N/A)
+- default unmentioned rules to enabled, hide excluded rules (N/A)
+- use i18n key for Coming Soon badge text (N/A)
+- enforce rule visibility in lobby UI and updateRoomOptions (N/A)
+- enforce game rule visibility in createRoom (N/A)
+- add CSRF header to server actions and fix game rules response (N/A)
 
 ## [1.22.29] - 2026-07-03
 
 ### Fixed
 
-- play next track when previous ends (wasPlaying was false after ended)
-- show music icon in mobile menu by using navItem.icon fallback
-- remove crossOrigin and use removeAttribute(src) to clear old audio
-- add audio error logging for CDN debugging
-- restore crossOrigin on audio elements — CDN supports CORS
-- load full music catalog in dev mode instead of 10-track fallback
-- remove crossOrigin from audio elements to fix CDN CORS error
-- make refreshToken optional in refresh DTO to allow cookie-based refresh
-- use store refreshTokens in checkSession instead of refreshSessionFromCookie
-- clear session when refresh token is missing instead of sending empty string
-- use store refreshTokens with proper guards on rehydration
-- change Cross-Origin-Resource-Policy to cross-origin for CDN audio
-- persist refresh token and restore session on page reload
+- play next track when previous ends (wasPlaying was false after ended) (N/A)
+- show music icon in mobile menu by using navItem.icon fallback (N/A)
+- remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
+- add audio error logging for CDN debugging (N/A)
+- restore crossOrigin on audio elements — CDN supports CORS (N/A)
+- load full music catalog in dev mode instead of 10-track fallback (N/A)
+- remove crossOrigin from audio elements to fix CDN CORS error (N/A)
+- make refreshToken optional in refresh DTO to allow cookie-based refresh (N/A)
+- use store refreshTokens in checkSession instead of refreshSessionFromCookie (N/A)
+- clear session when refresh token is missing instead of sending empty string (N/A)
+- use store refreshTokens with proper guards on rehydration (N/A)
+- change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
+- persist refresh token and restore session on page reload (N/A)
 
 ## [1.22.28] - 2026-07-03
 
 ### Added
 
-- add undo/take-back and password-protected rooms
-- add CreationConfig for TicTacToe and Cascade
-- add i18n for emote labels
-- add server-side emote rate limiting
-- add streaks and favorite game to local stats
+- add undo/take-back and password-protected rooms (N/A)
+- add CreationConfig for TicTacToe and Cascade (N/A)
+- add i18n for emote labels (N/A)
+- add server-side emote rate limiting (N/A)
+- add streaks and favorite game to local stats (N/A)
 
 ### Fixed
 
-- skip finally URL cleanup on successful OAuth redirect
-- use router.replace after OAuth to avoid hard page reload
-- restore hard navigation after OAuth, session survives via cookies
-- use soft navigation after OAuth instead of hard page reload
-- recover session from cookies in SessionRoleSync
-- use lax sameSite on HTTP to prevent cookie rejection
-- fix session persistence and e2e stats test
-- move getAttribute outside toPass to avoid 15s retry timeout
-- fix stats e2e test by removing catch-all route that bypassed stats mock
-- sync pnpm-lock.yaml with be/package.json
-- clean up old audio element during paused crossfade to fix next/prev track detection
-- update GameMusic tests for no-auto-play behavior
-- prevent music auto-playing on page load/refresh
-- wire undo to actually revert game state on acceptance
+- skip finally URL cleanup on successful OAuth redirect (N/A)
+- use router.replace after OAuth to avoid hard page reload (N/A)
+- restore hard navigation after OAuth, session survives via cookies (N/A)
+- use soft navigation after OAuth instead of hard page reload (N/A)
+- recover session from cookies in SessionRoleSync (N/A)
+- use lax sameSite on HTTP to prevent cookie rejection (N/A)
+- fix session persistence and e2e stats test (N/A)
+- move getAttribute outside toPass to avoid 15s retry timeout (N/A)
+- fix stats e2e test by removing catch-all route that bypassed stats mock (N/A)
+- sync pnpm-lock.yaml with be/package.json (N/A)
+- clean up old audio element during paused crossfade to fix next/prev track detection (N/A)
+- update GameMusic tests for no-auto-play behavior (N/A)
+- prevent music auto-playing on page load/refresh (N/A)
+- wire undo to actually revert game state on acceptance (N/A)
 
 ## [1.22.27] - 2026-07-02
 
 ### Added
 
-- add game rules visibility control for lobby settings
+- add game rules visibility control for lobby settings (N/A)
 
 ### Fixed
 
-- fix GameRuleVisibilityModule DI and unit test mocks
+- fix GameRuleVisibilityModule DI and unit test mocks (N/A)
 
 ## [1.22.26] - 2026-07-02
 
 ### Added
 
-- update friends page UI/UX and move to profile menu
+- update friends page UI/UX and move to profile menu (N/A)
 
 ## [1.22.25] - 2026-07-02
 
 ### Added
 
-- add backend health monitoring with Telegram and Discord alerts
+- add backend health monitoring with Telegram and Discord alerts (N/A)
 
 ### Fixed
 
-- handle missing changelog file in daily workflow
-- add LinkedIn and Facebook chunking for long messages
-- add Facebook chunking, version in Threads header, footer in Discord continued
-- add stay tuned footer to daily messages
-- remove arcadeum.games link from daily messages
-- improve social bot messages across all platforms
-- rework social media bot messages
+- handle missing changelog file in daily workflow (N/A)
+- add LinkedIn and Facebook chunking for long messages (N/A)
+- add Facebook chunking, version in Threads header, footer in Discord continued (N/A)
+- add stay tuned footer to daily messages (N/A)
+- remove arcadeum.games link from daily messages (N/A)
+- improve social bot messages across all platforms (N/A)
+- rework social media bot messages (N/A)
 
 ## [1.22.24] - 2026-07-02
 
 ### Added
 
-- add Siamese, Persian, and Bengal cyber cat avatars
+- add Siamese, Persian, and Bengal cyber cat avatars (N/A)
 
 ## [1.22.23] - 2026-07-02
 
 ### Fixed
 
-- add X-Requested-With header to server action fetch calls
-- remove unused ShipOp interface
-- fix Logger type mismatch in sea-battle gateway
-- add JwtModule imports to ChatModule and GamesModule
-- reorder AuthModule before ChatModule in AppModule imports
-- add CSRF guard, anonymous ID verification, remove tokens from localStorage
-- migrate JWTs to httpOnly cookies
-- add JWT verification to WebSocket gateways and enable Helmet CSP
-- patch critical vulnerabilities found during security audit
-- override vulnerable deps react-server-dom-webpack and shell-quote
+- add X-Requested-With header to server action fetch calls (N/A)
+- remove unused ShipOp interface (N/A)
+- fix Logger type mismatch in sea-battle gateway (N/A)
+- add JwtModule imports to ChatModule and GamesModule (N/A)
+- reorder AuthModule before ChatModule in AppModule imports (N/A)
+- add CSRF guard, anonymous ID verification, remove tokens from localStorage (N/A)
+- migrate JWTs to httpOnly cookies (N/A)
+- add JWT verification to WebSocket gateways and enable Helmet CSP (N/A)
+- patch critical vulnerabilities found during security audit (N/A)
+- override vulnerable deps react-server-dom-webpack and shell-quote (N/A)
 
 ### Documentation
 
-- add comprehensive security audit skills from Anthropic-Cybersecurity-Skills
-- clarify socket encryption key naming and document security posture
-- add cybersecurity audit skills from Anthropic-Cybersecurity-Skills
+- add comprehensive security audit skills from Anthropic-Cybersecurity-Skills (N/A)
+- clarify socket encryption key naming and document security posture (N/A)
+- add cybersecurity audit skills from Anthropic-Cybersecurity-Skills (N/A)
 
 ## [1.22.22] - 2026-07-02
 
@@ -678,7 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- skip CDN music fetch in dev to avoid CORS 404 in e2e tests
+- skip CDN music fetch in dev to avoid CORS 404 in e2e tests (N/A)
 - fix lint errors and extract types to stay under 500 lines (ARC-1)
 - refresh room data after updating house rules in lobby (ARC-1)
 - replace Switch with native checkboxes for house rules in lobby (ARC-1)
@@ -699,18 +224,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- fix emote encryption and expand emote system
+- fix emote encryption and expand emote system (N/A)
 
 ### Fixed
 
-- correct isLandscape on mount to fix webkit layout
-- correct isLandscape on mount to fix webkit layout
-- compute isLandscape synchronously from window to fix SSR hydration
-- use synchronous isMobilePortrait check for cols floor
-- add containerWidth=0 floor for landscape multi-player grids
-- default to 2 cols when containerWidth is 0 in media.short branch
-- wait for ResizeObserver before asserting grid layout in sea-battle-6-players test
-- handle invalid ARCADEUM_MINT_ADDRESS gracefully
+- correct isLandscape on mount to fix webkit layout (N/A)
+- correct isLandscape on mount to fix webkit layout (N/A)
+- compute isLandscape synchronously from window to fix SSR hydration (N/A)
+- use synchronous isMobilePortrait check for cols floor (N/A)
+- add containerWidth=0 floor for landscape multi-player grids (N/A)
+- default to 2 cols when containerWidth is 0 in media.short branch (N/A)
+- wait for ResizeObserver before asserting grid layout in sea-battle-6-players test (N/A)
+- handle invalid ARCADEUM_MINT_ADDRESS gracefully (N/A)
 
 ## [1.22.20] - 2026-07-01
 
@@ -734,98 +259,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- add implement-roadmap-feature skill
+- add implement-roadmap-feature skill (N/A)
 
 ## [1.22.18] - 2026-07-01
 
 ### Documentation
 
-- add ARC ticket references for all features
+- add ARC ticket references for all features (N/A)
 
 ## [1.22.17] - 2026-06-30
 
 ### Added
 
-- double-click on playlist track to play
-- update music player to use 160-track R2 catalog
+- double-click on playlist track to play (N/A)
+- update music player to use 160-track R2 catalog (N/A)
 
 ### Fixed
 
-- remove row click-to-play from playlist tracks
-- checkbox toggle should not affect current playback
-- suppress auto-play when disabling currently playing track
-- disable currently playing track when unchecked in playlist
-- widen mini mode music player to prevent button overflow
+- remove row click-to-play from playlist tracks (N/A)
+- checkbox toggle should not affect current playback (N/A)
+- suppress auto-play when disabling currently playing track (N/A)
+- disable currently playing track when unchecked in playlist (N/A)
+- widen mini mode music player to prevent button overflow (N/A)
 
 ## [1.22.16] - 2026-06-30
 
 ### Added
 
-- improve token chart, wallet balance, and home page
+- improve token chart, wallet balance, and home page (N/A)
 
 ## [1.22.15] - 2026-06-30
 
 ### Fixed
 
-- use numeric borderRadius instead of $full token in roadmap page
+- use numeric borderRadius instead of $full token in roadmap page (N/A)
 
 ### Refactored
 
-- split roadmap page data into roadmap-data.ts to stay under 500 lines
+- split roadmap page data into roadmap-data.ts to stay under 500 lines (N/A)
 
 ### Documentation
 
-- add platform expansion roadmap
+- add platform expansion roadmap (N/A)
 
 ## [1.22.14] - 2026-06-30
 
 ### Added
 
-- add remove friend confirmation dialog
-- add invite to game button on friends page
-- add friends SEO metadata for all locales
-- add friends link to navigation
-- add friends i18n for all locales
-- add friends page with real-time updates
-- add friends i18n keys
-- add friends socket to shared infrastructure
-- add friends API client
-- wire gateway events into FriendsService
+- add remove friend confirmation dialog (N/A)
+- add invite to game button on friends page (N/A)
+- add friends SEO metadata for all locales (N/A)
+- add friends link to navigation (N/A)
+- add friends i18n for all locales (N/A)
+- add friends page with real-time updates (N/A)
+- add friends i18n keys (N/A)
+- add friends socket to shared infrastructure (N/A)
+- add friends API client (N/A)
+- wire gateway events into FriendsService (N/A)
 
 ### Fixed
 
-- resolve FriendsGateway circular dependency and missing JwtModule
-- resolve CI failures across lint, tests, and e2e
-- fix build errors in friends page
-- use useSessionTokens instead of nonexistent useSession
+- resolve FriendsGateway circular dependency and missing JwtModule (N/A)
+- resolve CI failures across lint, tests, and e2e (N/A)
+- fix build errors in friends page (N/A)
+- use useSessionTokens instead of nonexistent useSession (N/A)
 
 ## [1.22.13] - 2026-06-30
 
 ### Added
 
-- add contact page scenario
-- add 30 scenario journeys (one per day)
+- add contact page scenario (N/A)
+- add 30 scenario journeys (one per day) (N/A)
 
 ### Fixed
 
-- remove glimworm scenario
-- wait for page content to render before recording
+- remove glimworm scenario (N/A)
+- wait for page content to render before recording (N/A)
 
 ## [1.22.12] - 2026-06-29
 
 ### Added
 
-- video generator + Postiz YouTube publisher
+- video generator + Postiz YouTube publisher (N/A)
 
 ### Fixed
 
-- remove non-existent CDN music tracks
+- remove non-existent CDN music tracks (N/A)
 
 ## [1.22.11] - 2026-06-29
 
 ### Added
 
-- add configurable signup reward for coins and gems
+- add configurable signup reward for coins and gems (N/A)
 
 ## [1.22.10] - 2026-06-29
 
@@ -837,29 +362,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add native tooltips to all player buttons
-- per-track gradient backgrounds and smooth progress bar
-- add error/loading states for track fetch and playback
-- show track duration in playlist
-- add crossfade between tracks
-- allow dragging player from any empty space with grab cursor
-- add play button and double-click to play tracks in playlist
-- stronger liquid glass with more transparency and white highlights
-- Apple liquid glass effect with transparent white gradient
-- liquid glass effect with see-through transparency
-- increase blur to 60px and reduce opacity to 0.35 for deeper glass effect
-- liquid glass effect with stronger blur and transparency
-- add volume percentage display and narrow volume slider
-- add close button to music player that stops playback
-- replace Token nav link with Music toggle button
-- make music player global across all pages
-- premium audio player UI with larger buttons
-- add drag-and-drop reordering for music playlist
-- persist music playlist track toggles in localStorage
-- add mobile-friendly music player styles
-- load music tracks from CDN json and add media-src CSP
-- integrate transport controls, playlist, draggable and polished styles into music player
-- move music to cloudflare r2 and add dynamic track loading
+- add native tooltips to all player buttons (N/A)
+- per-track gradient backgrounds and smooth progress bar (N/A)
+- add error/loading states for track fetch and playback (N/A)
+- show track duration in playlist (N/A)
+- add crossfade between tracks (N/A)
+- allow dragging player from any empty space with grab cursor (N/A)
+- add play button and double-click to play tracks in playlist (N/A)
+- stronger liquid glass with more transparency and white highlights (N/A)
+- Apple liquid glass effect with transparent white gradient (N/A)
+- liquid glass effect with see-through transparency (N/A)
+- increase blur to 60px and reduce opacity to 0.35 for deeper glass effect (N/A)
+- liquid glass effect with stronger blur and transparency (N/A)
+- add volume percentage display and narrow volume slider (N/A)
+- add close button to music player that stops playback (N/A)
+- replace Token nav link with Music toggle button (N/A)
+- make music player global across all pages (N/A)
+- premium audio player UI with larger buttons (N/A)
+- add drag-and-drop reordering for music playlist (N/A)
+- persist music playlist track toggles in localStorage (N/A)
+- add mobile-friendly music player styles (N/A)
+- load music tracks from CDN json and add media-src CSP (N/A)
+- integrate transport controls, playlist, draggable and polished styles into music player (N/A)
+- move music to cloudflare r2 and add dynamic track loading (N/A)
 - keep 2 fallback tracks in repo, load rest from R2 CDN (ARC-840)
 - add transport controls, playlist, and draggable hook (ARC-840)
 - add i18n keys for shuffle, repeat, playlist, minimize, maximize (ARC-840)
@@ -870,61 +395,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- remove duplicate declarations in useAudioPlayer and fix mobile nav href
-- remove leftover seekOnReorderRef from crossfade
-- fix isPlaying flicker and playlist click-to-play
-- add stop to mini mode and gap before expand button
-- use double-chevron icons for skip ±10s
-- restore big play button and add transport to mini mode
-- use small button variant for primary transport row
-- restructure transport controls layout and fix skip icons
-- prevent track restart when toggling shuffle or repeat
-- resume playback from paused position instead of beginning
-- resume playback when clicking play on already-selected paused track
-- increase equalizer and playing bars contrast for glass background
-- show grabbing cursor on entire player while dragging
-- prevent track restart when toggling enabled tracks
-- improve text contrast and visibility in glass player
-- set mobile player width to 320px
-- left-align volume icon
-- match volume and progress bar widths with aligned icon
-- right-align volume percentage
-- align volume percentage with track time labels
-- adjust volume slider horizontal padding to 6px
-- move volume percentage to right side of slider
-- make progress bar narrower than volume slider
-- shrink buttons to 28px/34px and reduce gap to 4px
-- resize buttons to 32px/38px to fit inside player
-- replace IconButton with plain buttons for correct sizing
-- remove size prop from IconButton to let CSS control button dimensions
-- force button sizes with CSS !important to override Tamagui variants
-- force button sizes via inline styles and increase control gap
-- increase music player button sizes
-- add margin under transport controls
-- add more bottom padding to music player
-- increase gap between transport buttons to 8px
-- increase spacing between music player controls
-- improve mobile touch drag for playlist songs
-- add TouchSensor for mobile drag-and-drop in playlist
-- use label as key in mobile menu to avoid duplicate keys
-- auto-advance to next track when song ends
-- add CDN URL to connect-src CSP for tracks.json fetch
-- auto-advance to next track when song ends
+- remove duplicate declarations in useAudioPlayer and fix mobile nav href (N/A)
+- remove leftover seekOnReorderRef from crossfade (N/A)
+- fix isPlaying flicker and playlist click-to-play (N/A)
+- add stop to mini mode and gap before expand button (N/A)
+- use double-chevron icons for skip ±10s (N/A)
+- restore big play button and add transport to mini mode (N/A)
+- use small button variant for primary transport row (N/A)
+- restructure transport controls layout and fix skip icons (N/A)
+- prevent track restart when toggling shuffle or repeat (N/A)
+- resume playback from paused position instead of beginning (N/A)
+- resume playback when clicking play on already-selected paused track (N/A)
+- increase equalizer and playing bars contrast for glass background (N/A)
+- show grabbing cursor on entire player while dragging (N/A)
+- prevent track restart when toggling enabled tracks (N/A)
+- improve text contrast and visibility in glass player (N/A)
+- set mobile player width to 320px (N/A)
+- left-align volume icon (N/A)
+- match volume and progress bar widths with aligned icon (N/A)
+- right-align volume percentage (N/A)
+- align volume percentage with track time labels (N/A)
+- adjust volume slider horizontal padding to 6px (N/A)
+- move volume percentage to right side of slider (N/A)
+- make progress bar narrower than volume slider (N/A)
+- shrink buttons to 28px/34px and reduce gap to 4px (N/A)
+- resize buttons to 32px/38px to fit inside player (N/A)
+- replace IconButton with plain buttons for correct sizing (N/A)
+- remove size prop from IconButton to let CSS control button dimensions (N/A)
+- force button sizes with CSS !important to override Tamagui variants (N/A)
+- force button sizes via inline styles and increase control gap (N/A)
+- increase music player button sizes (N/A)
+- add margin under transport controls (N/A)
+- add more bottom padding to music player (N/A)
+- increase gap between transport buttons to 8px (N/A)
+- increase spacing between music player controls (N/A)
+- improve mobile touch drag for playlist songs (N/A)
+- add TouchSensor for mobile drag-and-drop in playlist (N/A)
+- use label as key in mobile menu to avoid duplicate keys (N/A)
+- auto-advance to next track when song ends (N/A)
+- add CDN URL to connect-src CSP for tracks.json fetch (N/A)
+- auto-advance to next track when song ends (N/A)
 
 ### Improved
 
-- reuse Audio element across track changes
+- reuse Audio element across track changes (N/A)
 
 ### Refactored
 
-- extract TransportRow reusable component
-- extract useAudioPlayer hook, add skip ±10s, mini track name, keyboard shortcuts
+- extract TransportRow reusable component (N/A)
+- extract useAudioPlayer hook, add skip ±10s, mini track name, keyboard shortcuts (N/A)
 
 ## [1.22.8] - 2026-06-28
 
 ### Refactored
 
-- extract shared integration test helpers
+- extract shared integration test helpers (N/A)
 
 ## [1.22.7] - 2026-06-27
 
@@ -937,13 +462,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- room join/watch button visibility based on lobby status and participation
+- room join/watch button visibility based on lobby status and participation (N/A)
 
 ## [1.22.5] - 2026-06-27
 
 ### Fixed
 
-- add custom 404 page with navigation
+- add custom 404 page with navigation (N/A)
 
 ## [1.22.4] - 2026-06-26
 
@@ -955,7 +480,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- rename middleware to proxy and remove duplicate mongoose index
+- rename middleware to proxy and remove duplicate mongoose index (N/A)
 
 ## [1.22.0] - 2026-06-25
 
@@ -982,7 +507,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- normalize VideoObject uploadDate to include time zone
+- normalize VideoObject uploadDate to include time zone (N/A)
 
 ## [1.21.13] - 2026-06-25
 
@@ -1010,17 +535,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- reorganize in-game music into public/music with unique track names
+- reorganize in-game music into public/music with unique track names (N/A)
 
 ## [1.21.9] - 2026-06-24
 
 ### Added
 
-- add cyber lion/shark avatars, premium name colors, banners, auras, and frames
+- add cyber lion/shark avatars, premium name colors, banners, auras, and frames (N/A)
 
 ### Fixed
 
-- split shop-catalog.ts to stay under 500-line lint limit
+- split shop-catalog.ts to stay under 500-line lint limit (N/A)
 
 ## [1.21.8] - 2026-06-24
 
@@ -1055,57 +580,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactored
 
-- merge two useEffects into one in useIdleReconnect
+- merge two useEffects into one in useIdleReconnect (N/A)
 
 ## [1.21.3] - 2026-06-22
 
 ### Fixed
 
-- update pnpm-lock.yaml after removing @nestjs/schedule
-- improve buy/sell detection with phase2 token balance fallback
-- improve buy/sell detection, add retry logic and health check
+- update pnpm-lock.yaml after removing @nestjs/schedule (N/A)
+- improve buy/sell detection with phase2 token balance fallback (N/A)
+- improve buy/sell detection, add retry logic and health check (N/A)
 
 ## [1.21.2] - 2026-06-22
 
 ### Added
 
-- add token price chart with GeckoTerminal API and i18n
-- redesign token page with premium UI/UX
-- add wallet-based shop purchase endpoint
-- add admin controls for shop currencies
-- add ARC as shop currency and new wallet reasons
+- add token price chart with GeckoTerminal API and i18n (N/A)
+- redesign token page with premium UI/UX (N/A)
+- add wallet-based shop purchase endpoint (N/A)
+- add admin controls for shop currencies (N/A)
+- add ARC as shop currency and new wallet reasons (N/A)
 
 ### Fixed
 
-- move connect wallet to spend section and add i18n translations
-- replace gameplay rewards with wallet connection in token page
-- update token page to show real ways to earn ARC
-- type-assert res.body in solana controller spec
-- mock @solana/web3.js in shop controller spec
-- update tests for withdrawal removal and ARC shop support
-- add arcadeum to admin shop override type
+- move connect wallet to spend section and add i18n translations (N/A)
+- replace gameplay rewards with wallet connection in token page (N/A)
+- update token page to show real ways to earn ARC (N/A)
+- type-assert res.body in solana controller spec (N/A)
+- mock @solana/web3.js in shop controller spec (N/A)
+- update tests for withdrawal removal and ARC shop support (N/A)
+- add arcadeum to admin shop override type (N/A)
 
 ### Refactored
 
-- split chart into helpers, styles, and component files
-- add utility token disclaimers to wallet and token pages
-- add shop disclaimer and remove Jupiter exchange link
-- update SEO descriptions to remove withdrawal references
-- update i18n messages to remove withdrawal references
-- remove withdrawal UI from wallet page
-- remove withdrawal endpoint and transfer methods
+- split chart into helpers, styles, and component files (N/A)
+- add utility token disclaimers to wallet and token pages (N/A)
+- add shop disclaimer and remove Jupiter exchange link (N/A)
+- update SEO descriptions to remove withdrawal references (N/A)
+- update i18n messages to remove withdrawal references (N/A)
+- remove withdrawal UI from wallet page (N/A)
+- remove withdrawal endpoint and transfer methods (N/A)
 
 ## [1.21.1] - 2026-06-21
 
 ### Added
 
-- add PumpFun transaction monitor Telegram bot
+- add PumpFun transaction monitor Telegram bot (N/A)
 
 ### Fixed
 
-- remove unused accounts variable
-- detect trades without PumpFun program in accounts
-- add eslint config and fix lint errors
+- remove unused accounts variable (N/A)
+- detect trades without PumpFun program in accounts (N/A)
+- add eslint config and fix lint errors (N/A)
 
 ## [1.21.0] - 2026-06-20
 
@@ -1113,16 +638,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add token page, home section, header nav link, and pump.fun link
-- add Arcadeum filter to wallet history and fix filter scroll
-- display real token image, name and ticker from pump.fun
+- add token page, home section, header nav link, and pump.fun link (N/A)
+- add Arcadeum filter to wallet history and fix filter scroll (N/A)
+- display real token image, name and ticker from pump.fun (N/A)
 
 ### Fixed
 
-- add missing useState import in TokenInfo
-- fix mobile language pill click by scrolling container
-- update e2e tests for wallet filter anchors and mobile language scroll
-- add wallet icon to token link in mobile menu
+- add missing useState import in TokenInfo (N/A)
+- fix mobile language pill click by scrolling container (N/A)
+- update e2e tests for wallet filter anchors and mobile language scroll (N/A)
+- add wallet icon to token link in mobile menu (N/A)
 
 ## [1.20.4] - 2026-06-19
 
@@ -1130,62 +655,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add ARCADEUM GAMES token info section with ARC ticker
-- complete Solana withdraw feature with security hardening
-- add admin buy-back endpoint for token purchases
-- add Withdraw to Wallet page with Phantom integration
-- add cryptocurrency disclaimer to Terms of Service
-- add Solana module with SPL token transfer and withdrawal
-- add arcadeum currency to wallet system
+- add ARCADEUM GAMES token info section with ARC ticker (N/A)
+- complete Solana withdraw feature with security hardening (N/A)
+- add admin buy-back endpoint for token purchases (N/A)
+- add Withdraw to Wallet page with Phantom integration (N/A)
+- add cryptocurrency disclaimer to Terms of Service (N/A)
+- add Solana module with SPL token transfer and withdrawal (N/A)
+- add arcadeum currency to wallet system (N/A)
 
 ### Fixed
 
-- rewrite withdraw e2e tests for server-side auth
-- fix lint errors in withdraw e2e test
-- use individual expect assertions to avoid any lint errors
-- fix lint error with toMatchObject and asymmetric matchers
-- fix lint error in solana controller spec
-- fix lint errors in solana test files
-- make ARCADEUM_MINT_ADDRESS and SOLANA_PRIVATE_KEY optional
-- fix useTranslation API usage and DeepPartial types
-- remove locale arg from useTranslation calls
-- patch @tamagui/web config.mjs to auto-init tokensMerged from global config
-- resolve CI build and test failures
-- broaden uuid ESM transform pattern for pnpm nested paths
-- transform uuid ESM in e2e test config
-- add missing User model to SolanaModule imports
+- rewrite withdraw e2e tests for server-side auth (N/A)
+- fix lint errors in withdraw e2e test (N/A)
+- use individual expect assertions to avoid any lint errors (N/A)
+- fix lint error with toMatchObject and asymmetric matchers (N/A)
+- fix lint error in solana controller spec (N/A)
+- fix lint errors in solana test files (N/A)
+- make ARCADEUM_MINT_ADDRESS and SOLANA_PRIVATE_KEY optional (N/A)
+- fix useTranslation API usage and DeepPartial types (N/A)
+- remove locale arg from useTranslation calls (N/A)
+- patch @tamagui/web config.mjs to auto-init tokensMerged from global config (N/A)
+- resolve CI build and test failures (N/A)
+- broaden uuid ESM transform pattern for pnpm nested paths (N/A)
+- transform uuid ESM in e2e test config (N/A)
+- add missing User model to SolanaModule imports (N/A)
 
 ### Refactored
 
-- extract TokenInfo inline styles to CSS module
+- extract TokenInfo inline styles to CSS module (N/A)
 
 ### Documentation
 
-- add ARCADEUM_MINT_ADDRESS to web .env.example
-- add Solana environment variable documentation
-- add Solana token ecosystem final report
+- add ARCADEUM_MINT_ADDRESS to web .env.example (N/A)
+- add Solana environment variable documentation (N/A)
+- add Solana token ecosystem final report (N/A)
 
 ## [1.20.2] - 2026-06-19
 
 ### Fixed
 
-- use addToQueue for Facebook manual publish
-- use shareNow for Facebook immediate publish
-- use addToQueue for Facebook to bypass identity check
-- pass Facebook post type via metadata instead of top-level field
-- add Facebook post type and fix error detection in Buffer API
-- use correct Buffer enum values (shareNow, assets: [])
-- use correct Buffer GraphQL types (ChannelId, schedulingType: now)
-- hardcode mode enum in query, remove random sleep
-- remove invalid ShareMode enum value from Buffer GraphQL mutation
-- use GraphQL variables for Buffer API in release poster too
-- use GraphQL variables for Buffer API to fix string escaping
+- use addToQueue for Facebook manual publish (N/A)
+- use shareNow for Facebook immediate publish (N/A)
+- use addToQueue for Facebook to bypass identity check (N/A)
+- pass Facebook post type via metadata instead of top-level field (N/A)
+- add Facebook post type and fix error detection in Buffer API (N/A)
+- use correct Buffer enum values (shareNow, assets: []) (N/A)
+- use correct Buffer GraphQL types (ChannelId, schedulingType: now) (N/A)
+- hardcode mode enum in query, remove random sleep (N/A)
+- remove invalid ShareMode enum value from Buffer GraphQL mutation (N/A)
+- use GraphQL variables for Buffer API in release poster too (N/A)
+- use GraphQL variables for Buffer API to fix string escaping (N/A)
 
 ## [1.20.1] - 2026-06-19
 
 ### Fixed
 
-- use CHANGELOG.md content for release social posts instead of merge commits
+- use CHANGELOG.md content for release social posts instead of merge commits (N/A)
 
 ## [1.20.0] - 2026-06-19
 
@@ -1193,32 +718,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- use domcontentloaded instead of load for Mobile Safari reliability
+- use domcontentloaded instead of load for Mobile Safari reliability (N/A)
 
 ## [1.19.2] - 2026-06-18
 
 ### Fixed
 
-- add minHeight 400 on mobile for shop hero card
-- improve shop hero card mobile layout and buy button styling
-- restore min-height on page-layout-base to fix chat e2e test
-- prevent shop YStack from collapsing to 0 height on mobile
-- match body min-height to layout shell using 100dvh instead of 100vh
-- revert overflow auto on main — breaks chat page layout
-- keep footer at bottom of page with overflow auto on main
+- add minHeight 400 on mobile for shop hero card (N/A)
+- improve shop hero card mobile layout and buy button styling (N/A)
+- restore min-height on page-layout-base to fix chat e2e test (N/A)
+- prevent shop YStack from collapsing to 0 height on mobile (N/A)
+- match body min-height to layout shell using 100dvh instead of 100vh (N/A)
+- revert overflow auto on main — breaks chat page layout (N/A)
+- keep footer at bottom of page with overflow auto on main (N/A)
 
 ## [1.19.1] - 2026-06-18
 
 ### Added
 
-- add LinkedIn channel to Buffer social posting
+- add LinkedIn channel to Buffer social posting (N/A)
 
 ### Fixed
 
-- migrate Buffer integration from deprecated REST API to GraphQL API
-- validate Buffer token before posting to avoid OIDC 401 errors
-- add MongoDB service container to release workflow
-- override CI to falsy so Playwright uses dev mode for BE
+- migrate Buffer integration from deprecated REST API to GraphQL API (N/A)
+- validate Buffer token before posting to avoid OIDC 401 errors (N/A)
+- add MongoDB service container to release workflow (N/A)
+- override CI to falsy so Playwright uses dev mode for BE (N/A)
 
 ## [1.19.0] - 2026-06-17
 
@@ -1226,17 +751,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add Telegram group posting to social workflows
+- add Telegram group posting to social workflows (N/A)
 
 ### Fixed
 
-- fix Buffer social posts and release E2E tests
+- fix Buffer social posts and release E2E tests (N/A)
 
 ## [1.18.1] - 2026-06-17
 
 ### Fixed
 
-- use double curly braces for appName interpolation in HomeHero
+- use double curly braces for appName interpolation in HomeHero (N/A)
 
 ## [1.18.0] - 2026-06-17
 
@@ -1244,86 +769,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- show play badge only on hero card hover
+- show play badge only on hero card hover (N/A)
 
 ## [1.17.9] - 2026-06-17
 
 ### Fixed
 
-- make entire hero card clickable, play label is just a badge
-- remove hoveredIndex recalc on pointerup so click reaches play button
-- freeze hero card hover during click to prevent play button disappearing
-- hero card hover overlap race condition
-- prevent hero card overlap blocking play button on hover
+- make entire hero card clickable, play label is just a badge (N/A)
+- remove hoveredIndex recalc on pointerup so click reaches play button (N/A)
+- freeze hero card hover during click to prevent play button disappearing (N/A)
+- hero card hover overlap race condition (N/A)
+- prevent hero card overlap blocking play button on hover (N/A)
 
 ## [1.17.8] - 2026-06-17
 
 ### Fixed
 
-- resolve hydration mismatch in layout caused by Turbopack streaming SSR
+- resolve hydration mismatch in layout caused by Turbopack streaming SSR (N/A)
 
 ### Improved
 
-- defer non-critical hydration work to reduce main-thread contention
+- defer non-critical hydration work to reduce main-thread contention (N/A)
 
 ## [1.17.7] - 2026-06-17
 
 ### Improved
 
-- optimize LCP by splitting hero to server component and deferring notification init
+- optimize LCP by splitting hero to server component and deferring notification init (N/A)
 
 ## [1.17.6] - 2026-06-16
 
 ### Fixed
 
-- fix cascade lobby double-click start and hydration mismatch
+- fix cascade lobby double-click start and hydration mismatch (N/A)
 
 ## [1.17.5] - 2026-06-16
 
 ### Fixed
 
-- scroll mobile nav to bottom before clicking language pill
-- use force click for mobile language pill in fixed scroll container
-- fix social media workflow bugs and e2e test
+- scroll mobile nav to bottom before clicking language pill (N/A)
+- use force click for mobile language pill in fixed scroll container (N/A)
+- fix social media workflow bugs and e2e test (N/A)
 
 ### Improved
 
-- improve homepage Web Vitals by fixing image priority and reducing assets
+- improve homepage Web Vitals by fixing image priority and reducing assets (N/A)
 
 ## [1.17.4] - 2026-06-16
 
 ### Fixed
 
-- sticky footer on mobile and hide during gameplay
-- fix game result modal positioning and sizing on mobile
+- sticky footer on mobile and hide during gameplay (N/A)
+- fix game result modal positioning and sizing on mobile (N/A)
 
 ## [1.17.3] - 2026-06-16
 
 ### Fixed
 
-- cascade game fixes — styles, padding, fullscreen, tests, i18n
+- cascade game fixes — styles, padding, fullscreen, tests, i18n (N/A)
 
 ## [1.17.2] - 2026-06-16
 
 ### Fixed
 
-- wrap children in Suspense to prevent async cleanup error
+- wrap children in Suspense to prevent async cleanup error (N/A)
 
 ## [1.17.1] - 2026-06-16
 
 ### Fixed
 
-- always show copied feedback after clipboard attempt
-- add clipboard fallback for referral copy button in e2e
-- remove dead CSS, fabricated aggregateRating, and redundant !important
-- security, a11y, CSS, and code quality optimizations
-- improve SEO, accessibility, and performance across 20 issues
-- add build step to release workflow before e2e tests
-- improve SEO metadata and AI search readiness
+- always show copied feedback after clipboard attempt (N/A)
+- add clipboard fallback for referral copy button in e2e (N/A)
+- remove dead CSS, fabricated aggregateRating, and redundant !important (N/A)
+- security, a11y, CSS, and code quality optimizations (N/A)
+- improve SEO, accessibility, and performance across 20 issues (N/A)
+- add build step to release workflow before e2e tests (N/A)
+- improve SEO metadata and AI search readiness (N/A)
 
 ### Refactored
 
-- migrate @/shared/ui barrel imports to @arcadeum/ui
+- migrate @/shared/ui barrel imports to @arcadeum/ui (N/A)
 
 ## [1.17.0] - 2026-06-15
 
@@ -1331,145 +856,145 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- remove 180deg rotation on notifications bell hover
+- remove 180deg rotation on notifications bell hover (N/A)
 
 ### Documentation
 
-- clarify PRs must target develop branch
-- add rule to pull develop before opening PR
+- clarify PRs must target develop branch (N/A)
+- add rule to pull develop before opening PR (N/A)
 
 ## [1.16.14] - 2026-06-15
 
 ### Fixed
 
-- propagate actual validation error messages from game engines
-- update cascade bot race-error detection and tighten reflex delays
-- enforce first-click-wins for cascade call race condition
+- propagate actual validation error messages from game engines (N/A)
+- update cascade bot race-error detection and tighten reflex delays (N/A)
+- enforce first-click-wins for cascade call race condition (N/A)
 
 ## [1.16.13] - 2026-06-15
 
 ### Fixed
 
-- comprehensive SEO audit fixes across 26 files
+- comprehensive SEO audit fixes across 26 files (N/A)
 
 ## [1.16.12] - 2026-06-15
 
 ### Added
 
-- add rate limiting, helmet, IP blocking, and security hardening
+- add rate limiting, helmet, IP blocking, and security hardening (N/A)
 
 ## [1.16.11] - 2026-06-15
 
 ### Added
 
-- replace basic SEO with Agentic SEO Skill v3.0.1
-- add SEO, a11y, and performance Claude skills
+- replace basic SEO with Agentic SEO Skill v3.0.1 (N/A)
+- add SEO, a11y, and performance Claude skills (N/A)
 
 ## [1.16.10] - 2026-06-15
 
 ### Added
 
-- add social media auto-posting for daily changelogs and releases
+- add social media auto-posting for daily changelogs and releases (N/A)
 
 ### Fixed
 
-- randomize daily post time within 2-hour window
-- add pip install requests, expand emoji map, pin develop branch for daily fetch
+- randomize daily post time within 2-hour window (N/A)
+- add pip install requests, expand emoji map, pin develop branch for daily fetch (N/A)
 
 ## [1.16.9] - 2026-06-15
 
 ### Added
 
-- configurable max total players + fix team panel scroll
-- add explicit og:image and twitter:image to all game landing pages
-- add tap-to-move for placed ships on mobile
+- configurable max total players + fix team panel scroll (N/A)
+- add explicit og:image and twitter:image to all game landing pages (N/A)
+- add tap-to-move for placed ships on mobile (N/A)
 
 ### Fixed
 
-- move team panel into optionsSlot so it scrolls with lobby
-- remove all CSS overrides, use plain flex layout for team lobby
-- team panel and lobby scroll together as one unit
-- remove fragile CSS override for team lobby scroll
-- only override overflow-y on LobbyContent, not flex/minHeight
-- use flex:undefined instead of flex:0 on lobby wrapper
-- cap team size stepper by remaining slots across all teams
-- add missing i18n key and backend maxTotalPlayers validation
-- always use flex:1 on lobby wrapper to prevent collapse when team panel is shown
-- raise GameResultModal and shared modal z-index above fullscreen container
+- move team panel into optionsSlot so it scrolls with lobby (N/A)
+- remove all CSS overrides, use plain flex layout for team lobby (N/A)
+- team panel and lobby scroll together as one unit (N/A)
+- remove fragile CSS override for team lobby scroll (N/A)
+- only override overflow-y on LobbyContent, not flex/minHeight (N/A)
+- use flex:undefined instead of flex:0 on lobby wrapper (N/A)
+- cap team size stepper by remaining slots across all teams (N/A)
+- add missing i18n key and backend maxTotalPlayers validation (N/A)
+- always use flex:1 on lobby wrapper to prevent collapse when team panel is shown (N/A)
+- raise GameResultModal and shared modal z-index above fullscreen container (N/A)
 
 ### Refactored
 
-- remove redundant max players stepper from lobby
+- remove redundant max players stepper from lobby (N/A)
 
 ## [1.16.8] - 2026-06-14
 
 ### Added
 
-- add tiktok and linkedin social links to footer and support page
+- add tiktok and linkedin social links to footer and support page (N/A)
 
 ## [1.16.7] - 2026-06-14
 
 ### Fixed
 
-- refactor modals to render inline within widget and fix insight card routing
-- improve modals, mobile UX, fullscreen, defaults
+- refactor modals to render inline within widget and fix insight card routing (N/A)
+- improve modals, mobile UX, fullscreen, defaults (N/A)
 
 ## [1.16.6] - 2026-06-14
 
 ### Fixed
 
-- rewrite sea battle bot-count test to use mock response instead of event recording
-- use force click in sea battle e2e tests to bypass pointer event interception
+- rewrite sea battle bot-count test to use mock response instead of event recording (N/A)
+- use force click in sea battle e2e tests to bypass pointer event interception (N/A)
 - reduce fullscreen padding on mobile screens (ARC-779) (ARC-779)
 - make games control panel wrap on mobile instead of horizontal scroll (ARC-779) (ARC-779)
 - prevent horizontal scroll in game lobbies on mobile (ARC-779) (ARC-779)
 - remove overflow hidden from GameContainer to unclip header badge (ARC-779) (ARC-779)
 - prevent horizontal scroll in game lobbies and fix webkit e2e test (ARC-779) (ARC-779)
-- update PWA manifest for Android TV compatibility
-- add breakpoint constants to games/create CSS
-- improve games/create mobile UX
+- update PWA manifest for Android TV compatibility (N/A)
+- add breakpoint constants to games/create CSS (N/A)
+- improve games/create mobile UX (N/A)
 
 ### Refactored
 
-- convert all CSS to SCSS with breakpoint mixins
+- convert all CSS to SCSS with breakpoint mixins (N/A)
 
 ## [1.16.5] - 2026-06-13
 
 ### Added
 
-- add daily challenges, achievements, and sea battle variants
+- add daily challenges, achievements, and sea battle variants (N/A)
 
 ## [1.16.4] - 2026-06-13
 
 ### Added
 
-- add additional premium shop items and fix E2E tests
+- add additional premium shop items and fix E2E tests (N/A)
 
 ## [1.16.3] - 2026-06-13
 
 ### Added
 
-- wire TicTacToe chat send via shared useGameChatSend hook
-- add shared TurnIndicator + turn contract to GameWidgetContainer
+- wire TicTacToe chat send via shared useGameChatSend hook (N/A)
+- add shared TurnIndicator + turn contract to GameWidgetContainer (N/A)
 
 ### Fixed
 
-- wire Cascade chat and add generic history_note handler
-- avoid double chat popups in Critical on the shared shell
+- wire Cascade chat and add generic history_note handler (N/A)
+- avoid double chat popups in Critical on the shared shell (N/A)
 
 ### Refactored
 
-- add standardized gameResult to session state
-- extract shared hooks and utilities from game widgets
-- render Glimworm inside the shared GameWidgetContainer
-- render CriticalGame inside the shared GameWidgetContainer
-- adopt shared turn contract in TicTacToe and Cascade headers
+- add standardized gameResult to session state (N/A)
+- extract shared hooks and utilities from game widgets (N/A)
+- render Glimworm inside the shared GameWidgetContainer (N/A)
+- render CriticalGame inside the shared GameWidgetContainer (N/A)
+- adopt shared turn contract in TicTacToe and Cascade headers (N/A)
 
 ### Documentation
 
-- add git rules — no force push, no amend
-- tighten shared game shell spec after review
-- add shared game shell refactor design
+- add git rules — no force push, no amend (N/A)
+- tighten shared game shell spec after review (N/A)
+- add shared game shell refactor design (N/A)
 
 ## [1.16.2] - 2026-06-13
 
@@ -1751,7 +1276,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - cap sticky rail height so Create Room CTA stays reachable (ARC-744) (ARC-744)
 - restore e2e contract with redesigned /games/create (ARC-744) (ARC-744)
-- emit valid hreflang code for Belarusian locale
+- emit valid hreflang code for Belarusian locale (N/A)
 - stop calling router.replace inside setForm updater (ARC-744) (ARC-744)
 - silence remaining hydration warnings on /games/create (ARC-744) (ARC-744)
 - cover Sea Battle poster with opaque rail preview (ARC-744) (ARC-744)
@@ -1780,14 +1305,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- show Play CTA on hover of every hero card
+- show Play CTA on hover of every hero card (N/A)
 - show 'Play' CTA on hover of front hero card linking to variant create (ARC-734) (ARC-734)
 - render hero cards with full-bleed variant artwork (ARC-734) (ARC-734)
 - add optional bgImage to CARD_VARIANTS for shipped artwork (ARC-734) (ARC-734)
 
 ### Fixed
 
-- rename Play CTA testid to avoid hero-card- prefix collision
+- rename Play CTA testid to avoid hero-card- prefix collision (N/A)
 
 ### Refactored
 
@@ -1988,7 +1513,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- clear file length allow list
+- clear file length allow list (N/A)
 
 ## [1.14.13] - 2026-05-19
 
@@ -2032,7 +1557,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- drop dynamic+ssr:false wrapper for CreateGameRoomPage
+- drop dynamic+ssr:false wrapper for CreateGameRoomPage (N/A)
 - guard buildComingSoonMaps against malformed catalog (ARC-710) (ARC-710)
 - brighten Game Rules link button to readable accent color (ARC-710) (ARC-710)
 - update listForAdmin test after catalog populated (ARC-710) (ARC-710)
@@ -2040,7 +1565,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Improved
 
-- add priority prop for eager-load + high fetchpriority
+- add priority prop for eager-load + high fetchpriority (N/A)
 
 ### Refactored
 
@@ -2048,7 +1573,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extract web CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
 - extract CatalogVariant/CatalogGame/CatalogResponse types (ARC-710) (ARC-710)
 - drop unnecessary cast in listRooms key extractor (ARC-710) (ARC-710)
-- split gem-success page presentational components
+- split gem-success page presentational components (N/A)
 
 ### Documentation
 
@@ -2061,7 +1586,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - align test bullet file name (ARC-710) (ARC-710)
 - fold spec-review fixes into color-variants design (ARC-710) (ARC-710)
 - design for admin-controlled color-variant visibility (ARC-710) (ARC-710)
-- note evolving GamesController constructor signature in plan
+- note evolving GamesController constructor signature in plan (N/A)
 - implementation plan for ARC-710 game/variant visibility (ARC-710)
 - fold spec-review clarifications into ARC-710 design (ARC-710)
 - design for admin-controlled game/variant visibility (ARC-710) (ARC-710)
@@ -2070,66 +1595,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- limited-drop hero rotates unowned legendaries
-- split Inventory into its own page (/shop/inventory)
-- real Inventory section + working top-bar nav
-- make 'View all' actually expand the row
-- free starter item in every category + generic auto-equip
-- reframe banner as the stage backdrop + add Frame category
-- banner fills the avatar disc, aura drives the orbiting rays
-- add Banner + Aura categories end-to-end
-- hoist Legendary row to the top of the catalog rail
-- idempotent purchase + hero owned-state awareness
+- limited-drop hero rotates unowned legendaries (N/A)
+- split Inventory into its own page (/shop/inventory) (N/A)
+- real Inventory section + working top-bar nav (N/A)
+- make 'View all' actually expand the row (N/A)
+- free starter item in every category + generic auto-equip (N/A)
+- reframe banner as the stage backdrop + add Frame category (N/A)
+- banner fills the avatar disc, aura drives the orbiting rays (N/A)
+- add Banner + Aura categories end-to-end (N/A)
+- hoist Legendary row to the top of the catalog rail (N/A)
+- idempotent purchase + hero owned-state awareness (N/A)
 
 ### Fixed
 
-- define missing $gray10/11/12, $green11, $red11, $blue11 tokens
-- render game_skin items as a swatch instead of next/image
-- soften the frame on the avatar disc
-- drop overflow:hidden on the avatar disc so the badge isn't clipped
-- complete EquippedView literal in purchase() happy path
+- define missing $gray10/11/12, $green11, $red11, $blue11 tokens (N/A)
+- render game_skin items as a swatch instead of next/image (N/A)
+- soften the frame on the avatar disc (N/A)
+- drop overflow:hidden on the avatar disc so the badge isn't clipped (N/A)
+- complete EquippedView literal in purchase() happy path (N/A)
 
 ## [1.14.11] - 2026-05-19
 
 ### Added
 
-- shop images and badges redesign
+- shop images and badges redesign (N/A)
 
 ### Refactored
 
-- replace standard img with optimized next/image components
+- replace standard img with optimized next/image components (N/A)
 
 ## [1.14.10] - 2026-05-19
 
 ### Added
 
-- locale-aware formatters + completeness audit + LCP polish
+- locale-aware formatters + completeness audit + LCP polish (N/A)
 
 ## [1.14.9] - 2026-05-18
 
 ### Added
 
-- Showcase Locker redesign with live try-on rail
+- Showcase Locker redesign with live try-on rail (N/A)
 
 ### Fixed
 
-- switch locale-routing cookie fixture to domain+path to satisfy addCookies
-- hide the rotating rectangle + recenter rays around the avatar
-- stop mannequin rays wobbling — align transform-origin with gradient anchor
-- action-panel — keep preview alive on card→panel hop, fix Unequip showing for owned-but-not-equipped items
-- wire the top-bar nav links to real destinations
+- switch locale-routing cookie fixture to domain+path to satisfy addCookies (N/A)
+- hide the rotating rectangle + recenter rays around the avatar (N/A)
+- stop mannequin rays wobbling — align transform-origin with gradient anchor (N/A)
+- action-panel — keep preview alive on card→panel hop, fix Unequip showing for owned-but-not-equipped items (N/A)
+- wire the top-bar nav links to real destinations (N/A)
 
 ### Improved
 
-- priority-load first cards across every catalog row to silence repeat LCP warnings
-- eager-load the first avatar-row cards so catalog asset can't become a lazy LCP
-- mark above-the-fold ItemAssets as priority so LCP isn't lazy
+- priority-load first cards across every catalog row to silence repeat LCP warnings (N/A)
+- eager-load the first avatar-row cards so catalog asset can't become a lazy LCP (N/A)
+- mark above-the-fold ItemAssets as priority so LCP isn't lazy (N/A)
 
 ### Refactored
 
-- move the action button onto the card, panel becomes display-only
-- address PR #689 review — blockers, a11y, direct-buy, instrumentation
-- extract listRooms query parsers to keep controller under 500 lines
+- move the action button onto the card, panel becomes display-only (N/A)
+- address PR #689 review — blockers, a11y, direct-buy, instrumentation (N/A)
+- extract listRooms query parsers to keep controller under 500 lines (N/A)
 
 ## [1.14.8] - 2026-05-18
 
@@ -2161,7 +1686,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- global [locale] URL prefix
+- global [locale] URL prefix (N/A)
 
 ### Fixed
 
@@ -2171,77 +1696,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- /games/<id> uses the full lounge UI scoped to one game
-- polish sea-battle landing for indexability
-- quickplay — persist the chosen variant into room.gameOptions
-- sea-battle landing — patches 1-7 (CTA hierarchy, a11y board, error UX)
-- show real theme colors in the landing's themes strip
-- make theme preview cell-size configurable, enlarge on landing
-- use the real game board on /games/sea-battle landing hero
-- matchmaking — skip rooms whose host has already left
-- add Find-a-human-opponent matchmaking on Sea Battle landing
-- add quickplay vs AI button on Sea Battle landing
-- redesign Sea Battle landing — sonar hero, themes strip, FAQ accordion
-- add Sea Battle SEO landing page at /games/sea-battle
+- /games/<id> uses the full lounge UI scoped to one game (N/A)
+- polish sea-battle landing for indexability (N/A)
+- quickplay — persist the chosen variant into room.gameOptions (N/A)
+- sea-battle landing — patches 1-7 (CTA hierarchy, a11y board, error UX) (N/A)
+- show real theme colors in the landing's themes strip (N/A)
+- make theme preview cell-size configurable, enlarge on landing (N/A)
+- use the real game board on /games/sea-battle landing hero (N/A)
+- matchmaking — skip rooms whose host has already left (N/A)
+- add Find-a-human-opponent matchmaking on Sea Battle landing (N/A)
+- add quickplay vs AI button on Sea Battle landing (N/A)
+- redesign Sea Battle landing — sonar hero, themes strip, FAQ accordion (N/A)
+- add Sea Battle SEO landing page at /games/sea-battle (N/A)
 
 ### Fixed
 
-- StartButton — wrap in plain <div> so the glow class actually applies
-- StartButton animation — bolder + raised specificity + !important
-- StartButton — actual pulse/shimmer animations via CSS keyframes
-- quickplay DTO — accept optional \`variant\` from the landing
-- QuickplayButton — console.warn on caught failure, not error
-- cycle-hint pill no longer covers the caption
-- sea-battle landing board — let it sit inside the hero card
-- sea-battle landing board — drop scale + aspect-ratio so it fits
-- RematchInvitationModal — return null when no inviter message
-- add missing rematch.invitation keys across all 5 locales
-- tighten matchmaking pool, switch to \$elemMatch, log candidates
-- matchmaking — exclude rooms that already contain an AI bot
-- matchmaking — drop \$expr, log candidate scans
-- make quickplay anonymous-friendly, drop /auth redirect
-- point Sea Battle "Play Now" button to the SEO landing
-- wire featured-game card title to FeaturedGame.route
+- StartButton — wrap in plain <div> so the glow class actually applies (N/A)
+- StartButton animation — bolder + raised specificity + !important (N/A)
+- StartButton — actual pulse/shimmer animations via CSS keyframes (N/A)
+- quickplay DTO — accept optional \`variant\` from the landing (N/A)
+- QuickplayButton — console.warn on caught failure, not error (N/A)
+- cycle-hint pill no longer covers the caption (N/A)
+- sea-battle landing board — let it sit inside the hero card (N/A)
+- sea-battle landing board — drop scale + aspect-ratio so it fits (N/A)
+- RematchInvitationModal — return null when no inviter message (N/A)
+- add missing rematch.invitation keys across all 5 locales (N/A)
+- tighten matchmaking pool, switch to \$elemMatch, log candidates (N/A)
+- matchmaking — exclude rooms that already contain an AI bot (N/A)
+- matchmaking — drop \$expr, log candidate scans (N/A)
+- make quickplay anonymous-friendly, drop /auth redirect (N/A)
+- point Sea Battle "Play Now" button to the SEO landing (N/A)
+- wire featured-game card title to FeaturedGame.route (N/A)
 
 ### Refactored
 
-- apply v2 review polish to Sea Battle landing
-- split HomeGames into card + slider hook, replace route ternary
+- apply v2 review polish to Sea Battle landing (N/A)
+- split HomeGames into card + slider hook, replace route ternary (N/A)
 
 ## [1.14.1] - 2026-05-17
 
 ### Added
 
-- complete steampunk and zen sprites and update spritesheets
-- add missing steampunk sprites and update spritesheet
-- finalize western sprites and update spritesheet
-- add western aegis and blight sprites and update spritesheet
-- finalize fantasy sprites and update spritesheet
-- finalize egypt sprites and update spritesheet
-- complete galaxy sprites and update thematic sprite sheets
-- finish galaxy sprites with realistic 4k images
-- upgrade Critical Game sprites to realistic 4k (Egypt, Fantasy, Western, Steampunk)
-- integrate 17 new card illustrations and refactor views to stay under line limit
-- completed fantasy chaos pack and western chaos pack
-- completed deity pack for all variants and started chaos pack
-- deity and chaos pack expansion for several variants
-- partial deity pack for fantasy variant
-- complete galaxy collection and deity packs for egypt, steampunk, zen
-- complete future utilities and fantasy/western collection packs
-- fill missing future and theft sprites for egypt and steampunk
-- complete galaxy thematic sprites
-- complete fantasy and western thematic sprites
-- expand zen and fantasy pack sprites
-- expand steampunk future pack sprites
-- expand thematic card sprites for fantasy, western, steampunk, and zen variants
-- expand egypt variant with 23 additional thematic card sprites
-- implement high-quality thematic sprites for egypt, steampunk, and zen variants
-- implement thematic sprite sheets for Galaxy and Fantasy variants
-- integrate 6 new thematic variants and resolve literal string type mismatches
+- complete steampunk and zen sprites and update spritesheets (N/A)
+- add missing steampunk sprites and update spritesheet (N/A)
+- finalize western sprites and update spritesheet (N/A)
+- add western aegis and blight sprites and update spritesheet (N/A)
+- finalize fantasy sprites and update spritesheet (N/A)
+- finalize egypt sprites and update spritesheet (N/A)
+- complete galaxy sprites and update thematic sprite sheets (N/A)
+- finish galaxy sprites with realistic 4k images (N/A)
+- upgrade Critical Game sprites to realistic 4k (Egypt, Fantasy, Western, Steampunk) (N/A)
+- integrate 17 new card illustrations and refactor views to stay under line limit (N/A)
+- completed fantasy chaos pack and western chaos pack (N/A)
+- completed deity pack for all variants and started chaos pack (N/A)
+- deity and chaos pack expansion for several variants (N/A)
+- partial deity pack for fantasy variant (N/A)
+- complete galaxy collection and deity packs for egypt, steampunk, zen (N/A)
+- complete future utilities and fantasy/western collection packs (N/A)
+- fill missing future and theft sprites for egypt and steampunk (N/A)
+- complete galaxy thematic sprites (N/A)
+- complete fantasy and western thematic sprites (N/A)
+- expand zen and fantasy pack sprites (N/A)
+- expand steampunk future pack sprites (N/A)
+- expand thematic card sprites for fantasy, western, steampunk, and zen variants (N/A)
+- expand egypt variant with 23 additional thematic card sprites (N/A)
+- implement high-quality thematic sprites for egypt, steampunk, and zen variants (N/A)
+- implement thematic sprite sheets for Galaxy and Fantasy variants (N/A)
+- integrate 6 new thematic variants and resolve literal string type mismatches (N/A)
 
 ### Fixed
 
-- restore chat bubble and sea battle popup on mobile opponent tiles
+- restore chat bubble and sea battle popup on mobile opponent tiles (N/A)
 - ARC-590: stabilize critical mobile interactions and game layouts (ARC-590)
 
 ## [1.14.0] - 2026-05-16
@@ -2283,8 +1808,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- correct mobile dev port (Metro 8081, not legacy expo-cli 19000)
-- fix outdated paths, ports, and broken links in root README
+- correct mobile dev port (Metro 8081, not legacy expo-cli 19000) (N/A)
+- fix outdated paths, ports, and broken links in root README (N/A)
 
 ## [1.13.54] - 2026-05-15
 
@@ -2811,7 +2336,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- restore missing logout test ID in ProfileMenu
+- restore missing logout test ID in ProfileMenu (N/A)
 - ARC-620 stabilize E2E tests and fix mobile layout overlaps (ARC-620)
 
 ## [1.13.11] - 2026-05-10
@@ -3138,7 +2663,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - drop Texas Hold'em and Tic Tac Toe modes (ARC-588) (ARC-588)
 - use real Arcadeum games (Critical, Sea Battle, Texas Hold'em, Tic Tac Toe) (ARC-588) (ARC-588)
 - dev fallback for MONGODB_URI (ARC-588) (ARC-588)
-- dev fallback for AUTH_JWT_SECRET
+- dev fallback for AUTH_JWT_SECRET (N/A)
 - skip leaderboards socket connect under mock (ARC-588) (ARC-588)
 - pin leaderboard self row via position:fixed (ARC-588) (ARC-588)
 - address review #2 for leaderboards (ARC-588) (ARC-588)
@@ -3281,8 +2806,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- fix tablet layout and finalize rendering optimization
-- optimize rendering performance and refactor placement board
+- fix tablet layout and finalize rendering optimization (N/A)
+- optimize rendering performance and refactor placement board (N/A)
 
 ## [1.12.2] - 2026-05-06
 
@@ -3318,12 +2843,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- token colors
+- token colors (N/A)
 - sitemap ts (ARC-564)
 - homepage e2e test (ARC-564)
 - chat message e2e test for ci (ARC-564)
-- chat interactions e2e test
-- tamagui config colors
+- chat interactions e2e test (N/A)
+- tamagui config colors (N/A)
 
 ### Refactored
 
@@ -3388,13 +2913,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- update upstream remote URL and project live demo link
+- update upstream remote URL and project live demo link (N/A)
 
 ## [1.9.26] - 2026-04-29
 
 ### Added
 
-- optimize mobile layout and enhance background animations
+- optimize mobile layout and enhance background animations (N/A)
 
 ## [1.9.25] - 2026-04-29
 
@@ -3492,15 +3017,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add kick/leave UI, store actions, game wiring, and fix flaky e2e tests
-- pass kicked flag through realtime emitPlayerLeft
-- extend leaveRoom authorization for host kick flow
-- add kickedBy to LeaveGameRoomDto and kicked flag to result type
+- add kick/leave UI, store actions, game wiring, and fix flaky e2e tests (N/A)
+- pass kicked flag through realtime emitPlayerLeft (N/A)
+- extend leaveRoom authorization for host kick flow (N/A)
+- add kickedBy to LeaveGameRoomDto and kicked flag to result type (N/A)
 
 ### Documentation
 
-- add lobby kick/leave implementation plan
-- add lobby kick & leave design spec
+- add lobby kick/leave implementation plan (N/A)
+- add lobby kick & leave design spec (N/A)
 
 ## [1.9.17] - 2026-04-16
 
@@ -3680,9 +3205,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - games section scroll reveal and card hover lift (ARC-425)
 - improve hero proportions, kicker badge, demote support CTA (ARC-425)
 - add useScrollReveal hook and CSS reveal/stagger system (ARC-425)
-- add violet and teal theme options to settings picker
-- register violetDark, violetLight, tealDark, tealLight Tamagui themes
-- add violetDark, violetLight, tealDark, tealLight theme tokens
+- add violet and teal theme options to settings picker (N/A)
+- register violetDark, violetLight, tealDark, tealLight Tamagui themes (N/A)
+- add violetDark, violetLight, tealDark, tealLight theme tokens (N/A)
 - expand ThemeName type with violetDark, violetLight, tealDark, tealLight (ARC-425)
 - complete home page tamagui migration — remove Animations.styles (ARC-425)
 - migrate HomePitchDeck and WebPresentation styles to tamagui (ARC-425)
@@ -3702,10 +3227,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - migrate SeaBattleGame styles/ from styled-components to Tamagui (ARC-425)
 - add TurnIndicator component to packages/ui (ARC-425)
 - create SeaBattleThemeContext with provider and hook (ARC-425)
-- add chat message popup via shared GameChat hook
-- replace ChatSection with shared GameChat widget
-- add ChatMessagePopup component and update exports
-- add useLatestChatMessage hook
+- add chat message popup via shared GameChat hook (N/A)
+- replace ChatSection with shared GameChat widget (N/A)
+- add ChatMessagePopup component and update exports (N/A)
+- add useLatestChatMessage hook (N/A)
 - add frosted glass card containers with responsive sprites (ARC-425)
 - enable crime, horror, adventure card variants (ARC-425)
 - add isolated ParticleOverlay to ActiveGameContent (ARC-425)
@@ -3752,13 +3277,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove warnings (ARC-425)
 - hero title styles (ARC-425)
 - hero cards styles (ARC-425)
-- fix CardTitle/ProgressLabel/ShareLinkRow text styling
-- hoist style tag to outermost wrapper in ReferralDashboard
-- address code review issues — style tag placement, aria-label on haptics toggle
-- export notesStyles, restore stagger animation, fix AmountBadge
-- address code review issues — style dedup, dead exports, GameIcon, color tokens
-- address code review issues — class names, mobile grid, hover, XStack, scroll context
-- address code review issues — orphaned Footer.styles, text-secondary color token
+- fix CardTitle/ProgressLabel/ShareLinkRow text styling (N/A)
+- hoist style tag to outermost wrapper in ReferralDashboard (N/A)
+- address code review issues — style tag placement, aria-label on haptics toggle (N/A)
+- export notesStyles, restore stagger animation, fix AmountBadge (N/A)
+- address code review issues — style dedup, dead exports, GameIcon, color tokens (N/A)
+- address code review issues — class names, mobile grid, hover, XStack, scroll context (N/A)
+- address code review issues — orphaned Footer.styles, text-secondary color token (N/A)
 - home page unit tests (ARC-425)
 - accessibility and code quality fixes from final review (ARC-425)
 - add delay cap to HIW steps, disable hover motion for prefers-reduced-motion (ARC-425)
@@ -3770,7 +3295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - restore CSS grid layout for BoardWithLabels (ARC-425)
 - fix missing animations, PlayerStats and ActionButton in Tamagui style files (ARC-425)
 - unnecessry chat in sea battle games (ARC-425)
-- correct scope value in useLatestChatMessage test fixture
+- correct scope value in useLatestChatMessage test fixture (N/A)
 - clean up GameChat imports and test fixture types (ARC-425)
 - use properly-typed fn in gameChatStore tests (ARC-425)
 
@@ -3782,59 +3307,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - extract useClickOutside hook for header widget (ARC-425)
 - extract useHeaderAuth hook for header widget (ARC-425)
 - extract useIsMounted hook for header widget (ARC-425)
-- remove styled-components ThemeProvider from preview
-- remove StyledThemeProvider and styled-components infrastructure
-- replace InstallPWAModalContent styled-components with Tamagui
-- replace referrals/ui/styles.ts styled-components with Tamagui
-- convert scrollbarStyles from styled-components css to plain string
-- replace error, offline, payment/cancel styled-components with Tamagui
-- replace styled-components with Tamagui
-- replace styled-components with Tamagui
-- replace NotesPage styled-components with Tamagui
-- replace ChatListPage styled-components with Tamagui
-- fix Leaderboard.tsx ref type — use native div for IntersectionObserver target
-- replace StatsOverview.tsx styled-components with Tamagui
-- replace GameBreakdown.tsx styled-components with Tamagui
-- replace StatsHeader.tsx styled-components with Tamagui
-- replace Leaderboard.tsx styled-components with Tamagui
-- replace StatsPage.tsx styled-components with Tamagui
-- replace styles.ts styled-components with Tamagui
-- replace InviteCodeModal styled-components with Tamagui
-- replace GameDetailPage styled-components with Tamagui
-- replace rooms/[id]/components/styles.ts styled-components with Tamagui
-- replace create/styles.ts styled-components with Tamagui
-- replace room-card.styles styled-components with Tamagui
-- replace games/styles.ts styled-components with Tamagui
-- replace HomeGameDetailsModal styled-components with Tamagui
-- replace Footer.styles styled-components with Tamagui
-- replace PaymentSuccessView styled-components with Tamagui — payment migration complete
-- replace PaymentPage styled-components with Tamagui
-- replace AmountDisplay styled-components with Tamagui
-- replace PaymentPresets styled-components with Tamagui
-- replace PaymentHeader styled-components with Tamagui
-- rewrite logs styles with Tamagui — history page migration complete
-- rewrite participants styles with Tamagui
-- replace ConfirmRow styled-component with Tamagui XStack
-- rewrite details styles with Tamagui
-- rewrite entries styles with Tamagui
-- replace HistoryFilters styled-components with Tamagui
-- replace HistoryHeader styled-components with Tamagui
-- replace Page/Container styled-components with Tamagui
+- remove styled-components ThemeProvider from preview (N/A)
+- remove StyledThemeProvider and styled-components infrastructure (N/A)
+- replace InstallPWAModalContent styled-components with Tamagui (N/A)
+- replace referrals/ui/styles.ts styled-components with Tamagui (N/A)
+- convert scrollbarStyles from styled-components css to plain string (N/A)
+- replace error, offline, payment/cancel styled-components with Tamagui (N/A)
+- replace styled-components with Tamagui (N/A)
+- replace styled-components with Tamagui (N/A)
+- replace NotesPage styled-components with Tamagui (N/A)
+- replace ChatListPage styled-components with Tamagui (N/A)
+- fix Leaderboard.tsx ref type — use native div for IntersectionObserver target (N/A)
+- replace StatsOverview.tsx styled-components with Tamagui (N/A)
+- replace GameBreakdown.tsx styled-components with Tamagui (N/A)
+- replace StatsHeader.tsx styled-components with Tamagui (N/A)
+- replace Leaderboard.tsx styled-components with Tamagui (N/A)
+- replace StatsPage.tsx styled-components with Tamagui (N/A)
+- replace styles.ts styled-components with Tamagui (N/A)
+- replace InviteCodeModal styled-components with Tamagui (N/A)
+- replace GameDetailPage styled-components with Tamagui (N/A)
+- replace rooms/[id]/components/styles.ts styled-components with Tamagui (N/A)
+- replace create/styles.ts styled-components with Tamagui (N/A)
+- replace room-card.styles styled-components with Tamagui (N/A)
+- replace games/styles.ts styled-components with Tamagui (N/A)
+- replace HomeGameDetailsModal styled-components with Tamagui (N/A)
+- replace Footer.styles styled-components with Tamagui (N/A)
+- replace PaymentSuccessView styled-components with Tamagui — payment migration complete (N/A)
+- replace PaymentPage styled-components with Tamagui (N/A)
+- replace AmountDisplay styled-components with Tamagui (N/A)
+- replace PaymentPresets styled-components with Tamagui (N/A)
+- replace PaymentHeader styled-components with Tamagui (N/A)
+- rewrite logs styles with Tamagui — history page migration complete (N/A)
+- rewrite participants styles with Tamagui (N/A)
+- replace ConfirmRow styled-component with Tamagui XStack (N/A)
+- rewrite details styles with Tamagui (N/A)
+- rewrite entries styles with Tamagui (N/A)
+- replace HistoryFilters styled-components with Tamagui (N/A)
+- replace HistoryHeader styled-components with Tamagui (N/A)
+- replace Page/Container styled-components with Tamagui (N/A)
 - ui kit components (ARC-425)
 
 ### Documentation
 
-- add styled-components to Tamagui implementation plan
-- add 640px breakpoint row, fix success criteria ordering
-- fix token gaps, breakpoints, fullscreen special case, scrollbar consumer note
-- update migration spec with corrected token mapping, breakpoints, and special cases
-- add styled-components to Tamagui migration design spec
+- add styled-components to Tamagui implementation plan (N/A)
+- add 640px breakpoint row, fix success criteria ordering (N/A)
+- fix token gaps, breakpoints, fullscreen special case, scrollbar consumer note (N/A)
+- update migration spec with corrected token mapping, breakpoints, and special cases (N/A)
+- add styled-components to Tamagui migration design spec (N/A)
 - clarify why data-reveal must be on descendants not ref target (ARC-425)
 - clarify useScrollReveal ref vs data-reveal constraint (ARC-425)
 - add home page tamagui migration spec (ARC-425)
-- add CriticalGame rework implementation plan
-- finalize CriticalGame rework spec after review
-- add CriticalGame widget rework design spec
+- add CriticalGame rework implementation plan (N/A)
+- finalize CriticalGame rework spec after review (N/A)
+- add CriticalGame widget rework design spec (N/A)
 
 ## [1.9.0] - 2026-03-19
 
@@ -3940,7 +3465,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Resolved video attribute warnings in E2E tests that were cluttering logs
+- Resolved video attribute warnings in E2E tests that were cluttering logs (N/A)
 - Fixed an issue where users were stuck on an idle screen after navigating away from a game (ARC-439)
 
 ## [1.7.5] - 2026-03-06
@@ -3957,9 +3482,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed a 404 error in E2E tests related to payment endpoints
-- Updated Playwright configuration for more stable test runs
-- Streamlined CI/CD configuration for improved reliability
+- Fixed a 404 error in E2E tests related to payment endpoints (N/A)
+- Updated Playwright configuration for more stable test runs (N/A)
+- Streamlined CI/CD configuration for improved reliability (N/A)
 
 ## [1.7.3] - 2026-03-03
 
@@ -3971,7 +3496,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed a bug in the documentation link checker script that caused false positives
+- Fixed a bug in the documentation link checker script that caused false positives (N/A)
 
 ### Documentation
 
@@ -4032,7 +3557,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- minor version number
+- minor version number (N/A)
 - release version after merging to main (ARC-429)
 
 ## [1.5.12] - 2026-02-27

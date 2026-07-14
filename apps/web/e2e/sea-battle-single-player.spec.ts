@@ -118,7 +118,6 @@ test.describe('Sea Battle Single Player Mode', () => {
                           ...p,
                           placementComplete: false,
                           ships: [
-                            { id: 'carrier-1', size: 5 },
                             { id: 'battleship-1', size: 4 },
                             { id: 'cruiser-1', size: 3 },
                             { id: 'cruiser-2', size: 3 },
@@ -128,6 +127,7 @@ test.describe('Sea Battle Single Player Mode', () => {
                             { id: 'submarine-1', size: 1 },
                             { id: 'submarine-2', size: 1 },
                             { id: 'submarine-3', size: 1 },
+                            { id: 'submarine-4', size: 1 },
                           ].map((config, i) => ({
                             ...config,
                             name: 'Ship',

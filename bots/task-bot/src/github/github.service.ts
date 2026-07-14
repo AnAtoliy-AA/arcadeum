@@ -60,7 +60,7 @@ export class GitHubService {
     }
 
     const labelArgs = labels.map((l) => `--label "${l}"`).join(' ');
-    const cmd = `gh issue create --title "${title.replace(/"/g, '\\"')}" --body "${body.replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
+    const cmd = `gh issue create --title "${title.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" --body "${body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
 
     try {
       const result = execSync(cmd, {
@@ -279,7 +279,7 @@ export class GitHubService {
         'Commit with conventional commits when complete.',
       ].join('\n');
 
-      const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {

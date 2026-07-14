@@ -247,6 +247,8 @@ export class GameRoomsService {
     dto: LeaveGameRoomDto,
     userId: string,
   ): Promise<LeaveGameRoomResult> {
+    if (!Types.ObjectId.isValid(dto.roomId))
+      throw new BadRequestException('Invalid room ID');
     const room = await this.gameRoomModel.findById(dto.roomId).exec();
 
     if (!room) {
@@ -315,6 +317,8 @@ export class GameRoomsService {
     dto: DeleteGameRoomDto,
     userId: string,
   ): Promise<DeleteGameRoomResult> {
+    if (!Types.ObjectId.isValid(dto.roomId))
+      throw new BadRequestException('Invalid room ID');
     const room = await this.gameRoomModel.findById(dto.roomId).lean().exec();
 
     if (!room) {

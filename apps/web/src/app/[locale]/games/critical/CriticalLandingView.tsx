@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { CriticalGamesMessages } from '@/shared/i18n/messages/games/critical';
 import { Container, PageLayout } from '@arcadeum/ui';
+import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import styles from './CriticalLanding.module.scss';
 
 type CriticalMessages = CriticalGamesMessages['critical_v1'];
@@ -8,7 +11,7 @@ type Landing = CriticalMessages['landing'];
 
 interface Props {
   landing?: Landing;
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
   homeHref: string;
   gamesHref: string;
@@ -16,7 +19,7 @@ interface Props {
 
 export function CriticalLandingView({
   landing,
-  createRoomHref,
+  gameId,
   roomsHref,
   homeHref,
   gamesHref,
@@ -56,9 +59,11 @@ export function CriticalLandingView({
             role="group"
             aria-label={landing.hero.ctaGroupLabel}
           >
-            <Link href={createRoomHref} className={styles.ctaPrimary}>
-              {landing.hero.ctaPlay}
-            </Link>
+            <QuickplayCta
+              gameId={gameId}
+              ctaQuickplay={landing.hero.ctaQuickplay}
+              ctaQuickplayError={landing.hero.ctaQuickplayError}
+            />
             <Link href={roomsHref} className={styles.ctaSecondary}>
               {landing.hero.ctaRooms}
             </Link>
@@ -137,9 +142,11 @@ export function CriticalLandingView({
             {landing.finalCta.title}
           </h2>
           <p className={styles.finalCtaSubtitle}>{landing.finalCta.subtitle}</p>
-          <Link href={createRoomHref} className={styles.ctaPrimary}>
-            {landing.hero.ctaPlay}
-          </Link>
+          <QuickplayCta
+            gameId={gameId}
+            ctaQuickplay={landing.hero.ctaQuickplay}
+            ctaQuickplayError={landing.hero.ctaQuickplayError}
+          />
         </section>
       </Container>
     </PageLayout>

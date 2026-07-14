@@ -1,12 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import styles from './CascadeLanding.module.scss';
 
 interface Props {
   title: string;
   subtitle: string;
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
-  createRoomLabel: string;
+  ctaQuickplayLabel: string;
+  ctaQuickplayErrorLabel: string;
   browseRoomsLabel: string;
 }
 
@@ -19,9 +23,10 @@ const FAN = [
 export function CascadeHero({
   title,
   subtitle,
-  createRoomHref,
+  gameId,
   roomsHref,
-  createRoomLabel,
+  ctaQuickplayLabel,
+  ctaQuickplayErrorLabel,
   browseRoomsLabel,
 }: Props) {
   return (
@@ -30,9 +35,12 @@ export function CascadeHero({
         <h1 className={styles.heroTitle}>{title}</h1>
         <p className={styles.heroSubtitle}>{subtitle}</p>
         <div className={styles.heroButtons}>
-          <Link href={createRoomHref} className={styles.heroCta}>
-            {createRoomLabel}
-          </Link>
+          <QuickplayButton
+            gameId={gameId}
+            label={ctaQuickplayLabel}
+            mode="ai"
+            errorLabel={ctaQuickplayErrorLabel}
+          />
           <Link href={roomsHref} className={styles.heroSecondary}>
             {browseRoomsLabel}
           </Link>

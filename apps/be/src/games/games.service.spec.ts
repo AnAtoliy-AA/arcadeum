@@ -172,11 +172,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(service.quickplay('user1', 'critical_v1')).rejects.toThrow(
-        /Quickplay not supported/,
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room1', gameId: 'critical_v1' };
+      roomsQuickplayService.createQuickplayRoom.mockResolvedValue(
+        room as unknown as GameRoomSummary,
       );
-      expect(roomsQuickplayService.createQuickplayRoom).not.toHaveBeenCalled();
+
+      const result = await service.quickplay('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 
@@ -197,11 +206,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(
-        service.findHumanMatch('user1', 'critical_v1'),
-      ).rejects.toThrow(/Matchmaking not supported/);
-      expect(roomsQuickplayService.findHumanMatch).not.toHaveBeenCalled();
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room2', gameId: 'critical_v1' };
+      roomsQuickplayService.findHumanMatch.mockResolvedValue(
+        room as unknown as GameRoomSummary,
+      );
+
+      const result = await service.findHumanMatch('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.findHumanMatch).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 

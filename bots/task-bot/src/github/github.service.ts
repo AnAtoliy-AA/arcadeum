@@ -60,7 +60,7 @@ export class GitHubService {
     }
 
     const labelArgs = labels.map((l) => `--label "${l}"`).join(' ');
-    const cmd = `gh issue create --title "${title.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" --body "${body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
+    const cmd = `gh issue create --title "${title.replace(/"/g, '\\"')}" --body "${body.replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
 
     try {
       const result = execSync(cmd, {
@@ -243,10 +243,10 @@ export class GitHubService {
       branchName = `task-${issueNum}-${titleSlug}`;
 
       execSync('git fetch origin', { encoding: 'utf-8', cwd });
-      const branchExists = execSync(`git branch --list ${branchName}`, {
-        encoding: 'utf-8',
-        cwd,
-      }).trim();
+      const branchExists = execSync(
+        `git branch --list ${branchName}`,
+        { encoding: 'utf-8', cwd },
+      ).trim();
       if (branchExists) {
         execSync('git checkout main', { encoding: 'utf-8', cwd });
         const aheadCount = execSync(
@@ -279,7 +279,7 @@ export class GitHubService {
         'Commit with conventional commits when complete.',
       ].join('\n');
 
-      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {
@@ -295,10 +295,7 @@ export class GitHubService {
       await this.spawnAsync(
         cli,
         ['run', escapedPrompt, '--dangerously-skip-permissions'],
-        {
-          cwd,
-          timeout: 600_000,
-        },
+        { cwd, timeout: 600_000 },
       );
 
       execSync('git add -A', { encoding: 'utf-8', cwd });
@@ -351,10 +348,10 @@ export class GitHubService {
         }
       }
       try {
-        execSync(`gh issue edit ${issueNum} --add-label "in-review"`, {
-          encoding: 'utf-8',
-          cwd,
-        });
+        execSync(
+          `gh issue edit ${issueNum} --add-label "in-review"`,
+          { encoding: 'utf-8', cwd },
+        );
       } catch {
         // ignore if label add fails
       }

@@ -12,7 +12,7 @@ import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 
 const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
 const MAX_TILT_DEG = 8;
-const FAN_OFFSET = 65;
+const FAN_OFFSET = 100;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();

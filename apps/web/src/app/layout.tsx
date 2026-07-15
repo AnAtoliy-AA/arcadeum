@@ -144,14 +144,12 @@ export default async function RootLayout({
          * R2 CDN hosts game cover images and assets loaded eagerly.
          * YouTube preconnects moved to presentation section (loaded on click).
          */}
-        <link
-          rel="preconnect"
-          href="https://pub-e993f933ebf045b8af6797750ef1439d.r2.dev"
-        />
-        <link
-          rel="dns-prefetch"
-          href="https://pub-e993f933ebf045b8af6797750ef1439d.r2.dev"
-        />
+        {process.env.NEXT_PUBLIC_CDN_URL && (
+          <>
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
+          </>
+        )}
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>

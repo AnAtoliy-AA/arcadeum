@@ -4,6 +4,7 @@ import { Job } from 'bull';
 import { GitHubService } from '../github/github.service';
 import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Processor('implementation')
 export class ImplementProcessor {
@@ -12,6 +13,7 @@ export class ImplementProcessor {
   constructor(
     private readonly githubService: GitHubService,
     private readonly reviewQueue: ReviewQueueService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   @Process()
@@ -53,6 +55,15 @@ export class ImplementProcessor {
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'}`,
     );
 
+    await this.notificationService.publish({
+      jobId: String(job.id),
+      issueNum: job.data.issueNum,
+      engine: job.data.engine,
+      success: result.success,
+      message: result.message,
+      timestamp: Date.now(),
+    });
+
     if (result.success && result.message.includes('PR created:')) {
       const prUrl = result.message.replace('PR created: ', '');
       const { issueNum, engine, chatId, userId } = job.data;
@@ -67,10 +78,19 @@ export class ImplementProcessor {
   }
 
   @OnQueueFailed()
-  onFailed(job: Job<ImplementJobData>, err: Error) {
+  async onFailed(job: Job<ImplementJobData>, err: Error) {
     this.logger.error(
       `Job ${job.id} failed: ${err.message}`,
       err.stack,
     );
+
+    await this.notificationService.publish({
+      jobId: String(job.id),
+      issueNum: job.data.issueNum,
+      engine: job.data.engine,
+      success: false,
+      message: err.message,
+      timestamp: Date.now(),
+    });
   }
 }

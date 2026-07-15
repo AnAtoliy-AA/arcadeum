@@ -5,6 +5,7 @@ import { ImplementProcessor } from './implement.processor';
 import { ReviewProcessor } from './review.processor';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { GitHubModule } from '../github/github.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { GitHubModule } from '../github/github.module';
     BullModule.registerQueue({ name: 'implementation' }),
     BullModule.registerQueue({ name: 'review' }),
     GitHubModule,
+    NotificationModule,
   ],
   providers: [ImplementProcessor, ReviewProcessor, ReviewQueueService],
 })

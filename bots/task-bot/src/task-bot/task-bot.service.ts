@@ -5,6 +5,7 @@ import { RoadmapService } from '../roadmap/roadmap.service';
 import { PreferencesService } from '../preferences/preferences.service';
 import { GitHubService } from '../github/github.service';
 import { ImplementQueueService } from '../queue/implement-queue.service';
+import { NotificationService, JobNotification } from '../notification/notification.service';
 import { Bot, type Context } from 'grammy';
 
 type Engine = 'opencode' | 'mimo';
@@ -64,6 +65,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     private readonly prefsService: PreferencesService,
     private readonly githubService: GitHubService,
     private readonly queueService: ImplementQueueService,
+    private readonly notificationService: NotificationService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -77,6 +79,10 @@ export class TaskBotService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     this.bot = this.telegramService.getBot();
     this.registerCommands();
+
+    this.notificationService.onNotification((notification) => {
+      this.handleNotification(notification);
+    });
 
     await this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),
@@ -535,5 +541,30 @@ export class TaskBotService implements OnApplicationBootstrap {
         `/prefs scope: backend, web — set default scope`,
       { parse_mode: 'Markdown' },
     );
+  }
+
+  private async handleNotification(notification: JobNotification) {
+    const chatId = parseInt(this.config.get<string>('TELEGRAM_CHAT_ID') ?? '0', 10);
+    if (!chatId) {
+      this.logger.warn('No TELEGRAM_CHAT_ID configured, skipping notification');
+      return;
+    }
+
+    const status = notification.success ? '✅' : '❌';
+    const title = notification.success ? 'Task Completed' : 'Task Failed';
+    const message = notification.success
+      ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
+      : `Issue #${notification.issueNum} failed: ${notification.message}`;
+
+    try {
+      await this.bot.api.sendMessage(
+        chatId,
+        `*${title}*\n${status} ${message}`,
+        { parse_mode: 'Markdown' },
+      );
+      this.logger.log(`Notification sent for issue #${notification.issueNum}`);
+    } catch (err) {
+      this.logger.error(`Failed to send notification: ${err}`);
+    }
   }
 }

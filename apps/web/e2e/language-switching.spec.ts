@@ -38,11 +38,15 @@ test.describe('Language Switching', () => {
     // Based on settings.ts, ru translation for title is "Настройки"
     await ensureNavigationVisible(page);
     await expect(
-      page.locator('nav').getByRole('link', { name: /games/i }),
+      page
+        .locator('nav[aria-label="Main navigation"]')
+        .getByRole('link', { name: /games/i }),
     ).not.toBeVisible({});
 
     await expect(
-      page.locator('nav').getByRole('link', { name: /игры/i }),
+      page
+        .locator('nav[aria-label="Main navigation"]')
+        .getByRole('link', { name: /игры/i }),
     ).toBeVisible({});
 
     // 5. Reload page and verify language persists

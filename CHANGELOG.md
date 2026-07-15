@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.56] - 2026-07-15
+
+### Added
+- add Redis queue system for concurrent task bot implementations
+
+### Fixed
+- add missing backslash escaping in task-bot github service
+
+
 ## [1.23.55] - 2026-07-14
 
 ### Added

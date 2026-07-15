@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.57] - 2026-07-15
+
+### Fixed
+- remove fragile nav-not-visible check from language-switching test
+- rewrite language-switching test to use stable nav-games testid
+- handle mobile nav in language-switching test selectors
+- scope language-switching test to main navigation nav element
+- scope language-switching test assertions to nav element
+- remove Main navigation scope from language-switching e2e test
+- resolve e2e test failures, console errors, and Lighthouse issues
+- add type declaration for compression module
+- remove invalid color prop from Tamagui styled components
+- improve accessibility contrast and performance
+- fix validateRoomId type to accept undefined
+
+
 ## [1.23.56] - 2026-07-15
 
 ### Added

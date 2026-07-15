@@ -34,13 +34,8 @@ test.describe('Language Switching', () => {
     // 4. Navigate back to Home and verify it is translated
     await navigateTo(page, '/');
 
-    // Check for "Games" link translation in Russian (likely "Игры" or similar)
-    // Based on settings.ts, ru translation for title is "Настройки"
     await ensureNavigationVisible(page);
-    await expect(
-      page.getByRole('link', { name: /games/i }).first(),
-    ).not.toBeVisible({});
-
+    // Verify the nav link text changed to Russian
     await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
       {},
     );

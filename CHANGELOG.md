@@ -19,20 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.23.55] - 2026-07-14
 
 ### Added
-- redesign OG images with richer visuals for social unfurls
 
+- redesign OG images with richer visuals for social unfurls
 
 ## [1.23.54] - 2026-07-14
 
 ### Added
+
 - unified quickplay flow across all game landing pages
 
 ### Fixed
+
 - update e2e test for landing page redirect, fix CodeQL security alerts
 - remove duplicate version keys in package.json files
 - remove 'use client' from critical/glimworm landing views to fix hydration mismatch
 - fix tic-tac-toe lobby icon clipping and add player symbols
-
 
 ## [1.23.53] - 2026-07-14
 

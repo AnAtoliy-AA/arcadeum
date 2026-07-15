@@ -270,6 +270,8 @@
   position: absolute;
   width: 280px;
   height: 380px;
+  min-width: 48px;
+  min-height: 48px;
   background: rgba(20, 22, 26, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 24px;
@@ -290,6 +292,7 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .hero-card-image {
@@ -445,6 +448,12 @@
     margin-top: 60px;
     margin-bottom: 40px;
     transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-card-main {
+    touch-action: manipulation;
   }
 }
 /* Static Presentation Styles */

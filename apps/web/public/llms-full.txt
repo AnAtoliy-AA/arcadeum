@@ -10,11 +10,12 @@ Arcadeum lets you play board games online with friends or AI opponents. Each gam
 
 ### Supported Games
 
-- **Sea Battle (Battleship)** — Classic naval combat strategy game. Place your ships, guess your opponent's coordinates, and sink their fleet before they sink yours.
-- **Critical** — A strategic card game where you draw cards, defuse threats, and survive the explosion. 2–5 players with AI bots and themed decks.
-- **Glimworm** — A real-time glow-worm snake arena for up to 10 players. Slither, survive, and eat the lights.
-- **Tic-Tac-Toe** — Six themed variants with 2–4 players, optional teams, and boards from 3×3 to 9×9.
-- **Cascade** — A shedding card game with Draw-Two and Wild +4 stacking chains. 2–10 players with four selectable themes.
+- [Sea Battle (Battleship)](https://arcadeum.games/en/games/sea-battle): Classic naval combat strategy game for 2–6 players. Place your ships, guess coordinates, and sink the enemy fleet.
+- [Critical](https://arcadeum.games/en/games/critical): Strategic card game for 3–5 players. Draw cards, defuse threats, and survive the explosion.
+- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants for 2–5 players. Boards from 3×3 to 9×9.
+- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game for 2–10 players. Draw-Two and Wild +4 stacking chains.
+- [Chess](https://arcadeum.games/en/games/chess): Classic strategy game for 2 players.
+- [Glimworm](https://arcadeum.games/en/games): Real-time glow-worm snake arena for 2–10 players.
 
 ### How to Play
 
@@ -42,20 +43,19 @@ Arcadeum lets you play board games online with friends or AI opponents. Each gam
 - **Mobile**: React Native / Expo
 - **Monorepo**: pnpm workspaces + Turborepo
 
-### Links
+### Pages
 
 - [Home](https://arcadeum.games/en): Landing page with featured games and overview
 - [Games](https://arcadeum.games/en/games): Browse all games and join rooms
-- [Sea Battle](https://arcadeum.games/en/games/sea-battle): Classic Battleship strategy game
-- [Critical](https://arcadeum.games/en/games/critical): Strategic card game — draw, defuse, survive
-- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants, 2–5 players
-- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game with stacking chains
 - [Blog](https://arcadeum.games/en/blog): Guides, tutorials, and news
-- [Community](https://arcadeum.games/en/community): Join the Arcadeum community
 - [Leaderboards](https://arcadeum.games/en/leaderboards): Top players and rankings
 - [Tournaments](https://arcadeum.games/en/tournaments): Competitive play schedules
+- [Community](https://arcadeum.games/en/community): Join the Arcadeum community
 - [Developers](https://arcadeum.games/en/developers): API and integration docs
 - [Support](https://arcadeum.games/en/support): Help and contact info
+
+### Links
+
 - Discord: https://discord.gg/arcadeum
 - Telegram: https://t.me/arcadeum
 - GitHub: https://github.com/anomalyco/arcadeum

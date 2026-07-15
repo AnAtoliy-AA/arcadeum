@@ -2,7 +2,7 @@ import { Process, Processor, OnQueueActive, OnQueueCompleted, OnQueueFailed } fr
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ReviewJobData } from '../queue/review-queue.service';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 
 @Processor('review')
 export class ReviewProcessor {

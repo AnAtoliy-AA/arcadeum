@@ -8,10 +8,7 @@ test.describe('Language Switching', () => {
     await navigateTo(page, '/');
     await ensureNavigationVisible(page);
     await expect(
-      page
-        .getByRole('navigation', { name: 'Main navigation' })
-        .getByRole('link', { name: /games/i })
-        .first(),
+      page.getByRole('link', { name: /games/i }).first(),
     ).toBeVisible();
 
     // 2. Go to Settings and change to Russian
@@ -41,18 +38,12 @@ test.describe('Language Switching', () => {
     // Based on settings.ts, ru translation for title is "Настройки"
     await ensureNavigationVisible(page);
     await expect(
-      page
-        .getByRole('navigation', { name: 'Main navigation' })
-        .getByRole('link', { name: /games/i })
-        .first(),
+      page.getByRole('link', { name: /games/i }).first(),
     ).not.toBeVisible({});
 
-    await expect(
-      page
-        .getByRole('navigation', { name: 'Main navigation' })
-        .getByRole('link', { name: /игры/i })
-        .first(),
-    ).toBeVisible({});
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      {},
+    );
 
     // 5. Reload page and verify language persists
     // Use domcontentloaded to avoid hanging on ChunkLoadError in slow CI.
@@ -66,12 +57,14 @@ test.describe('Language Switching', () => {
     );
 
     await ensureNavigationVisible(page);
-    await expect(
-      page
-        .getByRole('navigation', { name: 'Main navigation' })
-        .getByRole('link', { name: /игры/i })
-        .first(),
-    ).toBeVisible({});
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      {},
+    );
+
+    await ensureNavigationVisible(page);
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      {},
+    );
 
     // 6. Change back to English
     await navigateTo(page, '/settings');

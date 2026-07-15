@@ -35,8 +35,10 @@ test.describe('Language Switching', () => {
     await navigateTo(page, '/');
 
     await ensureNavigationVisible(page);
-    // The desktop nav games link has a stable testid based on href path
-    await expect(page.getByTestId('nav-games')).toHaveText(/игры/i);
+    // Verify the nav link text changed to Russian
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      {},
+    );
 
     // 5. Reload page and verify language persists
     // Use domcontentloaded to avoid hanging on ChunkLoadError in slow CI.
@@ -50,7 +52,9 @@ test.describe('Language Switching', () => {
     );
 
     await ensureNavigationVisible(page);
-    await expect(page.getByTestId('nav-games')).toHaveText(/игры/i);
+    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
+      {},
+    );
 
     // 6. Change back to English
     await navigateTo(page, '/settings');

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.58] - 2026-07-15
+
+### Added
+- add review queue for automated PR code review after implementation
+
+### Fixed
+- remove unused execSync import in review processor
+
+
 ## [1.23.57] - 2026-07-15
 
 ### Fixed

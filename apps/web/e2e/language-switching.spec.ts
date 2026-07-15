@@ -8,20 +8,35 @@ test.describe('Language Switching', () => {
     await navigateTo(page, '/');
     await ensureNavigationVisible(page);
     await expect(
-      page
-        .locator(
-          'nav[aria-label="Main navigation"], [data-testid="mobile-nav"]',
-        )
-        .getByRole('link', { name: /games/i }),
-    ).not.toBeVisible({});
+      page.getByRole('link', { name: /games/i }).first(),
+    ).toBeVisible();
 
-    await expect(
-      page
-        .locator(
-          'nav[aria-label="Main navigation"], [data-testid="mobile-nav"]',
-        )
-        .getByRole('link', { name: /игры/i }),
-    ).toBeVisible({});
+    // 2. Go to Settings and change to Russian
+    await navigateTo(page, '/settings');
+    // Verify English is selected
+    await expect(page.getByTestId('lang-btn-en')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    // Switch to Russian using the page button
+    await page.getByTestId('lang-btn-ru').click();
+
+    // Verify page content changed to Russian using polling for stability
+    await expect(async () => {
+      const settingsTitle = page.getByRole('heading', { level: 1 });
+      const text = await settingsTitle.innerText();
+      if (!/настройки/i.test(text)) {
+        throw new Error(`Not yet Russian. Current text: "${text}"`);
+      }
+    }).toPass({});
+
+    // 4. Navigate back to Home and verify it is translated
+    await navigateTo(page, '/');
+
+    await ensureNavigationVisible(page);
+    // The desktop nav games link has a stable testid based on href path
+    await expect(page.getByTestId('nav-games')).toHaveText(/игры/i);
 
     // 5. Reload page and verify language persists
     // Use domcontentloaded to avoid hanging on ChunkLoadError in slow CI.
@@ -35,14 +50,7 @@ test.describe('Language Switching', () => {
     );
 
     await ensureNavigationVisible(page);
-    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
-      {},
-    );
-
-    await ensureNavigationVisible(page);
-    await expect(page.getByRole('link', { name: /игры/i }).first()).toBeVisible(
-      {},
-    );
+    await expect(page.getByTestId('nav-games')).toHaveText(/игры/i);
 
     // 6. Change back to English
     await navigateTo(page, '/settings');

@@ -3,12 +3,16 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { GitHubService } from '../github/github.service';
 import { ImplementJobData } from '../queue/implement-queue.service';
+import { ReviewQueueService } from '../queue/review-queue.service';
 
 @Processor('implementation')
 export class ImplementProcessor {
   private readonly logger = new Logger(ImplementProcessor.name);
 
-  constructor(private readonly githubService: GitHubService) {}
+  constructor(
+    private readonly githubService: GitHubService,
+    private readonly reviewQueue: ReviewQueueService,
+  ) {}
 
   @Process()
   async handleImplement(job: Job<ImplementJobData>): Promise<{
@@ -41,13 +45,25 @@ export class ImplementProcessor {
   }
 
   @OnQueueCompleted()
-  onCompleted(
+  async onCompleted(
     job: Job<ImplementJobData>,
     result: { success: boolean; message: string },
   ) {
     this.logger.log(
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'}`,
     );
+
+    if (result.success && result.message.includes('PR created:')) {
+      const prUrl = result.message.replace('PR created: ', '');
+      const { issueNum, engine, chatId, userId } = job.data;
+
+      this.logger.log(`Auto-queueing review for PR: ${prUrl}`);
+      try {
+        await this.reviewQueue.addJob(issueNum, engine, chatId, userId, prUrl);
+      } catch (err) {
+        this.logger.error(`Failed to queue review: ${(err as Error).message}`);
+      }
+    }
   }
 
   @OnQueueFailed()

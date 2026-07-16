@@ -2,7 +2,13 @@ export const BOARD_SIZE = 8;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 
-export const VARIANTS = ['classic', 'neon', 'wood', 'marble', 'neon_glow'] as const;
+export const VARIANTS = [
+  'classic',
+  'neon',
+  'wood',
+  'marble',
+  'neon_glow',
+] as const;
 export type Variant = (typeof VARIANTS)[number];
 
 export const GAME_PHASE = {

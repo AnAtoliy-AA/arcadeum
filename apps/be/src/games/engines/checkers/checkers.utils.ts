@@ -1,5 +1,5 @@
 import { BOARD_SIZE } from './checkers.constants';
-import type { Board, CheckersState, MoveStep, Piece, PieceType } from './checkers.types';
+import type { Board, CheckersState, MoveStep, Piece } from './checkers.types';
 
 export function createInitialBoard(
   darkPlayerId?: string,
@@ -36,7 +36,10 @@ export function isPlayerPiece(piece: Piece | null, playerId: string): boolean {
   return piece !== null && piece.playerId === playerId;
 }
 
-export function getOpponentId(state: CheckersState, playerId: string): string | null {
+export function getOpponentId(
+  state: CheckersState,
+  playerId: string,
+): string | null {
   const player = state.players.find((p) => p.playerId === playerId);
   if (!player) return null;
   const color = player.color;
@@ -44,24 +47,45 @@ export function getOpponentId(state: CheckersState, playerId: string): string | 
   return opponent?.playerId ?? null;
 }
 
-export function getPlayerColor(state: CheckersState, playerId: string): string | null {
+export function getPlayerColor(
+  state: CheckersState,
+  playerId: string,
+): string | null {
   return state.players.find((p) => p.playerId === playerId)?.color ?? null;
 }
 
-export function getMoveDirections(playerColor: string): Array<[number, number]> {
+export function getMoveDirections(
+  playerColor: string,
+): Array<[number, number]> {
   // Light moves up (row decreases), dark moves down (row increases)
   if (playerColor === 'light') {
-    return [[-1, -1], [-1, 1]];
+    return [
+      [-1, -1],
+      [-1, 1],
+    ];
   }
-  return [[1, -1], [1, 1]];
+  return [
+    [1, -1],
+    [1, 1],
+  ];
 }
 
 export function getKingDirections(): Array<[number, number]> {
-  return [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+  return [
+    [-1, -1],
+    [-1, 1],
+    [1, -1],
+    [1, 1],
+  ];
 }
 
-export function getDirectionsForPiece(piece: Piece, playerColor: string): Array<[number, number]> {
-  return piece.type === 'king' ? getKingDirections() : getMoveDirections(playerColor);
+export function getDirectionsForPiece(
+  piece: Piece,
+  playerColor: string,
+): Array<[number, number]> {
+  return piece.type === 'king'
+    ? getKingDirections()
+    : getMoveDirections(playerColor);
 }
 
 export function inBounds(row: number, col: number): boolean {
@@ -217,11 +241,19 @@ export function applyMove(board: Board, steps: MoveStep[]): Board {
   return newBoard;
 }
 
-export function hasAnyMoves(board: Board, playerId: string, playerColor: string): boolean {
+export function hasAnyMoves(
+  board: Board,
+  playerId: string,
+  playerColor: string,
+): boolean {
   return getAvailableMovesForPlayer(board, playerId, playerColor).length > 0;
 }
 
-export function getWinner(board: Board, currentPlayerId: string, currentColor: string): string | null {
+export function getWinner(
+  board: Board,
+  currentPlayerId: string,
+  currentColor: string,
+): string | null {
   const opponentId = currentPlayerId === 'light' ? 'dark' : 'light';
   const opponentColor = currentPlayerId === 'light' ? 'dark' : 'light';
 

@@ -228,8 +228,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       {
         ruleId: 'forcedCaptures',
         label: 'Forced captures',
-        description:
-          'Players must capture when a capture is available.',
+        description: 'Players must capture when a capture is available.',
       },
     ],
   },

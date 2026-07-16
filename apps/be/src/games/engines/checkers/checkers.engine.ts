@@ -10,15 +10,11 @@ import type {
   CheckersState,
   InitializeConfig,
   MovePayload,
-  MoveStep,
-  Piece,
 } from './checkers.types';
 import {
   applyMove,
-  cloneBoard,
   countPieces,
   createInitialBoard,
-  getAvailableMovesForPlayer,
   getOpponentId,
   getPlayerColor,
   hasAnyMoves,
@@ -55,8 +51,18 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
 
     const players = [
-      { playerId: playerIds[0], color: 'light' as const, alive: true, piecesRemaining: 12 },
-      { playerId: playerIds[1], color: 'dark' as const, alive: true, piecesRemaining: 12 },
+      {
+        playerId: playerIds[0],
+        color: 'light' as const,
+        alive: true,
+        piecesRemaining: 12,
+      },
+      {
+        playerId: playerIds[1],
+        color: 'dark' as const,
+        alive: true,
+        piecesRemaining: 12,
+      },
     ];
 
     return {
@@ -84,7 +90,8 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     payload?: unknown,
   ): boolean {
     if (action === ACTION.MOVE_PIECE) {
-      return validateMovePiece(state, payload as MovePayload, context.userId).ok;
+      return validateMovePiece(state, payload as MovePayload, context.userId)
+        .ok;
     }
     if (action === ACTION.FORFEIT) {
       return validateForfeit(state, context.userId).ok;
@@ -100,11 +107,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
   ): GameActionResult<CheckersState> {
     let result: GameActionResult<CheckersState>;
     if (action === ACTION.MOVE_PIECE) {
-      result = this.executeMovePiece(
-        state,
-        context,
-        payload as MovePayload,
-      );
+      result = this.executeMovePiece(state, context, payload as MovePayload);
     } else if (action === ACTION.FORFEIT) {
       result = this.executeForfeit(state, context);
     } else {
@@ -229,9 +232,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     if (currentPieces === 0) {
       newState.winnerId = opponentId;
       newState.phase = GAME_PHASE.GAME_OVER;
-      newState.logs.push(
-        this.createLogEntry('system', `${opponentId} wins!`),
-      );
+      newState.logs.push(this.createLogEntry('system', `${opponentId} wins!`));
       return this.successResult(newState);
     }
 
@@ -241,7 +242,10 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       newState.winnerId = context.userId;
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.logs.push(
-        this.createLogEntry('system', `${context.userId} wins! Opponent has no moves.`),
+        this.createLogEntry(
+          'system',
+          `${context.userId} wins! Opponent has no moves.`,
+        ),
       );
       return this.successResult(newState);
     }
@@ -252,7 +256,10 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       newState.winnerId = opponentId;
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.logs.push(
-        this.createLogEntry('system', `${opponentId} wins! ${context.userId} has no moves.`),
+        this.createLogEntry(
+          'system',
+          `${opponentId} wins! ${context.userId} has no moves.`,
+        ),
       );
       return this.successResult(newState);
     }
@@ -273,7 +280,9 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       ) {
         newState.isDraw = true;
         newState.phase = GAME_PHASE.GAME_OVER;
-        newState.logs.push(this.createLogEntry('system', 'Draw — insufficient material.'));
+        newState.logs.push(
+          this.createLogEntry('system', 'Draw — insufficient material.'),
+        );
         return this.successResult(newState);
       }
     }
@@ -314,11 +323,15 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     return this.successResult(newState);
   }
 
-  private countKings(board: import('./checkers.types').Board, playerId: string): number {
+  private countKings(
+    board: import('./checkers.types').Board,
+    playerId: string,
+  ): number {
     let count = 0;
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
-        if (board[r][c]?.playerId === playerId && board[r][c]?.type === 'king') count++;
+        if (board[r][c]?.playerId === playerId && board[r][c]?.type === 'king')
+          count++;
       }
     }
     return count;

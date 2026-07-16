@@ -1,5 +1,5 @@
 import { GAME_PHASE } from './checkers.constants';
-import type { CheckersState, MovePayload, MoveStep } from './checkers.types';
+import type { CheckersState, MovePayload } from './checkers.types';
 import {
   applyMove,
   findCaptures,
@@ -32,7 +32,11 @@ export function validateMovePiece(
     return { ok: false, error: 'Player color not found' };
   }
 
-  if (!payload?.steps || !Array.isArray(payload.steps) || payload.steps.length === 0) {
+  if (
+    !payload?.steps ||
+    !Array.isArray(payload.steps) ||
+    payload.steps.length === 0
+  ) {
     return { ok: false, error: 'No steps provided' };
   }
 
@@ -48,7 +52,9 @@ export function validateMovePiece(
   }
 
   // Check if this chain is all captures (multi-jump must be all captures)
-  const isCaptureChain = steps.every((s) => s.capturedRow !== undefined && s.capturedCol !== undefined);
+  const isCaptureChain = steps.every(
+    (s) => s.capturedRow !== undefined && s.capturedCol !== undefined,
+  );
 
   // Forced captures: if captures are available, must capture
   if (state.options.forcedCaptures) {
@@ -65,7 +71,10 @@ export function validateMovePiece(
 
   // Validate first step
   const firstStep = steps[0];
-  if (!inBounds(firstStep.fromRow, firstStep.fromCol) || !inBounds(firstStep.toRow, firstStep.toCol)) {
+  if (
+    !inBounds(firstStep.fromRow, firstStep.fromCol) ||
+    !inBounds(firstStep.toRow, firstStep.toCol)
+  ) {
     return { ok: false, error: 'Move out of bounds' };
   }
 
@@ -95,7 +104,8 @@ export function validateMovePiece(
         m.toRow === step.toRow &&
         m.toCol === step.toCol &&
         (isCaptureChain
-          ? m.capturedRow === step.capturedRow && m.capturedCol === step.capturedCol
+          ? m.capturedRow === step.capturedRow &&
+            m.capturedCol === step.capturedCol
           : true),
     );
 
@@ -119,7 +129,10 @@ export function validateMovePiece(
         playerColor,
       );
       if (furtherCaptures.length > 0) {
-        return { ok: false, error: 'Multi-jump not complete — more captures available' };
+        return {
+          ok: false,
+          error: 'Multi-jump not complete — more captures available',
+        };
       }
     }
   }

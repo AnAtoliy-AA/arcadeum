@@ -16,7 +16,7 @@ import { extractRoomAndUser, handleError } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
-import type { MoveStep } from '../engines/checkers/checkers.types';
+import type { MoveStep } from './engines/checkers/checkers.types';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -97,7 +97,11 @@ export class CheckersGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    if (!payload?.steps || !Array.isArray(payload.steps) || payload.steps.length === 0) {
+    if (
+      !payload?.steps ||
+      !Array.isArray(payload.steps) ||
+      payload.steps.length === 0
+    ) {
       throw new WsException('steps are required');
     }
     try {

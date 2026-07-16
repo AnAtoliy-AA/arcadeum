@@ -253,6 +253,71 @@ export class GitHubService {
     }
   }
 
+  async checkAndFixCI(
+    prNumber: string,
+    branchName: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const cwd = this.getCwd();
+    try {
+      const checksRaw = execFileSync('gh', [
+        'pr', 'checks', prNumber, '--json', 'name,conclusion,detailsUrl',
+      ], { encoding: 'utf-8', cwd });
+      const checks = JSON.parse(checksRaw) as Array<{ name: string; conclusion: string; detailsUrl: string }>;
+
+      const failed = checks.filter((c) => c.conclusion === 'failure');
+      if (failed.length === 0) {
+        return { success: true, message: 'All checks passing' };
+      }
+
+      this.logger.warn(`CI failed: ${failed.map((c) => c.name).join(', ')}`);
+
+      const failedNames = failed.map((c) => c.name).join(', ');
+      const fixPrompt = [
+        `Fix CI failures for PR #${prNumber}: ${failedNames}`,
+        '',
+        'CI failed checks:',
+        ...failed.map((c) => `- ${c.name}: ${c.detailsUrl}`),
+        '',
+        'Instructions:',
+        '- Read the CI logs from the detailsUrl to understand what failed.',
+        '- Fix the issues in the code.',
+        '- Run `pnpm lint` and `pnpm typecheck` to verify.',
+        '- Commit the fixes with conventional commits.',
+        '- Push to the existing branch.',
+        '- Max 500 lines per file — split large files into smaller modules.',
+        '- Do not add comments unless asked.',
+      ].join('\n');
+
+      const escapedPrompt = fixPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
+
+      await this.spawnAsync(
+        'opencode',
+        ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'],
+        { cwd, timeout: 600_000 },
+      );
+
+      execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
+
+      const diffCheck = execSync('git diff --cached --quiet; echo $?', {
+        encoding: 'utf-8', cwd,
+      }).trim();
+
+      if (diffCheck === '0') {
+        return { success: true, message: 'No changes needed — CI failures may require manual investigation' };
+      }
+
+      execFileSync('git', ['commit', '-m', 'fix: resolve CI failures'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['push', 'origin', branchName], { encoding: 'utf-8', cwd });
+
+      return { success: true, message: `Fixes pushed to ${branchName}. CI will re-run.` };
+    } catch (err) {
+      return { success: false, message: `CI fix failed: ${(err as Error).message}` };
+    }
+  }
+
   async implementLocally(
     issueNum: string,
     engine: string,

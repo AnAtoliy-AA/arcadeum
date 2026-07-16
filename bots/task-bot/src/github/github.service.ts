@@ -291,8 +291,15 @@ export class GitHubService {
         '',
         'Follow the project conventions in CLAUDE.md.',
         'Do not add comments unless asked.',
-        'Run pnpm lint and pnpm typecheck when done.',
-        'Commit with conventional commits when complete.',
+        '',
+        'CRITICAL RULES:',
+        '- Run `pnpm lint` and `pnpm typecheck` when done.',
+        '- If pre-commit hook fails (file too long, lint errors, type errors), FIX the issues and try again.',
+        '- Max 500 lines per file — split large files into smaller modules.',
+        '- Commit with conventional commits format.',
+        '- After committing, push the branch and create a PR targeting develop.',
+        '- If `gh pr create` fails, check `gh auth status` and fix auth if needed.',
+        '- Never leave the repo in a dirty state.',
       ].join('\n');
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');

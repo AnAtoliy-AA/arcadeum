@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { execSync, spawn } from 'child_process';
+import { execSync, execFileSync, spawn } from 'child_process';
 
 interface GitHubIssue {
   arc: string | null;
@@ -59,11 +59,16 @@ export class GitHubService {
       }
     }
 
-    const labelArgs = labels.map((l) => `--label "${l}"`).join(' ');
-    const cmd = `gh issue create --title "${title.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" --body "${body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
+    const labelArgs = labels.flatMap((l) => ['--label', l]);
+    const args = [
+      'issue', 'create',
+      '--title', title,
+      '--body', body,
+      ...labelArgs,
+    ];
 
     try {
-      const result = execSync(cmd, {
+      const result = execFileSync('gh', args, {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -204,7 +209,7 @@ export class GitHubService {
 
   private listLabels(): string[] {
     try {
-      const result = execSync(`gh label list --json name --limit 100`, {
+      const result = execFileSync('gh', ['label', 'list', '--json', 'name', '--limit', '100'], {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });

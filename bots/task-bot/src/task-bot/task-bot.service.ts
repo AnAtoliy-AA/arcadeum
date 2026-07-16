@@ -552,9 +552,14 @@ export class TaskBotService implements OnApplicationBootstrap {
 
     const status = notification.success ? '✅' : '❌';
     const title = notification.success ? 'Task Completed' : 'Task Failed';
-    const message = notification.success
+    let message = notification.success
       ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
       : `Issue #${notification.issueNum} failed: ${notification.message}`;
+
+    // Truncate message if too long (Telegram limit is 4096 chars)
+    if (message.length > 3900) {
+      message = message.substring(0, 3900) + '...';
+    }
 
     try {
       await this.bot.api.sendMessage(

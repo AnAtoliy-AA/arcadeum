@@ -256,7 +256,7 @@ export class GitHubService {
   async implementLocally(
     issueNum: string,
     engine: string,
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
     const cwd = this.getCwd();
     let branchName = '';
     try {
@@ -398,24 +398,25 @@ export class GitHubService {
           { encoding: 'utf-8', cwd },
         );
 
-      const existingLabels = this.listLabels();
-      if (!existingLabels.includes('in-review')) {
+        const existingLabels = this.listLabels();
+        if (!existingLabels.includes('in-review')) {
+          try {
+            execSync(
+              `gh label create "in-review" --color "D4C5F9" --description "Ready for review"`,
+              { encoding: 'utf-8', cwd },
+            );
+          } catch {
+            // label may already exist
+          }
+        }
         try {
           execSync(
-            `gh label create "in-review" --color "D4C5F9" --description "Ready for review"`,
+            `gh issue edit ${issueNum} --add-label "in-review"`,
             { encoding: 'utf-8', cwd },
           );
         } catch {
-          // label may already exist
+          // ignore if label add fails
         }
-      }
-      try {
-        execSync(
-          `gh issue edit ${issueNum} --add-label "in-review"`,
-          { encoding: 'utf-8', cwd },
-        );
-      } catch {
-        // ignore if label add fails
       }
 
       return prUrl

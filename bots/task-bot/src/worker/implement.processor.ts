@@ -80,6 +80,8 @@ export class ImplementProcessor {
       success: result.success,
       message: prUrl ? `PR created: ${prUrl}` : result.message,
       timestamp: Date.now(),
+      type: prUrl ? 'pr-opened' : (result.success ? 'task-completed' : 'task-failed'),
+      prUrl: prUrl || undefined,
     });
 
     if (prUrl) {

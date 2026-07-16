@@ -571,28 +571,50 @@ export class TaskBotService implements OnApplicationBootstrap {
       return;
     }
 
-    const status = notification.success ? '✅' : '❌';
-    const title = notification.success ? 'Task Completed' : 'Task Failed';
-    let message = notification.success
-      ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
-      : `Issue #${notification.issueNum} failed: ${notification.message}`;
+    let text: string;
 
-    if (notification.success && notification.message && notification.message !== 'success') {
-      message += `\n${notification.message}`;
+    switch (notification.type) {
+      case 'pr-opened':
+        text = `*PR Opened*\n🔗 ${notification.prUrl}\nIssue #${notification.issueNum} implemented with ${notification.engine}`;
+        break;
+
+      case 'ci-failed':
+        text = `*CI Failed* ❌\nPR #${notification.issueNum} — ${notification.failedChecks?.join(', ') ?? 'unknown'}\n🤖 Auto-fixing...`;
+        break;
+
+      case 'ci-fixed':
+        text = notification.success
+          ? `*CI Fixed* ✅\n${notification.message}`
+          : `*CI Fix Failed* ❌\n${notification.message}`;
+        break;
+
+      case 'task-completed':
+        text = notification.success
+          ? `*Task Completed* ✅\nIssue #${notification.issueNum} implemented with ${notification.engine}.\n${notification.message}`
+          : `*Task Failed* ❌\nIssue #${notification.issueNum}: ${notification.message}`;
+        break;
+
+      default: {
+        const status = notification.success ? '✅' : '❌';
+        const title = notification.success ? 'Task Completed' : 'Task Failed';
+        let message = notification.success
+          ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
+          : `Issue #${notification.issueNum} failed: ${notification.message}`;
+        if (notification.success && notification.message && notification.message !== 'success') {
+          message += `\n${notification.message}`;
+        }
+        text = `*${title}*\n${status} ${message}`;
+        break;
+      }
     }
 
-    // Truncate message if too long (Telegram limit is 4096 chars)
-    if (message.length > 3900) {
-      message = message.substring(0, 3900) + '...';
+    if (text.length > 3900) {
+      text = text.substring(0, 3900) + '...';
     }
 
     try {
-      await this.bot.api.sendMessage(
-        chatId,
-        `*${title}*\n${status} ${message}`,
-        { parse_mode: 'Markdown' },
-      );
-      this.logger.log(`Notification sent for issue #${notification.issueNum}`);
+      await this.bot.api.sendMessage(chatId, text, { parse_mode: 'Markdown' });
+      this.logger.log(`Notification sent: ${notification.type ?? 'default'} for #${notification.issueNum}`);
     } catch (err) {
       this.logger.error(`Failed to send notification: ${err}`);
     }

@@ -9,6 +9,9 @@ export interface JobNotification {
   success: boolean;
   message: string;
   timestamp: number;
+  type?: 'pr-opened' | 'ci-failed' | 'ci-fixed' | 'task-completed' | 'task-failed';
+  prUrl?: string;
+  failedChecks?: string[];
 }
 
 @Injectable()

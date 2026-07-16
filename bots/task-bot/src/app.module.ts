@@ -4,6 +4,7 @@ import { TelegramModule } from './telegram/telegram.module';
 import { TaskBotModule } from './task-bot/task-bot.module';
 import { QueueModule } from './queue/queue.module';
 import { NotificationModule } from './notification/notification.module';
+import { CIModule } from './ci/ci.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { NotificationModule } from './notification/notification.module';
     QueueModule,
     TaskBotModule,
     NotificationModule,
+    CIModule,
   ],
 })
 export class AppModule {}

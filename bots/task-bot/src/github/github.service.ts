@@ -260,11 +260,11 @@ export class GitHubService {
     const cwd = this.getCwd();
     try {
       const checksRaw = execFileSync('gh', [
-        'pr', 'checks', prNumber, '--json', 'name,conclusion,detailsUrl',
+        'pr', 'checks', prNumber, '--json', 'name,state,link',
       ], { encoding: 'utf-8', cwd });
-      const checks = JSON.parse(checksRaw) as Array<{ name: string; conclusion: string; detailsUrl: string }>;
+      const checks = JSON.parse(checksRaw) as Array<{ name: string; state: string; link: string }>;
 
-      const failed = checks.filter((c) => c.conclusion === 'failure');
+      const failed = checks.filter((c) => c.state === 'FAILURE' || c.state === 'failure');
       if (failed.length === 0) {
         return { success: true, message: 'All checks passing' };
       }
@@ -276,7 +276,7 @@ export class GitHubService {
         `Fix CI failures for PR #${prNumber}: ${failedNames}`,
         '',
         'CI failed checks:',
-        ...failed.map((c) => `- ${c.name}: ${c.detailsUrl}`),
+        ...failed.map((c) => `- ${c.name}: ${c.link}`),
         '',
         'Instructions:',
         '- Read the CI logs from the detailsUrl to understand what failed.',

@@ -208,6 +208,31 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'checkers_v1',
+    startMode: 'immediate',
+    variants: ['classic', 'neon', 'wood', 'marble', 'neon_glow'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically make a move if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+      {
+        ruleId: 'forcedCaptures',
+        label: 'Forced captures',
+        description:
+          'Players must capture when a capture is available.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

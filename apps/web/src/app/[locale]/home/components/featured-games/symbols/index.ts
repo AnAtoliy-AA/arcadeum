@@ -4,3 +4,4 @@ export * from './GlimwormSymbol';
 export * from './TicTacToeSymbol';
 export * from './CascadeSymbol';
 export * from './ChessSymbol';
+export * from './CheckersSymbol';

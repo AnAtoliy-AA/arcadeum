@@ -6,6 +6,7 @@ import * as glimworm from './glimworm/index';
 import * as ticTacToe from './tic-tac-toe/index';
 import * as cascade from './cascade/index';
 import * as chess from './chess/index';
+import * as checkers from './checkers/index';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = shared.SharedGamesMessages &
@@ -15,7 +16,8 @@ export type GamesMessagesBundle = shared.SharedGamesMessages &
   glimworm.GlimwormGamesMessages &
   ticTacToe.TicTacToeMessages &
   cascade.CascadeMessages &
-  chess.ChessMessages;
+  chess.ChessMessages &
+  checkers.CheckersMessages;
 
 export const en = {
   ...shared.en,
@@ -26,6 +28,7 @@ export const en = {
   ...ticTacToe.en,
   ...cascade.en,
   ...chess.en,
+  ...checkers.en,
 };
 
 export const es = {
@@ -37,6 +40,7 @@ export const es = {
   ...ticTacToe.es,
   ...cascade.es,
   ...chess.es,
+  ...checkers.es,
 };
 
 export const fr = {
@@ -48,6 +52,7 @@ export const fr = {
   ...ticTacToe.fr,
   ...cascade.fr,
   ...chess.fr,
+  ...checkers.fr,
 };
 
 export const ru = {
@@ -59,6 +64,7 @@ export const ru = {
   ...ticTacToe.ru,
   ...cascade.ru,
   ...chess.ru,
+  ...checkers.ru,
 };
 
 export const by = {
@@ -70,6 +76,7 @@ export const by = {
   ...ticTacToe.by,
   ...cascade.by,
   ...chess.by,
+  ...checkers.by,
 };
 
 export const gamesMessages = {

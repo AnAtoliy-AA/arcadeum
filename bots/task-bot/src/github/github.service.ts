@@ -272,11 +272,22 @@ export class GitHubService {
         cwd,
       });
 
+      const requirements = this.extractRequirements(issue.body);
+      const hasRealRequirements =
+        requirements.length > 0 && !requirements.every((r) => r === 'TBD');
+
       const prompt = [
         `Implement GitHub issue #${issueNum}: ${issue.title}`,
         '',
         'Requirements:',
-        ...this.extractRequirements(issue.body).map((r) => `- ${r}`),
+        ...(hasRealRequirements
+          ? requirements.map((r) => `- ${r}`)
+          : [
+              '- Determine what needs to be done based on the issue title.',
+              '- Read CLAUDE.md for project conventions and architecture.',
+              '- Explore the codebase to understand existing patterns.',
+              '- Implement the feature following existing code style.',
+            ]),
         '',
         'Follow the project conventions in CLAUDE.md.',
         'Do not add comments unless asked.',

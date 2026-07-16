@@ -85,4 +85,4 @@ export const enMessages = {
       waiting: 'Waiting for opponent...',
     },
   },
-} as const;
+};

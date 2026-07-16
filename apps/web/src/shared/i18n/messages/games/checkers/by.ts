@@ -85,4 +85,4 @@ export const byMessages = {
       waiting: 'Чаканне праціўніка...',
     },
   },
-} as const;
+};

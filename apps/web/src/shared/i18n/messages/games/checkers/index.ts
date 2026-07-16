@@ -6,4 +6,4 @@ import { byMessages as by } from './by';
 
 export { en, es, fr, ru, by };
 export type CheckersMessages = typeof en;
-export const checkersMessages = { en, es, fr, ru, by } as const;
+export const checkersMessages = { en, es, fr, ru, by };

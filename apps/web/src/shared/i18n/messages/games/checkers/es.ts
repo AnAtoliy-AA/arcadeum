@@ -85,4 +85,4 @@ export const esMessages = {
       waiting: 'Esperando oponente...',
     },
   },
-} as const;
+};

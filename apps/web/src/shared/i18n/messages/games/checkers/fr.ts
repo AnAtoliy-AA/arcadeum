@@ -85,4 +85,4 @@ export const frMessages = {
       waiting: 'En attente de l\'adversaire...',
     },
   },
-} as const;
+};

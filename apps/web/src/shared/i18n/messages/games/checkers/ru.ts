@@ -85,4 +85,4 @@ export const ruMessages = {
       waiting: 'Ожидание противника...',
     },
   },
-} as const;
+};

@@ -185,6 +185,25 @@ export class TaskBotService implements OnApplicationBootstrap {
       cleaned = cleaned.replace(/--engine=\S+/i, '').trim();
     }
 
+    let requirements: string[] = [];
+    const reqMatch = cleaned.match(/--req\s+"([^"]+)"/i);
+    if (reqMatch) {
+      requirements = reqMatch[1]
+        .split(/[,;]/)
+        .map((r) => r.trim())
+        .filter(Boolean);
+      cleaned = cleaned.replace(/--req\s+"[^"]+"/i, '').trim();
+    } else {
+      const reqMatchSimple = cleaned.match(/--req\s+(\S.+)/i);
+      if (reqMatchSimple) {
+        requirements = reqMatchSimple[1]
+          .split(/[,;]/)
+          .map((r) => r.trim())
+          .filter(Boolean);
+        cleaned = cleaned.replace(/--req\s+.+/i, '').trim();
+      }
+    }
+
     let priority: Priority = 'normal';
     const prioMatch = cleaned.match(/--(low|normal|high|urgent)/i);
     if (prioMatch) {
@@ -215,10 +234,12 @@ export class TaskBotService implements OnApplicationBootstrap {
       arc = roadmapMatch?.arc ?? this.roadmapService.getNextArcNumber();
     }
 
-    const requirements = lines
-      .slice(1)
-      .filter((l) => /^[-*]\s/.test(l))
-      .map((l) => l.replace(/^[-*]\s+/, ''));
+    if (requirements.length === 0) {
+      requirements = lines
+        .slice(1)
+        .filter((l) => /^[-*]\s/.test(l))
+        .map((l) => l.replace(/^[-*]\s+/, ''));
+    }
 
     const scopeLine = lines.find((l) => /^scope:/i.test(l));
     let scope: string[];
@@ -306,7 +327,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text?.replace(/^\/task\s*/, '');
     if (!text) {
       await ctx.reply(
-        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\nScope: backend, web, mobile, game',
+        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
       );
       return;
     }

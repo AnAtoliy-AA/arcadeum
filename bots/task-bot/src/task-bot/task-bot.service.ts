@@ -84,9 +84,9 @@ export class TaskBotService implements OnApplicationBootstrap {
       this.handleNotification(notification);
     });
 
-    await this.bot.start({
+    this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),
-    });
+    }).catch((err) => this.logger.error(`Bot start failed: ${err}`));
 
     this.logger.log(
       `Task bot ready. Allowed users: ${this.allowedUserIds.size === 0 ? 'anyone (set TELEGRAM_ALLOWED_USERS)' : [...this.allowedUserIds].join(', ')}`,

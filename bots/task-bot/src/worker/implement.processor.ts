@@ -49,23 +49,40 @@ export class ImplementProcessor {
   @OnQueueCompleted()
   async onCompleted(
     job: Job<ImplementJobData>,
-    result: { success: boolean; message: string },
+    result: { success: boolean; message: string; branchName?: string },
   ) {
     this.logger.log(
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'}`,
     );
+
+    let prUrl = '';
+    if (result.message.includes('PR created:')) {
+      prUrl = result.message.replace('PR created: ', '');
+    } else if (result.branchName) {
+      this.logger.log(`Creating PR from main instance for branch: ${result.branchName}`);
+      try {
+        const prResult = this.githubService.createPR(job.data.issueNum, result.branchName);
+        if (prResult.success && prResult.prUrl) {
+          prUrl = prResult.prUrl;
+          this.logger.log(`PR created: ${prUrl}`);
+        } else {
+          this.logger.warn(`PR creation failed: ${prResult.message}`);
+        }
+      } catch (err) {
+        this.logger.error(`Failed to create PR: ${(err as Error).message}`);
+      }
+    }
 
     await this.notificationService.publish({
       jobId: String(job.id),
       issueNum: job.data.issueNum,
       engine: job.data.engine,
       success: result.success,
-      message: result.message,
+      message: prUrl ? `PR created: ${prUrl}` : result.message,
       timestamp: Date.now(),
     });
 
-    if (result.success && result.message.includes('PR created:')) {
-      const prUrl = result.message.replace('PR created: ', '');
+    if (prUrl) {
       const { issueNum, engine, chatId, userId } = job.data;
 
       this.logger.log(`Auto-queueing review for PR: ${prUrl}`);

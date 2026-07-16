@@ -220,6 +220,39 @@ export class GitHubService {
     }
   }
 
+  createPR(
+    issueNum: string,
+    branchName: string,
+  ): { success: boolean; prUrl?: string; message: string } {
+    const cwd = this.getCwd();
+    try {
+      const issue = this.viewIssue(issueNum);
+      if (!issue) {
+        return { success: false, message: `Issue #${issueNum} not found` };
+      }
+      const prUrl = execFileSync(
+        'gh',
+        [
+          'pr', 'create',
+          '--title', issue.title,
+          '--body', `Closes #${issueNum}`,
+          '--base', 'develop',
+          '--head', branchName,
+        ],
+        { encoding: 'utf-8', cwd },
+      ).trim();
+
+      execFileSync('gh', [
+        'issue', 'comment', issueNum,
+        '--body', `PR created: ${prUrl}`,
+      ], { encoding: 'utf-8', cwd });
+
+      return { success: true, prUrl, message: `PR created: ${prUrl}` };
+    } catch (err) {
+      return { success: false, message: `Failed to create PR: ${(err as Error).message}` };
+    }
+  }
+
   async implementLocally(
     issueNum: string,
     engine: string,
@@ -349,15 +382,21 @@ export class GitHubService {
       });
       execSync(`git push origin ${branchName}`, { encoding: 'utf-8', cwd });
 
-      const prUrl = execSync(
-        `gh pr create --title "${issue.title}" --body "Closes #${issueNum}" --base develop --head ${branchName}`,
-        { encoding: 'utf-8', cwd },
-      ).trim();
+      let prUrl = '';
+      try {
+        prUrl = execSync(
+          `gh pr create --title "${issue.title}" --body "Closes #${issueNum}" --base develop --head ${branchName}`,
+          { encoding: 'utf-8', cwd },
+        ).trim();
+      } catch {
+        this.logger.warn('gh pr create failed — PR will be created by task bot');
+      }
 
-      execSync(
-        `gh issue comment ${issueNum} --body "Implementation complete (${engine}). PR: ${prUrl}"`,
-        { encoding: 'utf-8', cwd },
-      );
+      if (prUrl) {
+        execSync(
+          `gh issue comment ${issueNum} --body "Implementation complete (${engine}). PR: ${prUrl}"`,
+          { encoding: 'utf-8', cwd },
+        );
 
       const existingLabels = this.listLabels();
       if (!existingLabels.includes('in-review')) {
@@ -379,7 +418,9 @@ export class GitHubService {
         // ignore if label add fails
       }
 
-      return { success: true, message: `PR created: ${prUrl}` };
+      return prUrl
+        ? { success: true, message: `PR created: ${prUrl}` }
+        : { success: true, message: `Branch pushed: ${branchName}`, branchName };
     } catch (err) {
       const cwd = this.getCwd();
       try {

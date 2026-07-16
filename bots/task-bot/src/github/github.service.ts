@@ -308,11 +308,11 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(
-        cli,
-        ['run', escapedPrompt, '--dangerously-skip-permissions'],
-        { cwd, timeout: 600_000 },
-      );
+      const runArgs =
+        cli === 'opencode'
+          ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+          : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
 
       execSync('git add -A', { encoding: 'utf-8', cwd });
 

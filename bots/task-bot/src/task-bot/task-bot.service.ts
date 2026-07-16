@@ -556,6 +556,10 @@ export class TaskBotService implements OnApplicationBootstrap {
       ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
       : `Issue #${notification.issueNum} failed: ${notification.message}`;
 
+    if (notification.success && notification.message && notification.message !== 'success') {
+      message += `\n${notification.message}`;
+    }
+
     // Truncate message if too long (Telegram limit is 4096 chars)
     if (message.length > 3900) {
       message = message.substring(0, 3900) + '...';

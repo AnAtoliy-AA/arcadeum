@@ -313,7 +313,7 @@ export class GitHubService {
       if (diffCheck === '0') {
         execSync(`git checkout main`, { encoding: 'utf-8', cwd });
         execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
-        return { success: true, message: 'No changes to commit' };
+        return { success: true, message: 'No changes to commit — the AI engine did not produce any modifications. Check the issue requirements or try a different engine.' };
       }
 
       const scope = issue.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;

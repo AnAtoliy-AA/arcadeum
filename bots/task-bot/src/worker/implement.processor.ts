@@ -6,7 +6,7 @@ import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
 
-const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '5', 10);
 
 @Processor('implementation')
 export class ImplementProcessor {
@@ -19,94 +19,186 @@ export class ImplementProcessor {
   ) {}
 
   @Process({ concurrency })
-  async handleImplement(job: Job<ImplementJobData>): Promise<{
+  async handleJob(job: Job<ImplementJobData>): Promise<{
     success: boolean;
     message: string;
+    branchName?: string;
   }> {
-    const { issueNum, engine, type } = job.data;
-    const isFix = type === 'fix';
+    const { issueNum, engine, type, prNumber } = job.data;
     this.logger.log(
-      `Processing job ${job.id}: ${isFix ? 'fixing PR' : 'implementing issue'} #${issueNum} with ${engine}`,
+      `Processing job ${job.id}: ${type} on #${issueNum} with ${engine}`,
     );
 
-    await job.progress(10);
+    await job.progress(5);
 
-    const result = isFix
-      ? await this.githubService.fixPR(issueNum, engine)
-      : await this.githubService.implementLocally(issueNum, engine);
+    const jobId = String(job.id);
+    let cwd: string | null = null;
 
-    await job.progress(100);
+    try {
+      cwd = this.githubService.createWorktree(jobId);
+      await job.progress(10);
 
-    this.logger.log(
-      `Job ${job.id} completed: ${result.success ? 'success' : 'failed'} - ${result.message}`,
-    );
+      let result: { success: boolean; message: string; branchName?: string };
 
-    return result;
-  }
-
-  @OnQueueActive()
-  onActive(job: Job<ImplementJobData>) {
-    this.logger.log(
-      `Job ${job.id} started: issue #${job.data.issueNum} with ${job.data.engine}`,
-    );
-  }
-
-  @OnQueueCompleted()
-  async onCompleted(
-    job: Job<ImplementJobData>,
-    result: { success: boolean; message: string; branchName?: string },
-  ) {
-    this.logger.log(
-      `Job ${job.id} finished: ${result.success ? 'success' : 'failed'}`,
-    );
-
-    const isFix = job.data.type === 'fix';
-    let prUrl = '';
-
-    if (result.branchName) {
-      this.logger.log(`Pushing branch ${result.branchName} from main instance`);
-      const pushResult = this.githubService.pushBranch(result.branchName);
-      if (!pushResult.success) {
-        this.logger.error(`Push failed: ${pushResult.message}`);
+      switch (type) {
+        case 'implement':
+          result = await this.handleImplement(job, cwd);
+          break;
+        case 'fix':
+          result = await this.handleFix(job, cwd);
+          break;
+        case 'ci-fix':
+          result = await this.handleCIFix(job, cwd);
+          break;
+        default:
+          result = { success: false, message: `Unknown job type: ${type}` };
       }
 
-      if (!isFix && pushResult.success) {
-        this.logger.log(`Creating PR for branch: ${result.branchName}`);
-        try {
-          const prResult = this.githubService.createPR(job.data.issueNum, result.branchName);
-          if (prResult.success && prResult.prUrl) {
-            prUrl = prResult.prUrl;
-            this.logger.log(`PR created: ${prUrl}`);
-          } else {
-            this.logger.warn(`PR creation failed: ${prResult.message}`);
-          }
-        } catch (err) {
-          this.logger.error(`Failed to create PR: ${(err as Error).message}`);
+      await job.progress(80);
+
+      if (result.branchName && result.success) {
+        await this.postProcess(job, result.branchName, cwd);
+      }
+
+      await job.progress(100);
+
+      this.logger.log(
+        `Job ${job.id} completed: ${result.success ? 'success' : 'failed'} - ${result.message}`,
+      );
+
+      return result;
+    } catch (err) {
+      this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`);
+      return { success: false, message: (err as Error).message };
+    } finally {
+      if (cwd) {
+        this.githubService.removeWorktree(jobId);
+      }
+    }
+  }
+
+  private async handleImplement(
+    job: Job<ImplementJobData>,
+    cwd: string,
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    const { issueNum, engine, issueTitle, issueBody } = job.data;
+
+    if (!issueTitle || !issueBody) {
+      return { success: false, message: 'Missing issue data in job payload' };
+    }
+
+    return this.githubService.implementLocally(issueNum, engine, cwd, {
+      title: issueTitle,
+      body: issueBody,
+    });
+  }
+
+  private async handleFix(
+    job: Job<ImplementJobData>,
+    cwd: string,
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    const { prNumber, engine, prBranchName, prFailedChecks, prReviewComments } = job.data;
+
+    if (!prNumber || !prBranchName) {
+      return { success: false, message: 'Missing PR data in job payload' };
+    }
+
+    return this.githubService.fixPR(prNumber, engine, cwd, {
+      branchName: prBranchName,
+      failedChecks: prFailedChecks,
+      reviewComments: prReviewComments,
+    });
+  }
+
+  private async handleCIFix(
+    job: Job<ImplementJobData>,
+    cwd: string,
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    const { prNumber, engine, prBranchName, prFailedChecks } = job.data;
+
+    if (!prNumber || !prBranchName || !prFailedChecks) {
+      return { success: false, message: 'Missing CI fix data in job payload' };
+    }
+
+    return this.githubService.checkAndFixCI(prNumber, engine, cwd, {
+      branchName: prBranchName,
+      failedChecks: prFailedChecks,
+    });
+  }
+
+  private async postProcess(
+    job: Job<ImplementJobData>,
+    branchName: string,
+    cwd: string,
+  ): Promise<void> {
+    const { type, issueNum } = job.data;
+
+    this.logger.log(`Pushing branch ${branchName} from worktree`);
+    const pushResult = this.githubService.pushBranch(branchName, cwd);
+    if (!pushResult.success) {
+      this.logger.error(`Push failed: ${pushResult.message}`);
+      return;
+    }
+
+    let prUrl = '';
+
+    if (type === 'implement') {
+      this.logger.log(`Creating PR for branch: ${branchName}`);
+      try {
+        const prResult = this.githubService.createPR(issueNum, branchName, cwd);
+        if (prResult.success && prResult.prUrl) {
+          prUrl = prResult.prUrl;
+          this.logger.log(`PR created: ${prUrl}`);
+        } else {
+          this.logger.warn(`PR creation failed: ${prResult.message}`);
         }
+      } catch (err) {
+        this.logger.error(`Failed to create PR: ${(err as Error).message}`);
       }
     }
 
     await this.notificationService.publish({
       jobId: String(job.id),
-      issueNum: job.data.issueNum,
+      issueNum,
       engine: job.data.engine,
-      success: result.success,
-      message: prUrl ? `PR created: ${prUrl}` : result.message,
+      success: true,
+      message: prUrl ? `PR created: ${prUrl}` : `Branch pushed: ${branchName}`,
       timestamp: Date.now(),
-      type: prUrl ? 'pr-opened' : (result.success ? 'task-completed' : 'task-failed'),
+      type: prUrl ? 'pr-opened' : 'task-completed',
       prUrl: prUrl || undefined,
     });
 
     if (prUrl) {
-      const { issueNum, engine, chatId, userId } = job.data;
-
       this.logger.log(`Auto-queueing review for PR: ${prUrl}`);
       try {
-        await this.reviewQueue.addJob(issueNum, engine, chatId, userId, prUrl);
+        await this.reviewQueue.addJob(
+          issueNum,
+          job.data.engine,
+          job.data.chatId,
+          job.data.userId,
+          prUrl,
+        );
       } catch (err) {
         this.logger.error(`Failed to queue review: ${(err as Error).message}`);
       }
     }
+  }
+
+  @OnQueueActive()
+  onActive(job: Job<ImplementJobData>) {
+    this.logger.log(
+      `Job ${job.id} started: ${job.data.type} on #${job.data.issueNum} with ${job.data.engine}`,
+    );
+  }
+
+  @OnQueueCompleted()
+  onCompleted(
+    job: Job<ImplementJobData>,
+    result: { success: boolean; message: string },
+  ) {
+    this.logger.log(
+      `Job ${job.id} finished: ${result.success ? 'success' : 'failed'} - ${result.message}`,
+    );
   }
 
   @OnQueueFailed()

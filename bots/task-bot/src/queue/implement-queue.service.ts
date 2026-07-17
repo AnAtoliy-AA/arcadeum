@@ -2,12 +2,21 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 
+export type JobType = 'implement' | 'fix' | 'ci-fix';
+
 export interface ImplementJobData {
   issueNum: string;
   engine: 'opencode' | 'mimo';
   chatId: number;
   userId: number;
-  type?: 'implement' | 'fix';
+  type: JobType;
+  prNumber?: string;
+  issueTitle?: string;
+  issueBody?: string;
+  issueLabels?: Array<{ name: string }>;
+  prBranchName?: string;
+  prFailedChecks?: Array<{ name: string; state: string; link: string }>;
+  prReviewComments?: string;
 }
 
 @Injectable()
@@ -40,14 +49,40 @@ export class ImplementQueueService {
     return String(job.id);
   }
 
+  async setJobData(
+    jobId: string,
+    data: Partial<ImplementJobData>,
+  ): Promise<void> {
+    const job = await this.implementQueue.getJob(jobId);
+    if (job) {
+      await job.update({ ...job.data, ...data });
+    }
+  }
+
   async addFixJob(
     prNumber: string,
     engine: 'opencode' | 'mimo',
     chatId: number,
     userId: number,
+    data: {
+      issueNum: string;
+      prBranchName: string;
+      prFailedChecks?: Array<{ name: string; state: string; link: string }>;
+      prReviewComments?: string;
+    },
   ): Promise<string> {
     const job = await this.implementQueue.add(
-      { issueNum: prNumber, engine, chatId, userId, type: 'fix' },
+      {
+        issueNum: data.issueNum,
+        engine,
+        chatId,
+        userId,
+        type: 'fix',
+        prNumber,
+        prBranchName: data.prBranchName,
+        prFailedChecks: data.prFailedChecks,
+        prReviewComments: data.prReviewComments,
+      },
       {
         attempts: 1,
         removeOnComplete: 50,
@@ -56,6 +91,40 @@ export class ImplementQueueService {
     );
     this.logger.log(
       `Job ${job.id} queued: fix PR #${prNumber} with ${engine}`,
+    );
+    return String(job.id);
+  }
+
+  async addCIFixJob(
+    prNumber: string,
+    engine: 'opencode' | 'mimo',
+    chatId: number,
+    userId: number,
+    data: {
+      issueNum: string;
+      prBranchName: string;
+      prFailedChecks: Array<{ name: string; state: string; link: string }>;
+    },
+  ): Promise<string> {
+    const job = await this.implementQueue.add(
+      {
+        issueNum: data.issueNum,
+        engine,
+        chatId,
+        userId,
+        type: 'ci-fix',
+        prNumber,
+        prBranchName: data.prBranchName,
+        prFailedChecks: data.prFailedChecks,
+      },
+      {
+        attempts: 1,
+        removeOnComplete: 50,
+        removeOnFail: 20,
+      },
+    );
+    this.logger.log(
+      `Job ${job.id} queued: CI fix for PR #${prNumber} with ${engine}`,
     );
     return String(job.id);
   }

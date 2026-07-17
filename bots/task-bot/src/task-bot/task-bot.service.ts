@@ -282,12 +282,29 @@ export class TaskBotService implements OnApplicationBootstrap {
     const userId = ctx.from?.id ?? 0;
 
     try {
+      const issue = this.githubService.viewIssue(issueNum);
+      if (!issue) {
+        await ctx.reply(`Issue #${issueNum} not found.`);
+        return;
+      }
+      if (issue.state !== 'OPEN') {
+        await ctx.reply(`Issue #${issueNum} is ${issue.state.toLowerCase()}.`);
+        return;
+      }
+
       const jobId = await this.queueService.addJob(
         issueNum,
         engine,
         chatId,
         userId,
       );
+
+      await this.queueService.setJobData(jobId, {
+        issueTitle: issue.title,
+        issueBody: issue.body,
+        issueLabels: issue.labels,
+      });
+
       await ctx.reply(
         `Queued implementation #${issueNum} with ${engine}.\nJob ID: ${jobId}\n\nWorkers will process it shortly.`,
         { parse_mode: 'Markdown' },
@@ -483,7 +500,29 @@ export class TaskBotService implements OnApplicationBootstrap {
     const userId = ctx.from?.id ?? 0;
 
     try {
-      const jobId = await this.queueService.addFixJob(prNum, engine, chatId, userId);
+      const pr = this.githubService.viewPr(prNum);
+      if (!pr) {
+        await ctx.reply(`PR #${prNum} not found.`);
+        return;
+      }
+
+      const failedChecks = this.githubService.getPrChecks(prNum).filter(
+        (c) => c.state === 'FAILURE' || c.state === 'failure',
+      );
+
+      const reviews = this.githubService.getPrReviews(prNum);
+      const reviewComments = reviews
+        .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+        .map((r) => r.body)
+        .join('\n---\n');
+
+      const jobId = await this.queueService.addFixJob(prNum, engine, chatId, userId, {
+        issueNum: prNum,
+        prBranchName: pr.headRefName,
+        prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+        prReviewComments: reviewComments || undefined,
+      });
+
       await ctx.reply(
         `Queued fix for PR #${prNum} with ${engine}.\nJob ID: ${jobId}\n\nWorker will process it shortly.`,
         { parse_mode: 'Markdown' },

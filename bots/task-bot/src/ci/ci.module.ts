@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CIController } from './ci.controller';
-import { GitHubModule } from '../github/github.module';
+import { QueueModule } from '../queue/queue.module';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [GitHubModule, NotificationModule],
+  imports: [QueueModule, NotificationModule],
   controllers: [CIController],
 })
 export class CIModule {}

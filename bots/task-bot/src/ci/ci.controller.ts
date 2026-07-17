@@ -1,12 +1,13 @@
 import { Controller, Post, Body, Logger, HttpCode } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GitHubService } from '../github/github.service';
 import { NotificationService } from '../notification/notification.service';
+import { ImplementQueueService } from '../queue/implement-queue.service';
 
 interface CIFailurePayload {
   prNumber: string;
   branchName: string;
   failedChecks: string[];
+  issueNum?: string;
   runUrl: string;
   secret?: string;
 }
@@ -16,7 +17,7 @@ export class CIController {
   private readonly logger = new Logger(CIController.name);
 
   constructor(
-    private readonly githubService: GitHubService,
+    private readonly queueService: ImplementQueueService,
     private readonly notificationService: NotificationService,
     private readonly config: ConfigService,
   ) {}
@@ -36,7 +37,7 @@ export class CIController {
 
     await this.notificationService.publish({
       jobId: `ci-fail-${payload.prNumber}`,
-      issueNum: payload.prNumber,
+      issueNum: payload.issueNum ?? payload.prNumber,
       engine: 'mimo',
       success: false,
       message: `CI failed: ${payload.failedChecks.join(', ')}`,
@@ -46,30 +47,31 @@ export class CIController {
     });
 
     try {
-      const result = await this.githubService.checkAndFixCI(
+      const jobId = await this.queueService.addCIFixJob(
         payload.prNumber,
-        payload.branchName,
+        'mimo',
+        0,
+        0,
+        {
+          issueNum: payload.issueNum ?? payload.prNumber,
+          prBranchName: payload.branchName,
+          prFailedChecks: payload.failedChecks.map((name) => ({
+            name,
+            state: 'FAILURE',
+            link: payload.runUrl,
+          })),
+        },
       );
 
-      this.logger.log(`CI fix result: ${result.message}`);
+      this.logger.log(`CI fix queued: job ${jobId} for PR #${payload.prNumber}`);
 
-      await this.notificationService.publish({
-        jobId: `ci-fix-${payload.prNumber}`,
-        issueNum: payload.prNumber,
-        engine: 'mimo',
-        success: result.success,
-        message: result.message,
-        timestamp: Date.now(),
-        type: 'ci-fixed',
-      });
-
-      return { status: 'processed', ...result };
+      return { status: 'queued', jobId };
     } catch (err) {
-      this.logger.error(`CI fix failed: ${(err as Error).message}`);
+      this.logger.error(`Failed to queue CI fix: ${(err as Error).message}`);
 
       await this.notificationService.publish({
         jobId: `ci-fix-${payload.prNumber}`,
-        issueNum: payload.prNumber,
+        issueNum: payload.issueNum ?? payload.prNumber,
         engine: 'mimo',
         success: false,
         message: (err as Error).message,

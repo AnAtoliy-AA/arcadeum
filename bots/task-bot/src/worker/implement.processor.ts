@@ -24,7 +24,7 @@ export class ImplementProcessor {
     message: string;
     branchName?: string;
   }> {
-    const { issueNum, engine, type, prNumber } = job.data;
+    const { issueNum, engine, type } = job.data;
     this.logger.log(
       `Processing job ${job.id}: ${type} on #${issueNum} with ${engine}`,
     );

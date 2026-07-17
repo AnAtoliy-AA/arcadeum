@@ -455,10 +455,9 @@ export class GitHubService {
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
-      let hasChanges = true;
+      let hasChanges = false;
       try {
         execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
-        hasChanges = false;
       } catch {
         hasChanges = true;
       }
@@ -571,10 +570,9 @@ export class GitHubService {
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
-      let hasChanges = true;
+      let hasChanges = false;
       try {
         execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
-        hasChanges = false;
       } catch {
         hasChanges = true;
       }
@@ -644,10 +642,9 @@ export class GitHubService {
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
-      let hasChanges = true;
+      let hasChanges = false;
       try {
         execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
-        hasChanges = false;
       } catch {
         hasChanges = true;
       }

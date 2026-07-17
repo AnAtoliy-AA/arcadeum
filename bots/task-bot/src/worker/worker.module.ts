@@ -7,8 +7,6 @@ import { ReviewQueueService } from '../queue/review-queue.service';
 import { GitHubModule } from '../github/github.module';
 import { NotificationModule } from '../notification/notification.module';
 
-const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

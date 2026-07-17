@@ -319,6 +319,111 @@ export class GitHubService {
     }
   }
 
+  async fixPR(
+    prNumber: string,
+    engine: 'opencode' | 'mimo' = 'mimo',
+  ): Promise<{ success: boolean; message: string }> {
+    const cwd = this.getCwd();
+    try {
+      const prRaw = execFileSync('gh', [
+        'pr', 'view', prNumber, '--json', 'headRefName,state,statusCheckRollup',
+      ], { encoding: 'utf-8', cwd });
+      const pr = JSON.parse(prRaw) as {
+        headRefName: string;
+        state: string;
+        statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
+      };
+      const branchName = pr.headRefName;
+
+      const checksRaw = execFileSync('gh', [
+        'pr', 'checks', prNumber, '--json', 'name,state,link',
+      ], { encoding: 'utf-8', cwd });
+      const checks = JSON.parse(checksRaw) as Array<{ name: string; state: string; link: string }>;
+      const failed = checks.filter((c) => c.state === 'FAILURE' || c.state === 'failure');
+
+      const reviewsRaw = execFileSync('gh', [
+        'pr', 'view', prNumber, '--json', 'reviews',
+      ], { encoding: 'utf-8', cwd });
+      const { reviews } = JSON.parse(reviewsRaw) as {
+        reviews: Array<{ body: string; state: string }>;
+      };
+      const reviewComments = reviews
+        ?.filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+        .map((r) => r.body)
+        .join('\n---\n') ?? '';
+
+      const promptParts: string[] = [
+        `Fix all issues on PR #${prNumber} (branch: ${branchName}).`,
+        '',
+      ];
+
+      if (failed.length > 0) {
+        promptParts.push('## CI Failures');
+        for (const f of failed) {
+          promptParts.push(`- ${f.name}: ${f.link}`);
+        }
+        promptParts.push(
+          '',
+          'Read the CI logs and fix the failures.',
+          '',
+        );
+      }
+
+      if (reviewComments) {
+        promptParts.push('## Review Comments');
+        promptParts.push(reviewComments);
+        promptParts.push(
+          '',
+          'Address all review feedback. Apply suggestions where provided.',
+          '',
+        );
+      }
+
+      if (failed.length === 0 && !reviewComments) {
+        promptParts.push('No CI failures or review comments found. Run `pnpm lint` and `pnpm typecheck` to verify the build is clean.');
+      }
+
+      promptParts.push(
+        '## Rules',
+        '- Run `pnpm lint` and `pnpm typecheck` when done.',
+        '- Fix any pre-commit hook failures (file length, lint, type errors).',
+        '- Max 500 lines per file.',
+        '- Do not add comments unless asked.',
+        '- Commit with conventional commits.',
+        '- Push to the existing branch.',
+      );
+
+      const prompt = promptParts.join('\n');
+      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
+
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      const runArgs = cli === 'opencode'
+        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
+
+      execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
+
+      const diffCheck = execSync('git diff --cached --quiet; echo $?', {
+        encoding: 'utf-8', cwd,
+      }).trim();
+
+      if (diffCheck === '0') {
+        return { success: true, message: 'No changes needed' };
+      }
+
+      execFileSync('git', ['commit', '-m', 'fix: resolve CI failures and review feedback'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['push', 'origin', branchName], { encoding: 'utf-8', cwd });
+
+      return { success: true, message: `Fixes pushed to ${branchName}. CI will re-run.` };
+    } catch (err) {
+      return { success: false, message: `Fix failed: ${(err as Error).message}` };
+    }
+  }
+
   async implementLocally(
     issueNum: string,
     engine: string,

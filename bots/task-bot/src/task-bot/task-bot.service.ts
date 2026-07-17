@@ -113,6 +113,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           '/task <title> - Create a task (ARC auto-assigned)\n' +
           '/tasks - List open tasks\n' +
           '/implement #12 - Implement an issue\n' +
+          '/fix #12 - Fix CI failures + review feedback on a PR\n' +
           '/status #12 - Check implementation status\n' +
           '/queue - Check worker queue status\n' +
           '/prefs - Set preferences\n' +
@@ -131,6 +132,10 @@ export class TaskBotService implements OnApplicationBootstrap {
     this.bot.command('implement', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
       return this.handleImplement(ctx);
+    });
+    this.bot.command('fix', (ctx) => {
+      if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
+      return this.handleFix(ctx);
     });
     this.bot.command('status', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
@@ -447,6 +452,35 @@ export class TaskBotService implements OnApplicationBootstrap {
     }
 
     await this.queueImplementation(issueNum, engine, ctx);
+  }
+
+  private async handleFix(ctx: Context) {
+    const text = ctx.message?.text ?? '';
+    const prNum = text.match(/#?(\d+)/)?.[1];
+    if (!prNum) {
+      await ctx.reply('Usage: /fix #12\n\nFixes CI failures, review comments, and common issues on a PR.');
+      return;
+    }
+
+    let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
+    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
+    if (engineMatch) {
+      engine = engineMatch[1].toLowerCase() as Engine;
+    }
+
+    await ctx.reply(`Fixing PR #${prNum} with ${engine}...`);
+
+    try {
+      const result = await this.githubService.fixPR(prNum, engine);
+      if (result.success) {
+        await ctx.reply(`PR #${prNum} fixed.\n${result.message}`);
+      } else {
+        await ctx.reply(`Fix failed for PR #${prNum}:\n${result.message}`);
+      }
+    } catch (err) {
+      this.logger.error(`Fix failed: ${err}`);
+      await ctx.reply(`Error: ${(err as Error).message}`);
+    }
   }
 
   private async handleQueueStatus(ctx: Context) {

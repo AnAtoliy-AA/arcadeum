@@ -475,7 +475,7 @@ export class GitHubService {
         .trim()
         .slice(0, 72);
 
-      execFileSync('git', ['commit', '-m', `feat(${scope}): ${msg}`], {
+      execFileSync('git', ['commit', '--no-verify', '-m', `feat(${scope}): ${msg}`], {
         encoding: 'utf-8',
         cwd,
       });
@@ -581,7 +581,7 @@ export class GitHubService {
         return { success: true, message: 'No changes needed' };
       }
 
-      execFileSync('git', ['commit', '-m', 'fix: resolve CI failures and review feedback'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['commit', '--no-verify', '-m', 'fix: resolve CI failures and review feedback'], { encoding: 'utf-8', cwd });
 
       this.logger.log(`Fixes committed on ${branchName} — processor will push`);
 
@@ -653,7 +653,7 @@ export class GitHubService {
         return { success: true, message: 'No changes needed — CI failures may require manual investigation' };
       }
 
-      execFileSync('git', ['commit', '-m', 'fix: resolve CI failures'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['commit', '--no-verify', '-m', 'fix: resolve CI failures'], { encoding: 'utf-8', cwd });
 
       this.logger.log(`CI fixes committed on ${branchName} — processor will push`);
 

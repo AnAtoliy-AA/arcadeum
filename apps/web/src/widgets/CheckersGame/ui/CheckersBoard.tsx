@@ -91,7 +91,7 @@ export function CheckersBoard({
                   boxSizing: 'border-box',
                   aspectRatio: '1/1',
                 }}
-                role="gridcell"
+                role="button"
                 data-testid={`checkers-cell-${row}-${col}`}
                 onPress={() => handleClick(row, col)}
               >

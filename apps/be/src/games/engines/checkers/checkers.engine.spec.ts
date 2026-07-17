@@ -86,26 +86,19 @@ describe('CheckersEngine', () => {
       expect(state.playerOrder).toEqual(['a', 'b']);
     });
 
-    it('places 12 dark pieces (rows 0-2)', () => {
+    it('places 12 dark pieces (rows 0-2) and 12 light pieces (rows 5-7)', () => {
       const state = engine.initializeState(['a', 'b']);
-      let count = 0;
-      for (let row = 0; row < 3; row++) {
+      let darkCount = 0;
+      let lightCount = 0;
+      for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
-          if (state.board[row][col]?.playerId === 'b') count++;
+          const p = state.board[row][col]?.playerId;
+          if (p === 'b' && row < 3) darkCount++;
+          if (p === 'a' && row >= 5) lightCount++;
         }
       }
-      expect(count).toBe(12);
-    });
-
-    it('places 12 light pieces (rows 5-7)', () => {
-      const state = engine.initializeState(['a', 'b']);
-      let count = 0;
-      for (let row = 5; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
-          if (state.board[row][col]?.playerId === 'a') count++;
-        }
-      }
-      expect(count).toBe(12);
+      expect(darkCount).toBe(12);
+      expect(lightCount).toBe(12);
     });
 
     it('has no pieces on light squares', () => {
@@ -163,19 +156,16 @@ describe('CheckersEngine', () => {
       expect(r2.state!.board[3][0]!.playerId).toBe('b');
     });
 
-    it('rejects non-diagonal moves', () => {
+    it('rejects invalid moves (non-diagonal, occupied, out-of-turn, out-of-bounds)', () => {
       const state = engine.initializeState(['a', 'b']);
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 5, 1),
-      );
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects moves to occupied squares', () => {
-      const state = engine.initializeState(['a', 'b']);
+      expect(
+        engine.executeAction(
+          state,
+          'move_piece',
+          ctx('a'),
+          singleStep(5, 0, 5, 1),
+        ).success,
+      ).toBe(false);
       const r1 = engine.executeAction(
         state,
         'move_piece',
@@ -188,35 +178,30 @@ describe('CheckersEngine', () => {
         ctx('b'),
         singleStep(2, 1, 3, 0),
       );
-      const r3 = engine.executeAction(
-        r2.state!,
-        'move_piece',
-        ctx('a'),
-        singleStep(4, 1, 3, 0),
-      );
-      expect(r3.success).toBe(false);
-    });
-
-    it('rejects out-of-turn moves', () => {
-      const state = engine.initializeState(['a', 'b']);
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('b'),
-        singleStep(2, 1, 3, 0),
-      );
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects out-of-bounds moves', () => {
-      const state = engine.initializeState(['a', 'b']);
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, -1, 0),
-      );
-      expect(result.success).toBe(false);
+      expect(
+        engine.executeAction(
+          r2.state!,
+          'move_piece',
+          ctx('a'),
+          singleStep(4, 1, 3, 0),
+        ).success,
+      ).toBe(false);
+      expect(
+        engine.executeAction(
+          state,
+          'move_piece',
+          ctx('b'),
+          singleStep(2, 1, 3, 0),
+        ).success,
+      ).toBe(false);
+      expect(
+        engine.executeAction(
+          state,
+          'move_piece',
+          ctx('a'),
+          singleStep(5, 0, -1, 0),
+        ).success,
+      ).toBe(false);
     });
 
     it('advances turn after move', () => {

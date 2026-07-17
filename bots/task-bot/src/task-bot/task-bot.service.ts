@@ -468,6 +468,27 @@ export class TaskBotService implements OnApplicationBootstrap {
       engine = engineMatch[1].toLowerCase() as Engine;
     }
 
+    const chatId = ctx.chat?.id ?? 0;
+    const userId = ctx.from?.id ?? 0;
+
+    try {
+      const jobId = await this.queueService.addFixJob(prNum, engine, chatId, userId);
+      await ctx.reply(
+        `Queued fix for PR #${prNum} with ${engine}.\nJob ID: ${jobId}\n\nWorker will process it shortly.`,
+        { parse_mode: 'Markdown' },
+      );
+    } catch (err) {
+      this.logger.error(`Failed to queue fix: ${err}`);
+      await ctx.reply('Failed to queue fix. Try again later.');
+    }
+  }
+
+    let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
+    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
+    if (engineMatch) {
+      engine = engineMatch[1].toLowerCase() as Engine;
+    }
+
     await ctx.reply(`Fixing PR #${prNum} with ${engine}...`);
 
     try {

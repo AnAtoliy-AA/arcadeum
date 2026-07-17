@@ -7,6 +7,7 @@ export interface ImplementJobData {
   engine: 'opencode' | 'mimo';
   chatId: number;
   userId: number;
+  type?: 'implement' | 'fix';
 }
 
 @Injectable()
@@ -25,7 +26,7 @@ export class ImplementQueueService {
     userId: number,
   ): Promise<string> {
     const job = await this.implementQueue.add(
-      { issueNum, engine, chatId, userId },
+      { issueNum, engine, chatId, userId, type: 'implement' },
       {
         attempts: 2,
         backoff: { type: 'exponential', delay: 5000 },
@@ -35,6 +36,26 @@ export class ImplementQueueService {
     );
     this.logger.log(
       `Job ${job.id} queued: issue #${issueNum} with ${engine}`,
+    );
+    return String(job.id);
+  }
+
+  async addFixJob(
+    prNumber: string,
+    engine: 'opencode' | 'mimo',
+    chatId: number,
+    userId: number,
+  ): Promise<string> {
+    const job = await this.implementQueue.add(
+      { issueNum: prNumber, engine, chatId, userId, type: 'fix' },
+      {
+        attempts: 1,
+        removeOnComplete: 50,
+        removeOnFail: 20,
+      },
+    );
+    this.logger.log(
+      `Job ${job.id} queued: fix PR #${prNumber} with ${engine}`,
     );
     return String(job.id);
   }

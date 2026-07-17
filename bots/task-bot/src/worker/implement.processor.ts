@@ -21,14 +21,17 @@ export class ImplementProcessor {
     success: boolean;
     message: string;
   }> {
-    const { issueNum, engine } = job.data;
+    const { issueNum, engine, type } = job.data;
+    const isFix = type === 'fix';
     this.logger.log(
-      `Processing job ${job.id}: implementing issue #${issueNum} with ${engine}`,
+      `Processing job ${job.id}: ${isFix ? 'fixing PR' : 'implementing issue'} #${issueNum} with ${engine}`,
     );
 
     await job.progress(10);
 
-    const result = await this.githubService.implementLocally(issueNum, engine);
+    const result = isFix
+      ? await this.githubService.fixPR(issueNum, engine)
+      : await this.githubService.implementLocally(issueNum, engine);
 
     await job.progress(100);
 

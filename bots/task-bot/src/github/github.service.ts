@@ -17,6 +17,15 @@ export class GitHubService {
 
   constructor(private readonly config: ConfigService) {}
 
+  private cleanWorkdir(cwd: string): void {
+    try {
+      execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
+    } catch {
+      // ignore — repo may be in a bad state
+    }
+  }
+
   private getCwd(): string {
     return this.config.get<string>('REPO_PATH') ?? process.cwd();
   }
@@ -292,6 +301,7 @@ export class GitHubService {
       const escapedPrompt = fixPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      this.cleanWorkdir(cwd);
       execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
@@ -397,6 +407,7 @@ export class GitHubService {
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      this.cleanWorkdir(cwd);
       execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
@@ -471,6 +482,7 @@ export class GitHubService {
           };
         }
       }
+      this.cleanWorkdir(cwd);
       execSync(`git checkout -b ${branchName} origin/develop`, {
         encoding: 'utf-8',
         cwd,

@@ -211,8 +211,8 @@ Dir: /opt/arcadeum
 pm2 list
 # arcadeum-be        — NestJS backend (port 4000)
 # arcadeum-tg-bot    — Telegram bot (port 4001)
-# arcadeum-task-bot  — Task bot API (port 4002)
-# arcadeum-worker    — Task bot worker (concurrency: 3)
+# task-bot           — Task bot API (port 4002) — Telegram commands, CI webhooks
+# task-worker        — Bull queue workers — mimo/opencode implementations, reviews
 ```
 
 ### Environment Variables (`/opt/arcadeum/bots/task-bot/.env`)
@@ -244,18 +244,15 @@ OPENCODE_API_KEY=...
 ### Deploy Script
 
 ```bash
-# scripts/deploy-tg-bot.sh (builds be + tg-bot only)
+# scripts/deploy-tg-bot.sh
 cd /opt/arcadeum
 git fetch origin main
 git reset --hard origin/main
 pnpm install --frozen-lockfile
 pnpm --filter be build
 pnpm --filter tg-bot build
-pm2 restart arcadeum-be arcadeum-tg-bot
-
-# Task bot must be built and restarted separately:
-pnpm --filter task-bot build
-pm2 restart arcadeum-task-bot arcadeum-worker
+cd bots/task-bot && pnpm build && cd /opt/arcadeum
+pm2 restart arcadeum-be arcadeum-tg-bot task-bot task-worker
 ```
 
 ## GitHub Workflows

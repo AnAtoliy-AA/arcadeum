@@ -37,7 +37,7 @@ export class CIController {
     await this.notificationService.publish({
       jobId: `ci-fail-${payload.prNumber}`,
       issueNum: payload.prNumber,
-      engine: 'opencode',
+      engine: 'mimo',
       success: false,
       message: `CI failed: ${payload.failedChecks.join(', ')}`,
       timestamp: Date.now(),
@@ -56,7 +56,7 @@ export class CIController {
       await this.notificationService.publish({
         jobId: `ci-fix-${payload.prNumber}`,
         issueNum: payload.prNumber,
-        engine: 'opencode',
+        engine: 'mimo',
         success: result.success,
         message: result.message,
         timestamp: Date.now(),
@@ -70,7 +70,7 @@ export class CIController {
       await this.notificationService.publish({
         jobId: `ci-fix-${payload.prNumber}`,
         issueNum: payload.prNumber,
-        engine: 'opencode',
+        engine: 'mimo',
         success: false,
         message: (err as Error).message,
         timestamp: Date.now(),

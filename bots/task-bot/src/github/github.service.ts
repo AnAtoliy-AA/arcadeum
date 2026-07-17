@@ -256,6 +256,7 @@ export class GitHubService {
   async checkAndFixCI(
     prNumber: string,
     branchName: string,
+    engine: 'opencode' | 'mimo' = 'mimo',
   ): Promise<{ success: boolean; message: string }> {
     const cwd = this.getCwd();
     try {
@@ -293,11 +294,11 @@ export class GitHubService {
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
 
-      await this.spawnAsync(
-        'opencode',
-        ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'],
-        { cwd, timeout: 600_000 },
-      );
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      const runArgs = cli === 'opencode'
+        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 

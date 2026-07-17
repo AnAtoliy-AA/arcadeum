@@ -80,6 +80,17 @@ export class TaskBotService implements OnApplicationBootstrap {
     this.bot = this.telegramService.getBot();
     this.registerCommands();
 
+    await this.bot.api.setMyCommands([
+      { command: 'task', description: 'Create a task (ARC auto-assigned)' },
+      { command: 'tasks', description: 'List open tasks' },
+      { command: 'implement', description: 'Implement an issue' },
+      { command: 'fix', description: 'Fix CI failures + review feedback on a PR' },
+      { command: 'status', description: 'Check implementation status' },
+      { command: 'queue', description: 'Check worker queue status' },
+      { command: 'prefs', description: 'Set preferences' },
+      { command: 'help', description: 'Show available commands' },
+    ]);
+
     this.notificationService.onNotification((notification) => {
       this.handleNotification(notification);
     });

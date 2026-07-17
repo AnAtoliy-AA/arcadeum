@@ -430,7 +430,8 @@ export class GitHubService {
         '- Run `pnpm lint` and `pnpm typecheck` when done.',
         '- If pre-commit hook fails, FIX the issues and try again.',
         '- Max 500 lines per file.',
-        '- Commit with conventional commits format.',
+        '- Do NOT commit or push — the processor handles git operations.',
+        '- Just make code changes and run lint/typecheck.',
         '- Never leave the repo in a dirty state.',
       ].join('\n');
 
@@ -542,7 +543,8 @@ export class GitHubService {
         '- Fix any pre-commit hook failures.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
-        '- Commit with conventional commits.',
+        '- Do NOT commit or push — the processor handles git operations.',
+        '- Just make code changes and run lint/typecheck.',
       );
 
       const prompt = promptParts.join('\n');
@@ -614,7 +616,7 @@ export class GitHubService {
         '- Read the CI logs from the detailsUrl to understand what failed.',
         '- Fix the issues in the code.',
         '- Run `pnpm lint` and `pnpm typecheck` to verify.',
-        '- Commit the fixes with conventional commits.',
+        '- Do NOT commit or push — the processor handles git operations.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
       ].join('\n');

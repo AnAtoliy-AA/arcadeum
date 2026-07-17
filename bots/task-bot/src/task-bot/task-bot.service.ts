@@ -483,27 +483,6 @@ export class TaskBotService implements OnApplicationBootstrap {
     }
   }
 
-    let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
-    if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
-    }
-
-    await ctx.reply(`Fixing PR #${prNum} with ${engine}...`);
-
-    try {
-      const result = await this.githubService.fixPR(prNum, engine);
-      if (result.success) {
-        await ctx.reply(`PR #${prNum} fixed.\n${result.message}`);
-      } else {
-        await ctx.reply(`Fix failed for PR #${prNum}:\n${result.message}`);
-      }
-    } catch (err) {
-      this.logger.error(`Fix failed: ${err}`);
-      await ctx.reply(`Error: ${(err as Error).message}`);
-    }
-  }
-
   private async handleQueueStatus(ctx: Context) {
     try {
       const stats = await this.queueService.getQueueStats();

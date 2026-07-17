@@ -411,11 +411,8 @@ export class GitHubService {
       this.cleanWorkdir(cwd);
       execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
 
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      const runArgs = cli === 'opencode'
-        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
+      const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
+      await this.spawnAsync('opencode', runArgs, { cwd, timeout: 600_000 });
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 

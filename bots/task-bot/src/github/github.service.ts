@@ -370,11 +370,12 @@ export class GitHubService {
       if (failed.length > 0) {
         promptParts.push('## CI Failures');
         for (const f of failed) {
-          promptParts.push(`- ${f.name}: ${f.link}`);
+          promptParts.push(`- ${f.name}`);
         }
         promptParts.push(
           '',
-          'Read the CI logs and fix the failures.',
+          'Run the failing commands locally to see errors, then fix them.',
+          'Do NOT fetch CI log URLs — just run the build/lint/test commands locally.',
           '',
         );
       }

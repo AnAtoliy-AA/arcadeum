@@ -7,6 +7,8 @@ import { ReviewQueueService } from '../queue/review-queue.service';
 import { GitHubModule } from '../github/github.module';
 import { NotificationModule } from '../notification/notification.module';
 
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,11 +21,17 @@ import { NotificationModule } from '../notification/notification.module';
         },
       }),
     }),
-    BullModule.registerQueue({ name: 'implementation' }),
-    BullModule.registerQueue({ name: 'review' }),
+    BullModule.registerQueue(
+      { name: 'implementation', defaultJobOptions: { removeOnComplete: 50, removeOnFail: 20 } },
+      { name: 'review', defaultJobOptions: { removeOnComplete: 50, removeOnFail: 20 } },
+    ),
     GitHubModule,
     NotificationModule,
   ],
-  providers: [ImplementProcessor, ReviewProcessor, ReviewQueueService],
+  providers: [
+    { provide: ImplementProcessor, useClass: ImplementProcessor },
+    { provide: ReviewProcessor, useClass: ReviewProcessor },
+    ReviewQueueService,
+  ],
 })
 export class WorkerModule {}

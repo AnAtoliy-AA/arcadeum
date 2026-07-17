@@ -6,6 +6,8 @@ import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
 
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
+
 @Processor('implementation')
 export class ImplementProcessor {
   private readonly logger = new Logger(ImplementProcessor.name);
@@ -16,7 +18,7 @@ export class ImplementProcessor {
     private readonly notificationService: NotificationService,
   ) {}
 
-  @Process()
+  @Process({ concurrency })
   async handleImplement(job: Job<ImplementJobData>): Promise<{
     success: boolean;
     message: string;
@@ -58,21 +60,29 @@ export class ImplementProcessor {
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'}`,
     );
 
+    const isFix = job.data.type === 'fix';
     let prUrl = '';
-    if (result.message.includes('PR created:')) {
-      prUrl = result.message.replace('PR created: ', '');
-    } else if (result.branchName) {
-      this.logger.log(`Creating PR from main instance for branch: ${result.branchName}`);
-      try {
-        const prResult = this.githubService.createPR(job.data.issueNum, result.branchName);
-        if (prResult.success && prResult.prUrl) {
-          prUrl = prResult.prUrl;
-          this.logger.log(`PR created: ${prUrl}`);
-        } else {
-          this.logger.warn(`PR creation failed: ${prResult.message}`);
+
+    if (result.branchName) {
+      this.logger.log(`Pushing branch ${result.branchName} from main instance`);
+      const pushResult = this.githubService.pushBranch(result.branchName);
+      if (!pushResult.success) {
+        this.logger.error(`Push failed: ${pushResult.message}`);
+      }
+
+      if (!isFix && pushResult.success) {
+        this.logger.log(`Creating PR for branch: ${result.branchName}`);
+        try {
+          const prResult = this.githubService.createPR(job.data.issueNum, result.branchName);
+          if (prResult.success && prResult.prUrl) {
+            prUrl = prResult.prUrl;
+            this.logger.log(`PR created: ${prUrl}`);
+          } else {
+            this.logger.warn(`PR creation failed: ${prResult.message}`);
+          }
+        } catch (err) {
+          this.logger.error(`Failed to create PR: ${(err as Error).message}`);
         }
-      } catch (err) {
-        this.logger.error(`Failed to create PR: ${(err as Error).message}`);
       }
     }
 

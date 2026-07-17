@@ -4,6 +4,8 @@ import { Job } from 'bull';
 import { ReviewJobData } from '../queue/review-queue.service';
 import { spawn } from 'child_process';
 
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
+
 @Processor('review')
 export class ReviewProcessor {
   private readonly logger = new Logger(ReviewProcessor.name);
@@ -17,7 +19,6 @@ export class ReviewProcessor {
       const child = spawn(cmd, args, {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
-        shell: true,
         timeout: opts.timeout,
       });
       let stdout = '';
@@ -32,7 +33,7 @@ export class ReviewProcessor {
     });
   }
 
-  @Process()
+  @Process({ concurrency })
   async handleReview(job: Job<ReviewJobData>): Promise<{
     success: boolean;
     message: string;

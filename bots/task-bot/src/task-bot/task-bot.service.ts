@@ -736,11 +736,31 @@ export class TaskBotService implements OnApplicationBootstrap {
       text = text.substring(0, 3900) + '...';
     }
 
+    text = this.sanitizeMessage(text);
+
     try {
       await this.bot.api.sendMessage(chatId, text, { parse_mode: 'Markdown' });
       this.logger.log(`Notification sent: ${notification.type ?? 'default'} for #${notification.issueNum}`);
     } catch (err) {
-      this.logger.error(`Failed to send notification: ${err}`);
+      try {
+        await this.bot.api.sendMessage(chatId, text);
+        this.logger.log(`Notification sent (plain text): ${notification.type ?? 'default'} for #${notification.issueNum}`);
+      } catch (err2) {
+        this.logger.error(`Failed to send notification: ${err2}`);
+      }
     }
+  }
+
+  private sanitizeMessage(text: string): string {
+    return text
+      .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+      .replace(/\[[\d;]*m/g, '')
+      .replace(/`([^`]*?)`/g, '«$1»')
+      .replace(/[*_~\[\]()]/g, '')
+      .slice(0, 3900);
+  }
+
+  private escapeMarkdown(text: string): string {
+    return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
   }
 }

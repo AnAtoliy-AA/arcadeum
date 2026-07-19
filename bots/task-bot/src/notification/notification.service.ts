@@ -53,6 +53,12 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   }
 
   async publish(notification: JobNotification): Promise<void> {
+    notification.message = notification.message
+      .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+      .replace(/\[[\d;]*m/g, '')
+      .replace(/`([^`]*?)`/g, '«$1»')
+      .replace(/[*_~\[\]()]/g, '')
+      .slice(0, 3000);
     await this.publisher.publish(this.channel, JSON.stringify(notification));
     this.logger.log(`Published notification: ${notification.issueNum}`);
   }

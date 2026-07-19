@@ -6,7 +6,7 @@ import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
 
-const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '5', 10);
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '1', 10);
 
 @Processor('implementation')
 export class ImplementProcessor {

@@ -5,7 +5,7 @@ import { ReviewJobData } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
 import { spawn } from 'child_process';
 
-const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '3', 10);
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '1', 10);
 
 @Processor('review')
 export class ReviewProcessor {

@@ -61,6 +61,11 @@ export class GitHubService {
     mkdirSync('/tmp/task-bot', { recursive: true });
 
     try {
+      execFileSync('git', ['checkout', '--detach'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+        stdio: 'pipe',
+      });
       execFileSync('git', ['worktree', 'add', worktreePath, 'origin/develop'], {
         encoding: 'utf-8',
         cwd: repoCwd,

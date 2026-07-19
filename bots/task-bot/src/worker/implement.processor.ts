@@ -137,6 +137,16 @@ export class ImplementProcessor {
     const pushResult = this.githubService.pushBranch(branchName, cwd);
     if (!pushResult.success) {
       this.logger.error(`Push failed: ${pushResult.message}`);
+      await this.notificationService.publish({
+        jobId: String(job.id),
+        issueNum,
+        engine: job.data.engine,
+        success: false,
+        type: `${type}-failed` as 'implement-failed' | 'fix-failed',
+        jobType: type,
+        message: `Git push failed for ${type} on #${issueNum} (branch: ${branchName}): ${pushResult.message}`,
+        timestamp: Date.now(),
+      });
       return;
     }
 
@@ -151,9 +161,29 @@ export class ImplementProcessor {
           this.logger.log(`PR created: ${prUrl}`);
         } else {
           this.logger.warn(`PR creation failed: ${prResult.message}`);
+          await this.notificationService.publish({
+            jobId: String(job.id),
+            issueNum,
+            engine: job.data.engine,
+            success: false,
+            type: 'implement-failed',
+            jobType: 'implement',
+            message: `PR creation failed for #${issueNum} (branch: ${branchName}): ${prResult.message}`,
+            timestamp: Date.now(),
+          });
         }
       } catch (err) {
         this.logger.error(`Failed to create PR: ${(err as Error).message}`);
+        await this.notificationService.publish({
+          jobId: String(job.id),
+          issueNum,
+          engine: job.data.engine,
+          success: false,
+          type: 'implement-failed',
+          jobType: 'implement',
+          message: `PR creation failed for #${issueNum} (branch: ${branchName}): ${(err as Error).message}`,
+          timestamp: Date.now(),
+        });
       }
     }
 
@@ -192,13 +222,29 @@ export class ImplementProcessor {
   }
 
   @OnQueueCompleted()
-  onCompleted(
+  async onCompleted(
     job: Job<ImplementJobData>,
     result: { success: boolean; message: string },
   ) {
     this.logger.log(
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'} - ${result.message}`,
     );
+
+    if (!result.success) {
+      const { type, issueNum, engine, prNumber } = job.data;
+      const jobType = type === 'ci-fix' ? 'CI fix' : type;
+      const target = type === 'fix' || type === 'ci-fix' ? `PR #${prNumber}` : `Issue #${issueNum}`;
+      await this.notificationService.publish({
+        jobId: String(job.id),
+        issueNum,
+        engine,
+        success: false,
+        type: `${type}-failed` as 'implement-failed' | 'fix-failed',
+        jobType: type,
+        message: `${jobType} failed for ${target}: ${result.message}`,
+        timestamp: Date.now(),
+      });
+    }
   }
 
   @OnQueueFailed()
@@ -208,12 +254,17 @@ export class ImplementProcessor {
       err.stack,
     );
 
+    const { type, issueNum, engine, prNumber } = job.data;
+    const jobType = type === 'ci-fix' ? 'CI fix' : type;
+    const target = type === 'fix' || type === 'ci-fix' ? `PR #${prNumber}` : `Issue #${issueNum}`;
     await this.notificationService.publish({
       jobId: String(job.id),
-      issueNum: job.data.issueNum,
-      engine: job.data.engine,
+      issueNum,
+      engine,
       success: false,
-      message: err.message,
+      type: `${type}-failed` as 'implement-failed' | 'fix-failed',
+      jobType: type,
+      message: `${jobType} crashed for ${target}: ${err.message}`,
       timestamp: Date.now(),
     });
   }

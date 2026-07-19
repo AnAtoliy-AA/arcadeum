@@ -195,9 +195,13 @@ export class TaskBotService implements OnApplicationBootstrap {
     let engine: Engine = userId
       ? this.prefsService.getEngine(userId)
       : 'opencode';
-    const engineMatch = cleaned.match(/--engine=(mimo|opencode)/i);
+    const engineMatch = cleaned.match(/--engine=(\S+)/i);
     if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        throw new Error(`Invalid engine: ${requested}. Valid engines: mimo, opencode`);
+      }
+      engine = requested as Engine;
       cleaned = cleaned.replace(/--engine=\S+/i, '').trim();
     }
 
@@ -364,8 +368,12 @@ export class TaskBotService implements OnApplicationBootstrap {
       );
       return;
     }
-    const task = this.parseTask(text, true, ctx.from?.id);
-    await this.createAndTriggerTask(task, ctx);
+    try {
+      const task = this.parseTask(text, true, ctx.from?.id);
+      await this.createAndTriggerTask(task, ctx);
+    } catch (err) {
+      await ctx.reply((err as Error).message);
+    }
   }
 
   private async handleCallbackQuery(ctx: Context) {
@@ -391,7 +399,13 @@ export class TaskBotService implements OnApplicationBootstrap {
     await ctx.answerCallbackQuery();
 
     const textWithEngine = `${pending.text} --engine=${engine}`;
-    const task = this.parseTask(textWithEngine, true, pending.userId);
+    let task;
+    try {
+      task = this.parseTask(textWithEngine, true, pending.userId);
+    } catch (err) {
+      await ctx.reply((err as Error).message);
+      return;
+    }
 
     await ctx.editMessageText(`Creating issue for: *${task.title}*...`, {
       parse_mode: 'Markdown',
@@ -430,9 +444,13 @@ export class TaskBotService implements OnApplicationBootstrap {
     const hasDashLines = /^[-*]\s/.test(text.split('\n')[1] ?? '');
 
     if (hasArc && hasDashLines) {
-      const hasEngine = /--engine=(mimo|opencode)/i.test(text);
-      const task = this.parseTask(text, !hasEngine, ctx.from?.id);
-      await this.createAndTriggerTask(task, ctx);
+      try {
+        const hasEngine = /--engine=(\S+)/i.test(text);
+        const task = this.parseTask(text, !hasEngine, ctx.from?.id);
+        await this.createAndTriggerTask(task, ctx);
+      } catch (err) {
+        await ctx.reply((err as Error).message);
+      }
     }
   }
 
@@ -469,14 +487,19 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text ?? '';
     const issueNum = text.match(/#?(\d+)/)?.[1];
     if (!issueNum) {
-      await ctx.reply('Usage: /implement #12 --engine=mimo');
+      await ctx.reply('Usage: /implement #12 --engine=mimo\n\nValid engines: mimo, opencode');
       return;
     }
 
     let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
+    const engineMatch = text.match(/--engine=(\S+)/i);
     if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /implement #${issueNum} --engine=mimo`);
+        return;
+      }
+      engine = requested as Engine;
     }
 
     await this.queueImplementation(issueNum, engine, ctx);
@@ -486,14 +509,19 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text ?? '';
     const prNum = text.match(/#?(\d+)/)?.[1];
     if (!prNum) {
-      await ctx.reply('Usage: /fix #12\n\nFixes CI failures, review comments, and common issues on a PR.');
+      await ctx.reply('Usage: /fix #12 --engine=mimo\n\nFixes CI failures, review comments, and common issues on a PR.\nValid engines: mimo, opencode');
       return;
     }
 
     let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
+    const engineMatch = text.match(/--engine=(\S+)/i);
     if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /fix #${prNum} --engine=mimo`);
+        return;
+      }
+      engine = requested as Engine;
     }
 
     const chatId = ctx.chat?.id ?? 0;
@@ -670,6 +698,18 @@ export class TaskBotService implements OnApplicationBootstrap {
         text = notification.success
           ? `*CI Fixed* ✅\n${notification.message}`
           : `*CI Fix Failed* ❌\n${notification.message}`;
+        break;
+
+      case 'implement-failed':
+        text = `*Implement Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
+        break;
+
+      case 'fix-failed':
+        text = `*Fix Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
+        break;
+
+      case 'review-failed':
+        text = `*Review Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
         break;
 
       case 'task-completed':

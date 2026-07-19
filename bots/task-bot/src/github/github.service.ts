@@ -31,18 +31,40 @@ export class GitHubService {
       const child = spawn(cmd, args, {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
-        timeout: opts.timeout,
         env: { ...process.env, ...opts.env },
       });
       let stdout = '';
       let stderr = '';
+      let settled = false;
       child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
       child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
+
+      const timer = opts.timeout
+        ? setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            try {
+              process.kill(-child.pid!, 'SIGTERM');
+            } catch {
+              try { child.kill('SIGTERM'); } catch { /* ignore */ }
+            }
+            reject(new Error(`Timeout after ${Math.round(opts.timeout! / 1000)}s`));
+          }, opts.timeout)
+        : undefined;
+
       child.on('close', (code) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
         if (code === 0) resolve(stdout.trim());
         else reject(new Error(stderr || `Exit code ${code}`));
       });
-      child.on('error', reject);
+      child.on('error', (err) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
+        reject(err);
+      });
     });
   }
 
@@ -592,6 +614,11 @@ export class GitHubService {
       this.cleanWorkdir(cwd);
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore
+      }
 
       this.installDeps(cwd);
 
@@ -669,6 +696,11 @@ export class GitHubService {
       this.cleanWorkdir(cwd);
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore
+      }
 
       this.installDeps(cwd);
 

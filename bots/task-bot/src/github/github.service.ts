@@ -25,13 +25,14 @@ export class GitHubService {
   private spawnAsync(
     cmd: string,
     args: string[],
-    opts: { cwd: string; timeout?: number },
+    opts: { cwd: string; timeout?: number; env?: Record<string, string> },
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const child = spawn(cmd, args, {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: opts.timeout,
+        env: { ...process.env, HUSKY: '0', ...opts.env },
       });
       let stdout = '';
       let stderr = '';
@@ -49,11 +50,6 @@ export class GitHubService {
     try {
       execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
-      try {
-        execFileSync('rm', ['-rf', '.husky'], { encoding: 'utf-8', cwd });
-      } catch {
-        // ignore — .husky may not exist
-      }
     } catch {
       // ignore — repo may be in a bad state
     }

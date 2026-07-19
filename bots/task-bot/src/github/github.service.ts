@@ -459,9 +459,9 @@ export class GitHubService {
         '',
         'CRITICAL RULES:',
         '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
-        '- If pre-commit hook fails, FIX the issues and try again.',
         '- Max 500 lines per file.',
-        '- Do NOT commit or push — the processor handles git operations.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
         '- Just make code changes and run lint/typecheck.',
         '- Never leave the repo in a dirty state.',
       ].join('\n');
@@ -571,10 +571,10 @@ export class GitHubService {
       promptParts.push(
         '## Rules',
         '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
-        '- Fix any pre-commit hook failures.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
-        '- Do NOT commit or push — the processor handles git operations.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
         '- Just make code changes and run lint/typecheck.',
       );
 
@@ -650,7 +650,8 @@ export class GitHubService {
         '- Read the CI logs from the detailsUrl to understand what failed.',
         '- Fix the issues in the code.',
         '- Run `pnpm lint` and `pnpm --filter web type-check` to verify.',
-        '- Do NOT commit or push — the processor handles git operations.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
       ].join('\n');

@@ -6,11 +6,12 @@ import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
 
-const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '1', 10);
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '5', 10);
 
 @Processor('implementation')
 export class ImplementProcessor {
   private readonly logger = new Logger(ImplementProcessor.name);
+  private readonly activeTargets = new Set<string>();
 
   constructor(
     private readonly githubService: GitHubService,
@@ -26,6 +27,14 @@ export class ImplementProcessor {
     worktreePath?: string;
   }> {
     const { issueNum, engine, type, existingWorktree } = job.data;
+    const targetKey = `${type}:${issueNum}`;
+
+    if (this.activeTargets.has(targetKey)) {
+      this.logger.warn(`Skipping job ${job.id}: ${targetKey} already being processed`);
+      return { success: false, message: `Skipped: ${targetKey} is already being processed by another job` };
+    }
+
+    this.activeTargets.add(targetKey);
     this.logger.log(
       `Processing job ${job.id}: ${type} on #${issueNum} with ${engine}`,
     );
@@ -79,8 +88,7 @@ export class ImplementProcessor {
       this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`);
       return { success: false, message: (err as Error).message, worktreePath: cwd ?? undefined };
     } finally {
-      // Don't clean up worktree on failure — it's needed for continue/retry
-      // Worktree cleanup is handled by removeWorktree on success only
+      this.activeTargets.delete(targetKey);
     }
   }
 

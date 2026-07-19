@@ -79,9 +79,8 @@ export class ImplementProcessor {
       this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`);
       return { success: false, message: (err as Error).message, worktreePath: cwd ?? undefined };
     } finally {
-      if (createdWorktree && cwd) {
-        this.githubService.removeWorktree(jobId);
-      }
+      // Don't clean up worktree on failure — it's needed for continue/retry
+      // Worktree cleanup is handled by removeWorktree on success only
     }
   }
 
@@ -219,6 +218,13 @@ export class ImplementProcessor {
       } catch (err) {
         this.logger.error(`Failed to queue review: ${(err as Error).message}`);
       }
+    }
+
+    // Clean up worktree on success
+    try {
+      this.githubService.removeWorktree(String(job.id));
+    } catch {
+      // ignore
     }
   }
 

@@ -556,7 +556,8 @@ export class GitHubService {
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       this.cleanWorkdir(cwd);
-      execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       const runArgs =
@@ -629,7 +630,8 @@ export class GitHubService {
       const escapedPrompt = fixPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
       this.cleanWorkdir(cwd);
-      execFileSync('git', ['checkout', branchName], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {

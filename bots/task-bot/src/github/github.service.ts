@@ -32,7 +32,7 @@ export class GitHubService {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: opts.timeout,
-        env: { ...process.env, HUSKY: '0', ...opts.env },
+        env: { ...process.env, ...opts.env },
       });
       let stdout = '';
       let stderr = '';
@@ -52,6 +52,29 @@ export class GitHubService {
       execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
     } catch {
       // ignore — repo may be in a bad state
+    }
+  }
+
+  private installDeps(cwd: string): void {
+    try {
+      this.logger.log(`Installing dependencies in ${cwd}`);
+      execFileSync('pnpm', ['install', '--frozen-lockfile'], {
+        encoding: 'utf-8',
+        cwd,
+        timeout: 120_000,
+      });
+      this.logger.log(`Dependencies installed in ${cwd}`);
+    } catch {
+      try {
+        execFileSync('pnpm', ['install'], {
+          encoding: 'utf-8',
+          cwd,
+          timeout: 120_000,
+        });
+        this.logger.log(`Dependencies installed (no frozen lockfile) in ${cwd}`);
+      } catch (err) {
+        this.logger.warn(`Failed to install deps: ${(err as Error).message}`);
+      }
     }
   }
 
@@ -412,6 +435,8 @@ export class GitHubService {
       });
       this.logger.log(`Created branch ${branchName} in worktree`);
 
+      this.installDeps(cwd);
+
       const requirements = this.extractRequirements(data.body);
       const hasRealRequirements =
         requirements.length > 0 && !requirements.every((r) => r === 'TBD');
@@ -560,6 +585,8 @@ export class GitHubService {
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
 
+      this.installDeps(cwd);
+
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       const runArgs =
         cli === 'opencode'
@@ -633,6 +660,8 @@ export class GitHubService {
       this.cleanWorkdir(cwd);
       execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
+
+      this.installDeps(cwd);
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {

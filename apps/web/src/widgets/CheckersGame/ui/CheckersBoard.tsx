@@ -99,7 +99,7 @@ export function CheckersBoard({
                   <YStack
                     width="70%"
                     height="70%"
-                    borderRadius="50%"
+                    borderRadius={9999}
                     alignItems="center"
                     justifyContent="center"
                     backgroundColor={

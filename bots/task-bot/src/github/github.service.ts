@@ -483,7 +483,7 @@ export class GitHubService {
         cli === 'opencode'
           ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
           : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000, env: { HUSKY: '0' } });
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
@@ -602,7 +602,7 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000, env: { HUSKY: '0' } });
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
@@ -678,7 +678,7 @@ export class GitHubService {
       const runArgs = cli === 'opencode'
         ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
         : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000 });
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 600_000, env: { HUSKY: '0' } });
 
       execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 

@@ -94,6 +94,14 @@ export class GitHubService {
         encoding: 'utf-8',
         cwd: repoCwd,
       });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
       this.logger.log(`Created worktree at ${worktreePath}`);
       return worktreePath;
     } catch (err) {

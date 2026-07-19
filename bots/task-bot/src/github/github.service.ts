@@ -458,7 +458,7 @@ export class GitHubService {
         'Do not add comments unless asked.',
         '',
         'CRITICAL RULES:',
-        '- Run `pnpm lint` and `pnpm typecheck` when done.',
+        '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
         '- If pre-commit hook fails, FIX the issues and try again.',
         '- Max 500 lines per file.',
         '- Do NOT commit or push — the processor handles git operations.',
@@ -565,12 +565,12 @@ export class GitHubService {
       }
 
       if (failedChecks.length === 0 && !reviewComments) {
-        promptParts.push('No CI failures or review comments found. Run `pnpm lint` and `pnpm typecheck` to verify the build is clean.');
+        promptParts.push('No CI failures or review comments found. Run `pnpm lint` and `pnpm --filter web type-check` to verify the build is clean.');
       }
 
       promptParts.push(
         '## Rules',
-        '- Run `pnpm lint` and `pnpm typecheck` when done.',
+        '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
         '- Fix any pre-commit hook failures.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
@@ -649,7 +649,7 @@ export class GitHubService {
         'Instructions:',
         '- Read the CI logs from the detailsUrl to understand what failed.',
         '- Fix the issues in the code.',
-        '- Run `pnpm lint` and `pnpm typecheck` to verify.',
+        '- Run `pnpm lint` and `pnpm --filter web type-check` to verify.',
         '- Do NOT commit or push — the processor handles git operations.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',

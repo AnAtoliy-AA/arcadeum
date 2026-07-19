@@ -67,6 +67,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     { text: string; userId: number }
   >();
   private readonly pendingRetries = new Map<string, PendingRetry>();
+  private readonly autoContinueTimers = new Map<string, NodeJS.Timeout>();
   private bot!: Bot;
 
   constructor(
@@ -408,6 +409,11 @@ export class TaskBotService implements OnApplicationBootstrap {
       }
 
       this.pendingRetries.delete(retryKey);
+      const existingTimer = this.autoContinueTimers.get(retryKey);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+        this.autoContinueTimers.delete(retryKey);
+      }
       await ctx.answerCallbackQuery();
 
       if (action === 'cancel') {
@@ -824,14 +830,15 @@ export class TaskBotService implements OnApplicationBootstrap {
 
     if (isFailed && notification.jobType) {
       const retryKey = `${notification.jobType}:${notification.issueNum}`;
-      this.pendingRetries.set(retryKey, {
+      const retryData: PendingRetry = {
         jobType: notification.jobType as 'implement' | 'fix' | 'ci-fix',
         targetNum: notification.issueNum,
         engine: notification.engine as Engine,
         chatId,
         worktreePath: notification.worktreePath,
         expiresAt: Date.now() + 5 * 60 * 1000,
-      });
+      };
+      this.pendingRetries.set(retryKey, retryData);
 
       const hasWorktree = !!notification.worktreePath;
       const continueBtn = hasWorktree
@@ -848,6 +855,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           },
         });
         this.logger.log(`Notification sent with action buttons: ${notification.type} for #${notification.issueNum}`);
+        this.scheduleAutoContinue(retryKey, retryData, chatId);
         return;
       } catch (err) {
         try {
@@ -857,6 +865,7 @@ export class TaskBotService implements OnApplicationBootstrap {
             },
           });
           this.logger.log(`Notification sent (plain text) with action buttons: ${notification.type} for #${notification.issueNum}`);
+          this.scheduleAutoContinue(retryKey, retryData, chatId);
           return;
         } catch (err2) {
           this.logger.error(`Failed to send notification: ${err2}`);
@@ -889,5 +898,54 @@ export class TaskBotService implements OnApplicationBootstrap {
 
   private escapeMarkdown(text: string): string {
     return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+  }
+
+  private scheduleAutoContinue(retryKey: string, pending: PendingRetry, chatId: number): void {
+    const AUTO_CONTINUE_MS = 3 * 60 * 1000;
+    const timer = setTimeout(async () => {
+      this.autoContinueTimers.delete(retryKey);
+      const current = this.pendingRetries.get(retryKey);
+      if (!current) return;
+
+      this.pendingRetries.delete(retryKey);
+      this.logger.log(`Auto-continuing ${current.jobType} for #${current.targetNum}`);
+
+      try {
+        if (current.jobType === 'fix' || current.jobType === 'ci-fix') {
+          const pr = this.githubService.viewPr(current.targetNum);
+          if (!pr) return;
+
+          const failedChecks = this.githubService.getPrChecks(current.targetNum).filter(
+            (c) => c.state === 'FAILURE' || c.state === 'failure',
+          );
+          const reviews = this.githubService.getPrReviews(current.targetNum);
+          const reviewComments = reviews
+            .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+            .map((r) => r.body)
+            .join('\n---\n');
+
+          const jobId = await this.queueService.addFixJob(
+            current.targetNum,
+            current.engine,
+            current.chatId,
+            0,
+            {
+              issueNum: current.targetNum,
+              prBranchName: pr.headRefName,
+              prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+              prReviewComments: reviewComments || undefined,
+              existingWorktree: current.worktreePath,
+            },
+          );
+          await this.bot.api.sendMessage(chatId,
+            `⏰ Auto-continuing ${current.jobType} for PR #${current.targetNum} (${current.engine}).\nJob ID: ${jobId}`,
+          );
+        }
+      } catch (err) {
+        this.logger.error(`Auto-continue failed: ${err}`);
+      }
+    }, AUTO_CONTINUE_MS);
+
+    this.autoContinueTimers.set(retryKey, timer);
   }
 }

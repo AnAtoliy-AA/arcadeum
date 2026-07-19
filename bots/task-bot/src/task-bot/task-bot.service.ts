@@ -26,6 +26,7 @@ interface PendingRetry {
   engine: Engine;
   chatId: number;
   worktreePath?: string;
+  retryCount?: number;
   jobData?: Record<string, unknown>;
   expiresAt: number;
 }
@@ -902,6 +903,8 @@ export class TaskBotService implements OnApplicationBootstrap {
 
   private scheduleAutoContinue(retryKey: string, pending: PendingRetry, chatId: number): void {
     const AUTO_CONTINUE_MS = 3 * 60 * 1000;
+    const MAX_AUTO_RETRIES = 3;
+
     const timer = setTimeout(async () => {
       this.autoContinueTimers.delete(retryKey);
       const current = this.pendingRetries.get(retryKey);
@@ -924,6 +927,10 @@ export class TaskBotService implements OnApplicationBootstrap {
             .map((r) => r.body)
             .join('\n---\n');
 
+          const worktreeExists = current.worktreePath
+            ? await this.checkWorktreeExists(current.worktreePath)
+            : false;
+
           const jobId = await this.queueService.addFixJob(
             current.targetNum,
             current.engine,
@@ -934,12 +941,27 @@ export class TaskBotService implements OnApplicationBootstrap {
               prBranchName: pr.headRefName,
               prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
               prReviewComments: reviewComments || undefined,
-              existingWorktree: current.worktreePath,
+              existingWorktree: worktreeExists ? current.worktreePath : undefined,
             },
           );
+
+          const label = worktreeExists ? 'Continuing' : 'Retrying';
+          const retryCount = (current.retryCount ?? 0) + 1;
           await this.bot.api.sendMessage(chatId,
-            `⏰ Auto-continuing ${current.jobType} for PR #${current.targetNum} (${current.engine}).\nJob ID: ${jobId}`,
+            `⏰ Auto-${label.toLowerCase()} ${current.jobType} for PR #${current.targetNum} (${current.engine}).\nJob ID: ${jobId}\nAttempt ${retryCount}/${MAX_AUTO_RETRIES}`,
           );
+
+          if (retryCount < MAX_AUTO_RETRIES) {
+            const nextKey = `${current.jobType}:${current.targetNum}:retry:${retryCount}`;
+            const nextPending: PendingRetry = {
+              ...current,
+              worktreePath: worktreeExists ? current.worktreePath : undefined,
+              retryCount,
+              expiresAt: Date.now() + 5 * 60 * 1000,
+            };
+            this.pendingRetries.set(nextKey, nextPending);
+            this.scheduleAutoContinue(nextKey, nextPending, chatId);
+          }
         }
       } catch (err) {
         this.logger.error(`Auto-continue failed: ${err}`);
@@ -947,5 +969,15 @@ export class TaskBotService implements OnApplicationBootstrap {
     }, AUTO_CONTINUE_MS);
 
     this.autoContinueTimers.set(retryKey, timer);
+  }
+
+  private async checkWorktreeExists(path: string): Promise<boolean> {
+    try {
+      const { accessSync } = await import('fs');
+      accessSync(path);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

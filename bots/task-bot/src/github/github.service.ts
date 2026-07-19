@@ -49,6 +49,11 @@ export class GitHubService {
     try {
       execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
       execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
+      try {
+        execFileSync('rm', ['-rf', '.husky'], { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore — .husky may not exist
+      }
     } catch {
       // ignore — repo may be in a bad state
     }

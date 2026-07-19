@@ -25,6 +25,7 @@ interface PendingRetry {
   targetNum: string;
   engine: Engine;
   chatId: number;
+  worktreePath?: string;
   jobData?: Record<string, unknown>;
   expiresAt: number;
 }
@@ -390,23 +391,31 @@ export class TaskBotService implements OnApplicationBootstrap {
     const data = ctx.callbackQuery?.data;
     if (!data) return;
 
-    if (data.startsWith('retry:')) {
-      const retryKey = data.slice(6);
+    if (data.startsWith('continue:') || data.startsWith('retry:') || data.startsWith('cancel:')) {
+      const action = data.split(':')[0] as 'continue' | 'retry' | 'cancel';
+      const retryKey = data.slice(data.indexOf(':') + 1);
       const pending = this.pendingRetries.get(retryKey);
 
       if (!pending) {
-        await ctx.answerCallbackQuery('Retry expired. Send the command again.');
+        await ctx.answerCallbackQuery('Expired. Send the command again.');
         return;
       }
 
       if (Date.now() > pending.expiresAt) {
         this.pendingRetries.delete(retryKey);
-        await ctx.answerCallbackQuery('Retry expired. Send the command again.');
+        await ctx.answerCallbackQuery('Expired. Send the command again.');
         return;
       }
 
       this.pendingRetries.delete(retryKey);
       await ctx.answerCallbackQuery();
+
+      if (action === 'cancel') {
+        await ctx.reply('Cancelled.');
+        return;
+      }
+
+      const useExistingWorktree = action === 'continue' && pending.worktreePath;
 
       try {
         if (pending.jobType === 'fix' || pending.jobType === 'ci-fix') {
@@ -434,17 +443,19 @@ export class TaskBotService implements OnApplicationBootstrap {
               prBranchName: pr.headRefName,
               prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
               prReviewComments: reviewComments || undefined,
+              existingWorktree: useExistingWorktree ? pending.worktreePath : undefined,
             },
           );
+          const label = useExistingWorktree ? 'Continuing' : 'Retrying';
           await ctx.reply(
-            `Retrying ${pending.jobType} for PR #${pending.targetNum} with ${pending.engine}.\nJob ID: ${jobId}`,
+            `${label} ${pending.jobType} for PR #${pending.targetNum} with ${pending.engine}.\nJob ID: ${jobId}`,
           );
         } else {
           await this.queueImplementation(pending.targetNum, pending.engine, ctx);
         }
       } catch (err) {
-        this.logger.error(`Failed to retry: ${err}`);
-        await ctx.reply('Failed to retry. Send the command again.');
+        this.logger.error(`Failed to ${action}: ${err}`);
+        await ctx.reply(`Failed to ${action}. Send the command again.`);
       }
       return;
     }
@@ -818,30 +829,34 @@ export class TaskBotService implements OnApplicationBootstrap {
         targetNum: notification.issueNum,
         engine: notification.engine as Engine,
         chatId,
+        worktreePath: notification.worktreePath,
         expiresAt: Date.now() + 5 * 60 * 1000,
       });
+
+      const hasWorktree = !!notification.worktreePath;
+      const continueBtn = hasWorktree
+        ? [{ text: `▶️ Continue ${notification.jobType}`, callback_data: `continue:${retryKey}` }]
+        : [];
+      const retryBtn = [{ text: `🔄 Retry ${notification.jobType}`, callback_data: `retry:${retryKey}` }];
+      const cancelBtn = [{ text: `❌ Cancel`, callback_data: `cancel:${retryKey}` }];
 
       try {
         await this.bot.api.sendMessage(chatId, text, {
           parse_mode: 'Markdown',
           reply_markup: {
-            inline_keyboard: [
-              [{ text: `🔄 Retry ${notification.jobType}`, callback_data: `retry:${retryKey}` }],
-            ],
+            inline_keyboard: [continueBtn, retryBtn, cancelBtn].filter((r) => r.length > 0),
           },
         });
-        this.logger.log(`Notification sent with retry button: ${notification.type} for #${notification.issueNum}`);
+        this.logger.log(`Notification sent with action buttons: ${notification.type} for #${notification.issueNum}`);
         return;
       } catch (err) {
         try {
           await this.bot.api.sendMessage(chatId, text, {
             reply_markup: {
-              inline_keyboard: [
-                [{ text: `🔄 Retry ${notification.jobType}`, callback_data: `retry:${retryKey}` }],
-              ],
+              inline_keyboard: [continueBtn, retryBtn, cancelBtn].filter((r) => r.length > 0),
             },
           });
-          this.logger.log(`Notification sent (plain text) with retry button: ${notification.type} for #${notification.issueNum}`);
+          this.logger.log(`Notification sent (plain text) with action buttons: ${notification.type} for #${notification.issueNum}`);
           return;
         } catch (err2) {
           this.logger.error(`Failed to send notification: ${err2}`);

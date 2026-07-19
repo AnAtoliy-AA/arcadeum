@@ -23,8 +23,9 @@ export class ImplementProcessor {
     success: boolean;
     message: string;
     branchName?: string;
+    worktreePath?: string;
   }> {
-    const { issueNum, engine, type } = job.data;
+    const { issueNum, engine, type, existingWorktree } = job.data;
     this.logger.log(
       `Processing job ${job.id}: ${type} on #${issueNum} with ${engine}`,
     );
@@ -33,9 +34,16 @@ export class ImplementProcessor {
 
     const jobId = String(job.id);
     let cwd: string | null = null;
+    let createdWorktree = false;
 
     try {
-      cwd = this.githubService.createWorktree(jobId);
+      if (existingWorktree) {
+        cwd = existingWorktree;
+        this.logger.log(`Reusing worktree at ${cwd}`);
+      } else {
+        cwd = this.githubService.createWorktree(jobId);
+        createdWorktree = true;
+      }
       await job.progress(10);
 
       let result: { success: boolean; message: string; branchName?: string };
@@ -66,12 +74,12 @@ export class ImplementProcessor {
         `Job ${job.id} completed: ${result.success ? 'success' : 'failed'} - ${result.message}`,
       );
 
-      return result;
+      return { ...result, worktreePath: !result.success && cwd ? cwd : undefined };
     } catch (err) {
       this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`);
-      return { success: false, message: (err as Error).message };
+      return { success: false, message: (err as Error).message, worktreePath: cwd ?? undefined };
     } finally {
-      if (cwd) {
+      if (createdWorktree && cwd) {
         this.githubService.removeWorktree(jobId);
       }
     }
@@ -224,7 +232,7 @@ export class ImplementProcessor {
   @OnQueueCompleted()
   async onCompleted(
     job: Job<ImplementJobData>,
-    result: { success: boolean; message: string },
+    result: { success: boolean; message: string; worktreePath?: string },
   ) {
     this.logger.log(
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'} - ${result.message}`,
@@ -243,6 +251,7 @@ export class ImplementProcessor {
         jobType: type,
         message: `${jobType} failed for ${target}: ${result.message}`,
         timestamp: Date.now(),
+        worktreePath: result.worktreePath,
       });
     }
   }

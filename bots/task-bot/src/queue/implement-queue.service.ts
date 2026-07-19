@@ -17,6 +17,7 @@ export interface ImplementJobData {
   prBranchName?: string;
   prFailedChecks?: Array<{ name: string; state: string; link: string }>;
   prReviewComments?: string;
+  existingWorktree?: string;
 }
 
 @Injectable()
@@ -69,6 +70,7 @@ export class ImplementQueueService {
       prBranchName: string;
       prFailedChecks?: Array<{ name: string; state: string; link: string }>;
       prReviewComments?: string;
+      existingWorktree?: string;
     },
   ): Promise<string> {
     const job = await this.implementQueue.add(
@@ -82,6 +84,7 @@ export class ImplementQueueService {
         prBranchName: data.prBranchName,
         prFailedChecks: data.prFailedChecks,
         prReviewComments: data.prReviewComments,
+        existingWorktree: data.existingWorktree,
       },
       {
         attempts: 1,

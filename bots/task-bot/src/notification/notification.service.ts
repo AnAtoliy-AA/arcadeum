@@ -13,6 +13,7 @@ export interface JobNotification {
   prUrl?: string;
   failedChecks?: string[];
   jobType?: 'implement' | 'fix' | 'ci-fix' | 'review';
+  worktreePath?: string;
 }
 
 @Injectable()

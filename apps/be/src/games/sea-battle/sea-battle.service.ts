@@ -140,6 +140,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
+    difficulty?: 'easy' | 'medium' | 'hard',
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
 
@@ -207,7 +208,10 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
             })),
             hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
           }
-        : { ...room.gameOptions },
+        : {
+            ...room.gameOptions,
+            ...(difficulty ? { aiDifficulty: difficulty } : {}),
+          },
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');

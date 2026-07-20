@@ -476,7 +476,7 @@ export class SeaBattleBotService {
     if (remainingShipSizes.length === 0) return null;
 
     const density: number[][] = Array.from({ length: gridSize }, () =>
-      Array(gridSize).fill(0),
+      Array<number>(gridSize).fill(0),
     );
 
     const isAvailable = (r: number, c: number): boolean => {

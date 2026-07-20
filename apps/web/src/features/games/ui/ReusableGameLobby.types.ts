@@ -61,9 +61,9 @@ export interface ReusableGameLobbyProps {
     botCountLabel?: string;
     startWithBotsLabel?: string;
     difficultyLabel?: string;
-    difficultyEasy?: string;
-    difficultyMedium?: string;
-    difficultyHard?: string;
+    difficultyEasyLabel?: string;
+    difficultyMediumLabel?: string;
+    difficultyHardLabel?: string;
     deleteRoomLabel?: string;
     kickPlayerLabel?: string;
     leaveRoomLabel?: string;

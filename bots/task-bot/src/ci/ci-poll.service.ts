@@ -1,5 +1,7 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { NotificationService } from '../notification/notification.service';
+import { ImplementQueueService } from '../queue/implement-queue.service';
+import { CIFixTrackerService } from './ci-fix-tracker.service';
 import { execFileSync } from 'child_process';
 import { ConfigService } from '@nestjs/config';
 
@@ -20,6 +22,8 @@ export class CIFollService implements OnModuleDestroy {
 
   constructor(
     private readonly notificationService: NotificationService,
+    private readonly queueService: ImplementQueueService,
+    private readonly ciFixTracker: CIFixTrackerService,
     private readonly config: ConfigService,
   ) {}
 
@@ -114,7 +118,47 @@ export class CIFollService implements OnModuleDestroy {
       );
 
       if (failed.length > 0) {
-        this.logger.log(`CI has failures on PR #${prNumber}, webhook will handle auto-fix`);
+        const maxAttempts = this.ciFixTracker.getMaxAttempts();
+        const currentAttempts = await this.ciFixTracker.getAttempts(prNumber);
+
+        if (currentAttempts >= maxAttempts) {
+          this.logger.warn(`CI fix max attempts (${maxAttempts}) reached for PR #${prNumber}. Giving up.`);
+          this.notificationService.publish({
+            jobId: `ci-poll-max-${prNumber}`,
+            issueNum,
+            engine,
+            success: false,
+            message: `CI fix failed after ${maxAttempts} attempts. Manual intervention needed.\nFailed checks: ${failed.map((c) => c.name).join(', ')}`,
+            timestamp: Date.now(),
+            type: 'ci-fixed',
+          });
+          return;
+        }
+
+        this.logger.log(`CI failures on PR #${prNumber}, queuing fix (attempt ${currentAttempts + 1}/${maxAttempts})`);
+        await this.ciFixTracker.incrementAttempts(prNumber);
+
+        const failedCheckNames = failed.map((c) => c.name);
+        try {
+          await this.queueService.addCIFixJob(
+            prNumber,
+            engine as 'mimo' | 'opencode',
+            0,
+            0,
+            {
+              issueNum,
+              prBranchName: `task-${issueNum}-${engine}`,
+              prFailedChecks: failed.map((c) => ({
+                name: c.name,
+                state: 'FAILURE',
+                link: '',
+              })),
+            },
+          );
+          this.logger.log(`CI fix queued for PR #${prNumber}`);
+        } catch (err) {
+          this.logger.error(`Failed to queue CI fix: ${(err as Error).message}`);
+        }
         return;
       }
 

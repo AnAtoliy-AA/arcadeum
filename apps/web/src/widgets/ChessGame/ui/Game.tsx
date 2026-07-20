@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useCallback, useMemo, useState } from 'react';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -68,7 +68,7 @@ function ChessGameImpl({
   const displaySnapshot =
     optimisticState &&
     snapshot &&
-    optimisticState.moveHistory.length >= snapshot.moveHistory.length
+    optimisticState.moveHistory.length > snapshot.moveHistory.length
       ? optimisticState
       : snapshot;
   const displayMyTurn = !!(
@@ -101,6 +101,35 @@ function ChessGameImpl({
         ? { type: promotion, color: piece.color }
         : piece;
       newBoard[fromRow][fromCol] = null;
+
+      const isCastle =
+        piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
+      let isCastleFlag = false;
+      if (isCastle) {
+        isCastleFlag = true;
+        if (toCol === 6) {
+          const rookCol = newBoard[toRow].findIndex(
+            (p) => p?.type === 'rook' && p.color === piece.color,
+          );
+          if (rookCol > toCol) {
+            newBoard[toRow][5] = newBoard[toRow][rookCol];
+            newBoard[toRow][rookCol] = null;
+          }
+        } else if (toCol === 2) {
+          let rookCol = -1;
+          for (let c = toCol - 1; c >= 0; c--) {
+            if (newBoard[toRow][c]?.type === 'rook') {
+              rookCol = c;
+              break;
+            }
+          }
+          if (rookCol >= 0) {
+            newBoard[toRow][3] = newBoard[toRow][rookCol];
+            newBoard[toRow][rookCol] = null;
+          }
+        }
+      }
+
       setOptimisticState({
         ...snapshot,
         board: newBoard,
@@ -114,7 +143,7 @@ function ChessGameImpl({
             piece,
             captured: snapshot.board[toRow]?.[toCol] ?? null,
             promotion: promotion ?? null,
-            isCastle: false,
+            isCastle: isCastleFlag,
             isEnPassant: false,
             notation: '',
           },
@@ -140,7 +169,13 @@ function ChessGameImpl({
     sendChat,
     resolveDisplayNameBound,
   );
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const {
+    rematchLoading,
+    handleRematch,
+    invitation,
+    handleAcceptInvitation,
+    handleDeclineInvitation,
+  } = useRematch({ roomId });
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
       if (!accessToken || !roomId) return;
@@ -158,7 +193,8 @@ function ChessGameImpl({
       displaySnapshot?.isStalemate ||
       displaySnapshot?.isDrawByRepetition ||
       displaySnapshot?.isDrawByFiftyMoveRule ||
-      displaySnapshot?.isInsufficientMaterial,
+      displaySnapshot?.isInsufficientMaterial ||
+      displaySnapshot?.isDrawByAgreement,
     backendResult: (session?.state as Record<string, unknown>)?.gameResult as
       | import('@/features/games/lib/computeGameResult').BackendGameResult
       | undefined,
@@ -382,6 +418,14 @@ function ChessGameImpl({
         rematchLoading={rematchLoading}
         t={t}
         messages={resultMessages}
+      />
+      <RematchInvitationModal
+        isOpen={!!invitation}
+        senderName={invitation?.hostName || ''}
+        message={invitation?.message}
+        onAccept={handleAcceptInvitation}
+        onDecline={handleDeclineInvitation}
+        t={t}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
       <PromotionModal

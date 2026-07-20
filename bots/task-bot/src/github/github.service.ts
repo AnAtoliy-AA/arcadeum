@@ -124,6 +124,14 @@ export class GitHubService {
       } catch {
         // ignore
       }
+      try {
+        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
       this.logger.log(`Created worktree at ${worktreePath}`);
       return worktreePath;
     } catch (err) {
@@ -439,6 +447,11 @@ export class GitHubService {
   ): { success: boolean; message: string } {
     const workdir = cwd ?? this.getCwd();
     try {
+      try {
+        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], { encoding: 'utf-8', cwd: workdir });
+      } catch {
+        // ignore
+      }
       execFileSync('git', ['push', 'origin', branchName], { encoding: 'utf-8', cwd: workdir });
       return { success: true, message: `Pushed ${branchName}` };
     } catch (err) {

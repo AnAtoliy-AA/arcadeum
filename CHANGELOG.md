@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.69] - 2026-07-20
+
+### Fixed
+- prevent sticky start button from intercepting bot-count clicks
+- add bottom padding to LobbyContent to prevent sticky start button overlap on mobile
+- make lobby start button sticky on mobile and visible only for host
+
+
 ## [1.23.68] - 2026-07-20
 
 ### Added

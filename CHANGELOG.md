@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.67] - 2026-07-20
+
+### Fixed
+- add missing game result modal and rematch invitation to all games
+
+
 ## [1.23.66] - 2026-07-20
 
 ### Changed

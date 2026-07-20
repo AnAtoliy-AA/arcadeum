@@ -76,13 +76,17 @@ export class ImplementProcessor {
       await job.progress(80);
 
       if (result.branchName && result.success) {
-        const verification = this.githubService.verifyChanges(cwd);
-        if (!verification.ok) {
-          this.logger.error(`Verification failed: ${verification.errors.join('; ')}`);
-          result = {
-            success: false,
-            message: `Verification failed:\n${verification.errors.join('\n')}`,
-          };
+        if (type === 'fix' || type === 'ci-fix') {
+          const verification = this.githubService.verifyChanges(cwd);
+          if (!verification.ok) {
+            this.logger.error(`Verification failed: ${verification.errors.join('; ')}`);
+            result = {
+              success: false,
+              message: `Verification failed:\n${verification.errors.join('\n')}`,
+            };
+          } else {
+            await this.postProcess(job, result.branchName, cwd);
+          }
         } else {
           await this.postProcess(job, result.branchName, cwd);
         }

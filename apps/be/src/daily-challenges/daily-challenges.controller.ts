@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  Body,
   Controller,
   Get,
   Post,
@@ -11,6 +11,7 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { DailyChallengesService } from './daily-challenges.service';
+import { ClaimChallengeRewardDto } from './dto/daily-challenge.dto';
 
 @Controller('daily-challenges')
 export class DailyChallengesController {
@@ -26,13 +27,9 @@ export class DailyChallengesController {
 
   @Post('claim')
   @UseGuards(JwtAuthGuard)
-  async claim(@Req() req: Request) {
+  async claim(@Req() req: Request, @Body() dto: ClaimChallengeRewardDto) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) throw new UnauthorizedException();
-    const body = req.body as { challengeId?: string; date?: string };
-    if (!body.challengeId || !body.date) {
-      throw new BadRequestException('challengeId and date are required');
-    }
-    return this.service.claimReward(user.userId, body.challengeId, body.date);
+    return this.service.claimReward(user.userId, dto.challengeId, dto.date);
   }
 }

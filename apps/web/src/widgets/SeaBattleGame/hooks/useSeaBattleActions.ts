@@ -15,7 +15,11 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
   const { roomId, userId, onActionStart } = options;
 
   const startSession = useCallback(
-    (options?: { withBots?: boolean; botCount?: number }) => {
+    (options?: {
+      withBots?: boolean;
+      botCount?: number;
+      difficulty?: 'easy' | 'medium' | 'hard';
+    }) => {
       if (!userId) return;
       onActionStart?.('start');
       gameSocket.emit('seaBattle.session.start', {
@@ -23,6 +27,7 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
         userId,
         withBots: options?.withBots,
         botCount: options?.botCount,
+        difficulty: options?.difficulty,
       });
     },
     [roomId, userId, onActionStart],

@@ -64,6 +64,14 @@
   flex: 1;
 }
 
+.nav-styled a {
+  color: #e2e8f0;
+}
+
+.nav-styled a:hover {
+  color: #ffffff;
+}
+
 .actions-styled {
   display: flex;
   flex-direction: row;
@@ -101,6 +109,11 @@
 
 .link-no-decoration {
   text-decoration: none;
+  color: #e2e8f0;
+}
+
+.link-no-decoration:hover {
+  color: #ffffff;
 }
 
 .header-inner .mobile-menu-container {

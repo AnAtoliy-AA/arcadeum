@@ -181,9 +181,8 @@ export class AchievementsService {
     userId: string,
     achievementId: string,
   ): Promise<ClaimResult> {
-    const definition = await this.definitionModel
-      .findOne({ achievementId })
-      .lean();
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.achievementId === achievementId);
     if (!definition) throw new Error('Achievement not found');
 
     const progress = await this.getOrCreateProgress(userId);

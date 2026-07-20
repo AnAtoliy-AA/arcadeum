@@ -13,7 +13,7 @@ export const gameLoaders: Record<
   tic_tac_toe_v1: () => import('@/widgets/TicTacToeGame'),
   cascade_v1: () => import('@/widgets/CascadeGame'),
   chess_v1: () => import('@/widgets/ChessGame'),
-  // checkers_v1: () => import("@/widgets/CheckersGame"),
+  checkers_v1: () => import('@/widgets/CheckersGame'),
   // Add more games as they are implemented
 } as const;
 

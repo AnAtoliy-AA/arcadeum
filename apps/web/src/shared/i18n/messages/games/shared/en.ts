@@ -15,6 +15,7 @@ export const enMessages = {
     filters: {
       statusLabel: 'Status',
       participationLabel: 'Participation',
+      categoryLabel: 'Category',
       status: {
         all: 'All',
         lobby: 'Lobby',
@@ -277,6 +278,13 @@ export const enMessages = {
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
+    difficultyLabel: 'AI Difficulty',
+    difficultyEasy: 'Easy',
+    difficultyMedium: 'Medium',
+    difficultyHard: 'Hard',
+    difficultyEasyDesc: 'Random moves with occasional smart plays',
+    difficultyMediumDesc: 'Smart targeting with locked-on strategy',
+    difficultyHardDesc: 'Probability-based precision targeting',
   },
   shared: {
     rules: {
@@ -296,6 +304,7 @@ export const enMessages = {
     tags: {
       strategy: 'Strategy',
       cards: 'Cards',
+      action: 'Action',
     },
   },
   connectionOverlay: {

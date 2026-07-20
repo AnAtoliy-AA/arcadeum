@@ -37,6 +37,8 @@ export const ruMessages = {
         subtitle:
           'Темы, команды и боты. Один или с друзьями, на полях от 3×3 до 9×9.',
         createRoom: 'Создать комнату',
+        ctaQuickplay: 'Сыграть с ИИ',
+        ctaQuickplayError: 'Не удалось начать игру — попробуйте ещё раз',
         browseRooms: 'Найти комнату',
       },
       highlights: {

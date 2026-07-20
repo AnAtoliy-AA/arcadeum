@@ -18,6 +18,8 @@ export const ruMessages = {
         subtitle:
           'Стандартные правила, вариант Chess960 и опциональный контроль времени. Играйте с друзьями или ботами.',
         createRoom: 'Создать комнату',
+        ctaQuickplay: 'Сыграть с ИИ',
+        ctaQuickplayError: 'Не удалось начать игру — попробуйте ещё раз',
         browseRooms: 'Обзор комнат',
       },
       highlights: {

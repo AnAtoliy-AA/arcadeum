@@ -38,40 +38,38 @@ export function usePlacementOptimistic({
     return changed ? cleaned : rawPendingPlacements;
   }, [serverShips, rawPendingPlacements]);
 
-  const [pendingMove, setPendingMove] = useState<{
-    shipId: string;
-    originalCells: ShipCell[];
-    newCells: ShipCell[];
-  } | null>(null);
+  const [pendingMoves, setPendingMoves] = useState<
+    Map<string, { originalCells: ShipCell[]; newCells: ShipCell[] }>
+  >(new Map());
 
-  const effectivePendingMove = useMemo(() => {
-    if (!pendingMove) return null;
-    const ship = serverShips.find((s) => s.id === pendingMove.shipId);
-    if (!ship) return pendingMove;
-    const matchesNew =
-      ship.cells.length === pendingMove.newCells.length &&
-      ship.cells.every(
-        (c, i) =>
-          c.row === pendingMove.newCells[i].row &&
-          c.col === pendingMove.newCells[i].col,
-      );
-    return matchesNew ? null : pendingMove;
-  }, [serverShips, pendingMove]);
-
-  useEffect(() => {
-    if (!pendingMove) return;
-    const timer = setTimeout(() => setPendingMove(null), 2000);
-    return () => clearTimeout(timer);
-  }, [pendingMove]);
+  const effectivePendingMoves = useMemo(() => {
+    if (pendingMoves.size === 0) return pendingMoves;
+    const cleaned = new Map(pendingMoves);
+    let changed = false;
+    for (const [shipId, move] of cleaned) {
+      const ship = serverShips.find((s) => s.id === shipId);
+      if (!ship) continue;
+      const matchesNew =
+        ship.cells.length === move.newCells.length &&
+        ship.cells.every(
+          (c, i) =>
+            c.row === move.newCells[i].row && c.col === move.newCells[i].col,
+        );
+      if (matchesNew) {
+        cleaned.delete(shipId);
+        changed = true;
+      }
+    }
+    return changed ? cleaned : pendingMoves;
+  }, [serverShips, pendingMoves]);
 
   const ships = useMemo<Ship[]>(() => {
     let result = serverShips;
-    if (effectivePendingMove) {
-      result = result.map((s) =>
-        s.id === effectivePendingMove.shipId
-          ? { ...s, cells: effectivePendingMove.newCells }
-          : s,
-      );
+    if (effectivePendingMoves.size > 0) {
+      result = result.map((s) => {
+        const move = effectivePendingMoves.get(s.id);
+        return move ? { ...s, cells: move.newCells } : s;
+      });
     }
     for (const [, entry] of pendingPlacements) {
       if (!result.some((s) => s.id === entry.ship.id)) {
@@ -79,15 +77,15 @@ export function usePlacementOptimistic({
       }
     }
     return result;
-  }, [serverShips, effectivePendingMove, pendingPlacements]);
+  }, [serverShips, effectivePendingMoves, pendingPlacements]);
 
   const board = useMemo<CellState[][]>(() => {
     const next = serverBoard.map((row) => row.slice());
-    if (effectivePendingMove) {
-      for (const c of effectivePendingMove.originalCells) {
+    for (const [, move] of effectivePendingMoves) {
+      for (const c of move.originalCells) {
         next[c.row][c.col] = CELL_STATE.EMPTY;
       }
-      for (const c of effectivePendingMove.newCells) {
+      for (const c of move.newCells) {
         next[c.row][c.col] = CELL_STATE.SHIP;
       }
     }
@@ -97,7 +95,7 @@ export function usePlacementOptimistic({
       }
     }
     return next;
-  }, [serverBoard, effectivePendingMove, pendingPlacements]);
+  }, [serverBoard, effectivePendingMoves, pendingPlacements]);
 
   const registerPlacement = useCallback(
     (shipId: string, name: string, size: number, cells: ShipCell[]) => {
@@ -115,15 +113,24 @@ export function usePlacementOptimistic({
 
   const registerMove = useCallback(
     (shipId: string, originalCells: ShipCell[], newCells: ShipCell[]) => {
-      setPendingMove({ shipId, originalCells, newCells });
+      setPendingMoves((prev) => {
+        const next = new Map(prev);
+        next.set(shipId, { originalCells, newCells });
+        return next;
+      });
     },
     [],
   );
+
+  const clearPendingMoves = useCallback(() => {
+    setPendingMoves(new Map());
+  }, []);
 
   return {
     ships,
     board,
     registerPlacement,
     registerMove,
+    clearPendingMoves,
   };
 }

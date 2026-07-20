@@ -5,6 +5,8 @@ description: Use when implementing or reviewing frontend performance — bundle 
 
 # Performance Skill
 
+> **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules including performance, animation, and progressive loading patterns.
+
 ## Core Web Vitals Targets
 
 | Metric | Good | Needs Improvement | Poor |

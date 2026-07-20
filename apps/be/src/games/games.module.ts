@@ -58,6 +58,9 @@ import { CascadeBotService } from './cascade/cascade-bot.service';
 import { ChessGateway } from './chess.gateway';
 import { ChessService } from './chess/chess.service';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { CheckersGateway } from './checkers.gateway';
+import { CheckersService } from './checkers/checkers.service';
+import { CheckersBotService } from './checkers/checkers-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -132,6 +135,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Chess
     ChessService,
     ChessBotService,
+    // Checkers
+    CheckersService,
+    CheckersBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -150,6 +156,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     TicTacToeGateway,
     CascadeGateway,
     ChessGateway,
+    CheckersGateway,
   ],
   exports: [GameHistoryStatsService],
 })

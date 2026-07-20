@@ -1,26 +1,27 @@
+'use client';
+
 import Link from 'next/link';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 
 interface Props {
   title: string;
   subtitle: string;
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
-  createRoomLabel: string;
+  ctaQuickplayLabel: string;
+  ctaQuickplayErrorLabel: string;
   browseRoomsLabel: string;
 }
 
 export function TicTacToeHero({
   title,
   subtitle,
-  createRoomHref,
+  gameId,
   roomsHref,
-  createRoomLabel,
+  ctaQuickplayLabel,
+  ctaQuickplayErrorLabel,
   browseRoomsLabel,
 }: Props) {
-  // Static demo grid — deliberately simple, no client JS. The hero is
-  // a server component; theme cycling is wired in heroVariantContext if a
-  // client subscriber is added later. For now the grid renders a fixed
-  // mid-game snapshot to suggest the game without animation overhead.
   const demoBoard: Array<Array<'x' | 'o' | null>> = [
     ['x', null, 'o'],
     [null, 'x', null],
@@ -51,19 +52,12 @@ export function TicTacToeHero({
           {subtitle}
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Link
-            href={createRoomHref}
-            style={{
-              padding: '14px 24px',
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-              color: 'white',
-              fontWeight: 700,
-              textDecoration: 'none',
-            }}
-          >
-            {createRoomLabel}
-          </Link>
+          <QuickplayButton
+            gameId={gameId}
+            label={ctaQuickplayLabel}
+            mode="ai"
+            errorLabel={ctaQuickplayErrorLabel}
+          />
           <Link
             href={roomsHref}
             style={{

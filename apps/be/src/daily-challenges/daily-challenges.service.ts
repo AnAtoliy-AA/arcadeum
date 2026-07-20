@@ -88,9 +88,9 @@ export class DailyChallengesService {
     date: string,
     increment: number = 1,
   ): Promise<void> {
-    const definition = await this.definitionModel
-      .findOne({ challengeId })
-      .lean();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.challengeId === challengeId);
     if (!definition) return;
 
     const progress = await this.getOrCreateProgress(userId, date, [
@@ -117,12 +117,12 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
-    const definition = await this.definitionModel
-      .findOne({ challengeId })
-      .lean();
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.challengeId === challengeId);
     if (!definition) throw new Error('Challenge not found');
 
-    const progress = await this.getOrCreateProgress(userId, date, [
+    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
+    const progress = await this.getOrCreateProgress(userId, safeDate, [
       definition as unknown as DailyChallengeDefinitionDocument,
     ]);
     const userChallenge = progress.challenges.find(
@@ -261,24 +261,26 @@ export class DailyChallengesService {
     date: string,
     definitions: DailyChallengeDefinitionDocument[],
   ): Promise<UserDailyChallengeDocument> {
-    let progress = await this.progressModel.findOne({
-      userId: new Types.ObjectId(userId),
-      date,
-    });
-    if (!progress) {
-      const challenges = definitions.map((def) => ({
-        challengeId: def.challengeId,
-        progress: 0,
-        completed: false,
-        claimed: false,
-      }));
-      progress = await this.progressModel.create({
-        userId: new Types.ObjectId(userId),
-        date,
-        challenges,
-      });
+    const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
+    const all = await this.progressModel
+      .find({ userId: new Types.ObjectId(userId) })
+      .lean()
+      .exec();
+    const existing = all.find((p) => p.date === safeDate);
+    if (existing) {
+      return existing as unknown as UserDailyChallengeDocument;
     }
-    return progress;
+    const challenges = definitions.map((def) => ({
+      challengeId: def.challengeId,
+      progress: 0,
+      completed: false,
+      claimed: false,
+    }));
+    return this.progressModel.create({
+      userId: new Types.ObjectId(userId),
+      date: safeDate,
+      challenges,
+    });
   }
 
   private getDescription(def: DailyChallengeDefinition): string {

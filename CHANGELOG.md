@@ -7,20 +7,229 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.64] - 2026-07-20
+
+### Added
+- CI poll now triggers fix instead of just logging
+- AI-powered conflict resolution before push
+
+### Fixed
+- fix async return type to Promise<void>
+- remove unused failedCheckNames variable
+- make checkCIStatus async for await calls
+
+
+## [1.23.63] - 2026-07-20
+
+### Added
+- ai difficulty levels (ARC-880)
+
+### Fixed
+- resolve CI failures and review feedback
+
+
+## [1.23.62] - 2026-07-20
+
+### Added
+- add conflict resolution before push and .mimocode to gitignore
+
+### Fixed
+- only verify on /fix, not /implement
+
+
+## [1.23.61] - 2026-07-20
+
+### Added
+- add CI fix max attempts guard, CI polling, and rate limiting
+
+
+## [1.23.60] - 2026-07-20
+
+### Added
+- run lint/typecheck/build verification before push
+- chain auto-continue up to 3 retries
+- auto-continue after 3 min timeout
+- continue/retry/cancel buttons on failed jobs
+- add retry button on failed jobs
+- add descriptive failure notifications to Telegram
+- worker no longer pushes — commits locally, processor handles push + PR creation
+- add /fix command for CI failures + review feedback
+- full autonomous CI fix loop with TG notifications
+- auto-check and fix CI failures after PR creation
+- add --req flag for specifying task requirements
+- add Redis pub/sub notifications for task completion
+
+### Fixed
+- pass issue data directly in addJob to prevent race condition
+- add push timeout and gh auth fallback
+- re-fetch failed checks when worker starts processing
+- accept colon syntax for --engine flag
+- force HTTPS remote for worktree push
+- skip failure notifications for already-processed jobs
+- increase AI timeout to 900s and commit partial changes on timeout
+- prevent mimo from loading skills and exploring during fix tasks
+- fetch actual CI error output and add backend verification to fix prompts
+- per-target locking with concurrency 5
+- set worker concurrency to 1
+- robust timeout + hooks disable in all methods
+- keep worktree on failure for auto-continue
+- disable git hooks in worktrees via core.hooksPath
+- set HUSKY=0 to prevent pre-commit hooks in AI spawns
+- forbid AI from running git commit
+- sanitize notification messages for Telegram
+- use correct type-check command in AI prompts
+- install deps in worktree so pre-commit hooks work and AI can fix real issues
+- set HUSKY=0 in spawn env instead of deleting .husky
+- remove .husky from worktrees — AI ignores 'do not commit' prompt
+- checkout remote branch in worktree — avoids stale local branch state
+- detach HEAD before creating worktree — prevents branch-in-use error
+- tell AI not to commit/push — processor handles git ops
+- skip pre-commit hooks in worktrees — no node_modules available
+- regenerate pnpm lockfile to match overrides config
+- resolve CodeQL warnings — unused vars and useless assignments
+- use opencode for CI fixes to avoid git permission issues
+- focus fixPR prompt on local commands instead of fetching CI logs
+- register commands with Telegram Bot API for autocomplete menu
+- clean workdir before branch checkout to prevent dirty state errors
+- remove duplicate handleFix code
+- queue /fix jobs to Bull worker instead of running in API
+- limit jest workers to prevent SIGSEGV crashes
+- use mimo for CI auto-fix and update roadmap statuses
+- use gh pr checks state field instead of conclusion
+- make bot.start() non-blocking to unblock HTTP server
+- fix TypeScript errors in implementLocally
+- create PR from main instance when worker can't
+- instruct AI to handle pre-commit failures and create PR
+- use opencode/mimo-v2.5-free model for AI implementation
+- enhance AI prompt with context when requirements are TBD
+- always show implementation details in Telegram notification
+- use execFileSync for gh CLI and truncate long Telegram messages
+
+### Refactored
+- worktree isolation, permission separation, unified job types
+
+
+## [1.23.59] - 2026-07-20
+
+### Added
+- add checkers engine with bot AI, web widget, and full i18n
+
+### Fixed
+- resolve CI failures and review feedback
+- resolve CI failures and review feedback
+- use valid borderRadius value in CheckersBoard
+- use valid ARIA role in CheckersBoard
+- resolve all build and lint errors including i18n types
+- resolve all build and lint errors
+
+
+## [1.23.58] - 2026-07-15
+
+### Added
+- add review queue for automated PR code review after implementation
+
+### Fixed
+- remove unused execSync import in review processor
+
+
+## [1.23.57] - 2026-07-15
+
+### Fixed
+- remove fragile nav-not-visible check from language-switching test
+- rewrite language-switching test to use stable nav-games testid
+- handle mobile nav in language-switching test selectors
+- scope language-switching test to main navigation nav element
+- scope language-switching test assertions to nav element
+- remove Main navigation scope from language-switching e2e test
+- resolve e2e test failures, console errors, and Lighthouse issues
+- add type declaration for compression module
+- remove invalid color prop from Tamagui styled components
+- improve accessibility contrast and performance
+- fix validateRoomId type to accept undefined
+
+
+## [1.23.56] - 2026-07-15
+
+### Added
+- add Redis queue system for concurrent task bot implementations
+
+### Fixed
+- add missing backslash escaping in task-bot github service
+
+
+## [1.23.55] - 2026-07-14
+
+### Added
+
+- redesign OG images with richer visuals for social unfurls
+
+## [1.23.54] - 2026-07-14
+
+### Added
+
+- unified quickplay flow across all game landing pages
+
+### Fixed
+
+- update e2e test for landing page redirect, fix CodeQL security alerts
+- remove duplicate version keys in package.json files
+- remove 'use client' from critical/glimworm landing views to fix hydration mismatch
+- fix tic-tac-toe lobby icon clipping and add player symbols
+
+## [1.23.53] - 2026-07-14
+
+### Added
+
+- unified quickplay flow across all game landing pages
+- shared QuickplayButton and QuickplayCta components
+- ctaQuickplay i18n labels for Tic-Tac-Toe, Cascade, Chess
+- attractive Play vs AI button with gradient and glow
+- add backend and fullstack skills
+- add comprehensive UI/UX design skills
+
+### Fixed
+
+- tic-tac-toe lobby icon clipping and float animation
+- backend quickplay restriction (was sea-battle-only)
+- add explicit ObjectId validation for room queries
+- escape backslashes in shell commands
+
+## [1.22.38] - 2026-07-14
+
+### Added
+
+- add game category grouping across UI surfaces
+
+### Fixed
+
+- fix TypeScript build error in getOrCreateProgress
+- replace findOne with find+filter for tainted Mongoose queries
+- use sanitized variables in Mongoose queries for CodeQL
+- add service-level input validation for Mongoose queries
+- add input validation for Mongoose query parameters
+
+## [1.22.37] - 2026-07-14
+
+### Fixed
+
+- ships remaining shows correct count based on game shipCount
+- ship placement moves persist until confirm, no revert on next move
+
 ## [1.22.36] - 2026-07-14
 
 ### Fixed
-- daily changelog poster runs on schedule only, not on push
 
+- daily changelog poster runs on schedule only, not on push
 
 ## [1.22.35] - 2026-07-14
 
 ### Added
+
 - batch placement and grid-based fleet count
 
 ### Fixed
-- suppress compression() lint error in main.ts
 
+- suppress compression() lint error in main.ts
 
 ## [1.22.34] - 2026-07-04
 

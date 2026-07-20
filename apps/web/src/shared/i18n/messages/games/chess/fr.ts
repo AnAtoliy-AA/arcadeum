@@ -18,6 +18,8 @@ export const frMessages = {
         subtitle:
           'Règles standard, variante Chess960 et contrôles de temps optionnels. Jouez contre des amis ou des bots.',
         createRoom: 'Créer une salle',
+        ctaQuickplay: "Jouer contre l'IA",
+        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         browseRooms: 'Parcourir les salles',
       },
       highlights: {

@@ -29,6 +29,10 @@ export function SessionRoleSync(): null {
       if (!stateBefore.hydrated) return;
 
       if (!stateBefore.snapshot.accessToken) {
+        const hasRefreshCookie = document.cookie
+          .split(';')
+          .some((c) => c.trim().startsWith('refresh_token='));
+        if (!hasRefreshCookie) return;
         try {
           const refreshed = await refreshSessionFromCookie();
           if (refreshed.accessToken) {

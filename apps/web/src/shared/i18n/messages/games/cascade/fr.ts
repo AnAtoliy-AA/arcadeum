@@ -57,6 +57,8 @@ export const frMessages = {
         subtitle:
           'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi huit thèmes visuels. 2–10 joueurs.',
         createRoom: 'Créer un salon',
+        ctaQuickplay: "Jouer contre l'IA",
+        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         browseRooms: 'Parcourir les salons',
       },
       highlights: {

@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  Inject,
-  forwardRef,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -73,9 +67,6 @@ export class GamesService {
   }
 
   async quickplay(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.createQuickplayRoom(
       userId,
       gameId,
@@ -84,9 +75,6 @@ export class GamesService {
   }
 
   async findHumanMatch(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 

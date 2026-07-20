@@ -18,6 +18,8 @@ export const byMessages = {
         subtitle:
           'Стандартныя правілы, варыянт Chess960 і апцыянальны кантроль часу. Гуляйце са сябрамі ці ботамі.',
         createRoom: 'Стварыць пакой',
+        ctaQuickplay: 'Згуляць з ШІ',
+        ctaQuickplayError: 'Не атрымалася пачаць гульню — паспрабуйце яшчэ раз',
         browseRooms: 'Агляд пакояў',
       },
       highlights: {

@@ -13,6 +13,7 @@ export interface GameMeta {
   players: { min: number; max: number; label: string };
   duration: string;
   kind: string;
+  category: string;
   hasExpansion: boolean;
   hasThemes: boolean;
   rules: ReadonlyArray<'combos' | 'idle' | 'teams' | 'spectators'>;
@@ -26,6 +27,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 6, label: '2–6' },
     duration: '12 min',
     kind: 'Card · bluff',
+    category: 'Card Game',
     hasExpansion: true,
     hasThemes: true,
     rules: ['combos', 'idle', 'spectators'],
@@ -37,6 +39,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 6, label: '2–6' },
     duration: '20 min',
     kind: 'Strategy',
+    category: 'Strategy',
     hasExpansion: false,
     hasThemes: true,
     rules: ['idle', 'teams', 'spectators'],
@@ -48,6 +51,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 10, label: '2–10' },
     duration: '8 min',
     kind: 'Arcade',
+    category: 'Action',
     hasExpansion: false,
     hasThemes: false,
     rules: ['idle', 'spectators'],
@@ -59,6 +63,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 4, label: '2–4' },
     duration: '5 min',
     kind: 'Board',
+    category: 'Board Game',
     hasExpansion: false,
     hasThemes: true,
     rules: ['teams', 'spectators'],
@@ -70,6 +75,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 10, label: '2–10' },
     duration: '10 min',
     kind: 'Card · matching',
+    category: 'Card Game',
     hasExpansion: false,
     hasThemes: true,
     rules: ['idle', 'spectators'],
@@ -81,6 +87,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     players: { min: 2, max: 2, label: '2' },
     duration: '15 min',
     kind: 'Board · strategy',
+    category: 'Board Game',
     hasExpansion: false,
     hasThemes: false,
     rules: ['idle', 'spectators'],
@@ -95,6 +102,22 @@ export const VISIBLE_GAMES: GameId[] = [
   'cascade_v1',
   'chess_v1',
 ];
+
+export function getGamesByCategory(): Array<{
+  category: string;
+  games: GameId[];
+}> {
+  const map = new Map<string, GameId[]>();
+  for (const id of VISIBLE_GAMES) {
+    const cat = GAMES[id].category;
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(id);
+  }
+  return Array.from(map.entries()).map(([category, games]) => ({
+    category,
+    games,
+  }));
+}
 
 // Critical theme registry. The `id` here is the value sent to the API
 // as the `cardVariant` and must match an existing entry in CARD_VARIANTS.

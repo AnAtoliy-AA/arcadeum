@@ -38,6 +38,8 @@ export const frMessages = {
         subtitle:
           'Plateaux thématiques, équipes et bots. Joue seul ou entre amis, du 3×3 au 9×9.',
         createRoom: 'Créer un salon',
+        ctaQuickplay: "Jouer contre l'IA",
+        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         browseRooms: 'Parcourir les salons',
       },
       highlights: {

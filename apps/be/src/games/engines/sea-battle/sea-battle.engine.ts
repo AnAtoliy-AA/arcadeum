@@ -109,6 +109,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       gridSize,
       shipCount,
       specialWeapons: config?.specialWeapons,
+      aiDifficulty: config?.aiDifficulty,
     };
     if (config?.teams && config.teams.length > 0) {
       const orderedTeams = shouldRandomize

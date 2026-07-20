@@ -5,6 +5,7 @@ import {
   SeaBattleState,
   SeaBattlePlayer,
   Ship,
+  type AiDifficulty,
 } from '../engines/sea-battle/sea-battle.types';
 import {
   CELL_STATE,
@@ -296,14 +297,27 @@ export class SeaBattleBotService {
           currentSession = refreshed;
         }
 
-        // Smart Target Logic: Finish off damaged ships
-        let choice: { r: number; c: number } | null = this.getSmartTarget(
-          target,
-          gridSize,
-        );
+        // Difficulty-based targeting
+        const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
+        let choice: { r: number; c: number } | null = null;
+
+        if (difficulty === 'easy') {
+          // Easy: 70% random, 30% smart target
+          if (Math.random() < 0.3) {
+            choice = this.getSmartTarget(target, gridSize);
+          }
+        } else if (difficulty === 'hard') {
+          // Hard: probability density function targeting
+          choice = this.getProbabilisticTarget(target, gridSize);
+          if (!choice) {
+            choice = this.getSmartTarget(target, gridSize);
+          }
+        } else {
+          // Medium: always use smart target (locked-on strategy)
+          choice = this.getSmartTarget(target, gridSize);
+        }
 
         if (!choice) {
-          // Use Hunt Mode (Random)
           const validCells: { r: number; c: number }[] = [];
           for (let r = 0; r < gridSize; r++) {
             for (let c = 0; c < gridSize; c++) {
@@ -441,5 +455,92 @@ export class SeaBattleBotService {
     if (neighbours.size === 0) return null;
     const arr = Array.from(neighbours.values());
     return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  private getProbabilisticTarget(
+    target: SeaBattlePlayer,
+    gridSize: number = BOARD_SIZE,
+  ): { r: number; c: number } | null {
+    const sunkCells = new Set<string>();
+    const remainingShipSizes: number[] = [];
+    for (const ship of target.ships) {
+      if (ship.sunk) {
+        for (const cell of ship.cells) {
+          sunkCells.add(`${cell.row},${cell.col}`);
+        }
+      } else if (ship.hits === 0) {
+        remainingShipSizes.push(ship.size);
+      }
+    }
+
+    if (remainingShipSizes.length === 0) return null;
+
+    const density: number[][] = Array.from({ length: gridSize }, () =>
+      Array<number>(gridSize).fill(0),
+    );
+
+    const isAvailable = (r: number, c: number): boolean => {
+      if (r < 0 || r >= gridSize || c < 0 || c >= gridSize) return false;
+      const cell = target.board[r][c];
+      return (
+        cell !== CELL_STATE.HIT &&
+        cell !== CELL_STATE.MISS &&
+        !sunkCells.has(`${r},${c}`)
+      );
+    };
+
+    for (const size of remainingShipSizes) {
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          // Horizontal placement
+          if (c + size <= gridSize) {
+            let valid = true;
+            for (let k = 0; k < size; k++) {
+              if (!isAvailable(r, c + k)) {
+                valid = false;
+                break;
+              }
+            }
+            if (valid) {
+              for (let k = 0; k < size; k++) {
+                density[r][c + k]++;
+              }
+            }
+          }
+          // Vertical placement
+          if (r + size <= gridSize) {
+            let valid = true;
+            for (let k = 0; k < size; k++) {
+              if (!isAvailable(r + k, c)) {
+                valid = false;
+                break;
+              }
+            }
+            if (valid) {
+              for (let k = 0; k < size; k++) {
+                density[r + k][c]++;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    let maxDensity = 0;
+    let candidates: { r: number; c: number }[] = [];
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        if (!isAvailable(r, c)) continue;
+        if (density[r][c] > maxDensity) {
+          maxDensity = density[r][c];
+          candidates = [{ r, c }];
+        } else if (density[r][c] === maxDensity) {
+          candidates.push({ r, c });
+        }
+      }
+    }
+
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
   }
 }

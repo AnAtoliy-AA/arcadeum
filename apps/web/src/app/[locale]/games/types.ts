@@ -45,4 +45,13 @@ export type GamesParticipationFilter =
   | 'joined'
   | 'not_joined';
 
+export type GamesCategoryFilter = string;
+
+export const GAME_CATEGORIES = [
+  'Card Game',
+  'Board Game',
+  'Strategy',
+  'Action',
+] as const;
+
 export type GamesViewMode = 'grid' | 'list';

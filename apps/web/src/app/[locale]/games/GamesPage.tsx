@@ -15,6 +15,7 @@ import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { gameSocket, connectSockets } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
+import { gameMetadata } from '@/features/games/registry';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
 import { GamesFilters } from './components/GamesFilters';
@@ -26,6 +27,7 @@ import styles from './GamesPage.module.scss';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
+  GamesCategoryFilter,
   GamesViewMode,
 } from './types';
 import { parseStatusFilterFromUrl, serializeStatusFilterToUrl } from './types';
@@ -55,6 +57,7 @@ export default function GamesPage({
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const initialSearchQuery = searchParams?.get('search') || '';
+  const categoryFilterParam = searchParams?.get('category') || '';
 
   // Re-sync selectedStatuses from URL whenever search params change
   useEffect(() => {
@@ -66,6 +69,8 @@ export default function GamesPage({
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [viewMode, setViewMode] = useState<GamesViewMode>('grid');
+  const [categoryFilter, setCategoryFilter] =
+    useState<GamesCategoryFilter>(categoryFilterParam);
 
   // Update URL helper - ref to current params to avoid dependency loop
   const searchParamsRef = useRef(searchParams);
@@ -123,6 +128,14 @@ export default function GamesPage({
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
+
+  const handleCategoryChange = useCallback(
+    (category: GamesCategoryFilter) => {
+      setCategoryFilter(category);
+      updateParams({ category: category || undefined });
+    },
+    [updateParams],
+  );
 
   // Sync deferred search query to URL - only if it actually changed from current URL
   useEffect(() => {
@@ -219,11 +232,17 @@ export default function GamesPage({
   }, [data]);
 
   const sortedRooms = useMemo(() => {
-    return [...rooms].sort(
+    const filtered = categoryFilter
+      ? rooms.filter((room) => {
+          const meta = gameMetadata[room.gameId as keyof typeof gameMetadata];
+          return meta?.category === categoryFilter;
+        })
+      : rooms;
+    return [...filtered].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
-  }, [rooms]);
+  }, [rooms, categoryFilter]);
 
   const error = queryError ? 'Failed to load rooms' : null;
 
@@ -265,6 +284,8 @@ export default function GamesPage({
           onStatusChange={handleStatusChange}
           participationFilter={participationFilter}
           onParticipationChange={handleParticipationChange}
+          categoryFilter={categoryFilter}
+          onCategoryChange={handleCategoryChange}
           isAuthenticated={!!snapshot.accessToken}
         />
 

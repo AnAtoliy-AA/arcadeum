@@ -489,6 +489,7 @@ export class GitHubService {
     branchName: string,
     baseBranch: string,
     cwd?: string,
+    engine: 'mimo' | 'opencode' = 'mimo',
   ): { success: boolean; message: string } {
     const workdir = cwd ?? this.getCwd();
     try {
@@ -498,28 +499,84 @@ export class GitHubService {
         this.logger.log(`Merged ${baseBranch} into ${branchName} cleanly`);
         return { success: true, message: 'Merged cleanly' };
       } catch {
-        this.logger.log(`Merge conflict detected, attempting resolution`);
-        try {
-          execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir });
-        } catch {
-          // ignore
+        this.logger.log(`Merge conflict detected, getting conflicted files`);
+        const conflictedFiles = this.getConflictedFiles(workdir);
+        if (conflictedFiles.length === 0) {
+          try { execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir }); } catch { /* ignore */ }
+          return { success: true, message: 'No conflicts after all' };
         }
-        try {
-          execFileSync('git', ['rebase', `origin/${baseBranch}`], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
-          this.logger.log(`Rebased ${branchName} onto ${baseBranch} cleanly`);
-          return { success: true, message: 'Rebased cleanly' };
-        } catch {
-          try {
-            execFileSync('git', ['rebase', '--abort'], { encoding: 'utf-8', cwd: workdir });
-          } catch {
-            // ignore
-          }
-          this.logger.warn(`Could not auto-resolve conflicts for ${branchName}`);
-          return { success: false, message: 'Merge conflicts require manual resolution' };
+
+        this.logger.log(`Conflicted files: ${conflictedFiles.join(', ')}`);
+        const resolution = this.resolveWithAI(conflictedFiles, workdir, engine);
+
+        if (resolution) {
+          execFileSync('git', ['add', ...conflictedFiles], { encoding: 'utf-8', cwd: workdir });
+          execFileSync('git', ['commit', '--no-verify', '-m', 'merge: resolve conflicts with AI'], { encoding: 'utf-8', cwd: workdir });
+          this.logger.log(`Conflicts resolved by AI`);
+          return { success: true, message: 'Resolved by AI' };
         }
+
+        try { execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir }); } catch { /* ignore */ }
+        return { success: false, message: 'AI could not resolve conflicts' };
       }
     } catch (err) {
       return { success: false, message: `Conflict resolution failed: ${(err as Error).message}` };
+    }
+  }
+
+  private getConflictedFiles(cwd: string): string[] {
+    try {
+      const output = execFileSync('git', ['diff', '--name-only', '--diff-filter=U'], { encoding: 'utf-8', cwd });
+      return output.trim().split('\n').filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  private resolveWithAI(files: string[], cwd: string, engine: 'mimo' | 'opencode'): boolean {
+    try {
+      const conflicts = files.map((f) => {
+        try {
+          const content = execFileSync('git', ['show', `:${f}`], { encoding: 'utf-8', cwd });
+          return `--- ${f}\n${content}`;
+        } catch {
+          return `--- ${f}\n(unable to read)`;
+        }
+      }).join('\n\n');
+
+      const prompt = [
+        'Resolve the merge conflicts in these files.',
+        'Keep the correct code from both sides. Do not remove functionality.',
+        '',
+        'Conflicted files:',
+        ...files.map((f) => `- ${f}`),
+        '',
+        'Conflict content:',
+        '```',
+        conflicts,
+        '```',
+        '',
+        'For each file, write the resolved version using Edit tool.',
+        'After resolving all files, run `pnpm --filter web type-check` to verify.',
+        'Do NOT commit or push — the processor handles git operations.',
+      ].join('\n');
+
+      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      const runArgs = cli === 'opencode'
+        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+
+      if (cli === 'mimo') {
+        try {
+          execFileSync('mimo', ['auth', 'login', '-p', 'mimo-free'], { cwd, timeout: 30_000, encoding: 'utf-8' });
+        } catch { /* ignore */ }
+      }
+      execFileSync(cli, runArgs, { cwd, timeout: 120_000, env: { ...process.env, HUSKY: '0' } });
+      return true;
+    } catch (err) {
+      this.logger.error(`AI conflict resolution failed: ${(err as Error).message}`);
+      return false;
     }
   }
 

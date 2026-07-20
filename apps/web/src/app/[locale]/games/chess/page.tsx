@@ -122,6 +122,9 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        homeLabel={landing?.breadcrumb?.home ?? messages.navigation?.homeTab ?? 'Home'}
+        gamesLabel={landing?.breadcrumb?.games ?? messages.navigation?.gamesTab ?? 'Games'}
+        backToGamesLabel={landing?.backToGames ?? '← Games'}
       />
     </>
   );

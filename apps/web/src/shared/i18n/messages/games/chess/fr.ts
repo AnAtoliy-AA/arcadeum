@@ -67,6 +67,12 @@ export const frMessages = {
             "Quand un pion atteint l'extrémité opposée du plateau, vous devez le promouvoir en dame, tour, fou ou cavalier.",
         },
       },
+      backToGames: '← Jeux',
+      breadcrumb: {
+        home: 'Accueil',
+        games: 'Jeux',
+        chess: 'Échecs',
+      },
     },
     lobby: {
       variant: 'Variante',
@@ -86,6 +92,7 @@ export const frMessages = {
       easy: 'Facile',
       medium: 'Moyen',
       hard: 'Difficile',
+      botDifficulty: 'Difficulté du bot',
     },
     rules: {
       title: 'Règles des Échecs',
@@ -93,7 +100,20 @@ export const frMessages = {
       objectiveText:
         "Échec et mat au roi de votre adversaire. Le roi est en échec et mat lorsqu'il est en échec et qu'aucun coup légal ne permet d'échapper.",
       pieces: 'Pièces',
+      pieceTypes: {
+        king: 'Roi',
+        queen: 'Dame',
+        rook: 'Tour',
+        bishop: 'Fou',
+        knight: 'Cavalier',
+        pawn: 'Pion',
+      },
       special: 'Coups Spéciaux',
+      specialMoves: {
+        castling: 'Roque :',
+        enPassant: 'Prise en passant :',
+        promotion: 'Promotion :',
+      },
       castling:
         "Le roi se déplace de deux cases vers une tour, et la tour saute par-dessus le roi. Doit être dégagé, roi non en échec, et aucune pièce n'a bougé.",
       enPassant:

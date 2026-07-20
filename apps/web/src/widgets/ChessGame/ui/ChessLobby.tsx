@@ -21,8 +21,8 @@ const LOBBY_THEME: GameLobbyTheme = {
   buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
 };
 
-function formatTimeControl(tc: TimeControl | null): string {
-  if (!tc) return 'No clock';
+function formatTimeControl(tc: TimeControl | null, noClockLabel: string): string {
+  if (!tc) return noClockLabel;
   const mins = Math.floor(tc.initialSeconds / 60);
   return tc.incrementSeconds > 0
     ? `${mins}+${tc.incrementSeconds}`
@@ -155,7 +155,7 @@ export function ChessLobby({
               }}
             >
               <Text fontWeight="600" fontSize="$3">
-                {formatTimeControl(tc)}
+                {formatTimeControl(tc, t('games.chess_v1.lobby.noClock'))}
               </Text>
               <Text fontSize="$2" opacity={0.7}>
                 {tc.type === 'blitz'
@@ -198,7 +198,7 @@ export function ChessLobby({
       </YStack>
 
       <YStack gap="$2">
-        <Text fontWeight="600">Bot Difficulty</Text>
+        <Text fontWeight="600">{t('games.chess_v1.lobby.botDifficulty')}</Text>
         <XStack gap="$2">
           {DIFFICULTY_OPTIONS.map((diff) => (
             <button

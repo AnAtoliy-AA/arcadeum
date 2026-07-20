@@ -67,6 +67,12 @@ export const enMessages = {
             'When a pawn reaches the opposite end of the board, you must promote it to a queen, rook, bishop, or knight.',
         },
       },
+      backToGames: '← Games',
+      breadcrumb: {
+        home: 'Home',
+        games: 'Games',
+        chess: 'Chess',
+      },
     },
     lobby: {
       variant: 'Variant',
@@ -86,6 +92,7 @@ export const enMessages = {
       easy: 'Easy',
       medium: 'Medium',
       hard: 'Hard',
+      botDifficulty: 'Bot Difficulty',
     },
     rules: {
       title: 'Chess Rules',
@@ -93,7 +100,20 @@ export const enMessages = {
       objectiveText:
         "Checkmate your opponent's king. The king is in checkmate when it is in check and there is no legal move to escape.",
       pieces: 'Pieces',
+      pieceTypes: {
+        king: 'King',
+        queen: 'Queen',
+        rook: 'Rook',
+        bishop: 'Bishop',
+        knight: 'Knight',
+        pawn: 'Pawn',
+      },
       special: 'Special Moves',
+      specialMoves: {
+        castling: 'Castling:',
+        enPassant: 'En passant:',
+        promotion: 'Promotion:',
+      },
       castling:
         'King moves two squares toward a rook, and the rook jumps over the king. Must be unobstructed, king not in check, and neither piece moved.',
       enPassant:

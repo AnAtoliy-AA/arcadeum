@@ -15,6 +15,9 @@ interface Props {
   roomsHref: string;
   gamesHref: string;
   homeHref: string;
+  homeLabel: string;
+  gamesLabel: string;
+  backToGamesLabel: string;
 }
 
 export default function ChessLanding({
@@ -24,6 +27,9 @@ export default function ChessLanding({
   roomsHref,
   gamesHref,
   homeHref,
+  homeLabel,
+  gamesLabel,
+  backToGamesLabel,
 }: Props) {
   if (!landing) return null;
 
@@ -99,14 +105,15 @@ export default function ChessLanding({
         ctaQuickplayLabel={landing.hero.ctaQuickplay}
         ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
         browseRoomsLabel={landing.hero.browseRooms}
+        backToGamesLabel={backToGamesLabel}
       />
 
       <nav className={styles.breadcrumbs}>
-        <Link href={homeHref}>Home</Link>
+        <Link href={homeHref}>{homeLabel}</Link>
         <span aria-hidden> / </span>
-        <Link href={gamesHref}>Games</Link>
+        <Link href={gamesHref}>{gamesLabel}</Link>
         <span aria-hidden> / </span>
-        <span>Chess</span>
+        <span>{landing.breadcrumb.chess}</span>
       </nav>
     </main>
   );

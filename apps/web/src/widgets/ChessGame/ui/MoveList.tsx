@@ -41,7 +41,7 @@ export function MoveList({ state, t }: MoveListProps) {
     <YStack gap="$1" mt="$2">
       <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$2" opacity={0.5}>
-          {t('chess_v1.actions.moveList') ?? 'Move List'}
+          {t('games.chess_v1.actions.moveList')}
         </Text>
         <XStack gap="$2">
           {pairs.length > 6 && (

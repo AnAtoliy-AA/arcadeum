@@ -67,6 +67,12 @@ export const esMessages = {
             'Cuando un peón llega al extremo opuesto del tablero, debes promocionarlo a dama, torre, alfil o caballo.',
         },
       },
+      backToGames: '← Juegos',
+      breadcrumb: {
+        home: 'Inicio',
+        games: 'Juegos',
+        chess: 'Ajedrez',
+      },
     },
     lobby: {
       variant: 'Variante',
@@ -86,6 +92,7 @@ export const esMessages = {
       easy: 'Fácil',
       medium: 'Medio',
       hard: 'Difícil',
+      botDifficulty: 'Dificultad del bot',
     },
     rules: {
       title: 'Reglas del Ajedrez',
@@ -93,7 +100,20 @@ export const esMessages = {
       objectiveText:
         'Jaque mate al rey de tu oponente. El rey está en jaque mate cuando está en jaque y no hay movimiento legal para escapar.',
       pieces: 'Piezas',
+      pieceTypes: {
+        king: 'Rey',
+        queen: 'Dama',
+        rook: 'Torre',
+        bishop: 'Alfil',
+        knight: 'Caballo',
+        pawn: 'Peón',
+      },
       special: 'Movimientos Especiales',
+      specialMoves: {
+        castling: 'Enroque:',
+        enPassant: 'Captura al paso:',
+        promotion: 'Promoción:',
+      },
       castling:
         'El rey mueve dos casillas hacia una torre, y la torre salta sobre el rey. Debe estar despejado, el rey no en jaque, y ninguna pieza se ha movido.',
       enPassant:

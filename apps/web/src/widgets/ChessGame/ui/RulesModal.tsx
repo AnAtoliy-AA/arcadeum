@@ -65,7 +65,7 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
               >
                 <Text fontSize={20}>{PIECE_SYMBOLS[type].white}</Text>
                 <Text fontSize="$2" textTransform="capitalize">
-                  {type}
+                  {t(`games.chess_v1.rules.pieceTypes.${type}`)}
                 </Text>
               </XStack>
             ))}
@@ -74,15 +74,15 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
             {t('games.chess_v1.rules.special')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Castling:</Text>{' '}
+            • <Text fontWeight="600">{t('games.chess_v1.rules.specialMoves.castling')}</Text>{' '}
             {t('games.chess_v1.rules.castling')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">En passant:</Text>{' '}
+            • <Text fontWeight="600">{t('games.chess_v1.rules.specialMoves.enPassant')}</Text>{' '}
             {t('games.chess_v1.rules.enPassant')}
           </Text>
           <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Promotion:</Text>{' '}
+            • <Text fontWeight="600">{t('games.chess_v1.rules.specialMoves.promotion')}</Text>{' '}
             {t('games.chess_v1.rules.promotion')}
           </Text>
           <Text fontSize="$4" fontWeight="600" mt="$2">

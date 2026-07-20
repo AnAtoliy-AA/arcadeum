@@ -174,6 +174,12 @@ export class ImplementProcessor {
   ): Promise<void> {
     const { type, issueNum } = job.data;
 
+    this.logger.log(`Resolving conflicts for ${branchName}`);
+    const conflictResult = this.githubService.resolveConflicts(branchName, 'develop', cwd);
+    if (!conflictResult.success) {
+      this.logger.warn(`Conflict resolution: ${conflictResult.message}`);
+    }
+
     this.logger.log(`Pushing branch ${branchName} from worktree`);
     const pushResult = this.githubService.pushBranch(branchName, cwd);
     if (!pushResult.success) {

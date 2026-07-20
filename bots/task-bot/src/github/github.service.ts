@@ -485,6 +485,44 @@ export class GitHubService {
     }
   }
 
+  resolveConflicts(
+    branchName: string,
+    baseBranch: string,
+    cwd?: string,
+  ): { success: boolean; message: string } {
+    const workdir = cwd ?? this.getCwd();
+    try {
+      execFileSync('git', ['fetch', 'origin', baseBranch], { encoding: 'utf-8', cwd: workdir, timeout: 30_000 });
+      try {
+        execFileSync('git', ['merge', `origin/${baseBranch}`, '--no-edit'], { encoding: 'utf-8', cwd: workdir, timeout: 30_000 });
+        this.logger.log(`Merged ${baseBranch} into ${branchName} cleanly`);
+        return { success: true, message: 'Merged cleanly' };
+      } catch {
+        this.logger.log(`Merge conflict detected, attempting resolution`);
+        try {
+          execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir });
+        } catch {
+          // ignore
+        }
+        try {
+          execFileSync('git', ['rebase', `origin/${baseBranch}`], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+          this.logger.log(`Rebased ${branchName} onto ${baseBranch} cleanly`);
+          return { success: true, message: 'Rebased cleanly' };
+        } catch {
+          try {
+            execFileSync('git', ['rebase', '--abort'], { encoding: 'utf-8', cwd: workdir });
+          } catch {
+            // ignore
+          }
+          this.logger.warn(`Could not auto-resolve conflicts for ${branchName}`);
+          return { success: false, message: 'Merge conflicts require manual resolution' };
+        }
+      }
+    } catch (err) {
+      return { success: false, message: `Conflict resolution failed: ${(err as Error).message}` };
+    }
+  }
+
   pushBranch(
     branchName: string,
     cwd?: string,

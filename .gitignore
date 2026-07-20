@@ -29,6 +29,9 @@ backend-e2e-errors.log
 
 # docs/superpowers
 
+# AI agent artifacts
+.mimocode/
+
 # Lighthouse audit reports (large auto-generated JSON)
 docs/superpowers/specs/lighthouse/
 

@@ -105,42 +105,33 @@
 
 .sb-breathe {
   animation: breathe 3s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-section-danger-breathe {
   animation: danger-breathe 3s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-badge-danger-breathe {
   animation: danger-breathe 2s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-glow-hit {
   animation: glow-hit 2s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-glow-sunk {
   animation: glow-sunk 1.5s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-valid-pulse {
   animation: valid-pulse 1.2s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-selected-glow {
   animation: selected-glow 1.5s ease-in-out infinite;
-  will-change: filter;
 }
 .sb-preview-fade {
   animation: preview-fade 0.2s ease-out forwards;
 }
 .sb-dot-blink {
   animation: dot-blink 1.2s ease-in-out infinite;
-  will-change: opacity;
 }
 .sb-turn-pulse {
   animation: turn-pulse 2s ease-in-out infinite;
-  will-change: filter;
 }
 
 .sb-icon-hit {

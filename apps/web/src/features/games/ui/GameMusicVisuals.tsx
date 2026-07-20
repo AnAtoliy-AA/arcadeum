@@ -82,6 +82,7 @@ export const EqualizerVisualization = ({
   }, [isPlaying, audioRef]);
 
   useEffect(() => {
+    if (!isPlaying) return;
     let raf = 0;
     const loop = () => {
       draw();
@@ -89,7 +90,7 @@ export const EqualizerVisualization = ({
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [draw]);
+  }, [draw, isPlaying]);
 
   return (
     <canvas

@@ -10,86 +10,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.23.71] - 2026-07-20
 
 ### Fixed
-- fix tic-tac-toe board rendering issues
 
+- fix tic-tac-toe board rendering issues
 
 ## [1.23.70] - 2026-07-20
 
 ### Fixed
-- report failure when AI engine produces no changes, default to mimo engine
 
+- report failure when AI engine produces no changes, default to mimo engine
 
 ## [1.23.69] - 2026-07-20
 
 ### Fixed
+
 - prevent sticky start button from intercepting bot-count clicks
 - add bottom padding to LobbyContent to prevent sticky start button overlap on mobile
 - make lobby start button sticky on mobile and visible only for host
 
-
 ## [1.23.68] - 2026-07-20
 
 ### Added
-- chess game translations (ARC-877)
 
+- chess game translations (ARC-877)
 
 ## [1.23.67] - 2026-07-20
 
 ### Fixed
-- add missing game result modal and rematch invitation to all games
 
+- add missing game result modal and rematch invitation to all games
 
 ## [1.23.66] - 2026-07-20
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.65] - 2026-07-20
 
 ### Fixed
-- use separate row/col bounds in infinity board validator
 
+- use separate row/col bounds in infinity board validator
 
 ## [1.23.64] - 2026-07-20
 
 ### Added
+
 - CI poll now triggers fix instead of just logging
 - AI-powered conflict resolution before push
 
 ### Fixed
+
 - fix async return type to Promise<void>
 - remove unused failedCheckNames variable
 - make checkCIStatus async for await calls
 
-
 ## [1.23.63] - 2026-07-20
 
 ### Added
+
 - ai difficulty levels (ARC-880)
 
 ### Fixed
-- resolve CI failures and review feedback
 
+- resolve CI failures and review feedback
 
 ## [1.23.62] - 2026-07-20
 
 ### Added
+
 - add conflict resolution before push and .mimocode to gitignore
 
 ### Fixed
-- only verify on /fix, not /implement
 
+- only verify on /fix, not /implement
 
 ## [1.23.61] - 2026-07-20
 
 ### Added
-- add CI fix max attempts guard, CI polling, and rate limiting
 
+- add CI fix max attempts guard, CI polling, and rate limiting
 
 ## [1.23.60] - 2026-07-20
 
 ### Added
+
 - run lint/typecheck/build verification before push
 - chain auto-continue up to 3 retries
 - auto-continue after 3 min timeout
@@ -104,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Redis pub/sub notifications for task completion
 
 ### Fixed
+
 - pass issue data directly in addJob to prevent race condition
 - add push timeout and gh auth fallback
 - re-fetch failed checks when worker starts processing
@@ -150,15 +155,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use execFileSync for gh CLI and truncate long Telegram messages
 
 ### Refactored
-- worktree isolation, permission separation, unified job types
 
+- worktree isolation, permission separation, unified job types
 
 ## [1.23.59] - 2026-07-20
 
 ### Added
+
 - add checkers engine with bot AI, web widget, and full i18n
 
 ### Fixed
+
 - resolve CI failures and review feedback
 - resolve CI failures and review feedback
 - use valid borderRadius value in CheckersBoard
@@ -166,19 +173,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - resolve all build and lint errors including i18n types
 - resolve all build and lint errors
 
-
 ## [1.23.58] - 2026-07-15
 
 ### Added
+
 - add review queue for automated PR code review after implementation
 
 ### Fixed
-- remove unused execSync import in review processor
 
+- remove unused execSync import in review processor
 
 ## [1.23.57] - 2026-07-15
 
 ### Fixed
+
 - remove fragile nav-not-visible check from language-switching test
 - rewrite language-switching test to use stable nav-games testid
 - handle mobile nav in language-switching test selectors
@@ -191,15 +199,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improve accessibility contrast and performance
 - fix validateRoomId type to accept undefined
 
-
 ## [1.23.56] - 2026-07-15
 
 ### Added
+
 - add Redis queue system for concurrent task bot implementations
 
 ### Fixed
-- add missing backslash escaping in task-bot github service
 
+- add missing backslash escaping in task-bot github service
 
 ## [1.23.55] - 2026-07-14
 

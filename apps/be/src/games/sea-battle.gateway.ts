@@ -31,7 +31,6 @@ import {
   handleRemoveBotFromTeam,
   handleToggleHideShips,
 } from './sea-battle.gateway.lobby';
-
 type ShipOpPayload = {
   roomId?: string;
   userId?: string;
@@ -57,7 +56,6 @@ export class SeaBattleGateway {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
-
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
 

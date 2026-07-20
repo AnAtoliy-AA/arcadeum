@@ -376,7 +376,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text?.replace(/^\/task\s*/, '');
     if (!text) {
       await ctx.reply(
-        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
+        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: mimo)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
       );
       return;
     }
@@ -754,7 +754,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     const current = this.prefsService.getAll(userId);
     await ctx.reply(
       `Current preferences:\n` +
-        `Engine: *${current?.engine ?? 'opencode'}*\n` +
+        `Engine: *${current?.engine ?? 'mimo'}*\n` +
         `Scope: *${current?.defaultScope?.join(', ') ?? 'web'}*\n\n` +
         `Usage:\n` +
         `/prefs opencode — set default engine\n` +

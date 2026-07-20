@@ -314,13 +314,12 @@ export class TaskBotService implements OnApplicationBootstrap {
         engine,
         chatId,
         userId,
+        {
+          issueTitle: issue.title,
+          issueBody: issue.body,
+          issueLabels: issue.labels,
+        },
       );
-
-      await this.queueService.setJobData(jobId, {
-        issueTitle: issue.title,
-        issueBody: issue.body,
-        issueLabels: issue.labels,
-      });
 
       await ctx.reply(
         `Queued implementation #${issueNum} with ${engine}.\nJob ID: ${jobId}\n\nWorkers will process it shortly.`,

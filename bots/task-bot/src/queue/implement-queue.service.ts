@@ -34,9 +34,10 @@ export class ImplementQueueService {
     engine: 'opencode' | 'mimo',
     chatId: number,
     userId: number,
+    data?: Partial<ImplementJobData>,
   ): Promise<string> {
     const job = await this.implementQueue.add(
-      { issueNum, engine, chatId, userId, type: 'implement' },
+      { issueNum, engine, chatId, userId, type: 'implement', ...data },
       {
         attempts: 2,
         backoff: { type: 'exponential', delay: 5000 },

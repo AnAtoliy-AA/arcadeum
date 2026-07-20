@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.63] - 2026-07-20
+
+### Added
+- ai difficulty levels (ARC-880)
+
+### Fixed
+- resolve CI failures and review feedback
+
+
 ## [1.23.62] - 2026-07-20
 
 ### Added

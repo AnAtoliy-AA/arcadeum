@@ -16,6 +16,7 @@ export const LobbyContent = styled(XStack, {
   flex: 1,
   minHeight: 0,
   padding: '$5',
+  paddingBottom: 96,
   overflowY: 'auto',
   overflowX: 'hidden',
   alignItems: 'flex-start',

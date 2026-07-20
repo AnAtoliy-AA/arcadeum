@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { execSync, spawn } from 'child_process';
+import { execFileSync, spawn } from 'child_process';
+import { mkdirSync, rmSync } from 'fs';
 
 interface GitHubIssue {
   arc: string | null;
@@ -24,25 +25,165 @@ export class GitHubService {
   private spawnAsync(
     cmd: string,
     args: string[],
-    opts: { cwd: string; timeout?: number },
+    opts: { cwd: string; timeout?: number; env?: Record<string, string> },
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const child = spawn(cmd, args, {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
-        shell: true,
-        timeout: opts.timeout,
+        env: { ...process.env, ...opts.env },
       });
       let stdout = '';
       let stderr = '';
+      let settled = false;
       child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
       child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
+
+      const timer = opts.timeout
+        ? setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            try {
+              process.kill(-child.pid!, 'SIGTERM');
+            } catch {
+              try { child.kill('SIGTERM'); } catch { /* ignore */ }
+            }
+            reject(new Error(`Timeout after ${Math.round(opts.timeout! / 1000)}s`));
+          }, opts.timeout)
+        : undefined;
+
       child.on('close', (code) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
         if (code === 0) resolve(stdout.trim());
         else reject(new Error(stderr || `Exit code ${code}`));
       });
-      child.on('error', reject);
+      child.on('error', (err) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
+        reject(err);
+      });
     });
+  }
+
+  private cleanWorkdir(cwd: string): void {
+    try {
+      execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
+    } catch {
+      // ignore — repo may be in a bad state
+    }
+  }
+
+  verifyChanges(cwd: string): { ok: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const commands = [
+      { name: 'lint', cmd: ['pnpm', 'lint'] },
+      { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
+      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
+      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
+    ];
+    for (const { name, cmd } of commands) {
+      try {
+        this.logger.log(`Verifying: ${name}`);
+        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 120_000 });
+        this.logger.log(`✓ ${name} passed`);
+      } catch (err) {
+        const msg = (err as Error).message.slice(0, 500);
+        this.logger.error(`✗ ${name} failed: ${msg}`);
+        errors.push(`${name}: ${msg}`);
+      }
+    }
+    return { ok: errors.length === 0, errors };
+  }
+
+  private installDeps(cwd: string): void {
+    try {
+      this.logger.log(`Installing dependencies in ${cwd}`);
+      execFileSync('pnpm', ['install', '--frozen-lockfile'], {
+        encoding: 'utf-8',
+        cwd,
+        timeout: 120_000,
+      });
+      this.logger.log(`Dependencies installed in ${cwd}`);
+    } catch {
+      try {
+        execFileSync('pnpm', ['install'], {
+          encoding: 'utf-8',
+          cwd,
+          timeout: 120_000,
+        });
+        this.logger.log(`Dependencies installed (no frozen lockfile) in ${cwd}`);
+      } catch (err) {
+        this.logger.warn(`Failed to install deps: ${(err as Error).message}`);
+      }
+    }
+  }
+
+  createWorktree(jobId: string): string {
+    const repoCwd = this.getCwd();
+    const worktreePath = `/tmp/task-bot/${jobId}`;
+
+    mkdirSync('/tmp/task-bot', { recursive: true });
+
+    try {
+      execFileSync('git', ['checkout', '--detach'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+        stdio: 'pipe',
+      });
+      execFileSync('git', ['worktree', 'add', worktreePath, 'origin/develop'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+      });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
+      try {
+        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
+      this.logger.log(`Created worktree at ${worktreePath}`);
+      return worktreePath;
+    } catch (err) {
+      this.logger.error(`Failed to create worktree: ${(err as Error).message}`);
+      throw err;
+    }
+  }
+
+  removeWorktree(jobId: string): void {
+    const repoCwd = this.getCwd();
+    const worktreePath = `/tmp/task-bot/${jobId}`;
+
+    try {
+      execFileSync('git', ['worktree', 'remove', worktreePath, '--force'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+      });
+      this.logger.log(`Removed worktree at ${worktreePath}`);
+    } catch {
+      try {
+        rmSync(worktreePath, { recursive: true, force: true });
+        execFileSync('git', ['worktree', 'prune'], {
+          encoding: 'utf-8',
+          cwd: repoCwd,
+        });
+        this.logger.log(`Force-removed worktree at ${worktreePath}`);
+      } catch {
+        // ignore — worktree may already be gone
+      }
+    }
   }
 
   createIssue(issue: GitHubIssue): string | null {
@@ -59,11 +200,16 @@ export class GitHubService {
       }
     }
 
-    const labelArgs = labels.map((l) => `--label "${l}"`).join(' ');
-    const cmd = `gh issue create --title "${title.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" --body "${body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}" ${labelArgs}`;
+    const labelArgs = labels.flatMap((l) => ['--label', l]);
+    const args = [
+      'issue', 'create',
+      '--title', title,
+      '--body', body,
+      ...labelArgs,
+    ];
 
     try {
-      const result = execSync(cmd, {
+      const result = execFileSync('gh', args, {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -81,8 +227,9 @@ export class GitHubService {
 
   triggerWorkflow(issueNumber: string, engine: string): boolean {
     try {
-      execSync(
-        `gh workflow run implement-task.yml --ref develop -f issue_number=${issueNumber} -f engine=${engine}`,
+      execFileSync(
+        'gh',
+        ['workflow', 'run', 'implement-task.yml', '--ref', 'develop', '-f', `issue_number=${issueNumber}`, '-f', `engine=${engine}`],
         { encoding: 'utf-8', cwd: this.getCwd(), stdio: 'pipe' },
       );
       this.logger.log(
@@ -103,8 +250,9 @@ export class GitHubService {
     labels: Array<{ name: string }>;
   } | null {
     try {
-      const result = execSync(
-        `gh issue view ${issueNum} --json state,title,body,comments,labels`,
+      const result = execFileSync(
+        'gh',
+        ['issue', 'view', issueNum, '--json', 'state,title,body,comments,labels'],
         { encoding: 'utf-8', cwd: this.getCwd() },
       );
       return JSON.parse(result) as {
@@ -121,7 +269,7 @@ export class GitHubService {
 
   viewIssueSimple(issueNum: string): { state: string; title: string } | null {
     try {
-      const result = execSync(`gh issue view ${issueNum} --json state,title`, {
+      const result = execFileSync('gh', ['issue', 'view', issueNum, '--json', 'state,title'], {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -133,19 +281,83 @@ export class GitHubService {
 
   viewPr(prNum: string): {
     state: string;
+    headRefName: string;
     statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
   } | null {
     try {
-      const result = execSync(
-        `gh pr view ${prNum} --json state,statusCheckRollup`,
+      const result = execFileSync(
+        'gh',
+        ['pr', 'view', prNum, '--json', 'state,headRefName,statusCheckRollup'],
         { encoding: 'utf-8', cwd: this.getCwd() },
       );
       return JSON.parse(result) as {
         state: string;
+        headRefName: string;
         statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
       };
     } catch {
       return null;
+    }
+  }
+
+  getPrChecks(
+    prNumber: string,
+  ): Array<{ name: string; state: string; link: string }> {
+    try {
+      const result = execFileSync(
+        'gh',
+        ['pr', 'checks', prNumber, '--json', 'name,state,link'],
+        { encoding: 'utf-8', cwd: this.getCwd() },
+      );
+      return JSON.parse(result) as Array<{ name: string; state: string; link: string }>;
+    } catch {
+      return [];
+    }
+  }
+
+  getCIFailureLogs(runUrl: string): string {
+    try {
+      const runIdMatch = runUrl.match(/\/runs\/(\d+)/);
+      if (!runIdMatch) return '';
+      const runId = runIdMatch[1];
+      const result = execFileSync(
+        'gh',
+        ['run', 'view', runId, '--log-failed', '--repo', 'AnAtoliy-AA/arcadeum'],
+        { encoding: 'utf-8', cwd: this.getCwd(), timeout: 30_000 },
+      );
+      const lines = result.split('\n');
+      const errorLines: string[] = [];
+      let capture = false;
+      for (const line of lines) {
+        if (line.includes('ERROR') || line.includes('error') || line.includes('FAIL') || line.includes('fail')) {
+          capture = true;
+        }
+        if (capture) {
+          errorLines.push(line);
+          if (errorLines.length > 80) break;
+        }
+      }
+      return errorLines.length > 0 ? errorLines.join('\n').slice(0, 4000) : result.slice(0, 4000);
+    } catch {
+      return '';
+    }
+  }
+
+  getPrReviews(
+    prNumber: string,
+  ): Array<{ body: string; state: string }> {
+    try {
+      const result = execFileSync(
+        'gh',
+        ['pr', 'view', prNumber, '--json', 'reviews'],
+        { encoding: 'utf-8', cwd: this.getCwd() },
+      );
+      const data = JSON.parse(result) as {
+        reviews: Array<{ body: string; state: string }>;
+      };
+      return data.reviews ?? [];
+    } catch {
+      return [];
     }
   }
 
@@ -160,8 +372,9 @@ export class GitHubService {
     comments: Array<{ body: string; createdAt: string }>;
   }> {
     try {
-      const result = execSync(
-        `gh issue list --label "${label}" --json number,title,state,labels,comments --limit ${limit}`,
+      const result = execFileSync(
+        'gh',
+        ['issue', 'list', '--label', label, '--json', 'number,title,state,labels,comments', '--limit', String(limit)],
         { encoding: 'utf-8', cwd: this.getCwd() },
       );
       return JSON.parse(result) as Array<{
@@ -180,8 +393,9 @@ export class GitHubService {
     title: string,
   ): { number: number; title: string; state: string } | null {
     try {
-      const result = execSync(
-        `gh issue list --state all --json number,title,state --limit 100`,
+      const result = execFileSync(
+        'gh',
+        ['issue', 'list', '--state', 'all', '--json', 'number,title,state', '--limit', '100'],
         { encoding: 'utf-8', cwd: this.getCwd() },
       );
       const issues = JSON.parse(result) as Array<{
@@ -204,7 +418,7 @@ export class GitHubService {
 
   private listLabels(): string[] {
     try {
-      const result = execSync(`gh label list --json name --limit 100`, {
+      const result = execFileSync('gh', ['label', 'list', '--json', 'name', '--limit', '100'], {
         encoding: 'utf-8',
         cwd: this.getCwd(),
       });
@@ -215,68 +429,151 @@ export class GitHubService {
     }
   }
 
-  async implementLocally(
+  createPR(
     issueNum: string,
-    engine: string,
-  ): Promise<{ success: boolean; message: string }> {
-    const cwd = this.getCwd();
-    let branchName = '';
+    branchName: string,
+    cwd?: string,
+  ): { success: boolean; prUrl?: string; message: string } {
+    const workdir = cwd ?? this.getCwd();
     try {
       const issue = this.viewIssue(issueNum);
       if (!issue) {
         return { success: false, message: `Issue #${issueNum} not found` };
       }
-      if (issue.state !== 'OPEN') {
-        return {
-          success: false,
-          message: `Issue #${issueNum} is ${issue.state.toLowerCase()}`,
-        };
-      }
+      const prUrl = execFileSync(
+        'gh',
+        [
+          'pr', 'create',
+          '--title', issue.title,
+          '--body', `Closes #${issueNum}`,
+          '--base', 'develop',
+          '--head', branchName,
+        ],
+        { encoding: 'utf-8', cwd: workdir },
+      ).trim();
 
-      const titleSlug = issue.title
+      execFileSync('gh', [
+        'issue', 'comment', issueNum,
+        '--body', `PR created: ${prUrl}`,
+      ], { encoding: 'utf-8', cwd: workdir });
+
+      return { success: true, prUrl, message: `PR created: ${prUrl}` };
+    } catch (err) {
+      return { success: false, message: `Failed to create PR: ${(err as Error).message}` };
+    }
+  }
+
+  pushBranch(
+    branchName: string,
+    cwd?: string,
+  ): { success: boolean; message: string } {
+    const workdir = cwd ?? this.getCwd();
+    try {
+      try {
+        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], { encoding: 'utf-8', cwd: workdir });
+      } catch {
+        // ignore
+      }
+      execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+      return { success: true, message: `Pushed ${branchName}` };
+    } catch (err) {
+      this.logger.warn(`git push failed, trying gh: ${(err as Error).message}`);
+      try {
+        execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
+        execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+        return { success: true, message: `Pushed ${branchName} (via gh auth)` };
+      } catch (err2) {
+        return { success: false, message: `Failed to push: ${(err2 as Error).message}` };
+      }
+    }
+  }
+
+  async implementLocally(
+    issueNum: string,
+    engine: string,
+    cwd: string,
+    data: {
+      title: string;
+      body: string;
+      labels?: Array<{ name: string }>;
+    },
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    try {
+      const titleSlug = data.title
         .toLowerCase()
         .replace(/^arc-\d+:\s*/, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '')
         .slice(0, 50);
 
-      branchName = `task-${issueNum}-${titleSlug}`;
+      const branchName = `task-${issueNum}-${titleSlug}`;
 
-      execSync('git fetch origin', { encoding: 'utf-8', cwd });
-      const branchExists = execSync(
-        `git branch --list ${branchName}`,
+      this.cleanWorkdir(cwd);
+
+      const branchExists = execFileSync(
+        'git', ['branch', '--list', branchName],
         { encoding: 'utf-8', cwd },
       ).trim();
       if (branchExists) {
-        execSync('git checkout main', { encoding: 'utf-8', cwd });
-        const aheadCount = execSync(
-          `git log origin/develop..${branchName} --oneline`,
+        const aheadCount = execFileSync(
+          'git', ['log', `origin/develop..${branchName}`, '--oneline'],
           { encoding: 'utf-8', cwd },
         ).trim();
         if (!aheadCount) {
-          execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
+          execFileSync('git', ['branch', '-D', branchName], { encoding: 'utf-8', cwd });
         } else {
           return {
             success: false,
-            message: `Branch ${branchName} already has commits. Check /status or delete manually.`,
+            message: `Branch ${branchName} already has commits.`,
           };
         }
       }
-      execSync(`git checkout -b ${branchName} origin/develop`, {
+
+      execFileSync('git', ['checkout', '-b', branchName], {
         encoding: 'utf-8',
         cwd,
       });
+      this.logger.log(`Created branch ${branchName} in worktree`);
+
+      this.installDeps(cwd);
+
+      const requirements = this.extractRequirements(data.body);
+      const hasRealRequirements =
+        requirements.length > 0 && !requirements.every((r) => r === 'TBD');
 
       const prompt = [
-        `Implement GitHub issue #${issueNum}: ${issue.title}`,
+        `Implement GitHub issue #${issueNum}: ${data.title}`,
         '',
         'Requirements:',
-        ...this.extractRequirements(issue.body).map((r) => `- ${r}`),
+        ...(hasRealRequirements
+          ? requirements.map((r) => `- ${r}`)
+          : [
+              '- Determine what needs to be done based on the issue title.',
+              '- Read CLAUDE.md for project conventions and architecture.',
+              '- Explore the codebase to understand existing patterns.',
+              '- Implement the feature following existing code style.',
+            ]),
         '',
         'Follow the project conventions in CLAUDE.md.',
         'Do not add comments unless asked.',
-        'Run pnpm lint and pnpm typecheck when done.',
-        'Commit with conventional commits when complete.',
+        '',
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
+        '## Rules',
+        '- DO NOT load any skills or plugins — implement directly from the requirements.',
+        '- DO NOT run `gh issue list` or `gh issue view`.',
+        '- DO NOT create tasks or use the task/actor tools.',
+        '- Max 500 lines per file.',
+        '- Do not add comments unless asked.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
+        '- Just make code changes and run the verification commands above.',
+        '- Never leave the repo in a dirty state.',
       ].join('\n');
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
@@ -292,27 +589,29 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(
-        cli,
-        ['run', escapedPrompt, '--dangerously-skip-permissions'],
-        { cwd, timeout: 600_000 },
-      );
+      const runArgs =
+        cli === 'opencode'
+          ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+          : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+        this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
+      });
 
-      execSync('git add -A', { encoding: 'utf-8', cwd });
+      execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
 
-      const diffCheck = execSync('git diff --cached --quiet; echo $?', {
-        encoding: 'utf-8',
-        cwd,
-      }).trim();
-
-      if (diffCheck === '0') {
-        execSync(`git checkout main`, { encoding: 'utf-8', cwd });
-        execSync(`git branch -D ${branchName}`, { encoding: 'utf-8', cwd });
-        return { success: true, message: 'No changes to commit' };
+      let hasChanges = false;
+      try {
+        execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
+      } catch {
+        hasChanges = true;
       }
 
-      const scope = issue.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;
-      const msg = issue.title
+      if (!hasChanges) {
+        return { success: true, message: 'No changes to commit — the AI engine did not produce any modifications.' };
+      }
+
+      const scope = data.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;
+      const msg = data.title
         .replace(/^ARC-\d+:\s*/, '')
         .toLowerCase()
         .replace(/[^a-z0-9 ]/g, ' ')
@@ -320,65 +619,269 @@ export class GitHubService {
         .trim()
         .slice(0, 72);
 
-      execSync(`git commit -m "feat(${scope}): ${msg}"`, {
+      execFileSync('git', ['commit', '--no-verify', '-m', `feat(${scope}): ${msg}`], {
         encoding: 'utf-8',
         cwd,
       });
-      execSync(`git push origin ${branchName}`, { encoding: 'utf-8', cwd });
 
-      const prUrl = execSync(
-        `gh pr create --title "${issue.title}" --body "Closes #${issueNum}" --base develop --head ${branchName}`,
-        { encoding: 'utf-8', cwd },
-      ).trim();
+      this.logger.log(`Committed on branch ${branchName} — processor will push`);
 
-      execSync(
-        `gh issue comment ${issueNum} --body "Implementation complete (${engine}). PR: ${prUrl}"`,
-        { encoding: 'utf-8', cwd },
-      );
-
-      const existingLabels = this.listLabels();
-      if (!existingLabels.includes('in-review')) {
-        try {
-          execSync(
-            `gh label create "in-review" --color "D4C5F9" --description "Ready for review"`,
-            { encoding: 'utf-8', cwd },
-          );
-        } catch {
-          // label may already exist
-        }
-      }
-      try {
-        execSync(
-          `gh issue edit ${issueNum} --add-label "in-review"`,
-          { encoding: 'utf-8', cwd },
-        );
-      } catch {
-        // ignore if label add fails
-      }
-
-      return { success: true, message: `PR created: ${prUrl}` };
+      return { success: true, message: `Committed on ${branchName}`, branchName };
     } catch (err) {
-      const cwd = this.getCwd();
-      try {
-        execSync('git checkout -- .', { encoding: 'utf-8', cwd });
-        execSync('git checkout main', { encoding: 'utf-8', cwd });
-      } catch {
-        // ignore
-      }
-      try {
-        const branches = execSync('git branch', { encoding: 'utf-8', cwd });
-        const match = branches.match(new RegExp(`task-${issueNum}-\\S+`));
-        if (match) {
-          execSync(`git branch -D ${match[0]}`, { encoding: 'utf-8', cwd });
-        }
-      } catch {
-        // ignore
-      }
+      this.logger.error(`Implementation failed for #${issueNum}: ${(err as Error).message}`);
       return {
         success: false,
         message: `Implementation failed: ${(err as Error).message}`,
       };
     }
+  }
+
+  async fixPR(
+    prNumber: string,
+    engine: string,
+    cwd: string,
+    data: {
+      branchName: string;
+      failedChecks?: Array<{ name: string; state: string; link: string }>;
+      reviewComments?: string;
+    },
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    try {
+      const { branchName, failedChecks = [], reviewComments = '' } = data;
+
+      const promptParts: string[] = [
+        `Fix all issues on PR #${prNumber} (branch: ${branchName}).`,
+        '',
+      ];
+
+      if (failedChecks.length > 0) {
+        promptParts.push('## CI Failures');
+        for (const f of failedChecks) {
+          promptParts.push(`- ${f.name}`);
+        }
+
+        const errorOutput = this.fetchErrorLogs(failedChecks);
+        if (errorOutput) {
+          promptParts.push('', '## Actual Error Output', '```', errorOutput, '```');
+        }
+
+        promptParts.push(
+          '',
+          'Fix the issues shown in the error output above.',
+          '',
+        );
+      }
+
+      if (reviewComments) {
+        promptParts.push('## Review Comments');
+        promptParts.push(reviewComments);
+        promptParts.push(
+          '',
+          'Address all review feedback. Apply suggestions where provided.',
+          '',
+        );
+      }
+
+      if (failedChecks.length === 0 && !reviewComments) {
+        promptParts.push('No CI failures or review comments found.');
+      }
+
+      promptParts.push(
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
+        '## Rules',
+        '- DO NOT load any skills or plugins.',
+        '- DO NOT explore the codebase beyond what is needed to fix the error.',
+        '- DO NOT run `gh issue list` or `gh issue view`.',
+        '- DO NOT create tasks or use the task/actor tools.',
+        '- DO NOT implement new features — only fix the specific error shown above.',
+        '- Max 500 lines per file.',
+        '- Do not add comments unless asked.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
+        '- Just make code changes and run the verification commands above.',
+      );
+
+      const prompt = promptParts.join('\n');
+      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+      this.cleanWorkdir(cwd);
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore
+      }
+
+      this.installDeps(cwd);
+
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      const runArgs =
+        cli === 'opencode'
+          ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+          : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      if (cli === 'mimo') {
+        try {
+          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
+            cwd,
+            timeout: 30_000,
+          });
+        } catch {
+          // ignore — token may already be valid
+        }
+      }
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+        this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
+      });
+
+      execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
+
+      let hasChanges = false;
+      try {
+        execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
+      } catch {
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        return { success: true, message: 'No changes needed' };
+      }
+
+      execFileSync('git', ['commit', '--no-verify', '-m', 'fix: resolve CI failures and review feedback'], { encoding: 'utf-8', cwd });
+
+      this.logger.log(`Fixes committed on ${branchName} — processor will push`);
+
+      return { success: true, message: `Fixes committed on ${branchName}`, branchName };
+    } catch (err) {
+      return { success: false, message: `Fix failed: ${(err as Error).message}` };
+    }
+  }
+
+  async checkAndFixCI(
+    prNumber: string,
+    engine: 'opencode' | 'mimo',
+    cwd: string,
+    data: {
+      branchName: string;
+      failedChecks: Array<{ name: string; state: string; link: string }>;
+    },
+  ): Promise<{ success: boolean; message: string; branchName?: string }> {
+    try {
+      const { branchName, failedChecks } = data;
+
+      const failedNames = failedChecks.map((c) => c.name).join(', ');
+      const promptParts: string[] = [
+        `Fix CI failures for PR #${prNumber}: ${failedNames}`,
+        '',
+        'CI failed checks:',
+        ...failedChecks.map((c) => `- ${c.name}: ${c.link}`),
+      ];
+
+      const errorOutput = this.fetchErrorLogs(failedChecks);
+      if (errorOutput) {
+        promptParts.push('', '## Actual Error Output', '```', errorOutput, '```');
+      }
+
+      promptParts.push(
+        '',
+        'Instructions:',
+        '- Fix the issues shown in the error output above.',
+        '- If no error output is available, run the failing commands locally to see errors.',
+        '',
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
+        '## Rules',
+        '- DO NOT load any skills or plugins.',
+        '- DO NOT explore the codebase beyond what is needed to fix the error.',
+        '- DO NOT run `gh issue list` or `gh issue view`.',
+        '- DO NOT create tasks or use the task/actor tools.',
+        '- DO NOT implement new features — only fix the specific error shown above.',
+        '- Max 500 lines per file.',
+        '- Do not add comments unless asked.',
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
+        '- Just make code changes and run the verification commands above.',
+      );
+
+      const fixPrompt = promptParts.join('\n');
+
+      const escapedPrompt = fixPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+      this.cleanWorkdir(cwd);
+      execFileSync('git', ['fetch', 'origin'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['checkout', '-B', branchName, `origin/${branchName}`], { encoding: 'utf-8', cwd });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { encoding: 'utf-8', cwd });
+      } catch {
+        // ignore
+      }
+
+      this.installDeps(cwd);
+
+      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
+      if (cli === 'mimo') {
+        try {
+          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
+            cwd,
+            timeout: 30_000,
+          });
+        } catch {
+          // ignore — token may already be valid
+        }
+      }
+      const runArgs = cli === 'opencode'
+        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
+        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+        this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
+      });
+
+      execFileSync('git', ['add', '-A'], { encoding: 'utf-8', cwd });
+
+      let hasChanges = false;
+      try {
+        execFileSync('git', ['diff', '--cached', '--quiet'], { encoding: 'utf-8', cwd });
+      } catch {
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        return { success: true, message: 'No changes needed — CI failures may require manual investigation' };
+      }
+
+      execFileSync('git', ['commit', '--no-verify', '-m', 'fix: resolve CI failures'], { encoding: 'utf-8', cwd });
+
+      this.logger.log(`CI fixes committed on ${branchName} — processor will push`);
+
+      return { success: true, message: `Fixes committed on ${branchName}`, branchName };
+    } catch (err) {
+      return { success: false, message: `CI fix failed: ${(err as Error).message}` };
+    }
+  }
+
+  private fetchErrorLogs(
+    failedChecks: Array<{ name: string; state: string; link: string }>,
+  ): string {
+    const allLogs: string[] = [];
+    for (const check of failedChecks) {
+      const logs = this.getCIFailureLogs(check.link);
+      if (logs) {
+        allLogs.push(`--- ${check.name} ---`);
+        allLogs.push(logs);
+      }
+    }
+    return allLogs.join('\n\n').slice(0, 6000);
   }
 
   private extractRequirements(body: string): string[] {

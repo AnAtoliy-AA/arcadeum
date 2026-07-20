@@ -17,49 +17,49 @@
 
 ## ARC Ticket Reference
 
-| Feature | ARC | Branch | Status |
-|---------|-----|--------|--------|
-| 1A. Stat Tracking | ARC-871 | `ARC-871-stat-tracking` | Partial |
-| 1B. Emotes | ARC-872 | `ARC-872-emotes` | Not started |
-| 1C. House Rules | ARC-873 | `ARC-873-house-rules` | Partial |
-| 1D. Dark Mode | — | — | **Implemented** |
-| 1E. Undo/Take-Back | ARC-874 | `ARC-874-undo-takeback` | Not started |
-| 1F. Password Rooms | ARC-875 | `ARC-875-password-rooms` | Not started |
-| 2A. Matchmaking Queue | ARC-876 | `ARC-876-matchmaking` | Not started |
-| 2B. Chess Engine | ARC-877 | `ARC-877-chess-engine` | Not started |
-| 2C. Checkers Engine | ARC-878 | `ARC-878-checkers-engine` | Not started |
-| 2D. Audio Cues | ARC-879 | `ARC-879-audio-cues` | Partial |
-| 2E. AI Difficulty | ARC-880 | `ARC-880-ai-difficulty` | Not started |
-| 2F. Ranked/ELO | ARC-881 | `ARC-881-ranked-elo` | Not started |
-| 2G. Achievements | — | — | **Implemented** |
-| 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | Not started |
-| 2I. Coach Mode | ARC-883 | `ARC-883-coach-mode` | Not started |
-| 3A. Hearts/Spades | ARC-884 | `ARC-884-hearts-spades` | Not started |
-| 3B. Backgammon | ARC-885 | `ARC-885-backgammon` | Not started |
-| 3C. Pachisi | ARC-886 | `ARC-886-pachisi` | Not started |
-| 3D. Go | ARC-887 | `ARC-887-go` | Not started |
-| 3F. Game Replays | ARC-888 | `ARC-888-game-replays` | Not started |
-| 3G. Spectator Mode | ARC-889 | `ARC-889-spectator-mode` | Partial |
-| 3H. AI-vs-AI | ARC-890 | `ARC-890-ai-vs-ai` | Not started |
-| 3I. Clans | ARC-891 | `ARC-891-clans` | Not started |
-| 3J. Game Nights | ARC-892 | `ARC-892-game-nights` | Not started |
-| 4A. Chess Clock | ARC-893 | `ARC-893-chess-clock` | Not started |
-| 4B. Stats Dashboard | ARC-894 | `ARC-894-stats-dashboard` | Partial |
-| 4C. Tutorials | ARC-895 | `ARC-895-tutorials` | Not started |
-| 4D. Colorblind | ARC-896 | `ARC-896-colorblind` | Not started |
-| 4E. Screen Reader | ARC-897 | `ARC-897-screen-reader` | Partial |
-| 4F. Keyboard Nav | ARC-898 | `ARC-898-keyboard-nav` | Not started |
-| 4G. Daily Challenges | — | — | **Implemented** |
-| 4H. Season System | ARC-899 | `ARC-899-season-system` | Not started |
-| 4I. PWA Support | ARC-903 | `ARC-903-pwa-support` | Partial |
-| 4J. Offline Mode | ARC-900 | `ARC-900-offline-mode` | Not started |
-| 4K. Web Share | — | — | **Implemented** |
-| 4L. Push Notifications | — | — | **Implemented** |
-| 4M. Tournaments | — | — | **Implemented** |
-| 4N. Leaderboards | — | — | **Implemented** |
-| 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | Not started |
-| 4P. Mobile Games | ARC-902 | `ARC-902-mobile-games` | Partial |
-| 5B. Monetization | — | — | **Implemented** |
+| Feature                | ARC     | Branch                       | Status          |
+| ---------------------- | ------- | ---------------------------- | --------------- |
+| 1A. Stat Tracking      | ARC-871 | `ARC-871-stat-tracking`      | Partial         |
+| 1B. Emotes             | ARC-872 | `ARC-872-emotes`             | **Implemented** |
+| 1C. House Rules        | ARC-873 | `ARC-873-house-rules`        | Partial         |
+| 1D. Dark Mode          | —       | —                            | **Implemented** |
+| 1E. Undo/Take-Back     | ARC-874 | `ARC-874-undo-takeback`      | **Implemented** |
+| 1F. Password Rooms     | ARC-875 | `ARC-875-password-rooms`     | Partial         |
+| 2A. Matchmaking Queue  | ARC-876 | `ARC-876-matchmaking`        | Not started     |
+| 2B. Chess Engine       | ARC-877 | `ARC-877-chess-engine`       | **Implemented** |
+| 2C. Checkers Engine    | ARC-878 | `ARC-878-checkers-engine`    | Not started     |
+| 2D. Audio Cues         | ARC-879 | `ARC-879-audio-cues`         | Partial         |
+| 2E. AI Difficulty      | ARC-880 | `ARC-880-ai-difficulty`      | Not started     |
+| 2F. Ranked/ELO         | ARC-881 | `ARC-881-ranked-elo`         | Not started     |
+| 2G. Achievements       | —       | —                            | **Implemented** |
+| 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | Not started     |
+| 2I. Coach Mode         | ARC-883 | `ARC-883-coach-mode`         | Not started     |
+| 3A. Hearts/Spades      | ARC-884 | `ARC-884-hearts-spades`      | Not started     |
+| 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | Not started     |
+| 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | Not started     |
+| 3D. Go                 | ARC-887 | `ARC-887-go`                 | Not started     |
+| 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
+| 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | Partial         |
+| 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | Not started     |
+| 3I. Clans              | ARC-891 | `ARC-891-clans`              | Not started     |
+| 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
+| 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
+| 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | Partial         |
+| 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
+| 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
+| 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | Partial         |
+| 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
+| 4G. Daily Challenges   | —       | —                            | **Implemented** |
+| 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
+| 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | Partial         |
+| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | Not started     |
+| 4K. Web Share          | —       | —                            | **Implemented** |
+| 4L. Push Notifications | —       | —                            | **Implemented** |
+| 4M. Tournaments        | —       | —                            | **Implemented** |
+| 4N. Leaderboards       | —       | —                            | **Implemented** |
+| 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | Not started     |
+| 4P. Mobile Games       | ARC-902 | `ARC-902-mobile-games`       | Partial         |
+| 5B. Monetization       | —       | —                            | **Implemented** |
 
 ---
 

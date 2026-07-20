@@ -1,56 +1,14 @@
 import { CheckersEngine } from './checkers.engine';
 import { GAME_PHASE, BOARD_SIZE } from './checkers.constants';
-import type { GameActionContext } from '../base/game-engine.interface';
-import type { MovePayload, MoveStep } from './checkers.types';
+import {
+  ctx,
+  s,
+  singleStep,
+  capture,
+  multiCapture,
+} from './checkers-test-utils';
 
 const engine = new CheckersEngine();
-
-function ctx(userId: string): GameActionContext {
-  return {
-    userId,
-    roomId: 'room-1',
-    sessionId: 'session-1',
-    timestamp: new Date(),
-  };
-}
-
-function s(
-  fromRow: number,
-  fromCol: number,
-  toRow: number,
-  toCol: number,
-  capturedRow?: number,
-  capturedCol?: number,
-): MoveStep {
-  const step: MoveStep = { fromRow, fromCol, toRow, toCol };
-  if (capturedRow !== undefined) step.capturedRow = capturedRow;
-  if (capturedCol !== undefined) step.capturedCol = capturedCol;
-  return step;
-}
-
-function singleStep(
-  fromRow: number,
-  fromCol: number,
-  toRow: number,
-  toCol: number,
-): MovePayload {
-  return { steps: [s(fromRow, fromCol, toRow, toCol)] };
-}
-
-function capture(
-  fromRow: number,
-  fromCol: number,
-  toRow: number,
-  toCol: number,
-  capRow: number,
-  capCol: number,
-): MovePayload {
-  return { steps: [s(fromRow, fromCol, toRow, toCol, capRow, capCol)] };
-}
-
-function multiCapture(steps: MoveStep[]): MovePayload {
-  return { steps };
-}
 
 function clearBoard(state: ReturnType<typeof engine.initializeState>): void {
   for (let r = 0; r < BOARD_SIZE; r++) {

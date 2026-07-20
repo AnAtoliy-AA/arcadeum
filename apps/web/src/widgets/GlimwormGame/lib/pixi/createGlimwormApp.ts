@@ -29,8 +29,8 @@ export async function createGlimwormApp(
 ): Promise<GlimwormPixiApp> {
   const app = new Application();
   await app.init({
-    resolution: window.devicePixelRatio || 1,
-    antialias: true,
+    resolution: Math.min(window.devicePixelRatio || 1, 2),
+    antialias: false,
     backgroundAlpha: 1,
     backgroundColor: 0x0a0a1a,
     resizeTo: canvasParent,

@@ -43,6 +43,10 @@ export const en = {
     title: `Chess · Multiplayer · Standard & Chess960 · ${APP}`,
     description: `Play Chess online on ${APP} — standard and Chess960 variants, optional time controls, AI bots. Free, instant rooms, no download.`,
   },
+  checkersLanding: {
+    title: `Checkers · Multiplayer · ${APP}`,
+    description: `Play Checkers online on ${APP} — standard 8×8 rules with forced captures, multi-jump, and king promotion. Free, instant rooms, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

@@ -39,7 +39,11 @@ export const es: DeepPartial<SeoMessages> = {
   },
   chessLanding: {
     title: `Ajedrez · Multijugador · Estándar y Chess960 · ${APP}`,
-    description: `Juega al ajedrez online en ${APP} — variantes estándar y Chess960, controles de tiempo opcionales, bots IA. Gratis, salas instantáneas, sin descarga.`,
+    description: `Juega ajedrez en ${APP} — variantes estándar y Chess960, controles de tiempo, bots IA. Gratis, salas instantáneas, sin descargas.`,
+  },
+  checkersLanding: {
+    title: `Damas · Multijugador · ${APP}`,
+    description: `Juega damas en ${APP} — tablero 8×8 con capturas forzadas, saltos múltiples y promoción a rey. Gratis, salas instantáneas.`,
   },
   seaBattleLanding: {
     title: `Batalla naval en línea · Juega Battleship gratis · ${APP}`,

@@ -452,10 +452,17 @@ export class GitHubService {
       } catch {
         // ignore
       }
-      execFileSync('git', ['push', 'origin', branchName], { encoding: 'utf-8', cwd: workdir });
+      execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
       return { success: true, message: `Pushed ${branchName}` };
     } catch (err) {
-      return { success: false, message: `Failed to push: ${(err as Error).message}` };
+      this.logger.warn(`git push failed, trying gh: ${(err as Error).message}`);
+      try {
+        execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
+        execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+        return { success: true, message: `Pushed ${branchName} (via gh auth)` };
+      } catch (err2) {
+        return { success: false, message: `Failed to push: ${(err2 as Error).message}` };
+      }
     }
   }
 

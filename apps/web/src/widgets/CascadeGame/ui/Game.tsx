@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -108,7 +108,13 @@ function CascadeGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
   useGameChatIntegration(snapshot?.logs as never, sendChat);
 
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const {
+    rematchLoading,
+    handleRematch,
+    invitation,
+    handleAcceptInvitation,
+    handleDeclineInvitation,
+  } = useRematch({ roomId });
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
       if (!accessToken || !roomId) return;
@@ -230,6 +236,14 @@ function CascadeGameImpl({
         rematchLoading={rematchLoading}
         t={t}
         messages={resultMessages}
+      />
+      <RematchInvitationModal
+        isOpen={!!invitation}
+        senderName={invitation?.hostName || ''}
+        message={invitation?.message}
+        onAccept={handleAcceptInvitation}
+        onDecline={handleDeclineInvitation}
+        t={t}
       />
       <RulesModal
         open={showRulesOpen}

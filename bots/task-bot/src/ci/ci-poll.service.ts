@@ -65,13 +65,13 @@ export class CIFollService implements OnModuleDestroy {
   ): void {
     const timer = setTimeout(() => {
       this.activePolls.delete(prNumber);
-      this.checkCIStatus(prNumber, issueNum, engine, startTime);
+      void this.checkCIStatus(prNumber, issueNum, engine, startTime);
     }, this.pollIntervalMs);
 
     this.activePolls.set(prNumber, { timer, prNumber, issueNum, engine, startTime });
   }
 
-  private checkCIStatus(
+  private async checkCIStatus(
     prNumber: string,
     issueNum: string,
     engine: string,

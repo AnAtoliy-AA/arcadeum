@@ -280,10 +280,8 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.use_sonar')
-  async handleUseSonar(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
+  private async dispatchAction(
+    client: Socket,
     payload: {
       roomId?: string;
       userId?: string;
@@ -291,71 +289,58 @@ export class SeaBattleGateway {
       row?: number;
       col?: number;
     },
+    action: string,
+    ackEvent: string,
+    emitExtra?: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
     if (!targetPlayerId) throw new WsException('targetPlayerId is required');
     try {
-      await this.seaBattleService.executeActionByRoom(
-        userId,
-        roomId,
-        'useSonar',
-        { targetPlayerId, row: payload.row, col: payload.col },
-      );
+      await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
+        targetPlayerId,
+        row: payload.row,
+        col: payload.col,
+      });
       client.emit(
-        'seaBattle.session.sonar_result',
-        maybeEncrypt({ roomId, userId, targetPlayerId }),
+        ackEvent,
+        maybeEncrypt({ roomId, userId, targetPlayerId, ...emitExtra }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        { action: 'useSonar', roomId, userId },
-        'Unable to use sonar.',
+        { action, roomId, userId },
+        `Unable to ${action}.`,
       );
     }
   }
 
-  @SubscribeMessage('seaBattle.session.use_radar')
-  async handleUseRadar(
+  @SubscribeMessage('seaBattle.session.use_sonar')
+  handleUseSonar(
     @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetPlayerId?: string;
-      row?: number;
-      col?: number;
-    },
+    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
-    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
-    try {
-      await this.seaBattleService.executeActionByRoom(
-        userId,
-        roomId,
-        'useRadar',
-        { targetPlayerId, row: payload.row, col: payload.col },
-      );
-      client.emit(
-        'seaBattle.session.radar_result',
-        maybeEncrypt({
-          roomId,
-          userId,
-          targetPlayerId,
-          row: payload.row,
-          col: payload.col,
-        }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'useRadar', roomId, userId },
-        'Unable to use radar.',
-      );
-    }
+    return this.dispatchAction(
+      client,
+      payload,
+      'useSonar',
+      'seaBattle.session.sonar_result',
+    );
+  }
+
+  @SubscribeMessage('seaBattle.session.use_radar')
+  handleUseRadar(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
+  ): Promise<void> {
+    return this.dispatchAction(
+      client,
+      payload,
+      'useRadar',
+      'seaBattle.session.radar_result',
+      { row: payload.row, col: payload.col },
+    );
   }
 
   @SubscribeMessage('seaBattle.session.history_note')

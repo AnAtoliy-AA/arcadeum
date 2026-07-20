@@ -138,7 +138,6 @@ export class CIFollService implements OnModuleDestroy {
         this.logger.log(`CI failures on PR #${prNumber}, queuing fix (attempt ${currentAttempts + 1}/${maxAttempts})`);
         await this.ciFixTracker.incrementAttempts(prNumber);
 
-        const failedCheckNames = failed.map((c) => c.name);
         try {
           await this.queueService.addCIFixJob(
             prNumber,

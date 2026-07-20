@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { XStack, YStack, Text, useMedia } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -314,31 +315,40 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
                 const disabled = !!ruleComingSoon.get('gridSize');
                 const active = (effectiveRoom.gameOptions?.gridSize ?? 10) === gs;
                 return (
-                  <button
+                  <Button
                     key={gs}
-                    type="button"
+                    variant="chip"
+                    size="sm"
                     disabled={disabled}
-                    onClick={() => !disabled && handleOptionChange({ gridSize: gs })}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: 8,
-                      border: `1px solid ${active ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'}`,
-                      backgroundColor: active
-                        ? 'rgba(59,130,246,0.15)'
-                        : 'transparent',
-                      color: disabled
+                    data-active={active}
+                    backgroundColor={
+                      active ? 'rgba(59,130,246,0.15)' : 'transparent'
+                    }
+                    borderColor={
+                      active
+                        ? 'var(--color, #3b82f6)'
+                        : 'rgba(255,255,255,0.2)'
+                    }
+                    color={
+                      disabled
                         ? '#52525b'
                         : active
                           ? 'var(--color, #3b82f6)'
-                          : '#e2e8f0',
-                      fontWeight: 600,
-                      fontSize: 13,
-                      cursor: disabled ? 'not-allowed' : 'pointer',
-                      opacity: disabled ? 0.4 : 1,
+                          : '#e2e8f0'
+                    }
+                    hoverStyle={{
+                      backgroundColor: active
+                        ? 'rgba(59,130,246,0.2)'
+                        : 'rgba(255,255,255,0.05)',
                     }}
+                    borderRadius={8}
+                    fontWeight={600}
+                    fontSize={13}
+                    opacity={disabled ? 0.4 : 1}
+                    onClick={() => !disabled && handleOptionChange({ gridSize: gs })}
                   >
                     {gs}×{gs}
-                  </button>
+                  </Button>
                 );
               })}
             </XStack>

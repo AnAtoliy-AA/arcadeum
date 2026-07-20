@@ -12,6 +12,7 @@ export const byMessages = {
           'Гуляйце ў шахматы анлайн. Стандартны варыянт і Chess960, апцыянальны кантроль часу, боты з першага дня. Бясплатна, імгненныя пакоі.',
         keywords:
           'шахматы, шахматы анлайн, мультиплеер шахматы, chess960, настольныя гульні',
+        howToPlayTitle: 'Як гуляць у {{gameName}}',
       },
       hero: {
         title: 'Шахматы — вечная стратэгічная гульня',
@@ -21,6 +22,7 @@ export const byMessages = {
         ctaQuickplay: 'Згуляць з ШІ',
         ctaQuickplayError: 'Не атрымалася пачаць гульню — паспрабуйце яшчэ раз',
         browseRooms: 'Агляд пакояў',
+        backToGames: '← Гульні',
       },
       highlights: {
         players: {
@@ -162,6 +164,7 @@ export const byMessages = {
       showAll: 'Паказаць усе ({{count}})',
       copied: 'Скапіявана!',
       spectating: 'Назіранне',
+      boardLabel: 'Шахматная дошка, {{color}} ходзяць',
     },
   },
 };

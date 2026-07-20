@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { XStack, YStack, Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   BOARD_SIZES,
@@ -90,48 +91,50 @@ export function BoardSizeSelector({
         {BOARD_SIZES.map((size) => {
           const isActive = size === internalSize;
           return (
-            <button
+            <Button
               key={size}
-              type="button"
+              variant="chip"
+              size="sm"
               data-testid={`ttt-board-size-${size}`}
               disabled={disabled}
-              onClick={() => handlePick(size)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-                padding: '10px 16px',
-                borderRadius: 10,
-                border: isActive
-                  ? '2px solid var(--primary, #3b82f6)'
-                  : '2px solid var(--borderColor, #cbd5e1)',
+              data-active={isActive}
+              backgroundColor={
+                isActive ? 'var(--primary, #3b82f6)' : 'transparent'
+              }
+              borderColor={
+                isActive
+                  ? 'var(--primary, #3b82f6)'
+                  : 'var(--borderColor, #cbd5e1)'
+              }
+              color={isActive ? '#fff' : 'inherit'}
+              hoverStyle={{
                 backgroundColor: isActive
                   ? 'var(--primary, #3b82f6)'
-                  : 'transparent',
-                color: isActive ? '#fff' : 'inherit',
-                fontWeight: 600,
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                opacity: disabled ? 0.6 : 1,
-                minWidth: 72,
-                lineHeight: 1.1,
+                  : 'rgba(255, 255, 255, 0.05)',
               }}
+              borderRadius={10}
+              fontWeight={600}
+              opacity={disabled ? 0.6 : 1}
+              minWidth={72}
+              lineHeight={1.1}
+              flex={0}
+              onClick={() => handlePick(size)}
             >
-              <span>{size === 'infinity' ? '∞' : `${size}×${size}`}</span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  opacity: isActive ? 0.85 : 0.65,
-                }}
-              >
-                {size === 'infinity'
-                  ? t('games.tic_tac_toe_v1.lobby.infinityLabel')
-                  : t('games.tic_tac_toe_v1.lobby.maxPlayersShort', {
-                      n: String(MAX_PLAYERS_BY_BOARD_SIZE[size]),
-                    })}
-              </span>
-            </button>
+              <YStack alignItems="center" gap={2}>
+                <Text>{size === 'infinity' ? '∞' : `${size}×${size}`}</Text>
+                <Text
+                  fontSize={11}
+                  fontWeight={500}
+                  opacity={isActive ? 0.85 : 0.65}
+                >
+                  {size === 'infinity'
+                    ? t('games.tic_tac_toe_v1.lobby.infinityLabel')
+                    : t('games.tic_tac_toe_v1.lobby.maxPlayersShort', {
+                        n: String(MAX_PLAYERS_BY_BOARD_SIZE[size]),
+                      })}
+                </Text>
+              </YStack>
+            </Button>
           );
         })}
       </XStack>
@@ -152,30 +155,35 @@ export function BoardSizeSelector({
               {INFINITY_MARGIN_OPTIONS.map((margin) => {
                 const isActive = margin === internalMargin;
                 return (
-                  <button
+                  <Button
                     key={margin}
-                    type="button"
+                    variant="chip"
+                    size="sm"
                     data-testid={`ttt-margin-${margin}`}
                     disabled={disabled}
-                    onClick={() => handleMarginChange(margin)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: 8,
-                      border: isActive
-                        ? '2px solid var(--primary, #3b82f6)'
-                        : '2px solid var(--borderColor, #cbd5e1)',
+                    data-active={isActive}
+                    backgroundColor={
+                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
+                    }
+                    borderColor={
+                      isActive
+                        ? 'var(--primary, #3b82f6)'
+                        : 'var(--borderColor, #cbd5e1)'
+                    }
+                    color={isActive ? '#fff' : 'inherit'}
+                    hoverStyle={{
                       backgroundColor: isActive
                         ? 'var(--primary, #3b82f6)'
-                        : 'transparent',
-                      color: isActive ? '#fff' : 'inherit',
-                      fontWeight: 600,
-                      fontSize: 13,
-                      cursor: disabled ? 'not-allowed' : 'pointer',
-                      opacity: disabled ? 0.6 : 1,
+                        : 'rgba(255, 255, 255, 0.05)',
                     }}
+                    borderRadius={8}
+                    fontWeight={600}
+                    fontSize={13}
+                    opacity={disabled ? 0.6 : 1}
+                    onClick={() => handleMarginChange(margin)}
                   >
                     {margin}
-                  </button>
+                  </Button>
                 );
               })}
             </XStack>
@@ -189,32 +197,37 @@ export function BoardSizeSelector({
               {INFINITY_WIN_LENGTH_OPTIONS.map((winLen) => {
                 const isActive = winLen === internalWinLength;
                 return (
-                  <button
+                  <Button
                     key={winLen}
-                    type="button"
+                    variant="chip"
+                    size="sm"
                     data-testid={`ttt-win-length-${winLen}`}
                     disabled={disabled}
-                    onClick={() => handleWinLengthChange(winLen)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: 8,
-                      border: isActive
-                        ? '2px solid var(--primary, #3b82f6)'
-                        : '2px solid var(--borderColor, #cbd5e1)',
+                    data-active={isActive}
+                    backgroundColor={
+                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
+                    }
+                    borderColor={
+                      isActive
+                        ? 'var(--primary, #3b82f6)'
+                        : 'var(--borderColor, #cbd5e1)'
+                    }
+                    color={isActive ? '#fff' : 'inherit'}
+                    hoverStyle={{
                       backgroundColor: isActive
                         ? 'var(--primary, #3b82f6)'
-                        : 'transparent',
-                      color: isActive ? '#fff' : 'inherit',
-                      fontWeight: 600,
-                      fontSize: 13,
-                      cursor: disabled ? 'not-allowed' : 'pointer',
-                      opacity: disabled ? 0.6 : 1,
+                        : 'rgba(255, 255, 255, 0.05)',
                     }}
+                    borderRadius={8}
+                    fontWeight={600}
+                    fontSize={13}
+                    opacity={disabled ? 0.6 : 1}
+                    onClick={() => handleWinLengthChange(winLen)}
                   >
                     {t('games.tic_tac_toe_v1.lobby.inARow', {
                       n: String(winLen),
                     })}
-                  </button>
+                  </Button>
                 );
               })}
             </XStack>

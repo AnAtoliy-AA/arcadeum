@@ -10,6 +10,7 @@ interface Props {
   ctaQuickplayLabel: string;
   ctaQuickplayErrorLabel: string;
   browseRoomsLabel: string;
+  backToGamesLabel: string;
 }
 
 export function ChessFinalCtaButtons({
@@ -19,6 +20,7 @@ export function ChessFinalCtaButtons({
   ctaQuickplayLabel,
   ctaQuickplayErrorLabel,
   browseRoomsLabel,
+  backToGamesLabel,
 }: Props) {
   return (
     <div
@@ -57,7 +59,7 @@ export function ChessFinalCtaButtons({
           textDecoration: 'underline',
         }}
       >
-        ← Games
+        {backToGamesLabel}
       </Link>
     </div>
   );

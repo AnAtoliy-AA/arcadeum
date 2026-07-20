@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
+import { YStack, Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -9,6 +10,10 @@ import {
 } from '@/features/games/ui/ReusableGameLobby';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import {
+  DifficultySelector,
+  type BotDifficulty,
+} from '@/features/games/ui/DifficultySelector';
 import type { ChessVariant, TimeControl } from '../types';
 import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
@@ -29,8 +34,6 @@ function formatTimeControl(tc: TimeControl | null): string {
     : `${mins}|0`;
 }
 
-type BotDifficulty = 'easy' | 'medium' | 'hard';
-
 interface ChessLobbyProps {
   room: GameRoomSummary;
   userId: string;
@@ -49,8 +52,6 @@ interface ChessLobbyProps {
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
 }
-
-const DIFFICULTY_OPTIONS: BotDifficulty[] = ['easy', 'medium', 'hard'];
 
 export function ChessLobby({
   room,
@@ -88,151 +89,153 @@ export function ChessLobby({
       <YStack gap="$2">
         <Text fontWeight="600">{t('games.chess_v1.lobby.variant')}</Text>
         <YStack gap="$2">
-          {(['standard', 'chess960'] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              disabled={!isHost}
-              onClick={() => setOption({ variant: v })}
-              style={{
-                padding: '10px 16px',
-                borderRadius: 10,
-                border:
-                  options.variant === v
-                    ? '2px solid #2563eb'
-                    : '1px solid rgba(255,255,255,0.15)',
-                backgroundColor:
-                  options.variant === v
-                    ? 'rgba(37,99,235,0.15)'
-                    : 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                cursor: isHost ? 'pointer' : 'default',
-                textAlign: 'left' as const,
-                width: '100%',
-              }}
-            >
-              <Text fontWeight="600" fontSize="$3">
-                {v === 'standard'
-                  ? t('games.chess_v1.lobby.standard')
-                  : t('games.chess_v1.lobby.chess960')}
-              </Text>
-              <Text fontSize="$2" opacity={0.7}>
-                {v === 'standard'
-                  ? t('games.chess_v1.lobby.standardDesc')
-                  : t('games.chess_v1.lobby.chess960Desc')}
-              </Text>
-            </button>
-          ))}
+          {(['standard', 'chess960'] as const).map((v) => {
+            const isActive = options.variant === v;
+            return (
+              <Button
+                key={v}
+                variant="chip"
+                size="md"
+                flex={1}
+                data-active={isActive}
+                backgroundColor={
+                  isActive
+                    ? 'rgba(99, 102, 241, 0.2)'
+                    : 'rgba(255, 255, 255, 0.05)'
+                }
+                borderColor={
+                  isActive
+                    ? 'rgba(99, 102, 241, 0.5)'
+                    : 'rgba(255, 255, 255, 0.1)'
+                }
+                color={isActive ? '#6366f1' : '$color'}
+                hoverStyle={{
+                  backgroundColor: isActive
+                    ? 'rgba(99, 102, 241, 0.25)'
+                    : 'rgba(255, 255, 255, 0.1)',
+                }}
+                borderRadius={10}
+                fontWeight="600"
+                disabled={!isHost}
+                justifyContent="flex-start"
+                
+                onClick={() => setOption({ variant: v })}
+              >
+                <YStack>
+                  <Text fontWeight="600" fontSize="$3">
+                    {v === 'standard'
+                      ? t('games.chess_v1.lobby.standard')
+                      : t('games.chess_v1.lobby.chess960')}
+                  </Text>
+                  <Text fontSize="$2" opacity={0.7}>
+                    {v === 'standard'
+                      ? t('games.chess_v1.lobby.standardDesc')
+                      : t('games.chess_v1.lobby.chess960Desc')}
+                  </Text>
+                </YStack>
+              </Button>
+            );
+          })}
         </YStack>
       </YStack>
 
       <YStack gap="$2">
         <Text fontWeight="600">{t('games.chess_v1.lobby.timeControl')}</Text>
         <YStack gap="$2">
-          {TIME_CONTROLS.map((tc, idx) => (
-            <button
-              key={idx}
-              type="button"
-              disabled={!isHost}
-              onClick={() => setOption({ timeControl: tc })}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 10,
-                border:
-                  options.timeControl?.initialSeconds === tc.initialSeconds &&
-                  options.timeControl?.incrementSeconds === tc.incrementSeconds
-                    ? '2px solid #2563eb'
-                    : '1px solid rgba(255,255,255,0.15)',
-                backgroundColor:
-                  options.timeControl?.initialSeconds === tc.initialSeconds &&
-                  options.timeControl?.incrementSeconds === tc.incrementSeconds
-                    ? 'rgba(37,99,235,0.15)'
-                    : 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                cursor: isHost ? 'pointer' : 'default',
-                textAlign: 'left' as const,
-                width: '100%',
-              }}
-            >
-              <Text fontWeight="600" fontSize="$3">
-                {formatTimeControl(tc)}
-              </Text>
-              <Text fontSize="$2" opacity={0.7}>
-                {tc.type === 'blitz'
-                  ? t('games.chess_v1.lobby.blitz')
-                  : tc.type === 'rapid'
-                    ? t('games.chess_v1.lobby.rapid')
-                    : t('games.chess_v1.lobby.classical')}
-              </Text>
-            </button>
-          ))}
-          <button
-            type="button"
-            disabled={!isHost}
-            onClick={() => setOption({ timeControl: null })}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 10,
-              border:
-                options.timeControl === null
-                  ? '2px solid #2563eb'
-                  : '1px solid rgba(255,255,255,0.15)',
+          {TIME_CONTROLS.map((tc, idx) => {
+            const isActive =
+              options.timeControl?.initialSeconds === tc.initialSeconds &&
+              options.timeControl?.incrementSeconds === tc.incrementSeconds;
+            return (
+              <Button
+                key={idx}
+                variant="chip"
+                size="md"
+                flex={1}
+                data-active={isActive}
+                backgroundColor={
+                  isActive
+                    ? 'rgba(99, 102, 241, 0.2)'
+                    : 'rgba(255, 255, 255, 0.05)'
+                }
+                borderColor={
+                  isActive
+                    ? 'rgba(99, 102, 241, 0.5)'
+                    : 'rgba(255, 255, 255, 0.1)'
+                }
+                color={isActive ? '#6366f1' : '$color'}
+                hoverStyle={{
+                  backgroundColor: isActive
+                    ? 'rgba(99, 102, 241, 0.25)'
+                    : 'rgba(255, 255, 255, 0.1)',
+                }}
+                borderRadius={10}
+                fontWeight="600"
+                disabled={!isHost}
+                justifyContent="flex-start"
+                
+                onClick={() => setOption({ timeControl: tc })}
+              >
+                <YStack>
+                  <Text fontWeight="600" fontSize="$3">
+                    {formatTimeControl(tc)}
+                  </Text>
+                  <Text fontSize="$2" opacity={0.7}>
+                    {tc.type === 'blitz'
+                      ? t('games.chess_v1.lobby.blitz')
+                      : tc.type === 'rapid'
+                        ? t('games.chess_v1.lobby.rapid')
+                        : t('games.chess_v1.lobby.classical')}
+                  </Text>
+                </YStack>
+              </Button>
+            );
+          })}
+          <Button
+            variant="chip"
+            size="md"
+            flex={1}
+            data-active={options.timeControl === null}
+            backgroundColor={
+              options.timeControl === null
+                ? 'rgba(99, 102, 241, 0.2)'
+                : 'rgba(255, 255, 255, 0.05)'
+            }
+            borderColor={
+              options.timeControl === null
+                ? 'rgba(99, 102, 241, 0.5)'
+                : 'rgba(255, 255, 255, 0.1)'
+            }
+            color={options.timeControl === null ? '#6366f1' : '$color'}
+            hoverStyle={{
               backgroundColor:
                 options.timeControl === null
-                  ? 'rgba(37,99,235,0.15)'
-                  : 'rgba(255,255,255,0.03)',
-              color: 'inherit',
-              cursor: isHost ? 'pointer' : 'default',
-              textAlign: 'left' as const,
-              width: '100%',
+                  ? 'rgba(99, 102, 241, 0.25)'
+                  : 'rgba(255, 255, 255, 0.1)',
             }}
+            borderRadius={10}
+            fontWeight="600"
+            disabled={!isHost}
+            justifyContent="flex-start"
+            
+            onClick={() => setOption({ timeControl: null })}
           >
-            <Text fontWeight="600" fontSize="$3">
-              {t('games.chess_v1.lobby.noClock')}
-            </Text>
-            <Text fontSize="$2" opacity={0.7}>
-              {t('games.chess_v1.lobby.unlimitedTime')}
-            </Text>
-          </button>
+            <YStack>
+              <Text fontWeight="600" fontSize="$3">
+                {t('games.chess_v1.lobby.noClock')}
+              </Text>
+              <Text fontSize="$2" opacity={0.7}>
+                {t('games.chess_v1.lobby.unlimitedTime')}
+              </Text>
+            </YStack>
+          </Button>
         </YStack>
       </YStack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Bot Difficulty</Text>
-        <XStack gap="$2">
-          {DIFFICULTY_OPTIONS.map((diff) => (
-            <button
-              key={diff}
-              type="button"
-              onClick={() => setBotDifficulty(diff)}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                borderRadius: 10,
-                border:
-                  botDifficulty === diff
-                    ? '2px solid #2563eb'
-                    : '1px solid rgba(255,255,255,0.15)',
-                backgroundColor:
-                  botDifficulty === diff
-                    ? 'rgba(37,99,235,0.15)'
-                    : 'rgba(255,255,255,0.03)',
-                color: 'inherit',
-                cursor: 'pointer',
-                textAlign: 'center' as const,
-              }}
-            >
-              <Text fontWeight="600" fontSize="$2">
-                {diff === 'easy'
-                  ? t('games.chess_v1.lobby.easy')
-                  : diff === 'medium'
-                    ? t('games.chess_v1.lobby.medium')
-                    : t('games.chess_v1.lobby.hard')}
-              </Text>
-            </button>
-          ))}
-        </XStack>
-      </YStack>
+      <DifficultySelector
+        value={botDifficulty}
+        onChange={setBotDifficulty}
+      />
     </YStack>
   );
 

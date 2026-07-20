@@ -16,6 +16,7 @@ export const LobbyContent = styled(XStack, {
   flex: 1,
   minHeight: 0,
   padding: '$5',
+  paddingBottom: 96,
   overflowY: 'auto',
   overflowX: 'hidden',
   alignItems: 'flex-start',
@@ -46,6 +47,11 @@ export const CenterSection = styled(YStack, {
     width: '100%',
     justifyContent: 'flex-start',
     gap: '$4',
+  },
+  $sm: {
+    flex: 0,
+    minHeight: 'unset',
+    justifyContent: 'flex-start',
   },
 });
 

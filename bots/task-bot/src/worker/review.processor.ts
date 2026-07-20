@@ -2,11 +2,16 @@ import { Process, Processor, OnQueueActive, OnQueueCompleted, OnQueueFailed } fr
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ReviewJobData } from '../queue/review-queue.service';
+import { NotificationService } from '../notification/notification.service';
 import { spawn } from 'child_process';
+
+const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '1', 10);
 
 @Processor('review')
 export class ReviewProcessor {
   private readonly logger = new Logger(ReviewProcessor.name);
+
+  constructor(private readonly notificationService: NotificationService) {}
 
   private spawnAsync(
     cmd: string,
@@ -17,7 +22,6 @@ export class ReviewProcessor {
       const child = spawn(cmd, args, {
         cwd: opts.cwd,
         stdio: ['ignore', 'pipe', 'pipe'],
-        shell: true,
         timeout: opts.timeout,
       });
       let stdout = '';
@@ -32,7 +36,7 @@ export class ReviewProcessor {
     });
   }
 
-  @Process()
+  @Process({ concurrency })
   async handleReview(job: Job<ReviewJobData>): Promise<{
     success: boolean;
     message: string;
@@ -44,12 +48,12 @@ export class ReviewProcessor {
 
     await job.progress(10);
 
-    try {
-      const prNum = prUrl.match(/\/(\d+)$/)?.[1];
-      if (!prNum) {
-        return { success: false, message: `Invalid PR URL: ${prUrl}` };
-      }
+    const prNum = prUrl.match(/\/(\d+)$/)?.[1];
+    if (!prNum) {
+      return { success: false, message: `Invalid PR URL: ${prUrl}` };
+    }
 
+    try {
       const cwd = process.env.REPO_PATH ?? process.cwd();
 
       await job.progress(20);
@@ -98,6 +102,16 @@ export class ReviewProcessor {
       return { success: true, message: `Review posted on PR #${prNum}` };
     } catch (err) {
       this.logger.error(`Review job ${job.id} failed: ${(err as Error).message}`);
+      await this.notificationService.publish({
+        jobId: String(job.id),
+        issueNum,
+        engine,
+        success: false,
+        type: 'review-failed',
+        jobType: 'review',
+        message: `Review failed for PR #${prNum} (issue #${issueNum}): ${(err as Error).message}`,
+        timestamp: Date.now(),
+      });
       return { success: false, message: `Review failed: ${(err as Error).message}` };
     }
   }
@@ -120,10 +134,21 @@ export class ReviewProcessor {
   }
 
   @OnQueueFailed()
-  onFailed(job: Job<ReviewJobData>, err: Error) {
+  async onFailed(job: Job<ReviewJobData>, err: Error) {
     this.logger.error(
       `Review job ${job.id} failed: ${err.message}`,
       err.stack,
     );
+
+    await this.notificationService.publish({
+      jobId: String(job.id),
+      issueNum: job.data.issueNum,
+      engine: job.data.engine,
+      success: false,
+      type: 'review-failed',
+      jobType: 'review',
+      message: `Review crashed for issue #${job.data.issueNum}: ${err.message}`,
+      timestamp: Date.now(),
+    });
   }
 }

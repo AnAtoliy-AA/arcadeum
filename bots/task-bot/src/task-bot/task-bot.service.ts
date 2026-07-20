@@ -5,6 +5,7 @@ import { RoadmapService } from '../roadmap/roadmap.service';
 import { PreferencesService } from '../preferences/preferences.service';
 import { GitHubService } from '../github/github.service';
 import { ImplementQueueService } from '../queue/implement-queue.service';
+import { NotificationService, JobNotification } from '../notification/notification.service';
 import { Bot, type Context } from 'grammy';
 
 type Engine = 'opencode' | 'mimo';
@@ -17,6 +18,17 @@ interface ParsedTask {
   scope: string[];
   engine: Engine;
   priority: Priority;
+}
+
+interface PendingRetry {
+  jobType: 'implement' | 'fix' | 'ci-fix';
+  targetNum: string;
+  engine: Engine;
+  chatId: number;
+  worktreePath?: string;
+  retryCount?: number;
+  jobData?: Record<string, unknown>;
+  expiresAt: number;
 }
 
 const SCOPE_KEYWORDS: Record<string, string[]> = {
@@ -55,6 +67,8 @@ export class TaskBotService implements OnApplicationBootstrap {
     string,
     { text: string; userId: number }
   >();
+  private readonly pendingRetries = new Map<string, PendingRetry>();
+  private readonly autoContinueTimers = new Map<string, NodeJS.Timeout>();
   private bot!: Bot;
 
   constructor(
@@ -64,6 +78,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     private readonly prefsService: PreferencesService,
     private readonly githubService: GitHubService,
     private readonly queueService: ImplementQueueService,
+    private readonly notificationService: NotificationService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -78,9 +93,24 @@ export class TaskBotService implements OnApplicationBootstrap {
     this.bot = this.telegramService.getBot();
     this.registerCommands();
 
-    await this.bot.start({
-      onStart: () => this.logger.log('Bot polling started'),
+    await this.bot.api.setMyCommands([
+      { command: 'task', description: 'Create a task (ARC auto-assigned)' },
+      { command: 'tasks', description: 'List open tasks' },
+      { command: 'implement', description: 'Implement an issue' },
+      { command: 'fix', description: 'Fix CI failures + review feedback on a PR' },
+      { command: 'status', description: 'Check implementation status' },
+      { command: 'queue', description: 'Check worker queue status' },
+      { command: 'prefs', description: 'Set preferences' },
+      { command: 'help', description: 'Show available commands' },
+    ]);
+
+    this.notificationService.onNotification((notification) => {
+      this.handleNotification(notification);
     });
+
+    this.bot.start({
+      onStart: () => this.logger.log('Bot polling started'),
+    }).catch((err) => this.logger.error(`Bot start failed: ${err}`));
 
     this.logger.log(
       `Task bot ready. Allowed users: ${this.allowedUserIds.size === 0 ? 'anyone (set TELEGRAM_ALLOWED_USERS)' : [...this.allowedUserIds].join(', ')}`,
@@ -107,6 +137,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           '/task <title> - Create a task (ARC auto-assigned)\n' +
           '/tasks - List open tasks\n' +
           '/implement #12 - Implement an issue\n' +
+          '/fix #12 - Fix CI failures + review feedback on a PR\n' +
           '/status #12 - Check implementation status\n' +
           '/queue - Check worker queue status\n' +
           '/prefs - Set preferences\n' +
@@ -125,6 +156,10 @@ export class TaskBotService implements OnApplicationBootstrap {
     this.bot.command('implement', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
       return this.handleImplement(ctx);
+    });
+    this.bot.command('fix', (ctx) => {
+      if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
+      return this.handleFix(ctx);
     });
     this.bot.command('status', (ctx) => {
       if (!this.isAllowed(ctx)) return ctx.reply('Access denied.');
@@ -173,10 +208,33 @@ export class TaskBotService implements OnApplicationBootstrap {
     let engine: Engine = userId
       ? this.prefsService.getEngine(userId)
       : 'opencode';
-    const engineMatch = cleaned.match(/--engine=(mimo|opencode)/i);
+    const engineMatch = cleaned.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        throw new Error(`Invalid engine: ${requested}. Valid engines: mimo, opencode`);
+      }
+      engine = requested as Engine;
       cleaned = cleaned.replace(/--engine=\S+/i, '').trim();
+    }
+
+    let requirements: string[] = [];
+    const reqMatch = cleaned.match(/--req\s+"([^"]+)"/i);
+    if (reqMatch) {
+      requirements = reqMatch[1]
+        .split(/[,;]/)
+        .map((r) => r.trim())
+        .filter(Boolean);
+      cleaned = cleaned.replace(/--req\s+"[^"]+"/i, '').trim();
+    } else {
+      const reqMatchSimple = cleaned.match(/--req\s+(\S.+)/i);
+      if (reqMatchSimple) {
+        requirements = reqMatchSimple[1]
+          .split(/[,;]/)
+          .map((r) => r.trim())
+          .filter(Boolean);
+        cleaned = cleaned.replace(/--req\s+.+/i, '').trim();
+      }
     }
 
     let priority: Priority = 'normal';
@@ -209,10 +267,12 @@ export class TaskBotService implements OnApplicationBootstrap {
       arc = roadmapMatch?.arc ?? this.roadmapService.getNextArcNumber();
     }
 
-    const requirements = lines
-      .slice(1)
-      .filter((l) => /^[-*]\s/.test(l))
-      .map((l) => l.replace(/^[-*]\s+/, ''));
+    if (requirements.length === 0) {
+      requirements = lines
+        .slice(1)
+        .filter((l) => /^[-*]\s/.test(l))
+        .map((l) => l.replace(/^[-*]\s+/, ''));
+    }
 
     const scopeLine = lines.find((l) => /^scope:/i.test(l));
     let scope: string[];
@@ -239,12 +299,28 @@ export class TaskBotService implements OnApplicationBootstrap {
     const userId = ctx.from?.id ?? 0;
 
     try {
+      const issue = this.githubService.viewIssue(issueNum);
+      if (!issue) {
+        await ctx.reply(`Issue #${issueNum} not found.`);
+        return;
+      }
+      if (issue.state !== 'OPEN') {
+        await ctx.reply(`Issue #${issueNum} is ${issue.state.toLowerCase()}.`);
+        return;
+      }
+
       const jobId = await this.queueService.addJob(
         issueNum,
         engine,
         chatId,
         userId,
+        {
+          issueTitle: issue.title,
+          issueBody: issue.body,
+          issueLabels: issue.labels,
+        },
       );
+
       await ctx.reply(
         `Queued implementation #${issueNum} with ${engine}.\nJob ID: ${jobId}\n\nWorkers will process it shortly.`,
         { parse_mode: 'Markdown' },
@@ -300,17 +376,97 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text?.replace(/^\/task\s*/, '');
     if (!text) {
       await ctx.reply(
-        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\nScope: backend, web, mobile, game',
+        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
       );
       return;
     }
-    const task = this.parseTask(text, true, ctx.from?.id);
-    await this.createAndTriggerTask(task, ctx);
+    try {
+      const task = this.parseTask(text, true, ctx.from?.id);
+      await this.createAndTriggerTask(task, ctx);
+    } catch (err) {
+      await ctx.reply((err as Error).message);
+    }
   }
 
   private async handleCallbackQuery(ctx: Context) {
     const data = ctx.callbackQuery?.data;
-    if (!data?.startsWith('engine:')) return;
+    if (!data) return;
+
+    if (data.startsWith('continue:') || data.startsWith('retry:') || data.startsWith('cancel:')) {
+      const action = data.split(':')[0] as 'continue' | 'retry' | 'cancel';
+      const retryKey = data.slice(data.indexOf(':') + 1);
+      const pending = this.pendingRetries.get(retryKey);
+
+      if (!pending) {
+        await ctx.answerCallbackQuery('Expired. Send the command again.');
+        return;
+      }
+
+      if (Date.now() > pending.expiresAt) {
+        this.pendingRetries.delete(retryKey);
+        await ctx.answerCallbackQuery('Expired. Send the command again.');
+        return;
+      }
+
+      this.pendingRetries.delete(retryKey);
+      const existingTimer = this.autoContinueTimers.get(retryKey);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+        this.autoContinueTimers.delete(retryKey);
+      }
+      await ctx.answerCallbackQuery();
+
+      if (action === 'cancel') {
+        await ctx.reply('Cancelled.');
+        return;
+      }
+
+      const useExistingWorktree = action === 'continue' && pending.worktreePath;
+
+      try {
+        if (pending.jobType === 'fix' || pending.jobType === 'ci-fix') {
+          const pr = this.githubService.viewPr(pending.targetNum);
+          if (!pr) {
+            await ctx.reply(`PR #${pending.targetNum} not found.`);
+            return;
+          }
+          const failedChecks = this.githubService.getPrChecks(pending.targetNum).filter(
+            (c) => c.state === 'FAILURE' || c.state === 'failure',
+          );
+          const reviews = this.githubService.getPrReviews(pending.targetNum);
+          const reviewComments = reviews
+            .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+            .map((r) => r.body)
+            .join('\n---\n');
+
+          const jobId = await this.queueService.addFixJob(
+            pending.targetNum,
+            pending.engine,
+            pending.chatId,
+            0,
+            {
+              issueNum: pending.targetNum,
+              prBranchName: pr.headRefName,
+              prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+              prReviewComments: reviewComments || undefined,
+              existingWorktree: useExistingWorktree ? pending.worktreePath : undefined,
+            },
+          );
+          const label = useExistingWorktree ? 'Continuing' : 'Retrying';
+          await ctx.reply(
+            `${label} ${pending.jobType} for PR #${pending.targetNum} with ${pending.engine}.\nJob ID: ${jobId}`,
+          );
+        } else {
+          await this.queueImplementation(pending.targetNum, pending.engine, ctx);
+        }
+      } catch (err) {
+        this.logger.error(`Failed to ${action}: ${err}`);
+        await ctx.reply(`Failed to ${action}. Send the command again.`);
+      }
+      return;
+    }
+
+    if (!data.startsWith('engine:')) return;
 
     const parts = data.split(':');
     if (parts.length !== 3) return;
@@ -331,7 +487,13 @@ export class TaskBotService implements OnApplicationBootstrap {
     await ctx.answerCallbackQuery();
 
     const textWithEngine = `${pending.text} --engine=${engine}`;
-    const task = this.parseTask(textWithEngine, true, pending.userId);
+    let task;
+    try {
+      task = this.parseTask(textWithEngine, true, pending.userId);
+    } catch (err) {
+      await ctx.reply((err as Error).message);
+      return;
+    }
 
     await ctx.editMessageText(`Creating issue for: *${task.title}*...`, {
       parse_mode: 'Markdown',
@@ -370,9 +532,13 @@ export class TaskBotService implements OnApplicationBootstrap {
     const hasDashLines = /^[-*]\s/.test(text.split('\n')[1] ?? '');
 
     if (hasArc && hasDashLines) {
-      const hasEngine = /--engine=(mimo|opencode)/i.test(text);
-      const task = this.parseTask(text, !hasEngine, ctx.from?.id);
-      await this.createAndTriggerTask(task, ctx);
+      try {
+        const hasEngine = /--engine[=:](\S+)/i.test(text);
+        const task = this.parseTask(text, !hasEngine, ctx.from?.id);
+        await this.createAndTriggerTask(task, ctx);
+      } catch (err) {
+        await ctx.reply((err as Error).message);
+      }
     }
   }
 
@@ -409,17 +575,78 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text ?? '';
     const issueNum = text.match(/#?(\d+)/)?.[1];
     if (!issueNum) {
-      await ctx.reply('Usage: /implement #12 --engine=mimo');
+      await ctx.reply('Usage: /implement #12 --engine=mimo\n\nValid engines: mimo, opencode');
       return;
     }
 
     let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(mimo|opencode)/i);
+    const engineMatch = text.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
-      engine = engineMatch[1].toLowerCase() as Engine;
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /implement #${issueNum} --engine=mimo`);
+        return;
+      }
+      engine = requested as Engine;
     }
 
     await this.queueImplementation(issueNum, engine, ctx);
+  }
+
+  private async handleFix(ctx: Context) {
+    const text = ctx.message?.text ?? '';
+    const prNum = text.match(/#?(\d+)/)?.[1];
+    if (!prNum) {
+      await ctx.reply('Usage: /fix #12 --engine=mimo\n\nFixes CI failures, review comments, and common issues on a PR.\nValid engines: mimo, opencode');
+      return;
+    }
+
+    let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
+    const engineMatch = text.match(/--engine[=:](\S+)/i);
+    if (engineMatch) {
+      const requested = engineMatch[1].toLowerCase();
+      if (requested !== 'mimo' && requested !== 'opencode') {
+        await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /fix #${prNum} --engine=mimo`);
+        return;
+      }
+      engine = requested as Engine;
+    }
+
+    const chatId = ctx.chat?.id ?? 0;
+    const userId = ctx.from?.id ?? 0;
+
+    try {
+      const pr = this.githubService.viewPr(prNum);
+      if (!pr) {
+        await ctx.reply(`PR #${prNum} not found.`);
+        return;
+      }
+
+      const failedChecks = this.githubService.getPrChecks(prNum).filter(
+        (c) => c.state === 'FAILURE' || c.state === 'failure',
+      );
+
+      const reviews = this.githubService.getPrReviews(prNum);
+      const reviewComments = reviews
+        .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+        .map((r) => r.body)
+        .join('\n---\n');
+
+      const jobId = await this.queueService.addFixJob(prNum, engine, chatId, userId, {
+        issueNum: prNum,
+        prBranchName: pr.headRefName,
+        prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+        prReviewComments: reviewComments || undefined,
+      });
+
+      await ctx.reply(
+        `Queued fix for PR #${prNum} with ${engine}.\nJob ID: ${jobId}\n\nWorker will process it shortly.`,
+        { parse_mode: 'Markdown' },
+      );
+    } catch (err) {
+      this.logger.error(`Failed to queue fix: ${err}`);
+      await ctx.reply('Failed to queue fix. Try again later.');
+    }
   }
 
   private async handleQueueStatus(ctx: Context) {
@@ -535,5 +762,221 @@ export class TaskBotService implements OnApplicationBootstrap {
         `/prefs scope: backend, web — set default scope`,
       { parse_mode: 'Markdown' },
     );
+  }
+
+  private async handleNotification(notification: JobNotification) {
+    const chatId = parseInt(this.config.get<string>('TELEGRAM_CHAT_ID') ?? '0', 10);
+    if (!chatId) {
+      this.logger.warn('No TELEGRAM_CHAT_ID configured, skipping notification');
+      return;
+    }
+
+    let text: string;
+
+    switch (notification.type) {
+      case 'pr-opened':
+        text = `*PR Opened*\n🔗 ${notification.prUrl}\nIssue #${notification.issueNum} implemented with ${notification.engine}`;
+        break;
+
+      case 'ci-failed':
+        text = `*CI Failed* ❌\nPR #${notification.issueNum} — ${notification.failedChecks?.join(', ') ?? 'unknown'}\n🤖 Auto-fixing...`;
+        break;
+
+      case 'ci-fixed':
+        text = notification.success
+          ? `*CI Passed* ✅\n${notification.message}`
+          : `*CI Fix Failed* ❌\n${notification.message}`;
+        break;
+
+      case 'implement-failed':
+        text = `*Implement Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
+        break;
+
+      case 'fix-failed':
+        text = `*Fix Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
+        break;
+
+      case 'review-failed':
+        text = `*Review Failed* ❌\n${notification.message}\nEngine: ${notification.engine}`;
+        break;
+
+      case 'task-completed':
+        text = notification.success
+          ? `*Task Completed* ✅\nIssue #${notification.issueNum} implemented with ${notification.engine}.\n${notification.message}`
+          : `*Task Failed* ❌\nIssue #${notification.issueNum}: ${notification.message}`;
+        break;
+
+      default: {
+        const status = notification.success ? '✅' : '❌';
+        const title = notification.success ? 'Task Completed' : 'Task Failed';
+        let message = notification.success
+          ? `Issue #${notification.issueNum} implemented successfully with ${notification.engine}.`
+          : `Issue #${notification.issueNum} failed: ${notification.message}`;
+        if (notification.success && notification.message && notification.message !== 'success') {
+          message += `\n${notification.message}`;
+        }
+        text = `*${title}*\n${status} ${message}`;
+        break;
+      }
+    }
+
+    if (text.length > 3900) {
+      text = text.substring(0, 3900) + '...';
+    }
+
+    text = this.sanitizeMessage(text);
+
+    const isFailed = notification.type?.includes('failed') || (!notification.success && notification.type !== 'ci-failed');
+
+    if (isFailed && notification.jobType) {
+      const retryKey = `${notification.jobType}:${notification.issueNum}`;
+      const retryData: PendingRetry = {
+        jobType: notification.jobType as 'implement' | 'fix' | 'ci-fix',
+        targetNum: notification.issueNum,
+        engine: notification.engine as Engine,
+        chatId,
+        worktreePath: notification.worktreePath,
+        expiresAt: Date.now() + 5 * 60 * 1000,
+      };
+      this.pendingRetries.set(retryKey, retryData);
+
+      const hasWorktree = !!notification.worktreePath;
+      const continueBtn = hasWorktree
+        ? [{ text: `▶️ Continue ${notification.jobType}`, callback_data: `continue:${retryKey}` }]
+        : [];
+      const retryBtn = [{ text: `🔄 Retry ${notification.jobType}`, callback_data: `retry:${retryKey}` }];
+      const cancelBtn = [{ text: `❌ Cancel`, callback_data: `cancel:${retryKey}` }];
+
+      try {
+        await this.bot.api.sendMessage(chatId, text, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [continueBtn, retryBtn, cancelBtn].filter((r) => r.length > 0),
+          },
+        });
+        this.logger.log(`Notification sent with action buttons: ${notification.type} for #${notification.issueNum}`);
+        this.scheduleAutoContinue(retryKey, retryData, chatId);
+        return;
+      } catch (err) {
+        try {
+          await this.bot.api.sendMessage(chatId, text, {
+            reply_markup: {
+              inline_keyboard: [continueBtn, retryBtn, cancelBtn].filter((r) => r.length > 0),
+            },
+          });
+          this.logger.log(`Notification sent (plain text) with action buttons: ${notification.type} for #${notification.issueNum}`);
+          this.scheduleAutoContinue(retryKey, retryData, chatId);
+          return;
+        } catch (err2) {
+          this.logger.error(`Failed to send notification: ${err2}`);
+          return;
+        }
+      }
+    }
+
+    try {
+      await this.bot.api.sendMessage(chatId, text, { parse_mode: 'Markdown' });
+      this.logger.log(`Notification sent: ${notification.type ?? 'default'} for #${notification.issueNum}`);
+    } catch (err) {
+      try {
+        await this.bot.api.sendMessage(chatId, text);
+        this.logger.log(`Notification sent (plain text): ${notification.type ?? 'default'} for #${notification.issueNum}`);
+      } catch (err2) {
+        this.logger.error(`Failed to send notification: ${err2}`);
+      }
+    }
+  }
+
+  private sanitizeMessage(text: string): string {
+    return text
+      .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+      .replace(/\[[\d;]*m/g, '')
+      .replace(/`([^`]*?)`/g, '«$1»')
+      .replace(/[*_~\[\]()]/g, '')
+      .slice(0, 3900);
+  }
+
+  private escapeMarkdown(text: string): string {
+    return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+  }
+
+  private scheduleAutoContinue(retryKey: string, pending: PendingRetry, chatId: number): void {
+    const AUTO_CONTINUE_MS = 3 * 60 * 1000;
+    const MAX_AUTO_RETRIES = 3;
+
+    const timer = setTimeout(async () => {
+      this.autoContinueTimers.delete(retryKey);
+      const current = this.pendingRetries.get(retryKey);
+      if (!current) return;
+
+      this.pendingRetries.delete(retryKey);
+      this.logger.log(`Auto-continuing ${current.jobType} for #${current.targetNum}`);
+
+      try {
+        if (current.jobType === 'fix' || current.jobType === 'ci-fix') {
+          const pr = this.githubService.viewPr(current.targetNum);
+          if (!pr) return;
+
+          const failedChecks = this.githubService.getPrChecks(current.targetNum).filter(
+            (c) => c.state === 'FAILURE' || c.state === 'failure',
+          );
+          const reviews = this.githubService.getPrReviews(current.targetNum);
+          const reviewComments = reviews
+            .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+            .map((r) => r.body)
+            .join('\n---\n');
+
+          const worktreeExists = current.worktreePath
+            ? await this.checkWorktreeExists(current.worktreePath)
+            : false;
+
+          const jobId = await this.queueService.addFixJob(
+            current.targetNum,
+            current.engine,
+            current.chatId,
+            0,
+            {
+              issueNum: current.targetNum,
+              prBranchName: pr.headRefName,
+              prFailedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+              prReviewComments: reviewComments || undefined,
+              existingWorktree: worktreeExists ? current.worktreePath : undefined,
+            },
+          );
+
+          const label = worktreeExists ? 'Continuing' : 'Retrying';
+          const retryCount = (current.retryCount ?? 0) + 1;
+          await this.bot.api.sendMessage(chatId,
+            `⏰ Auto-${label.toLowerCase()} ${current.jobType} for PR #${current.targetNum} (${current.engine}).\nJob ID: ${jobId}\nAttempt ${retryCount}/${MAX_AUTO_RETRIES}`,
+          );
+
+          if (retryCount < MAX_AUTO_RETRIES) {
+            const nextKey = `${current.jobType}:${current.targetNum}:retry:${retryCount}`;
+            const nextPending: PendingRetry = {
+              ...current,
+              worktreePath: worktreeExists ? current.worktreePath : undefined,
+              retryCount,
+              expiresAt: Date.now() + 5 * 60 * 1000,
+            };
+            this.pendingRetries.set(nextKey, nextPending);
+            this.scheduleAutoContinue(nextKey, nextPending, chatId);
+          }
+        }
+      } catch (err) {
+        this.logger.error(`Auto-continue failed: ${err}`);
+      }
+    }, AUTO_CONTINUE_MS);
+
+    this.autoContinueTimers.set(retryKey, timer);
+  }
+
+  private async checkWorktreeExists(path: string): Promise<boolean> {
+    try {
+      const { accessSync } = await import('fs');
+      accessSync(path);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

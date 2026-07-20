@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.64] - 2026-07-20
+
+### Added
+- CI poll now triggers fix instead of just logging
+- AI-powered conflict resolution before push
+
+### Fixed
+- fix async return type to Promise<void>
+- remove unused failedCheckNames variable
+- make checkCIStatus async for await calls
+
+
 ## [1.23.63] - 2026-07-20
 
 ### Added

@@ -101,7 +101,7 @@ export function ChessBoardPanel({
         lastMove={lastMove}
         isCheck={snapshot.isCheck}
         kingPosition={kingPosition}
-        ariaLabel={`Chess board, ${snapshot.currentTurnColor} to move`}
+        ariaLabel={t('games.chess_v1.status.boardLabel', { color: snapshot.currentTurnColor === 'white' ? t('games.chess_v1.status.white') : t('games.chess_v1.status.black') })}
         onSquareClick={onSquareClick}
         onPieceDrop={onPieceDrop}
       />

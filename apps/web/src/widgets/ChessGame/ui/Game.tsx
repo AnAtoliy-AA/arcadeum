@@ -401,7 +401,7 @@ function ChessGameImpl({
       loading={!snapshot}
       headerProps={{
         variantEmoji: '♟',
-        title: 'Chess',
+        title: t('games.chess_v1.name'),
         subtitle: room?.name,
         turn: {
           onClockUserId:

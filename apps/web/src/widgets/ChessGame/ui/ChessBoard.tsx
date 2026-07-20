@@ -104,7 +104,7 @@ function ChessBoardImpl({
   return (
     <div
       role="grid"
-      aria-label={ariaLabel ?? 'Chess board'}
+      aria-label={ariaLabel ?? 'Chess'}
       data-testid="chess-board"
       style={{
         display: 'flex',

@@ -12,6 +12,7 @@ export const frMessages = {
           'Jouez aux échecs en multijoueur en ligne. Variantes standard et Chess960, contrôles de temps optionnels, bots dès le premier jour. Gratuit, salles instantanées.',
         keywords:
           'échecs, échecs en ligne, échecs multijeu, chess960, jeux de plateau',
+        howToPlayTitle: 'Comment jouer à {{gameName}}',
       },
       hero: {
         title: 'Échecs — le jeu de stratégie intemporel',
@@ -21,6 +22,7 @@ export const frMessages = {
         ctaQuickplay: "Jouer contre l'IA",
         ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         browseRooms: 'Parcourir les salles',
+        backToGames: '← Jeux',
       },
       highlights: {
         players: {
@@ -163,6 +165,7 @@ export const frMessages = {
       showAll: 'Tout afficher ({{count}})',
       copied: 'Copié !',
       spectating: "En train d'observer",
+      boardLabel: 'Plateau d\'échecs, {{color}} à jouer',
     },
   },
 };

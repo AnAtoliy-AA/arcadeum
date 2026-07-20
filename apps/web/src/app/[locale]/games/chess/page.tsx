@@ -29,6 +29,8 @@ export async function generateMetadata({
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const base = await buildPageMetadata({ locale, page: 'chessLanding' });
+  const messages = await getTranslations(locale);
+  const landingMeta = messages.games?.chess_v1?.landing?.meta;
   return {
     ...base,
     openGraph: {
@@ -38,7 +40,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/chess/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Chess — free multiplayer on Arcadeum',
+          alt: landingMeta?.title ?? 'Chess — free multiplayer on Arcadeum',
         },
       ],
     },
@@ -103,7 +105,9 @@ export default async function ChessLandingRoute({ params }: PageProps) {
     const howToJsonLd = buildHowToJsonLd({
       locale,
       pageUrl,
-      name: `How to play ${gameName}`,
+      name: landing?.meta?.howToPlayTitle
+        ? landing.meta.howToPlayTitle.replace(/\{\{gameName\}\}/g, gameName)
+        : `How to play ${gameName}`,
       description: description ?? '',
       steps: [howToSteps.create, howToSteps.join, howToSteps.play]
         .filter((s): s is { title: string; body: string } => s !== undefined)
@@ -122,6 +126,10 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
       />
     </>
   );

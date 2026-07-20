@@ -17,7 +17,11 @@ export interface ReusableGameLobbyProps {
   isFullscreen?: boolean;
   containerRef?: React.RefObject<TamaguiElement | null>;
   onToggleFullscreen?: () => void;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    difficulty?: 'easy' | 'medium' | 'hard';
+  }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
   onDeleteRoom?: () => void;
@@ -56,6 +60,10 @@ export interface ReusableGameLobbyProps {
     fastRoomLabel?: string;
     botCountLabel?: string;
     startWithBotsLabel?: string;
+    difficultyLabel?: string;
+    difficultyEasy?: string;
+    difficultyMedium?: string;
+    difficultyHard?: string;
     deleteRoomLabel?: string;
     kickPlayerLabel?: string;
     leaveRoomLabel?: string;

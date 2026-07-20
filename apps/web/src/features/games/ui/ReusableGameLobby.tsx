@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';
+import {
+  loadStoredSettings,
+  saveStoredSettings,
+} from '@/shared/lib/settings-storage';
 import {
   LobbyContent,
   CenterSection,
@@ -111,6 +115,10 @@ export function ReusableGameLobby({
     fastRoomLabel = 'Fast Room',
     botCountLabel = 'Number of bots',
     startWithBotsLabel = 'Start with {{count}} 🤖',
+    difficultyLabel = 'AI Difficulty',
+    difficultyEasyLabel = 'Easy',
+    difficultyMediumLabel = 'Medium',
+    difficultyHardLabel = 'Hard',
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
@@ -137,21 +145,32 @@ export function ReusableGameLobby({
   }, [room.gameId, onRuleComingSoonChange]);
 
   const [botCount, setBotCount] = useState(1);
+  const [difficulty, setDifficulty] = useState<
+    'easy' | 'medium' | 'hard'
+  >(() => {
+    const settings = loadStoredSettings();
+    return settings.aiDifficulty ?? 'medium';
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
   const cooldownRef = React.useRef(0);
+
+  useEffect(() => {
+    saveStoredSettings({ aiDifficulty: difficulty });
+  }, [difficulty]);
+
   const handleStart = React.useCallback(() => {
     const now = Date.now();
     if (now - cooldownRef.current < 1000) return;
     cooldownRef.current = now;
 
     if (enableBots && room.playerCount === 1) {
-      onStartGame({ withBots: true, botCount });
+      onStartGame({ withBots: true, botCount, difficulty });
     } else {
       onStartGame();
     }
-  }, [enableBots, room.playerCount, botCount, onStartGame]);
+  }, [enableBots, room.playerCount, botCount, difficulty, onStartGame]);
 
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
 
@@ -308,6 +327,34 @@ export function ReusableGameLobby({
                         onClick={() => setBotCount(count)}
                       >
                         {count}
+                      </BotCountButton>
+                    ))}
+                  </BotCountButtons>
+                </BotCountSelector>
+              )}
+              {enableBots && room.playerCount === 1 && (
+                <BotCountSelector>
+                  <BotCountLabel>
+                    {difficultyLabel || 'AI Difficulty'}
+                  </BotCountLabel>
+                  <BotCountButtons>
+                    {(
+                      [
+                        { key: 'easy', label: difficultyEasyLabel || 'Easy' },
+                        {
+                          key: 'medium',
+                          label: difficultyMediumLabel || 'Medium',
+                        },
+                        { key: 'hard', label: difficultyHardLabel || 'Hard' },
+                      ] as const
+                    ).map((d) => (
+                      <BotCountButton
+                        key={d.key}
+                        data-testid={`difficulty-${d.key}`}
+                        $isActive={difficulty === d.key}
+                        onClick={() => setDifficulty(d.key)}
+                      >
+                        {d.label}
                       </BotCountButton>
                     ))}
                   </BotCountButtons>

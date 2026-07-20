@@ -11,6 +11,7 @@ export type StoredSettings = {
   musicRepeat?: 'off' | 'all' | 'one';
   musicEnabledTracks?: number[];
   musicTrackOrder?: number[];
+  aiDifficulty?: 'easy' | 'medium' | 'hard';
 };
 
 const listeners = new Set<() => void>();
@@ -82,6 +83,14 @@ export function loadStoredSettings(): StoredSettings {
       parsed.musicTrackOrder.every((t) => typeof t === 'number')
     ) {
       settings.musicTrackOrder = parsed.musicTrackOrder;
+    }
+
+    if (
+      parsed.aiDifficulty === 'easy' ||
+      parsed.aiDifficulty === 'medium' ||
+      parsed.aiDifficulty === 'hard'
+    ) {
+      settings.aiDifficulty = parsed.aiDifficulty;
     }
 
     return settings;

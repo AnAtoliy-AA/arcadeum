@@ -43,7 +43,11 @@ interface SeaBattleLobbyProps {
   isHost: boolean;
   userId?: string;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    difficulty?: 'easy' | 'medium' | 'hard';
+  }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onShowRules: (show: boolean) => void;
   onDeleteRoom?: () => void;
@@ -144,7 +148,11 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const teamStartBlocked = teamMode && !allTeamsFull;
 
   const handleStart = React.useCallback(
-    (opts?: { withBots?: boolean; botCount?: number }) => {
+    (opts?: {
+      withBots?: boolean;
+      botCount?: number;
+      difficulty?: 'easy' | 'medium' | 'hard';
+    }) => {
       if (teamStartBlocked) return;
       onStartGame(opts);
     },
@@ -438,6 +446,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
           fastRoomLabel: t('games.rooms.fastRoom'),
           botCountLabel: t('games.lobby.botCountLabel'),
           startWithBotsLabel: t('games.lobby.startWithBots'),
+          difficultyLabel: t('games.lobby.difficultyLabel'),
+          difficultyEasyLabel: t('games.lobby.difficultyEasy'),
+          difficultyMediumLabel: t('games.lobby.difficultyMedium'),
+          difficultyHardLabel: t('games.lobby.difficultyHard'),
         }}
         theme={theme}
         showReorderControls={true}

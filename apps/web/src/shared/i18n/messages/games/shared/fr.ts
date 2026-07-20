@@ -284,6 +284,13 @@ export const frMessages = {
     startWithBots: 'Commencer avec {{count}} 🤖',
     playWithBotsNotice:
       "Commencez avec des bots immédiatement ou attendez d'autres joueurs",
+    difficultyLabel: 'Difficulté IA',
+    difficultyEasy: 'Facile',
+    difficultyMedium: 'Moyen',
+    difficultyHard: 'Difficile',
+    difficultyEasyDesc: 'Coups aléatoires avec des plays intelligents occasionnels',
+    difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
+    difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
   },
   shared: {
     rules: {

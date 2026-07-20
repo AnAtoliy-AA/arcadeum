@@ -6,6 +6,7 @@ import { ReviewProcessor } from './review.processor';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { GitHubModule } from '../github/github.module';
 import { NotificationModule } from '../notification/notification.module';
+import { CIModule } from '../ci/ci.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { NotificationModule } from '../notification/notification.module';
     ),
     GitHubModule,
     NotificationModule,
+    CIModule,
   ],
   providers: [
     { provide: ImplementProcessor, useClass: ImplementProcessor },

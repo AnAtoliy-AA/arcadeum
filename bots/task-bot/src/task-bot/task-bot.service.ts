@@ -784,7 +784,7 @@ export class TaskBotService implements OnApplicationBootstrap {
 
       case 'ci-fixed':
         text = notification.success
-          ? `*CI Fixed* ✅\n${notification.message}`
+          ? `*CI Passed* ✅\n${notification.message}`
           : `*CI Fix Failed* ❌\n${notification.message}`;
         break;
 

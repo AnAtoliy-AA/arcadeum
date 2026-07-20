@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.60] - 2026-07-20
+
+### Added
+- run lint/typecheck/build verification before push
+- chain auto-continue up to 3 retries
+- auto-continue after 3 min timeout
+- continue/retry/cancel buttons on failed jobs
+- add retry button on failed jobs
+- add descriptive failure notifications to Telegram
+- worker no longer pushes — commits locally, processor handles push + PR creation
+- add /fix command for CI failures + review feedback
+- full autonomous CI fix loop with TG notifications
+- auto-check and fix CI failures after PR creation
+- add --req flag for specifying task requirements
+- add Redis pub/sub notifications for task completion
+
+### Fixed
+- pass issue data directly in addJob to prevent race condition
+- add push timeout and gh auth fallback
+- re-fetch failed checks when worker starts processing
+- accept colon syntax for --engine flag
+- force HTTPS remote for worktree push
+- skip failure notifications for already-processed jobs
+- increase AI timeout to 900s and commit partial changes on timeout
+- prevent mimo from loading skills and exploring during fix tasks
+- fetch actual CI error output and add backend verification to fix prompts
+- per-target locking with concurrency 5
+- set worker concurrency to 1
+- robust timeout + hooks disable in all methods
+- keep worktree on failure for auto-continue
+- disable git hooks in worktrees via core.hooksPath
+- set HUSKY=0 to prevent pre-commit hooks in AI spawns
+- forbid AI from running git commit
+- sanitize notification messages for Telegram
+- use correct type-check command in AI prompts
+- install deps in worktree so pre-commit hooks work and AI can fix real issues
+- set HUSKY=0 in spawn env instead of deleting .husky
+- remove .husky from worktrees — AI ignores 'do not commit' prompt
+- checkout remote branch in worktree — avoids stale local branch state
+- detach HEAD before creating worktree — prevents branch-in-use error
+- tell AI not to commit/push — processor handles git ops
+- skip pre-commit hooks in worktrees — no node_modules available
+- regenerate pnpm lockfile to match overrides config
+- resolve CodeQL warnings — unused vars and useless assignments
+- use opencode for CI fixes to avoid git permission issues
+- focus fixPR prompt on local commands instead of fetching CI logs
+- register commands with Telegram Bot API for autocomplete menu
+- clean workdir before branch checkout to prevent dirty state errors
+- remove duplicate handleFix code
+- queue /fix jobs to Bull worker instead of running in API
+- limit jest workers to prevent SIGSEGV crashes
+- use mimo for CI auto-fix and update roadmap statuses
+- use gh pr checks state field instead of conclusion
+- make bot.start() non-blocking to unblock HTTP server
+- fix TypeScript errors in implementLocally
+- create PR from main instance when worker can't
+- instruct AI to handle pre-commit failures and create PR
+- use opencode/mimo-v2.5-free model for AI implementation
+- enhance AI prompt with context when requirements are TBD
+- always show implementation details in Telegram notification
+- use execFileSync for gh CLI and truncate long Telegram messages
+
+### Refactored
+- worktree isolation, permission separation, unified job types
+
+
 ## [1.23.59] - 2026-07-20
 
 ### Added

@@ -229,9 +229,11 @@ export function applyMove(board: Board, steps: MoveStep[]): Board {
   const lastStep = steps[steps.length - 1];
   const movingPiece = { ...piece };
 
-  // Promote to king if reaching the back row
-  const promotionRow = piece.playerId === 'light' ? 0 : BOARD_SIZE - 1;
-  if (movingPiece.type === 'man' && lastStep.toRow === promotionRow) {
+  // Promote to king if reaching either edge row
+  if (
+    movingPiece.type === 'man' &&
+    (lastStep.toRow === 0 || lastStep.toRow === BOARD_SIZE - 1)
+  ) {
     movingPiece.type = 'king';
   }
 

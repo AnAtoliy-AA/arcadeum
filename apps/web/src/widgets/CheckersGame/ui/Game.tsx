@@ -16,7 +16,7 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type { CheckersGameProps, CheckersClientState, MoveStep } from '../types';
+import type { CheckersGameProps, MoveStep } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
 import { CheckersThemeProvider } from '../lib/CheckersThemeContext';
@@ -230,7 +230,6 @@ function CheckersGameImpl({
             players={snapshot.players}
             selectedPiece={selectedPiece}
             disabled={!myTurn || isGameOver}
-            currentPlayerId={currentTurnUserId}
             ariaLabel="Checkers 8×8 board"
             onCellClick={handleCellClick}
           />

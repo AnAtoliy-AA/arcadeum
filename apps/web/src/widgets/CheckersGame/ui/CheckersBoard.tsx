@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { YStack } from 'tamagui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
-import type { Board, CheckersPlayer, Piece } from '../types';
+import type { Board, CheckersPlayer } from '../types';
 
 const BOARD_SIZE = 8;
 
@@ -12,7 +12,6 @@ interface CheckersBoardProps {
   players: CheckersPlayer[];
   selectedPiece: { row: number; col: number } | null;
   disabled: boolean;
-  currentPlayerId: string | null;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
 }
@@ -22,7 +21,6 @@ export function CheckersBoard({
   players,
   selectedPiece,
   disabled,
-  currentPlayerId,
   ariaLabel,
   onCellClick,
 }: CheckersBoardProps) {
@@ -70,7 +68,6 @@ export function CheckersBoard({
             const piece = board[row][col];
             const isSelected =
               selectedPiece?.row === row && selectedPiece?.col === col;
-            const isPlayerPiece = piece?.playerId === currentPlayerId;
             const pieceColor = piece ? playerColorMap[piece.playerId] : null;
 
             return (

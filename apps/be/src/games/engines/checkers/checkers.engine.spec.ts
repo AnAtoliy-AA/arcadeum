@@ -315,13 +315,14 @@ describe('CheckersEngine', () => {
     it('promotes dark piece to king when reaching row 7', () => {
       const state = engine.initializeState(['a', 'b']);
       clearBoard(state);
+      state.board[5][2] = { playerId: 'a', type: 'man' };
       state.board[6][1] = { playerId: 'b', type: 'man' };
 
       const r1 = engine.executeAction(
         state,
         'move_piece',
         ctx('a'),
-        singleStep(5, 0, 4, 1),
+        singleStep(5, 2, 4, 3),
       );
       expect(r1.success).toBe(true);
 
@@ -341,6 +342,7 @@ describe('CheckersEngine', () => {
       const state = engine.initializeState(['a', 'b']);
       clearBoard(state);
       state.board[3][3] = { playerId: 'a', type: 'king' };
+      state.board[5][0] = { playerId: 'b', type: 'man' };
 
       // Move king up-left (backward for light)
       const r1 = engine.executeAction(
@@ -357,7 +359,7 @@ describe('CheckersEngine', () => {
         r1.state!,
         'move_piece',
         ctx('b'),
-        singleStep(5, 0, 4, 1),
+        singleStep(5, 0, 6, 1),
       );
       expect(r2.success).toBe(true);
 

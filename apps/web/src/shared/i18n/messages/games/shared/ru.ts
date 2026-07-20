@@ -283,6 +283,9 @@ export const ruMessages = {
     difficultyEasy: 'Легко',
     difficultyMedium: 'Средне',
     difficultyHard: 'Сложно',
+    difficultyEasyDesc: 'Случайные ходы с редкими умными играми',
+    difficultyMediumDesc: 'Умное наведение со стратегией блокировки',
+    difficultyHardDesc: 'Точное наведение на основе вероятностей',
   },
   shared: {
     rules: {

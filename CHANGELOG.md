@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.65] - 2026-07-20
+
+### Fixed
+- use separate row/col bounds in infinity board validator
+
+
+## [1.23.64] - 2026-07-20
+
+### Added
+- CI poll now triggers fix instead of just logging
+- AI-powered conflict resolution before push
+
+### Fixed
+- fix async return type to Promise<void>
+- remove unused failedCheckNames variable
+- make checkCIStatus async for await calls
+
+
+## [1.23.63] - 2026-07-20
+
+### Added
+- ai difficulty levels (ARC-880)
+
+### Fixed
+- resolve CI failures and review feedback
+
+
+## [1.23.62] - 2026-07-20
+
+### Added
+- add conflict resolution before push and .mimocode to gitignore
+
+### Fixed
+- only verify on /fix, not /implement
+
+
 ## [1.23.61] - 2026-07-20
 
 ### Added

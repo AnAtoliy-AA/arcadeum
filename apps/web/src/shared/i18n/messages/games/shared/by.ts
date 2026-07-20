@@ -280,8 +280,11 @@ export const byMessages = {
     playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',
     difficultyLabel: 'Складанасць ІІ',
     difficultyEasy: 'Лёгка',
-    difficultyMedium: 'Сярэдне',
-    difficultyHard: 'Складана',
+    difficultyMedium: 'Сярэдня',
+    difficultyHard: 'Цяжка',
+    difficultyEasyDesc: 'Выпадковыя хады з рэдкімі разумнымі гульнямі',
+    difficultyMediumDesc: 'Разумнае навядзенне са стратэгіяй блакіроўкі',
+    difficultyHardDesc: 'Дакладнае навядзенне на аснове верагоднасцяў',
   },
   shared: {
     rules: {

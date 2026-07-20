@@ -285,8 +285,11 @@ export const esMessages = {
       'Empieza con bots inmediatamente o espera a otros jugadores',
     difficultyLabel: 'Dificultad de IA',
     difficultyEasy: 'Fácil',
-    difficultyMedium: 'Medio',
+    difficultyMedium: 'Media',
     difficultyHard: 'Difícil',
+    difficultyEasyDesc: 'Movimientos aleatorios con jugadas inteligentes ocasionales',
+    difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
+    difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
   },
   shared: {
     rules: {

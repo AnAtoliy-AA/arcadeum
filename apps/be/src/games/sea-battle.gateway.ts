@@ -89,6 +89,7 @@ export class SeaBattleGateway {
       userId?: string;
       withBots?: boolean;
       botCount?: number;
+      difficulty?: 'easy' | 'medium' | 'hard';
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
@@ -98,6 +99,7 @@ export class SeaBattleGateway {
         roomId,
         !!payload?.withBots,
         payload?.botCount,
+        payload?.difficulty,
       );
       client.emit('seaBattle.session.started', maybeEncrypt(result));
     } catch (error) {

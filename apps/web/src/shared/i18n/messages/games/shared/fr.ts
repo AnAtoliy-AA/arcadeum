@@ -288,6 +288,9 @@ export const frMessages = {
     difficultyEasy: 'Facile',
     difficultyMedium: 'Moyen',
     difficultyHard: 'Difficile',
+    difficultyEasyDesc: 'Coups aléatoires avec des plays intelligents occasionnels',
+    difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
+    difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
   },
   shared: {
     rules: {

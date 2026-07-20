@@ -23,6 +23,10 @@ import {
   WIN_LENGTHS,
 } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import {
+  DifficultySelector,
+  type BotDifficulty,
+} from '@/features/games/ui/DifficultySelector';
 
 const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
   const variant = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variantId);
@@ -41,7 +45,11 @@ interface TicTacToeLobbyProps {
   userId: string;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    difficulty?: BotDifficulty;
+  }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
@@ -102,6 +110,7 @@ export function TicTacToeLobby({
   }, [variant, t]);
 
   const [internalTeamMode, setInternalTeamMode] = useState(options.teamMode);
+  const [difficulty, setDifficulty] = useState<BotDifficulty>('medium');
 
   const handleTeamModeToggle = (val: boolean) => {
     if (!isHost) return;
@@ -135,6 +144,7 @@ export function TicTacToeLobby({
         onMarginChange={handleMarginChange}
         onWinLengthChange={handleWinLengthChange}
       />
+      <DifficultySelector value={difficulty} onChange={setDifficulty} />
       <XStack alignItems="center" gap="$3">
         <Text fontWeight="600">{t('games.tic_tac_toe_v1.lobby.teamMode')}</Text>
         <Switch
@@ -164,7 +174,9 @@ export function TicTacToeLobby({
         userId={userId}
         isHost={isHost}
         startBusy={startBusy}
-        onStartGame={onStartGame}
+        onStartGame={(opts) =>
+          onStartGame({ ...opts, difficulty })
+        }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}
         onKickPlayer={onKickPlayer}

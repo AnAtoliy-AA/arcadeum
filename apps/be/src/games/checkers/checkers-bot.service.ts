@@ -25,7 +25,7 @@ export class CheckersBotService {
   private readonly processing = new Set<string>();
 
   constructor(
-    @Inject(forwardRef(() => CheckersBotService))
+    @Inject(forwardRef(() => CheckersService))
     private readonly checkersService: CheckersService,
   ) {}
 

@@ -12,11 +12,27 @@ interface GitHubIssue {
   scope: string[];
 }
 
+const GITHUB_RATE_LIMIT_DELAY_MS = 500;
+
 @Injectable()
 export class GitHubService {
   private readonly logger = new Logger(GitHubService.name);
+  private lastGhCallTime = 0;
 
   constructor(private readonly config: ConfigService) {}
+
+  private throttleGitHub(): void {
+    const now = Date.now();
+    const elapsed = now - this.lastGhCallTime;
+    if (elapsed < GITHUB_RATE_LIMIT_DELAY_MS) {
+      const waitMs = GITHUB_RATE_LIMIT_DELAY_MS - elapsed;
+      const start = Date.now();
+      while (Date.now() - start < waitMs) {
+        // busy wait for rate limit
+      }
+    }
+    this.lastGhCallTime = Date.now();
+  }
 
   private getCwd(): string {
     return this.config.get<string>('REPO_PATH') ?? process.cwd();
@@ -209,6 +225,7 @@ export class GitHubService {
     ];
 
     try {
+      this.throttleGitHub();
       const result = execFileSync('gh', args, {
         encoding: 'utf-8',
         cwd: this.getCwd(),
@@ -250,6 +267,7 @@ export class GitHubService {
     labels: Array<{ name: string }>;
   } | null {
     try {
+      this.throttleGitHub();
       const result = execFileSync(
         'gh',
         ['issue', 'view', issueNum, '--json', 'state,title,body,comments,labels'],
@@ -285,6 +303,7 @@ export class GitHubService {
     statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
   } | null {
     try {
+      this.throttleGitHub();
       const result = execFileSync(
         'gh',
         ['pr', 'view', prNum, '--json', 'state,headRefName,statusCheckRollup'],
@@ -304,6 +323,7 @@ export class GitHubService {
     prNumber: string,
   ): Array<{ name: string; state: string; link: string }> {
     try {
+      this.throttleGitHub();
       const result = execFileSync(
         'gh',
         ['pr', 'checks', prNumber, '--json', 'name,state,link'],
@@ -347,6 +367,7 @@ export class GitHubService {
     prNumber: string,
   ): Array<{ body: string; state: string }> {
     try {
+      this.throttleGitHub();
       const result = execFileSync(
         'gh',
         ['pr', 'view', prNumber, '--json', 'reviews'],
@@ -440,6 +461,7 @@ export class GitHubService {
       if (!issue) {
         return { success: false, message: `Issue #${issueNum} not found` };
       }
+      this.throttleGitHub();
       const prUrl = execFileSync(
         'gh',
         [

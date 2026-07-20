@@ -44,8 +44,24 @@ jobs:
             core.setOutput('branch', context.payload.workflow_run.head_branch);
             core.setOutput('failed_checks', JSON.stringify(failed));
 
-      - name: Notify task bot
+      - name: Check if PR is from task bot
+        id: check
         if: steps.pr.outputs.pr_number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(context.payload.workflow_run.head_branch.match(/task-(\d+)/)?.[1] || '0'),
+            }).catch(() => null);
+
+            const branch = context.payload.workflow_run.head_branch;
+            const isTaskBot = branch.startsWith('task-');
+            core.setOutput('is_task_bot', isTaskBot);
+
+      - name: Notify task bot
+        if: steps.pr.outputs.pr_number != '' && steps.check.outputs.is_task_bot == 'true'
         run: |
           curl -s -X POST "https://$TASK_BOT_HOST/ci/fix" \
             -H "Content-Type: application/json" \

@@ -29,6 +29,7 @@ Worker Process (concurrency: 3)
     ├─ 5. git commit + push
     ├─ 6. gh pr create --base develop
     ├─ 7. Queue review job
+    ├─ 8. Start CI polling (background, 30s interval, 15min timeout)
     │
     ▼
 Review Worker
@@ -42,14 +43,17 @@ CI Pipeline (GitHub Actions)
     ├─ ci.yml runs lint/typecheck/test
     ├─ If failed → auto-fix-ci.yml
     │   └─ POST to task bot /ci/fix endpoint
-    │       └─ Worker fixes + pushes
+    │       ├─ Check max attempts (default 3, Redis-tracked)
+    │       ├─ If under limit → queue fix job
+    │       └─ If over limit → notify "manual intervention needed"
+    ├─ CI Poller detects all checks passed → notify "CI Green ✅"
     │
     ▼
 Notifications (Redis pub/sub → Telegram)
     │
     ├─ "PR Opened 🔗 ..."
-    ├─ "CI Failed ❌ Auto-fixing..."
-    ├─ "CI Fixed ✅"
+    ├─ "CI Failed ❌ Auto-fixing... (attempt 1/3)"
+    ├─ "CI Fixed ✅" / "CI Passed ✅"
     └─ "Task Completed ✅"
 ```
 
@@ -235,6 +239,7 @@ REDIS_PORT=6379
 TASK_BOT_PORT=4002
 WORKER_CONCURRENCY=3
 CI_WEBHOOK_SECRET=...
+CI_FIX_MAX_ATTEMPTS=3
 
 # AI Engines
 MIMO_API_KEY=...
@@ -286,6 +291,23 @@ When PR merges → auto-closes linked issue.
 | `in-review`       | Task bot worker     | PR created, ready for review                         |
 | `priority`        | Task bot (TG)       | High/urgent priority                                 |
 | `ARC-XXX`         | Task bot (TG)       | Links to roadmap ticket                              |
+
+## CI Fix Max Attempts
+
+The CI auto-fix loop is bounded by `CI_FIX_MAX_ATTEMPTS` (default: 3). Tracked per PR in Redis with 1-hour TTL.
+
+- Each CI failure webhook increments the counter
+- When max reached, the bot stops auto-fixing and notifies "manual intervention needed"
+- Counter resets when CI passes (via `/ci/reset` endpoint or Redis TTL)
+- Configurable via `CI_FIX_MAX_ATTEMPTS` env var
+
+## CI Polling
+
+After PR creation, the worker starts a background CI poller:
+- Checks `gh pr checks` every 30 seconds
+- Notifies "CI Passed ✅" when all checks pass
+- Stops polling on failure (webhook handles auto-fix) or after 15 minutes timeout
+- Non-blocking — doesn't hold the worker process
 
 ## Monitoring
 

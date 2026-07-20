@@ -5,12 +5,14 @@ import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { GitHubService } from '../github/github.service';
 import { NotificationService } from '../notification/notification.service';
+import { CIFollService } from '../ci/ci-poll.service';
 
 describe('ImplementProcessor', () => {
   let processor: ImplementProcessor;
   let mockGitHubService: jest.Mocked<GitHubService>;
   let mockReviewQueue: jest.Mocked<ReviewQueueService>;
   let mockNotificationService: jest.Mocked<NotificationService>;
+  let mockCIPollService: jest.Mocked<CIFollService>;
 
   beforeEach(async () => {
     mockGitHubService = {
@@ -31,12 +33,18 @@ describe('ImplementProcessor', () => {
       publish: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<NotificationService>;
 
+    mockCIPollService = {
+      startPolling: jest.fn(),
+      stopPolling: jest.fn(),
+    } as unknown as jest.Mocked<CIFollService>;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImplementProcessor,
         { provide: GitHubService, useValue: mockGitHubService },
         { provide: ReviewQueueService, useValue: mockReviewQueue },
         { provide: NotificationService, useValue: mockNotificationService },
+        { provide: CIFollService, useValue: mockCIPollService },
       ],
     }).compile();
 
@@ -181,6 +189,30 @@ describe('ImplementProcessor', () => {
         123456,
         789,
         'https://github.com/test/pr/1',
+      );
+    });
+
+    it('should start CI polling after PR creation', async () => {
+      const job = {
+        id: '6',
+        data: {
+          issueNum: '222',
+          engine: 'mimo',
+          chatId: 123456,
+          userId: 789,
+          type: 'implement' as const,
+          issueTitle: 'CI Poll Test',
+          issueBody: 'body',
+        },
+        progress: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Job<ImplementJobData>;
+
+      await processor.handleJob(job);
+
+      expect(mockCIPollService.startPolling).toHaveBeenCalledWith(
+        '1',
+        '222',
+        'mimo',
       );
     });
   });

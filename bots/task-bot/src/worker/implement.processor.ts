@@ -5,6 +5,7 @@ import { GitHubService } from '../github/github.service';
 import { ImplementJobData } from '../queue/implement-queue.service';
 import { ReviewQueueService } from '../queue/review-queue.service';
 import { NotificationService } from '../notification/notification.service';
+import { CIFollService } from '../ci/ci-poll.service';
 
 const concurrency = parseInt(process.env.WORKER_CONCURRENCY ?? '5', 10);
 
@@ -17,6 +18,7 @@ export class ImplementProcessor {
     private readonly githubService: GitHubService,
     private readonly reviewQueue: ReviewQueueService,
     private readonly notificationService: NotificationService,
+    private readonly ciPollService: CIFollService,
   ) {}
 
   @Process({ concurrency })
@@ -245,6 +247,12 @@ export class ImplementProcessor {
         );
       } catch (err) {
         this.logger.error(`Failed to queue review: ${(err as Error).message}`);
+      }
+
+      const prNum = prUrl.match(/\/(\d+)$/)?.[1];
+      if (prNum) {
+        this.logger.log(`Starting CI poll for PR #${prNum}`);
+        this.ciPollService.startPolling(prNum, issueNum, job.data.engine);
       }
     }
 

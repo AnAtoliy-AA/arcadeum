@@ -31,13 +31,13 @@ import {
   handleRemoveBotFromTeam,
   handleToggleHideShips,
 } from './sea-battle.gateway.lobby';
-interface ShipOpPayload {
+type ShipOpPayload = {
   roomId?: string;
   userId?: string;
   shipId?: string;
   cells?: { row: number; col: number }[];
   [key: string]: unknown;
-}
+};
 
 @WebSocketGateway({
   namespace: 'games',
@@ -371,12 +371,12 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
-    const scopeRaw =
+    const raw =
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
     const scope = (
-      ['players', 'private', 'team'].includes(scopeRaw) ? scopeRaw : 'all'
+      ['players', 'private', 'team'].includes(raw) ? raw : 'all'
     ) as ChatScope;
     try {
       await this.seaBattleService.postHistoryNote(

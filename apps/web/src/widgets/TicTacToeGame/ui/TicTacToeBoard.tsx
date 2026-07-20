@@ -6,6 +6,7 @@ import type {
   CellValue,
   TicTacToePlayer,
   TicTacToeTeam,
+  TicTacToeTheme,
   WinLineCell,
 } from '../types';
 import './styles/animations.scss';
@@ -30,6 +31,122 @@ interface TicTacToeBoardProps {
   maxBoardSize?: number;
   currentPlayerId?: string | null;
 }
+
+interface CellRendererProps {
+  rowIdx: number;
+  colIdx: number;
+  cell: CellValue;
+  origin: { row: number; col: number };
+  disabled: boolean;
+  winSet: Set<string>;
+  symbolByOwner: Map<string, { mark: string; color: string }>;
+  hoveredCell: { row: number; col: number } | null;
+  currentPlayerId?: string | null;
+  highlightedCell?: { row: number; col: number } | null;
+  maxBoardSize: number;
+  rows: number;
+  cols: number;
+  theme: TicTacToeTheme;
+  cellStyle: React.CSSProperties;
+  playerCursor?: string;
+  onCellClick: (row: number, col: number) => void;
+  onHover: (row: number, col: number) => void;
+  onLeave: () => void;
+}
+
+function CellRenderer({
+  rowIdx,
+  colIdx,
+  cell,
+  origin,
+  disabled,
+  winSet,
+  symbolByOwner,
+  hoveredCell,
+  currentPlayerId,
+  highlightedCell,
+  maxBoardSize,
+  rows,
+  cols,
+  theme,
+  cellStyle,
+  playerCursor,
+  onCellClick,
+  onHover,
+  onLeave,
+}: CellRendererProps) {
+  const isWinning = winSet.has(`${rowIdx}:${colIdx}`);
+  const ownerInfo = cell ? symbolByOwner.get(cell) : null;
+  const cellDisabled = disabled || cell !== null;
+  const isHovered =
+    !cellDisabled && hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+  const previewInfo =
+    isHovered && !disabled && currentPlayerId
+      ? (symbolByOwner.get(currentPlayerId) ?? null)
+      : null;
+  const isHighlighted = highlightedCell
+    ? rowIdx === highlightedCell.row + origin.row &&
+      colIdx === highlightedCell.col + origin.col
+    : false;
+  const isMaxRows = rows >= maxBoardSize;
+  const isMaxCols = cols >= maxBoardSize;
+  const isAtLimit =
+    (isMaxRows && rowIdx === rows - 1) || (isMaxCols && colIdx === cols - 1);
+
+  return (
+    <button
+      type="button"
+      role="gridcell"
+      data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
+      disabled={cellDisabled}
+      aria-label={
+        ownerInfo
+          ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
+          : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
+      }
+      onClick={() => onCellClick(rowIdx, colIdx)}
+      onMouseEnter={() => {
+        if (!cell && !disabled) onHover(rowIdx, colIdx);
+      }}
+      onMouseLeave={onLeave}
+      className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}`}
+      style={{
+        ...cellStyle,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: isWinning
+          ? theme.winningCellBg
+          : isHighlighted
+            ? 'rgba(99,102,241,0.35)'
+            : isAtLimit
+              ? 'rgba(239,68,68,0.12)'
+              : theme.cellBg,
+        color: ownerInfo?.color ?? previewInfo?.color ?? theme.textColor,
+        border: isHighlighted
+          ? '2px solid rgba(129,140,248,0.8)'
+          : isAtLimit
+            ? '1px dashed rgba(239,68,68,0.45)'
+            : 'none',
+        borderRadius: theme.borderRadius,
+        fontFamily: theme.markFont,
+        fontWeight: 700,
+        fontSize: cellStyle.fontSize,
+        cursor: cellDisabled ? 'default' : (playerCursor ?? 'pointer'),
+        transition: 'background-color 120ms ease, border 120ms ease',
+        overflow: 'hidden',
+      }}
+    >
+      {ownerInfo ? (
+        <span className="ttt-mark">{ownerInfo.mark}</span>
+      ) : previewInfo ? (
+        <span style={{ opacity: 0.25 }}>{previewInfo.mark}</span>
+      ) : null}
+    </button>
+  );
+}
+
+const MemoizedCellRenderer = memo(CellRenderer);
 
 function TicTacToeBoardImpl({
   board,
@@ -185,6 +302,13 @@ function TicTacToeBoardImpl({
     [onCellClick, isScrollable],
   );
 
+  const handleHover = useCallback(
+    (row: number, col: number) => setHoveredCell({ row, col }),
+    [],
+  );
+
+  const handleLeave = useCallback(() => setHoveredCell(null), []);
+
   const gridStyle: React.CSSProperties = isScrollable
     ? {
         display: 'grid',
@@ -253,101 +377,30 @@ function TicTacToeBoardImpl({
         style={gridStyle}
       >
         {board.map((row, rowIdx) =>
-          row.map((cell, colIdx) => {
-            const isWinning = winSet.has(`${rowIdx}:${colIdx}`);
-            const ownerInfo = cell ? symbolByOwner.get(cell) : null;
-            const cellDisabled = disabled || cell !== null;
-            const isHovered =
-              !cellDisabled &&
-              hoveredCell?.row === rowIdx &&
-              hoveredCell?.col === colIdx;
-            const previewInfo =
-              isHovered && !disabled && players.length > 0
-                ? (symbolByOwner.get(players[0].playerId) ?? null)
-                : null;
-            const isHighlighted = highlightedCell
-              ? rowIdx === highlightedCell.row + origin.row &&
-                colIdx === highlightedCell.col + origin.col
-              : false;
-            const isOrigin = rowIdx === origin.row && colIdx === origin.col;
-            const isMaxRows = rows >= maxBoardSize;
-            const isMaxCols = cols >= maxBoardSize;
-            const isAtLimit =
-              (isMaxRows && rowIdx === rows - 1) ||
-              (isMaxCols && colIdx === cols - 1);
-            return (
-              <button
-                key={`${rowIdx}-${colIdx}`}
-                type="button"
-                role="gridcell"
-                data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
-                disabled={cellDisabled}
-                aria-label={
-                  ownerInfo
-                    ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
-                    : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
-                }
-                onClick={() => handleCellClick(rowIdx, colIdx)}
-                onMouseEnter={() => {
-                  if (!cell && !disabled)
-                    setHoveredCell({ row: rowIdx, col: colIdx });
-                }}
-                onMouseLeave={() => setHoveredCell(null)}
-                className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}${isOrigin && !ownerInfo ? ' ttt-origin' : ''}`}
-                style={{
-                  ...cellStyle,
-                  backgroundColor: isWinning
-                    ? theme.winningCellBg
-                    : isHighlighted
-                      ? 'rgba(99,102,241,0.35)'
-                      : isAtLimit
-                        ? 'rgba(239,68,68,0.12)'
-                        : isOrigin
-                          ? 'rgba(129,140,248,0.12)'
-                          : theme.cellBg,
-                  color:
-                    ownerInfo?.color ?? previewInfo?.color ?? theme.textColor,
-                  border: isHighlighted
-                    ? '2px solid rgba(129,140,248,0.8)'
-                    : isAtLimit
-                      ? '1px dashed rgba(239,68,68,0.45)'
-                      : isOrigin && !ownerInfo
-                        ? '1px solid rgba(129,140,248,0.35)'
-                        : 'none',
-                  borderRadius: theme.borderRadius,
-                  fontFamily: theme.markFont,
-                  fontWeight: 700,
-                  fontSize: cellStyle.fontSize,
-                  cursor: cellDisabled
-                    ? 'default'
-                    : (playerCursor ?? 'pointer'),
-                  transition: 'background-color 120ms ease, border 120ms ease',
-                  overflow: 'hidden',
-                }}
-              >
-                {ownerInfo ? (
-                  <span className="ttt-mark">{ownerInfo.mark}</span>
-                ) : previewInfo ? (
-                  <span style={{ opacity: 0.25 }}>{previewInfo.mark}</span>
-                ) : null}
-                {isOrigin && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: 2,
-                      left: 2,
-                      fontSize: '0.5em',
-                      opacity: 0.35,
-                      lineHeight: 1,
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    +
-                  </span>
-                )}
-              </button>
-            );
-          }),
+          row.map((cell, colIdx) => (
+            <MemoizedCellRenderer
+              key={`${rowIdx}-${colIdx}`}
+              rowIdx={rowIdx}
+              colIdx={colIdx}
+              cell={cell}
+              origin={origin}
+              disabled={disabled}
+              winSet={winSet}
+              symbolByOwner={symbolByOwner}
+              hoveredCell={hoveredCell}
+              currentPlayerId={currentPlayerId}
+              highlightedCell={highlightedCell}
+              maxBoardSize={maxBoardSize}
+              rows={rows}
+              cols={cols}
+              theme={theme}
+              cellStyle={cellStyle}
+              playerCursor={playerCursor}
+              onCellClick={handleCellClick}
+              onHover={handleHover}
+              onLeave={handleLeave}
+            />
+          )),
         )}
       </div>
     </div>

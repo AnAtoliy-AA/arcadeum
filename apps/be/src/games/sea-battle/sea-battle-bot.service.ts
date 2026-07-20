@@ -158,12 +158,8 @@ export class SeaBattleBotService {
       let state = currentSession.state as unknown as SeaBattleState;
       let botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Auto place ships — serialized per room so concurrent bots don't
       // overwrite each other's freshly-placed ships.
@@ -181,12 +177,8 @@ export class SeaBattleBotService {
       state = currentSession.state as unknown as SeaBattleState;
       botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Confirm placement — same per-room queue so the confirm only runs
       // after this bot's autoPlace save has landed.
@@ -199,11 +191,10 @@ export class SeaBattleBotService {
       const latestSession = await this.seaBattleService.findSessionByRoom(
         session.roomId,
       );
-      if (latestSession) {
+      if (latestSession)
         this.checkAndPlay(latestSession).catch((err) =>
           this.logger.error(`Re-trigger failed for ${botId}: ${err}`),
         );
-      }
     }
   }
 
@@ -240,8 +231,6 @@ export class SeaBattleBotService {
         const activeOpponents = state.players.filter(
           (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
         );
-
-        // In team mode, exclude teammates from the candidate pool
         const botTeam = getTeamForPlayer(state, botId);
         const eligibleOpponents = botTeam
           ? activeOpponents.filter(
@@ -257,7 +246,6 @@ export class SeaBattleBotService {
         const damagedOpponent = eligibleOpponents.find((p) =>
           p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
         );
-
         const target =
           damagedOpponent ||
           eligibleOpponents[
@@ -301,37 +289,27 @@ export class SeaBattleBotService {
         // Difficulty-based targeting
         const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
         let choice: { r: number; c: number } | null = null;
-
         if (difficulty === 'easy') {
-          // Easy: 70% random, 30% smart target
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.3)
             choice = this.getSmartTarget(target, gridSize);
-          }
         } else if (difficulty === 'hard') {
-          // Hard: probability density function targeting
-          choice = this.getProbabilisticTarget(target, gridSize);
-          if (!choice) {
-            choice = this.getSmartTarget(target, gridSize);
-          }
+          choice =
+            this.getProbabilisticTarget(target, gridSize) ||
+            this.getSmartTarget(target, gridSize);
         } else {
-          // Medium: always use smart target (locked-on strategy)
           choice = this.getSmartTarget(target, gridSize);
         }
 
         if (!choice) {
           const validCells: { r: number; c: number }[] = [];
-          for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-              const cell = target.board[r][c];
-              if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
+          for (let r = 0; r < gridSize; r++)
+            for (let c = 0; c < gridSize; c++)
+              if (
+                target.board[r][c] !== CELL_STATE.HIT &&
+                target.board[r][c] !== CELL_STATE.MISS
+              )
                 validCells.push({ r, c });
-              }
-            }
-          }
-
-          if (validCells.length === 0) {
-            break;
-          }
+          if (validCells.length === 0) break;
           choice = validCells[Math.floor(Math.random() * validCells.length)];
         }
 

@@ -76,7 +76,7 @@ export class CIFollService implements OnModuleDestroy {
     issueNum: string,
     engine: string,
     startTime: number,
-  ): void {
+  ): Promise<void> {
     const elapsed = Date.now() - startTime;
     if (elapsed > this.maxPollTimeMs) {
       this.logger.log(`CI poll timeout for PR #${prNumber} after ${Math.round(elapsed / 1000)}s`);

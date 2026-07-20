@@ -1,5 +1,7 @@
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
+import type { TicTacToeTheme } from '../lib/theme';
 
+export type { TicTacToeTheme };
 export type TicTacToeGameProps = BaseGameWidgetProps;
 
 export const MIN_PLAYERS = 2;

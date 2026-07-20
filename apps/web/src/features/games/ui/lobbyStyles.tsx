@@ -26,6 +26,7 @@ export const LobbyContent = styled(XStack, {
     overflowY: 'visible',
     overflowX: 'hidden',
     padding: '$3',
+    paddingBottom: 96,
     gap: '$4',
     alignItems: 'stretch',
   },
@@ -165,6 +166,29 @@ export const HostLabel = styled(Text, {
   letterSpacing: 1,
   color: '#6366f1',
 });
+
+export const LobbyStickyStart = styled(YStack, {
+  name: 'LobbyStickyStart',
+  alignItems: 'center',
+  paddingVertical: '$3',
+  paddingHorizontal: '$5',
+  $sm: {
+    position: 'fixed' as unknown as 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: '$3',
+    paddingHorizontal: '$5',
+    paddingBottom:
+      'calc(env(safe-area-inset-bottom, 0px) + 12px)' as unknown as number,
+    backgroundColor: 'rgba(15, 23, 42, 0.92)',
+    backdropFilter: 'blur(16px)',
+    borderTopWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    zIndex: 150,
+    alignItems: 'center',
+  },
+} as unknown as Record<string, unknown>);
 
 // Sidebar re-exports
 export * from './lobbySidebarStyles';

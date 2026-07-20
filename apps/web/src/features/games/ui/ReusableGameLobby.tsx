@@ -40,6 +40,7 @@ import {
   BotCountButtons,
   BotCountButton,
 } from './lobbyStyles';
+import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
@@ -360,25 +361,6 @@ export function ReusableGameLobby({
                   </BotCountButtons>
                 </BotCountSelector>
               )}
-              <StartButton
-                onClick={handleStart}
-                disabled={
-                  startBusy ||
-                  startDisabled ||
-                  (room.playerCount < (minPlayers || 2) &&
-                    !(enableBots && room.playerCount === 1))
-                }
-                data-testid="start-with-bots-button"
-              >
-                {startBusy
-                  ? startingLabel
-                  : enableBots && room.playerCount === 1
-                    ? startWithBotsLabel.replace(
-                        '{{count}}',
-                        botCount.toString(),
-                      )
-                    : startLabel}
-              </StartButton>
             </HostControls>
           )}
 
@@ -412,6 +394,21 @@ export function ReusableGameLobby({
           labels={labels}
         />
       </LobbyContent>
+
+      {isHost && room.status === 'lobby' && (
+        <LobbyStartButton
+          startBusy={startBusy}
+          startDisabled={startDisabled}
+          enableBots={enableBots}
+          playerCount={room.playerCount}
+          minPlayers={minPlayers || 2}
+          botCount={botCount}
+          startLabel={startLabel}
+          startingLabel={startingLabel}
+          startWithBotsLabel={startWithBotsLabel}
+          onStart={handleStart}
+        />
+      )}
     </GameContainer>
   );
 }

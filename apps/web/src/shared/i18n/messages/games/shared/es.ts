@@ -283,6 +283,10 @@ export const esMessages = {
     startWithBots: 'Comenzar con {{count}} 🤖',
     playWithBotsNotice:
       'Empieza con bots inmediatamente o espera a otros jugadores',
+    difficultyLabel: 'Dificultad de IA',
+    difficultyEasy: 'Fácil',
+    difficultyMedium: 'Medio',
+    difficultyHard: 'Difícil',
   },
   shared: {
     rules: {

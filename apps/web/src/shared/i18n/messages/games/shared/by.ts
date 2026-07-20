@@ -278,6 +278,10 @@ export const byMessages = {
     botCountLabel: 'Колькасць ботаў',
     startWithBots: 'Пачаць з {{count}} 🤖',
     playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',
+    difficultyLabel: 'Складанасць ІІ',
+    difficultyEasy: 'Лёгка',
+    difficultyMedium: 'Сярэдне',
+    difficultyHard: 'Складана',
   },
   shared: {
     rules: {

@@ -278,6 +278,10 @@ export const enMessages = {
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
+    difficultyLabel: 'AI Difficulty',
+    difficultyEasy: 'Easy',
+    difficultyMedium: 'Medium',
+    difficultyHard: 'Hard',
   },
   shared: {
     rules: {

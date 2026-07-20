@@ -12,6 +12,7 @@ export const ruMessages = {
           'Играйте в шахматы онлайн. Стандартный вариант и Chess960, опциональный контроль времени, боты с первого дня. Бесплатно, мгновенные комнаты.',
         keywords:
           'шахматы, шахматы онлайн, мультиплеер шахматы, chess960, настольные игры',
+        howToPlayTitle: 'Как играть в {{gameName}}',
       },
       hero: {
         title: 'Шахматы — вечная стратегическая игра',
@@ -21,6 +22,7 @@ export const ruMessages = {
         ctaQuickplay: 'Сыграть с ИИ',
         ctaQuickplayError: 'Не удалось начать игру — попробуйте ещё раз',
         browseRooms: 'Обзор комнат',
+        backToGames: '← Игры',
       },
       highlights: {
         players: {
@@ -162,6 +164,7 @@ export const ruMessages = {
       showAll: 'Показать все ({{count}})',
       copied: 'Скопировано!',
       spectating: 'Наблюдение',
+      boardLabel: 'Шахматная доска, {{color}} ходят',
     },
   },
 };

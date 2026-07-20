@@ -157,12 +157,8 @@ export class SeaBattleBotService {
       let state = currentSession.state as unknown as SeaBattleState;
       let botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Auto place ships — serialized per room so concurrent bots don't
       // overwrite each other's freshly-placed ships.
@@ -180,12 +176,8 @@ export class SeaBattleBotService {
       state = currentSession.state as unknown as SeaBattleState;
       botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Confirm placement — same per-room queue so the confirm only runs
       // after this bot's autoPlace save has landed.
@@ -198,11 +190,10 @@ export class SeaBattleBotService {
       const latestSession = await this.seaBattleService.findSessionByRoom(
         session.roomId,
       );
-      if (latestSession) {
+      if (latestSession)
         this.checkAndPlay(latestSession).catch((err) =>
           this.logger.error(`Re-trigger failed for ${botId}: ${err}`),
         );
-      }
     }
   }
 
@@ -239,8 +230,6 @@ export class SeaBattleBotService {
         const activeOpponents = state.players.filter(
           (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
         );
-
-        // In team mode, exclude teammates from the candidate pool
         const botTeam = getTeamForPlayer(state, botId);
         const eligibleOpponents = botTeam
           ? activeOpponents.filter(
@@ -256,7 +245,6 @@ export class SeaBattleBotService {
         const damagedOpponent = eligibleOpponents.find((p) =>
           p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
         );
-
         const target =
           damagedOpponent ||
           eligibleOpponents[
@@ -300,37 +288,27 @@ export class SeaBattleBotService {
         // Difficulty-based targeting
         const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
         let choice: { r: number; c: number } | null = null;
-
         if (difficulty === 'easy') {
-          // Easy: 70% random, 30% smart target
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.3)
             choice = this.getSmartTarget(target, gridSize);
-          }
         } else if (difficulty === 'hard') {
-          // Hard: probability density function targeting
-          choice = this.getProbabilisticTarget(target, gridSize);
-          if (!choice) {
-            choice = this.getSmartTarget(target, gridSize);
-          }
+          choice =
+            this.getProbabilisticTarget(target, gridSize) ||
+            this.getSmartTarget(target, gridSize);
         } else {
-          // Medium: always use smart target (locked-on strategy)
           choice = this.getSmartTarget(target, gridSize);
         }
 
         if (!choice) {
           const validCells: { r: number; c: number }[] = [];
-          for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-              const cell = target.board[r][c];
-              if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
+          for (let r = 0; r < gridSize; r++)
+            for (let c = 0; c < gridSize; c++)
+              if (
+                target.board[r][c] !== CELL_STATE.HIT &&
+                target.board[r][c] !== CELL_STATE.MISS
+              )
                 validCells.push({ r, c });
-              }
-            }
-          }
-
-          if (validCells.length === 0) {
-            break;
-          }
+          if (validCells.length === 0) break;
           choice = validCells[Math.floor(Math.random() * validCells.length)];
         }
 
@@ -363,21 +341,18 @@ export class SeaBattleBotService {
     // Cells of already-sunk ships are public info; exclude them so we focus
     // on hits that still belong to damaged-but-unsunk ships.
     const sunkCells = new Set<string>();
-    for (const ship of target.ships) {
-      if (!ship.sunk) continue;
-      for (const cell of ship.cells) {
-        sunkCells.add(`${cell.row},${cell.col}`);
-      }
-    }
+    for (const ship of target.ships)
+      if (ship.sunk)
+        for (const cell of ship.cells) sunkCells.add(`${cell.row},${cell.col}`);
 
     const activeHits: { row: number; col: number }[] = [];
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        if (target.board[r][c] !== CELL_STATE.HIT) continue;
-        if (sunkCells.has(`${r},${c}`)) continue;
-        activeHits.push({ row: r, col: c });
-      }
-    }
+    for (let r = 0; r < gridSize; r++)
+      for (let c = 0; c < gridSize; c++)
+        if (
+          target.board[r][c] === CELL_STATE.HIT &&
+          !sunkCells.has(`${r},${c}`)
+        )
+          activeHits.push({ row: r, col: c });
 
     if (activeHits.length === 0) return null;
 
@@ -399,34 +374,28 @@ export class SeaBattleBotService {
     for (const hit of activeHits) {
       for (const [dr, dc] of axes) {
         if (!activeSet.has(`${hit.row + dr},${hit.col + dc}`)) continue;
-
-        // Walk forward to the far end of the line.
-        let fr = hit.row;
-        let fc = hit.col;
+        let fr = hit.row,
+          fc = hit.col;
         while (activeSet.has(`${fr + dr},${fc + dc}`)) {
           fr += dr;
           fc += dc;
         }
-        if (isOpen(fr + dr, fc + dc)) {
+        if (isOpen(fr + dr, fc + dc))
           lineCandidates.set(`${fr + dr},${fc + dc}`, {
             r: fr + dr,
             c: fc + dc,
           });
-        }
-
-        // Walk backward to the near end of the line.
-        let br = hit.row;
-        let bc = hit.col;
+        let br = hit.row,
+          bc = hit.col;
         while (activeSet.has(`${br - dr},${bc - dc}`)) {
           br -= dr;
           bc -= dc;
         }
-        if (isOpen(br - dr, bc - dc)) {
+        if (isOpen(br - dr, bc - dc))
           lineCandidates.set(`${br - dr},${bc - dc}`, {
             r: br - dr,
             c: bc - dc,
           });
-        }
       }
     }
 
@@ -436,22 +405,20 @@ export class SeaBattleBotService {
     }
 
     // Single-hit mode: probe a random orthogonal neighbour of any active hit.
-    const neighbours = new Map<string, { r: number; c: number }>();
-    const directions: [number, number][] = [
+    const dirs: [number, number][] = [
       [-1, 0],
       [1, 0],
       [0, -1],
       [0, 1],
     ];
+    const neighbours = new Map<string, { r: number; c: number }>();
     for (const hit of activeHits) {
-      for (const [dr, dc] of directions) {
-        const nr = hit.row + dr;
-        const nc = hit.col + dc;
-        if (!isOpen(nr, nc)) continue;
-        neighbours.set(`${nr},${nc}`, { r: nr, c: nc });
+      for (const [dr, dc] of dirs) {
+        const nr = hit.row + dr,
+          nc = hit.col + dc;
+        if (isOpen(nr, nc)) neighbours.set(`${nr},${nc}`, { r: nr, c: nc });
       }
     }
-
     if (neighbours.size === 0) return null;
     const arr = Array.from(neighbours.values());
     return arr[Math.floor(Math.random() * arr.length)];
@@ -464,13 +431,9 @@ export class SeaBattleBotService {
     const sunkCells = new Set<string>();
     const remainingShipSizes: number[] = [];
     for (const ship of target.ships) {
-      if (ship.sunk) {
-        for (const cell of ship.cells) {
-          sunkCells.add(`${cell.row},${cell.col}`);
-        }
-      } else if (ship.hits === 0) {
-        remainingShipSizes.push(ship.size);
-      }
+      if (ship.sunk)
+        for (const cell of ship.cells) sunkCells.add(`${cell.row},${cell.col}`);
+      else if (ship.hits === 0) remainingShipSizes.push(ship.size);
     }
 
     if (remainingShipSizes.length === 0) return null;
@@ -479,48 +442,27 @@ export class SeaBattleBotService {
       Array<number>(gridSize).fill(0),
     );
 
-    const isAvailable = (r: number, c: number): boolean => {
-      if (r < 0 || r >= gridSize || c < 0 || c >= gridSize) return false;
-      const cell = target.board[r][c];
-      return (
-        cell !== CELL_STATE.HIT &&
-        cell !== CELL_STATE.MISS &&
-        !sunkCells.has(`${r},${c}`)
-      );
-    };
+    const isAvailable = (r: number, c: number): boolean =>
+      r >= 0 &&
+      r < gridSize &&
+      c >= 0 &&
+      c < gridSize &&
+      target.board[r][c] !== CELL_STATE.HIT &&
+      target.board[r][c] !== CELL_STATE.MISS &&
+      !sunkCells.has(`${r},${c}`);
 
     for (const size of remainingShipSizes) {
       for (let r = 0; r < gridSize; r++) {
         for (let c = 0; c < gridSize; c++) {
-          // Horizontal placement
           if (c + size <= gridSize) {
-            let valid = true;
-            for (let k = 0; k < size; k++) {
-              if (!isAvailable(r, c + k)) {
-                valid = false;
-                break;
-              }
-            }
-            if (valid) {
-              for (let k = 0; k < size; k++) {
-                density[r][c + k]++;
-              }
-            }
+            let ok = true;
+            for (let k = 0; k < size && ok; k++) ok = isAvailable(r, c + k);
+            if (ok) for (let k = 0; k < size; k++) density[r][c + k]++;
           }
-          // Vertical placement
           if (r + size <= gridSize) {
-            let valid = true;
-            for (let k = 0; k < size; k++) {
-              if (!isAvailable(r + k, c)) {
-                valid = false;
-                break;
-              }
-            }
-            if (valid) {
-              for (let k = 0; k < size; k++) {
-                density[r + k][c]++;
-              }
-            }
+            let ok = true;
+            for (let k = 0; k < size && ok; k++) ok = isAvailable(r + k, c);
+            if (ok) for (let k = 0; k < size; k++) density[r + k][c]++;
           }
         }
       }
@@ -534,9 +476,7 @@ export class SeaBattleBotService {
         if (density[r][c] > maxDensity) {
           maxDensity = density[r][c];
           candidates = [{ r, c }];
-        } else if (density[r][c] === maxDensity) {
-          candidates.push({ r, c });
-        }
+        } else if (density[r][c] === maxDensity) candidates.push({ r, c });
       }
     }
 

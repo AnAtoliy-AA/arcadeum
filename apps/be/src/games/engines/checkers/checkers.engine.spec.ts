@@ -4,6 +4,7 @@ import type { GameActionContext } from '../base/game-engine.interface';
 import type { MovePayload, MoveStep } from './checkers.types';
 
 const engine = new CheckersEngine();
+type CheckersState = ReturnType<typeof engine.initializeState>;
 
 function ctx(userId: string): GameActionContext {
   return {
@@ -52,12 +53,16 @@ function multiCapture(steps: MoveStep[]): MovePayload {
   return { steps };
 }
 
-function clearBoard(state: ReturnType<typeof engine.initializeState>): void {
+function clearBoard(state: CheckersState): void {
   for (let r = 0; r < BOARD_SIZE; r++) {
     for (let c = 0; c < BOARD_SIZE; c++) {
       state.board[r][c] = null;
     }
   }
+}
+
+function doMove(state: CheckersState, userId: string, payload: MovePayload) {
+  return engine.executeAction(state, 'move_piece', ctx(userId), payload);
 }
 
 describe('CheckersEngine', () => {
@@ -124,12 +129,7 @@ describe('CheckersEngine', () => {
   describe('simple moves', () => {
     it('allows a valid diagonal move for light (player a)', () => {
       const state = engine.initializeState(['a', 'b']);
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 4, 1),
-      );
+      const result = doMove(state, 'a', singleStep(5, 0, 4, 1));
       expect(result.success).toBe(true);
       expect(result.state!.board[5][0]).toBeNull();
       expect(result.state!.board[4][1]).not.toBeNull();
@@ -138,19 +138,9 @@ describe('CheckersEngine', () => {
 
     it('allows a valid diagonal move for dark (player b)', () => {
       const state = engine.initializeState(['a', 'b']);
-      const r1 = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 4, 1),
-      );
+      const r1 = doMove(state, 'a', singleStep(5, 0, 4, 1));
       expect(r1.success).toBe(true);
-      const r2 = engine.executeAction(
-        r1.state!,
-        'move_piece',
-        ctx('b'),
-        singleStep(2, 1, 3, 0),
-      );
+      const r2 = doMove(r1.state!, 'b', singleStep(2, 1, 3, 0));
       expect(r2.success).toBe(true);
       expect(r2.state!.board[2][1]).toBeNull();
       expect(r2.state!.board[3][0]!.playerId).toBe('b');
@@ -158,60 +148,19 @@ describe('CheckersEngine', () => {
 
     it('rejects invalid moves (non-diagonal, occupied, out-of-turn, out-of-bounds)', () => {
       const state = engine.initializeState(['a', 'b']);
-      expect(
-        engine.executeAction(
-          state,
-          'move_piece',
-          ctx('a'),
-          singleStep(5, 0, 5, 1),
-        ).success,
-      ).toBe(false);
-      const r1 = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 4, 1),
+      expect(doMove(state, 'a', singleStep(5, 0, 5, 1)).success).toBe(false);
+      const r1 = doMove(state, 'a', singleStep(5, 0, 4, 1));
+      const r2 = doMove(r1.state!, 'b', singleStep(2, 1, 3, 0));
+      expect(doMove(r2.state!, 'a', singleStep(4, 1, 3, 0)).success).toBe(
+        false,
       );
-      const r2 = engine.executeAction(
-        r1.state!,
-        'move_piece',
-        ctx('b'),
-        singleStep(2, 1, 3, 0),
-      );
-      expect(
-        engine.executeAction(
-          r2.state!,
-          'move_piece',
-          ctx('a'),
-          singleStep(4, 1, 3, 0),
-        ).success,
-      ).toBe(false);
-      expect(
-        engine.executeAction(
-          state,
-          'move_piece',
-          ctx('b'),
-          singleStep(2, 1, 3, 0),
-        ).success,
-      ).toBe(false);
-      expect(
-        engine.executeAction(
-          state,
-          'move_piece',
-          ctx('a'),
-          singleStep(5, 0, -1, 0),
-        ).success,
-      ).toBe(false);
+      expect(doMove(state, 'b', singleStep(2, 1, 3, 0)).success).toBe(false);
+      expect(doMove(state, 'a', singleStep(5, 0, -1, 0)).success).toBe(false);
     });
 
     it('advances turn after move', () => {
       const state = engine.initializeState(['a', 'b']);
-      const r1 = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 4, 1),
-      );
+      const r1 = doMove(state, 'a', singleStep(5, 0, 4, 1));
       expect(r1.state!.currentTurnIndex).toBe(1);
       expect(r1.state!.playerOrder[r1.state!.currentTurnIndex]).toBe('b');
     });
@@ -223,13 +172,7 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[4][1] = { playerId: 'a', type: 'man' };
       state.board[3][2] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        capture(4, 1, 2, 3, 3, 2),
-      );
+      const result = doMove(state, 'a', capture(4, 1, 2, 3, 3, 2));
       expect(result.success).toBe(true);
       expect(result.state!.board[4][1]).toBeNull();
       expect(result.state!.board[3][2]).toBeNull();
@@ -245,13 +188,7 @@ describe('CheckersEngine', () => {
       state.board[3][2] = { playerId: 'b', type: 'man' };
       state.board[5][4] = { playerId: 'a', type: 'man' };
       state.board[4][5] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 4, 3, 6),
-      );
+      const result = doMove(state, 'a', singleStep(5, 4, 3, 6));
       expect(result.success).toBe(false);
       expect(result.error).toMatch(/capture/i);
     });
@@ -264,11 +201,9 @@ describe('CheckersEngine', () => {
       state.board[5][0] = { playerId: 'a', type: 'man' };
       state.board[4][1] = { playerId: 'b', type: 'man' };
       state.board[2][3] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
+      const result = doMove(
         state,
-        'move_piece',
-        ctx('a'),
+        'a',
         multiCapture([s(5, 0, 3, 2, 4, 1), s(3, 2, 1, 4, 2, 3)]),
       );
       expect(result.success).toBe(true);
@@ -284,11 +219,9 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[5][0] = { playerId: 'a', type: 'man' };
       state.board[4][1] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
+      const result = doMove(
         state,
-        'move_piece',
-        ctx('a'),
+        'a',
         multiCapture([s(5, 0, 3, 2, 4, 1), s(1, 4, 3, 2)]),
       );
       expect(result.success).toBe(false);
@@ -300,13 +233,7 @@ describe('CheckersEngine', () => {
       const state = engine.initializeState(['a', 'b']);
       clearBoard(state);
       state.board[1][0] = { playerId: 'a', type: 'man' };
-
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(1, 0, 0, 1),
-      );
+      const result = doMove(state, 'a', singleStep(1, 0, 0, 1));
       expect(result.success).toBe(true);
       expect(result.state!.board[0][1]!.type).toBe('king');
       expect(result.state!.board[0][1]!.playerId).toBe('a');
@@ -317,21 +244,9 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[5][2] = { playerId: 'a', type: 'man' };
       state.board[6][1] = { playerId: 'b', type: 'man' };
-
-      const r1 = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 2, 4, 3),
-      );
+      const r1 = doMove(state, 'a', singleStep(5, 2, 4, 3));
       expect(r1.success).toBe(true);
-
-      const r2 = engine.executeAction(
-        r1.state!,
-        'move_piece',
-        ctx('b'),
-        singleStep(6, 1, 7, 0),
-      );
+      const r2 = doMove(r1.state!, 'b', singleStep(6, 1, 7, 0));
       expect(r2.success).toBe(true);
       expect(r2.state!.board[7][0]!.type).toBe('king');
     });
@@ -343,33 +258,12 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[3][3] = { playerId: 'a', type: 'king' };
       state.board[5][0] = { playerId: 'b', type: 'man' };
-
-      // Move king up-left (backward for light)
-      const r1 = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(3, 3, 2, 2),
-      );
+      const r1 = doMove(state, 'a', singleStep(3, 3, 2, 2));
       expect(r1.success).toBe(true);
       expect(r1.state!.board[2][2]!.type).toBe('king');
-
-      // Dark must move
-      const r2 = engine.executeAction(
-        r1.state!,
-        'move_piece',
-        ctx('b'),
-        singleStep(5, 0, 6, 1),
-      );
+      const r2 = doMove(r1.state!, 'b', singleStep(5, 0, 6, 1));
       expect(r2.success).toBe(true);
-
-      // Move king down-right (forward for light)
-      const r3 = engine.executeAction(
-        r2.state!,
-        'move_piece',
-        ctx('a'),
-        singleStep(2, 2, 3, 3),
-      );
+      const r3 = doMove(r2.state!, 'a', singleStep(2, 2, 3, 3));
       expect(r3.success).toBe(true);
       expect(r3.state!.board[3][3]!.type).toBe('king');
     });
@@ -379,13 +273,7 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[3][3] = { playerId: 'a', type: 'king' };
       state.board[2][2] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        capture(3, 3, 1, 1, 2, 2),
-      );
+      const result = doMove(state, 'a', capture(3, 3, 1, 1, 2, 2));
       expect(result.success).toBe(true);
       expect(result.state!.board[1][1]!.type).toBe('king');
       expect(result.state!.board[2][2]).toBeNull();
@@ -409,13 +297,7 @@ describe('CheckersEngine', () => {
       clearBoard(state);
       state.board[4][1] = { playerId: 'a', type: 'man' };
       state.board[3][2] = { playerId: 'b', type: 'man' };
-
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        capture(4, 1, 2, 3, 3, 2),
-      );
+      const result = doMove(state, 'a', capture(4, 1, 2, 3, 3, 2));
       expect(result.success).toBe(true);
       expect(result.state!.phase).toBe(GAME_PHASE.GAME_OVER);
       expect(result.state!.winnerId).toBe('a');
@@ -500,12 +382,7 @@ describe('CheckersEngine', () => {
   describe('state history', () => {
     it('preserves state history after move', () => {
       const state = engine.initializeState(['a', 'b']);
-      const result = engine.executeAction(
-        state,
-        'move_piece',
-        ctx('a'),
-        singleStep(5, 0, 4, 1),
-      );
+      const result = doMove(state, 'a', singleStep(5, 0, 4, 1));
       expect(result.success).toBe(true);
       expect(result.state!.stateHistory).toBeDefined();
       expect(Array.isArray(result.state!.stateHistory)).toBe(true);

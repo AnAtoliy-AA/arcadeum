@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.71] - 2026-07-20
+
+### Fixed
+- fix tic-tac-toe board rendering issues
+
+
 ## [1.23.70] - 2026-07-20
 
 ### Fixed

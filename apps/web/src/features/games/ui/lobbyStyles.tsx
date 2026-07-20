@@ -48,6 +48,11 @@ export const CenterSection = styled(YStack, {
     justifyContent: 'flex-start',
     gap: '$4',
   },
+  $sm: {
+    flex: 0,
+    minHeight: 'unset',
+    justifyContent: 'flex-start',
+  },
 });
 
 export const GameIcon = styled(Text, {

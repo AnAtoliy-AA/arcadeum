@@ -112,16 +112,27 @@ export class ImplementProcessor {
     job: Job<ImplementJobData>,
     cwd: string,
   ): Promise<{ success: boolean; message: string; branchName?: string }> {
-    const { prNumber, engine, prBranchName, prFailedChecks, prReviewComments } = job.data;
+    const { prNumber, engine, prBranchName } = job.data;
 
     if (!prNumber || !prBranchName) {
       return { success: false, message: 'Missing PR data in job payload' };
     }
 
+    const failedChecks = this.githubService.getPrChecks(prNumber).filter(
+      (c) => c.state === 'FAILURE' || c.state === 'failure',
+    );
+    const reviews = this.githubService.getPrReviews(prNumber);
+    const reviewComments = reviews
+      .filter((r) => r.state === 'CHANGES_REQUESTED' || r.body?.includes('```suggestion'))
+      .map((r) => r.body)
+      .join('\n---\n');
+
+    this.logger.log(`Fetched ${failedChecks.length} failed checks for PR #${prNumber}`);
+
     return this.githubService.fixPR(prNumber, engine, cwd, {
       branchName: prBranchName,
-      failedChecks: prFailedChecks,
-      reviewComments: prReviewComments,
+      failedChecks: failedChecks.length > 0 ? failedChecks : undefined,
+      reviewComments: reviewComments || undefined,
     });
   }
 

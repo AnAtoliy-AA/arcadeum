@@ -285,6 +285,34 @@ export class GitHubService {
     }
   }
 
+  getCIFailureLogs(runUrl: string): string {
+    try {
+      const runIdMatch = runUrl.match(/\/runs\/(\d+)/);
+      if (!runIdMatch) return '';
+      const runId = runIdMatch[1];
+      const result = execFileSync(
+        'gh',
+        ['run', 'view', runId, '--log-failed', '--repo', 'AnAtoliy-AA/arcadeum'],
+        { encoding: 'utf-8', cwd: this.getCwd(), timeout: 30_000 },
+      );
+      const lines = result.split('\n');
+      const errorLines: string[] = [];
+      let capture = false;
+      for (const line of lines) {
+        if (line.includes('ERROR') || line.includes('error') || line.includes('FAIL') || line.includes('fail')) {
+          capture = true;
+        }
+        if (capture) {
+          errorLines.push(line);
+          if (errorLines.length > 80) break;
+        }
+      }
+      return errorLines.length > 0 ? errorLines.join('\n').slice(0, 4000) : result.slice(0, 4000);
+    } catch {
+      return '';
+    }
+  }
+
   getPrReviews(
     prNumber: string,
   ): Array<{ body: string; state: string }> {
@@ -487,12 +515,18 @@ export class GitHubService {
         'Follow the project conventions in CLAUDE.md.',
         'Do not add comments unless asked.',
         '',
-        'CRITICAL RULES:',
-        '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
+        '## Rules',
         '- Max 500 lines per file.',
         '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
         '- The processor handles all git operations after you finish.',
-        '- Just make code changes and run lint/typecheck.',
+        '- Just make code changes and run the verification commands above.',
         '- Never leave the repo in a dirty state.',
       ].join('\n');
 
@@ -577,9 +611,15 @@ export class GitHubService {
         for (const f of failedChecks) {
           promptParts.push(`- ${f.name}`);
         }
+
+        const errorOutput = this.fetchErrorLogs(failedChecks);
+        if (errorOutput) {
+          promptParts.push('', '## Actual Error Output', '```', errorOutput, '```');
+        }
+
         promptParts.push(
           '',
-          'Run the failing commands locally to see errors, then fix them.',
+          'Fix the issues shown in the error output above.',
           '',
         );
       }
@@ -595,17 +635,23 @@ export class GitHubService {
       }
 
       if (failedChecks.length === 0 && !reviewComments) {
-        promptParts.push('No CI failures or review comments found. Run `pnpm lint` and `pnpm --filter web type-check` to verify the build is clean.');
+        promptParts.push('No CI failures or review comments found.');
       }
 
       promptParts.push(
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
         '## Rules',
-        '- Run `pnpm lint` and `pnpm --filter web type-check` when done.',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
         '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
         '- The processor handles all git operations after you finish.',
-        '- Just make code changes and run lint/typecheck.',
+        '- Just make code changes and run the verification commands above.',
       );
 
       const prompt = promptParts.join('\n');
@@ -675,21 +721,40 @@ export class GitHubService {
       const { branchName, failedChecks } = data;
 
       const failedNames = failedChecks.map((c) => c.name).join(', ');
-      const fixPrompt = [
+      const promptParts: string[] = [
         `Fix CI failures for PR #${prNumber}: ${failedNames}`,
         '',
         'CI failed checks:',
         ...failedChecks.map((c) => `- ${c.name}: ${c.link}`),
+      ];
+
+      const errorOutput = this.fetchErrorLogs(failedChecks);
+      if (errorOutput) {
+        promptParts.push('', '## Actual Error Output', '```', errorOutput, '```');
+      }
+
+      promptParts.push(
         '',
         'Instructions:',
-        '- Read the CI logs from the detailsUrl to understand what failed.',
-        '- Fix the issues in the code.',
-        '- Run `pnpm lint` and `pnpm --filter web type-check` to verify.',
-        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
-        '- The processor handles all git operations after you finish.',
+        '- Fix the issues shown in the error output above.',
+        '- If no error output is available, run the failing commands locally to see errors.',
+        '',
+        '## Verification',
+        'After making changes, run ALL of these to verify:',
+        '- `pnpm lint`',
+        '- `pnpm --filter web type-check`',
+        '- `pnpm --filter be build`',
+        '- `pnpm --filter be test`',
+        '',
+        '## Rules',
         '- Max 500 lines per file.',
         '- Do not add comments unless asked.',
-      ].join('\n');
+        '- Do NOT run `git commit`, `git add`, or `git push` under ANY circumstances.',
+        '- The processor handles all git operations after you finish.',
+        '- Just make code changes and run the verification commands above.',
+      );
+
+      const fixPrompt = promptParts.join('\n');
 
       const escapedPrompt = fixPrompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
@@ -741,6 +806,20 @@ export class GitHubService {
     } catch (err) {
       return { success: false, message: `CI fix failed: ${(err as Error).message}` };
     }
+  }
+
+  private fetchErrorLogs(
+    failedChecks: Array<{ name: string; state: string; link: string }>,
+  ): string {
+    const allLogs: string[] = [];
+    for (const check of failedChecks) {
+      const logs = this.getCIFailureLogs(check.link);
+      if (logs) {
+        allLogs.push(`--- ${check.name} ---`);
+        allLogs.push(logs);
+      }
+    }
+    return allLogs.join('\n\n').slice(0, 6000);
   }
 
   private extractRequirements(body: string): string[] {

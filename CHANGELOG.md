@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.59] - 2026-07-20
+
+### Added
+- add checkers engine with bot AI, web widget, and full i18n
+
+### Fixed
+- resolve CI failures and review feedback
+- resolve CI failures and review feedback
+- use valid borderRadius value in CheckersBoard
+- use valid ARIA role in CheckersBoard
+- resolve all build and lint errors including i18n types
+- resolve all build and lint errors
+
+
 ## [1.23.58] - 2026-07-15
 
 ### Added

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.70] - 2026-07-20
+
+### Fixed
+- report failure when AI engine produces no changes, default to mimo engine
+
+
 ## [1.23.69] - 2026-07-20
 
 ### Fixed

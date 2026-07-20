@@ -77,6 +77,28 @@ export class GitHubService {
     }
   }
 
+  verifyChanges(cwd: string): { ok: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const commands = [
+      { name: 'lint', cmd: ['pnpm', 'lint'] },
+      { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
+      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
+      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
+    ];
+    for (const { name, cmd } of commands) {
+      try {
+        this.logger.log(`Verifying: ${name}`);
+        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 120_000 });
+        this.logger.log(`✓ ${name} passed`);
+      } catch (err) {
+        const msg = (err as Error).message.slice(0, 500);
+        this.logger.error(`✗ ${name} failed: ${msg}`);
+        errors.push(`${name}: ${msg}`);
+      }
+    }
+    return { ok: errors.length === 0, errors };
+  }
+
   private installDeps(cwd: string): void {
     try {
       this.logger.log(`Installing dependencies in ${cwd}`);

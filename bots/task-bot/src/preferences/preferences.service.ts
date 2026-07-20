@@ -51,7 +51,7 @@ export class PreferencesService {
   }
 
   getEngine(userId: number): Engine {
-    return this.preferences.get(userId)?.engine ?? 'opencode';
+    return this.preferences.get(userId)?.engine ?? 'mimo';
   }
 
   getScope(userId: number): string[] {
@@ -60,7 +60,7 @@ export class PreferencesService {
 
   setEngine(userId: number, engine: Engine) {
     const current = this.preferences.get(userId) ?? {
-      engine: 'opencode' as Engine,
+      engine: 'mimo' as Engine,
       defaultScope: ['web'],
     };
     this.preferences.set(userId, { ...current, engine });
@@ -69,7 +69,7 @@ export class PreferencesService {
 
   setScope(userId: number, scope: string[]) {
     const current = this.preferences.get(userId) ?? {
-      engine: 'opencode' as Engine,
+      engine: 'mimo' as Engine,
       defaultScope: ['web'],
     };
     this.preferences.set(userId, { ...current, defaultScope: scope });

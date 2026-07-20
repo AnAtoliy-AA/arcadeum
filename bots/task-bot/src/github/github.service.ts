@@ -724,7 +724,7 @@ export class GitHubService {
       }
 
       if (!hasChanges) {
-        return { success: true, message: 'No changes to commit — the AI engine did not produce any modifications.' };
+        return { success: false, message: 'No changes to commit — the AI engine did not produce any modifications.' };
       }
 
       const scope = data.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;

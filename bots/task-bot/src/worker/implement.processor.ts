@@ -252,7 +252,7 @@ export class ImplementProcessor {
       `Job ${job.id} finished: ${result.success ? 'success' : 'failed'} - ${result.message}`,
     );
 
-    if (!result.success) {
+    if (!result.success && !result.message.startsWith('Skipped:')) {
       const { type, issueNum, engine, prNumber } = job.data;
       const jobType = type === 'ci-fix' ? 'CI fix' : type;
       const target = type === 'fix' || type === 'ci-fix' ? `PR #${prNumber}` : `Issue #${issueNum}`;

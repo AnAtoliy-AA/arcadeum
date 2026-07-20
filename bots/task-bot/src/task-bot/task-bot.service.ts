@@ -208,7 +208,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     let engine: Engine = userId
       ? this.prefsService.getEngine(userId)
       : 'opencode';
-    const engineMatch = cleaned.match(/--engine=(\S+)/i);
+    const engineMatch = cleaned.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
       const requested = engineMatch[1].toLowerCase();
       if (requested !== 'mimo' && requested !== 'opencode') {
@@ -534,7 +534,7 @@ export class TaskBotService implements OnApplicationBootstrap {
 
     if (hasArc && hasDashLines) {
       try {
-        const hasEngine = /--engine=(\S+)/i.test(text);
+        const hasEngine = /--engine[=:](\S+)/i.test(text);
         const task = this.parseTask(text, !hasEngine, ctx.from?.id);
         await this.createAndTriggerTask(task, ctx);
       } catch (err) {
@@ -581,7 +581,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     }
 
     let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(\S+)/i);
+    const engineMatch = text.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
       const requested = engineMatch[1].toLowerCase();
       if (requested !== 'mimo' && requested !== 'opencode') {
@@ -603,7 +603,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     }
 
     let engine: Engine = this.prefsService.getEngine(ctx.from?.id ?? 0);
-    const engineMatch = text.match(/--engine=(\S+)/i);
+    const engineMatch = text.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
       const requested = engineMatch[1].toLowerCase();
       if (requested !== 'mimo' && requested !== 'opencode') {

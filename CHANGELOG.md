@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.61] - 2026-07-20
+
+### Added
+- add CI fix max attempts guard, CI polling, and rate limiting
+
+
 ## [1.23.60] - 2026-07-20
 
 ### Added

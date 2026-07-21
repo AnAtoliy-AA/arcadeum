@@ -254,12 +254,12 @@ export default function StatsPage({
                   losses: localStats.losses,
                   winRate: localStats.winRate,
                   byGameType: localBreakdown,
+                  currentStreak: localStreaks.currentStreak,
+                  currentStreakType: localStreaks.currentStreakType,
+                  bestWinStreak: localStreaks.bestWinStreak,
+                  favoriteGame: localFavoriteGame,
                 }}
                 loading={false}
-                currentStreak={localStreaks.currentStreak}
-                currentStreakType={localStreaks.currentStreakType}
-                bestWinStreak={localStreaks.bestWinStreak}
-                favoriteGame={localFavoriteGame}
               />
               <GameBreakdown
                 stats={{
@@ -268,6 +268,10 @@ export default function StatsPage({
                   losses: localStats.losses,
                   winRate: localStats.winRate,
                   byGameType: localBreakdown,
+                  currentStreak: localStreaks.currentStreak,
+                  currentStreakType: localStreaks.currentStreakType,
+                  bestWinStreak: localStreaks.bestWinStreak,
+                  favoriteGame: localFavoriteGame,
                 }}
                 loading={false}
               />

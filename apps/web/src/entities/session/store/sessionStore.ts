@@ -235,6 +235,18 @@ export const useSessionStore = create<SessionState>()(
           mode: s.mode,
         };
       },
+      onRehydrateStorage: () => () => {
+        if (typeof window === 'undefined') return;
+        const handleStorage = (e: StorageEvent) => {
+          if (e.key !== 'web_session_tokens_v1') return;
+          if (e.newValue) return;
+          const current = useSessionStore.getState();
+          if (current.snapshot.userId) {
+            current.clearTokens();
+          }
+        };
+        window.addEventListener('storage', handleStorage);
+      },
     },
   ),
 );

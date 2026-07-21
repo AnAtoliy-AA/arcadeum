@@ -29,10 +29,6 @@ export function SessionRoleSync(): null {
       if (!stateBefore.hydrated) return;
 
       if (!stateBefore.snapshot.accessToken) {
-        const hasRefreshCookie = document.cookie
-          .split(';')
-          .some((c) => c.trim().startsWith('refresh_token='));
-        if (!hasRefreshCookie) return;
         try {
           const refreshed = await refreshSessionFromCookie();
           if (refreshed.accessToken) {
@@ -124,11 +120,16 @@ export function SessionRoleSync(): null {
     const onFocus = (): void => {
       void sync();
     };
+    const onVisibilityChange = (): void => {
+      if (document.visibilityState === 'visible') void sync();
+    };
     window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       unsubscribe();
     };
   }, []);

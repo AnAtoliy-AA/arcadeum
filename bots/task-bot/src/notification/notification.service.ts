@@ -9,11 +9,17 @@ export interface JobNotification {
   success: boolean;
   message: string;
   timestamp: number;
-  type?: 'pr-opened' | 'ci-failed' | 'ci-fixed' | 'task-completed' | 'task-failed' | 'implement-failed' | 'fix-failed' | 'review-failed';
+  type?: 'pr-opened' | 'ci-failed' | 'ci-fixed' | 'task-completed' | 'task-failed' | 'implement-failed' | 'fix-failed' | 'review-failed' | 'timeout-prompt';
   prUrl?: string;
   failedChecks?: string[];
   jobType?: 'implement' | 'fix' | 'ci-fix' | 'review';
   worktreePath?: string;
+}
+
+export interface TimeoutResponse {
+  jobId: string;
+  action: 'continue' | 'abort';
+  timestamp: number;
 }
 
 @Injectable()
@@ -21,8 +27,11 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(NotificationService.name);
   private publisher!: Redis;
   private subscriber!: Redis;
+  private responseSubscriber!: Redis;
   private readonly channel = 'task-bot:notifications';
+  private readonly responseChannel = 'task-bot:timeout-responses';
   private handlers: ((notification: JobNotification) => void)[] = [];
+  private responseHandlers = new Map<string, (response: TimeoutResponse) => void>();
 
   constructor(private readonly config: ConfigService) {}
 
@@ -33,6 +42,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 
     this.publisher = new Redis({ host, port, password });
     this.subscriber = new Redis({ host, port, password });
+    this.responseSubscriber = new Redis({ host, port, password });
 
     await this.subscriber.subscribe(this.channel);
     this.subscriber.on('message', (_channel, message) => {
@@ -45,12 +55,28 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
       }
     });
 
+    await this.responseSubscriber.subscribe(this.responseChannel);
+    this.responseSubscriber.on('message', (_channel, message) => {
+      try {
+        const response = JSON.parse(message) as TimeoutResponse;
+        this.logger.log(`Received timeout response: ${response.jobId} - ${response.action}`);
+        const handler = this.responseHandlers.get(response.jobId);
+        if (handler) {
+          handler(response);
+          this.responseHandlers.delete(response.jobId);
+        }
+      } catch (err) {
+        this.logger.error(`Failed to parse timeout response: ${err}`);
+      }
+    });
+
     this.logger.log('Notification service initialized');
   }
 
   async onModuleDestroy() {
     await this.publisher.quit();
     await this.subscriber.quit();
+    await this.responseSubscriber.quit();
   }
 
   async publish(notification: JobNotification): Promise<void> {
@@ -64,7 +90,26 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(`Published notification: ${notification.issueNum}`);
   }
 
+  async publishTimeoutResponse(response: TimeoutResponse): Promise<void> {
+    await this.publisher.publish(this.responseChannel, JSON.stringify(response));
+    this.logger.log(`Published timeout response: ${response.jobId} - ${response.action}`);
+  }
+
   onNotification(handler: (notification: JobNotification) => void): void {
     this.handlers.push(handler);
+  }
+
+  waitForTimeoutResponse(jobId: string, timeoutMs: number): Promise<'continue' | 'abort'> {
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        this.responseHandlers.delete(jobId);
+        resolve('continue');
+      }, timeoutMs);
+
+      this.responseHandlers.set(jobId, (response) => {
+        clearTimeout(timer);
+        resolve(response.action);
+      });
+    });
   }
 }

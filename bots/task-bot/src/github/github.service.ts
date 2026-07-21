@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { execFileSync, spawn } from 'child_process';
 import { mkdirSync, rmSync } from 'fs';
+import { NotificationService } from '../notification/notification.service';
 
 interface GitHubIssue {
   arc: string | null;
@@ -19,7 +20,10 @@ export class GitHubService {
   private readonly logger = new Logger(GitHubService.name);
   private lastGhCallTime = 0;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   private throttleGitHub(): void {
     const now = Date.now();
@@ -41,7 +45,12 @@ export class GitHubService {
   private spawnAsync(
     cmd: string,
     args: string[],
-    opts: { cwd: string; timeout?: number; env?: Record<string, string> },
+    opts: {
+      cwd: string;
+      timeout?: number;
+      env?: Record<string, string>;
+      onTimeoutApproaching?: () => Promise<'continue' | 'abort'>;
+    },
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const child = spawn(cmd, args, {
@@ -52,33 +61,65 @@ export class GitHubService {
       let stdout = '';
       let stderr = '';
       let settled = false;
+      let currentTimer: NodeJS.Timeout | undefined;
+      let warningTimer: NodeJS.Timeout | undefined;
       child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
       child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
 
-      const timer = opts.timeout
-        ? setTimeout(() => {
+      const killChild = () => {
+        try {
+          process.kill(-child.pid!, 'SIGTERM');
+        } catch {
+          try { child.kill('SIGTERM'); } catch { /* ignore */ }
+        }
+      };
+
+      const startTimer = (remainingMs: number) => {
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+
+        const warningMs = Math.max(0, remainingMs - 100_000);
+        if (opts.onTimeoutApproaching && warningMs > 0) {
+          warningTimer = setTimeout(() => {
             if (settled) return;
-            settled = true;
-            try {
-              process.kill(-child.pid!, 'SIGTERM');
-            } catch {
-              try { child.kill('SIGTERM'); } catch { /* ignore */ }
-            }
-            reject(new Error(`Timeout after ${Math.round(opts.timeout! / 1000)}s`));
-          }, opts.timeout)
-        : undefined;
+            opts.onTimeoutApproaching!().then((action) => {
+              if (settled) return;
+              if (action === 'abort') {
+                settled = true;
+                killChild();
+                reject(new Error('Aborted by user'));
+              } else {
+                startTimer(900_000);
+              }
+            });
+          }, warningMs);
+        }
+
+        currentTimer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          killChild();
+          reject(new Error(`Timeout after ${Math.round(remainingMs / 1000)}s`));
+        }, remainingMs);
+      };
+
+      if (opts.timeout) {
+        startTimer(opts.timeout);
+      }
 
       child.on('close', (code) => {
         if (settled) return;
         settled = true;
-        if (timer) clearTimeout(timer);
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
         if (code === 0) resolve(stdout.trim());
         else reject(new Error(stderr || `Exit code ${code}`));
       });
       child.on('error', (err) => {
         if (settled) return;
         settled = true;
-        if (timer) clearTimeout(timer);
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
         reject(err);
       });
     });
@@ -714,7 +755,23 @@ export class GitHubService {
         cli === 'opencode'
           ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
           : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-${issueNum}`,
+            issueNum,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on #${issueNum}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-${issueNum}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 

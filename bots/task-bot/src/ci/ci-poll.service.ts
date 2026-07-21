@@ -85,31 +85,46 @@ export class CIFollService implements OnModuleDestroy {
 
     try {
       const repoPath = this.config.get<string>('REPO_PATH') ?? process.cwd();
-      const result = execFileSync(
+
+      const prJson = execFileSync(
         'gh',
-        ['pr', 'checks', prNumber, '--json', 'name,state,conclusion'],
+        ['pr', 'view', prNumber, '--json', 'headRefOid'],
         { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
       );
+      const { headRefOid } = JSON.parse(prJson) as { headRefOid: string };
+      const repoSlug = execFileSync(
+        'gh',
+        ['repo', 'view', '--json', 'nameWithOwner'],
+        { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
+      );
+      const { nameWithOwner } = JSON.parse(repoSlug) as { nameWithOwner: string };
 
-      const checks = JSON.parse(result) as Array<{
-        name: string;
-        state: string;
-        conclusion: string | null;
-      }>;
+      const apiResult = execFileSync(
+        'gh',
+        ['api', `repos/${nameWithOwner}/commits/${headRefOid}/check-runs`, '--paginate'],
+        { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
+      );
+      const { check_runs: runs } = JSON.parse(apiResult) as {
+        check_runs: Array<{
+          name: string;
+          status: string;
+          conclusion: string | null;
+        }>;
+      };
 
-      if (checks.length === 0) {
+      if (!runs || runs.length === 0) {
         this.logger.log(`No checks found for PR #${prNumber} yet, retrying...`);
         this.scheduleNext(prNumber, issueNum, engine, startTime);
         return;
       }
 
-      const pending = checks.filter(
-        (c) => c.state === 'pending' || c.conclusion === null,
+      const pending = runs.filter(
+        (c) => c.status === 'queued' || c.status === 'in_progress' || c.conclusion === null,
       );
-      const failed = checks.filter(
-        (c) => c.conclusion === 'failure' || c.conclusion === 'action_required',
+      const failed = runs.filter(
+        (c) => c.conclusion === 'failure' || c.conclusion === 'action_required' || c.conclusion === 'cancelled',
       );
-      const passed = checks.filter(
+      const passed = runs.filter(
         (c) => c.conclusion === 'success',
       );
 

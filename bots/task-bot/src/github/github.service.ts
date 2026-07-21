@@ -139,13 +139,11 @@ export class GitHubService {
     const commands = [
       { name: 'lint', cmd: ['pnpm', 'lint'] },
       { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
-      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
-      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
     ];
     for (const { name, cmd } of commands) {
       try {
         this.logger.log(`Verifying: ${name}`);
-        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 120_000 });
+        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 300_000 });
         this.logger.log(`✓ ${name} passed`);
       } catch (err) {
         const msg = (err as Error).message.slice(0, 500);

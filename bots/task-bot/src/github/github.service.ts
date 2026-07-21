@@ -627,6 +627,12 @@ export class GitHubService {
 
       this.cleanWorkdir(cwd);
 
+      try {
+        execFileSync('git', ['worktree', 'prune'], { encoding: 'utf-8', cwd: this.getCwd() });
+      } catch {
+        // ignore prune errors
+      }
+
       const branchExists = execFileSync(
         'git', ['branch', '--list', branchName],
         { encoding: 'utf-8', cwd },
@@ -636,9 +642,7 @@ export class GitHubService {
           'git', ['log', `origin/develop..${branchName}`, '--oneline'],
           { encoding: 'utf-8', cwd },
         ).trim();
-        if (!aheadCount) {
-          execFileSync('git', ['branch', '-D', branchName], { encoding: 'utf-8', cwd });
-        } else {
+        if (aheadCount) {
           return {
             success: false,
             message: `Branch ${branchName} already has commits.`,
@@ -646,7 +650,7 @@ export class GitHubService {
         }
       }
 
-      execFileSync('git', ['checkout', '-b', branchName], {
+      execFileSync('git', ['checkout', '-B', branchName], {
         encoding: 'utf-8',
         cwd,
       });

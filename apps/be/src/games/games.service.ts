@@ -21,6 +21,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { PlayerStatsService } from './player-stats.service';
 
 @Injectable()
 export class GamesService {
@@ -42,6 +43,7 @@ export class GamesService {
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
     private readonly ruleVisibility: GameRuleVisibilityService,
+    private readonly playerStats: PlayerStatsService,
   ) {}
 
   private sanitizeForPlayer(
@@ -322,6 +324,18 @@ export class GamesService {
 
   async getPlayerStats(userId: string) {
     return this.historyService.getPlayerStats(userId);
+  }
+
+  async syncPlayerStats(
+    userId: string,
+    records: Array<{
+      gameId: string;
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>,
+  ) {
+    return this.playerStats.syncRecords(userId, records);
   }
 
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {

@@ -154,6 +154,13 @@ export class CIFollService implements OnModuleDestroy {
         await this.ciFixTracker.incrementAttempts(prNumber);
 
         try {
+          const prJson = execFileSync(
+            'gh',
+            ['pr', 'view', prNumber, '--json', 'headRefName'],
+            { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
+          );
+          const { headRefName: prBranchName } = JSON.parse(prJson) as { headRefName: string };
+
           await this.queueService.addCIFixJob(
             prNumber,
             engine as 'mimo' | 'opencode',
@@ -161,7 +168,7 @@ export class CIFollService implements OnModuleDestroy {
             0,
             {
               issueNum,
-              prBranchName: `task-${issueNum}-${engine}`,
+              prBranchName,
               prFailedChecks: failed.map((c) => ({
                 name: c.name,
                 state: 'FAILURE',

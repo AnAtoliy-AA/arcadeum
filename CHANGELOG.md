@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.74] - 2026-07-21
+
+### Added
+- persistent stat tracking (ARC-871)
+
+### Fixed
+- sanitize user-controlled values in MongoDB queries (CodeQL)
+- add PlayerStatsService mock to GamesService spec
+- add missing PlayerStats fields to local stats objects
+- skip branch deletion, use checkout -B to avoid worktree conflicts
+
+
 ## [1.23.73] - 2026-07-20
 
 ### Fixed

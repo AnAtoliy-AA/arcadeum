@@ -7,7 +7,7 @@ const ROOT_DIR = process.cwd();
 // List of files to ignore (relative to root). Empty by design: every TS/TSX
 // file under apps/ must stay below MAX_LINES. If you genuinely need an
 // exemption, add the path here and link the follow-up refactor ticket.
-const ALLOW_LIST = new Set(['apps/be/src/games/games.controller.ts']);
+const ALLOW_LIST = new Set([]);
 
 const IGNORE_DIRS = new Set([
   'node_modules',

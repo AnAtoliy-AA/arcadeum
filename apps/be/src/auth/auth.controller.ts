@@ -74,9 +74,12 @@ function setTokenCookies(
   });
 }
 
-function clearTokenCookies(res: Response): void {
-  res.clearCookie('access_token', { path: '/' });
-  res.clearCookie('refresh_token', { path: '/' });
+function clearTokenCookies(res: Response, req: Request): void {
+  const secure = isSecureOrigin(req);
+  const sameSite: 'strict' | 'none' | 'lax' = secure ? 'none' : 'lax';
+  const options = { path: '/', httpOnly: true, secure, sameSite };
+  res.clearCookie('access_token', options);
+  res.clearCookie('refresh_token', options);
 }
 
 @Controller('auth')
@@ -199,8 +202,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(204)
-  logout(@Res({ passthrough: true }) res: Response): void {
-    clearTokenCookies(res);
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): void {
+    clearTokenCookies(res, req);
   }
 
   // Account-enumeration defense: always 204, never reveal whether the email

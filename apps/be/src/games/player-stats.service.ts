@@ -36,7 +36,7 @@ export class PlayerStatsService {
         const isDraw = winners.length === 0;
 
         await this.statsModel.findOneAndUpdate(
-          { userId, gameId },
+          { userId: { $eq: userId }, gameId: { $eq: gameId } },
           {
             $inc: {
               totalGames: 1,
@@ -86,7 +86,7 @@ export class PlayerStatsService {
     }
 
     const docs = await this.statsModel
-      .find({ userId })
+      .find({ userId: { $eq: userId } })
       .lean<
         { gameId: string; totalGames: number; wins: number; losses: number }[]
       >()
@@ -106,7 +106,7 @@ export class PlayerStatsService {
     const totalWins = docs.reduce((s, d) => s + d.wins, 0);
 
     const records = await this.recordModel
-      .find({ userId })
+      .find({ userId: { $eq: userId } })
       .sort({ timestamp: -1 })
       .lean<{ result: string; gameId: string }[]>()
       .exec();
@@ -256,8 +256,8 @@ export class PlayerStatsService {
     for (const record of records) {
       try {
         const existing = await this.recordModel.findOne({
-          userId,
-          sessionId: record.sessionId,
+          userId: { $eq: userId },
+          sessionId: { $eq: record.sessionId },
         });
 
         if (existing) {
@@ -274,7 +274,7 @@ export class PlayerStatsService {
         });
 
         await this.statsModel.findOneAndUpdate(
-          { userId, gameId: record.gameId },
+          { userId: { $eq: userId }, gameId: { $eq: record.gameId } },
           {
             $inc: {
               totalGames: 1,

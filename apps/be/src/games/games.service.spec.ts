@@ -13,6 +13,7 @@ import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
 import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
+import { PlayerStatsService } from './player-stats.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -91,6 +92,10 @@ describe('GamesService', () => {
     const mockRuleVisibility = {
       getRulesForGame: jest.fn().mockResolvedValue(new Map()),
     };
+    const mockPlayerStats = {
+      recordGameResult: jest.fn().mockResolvedValue(undefined),
+      getPlayerStats: jest.fn().mockResolvedValue({}),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -114,6 +119,7 @@ describe('GamesService', () => {
         },
         { provide: GamePostMatchService, useValue: mockPostMatchService },
         { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
+        { provide: PlayerStatsService, useValue: mockPlayerStats },
       ],
     }).compile();
 

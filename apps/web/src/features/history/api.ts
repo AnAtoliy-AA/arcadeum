@@ -40,6 +40,10 @@ export interface PlayerStats {
   losses: number;
   winRate: number;
   byGameType: GameTypeStats[];
+  currentStreak: number;
+  currentStreakType: 'won' | 'lost' | null;
+  bestWinStreak: number;
+  favoriteGame: string | null;
 }
 
 export interface LeaderboardEntry {
@@ -150,6 +154,22 @@ export const historyApi = {
   remove: async (roomId: string, options?: ApiClientOptions): Promise<void> => {
     return apiClient.delete(
       `/games/history/${encodeURIComponent(roomId)}`,
+      options,
+    );
+  },
+
+  syncStats: async (
+    records: Array<{
+      gameId: string;
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>,
+    options?: ApiClientOptions,
+  ): Promise<{ synced: number; duplicates: number }> => {
+    return apiClient.post<{ synced: number; duplicates: number }>(
+      '/games/stats',
+      { records },
       options,
     );
   },

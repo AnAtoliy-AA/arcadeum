@@ -22,6 +22,7 @@ import {
   type CatalogGame,
   type CatalogVariant,
 } from './games.types';
+import { SyncStatsDto } from './dtos/sync-stats.dto';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
@@ -292,6 +293,17 @@ export class GamesController {
     }
 
     return this.gamesService.getPlayerStats(user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('stats')
+  async syncStats(@Req() req: Request, @Body() dto: SyncStatsDto) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.gamesService.syncPlayerStats(user.userId, dto.records);
   }
 
   @Get('leaderboard')

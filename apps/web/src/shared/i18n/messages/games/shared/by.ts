@@ -144,6 +144,7 @@ export const byMessages = {
     houseRuleIdleTimer: 'Аўтаход пры бяздзейнасці',
     houseRuleIdleTimerHint: 'Аўтаматычны ход праз {{seconds}} сек',
     seaBattleGridSize: 'Памер поля',
+    seaBattleShipCount: 'Колькасць караблёў',
     specialWeapons: 'Спецзброі',
     seaBattleSonar: 'Сонар',
     seaBattleSonarHint: 'Паказаць размяшчэнне караблёў',

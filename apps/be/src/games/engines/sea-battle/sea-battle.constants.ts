@@ -45,8 +45,17 @@ export const SHIPS: ShipConfig[] = [
 
 export function getDefaultShipCount(gridSize: number): number {
   if (gridSize <= 10) return 10;
-  if (gridSize <= 15) return 12;
+  if (gridSize <= 15) return 14;
   return 14;
+}
+
+export function getShipCountOptions(gridSize: number): number[] {
+  const maxForGrid = gridSize <= 10 ? 14 : 14;
+  const options: number[] = [];
+  for (let i = 5; i <= Math.min(maxForGrid, SHIPS.length); i++) {
+    options.push(i);
+  }
+  return options;
 }
 
 export function getActiveShips(shipCount?: number): ShipConfig[] {

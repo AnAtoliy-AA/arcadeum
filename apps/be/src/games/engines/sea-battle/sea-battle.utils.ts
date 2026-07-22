@@ -245,7 +245,7 @@ function canPlaceShip(
     for (const [dr, dc] of directions) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
         if (board[r][c] === CELL_STATE.SHIP) return false;
       }
     }

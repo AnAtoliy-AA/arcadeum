@@ -144,6 +144,7 @@ export const frMessages = {
     houseRuleIdleTimer: 'Autoplay avec minuterie',
     houseRuleIdleTimerHint: "Se déclenche après {{seconds}}s d'inactivité",
     seaBattleGridSize: 'Taille du Champ',
+    seaBattleShipCount: 'Nombre de Navires',
     specialWeapons: 'Armes Spéciales',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Révéler les positions des navires',
@@ -288,7 +289,8 @@ export const frMessages = {
     difficultyEasy: 'Facile',
     difficultyMedium: 'Moyen',
     difficultyHard: 'Difficile',
-    difficultyEasyDesc: 'Coups aléatoires avec des plays intelligents occasionnels',
+    difficultyEasyDesc:
+      'Coups aléatoires avec des plays intelligents occasionnels',
     difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
     difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
   },

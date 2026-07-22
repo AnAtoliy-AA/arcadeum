@@ -258,44 +258,49 @@ export function randomlyPlaceShips(
   gridSize: number = BOARD_SIZE,
   shipCount?: number,
 ): Record<string, ShipCell[]> {
-  const board = createEmptyBoard(gridSize);
-  const placements: Record<string, ShipCell[]> = {};
   const activeShips = getActiveShips(shipCount);
+  const maxRetries = 5;
 
-  // Sort ships by size descending to make placement easier
-  const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
+  for (let retry = 0; retry < maxRetries; retry++) {
+    const board = createEmptyBoard(gridSize);
+    const placements: Record<string, ShipCell[]> = {};
 
-  for (const ship of sortedShips) {
-    let placed = false;
-    let attempts = 0;
-    const maxAttempts = 1000;
+    // Sort ships by size descending to make placement easier
+    const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
 
-    while (!placed && attempts < maxAttempts) {
-      attempts++;
-      const isVertical = Math.random() < 0.5;
-      const row = Math.floor(Math.random() * gridSize);
-      const col = Math.floor(Math.random() * gridSize);
+    let allPlaced = true;
+    for (const ship of sortedShips) {
+      let placed = false;
+      const maxAttempts = 5000;
 
-      if (canPlaceShip(board, row, col, ship.size, isVertical, gridSize)) {
-        const cells = getShipCells(row, col, ship.size, isVertical, gridSize);
+      for (let attempts = 0; attempts < maxAttempts; attempts++) {
+        const isVertical = Math.random() < 0.5;
+        const row = Math.floor(Math.random() * gridSize);
+        const col = Math.floor(Math.random() * gridSize);
 
-        if (cells) {
-          // Update local board
-          cells.forEach((cell) => {
-            board[cell.row][cell.col] = CELL_STATE.SHIP;
-          });
+        if (canPlaceShip(board, row, col, ship.size, isVertical, gridSize)) {
+          const cells = getShipCells(row, col, ship.size, isVertical, gridSize);
 
-          placements[ship.id] = cells;
-          placed = true;
+          if (cells) {
+            cells.forEach((cell) => {
+              board[cell.row][cell.col] = CELL_STATE.SHIP;
+            });
+
+            placements[ship.id] = cells;
+            placed = true;
+            break;
+          }
         }
+      }
+
+      if (!placed) {
+        allPlaced = false;
+        break;
       }
     }
 
-    if (!placed) {
-      // Failed to place a ship. Allow retry in caller or return empty to signal failure.
-      return {};
-    }
+    if (allPlaced) return placements;
   }
 
-  return placements;
+  return {};
 }

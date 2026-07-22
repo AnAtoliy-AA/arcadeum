@@ -38,7 +38,9 @@ export const ShipPaletteSection = memo(
     activeShips,
     t,
   }: ShipPaletteSectionProps) => {
-    const shipItems = activeShips.map((ship) => {
+    const shipItems = [...activeShips]
+      .sort((a, b) => b.size - a.size)
+      .map((ship) => {
       const isPlaced = placedShipIds.has(ship.id);
       const isSelected = selectedShipId === ship.id;
 

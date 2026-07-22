@@ -12,7 +12,11 @@ import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 
 async function bootstrap() {
-  if (process.env.E2E === 'true' && process.env.NODE_ENV === 'production') {
+  if (
+    process.env.E2E === 'true' &&
+    process.env.NODE_ENV === 'production' &&
+    !process.env.CI
+  ) {
     throw new Error(
       'E2E mode must not be enabled in production. Set E2E=false or remove it.',
     );

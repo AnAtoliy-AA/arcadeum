@@ -12,6 +12,12 @@ import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 
 async function bootstrap() {
+  if (process.env.E2E === 'true' && process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'E2E mode must not be enabled in production. Set E2E=false or remove it.',
+    );
+  }
+
   const logger = new ArcadeumLogger();
   logger.setLogLevels(['error', 'warn', 'log']);
   const app = await NestFactory.create(AppModule, { logger });

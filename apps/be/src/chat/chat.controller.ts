@@ -1,6 +1,7 @@
 import {
   Body,
   BadRequestException,
+  ForbiddenException,
   Controller,
   Get,
   Post,
@@ -36,10 +37,26 @@ export class ChatController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':chatId/messages')
-  async getMessages(@Param('chatId') chatId: string): Promise<MessageView[]> {
+  async getMessages(
+    @Req() req: AuthenticatedRequest,
+    @Param('chatId') chatId: string,
+  ): Promise<MessageView[]> {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('User context missing');
+    }
     if (!chatId) {
       throw new BadRequestException('Chat ID is required');
     }
+
+    const isParticipant = await this.chatService.isUserParticipant(
+      chatId,
+      userId,
+    );
+    if (!isParticipant) {
+      throw new ForbiddenException('You are not a participant of this chat');
+    }
+
     return this.chatService.getMessagesByChatId(chatId);
   }
 

@@ -1,4 +1,10 @@
-import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import {
   GAME_ROOM_VISIBILITY_VALUES,
   type GameRoomVisibility,
@@ -36,5 +42,6 @@ export class HistoryRematchDto {
   visibility?: GameRoomVisibility;
 
   @IsOptional()
+  @IsObject()
   gameOptions?: Record<string, unknown>;
 }

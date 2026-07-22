@@ -625,40 +625,36 @@ export class GitHubService {
     try {
       try {
         execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], { encoding: 'utf-8', cwd: workdir });
-        this.logger.log(`Remote URL set for ${branchName}`);
-      } catch (err) {
-        this.logger.warn(`Failed to set remote URL: ${(err as Error).message}`);
-      }
-      try {
-        execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
-        this.logger.log('gh auth setup-git succeeded');
-      } catch (err) {
-        this.logger.warn(`gh auth setup-git failed: ${(err as Error).message} — falling back to credential store`);
+      } catch {
+        // ignore
       }
 
+      const credHelper = '!/usr/bin/gh auth git-credential';
       const maxRetries = 2;
       let lastError: Error | null = null;
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+          execFileSync('git', [
+            '-c', `credential.helper=${credHelper}`,
+            'push', 'origin', branchName, '--no-verify',
+          ], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
           this.logger.log(`Pushed ${branchName} (attempt ${attempt})`);
           return { success: true, message: `Pushed ${branchName}` };
         } catch (err) {
           lastError = err as Error;
           this.logger.warn(`git push attempt ${attempt}/${maxRetries} failed: ${lastError.message}`);
           if (attempt < maxRetries) {
-            try {
-              execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
-            } catch {
-              // ignore retry setup-git failures
-            }
-            execFileSync('git', ['credential', 'reject'], { input: 'protocol=https\nhost=github.com\n', encoding: 'utf-8', cwd: workdir, timeout: 5_000 });
+            execFileSync('git', ['credential', 'reject'], {
+              input: 'protocol=https\nhost=github.com\n',
+              encoding: 'utf-8',
+              cwd: workdir,
+              timeout: 5_000,
+            });
           }
         }
       }
       return { success: false, message: `Failed to push after ${maxRetries} attempts: ${lastError!.message}` };
     } catch (err) {
-      this.logger.error(`pushBranch unexpected error: ${(err as Error).message}`);
       return { success: false, message: `Failed to push: ${(err as Error).message}` };
     }
   }

@@ -104,6 +104,18 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     [setOption],
   );
 
+  React.useEffect(() => {
+    if (room.status !== 'lobby') return;
+    const opts = (room.gameOptions ?? {}) as Record<string, unknown>;
+    const gs = (opts.gridSize as number) ?? 10;
+    const updates: Record<string, unknown> = {};
+    if (opts.gridSize === undefined) updates.gridSize = gs;
+    if (opts.shipCount === undefined)
+      updates.shipCount = getDefaultShipCount(gs);
+    if (opts.variant === undefined) updates.variant = 'classic';
+    if (Object.keys(updates).length > 0) setOption(updates);
+  }, [room.id, room.status]);
+
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
   const teamMode = !!teamOpts.teamMode;

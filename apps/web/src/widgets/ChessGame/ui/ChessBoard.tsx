@@ -11,6 +11,7 @@ import {
   type BoardPosition,
   type PieceColor,
 } from '../types';
+import './styles/animations.scss';
 
 interface ChessBoardProps {
   board: Board;
@@ -107,141 +108,180 @@ function ChessBoardImpl({
       aria-label={ariaLabel ?? 'Chess'}
       data-testid="chess-board"
       style={{
-        display: 'flex',
-        flexDirection: 'column',
+        position: 'relative',
         width: '100%',
-        maxWidth: 'min(80vmin, 480px)',
-        aspectRatio: '1 / 1',
+        maxWidth: 'min(75vmin, 480px)',
         margin: '0 auto',
       }}
     >
-      {rows.ranks.map((rank) => (
-        <div key={rank} role="row" style={{ display: 'flex', flex: 1 }}>
-          {rows.files.map((file) => {
-            const rowIdx = rankToFile(rank);
-            const colIdx = FILES.indexOf(file);
-            const piece: ChessPiece | null = board[rowIdx]?.[colIdx] ?? null;
-            const isLight = (rowIdx + colIdx) % 2 === 0;
-            const selected = isSelected(file, rank);
-            const legalTarget = isLegalTarget(file, rank);
-            const lastMoved = isLastMove(file, rank);
-            const kingCheck = isKingInCheck(file, rank);
-            const hovered = hoveredSquare === `${file}-${rank}`;
-            const hasPiece = piece !== null;
-            const isMyPiece = piece?.color === myColor;
-            const canInteract = !disabled && (isMyPiece || legalTarget);
-
-            let bg = isLight ? '#f0d9b5' : '#b58863';
-            if (selected) bg = '#82976d';
-            else if (kingCheck) bg = '#e74c3c';
-            else if (lastMoved) bg = isLight ? '#ced26b' : '#aaa23a';
-            const isDragOver = dragOverSquare === `${file}-${rank}`;
-
-            const symbol = piece
-              ? PIECE_SYMBOLS[piece.type][piece.color]
-              : null;
-
-            return (
-              <button
-                key={`${file}-${rank}`}
-                type="button"
-                role="gridcell"
-                data-testid={`chess-${file}${rank}`}
-                aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}`}
-                disabled={!canInteract}
-                onClick={() => onSquareClick(file, rank)}
-                onMouseEnter={() => setHoveredSquare(`${file}-${rank}`)}
-                onMouseLeave={() => setHoveredSquare(null)}
-                draggable={isMyPiece && !disabled}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('text/plain', `${file}-${rank}`);
-                  e.dataTransfer.effectAllowed = 'move';
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  e.dataTransfer.dropEffect = 'move';
-                  setDragOverSquare(`${file}-${rank}`);
-                }}
-                onDragLeave={() => setDragOverSquare(null)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragOverSquare(null);
-                  const data = e.dataTransfer.getData('text/plain');
-                  if (data && onPieceDrop) {
-                    const [fromFile, fromRank] = data.split('-');
-                    onPieceDrop(
-                      fromFile as File,
-                      Number(fromRank) as Rank,
-                      file,
-                      rank,
-                    );
-                  }
-                }}
-                style={{
-                  flex: 1,
-                  aspectRatio: '1 / 1',
-                  backgroundColor:
-                    isDragOver && legalTarget
-                      ? '#d4e157'
-                      : hovered && legalTarget
-                        ? '#d4e157'
-                        : bg,
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: canInteract ? 'pointer' : 'default',
-                  position: 'relative',
-                  transition: 'background-color 100ms ease',
-                }}
-              >
-                {legalTarget && !hasPiece && (
-                  <div
-                    style={{
-                      width: '28%',
-                      height: '28%',
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(0,0,0,0.15)',
-                    }}
-                  />
-                )}
-                {legalTarget && hasPiece && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      border: '3px solid rgba(0,0,0,0.25)',
-                      borderRadius: '50%',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                )}
-                {symbol && (
-                  <span
-                    style={{
-                      fontSize: `clamp(1.2rem, ${(80 / 8).toFixed(0)}cqw, 3.2rem)`,
-                      lineHeight: 1,
-                      filter:
-                        isMyPiece && !disabled
-                          ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-                          : 'none',
-                      userSelect: 'none',
-                    }}
-                  >
-                    {symbol}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      ))}
+      <div
+        className="chess-board-glow"
+        style={{
+          position: 'absolute',
+          inset: -6,
+          borderRadius: 16,
+          background:
+            'radial-gradient(ellipse at center, rgba(167, 139, 250, 0.12), transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
       <div
         style={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          aspectRatio: '1 / 1',
+          borderRadius: 10,
+          overflow: 'hidden',
+          backgroundColor: 'rgba(15, 20, 30, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow:
+            '0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.05) inset',
           display: 'flex',
-          paddingLeft: 0,
+          flexDirection: 'column',
         }}
       >
+        {rows.ranks.map((rank) => (
+          <div key={rank} role="row" style={{ display: 'flex', flex: 1 }}>
+            {rows.files.map((file) => {
+              const rowIdx = rankToFile(rank);
+              const colIdx = FILES.indexOf(file);
+              const piece: ChessPiece | null = board[rowIdx]?.[colIdx] ?? null;
+              const isLight = (rowIdx + colIdx) % 2 === 0;
+              const selected = isSelected(file, rank);
+              const legalTarget = isLegalTarget(file, rank);
+              const lastMoved = isLastMove(file, rank);
+              const kingCheck = isKingInCheck(file, rank);
+              const hovered = hoveredSquare === `${file}-${rank}`;
+              const isMyPiece = piece?.color === myColor;
+              const canInteract = !disabled && (isMyPiece || legalTarget);
+              const isDragOver = dragOverSquare === `${file}-${rank}`;
+
+              const symbol = piece
+                ? PIECE_SYMBOLS[piece.type][piece.color]
+                : null;
+
+              let bgColor = isLight
+                ? 'rgba(160, 180, 200, 0.35)'
+                : 'rgba(60, 75, 95, 0.8)';
+              if (selected) bgColor = 'rgba(255, 215, 0, 0.35)';
+              else if (kingCheck) bgColor = 'rgba(239, 68, 68, 0.4)';
+              else if (lastMoved) bgColor = 'rgba(56, 189, 248, 0.25)';
+
+              const isLastFile = rows.files[rows.files.length - 1] === file;
+
+              return (
+                <div
+                  key={`${file}-${rank}`}
+                  role="gridcell"
+                  data-testid={`chess-${file}${rank}`}
+                  aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}`}
+                  draggable={isMyPiece && !disabled}
+                  onClick={() => {
+                    if (!disabled) onSquareClick(file, rank);
+                  }}
+                  onMouseEnter={() => setHoveredSquare(`${file}-${rank}`)}
+                  onMouseLeave={() => setHoveredSquare(null)}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/plain', `${file}-${rank}`);
+                    e.dataTransfer.effectAllowed = 'move';
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    setDragOverSquare(`${file}-${rank}`);
+                  }}
+                  onDragLeave={() => setDragOverSquare(null)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragOverSquare(null);
+                    const data = e.dataTransfer.getData('text/plain');
+                    if (data && onPieceDrop) {
+                      const [fromFile, fromRank] = data.split('-');
+                      onPieceDrop(
+                        fromFile as File,
+                        Number(fromRank) as Rank,
+                        file,
+                        rank,
+                      );
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    aspectRatio: '1 / 1',
+                    backgroundColor:
+                      legalTarget && (hovered || isDragOver)
+                        ? 'rgba(167, 139, 250, 0.4)'
+                        : bgColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: canInteract ? 'pointer' : 'default',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {legalTarget && !piece && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: '28%',
+                        height: '28%',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(167, 139, 250, 0.5)',
+                      }}
+                    />
+                  )}
+                  {legalTarget && piece && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 2,
+                        borderRadius: '50%',
+                        border: '3px solid rgba(239, 68, 68, 0.6)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  )}
+                  {isLastFile && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        right: 3,
+                        top: 2,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        opacity: 0.4,
+                        color: '#fff',
+                        lineHeight: 1,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {rank}
+                    </span>
+                  )}
+                  {symbol && (
+                    <span
+                      style={{
+                        fontSize: 'clamp(1.2rem, 10cqw, 3.2rem)',
+                        lineHeight: 1,
+                        filter: 'drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4))',
+                        userSelect: 'none',
+                        position: 'relative',
+                        zIndex: 2,
+                      }}
+                    >
+                      {symbol}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', paddingLeft: 2, paddingRight: 2 }}>
         {rows.files.map((file) => (
           <div
             key={file}
@@ -249,8 +289,9 @@ function ChessBoardImpl({
               flex: 1,
               textAlign: 'center',
               fontSize: 11,
-              opacity: 0.6,
+              opacity: 0.4,
               paddingTop: 4,
+              color: '#fff',
             }}
           >
             {file}

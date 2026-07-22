@@ -1,8 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import { TamaguiProvider, createTamagui } from 'tamagui';
+import { defaultConfig } from '@tamagui/config/v4';
 import { ChessBoard } from './ChessBoard';
 import type { Board, File, Rank, PieceColor } from '../types';
 import { FILES } from '../types';
+
+const tamaguiConfig = createTamagui(defaultConfig);
 
 function createEmptyBoard(): Board {
   return Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -13,6 +17,14 @@ function createBoardWithPawn(color: PieceColor): Board {
   const row = color === 'white' ? 6 : 1;
   board[row][4] = { type: 'pawn', color };
   return board;
+}
+
+function renderWithProvider(ui: React.ReactElement) {
+  return render(
+    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+      {ui}
+    </TamaguiProvider>,
+  );
 }
 
 describe('ChessBoard', () => {
@@ -34,7 +46,7 @@ describe('ChessBoard', () => {
 
   it('renders 64 squares', () => {
     const board = createEmptyBoard();
-    render(<ChessBoard {...defaultProps} board={board} />);
+    renderWithProvider(<ChessBoard {...defaultProps} board={board} />);
     const cells = screen.getAllByRole('gridcell');
     expect(cells).toHaveLength(64);
   });
@@ -42,7 +54,7 @@ describe('ChessBoard', () => {
   it('calls onSquareClick when a square is clicked', () => {
     const board = createBoardWithPawn('white');
     const onSquareClick = vi.fn();
-    render(
+    renderWithProvider(
       <ChessBoard
         {...defaultProps}
         board={board}
@@ -56,7 +68,7 @@ describe('ChessBoard', () => {
 
   it('renders pieces with correct symbols', () => {
     const board = createBoardWithPawn('white');
-    render(<ChessBoard {...defaultProps} board={board} />);
+    renderWithProvider(<ChessBoard {...defaultProps} board={board} />);
     const cell = screen.getByTestId('chess-e2');
     expect(cell.textContent).toContain('♙');
   });
@@ -64,7 +76,7 @@ describe('ChessBoard', () => {
   it('shows legal move indicator', () => {
     const board = createBoardWithPawn('white');
     const legalMoves = [{ file: 'e' as File, rank: 4 as Rank }];
-    render(
+    renderWithProvider(
       <ChessBoard {...defaultProps} board={board} legalMoves={legalMoves} />,
     );
     const cell = screen.getByTestId('chess-e4');
@@ -74,7 +86,7 @@ describe('ChessBoard', () => {
   it('disables interaction when disabled prop is true', () => {
     const board = createBoardWithPawn('white');
     const onSquareClick = vi.fn();
-    render(
+    renderWithProvider(
       <ChessBoard
         {...defaultProps}
         board={board}
@@ -89,7 +101,7 @@ describe('ChessBoard', () => {
 
   it('shows file labels below the board', () => {
     const board = createEmptyBoard();
-    render(<ChessBoard {...defaultProps} board={board} />);
+    renderWithProvider(<ChessBoard {...defaultProps} board={board} />);
     FILES.forEach((file) => {
       expect(screen.getAllByText(file).length).toBeGreaterThan(0);
     });

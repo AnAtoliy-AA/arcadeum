@@ -29,6 +29,7 @@ interface ChessBoardPanelProps {
   lastMove: { from: BoardPosition; to: BoardPosition } | null;
   kingPosition: BoardPosition | null;
   currentUserId: string | null;
+  resolveName: (id: string) => string;
   t: TranslateFn;
   onSquareClick: (file: File, rank: Rank) => void;
   onPieceDrop: (
@@ -54,6 +55,7 @@ function ChessBoardPanelImpl({
   lastMove,
   kingPosition,
   currentUserId,
+  resolveName,
   t,
   onSquareClick,
   onPieceDrop,
@@ -73,10 +75,10 @@ function ChessBoardPanelImpl({
   const blackPlayer = players.find((p) => p.color === 'black');
 
   const whiteName = whitePlayer?.playerId
-    ? whitePlayer.playerId.slice(0, 12)
+    ? resolveName(whitePlayer.playerId)
     : 'White';
   const blackName = blackPlayer?.playerId
-    ? blackPlayer.playerId.slice(0, 12)
+    ? resolveName(blackPlayer.playerId)
     : 'Black';
 
   const hasDrawOffer = !!snapshot?.drawOfferedBy;
@@ -202,6 +204,8 @@ function ChessBoardPanelImpl({
 
       <div className="chess-info-col">
         <PlayerCards
+          whiteId={whitePlayer?.playerId ?? ''}
+          blackId={blackPlayer?.playerId ?? ''}
           whiteName={whiteName}
           blackName={blackName}
           currentTurnColor={snapshot.currentTurnColor}

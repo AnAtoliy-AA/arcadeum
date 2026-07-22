@@ -414,6 +414,7 @@ function ChessGameImpl({
       lastMove={lastMove}
       kingPosition={kingPosition}
       currentUserId={currentUserId}
+      resolveName={resolveDisplayNameBound}
       t={t}
       onSquareClick={handleSquareClick}
       onPieceDrop={handlePieceDrop}

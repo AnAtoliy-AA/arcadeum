@@ -1,5 +1,6 @@
 'use client';
 
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import type { ChessClientState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -59,6 +60,8 @@ export function TurnBar({
 }
 
 export function PlayerCards({
+  whiteId,
+  blackId,
   whiteName,
   blackName,
   currentTurnColor,
@@ -66,6 +69,8 @@ export function PlayerCards({
   clocks,
   timeControl,
 }: {
+  whiteId: string;
+  blackId: string;
   whiteName: string;
   blackName: string;
   currentTurnColor: 'white' | 'black';
@@ -76,8 +81,8 @@ export function PlayerCards({
   return (
     <div className="player-cards-container">
       <PlayerCard
+        playerId={whiteId}
         name={whiteName}
-        color="white"
         isActive={currentTurnColor === 'white' && !isGameOver}
         mainTime={
           clocks?.white ? formatClock(clocks.white.remainingSeconds) : '--:--'
@@ -85,8 +90,8 @@ export function PlayerCards({
         incrTime={timeControl ? `+${timeControl.incrementSeconds}` : '+0'}
       />
       <PlayerCard
+        playerId={blackId}
         name={blackName}
-        color="black"
         isActive={currentTurnColor === 'black' && !isGameOver}
         mainTime={
           clocks?.black ? formatClock(clocks.black.remainingSeconds) : '--:--'
@@ -98,14 +103,14 @@ export function PlayerCards({
 }
 
 export function PlayerCard({
+  playerId,
   name,
-  color,
   isActive,
   mainTime,
   incrTime,
 }: {
+  playerId: string;
   name: string;
-  color: 'white' | 'black';
   isActive: boolean;
   mainTime: string;
   incrTime: string;
@@ -129,25 +134,7 @@ export function PlayerCard({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            background:
-              color === 'white'
-                ? 'linear-gradient(135deg, #e2e8f0, #94a3b8)'
-                : 'linear-gradient(135deg, #475569, #1e293b)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 14,
-            border: '2px solid rgba(255, 255, 255, 0.1)',
-            flexShrink: 0,
-          }}
-        >
-          {KING_SYMBOLS[color]}
-        </div>
+        <InGameAvatar playerId={playerId} name={name} size="sm" />
         <div
           style={{
             fontSize: 12,

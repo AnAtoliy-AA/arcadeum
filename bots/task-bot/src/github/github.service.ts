@@ -394,7 +394,13 @@ export class GitHubService {
           if (errorLines.length > 80) break;
         }
       }
-      return errorLines.length > 0 ? errorLines.join('\n').slice(0, 4000) : result.slice(0, 4000);
+      if (errorLines.length > 0) {
+        return errorLines.join('\n').slice(0, 4000);
+      }
+      const passingLines = lines.filter(l => l.includes('✓') || l.includes('PASS'));
+      const failingLines = lines.filter(l => l.includes('×') || l.includes('FAIL') || l.includes('Error'));
+      const summary = `Total tests: ${passingLines.length} passed, ${failingLines.length} failed`;
+      return [summary, '', 'Failing tests:', ...failingLines.slice(0, 20)].join('\n').slice(0, 4000);
     } catch {
       return '';
     }

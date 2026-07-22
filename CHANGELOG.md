@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.77] - 2026-07-22
+
+### Added
+- audio cues (ARC-879)
+
+### Fixed
+- update sound test to use dynamic manifest count
+- resolve CI failures and review feedback
+- lint warning in ChatMessagePopup
+
+
 ## [1.23.76] - 2026-07-22
 
 ### Added

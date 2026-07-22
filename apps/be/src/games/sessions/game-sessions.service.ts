@@ -112,8 +112,9 @@ export class GameSessionsService {
    * Find session by room ID
    */
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
+    const safeRoomId = String(roomId);
     const session = await this.gameSessionModel
-      .findOne({ roomId })
+      .findOne({ roomId: safeRoomId })
       .sort({ createdAt: -1 })
       .lean()
       .exec();

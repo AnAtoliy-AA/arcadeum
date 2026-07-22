@@ -6,6 +6,7 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
+import { useAudioCuesSetting } from '@/shared/hooks/useAudioCuesSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
@@ -135,6 +136,7 @@ export default function SettingsContent({
   const { themePreference, setThemePreference } = useThemeController();
   const { hapticsEnabled, setHapticsEnabled } = useHapticsSetting();
   const { soundEnabled, setSoundEnabled } = useSoundSetting();
+  const { audioCuesEnabled, setAudioCuesEnabled } = useAudioCuesSetting();
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const { locale, setLocale, messages } = useLanguage();
 
@@ -204,6 +206,7 @@ export default function SettingsContent({
   const gameplayDescription =
     settingsCopy.gameplayDescription ?? 'Customize your in-game experience.';
   const hapticsLabel = settingsCopy.hapticsLabel ?? 'Haptic Feedback';
+  const audioCuesLabel = settingsCopy.audioCuesLabel ?? 'Audio Cues';
 
   const aboutTitle = settingsCopy.aboutTitle ?? 'About';
   const aboutDescription =
@@ -221,6 +224,10 @@ export default function SettingsContent({
   const handleToggleSound = useCallback(() => {
     setSoundEnabled(!soundEnabled);
   }, [setSoundEnabled, soundEnabled]);
+
+  const handleToggleAudioCues = useCallback(() => {
+    setAudioCuesEnabled(!audioCuesEnabled);
+  }, [setAudioCuesEnabled, audioCuesEnabled]);
 
   const handleToggleHaptics = useCallback(() => {
     setHapticsEnabled(!hapticsEnabled);
@@ -296,6 +303,15 @@ export default function SettingsContent({
                 checked={soundEnabled}
                 readOnly
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
+              />
+            </ToggleRow>
+            <ToggleRow data-testid="audio-cues-row" onClick={handleToggleAudioCues}>
+              <ToggleLabel>{audioCuesLabel}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={audioCuesEnabled}
+                readOnly
+                aria-label={audioCuesLabel}
               />
             </ToggleRow>
             <ToggleRow data-testid="music-row" onClick={handleToggleMusic}>

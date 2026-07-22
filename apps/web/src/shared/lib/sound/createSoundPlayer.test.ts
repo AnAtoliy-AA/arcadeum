@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createSoundPlayer, type AudioLike } from './createSoundPlayer';
+import { SOUNDS } from './sound-manifest';
 
 function makeFakeAudio(): AudioLike & { play: ReturnType<typeof vi.fn> } {
   return {
@@ -60,7 +61,7 @@ describe('createSoundPlayer', () => {
 
     player.preloadAll();
 
-    // one element per entry in the manifest (win, lose, click, coin)
-    expect(factory).toHaveBeenCalledTimes(4);
+    // one element per entry in the manifest
+    expect(factory).toHaveBeenCalledTimes(Object.keys(SOUNDS).length);
   });
 });

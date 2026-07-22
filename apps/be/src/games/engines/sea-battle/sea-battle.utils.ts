@@ -213,47 +213,6 @@ function getShipCells(
   return cells;
 }
 
-function canPlaceShip(
-  board: CellState[][],
-  row: number,
-  col: number,
-  size: number,
-  isVertical: boolean,
-  gridSize: number = BOARD_SIZE,
-): boolean {
-  const cells = getShipCells(row, col, size, isVertical, gridSize);
-
-  // Check bounds
-  if (!cells) return false;
-
-  // Check collision and spacing
-  for (const cell of cells) {
-    if (board[cell.row][cell.col] !== CELL_STATE.EMPTY) return false;
-
-    // Check neighbors (no adjacent ships allowed)
-    const directions = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ];
-
-    for (const [dr, dc] of directions) {
-      const r = cell.row + dr;
-      const c = cell.col + dc;
-      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
-        if (board[r][c] === CELL_STATE.SHIP) return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 export function randomlyPlaceShips(
   gridSize: number = BOARD_SIZE,
   shipCount?: number,

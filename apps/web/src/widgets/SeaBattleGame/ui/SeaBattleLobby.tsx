@@ -80,6 +80,14 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   });
   const media = useMedia();
 
+  const roomOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
+  const [currentGridSize, setCurrentGridSize] = React.useState<number>(
+    (roomOpts.gridSize as number) ?? 10,
+  );
+  const [currentShipCount, setCurrentShipCount] = React.useState<number>(
+    (roomOpts.shipCount as number) ?? getDefaultShipCount(currentGridSize),
+  );
+
   const [ruleComingSoon, setRuleComingSoon] = React.useState<
     Map<string, boolean>
   >(new Map());
@@ -99,6 +107,8 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   const handleOptionChange = React.useCallback(
     (options: Record<string, unknown>) => {
+      if (options.gridSize !== undefined) setCurrentGridSize(options.gridSize as number);
+      if (options.shipCount !== undefined) setCurrentShipCount(options.shipCount as number);
       setOption(options);
     },
     [setOption],
@@ -169,18 +179,14 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       difficulty?: 'easy' | 'medium' | 'hard';
     }) => {
       if (teamStartBlocked) return;
-      const currentOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
-      const gs = (currentOpts.gridSize as number) ?? 10;
-      const currentShipCount =
-        (currentOpts.shipCount as number) ?? getDefaultShipCount(gs);
       setOption({
-        gridSize: gs,
+        gridSize: currentGridSize,
         shipCount: currentShipCount,
-        variant: (currentOpts.variant as string) ?? 'classic',
+        variant: selectedVariant,
       });
       onStartGame(opts);
     },
-    [onStartGame, teamStartBlocked, room.gameOptions, setOption],
+    [onStartGame, teamStartBlocked, currentGridSize, currentShipCount, selectedVariant, setOption],
   );
 
   const roomMembers = (room.members ?? []).map((m) => ({
@@ -321,7 +327,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
       {isHost && room.status === 'lobby' && (
         <HouseRulesPanel
-          gameOptions={effectiveRoom.gameOptions ?? {}}
+          gameOptions={{
+            ...(effectiveRoom.gameOptions ?? {}),
+            gridSize: currentGridSize,
+            shipCount: currentShipCount,
+            variant: selectedVariant,
+          }}
           ruleComingSoon={ruleComingSoon}
           onOptionChange={handleOptionChange}
         />

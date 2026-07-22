@@ -108,7 +108,12 @@ export class ImplementProcessor {
         try {
           this.githubService.removeWorktree(jobId);
         } catch {
-          // ignore cleanup errors
+          try {
+            const { rmSync } = require('fs');
+            rmSync(cwd, { recursive: true, force: true });
+          } catch {
+            // ignore cleanup errors
+          }
         }
       }
     }

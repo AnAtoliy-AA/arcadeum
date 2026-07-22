@@ -1,9 +1,14 @@
 'use client';
 
-import { YStack, XStack, Text } from 'tamagui';
+import { memo, useState, useCallback } from 'react';
 import { ChessBoard } from './ChessBoard';
-import { ChessClock } from './ChessClock';
 import { MoveList } from './MoveList';
+import {
+  TurnBar,
+  PlayerCards,
+  GameInfoPanel,
+  ActionsBar,
+} from './ChessPanelComponents';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -24,6 +29,7 @@ interface ChessBoardPanelProps {
   lastMove: { from: BoardPosition; to: BoardPosition } | null;
   kingPosition: BoardPosition | null;
   currentUserId: string | null;
+  resolveName: (id: string) => string;
   t: TranslateFn;
   onSquareClick: (file: File, rank: Rank) => void;
   onPieceDrop: (
@@ -37,7 +43,7 @@ interface ChessBoardPanelProps {
   onAcceptDraw: () => void;
 }
 
-export function ChessBoardPanel({
+function ChessBoardPanelImpl({
   snapshot,
   myColor,
   isFlipped,
@@ -49,6 +55,7 @@ export function ChessBoardPanel({
   lastMove,
   kingPosition,
   currentUserId,
+  resolveName,
   t,
   onSquareClick,
   onPieceDrop,
@@ -56,115 +63,175 @@ export function ChessBoardPanel({
   onResign,
   onAcceptDraw,
 }: ChessBoardPanelProps) {
+  const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
+  const handleMoveHover = useCallback((idx: number | null) => {
+    setHoveredMoveIdx(idx);
+  }, []);
+
   if (!snapshot) return null;
 
+  const players = snapshot.players ?? [];
+  const whitePlayer = players.find((p) => p.color === 'white');
+  const blackPlayer = players.find((p) => p.color === 'black');
+
+  const whiteName = whitePlayer?.playerId
+    ? resolveName(whitePlayer.playerId)
+    : 'White';
+  const blackName = blackPlayer?.playerId
+    ? resolveName(blackPlayer.playerId)
+    : 'Black';
+
+  const hasDrawOffer = !!snapshot?.drawOfferedBy;
+  const isMyDrawOffer = snapshot?.drawOfferedBy === currentUserId;
+
+  const highlightMove =
+    hoveredMoveIdx !== null && snapshot.moveHistory[hoveredMoveIdx]
+      ? {
+          from: snapshot.moveHistory[hoveredMoveIdx].from,
+          to: snapshot.moveHistory[hoveredMoveIdx].to,
+        }
+      : lastMove;
+
   return (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
-      {isSpectator && (
-        <XStack
-          justifyContent="center"
-          padding="$2"
-          borderRadius={8}
-          backgroundColor="rgba(255,255,255,0.05)"
-        >
-          <Text fontSize="$2" opacity={0.6} fontWeight="600">
-            {t('games.chess_v1.status.spectating')}
-          </Text>
-        </XStack>
-      )}
-      <ChessClock
-        clocks={snapshot.clocks}
-        currentTurnColor={snapshot.currentTurnColor}
-        isGameOver={isGameOver}
-      />
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" fontWeight="600" opacity={0.8}>
-          {snapshot.currentTurnColor === 'white'
-            ? `♔ ${t('games.chess_v1.status.white')}`
-            : `♚ ${t('games.chess_v1.status.black')}`}{' '}
-          {t('games.chess_v1.status.toMove')}
-          {snapshot.isCheck && !snapshot.isCheckmate
-            ? ` (${t('games.chess_v1.status.check').toLowerCase()})`
-            : ''}
-        </Text>
-        <Text fontSize="$2" opacity={0.6}>
-          {snapshot.fullMoveNumber}.
-        </Text>
-      </XStack>
-      <ChessBoard
-        board={snapshot.board}
-        myColor={myColor}
-        isFlipped={isFlipped}
-        disabled={!displayMyTurn || isGameOver || isSpectator}
-        selectedSquare={selectedSquare}
-        legalMoves={legalMoves}
-        lastMove={lastMove}
-        isCheck={snapshot.isCheck}
-        kingPosition={kingPosition}
-        ariaLabel={t('games.chess_v1.status.boardLabel', { color: snapshot.currentTurnColor === 'white' ? t('games.chess_v1.status.white') : t('games.chess_v1.status.black') })}
-        onSquareClick={onSquareClick}
-        onPieceDrop={onPieceDrop}
-      />
-      <XStack justifyContent="space-between" alignItems="center" mt="$1">
-        {currentUserId &&
-          !isGameOver &&
-          !isSpectator &&
-          (snapshot?.drawOfferedBy &&
-          snapshot.drawOfferedBy !== currentUserId ? (
-            <XStack gap="$2" alignItems="center">
-              <Text
-                fontSize="$2"
-                color="$green10"
-                cursor="pointer"
-                hoverStyle={{ opacity: 0.8 }}
-                onPress={onAcceptDraw}
-              >
-                {t('games.chess_v1.actions.acceptDraw')}
-              </Text>
-              <Text
-                fontSize="$2"
-                opacity={0.6}
-                cursor="pointer"
-                hoverStyle={{ opacity: 1 }}
-                onPress={onResign}
-              >
-                {t('games.chess_v1.actions.declineDraw')}
-              </Text>
-            </XStack>
-          ) : (
-            <XStack gap="$3" alignItems="center">
-              <Text
-                fontSize="$2"
-                opacity={0.6}
-                cursor="pointer"
-                hoverStyle={{ opacity: 1 }}
-                onPress={onOfferDraw}
-                disabled={!!snapshot?.drawOfferedBy}
-              >
-                {snapshot?.drawOfferedBy
-                  ? t('games.chess_v1.actions.drawOffered')
-                  : t('games.chess_v1.actions.draw')}
-              </Text>
-              <Text
-                fontSize="$2"
-                opacity={0.6}
-                cursor="pointer"
-                hoverStyle={{ opacity: 1 }}
-                onPress={onResign}
-              >
-                {t('games.chess_v1.actions.resign')}
-              </Text>
-            </XStack>
-          ))}
-        {snapshot.moveHistory.length > 0 && (
-          <Text fontSize="$2" opacity={0.5}>
-            {t('games.chess_v1.status.moves', {
-              count: snapshot.moveHistory.length,
-            })}
-          </Text>
-        )}
-      </XStack>
-      {snapshot.moveHistory.length > 0 && <MoveList state={snapshot} t={t} />}
-    </YStack>
+    <div className="chess-layout">
+      <style>{`
+        .chess-layout {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 12px;
+        }
+        .chess-board-col {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .chess-info-col {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .player-cards-container {
+          display: flex;
+          gap: 12px;
+          width: 100%;
+        }
+        .player-card-stat-box {
+          flex: 1;
+          padding: 10px 14px;
+          border-radius: 8px;
+          background-color: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          text-align: center;
+        }
+        .player-card-stat-value {
+          font-size: 18px;
+          font-weight: 700;
+          color: #f8fafc;
+        }
+        .player-card-stat-label {
+          font-size: 9px;
+          font-weight: 600;
+          color: rgba(148, 163, 184, 0.6);
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+        @media (max-width: 480px) {
+          .player-cards-container {
+            gap: 8px;
+          }
+          .player-card-stat-box {
+            padding: 4px 6px;
+          }
+          .player-card-stat-value {
+            font-size: 13px;
+          }
+          .player-card-stat-label {
+            font-size: 7px;
+          }
+        }
+        @media (min-width: 768px) {
+          .chess-layout {
+            flex-direction: row;
+            align-items: flex-start;
+          }
+          .chess-board-col {
+            flex: 0 0 auto;
+            width: min(70vmin, 560px);
+            position: sticky;
+            top: 12px;
+          }
+          .chess-info-col {
+            flex: 1;
+            min-width: 0;
+            max-width: 280px;
+          }
+        }
+      `}</style>
+
+      <div className="chess-board-col">
+        <TurnBar
+          currentTurnColor={snapshot.currentTurnColor}
+          isCheck={snapshot.isCheck}
+          isCheckmate={snapshot.isCheckmate}
+          fullMoveNumber={snapshot.fullMoveNumber}
+          t={t}
+        />
+
+        <ChessBoard
+          board={snapshot.board}
+          myColor={myColor}
+          isFlipped={isFlipped}
+          disabled={!displayMyTurn || isGameOver || isSpectator}
+          selectedSquare={selectedSquare}
+          legalMoves={legalMoves}
+          lastMove={highlightMove}
+          isCheck={snapshot.isCheck}
+          kingPosition={kingPosition}
+          ariaLabel={t('games.chess_v1.status.boardLabel', {
+            color:
+              snapshot.currentTurnColor === 'white'
+                ? t('games.chess_v1.status.white')
+                : t('games.chess_v1.status.black'),
+          })}
+          onSquareClick={onSquareClick}
+          onPieceDrop={onPieceDrop}
+        />
+      </div>
+
+      <div className="chess-info-col">
+        <PlayerCards
+          whiteId={whitePlayer?.playerId ?? ''}
+          blackId={blackPlayer?.playerId ?? ''}
+          whiteName={whiteName}
+          blackName={blackName}
+          currentTurnColor={snapshot.currentTurnColor}
+          isGameOver={isGameOver}
+          clocks={snapshot.clocks}
+          timeControl={snapshot.timeControl}
+        />
+
+        <GameInfoPanel snapshot={snapshot} t={t} />
+
+        <MoveList state={snapshot} t={t} onMoveHover={handleMoveHover} />
+
+        <ActionsBar
+          hasDrawOffer={hasDrawOffer}
+          isMyDrawOffer={isMyDrawOffer}
+          isGameOver={isGameOver}
+          isSpectator={isSpectator}
+          currentUserId={currentUserId}
+          onResign={onResign}
+          onOfferDraw={onOfferDraw}
+          onAcceptDraw={onAcceptDraw}
+          t={t}
+        />
+      </div>
+    </div>
   );
 }
+
+export const ChessBoardPanel = memo(ChessBoardPanelImpl);

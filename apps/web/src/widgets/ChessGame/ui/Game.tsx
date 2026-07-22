@@ -1,7 +1,10 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
-import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  GameWidgetContainer,
+  RematchInvitationModal,
+} from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -65,6 +68,18 @@ function ChessGameImpl({
   } | null>(null);
   const [optimisticState, setOptimisticState] =
     useState<ChessClientState | null>(null);
+
+  // Clear stale optimistic state when server catches up
+  useEffect(() => {
+    if (
+      optimisticState &&
+      snapshot &&
+      snapshot.moveHistory.length >= optimisticState.moveHistory.length
+    ) {
+      queueMicrotask(() => setOptimisticState(null));
+    }
+  }, [snapshot, optimisticState]);
+
   const displaySnapshot =
     optimisticState &&
     snapshot &&
@@ -102,8 +117,7 @@ function ChessGameImpl({
         : piece;
       newBoard[fromRow][fromCol] = null;
 
-      const isCastle =
-        piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
+      const isCastle = piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
       let isCastleFlag = false;
       if (isCastle) {
         isCastleFlag = true;
@@ -400,6 +414,7 @@ function ChessGameImpl({
       lastMove={lastMove}
       kingPosition={kingPosition}
       currentUserId={currentUserId}
+      resolveName={resolveDisplayNameBound}
       t={t}
       onSquareClick={handleSquareClick}
       onPieceDrop={handlePieceDrop}

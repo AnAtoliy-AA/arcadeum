@@ -141,6 +141,9 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     withBots?: boolean,
     botCount?: number,
     difficulty?: 'easy' | 'medium' | 'hard',
+    gridSize?: number,
+    shipCount?: number,
+    variant?: string,
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
 
@@ -149,6 +152,19 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     }
 
     const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
+
+    // Client-side values override stale room.gameOptions (race condition fix)
+    if (gridSize !== undefined) opts.gridSize = gridSize;
+    if (shipCount !== undefined) opts.shipCount = shipCount;
+    if (variant !== undefined) opts.variant = variant;
+
+    // Persist overrides so bots and reconnects see the same config
+    await this.roomsService.updateRoomOptions(roomId, userId, {
+      ...(gridSize !== undefined ? { gridSize } : {}),
+      ...(shipCount !== undefined ? { shipCount } : {}),
+      ...(variant !== undefined ? { variant } : {}),
+    });
+
     const teamMode = !!opts.teamMode;
     const cap = teamMode ? MAX_PLAYERS_TEAM_MODE : MAX_PLAYERS;
 
@@ -199,7 +215,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       gameId: room.gameId,
       playerIds,
       config: {
-        ...room.gameOptions,
+        ...opts,
         ...(teamMode
           ? {
               teams: opts.teams!.map((t) => ({

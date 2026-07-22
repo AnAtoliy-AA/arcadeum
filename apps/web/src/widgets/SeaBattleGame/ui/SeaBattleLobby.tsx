@@ -48,6 +48,9 @@ interface SeaBattleLobbyProps {
     withBots?: boolean;
     botCount?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
+    gridSize?: number;
+    shipCount?: number;
+    variant?: string;
   }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onShowRules: (show: boolean) => void;
@@ -184,7 +187,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         shipCount: currentShipCount,
         variant: selectedVariant,
       });
-      onStartGame(opts);
+      onStartGame({
+        ...opts,
+        gridSize: currentGridSize,
+        shipCount: currentShipCount,
+        variant: selectedVariant,
+      });
     },
     [onStartGame, teamStartBlocked, currentGridSize, currentShipCount, selectedVariant, setOption],
   );

@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.78] - 2026-07-22
+
+### Fixed
+- filter CI error logs to show only failures
+- add timeout prompt to fixPR and checkAndFixCI
+- eliminate credential race condition in pushBranch
+- improve pushBranch retry, sync verifyChanges, increase installDeps timeout
+- rm -rf worktree fallback when git worktree remove fails
+- simplify verification to lint+typecheck only, increase timeout to 5min
+- increase Bull lock duration to 15min for implementation queue
+- remove git checkout --detach from worktree creation
+- always setup gh auth before push in worktrees
+- use actual PR branch name for CI fix instead of constructing it
+- default engine to mimo, fix CI poll, add timeout prompt
+
+### Refactored
+- extract stripDisabledRules from games.controller
+
+
+## [1.23.77] - 2026-07-22
+
+### Added
+- audio cues (ARC-879)
+
+### Fixed
+- update sound test to use dynamic manifest count
+- resolve CI failures and review feedback
+- lint warning in ChatMessagePopup
+
+
 ## [1.23.76] - 2026-07-22
 
 ### Added

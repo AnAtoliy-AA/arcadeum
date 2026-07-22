@@ -17,7 +17,7 @@ import { ReviewQueueService } from './review-queue.service';
         },
       }),
     }),
-    BullModule.registerQueue({ name: 'implementation' }),
+    BullModule.registerQueue({ name: 'implementation', settings: { lockDuration: 900_000, stalledInterval: 300_000 } }),
     BullModule.registerQueue({ name: 'review' }),
   ],
   providers: [ImplementQueueService, ReviewQueueService],

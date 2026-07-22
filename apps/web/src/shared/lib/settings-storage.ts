@@ -5,6 +5,7 @@ export type StoredSettings = {
   language?: string;
   hapticsEnabled?: boolean;
   soundEnabled?: boolean;
+  audioCuesEnabled?: boolean;
   musicEnabled?: boolean;
   musicVolume?: number;
   musicShuffle?: boolean;
@@ -49,6 +50,10 @@ export function loadStoredSettings(): StoredSettings {
 
     if (typeof parsed.soundEnabled === 'boolean') {
       settings.soundEnabled = parsed.soundEnabled;
+    }
+
+    if (typeof parsed.audioCuesEnabled === 'boolean') {
+      settings.audioCuesEnabled = parsed.audioCuesEnabled;
     }
 
     if (typeof parsed.musicEnabled === 'boolean') {

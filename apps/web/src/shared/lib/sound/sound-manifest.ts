@@ -12,6 +12,18 @@ export const SOUNDS = {
   click: '/sounds/click.wav',
   /** Currency / reward gained — two-tone chime. */
   coin: '/sounds/coin.wav',
+  /** Audio cue: move made on the board. */
+  move: '/sounds/move.wav',
+  /** Audio cue: it is now your turn. */
+  turn: '/sounds/turn.wav',
+  /** Audio cue: attack hit a target. */
+  hit: '/sounds/hit.wav',
+  /** Audio cue: attack missed. */
+  miss: '/sounds/miss.wav',
+  /** Audio cue: ship sunk. */
+  sink: '/sounds/sink.wav',
+  /** Audio cue: game session started. */
+  gameStart: '/sounds/game-start.wav',
 } as const;
 
 export type SoundId = keyof typeof SOUNDS;

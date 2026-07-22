@@ -927,7 +927,23 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-fix-${prNumber}`,
+            issueNum: prNumber,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on PR #${prNumber}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-fix-${prNumber}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 
@@ -1034,7 +1050,23 @@ export class GitHubService {
       const runArgs = cli === 'opencode'
         ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
         : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-ci-${prNumber}`,
+            issueNum: prNumber,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on CI fix for PR #${prNumber}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-ci-${prNumber}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 

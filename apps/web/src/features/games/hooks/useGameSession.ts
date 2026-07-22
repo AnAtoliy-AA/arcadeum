@@ -54,17 +54,6 @@ export function useGameSession(
       roomId?: string;
       session?: GameSessionSummary | null;
     }) => {
-      console.log('[ChessDebug] games.session.snapshot received', {
-        payloadRoomId: payload?.roomId,
-        hasSession: !!payload?.session,
-        moveCount: (payload?.session?.state as Record<string, unknown>)
-          ?.moveHistory
-          ? (
-              (payload?.session?.state as Record<string, unknown>)
-                ?.moveHistory as unknown[]
-            )?.length
-          : 'unknown',
-      });
       if (payload?.roomId && payload.roomId !== roomId) return;
       if (payload && Object.prototype.hasOwnProperty.call(payload, 'session')) {
         setSession(payload?.session ?? null);

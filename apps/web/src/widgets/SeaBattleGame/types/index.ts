@@ -78,6 +78,18 @@ export const SHIPS: ShipConfig[] = [
   { id: 'patrol-2', name: 'Patrol', size: 2 },
   { id: 'frigate-1', name: 'Frigate', size: 3 },
   { id: 'frigate-2', name: 'Frigate', size: 3 },
+  { id: 'carrier-1', name: 'Carrier', size: 5 },
+  { id: 'cruiser-3', name: 'Cruiser', size: 3 },
+  { id: 'destroyer-4', name: 'Destroyer', size: 2 },
+  { id: 'destroyer-5', name: 'Destroyer', size: 2 },
+  { id: 'submarine-5', name: 'Submarine', size: 1 },
+  { id: 'submarine-6', name: 'Submarine', size: 1 },
+  { id: 'patrol-3', name: 'Patrol', size: 2 },
+  { id: 'patrol-4', name: 'Patrol', size: 2 },
+  { id: 'frigate-3', name: 'Frigate', size: 3 },
+  { id: 'battleship-2', name: 'Battleship', size: 4 },
+  { id: 'submarine-7', name: 'Submarine', size: 1 },
+  { id: 'submarine-8', name: 'Submarine', size: 1 },
 ];
 
 export function getActiveShips(shipCount?: number): ShipConfig[] {

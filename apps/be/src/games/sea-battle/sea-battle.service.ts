@@ -198,20 +198,21 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       roomId,
       gameId: room.gameId,
       playerIds,
-      config: teamMode
-        ? {
-            teams: opts.teams!.map((t) => ({
-              id: t.id,
-              name: t.name,
-              color: t.color,
-              playerIds: t.playerIds,
-            })),
-            hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
-          }
-        : {
-            ...room.gameOptions,
-            ...(difficulty ? { aiDifficulty: difficulty } : {}),
-          },
+      config: {
+        ...room.gameOptions,
+        ...(teamMode
+          ? {
+              teams: opts.teams!.map((t) => ({
+                id: t.id,
+                name: t.name,
+                color: t.color,
+                playerIds: t.playerIds,
+              })),
+              hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
+            }
+          : {}),
+        ...(difficulty ? { aiDifficulty: difficulty } : {}),
+      },
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');

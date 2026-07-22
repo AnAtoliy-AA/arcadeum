@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.76] - 2026-07-22
+
+### Added
+- add display names and avatars to player cards
+
+### Fixed
+- reduce Jest workers from 4 to 2 to fix SIGSEGV
+
+### Refactored
+- extract GamesCatalogService from controller
+
+
 ## [1.23.75] - 2026-07-21
 
 ### Fixed

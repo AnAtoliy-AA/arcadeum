@@ -12,7 +12,10 @@ import {
   GameHistoryHiddenSchema,
 } from './schemas/game-history-hidden.schema';
 import { PlayerStats, PlayerStatsSchema } from './schemas/player-stats.schema';
-import { PlayerStatRecord, PlayerStatRecordSchema } from './schemas/player-stat-record.schema';
+import {
+  PlayerStatRecord,
+  PlayerStatRecordSchema,
+} from './schemas/player-stat-record.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';

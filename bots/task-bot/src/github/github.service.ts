@@ -139,6 +139,8 @@ export class GitHubService {
     const commands = [
       { name: 'lint', cmd: ['pnpm', 'lint'] },
       { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
+      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
+      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
     ];
     for (const { name, cmd } of commands) {
       try {
@@ -160,15 +162,16 @@ export class GitHubService {
       execFileSync('pnpm', ['install', '--frozen-lockfile'], {
         encoding: 'utf-8',
         cwd,
-        timeout: 120_000,
+        timeout: 180_000,
       });
       this.logger.log(`Dependencies installed in ${cwd}`);
     } catch {
       try {
+        this.logger.log(`Frozen lockfile install failed, trying without --frozen-lockfile`);
         execFileSync('pnpm', ['install'], {
           encoding: 'utf-8',
           cwd,
-          timeout: 120_000,
+          timeout: 180_000,
         });
         this.logger.log(`Dependencies installed (no frozen lockfile) in ${cwd}`);
       } catch (err) {
@@ -622,18 +625,40 @@ export class GitHubService {
     try {
       try {
         execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], { encoding: 'utf-8', cwd: workdir });
-      } catch {
-        // ignore
+        this.logger.log(`Remote URL set for ${branchName}`);
+      } catch (err) {
+        this.logger.warn(`Failed to set remote URL: ${(err as Error).message}`);
       }
       try {
         execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
-      } catch {
-        // ignore
+        this.logger.log('gh auth setup-git succeeded');
+      } catch (err) {
+        this.logger.warn(`gh auth setup-git failed: ${(err as Error).message} — falling back to credential store`);
       }
-      execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
-      return { success: true, message: `Pushed ${branchName}` };
+
+      const maxRetries = 2;
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+          this.logger.log(`Pushed ${branchName} (attempt ${attempt})`);
+          return { success: true, message: `Pushed ${branchName}` };
+        } catch (err) {
+          lastError = err as Error;
+          this.logger.warn(`git push attempt ${attempt}/${maxRetries} failed: ${lastError.message}`);
+          if (attempt < maxRetries) {
+            try {
+              execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
+            } catch {
+              // ignore retry setup-git failures
+            }
+            execFileSync('git', ['credential', 'reject'], { input: 'protocol=https\nhost=github.com\n', encoding: 'utf-8', cwd: workdir, timeout: 5_000 });
+          }
+        }
+      }
+      return { success: false, message: `Failed to push after ${maxRetries} attempts: ${lastError!.message}` };
     } catch (err) {
-      this.logger.warn(`git push failed: ${(err as Error).message}`);
+      this.logger.error(`pushBranch unexpected error: ${(err as Error).message}`);
       return { success: false, message: `Failed to push: ${(err as Error).message}` };
     }
   }

@@ -259,48 +259,73 @@ export function randomlyPlaceShips(
   shipCount?: number,
 ): Record<string, ShipCell[]> {
   const activeShips = getActiveShips(shipCount);
-  const maxRetries = 5;
+  const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
 
-  for (let retry = 0; retry < maxRetries; retry++) {
+  // Try multiple times with different random seeds
+  for (let attempt = 0; attempt < 20; attempt++) {
     const board = createEmptyBoard(gridSize);
     const placements: Record<string, ShipCell[]> = {};
+    let failed = false;
 
-    // Sort ships by size descending to make placement easier
-    const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
-
-    let allPlaced = true;
     for (const ship of sortedShips) {
-      let placed = false;
-      const maxAttempts = 5000;
-
-      for (let attempts = 0; attempts < maxAttempts; attempts++) {
-        const isVertical = Math.random() < 0.5;
-        const row = Math.floor(Math.random() * gridSize);
-        const col = Math.floor(Math.random() * gridSize);
-
-        if (canPlaceShip(board, row, col, ship.size, isVertical, gridSize)) {
-          const cells = getShipCells(row, col, ship.size, isVertical, gridSize);
-
-          if (cells) {
-            cells.forEach((cell) => {
-              board[cell.row][cell.col] = CELL_STATE.SHIP;
-            });
-
-            placements[ship.id] = cells;
-            placed = true;
-            break;
+      // Collect all valid positions for this ship
+      const validPositions: ShipCell[][] = [];
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          for (const vertical of [true, false]) {
+            const cells = getShipCells(r, c, ship.size, vertical, gridSize);
+            if (cells && canPlaceShipOnBoard(board, cells, gridSize)) {
+              validPositions.push(cells);
+            }
           }
         }
       }
 
-      if (!placed) {
-        allPlaced = false;
+      if (validPositions.length === 0) {
+        failed = true;
         break;
       }
+
+      // Pick a random valid position
+      const chosen =
+        validPositions[Math.floor(Math.random() * validPositions.length)];
+      for (const cell of chosen) {
+        board[cell.row][cell.col] = CELL_STATE.SHIP;
+      }
+      placements[ship.id] = chosen;
     }
 
-    if (allPlaced) return placements;
+    if (!failed) return placements;
   }
 
   return {};
+}
+
+function canPlaceShipOnBoard(
+  board: CellState[][],
+  cells: ShipCell[],
+  gridSize: number,
+): boolean {
+  for (const cell of cells) {
+    if (board[cell.row][cell.col] !== CELL_STATE.EMPTY) return false;
+
+    const dirs = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ];
+    for (const [dr, dc] of dirs) {
+      const r = cell.row + dr;
+      const c = cell.col + dc;
+      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+        if (board[r][c] === CELL_STATE.SHIP) return false;
+      }
+    }
+  }
+  return true;
 }

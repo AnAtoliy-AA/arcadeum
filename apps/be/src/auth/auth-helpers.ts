@@ -8,7 +8,7 @@ import type { GoogleUserProfile, AuthUserProfile } from './lib/types';
 export function sanitizeUsernameCandidate(source: string): string {
   const base = source.replace(/[^a-zA-Z0-9_-]/g, '');
   if (base.length >= 3) return base;
-  return `user${Math.floor(Math.random() * 9000 + 1000)}`;
+  return `user${crypto.randomInt(1000, 10000)}`;
 }
 
 export async function ensureUserUsername(

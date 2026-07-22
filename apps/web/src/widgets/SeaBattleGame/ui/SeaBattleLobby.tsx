@@ -107,13 +107,18 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   React.useEffect(() => {
     if (room.status !== 'lobby') return;
     const opts = (room.gameOptions ?? {}) as Record<string, unknown>;
-    const gs = (opts.gridSize as number) ?? 10;
-    const updates: Record<string, unknown> = {};
-    if (opts.gridSize === undefined) updates.gridSize = gs;
-    if (opts.shipCount === undefined)
-      updates.shipCount = getDefaultShipCount(gs);
-    if (opts.variant === undefined) updates.variant = 'classic';
-    if (Object.keys(updates).length > 0) setOption(updates);
+    if (
+      opts.gridSize === undefined ||
+      opts.shipCount === undefined ||
+      opts.variant === undefined
+    ) {
+      const gs = (opts.gridSize as number) ?? 10;
+      setOption({
+        gridSize: opts.gridSize ?? gs,
+        shipCount: opts.shipCount ?? getDefaultShipCount(gs),
+        variant: opts.variant ?? 'classic',
+      });
+    }
   }, [room.id, room.status]);
 
   // Team mode state derived from room game options
@@ -164,9 +169,18 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       difficulty?: 'easy' | 'medium' | 'hard';
     }) => {
       if (teamStartBlocked) return;
+      const currentOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
+      const gs = (currentOpts.gridSize as number) ?? 10;
+      const currentShipCount =
+        (currentOpts.shipCount as number) ?? getDefaultShipCount(gs);
+      setOption({
+        gridSize: gs,
+        shipCount: currentShipCount,
+        variant: (currentOpts.variant as string) ?? 'classic',
+      });
       onStartGame(opts);
     },
-    [onStartGame, teamStartBlocked],
+    [onStartGame, teamStartBlocked, room.gameOptions, setOption],
   );
 
   const roomMembers = (room.members ?? []).map((m) => ({

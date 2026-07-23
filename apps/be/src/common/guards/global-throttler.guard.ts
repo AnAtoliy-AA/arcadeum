@@ -36,7 +36,7 @@ export class GlobalThrottlerGuard extends ThrottlerGuard {
     throttlerLimitDetail: ThrottlerLimitDetail,
   ): Promise<void> {
     const request = context.switchToHttp().getRequest<Request>();
-    this.ipBlockService.record429(extractIp(request));
+    void this.ipBlockService.record429(extractIp(request));
     return super.throwThrottlingException(context, throttlerLimitDetail);
   }
 

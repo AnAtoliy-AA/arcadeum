@@ -16,14 +16,14 @@ export class AdminBlockedIpsController {
   }
 
   @Delete(':ip')
-  unblock(@Param('ip') ip: string) {
-    const removed = this.ipBlockService.unblock(ip);
-    return { ok: removed };
+  async unblock(@Param('ip') ip: string) {
+    await this.ipBlockService.unblock(ip);
+    return { ok: true };
   }
 
   @Delete()
-  clearAll() {
-    this.ipBlockService.clearAll();
+  async clearAll() {
+    await this.ipBlockService.clearAll();
     return { ok: true };
   }
 }

@@ -373,28 +373,37 @@ export function ActiveGameView({
               resolveDisplayName={resolveDisplayName}
             />
             <GameEndModals
-              showResultModal={!!showResultModal}
-              result={
-                snapshot.players.find((p) => p.alive)?.playerId ===
-                currentUserId
-                  ? 'victory'
-                  : 'defeat'
-              }
-              dismissResult={() => setModalDismissed(true)}
-              onRematch={isHost ? rematch.openRematchModal : undefined}
-              rematchLoading={rematch.rematchLoading}
-              showRematchModal={rematch.showRematchModal}
-              closeRematchModal={rematch.closeRematchModal}
+              gameEnd={{
+                showResultModal: !!showResultModal,
+                sharedResult:
+                  snapshot.players.find((p) => p.alive)?.playerId ===
+                  currentUserId
+                    ? 'victory'
+                    : 'defeat',
+                dismissResult: () => setModalDismissed(true),
+                rematchLoading: rematch.rematchLoading,
+                showRematchModal: rematch.showRematchModal,
+                closeRematchModal: rematch.closeRematchModal,
+                handleResultRematchClick: isHost
+                  ? rematch.openRematchModal
+                  : undefined,
+                handleRematch: rematch.handleRematch,
+                invitation: rematch.invitation,
+                invitationTimeLeft: rematch.invitationTimeLeft,
+                handleAcceptInvitation: rematch.handleAcceptInvitation,
+                handleDeclineInvitation: rematch.handleDeclineInvitation,
+                isAcceptingInvitation: rematch.isAcceptingInvitation,
+                handleReinvite: rematch.handleReinvite,
+                handleBlockRematch: rematch.handleBlockRematch,
+                handleBlockUser: rematch.handleBlockUser,
+                resultMessages: undefined,
+              }}
               players={snapshot.players.map((p) => ({
                 playerId: p.playerId,
                 displayName: resolveDisplayName(p.playerId),
                 alive: p.alive,
               }))}
               currentUserId={currentUserId}
-              onConfirmRematch={rematch.handleRematch}
-              invitation={rematch.invitation}
-              handleAcceptInvitation={rematch.handleAcceptInvitation}
-              handleDeclineInvitation={rematch.handleDeclineInvitation}
               t={t}
             />
           </>

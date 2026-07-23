@@ -425,22 +425,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             showRulesOpen={showRulesOpen}
             onShowRulesClose={onShowRulesClose}
             setShowRules={setShowRules}
-            showResultModal={gameEnd.showResultModal}
-            result={gameEnd.sharedResult}
-            dismissResult={gameEnd.dismissResult}
-            handleRematchClick={handleRematchClick}
-            rematchLoading={gameEnd.rematchLoading}
-            showRematchModal={gameEnd.showRematchModal}
+            gameEnd={gameEnd}
             snapshot={snapshot}
             resolveDisplayNameBound={resolveDisplayNameBound}
             currentUserId={currentUserId}
-            closeRematchModal={gameEnd.closeRematchModal}
-            handleRematch={gameEnd.handleRematch}
             cardVariant={cardVariant}
-            invitation={gameEnd.invitation}
-            handleAcceptInvitation={gameEnd.handleAcceptInvitation}
-            handleDeclineInvitation={gameEnd.handleDeclineInvitation}
-            resultMessages={gameEnd.resultMessages}
+            onRematch={handleRematchClick}
           />
         }
         variant={cardVariant}

@@ -3,81 +3,57 @@
 import { GameResultModal } from './GameResultModal';
 import { RematchModal } from './RematchModal';
 import { RematchInvitationModal } from './RematchInvitationModal';
-import type { SharedResult, ResultMessages } from '../hooks/useGameResultModal';
-import type { RematchInvitation } from '../hooks/useRematch';
+import type { UseGameEndStateResult } from '../hooks/useGameEndState';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface GameEndModalsProps {
-  showResultModal: boolean;
-  result: SharedResult;
-  dismissResult: () => void;
-  onRematch?: () => void;
-  rematchLoading: boolean;
-  resultMessages?: ResultMessages;
-
-  showRematchModal: boolean;
-  closeRematchModal: () => void;
+  gameEnd: UseGameEndStateResult;
   players: Array<{ playerId: string; displayName: string; alive: boolean }>;
   currentUserId: string | null;
-  onConfirmRematch: (participantIds: string[], message?: string) => void;
   cardVariant?: string;
-
-  invitation: RematchInvitation | null;
-  handleAcceptInvitation: () => void;
-  handleDeclineInvitation: () => void;
-
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  onRematch?: () => void;
 }
 
 export function GameEndModals({
-  showResultModal,
-  result,
-  dismissResult,
-  onRematch,
-  rematchLoading,
-  resultMessages,
-  showRematchModal,
-  closeRematchModal,
+  gameEnd,
   players,
   currentUserId,
-  onConfirmRematch,
   cardVariant,
-  invitation,
-  handleAcceptInvitation,
-  handleDeclineInvitation,
   t,
+  onRematch,
 }: GameEndModalsProps) {
   return (
     <>
       <GameResultModal
-        isOpen={showResultModal}
-        result={result}
-        onClose={dismissResult}
-        onRematch={onRematch}
-        rematchLoading={rematchLoading}
+        isOpen={gameEnd.showResultModal}
+        result={gameEnd.sharedResult}
+        onClose={gameEnd.dismissResult}
+        onRematch={onRematch ?? gameEnd.handleResultRematchClick}
+        rematchLoading={gameEnd.rematchLoading}
         t={t}
-        messages={resultMessages}
+        messages={gameEnd.resultMessages}
       />
 
       {players.length > 1 && (
         <RematchModal
-          isOpen={showRematchModal}
+          isOpen={gameEnd.showRematchModal}
           players={players}
           currentUserId={currentUserId}
-          rematchLoading={rematchLoading}
-          onClose={closeRematchModal}
-          onConfirm={onConfirmRematch}
+          rematchLoading={gameEnd.rematchLoading}
+          onClose={gameEnd.closeRematchModal}
+          onConfirm={gameEnd.handleRematch}
           t={t}
           cardVariant={cardVariant}
         />
       )}
 
       <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
+        isOpen={!!gameEnd.invitation}
+        senderName={gameEnd.invitation?.hostName || ''}
+        message={gameEnd.invitation?.message}
+        onAccept={gameEnd.handleAcceptInvitation}
+        onDecline={gameEnd.handleDeclineInvitation}
         t={t}
       />
     </>

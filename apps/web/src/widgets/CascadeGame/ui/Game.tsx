@@ -204,20 +204,9 @@ function CascadeGameImpl({
   const modals = (
     <>
       <GameEndModals
-        showResultModal={gameEnd.showResultModal}
-        result={gameEnd.sharedResult}
-        dismissResult={gameEnd.dismissResult}
-        onRematch={result ? gameEnd.handleResultRematchClick : undefined}
-        rematchLoading={gameEnd.rematchLoading}
-        resultMessages={gameEnd.resultMessages}
-        showRematchModal={gameEnd.showRematchModal}
-        closeRematchModal={gameEnd.closeRematchModal}
+        gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        onConfirmRematch={gameEnd.handleRematch}
-        invitation={gameEnd.invitation}
-        handleAcceptInvitation={gameEnd.handleAcceptInvitation}
-        handleDeclineInvitation={gameEnd.handleDeclineInvitation}
         t={t}
       />
       <RulesModal

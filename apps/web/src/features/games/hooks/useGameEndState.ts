@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useRematch } from './useRematch';
 import { useGameResultModal } from './useGameResultModal';
 import type { GameResult, ResultMessages } from './useGameResultModal';
@@ -12,9 +12,7 @@ export interface PlayerInfo {
 
 export interface UseGameEndStateOptions {
   roomId: string;
-  currentUserId: string | null;
   session: GameSessionSummary | null | undefined;
-  isGameOver: boolean;
   result: GameResult;
   resultMessages?: ResultMessages;
   rematchGameOptions?: GameOptions;
@@ -23,26 +21,24 @@ export interface UseGameEndStateOptions {
 
 /**
  * Unified hook that combines game result + rematch state into one.
- * Returns everything a game needs to render GameResultModal, RematchModal,
- * and RematchInvitationModal without any manual wiring.
+ * Returns a stable object (via useMemo) so consumers don't re-render
+ * unnecessarily.
  *
  * Usage:
  * ```ts
  * const gameEnd = useGameEndState({
- *   roomId, currentUserId, session, isGameOver,
+ *   roomId, session,
  *   result: computeGameResult(isGameOver, currentUserId, { winnerId }),
  *   players: snapshot?.players.map(p => ({ playerId: p.playerId, displayName: name, alive: p.alive })),
  * });
  *
- * // In JSX:
- * <GameEndModals {...gameEnd} players={players} currentUserId={currentUserId} onConfirmRematch={gameEnd.handleRematch} t={t} />
+ * // In JSX — pass the whole object to GameEndModals:
+ * <GameEndModals gameEnd={gameEnd} currentUserId={currentUserId} t={t} />
  * ```
  */
 export function useGameEndState({
   roomId,
-  currentUserId: _currentUserId,
   session,
-  isGameOver: _isGameOver,
   result,
   resultMessages,
   rematchGameOptions,
@@ -63,29 +59,55 @@ export function useGameEndState({
     } else {
       void rematch.handleRematch([], undefined);
     }
-  }, [players.length, rematch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [players.length, rematch.openRematchModal, rematch.handleRematch]);
 
-  return {
-    showResultModal,
-    sharedResult,
-    resultMessages: resultMessages || defaultMessages,
-    dismissResult: dismiss,
+  return useMemo(
+    () => ({
+      showResultModal,
+      sharedResult,
+      resultMessages: resultMessages || defaultMessages,
+      dismissResult: dismiss,
 
-    rematchLoading: rematch.rematchLoading,
-    showRematchModal: rematch.showRematchModal,
-    openRematchModal: rematch.openRematchModal,
-    closeRematchModal: rematch.closeRematchModal,
-    handleResultRematchClick,
-    handleRematch: rematch.handleRematch,
+      rematchLoading: rematch.rematchLoading,
+      showRematchModal: rematch.showRematchModal,
+      openRematchModal: rematch.openRematchModal,
+      closeRematchModal: rematch.closeRematchModal,
+      handleResultRematchClick,
+      handleRematch: rematch.handleRematch,
 
-    invitation: rematch.invitation,
-    invitationTimeLeft: rematch.invitationTimeLeft,
-    handleAcceptInvitation: rematch.handleAcceptInvitation,
-    handleDeclineInvitation: rematch.handleDeclineInvitation,
-    isAcceptingInvitation: rematch.isAcceptingInvitation,
+      invitation: rematch.invitation,
+      invitationTimeLeft: rematch.invitationTimeLeft,
+      handleAcceptInvitation: rematch.handleAcceptInvitation,
+      handleDeclineInvitation: rematch.handleDeclineInvitation,
+      isAcceptingInvitation: rematch.isAcceptingInvitation,
 
-    handleReinvite: rematch.handleReinvite,
-    handleBlockRematch: rematch.handleBlockRematch,
-    handleBlockUser: rematch.handleBlockUser,
-  } as const;
+      handleReinvite: rematch.handleReinvite,
+      handleBlockRematch: rematch.handleBlockRematch,
+      handleBlockUser: rematch.handleBlockUser,
+    }),
+    [
+      showResultModal,
+      sharedResult,
+      resultMessages,
+      defaultMessages,
+      dismiss,
+      rematch.rematchLoading,
+      rematch.showRematchModal,
+      rematch.openRematchModal,
+      rematch.closeRematchModal,
+      handleResultRematchClick,
+      rematch.handleRematch,
+      rematch.invitation,
+      rematch.invitationTimeLeft,
+      rematch.handleAcceptInvitation,
+      rematch.handleDeclineInvitation,
+      rematch.isAcceptingInvitation,
+      rematch.handleReinvite,
+      rematch.handleBlockRematch,
+      rematch.handleBlockUser,
+    ],
+  );
 }
+
+export type UseGameEndStateResult = ReturnType<typeof useGameEndState>;

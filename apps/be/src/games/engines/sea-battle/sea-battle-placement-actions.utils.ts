@@ -116,6 +116,12 @@ export function runAutoPlace(
 ): GameActionResult<SeaBattleState> {
   const gridSize = state.gridSize ?? BOARD_SIZE;
   const activeShips = getActiveShips(state.shipCount);
+
+  const placements = randomlyPlaceShips(gridSize, state.shipCount);
+  if (Object.keys(placements).length === 0) {
+    return { success: false, error: 'Failed to generate ship placement' };
+  }
+
   for (let r = 0; r < gridSize; r++) {
     for (let c = 0; c < gridSize; c++) {
       if (player.board[r][c] === CELL_STATE.SHIP) {
@@ -125,10 +131,7 @@ export function runAutoPlace(
   }
   player.ships = [];
   player.placementComplete = false;
-  const placements = randomlyPlaceShips(gridSize, state.shipCount);
-  if (Object.keys(placements).length === 0) {
-    return { success: false, error: 'Failed to generate ship placement' };
-  }
+
   for (const shipId of Object.keys(placements)) {
     const cells = placements[shipId];
     const shipConfig = activeShips.find((s) => s.id === shipId);

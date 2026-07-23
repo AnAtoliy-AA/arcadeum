@@ -27,6 +27,9 @@ Where `ARC-XXX` is the Jira ticket number (e.g., `ARC-123`).
 - `ARC-456-fix-crash-on-join`
 - `ARC-789-update-contributing-guide`
 
+> [!NOTE]
+> Branch names use `ARC-XXX` format. PR **titles** use [Conventional Commits](https://www.conventionalcommits.org/) format (see below).
+
 ---
 
 ## Commit Message Conventions
@@ -264,7 +267,8 @@ Add screenshots or screen recordings to demonstrate UI changes.
 - `apps/mobile`: Expo React Native app (iOS/Android)
 - `apps/web`: Next.js web application
 - `apps/be`: NestJS API server
-- `apps/shared`: Shared code and utilities (if any)
+- `apps/tg-bot`: Telegram bot
+- `packages/ui`: Shared UI component library (`@arcadeum/ui`)
 - `docs`: General project documentation
 - `scripts`: Maintenance and build scripts
 - `.husky`: Git hooks configuration
@@ -295,9 +299,8 @@ Add screenshots or screen recordings to demonstrate UI changes.
 
 If you're stuck:
 
-1. Check the [GitHub Discussions](https://github.com/arcadeum/arcadeum/discussions)
-2. Ask in our [Discord server](link-to-discord) (if available)
-3. Tag a maintainer in your PR with a specific question
+1. Check the [GitHub Discussions](https://github.com/AnAtoliy-AA/arcadeum/discussions)
+2. Tag a maintainer in your PR with a specific question
 
 ---
 

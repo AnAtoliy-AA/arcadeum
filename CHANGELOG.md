@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.88] - 2026-07-23
+
+### Fixed
+- fix sea battle auto-place not placing all ships and state corruption
+
+
 ## [1.23.87] - 2026-07-23
 
 ### Fixed

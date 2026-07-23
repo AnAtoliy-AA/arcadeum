@@ -194,7 +194,13 @@ export function useDragPlacement({
         const vertical = origin.orientation === 'v';
         const startRow = vertical ? row - origin.anchorOffset : row;
         const startCol = vertical ? col : col - origin.anchorOffset;
-        const cells = getCells(startRow, startCol, ship.size, vertical);
+        const cells = getCells(
+          startRow,
+          startCol,
+          ship.size,
+          vertical,
+          board.length,
+        );
         const virtualBoard = boardWithout(board, origin.originalCells);
         if (cells && canPlace(cells, virtualBoard)) {
           setHoveredCells(cells);
@@ -207,7 +213,7 @@ export function useDragPlacement({
       }
 
       // palette mode
-      const cells = getCells(row, col, ship.size, isVertical);
+      const cells = getCells(row, col, ship.size, isVertical, board.length);
       if (cells && canPlace(cells, board)) {
         setHoveredCells(cells);
         setIsInvalidHover?.(false);
@@ -250,7 +256,13 @@ export function useDragPlacement({
         const vertical = origin.orientation === 'v';
         const startRow = vertical ? row - origin.anchorOffset : row;
         const startCol = vertical ? col : col - origin.anchorOffset;
-        const cells = getCells(startRow, startCol, ship.size, vertical);
+        const cells = getCells(
+          startRow,
+          startCol,
+          ship.size,
+          vertical,
+          board.length,
+        );
         const virtualBoard = boardWithout(board, origin.originalCells);
         if (
           cells &&
@@ -264,7 +276,7 @@ export function useDragPlacement({
       }
 
       // palette mode
-      const cells = getCells(row, col, ship.size, isVertical);
+      const cells = getCells(row, col, ship.size, isVertical, board.length);
       if (cells && canPlace(cells, board)) {
         onPlaceShip(shipId, cells);
       }
@@ -343,7 +355,13 @@ export function useDragPlacement({
           const startCol = vertical
             ? cell.col
             : cell.col - t.origin.anchorOffset;
-          const cells = getCells(startRow, startCol, shipDef.size, vertical);
+          const cells = getCells(
+            startRow,
+            startCol,
+            shipDef.size,
+            vertical,
+            boardRef.current.length,
+          );
           const virtualBoard = boardWithout(
             boardRef.current,
             t.origin.originalCells,
@@ -380,6 +398,7 @@ export function useDragPlacement({
                 startCol,
                 shipDef.size,
                 vertical,
+                boardRef.current.length,
               );
               const virtualBoard = boardWithout(
                 boardRef.current,

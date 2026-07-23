@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.91] - 2026-07-23
+
+### Added
+- rework game lobbys for better UX and consistency
+
+
 ## [1.23.90] - 2026-07-23
 
 ### Added

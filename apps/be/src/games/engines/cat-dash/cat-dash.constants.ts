@@ -1,6 +1,6 @@
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 6;
-export const TRACK_LENGTH = 20;
+export const TRACK_LENGTH = 100;
 export const POWER_TOKENS_PER_GAME = 3;
 
 export const TRACK_TYPES = ['linear', 'circular', 'multiple'] as const;

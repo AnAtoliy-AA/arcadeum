@@ -1,8 +1,9 @@
 import {
   BOARD_SIZE,
   CELL_STATE,
-  SHIPS,
   GAME_PHASE,
+  getActiveShips,
+  type CellState,
 } from './sea-battle.constants';
 import {
   SeaBattlePlayer,
@@ -12,6 +13,7 @@ import {
   AttackPayload,
   SonarPayload,
   RadarPayload,
+  BatchPlacementPayload,
 } from './sea-battle.types';
 import { areCellsValid, areCellsConnected } from './sea-battle.utils';
 import {
@@ -28,7 +30,8 @@ export function validatePlaceShip(
   if (player.placementComplete) return false;
   if (!payload?.shipId || !payload?.cells) return false;
 
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find((s) => s.id === payload.shipId);
   if (!shipConfig) return false;
   if (payload.cells.length !== shipConfig.size) return false;
 
@@ -81,7 +84,8 @@ export function validateMoveShip(
   if (player.placementComplete) return false;
   if (!payload?.shipId || !payload?.cells) return false;
 
-  const shipConfig = SHIPS.find((s) => s.id === payload.shipId);
+  const activeShips = getActiveShips(state.shipCount);
+  const shipConfig = activeShips.find((s) => s.id === payload.shipId);
   if (!shipConfig) return false;
   if (payload.cells.length !== shipConfig.size) return false;
 
@@ -134,10 +138,82 @@ export function validateMoveShip(
 export function validateConfirmPlacement(
   state: SeaBattleState,
   player: SeaBattlePlayer,
+  payload?: BatchPlacementPayload,
 ): boolean {
   if (state.phase !== GAME_PHASE.PLACEMENT) return false;
   if (player.placementComplete) return false;
-  return player.ships.length === SHIPS.length;
+
+  if (payload?.ships && Array.isArray(payload.ships)) {
+    return validateBatchPlacement(state, player, payload);
+  }
+
+  return player.ships.length === getActiveShips(state.shipCount).length;
+}
+
+function validateBatchPlacement(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: BatchPlacementPayload,
+): boolean {
+  const activeShips = getActiveShips(state.shipCount);
+  const activeShipIds = new Set(activeShips.map((s) => s.id));
+  const gSize = state.gridSize ?? BOARD_SIZE;
+
+  if (payload.ships.length !== activeShips.length) return false;
+
+  const placedIds = new Set<string>();
+  const virtualBoard: CellState[][] = Array.from({ length: gSize }, () =>
+    Array<CellState>(gSize).fill(CELL_STATE.EMPTY),
+  );
+
+  const directions = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
+
+  for (const ship of payload.ships) {
+    if (!ship.shipId || !ship.cells || !Array.isArray(ship.cells)) return false;
+    if (!activeShipIds.has(ship.shipId)) return false;
+    if (placedIds.has(ship.shipId)) return false;
+
+    const shipConfig = activeShips.find((s) => s.id === ship.shipId)!;
+    if (ship.cells.length !== shipConfig.size) return false;
+
+    if (!areCellsValid(ship.cells)) return false;
+    if (!areCellsConnected(ship.cells)) return false;
+
+    for (const cell of ship.cells) {
+      if (
+        cell.row < 0 ||
+        cell.row >= gSize ||
+        cell.col < 0 ||
+        cell.col >= gSize
+      )
+        return false;
+      if (virtualBoard[cell.row][cell.col] !== CELL_STATE.EMPTY) return false;
+
+      for (const [dr, dc] of directions) {
+        const r = cell.row + dr;
+        const c = cell.col + dc;
+        if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
+          if (virtualBoard[r][c] === CELL_STATE.SHIP) return false;
+        }
+      }
+    }
+
+    for (const cell of ship.cells) {
+      virtualBoard[cell.row][cell.col] = CELL_STATE.SHIP;
+    }
+    placedIds.add(ship.shipId);
+  }
+
+  return placedIds.size === activeShipIds.size;
 }
 
 export function validateAutoPlace(state: SeaBattleState): boolean {

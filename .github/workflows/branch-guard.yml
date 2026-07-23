@@ -1,0 +1,91 @@
+name: Branch Guard
+
+on:
+  pull_request:
+    branches: [main, staging]
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  check-pr-title:
+    name: Validate PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title prefix matches target branch
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          BASE="${{ github.event.pull_request.base.ref }}"
+
+          if [[ "$BASE" == "staging" ]]; then
+            if [[ ! "$TITLE" =~ ^demo ]]; then
+              echo "❌ PR title must start with 'demo' to merge to staging."
+              echo "   Got: $TITLE"
+              exit 1
+            fi
+          elif [[ "$BASE" == "main" ]]; then
+            if [[ ! "$TITLE" =~ ^release ]]; then
+              echo "❌ PR title must start with 'release' to merge to main."
+              echo "   Got: $TITLE"
+              exit 1
+            fi
+          fi
+          echo "✅ PR title OK: $TITLE"
+
+  detect-dropped-commits:
+    name: Verify push preserves history
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check whether the previous tip is still reachable
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+          REF: ${{ github.ref }}
+        run: |
+          if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+            echo "Initial push of $REF — nothing to compare. OK."
+            exit 0
+          fi
+          if [[ "$AFTER"  == "0000000000000000000000000000000000000000" ]]; then
+            echo "Branch deletion of $REF — nothing to compare. OK."
+            exit 0
+          fi
+
+      - name: Checkout enough history to walk both tips
+        uses: actions/checkout@v7
+        if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
+        with:
+          fetch-depth: 0
+
+      - name: Fail if the force-push removed commits
+        if: ${{ github.event.before != '0000000000000000000000000000000000000000' && github.event.after != '0000000000000000000000000000000000000000' }}
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+          REF: ${{ github.ref }}
+        run: |
+          git fetch --no-tags --quiet origin "$BEFORE" || true
+          git fetch --no-tags --quiet origin "$AFTER"  || true
+
+          if git merge-base --is-ancestor "$BEFORE" "$AFTER"; then
+            echo "Push to $REF is a fast-forward — all previous commits preserved. OK."
+            exit 0
+          fi
+
+          echo "::error::Push to $REF dropped commits."
+          echo "Previous tip $BEFORE is no longer reachable from new tip $AFTER."
+          echo ""
+          echo "Commits that existed on $REF before this push and are now gone:"
+          git log --oneline "$AFTER..$BEFORE" || true
+          echo ""
+          echo "If this was intentional (e.g. rebase, squash), open a PR from"
+          echo "the new branch instead of force-pushing over an existing branch"
+          echo "with an open PR — the merge will otherwise silently drop the"
+          echo "missing commits when GitHub merges."
+          exit 1

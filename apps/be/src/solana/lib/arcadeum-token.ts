@@ -1,12 +1,13 @@
-import { PublicKey } from '@solana/web3.js';
-
 export const ARCADEUM_DECIMALS = 9;
 
 /**
  * Create the ARCADEUM mint PublicKey from a base58 address string.
  * Throws if the address is invalid.
  */
-export function getArcadeumMint(mintAddress: string): PublicKey {
+export async function getArcadeumMint(
+  mintAddress: string,
+): Promise<import('@solana/web3.js').PublicKey> {
+  const { PublicKey } = await import('@solana/web3.js');
   return new PublicKey(mintAddress);
 }
 

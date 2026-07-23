@@ -26,6 +26,7 @@ interface SeaBattleTableProps {
   resolveDisplayName: (id: string, fb: string) => string;
   teams?: SeaBattleTeam[];
   activeShooterId?: string;
+  shipCount?: number;
 }
 
 interface PlayerRowProps {
@@ -35,6 +36,7 @@ interface PlayerRowProps {
   teamColor?: string;
   resolveDisplayName: (id: string, fb: string) => string;
   idlePlayers: string[];
+  shipCount?: number;
   t: (key: TranslationKey) => string;
 }
 
@@ -45,6 +47,7 @@ function PlayerRow({
   teamColor,
   resolveDisplayName,
   idlePlayers,
+  shipCount,
   t,
 }: PlayerRowProps) {
   return (
@@ -120,7 +123,7 @@ function PlayerRow({
           )),
         )}
       </YStack>
-      <ShipsLeft ships={player.ships} isMe={isMe} />
+      <ShipsLeft ships={player.ships} isMe={isMe} shipCount={shipCount} />
     </YStack>
   );
 }
@@ -133,6 +136,7 @@ export function SeaBattleTable({
   resolveDisplayName,
   teams,
   activeShooterId,
+  shipCount,
 }: SeaBattleTableProps) {
   const { t } = useTranslation();
   const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
@@ -242,6 +246,7 @@ export function SeaBattleTable({
                       teamColor={team.color}
                       resolveDisplayName={resolveDisplayName}
                       idlePlayers={idlePlayers}
+                      shipCount={shipCount}
                       t={t}
                     />
                   ))}
@@ -260,6 +265,7 @@ export function SeaBattleTable({
               isActive={activePlayerId === player.playerId}
               resolveDisplayName={resolveDisplayName}
               idlePlayers={idlePlayers}
+              shipCount={shipCount}
               t={t}
             />
           ))}

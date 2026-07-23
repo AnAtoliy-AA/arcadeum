@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, startTransition } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, startTransition } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
@@ -17,6 +17,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
+import { historyApi } from '@/features/history/api';
 import { useStats } from './hooks/useStats';
 import { useLeaderboard } from './hooks/useLeaderboard';
 import {
@@ -108,6 +109,47 @@ export default function StatsPage({
   }, [records, localBreakdown]);
   const hasLocalStats = localStats.totalGames > 0;
 
+  const localStreaks = useMemo(
+    () => useLocalStatsStore.getState().getStreaks(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
+  const localFavoriteGame = useMemo(
+    () => useLocalStatsStore.getState().getFavoriteGame(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
+    [records.length],
+  );
+
+  const serverStreaks = isLoggedIn && stats
+    ? {
+        currentStreak: stats.currentStreak ?? 0,
+        currentStreakType: stats.currentStreakType ?? null,
+        bestWinStreak: stats.bestWinStreak ?? 0,
+      }
+    : localStreaks;
+  const serverFavoriteGame = isLoggedIn && stats
+    ? (stats.favoriteGame ?? localFavoriteGame)
+    : localFavoriteGame;
+
+  useEffect(() => {
+    if (!isLoggedIn || !snapshot.accessToken || records.length === 0) return;
+
+    const unsyncedRecords = records
+      .filter((r) => r.sessionId)
+      .map((r) => ({
+        gameId: r.gameId,
+        result: r.result,
+        timestamp: r.timestamp,
+        sessionId: r.sessionId!,
+      }));
+
+    if (unsyncedRecords.length > 0) {
+      historyApi
+        .syncStats(unsyncedRecords, { token: snapshot.accessToken })
+        .catch(() => {});
+    }
+  }, [isLoggedIn, snapshot.accessToken, records]);
+
   const {
     leaderboard,
     loading: leaderboardLoading,
@@ -188,7 +230,14 @@ export default function StatsPage({
         {activeTab === 'my-stats' ? (
           isLoggedIn ? (
             <>
-              <StatsOverview stats={stats} loading={loading} />
+              <StatsOverview
+                stats={stats}
+                loading={loading}
+                currentStreak={serverStreaks.currentStreak}
+                currentStreakType={serverStreaks.currentStreakType}
+                bestWinStreak={serverStreaks.bestWinStreak}
+                favoriteGame={serverFavoriteGame}
+              />
               <GameBreakdown stats={stats} loading={loading} />
             </>
           ) : hasLocalStats ? (
@@ -205,6 +254,10 @@ export default function StatsPage({
                   losses: localStats.losses,
                   winRate: localStats.winRate,
                   byGameType: localBreakdown,
+                  currentStreak: localStreaks.currentStreak,
+                  currentStreakType: localStreaks.currentStreakType,
+                  bestWinStreak: localStreaks.bestWinStreak,
+                  favoriteGame: localFavoriteGame,
                 }}
                 loading={false}
               />
@@ -215,6 +268,10 @@ export default function StatsPage({
                   losses: localStats.losses,
                   winRate: localStats.winRate,
                   byGameType: localBreakdown,
+                  currentStreak: localStreaks.currentStreak,
+                  currentStreakType: localStreaks.currentStreakType,
+                  bestWinStreak: localStreaks.bestWinStreak,
+                  favoriteGame: localFavoriteGame,
                 }}
                 loading={false}
               />

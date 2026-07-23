@@ -9,6 +9,7 @@ interface UseMobileShipMoveArgs {
   board: CellState[][];
   isPlacementComplete: boolean;
   isMobile: boolean;
+  gridSize: number;
   onMoveShip: (shipId: string, cells: ShipCell[]) => void;
   setHoveredCells: (cells: ShipCell[]) => void;
   setIsInvalidHover: (v: boolean) => void;
@@ -70,6 +71,7 @@ export function useMobileShipMove({
   board,
   isPlacementComplete,
   isMobile,
+  gridSize,
   onMoveShip,
   setHoveredCells,
   setIsInvalidHover,
@@ -109,7 +111,13 @@ export function useMobileShipMove({
         // Tap on empty cell → try to move the ship
         const wasVertical =
           movingShip.cells[0]?.col === movingShip.cells[1]?.col;
-        const newCells = getCells(row, col, movingShip.size, wasVertical);
+        const newCells = getCells(
+          row,
+          col,
+          movingShip.size,
+          wasVertical,
+          gridSize,
+        );
         if (!newCells) return true;
 
         if (canPlaceOnVirtualBoard(newCells, board, movingShip.cells)) {
@@ -138,6 +146,7 @@ export function useMobileShipMove({
       movingShipId,
       ships,
       board,
+      gridSize,
       isPlacementComplete,
       isMobile,
       onMoveShip,

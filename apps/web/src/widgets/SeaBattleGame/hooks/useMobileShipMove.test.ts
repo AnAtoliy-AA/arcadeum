@@ -45,6 +45,7 @@ function setup(
       board,
       isPlacementComplete: false,
       isMobile: true,
+      gridSize: BOARD_SIZE,
       onMoveShip,
       setHoveredCells,
       setIsInvalidHover,

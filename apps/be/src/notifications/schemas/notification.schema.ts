@@ -45,6 +45,7 @@ export type NotificationDocument = Notification & Document;
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
 
 NotificationSchema.index({ userId: 1, createdAt: -1 });
+NotificationSchema.index({ userId: 1, read: 1, createdAt: -1 });
 NotificationSchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: THIRTY_DAYS_SECONDS },

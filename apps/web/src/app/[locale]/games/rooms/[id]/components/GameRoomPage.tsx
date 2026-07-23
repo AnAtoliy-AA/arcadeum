@@ -123,7 +123,7 @@ export default function GameRoomPage({
     if (isAuthenticated) {
       connectSockets(snapshot.accessToken);
     } else if (snapshot.userId || roomVisibility === 'public') {
-      connectSocketsAnonymous();
+      connectSocketsAnonymous(snapshot.userId ?? undefined);
     }
     return () => {
       disconnectSockets();

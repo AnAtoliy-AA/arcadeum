@@ -7,8 +7,12 @@ import {
 } from '@/shared/lib/useTranslation';
 import { FilterChips, FilterGroup, FilterLabel, Filters } from '../styles';
 import { FilterChip } from '@arcadeum/ui';
-import type { GamesParticipationFilter, GamesStatusFilter } from '../types';
-import { ALL_STATUS_VALUES, STATUS_VALUES } from '../types';
+import type {
+  GamesParticipationFilter,
+  GamesStatusFilter,
+  GamesCategoryFilter,
+} from '../types';
+import { ALL_STATUS_VALUES, STATUS_VALUES, GAME_CATEGORIES } from '../types';
 
 interface GamesFiltersProps {
   searchQuery: string;
@@ -17,6 +21,8 @@ interface GamesFiltersProps {
   onStatusChange: (statuses: GamesStatusFilter) => void;
   participationFilter: GamesParticipationFilter;
   onParticipationChange: (participation: GamesParticipationFilter) => void;
+  categoryFilter: GamesCategoryFilter;
+  onCategoryChange: (category: GamesCategoryFilter) => void;
   isAuthenticated: boolean;
 }
 
@@ -34,6 +40,13 @@ const PARTICIPATION_KEYS = {
   not_joined: 'games.lounge.filters.participation.not_joined',
 } as const;
 
+const CATEGORY_LABELS: Record<string, string> = {
+  'Card Game': 'games.shared.category.cardGame',
+  'Board Game': 'games.shared.category.boardGame',
+  Strategy: 'games.shared.tags.strategy',
+  Action: 'games.shared.tags.action',
+};
+
 export function GamesFilters({
   searchQuery,
   onSearch,
@@ -41,6 +54,8 @@ export function GamesFilters({
   onStatusChange,
   participationFilter,
   onParticipationChange,
+  categoryFilter,
+  onCategoryChange,
   isAuthenticated,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
@@ -73,6 +88,40 @@ export function GamesFilters({
         placeholder={t('games.lounge.searchPlaceholder') || 'Search games...'}
         buttonLabel={t('games.lounge.searchButton') || 'Search'}
       />
+      <FilterGroup>
+        <FilterLabel>
+          {t('games.lounge.filters.categoryLabel') || 'Category'}
+        </FilterLabel>
+        <FilterChips>
+          <FilterChip
+            active={categoryFilter === ''}
+            onClick={() => onCategoryChange('')}
+            aria-label="Filter by category: All"
+            aria-pressed={categoryFilter === ''}
+          >
+            {t('games.lounge.filters.status.all') || 'All'}
+            {categoryFilter === '' ? ' ✓' : ''}
+          </FilterChip>
+          {GAME_CATEGORIES.map((cat) => {
+            const labelKey = CATEGORY_LABELS[cat];
+            const label = labelKey ? t(labelKey as TranslationKey) : cat;
+            const isActive = categoryFilter === cat;
+            return (
+              <FilterChip
+                key={cat}
+                active={isActive}
+                onClick={() => onCategoryChange(isActive ? '' : cat)}
+                aria-label={`Filter by category: ${label}`}
+                aria-pressed={isActive}
+              >
+                {label || cat}
+                {isActive ? ' ✓' : ''}
+              </FilterChip>
+            );
+          })}
+        </FilterChips>
+      </FilterGroup>
+
       <FilterGroup>
         <FilterLabel>{t('games.lounge.filters.statusLabel')}</FilterLabel>
         <FilterChips>

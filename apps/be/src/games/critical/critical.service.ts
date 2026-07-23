@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GameHistoryService } from '../history/game-history.service';
@@ -15,11 +17,12 @@ import { StartGameSessionResult } from '../games.types';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import { CriticalBotService } from './critical-bot.service';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 @Injectable()
 export class CriticalService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CriticalService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -29,51 +32,22 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     private readonly criticalActions: CriticalActionsService,
     @Inject(forwardRef(() => CriticalBotService))
     private readonly botService: CriticalBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'critical_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.startWatchdog();
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    this.stopWatchdog();
-  }
-
-  private startWatchdog() {
-    // Every 10 seconds, check active Critical sessions that haven't moved for 20 seconds
-    this.watchdogInterval = setInterval(() => {
-      void (async () => {
-        try {
-          const staleSessions =
-            await this.sessionsService.findStaleActiveSessions(
-              'critical_v1',
-              20000,
-              100,
-            );
-
-          if (staleSessions.length > 0) {
-            for (const session of staleSessions) {
-              this.botService
-                .checkAndPlay(session)
-                .catch((err) =>
-                  this.logger.error(
-                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-                  ),
-                );
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Watchdog failed: ${error}`);
-        }
-      })();
-    }, 10000);
-  }
-
-  private stopWatchdog() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   /**
@@ -87,7 +61,14 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return null;
   }
 
-  // ========== Core Actions ==========
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
 
   // ========== Private Helper ==========
 
@@ -107,8 +88,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     }
     return session;
   }
-
-  // ========== Core Actions ==========
 
   async drawCard(sessionId: string, userId: string) {
     const session = await this.criticalActions.drawCard(sessionId, userId);
@@ -264,8 +243,9 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
     await this.realtimeService.emitGameStarted(
-      room,
+      updatedRoom,
       session,
       async (s, pId) => {
         const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
@@ -279,7 +259,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       },
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**
@@ -382,9 +362,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Play favor card (gateway wrapper)
-   */
   async playFavorByRoom(
     userId: string,
     roomId: string,
@@ -402,9 +379,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Give favor card (gateway wrapper) - target player responds to favor
-   */
   async giveFavorCardByRoom(
     userId: string,
     roomId: string,
@@ -422,9 +396,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * See the future (gateway wrapper)
-   */
   async seeTheFutureByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -441,9 +412,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return { ...result, topCards };
   }
 
-  /**
-   * Play defuse card (gateway wrapper)
-   */
   async defuseByRoom(userId: string, roomId: string, position: number) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -455,17 +423,11 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     return this.checkAndSyncRoomStatus(updatedSession);
   }
 
-  /**
-   * Play nope card - cancels the last action
-   */
   async playNope(sessionId: string, userId: string) {
     const session = await this.criticalActions.playNope(sessionId, userId);
     return this.checkAndSyncRoomStatus(session);
   }
 
-  /**
-   * Play nope card (gateway wrapper)
-   */
   async playNopeByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
@@ -475,9 +437,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     );
     return this.checkAndSyncRoomStatus(updatedSession);
   }
-  /**
-   * Commit Alter the Future (gateway wrapper)
-   */
   async commitAlterFutureByRoom(
     userId: string,
     roomId: string,

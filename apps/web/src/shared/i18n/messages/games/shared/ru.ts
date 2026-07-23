@@ -15,6 +15,7 @@ export const ruMessages = {
     filters: {
       statusLabel: 'Статус',
       participationLabel: 'Участие',
+      categoryLabel: 'Категория',
       status: {
         all: 'Все',
         lobby: 'Лобби',
@@ -76,6 +77,7 @@ export const ruMessages = {
     joinRoom: 'Войти в зал',
     joining: 'Вход...',
     watchRoom: 'Смотреть',
+    watchResults: 'Результаты',
     joinByCode: 'Войти по коду',
     cancel: 'Отмена',
     share: 'Поделиться',
@@ -142,6 +144,7 @@ export const ruMessages = {
     houseRuleIdleTimer: 'Автоход при бездействии',
     houseRuleIdleTimerHint: 'Автоматический ход через {{seconds}} сек',
     seaBattleGridSize: 'Размер поля',
+    seaBattleShipCount: 'Количество кораблей',
     specialWeapons: 'Спецоружия',
     seaBattleSonar: 'Сонар',
     seaBattleSonarHint: 'Показать расположение кораблей',
@@ -210,8 +213,13 @@ export const ruMessages = {
         desc: 'Разделите игроков на флоты — 2v2 или 3v3.',
       },
       spectators: {
-        title: 'Зрители',
-        desc: 'Любой со ссылкой может тихо наблюдать.',
+        title: 'Разрешить зрителей',
+        desc: 'Любой с ссылкой может молча наблюдать.',
+      },
+      firstPlayer: {
+        title: 'Кто ходит первым',
+        host: 'Хозяин (по умолчанию)',
+        random: 'Случайный',
       },
     },
     summary: {
@@ -272,6 +280,13 @@ export const ruMessages = {
     botCountLabel: 'Количество ботов',
     startWithBots: 'Начать с {{count}} 🤖',
     playWithBotsNotice: 'Начните с ботами сразу или дождитесь других игроков',
+    difficultyLabel: 'Сложность ИИ',
+    difficultyEasy: 'Легко',
+    difficultyMedium: 'Средне',
+    difficultyHard: 'Сложно',
+    difficultyEasyDesc: 'Случайные ходы с редкими умными играми',
+    difficultyMediumDesc: 'Умное наведение со стратегией блокировки',
+    difficultyHardDesc: 'Точное наведение на основе вероятностей',
   },
   shared: {
     rules: {
@@ -291,6 +306,7 @@ export const ruMessages = {
     tags: {
       strategy: 'Стратегия',
       cards: 'Карты',
+      action: 'Экшн',
     },
   },
   connectionOverlay: {

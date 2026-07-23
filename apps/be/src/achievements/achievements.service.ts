@@ -61,6 +61,7 @@ export class AchievementsService {
     const definitions = await this.definitionModel
       .find()
       .sort({ sortOrder: 1 })
+      .lean()
       .exec();
     const progress = await this.getOrCreateProgress(userId);
     const stats = await this.statsService.getPlayerStats(userId);
@@ -99,7 +100,51 @@ export class AchievementsService {
   async checkAndUnlock(userId: string): Promise<string[]> {
     if (userId.startsWith('bot-')) return [];
 
-    const definitions = await this.definitionModel.find().exec();
+    const definitions = await this.definitionModel.find().lean().exec();
+    const progress = await this.getOrCreateProgress(userId);
+    const stats = await this.statsService.getPlayerStats(userId);
+    const newlyUnlocked: string[] = [];
+
+    for (const def of definitions) {
+      const existing = progress.achievements.find(
+        (a) => a.achievementId === def.achievementId,
+      );
+      if (existing?.unlockedAt) continue;
+
+      const { current, target } = this.getProgress(def, userId, stats);
+      if (current >= target) {
+        if (existing) {
+          existing.unlockedAt = new Date();
+        } else {
+          progress.achievements.push({
+            achievementId: def.achievementId,
+            unlockedAt: new Date(),
+            claimed: false,
+          });
+        }
+        newlyUnlocked.push(def.achievementId);
+      }
+    }
+
+    if (newlyUnlocked.length > 0) {
+      await progress.save();
+    }
+
+    return newlyUnlocked;
+  }
+
+  async getDefinitions(): Promise<AchievementDefinition[]> {
+    return this.definitionModel.find().lean().exec() as unknown as Promise<
+      AchievementDefinition[]
+    >;
+  }
+
+  async checkAndUnlockWithDefinitions(
+    userId: string,
+    definitions: AchievementDefinition[],
+  ): Promise<string[]> {
+    if (userId.startsWith('bot-')) return [];
+
     const progress = await this.getOrCreateProgress(userId);
     const stats = await this.statsService.getPlayerStats(userId);
     const newlyUnlocked: string[] = [];
@@ -136,7 +181,8 @@ export class AchievementsService {
     userId: string,
     achievementId: string,
   ): Promise<ClaimResult> {
-    const definition = await this.definitionModel.findOne({ achievementId });
+    const all = await this.definitionModel.find().lean().exec();
+    const definition = all.find((d) => d.achievementId === achievementId);
     if (!definition) throw new Error('Achievement not found');
 
     const progress = await this.getOrCreateProgress(userId);
@@ -201,7 +247,7 @@ export class AchievementsService {
   }
 
   private getProgress(
-    def: AchievementDefinitionDocument,
+    def: Pick<AchievementDefinition, 'achievementId'>,
     userId: string,
     stats: { totalGames: number; wins: number; winRate: number },
   ): { current: number; target: number } {

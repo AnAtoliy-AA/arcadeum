@@ -76,7 +76,7 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
 ### Project skills
 
-- `/pr-description` — write PR descriptions (runs `git diff main...HEAD`, formats as What/Why/Changes)
+- `/pr-description` — write PR descriptions (runs `git diff develop...HEAD`, formats as What/Why/Changes)
 - `/commit` — create a commit following Conventional Commits with ARC-XXX scope
 - `/new-web-page` — add a Next.js App Router page (`page.tsx` + `*Client.tsx` + `*View.tsx` + i18n)
 - `/new-be-module` — add a NestJS module (controller, service, module, DTOs, Mongoose schema)
@@ -84,6 +84,30 @@ Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 - `/new-mobile-screen` — add an Expo Router screen with i18n and Tamagui UI
 - `/new-ui-component` — add a shared Tamagui component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`
+- `/ui-ux-design` — comprehensive UI/UX design intelligence with priority-based rules for accessibility, touch, performance, style, layout, typography, animation, forms, navigation, and data visualization
+- `/baseline-ui` — quick UI cleanup/polish pass for spacing, hierarchy, typography, and layout issues
+- `/fixing-accessibility` — comprehensive a11y audit with priority-based rules and common fixes
+- `/fixing-motion-performance` — animation performance optimization (layout thrashing, compositor props, scroll-linked motion)
+- `/design-system` — generate and maintain design systems with colors, typography, spacing, and effects
+- `/aesthetic-literacy` — understand and characterize any named aesthetic across formal dimensions
+- `/image-analysis` — extract implementable CSS values and design tokens from reference images
+- `/animation` — implement smooth animations using Tamagui transitions, spring physics, and scroll effects
+- `/dark-mode` — implement dark mode with proper color tokens, contrast ratios, and platform patterns
+- `/form-patterns` — build accessible forms with validation, error handling, and progressive disclosure
+- `/data-visualization` — implement accessible charts, graphs, and data tables with proper color and tooltips
+- `/nestjs-expert` — create and configure NestJS modules, controllers, services, DTOs, guards, and interceptors
+- `/secure-code-guardian` — implement authentication/authorization, secure input, and prevent OWASP Top 10 vulnerabilities
+- `/security-reviewer` — review code for security vulnerabilities, audit auth flows, and identify attack vectors
+- `/database-optimizer` — optimize MongoDB queries, analyze execution plans, and improve database performance
+- `/test-master` — write comprehensive unit, integration, and E2E tests with proper mocking and coverage
+- `/typescript-pro` — write type-safe TypeScript with advanced patterns, generics, and utility types
+- `/react-native-expert` — build cross-platform mobile apps with React Native and Expo
+- `/nextjs-developer` — build modern web apps with Next.js App Router, Server Components, and Server Actions
+- `/websocket-engineer` — implement real-time WebSocket connections with Socket.IO for live updates and chat
+- `/code-reviewer` — review code for quality, best practices, and potential issues
+- `/debugging-wizard` — systematically debug issues with structured root-cause analysis
+- `/api-designer` — design RESTful APIs with proper endpoints, status codes, and Swagger documentation
+- `/microservices-architect` — design and implement microservice architectures with proper boundaries
 - `/implement-roadmap-feature` — implement a roadmap feature end-to-end: branch, code, test, commit, push, open PR, fix CI
 
 ### Global superpowers skills

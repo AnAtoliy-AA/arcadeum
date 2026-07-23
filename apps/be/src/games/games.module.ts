@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { GamesController } from './games.controller';
+import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
@@ -11,6 +12,11 @@ import {
   GameHistoryHidden,
   GameHistoryHiddenSchema,
 } from './schemas/game-history-hidden.schema';
+import { PlayerStats, PlayerStatsSchema } from './schemas/player-stats.schema';
+import {
+  PlayerStatRecord,
+  PlayerStatRecordSchema,
+} from './schemas/player-stat-record.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
@@ -25,6 +31,7 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { GameHistoryStatsService } from './history/game-history-stats.service';
@@ -34,6 +41,7 @@ import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { GamesRematchService } from './games.rematch.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { PlayerStatsService } from './player-stats.service';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
 
@@ -52,6 +60,12 @@ import { TicTacToeBotService } from './tic-tac-toe/tic-tac-toe-bot.service';
 import { CascadeGateway } from './cascade.gateway';
 import { CascadeService } from './cascade/cascade.service';
 import { CascadeBotService } from './cascade/cascade-bot.service';
+import { ChessGateway } from './chess.gateway';
+import { ChessService } from './chess/chess.service';
+import { ChessBotService } from './engines/chess/chess-bot.service';
+import { CheckersGateway } from './checkers.gateway';
+import { CheckersService } from './checkers/checkers.service';
+import { CheckersBotService } from './checkers/checkers-bot.service';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -77,6 +91,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       { name: GameRoom.name, schema: GameRoomSchema },
       { name: GameSession.name, schema: GameSessionSchema },
       { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
+      { name: PlayerStats.name, schema: PlayerStatsSchema },
+      { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
       { name: User.name, schema: UserSchema },
     ]),
     GameEnginesModule, // Import the game engines module
@@ -98,6 +114,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
+    GameSessionsCleanupCron,
     GameHistoryService,
     GameHistoryBuilderService,
     GameHistoryStatsService,
@@ -121,13 +138,21 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Cascade
     CascadeService,
     CascadeBotService,
+    // Chess
+    ChessService,
+    ChessBotService,
+    // Checkers
+    CheckersService,
+    CheckersBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
+    GamesCatalogService,
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,
+    PlayerStatsService,
     // Gateways
     GamesGateway,
     CriticalGateway,
@@ -137,6 +162,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GlimwormGateway,
     TicTacToeGateway,
     CascadeGateway,
+    ChessGateway,
+    CheckersGateway,
   ],
   exports: [GameHistoryStatsService],
 })

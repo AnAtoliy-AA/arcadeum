@@ -46,6 +46,39 @@
   position: relative;
 }
 
+.category-tabs-main {
+  display: flex;
+  gap: 8px;
+  padding: 0 var(--t-space-6);
+  flex-wrap: wrap;
+}
+
+.category-tab-main {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--glassBorder, rgba(255, 255, 255, 0.08));
+  background: transparent;
+  color: var(--textSecondary, rgba(180, 180, 200, 0.7));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.category-tab-main:hover {
+  border-color: var(--glassBorderHover, rgba(255, 255, 255, 0.16));
+  color: var(--color);
+}
+
+.category-tab-active-main {
+  background: rgba(255, 209, 102, 0.1);
+  border-color: var(--goldAccent, #ffd166);
+  color: var(--goldAccent, #ffd166);
+}
+
 .slider-container-main {
   position: relative;
   width: 100%;
@@ -379,17 +412,15 @@
   border-top: 1px solid rgba(255, 255, 255, 0.35);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.7);
+  will-change: transform;
   transition:
     filter 0.18s ease-out,
-    transform 0.18s ease-out,
-    box-shadow 0.18s ease-out;
+    transform 0.18s ease-out;
 }
 
 .featured-card-cta-main:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(255, 165, 0, 0.75);
 }
 
 .featured-card-cta-main:active {
@@ -404,7 +435,7 @@
 .featured-card-cta-main[aria-disabled='true'] {
   background-image: none;
   background-color: rgba(110, 113, 145, 0.5);
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.85);
   border-top-color: transparent;
   box-shadow: none;
   cursor: not-allowed;

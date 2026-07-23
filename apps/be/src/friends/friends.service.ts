@@ -42,7 +42,6 @@ interface LeanUser {
 @Injectable()
 export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
-  private readonly onlineUsers = new Set<string>();
 
   constructor(
     @InjectModel(Friendship.name)
@@ -204,7 +203,7 @@ export class FriendsService {
         username: user?.username ?? '',
         displayName: user?.displayName ?? null,
         equippedAvatarId: user?.equippedAvatarId ?? null,
-        online: this.onlineUsers.has(id),
+        online: this.gateway.isUserOnline(id),
       };
     });
   }
@@ -284,7 +283,7 @@ export class FriendsService {
           ? String(f.addresseeId)
           : String(f.requesterId),
       )
-      .filter((id) => this.onlineUsers.has(id));
+      .filter((id) => this.gateway.isUserOnline(id));
   }
 
   async getFriendIds(userId: string): Promise<string[]> {
@@ -303,18 +302,6 @@ export class FriendsService {
         ? String(f.addresseeId)
         : String(f.requesterId),
     );
-  }
-
-  setUserOnline(userId: string): void {
-    this.onlineUsers.add(userId);
-  }
-
-  setUserOffline(userId: string): void {
-    this.onlineUsers.delete(userId);
-  }
-
-  isUserOnline(userId: string): boolean {
-    return this.onlineUsers.has(userId);
   }
 
   private async findExisting(

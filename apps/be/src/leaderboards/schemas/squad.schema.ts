@@ -33,3 +33,4 @@ export type SquadDocument = Squad & Document;
 export const SquadSchema = SchemaFactory.createForClass(Squad);
 
 SquadSchema.index({ rating: -1 });
+SquadSchema.index({ memberUserIds: 1 });

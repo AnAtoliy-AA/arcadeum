@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
-import { YStack, Text } from 'tamagui';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';
+import {
+  loadStoredSettings,
+  saveStoredSettings,
+} from '@/shared/lib/settings-storage';
 import {
   LobbyContent,
   CenterSection,
@@ -37,8 +40,10 @@ import {
   BotCountButtons,
   BotCountButton,
 } from './lobbyStyles';
+import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
+import { HouseRulesSection } from './HouseRulesSection';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
 // Re-export all styles for games to use
@@ -87,6 +92,7 @@ export function ReusableGameLobby({
   variantName,
   roomIcon = '🎲',
   minPlayers = 2,
+  maxPlayers: maxPlayersProp,
   theme = {},
   isFastMode,
   labels = {},
@@ -110,14 +116,14 @@ export function ReusableGameLobby({
     fastRoomLabel = 'Fast Room',
     botCountLabel = 'Number of bots',
     startWithBotsLabel = 'Start with {{count}} 🤖',
+    difficultyLabel = 'AI Difficulty',
+    difficultyEasyLabel = 'Easy',
+    difficultyMediumLabel = 'Medium',
+    difficultyHardLabel = 'Hard',
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
-
-  // Optimistic state for house rules — updates instantly, clears when room syncs
-  const [optIdle, setOptIdle] = useState<boolean | null>(null);
-  const [optSpectators, setOptSpectators] = useState<boolean | null>(null);
 
   // Fetch catalog to determine which rules are excluded
   const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
@@ -139,29 +145,33 @@ export function ReusableGameLobby({
       .catch(() => {});
   }, [room.gameId, onRuleComingSoonChange]);
 
-  const [prevGameOptions, setPrevGameOptions] = useState(room.gameOptions);
-  if (prevGameOptions !== room.gameOptions) {
-    setPrevGameOptions(room.gameOptions);
-    setOptIdle(null);
-    setOptSpectators(null);
-  }
-
   const [botCount, setBotCount] = useState(1);
+  const [difficulty, setDifficulty] = useState<
+    'easy' | 'medium' | 'hard'
+  >(() => {
+    const settings = loadStoredSettings();
+    return settings.aiDifficulty ?? 'medium';
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
-  const maxPlayers = room.maxPlayers ?? 6;
+  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
   const cooldownRef = React.useRef(0);
+
+  useEffect(() => {
+    saveStoredSettings({ aiDifficulty: difficulty });
+  }, [difficulty]);
+
   const handleStart = React.useCallback(() => {
     const now = Date.now();
     if (now - cooldownRef.current < 1000) return;
     cooldownRef.current = now;
 
     if (enableBots && room.playerCount === 1) {
-      onStartGame({ withBots: true, botCount });
+      onStartGame({ withBots: true, botCount, difficulty });
     } else {
       onStartGame();
     }
-  }, [enableBots, room.playerCount, botCount, onStartGame]);
+  }, [enableBots, room.playerCount, botCount, difficulty, onStartGame]);
 
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
 
@@ -323,109 +333,45 @@ export function ReusableGameLobby({
                   </BotCountButtons>
                 </BotCountSelector>
               )}
-              <StartButton
-                onClick={handleStart}
-                disabled={
-                  startBusy ||
-                  startDisabled ||
-                  (room.playerCount < (minPlayers || 2) &&
-                    !(enableBots && room.playerCount === 1))
-                }
-                data-testid="start-with-bots-button"
-              >
-                {startBusy
-                  ? startingLabel
-                  : enableBots && room.playerCount === 1
-                    ? startWithBotsLabel.replace(
-                        '{{count}}',
-                        botCount.toString(),
-                      )
-                    : startLabel}
-              </StartButton>
+              {enableBots && room.playerCount === 1 && (
+                <BotCountSelector>
+                  <BotCountLabel>
+                    {difficultyLabel || 'AI Difficulty'}
+                  </BotCountLabel>
+                  <BotCountButtons>
+                    {(
+                      [
+                        { key: 'easy', label: difficultyEasyLabel || 'Easy' },
+                        {
+                          key: 'medium',
+                          label: difficultyMediumLabel || 'Medium',
+                        },
+                        { key: 'hard', label: difficultyHardLabel || 'Hard' },
+                      ] as const
+                    ).map((d) => (
+                      <BotCountButton
+                        key={d.key}
+                        data-testid={`difficulty-${d.key}`}
+                        $isActive={difficulty === d.key}
+                        onClick={() => setDifficulty(d.key)}
+                      >
+                        {d.label}
+                      </BotCountButton>
+                    ))}
+                  </BotCountButtons>
+                </BotCountSelector>
+              )}
             </HostControls>
           )}
 
           {optionsSlot}
 
           {isHost && room.status === 'lobby' && (
-            <YStack gap="$3" paddingTop="$2">
-              <Text fontSize="$4" fontWeight="600">
-                {t('games.create.sectionHouseRules') || 'House Rules'}
-              </Text>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: ruleComingSoon.get('idle')
-                    ? 'not-allowed'
-                    : 'pointer',
-                  opacity: ruleComingSoon.get('idle') ? 0.4 : 1,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
-                  disabled={!!ruleComingSoon.get('idle')}
-                  onChange={(e) => {
-                    const val = e.target.checked;
-                    setOptIdle(val);
-                    setOption({ idleTimerAutoplay: val });
-                  }}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    accentColor: 'var(--gc-accent, #ffd166)',
-                  }}
-                />
-                <Text fontSize="$3">
-                  {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
-                </Text>
-                {ruleComingSoon.get('idle') && (
-                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    {t('games.create.comingSoon') || 'Coming Soon'}
-                  </Text>
-                )}
-              </label>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: ruleComingSoon.get('spectators')
-                    ? 'not-allowed'
-                    : 'pointer',
-                  opacity: ruleComingSoon.get('spectators') ? 0.4 : 1,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={
-                    optSpectators ?? room.gameOptions?.allowSpectators !== false
-                  }
-                  disabled={!!ruleComingSoon.get('spectators')}
-                  onChange={(e) => {
-                    const val = e.target.checked;
-                    setOptSpectators(val);
-                    setOption({ allowSpectators: val });
-                  }}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    accentColor: 'var(--gc-accent, #ffd166)',
-                  }}
-                />
-                <Text fontSize="$3">
-                  {t('games.create.rules.spectators.title') ||
-                    'Allow spectators'}
-                </Text>
-                {ruleComingSoon.get('spectators') && (
-                  <Text fontSize={10} color="#f59e0b" fontWeight="600">
-                    {t('games.create.comingSoon') || 'Coming Soon'}
-                  </Text>
-                )}
-              </label>
-            </YStack>
+            <HouseRulesSection
+              room={room}
+              ruleComingSoon={ruleComingSoon}
+              onSetOption={setOption}
+            />
           )}
         </CenterSection>
 
@@ -448,6 +394,21 @@ export function ReusableGameLobby({
           labels={labels}
         />
       </LobbyContent>
+
+      {isHost && room.status === 'lobby' && (
+        <LobbyStartButton
+          startBusy={startBusy}
+          startDisabled={startDisabled}
+          enableBots={enableBots}
+          playerCount={room.playerCount}
+          minPlayers={minPlayers || 2}
+          botCount={botCount}
+          startLabel={startLabel}
+          startingLabel={startingLabel}
+          startWithBotsLabel={startWithBotsLabel}
+          onStart={handleStart}
+        />
+      )}
     </GameContainer>
   );
 }

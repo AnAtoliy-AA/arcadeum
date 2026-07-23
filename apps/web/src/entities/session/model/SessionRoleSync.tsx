@@ -120,11 +120,16 @@ export function SessionRoleSync(): null {
     const onFocus = (): void => {
       void sync();
     };
+    const onVisibilityChange = (): void => {
+      if (document.visibilityState === 'visible') void sync();
+    };
     window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       unsubscribe();
     };
   }, []);

@@ -2,6 +2,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { YStack, XStack, Text, Switch } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -24,6 +25,7 @@ interface CascadeLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
@@ -71,6 +73,7 @@ export function CascadeLobby({
   isHost,
   startBusy,
   onStartGame,
+  onReorderPlayers,
   onLeaveRoom,
   onDeleteRoom,
   onKickPlayer,
@@ -112,28 +115,37 @@ export function CascadeLobby({
             {t('games.create.sectionVariant') || 'Theme'}
           </Text>
           <XStack gap="$2" flexWrap="wrap">
-            {CASCADE_VARIANTS.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => handleOptionChange({ variant: v.id })}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 8,
-                  border: `1px solid ${options.variant === v.id ? '#fbbf24' : 'rgba(255,255,255,0.2)'}`,
-                  backgroundColor:
-                    options.variant === v.id
-                      ? 'rgba(251,191,36,0.15)'
-                      : 'transparent',
-                  color: options.variant === v.id ? '#fbbf24' : '#e2e8f0',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                {v.emoji} {t(v.name)}
-              </button>
-            ))}
+            {CASCADE_VARIANTS.map((v) => {
+              const isActive = options.variant === v.id;
+              return (
+                <Button
+                  key={v.id}
+                  variant="chip"
+                  size="sm"
+                  data-active={isActive}
+                  backgroundColor={
+                    isActive ? 'rgba(251, 191, 36, 0.15)' : 'transparent'
+                  }
+                  borderColor={
+                    isActive
+                      ? '#fbbf24'
+                      : 'rgba(255, 255, 255, 0.2)'
+                  }
+                  color={isActive ? '#fbbf24' : '#e2e8f0'}
+                  hoverStyle={{
+                    backgroundColor: isActive
+                      ? 'rgba(251, 191, 36, 0.2)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                  }}
+                  borderRadius={8}
+                  fontWeight={600}
+                  fontSize={13}
+                  onClick={() => handleOptionChange({ variant: v.id })}
+                >
+                  {v.emoji} {t(v.name)}
+                </Button>
+              );
+            })}
           </XStack>
         </YStack>
       )}
@@ -155,32 +167,41 @@ export function CascadeLobby({
             {t('games.create.cascadeMode') || 'Game Mode'}
           </Text>
           <XStack gap="$2" flexWrap="wrap">
-            {(['classic', 'pure', 'speed'] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => handleOptionChange({ mode })}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 8,
-                  border: `1px solid ${options.mode === mode ? '#fbbf24' : 'rgba(255,255,255,0.2)'}`,
-                  backgroundColor:
-                    options.mode === mode
-                      ? 'rgba(251,191,36,0.15)'
-                      : 'transparent',
-                  color: options.mode === mode ? '#fbbf24' : '#e2e8f0',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                {mode === 'classic'
-                  ? t('games.create.cascadeModeClassic') || 'Classic'
-                  : mode === 'pure'
-                    ? t('games.create.cascadeModePure') || 'Pure'
-                    : t('games.create.cascadeModeSpeed') || 'Speed'}
-              </button>
-            ))}
+            {(['classic', 'pure', 'speed'] as const).map((mode) => {
+              const isActive = options.mode === mode;
+              return (
+                <Button
+                  key={mode}
+                  variant="chip"
+                  size="sm"
+                  data-active={isActive}
+                  backgroundColor={
+                    isActive ? 'rgba(251, 191, 36, 0.15)' : 'transparent'
+                  }
+                  borderColor={
+                    isActive
+                      ? '#fbbf24'
+                      : 'rgba(255, 255, 255, 0.2)'
+                  }
+                  color={isActive ? '#fbbf24' : '#e2e8f0'}
+                  hoverStyle={{
+                    backgroundColor: isActive
+                      ? 'rgba(251, 191, 36, 0.2)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                  }}
+                  borderRadius={8}
+                  fontWeight={600}
+                  fontSize={13}
+                  onClick={() => handleOptionChange({ mode })}
+                >
+                  {mode === 'classic'
+                    ? t('games.create.cascadeModeClassic') || 'Classic'
+                    : mode === 'pure'
+                      ? t('games.create.cascadeModePure') || 'Pure'
+                      : t('games.create.cascadeModeSpeed') || 'Speed'}
+                </Button>
+              );
+            })}
           </XStack>
           <Text color="#94a3b8" fontSize={12}>
             {options.mode === 'pure'
@@ -261,6 +282,7 @@ export function CascadeLobby({
         />
       }
       onStartGame={onStartGame}
+      onReorderPlayers={onReorderPlayers}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}

@@ -196,7 +196,7 @@ useGameChatIntegration(snapshot?.logs as never, (_msg, _scope) => {
 });
 ```
 
-**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`.
+**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`).
 
 ### 6. Web registry — three files
 
@@ -315,6 +315,8 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 1. **Two `GameType` unions.** [gameIdMapping.ts](apps/web/src/features/games/lib/gameIdMapping.ts) AND [useGameActions.ts](apps/web/src/features/games/hooks/useGameActions.ts). Missing the second throws "Unsupported game type: <id>" at runtime, not compile time.
 
 2. **Lobby inside `GameWidgetContainer.board` collapses.** That slot is sized for the in-game grid. Early-return the lobby OUTSIDE the container (sea-battle pattern).
+
+3. **`onReorderPlayers` must be wired.** `ReusableGameLobby` shows DnD reordering by default (`showReorderControls=true`), but the reorder callback must be passed through from the Game.tsx → Lobby → ReusableGameLobby chain. Import `reorderRoomParticipants` from `@/shared/api/gamesApi` and create a handler. Without it, the drag UI renders but does nothing.
 
 3. **Grid `aspectRatio` without `width: '100%'` collapses to 0px** when children are empty buttons. Always set both `width: '100%'` and `boxSizing: 'border-box'` on the grid container.
 

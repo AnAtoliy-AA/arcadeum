@@ -18,9 +18,15 @@ import {
   type BoardSize,
   type TicTacToeOptions,
   type TicTacToeVariant,
+  type InfinityMargin,
+  type InfinityWinLength,
   WIN_LENGTHS,
 } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import {
+  DifficultySelector,
+  type BotDifficulty,
+} from '@/features/games/ui/DifficultySelector';
 
 const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
   const variant = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variantId);
@@ -39,7 +45,12 @@ interface TicTacToeLobbyProps {
   userId: string;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    difficulty?: BotDifficulty;
+  }) => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
@@ -51,15 +62,22 @@ interface TicTacToeLobbyProps {
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
-    boardSize: number;
+    boardSize: number | string;
     teamMode: boolean;
+    expansionMargin: number;
+    infinityWinLength: number;
   }>;
-  const isAllowedSize = (n: number | undefined): n is BoardSize =>
-    n === 3 || n === 5 || n === 7 || n === 9;
+  const isAllowedSize = (n: number | string | undefined): n is BoardSize =>
+    n === 3 || n === 5 || n === 7 || n === 9 || n === 'infinity';
+  const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+    n === 1 || n === 2 || n === 3;
+  const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
   return {
     variant: (r.variant ?? 'classic') as TicTacToeVariant,
     boardSize: isAllowedSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
+    expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
+    infinityWinLength: isWinLen(r.infinityWinLength) ? r.infinityWinLength : 5,
   };
 }
 
@@ -69,6 +87,7 @@ export function TicTacToeLobby({
   isHost,
   startBusy,
   onStartGame,
+  onReorderPlayers,
   onLeaveRoom,
   onDeleteRoom,
   onKickPlayer,
@@ -91,11 +110,20 @@ export function TicTacToeLobby({
   }, [variant, t]);
 
   const [internalTeamMode, setInternalTeamMode] = useState(options.teamMode);
+  const [difficulty, setDifficulty] = useState<BotDifficulty>('medium');
 
   const handleTeamModeToggle = (val: boolean) => {
     if (!isHost) return;
     setInternalTeamMode(val);
     setOption({ teamMode: val });
+  };
+
+  const handleMarginChange = (margin: InfinityMargin) => {
+    setOption({ expansionMargin: margin });
+  };
+
+  const handleWinLengthChange = (winLength: InfinityWinLength) => {
+    setOption({ infinityWinLength: winLength });
   };
 
   const optionsSlot = (
@@ -110,8 +138,13 @@ export function TicTacToeLobby({
         roomId={room.id}
         hostId={userId}
         currentSize={options.boardSize}
+        currentMargin={options.expansionMargin}
+        currentWinLength={options.infinityWinLength}
         disabled={!isHost}
+        onMarginChange={handleMarginChange}
+        onWinLengthChange={handleWinLengthChange}
       />
+      <DifficultySelector value={difficulty} onChange={setDifficulty} />
       <XStack alignItems="center" gap="$3">
         <Text fontWeight="600">{t('games.tic_tac_toe_v1.lobby.teamMode')}</Text>
         <Switch
@@ -127,7 +160,9 @@ export function TicTacToeLobby({
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
       <Text fontSize="$2" opacity={0.7}>
-        {t('games.tic_tac_toe_v1.rules.winLengths')}
+        {options.boardSize === 'infinity'
+          ? t('games.tic_tac_toe_v1.lobby.winCondition')
+          : t('games.tic_tac_toe_v1.rules.winLengths')}
       </Text>
     </YStack>
   );
@@ -139,7 +174,9 @@ export function TicTacToeLobby({
         userId={userId}
         isHost={isHost}
         startBusy={startBusy}
-        onStartGame={onStartGame}
+        onStartGame={(opts) =>
+          onStartGame({ ...opts, difficulty })
+        }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}
         onKickPlayer={onKickPlayer}
@@ -155,13 +192,19 @@ export function TicTacToeLobby({
         }}
         optionsSlot={optionsSlot}
         showInvitedPlayers
-        showReorderControls={false}
+        showReorderControls
+        onReorderPlayers={onReorderPlayers}
       />
       <RulesModal
         open={showRulesOpen}
         onClose={onShowRulesClose}
         boardSize={options.boardSize}
-        winLength={WIN_LENGTHS[options.boardSize]}
+        winLength={
+          options.boardSize === 'infinity'
+            ? options.infinityWinLength
+            : WIN_LENGTHS[options.boardSize]
+        }
+        expansionMargin={options.expansionMargin}
       />
     </>
   );

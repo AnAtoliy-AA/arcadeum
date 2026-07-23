@@ -89,7 +89,8 @@ function mergeSnapshot(
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const router = useRouter();
-  const { mode, setMode } = useSessionStore();
+  const mode = useSessionStore((s) => s.mode);
+  const setMode = useSessionStore((s) => s.setMode);
   const [state, setState] = useState<Omit<LocalAuthState, 'mode'>>(() => ({
     loading: false,
     error: null,

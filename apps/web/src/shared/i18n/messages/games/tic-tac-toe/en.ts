@@ -30,6 +30,8 @@ export const enMessages = {
         title: 'Tic-Tac-Toe — picked, polished, multiplayer',
         subtitle:
           'Themed boards, teams, and bots. Hop in alone or with friends, on 3×3 through 9×9.',
+        ctaQuickplay: 'Play vs AI now',
+        ctaQuickplayError: "Couldn't start a game — try again",
         createRoom: 'Create a room',
         browseRooms: 'Browse rooms',
       },
@@ -91,18 +93,28 @@ export const enMessages = {
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
+      infinityLabel: 'Infinity',
+      expansionMargin: 'Expansion margin',
+      winCondition: 'Win condition',
+      inARow: '{{n}} in a row',
     },
     rules: {
       title: 'Rules',
       objective:
         'Be the first to place your mark in {{winLength}} cells in a row — horizontal, vertical, or diagonal.',
+      objectiveInfinity:
+        'Be the first to place your mark in {{winLength}} cells in a row. The board starts at 9×9 and expands by {{margin}} cells when you play near the edge.',
       steps:
         '• On your turn, click an empty cell.\n• Win by completing a line.\n• If the board fills up with no winner, the round is a draw.',
-      winLengths: 'Win-length per board: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+      winLengths:
+        'Win-length per board: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
+      infinityDescription:
+        'In Infinity mode, the board starts at 9×9 and automatically expands by {{margin}} cells in every direction when a mark is placed near the edge. The game never ends in a draw — the board keeps growing until someone wins.',
       headers: {
         objective: 'Objective',
         howToPlay: 'How to play',
         boardSizes: 'Board sizes',
+        infinityMode: 'Infinity mode',
       },
       inARow: '{{n}} in a row',
     },

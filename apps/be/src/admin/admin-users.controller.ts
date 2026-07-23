@@ -18,6 +18,7 @@ import { AdminUsersService } from './admin-users.service';
 import { ListAdminUsersDto } from './dto/list-admin-users.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { BlockUserDto } from './dto/block-user.dto';
+import { BulkDeleteUsersDto } from './dto/bulk-delete-users.dto';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -87,10 +88,10 @@ export class AdminUsersController {
 
   @Post('bulk-delete')
   bulkDelete(
-    @Body() body: { userIds: string[] },
+    @Body() dto: BulkDeleteUsersDto,
     @Req() req: RequestWithUser,
   ): Promise<{ deleted: number; skipped: string[] }> {
     const requesterUserId = req.user?.userId ?? '';
-    return this.service.bulkDelete(body.userIds ?? [], requesterUserId);
+    return this.service.bulkDelete(dto.userIds, requesterUserId);
   }
 }

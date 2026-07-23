@@ -103,6 +103,7 @@ export const fr = {
   footerResourcesTitle: 'Ressources',
   footerHelpCenter: "Centre d'aide",
   footerRoadmap: 'Feuille de route',
+  footerChangelog: 'Journal des modifications',
   footerGamingBlog: 'Blog de jeu',
   footerDevelopers: 'Développeurs (API)',
   footerLegalTitle: 'Légal',

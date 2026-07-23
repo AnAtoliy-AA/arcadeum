@@ -3,7 +3,7 @@ import {
   CELL_STATE,
   CellState,
   GAME_PHASE,
-  SHIPS,
+  getActiveShips,
 } from './sea-battle.constants';
 import {
   ShipCell,
@@ -156,13 +156,14 @@ export function getSeaBattleAvailableActions(
   if (!player || !player.alive) return [];
 
   const actions: string[] = ['chat'];
+  const activeShips = getActiveShips(state.shipCount);
 
   if (state.phase === GAME_PHASE.PLACEMENT) {
     if (!player.placementComplete) {
-      if (player.ships.length < SHIPS.length) {
+      if (player.ships.length < activeShips.length) {
         actions.push('placeShip');
       }
-      if (player.ships.length === SHIPS.length) {
+      if (player.ships.length === activeShips.length) {
         actions.push('confirmPlacement');
       }
       if (player.ships.length > 0) {
@@ -212,25 +213,62 @@ function getShipCells(
   return cells;
 }
 
-function canPlaceShip(
-  board: CellState[][],
-  row: number,
-  col: number,
-  size: number,
-  isVertical: boolean,
+export function randomlyPlaceShips(
   gridSize: number = BOARD_SIZE,
+  shipCount?: number,
+): Record<string, ShipCell[]> {
+  const activeShips = getActiveShips(shipCount);
+  const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
+
+  // Try multiple times with different random seeds
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const board = createEmptyBoard(gridSize);
+    const placements: Record<string, ShipCell[]> = {};
+    let failed = false;
+
+    for (const ship of sortedShips) {
+      // Collect all valid positions for this ship
+      const validPositions: ShipCell[][] = [];
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          for (const vertical of [true, false]) {
+            const cells = getShipCells(r, c, ship.size, vertical, gridSize);
+            if (cells && canPlaceShipOnBoard(board, cells, gridSize)) {
+              validPositions.push(cells);
+            }
+          }
+        }
+      }
+
+      if (validPositions.length === 0) {
+        failed = true;
+        break;
+      }
+
+      // Pick a random valid position
+      const chosen =
+        validPositions[Math.floor(Math.random() * validPositions.length)];
+      for (const cell of chosen) {
+        board[cell.row][cell.col] = CELL_STATE.SHIP;
+      }
+      placements[ship.id] = chosen;
+    }
+
+    if (!failed) return placements;
+  }
+
+  return {};
+}
+
+function canPlaceShipOnBoard(
+  board: CellState[][],
+  cells: ShipCell[],
+  gridSize: number,
 ): boolean {
-  const cells = getShipCells(row, col, size, isVertical, gridSize);
-
-  // Check bounds
-  if (!cells) return false;
-
-  // Check collision and spacing
   for (const cell of cells) {
     if (board[cell.row][cell.col] !== CELL_STATE.EMPTY) return false;
 
-    // Check neighbors (no adjacent ships allowed)
-    const directions = [
+    const dirs = [
       [-1, -1],
       [-1, 0],
       [-1, 1],
@@ -240,59 +278,13 @@ function canPlaceShip(
       [1, 0],
       [1, 1],
     ];
-
-    for (const [dr, dc] of directions) {
+    for (const [dr, dc] of dirs) {
       const r = cell.row + dr;
       const c = cell.col + dc;
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
+      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
         if (board[r][c] === CELL_STATE.SHIP) return false;
       }
     }
   }
-
   return true;
-}
-
-export function randomlyPlaceShips(
-  gridSize: number = BOARD_SIZE,
-): Record<string, ShipCell[]> {
-  const board = createEmptyBoard(gridSize);
-  const placements: Record<string, ShipCell[]> = {};
-
-  // Sort ships by size descending to make placement easier
-  const sortedShips = [...SHIPS].sort((a, b) => b.size - a.size);
-
-  for (const ship of sortedShips) {
-    let placed = false;
-    let attempts = 0;
-    const maxAttempts = 1000;
-
-    while (!placed && attempts < maxAttempts) {
-      attempts++;
-      const isVertical = Math.random() < 0.5;
-      const row = Math.floor(Math.random() * gridSize);
-      const col = Math.floor(Math.random() * gridSize);
-
-      if (canPlaceShip(board, row, col, ship.size, isVertical, gridSize)) {
-        const cells = getShipCells(row, col, ship.size, isVertical, gridSize);
-
-        if (cells) {
-          // Update local board
-          cells.forEach((cell) => {
-            board[cell.row][cell.col] = CELL_STATE.SHIP;
-          });
-
-          placements[ship.id] = cells;
-          placed = true;
-        }
-      }
-    }
-
-    if (!placed) {
-      // Failed to place a ship. Allow retry in caller or return empty to signal failure.
-      return {};
-    }
-  }
-
-  return placements;
 }

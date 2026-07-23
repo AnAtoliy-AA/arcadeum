@@ -23,6 +23,7 @@ describe('FriendsService', () => {
     emitFriendRequest: jest.Mock;
     emitFriendAccepted: jest.Mock;
     emitFriendRemoved: jest.Mock;
+    isUserOnline: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -42,6 +43,7 @@ describe('FriendsService', () => {
       emitFriendRequest: jest.fn(),
       emitFriendAccepted: jest.fn(),
       emitFriendRemoved: jest.fn(),
+      isUserOnline: jest.fn().mockReturnValue(false),
     };
 
     const module = await Test.createTestingModule({
@@ -340,7 +342,7 @@ describe('FriendsService', () => {
         ]),
       });
 
-      service.setUserOnline(targetId);
+      gateway.isUserOnline.mockReturnValue(true);
       const result = await service.getFriends(userId);
 
       expect(result).toHaveLength(1);
@@ -411,7 +413,7 @@ describe('FriendsService', () => {
         ]),
       });
 
-      service.setUserOnline(targetId);
+      gateway.isUserOnline.mockReturnValue(true);
       const result = await service.getOnlineFriendIds(userId);
 
       expect(result).toEqual([targetId]);
@@ -447,16 +449,6 @@ describe('FriendsService', () => {
       const result = await service.getFriendIds(userId);
 
       expect(result).toEqual([targetId]);
-    });
-  });
-
-  describe('online tracking', () => {
-    it('tracks online/offline status', () => {
-      expect(service.isUserOnline(userId)).toBe(false);
-      service.setUserOnline(userId);
-      expect(service.isUserOnline(userId)).toBe(true);
-      service.setUserOffline(userId);
-      expect(service.isUserOnline(userId)).toBe(false);
     });
   });
 });

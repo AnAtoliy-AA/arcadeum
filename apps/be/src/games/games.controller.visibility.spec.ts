@@ -3,45 +3,47 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
-import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
-import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
-import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
+import { GamesCatalogService } from './games-catalog.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
 
-const ruleVis = {
-  getAllRules: jest.fn().mockResolvedValue(new Map()),
-  getRulesForGame: jest.fn().mockResolvedValue(new Map()),
-} as unknown as GameRuleVisibilityService;
+function buildCatalog(
+  vis: { assertVisible: jest.Mock; filterVisible?: jest.Mock },
+  resolver: { resolveRole: jest.Mock },
+): GamesCatalogService {
+  return {
+    resolveRole: resolver.resolveRole,
+    assertVisible: vis.assertVisible,
+    getRulesForGame: jest.fn().mockResolvedValue(new Map()),
+    filterVisible: vis.filterVisible ?? jest.fn().mockResolvedValue([]),
+    stripDisabledRules: jest.fn(),
+    getCatalog: jest.fn(),
+  } as unknown as GamesCatalogService;
+}
 
 function buildController(
   games: GamesService,
-  vis: GameVisibilityService,
-  resolver: UserRoleResolver,
+  catalog: GamesCatalogService,
 ): GamesController {
   return new GamesController(
     games,
+    catalog,
     {} as unknown as CriticalService,
     {} as unknown as TexasHoldemService,
-    vis,
-    ruleVis,
-    resolver,
   );
 }
 
 describe('createRoom visibility gate', () => {
   it('throws 403 when caller cannot see the game', async () => {
     const vis = {
-      canSee: jest.fn().mockResolvedValue(false),
       assertVisible: jest
         .fn()
         .mockRejectedValue(Object.assign(new Error('denied'), { status: 403 })),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('free') };
+    const catalog = buildCatalog(vis, resolver);
     const games = { createRoom: jest.fn() } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await expect(
       controller.createRoom(
         { user: { userId: 'u-1' } } as unknown as Request,
@@ -56,17 +58,13 @@ describe('createRoom visibility gate', () => {
   });
 
   it('passes through when visible', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('vip'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('vip') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.createRoom(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -85,17 +83,13 @@ describe('createRoom visibility gate', () => {
   });
 
   it('passes undefined variant when gameOptions has no variant key', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('premium'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('premium') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       createRoom: jest.fn().mockResolvedValue({ id: 'r-2' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.createRoom(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -112,17 +106,13 @@ describe('createRoom visibility gate', () => {
   });
 
   it('ignores non-string variant values in gameOptions', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('free') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       createRoom: jest.fn().mockResolvedValue({ id: 'r-3' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.createRoom(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -140,17 +130,13 @@ describe('createRoom visibility gate', () => {
   });
 
   it('extracts variant from gameOptions.cardVariant (Critical convention)', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('free') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.createRoom(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -168,17 +154,13 @@ describe('createRoom visibility gate', () => {
   });
 
   it('prefers gameOptions.variant over gameOptions.cardVariant', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('free') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       createRoom: jest.fn().mockResolvedValue({ id: 'r-1' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.createRoom(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -199,19 +181,17 @@ describe('createRoom visibility gate', () => {
 describe('quickplay visibility gate', () => {
   it('throws 403 when caller cannot see the game', async () => {
     const vis = {
-      canSee: jest.fn().mockResolvedValue(false),
       assertVisible: jest
         .fn()
         .mockRejectedValue(Object.assign(new Error('denied'), { status: 403 })),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('free') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       quickplay: jest.fn(),
       findHumanMatch: jest.fn(),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await expect(
       controller.quickplay(
         { user: { userId: 'u-1' } } as unknown as Request,
@@ -223,18 +203,14 @@ describe('quickplay visibility gate', () => {
   });
 
   it('passes through when visible (ai mode)', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('vip'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('vip') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       quickplay: jest.fn().mockResolvedValue({ id: 'r-1' }),
       findHumanMatch: jest.fn(),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.quickplay(
       { user: { userId: 'u-1' } } as unknown as Request,
       { gameId: 'glimworm_v1', variant: 'time_attack' } as QuickplayGameDto,
@@ -248,18 +224,14 @@ describe('quickplay visibility gate', () => {
   });
 
   it('passes through when visible (human mode)', async () => {
-    const vis = {
-      canSee: jest.fn().mockResolvedValue(true),
-      assertVisible: jest.fn().mockResolvedValue(undefined),
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('premium'),
-    } as unknown as UserRoleResolver;
+    const vis = { assertVisible: jest.fn().mockResolvedValue(undefined) };
+    const resolver = { resolveRole: jest.fn().mockResolvedValue('premium') };
+    const catalog = buildCatalog(vis, resolver);
     const games = {
       quickplay: jest.fn(),
       findHumanMatch: jest.fn().mockResolvedValue({ id: 'r-2' }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     await controller.quickplay(
       { user: { userId: 'u-1' } } as unknown as Request,
       {
@@ -299,13 +271,10 @@ describe('listRooms visibility filter', () => {
         return out;
       },
     );
-    const vis = {
-      canSee,
-      filterVisible,
-    } as unknown as GameVisibilityService;
-    const resolver = {
-      resolveRole: jest.fn().mockResolvedValue('free'),
-    } as unknown as UserRoleResolver;
+    const catalog = buildCatalog(
+      { assertVisible: jest.fn(), filterVisible },
+      { resolveRole: jest.fn().mockResolvedValue('free') },
+    );
     const games = {
       listRooms: jest.fn().mockResolvedValue({
         rooms: [
@@ -327,7 +296,7 @@ describe('listRooms visibility filter', () => {
         hasMore: false,
       }),
     } as unknown as GamesService;
-    const controller = buildController(games, vis, resolver);
+    const controller = buildController(games, catalog);
     const res = await controller.listRooms({
       user: undefined,
     } as unknown as Request);

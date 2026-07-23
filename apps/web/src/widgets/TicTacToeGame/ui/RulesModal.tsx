@@ -13,15 +13,17 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 interface RulesModalProps {
   open: boolean;
   onClose: () => void;
-  boardSize: number;
+  boardSize: number | string;
   winLength: number;
+  expansionMargin?: number;
 }
 
-const BOARD_VARIANTS: Array<{ size: number; win: number }> = [
+const BOARD_VARIANTS: Array<{ size: number | string; win: number }> = [
   { size: 3, win: 3 },
   { size: 5, win: 4 },
   { size: 7, win: 5 },
   { size: 9, win: 5 },
+  { size: 'infinity', win: 5 },
 ];
 
 export function RulesModal({
@@ -29,17 +31,24 @@ export function RulesModal({
   onClose,
   boardSize,
   winLength,
+  expansionMargin = 3,
 }: RulesModalProps) {
   const { t } = useTranslation();
+  const isInfinity = boardSize === 'infinity';
 
   const sections = [
     {
       icon: '🎯',
       gradient: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)',
       header: t('games.tic_tac_toe_v1.rules.headers.objective'),
-      body: t('games.tic_tac_toe_v1.rules.objective', {
-        winLength: String(winLength),
-      }),
+      body: isInfinity
+        ? t('games.tic_tac_toe_v1.rules.objectiveInfinity', {
+            winLength: String(winLength),
+            margin: String(expansionMargin),
+          })
+        : t('games.tic_tac_toe_v1.rules.objective', {
+            winLength: String(winLength),
+          }),
     },
     {
       icon: '🎮',
@@ -48,6 +57,17 @@ export function RulesModal({
       body: t('games.tic_tac_toe_v1.rules.steps'),
     },
   ];
+
+  if (isInfinity) {
+    sections.push({
+      icon: '✨',
+      gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+      header: t('games.tic_tac_toe_v1.rules.headers.infinityMode'),
+      body: t('games.tic_tac_toe_v1.rules.infinityDescription', {
+        margin: String(expansionMargin),
+      }),
+    });
+  }
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -110,7 +130,7 @@ export function RulesModal({
                   const active = bv.size === boardSize;
                   return (
                     <YStack
-                      key={bv.size}
+                      key={String(bv.size)}
                       backgroundColor={
                         active
                           ? 'rgba(99,102,241,0.18)'
@@ -134,7 +154,7 @@ export function RulesModal({
                         fontSize={20}
                         color={active ? '#c7d2fe' : '#f8fafc'}
                       >
-                        {bv.size}×{bv.size}
+                        {bv.size === 'infinity' ? '∞' : `${bv.size}×${bv.size}`}
                       </Text>
                       <Text fontSize={12} color="#94a3b8">
                         {t('games.tic_tac_toe_v1.rules.inARow', {

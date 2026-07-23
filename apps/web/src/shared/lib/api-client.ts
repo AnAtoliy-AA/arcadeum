@@ -66,10 +66,11 @@ export function getAnonymousId() {
   return localStorage.getItem(ANONYMOUS_ID_KEY);
 }
 
-export interface ApiClientOptions extends RequestInit {
+export interface ApiClientOptions extends Omit<RequestInit, 'cache'> {
   token?: string;
   data?: unknown;
   timeout?: number;
+  cache?: RequestCache;
 }
 
 export class ApiError extends Error {
@@ -170,7 +171,7 @@ export const apiClient = {
       ...fetchOptions,
       headers,
       credentials: 'include',
-      cache: 'no-cache', // Use no-cache instead of no-store to allow bfcache while still revalidating
+      cache: options.cache ?? 'no-cache',
       signal: customSignal || controller.signal,
     };
 

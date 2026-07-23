@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
@@ -11,6 +12,16 @@ import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 
 async function bootstrap() {
+  if (
+    process.env.E2E === 'true' &&
+    process.env.NODE_ENV === 'production' &&
+    !process.env.CI
+  ) {
+    throw new Error(
+      'E2E mode must not be enabled in production. Set E2E=false or remove it.',
+    );
+  }
+
   const logger = new ArcadeumLogger();
   logger.setLogLevels(['error', 'warn', 'log']);
   const app = await NestFactory.create(AppModule, { logger });
@@ -38,7 +49,13 @@ async function bootstrap() {
     }),
   );
 
+  app.use(compression());
   app.use(cookieParser());
+
+  // Trust proxy: required for correct client IP resolution behind reverse proxies (nginx, Cloudflare).
+  // Without this, req.ip always returns 127.0.0.1, breaking per-IP rate limiting.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -69,9 +86,17 @@ async function bootstrap() {
     ],
   });
 
-  const port = process.env.BE_PORT ?? 4000;
+  const port = process.env.PORT ?? process.env.BE_PORT ?? 4000;
   await app.listen(port, '0.0.0.0');
   console.log(`[Backend] Listening on port ${port}`);
+
+  const shutdown = async (signal: string) => {
+    console.log(`\n[Backend] ${signal} received — shutting down gracefully`);
+    await app.close();
+    process.exit(0);
+  };
+  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+  process.on('SIGINT', () => void shutdown('SIGINT'));
 }
 
 void bootstrap();

@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { YStack, XStack, Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -170,159 +172,167 @@ export function GlimwormLobby({
         }}
       >
         {/* Variant picker — host-only interactive; guests see static label */}
-        <div>
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-              color: 'rgba(148,163,184,0.7)',
-              marginBottom: 8,
-            }}
+        <YStack>
+          <Text
+            fontSize={11}
+            letterSpacing={2}
+            textTransform="uppercase"
+            color="rgba(148,163,184,0.7)"
+            marginBottom={8}
           >
             {t('games.glimworm_v1.lobby.variant')}
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          </Text>
+          <XStack gap={8} flexWrap="wrap">
             {visibleVariants.map((v) => {
               const active = variant === v.id;
               const isComingSoon = v.comingSoon;
               const interactionAllowed = isHost && !isComingSoon;
               return (
-                <button
+                <Button
                   key={v.id}
-                  type="button"
+                  variant="chip"
+                  size="sm"
                   data-testid={`variant-tile-${v.id}`}
-                  aria-disabled={isComingSoon || undefined}
                   disabled={!interactionAllowed}
+                  data-active={active}
+                  backgroundColor={
+                    active
+                      ? 'rgba(94,224,255,0.18)'
+                      : 'rgba(255,255,255,0.04)'
+                  }
+                  borderColor={
+                    active
+                      ? 'rgba(94,224,255,0.6)'
+                      : 'rgba(255,255,255,0.10)'
+                  }
+                  color={active ? '#a0e8ff' : '#cbd5e1'}
+                  hoverStyle={{
+                    backgroundColor: active
+                      ? 'rgba(94,224,255,0.25)'
+                      : 'rgba(255,255,255,0.08)',
+                  }}
+                  borderRadius={20}
+                  fontWeight={500}
+                  fontSize={13}
+                  opacity={isComingSoon ? 0.4 : isHost || active ? 1 : 0.5}
                   onClick={() =>
                     interactionAllowed && setVariant(v.id as GlimwormVariant)
                   }
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 20,
-                    background: active
-                      ? 'rgba(94,224,255,0.18)'
-                      : 'rgba(255,255,255,0.04)',
-                    border: active
-                      ? '1.5px solid rgba(94,224,255,0.6)'
-                      : '1.5px solid rgba(255,255,255,0.10)',
-                    color: active ? '#a0e8ff' : '#cbd5e1',
-                    cursor: interactionAllowed ? 'pointer' : 'default',
-                    opacity: isComingSoon ? 0.4 : isHost || active ? 1 : 0.5,
-                    fontSize: 13,
-                    fontWeight: 500,
-                    fontFamily: 'inherit',
-                  }}
                 >
                   {v.emoji} {t(v.name as TranslationKey)}
                   {isComingSoon && (
-                    <span
+                    <Text
                       data-testid="coming-soon-badge"
-                      style={{ marginLeft: 6, fontSize: 11, opacity: 0.85 }}
+                      marginLeft={6}
+                      fontSize={11}
+                      opacity={0.85}
                     >
                       {t('games.create.comingSoon') || 'Coming Soon'}
-                    </span>
+                    </Text>
                   )}
-                </button>
+                </Button>
               );
             })}
-          </div>
+          </XStack>
           {!isHost && (
-            <div
-              style={{
-                marginTop: 6,
-                fontSize: 11,
-                color: 'rgba(148,163,184,0.6)',
-                fontStyle: 'italic',
-              }}
+            <Text
+              marginTop={6}
+              fontSize={11}
+              color="rgba(148,163,184,0.6)"
+              fontStyle="italic"
             >
               Host chooses the variant.
-            </div>
+            </Text>
           )}
-        </div>
+        </YStack>
 
         {/* Power-ups toggle — host-only */}
-        <div>
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-              color: 'rgba(148,163,184,0.7)',
-              marginBottom: 8,
-            }}
+        <YStack>
+          <Text
+            fontSize={11}
+            letterSpacing={2}
+            textTransform="uppercase"
+            color="rgba(148,163,184,0.7)"
+            marginBottom={8}
           >
             {t('games.glimworm_v1.lobby.powerups')}
-          </div>
-          <button
-            type="button"
+          </Text>
+          <Button
+            variant="chip"
+            size="sm"
             disabled={!isHost}
-            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
-            style={{
-              padding: '8px 14px',
-              borderRadius: 20,
-              background: powerupsEnabled
+            data-active={powerupsEnabled}
+            backgroundColor={
+              powerupsEnabled
                 ? 'rgba(177,94,255,0.20)'
-                : 'rgba(255,255,255,0.04)',
-              border: powerupsEnabled
-                ? '1.5px solid rgba(177,94,255,0.6)'
-                : '1.5px solid rgba(255,255,255,0.10)',
-              color: powerupsEnabled ? '#d4a8ff' : '#cbd5e1',
-              cursor: isHost ? 'pointer' : 'default',
-              opacity: isHost ? 1 : 0.7,
-              fontSize: 13,
-              fontWeight: 500,
-              fontFamily: 'inherit',
+                : 'rgba(255,255,255,0.04)'
+            }
+            borderColor={
+              powerupsEnabled
+                ? 'rgba(177,94,255,0.6)'
+                : 'rgba(255,255,255,0.10)'
+            }
+            color={powerupsEnabled ? '#d4a8ff' : '#cbd5e1'}
+            hoverStyle={{
+              backgroundColor: powerupsEnabled
+                ? 'rgba(177,94,255,0.25)'
+                : 'rgba(255,255,255,0.08)',
             }}
+            borderRadius={20}
+            fontWeight={500}
+            fontSize={13}
+            opacity={isHost ? 1 : 0.7}
+            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
           >
             {powerupsEnabled
               ? `✓ ${t('games.glimworm_v1.lobby.powerupsOn')}`
               : t('games.glimworm_v1.lobby.powerupsOff')}
-          </button>
-        </div>
+          </Button>
+        </YStack>
 
         {/* Color picker */}
-        <div>
-          <div
-            style={{
-              fontSize: 11,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-              color: 'rgba(148,163,184,0.7)',
-              marginBottom: 8,
-            }}
+        <YStack>
+          <Text
+            fontSize={11}
+            letterSpacing={2}
+            textTransform="uppercase"
+            color="rgba(148,163,184,0.7)"
+            marginBottom={8}
           >
             {t('games.glimworm_v1.lobby.pickColor')}
-          </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          </Text>
+          <XStack gap={6} flexWrap="wrap">
             {PALETTE.map((color) => {
               const isSelected = color === effectiveSelectedColor;
               const isTaken = takenColors.has(color) && !isSelected;
               return (
-                <button
+                <Button
                   key={color}
-                  type="button"
+                  variant="chip"
+                  size="sm"
+                  padding={0}
+                  width={30}
+                  height={30}
+                  borderRadius="50%"
+                  backgroundColor={color}
+                  borderWidth={isSelected ? 3 : 2}
+                  borderColor={
+                    isSelected ? '#fff' : 'rgba(255,255,255,0.18)'
+                  }
+                  disabled={isTaken}
+                  opacity={isTaken ? 0.3 : 1}
+                  hoverStyle={{
+                    opacity: isTaken ? 0.3 : 0.8,
+                  }}
                   aria-label={color}
                   aria-pressed={isSelected}
-                  disabled={isTaken}
-                  onClick={() => !isTaken && handleColor(color)}
                   title={isTaken ? 'Taken by another player' : color}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '50%',
-                    background: color,
-                    border: isSelected
-                      ? '3px solid #fff'
-                      : '2px solid rgba(255,255,255,0.18)',
-                    opacity: isTaken ? 0.3 : 1,
-                    cursor: isTaken ? 'not-allowed' : 'pointer',
-                  }}
+                  onClick={() => !isTaken && handleColor(color)}
                 />
               );
             })}
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
         {error && (
           <div

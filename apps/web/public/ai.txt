@@ -1,0 +1,57 @@
+# Arcadeum AI Agent Guide
+
+> Free online board games — play with friends in your browser. No download, no signup.
+
+## Site Description
+
+Arcadeum is a browser-based multiplayer platform for classic board games. Create a private room, share the link, and play instantly.
+
+## Available Games
+
+- [Sea Battle (Battleship)](https://arcadeum.games/en/games/sea-battle): Naval combat strategy for 2-6 players
+- [Critical](https://arcadeum.games/en/games/critical): Strategic card game for 3-5 players
+- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants for 2-5 players
+- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game for 2-10 players
+- [Chess](https://arcadeum.games/en/games/chess): Classic strategy for 2 players
+- [Glimworm](https://arcadeum.games/en/games): Real-time snake arena for 2-10 players
+
+## Key Pages
+
+- [Home](https://arcadeum.games/en): Landing page with featured games
+- [Games](https://arcadeum.games/en/games): Browse all games
+- [Blog](https://arcadeum.games/en/blog): Guides and tutorials
+- [Leaderboards](https://arcadeum.games/en/leaderboards): Top players
+- [Support](https://arcadeum.games/en/support): Help and contact
+
+## Features
+
+- Private multiplayer rooms with shareable links
+- AI bots for solo practice
+- Real-time chat during gameplay
+- Player profiles and statistics
+- Daily rewards and cosmetic shop
+- Available in English, Spanish, French, Russian, Belarusian
+
+## Structured Data
+
+This site uses JSON-LD structured data including:
+- Organization schema
+- WebSite with SearchAction
+- VideoGame schemas for each game
+- FAQPage with SpeakableSpecification
+- BreadcrumbList for navigation
+- HowTo guides for game instructions
+- BlogPosting for articles
+
+## Technical Notes
+
+- Built with Next.js (React) and Server Components
+- All content is server-rendered for crawlability
+- Comprehensive sitemap.xml with hreflang alternates
+- robots.txt allows all AI/LLM crawlers
+
+## Contact
+
+- Email: arcadeum.care@gmail.com
+- Discord: https://discord.gg/arcadeum
+- GitHub: https://github.com/anomalyco/arcadeum

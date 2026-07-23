@@ -1,0 +1,158 @@
+name: Implement Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'GitHub issue number to implement'
+        required: true
+        type: string
+      engine:
+        description: 'AI engine to use'
+        required: false
+        default: 'opencode'
+        type: choice
+        options:
+          - opencode
+          - mimo
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: implement-task-${{ inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install opencode
+        if: inputs.engine == 'opencode'
+        run: |
+          npm install -g @opencode-ai/opencode
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
+
+      - name: Install mimo
+        if: inputs.engine == 'mimo'
+        run: |
+          npm install -g @anthropic-ai/mimo
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH
+
+      - name: Check if issue is already in progress
+        run: |
+          LABELS=$(gh issue view ${{ inputs.issue_number }} --json labels -q '.labels[].name')
+          if echo "$LABELS" | grep -q "^in-progress$"; then
+            echo "::warning::Issue #${{ inputs.issue_number }} is already in-progress (possibly by a local agent). Skipping."
+            exit 1
+          fi
+
+      - name: Mark issue as in progress
+        run: gh issue edit ${{ inputs.issue_number }} --add-label "in-progress"
+
+      - name: Fetch issue details
+        id: issue
+        run: |
+          ISSUE_json=$(gh issue view ${{ inputs.issue_number }} --json number,title,body,labels)
+          echo "number=$(echo $ISSUE_json | jq -r .number)" >> $GITHUB_OUTPUT
+          echo "title=$(echo $ISSUE_json | jq -r .title)" >> $GITHUB_OUTPUT
+          echo "body=$(echo $ISSUE_json | jq -r .body | head -c 65536)" >> $GITHUB_OUTPUT
+
+      - name: Create feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TITLE_SLUG=$(echo "${{ steps.issue.outputs.title }}" | \
+            sed 's/^ARC-[0-9]*:\s*//' | \
+            tr '[:upper:]' '[:lower:]' | \
+            sed 's/[^a-z0-9]/-/g' | \
+            sed 's/^-//;s/-$//' | \
+            cut -c1-50)
+
+          BRANCH_NAME="task-${{ steps.issue.outputs.number }}-${TITLE_SLUG}"
+
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+
+          git checkout -b ${BRANCH_NAME} origin/develop
+        id: branch
+
+      - name: Run implementation
+        timeout-minutes: 30
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ENGINE: ${{ inputs.engine }}
+        run: |
+          node scripts/implement-single-issue.mjs
+
+      - name: Commit and push
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          SCOPE=$(echo "${{ steps.issue.outputs.title }}" | grep -oE 'ARC-[0-9]+' || echo "task-${{ steps.issue.outputs.number }}")
+          MSG=$(echo "${{ steps.issue.outputs.title }}" | \
+            sed 's/^ARC-[0-9]*:\s*//' | \
+            tr '[:upper:]' '[:lower:]' | \
+            sed 's/[^a-z0-9 ]/ /g' | \
+            sed 's/  */ /g' | \
+            sed 's/^ //;s/ $//' | \
+            cut -c1-72)
+
+          git commit -m "feat(${SCOPE}): ${MSG}"
+          git push origin ${{ steps.branch.outputs.branch }}
+
+      - name: Create Pull Request
+        id: pr
+        if: success()
+        run: |
+          PR_TITLE="${{ steps.issue.outputs.title }}"
+          PR_URL=$(gh pr create \
+            --title "${PR_TITLE}" \
+            --body "Closes #${{ inputs.issue.outputs.number }}" \
+            --base develop \
+            --head ${{ steps.branch.outputs.branch }})
+          echo "url=${PR_URL}" >> $GITHUB_OUTPUT
+          echo "number=$(echo ${PR_URL} | grep -oE '[0-9]+$')" >> $GITHUB_OUTPUT
+          gh issue edit ${{ inputs.issue_number }} --remove-label "in-progress" 2>/dev/null || true
+
+      - name: Comment on issue
+        if: success() && steps.pr.outputs.url
+        run: |
+          gh issue comment ${{ inputs.issue_number }} --body \
+            "Implementation complete (${ENGINE:-opencode}). PR: ${{ steps.pr.outputs.url }}"
+
+      - name: Remove in-progress label on failure
+        if: failure()
+        run: gh issue edit ${{ inputs.issue_number }} --remove-label "in-progress" 2>/dev/null || true
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          gh issue comment ${{ inputs.issue_number }} --body \
+            "Implementation failed. Check [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."

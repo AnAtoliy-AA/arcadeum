@@ -7,7 +7,7 @@ test.describe('Header Responsive Layout', () => {
     await navigateTo(page, '/');
 
     // Nav should be visible
-    const nav = page.locator('nav');
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav).toBeVisible();
 
     // Mobile menu button should be hidden
@@ -22,7 +22,7 @@ test.describe('Header Responsive Layout', () => {
     await navigateTo(page, '/');
 
     // Nav should be hidden
-    const nav = page.locator('nav');
+    const nav = page.getByRole('navigation', { name: 'Main navigation' });
     await expect(nav).not.toBeVisible();
 
     // Mobile menu button should be visible

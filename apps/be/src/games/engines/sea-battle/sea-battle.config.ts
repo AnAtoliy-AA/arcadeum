@@ -1,4 +1,4 @@
-import { SHIPS } from './sea-battle.constants';
+import { SHIPS, getDefaultShipCount } from './sea-battle.constants';
 
 export function validateSeaBattleConfig(
   config: Record<string, unknown>,
@@ -10,21 +10,20 @@ export function validateSeaBattleConfig(
     }
   }
 
-  const shipCount = config.shipCount;
-  if (shipCount !== undefined) {
-    if (typeof shipCount !== 'number' || shipCount < 3 || shipCount > 15) {
-      return false;
-    }
-    if (gridSize !== undefined) {
-      const totalShipCells = SHIPS.slice(0, shipCount).reduce(
-        (sum, s) => sum + s.size,
-        0,
-      );
-      const boardCells = gridSize * gridSize;
-      if (totalShipCells > boardCells * 0.4) {
-        return false;
-      }
-    }
+  const resolvedGridSize = typeof gridSize === 'number' ? gridSize : 10;
+  const shipCount = config.shipCount ?? getDefaultShipCount(resolvedGridSize);
+
+  if (typeof shipCount !== 'number' || shipCount < 3 || shipCount > 26) {
+    return false;
+  }
+
+  const totalShipCells = SHIPS.slice(0, shipCount).reduce(
+    (sum, s) => sum + s.size,
+    0,
+  );
+  const boardCells = resolvedGridSize * resolvedGridSize;
+  if (totalShipCells > boardCells * 0.4) {
+    return false;
   }
 
   const specialWeapons = config.specialWeapons;

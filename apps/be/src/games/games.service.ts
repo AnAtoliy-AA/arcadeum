@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  Inject,
-  forwardRef,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -27,6 +21,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { PlayerStatsService } from './player-stats.service';
 
 @Injectable()
 export class GamesService {
@@ -48,16 +43,14 @@ export class GamesService {
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
     private readonly ruleVisibility: GameRuleVisibilityService,
+    private readonly playerStats: PlayerStatsService,
   ) {}
 
-  private async sanitizeForPlayer(
+  private sanitizeForPlayer(
     s: GameSessionSummary,
     pId: string,
-  ): Promise<GameSessionSummary> {
-    const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-      s.id,
-      pId,
-    );
+  ): GameSessionSummary {
+    const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
     if (sanitized && typeof sanitized === 'object') {
       return { ...s, state: sanitized as Record<string, unknown> };
     }
@@ -76,9 +69,6 @@ export class GamesService {
   }
 
   async quickplay(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.createQuickplayRoom(
       userId,
       gameId,
@@ -87,9 +77,6 @@ export class GamesService {
   }
 
   async findHumanMatch(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 
@@ -111,9 +98,11 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        session = await this.sanitizeForPlayer(session, userId);
-      } catch {
-        // safely continue with unsanitized session state
+        session = this.sanitizeForPlayer(session, userId);
+      } catch (err) {
+        this.logger.warn(
+          `Sanitization failed for user ${userId} in room ${roomId}: ${err}`,
+        );
       }
     }
 
@@ -229,16 +218,17 @@ export class GamesService {
 
     // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
 
     // Mark players as in-match for the leaderboard LIVE chip.
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(room, session, async (s, pId) =>
+    await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
       this.sanitizeForPlayer(s, pId),
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**
@@ -262,7 +252,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => this.sanitizeForPlayer(s, pId),
+      (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -336,6 +326,18 @@ export class GamesService {
     return this.historyService.getPlayerStats(userId);
   }
 
+  async syncPlayerStats(
+    userId: string,
+    records: Array<{
+      gameId: string;
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>,
+  ) {
+    return this.playerStats.syncRecords(userId, records);
+  }
+
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
@@ -390,7 +392,7 @@ export class GamesService {
       await this.realtimeService.emitSessionSnapshot(
         roomId,
         session,
-        async (s, pId) => this.sanitizeForPlayer(s, pId),
+        (s, pId) => this.sanitizeForPlayer(s, pId),
       );
     }
   }
@@ -434,8 +436,10 @@ export class GamesService {
       const room = await this.roomsService.getRoom(roomId);
       const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
       this.stripDisabledRules(options, ruleMap);
-    } catch {
-      // Room not found or inaccessible — proceed without stripping.
+    } catch (err) {
+      this.logger.warn(
+        `Rule stripping failed for room ${roomId}: ${err}. Proceeding without stripping.`,
+      );
     }
 
     const updated = await this.roomsService.updateRoomOptions(

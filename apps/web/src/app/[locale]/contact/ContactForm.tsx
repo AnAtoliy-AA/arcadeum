@@ -149,43 +149,72 @@ export function ContactForm({ form }: ContactFormProps) {
           <form key={formKey} action={formAction}>
             <YStack gap="$4">
               <div style={s.formGridStyle}>
-                <FloatingLabelInput
-                  id="contact-name"
-                  name="name"
-                  label={form?.name ?? form?.nameLabel ?? 'Your name'}
-                  required
-                  autoComplete="name"
-                  error={!!fieldErrors?.name}
-                  data-testid="contact-name-input"
-                />
-                <FloatingLabelInput
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  label={form?.email ?? form?.emailLabel ?? 'Email'}
-                  required
-                  autoComplete="email"
-                  error={!!fieldErrors?.email}
-                  data-testid="contact-email-input"
-                />
+                <div>
+                  <FloatingLabelInput
+                    id="contact-name"
+                    name="name"
+                    label={form?.name ?? form?.nameLabel ?? 'Your name'}
+                    required
+                    autoComplete="name"
+                    error={!!fieldErrors?.name}
+                    data-testid="contact-name-input"
+                  />
+                  {fieldErrors?.name && (
+                    <span style={s.errorTextStyle} role="alert">
+                      {fieldErrors.name}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <FloatingLabelInput
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    label={form?.email ?? form?.emailLabel ?? 'Email'}
+                    required
+                    autoComplete="email"
+                    error={!!fieldErrors?.email}
+                    data-testid="contact-email-input"
+                  />
+                  {fieldErrors?.email && (
+                    <span style={s.errorTextStyle} role="alert">
+                      {fieldErrors.email}
+                    </span>
+                  )}
+                </div>
               </div>
-              <FloatingLabelInput
-                id="contact-subject"
-                name="subject"
-                label={form?.subject ?? form?.subjectLabel ?? 'Subject'}
-                required
-                error={!!fieldErrors?.subject}
-                data-testid="contact-subject-input"
-              />
-              <FloatingLabelTextArea
-                id="contact-message"
-                name="message"
-                label={form?.message ?? form?.messageLabel ?? 'Message'}
-                required
-                maxLength={1200}
-                error={!!fieldErrors?.message}
-                data-testid="contact-message-textarea"
-              />
+              <div>
+                <FloatingLabelInput
+                  id="contact-subject"
+                  name="subject"
+                  label={form?.subject ?? form?.subjectLabel ?? 'Subject'}
+                  required
+                  error={!!fieldErrors?.subject}
+                  data-testid="contact-subject-input"
+                />
+                {fieldErrors?.subject && (
+                  <span style={s.errorTextStyle} role="alert">
+                    {fieldErrors.subject}
+                  </span>
+                )}
+              </div>
+              <div>
+                <FloatingLabelTextArea
+                  id="contact-message"
+                  name="message"
+                  label={form?.message ?? form?.messageLabel ?? 'Message'}
+                  required
+                  minLength={10}
+                  maxLength={1200}
+                  error={!!fieldErrors?.message}
+                  data-testid="contact-message-textarea"
+                />
+                {fieldErrors?.message && (
+                  <span style={s.errorTextStyle} role="alert">
+                    {fieldErrors.message}
+                  </span>
+                )}
+              </div>
               <div aria-hidden="true" style={honeypotStyle}>
                 <label htmlFor="contact-website">Website</label>
                 <input

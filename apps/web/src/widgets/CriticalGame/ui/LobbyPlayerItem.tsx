@@ -10,7 +10,7 @@ import {
   PlayerInfo,
   LobbyPlayerName,
   PlayerBadge,
-} from './styles/lobby';
+} from '@/features/games/ui/lobbySidebarStyles';
 
 // Avatar colors
 const AVATAR_COLORS = [

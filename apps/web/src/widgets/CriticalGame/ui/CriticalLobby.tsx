@@ -5,17 +5,16 @@ import {
   ReusableGameLobby,
   type GameLobbyTheme,
   IconButton,
-} from '@/features/games/ui/ReusableGameLobby';
+  LobbyOptionSection,
+} from '@/features/games/ui';
 import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
-import { VariantSelectorWrapper } from './styles/lobby';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
-// Get theme based on card variant
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {
   const variantConfig = CARD_VARIANTS.find((v) => v.id === variant);
   const gradient =
@@ -30,7 +29,6 @@ const getCriticalTheme = (variant?: string): GameLobbyTheme => {
   };
 };
 
-// Get variant display info
 const getVariantInfo = (variant?: string) => {
   if (variant === 'random') {
     return { name: RANDOM_VARIANT.name, emoji: RANDOM_VARIANT.emoji };
@@ -89,21 +87,17 @@ export function CriticalLobby({
   const theme = getCriticalTheme(cardVariant);
   const isFastMode = room.gameOptions?.idleTimerEnabled;
 
-  // Subtitle text helper
   const getSubtitleText = () => {
     if (room.status !== 'lobby') return t('games.table.lobby.gameLoading');
-    // If 1 player, we can start with bots
     if (room.playerCount === 1) return t('games.lobby.playWithBotsNotice');
-    // If < 2 players (0?), shouldn't happen but fallback
     if (room.playerCount < 2) return t('games.table.lobby.needTwoPlayers');
     if (isHost) return t('games.table.lobby.hostCanStart');
     return t('games.table.lobby.waitingForHost');
   };
 
-  // Variant selector for host
   const optionsSlot =
     isHost && room.status === 'lobby' ? (
-      <VariantSelectorWrapper>
+      <LobbyOptionSection title="Game Options">
         <VariantSelector
           roomId={room.id}
           hostId={userId}
@@ -121,10 +115,7 @@ export function CriticalLobby({
           >
             <Switch.Thumb />
           </Switch>
-          <Text
-            fontSize="$3"
-            opacity={ruleComingSoon.get('combos') ? 0.4 : 1}
-          >
+          <Text fontSize="$3" opacity={ruleComingSoon.get('combos') ? 0.4 : 1}>
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
           </Text>
@@ -134,17 +125,15 @@ export function CriticalLobby({
             </Text>
           )}
         </XStack>
-      </VariantSelectorWrapper>
+      </LobbyOptionSection>
     ) : null;
 
-  // Rules button
   const headerActionsSlot = (
     <IconButton onClick={() => setShowRules(true)} title="Game Rules">
       📖
     </IconButton>
   );
 
-  // Rules modal
   const rulesModalSlot = (
     <RulesModal
       isOpen={showRules}
@@ -172,13 +161,11 @@ export function CriticalLobby({
       onKickPlayer={onKickPlayer}
       onLeaveRoom={onLeaveRoom}
       onRefresh={onRefresh}
-      // Game info
       gameName={t('games.critical_v1.name')}
       gameIcon="🐱💣"
       variantName={t(variantInfo.name as TranslationKey)}
       roomIcon={variantInfo.emoji}
       minPlayers={2}
-      // Labels using translations
       labels={{
         waitingLabel: t('games.table.lobby.waitingToStart'),
         subtitleText: getSubtitleText(),
@@ -200,14 +187,11 @@ export function CriticalLobby({
         botCountLabel: t('games.lobby.botCountLabel'),
         startWithBotsLabel: t('games.lobby.startWithBots'),
       }}
-      // Theme
       theme={theme}
       isFastMode={isFastMode}
-      // Slots
       optionsSlot={optionsSlot}
       headerActionsSlot={headerActionsSlot}
       rulesModalSlot={rulesModalSlot}
-      // Features
       showFullscreenButton={true}
       showReorderControls={true}
       showInvitedPlayers={true}

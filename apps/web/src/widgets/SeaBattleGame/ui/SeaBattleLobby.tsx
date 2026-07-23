@@ -5,12 +5,12 @@ import { XStack, YStack, Text, useMedia } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
-} from '@/features/games/ui/ReusableGameLobby';
+  IconButton,
+} from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS, getDefaultShipCount } from '../types';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { TranslationKey } from '@/shared/lib/useTranslation';
-import { IconButton } from '@/features/games/ui/ReusableGameLobby';
 import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
@@ -273,10 +273,11 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   const themeLabel = (
     <Text
-      fontSize={10}
-      color="rgba(148,163,184,0.6)"
-      letterSpacing={2}
+      fontSize="$2"
+      fontWeight="600"
       textTransform="uppercase"
+      letterSpacing={0.5}
+      color="$textSecondary"
     >
       {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
     </Text>

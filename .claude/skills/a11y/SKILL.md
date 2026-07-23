@@ -5,6 +5,8 @@ description: Use when implementing or reviewing accessibility (a11y) — ARIA at
 
 # Accessibility Skill
 
+> **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules including accessibility, touch targets, and mobile-specific guidelines.
+
 ## Core Principles
 
 - **Perceivable**: All content must be presentable in ways users can perceive (alt text, captions, contrast).

@@ -30,6 +30,16 @@ const SeaBattleCreationConfig = dynamic(
   () => import('@/widgets/SeaBattleGame/ui/CreationConfig'),
   { ssr: false },
 );
+
+const TicTacToeCreationConfig = dynamic(
+  () => import('@/widgets/TicTacToeGame/ui/CreationConfig'),
+  { ssr: false },
+);
+
+const CascadeCreationConfig = dynamic(
+  () => import('@/widgets/CascadeGame/ui/CreationConfig'),
+  { ssr: false },
+);
 import { GameCreationConfigProps } from '@/features/games/types';
 
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -53,6 +63,12 @@ const GAME_CONFIGS: Record<
     GameCreationConfigProps<Record<string, unknown>>
   >,
   sea_battle_v1: SeaBattleCreationConfig as unknown as React.ComponentType<
+    GameCreationConfigProps<Record<string, unknown>>
+  >,
+  tic_tac_toe_v1: TicTacToeCreationConfig as unknown as React.ComponentType<
+    GameCreationConfigProps<Record<string, unknown>>
+  >,
+  cascade_v1: CascadeCreationConfig as unknown as React.ComponentType<
     GameCreationConfigProps<Record<string, unknown>>
   >,
 };
@@ -124,6 +140,7 @@ export default function CreateGameRoomPage() {
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [maxPlayers, setMaxPlayers] = useState('');
   const [notes, setNotes] = useState('');
+  const [password, setPassword] = useState('');
 
   // 3. Derived game options (merging URL variant with local options)
   // Use pendingVariant if available to bridge the gap during URL updates
@@ -240,7 +257,6 @@ export default function CreateGameRoomPage() {
   } = useMutation({
     mutationFn: async () => {
       const maxPlayersNum = maxPlayers.trim() ? Number(maxPlayers) : undefined;
-
       return gamesApi.createRoom(
         {
           gameId,
@@ -248,6 +264,7 @@ export default function CreateGameRoomPage() {
           visibility,
           maxPlayers: maxPlayersNum,
           notes: notes.trim() || undefined,
+          password: password.trim() || undefined,
           gameOptions,
         },
         { token: snapshot.accessToken || undefined },
@@ -340,53 +357,23 @@ export default function CreateGameRoomPage() {
               </FormGroup>
 
               <Row>
-                <FormGroup
-                  flexGrow={1}
-                  flexBasis={0}
-                  $xs={{ flexGrow: 0, flexBasis: 'auto' }}
-                  label={
-                    t('games.create.fieldMaxPlayers') ||
-                    'Max Players (optional)'
-                  }
+                <FormGroup flexGrow={1} flexBasis={0} $xs={{ flexGrow: 0, flexBasis: 'auto' }}
+                  label={t('games.create.fieldMaxPlayers') || 'Max Players (optional)'}
                   htmlFor="max-players"
                 >
                   <XStack gap="$2" alignItems="flex-start">
-                    <Input
-                      key="max-players-input"
-                      id="max-players"
-                      type="number"
-                      min="2"
-                      max={
-                        visibleGames.find((g) => g.id === gameId)?.maxPlayers ||
-                        undefined
-                      }
+                    <Input key="max-players-input" id="max-players" type="number" min="2"
+                      max={visibleGames.find((g) => g.id === gameId)?.maxPlayers || undefined}
                       placeholder={t('games.create.autoPlaceholder') || 'Auto'}
                       value={maxPlayers}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setMaxPlayers(e.target.value)
-                      }
-                      aria-label={
-                        t('games.create.maxPlayersAria') ||
-                        'Maximum number of players'
-                      }
-                      flex={1}
-                      fullWidth
-                      size="lg"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxPlayers(e.target.value)}
+                      aria-label={t('games.create.maxPlayersAria') || 'Maximum number of players'}
+                      flex={1} fullWidth size="lg"
                     />
                     {maxPlayers ? (
-                      <YStack
-                        flexShrink={0}
-                        width={150}
-                        justifyContent="center"
-                      >
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          onClick={() => setMaxPlayers('')}
-                          size="lg"
-                          aria-label="Set to Auto"
-                          data-testid="auto-max-players-button"
-                          width="100%"
+                      <YStack flexShrink={0} width={150} justifyContent="center">
+                        <Button type="button" variant="secondary" onClick={() => setMaxPlayers('')}
+                          size="lg" aria-label="Set to Auto" data-testid="auto-max-players-button" width="100%"
                         >
                           {t('games.create.autoButton') || 'Auto'}
                         </Button>
@@ -395,35 +382,37 @@ export default function CreateGameRoomPage() {
                   </XStack>
                 </FormGroup>
 
-                <FormGroup
-                  flexGrow={1}
-                  flexBasis={0}
-                  $xs={{ flexGrow: 0, flexBasis: 'auto' }}
-                  label={t('games.create.fieldVisibility') || 'Visibility'}
-                  htmlFor="visibility"
+                <FormGroup flexGrow={1} flexBasis={0} $xs={{ flexGrow: 0, flexBasis: 'auto' }}
+                  label={t('games.create.fieldVisibility') || 'Visibility'} htmlFor="visibility"
                 >
-                  <Button
-                    id="visibility"
-                    type="button"
-                    variant="secondary"
+                  <Button id="visibility" type="button" variant="secondary"
                     isActive={visibility === 'public'}
-                    onClick={() =>
-                      setVisibility(
-                        visibility === 'public' ? 'private' : 'public',
-                      )
-                    }
+                    onClick={() => setVisibility(visibility === 'public' ? 'private' : 'public')}
                     aria-pressed={visibility === 'public'}
-                    aria-label={
-                      visibility === 'public' ? 'Public room' : 'Private room'
-                    }
-                    data-testid="visibility-toggle-button"
-                    fullWidth
-                    size="lg"
+                    aria-label={visibility === 'public' ? 'Public room' : 'Private room'}
+                    data-testid="visibility-toggle-button" fullWidth size="lg"
                   >
                     {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
                   </Button>
                 </FormGroup>
               </Row>
+
+              <FormGroup
+                label={t('games.password.label') || 'Room Password (optional)'}
+                htmlFor="room-password"
+              >
+                <Input
+                  id="room-password"
+                  type="password"
+                  placeholder={t('games.password.placeholder') || 'Set a password'}
+                  value={password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                  aria-label={t('games.password.label') || 'Room Password (optional)'}
+                  maxLength={64}
+                  fullWidth
+                  size="lg"
+                />
+              </FormGroup>
 
               <FormGroup
                 label={t('games.create.fieldNotes') || 'Notes (optional)'}

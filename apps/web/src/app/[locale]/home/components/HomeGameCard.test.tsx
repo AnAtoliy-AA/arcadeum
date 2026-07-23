@@ -76,13 +76,11 @@ describe('HomeGameCard — comingSoon prop', () => {
     expect(playBtn.getAttribute('href')).toBe('/en/games/sea-battle');
   });
 
-  it('routes the play CTA to game create when no landing href is set', () => {
+  it('routes the critical play CTA to the locale-prefixed landing page', () => {
     render(<HomeGameCard {...baseProps} game={criticalGame} />);
 
     const playBtn = screen.getByTestId('game-play-button');
-    expect(playBtn.getAttribute('href')).toBe(
-      '/en/games/create?gameId=critical_v1',
-    );
+    expect(playBtn.getAttribute('href')).toBe('/en/games/critical');
   });
 
   it('still disables when comingSoon=false but isPlayable=false', () => {

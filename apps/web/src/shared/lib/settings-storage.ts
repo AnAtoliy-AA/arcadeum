@@ -5,12 +5,14 @@ export type StoredSettings = {
   language?: string;
   hapticsEnabled?: boolean;
   soundEnabled?: boolean;
+  audioCuesEnabled?: boolean;
   musicEnabled?: boolean;
   musicVolume?: number;
   musicShuffle?: boolean;
   musicRepeat?: 'off' | 'all' | 'one';
   musicEnabledTracks?: number[];
   musicTrackOrder?: number[];
+  aiDifficulty?: 'easy' | 'medium' | 'hard';
 };
 
 const listeners = new Set<() => void>();
@@ -50,6 +52,10 @@ export function loadStoredSettings(): StoredSettings {
       settings.soundEnabled = parsed.soundEnabled;
     }
 
+    if (typeof parsed.audioCuesEnabled === 'boolean') {
+      settings.audioCuesEnabled = parsed.audioCuesEnabled;
+    }
+
     if (typeof parsed.musicEnabled === 'boolean') {
       settings.musicEnabled = parsed.musicEnabled;
     }
@@ -82,6 +88,14 @@ export function loadStoredSettings(): StoredSettings {
       parsed.musicTrackOrder.every((t) => typeof t === 'number')
     ) {
       settings.musicTrackOrder = parsed.musicTrackOrder;
+    }
+
+    if (
+      parsed.aiDifficulty === 'easy' ||
+      parsed.aiDifficulty === 'medium' ||
+      parsed.aiDifficulty === 'hard'
+    ) {
+      settings.aiDifficulty = parsed.aiDifficulty;
     }
 
     return settings;

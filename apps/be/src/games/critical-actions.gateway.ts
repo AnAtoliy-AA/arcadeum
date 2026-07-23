@@ -3,10 +3,13 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import {
   extractRoomAndUser,
@@ -16,10 +19,12 @@ import {
   extractString,
   toCriticalCard,
   isSimpleActionCard,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { CriticalService } from './critical/critical.service';
 
 @WebSocketGateway({
@@ -30,10 +35,36 @@ import { CriticalService } from './critical/critical.service';
 export class CriticalActionsGateway {
   private readonly logger = new Logger(CriticalActionsGateway.name);
 
+  @WebSocketServer() server: Server;
+
   constructor(
     private readonly gamesService: GamesService,
     private readonly criticalService: CriticalService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'CriticalActionsGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to CriticalActions namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to CriticalActions namespace: ${client.id}`,
+      );
+    }
+  }
 
   private handleException(params: {
     error: unknown;
@@ -57,6 +88,8 @@ export class CriticalActionsGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+
+    validatePayloadUserId(client, userId);
 
     try {
       // Get session from room
@@ -98,6 +131,8 @@ export class CriticalActionsGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
     const { card, targetPlayerId, cardsToStash, cardsToUnstash } =
       extractPlayActionPayload(payload as unknown as Record<string, unknown>);
+
+    validatePayloadUserId(client, userId);
 
     if (process.env.NODE_ENV !== 'test') {
       this.logger.log(
@@ -163,6 +198,8 @@ export class CriticalActionsGateway {
       payload as unknown as Record<string, unknown>,
     );
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.playCatComboByRoom(userId, roomId, cat, {
         mode,
@@ -209,6 +246,8 @@ export class CriticalActionsGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.criticalService.playFavorByRoom(
@@ -257,6 +296,8 @@ export class CriticalActionsGateway {
       throw new WsException('Invalid cardToGive value.');
     }
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.giveFavorCardByRoom(userId, roomId, cardValue);
 
@@ -289,6 +330,8 @@ export class CriticalActionsGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+
+    validatePayloadUserId(client, userId);
 
     try {
       const result = await this.criticalService.seeTheFutureByRoom(

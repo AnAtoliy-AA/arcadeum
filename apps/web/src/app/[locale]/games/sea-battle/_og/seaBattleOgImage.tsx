@@ -87,7 +87,6 @@ export function renderSeaBattleOgImage(): ImageResponse {
           display: 'flex',
           width: '100%',
           height: '100%',
-          // Vertical ocean-depth gradient (single background for satori).
           backgroundImage:
             'linear-gradient(180deg, #0f2543 0%, #0a1a32 32%, #061224 72%, #03091a 100%)',
           padding: '56px 72px',
@@ -120,6 +119,49 @@ export function renderSeaBattleOgImage(): ImageResponse {
               'linear-gradient(90deg, transparent 0%, rgba(180, 220, 250, 0.45) 50%, transparent 100%)',
           }}
         />
+
+        {/* Secondary glow bottom-right */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -60,
+            bottom: -60,
+            width: 300,
+            height: 300,
+            borderRadius: 150,
+            background:
+              'radial-gradient(circle, rgba(255, 149, 0, 0.08) 0%, transparent 60%)',
+          }}
+        />
+
+        {/* Decorative grid dots */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 72,
+            top: 56,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 20,
+            opacity: 0.06,
+          }}
+        >
+          {Array.from({ length: 5 }).map((_, row) => (
+            <div key={row} style={{ display: 'flex', gap: 20 }}>
+              {Array.from({ length: 5 }).map((_, col) => (
+                <div
+                  key={col}
+                  style={{
+                    width: 4,
+                    height: 4,
+                    borderRadius: 2,
+                    background: 'white',
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
 
         {/* LEFT — copy column */}
         <div
@@ -210,7 +252,8 @@ export function renderSeaBattleOgImage(): ImageResponse {
             background: 'rgba(7, 20, 38, 0.55)',
             border: '1px solid rgba(120, 180, 230, 0.18)',
             position: 'relative',
-            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.45)',
+            boxShadow:
+              '0 12px 36px rgba(0, 0, 0, 0.45), 0 0 60px rgba(255, 149, 0, 0.06)',
           }}
         >
           {Array.from({ length: ROWS }).map((_, row) => (
@@ -252,7 +295,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
             </div>
           ))}
 
-          {/* Sonar rings — concentric circles fading outward */}
+          {/* Sonar rings */}
           {[
             { size: 70, opacity: 0.65 },
             { size: 110, opacity: 0.42 },
@@ -273,7 +316,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
             />
           ))}
 
-          {/* "H-5 · HIT" coordinate readout above the strike */}
+          {/* "H-5 · HIT" coordinate readout */}
           <div
             style={{
               position: 'absolute',

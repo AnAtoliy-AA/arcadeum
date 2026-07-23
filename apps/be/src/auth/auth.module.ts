@@ -23,17 +23,20 @@ import {
   GoogleOAuthService,
   PasswordResetService,
   SignupRewardService,
+  LoginLockoutService,
 } from './services';
 import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 import { MailerModule } from '../support/mailer.module';
+import { RateStateModule } from '../common/rate-state';
 
 @Module({
   imports: [
     forwardRef(() => ReferralModule),
     ConfigModule,
     MailerModule,
+    RateStateModule,
     // Self-register ThrottlerModule so AuthThrottlerGuard's deps resolve
     // even when AuthModule is loaded outside the full app.module graph
     // (e.g. integration tests that wire AuthModule directly into a
@@ -65,6 +68,7 @@ import { MailerModule } from '../support/mailer.module';
     GoogleOAuthService,
     PasswordResetService,
     SignupRewardService,
+    LoginLockoutService,
     UserRoleResolver,
     AuthThrottlerGuard,
   ],

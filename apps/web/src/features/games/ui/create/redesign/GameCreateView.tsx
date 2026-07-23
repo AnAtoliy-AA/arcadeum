@@ -22,6 +22,7 @@ import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { RoomDetails } from './RoomDetails';
+import { HouseRules } from './HouseRules';
 import { PreviewRail } from './PreviewRail';
 import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
 import { applyPreset } from './data/presets';
@@ -39,6 +40,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   glimworm_v1: 'glimworm_v1',
   tic_tac_toe_v1: 'tic_tac_toe_v1',
   cascade_v1: 'cascade_v1',
+  chess_v1: 'chess_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -64,6 +66,7 @@ function initialForm(
     visibility: 'public',
     roomName: defaultRoomName,
     notes: '',
+    password: '',
     rules: {
       combos: false,
       idle: false,
@@ -82,6 +85,18 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   if (form.gameId === 'critical_v1') {
     return {
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
+    };
+  }
+  if (form.gameId === 'chess_v1') {
+    return {
+      variant: form.themeId || 'standard',
+    };
+  }
+  if (form.gameId === 'sea_battle_v1') {
+    return {
+      variant: form.themeId || 'classic',
+      gridSize: 10,
+      shipCount: 10,
     };
   }
   return {};
@@ -153,7 +168,12 @@ export function GameCreateView() {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'preset'
+        | 'roomName'
+        | 'maxPlayers'
+        | 'visibility'
+        | 'notes'
+        | 'password'
+        | 'preset'
       >
     >,
   ) {
@@ -209,7 +229,7 @@ export function GameCreateView() {
       cancelled = true;
     };
   }, []);
-  const { gameComingSoon, variantComingSoon } = useMemo(
+  const { gameComingSoon, variantComingSoon, ruleComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],
   );
@@ -238,6 +258,7 @@ export function GameCreateView() {
           visibility: toApiVisibility(form.visibility),
           maxPlayers: form.maxPlayers === 'auto' ? undefined : form.maxPlayers,
           notes: form.notes.trim() || undefined,
+          password: form.password.trim() || undefined,
           gameOptions: buildGameOptions(form),
         },
         { token: snapshot.accessToken || undefined },
@@ -278,6 +299,7 @@ export function GameCreateView() {
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
+  const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
 
   return (
@@ -334,6 +356,18 @@ export function GameCreateView() {
                     />
                   </SectionGroup>
                 ) : null}
+
+                <SectionGroup num={numRules} title={L.sectionRules}>
+                  <HouseRules
+                    gameId={form.gameId}
+                    value={form.rules}
+                    labels={L.rules}
+                    ruleComingSoon={ruleComingSoon}
+                    onChange={(rules) =>
+                      setForm((prev) => ({ ...prev, rules }))
+                    }
+                  />
+                </SectionGroup>
 
                 <SectionGroup num={numDetails} title={L.sectionDetails}>
                   <RoomDetails

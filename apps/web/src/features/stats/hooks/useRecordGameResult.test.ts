@@ -2,6 +2,20 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useRecordGameResult } from './useRecordGameResult';
 import { useLocalStatsStore } from '../store/statsStore';
+import type { GameResult } from '@/features/games/hooks/useGameResultModal';
+
+vi.mock('@/entities/session/model/useSessionTokens', () => ({
+  useSessionTokens: vi.fn(() => ({
+    snapshot: { accessToken: null },
+    hydrated: true,
+  })),
+}));
+
+vi.mock('@/features/history/api', () => ({
+  historyApi: {
+    syncStats: vi.fn().mockResolvedValue({ synced: 0, duplicates: 0 }),
+  },
+}));
 
 describe('useRecordGameResult', () => {
   beforeEach(() => {
@@ -60,7 +74,6 @@ describe('useRecordGameResult', () => {
       { initialProps: { result: 'won' as const, sessionId: 'session-1' } },
     );
 
-    // Re-render with same session — should NOT record again
     rerender({ result: 'won', sessionId: 'session-1' });
 
     const overview = useLocalStatsStore.getState().getOverview();
@@ -71,7 +84,7 @@ describe('useRecordGameResult', () => {
     const { rerender } = renderHook(
       ({ result, sessionId }) =>
         useRecordGameResult(result, 'tic_tac_toe_v1', sessionId),
-      { initialProps: { result: 'won' as const, sessionId: 'session-1' } },
+      { initialProps: { result: 'won' as GameResult, sessionId: 'session-1' } },
     );
 
     rerender({ result: 'lost', sessionId: 'session-2' });

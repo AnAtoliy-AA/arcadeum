@@ -44,6 +44,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
             { id: 'classic', comingSoon: false },
             { id: 'pixel', comingSoon: false },
           ],
+          rules: [],
         }, // cyber hidden
       ],
     });
@@ -84,6 +85,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
             { id: 'classic', comingSoon: false },
             { id: 'cyber', comingSoon: true },
           ],
+          rules: [],
         },
       ],
     });

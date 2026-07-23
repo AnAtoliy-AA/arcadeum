@@ -15,6 +15,7 @@ export const byMessages = {
     filters: {
       statusLabel: 'Статус',
       participationLabel: 'Удзел',
+      categoryLabel: 'Катэгорыя',
       status: {
         all: 'Усе',
         lobby: 'Лобі',
@@ -51,6 +52,13 @@ export const byMessages = {
     fastRoom: 'Хуткая гульня',
     gameLabel: 'Гульня',
   },
+  password: {
+    label: 'Пароль зала (опцыянальна)',
+    placeholder: 'Усталюйце пароль',
+    joinTitle: 'Увядзіце пароль зала',
+    joinDescription: 'Для ўваходу ў гэты зал патрабуецца пароль.',
+    incorrect: 'Няправільны пароль',
+  },
   room: {
     gameArea: 'Гульнявая зона — інтэграцыя ў рэальным часе хутка з’явіцца',
     loading: 'Загрузка сервера...',
@@ -69,6 +77,7 @@ export const byMessages = {
     joinRoom: 'Увайсці ў зал',
     joining: 'Уваход...',
     watchRoom: 'Глядзець',
+    watchResults: 'Вынікі',
     joinByCode: 'Увайсці па кодзе',
     cancel: 'Адмена',
     share: 'Падзяліцца',
@@ -135,6 +144,7 @@ export const byMessages = {
     houseRuleIdleTimer: 'Аўтаход пры бяздзейнасці',
     houseRuleIdleTimerHint: 'Аўтаматычны ход праз {{seconds}} сек',
     seaBattleGridSize: 'Памер поля',
+    seaBattleShipCount: 'Колькасць караблёў',
     specialWeapons: 'Спецзброі',
     seaBattleSonar: 'Сонар',
     seaBattleSonarHint: 'Паказаць размяшчэнне караблёў',
@@ -202,8 +212,13 @@ export const byMessages = {
         desc: "Аб'яднайце гульцоў у флоты — 2v2 або 3v3.",
       },
       spectators: {
-        title: 'Гледачы',
-        desc: 'Любы са спасылкай можа ціха назіраць.',
+        title: 'Дазволіць гледачоў',
+        desc: 'Любы з спасылкай можа назіраць маўкліва.',
+      },
+      firstPlayer: {
+        title: 'Хто ходзіць першым',
+        host: 'Гаспадар (па змаўчанні)',
+        random: 'Выпадковы',
       },
     },
     summary: {
@@ -264,6 +279,13 @@ export const byMessages = {
     botCountLabel: 'Колькасць ботаў',
     startWithBots: 'Пачаць з {{count}} 🤖',
     playWithBotsNotice: 'Пачніце з ботамі адразу або дачакайцеся іншых гульцоў',
+    difficultyLabel: 'Складанасць ІІ',
+    difficultyEasy: 'Лёгка',
+    difficultyMedium: 'Сярэдня',
+    difficultyHard: 'Цяжка',
+    difficultyEasyDesc: 'Выпадковыя хады з рэдкімі разумнымі гульнямі',
+    difficultyMediumDesc: 'Разумнае навядзенне са стратэгіяй блакіроўкі',
+    difficultyHardDesc: 'Дакладнае навядзенне на аснове верагоднасцяў',
   },
   shared: {
     rules: {
@@ -283,6 +305,7 @@ export const byMessages = {
     tags: {
       strategy: 'Стратэгія',
       cards: 'Карты',
+      action: 'Экшн',
     },
   },
   connectionOverlay: {
@@ -335,5 +358,31 @@ export const byMessages = {
         accept: 'Прыняць',
       },
     },
+  },
+  undo: {
+    request: 'Запытаць адмену',
+    approve: 'Адабраць адмену',
+    deny: 'Адхіліць адмену',
+    pending: 'Чаканне адказу на адмену...',
+    accepted: 'Адмена прынята!',
+    denied: 'Адмена адхілена',
+  },
+  emotes: {
+    good_move: 'Крута!',
+    lol: 'ХАХА',
+    thinking: 'Хмм...',
+    nice: 'ГГ!',
+    unlucky: 'Ой!',
+    rip: 'RIP',
+    fire: 'Агонь!',
+    clap: 'Брава!',
+    cry: 'Сумна',
+    angry: 'Злы',
+    rocket: 'Паехалі!',
+    heart: 'Каханне',
+    brain: 'Галактычны мозг',
+    skull: 'Мёртвы',
+    sweat: 'Туга!',
+    clown: 'Клоун',
   },
 };

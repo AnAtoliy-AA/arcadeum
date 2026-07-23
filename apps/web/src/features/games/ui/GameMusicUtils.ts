@@ -1,12 +1,17 @@
 export interface MusicTrack {
   src: string;
   title: string;
+  duration?: number;
+  spriteIndex?: number;
 }
 
 export const CDN_BASE = process.env.NEXT_PUBLIC_CDN_URL || '';
 export const MUSIC_FOLDER = 'music';
 export const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
 export const TRACKS_JSON_URL = `${MUSIC_CDN_URL}/tracks.json`;
+export const SPRITE_URL = `${MUSIC_CDN_URL}/sprite.webp`;
+export const SPRITE_SIZE = 40;
+export const SPRITE_COLS = 20;
 
 export const FALLBACK_TRACKS: MusicTrack[] = [
   { src: `${MUSIC_CDN_URL}/battleship-grid.mp3`, title: 'Battleship Grid' },
@@ -43,13 +48,14 @@ async function loadTracksJson(): Promise<MusicTrack[] | null> {
 
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  if (CDN_BASE && process.env.NODE_ENV !== 'development') {
+
+  if (CDN_BASE && typeof window !== 'undefined') {
     try {
       const data = await loadTracksJson();
       if (data) {
         const resolved = data.map((t) => ({
           ...t,
-          src: t.src.startsWith('http') ? t.src : `${CDN_BASE}/${t.src}`,
+          src: t.src.startsWith('http') ? t.src : `${CDN_BASE}${t.src}`,
         }));
         cachedTracks = resolved;
         return resolved;
@@ -86,4 +92,13 @@ export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / SECONDS_PER_MINUTE);
   const s = Math.floor(seconds % SECONDS_PER_MINUTE);
   return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+export function shuffleArray(n: number): number[] {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }

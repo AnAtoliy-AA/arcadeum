@@ -2,24 +2,28 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { XStack, YStack, Text, styled } from 'tamagui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 export const EMOTES = [
-  { id: 'good_move', emoji: '👍', label: 'Good Move' },
-  { id: 'lol', emoji: '😂', label: 'LOL' },
-  { id: 'thinking', emoji: '🤔', label: 'Thinking...' },
-  { id: 'nice', emoji: '🎉', label: 'Nice!' },
-  { id: 'unlucky', emoji: '😤', label: 'Unlucky' },
-  { id: 'rip', emoji: '💀', label: 'RIP' },
-  { id: 'fire', emoji: '🔥', label: 'Fire!' },
-  { id: 'clap', emoji: '👏', label: 'Clap!' },
-  { id: 'cry', emoji: '😢', label: 'Sad' },
-  { id: 'angry', emoji: '😡', label: 'Angry' },
-  { id: 'rocket', emoji: '🚀', label: 'Rocket!' },
-  { id: 'heart', emoji: '❤️', label: 'Love' },
-  { id: 'brain', emoji: '🧠', label: 'Big Brain' },
-  { id: 'skull', emoji: '☠️', label: 'Dead' },
-  { id: 'sweat', emoji: '😅', label: 'Close One' },
-  { id: 'clown', emoji: '🤡', label: 'Clown' },
+  { id: 'good_move', emoji: '👍' },
+  { id: 'lol', emoji: '😂' },
+  { id: 'thinking', emoji: '🤔' },
+  { id: 'nice', emoji: '🎉' },
+  { id: 'unlucky', emoji: '😤' },
+  { id: 'rip', emoji: '💀' },
+  { id: 'fire', emoji: '🔥' },
+  { id: 'clap', emoji: '👏' },
+  { id: 'cry', emoji: '😢' },
+  { id: 'angry', emoji: '😡' },
+  { id: 'rocket', emoji: '🚀' },
+  { id: 'heart', emoji: '❤️' },
+  { id: 'brain', emoji: '🧠' },
+  { id: 'skull', emoji: '☠️' },
+  { id: 'sweat', emoji: '😅' },
+  { id: 'clown', emoji: '🤡' },
 ] as const;
 
 export type EmoteId = (typeof EMOTES)[number]['id'];
@@ -67,6 +71,7 @@ interface EmotePickerProps {
 export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
   const [cooldown, setCooldown] = useState(false);
   const lastSentRef = useRef(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!cooldown) return;
@@ -93,11 +98,11 @@ export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
           <EmoteBtn
             onPress={() => handleEmote(e.id)}
             opacity={cooldown ? 0.5 : 1}
-            aria-label={e.label}
+            aria-label={t(`games.emotes.${e.id}` as TranslationKey)}
           >
             <Text fontSize={20}>{e.emoji}</Text>
           </EmoteBtn>
-          <EmoteLabel>{e.label}</EmoteLabel>
+          <EmoteLabel>{t(`games.emotes.${e.id}` as TranslationKey)}</EmoteLabel>
         </YStack>
       ))}
     </PickerShell>

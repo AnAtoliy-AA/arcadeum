@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  Body,
   Controller,
   Get,
   Post,
@@ -11,6 +11,7 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { AchievementsService } from './achievements.service';
+import { ClaimAchievementDto } from './dto/claim-achievement.dto';
 
 @Controller('achievements')
 export class AchievementsController {
@@ -26,14 +27,10 @@ export class AchievementsController {
 
   @Post('claim')
   @UseGuards(JwtAuthGuard)
-  async claim(@Req() req: Request) {
+  async claim(@Req() req: Request, @Body() dto: ClaimAchievementDto) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) throw new UnauthorizedException();
-    const body = req.body as { achievementId?: string };
-    if (!body.achievementId) {
-      throw new BadRequestException('achievementId is required');
-    }
-    return this.service.claimReward(user.userId, body.achievementId);
+    return this.service.claimReward(user.userId, dto.achievementId);
   }
 
   @Post('check')

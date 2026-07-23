@@ -16,7 +16,7 @@ import {
   type AnnouncementLocale,
   type AnnouncementSeverity,
 } from './schemas/announcement.schema';
-import { escapeRegExp } from '../admin/lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import { buildActiveFilter, deriveStatus } from './lib/announcement-status';
 import type {
   AnnouncementAdminItem,

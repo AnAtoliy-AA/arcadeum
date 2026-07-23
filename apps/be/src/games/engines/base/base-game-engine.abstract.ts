@@ -19,6 +19,8 @@ export abstract class BaseGameEngine<
   TState extends BaseGameState = BaseGameState,
 > implements IGameEngine<TState>
 {
+  /** Max log entries per session to prevent BSON document bloat. */
+  protected static readonly MAX_LOG_ENTRIES = 100;
   /**
    * Subclasses must implement this to provide game metadata
    */
@@ -170,10 +172,13 @@ export abstract class BaseGameEngine<
   }
 
   /**
-   * Helper: Add log to state
+   * Helper: Add log to state (capped to prevent unbounded growth)
    */
   protected addLog(state: TState, log: GameLogEntry): void {
     state.logs.push(log);
+    if (state.logs.length > BaseGameEngine.MAX_LOG_ENTRIES) {
+      state.logs = state.logs.slice(-BaseGameEngine.MAX_LOG_ENTRIES);
+    }
   }
 
   /**

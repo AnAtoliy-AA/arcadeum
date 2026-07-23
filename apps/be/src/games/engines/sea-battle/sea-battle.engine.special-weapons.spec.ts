@@ -57,16 +57,20 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(result.state!.lastSonar!.targetId).toBe('b');
       expect(result.state!.lastSonar!.centerRow).toBe(0);
       expect(result.state!.lastSonar!.centerCol).toBe(1);
-      expect(result.state!.lastSonar!.radius).toBe(2);
-      expect(result.state!.lastSonar!.shipPositions).toEqual([
-        { row: 0, col: 0 },
-        { row: 0, col: 1 },
-        { row: 0, col: 2 },
-        { row: 0, col: 3 },
+      expect(result.state!.lastSonar!.radius).toBe(1);
+      // 3×3 area around (0,1): rows 0-1, cols 0-2 (row -1 clamped to 0)
+      const cells = result.state!.lastSonar!.cells;
+      expect(cells).toEqual([
+        { row: 0, col: 0, state: CELL_STATE.SHIP },
+        { row: 0, col: 1, state: CELL_STATE.SHIP },
+        { row: 0, col: 2, state: CELL_STATE.SHIP },
+        { row: 1, col: 0, state: CELL_STATE.EMPTY },
+        { row: 1, col: 1, state: CELL_STATE.EMPTY },
+        { row: 1, col: 2, state: CELL_STATE.EMPTY },
       ]);
     });
 
-    it('only reveals ships within radius', () => {
+    it('only reveals cells within radius', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
@@ -75,10 +79,15 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.state!.lastSonar!.shipPositions).toEqual([
-        { row: 0, col: 1 },
-        { row: 0, col: 2 },
-        { row: 0, col: 3 },
+      // 3×3 area around (0,3): rows 0-1, cols 2-4
+      const cells = result.state!.lastSonar!.cells;
+      expect(cells).toEqual([
+        { row: 0, col: 2, state: CELL_STATE.SHIP },
+        { row: 0, col: 3, state: CELL_STATE.SHIP },
+        { row: 0, col: 4, state: CELL_STATE.EMPTY },
+        { row: 1, col: 2, state: CELL_STATE.EMPTY },
+        { row: 1, col: 3, state: CELL_STATE.EMPTY },
+        { row: 1, col: 4, state: CELL_STATE.EMPTY },
       ]);
     });
 
@@ -109,15 +118,16 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(ok).toBe(false);
     });
 
-    it('advances turn after sonar', () => {
+    it('does not advance turn after sonar (free action)', () => {
       const s = battleState({ sonar: true });
+      const beforeIndex = s.currentTurnIndex;
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
         row: 0,
         col: 0,
       });
 
-      expect(result.state!.currentTurnIndex).not.toBe(s.currentTurnIndex);
+      expect(result.state!.currentTurnIndex).toBe(beforeIndex);
     });
 
     it('rejects sonar when not enabled', () => {
@@ -181,7 +191,11 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
         col: 0,
       });
 
-      expect(result.state!.lastSonar!.shipPositions).toEqual([]);
+      // Cells are still returned (board state unchanged), sunk ships
+      // still show as SHIP on the board — the frontend hides them via
+      // displayState override, not via the sonar data.
+      const cells = result.state!.lastSonar!.cells;
+      expect(cells.length).toBeGreaterThan(0);
     });
 
     it('sanitizes lastSonar for non-attacker', () => {
@@ -264,14 +278,15 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(ok).toBe(false);
     });
 
-    it('advances turn after radar', () => {
+    it('does not advance turn after radar (free action)', () => {
       const s = battleState({ radar: true });
+      const beforeIndex = s.currentTurnIndex;
       const result = engine.executeAction(s, 'useRadar', ctx('a'), {
         targetPlayerId: 'b',
         row: 0,
       });
 
-      expect(result.state!.currentTurnIndex).not.toBe(s.currentTurnIndex);
+      expect(result.state!.currentTurnIndex).toBe(beforeIndex);
     });
 
     it('rejects radar when not enabled', () => {

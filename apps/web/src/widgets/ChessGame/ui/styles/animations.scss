@@ -1,0 +1,48 @@
+@keyframes chess-board-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes chess-board-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes chess-check-pulse {
+  0% { box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.0); }
+  25% { box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.0); }
+  75% { box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.3); }
+  100% { box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.0); }
+}
+
+@keyframes chess-last-move-pulse {
+  0% { box-shadow: inset 0 0 0 0 rgba(56, 189, 248, 0.0); }
+  50% { box-shadow: inset 0 0 12px 2px rgba(56, 189, 248, 0.3); }
+  100% { box-shadow: inset 0 0 0 0 rgba(56, 189, 248, 0.0); }
+}
+
+@keyframes chess-select-glow {
+  0% { box-shadow: inset 0 0 8px 2px rgba(255, 215, 0, 0.0); }
+  50% { box-shadow: inset 0 0 16px 4px rgba(255, 215, 0, 0.45); }
+  100% { box-shadow: inset 0 0 8px 2px rgba(255, 215, 0, 0.0); }
+}
+
+.chess-board-border-ring {
+}
+
+.chess-board-glow {
+  animation: chess-board-glow 8s ease-in-out infinite;
+}
+
+.chess-square-selected {
+  animation: chess-select-glow 1.2s ease-in-out infinite;
+}
+
+.chess-square-check {
+  animation: chess-check-pulse 1.2s ease-in-out infinite;
+}
+
+.chess-square-last-move {
+  animation: chess-last-move-pulse 1.5s ease-in-out infinite;
+}

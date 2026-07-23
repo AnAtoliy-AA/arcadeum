@@ -1,17 +1,13 @@
-import {
-  Injectable,
-  Logger,
-  Inject,
-  forwardRef,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { AuthService } from '../auth/auth.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
@@ -25,6 +21,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { PlayerStatsService } from './player-stats.service';
 
 @Injectable()
 export class GamesService {
@@ -45,7 +42,20 @@ export class GamesService {
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
+    private readonly ruleVisibility: GameRuleVisibilityService,
+    private readonly playerStats: PlayerStatsService,
   ) {}
+
+  private sanitizeForPlayer(
+    s: GameSessionSummary,
+    pId: string,
+  ): GameSessionSummary {
+    const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
+    if (sanitized && typeof sanitized === 'object') {
+      return { ...s, state: sanitized as Record<string, unknown> };
+    }
+    return s;
+  }
 
   // ========== Room Operations ==========
 
@@ -59,9 +69,6 @@ export class GamesService {
   }
 
   async quickplay(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.createQuickplayRoom(
       userId,
       gameId,
@@ -70,9 +77,6 @@ export class GamesService {
   }
 
   async findHumanMatch(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 
@@ -94,16 +98,11 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          session.id,
-          userId,
+        session = this.sanitizeForPlayer(session, userId);
+      } catch (err) {
+        this.logger.warn(
+          `Sanitization failed for user ${userId} in room ${roomId}: ${err}`,
         );
-        if (sanitized && typeof sanitized === 'object') {
-          session = { ...session, state: sanitized as Record<string, unknown> };
-        }
-      } catch {
-        // If sanitization fails, return null session or handle appropriately;
-        // safely continue with the unsanitized session state
       }
     }
 
@@ -219,27 +218,17 @@ export class GamesService {
 
     // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
 
     // Mark players as in-match for the leaderboard LIVE chip.
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(
-      room,
-      session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+    await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
+      this.sanitizeForPlayer(s, pId),
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**
@@ -263,16 +252,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
-        if (sanitized && typeof sanitized === 'object') {
-          return { ...s, state: sanitized as Record<string, unknown> };
-        }
-        return s;
-      },
+      (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -311,6 +291,10 @@ export class GamesService {
     return this.sessionsService.getAvailableActions(sessionId, playerId);
   }
 
+  async revertLastMove(sessionId: string) {
+    return this.sessionsService.revertToPreviousState(sessionId);
+  }
+
   // ========== History Operations ==========
 
   /**
@@ -342,13 +326,22 @@ export class GamesService {
     return this.historyService.getPlayerStats(userId);
   }
 
+  async syncPlayerStats(
+    userId: string,
+    records: Array<{
+      gameId: string;
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>,
+  ) {
+    return this.playerStats.syncRecords(userId, records);
+  }
+
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
 
-  /**
-   * Create a rematch
-   */
   async createRematchFromHistory(
     userId: string,
     roomId: string,
@@ -385,9 +378,6 @@ export class GamesService {
     return this.rematchService.reinvitePlayers(roomId, hostId, userIds);
   }
 
-  /**
-   * Post a note to game history
-   */
   async postHistoryNote(
     roomId: string,
     userId: string,
@@ -402,14 +392,7 @@ export class GamesService {
       await this.realtimeService.emitSessionSnapshot(
         roomId,
         session,
-        async (s, pId) => {
-          const sanitized =
-            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
-          if (sanitized && typeof sanitized === 'object') {
-            return { ...s, state: sanitized as Record<string, unknown> };
-          }
-          return s;
-        },
+        (s, pId) => this.sanitizeForPlayer(s, pId),
       );
     }
   }
@@ -448,13 +431,53 @@ export class GamesService {
     userId: string,
     options: Record<string, unknown>,
   ) {
-    const room = await this.roomsService.updateRoomOptions(
+    // Strip disabled rules before persisting.
+    try {
+      const room = await this.roomsService.getRoom(roomId);
+      const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
+      this.stripDisabledRules(options, ruleMap);
+    } catch (err) {
+      this.logger.warn(
+        `Rule stripping failed for room ${roomId}: ${err}. Proceeding without stripping.`,
+      );
+    }
+
+    const updated = await this.roomsService.updateRoomOptions(
       roomId,
       userId,
       options,
     );
-    this.realtimeService.emitRoomUpdated(room);
-    return room;
+    this.realtimeService.emitRoomUpdated(updated);
+    return updated;
+  }
+
+  private stripDisabledRules(
+    options: Record<string, unknown>,
+    ruleMap: Map<string, boolean>,
+  ): void {
+    if (ruleMap.get('gridSize') === false) {
+      delete options.gridSize;
+    }
+
+    const sw = options.specialWeapons;
+    if (typeof sw === 'object' && sw !== null) {
+      const weapons = sw as Record<string, unknown>;
+      if (ruleMap.get('sonar') === false) delete weapons.sonar;
+      if (ruleMap.get('radar') === false) delete weapons.radar;
+      if (Object.keys(weapons).length === 0) {
+        delete options.specialWeapons;
+      }
+    }
+
+    if (ruleMap.get('teams') === false) {
+      delete options.teams;
+      delete options.teamConfig;
+      if (options.mode === 'team') delete options.mode;
+    }
+
+    if (ruleMap.get('combos') === false) {
+      delete options.expansions;
+    }
   }
 
   async reorderParticipants(

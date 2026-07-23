@@ -27,19 +27,19 @@ describe('EmotePicker', () => {
     vi.useRealTimers();
   });
 
-  it('renders all 6 emotes', () => {
+  it('renders all emotes', () => {
     renderPicker();
 
     for (const emote of EMOTES) {
       expect(screen.getByText(emote.emoji)).toBeTruthy();
-      expect(screen.getByLabelText(emote.label)).toBeTruthy();
+      expect(screen.getByLabelText(`games.emotes.${emote.id}`)).toBeTruthy();
     }
   });
 
   it('calls onEmote with the correct id when an emote is pressed', () => {
     const { onEmote } = renderPicker();
 
-    fireEvent.click(screen.getByLabelText('Good Move'));
+    fireEvent.click(screen.getByLabelText('games.emotes.good_move'));
 
     expect(onEmote).toHaveBeenCalledWith('good_move');
   });
@@ -48,7 +48,7 @@ describe('EmotePicker', () => {
     const { onEmote } = renderPicker();
 
     for (const emote of EMOTES) {
-      fireEvent.click(screen.getByLabelText(emote.label));
+      fireEvent.click(screen.getByLabelText(`games.emotes.${emote.id}`));
       expect(onEmote).toHaveBeenCalledWith(emote.id);
       act(() => {
         vi.advanceTimersByTime(2000);
@@ -61,24 +61,24 @@ describe('EmotePicker', () => {
   it('enforces rate limit of 2 seconds', () => {
     const { onEmote } = renderPicker();
 
-    fireEvent.click(screen.getByLabelText('LOL'));
+    fireEvent.click(screen.getByLabelText('games.emotes.lol'));
     expect(onEmote).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByLabelText('LOL'));
+    fireEvent.click(screen.getByLabelText('games.emotes.lol'));
     expect(onEmote).toHaveBeenCalledTimes(1);
 
     act(() => {
       vi.advanceTimersByTime(2000);
     });
 
-    fireEvent.click(screen.getByLabelText('LOL'));
+    fireEvent.click(screen.getByLabelText('games.emotes.lol'));
     expect(onEmote).toHaveBeenCalledTimes(2);
   });
 
   it('does not call onEmote when disabled', () => {
     const { onEmote } = renderPicker({ disabled: true });
 
-    fireEvent.click(screen.getByLabelText('Nice!'));
+    fireEvent.click(screen.getByLabelText('games.emotes.nice'));
 
     expect(onEmote).not.toHaveBeenCalled();
   });
@@ -86,7 +86,7 @@ describe('EmotePicker', () => {
   it('dims emotes during cooldown', () => {
     renderPicker();
 
-    const btn = screen.getByLabelText('RIP');
+    const btn = screen.getByLabelText('games.emotes.rip');
     fireEvent.click(btn);
 
     expect(

@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentNotesService, PaginatedNotes } from './payment-notes.service';
@@ -15,28 +16,15 @@ import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { PaymentSession } from './interfaces/payment-session.interface';
 import type { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-}
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 @Controller('payments')
 export class PaymentsController {
-  private readonly jwtService: JwtService;
-
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly notesService: PaymentNotesService,
-    private readonly config: ConfigService,
-  ) {
-    this.jwtService = new JwtService({
-      secret: resolveJwtSecret(this.config),
-    });
-  }
+  ) {}
 
   @Post('session')
   @HttpCode(HttpStatus.CREATED)
@@ -53,13 +41,18 @@ export class PaymentsController {
   }
 
   @Post('notes')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  async createNote(@Body() dto: CreateNoteDto, @Req() req: Request) {
-    const userId = this.extractUserId(req);
-    return this.notesService.createNote(dto, userId);
+  async createNote(
+    @Body() dto: CreateNoteDto,
+    @Req() req: Request,
+  ): Promise<unknown> {
+    const user = req.user as AuthenticatedUser | undefined;
+    return this.notesService.createNote(dto, user?.userId);
   }
 
   @Get('notes')
+  @UseGuards(JwtAuthGuard)
   async getNotes(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -70,20 +63,5 @@ export class PaymentsController {
       Math.min(100, parseInt(limit || '20', 10) || 20),
     );
     return this.notesService.getNotes(pageNum, limitNum);
-  }
-
-  private extractUserId(req: Request): string | undefined {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return undefined;
-    }
-
-    const token = authHeader.substring(7);
-    try {
-      const payload = this.jwtService.verify<JwtPayload>(token);
-      return payload.sub;
-    } catch {
-      return undefined;
-    }
   }
 }

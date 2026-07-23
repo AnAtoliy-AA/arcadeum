@@ -11,6 +11,9 @@ import type {
   GameSessionSummary,
 } from './games.types';
 
+const mockJwt = {} as never;
+const mockConfig = {} as never;
+
 describe('CriticalGateway', () => {
   let gateway: CriticalGateway;
   let actionsGateway: CriticalActionsGateway;
@@ -52,11 +55,15 @@ describe('CriticalGateway', () => {
 
     gateway = new CriticalGateway(
       criticalService as unknown as CriticalService,
+      mockJwt,
+      mockConfig,
     );
 
     actionsGateway = new CriticalActionsGateway(
       gamesService as unknown as GamesService,
       criticalService as unknown as CriticalService,
+      mockJwt,
+      mockConfig,
     );
 
     client = {

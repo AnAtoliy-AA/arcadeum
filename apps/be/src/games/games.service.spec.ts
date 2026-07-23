@@ -12,6 +12,8 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
+import { PlayerStatsService } from './player-stats.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -87,6 +89,13 @@ describe('GamesService', () => {
       onGameCompleted: jest.fn().mockResolvedValue(undefined),
       payoutGameWin: jest.fn().mockResolvedValue(undefined),
     };
+    const mockRuleVisibility = {
+      getRulesForGame: jest.fn().mockResolvedValue(new Map()),
+    };
+    const mockPlayerStats = {
+      recordGameResult: jest.fn().mockResolvedValue(undefined),
+      getPlayerStats: jest.fn().mockResolvedValue({}),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -109,6 +118,8 @@ describe('GamesService', () => {
           useValue: mockLeaderboardSync,
         },
         { provide: GamePostMatchService, useValue: mockPostMatchService },
+        { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
+        { provide: PlayerStatsService, useValue: mockPlayerStats },
       ],
     }).compile();
 
@@ -167,11 +178,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(service.quickplay('user1', 'critical_v1')).rejects.toThrow(
-        /Quickplay not supported/,
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room1', gameId: 'critical_v1' };
+      roomsQuickplayService.createQuickplayRoom.mockResolvedValue(
+        room as unknown as GameRoomSummary,
       );
-      expect(roomsQuickplayService.createQuickplayRoom).not.toHaveBeenCalled();
+
+      const result = await service.quickplay('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 
@@ -192,11 +212,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(
-        service.findHumanMatch('user1', 'critical_v1'),
-      ).rejects.toThrow(/Matchmaking not supported/);
-      expect(roomsQuickplayService.findHumanMatch).not.toHaveBeenCalled();
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room2', gameId: 'critical_v1' };
+      roomsQuickplayService.findHumanMatch.mockResolvedValue(
+        room as unknown as GameRoomSummary,
+      );
+
+      const result = await service.findHumanMatch('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.findHumanMatch).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 
@@ -232,11 +261,14 @@ describe('GamesService', () => {
         'in_progress',
       );
       expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(
-        room,
+        { ...room, status: 'in_progress' },
         session,
         expect.any(Function),
       );
-      expect(result).toEqual({ room, session });
+      expect(result).toEqual({
+        room: { ...room, status: 'in_progress' },
+        session,
+      });
     });
 
     it('should throw if user is not host', async () => {

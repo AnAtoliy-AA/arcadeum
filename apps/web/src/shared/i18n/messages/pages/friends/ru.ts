@@ -18,4 +18,6 @@ export const friendsRu = {
   offline: 'Офлайн',
   removeFriend: 'Удалить из друзей',
   inviteToGame: 'Пригласить в игру',
+  loginPrompt: 'Войдите, чтобы управлять списком друзей.',
+  loginButton: 'Войти',
 };

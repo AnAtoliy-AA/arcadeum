@@ -45,7 +45,7 @@ export class ArcadeumLogger extends ConsoleLogger {
 
       const logEntry = `[${new Date().toISOString()}] [${ctx || 'Generic'}] ERROR: ${errorMessage}\n${stack ? stack + '\n' : ''}`;
       try {
-        fs.appendFileSync(this.logFilePath, logEntry);
+        fs.appendFile(this.logFilePath, logEntry, () => {});
       } catch {
         // Fallback to super.error
       }

@@ -15,6 +15,7 @@ export const frMessages = {
     filters: {
       statusLabel: 'Statut',
       participationLabel: 'Participation',
+      categoryLabel: 'Catégorie',
       status: {
         all: 'Tous',
         lobby: "Salon d'attente",
@@ -51,6 +52,13 @@ export const frMessages = {
     fastRoom: 'Partie rapide',
     gameLabel: 'Jeu',
   },
+  password: {
+    label: 'Mot de passe de la salle (optionnel)',
+    placeholder: 'Définir un mot de passe',
+    joinTitle: 'Entrez le mot de passe de la salle',
+    joinDescription: 'Cette salle nécessite un mot de passe pour rejoindre.',
+    incorrect: 'Mot de passe incorrect',
+  },
   room: {
     gameArea: 'Zone de jeu - Intégration en temps réel bientôt disponible',
     loading: 'Serveur en cours de chargement...',
@@ -69,6 +77,7 @@ export const frMessages = {
     joinRoom: 'Rejoindre une Salle',
     joining: 'Rejoindre...',
     watchRoom: 'Regarder',
+    watchResults: 'Voir les Résultats',
     joinByCode: 'Rejoindre par code',
     cancel: 'Annuler',
     share: 'Partager',
@@ -135,6 +144,7 @@ export const frMessages = {
     houseRuleIdleTimer: 'Autoplay avec minuterie',
     houseRuleIdleTimerHint: "Se déclenche après {{seconds}}s d'inactivité",
     seaBattleGridSize: 'Taille du Champ',
+    seaBattleShipCount: 'Nombre de Navires',
     specialWeapons: 'Armes Spéciales',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Révéler les positions des navires',
@@ -205,7 +215,12 @@ export const frMessages = {
       },
       spectators: {
         title: 'Autoriser les spectateurs',
-        desc: 'Tout détenteur du lien peut regarder en silence.',
+        desc: 'Tout le lien peut observer en silence.',
+      },
+      firstPlayer: {
+        title: 'Qui commence',
+        host: 'Hôte (par défaut)',
+        random: 'Aléatoire',
       },
     },
     summary: {
@@ -270,6 +285,14 @@ export const frMessages = {
     startWithBots: 'Commencer avec {{count}} 🤖',
     playWithBotsNotice:
       "Commencez avec des bots immédiatement ou attendez d'autres joueurs",
+    difficultyLabel: 'Difficulté IA',
+    difficultyEasy: 'Facile',
+    difficultyMedium: 'Moyen',
+    difficultyHard: 'Difficile',
+    difficultyEasyDesc:
+      'Coups aléatoires avec des plays intelligents occasionnels',
+    difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
+    difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
   },
   shared: {
     rules: {
@@ -289,6 +312,7 @@ export const frMessages = {
     tags: {
       strategy: 'Stratégie',
       cards: 'Cartes',
+      action: 'Action',
     },
   },
   connectionOverlay: {
@@ -343,5 +367,31 @@ export const frMessages = {
         accept: 'Accepter',
       },
     },
+  },
+  undo: {
+    request: 'Demander annulation',
+    approve: 'Approuver annulation',
+    deny: 'Refuser annulation',
+    pending: 'En attente de réponse...',
+    accepted: 'Annulation acceptée !',
+    denied: 'Annulation refusée',
+  },
+  emotes: {
+    good_move: 'Bien joué !',
+    lol: 'MDR',
+    thinking: 'Hmm...',
+    nice: 'GG !',
+    unlucky: 'Aïe !',
+    rip: 'RIP',
+    fire: 'Feu !',
+    clap: 'Bravo !',
+    cry: 'Triste',
+    angry: 'Énervé',
+    rocket: "C'est parti !",
+    heart: 'Amour',
+    brain: 'Cerveau Galactique',
+    skull: 'Mort',
+    sweat: 'Chaudo !',
+    clown: 'Clown',
   },
 };

@@ -45,12 +45,8 @@ export const ChatPanel = styled(YStack, {
   height: '100%',
   minHeight: 350,
   flexShrink: 0,
-  backgroundColor: '$glassBg',
   borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$glassBorder',
   overflow: 'hidden',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
 
   $md: {
     width: '100%',

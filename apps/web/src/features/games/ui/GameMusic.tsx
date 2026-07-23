@@ -13,6 +13,7 @@ import { Playlist } from './GameMusicPlaylist';
 import { EqualizerVisualization } from './GameMusicVisuals';
 import { useDraggable } from './useDraggable';
 import { playerStyles } from './GameMusicStyles';
+import { SPRITE_URL, SPRITE_SIZE, SPRITE_COLS } from './GameMusicUtils';
 
 export function GameMusic({ gameId }: { gameId?: string | null }) {
   const { musicEnabled } = useMusicSetting();
@@ -99,12 +100,24 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               border: '1px solid rgba(255,255,255,0.45)',
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.08)',
+              backgroundImage:
+                player.track?.spriteIndex != null
+                  ? `url(${SPRITE_URL})`
+                  : undefined,
+              backgroundPosition:
+                player.track?.spriteIndex != null
+                  ? `-${(player.track.spriteIndex % SPRITE_COLS) * SPRITE_SIZE}px -${Math.floor(player.track.spriteIndex / SPRITE_COLS) * SPRITE_SIZE}px`
+                  : undefined,
+              backgroundSize:
+                player.track?.spriteIndex != null ? 'auto' : undefined,
             }}
           >
-            <EqualizerVisualization
-              isPlaying={player.isPlaying}
-              audioRef={player.audioRef}
-            />
+            {player.track?.spriteIndex == null && (
+              <EqualizerVisualization
+                isPlaying={player.isPlaying}
+                audioRef={player.audioRef}
+              />
+            )}
           </XStack>
           <YStack flex={1} overflow="hidden" gap={1}>
             <Text

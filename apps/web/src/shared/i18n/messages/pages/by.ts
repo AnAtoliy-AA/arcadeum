@@ -33,6 +33,7 @@ export const by = {
       economy: 'Эканоміка',
       shop: 'Крама',
       games: 'Гульні',
+      gameRules: 'Правы гульняў',
       bulkRewards: 'Масавыя Ўзнагароды',
       blockedIps: 'Заблакіраваныя IP',
       comingSoon: 'Хутка',

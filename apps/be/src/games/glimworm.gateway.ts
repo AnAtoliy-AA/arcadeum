@@ -3,13 +3,21 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { GlimwormService } from './glimworm/glimworm.service';
 import type { GlimwormVariant } from './glimworm/glimworm.types';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
@@ -70,11 +78,37 @@ const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
 export class GlimwormGateway {
   private readonly logger = new Logger(GlimwormGateway.name);
 
+  @WebSocketServer() server: Server;
+
   constructor(
     private readonly glimwormService: GlimwormService,
     private readonly visibility: GameVisibilityService,
     private readonly roleResolver: UserRoleResolver,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'GlimwormGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Glimworm namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Glimworm namespace: ${client.id}`,
+      );
+    }
+  }
 
   private async assertCanSee(
     userId: string | undefined,
@@ -108,6 +142,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const color =
         typeof payload.color === 'string' ? payload.color : undefined;
@@ -135,6 +170,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const ready = payload.ready === true;
       this.glimwormService.markReady(roomId, userId, ready);
@@ -162,6 +198,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const angle =
         typeof payload.angle === 'number' ? payload.angle : Number.NaN;
@@ -186,6 +223,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const variantRaw =
         typeof payload.variant === 'string' ? payload.variant : '';
@@ -230,6 +268,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       this.glimwormService.restart(roomId, userId);
       client.emit('glimworm.restart.ack', maybeEncrypt({ roomId, userId }));
@@ -252,6 +291,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       this.glimwormService.rematch(roomId, userId);
       client.emit('glimworm.rematch.ack', maybeEncrypt({ roomId, userId }));
@@ -274,6 +314,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const color = typeof payload.color === 'string' ? payload.color : '';
       const picked = this.glimwormService.setColor(roomId, userId, color);

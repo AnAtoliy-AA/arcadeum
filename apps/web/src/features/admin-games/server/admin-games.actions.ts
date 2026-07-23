@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { VisibilityTier } from '../types';
 
 // ─── Discriminated result type ────────────────────────────────────────────────
@@ -13,29 +12,13 @@ export type AdminGamesActionResult =
 
 // ─── Internal fetch helper ────────────────────────────────────────────────────
 
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export async function setGameTierAction(input: {
   gameId: string;
   tier: VisibilityTier;
 }): Promise<AdminGamesActionResult> {
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/games/${encodeURIComponent(input.gameId)}/visibility`,
     {
       method: 'PUT',
@@ -56,7 +39,7 @@ export async function setVariantTierAction(input: {
   variantId: string;
   tier: VisibilityTier;
 }): Promise<AdminGamesActionResult> {
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/games/${encodeURIComponent(input.gameId)}/variants/${encodeURIComponent(
       input.variantId,
     )}/visibility`,

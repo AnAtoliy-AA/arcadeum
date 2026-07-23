@@ -65,10 +65,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)
 - **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS with custom theme configuration
-- **State Management**: React Context for global state, Zustand for complex state
+- **Styling**: Tamagui with custom theme configuration
+- **State Management**: Zustand for global state, React Context for scoped state
 - **Routing**: Next.js App Router with file-based routing
-- **API Client**: Axios with interceptors for authentication
+- **API Client**: @tanstack/react-query with Axios for HTTP requests
 - **Testing**: Jest for unit tests, Playwright for E2E tests
 - **Component Library**: Custom design system with Storybook
 - **Analytics**: Vercel Analytics, Sentry for error tracking

@@ -1,8 +1,7 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   EquippedView,
   PurchaseResult,
@@ -25,21 +24,6 @@ export type ShopActionError =
   | 'category_mismatch'
   | 'unauthorized'
   | 'generic';
-
-async function authFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
-  const url = resolveApiUrl(path);
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
 
 function classifyError(status: number, body: string): ShopActionError {
   if (status === 401) return 'unauthorized';
@@ -71,7 +55,7 @@ export async function purchaseItemAction(
   itemId: string,
   purchaseId: string,
 ): Promise<ShopActionResult<PurchaseResult>> {
-  const res = await authFetch('/shop/purchase', {
+  const res = await serverAuthFetch('/shop/purchase', {
     method: 'POST',
     body: JSON.stringify({ itemId, purchaseId }),
   });
@@ -86,7 +70,7 @@ export async function purchaseItemAction(
 export async function sellItemAction(
   purchaseId: string,
 ): Promise<ShopActionResult<SellResult>> {
-  const res = await authFetch('/shop/sell', {
+  const res = await serverAuthFetch('/shop/sell', {
     method: 'POST',
     body: JSON.stringify({ purchaseId }),
   });
@@ -103,7 +87,7 @@ export async function sellItemAction(
 export async function equipItemAction(
   itemId: string,
 ): Promise<ShopActionResult<EquippedView>> {
-  const res = await authFetch('/shop/equip', {
+  const res = await serverAuthFetch('/shop/equip', {
     method: 'POST',
     body: JSON.stringify({ itemId }),
   });
@@ -118,7 +102,7 @@ export async function equipItemAction(
 export async function unequipItemAction(
   category: ShopCategory,
 ): Promise<ShopActionResult<EquippedView>> {
-  const res = await authFetch('/shop/unequip', {
+  const res = await serverAuthFetch('/shop/unequip', {
     method: 'POST',
     body: JSON.stringify({ category }),
   });

@@ -15,6 +15,7 @@ interface Props {
   landing?: Landing;
   variants?: Variants;
   rules?: Rules;
+  gameId: string;
   createRoomHref: string;
   roomsHref: string;
   gamesHref: string;
@@ -25,6 +26,7 @@ export default function TicTacToeLanding({
   landing,
   variants,
   rules,
+  gameId,
   createRoomHref,
   roomsHref,
   gamesHref,
@@ -51,9 +53,10 @@ export default function TicTacToeLanding({
           <TicTacToeHero
             title={landing.hero.title}
             subtitle={landing.hero.subtitle}
-            createRoomHref={createRoomHref}
+            gameId={gameId}
             roomsHref={roomsHref}
-            createRoomLabel={landing.hero.createRoom}
+            ctaQuickplayLabel={landing.hero.ctaQuickplay}
+            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
             browseRoomsLabel={landing.hero.browseRooms}
           />
 
@@ -111,10 +114,11 @@ export default function TicTacToeLanding({
           </section>
 
           <TicTacToeFinalCtaButtons
-            createRoomHref={createRoomHref}
+            gameId={gameId}
             roomsHref={roomsHref}
             gamesHref={gamesHref}
-            createRoomLabel={landing.hero.createRoom}
+            ctaQuickplayLabel={landing.hero.ctaQuickplay}
+            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
             browseRoomsLabel={landing.hero.browseRooms}
           />
 

@@ -55,6 +55,8 @@ export const ruMessages = {
         subtitle:
           'Подбирайте по цвету или номеру. Стройте цепочки штрафов. Выбирайте из восьми визуальных тем. 2–10 игроков.',
         createRoom: 'Создать комнату',
+        ctaQuickplay: 'Сыграть с ИИ',
+        ctaQuickplayError: 'Не удалось начать игру — попробуйте ещё раз',
         browseRooms: 'Найти комнаты',
       },
       highlights: {

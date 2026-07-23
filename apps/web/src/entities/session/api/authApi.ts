@@ -45,10 +45,21 @@ function api(url: string): string {
 
 async function readJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error('Unauthorized');
+    }
     const text = await res.text();
     throw new Error(text || `Request failed (${res.status})`);
   }
   return (await res.json()) as T;
+}
+
+function apiHeaders(extra?: Record<string, string>): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    ...extra,
+  };
 }
 
 export async function registerLocal(params: {
@@ -59,7 +70,8 @@ export async function registerLocal(params: {
 }): Promise<AuthUserProfile> {
   const res = await fetch(api('/auth/register'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<AuthUserProfile>(res);
@@ -70,6 +82,7 @@ export async function checkUsernameAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/username/${encodeURIComponent(username)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }
@@ -79,6 +92,7 @@ export async function checkEmailAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/email/${encodeURIComponent(email)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }
@@ -89,7 +103,8 @@ export async function loginLocal(params: {
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/login'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<LoginResponse>(res);
@@ -102,7 +117,8 @@ export async function exchangeOAuthCode(params: {
 }): Promise<TokenExchangeResponse> {
   const res = await fetch(api('/auth/token'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<TokenExchangeResponse>(res);
@@ -115,7 +131,8 @@ export async function loginOAuthSession(params: {
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/oauth/login'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   return readJson<LoginResponse>(res);
@@ -128,7 +145,8 @@ export async function requestPasswordReset(email: string): Promise<void> {
   // server detail.
   const res = await fetch(api('/auth/forgot'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify({ email }),
   });
   if (!res.ok) {
@@ -142,7 +160,8 @@ export async function confirmPasswordReset(params: {
 }): Promise<void> {
   const res = await fetch(api('/auth/reset'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify(params),
   });
   if (!res.ok) {
@@ -161,19 +180,47 @@ export async function refreshSession(
 ): Promise<LoginResponse> {
   const res = await fetch(api('/auth/refresh'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders(),
+    credentials: 'include',
     body: JSON.stringify({ refreshToken }),
   });
   return readJson<LoginResponse>(res);
 }
 
+export async function refreshSessionFromCookie(): Promise<LoginResponse> {
+  try {
+    const res = await fetch(api('/auth/refresh'), {
+      method: 'POST',
+      headers: apiHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({}),
+    });
+    return readJson<LoginResponse>(res);
+  } catch {
+    throw new Error('No session to refresh');
+  }
+}
+
+export async function logoutSession(): Promise<void> {
+  await fetch(api('/auth/logout'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+  });
+}
+
 export async function fetchProfile(
-  accessToken: string,
+  accessToken?: string,
 ): Promise<AuthUserProfile> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
   const res = await fetch(api('/auth/me'), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers,
+    credentials: 'include',
   });
   return readJson<AuthUserProfile>(res);
 }

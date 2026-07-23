@@ -33,6 +33,7 @@ export const en = {
       economy: 'Economy',
       shop: 'Shop',
       games: 'Games',
+      gameRules: 'Game Rules',
       bulkRewards: 'Bulk Rewards',
       blockedIps: 'Blocked IPs',
       comingSoon: 'Coming soon',

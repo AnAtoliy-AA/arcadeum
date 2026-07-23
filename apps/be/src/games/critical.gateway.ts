@@ -3,18 +3,23 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
 import {
   extractRoomAndUser,
   extractString,
   handleError,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { CriticalService } from './critical/critical.service';
 import { ChatScope } from './engines';
 
@@ -26,7 +31,35 @@ import { ChatScope } from './engines';
 export class CriticalGateway {
   private readonly logger = new Logger(CriticalGateway.name);
 
-  constructor(private readonly criticalService: CriticalService) {}
+  @WebSocketServer() server: Server;
+
+  constructor(
+    private readonly criticalService: CriticalService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    this.logger.verbose(`Client connected ${client.id}`);
+
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'CriticalGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Critical namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Critical namespace: ${client.id}`,
+      );
+    }
+  }
 
   private handleException(params: {
     error: unknown;
@@ -71,6 +104,8 @@ export class CriticalGateway {
         : 'all';
 
     const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.criticalService.postHistoryNote(
@@ -118,6 +153,8 @@ export class CriticalGateway {
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
     const withBots = !!payload?.withBots;
 
+    validatePayloadUserId(client, userId);
+
     try {
       const result = await this.criticalService.startSession(
         userId,
@@ -159,6 +196,8 @@ export class CriticalGateway {
       );
     }
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.defuseByRoom(userId, roomId, position);
 
@@ -192,6 +231,8 @@ export class CriticalGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.playNopeByRoom(userId, roomId);
 
@@ -224,6 +265,8 @@ export class CriticalGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const newOrder = Array.isArray(payload.newOrder) ? payload.newOrder : [];
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.criticalService.commitAlterFutureByRoom(

@@ -5,6 +5,8 @@ import { CriticalEngine } from './critical/critical.engine';
 import { SeaBattleEngine } from './sea-battle/sea-battle.engine';
 import { TicTacToeEngine } from './tic-tac-toe/tic-tac-toe.engine';
 import { CascadeEngine } from './cascade/cascade.engine';
+import { ChessEngine } from './chess/chess.engine';
+import { CheckersEngine } from './checkers/checkers.engine';
 
 /**
  * Game Engines Module
@@ -18,7 +20,8 @@ import { CascadeEngine } from './cascade/cascade.engine';
     SeaBattleEngine,
     TicTacToeEngine,
     CascadeEngine,
-    // Add more game engines here as they're implemented
+    ChessEngine,
+    CheckersEngine,
   ],
   exports: [GameEngineRegistry],
 })
@@ -32,7 +35,8 @@ export class GameEnginesModule implements OnModuleInit {
     private readonly seaBattleEngine: SeaBattleEngine,
     private readonly ticTacToeEngine: TicTacToeEngine,
     private readonly cascadeEngine: CascadeEngine,
-    // Inject more engines here
+    private readonly chessEngine: ChessEngine,
+    private readonly checkersEngine: CheckersEngine,
   ) {}
 
   /**
@@ -47,7 +51,8 @@ export class GameEnginesModule implements OnModuleInit {
     this.registry.register(this.seaBattleEngine);
     this.registry.register(this.ticTacToeEngine);
     this.registry.register(this.cascadeEngine);
-    // Register more engines here
+    this.registry.register(this.chessEngine);
+    this.registry.register(this.checkersEngine);
 
     // Log registration summary
     const stats = this.registry.getStats();

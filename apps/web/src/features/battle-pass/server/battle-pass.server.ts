@@ -1,6 +1,5 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { BattlePassState, ClaimResult } from './battle-pass.types';
 
 export class BattlePassUnauthorizedError extends Error {
@@ -11,19 +10,7 @@ export class BattlePassUnauthorizedError extends Error {
 }
 
 async function fetchWithAuth<T>(path: string, init?: RequestInit): Promise<T> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  const res = await fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      'Content-Type': 'application/json',
-    },
-  });
+  const res = await serverAuthFetch(path, init);
 
   if (!res.ok) {
     if (res.status === 401) {

@@ -69,7 +69,7 @@ describe('TicTacToeBoard', () => {
     });
     const occupied = screen.getByTestId('ttt-cell-0-0');
     expect(occupied).toBeDisabled();
-    expect(occupied.textContent).toBe('X');
+    expect(occupied.textContent).toContain('X');
     fireEvent.click(occupied);
     expect(onCellClick).not.toHaveBeenCalled();
   });

@@ -117,30 +117,32 @@ export class ReferralService {
     referralCode: string,
     referredUserId: string,
   ): Promise<void> {
-    const referrer = await this.userModel.findOne({ referralCode }).exec();
+    const safeCode = String(referralCode);
+    const safeReferredUserId = String(referredUserId);
+    const referrer = await this.userModel.findOne({ referralCode: safeCode }).exec();
     if (!referrer) {
-      this.logger.warn(`Invalid referral code: ${referralCode}`);
+      this.logger.warn(`Invalid referral code: ${safeCode}`);
       return;
     }
 
     const referrerId = (referrer as UserDocument).id as string;
 
-    if (referrerId === referredUserId) {
+    if (referrerId === safeReferredUserId) {
       this.logger.warn('User cannot refer themselves');
       return;
     }
 
     const existingReferral = await this.referralModel.findOne({
-      referredUserId,
+      referredUserId: safeReferredUserId,
     });
     if (existingReferral) {
-      this.logger.warn(`User ${referredUserId} already has a referral`);
+      this.logger.warn(`User ${safeReferredUserId} already has a referral`);
       return;
     }
 
     const referral = await this.referralModel.create({
       referrerId,
-      referredUserId,
+      referredUserId: safeReferredUserId,
       status: 'completed',
       completedAt: new Date(),
     });

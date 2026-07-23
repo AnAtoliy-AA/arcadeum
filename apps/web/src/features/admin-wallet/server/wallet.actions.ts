@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   PaginatedWalletTransactions,
   WalletBalance,
@@ -74,22 +73,6 @@ function validateGrantDeductInput(input: unknown): ValidationResult {
 
 // ─── Shared fetch helper ───────────────────────────────────────────────────────
 
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export async function grantWalletAction(
@@ -102,7 +85,7 @@ export async function grantWalletAction(
 
   const { userId, currency, amount, note } = input as WalletGrantDeductInput;
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/wallet/users/${encodeURIComponent(userId)}/grant`,
     {
       method: 'POST',
@@ -127,7 +110,7 @@ export async function deductWalletAction(
 
   const { userId, currency, amount, note } = input as WalletGrantDeductInput;
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/wallet/users/${encodeURIComponent(userId)}/deduct`,
     {
       method: 'POST',
@@ -158,8 +141,8 @@ export async function loadAdminWalletAction(userId: string): Promise<
 
   const encoded = encodeURIComponent(userId);
   const [balanceRes, recentRes] = await Promise.all([
-    adminFetch(`/admin/wallet/users/${encoded}/balance`),
-    adminFetch(`/admin/wallet/users/${encoded}/transactions?limit=20`),
+    serverAuthFetch(`/admin/wallet/users/${encoded}/balance`),
+    serverAuthFetch(`/admin/wallet/users/${encoded}/transactions?limit=20`),
   ]);
 
   if (!balanceRes.ok || !recentRes.ok) return { ok: false, error: 'generic' };

@@ -11,6 +11,7 @@ export async function startGameRoom(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ engine }),
@@ -34,6 +35,7 @@ export async function reorderRoomParticipants(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ userIds }),
@@ -56,6 +58,7 @@ export async function getGameRoomSession(
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    next: { revalidate: 5 },
   });
 
   if (!response.ok) {

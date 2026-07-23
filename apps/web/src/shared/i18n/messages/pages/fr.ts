@@ -32,6 +32,7 @@ export const fr = {
       economy: 'Économie',
       shop: 'Boutique',
       games: 'Jeux',
+      gameRules: 'Règles du Jeu',
       bulkRewards: 'Récompenses en Masse',
       blockedIps: 'IPs Bloqués',
       comingSoon: 'Bientôt',

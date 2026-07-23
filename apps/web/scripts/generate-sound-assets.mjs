@@ -104,6 +104,29 @@ const ASSETS = {
     { freq: 987.77, duration: 0.06 },
     { freq: 1318.51, duration: 0.14 },
   ]),
+  // Audio cue: short mid-tone tap for a board move.
+  'move.wav': renderNotes([{ freq: 880, duration: 0.06 }], { gain: 0.2 }),
+  // Audio cue: friendly ascending ping for "your turn".
+  'turn.wav': renderNotes([
+    { freq: 660, duration: 0.06 },
+    { freq: 880, duration: 0.1 },
+  ], { gain: 0.24 }),
+  // Audio cue: sharp bright ping for a hit.
+  'hit.wav': renderNotes([{ freq: 1320, duration: 0.08 }], { gain: 0.28 }),
+  // Audio cue: soft low thud for a miss.
+  'miss.wav': renderNotes([{ freq: 220, duration: 0.1 }], { gain: 0.18 }),
+  // Audio cue: descending sweep for ship sunk.
+  'sink.wav': renderNotes([
+    { freq: 660, duration: 0.08 },
+    { freq: 440, duration: 0.08 },
+    { freq: 330, duration: 0.14 },
+  ], { gain: 0.26 }),
+  // Audio cue: energetic double-ping for game start.
+  'game-start.wav': renderNotes([
+    { freq: 880, duration: 0.06 },
+    { freq: 1100, duration: 0.06 },
+    { freq: 1320, duration: 0.12 },
+  ], { gain: 0.26 }),
 };
 
 

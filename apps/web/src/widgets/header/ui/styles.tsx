@@ -2,7 +2,6 @@
 
 import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
-
 import Link from 'next/link';
 import { styled, XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
@@ -168,8 +167,6 @@ export const NavHeaderLink = styled(LinkButton, {
         fontWeight: '700',
       },
     },
-    // Emphasis treatment for monetization-driver entries (e.g. Shop):
-    // primary color + bolder weight, even when not the active route.
     accent: {
       true: {
         color: '$primary',

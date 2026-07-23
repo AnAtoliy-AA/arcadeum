@@ -2,6 +2,8 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import { DailyRewardChip } from '@/features/daily-rewards/ui/DailyRewardChip';
 import dynamic from 'next/dynamic';
+import { NoscriptFallback } from './components/NoscriptFallback';
+import { ServerGamesNav } from './components/ServerGamesNav';
 
 // Single concatenated bundle of hero + presentation styles.
 // The originals each became a separate render-blocking chunk under the
@@ -24,6 +26,8 @@ const InstallAppCta = dynamic(() =>
 export default function HomePage() {
   return (
     <PageLayout data-testid="page-layout">
+      {/* Server-rendered navigation for AI agents */}
+      <ServerGamesNav />
       <HomeHero />
       {/* Compact daily-reward CTA. Self-suppresses unless the user can claim
           right now, keeping the marketing-heavy home page uncluttered. */}
@@ -34,6 +38,8 @@ export default function HomePage() {
       <HomePresentation />
       <HomePitchDeck />
       <InstallAppCta />
+      {/* Server-rendered fallback for AI agents and disabled JavaScript */}
+      <NoscriptFallback />
     </PageLayout>
   );
 }

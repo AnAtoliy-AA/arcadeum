@@ -18,4 +18,6 @@ export const friendsEn = {
   offline: 'Offline',
   removeFriend: 'Remove Friend',
   inviteToGame: 'Invite to Game',
+  loginPrompt: 'Log in to manage your friends list.',
+  loginButton: 'Log In',
 };

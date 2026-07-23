@@ -1,45 +1,73 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { getAssociatedTokenAddress, getAccount } from '@solana/spl-token';
 import { ConfigService } from '@nestjs/config';
 import { getPlatformKeypair } from './lib/solana-keypair';
-import {
-  getArcadeumMint,
-  toRawAmount,
-  fromRawAmount,
-} from './lib/arcadeum-token';
+import { toRawAmount, fromRawAmount } from './lib/arcadeum-token';
+
+type Web3Module = typeof import('@solana/web3.js');
+type SplTokenModule = typeof import('@solana/spl-token');
 
 @Injectable()
 export class SolanaService {
   private readonly logger = new Logger(SolanaService.name);
-  private readonly connection: Connection;
-  private readonly arcadeumMint: PublicKey;
+  private connection: import('@solana/web3.js').Connection | null = null;
+  private arcadeumMint: import('@solana/web3.js').PublicKey | null = null;
+  private web3: Web3Module | null = null;
+  private splToken: SplTokenModule | null = null;
 
   private solPriceCache: { price: number; expiresAt: number } | null = null;
   private arcadeumPriceCache: { price: number; expiresAt: number } | null =
     null;
   private static readonly CACHE_TTL_MS = 60_000;
 
-  constructor(private readonly config: ConfigService) {
-    const rpcUrl =
-      this.config.get<string>('SOLANA_RPC_URL') ??
-      'https://api.mainnet-beta.solana.com';
-    this.connection = new Connection(rpcUrl, 'confirmed');
+  constructor(private readonly config: ConfigService) {}
 
-    const mintAddress = this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
-    const isValidMint =
-      mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
-    if (!isValidMint && mintAddress) {
-      this.logger.warn(
-        `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
-      );
+  private async loadWeb3(): Promise<Web3Module> {
+    if (!this.web3) {
+      this.web3 = await import('@solana/web3.js');
     }
-    this.arcadeumMint = isValidMint
-      ? getArcadeumMint(mintAddress)
-      : new PublicKey('11111111111111111111111111111111');
+    return this.web3;
   }
 
-  private getKeypair() {
+  private async loadSplToken(): Promise<SplTokenModule> {
+    if (!this.splToken) {
+      this.splToken = await import('@solana/spl-token');
+    }
+    return this.splToken;
+  }
+
+  private async getConnection(): Promise<import('@solana/web3.js').Connection> {
+    if (!this.connection) {
+      const { Connection } = await this.loadWeb3();
+      const rpcUrl =
+        this.config.get<string>('SOLANA_RPC_URL') ??
+        'https://api.mainnet-beta.solana.com';
+      this.connection = new Connection(rpcUrl, 'confirmed');
+    }
+    return this.connection;
+  }
+
+  private async getArcadeumMintKey(): Promise<
+    import('@solana/web3.js').PublicKey
+  > {
+    if (!this.arcadeumMint) {
+      const { PublicKey } = await this.loadWeb3();
+      const mintAddress =
+        this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
+      const isValidMint =
+        mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
+      if (!isValidMint && mintAddress) {
+        this.logger.warn(
+          `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
+        );
+      }
+      this.arcadeumMint = isValidMint
+        ? new PublicKey(mintAddress)
+        : new PublicKey('11111111111111111111111111111111');
+    }
+    return this.arcadeumMint;
+  }
+
+  private async getKeypair() {
     const secretKeyJson = this.config.get<string>('SOLANA_PRIVATE_KEY') ?? '';
     return getPlatformKeypair(secretKeyJson);
   }
@@ -72,7 +100,8 @@ export class SolanaService {
       return this.arcadeumPriceCache.price;
     }
 
-    const mintAddress = this.arcadeumMint.toBase58();
+    const mint = await this.getArcadeumMintKey();
+    const mintAddress = mint.toBase58();
     const res = await fetch(
       `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mintAddress}&vs_currencies=usd`,
     );
@@ -102,7 +131,8 @@ export class SolanaService {
     twitter: string | null;
     website: string | null;
   } | null> {
-    const mintAddress = this.arcadeumMint.toBase58();
+    const mint = await this.getArcadeumMintKey();
+    const mintAddress = mint.toBase58();
 
     try {
       const res = await fetch(
@@ -144,16 +174,17 @@ export class SolanaService {
   }
 
   async getPlatformBalance(): Promise<{ sol: number; arcadeum: number }> {
-    const keypair = this.getKeypair();
-    const solBalance = await this.connection.getBalance(keypair.publicKey);
+    const { LAMPORTS_PER_SOL } = await this.loadWeb3();
+    const { getAssociatedTokenAddress, getAccount } = await this.loadSplToken();
+    const connection = await this.getConnection();
+    const mint = await this.getArcadeumMintKey();
+    const keypair = await this.getKeypair();
+    const solBalance = await connection.getBalance(keypair.publicKey);
 
     let arcadeumBalance = 0;
     try {
-      const ata = await getAssociatedTokenAddress(
-        this.arcadeumMint,
-        keypair.publicKey,
-      );
-      const account = await getAccount(this.connection, ata);
+      const ata = await getAssociatedTokenAddress(mint, keypair.publicKey);
+      const account = await getAccount(connection, ata);
       arcadeumBalance = fromRawAmount(account.amount);
     } catch {
       this.logger.warn('Platform wallet has no ARCADEUM token account');
@@ -171,10 +202,12 @@ export class SolanaService {
     senderAddress: string,
   ): Promise<boolean> {
     try {
-      const keypair = this.getKeypair();
+      const { PublicKey } = await this.loadWeb3();
+      const connection = await this.getConnection();
+      const keypair = await this.getKeypair();
       const treasuryAddress = keypair.publicKey.toBase58();
 
-      const transaction = await this.connection.getTransaction(signature, {
+      const transaction = await connection.getTransaction(signature, {
         commitment: 'confirmed',
         maxSupportedTransactionVersion: 0,
       });

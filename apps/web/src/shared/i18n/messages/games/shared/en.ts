@@ -15,6 +15,7 @@ export const enMessages = {
     filters: {
       statusLabel: 'Status',
       participationLabel: 'Participation',
+      categoryLabel: 'Category',
       status: {
         all: 'All',
         lobby: 'Lobby',
@@ -51,6 +52,13 @@ export const enMessages = {
     fastRoom: 'Fast Room',
     gameLabel: 'Game',
   },
+  password: {
+    label: 'Room Password (optional)',
+    placeholder: 'Set a password',
+    joinTitle: 'Enter Room Password',
+    joinDescription: 'This room requires a password to join.',
+    incorrect: 'Incorrect password',
+  },
   room: {
     gameArea: 'Game area - Real-time game integration coming soon',
     loading: 'Server is loading...',
@@ -69,6 +77,7 @@ export const enMessages = {
     joinRoom: 'Join Room',
     joining: 'Joining...',
     watchRoom: 'Watch',
+    watchResults: 'Watch Results',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
     share: 'Share',
@@ -135,6 +144,7 @@ export const enMessages = {
     houseRuleIdleTimer: 'Idle Timer Autoplay',
     houseRuleIdleTimerHint: 'Automated play after {{seconds}}s',
     seaBattleGridSize: 'Grid Size',
+    seaBattleShipCount: 'Number of Ships',
     specialWeapons: 'Special Weapons',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Reveal ship locations',
@@ -205,6 +215,11 @@ export const enMessages = {
         title: 'Allow spectators',
         desc: 'Anyone with the link can watch silently.',
       },
+      firstPlayer: {
+        title: 'Who goes first',
+        host: 'Host (default)',
+        random: 'Random',
+      },
     },
     summary: {
       game: 'Game',
@@ -264,6 +279,13 @@ export const enMessages = {
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
+    difficultyLabel: 'AI Difficulty',
+    difficultyEasy: 'Easy',
+    difficultyMedium: 'Medium',
+    difficultyHard: 'Hard',
+    difficultyEasyDesc: 'Random moves with occasional smart plays',
+    difficultyMediumDesc: 'Smart targeting with locked-on strategy',
+    difficultyHardDesc: 'Probability-based precision targeting',
   },
   shared: {
     rules: {
@@ -283,6 +305,7 @@ export const enMessages = {
     tags: {
       strategy: 'Strategy',
       cards: 'Cards',
+      action: 'Action',
     },
   },
   connectionOverlay: {
@@ -335,5 +358,31 @@ export const enMessages = {
         accept: 'Accept',
       },
     },
+  },
+  undo: {
+    request: 'Request Undo',
+    approve: 'Approve Undo',
+    deny: 'Deny Undo',
+    pending: 'Undo request pending...',
+    accepted: 'Undo accepted!',
+    denied: 'Undo denied',
+  },
+  emotes: {
+    good_move: 'Nice!',
+    lol: 'LOL',
+    thinking: 'Hmm...',
+    nice: 'GG!',
+    unlucky: 'Oof!',
+    rip: 'RIP',
+    fire: 'Fire!',
+    clap: 'Bravo!',
+    cry: 'Sad',
+    angry: 'Mad',
+    rocket: "Let's go!",
+    heart: 'Love',
+    brain: 'Galaxy Brain',
+    skull: 'Dead',
+    sweat: 'Close!',
+    clown: 'Clown',
   },
 };

@@ -24,6 +24,8 @@ export interface UsersTableRowProps {
   restoreLabel: string;
   isPending?: boolean;
   zebra?: boolean;
+  isSelected?: boolean;
+  onSelectToggle?: (userId: string) => void;
 }
 
 export function UsersTableRow({
@@ -44,10 +46,13 @@ export function UsersTableRow({
   restoreLabel,
   isPending,
   zebra,
+  isSelected,
+  onSelectToggle,
 }: UsersTableRowProps) {
   const isSelf = item.id === currentUserId;
   const isBlocked = item.isBlocked;
   const isDeleted = !!item.deletedAt;
+  const isSelectable = !isDeleted && !isSelf;
 
   return (
     <XStack
@@ -55,13 +60,25 @@ export function UsersTableRow({
       alignItems="center"
       paddingVertical="$2"
       paddingHorizontal="$3"
-      backgroundColor={zebra ? '$backgroundFocus' : undefined}
+      backgroundColor={
+        isSelected ? '$backgroundFocus' : zebra ? '$backgroundFocus' : undefined
+      }
       hoverStyle={{ backgroundColor: '$backgroundHover' }}
       borderBottomWidth={1}
       borderColor="$borderColor"
       opacity={isDeleted ? 0.5 : 1}
       data-testid={`user-row-${item.id}`}
     >
+      <YStack width={32} alignItems="center">
+        {isSelectable && (
+          <input
+            type="checkbox"
+            checked={isSelected ?? false}
+            onChange={() => onSelectToggle?.(item.id)}
+            data-testid={`select-checkbox-${item.id}`}
+          />
+        )}
+      </YStack>
       <Avatar
         name={item.displayName ?? item.username}
         size="sm"

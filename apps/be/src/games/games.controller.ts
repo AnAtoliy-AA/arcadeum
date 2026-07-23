@@ -16,72 +16,45 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { GamesService } from './games.service';
+import { GamesCatalogService } from './games-catalog.service';
 import {
   type StartCriticalSessionResult,
   type CatalogResponse,
-  type CatalogGame,
-  type CatalogVariant,
 } from './games.types';
+import { SyncStatsDto } from './dtos/sync-stats.dto';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { JoinGameRoomDto } from './dtos/join-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
+import { RoomInfoDto } from './dtos/room-info.dto';
+import { UpdateRoomOptionsDto } from './dtos/update-room-options.dto';
+import { InvitePlayersDto } from './dtos/invite-players.dto';
+import { ReorderParticipantsDto } from './dtos/reorder-participants.dto';
 import {
   parseStatusFilters,
   parseVisibilityFilters,
   parseParticipationFilter,
 } from './games.query-parsers';
-
+import { extractVariantFromOptions } from './game-options';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
-import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
-import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
-import { GAME_CATALOG } from './games.catalog';
-import { extractVariantFromOptions } from './game-options';
 
 @Controller('games')
 export class GamesController {
   constructor(
     private readonly gamesService: GamesService,
+    private readonly catalogService: GamesCatalogService,
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
-    private readonly visibility: GameVisibilityService,
-    private readonly roleResolver: UserRoleResolver,
   ) {}
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
     const user = req.user as AuthenticatedUser | undefined | null;
-    const role = await this.roleResolver.resolveRole(user?.userId);
-    const games: CatalogGame[] = [];
-    for (const entry of GAME_CATALOG) {
-      const visible = await this.visibility.canSee(role, entry.gameId);
-      if (!visible) {
-        // Game restricted for this caller — include as coming-soon, no variants surfaced
-        games.push({
-          gameId: entry.gameId,
-          comingSoon: true,
-          variants: [],
-        });
-        continue;
-      }
-
-      const variants: CatalogVariant[] = [];
-      for (const v of entry.variants) {
-        const visible = await this.visibility.canSee(role, entry.gameId, v);
-        variants.push({ id: v, comingSoon: !visible });
-      }
-
-      games.push({
-        gameId: entry.gameId,
-        comingSoon: false,
-        variants,
-      });
-    }
-    return { games };
+    return this.catalogService.getCatalog(user?.userId);
   }
 
   @UseGuards(JwtOptionalAuthGuard)
@@ -95,9 +68,14 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const role = await this.roleResolver.resolveRole(user.userId);
+    const role = await this.catalogService.resolveRole(user.userId);
     const variant = extractVariantFromOptions(dto.gameOptions);
-    await this.visibility.assertVisible(role, dto.gameId, variant);
+    await this.catalogService.assertVisible(role, dto.gameId, variant);
+
+    if (dto.gameOptions) {
+      const ruleMap = await this.catalogService.getRulesForGame(dto.gameId);
+      this.catalogService.stripDisabledRules(dto.gameOptions, ruleMap);
+    }
 
     const room = await this.gamesService.createRoom(user.userId, dto);
     return { room };
@@ -110,8 +88,8 @@ export class GamesController {
     if (!user) {
       throw new BadRequestException('Missing user context');
     }
-    const role = await this.roleResolver.resolveRole(user.userId);
-    await this.visibility.assertVisible(role, dto.gameId, dto.variant);
+    const role = await this.catalogService.resolveRole(user.userId);
+    await this.catalogService.assertVisible(role, dto.gameId, dto.variant);
     const room =
       dto.mode === 'human'
         ? await this.gamesService.findHumanMatch(
@@ -158,8 +136,8 @@ export class GamesController {
       limit: limitNum,
     });
 
-    const role = await this.roleResolver.resolveRole(user?.userId);
-    const filtered = await this.visibility.filterVisible(
+    const role = await this.catalogService.resolveRole(user?.userId);
+    const filtered = await this.catalogService.filterVisible(
       role,
       result.rooms,
       (r) => ({
@@ -188,12 +166,17 @@ export class GamesController {
   @Post('room-info')
   async getRoomInfoBody(
     @Req() req: Request,
-    @Body() body: { roomId: string },
-  ): Promise<{ room: Awaited<ReturnType<GamesService['getRoom']>> }> {
-    const { roomId } = body;
+    @Body() dto: RoomInfoDto,
+  ): Promise<{
+    room: Awaited<ReturnType<GamesService['getRoom']>>;
+    session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'];
+  }> {
     const user = req.user as AuthenticatedUser | undefined | null;
-    const room = await this.gamesService.getRoom(roomId, user?.userId);
-    return { room };
+    const { room, session } = await this.gamesService.getRoomSession(
+      dto.roomId,
+      user?.userId,
+    );
+    return { room, session };
   }
 
   @UseGuards(JwtOptionalAuthGuard)
@@ -211,7 +194,6 @@ export class GamesController {
     );
     return { session };
   }
-
   @UseGuards(JwtAuthGuard)
   @Get('stats')
   async listStats(@Req() req: Request) {
@@ -222,7 +204,16 @@ export class GamesController {
 
     return this.gamesService.getPlayerStats(user.userId);
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('stats')
+  async syncStats(@Req() req: Request, @Body() dto: SyncStatsDto) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
+    return this.gamesService.syncPlayerStats(user.userId, dto.records);
+  }
   @Get('leaderboard')
   async getLeaderboard(
     @Query('limit') limit?: string,
@@ -237,7 +228,6 @@ export class GamesController {
       gameId || undefined,
     );
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/decline')
   @HttpCode(204)
@@ -252,7 +242,6 @@ export class GamesController {
 
     await this.gamesService.declineInvitation(roomId, user.userId);
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/block')
   @HttpCode(204)
@@ -267,26 +256,17 @@ export class GamesController {
 
     await this.gamesService.blockRematchRoom(roomId, user.userId);
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/invite')
   @HttpCode(204)
   async invitePlayers(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() dto: { userIds: string[] },
+    @Body() dto: InvitePlayersDto,
   ): Promise<void> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
-    }
-
-    if (
-      !dto.userIds ||
-      !Array.isArray(dto.userIds) ||
-      dto.userIds.length === 0
-    ) {
-      throw new BadRequestException('userIds array is required');
     }
 
     await this.gamesService.reinvitePlayers(roomId, user.userId, dto.userIds);
@@ -306,7 +286,6 @@ export class GamesController {
     const result = await this.gamesService.joinRoom(dto, user.userId);
     return { room: result.room };
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/start')
   async startRoom(
@@ -339,7 +318,6 @@ export class GamesController {
     // Default to Critical (legacy behavior)
     return this.criticalService.startSession(user.userId, roomId, dto.engine);
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/leave')
   leaveRoom(
@@ -353,7 +331,6 @@ export class GamesController {
 
     return this.gamesService.leaveRoom(dto, user.userId);
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/delete')
   async deleteRoom(
@@ -368,13 +345,12 @@ export class GamesController {
     const result = await this.gamesService.deleteRoom(dto, user.userId);
     return result;
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/options') // Using POST/PATCH interchangeably preference
   async updateRoomOptions(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() body: { options: Record<string, unknown> },
+    @Body() dto: UpdateRoomOptionsDto,
   ): Promise<{
     room: Awaited<ReturnType<GamesService['updateRoomOptions']>>;
   }> {
@@ -383,15 +359,10 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const { options } = body;
-    if (!options || typeof options !== 'object') {
-      throw new BadRequestException('Options object is required');
-    }
-
     const room = await this.gamesService.updateRoomOptions(
       roomId,
       user.userId,
-      options,
+      dto.options,
     );
     return { room };
   }
@@ -402,7 +373,7 @@ export class GamesController {
   async reorderParticipants(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() body: { userIds: string[] },
+    @Body() dto: ReorderParticipantsDto,
   ): Promise<{
     room: Awaited<ReturnType<GamesService['reorderParticipants']>>;
   }> {
@@ -411,15 +382,10 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const { userIds } = body;
-    if (!Array.isArray(userIds)) {
-      throw new BadRequestException('userIds must be an array');
-    }
-
     const room = await this.gamesService.reorderParticipants(
       roomId,
       user.userId,
-      userIds,
+      dto.userIds,
     );
     return { room };
   }

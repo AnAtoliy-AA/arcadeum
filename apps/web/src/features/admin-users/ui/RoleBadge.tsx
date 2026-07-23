@@ -3,8 +3,10 @@ import { Text, View } from 'tamagui';
 import type { UserRole } from '@/entities/session/model/types';
 import { ROLE_COLORS } from '../lib/roleColors';
 
+const FALLBACK_COLOR = { fg: '$gray9', bg: '$gray3' };
+
 export function RoleBadge({ role, label }: { role: UserRole; label: string }) {
-  const c = ROLE_COLORS[role];
+  const c = ROLE_COLORS[role] ?? FALLBACK_COLOR;
   return (
     <View
       paddingHorizontal="$2"

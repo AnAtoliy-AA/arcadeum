@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   GemPackageAdmin,
   CreateGemPackageInput,
@@ -21,26 +20,10 @@ export type AdminGemActionResult<T> =
 
 // ─── Internal fetch helper ────────────────────────────────────────────────────
 
-async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('web_access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
-
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export async function listAdminPackagesAction(): Promise<GemPackageAdmin[]> {
-  const res = await adminFetch('/admin/gem-packages');
+  const res = await serverAuthFetch('/admin/gem-packages');
   if (!res.ok) return [];
   return (await res.json()) as GemPackageAdmin[];
 }
@@ -53,7 +36,7 @@ export async function createPackageAction(
     return { ok: false, error: 'validation', details: validation.errors };
   }
 
-  const res = await adminFetch('/admin/gem-packages', {
+  const res = await serverAuthFetch('/admin/gem-packages', {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -82,7 +65,7 @@ export async function updatePackageAction(
     return { ok: false, error: 'validation', details: ['id is required'] };
   }
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/gem-packages/${encodeURIComponent(id)}`,
     {
       method: 'PATCH',
@@ -112,7 +95,7 @@ export async function deletePackageAction(input: {
     return { ok: false, error: 'validation', details: ['id is required'] };
   }
 
-  const res = await adminFetch(
+  const res = await serverAuthFetch(
     `/admin/gem-packages/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',

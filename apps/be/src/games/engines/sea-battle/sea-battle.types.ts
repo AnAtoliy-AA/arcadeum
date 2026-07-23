@@ -63,6 +63,7 @@ export interface SeaBattleState {
   hideShipsFromTeammates?: boolean;
   mode?: GameModeVariant;
   roundNumber?: number;
+  aiDifficulty?: AiDifficulty;
   specialWeaponUsage?: Record<string, SpecialWeaponUsage>;
   lastSonar?: {
     attackerId: string;
@@ -70,7 +71,7 @@ export interface SeaBattleState {
     centerRow: number;
     centerCol: number;
     radius: number;
-    shipPositions: ShipCell[];
+    cells: { row: number; col: number; state: CellState }[];
   };
   lastRadar?: {
     attackerId: string;
@@ -81,6 +82,8 @@ export interface SeaBattleState {
   };
   [key: string]: unknown;
 }
+
+export type AiDifficulty = 'easy' | 'medium' | 'hard';
 
 export interface SeaBattleConfig {
   teams?: Array<{
@@ -94,6 +97,7 @@ export interface SeaBattleConfig {
   gridSize?: number;
   shipCount?: number;
   specialWeapons?: { sonar?: boolean; radar?: boolean };
+  aiDifficulty?: AiDifficulty;
 }
 
 export interface PlaceShipPayload {
@@ -122,6 +126,10 @@ export interface RadarPayload {
   targetPlayerId: string;
   row?: number;
   col?: number;
+}
+
+export interface BatchPlacementPayload {
+  ships: Array<{ shipId: string; cells: ShipCell[] }>;
 }
 
 export interface ChatPayload {

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { GlimwormGamesMessages } from '@/shared/i18n/messages/games/glimworm';
 import { Container, PageLayout } from '@arcadeum/ui';
+import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import styles from './GlimwormLanding.module.scss';
 
 type GlimwormMessages = GlimwormGamesMessages['glimworm_v1'];
@@ -8,7 +9,7 @@ type Landing = GlimwormMessages['landing'];
 
 interface Props {
   landing?: Landing;
-  createRoomHref: string;
+  gameId: string;
   roomsHref: string;
   homeHref: string;
   gamesHref: string;
@@ -16,7 +17,7 @@ interface Props {
 
 export function GlimwormLandingView({
   landing,
-  createRoomHref,
+  gameId,
   roomsHref,
   homeHref,
   gamesHref,
@@ -56,9 +57,11 @@ export function GlimwormLandingView({
             role="group"
             aria-label={landing.hero.ctaGroupLabel}
           >
-            <Link href={createRoomHref} className={styles.ctaPrimary}>
-              {landing.hero.ctaPlay}
-            </Link>
+            <QuickplayCta
+              gameId={gameId}
+              ctaQuickplay={landing.hero.ctaQuickplay}
+              ctaQuickplayError={landing.hero.ctaQuickplayError}
+            />
             <Link href={roomsHref} className={styles.ctaSecondary}>
               {landing.hero.ctaRooms}
             </Link>
@@ -137,9 +140,11 @@ export function GlimwormLandingView({
             {landing.finalCta.title}
           </h2>
           <p className={styles.finalCtaSubtitle}>{landing.finalCta.subtitle}</p>
-          <Link href={createRoomHref} className={styles.ctaPrimary}>
-            {landing.hero.ctaPlay}
-          </Link>
+          <QuickplayCta
+            gameId={gameId}
+            ctaQuickplay={landing.hero.ctaQuickplay}
+            ctaQuickplayError={landing.hero.ctaQuickplayError}
+          />
         </section>
       </Container>
     </PageLayout>

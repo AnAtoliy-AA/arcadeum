@@ -18,13 +18,24 @@ export function useGameResultModal(
   session: GameSessionSummary | null | undefined,
   result: GameResult,
   resultMessages: ResultMessages | undefined,
+  isGameOver?: boolean,
 ) {
   const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(
     null,
   );
+  const [wasAlreadyOver] = useState(
+    () => isGameOver === true && result !== null,
+  );
+  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
+
+  if (!wasAlreadyOver && isGameOver && !hasSeenActiveGame) {
+    setHasSeenActiveGame(true);
+  }
 
   const showResultModal =
-    !!result && dismissedSessionId !== (session?.id ?? null);
+    !!result &&
+    dismissedSessionId !== (session?.id ?? null) &&
+    hasSeenActiveGame;
 
   const sharedResult: SharedResult = useMemo(() => {
     if (result === 'won') return 'victory';

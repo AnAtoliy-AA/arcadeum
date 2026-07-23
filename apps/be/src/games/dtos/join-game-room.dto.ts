@@ -1,9 +1,17 @@
-import { IsNotEmpty, IsString, MaxLength, ValidateIf } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class JoinGameRoomDto {
   @ValidateIf(({ inviteCode }) => !inviteCode)
   @IsString()
   @IsNotEmpty()
+  @IsMongoId({ message: 'Invalid roomId format' })
   @MaxLength(64)
   roomId?: string;
 
@@ -12,4 +20,9 @@ export class JoinGameRoomDto {
   @IsNotEmpty()
   @MaxLength(16)
   inviteCode?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  password?: string;
 }

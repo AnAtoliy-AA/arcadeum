@@ -401,7 +401,15 @@ export function LobbySidebar({
       </LobbyCard>
 
       {isHost && onDeleteRoom && (
-        <DeleteButton onClick={onDeleteRoom} marginTop="$2" width="100%">
+        <DeleteButton
+          onClick={onDeleteRoom}
+          marginTop="$2"
+          width="100%"
+          size="md"
+          shadowRadius={0}
+          shadowColor="transparent"
+          shadowOffset={{ width: 0, height: 0 }}
+        >
           {deleteRoomLabel}
         </DeleteButton>
       )}
@@ -411,6 +419,10 @@ export function LobbySidebar({
           onClick={() => setShowLeaveConfirm(true)}
           marginTop="$2"
           width="100%"
+          size="md"
+          shadowRadius={0}
+          shadowColor="transparent"
+          shadowOffset={{ width: 0, height: 0 }}
         >
           {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
         </DeleteButton>

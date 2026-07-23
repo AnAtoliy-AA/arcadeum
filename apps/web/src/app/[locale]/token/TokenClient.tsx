@@ -4,21 +4,17 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import MarketCapSparkline from './MarketCapSparkline';
+import dynamic from 'next/dynamic';
 import styles from './TokenClient.module.scss';
+import {
+  fetchTokenMetadata,
+  type TokenMetadata,
+} from '@/shared/api/tokenMetadata';
 
-interface TokenMetadata {
-  name: string;
-  symbol: string;
-  description: string;
-  image: string | null;
-  pumpfunUrl: string | null;
-  marketCapUsd: number | null;
-  totalSupply: string | null;
-  createdAt: number | null;
-  twitter: string | null;
-  website: string | null;
-}
+const MarketCapSparkline = dynamic(() => import('./MarketCapSparkline'), {
+  ssr: false,
+  loading: () => <div style={{ height: 240 }} />,
+});
 
 function formatNumber(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
@@ -53,21 +49,16 @@ export default function TokenClient({ mintAddress = '' }: Props) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchMetadata = (signal?: AbortSignal) => {
-    const base =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    return fetch(`${base}/solana/token-metadata`, { signal })
-      .then((r) => (r.ok ? r.json() : null))
+  const fetchMetadata = () => {
+    return fetchTokenMetadata()
       .then((data) => {
-        if (data?.name && data?.symbol) setMetadata(data);
+        if (data) setMetadata(data);
       })
       .catch(() => {});
   };
 
   useEffect(() => {
-    const controller = new AbortController();
-    void fetchMetadata(controller.signal).finally(() => setLoading(false));
-    return () => controller.abort();
+    void fetchMetadata().finally(() => setLoading(false));
   }, []);
 
   const handleRefresh = async () => {

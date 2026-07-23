@@ -15,9 +15,20 @@ export const statsOverviewCSS = `
 interface StatsOverviewProps {
   stats: PlayerStats | null;
   loading: boolean;
+  currentStreak?: number;
+  currentStreakType?: 'won' | 'lost' | null;
+  bestWinStreak?: number;
+  favoriteGame?: string | null;
 }
 
-export function StatsOverview({ stats, loading }: StatsOverviewProps) {
+export function StatsOverview({
+  stats,
+  loading,
+  currentStreak,
+  currentStreakType,
+  bestWinStreak,
+  favoriteGame,
+}: StatsOverviewProps) {
   const { t } = useTranslation();
 
   if (loading && !stats) {
@@ -70,6 +81,46 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
             <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
           </WinRateCardContent>
         </Card>
+        {currentStreak != null && currentStreak > 0 && (
+          <Card variant="glass" cardPadding="md">
+            <StatLabel>{t('stats.currentStreak')}</StatLabel>
+            <StatValue
+              data-testid="stats-current-streak"
+              color={currentStreakType === 'won' ? '$success' : '$danger'}
+            >
+              {currentStreak}
+              <StreakSuffix>
+                {currentStreakType === 'won' ? 'W' : 'L'}
+              </StreakSuffix>
+            </StatValue>
+          </Card>
+        )}
+        {bestWinStreak != null && bestWinStreak > 0 && (
+          <Card variant="glass" cardPadding="md">
+            <StatLabel>{t('stats.bestWinStreak')}</StatLabel>
+            <StatValue data-testid="stats-best-win-streak" color="$success">
+              {bestWinStreak}
+              <StreakSuffix>W</StreakSuffix>
+            </StatValue>
+          </Card>
+        )}
+        {favoriteGame && (
+          <Card variant="glass" cardPadding="md">
+            <StatLabel>{t('stats.favoriteGame')}</StatLabel>
+            <StatValue data-testid="stats-favorite-game" fontSize="$7">
+              🎯
+            </StatValue>
+            <Text
+              fontSize="$3"
+              fontWeight="600"
+              color="$color"
+              mt="$1"
+              textAlign="center"
+            >
+              {favoriteGame}
+            </Text>
+          </Card>
+        )}
       </div>
     </>
   );
@@ -98,4 +149,12 @@ const WinRateCardContent = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   gap: '$4',
+});
+
+const StreakSuffix = styled(Text, {
+  name: 'StatsOverviewStreakSuffix',
+  fontSize: '$5',
+  fontWeight: '600',
+  color: '$colorMuted',
+  marginLeft: 2,
 });

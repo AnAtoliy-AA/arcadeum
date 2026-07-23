@@ -14,6 +14,10 @@ export const adminUsersEs = {
     role: 'Rol',
     createdAt: 'Creado',
     actions: 'Acciones',
+    selectAll: 'Seleccionar todos en la página',
+    selectedCount: '{count} seleccionados',
+    deleteSelected: 'Eliminar seleccionados',
+    deselectAll: 'Deseleccionar todo',
   },
   empty: {
     noResults: 'No hay usuarios que coincidan con los filtros.',

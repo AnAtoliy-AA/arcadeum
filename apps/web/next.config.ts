@@ -110,7 +110,7 @@ const nextConfig: NextConfig = {
 
     const csp = [
       "default-src 'self';",
-      `script-src 'self' 'unsafe-eval' ${cspScriptSrc};`,
+      `script-src 'self'${allowLocalhost ? " 'unsafe-eval'" : ''} ${cspScriptSrc};`,
       `style-src ${cspStyleSrc};`,
       `img-src ${cspImgSrc};`,
       `font-src ${cspFontSrc};`,
@@ -166,7 +166,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cross-Origin-Resource-Policy',
-            value: 'same-origin',
+            value: 'cross-origin',
           },
         ],
       },

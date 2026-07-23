@@ -7,6 +7,7 @@ import {
   fetchProfile,
   loginLocal,
   registerLocal,
+  logoutSession,
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
@@ -88,7 +89,8 @@ function mergeSnapshot(
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const router = useRouter();
-  const { mode, setMode } = useSessionStore();
+  const mode = useSessionStore((s) => s.mode);
+  const setMode = useSessionStore((s) => s.setMode);
   const [state, setState] = useState<Omit<LocalAuthState, 'mode'>>(() => ({
     loading: false,
     error: null,
@@ -203,6 +205,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   );
 
   const logout = useCallback(async () => {
+    await logoutSession().catch(() => {});
     await session.clearTokens();
     persistEmail(null);
     hasCheckedOnceRef.current = false;
@@ -223,6 +226,15 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         ? session.snapshot
         : await session.reload();
       if (!baseSnapshot.accessToken) {
+        try {
+          const refreshed = await useSessionStore.getState().refreshTokens();
+          if (refreshed.accessToken) {
+            applySnapshot(refreshed);
+            return;
+          }
+        } catch {
+          // Cookie refresh failed — no session to recover
+        }
         setState((current) => ({
           ...current,
           loading: false,

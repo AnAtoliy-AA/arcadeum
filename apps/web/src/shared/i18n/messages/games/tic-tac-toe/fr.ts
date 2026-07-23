@@ -38,6 +38,8 @@ export const frMessages = {
         subtitle:
           'Plateaux thématiques, équipes et bots. Joue seul ou entre amis, du 3×3 au 9×9.',
         createRoom: 'Créer un salon',
+        ctaQuickplay: "Jouer contre l'IA",
+        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
         browseRooms: 'Parcourir les salons',
       },
       highlights: {
@@ -93,27 +95,36 @@ export const frMessages = {
     },
     lobby: {
       boardSize: 'Taille du plateau',
-      maxPlayersShort: 'jusqu’à {{n}}',
+      maxPlayersShort: "jusqu'à {{n}}",
       teamMode: 'Mode équipes',
       startWithBots: 'Commencer avec des bots',
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente de joueurs…',
       minPlayers: 'Minimum 2 joueurs',
+      infinityLabel: 'Infini',
+      expansionMargin: "Marge d'expansion",
+      winCondition: 'Condition de victoire',
+      inARow: "{{n}} d'affilée",
     },
     rules: {
       title: 'Règles',
       objective:
         'Sois le premier à placer ta marque sur {{winLength}} cases alignées — horizontalement, verticalement ou en diagonale.',
+      objectiveInfinity:
+        "Sois le premier à placer ta marque sur {{winLength}} cases alignées. Le plateau commence en 9×9 et s'étend de {{margin}} cases lorsque tu joues près du bord.",
       steps:
         '• À ton tour, clique sur une case vide.\n• Gagne en complétant une ligne.\n• Si le plateau se remplit sans gagnant, la manche est nulle.',
       winLengths:
-        'Longueur gagnante par plateau : 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+        'Longueur gagnante par plateau : 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
+      infinityDescription:
+        "En mode Infini, le plateau commence en 9×9 et s'étend automatiquement de {{margin}} cases dans toutes les directions lorsqu'une marque est placée près du bord. La partie ne se termine jamais par un match nul — le plateau continue de croître jusqu'à ce que quelqu'un gagne.",
       headers: {
         objective: 'Objectif',
         howToPlay: 'Comment jouer',
         boardSizes: 'Tailles de plateau',
+        infinityMode: 'Mode infini',
       },
-      inARow: '{{n}} d’affilée',
+      inARow: "{{n}} d'affilée",
     },
     gameOver: {
       won: 'Tu as gagné !',

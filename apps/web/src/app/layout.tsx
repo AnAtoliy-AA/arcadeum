@@ -140,18 +140,16 @@ export default async function RootLayout({
     >
       <head>
         {/*
-         * Resource hints. Preconnect opens the TCP+TLS handshake before any
-         * real request, so when the user (or a crawler running JS) hits the
-         * presentation video, OAuth flow, or YouTube thumbnail, the
-         * connection is already warm. `dns-prefetch` is the safe fallback
-         * for browsers that ignore `preconnect` (older Safari, some bots).
+         * Resource hints — only for origins actually used on first paint.
+         * R2 CDN hosts game cover images and assets loaded eagerly.
+         * YouTube preconnects moved to presentation section (loaded on click).
          */}
-        <link rel="preconnect" href="https://www.youtube-nocookie.com" />
-        <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
-        <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://i.ytimg.com" />
-        <link rel="preconnect" href="https://accounts.google.com" />
-        <link rel="dns-prefetch" href="https://accounts.google.com" />
+        {process.env.NEXT_PUBLIC_CDN_URL && (
+          <>
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
+          </>
+        )}
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>

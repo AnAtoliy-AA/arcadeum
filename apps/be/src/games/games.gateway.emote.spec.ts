@@ -5,6 +5,9 @@ import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 
+const mockJwt = {} as never;
+const mockConfig = {} as never;
+
 describe('GamesGateway – emote handler', () => {
   let gateway: GamesGateway;
   let gamesService: jest.Mocked<GamesService>;
@@ -38,7 +41,7 @@ describe('GamesGateway – emote handler', () => {
       data: {},
     } as unknown as jest.Mocked<Socket>;
 
-    gateway = new GamesGateway(gamesService, realtime);
+    gateway = new GamesGateway(gamesService, realtime, mockJwt, mockConfig);
     (gateway as unknown as { server: Server }).server = server;
   });
 
@@ -131,13 +134,14 @@ describe('GamesGateway – emote handler', () => {
         'rip',
       ];
 
-      for (const emoteId of validIds) {
+      for (let i = 0; i < validIds.length; i++) {
+        const emoteId = validIds[i];
         mockServerTo.mockClear();
         mockServerEmit.mockClear();
 
         gateway.handleEmote(client, {
           roomId: 'room-1',
-          userId: 'user-a',
+          userId: `user-${i}`,
           emoteId,
         });
 
@@ -152,7 +156,7 @@ describe('GamesGateway – emote handler', () => {
     it('decrypts encrypted payload when encryption is enabled', () => {
       const encrypted = maybeEncrypt({
         roomId: 'room-1',
-        userId: 'user-a',
+        userId: 'user-encrypted',
         emoteId: 'good_move',
       });
 
@@ -162,11 +166,32 @@ describe('GamesGateway – emote handler', () => {
       expect(mockServerEmit).toHaveBeenCalledWith(
         'games.session.emote',
         maybeEncrypt({
-          userId: 'user-a',
+          userId: 'user-encrypted',
           emoteId: 'good_move',
           ts: expect.any(Number) as unknown,
         }),
       );
+    });
+
+    it('rate limits emotes from same user', () => {
+      gateway.handleEmote(client, {
+        roomId: 'room-1',
+        userId: 'user-rate',
+        emoteId: 'good_move',
+      });
+
+      expect(mockServerTo).toHaveBeenCalledTimes(2);
+
+      mockServerTo.mockClear();
+      mockServerEmit.mockClear();
+
+      gateway.handleEmote(client, {
+        roomId: 'room-1',
+        userId: 'user-rate',
+        emoteId: 'lol',
+      });
+
+      expect(mockServerTo).not.toHaveBeenCalled();
     });
   });
 });

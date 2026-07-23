@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { ChatService } from './chat.service'; // Import the chat service
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { ChatService } from './chat.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -17,6 +19,7 @@ import {
   getEncryptionKeyHex,
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
+import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 
 @WebSocketGateway({
   cors: {
@@ -24,23 +27,57 @@ import { corsOriginMatcher } from '../common/utils/cors.util';
   },
 })
 export class ChatGateway {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
 
   private readonly logger = new Logger(ChatGateway.name);
 
   @WebSocketServer() server: Server;
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
 
-    // Send encryption key to authenticated client if encryption is enabled
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'ChatGateway',
+    );
+
+    if (authUserId) {
+      this.logger.debug(
+        `Authenticated user ${authUserId} connected to Chat namespace`,
+      );
+    } else {
+      this.logger.verbose(
+        `Anonymous client connected to Chat namespace: ${client.id}`,
+      );
+    }
+
+    // Only send encryption key to clients with a valid identity.
+    // Never broadcast the key to completely unauthenticated connections.
     if (isSocketEncryptionEnabled()) {
-      try {
-        const encryptionKey = getEncryptionKeyHex();
-        client.emit('socket.encryption_key', { key: encryptionKey });
-        this.logger.debug(`Encryption key sent to ${client.id}`);
-      } catch (error) {
-        this.logger.error(`Failed to send encryption key: ${error}`);
+      const hasIdentity =
+        authUserId ||
+        (typeof client.handshake?.query?.anonId === 'string' &&
+          client.handshake.query.anonId.startsWith('anon_'));
+
+      if (hasIdentity) {
+        try {
+          const encryptionKey = getEncryptionKeyHex();
+          client.emit('socket.encryption_key', { key: encryptionKey });
+          this.logger.debug(`Encryption key sent to ${client.id}`);
+        } catch (error) {
+          this.logger.error(`Failed to send encryption key: ${error}`);
+        }
+      } else {
+        this.logger.warn(
+          `Encryption key withheld from unauthenticated client ${client.id}`,
+        );
       }
     }
   }
@@ -50,8 +87,24 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(@MessageBody() payload: unknown): Promise<void> {
+  async handleMessage(
+    @MessageBody() payload: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
     const messageDTO = maybeDecrypt<MessageDTO>(payload);
+
+    const authUserId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    const isAuthenticated =
+      (client.data as Record<string, unknown>)?.authenticated === true;
+    if (isAuthenticated && authUserId && messageDTO.senderId !== authUserId) {
+      this.logger.warn(
+        `User ${authUserId} attempted to send message as ${messageDTO.senderId} — blocking`,
+      );
+      return;
+    }
+
     const message = await this.chatService.saveMessage(messageDTO);
 
     const outgoingMessage = maybeEncrypt(message);
@@ -79,6 +132,21 @@ export class ChatGateway {
 
     if (!chatId) {
       throw new WsException('chatId is required.');
+    }
+    if (!currentUserId) {
+      throw new WsException('currentUserId is required.');
+    }
+
+    const authUserId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    const isAuthenticated =
+      (client.data as Record<string, unknown>)?.authenticated === true;
+    if (isAuthenticated && authUserId && currentUserId !== authUserId) {
+      this.logger.warn(
+        `User ${authUserId} attempted to join chat as ${currentUserId} — blocking`,
+      );
+      throw new WsException('Cannot join chat as another user.');
     }
     if (!currentUserId) {
       throw new WsException('currentUserId is required.');

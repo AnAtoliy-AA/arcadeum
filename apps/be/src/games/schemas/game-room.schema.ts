@@ -77,6 +77,9 @@ export class GameRoom extends Document {
   @Prop({ type: String, trim: true, index: true, default: null })
   rootRoomId?: string | null;
 
+  @Prop({ type: String, trim: true, select: false })
+  password?: string;
+
   @Prop({ type: Object, default: {} })
   gameOptions?: Record<string, unknown>;
 
@@ -85,3 +88,25 @@ export class GameRoom extends Document {
 }
 
 export const GameRoomSchema = SchemaFactory.createForClass(GameRoom);
+
+GameRoomSchema.index({ hostId: 1 });
+GameRoomSchema.index({ status: 1, gameId: 1 });
+GameRoomSchema.index({ 'participants.userId': 1 });
+GameRoomSchema.index({ status: 1, updatedAt: -1 });
+GameRoomSchema.index({ 'participants.userId': 1, updatedAt: -1 });
+// Auto-delete lobby rooms after 7 days
+GameRoomSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 7 * 24 * 60 * 60,
+    partialFilterExpression: { status: 'lobby' },
+  },
+);
+// Auto-delete completed/in_progress rooms after 30 days
+GameRoomSchema.index(
+  { updatedAt: 1 },
+  {
+    expireAfterSeconds: 30 * 24 * 60 * 60,
+    partialFilterExpression: { status: { $in: ['completed', 'in_progress'] } },
+  },
+);

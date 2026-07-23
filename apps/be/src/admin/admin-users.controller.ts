@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -17,6 +18,7 @@ import { AdminUsersService } from './admin-users.service';
 import { ListAdminUsersDto } from './dto/list-admin-users.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { BlockUserDto } from './dto/block-user.dto';
+import { BulkDeleteUsersDto } from './dto/bulk-delete-users.dto';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -82,5 +84,14 @@ export class AdminUsersController {
   ): Promise<AdminUserItem> {
     const requesterUserId = req.user?.userId ?? '';
     return this.service.restore(id, requesterUserId);
+  }
+
+  @Post('bulk-delete')
+  bulkDelete(
+    @Body() dto: BulkDeleteUsersDto,
+    @Req() req: RequestWithUser,
+  ): Promise<{ deleted: number; skipped: string[] }> {
+    const requesterUserId = req.user?.userId ?? '';
+    return this.service.bulkDelete(dto.userIds, requesterUserId);
   }
 }

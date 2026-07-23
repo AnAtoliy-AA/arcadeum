@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import type { UserRole } from '../auth/lib/roles';
-import { escapeRegExp } from './lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -300,6 +300,50 @@ export class AdminUsersService {
       throw new NotFoundException({ code: 'USER_NOT_FOUND' });
     }
     return this.toAdminUserItem(updated as unknown as UserDocLean);
+  }
+
+  async bulkDelete(
+    userIds: string[],
+    requesterUserId: string,
+  ): Promise<{ deleted: number; skipped: string[] }> {
+    const validIds = userIds.filter((id) => Types.ObjectId.isValid(id));
+    if (validIds.length === 0) {
+      return { deleted: 0, skipped: userIds };
+    }
+
+    const targets = await this.userModel
+      .find({ _id: { $in: validIds } })
+      .lean<UserDocLean[]>();
+
+    const targetMap = new Map(targets.map((t) => [t._id.toString(), t]));
+    const deletable: string[] = [];
+    const skipped: string[] = [];
+
+    for (const id of validIds) {
+      const target = targetMap.get(id);
+      if (!target || target.deletedAt) {
+        skipped.push(id);
+        continue;
+      }
+      if (target._id.toString() === requesterUserId) {
+        skipped.push(id);
+        continue;
+      }
+      if (target.role === 'admin') {
+        skipped.push(id);
+        continue;
+      }
+      deletable.push(id);
+    }
+
+    if (deletable.length > 0) {
+      await this.userModel.updateMany(
+        { _id: { $in: deletable } },
+        { $set: { deletedAt: new Date() } },
+      );
+    }
+
+    return { deleted: deletable.length, skipped };
   }
 
   private toAdminUserItem(doc: UserDocLean): AdminUserItem {

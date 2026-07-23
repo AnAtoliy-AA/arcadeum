@@ -76,6 +76,7 @@ export class GameRoomsMapper {
       createdAt: room.createdAt.toISOString(),
       status: room.status,
       inviteCode: room.inviteCode,
+      hasPassword: !!(room as unknown as { password?: string }).password,
       gameOptions: room.gameOptions ? structuredClone(room.gameOptions) : {},
       rematchInvitedUsers,
       rematchDeclinedUsers,
@@ -128,9 +129,10 @@ export class GameRoomsMapper {
       .select(
         'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId',
       )
+      .lean()
       .exec();
 
-    return new Map(users.map((u) => [u._id.toString(), u]));
+    return new Map(users.map((u) => [u._id.toString(), u as unknown as User]));
   }
 
   private mapUserToMember(

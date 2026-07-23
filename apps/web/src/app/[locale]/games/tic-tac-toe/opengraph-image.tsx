@@ -25,14 +25,31 @@ export default function OpengraphImage() {
             'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
           color: 'white',
           fontFamily: 'system-ui, sans-serif',
+          position: 'relative',
         }}
       >
+        {/* Background glow */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -60,
+            top: -60,
+            width: 360,
+            height: 360,
+            borderRadius: 180,
+            background:
+              'radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 60%)',
+          }}
+        />
+
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: 32,
             maxWidth: 560,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: 2 }}>
@@ -99,36 +116,58 @@ export default function OpengraphImage() {
 
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
             padding: 24,
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: 28,
-            width: 360,
-            height: 360,
+            background: 'rgba(255, 255, 255, 0.06)',
+            borderRadius: 24,
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          {BOARD.flat().map((cell, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: 'rgba(0, 0, 0, 0.35)',
-                borderRadius: 16,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 80,
-                fontWeight: 800,
-                color:
-                  cell === 'x'
-                    ? '#fb7185'
-                    : cell === 'o'
-                      ? '#60a5fa'
-                      : 'transparent',
-              }}
-            >
-              {cell === 'x' ? '✕' : cell === 'o' ? '○' : ' '}
+          {BOARD.map((row, ri) => (
+            <div key={ri} style={{ display: 'flex', gap: 8 }}>
+              {row.map((cell, ci) => (
+                <div
+                  key={ci}
+                  style={{
+                    width: 110,
+                    height: 110,
+                    borderRadius: 18,
+                    background: cell
+                      ? cell === 'x'
+                        ? 'rgba(251, 113, 133, 0.2)'
+                        : 'rgba(96, 165, 250, 0.2)'
+                      : 'rgba(0, 0, 0, 0.25)',
+                    border: cell
+                      ? cell === 'x'
+                        ? '2px solid rgba(251, 113, 133, 0.4)'
+                        : '2px solid rgba(96, 165, 250, 0.4)'
+                      : '2px solid rgba(255, 255, 255, 0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 72,
+                    fontWeight: 800,
+                    color:
+                      cell === 'x'
+                        ? '#fb7185'
+                        : cell === 'o'
+                          ? '#60a5fa'
+                          : 'transparent',
+                    boxShadow: cell
+                      ? cell === 'x'
+                        ? '0 0 20px rgba(251, 113, 133, 0.3)'
+                        : '0 0 20px rgba(96, 165, 250, 0.3)'
+                      : 'none',
+                  }}
+                >
+                  {cell === 'x' ? '✕' : cell === 'o' ? '○' : ''}
+                </div>
+              ))}
             </div>
           ))}
         </div>

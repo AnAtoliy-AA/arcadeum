@@ -31,6 +31,11 @@ const CascadeRulesModal = dynamic(
   { ssr: false },
 );
 
+const ChessRulesModal = dynamic(
+  () => import('@/widgets/ChessGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -92,6 +97,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
           // themeId is safe here.
           variant={themeId as never}
         />
+      ) : null}
+      {gameId === 'chess_v1' ? (
+        <ChessRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

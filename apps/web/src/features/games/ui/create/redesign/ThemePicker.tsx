@@ -8,6 +8,7 @@ import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import { TicTacToeBoardPoster } from './art/TicTacToeBoardPoster';
 import { CascadeBoardPoster } from './art/CascadeBoardPoster';
 import { ChessBoardPoster } from './art/ChessBoardPoster';
+import { CheckersBoardPoster } from './art/CheckersBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
@@ -21,6 +22,10 @@ import {
   type ChessThemeMeta,
   type GameId,
 } from './data/themes';
+import {
+  CHECKERS_THEMES,
+  type CheckersThemeMeta,
+} from './data/checkers-themes';
 
 const SeaBattleRealPreview = dynamic(() => import('./SeaBattleRealPreview'), {
   ssr: false,
@@ -248,6 +253,49 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
     );
   }
 
+  if (gameId === 'checkers_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Checkers variant"
+          data-testid="theme-picker-checkers"
+        >
+          {CHECKERS_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <CheckersThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
 
@@ -261,6 +309,10 @@ function CascadeThumbnail({ theme }: { theme: CascadeThemeMeta }) {
 
 function ChessThumbnail({ theme }: { theme: ChessThemeMeta }) {
   return <ChessBoardPoster theme={theme} size="sm" />;
+}
+
+function CheckersThumbnail({ theme }: { theme: CheckersThemeMeta }) {
+  return <CheckersBoardPoster theme={theme} size="sm" />;
 }
 
 // Three-card fan. The SVG poster shows as a placeholder until the variant's

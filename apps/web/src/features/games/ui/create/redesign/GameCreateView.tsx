@@ -41,6 +41,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   tic_tac_toe_v1: 'tic_tac_toe_v1',
   cascade_v1: 'cascade_v1',
   chess_v1: 'chess_v1',
+  checkers_v1: 'checkers_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -97,6 +98,11 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'classic',
       gridSize: 10,
       shipCount: 10,
+    };
+  }
+  if (form.gameId === 'checkers_v1') {
+    return {
+      variant: form.themeId || 'classic',
     };
   }
   return {};

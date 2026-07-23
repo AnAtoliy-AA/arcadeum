@@ -46,6 +46,7 @@ import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
 import { CASCADE_VARIANTS } from '@/widgets/CascadeGame/lib/constants';
 import { CHESS_VARIANTS } from '@/widgets/ChessGame/lib/constants';
+import { CHECKERS_VARIANTS } from '@/widgets/CheckersGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -177,6 +178,27 @@ export const featuredGames: FeaturedGame[] = [
     rulesPrefix: 'games.chess_v1.rules',
     rulesKeys: ['objective', 'pieces', 'special'],
     variants: CHESS_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'checkers_v1',
+    nameKey: 'games.checkers_v1.name' as TranslationKey,
+    descriptionKey: 'games.checkers_v1.description' as TranslationKey,
+    accentColor: '#f59e0b',
+    genre: 'Board',
+    pace: 'Strategy',
+    category: 'Board Game',
+    players: '2',
+    duration: '20 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/checkers',
+    type: 'board',
+    rulesPrefix: 'games.checkers_v1.rules',
+    rulesKeys: ['objective', 'steps', 'kingPromotion', 'forcedCaptures'],
+    variants: CHECKERS_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),

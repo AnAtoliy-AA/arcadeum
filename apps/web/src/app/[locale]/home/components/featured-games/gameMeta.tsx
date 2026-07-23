@@ -6,6 +6,7 @@ import { TicTacToeSymbol } from './symbols/TicTacToeSymbol';
 import { CascadeSymbol } from './symbols/CascadeSymbol';
 import { ChessSymbol } from './symbols/ChessSymbol';
 import { CheckersSymbol } from './symbols/CheckersSymbol';
+import { CatDashSymbol } from './symbols/CatDashSymbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
@@ -29,6 +30,8 @@ export function GameSymbol({ gameId, ...rest }: GameSymbolProps) {
       return <ChessSymbol {...rest} />;
     case 'checkers_v1':
       return <CheckersSymbol {...rest} />;
+    case 'cat_dash_v1':
+      return <CatDashSymbol {...rest} />;
     default:
       return null;
   }

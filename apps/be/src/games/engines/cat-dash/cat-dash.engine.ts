@@ -206,7 +206,8 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     }
 
     if (!state.gameOver) {
-      this.advanceTurn(state);
+      state.currentPlayerIndex =
+        (state.currentPlayerIndex + 1) % state.players.length;
     }
 
     return this.successResult(state, logs);
@@ -335,7 +336,8 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     this.addLog(newState, log);
 
     if (newState.players[newState.currentPlayerIndex]?.playerId === playerId) {
-      this.advanceTurn(newState);
+      newState.currentPlayerIndex =
+        (newState.currentPlayerIndex + 1) % newState.players.length;
     }
 
     const alivePlayers = newState.players.filter(

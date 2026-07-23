@@ -7,6 +7,7 @@ import * as ticTacToe from './tic-tac-toe/index';
 import * as cascade from './cascade/index';
 import * as chess from './chess/index';
 import * as checkers from './checkers/index';
+import * as catDash from './cat-dash/index';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = shared.SharedGamesMessages &
@@ -17,7 +18,8 @@ export type GamesMessagesBundle = shared.SharedGamesMessages &
   ticTacToe.TicTacToeMessages &
   cascade.CascadeMessages &
   chess.ChessMessages &
-  checkers.CheckersMessages;
+  checkers.CheckersMessages &
+  catDash.CatDashMessages;
 
 export const en = {
   ...shared.en,
@@ -29,6 +31,7 @@ export const en = {
   ...cascade.en,
   ...chess.en,
   ...checkers.en,
+  ...catDash.en,
 };
 
 export const es = {
@@ -41,6 +44,7 @@ export const es = {
   ...cascade.es,
   ...chess.es,
   ...checkers.es,
+  ...catDash.es,
 };
 
 export const fr = {
@@ -53,6 +57,7 @@ export const fr = {
   ...cascade.fr,
   ...chess.fr,
   ...checkers.fr,
+  ...catDash.fr,
 };
 
 export const ru = {
@@ -65,6 +70,7 @@ export const ru = {
   ...cascade.ru,
   ...chess.ru,
   ...checkers.ru,
+  ...catDash.ru,
 };
 
 export const by = {
@@ -77,6 +83,7 @@ export const by = {
   ...cascade.by,
   ...chess.by,
   ...checkers.by,
+  ...catDash.by,
 };
 
 export const gamesMessages = {

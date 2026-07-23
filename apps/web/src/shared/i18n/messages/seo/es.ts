@@ -45,6 +45,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Damas · Multijugador · ${APP}`,
     description: `Juega damas en ${APP} — tablero 8×8 con capturas forzadas, saltos múltiples y promoción a rey. Gratis, salas instantáneas.`,
   },
+  catDashLanding: {
+    title: `Cat Dash · Carrera de gatos multijugador · ${APP}`,
+    description: `Juega Cat Dash en ${APP} — carreras de gatos con dados, habilidades únicas y pistas temáticas. 2–6 jugadores, gratis.`,
+  },
   seaBattleLanding: {
     title: `Batalla naval en línea · Juega Battleship gratis · ${APP}`,
     description: `Juega Batalla Naval (Battleship) en línea gratis en ${APP}. Partida rápida contra un bot, busca un oponente humano o invita amigos a una partida privada.`,

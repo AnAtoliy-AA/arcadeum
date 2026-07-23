@@ -45,6 +45,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Dames · Multijoueur · ${APP}`,
     description: `Jouez aux dames sur ${APP} — plateau 8×8 avec prises obligatoires, sauts multiples et promotion en dame. Gratuit, salles instantanées.`,
   },
+  catDashLanding: {
+    title: `Cat Dash · Course de chats multijoueur · ${APP}`,
+    description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

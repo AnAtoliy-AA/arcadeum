@@ -4,7 +4,8 @@ export type GameId =
   | 'glimworm_v1'
   | 'tic_tac_toe_v1'
   | 'cascade_v1'
-  | 'chess_v1';
+  | 'chess_v1'
+  | 'checkers_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -92,6 +93,18 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: false,
     rules: ['idle', 'spectators'],
   },
+  checkers_v1: {
+    id: 'checkers_v1',
+    title: 'Checkers',
+    desc: 'Classic 8×8 checkers with forced captures, multi-jump, and king promotion.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '20 min',
+    kind: 'Board · strategy',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -101,6 +114,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'tic_tac_toe_v1',
   'cascade_v1',
   'chess_v1',
+  'checkers_v1',
 ];
 
 export function getGamesByCategory(): Array<{
@@ -455,12 +469,12 @@ import {
   findCascadeTheme,
   type CascadeThemeMeta,
 } from './cascade-themes';
-
 import {
   CHESS_THEMES,
   findChessTheme,
   type ChessThemeMeta,
 } from './chess-themes';
+import { CHECKERS_THEMES } from './checkers-themes';
 
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
@@ -471,6 +485,7 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'tic_tac_toe_v1') return TIC_TAC_TOE_THEMES;
   if (gameId === 'cascade_v1') return CASCADE_THEMES;
   if (gameId === 'chess_v1') return CHESS_THEMES;
+  if (gameId === 'checkers_v1') return CHECKERS_THEMES;
   return [];
 }
 

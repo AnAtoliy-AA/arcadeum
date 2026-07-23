@@ -39,6 +39,15 @@ Format: `<type>(<scope>): <description>`
 
 Use the application name or component as the scope (e.g., `web`, `mobile`, `be`, `shared`, `ci`).
 
+### Types
+
+- `feat`: New features or enhancements
+- `fix`: Bug fixes
+- `refactor`: Code restructuring without functional changes
+- `docs`: Documentation updates
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks (dependencies, build configuration, etc.)
+
 ### Examples
 
 - `feat(web): add support for dark mode`

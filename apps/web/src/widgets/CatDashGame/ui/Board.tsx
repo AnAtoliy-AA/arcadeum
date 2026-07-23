@@ -1,7 +1,7 @@
 'use client';
 
-import { memo } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
+import { memo, useMemo } from 'react';
+import { YStack, XStack, Text } from 'tamagui';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
@@ -23,17 +23,25 @@ const CAT_COLORS: Record<CatId, string> = {
   luna: '#ec4899',
 };
 
-const SPACE_EMOJI: Record<string, string> = {
-  normal: '',
-  obstacle: '🔴',
-  bonus: '🟡',
-  fork: '🔵',
-};
-
 interface BoardProps {
   snapshot: CatDashClientState;
   disabled: boolean;
   resolveName: (id?: string | null) => string;
+}
+
+function getOvalPoint(
+  index: number,
+  total: number,
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+): { x: number; y: number } {
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  return {
+    x: cx + rx * Math.cos(angle),
+    y: cy + ry * Math.sin(angle),
+  };
 }
 
 export const CatDashBoard = memo(function CatDashBoard({
@@ -43,78 +51,156 @@ export const CatDashBoard = memo(function CatDashBoard({
 }: BoardProps) {
   const { tokens } = useCatDashTheme();
 
+  const total = snapshot.track.length;
+  const svgW = 560;
+  const svgH = 340;
+  const cx = svgW / 2;
+  const cy = svgH / 2;
+  const rx = svgW * 0.42;
+  const ry = svgH * 0.4;
+
+  const positions = useMemo(
+    () => snapshot.track.map((_, i) => getOvalPoint(i, total, cx, cy, rx, ry)),
+    [snapshot.track, total, cx, cy, rx, ry],
+  );
+
+  const spaceRadius = 12;
+
   return (
     <YStack gap="$3" alignItems="center" width="100%" padding="$3">
-      {/* Track */}
-      <YStack
+      <svg
+        viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
-        gap={3}
-        padding="$3"
-        backgroundColor={tokens.track}
-        borderRadius="$4"
-        borderWidth={2}
-        borderColor={tokens.trackBorder}
+        style={{ maxWidth: svgW, borderRadius: 16, overflow: 'hidden' }}
       >
-        {/* Start / Finish labels */}
-        <XStack justifyContent="space-between" paddingHorizontal="$1">
-          <Text fontSize={11} fontWeight="bold" color={tokens.textSecondary}>
-            START
-          </Text>
-          <Text fontSize={11} fontWeight="bold" color={tokens.textSecondary}>
-            FINISH 🏁
-          </Text>
-        </XStack>
+        {/* Background */}
+        <rect width={svgW} height={svgH} fill={tokens.track} rx={16} />
 
-        {/* Track spaces - 2 rows for better visibility */}
-        <XStack gap={2} flexWrap="wrap">
-          {snapshot.track.map((space) => {
-            const playersHere = snapshot.players.filter(
-              (p) => p.position === space.id && p.isReady,
-            );
-            const isOccupied = playersHere.length > 0;
+        {/* Track path line */}
+        <ellipse
+          cx={cx}
+          cy={cy}
+          rx={rx}
+          ry={ry}
+          fill="none"
+          stroke={tokens.trackBorder}
+          strokeWidth={spaceRadius * 2 + 6}
+          opacity={0.15}
+        />
 
-            let bgColor = tokens.normalSpace;
-            if (space.type === 'obstacle') bgColor = tokens.obstacleSpace;
-            else if (space.type === 'bonus') bgColor = tokens.bonusSpace;
-            else if (space.type === 'fork') bgColor = tokens.forkSpace;
+        {/* Track spaces */}
+        {snapshot.track.map((space, i) => {
+          const pos = positions[i];
+          const isStart = i === 0;
+          const isFinish = i === total - 1;
+          const playersHere = snapshot.players.filter(
+            (p) => p.position === space.id && p.isReady,
+          );
+          const isOccupied = playersHere.length > 0;
 
-            return (
-              <XStack
-                key={space.id}
-                flex={1}
-                minWidth={36}
-                height={44}
-                alignItems="center"
-                justifyContent="center"
-                backgroundColor={bgColor}
-                borderRadius="$2"
-                borderWidth={isOccupied ? 2 : 1}
-                borderColor={
-                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.1)'
+          let fill = tokens.normalSpace;
+          if (isStart) fill = '#22c55e';
+          else if (isFinish) fill = '#f59e0b';
+          else if (space.type === 'obstacle') fill = tokens.obstacleSpace;
+          else if (space.type === 'bonus') fill = tokens.bonusSpace;
+          else if (space.type === 'fork') fill = tokens.forkSpace;
+
+          return (
+            <g key={space.id}>
+              {/* Space circle */}
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={spaceRadius}
+                fill={fill}
+                stroke={
+                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
                 }
-                position="relative"
-              >
-                {isOccupied ? (
-                  <XStack gap={1} alignItems="center" justifyContent="center">
-                    {playersHere.map((p) => (
-                      <Text key={p.playerId} fontSize={18}>
-                        {CAT_EMOJI[p.catId] ?? '🐱'}
-                      </Text>
-                    ))}
-                  </XStack>
-                ) : (
-                  <Text fontSize={8} color={tokens.textSecondary} opacity={0.4}>
-                    {space.id}
-                  </Text>
+                strokeWidth={isOccupied ? 2.5 : 1}
+              />
+
+              {/* Space number (every 5th) */}
+              {i % 5 === 0 && !isOccupied && (
+                <text
+                  x={pos.x}
+                  y={pos.y + 1}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={7}
+                  fill={tokens.textSecondary}
+                  opacity={0.4}
+                >
+                  {i}
+                </text>
+              )}
+
+              {/* Player cat emoji */}
+              {isOccupied &&
+                playersHere.map((p) => (
+                  <text
+                    key={p.playerId}
+                    x={pos.x}
+                    y={pos.y + 1}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={14}
+                  >
+                    {CAT_EMOJI[p.catId] ?? '🐱'}
+                  </text>
+                ))}
+
+              {/* Start / Finish labels */}
+              {isStart && (
+                <text
+                  x={pos.x}
+                  y={pos.y - spaceRadius - 6}
+                  textAnchor="middle"
+                  fontSize={9}
+                  fontWeight="bold"
+                  fill="#22c55e"
+                >
+                  START
+                </text>
+              )}
+              {isFinish && (
+                <text
+                  x={pos.x}
+                  y={pos.y - spaceRadius - 6}
+                  textAnchor="middle"
+                  fontSize={9}
+                  fontWeight="bold"
+                  fill="#f59e0b"
+                >
+                  🏁 FINISH
+                </text>
+              )}
+
+              {/* Obstacle / Bonus icons */}
+              {!isOccupied &&
+                !isStart &&
+                !isFinish &&
+                space.type !== 'normal' && (
+                  <text
+                    x={pos.x}
+                    y={pos.y + 1}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={8}
+                  >
+                    {space.type === 'obstacle'
+                      ? '⚡'
+                      : space.type === 'bonus'
+                        ? '⭐'
+                        : '🔀'}
+                  </text>
                 )}
-              </XStack>
-            );
-          })}
-        </XStack>
-      </YStack>
+            </g>
+          );
+        })}
+      </svg>
 
       {/* Player legend */}
-      <XStack gap="$3" marginTop="$2" flexWrap="wrap" justifyContent="center">
+      <XStack gap="$3" flexWrap="wrap" justifyContent="center">
         {snapshot.players.map((player) => {
           const isCurrent =
             snapshot.players[snapshot.currentPlayerIndex]?.playerId ===
@@ -150,18 +236,42 @@ export const CatDashBoard = memo(function CatDashBoard({
         })}
       </XStack>
 
-      {/* Track legend */}
-      <XStack gap="$3" marginTop="$1" justifyContent="center">
-        {Object.entries(SPACE_EMOJI).map(([type, emoji]) =>
-          emoji ? (
-            <XStack key={type} gap="$1" alignItems="center">
-              <Text fontSize={10}>{emoji}</Text>
-              <Text fontSize={9} color={tokens.textSecondary}>
-                {type}
-              </Text>
-            </XStack>
-          ) : null,
-        )}
+      {/* Legend */}
+      <XStack gap="$3" justifyContent="center" flexWrap="wrap">
+        <XStack gap="$1" alignItems="center">
+          <XStack
+            width={12}
+            height={12}
+            backgroundColor="#22c55e"
+            borderRadius={6}
+          />
+          <Text fontSize={9} color={tokens.textSecondary}>
+            Start
+          </Text>
+        </XStack>
+        <XStack gap="$1" alignItems="center">
+          <XStack
+            width={12}
+            height={12}
+            backgroundColor="#f59e0b"
+            borderRadius={6}
+          />
+          <Text fontSize={9} color={tokens.textSecondary}>
+            Finish
+          </Text>
+        </XStack>
+        <XStack gap="$1" alignItems="center">
+          <Text fontSize={10}>⚡</Text>
+          <Text fontSize={9} color={tokens.textSecondary}>
+            Obstacle
+          </Text>
+        </XStack>
+        <XStack gap="$1" alignItems="center">
+          <Text fontSize={10}>⭐</Text>
+          <Text fontSize={9} color={tokens.textSecondary}>
+            Bonus
+          </Text>
+        </XStack>
       </XStack>
     </YStack>
   );

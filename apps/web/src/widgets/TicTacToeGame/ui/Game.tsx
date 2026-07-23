@@ -35,8 +35,8 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
     boardSize: number;
     teamMode: boolean;
   }>;
-  const isSize = (n: number | undefined): n is BoardSize =>
-    n === 3 || n === 5 || n === 7 || n === 9;
+  const isSize = (n: number | string | undefined): n is BoardSize =>
+    n === 3 || n === 5 || n === 7 || n === 9 || n === 'infinity';
   return {
     variant: (r.variant ?? 'classic') as TicTacToeVariant,
     boardSize: isSize(r.boardSize) ? r.boardSize : 3,

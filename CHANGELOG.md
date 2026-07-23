@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.82] - 2026-07-23
+
+### Added
+- add cyber phoenix and cyber dragon premium avatars
+
+
 ## [1.23.81] - 2026-07-23
 
 ### Fixed

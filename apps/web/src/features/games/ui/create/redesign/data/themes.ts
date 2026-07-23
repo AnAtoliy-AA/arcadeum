@@ -432,52 +432,11 @@ export const SEA_BATTLE_THEMES: SeaBattleThemeMeta[] = [
   },
 ];
 
-export interface TicTacToeThemeMeta {
-  id: string;
-  name: string;
-  desc: string;
-  color: string;
-}
-
-export const TIC_TAC_TOE_THEMES: TicTacToeThemeMeta[] = [
-  {
-    id: 'classic',
-    name: 'Classic',
-    desc: 'Crisp black grid on paper white.',
-    color: '#1f2937',
-  },
-  {
-    id: 'neon',
-    name: 'Neon',
-    desc: 'Glowing violet and cyan marks.',
-    color: '#a855f7',
-  },
-  {
-    id: 'paper',
-    name: 'Paper',
-    desc: 'Handwritten on warm parchment.',
-    color: '#92400e',
-  },
-  {
-    id: 'pixel',
-    name: 'Pixel',
-    desc: 'Retro 8-bit greens.',
-    color: '#22c55e',
-  },
-  {
-    id: 'chalkboard',
-    name: 'Chalkboard',
-    desc: 'Loose chalk strokes on slate.',
-    color: '#e5e7eb',
-  },
-  {
-    id: 'retro',
-    name: 'Retro TV',
-    desc: 'Sunset amber and warm red.',
-    color: '#f59e0b',
-  },
-];
-
+import {
+  TIC_TAC_TOE_THEMES,
+  findTicTacToeTheme,
+  type TicTacToeThemeMeta,
+} from './tic-tac-toe-themes';
 import {
   CASCADE_THEMES,
   findCascadeTheme,
@@ -495,9 +454,9 @@ import {
   type CatDashThemeMeta,
 } from './cat-dash-themes';
 
+export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
-export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
 
 export function themesFor(gameId: GameId) {

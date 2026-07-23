@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.84] - 2026-07-23
+
+### Fixed
+- forward isGameOver to useGameResultModal
+- remove vitest overrides that cause peer dep mismatches
+- escape regex input, gate CSP unsafe-eval, add socket auth validation
+
+
 ## [1.23.83] - 2026-07-23
 
 ### Added

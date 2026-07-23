@@ -293,6 +293,8 @@ export class GamesGateway {
       this.realtime,
       this.gamesService,
       payload,
+      (c, u) => this.validateUserId(c, u),
+      client,
     );
   }
 
@@ -315,6 +317,8 @@ export class GamesGateway {
         ? payload.scope.trim().toLowerCase()
         : 'all';
     const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+
+    this.validateUserId(client, userId);
 
     try {
       await this.gamesService.postHistoryNote(

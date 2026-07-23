@@ -14,6 +14,7 @@ import {
   extractRoomAndUser,
   extractString,
   handleError,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
@@ -104,6 +105,8 @@ export class CriticalGateway {
 
     const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.postHistoryNote(
         userId,
@@ -150,6 +153,8 @@ export class CriticalGateway {
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
     const withBots = !!payload?.withBots;
 
+    validatePayloadUserId(client, userId);
+
     try {
       const result = await this.criticalService.startSession(
         userId,
@@ -191,6 +196,8 @@ export class CriticalGateway {
       );
     }
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.defuseByRoom(userId, roomId, position);
 
@@ -224,6 +231,8 @@ export class CriticalGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.playNopeByRoom(userId, roomId);
 
@@ -256,6 +265,8 @@ export class CriticalGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const newOrder = Array.isArray(payload.newOrder) ? payload.newOrder : [];
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.criticalService.commitAlterFutureByRoom(

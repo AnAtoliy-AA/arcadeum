@@ -12,7 +12,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 
 import { CheckersService } from './checkers/checkers.service';
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
@@ -68,6 +72,7 @@ export class CheckersGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.checkersService.startSession(
         userId,
@@ -97,6 +102,7 @@ export class CheckersGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     if (
       !payload?.steps ||
       !Array.isArray(payload.steps) ||
@@ -128,6 +134,7 @@ export class CheckersGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.checkersService.forfeit(userId, roomId);
       client.emit(

@@ -1,7 +1,11 @@
 import type { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
-import { extractString, handleError } from './games.gateway.utils';
+import {
+  extractString,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import type { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import type { GamesRealtimeService } from './games.realtime.service';
@@ -41,6 +45,7 @@ export async function handleSetTeamMode(
 ): Promise<void> {
   const roomId = extractString(payload, 'roomId');
   const userId = extractString(payload, 'userId');
+  validatePayloadUserId(client, userId);
   if (typeof payload?.enabled !== 'boolean')
     throw new WsException('enabled is required (boolean).');
   await runTeamAction(
@@ -67,6 +72,7 @@ export async function handleSetTeamConfig(
 ): Promise<void> {
   const roomId = extractString(payload, 'roomId');
   const userId = extractString(payload, 'userId');
+  validatePayloadUserId(client, userId);
   if (!Array.isArray(payload?.teams))
     throw new WsException('teams is required (array).');
   await runTeamAction(
@@ -101,6 +107,7 @@ export async function handleAssignTeam(
       : userId;
   if (typeof payload.teamId === 'undefined')
     throw new WsException('teamId is required (string or null).');
+  validatePayloadUserId(client, userId);
   await runTeamAction(
     client,
     { action: 'assign team', roomId, userId },
@@ -123,6 +130,7 @@ export async function handleAddBotToTeam(
   const roomId = extractString(payload, 'roomId');
   const userId = extractString(payload, 'userId');
   const teamId = extractString(payload, 'teamId');
+  validatePayloadUserId(client, userId);
   await runTeamAction(
     client,
     { action: 'add bot to team', roomId, userId },
@@ -140,6 +148,7 @@ export async function handleRemoveBotFromTeam(
   const roomId = extractString(payload, 'roomId');
   const userId = extractString(payload, 'userId');
   const targetUserId = extractString(payload, 'targetUserId');
+  validatePayloadUserId(client, userId);
   await runTeamAction(
     client,
     { action: 'remove bot from team', roomId, userId },
@@ -158,6 +167,7 @@ export async function handleToggleHideShips(
   const userId = extractString(payload, 'userId');
   if (typeof payload?.enabled !== 'boolean')
     throw new WsException('enabled is required (boolean).');
+  validatePayloadUserId(client, userId);
   await runTeamAction(
     client,
     { action: 'toggle hide ships', roomId, userId },

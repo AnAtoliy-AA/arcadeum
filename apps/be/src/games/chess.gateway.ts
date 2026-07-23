@@ -12,7 +12,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 
 import { ChessService } from './chess/chess.service';
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
@@ -68,6 +72,7 @@ export class ChessGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.chessService.startSession(
         userId,
@@ -102,6 +107,7 @@ export class ChessGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     if (
       !payload?.fromFile ||
       !payload?.fromRank ||
@@ -145,6 +151,7 @@ export class ChessGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.chessService.forfeit(userId, roomId);
       client.emit('chess.session.resigned', maybeEncrypt({ roomId, userId }));
@@ -164,6 +171,7 @@ export class ChessGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.chessService.drawOffer(userId, roomId);
       client.emit(
@@ -186,6 +194,7 @@ export class ChessGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.chessService.drawAccept(userId, roomId);
       client.emit(

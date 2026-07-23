@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import type { UserRole } from '../auth/lib/roles';
-import { escapeRegExp } from './lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import type {
   AdminUserItem,
   AdminUsersResponse,

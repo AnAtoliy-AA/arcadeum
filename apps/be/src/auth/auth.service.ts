@@ -19,7 +19,7 @@ import {
   RefreshTokenService,
   GoogleOAuthService,
 } from './services';
-import { escapeRegex } from './lib/utils';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import type {
   AuthUserProfile,
   AuthTokensResponse,
@@ -278,7 +278,7 @@ export class AuthService {
     }
 
     const limit = Math.min(Math.max(params.limit ?? 10, 1), 25);
-    const pattern = new RegExp(escapeRegex(trimmed), 'i');
+    const pattern = new RegExp(escapeRegExp(trimmed), 'i');
 
     const users = await this.userModel
       .find({

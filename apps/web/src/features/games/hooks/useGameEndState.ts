@@ -12,7 +12,9 @@ export interface PlayerInfo {
 
 export interface UseGameEndStateOptions {
   roomId: string;
+  currentUserId?: string | null;
   session: GameSessionSummary | null | undefined;
+  isGameOver?: boolean;
   result: GameResult;
   resultMessages?: ResultMessages;
   rematchGameOptions?: GameOptions;

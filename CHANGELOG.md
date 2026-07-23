@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.80] - 2026-07-23
+
+### Fixed
+- sanitize user-provided values in MongoDB queries to prevent NoSQL injection
+- replace Math.random() with crypto.randomInt() for CodeQL compliance
+- allow E2E+production in CI environments
+- harden backend security after comprehensive audit
+
+
 ## [1.23.79] - 2026-07-23
 
 ### Fixed

@@ -7,7 +7,7 @@ import {
 } from './schemas/payment-note.schema';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { User, UserDocument } from '../auth/schemas/user.schema';
-import { escapeRegExp } from '../admin/lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import type {
   AdminPaymentNoteItem,
   AdminPaymentNotesResponse,

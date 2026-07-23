@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
@@ -11,19 +7,13 @@ import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { HistoryRematchDto } from '../dtos/history-rematch.dto';
 import {
-  HistoryParticipantSummary,
-  GameHistorySummary,
-  GroupedHistorySummary,
-  PlayerStats,
-  LeaderboardEntry,
+  HistoryParticipantSummary, GameHistorySummary,
+  GroupedHistorySummary, PlayerStats, LeaderboardEntry,
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
-import {
-  BaseGameState,
-  ChatScope,
-} from '../engines/base/game-engine.interface';
-import { escapeRegExp } from '../../admin/lib/escape-regexp';
+import { BaseGameState, ChatScope } from '../engines/base/game-engine.interface';
+import { escapeRegExp } from '../../common/utils/escape-regexp';
 
 /**
  * Game History Service
@@ -84,8 +74,9 @@ export class GameHistoryService {
     ];
 
     if (options.search) {
-      const searchRegex = new RegExp(escapeRegExp(options.search), 'i');
-      orFilters.push({ name: searchRegex });
+      const trimmed = options.search.trim().slice(0, 100);
+      if (trimmed)
+        orFilters.push({ name: new RegExp(escapeRegExp(trimmed), 'i') });
     }
 
     const query: FilterQuery<GameRoom> = {
@@ -378,7 +369,7 @@ export class GameHistoryService {
       : originalRoom.name;
 
     // Find existing rematch rooms with the same base name
-    const escapedBaseName = baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapedBaseName = escapeRegExp(baseName);
     const existingRematches = await this.gameRoomModel
       .find({
         name: { $regex: new RegExp(`^${escapedBaseName} Rematch \\d+$`) },

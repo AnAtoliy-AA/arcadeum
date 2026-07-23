@@ -15,6 +15,7 @@ import {
   extractRoomAndUser,
   extractString,
   handleError,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
@@ -94,6 +95,7 @@ export class SeaBattleGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.seaBattleService.startSession(
         userId,
@@ -135,6 +137,7 @@ export class SeaBattleGateway {
     const cells = payload.cells;
     if (!shipId || !cells || !Array.isArray(cells))
       throw new WsException('shipId and cells are required');
+    validatePayloadUserId(client, userId);
     try {
       await op.svc(userId, roomId, { shipId, cells });
       client.emit(op.ackEvent, maybeEncrypt({ roomId, userId, shipId }));
@@ -185,6 +188,7 @@ export class SeaBattleGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.confirmPlacementByRoom(
         userId,
@@ -211,6 +215,7 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.resetPlacementByRoom(userId, roomId);
       client.emit(
@@ -233,6 +238,7 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
       client.emit(
@@ -266,6 +272,7 @@ export class SeaBattleGateway {
     const { row, col } = payload;
     if (!targetPlayerId || row === undefined || col === undefined)
       throw new WsException('targetPlayerId, row, and col are required');
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.attackByRoom(userId, roomId, {
         targetPlayerId,
@@ -302,6 +309,7 @@ export class SeaBattleGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
     if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
         targetPlayerId,
@@ -369,6 +377,7 @@ export class SeaBattleGateway {
     const scope = (
       ['players', 'private', 'team'].includes(raw) ? raw : 'all'
     ) as ChatScope;
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.postHistoryNote(
         userId,

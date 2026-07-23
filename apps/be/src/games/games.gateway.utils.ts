@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
 import {
   CriticalCard,
   CriticalCollectionCard,
@@ -10,6 +11,25 @@ import {
   CHAOS_PACK_CARDS,
   DEITY_PACK_CARDS,
 } from './critical/critical.state';
+
+/**
+ * Validates that the client-supplied userId matches the server-verified
+ * identity for authenticated users. Blocks impersonation.
+ * For unauthenticated (anonymous) clients, allows the payload userId.
+ */
+export function validatePayloadUserId(
+  client: Socket,
+  payloadUserId: string,
+): void {
+  const authUserId = (client.data as Record<string, unknown>)?.userId as
+    | string
+    | undefined;
+  const isAuthenticated =
+    (client.data as Record<string, unknown>)?.authenticated === true;
+  if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
+    throw new WsException('Cannot perform actions as another user.');
+  }
+}
 
 export const SIMPLE_ACTION_CARDS = [
   'evade',

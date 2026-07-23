@@ -32,15 +32,22 @@ import {
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
     variant: string;
-    boardSize: number;
+    boardSize: number | string;
     teamMode: boolean;
+    expansionMargin: number;
+    infinityWinLength: number;
   }>;
   const isSize = (n: number | string | undefined): n is BoardSize =>
     n === 3 || n === 5 || n === 7 || n === 9 || n === 'infinity';
+  const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+    n === 1 || n === 2 || n === 3;
+  const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
   return {
     variant: (r.variant ?? 'classic') as TicTacToeVariant,
     boardSize: isSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
+    expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
+    infinityWinLength: isWinLen(r.infinityWinLength) ? r.infinityWinLength : 5,
   };
 }
 

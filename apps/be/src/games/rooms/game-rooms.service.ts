@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
   Injectable,
   BadRequestException,
@@ -61,7 +62,7 @@ export class GameRoomsService {
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
     const hashedPassword = dto.password
-      ? await bcrypt.hash(dto.password, 10)
+      ? await bcrypt.hash(dto.password, BCRYPT_SALT_ROUNDS)
       : undefined;
 
     const room = await this.gameRoomModel.create({

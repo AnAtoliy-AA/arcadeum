@@ -28,6 +28,10 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
+import { RoomInfoDto } from './dtos/room-info.dto';
+import { UpdateRoomOptionsDto } from './dtos/update-room-options.dto';
+import { InvitePlayersDto } from './dtos/invite-players.dto';
+import { ReorderParticipantsDto } from './dtos/reorder-participants.dto';
 import {
   parseStatusFilters,
   parseVisibilityFilters,
@@ -162,15 +166,14 @@ export class GamesController {
   @Post('room-info')
   async getRoomInfoBody(
     @Req() req: Request,
-    @Body() body: { roomId: string },
+    @Body() dto: RoomInfoDto,
   ): Promise<{
     room: Awaited<ReturnType<GamesService['getRoom']>>;
     session: Awaited<ReturnType<GamesService['getRoomSession']>>['session'];
   }> {
-    const { roomId } = body;
     const user = req.user as AuthenticatedUser | undefined | null;
     const { room, session } = await this.gamesService.getRoomSession(
-      roomId,
+      dto.roomId,
       user?.userId,
     );
     return { room, session };
@@ -259,19 +262,11 @@ export class GamesController {
   async invitePlayers(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() dto: { userIds: string[] },
+    @Body() dto: InvitePlayersDto,
   ): Promise<void> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
-    }
-
-    if (
-      !dto.userIds ||
-      !Array.isArray(dto.userIds) ||
-      dto.userIds.length === 0
-    ) {
-      throw new BadRequestException('userIds array is required');
     }
 
     await this.gamesService.reinvitePlayers(roomId, user.userId, dto.userIds);
@@ -355,7 +350,7 @@ export class GamesController {
   async updateRoomOptions(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() body: { options: Record<string, unknown> },
+    @Body() dto: UpdateRoomOptionsDto,
   ): Promise<{
     room: Awaited<ReturnType<GamesService['updateRoomOptions']>>;
   }> {
@@ -364,15 +359,10 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const { options } = body;
-    if (!options || typeof options !== 'object') {
-      throw new BadRequestException('Options object is required');
-    }
-
     const room = await this.gamesService.updateRoomOptions(
       roomId,
       user.userId,
-      options,
+      dto.options,
     );
     return { room };
   }
@@ -383,7 +373,7 @@ export class GamesController {
   async reorderParticipants(
     @Req() req: Request,
     @Param('roomId') roomId: string,
-    @Body() body: { userIds: string[] },
+    @Body() dto: ReorderParticipantsDto,
   ): Promise<{
     room: Awaited<ReturnType<GamesService['reorderParticipants']>>;
   }> {
@@ -392,15 +382,10 @@ export class GamesController {
       throw new UnauthorizedException();
     }
 
-    const { userIds } = body;
-    if (!Array.isArray(userIds)) {
-      throw new BadRequestException('userIds must be an array');
-    }
-
     const room = await this.gamesService.reorderParticipants(
       roomId,
       user.userId,
-      userIds,
+      dto.userIds,
     );
     return { room };
   }

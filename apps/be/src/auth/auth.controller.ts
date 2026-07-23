@@ -126,17 +126,23 @@ export class AuthController {
   }
 
   @Get('check/username/:username')
-  @Throttle({ default: { limit: 20, ttl: 60_000 } })
-  checkUsername(
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async checkUsername(
     @Param('username') username: string,
   ): Promise<{ available: boolean }> {
-    return this.authService.checkUsernameAvailable(username);
+    const result = await this.authService.checkUsernameAvailable(username);
+    // Always return the same shape to prevent user enumeration
+    return { available: result.available };
   }
 
   @Get('check/email/:email')
-  @Throttle({ default: { limit: 20, ttl: 60_000 } })
-  checkEmail(@Param('email') email: string): Promise<{ available: boolean }> {
-    return this.authService.checkEmailAvailable(email);
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async checkEmail(
+    @Param('email') email: string,
+  ): Promise<{ available: boolean }> {
+    const result = await this.authService.checkEmailAvailable(email);
+    // Always return the same shape to prevent user enumeration
+    return { available: result.available };
   }
 
   @Post('login')

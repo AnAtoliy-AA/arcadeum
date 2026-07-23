@@ -23,6 +23,7 @@ import {
   GoogleOAuthService,
   PasswordResetService,
   SignupRewardService,
+  LoginLockoutService,
 } from './services';
 import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
@@ -65,6 +66,7 @@ import { MailerModule } from '../support/mailer.module';
     GoogleOAuthService,
     PasswordResetService,
     SignupRewardService,
+    LoginLockoutService,
     UserRoleResolver,
     AuthThrottlerGuard,
   ],

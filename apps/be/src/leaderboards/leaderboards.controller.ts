@@ -14,16 +14,15 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/guards/roles.decorator';
 import { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { GetLeaderboardDto } from './dtos/get-leaderboard.dto';
 import { SeedLeaderboardDto } from './dtos/seed-leaderboard.dto';
 import { LeaderboardsService } from './leaderboards.service';
 import { LeaderboardsSeederService } from './leaderboards.seeder';
 import { LeaderboardsCaptureService } from './leaderboards.capture.service';
-
-function adminEnabled(): boolean {
-  return process.env.LEADERBOARDS_ADMIN_ENABLED === 'true';
-}
 
 @Controller('leaderboards')
 export class LeaderboardsController {
@@ -59,11 +58,10 @@ export class LeaderboardsController {
   }
 
   @Post('admin/seed')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async seed(@Body() body: SeedLeaderboardDto) {
-    if (!adminEnabled()) {
-      throw new NotFoundException();
-    }
     return this.seeder.seed({
       rowsPerMode: body.rowsPerMode,
       season: body.season,
@@ -71,11 +69,10 @@ export class LeaderboardsController {
   }
 
   @Post('admin/capture')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async runCapture() {
-    if (!adminEnabled()) {
-      throw new NotFoundException();
-    }
     const results = await this.capture.captureAll();
     return { results };
   }

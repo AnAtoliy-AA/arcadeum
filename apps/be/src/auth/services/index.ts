@@ -6,3 +6,4 @@ export { RefreshTokenService } from './refresh-token.service';
 export { GoogleOAuthService } from './google-oauth.service';
 export { PasswordResetService } from './password-reset.service';
 export { SignupRewardService } from './signup-reward.service';
+export { LoginLockoutService } from './login-lockout.service';

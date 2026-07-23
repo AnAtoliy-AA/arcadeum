@@ -7,6 +7,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.83] - 2026-07-23
+
+### Added
+- add useGameEndState hook and GameEndModals for unified game end screen
+
+### Fixed
+- add expansionMargin/infinityWinLength to TicTacToe resolveOptions
+- fix TicTacToe isSize type guard for infinity board size
+- add openRematchModal to Critical GameEndModals gameEnd object
+- fix type error in Critical ActiveGameView rematch handler
+- add currentUserId/isGameOver back as optional to UseGameEndStateOptions
+- remove duplicate SeaBattleModals function from merge
+
+### Refactored
+- optimize useGameEndState performance and simplify GameEndModals API
+
+
+## [1.23.82] - 2026-07-23
+
+### Added
+- add cyber phoenix and cyber dragon premium avatars
+
+
+## [1.23.81] - 2026-07-23
+
+### Fixed
+- add missing getDefaultShipCount import, gridSize test prop, and fix useEffect deps
+- pass shipCount/gridSize directly in start event to bypass race condition
+- track gridSize/shipCount in local state to fix stale room race
+- sync lobby options to gameOptions before starting game
+- ensure shipCount reaches engine via gameOptions
+- use deterministic autoplacement for many ships
+- restore expanded SHIPS array and correct defaults
+- improve autoplacement reliability and sort ships big-to-small
+- sync frontend SHIPS array with backend and pass shipCount in team mode
+- pass gridSize to frontend placement helpers
+- fix ship placement for larger grids and add host-configurable ship count
+
+
+## [1.23.80] - 2026-07-23
+
+### Fixed
+- sanitize user-provided values in MongoDB queries to prevent NoSQL injection
+- replace Math.random() with crypto.randomInt() for CodeQL compliance
+- allow E2E+production in CI environments
+- harden backend security after comprehensive audit
+
+
+## [1.23.79] - 2026-07-23
+
+### Fixed
+- target Dependabot PRs to develop branch
+
+
+## [1.23.78] - 2026-07-22
+
+### Fixed
+- filter CI error logs to show only failures
+- add timeout prompt to fixPR and checkAndFixCI
+- eliminate credential race condition in pushBranch
+- improve pushBranch retry, sync verifyChanges, increase installDeps timeout
+- rm -rf worktree fallback when git worktree remove fails
+- simplify verification to lint+typecheck only, increase timeout to 5min
+- increase Bull lock duration to 15min for implementation queue
+- remove git checkout --detach from worktree creation
+- always setup gh auth before push in worktrees
+- use actual PR branch name for CI fix instead of constructing it
+- default engine to mimo, fix CI poll, add timeout prompt
+
+### Refactored
+- extract stripDisabledRules from games.controller
+
+
+## [1.23.77] - 2026-07-22
+
+### Added
+- audio cues (ARC-879)
+
+### Fixed
+- update sound test to use dynamic manifest count
+- resolve CI failures and review feedback
+- lint warning in ChatMessagePopup
+
+
+## [1.23.76] - 2026-07-22
+
+### Added
+- add display names and avatars to player cards
+
+### Fixed
+- reduce Jest workers from 4 to 2 to fix SIGSEGV
+
+### Refactored
+- extract GamesCatalogService from controller
+
+
+## [1.23.75] - 2026-07-21
+
+### Fixed
+- resolve periodic re-login by fixing token refresh and session recovery
+
+
 ## [1.23.74] - 2026-07-21
 
 ### Added

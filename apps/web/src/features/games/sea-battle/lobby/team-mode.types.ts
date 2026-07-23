@@ -19,6 +19,8 @@ export interface SeaBattleGameOptions {
   hideShipsFromTeammates?: boolean;
   teams?: SeaBattleTeam[];
   maxTotalPlayers?: number;
+  gridSize?: number;
+  shipCount?: number;
 }
 
 /** Default team colors picked from the design palette (Tailwind 600 family). */

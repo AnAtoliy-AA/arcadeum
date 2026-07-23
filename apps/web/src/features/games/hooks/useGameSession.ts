@@ -97,15 +97,13 @@ export function useGameSession(
       setActionBusy(null);
     };
 
-    // Decrypt wrapper for socket handlers — falls through to handler with
-    // raw data when decryption fails (e.g. anonymous clients without key)
+    // Decrypt wrapper for socket handlers — skips handler when decryption
+    // fails (e.g. anonymous clients without encryption key, or key not yet received)
     const decryptHandler = <T>(handler: (payload: T) => void) => {
       return async (raw: unknown) => {
         const payload = await maybeDecrypt<T>(raw);
         if (payload !== null) {
           handler(payload);
-        } else {
-          handler(raw as T);
         }
       };
     };

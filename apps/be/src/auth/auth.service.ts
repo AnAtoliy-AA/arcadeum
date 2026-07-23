@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
+import { BCRYPT_SALT_ROUNDS } from '../common/constants/bcrypt';
 import { User, UserDocument } from './schemas/user.schema';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -19,12 +19,18 @@ import {
   RefreshTokenService,
   GoogleOAuthService,
 } from './services';
+import { LoginLockoutService } from './services/login-lockout.service';
 import { escapeRegExp } from '../common/utils/escape-regexp';
+import {
+  buildAuthUserProfile,
+  ensureUserUsername,
+  getOrCreateOAuthUser,
+  resolveDisplayName,
+} from './auth-helpers';
 import type {
   AuthUserProfile,
   AuthTokensResponse,
   OAuthTokenResponse,
-  GoogleUserProfile,
   UserRole,
 } from './lib/types';
 import { ReferralService } from '../referrals/referral.service';
@@ -50,10 +56,9 @@ export class AuthService {
     private readonly referralService: ReferralService,
     private readonly signupReward: SignupRewardService,
     private readonly moduleRef: ModuleRef,
+    private readonly lockoutService: LoginLockoutService,
   ) {}
 
-  // Lazy ModuleRef lookup avoids the AuthModule <-> ShopModule constructor
-  // cycle (transient DI errors on cold start). Called post-bootstrap only.
   private async grantStarterItems(userId: string): Promise<void> {
     try {
       const inv = this.moduleRef.get(InventoryService, { strict: false });
@@ -63,8 +68,6 @@ export class AuthService {
     }
   }
 
-  // ── OAuth Code Exchange (delegated to GoogleOAuthService) ────────────────
-
   async exchangeCode(params: {
     code: string;
     codeVerifier?: string;
@@ -73,8 +76,6 @@ export class AuthService {
   }): Promise<OAuthTokenResponse> {
     return this.googleOAuth.exchangeCode(params);
   }
-
-  // ── Local Auth (email/password) ─────────────────────────────────────────
 
   async register(data: RegisterDto): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();
@@ -94,7 +95,7 @@ export class AuthService {
       throw new ConflictException('Username already taken');
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
+    const passwordHash = await bcrypt.hash(data.password, BCRYPT_SALT_ROUNDS);
     const created = await this.userModel.create({
       email,
       passwordHash,
@@ -109,20 +110,14 @@ export class AuthService {
           (created as UserDocument).id as string,
         );
       } catch {
-        // Non-critical — don't fail registration if referral tracking fails
+        // Non-critical
       }
     }
 
-    // Grant starter shop items. Un-sessioned — neither `register()` nor
-    // `getOrCreateOAuthUser()` open a Mongo transaction today, and forcing
-    // one purely for this side effect would reshape error semantics across
-    // the auth surface. A crash between user-insert and starter-grant is
-    // recovered by `ShopInventoryBootstrap` on next boot. Failure is
-    // non-critical to registration itself.
     await this.grantStarterItems((created as UserDocument).id as string);
     await this.signupReward.grant((created as UserDocument).id as string);
 
-    return this.buildAuthUserProfile(created);
+    return buildAuthUserProfile(created);
   }
 
   async checkUsernameAvailable(
@@ -149,10 +144,22 @@ export class AuthService {
 
   async login(data: LoginDto): Promise<AuthTokensResponse> {
     const email = data.email.toLowerCase();
-    const userDoc = await this.userModel.findOne({ email });
-    if (!userDoc) throw new UnauthorizedException('Invalid credentials');
 
-    const user = await this.ensureUserUsername(userDoc);
+    if (this.lockoutService.isLocked(email)) {
+      const remainingMs = this.lockoutService.getLockoutRemainingMs(email);
+      const remainingMin = Math.ceil(remainingMs / 60_000);
+      throw new UnauthorizedException(
+        `Account locked due to too many failed attempts. Try again in ${remainingMin} minute${remainingMin > 1 ? 's' : ''}.`,
+      );
+    }
+
+    const userDoc = await this.userModel.findOne({ email });
+    if (!userDoc) {
+      this.lockoutService.recordFailure(email);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const user = await ensureUserUsername(userDoc, this.userModel);
 
     if (user.isBlocked) {
       throw new UnauthorizedException('Account is blocked');
@@ -163,7 +170,12 @@ export class AuthService {
     }
 
     const passwordOk = await bcrypt.compare(data.password, user.passwordHash);
-    if (!passwordOk) throw new UnauthorizedException('Invalid credentials');
+    if (!passwordOk) {
+      this.lockoutService.recordFailure(email);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    this.lockoutService.recordSuccess(email);
 
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
@@ -177,19 +189,14 @@ export class AuthService {
       String(user.id),
       null,
     );
-    const authUser = this.buildAuthUserProfile(user);
     return {
       accessToken,
       accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
-      user: authUser,
+      user: buildAuthUserProfile(user),
     };
   }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // OAuth Login
-  // ─────────────────────────────────────────────────────────────────────────────
 
   async loginWithOAuth(data: OAuthLoginDto): Promise<AuthTokensResponse> {
     if (data.provider !== 'google') {
@@ -209,7 +216,12 @@ export class AuthService {
       throw new UnauthorizedException('Google account email not verified');
     }
 
-    const user = await this.getOrCreateOAuthUser(googleProfile);
+    const user = await getOrCreateOAuthUser(
+      googleProfile,
+      this.userModel,
+      (id) => this.grantStarterItems(id),
+      (id) => this.signupReward.grant(id),
+    );
 
     if (user.isBlocked) {
       throw new UnauthorizedException('Account is blocked');
@@ -232,32 +244,23 @@ export class AuthService {
       String(user.id),
       null,
     );
-    const userProfile = this.buildAuthUserProfile(user);
 
     return {
       accessToken,
       accessTokenExpiresAt,
       refreshToken: refresh.token,
       refreshTokenExpiresAt: refresh.expiresAt,
-      user: userProfile,
+      user: buildAuthUserProfile(user),
     };
   }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Refresh Token (delegated to RefreshTokenService)
-  // ─────────────────────────────────────────────────────────────────────────────
 
   async refreshToken(rawToken: string): Promise<AuthTokensResponse> {
     return this.refreshTokenService.refreshToken(
       rawToken,
-      (user) => this.buildAuthUserProfile(user),
-      (user) => this.ensureUserUsername(user),
+      (user) => buildAuthUserProfile(user),
+      (user) => ensureUserUsername(user, this.userModel),
     );
   }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // User Search & Profile
-  // ─────────────────────────────────────────────────────────────────────────────
 
   async searchUsers(params: {
     query: string;
@@ -299,7 +302,7 @@ export class AuthService {
       id: String(user.id),
       email: user.email,
       username: user.username,
-      displayName: this.resolveDisplayName(user),
+      displayName: resolveDisplayName(user),
       role: user.role ?? 'free',
     }));
   }
@@ -312,8 +315,8 @@ export class AuthService {
     if (!doc) {
       throw new UnauthorizedException('User not found');
     }
-    const ensured = await this.ensureUserUsername(doc);
-    return this.buildAuthUserProfile(ensured);
+    const ensured = await ensureUserUsername(doc, this.userModel);
+    return buildAuthUserProfile(ensured);
   }
 
   async blockUser(userId: string, blockedUserId: string): Promise<void> {
@@ -371,123 +374,5 @@ export class AuthService {
       displayName: u.displayName || u.username || u.email || 'Unknown',
       username: u.username || '',
     }));
-  }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Private Helpers
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  private sanitizeUsernameCandidate(source: string): string {
-    const base = source.replace(/[^a-zA-Z0-9_-]/g, '');
-    if (base.length >= 3) return base;
-    return `user${Math.floor(Math.random() * 9000 + 1000)}`;
-  }
-
-  private async ensureUserUsername(user: UserDocument): Promise<UserDocument> {
-    if (user.username && user.usernameNormalized) {
-      return user;
-    }
-
-    const emailLocal = user.email.split('@')[0] ?? 'user';
-    const base = this.sanitizeUsernameCandidate(emailLocal);
-    let candidate = base;
-    let normalized = candidate.toLowerCase();
-    let suffix = 1;
-
-    while (
-      await this.userModel.exists({
-        usernameNormalized: normalized,
-        _id: { $ne: user._id },
-      })
-    ) {
-      candidate = `${base}${suffix}`;
-      normalized = candidate.toLowerCase();
-      suffix += 1;
-    }
-
-    user.username = candidate;
-    user.usernameNormalized = normalized;
-    await user.save();
-    return user;
-  }
-
-  private async getOrCreateOAuthUser(
-    profile: GoogleUserProfile,
-  ): Promise<UserDocument> {
-    const email = profile.email.toLowerCase();
-    const existing = await this.userModel.findOne({ email });
-    if (existing) {
-      const ensured = await this.ensureUserUsername(existing);
-      const preferredDisplay = profile.name?.trim();
-      if (preferredDisplay && ensured.displayName !== preferredDisplay) {
-        ensured.displayName = preferredDisplay;
-        await ensured.save();
-      }
-      return ensured;
-    }
-
-    const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
-    const base = this.sanitizeUsernameCandidate(preferredName);
-    let candidate = base;
-    let normalized = candidate.toLowerCase();
-    let suffix = 1;
-
-    while (await this.userModel.exists({ usernameNormalized: normalized })) {
-      candidate = `${base}${suffix}`;
-      normalized = candidate.toLowerCase();
-      suffix += 1;
-    }
-
-    const placeholderPassword = await bcrypt.hash(crypto.randomUUID(), 10);
-
-    const created = await this.userModel.create({
-      email,
-      passwordHash: placeholderPassword,
-      username: candidate,
-      usernameNormalized: normalized,
-      displayName: profile.name?.trim() || undefined,
-    });
-
-    // Grant starter shop items on first OAuth sign-up. Same un-sessioned
-    // approach as `register()`; bootstrap is the safety net.
-    await this.grantStarterItems((created as UserDocument).id as string);
-    await this.signupReward.grant((created as UserDocument).id as string);
-
-    return created;
-  }
-
-  private resolveDisplayName(
-    user: Pick<User, 'displayName' | 'username' | 'email'>,
-  ): string {
-    const preferred = user.displayName?.trim?.();
-    if (preferred) return preferred;
-    const username = user.username?.trim?.();
-    if (username) return username;
-    const [localPart] = user.email?.split?.('@') ?? [];
-    const local = localPart?.trim?.();
-    if (local) return local;
-    return user.email;
-  }
-
-  private buildAuthUserProfile(user: UserDocument): AuthUserProfile {
-    const profile: AuthUserProfile = {
-      id: String(user.id),
-      email: user.email,
-      username: user.username,
-      displayName: this.resolveDisplayName(user),
-      role: user.role ?? 'free',
-      equippedAvatarId: user.equippedAvatarId ?? null,
-      equippedBadgeId: user.equippedBadgeId ?? null,
-      equippedNameColorId: user.equippedNameColorId ?? null,
-      equippedFrameId: user.equippedFrameId ?? null,
-      equippedAuraId: user.equippedAuraId ?? null,
-      equippedBannerId: user.equippedBannerId ?? null,
-      equippedGameSkinId: user.equippedGameSkinId ?? null,
-      equippedBackgroundId: user.equippedBackgroundId ?? null,
-    };
-
-    const createdAt = (user as Partial<{ createdAt: Date }>).createdAt;
-    if (createdAt instanceof Date) profile.createdAt = createdAt;
-    return profile;
   }
 }

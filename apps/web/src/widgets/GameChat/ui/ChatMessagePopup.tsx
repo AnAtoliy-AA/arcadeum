@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { EMOTES, type EmoteId } from './EmotePicker';
+
 
 const KEYFRAMES_CSS = `
 @keyframes chatBubbleFloat {

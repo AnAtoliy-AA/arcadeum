@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { GamesController } from './games.controller';
+import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
@@ -147,6 +148,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
+    GamesCatalogService,
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,

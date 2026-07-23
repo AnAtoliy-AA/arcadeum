@@ -238,6 +238,12 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
 
   private async emitSessionUpdate(session: GameSessionSummary) {
     this.backfillLegalMoves(session);
+    const moveCount = session.state?.moveHistory
+      ? (session.state.moveHistory as unknown[]).length
+      : 0;
+    this.logger.log(
+      `[Chess] emitSessionUpdate room=${session.roomId} moveCount=${moveCount}`,
+    );
     await this.realtimeService.emitSessionSnapshot(
       session.roomId,
       session,

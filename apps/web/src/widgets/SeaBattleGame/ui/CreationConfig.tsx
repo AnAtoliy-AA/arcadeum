@@ -5,6 +5,10 @@ import {
 } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
+import {
+  getDefaultShipCount,
+  getShipCountOptions,
+} from '@/widgets/SeaBattleGame/types';
 import { gamesApi } from '@/features/games/api';
 import type { CatalogVariant } from '@/features/games/api';
 import { Section } from '@arcadeum/ui/components/Section/Section';
@@ -184,11 +188,39 @@ export default function SeaBattleCreationConfig({
                   disabled={!!ruleComingSoon.get('gridSize')}
                   onClick={() =>
                     !ruleComingSoon.get('gridSize') &&
-                    handleUpdate({ gridSize: gs.value })
+                    handleUpdate({
+                      gridSize: gs.value,
+                      shipCount: getDefaultShipCount(gs.value),
+                    })
                   }
                   data-testid={`grid-size-${gs.value}`}
                 >
                   {gs.label}
+                </Button>
+              ))}
+            </XStack>
+          </YStack>
+
+          <YStack gap="$1">
+            <XStack alignItems="center" gap="$2">
+              <Text fontSize="$4" fontWeight="600">
+                {t('games.create.seaBattleShipCount') || 'Number of Ships'}
+              </Text>
+            </XStack>
+            <XStack gap="$2" flexWrap="wrap">
+              {getShipCountOptions(options.gridSize ?? 10).map((count) => (
+                <Button
+                  key={count}
+                  variant="secondary"
+                  size="sm"
+                  isActive={
+                    (options.shipCount ??
+                      getDefaultShipCount(options.gridSize ?? 10)) === count
+                  }
+                  onClick={() => handleUpdate({ shipCount: count })}
+                  data-testid={`ship-count-${count}`}
+                >
+                  {count}
                 </Button>
               ))}
             </XStack>

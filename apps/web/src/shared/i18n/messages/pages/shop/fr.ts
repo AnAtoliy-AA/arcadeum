@@ -239,6 +239,14 @@ export const shopFr = {
         name: 'Chat du Bengale Cybernétique',
         desc: 'Un chat du Bengale cybernétique hyperréaliste.',
       },
+      phoenixcyber: {
+        name: 'Phénix Cybernétique',
+        desc: 'Un phénix cybernétique hyperréaliste.',
+      },
+      dragoncyber: {
+        name: 'Dragon Cybernétique',
+        desc: 'Un dragon cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },

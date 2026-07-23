@@ -12,6 +12,7 @@ import { SolanaService } from './solana.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
+import { VerifyTransactionDto } from './dto/verify-transaction.dto';
 
 @Controller('solana')
 export class SolanaController {
@@ -35,12 +36,12 @@ export class SolanaController {
   @UseGuards(JwtAuthGuard)
   async verifyTransaction(
     @Req() req: { user: AuthenticatedUser },
-    @Body() body: { signature: string; amount: number; senderAddress: string },
+    @Body() dto: VerifyTransactionDto,
   ) {
     const isValid = await this.solana.verifyTransaction(
-      body.signature,
-      body.amount,
-      body.senderAddress,
+      dto.signature,
+      dto.amount,
+      dto.senderAddress,
     );
 
     return { valid: isValid };

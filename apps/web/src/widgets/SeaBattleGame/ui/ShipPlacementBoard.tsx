@@ -59,8 +59,8 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     [currentPlayer?.ships],
   );
   const serverBoard = useMemo(
-    () => currentPlayer?.board || createEmptyBoard(),
-    [currentPlayer?.board],
+    () => currentPlayer?.board || createEmptyBoard(boardSize),
+    [currentPlayer?.board, boardSize],
   );
 
   const { ships, board, registerPlacement, registerMove, clearPendingMoves } =
@@ -84,6 +84,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     board,
     isPlacementComplete,
     isMobile,
+    gridSize: boardSize,
     onMoveShip: handleMoveShip,
     setHoveredCells,
     setIsInvalidHover,

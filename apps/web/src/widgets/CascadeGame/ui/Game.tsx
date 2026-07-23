@@ -2,20 +2,17 @@
 
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
   useGameChatSend,
-  useRematch,
+  useGameEndState,
   useGameRoomActions,
-  useGameResultModal,
   usePendingStart,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -62,7 +59,6 @@ function CascadeGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: CascadeGameProps) {
@@ -108,23 +104,6 @@ function CascadeGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
   useGameChatIntegration(snapshot?.logs as never, sendChat);
 
-  const {
-    rematchLoading,
-    handleRematch,
-    invitation,
-    handleAcceptInvitation,
-    handleDeclineInvitation,
-  } = useRematch({ roomId });
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
-
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     backendResult: (session?.state as Record<string, unknown>)?.gameResult as
@@ -134,22 +113,23 @@ function CascadeGameImpl({
 
   useRecordGameResult(result, 'cascade_v1', session?.id);
 
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-      isGameOver,
-    );
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result,
+    resultMessages: result
+      ? {
+          title: t(
+            `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+          message: t(
+            `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+        }
+      : undefined,
+  });
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
@@ -162,10 +142,6 @@ function CascadeGameImpl({
       CASCADE_VARIANTS[0],
     [options.variant],
   );
-
-  const onRematchClick = useCallback(() => {
-    void handleRematch([], undefined);
-  }, [handleRematch]);
 
   const handlePlayCard = useCallback(
     (cardId: string, chosenColor?: ActiveColor) => {
@@ -184,7 +160,6 @@ function CascadeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy || pendingStart}
-          onReorderPlayers={handleReorderPlayers}
           onStartGame={handleStartGame}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}
@@ -228,21 +203,10 @@ function CascadeGameImpl({
 
   const modals = (
     <>
-      <GameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
-        t={t}
-        messages={resultMessages}
-      />
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={[]}
+        currentUserId={currentUserId}
         t={t}
       />
       <RulesModal
@@ -261,7 +225,6 @@ function CascadeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
-        loading={!snapshot}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Cascade',

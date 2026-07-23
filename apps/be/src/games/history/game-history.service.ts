@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
-import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
@@ -13,7 +12,7 @@ import {
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
-import { BaseGameState } from '../engines/base/game-engine.interface';
+import { BaseGameState, ChatScope } from '../engines/base/game-engine.interface';
 import { escapeRegExp } from '../../common/utils/escape-regexp';
 
 /**

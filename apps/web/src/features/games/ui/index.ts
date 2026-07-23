@@ -18,3 +18,4 @@ export {
   type TurnContract,
 } from './TurnIndicator';
 export { UndoButton } from './UndoButton';
+export { GameEndModals } from './GameEndModals';

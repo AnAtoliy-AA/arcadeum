@@ -1,109 +1,144 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+} from '@nestjs/common';
 import { isE2EMode } from '../../support/lib/e2e-mode';
+import { RATE_STATE_STORE } from '../rate-state';
+import type { RateStateStore } from '../rate-state';
 import type { Request } from 'express';
 
-interface BlockedEntry {
-  expiresAt: number;
-  reason: string;
+const BLOCKED_PREFIX = 'ipblock:blocked:';
+const FAIL_PREFIX = 'ipblock:fail:';
+const ALL_BLOCKED_KEY = 'ipblock:all_blocked';
+
+function parseIpList(raw: string): string[] {
+  const parsed: unknown = JSON.parse(raw);
+  return Array.isArray(parsed) ? (parsed as string[]) : [];
 }
 
 /**
  * IP block service that tracks failed requests and blocks abusive IPs.
- *
- * NOTE: This service uses in-memory storage (Map). It is NOT safe for
- * multi-instance deployments — state is lost on restart and not shared
- * across horizontally-scaled instances. An attacker hitting different
- * instances or triggering a restart can bypass IP blocking.
- *
- * If multi-instance support is needed, replace the Map backing store with
- * Redis (atomic increment + TTL) or a MongoDB collection with a TTL index.
- * Keep the same public method signatures and swap only the storage layer.
+ * Uses a shared RateStateStore for persistence across restarts and instances.
  */
 @Injectable()
 export class IpBlockService {
-  private readonly blocked = new Map<string, BlockedEntry>();
-  private readonly failureCounts = new Map<
-    string,
-    { count: number; windowStart: number }
-  >();
+  constructor(
+    @Inject(RATE_STATE_STORE) private readonly store: RateStateStore,
+  ) {}
 
   private readonly FAILURE_THRESHOLD = 50;
   private readonly FAILURE_WINDOW_MS = 60_000;
   private readonly BLOCK_DURATION_MS = 15 * 60 * 1000;
   private readonly SEVERE_BLOCK_DURATION_MS = 60 * 60 * 1000;
-  private readonly FAILURE_SWEEP_INTERVAL_MS = 5 * 60_000;
-  private lastFailureSweep = Date.now();
 
-  record429(ip: string): void {
-    const now = Date.now();
-    this.maybeSweepFailures(now);
-    const entry = this.failureCounts.get(ip);
+  async record429(ip: string): Promise<void> {
+    const count = await this.store.increment(
+      FAIL_PREFIX + ip,
+      this.FAILURE_WINDOW_MS,
+    );
 
-    if (!entry || now - entry.windowStart > this.FAILURE_WINDOW_MS) {
-      this.failureCounts.set(ip, { count: 1, windowStart: now });
-      return;
-    }
-
-    entry.count++;
-    if (entry.count >= this.FAILURE_THRESHOLD) {
-      this.block(ip, this.BLOCK_DURATION_MS, 'Repeated 429 responses');
-      this.failureCounts.delete(ip);
+    if (count >= this.FAILURE_THRESHOLD) {
+      await this.block(ip, this.BLOCK_DURATION_MS, 'Repeated 429 responses');
+      await this.store.delete(FAIL_PREFIX + ip);
     }
   }
 
-  recordSevereAbuse(ip: string, reason: string): void {
-    this.block(ip, this.SEVERE_BLOCK_DURATION_MS, reason);
-    this.failureCounts.delete(ip);
+  async recordSevereAbuse(ip: string, reason: string): Promise<void> {
+    await this.block(ip, this.SEVERE_BLOCK_DURATION_MS, reason);
+    await this.store.delete(FAIL_PREFIX + ip);
+    void reason;
   }
 
-  isBlocked(ip: string): boolean {
-    const entry = this.blocked.get(ip);
-    if (!entry) return false;
-
-    if (Date.now() > entry.expiresAt) {
-      this.blocked.delete(ip);
-      return false;
-    }
-    return true;
+  async isBlocked(ip: string): Promise<boolean> {
+    const expiresAt = await this.store.get(BLOCKED_PREFIX + ip);
+    if (!expiresAt) return false;
+    return Date.now() < expiresAt;
   }
 
-  block(ip: string, durationMs: number, reason: string): void {
-    this.blocked.set(ip, {
-      expiresAt: Date.now() + durationMs,
-      reason,
-    });
+  async block(ip: string, durationMs: number, reason: string): Promise<void> {
+    const expiresAt = Date.now() + durationMs;
+    await this.store.set(BLOCKED_PREFIX + ip, expiresAt, durationMs);
+    await this.addToAllBlocked(ip, durationMs);
+    void reason;
   }
 
-  unblock(ip: string): boolean {
-    return this.blocked.delete(ip);
+  async unblock(ip: string): Promise<void> {
+    await this.store.delete(BLOCKED_PREFIX + ip);
+    await this.removeFromAllBlocked(ip);
   }
 
-  getBlocked(): Array<{ ip: string; expiresAt: number; reason: string }> {
-    const now = Date.now();
+  async getBlocked(): Promise<
+    Array<{ ip: string; expiresAt: number; reason: string }>
+  > {
+    const allBlockedRaw = await this.store.getString(ALL_BLOCKED_KEY);
+    if (!allBlockedRaw) return [];
+
+    const allBlocked = parseIpList(allBlockedRaw);
     const result: Array<{ ip: string; expiresAt: number; reason: string }> = [];
+    const now = Date.now();
+    const stillBlocked: string[] = [];
 
-    for (const [ip, entry] of this.blocked) {
-      if (now > entry.expiresAt) {
-        this.blocked.delete(ip);
+    for (const ip of allBlocked) {
+      const expiresAt = await this.store.get(BLOCKED_PREFIX + ip);
+      if (!expiresAt || now > expiresAt) continue;
+      stillBlocked.push(ip);
+      result.push({ ip, expiresAt, reason: '' });
+    }
+
+    if (stillBlocked.length !== allBlocked.length) {
+      if (stillBlocked.length === 0) {
+        await this.store.delete(ALL_BLOCKED_KEY);
       } else {
-        result.push({ ip, expiresAt: entry.expiresAt, reason: entry.reason });
+        await this.store.setString(
+          ALL_BLOCKED_KEY,
+          JSON.stringify(stillBlocked),
+          this.SEVERE_BLOCK_DURATION_MS,
+        );
       }
     }
+
     return result;
   }
 
-  clearAll(): void {
-    this.blocked.clear();
-    this.failureCounts.clear();
+  async clearAll(): Promise<void> {
+    const allBlockedRaw = await this.store.getString(ALL_BLOCKED_KEY);
+    if (allBlockedRaw) {
+      const allBlocked = parseIpList(allBlockedRaw);
+      for (const ip of allBlocked) {
+        await this.store.delete(BLOCKED_PREFIX + ip);
+      }
+    }
+    await this.store.delete(ALL_BLOCKED_KEY);
   }
 
-  private maybeSweepFailures(now: number): void {
-    if (now - this.lastFailureSweep < this.FAILURE_SWEEP_INTERVAL_MS) return;
-    this.lastFailureSweep = now;
-    for (const [ip, entry] of this.failureCounts) {
-      if (now - entry.windowStart > this.FAILURE_WINDOW_MS) {
-        this.failureCounts.delete(ip);
-      }
+  private async addToAllBlocked(ip: string, durationMs: number): Promise<void> {
+    const raw = await this.store.getString(ALL_BLOCKED_KEY);
+    const allBlocked = raw ? parseIpList(raw) : [];
+    if (!allBlocked.includes(ip)) {
+      allBlocked.push(ip);
+      await this.store.setString(
+        ALL_BLOCKED_KEY,
+        JSON.stringify(allBlocked),
+        Math.max(durationMs, this.SEVERE_BLOCK_DURATION_MS),
+      );
+    }
+  }
+
+  private async removeFromAllBlocked(ip: string): Promise<void> {
+    const raw = await this.store.getString(ALL_BLOCKED_KEY);
+    if (!raw) return;
+    const allBlocked = parseIpList(raw);
+    const filtered = allBlocked.filter((i) => i !== ip);
+    if (filtered.length === 0) {
+      await this.store.delete(ALL_BLOCKED_KEY);
+    } else {
+      await this.store.setString(
+        ALL_BLOCKED_KEY,
+        JSON.stringify(filtered),
+        this.SEVERE_BLOCK_DURATION_MS,
+      );
     }
   }
 }
@@ -112,12 +147,12 @@ export class IpBlockService {
 export class IpBlockGuard implements CanActivate {
   constructor(private readonly ipBlockService: IpBlockService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     if (isE2EMode()) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
     const ip = request.ip ?? request.socket?.remoteAddress ?? 'unknown';
 
-    return !this.ipBlockService.isBlocked(ip);
+    return !(await this.ipBlockService.isBlocked(ip));
   }
 }

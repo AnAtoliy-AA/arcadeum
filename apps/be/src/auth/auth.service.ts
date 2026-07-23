@@ -145,8 +145,9 @@ export class AuthService {
   async login(data: LoginDto): Promise<AuthTokensResponse> {
     const email = data.email.toLowerCase();
 
-    if (this.lockoutService.isLocked(email)) {
-      const remainingMs = this.lockoutService.getLockoutRemainingMs(email);
+    if (await this.lockoutService.isLocked(email)) {
+      const remainingMs =
+        await this.lockoutService.getLockoutRemainingMs(email);
       const remainingMin = Math.ceil(remainingMs / 60_000);
       throw new UnauthorizedException(
         `Account locked due to too many failed attempts. Try again in ${remainingMin} minute${remainingMin > 1 ? 's' : ''}.`,
@@ -155,7 +156,7 @@ export class AuthService {
 
     const userDoc = await this.userModel.findOne({ email });
     if (!userDoc) {
-      this.lockoutService.recordFailure(email);
+      await this.lockoutService.recordFailure(email);
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -171,11 +172,11 @@ export class AuthService {
 
     const passwordOk = await bcrypt.compare(data.password, user.passwordHash);
     if (!passwordOk) {
-      this.lockoutService.recordFailure(email);
+      await this.lockoutService.recordFailure(email);
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    this.lockoutService.recordSuccess(email);
+    await this.lockoutService.recordSuccess(email);
 
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),

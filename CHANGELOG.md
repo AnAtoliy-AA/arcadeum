@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.85] - 2026-07-23
+
+### Documentation
+- add PR title convention for staging/main
+
+
 ## [1.23.84] - 2026-07-23
 
 ### Fixed

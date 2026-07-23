@@ -106,6 +106,11 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'classic',
     };
   }
+  if (form.gameId === 'cat_dash_v1') {
+    return {
+      theme: form.themeId || 'village',
+    };
+  }
   return {};
 }
 

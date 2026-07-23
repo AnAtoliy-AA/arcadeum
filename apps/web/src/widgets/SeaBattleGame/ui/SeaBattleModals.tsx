@@ -2,40 +2,24 @@
 
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { RulesModal } from './RulesModal';
-import {
-  GameResultModal,
-  RematchModal,
-  RematchInvitationModal,
-} from '@/features/games/ui';
+import { GameEndModals } from '@/features/games/ui';
 import type { SeaBattleSnapshot } from '../types';
-import type { GameSessionSummary } from '@/shared/types/games';
+import type { UseGameEndStateResult } from '@/features/games/hooks/useGameEndState';
 
 interface SeaBattleModalsProps {
   showRules: boolean;
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
   setShowRules: (val: boolean) => void;
-  isGameOver: boolean;
-  resultModalDismissed: boolean;
-  hasSeenActiveGame: boolean;
-  gameResult: 'victory' | 'defeat' | null;
-  handleRematchClick: () => void;
-  session: GameSessionSummary | null;
-  setDismissedForSessionId: (id: string | null) => void;
-  rematchLoading: boolean;
-  showRematchModal: boolean;
+  gameEnd: UseGameEndStateResult;
   snapshot: SeaBattleSnapshot | null;
   resolveDisplayNameBound: (
     id?: string | null,
     fallback?: string | null,
   ) => string;
   currentUserId: string | null;
-  closeRematchModal: () => void;
-  handleRematch: (participantIds: string[], message?: string) => Promise<void>;
   cardVariant?: string;
-  invitation: { hostName: string; message?: string } | null;
-  handleAcceptInvitation: () => void;
-  handleDeclineInvitation: () => void;
+  onRematch?: () => void;
 }
 
 export function SeaBattleModals({
@@ -43,26 +27,26 @@ export function SeaBattleModals({
   showRulesOpen,
   onShowRulesClose,
   setShowRules,
-  isGameOver,
-  resultModalDismissed,
-  hasSeenActiveGame,
-  gameResult,
-  handleRematchClick,
-  session,
-  setDismissedForSessionId,
-  rematchLoading,
-  showRematchModal,
+  gameEnd,
   snapshot,
   resolveDisplayNameBound,
   currentUserId,
-  closeRematchModal,
-  handleRematch,
   cardVariant,
-  invitation,
-  handleAcceptInvitation,
-  handleDeclineInvitation,
+  onRematch,
 }: SeaBattleModalsProps) {
   const { t } = useTranslation();
+
+  const players =
+    snapshot?.players
+      .filter((p) => !p.playerId.startsWith('bot-'))
+      .map((p) => ({
+        playerId: p.playerId,
+        displayName: resolveDisplayNameBound(
+          p.playerId,
+          `Player ${p.playerId.slice(0, 4)} `,
+        ),
+        alive: p.alive,
+      })) || [];
 
   return (
     <>
@@ -74,46 +58,13 @@ export function SeaBattleModals({
         }}
         t={t}
       />
-      <GameResultModal
-        isOpen={isGameOver && hasSeenActiveGame && !resultModalDismissed}
-        result={gameResult}
-        onRematch={handleRematchClick}
-        onClose={() => {
-          if (session?.id) setDismissedForSessionId(session.id);
-        }}
-        rematchLoading={rematchLoading}
-        t={t}
-      />
-
-      <RematchModal
-        isOpen={showRematchModal}
-        players={
-          snapshot?.players
-            .filter((p) => !p.playerId.startsWith('bot-'))
-            .map((p) => ({
-              playerId: p.playerId,
-              displayName: resolveDisplayNameBound(
-                p.playerId,
-                `Player ${p.playerId.slice(0, 4)} `,
-              ),
-              alive: p.alive,
-            })) || []
-        }
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={players}
         currentUserId={currentUserId}
-        rematchLoading={rematchLoading}
-        onClose={closeRematchModal}
-        onConfirm={handleRematch}
-        t={t}
         cardVariant={cardVariant}
-      />
-
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
         t={t}
+        onRematch={onRematch}
       />
     </>
   );

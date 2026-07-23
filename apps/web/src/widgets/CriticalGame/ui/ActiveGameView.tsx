@@ -25,8 +25,7 @@ import {
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameEndModals, GameWidgetContainer } from '@/features/games/ui';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
@@ -373,18 +372,29 @@ export function ActiveGameView({
               }}
               resolveDisplayName={resolveDisplayName}
             />
-            <GameResultModal
-              isOpen={!!showResultModal}
-              data-testid="game-result-modal"
+            <GameEndModals
+              showResultModal={!!showResultModal}
               result={
                 snapshot.players.find((p) => p.alive)?.playerId ===
                 currentUserId
                   ? 'victory'
                   : 'defeat'
               }
+              dismissResult={() => setModalDismissed(true)}
               onRematch={isHost ? rematch.openRematchModal : undefined}
-              onClose={() => setModalDismissed(true)}
               rematchLoading={rematch.rematchLoading}
+              showRematchModal={rematch.showRematchModal}
+              closeRematchModal={rematch.closeRematchModal}
+              players={snapshot.players.map((p) => ({
+                playerId: p.playerId,
+                displayName: resolveDisplayName(p.playerId),
+                alive: p.alive,
+              }))}
+              currentUserId={currentUserId}
+              onConfirmRematch={rematch.handleRematch}
+              invitation={rematch.invitation}
+              handleAcceptInvitation={rematch.handleAcceptInvitation}
+              handleDeclineInvitation={rematch.handleDeclineInvitation}
               t={t}
             />
           </>

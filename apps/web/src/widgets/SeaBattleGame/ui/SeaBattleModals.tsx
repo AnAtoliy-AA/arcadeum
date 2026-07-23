@@ -2,25 +2,23 @@
 
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { RulesModal } from './RulesModal';
-import {
-  GameResultModal,
-  RematchModal,
-  RematchInvitationModal,
-} from '@/features/games/ui';
+import { GameEndModals } from '@/features/games/ui';
 import type { SeaBattleSnapshot } from '../types';
-import type { GameSessionSummary } from '@/shared/types/games';
+import type { RematchInvitation } from '@/features/games/hooks/useRematch';
+import type {
+  SharedResult,
+  ResultMessages,
+} from '@/features/games/hooks/useGameResultModal';
 
 interface SeaBattleModalsProps {
   showRules: boolean;
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
   setShowRules: (val: boolean) => void;
-  isGameOver: boolean;
-  resultModalDismissed: boolean;
-  gameResult: 'victory' | 'defeat' | null;
+  showResultModal: boolean;
+  result: SharedResult;
+  dismissResult: () => void;
   handleRematchClick: () => void;
-  session: GameSessionSummary | null;
-  setDismissedForSessionId: (id: string | null) => void;
   rematchLoading: boolean;
   showRematchModal: boolean;
   snapshot: SeaBattleSnapshot | null;
@@ -32,9 +30,10 @@ interface SeaBattleModalsProps {
   closeRematchModal: () => void;
   handleRematch: (participantIds: string[], message?: string) => Promise<void>;
   cardVariant?: string;
-  invitation: { hostName: string; message?: string } | null;
+  invitation: RematchInvitation | null;
   handleAcceptInvitation: () => void;
   handleDeclineInvitation: () => void;
+  resultMessages?: ResultMessages;
 }
 
 export function SeaBattleModals({
@@ -42,12 +41,10 @@ export function SeaBattleModals({
   showRulesOpen,
   onShowRulesClose,
   setShowRules,
-  isGameOver,
-  resultModalDismissed,
-  gameResult,
+  showResultModal,
+  result,
+  dismissResult,
   handleRematchClick,
-  session,
-  setDismissedForSessionId,
   rematchLoading,
   showRematchModal,
   snapshot,
@@ -59,8 +56,21 @@ export function SeaBattleModals({
   invitation,
   handleAcceptInvitation,
   handleDeclineInvitation,
+  resultMessages,
 }: SeaBattleModalsProps) {
   const { t } = useTranslation();
+
+  const players =
+    snapshot?.players
+      .filter((p) => !p.playerId.startsWith('bot-'))
+      .map((p) => ({
+        playerId: p.playerId,
+        displayName: resolveDisplayNameBound(
+          p.playerId,
+          `Player ${p.playerId.slice(0, 4)} `,
+        ),
+        alive: p.alive,
+      })) || [];
 
   return (
     <>
@@ -72,45 +82,22 @@ export function SeaBattleModals({
         }}
         t={t}
       />
-      <GameResultModal
-        isOpen={isGameOver && !resultModalDismissed}
-        result={gameResult}
+      <GameEndModals
+        showResultModal={showResultModal}
+        result={result}
+        dismissResult={dismissResult}
         onRematch={handleRematchClick}
-        onClose={() => {
-          if (session?.id) setDismissedForSessionId(session.id);
-        }}
         rematchLoading={rematchLoading}
-        t={t}
-      />
-
-      <RematchModal
-        isOpen={showRematchModal}
-        players={
-          snapshot?.players
-            .filter((p) => !p.playerId.startsWith('bot-'))
-            .map((p) => ({
-              playerId: p.playerId,
-              displayName: resolveDisplayNameBound(
-                p.playerId,
-                `Player ${p.playerId.slice(0, 4)} `,
-              ),
-              alive: p.alive,
-            })) || []
-        }
+        resultMessages={resultMessages}
+        showRematchModal={showRematchModal}
+        closeRematchModal={closeRematchModal}
+        players={players}
         currentUserId={currentUserId}
-        rematchLoading={rematchLoading}
-        onClose={closeRematchModal}
-        onConfirm={handleRematch}
-        t={t}
+        onConfirmRematch={handleRematch}
         cardVariant={cardVariant}
-      />
-
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
+        invitation={invitation}
+        handleAcceptInvitation={handleAcceptInvitation}
+        handleDeclineInvitation={handleDeclineInvitation}
         t={t}
       />
     </>

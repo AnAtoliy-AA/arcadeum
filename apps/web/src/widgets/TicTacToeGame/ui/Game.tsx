@@ -2,14 +2,12 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
   useGameChatSend,
-  useRematch,
+  useGameEndState,
   useGameRoomActions,
-  useGameResultModal,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -100,8 +98,6 @@ function TicTacToeGameImpl({
     resolveDisplayNameBound,
   );
 
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
-
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
@@ -112,21 +108,23 @@ function TicTacToeGameImpl({
 
   useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
 
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-    );
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result,
+    resultMessages: result
+      ? {
+          title: t(
+            `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+          message: t(
+            `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+        }
+      : undefined,
+  });
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
@@ -139,10 +137,6 @@ function TicTacToeGameImpl({
       TIC_TAC_TOE_VARIANTS[0],
     [options.variant],
   );
-
-  const onRematchClick = useCallback(() => {
-    void handleRematch([], undefined);
-  }, [handleRematch]);
 
   if (!room) return null;
 
@@ -206,14 +200,22 @@ function TicTacToeGameImpl({
 
   const modals = (
     <>
-      <GameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
+      <GameEndModals
+        showResultModal={gameEnd.showResultModal}
+        result={gameEnd.sharedResult}
+        dismissResult={gameEnd.dismissResult}
+        onRematch={result ? gameEnd.handleResultRematchClick : undefined}
+        rematchLoading={gameEnd.rematchLoading}
+        resultMessages={gameEnd.resultMessages}
+        showRematchModal={gameEnd.showRematchModal}
+        closeRematchModal={gameEnd.closeRematchModal}
+        players={[]}
+        currentUserId={currentUserId}
+        onConfirmRematch={gameEnd.handleRematch}
+        invitation={gameEnd.invitation}
+        handleAcceptInvitation={gameEnd.handleAcceptInvitation}
+        handleDeclineInvitation={gameEnd.handleDeclineInvitation}
         t={t}
-        messages={resultMessages}
       />
       <RulesModal
         open={showRulesOpen}

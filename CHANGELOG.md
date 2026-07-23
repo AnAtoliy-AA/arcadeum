@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.89] - 2026-07-23
+
+### Fixed
+- fully filter resolve-conflicts from daily updates
+- treat resolve-conflicts as docs type in release posts too
+- treat resolve-conflicts commits as docs type in daily updates
+- filter 'resolve conflicts' commits from daily update messages
+
+### Documentation
+- clarify CONTRIBUTING.md structure and links
+- restore commit types section in CONTRIBUTING.md
+- update stale documentation across monorepo
+
+
 ## [1.23.88] - 2026-07-23
 
 ### Fixed

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.90] - 2026-07-23
+
+### Added
+- add full client-side validation to contact form
+- add UI validation error display to contact form
+
+
 ## [1.23.89] - 2026-07-23
 
 ### Fixed

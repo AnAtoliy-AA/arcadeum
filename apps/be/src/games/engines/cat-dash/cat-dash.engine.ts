@@ -154,7 +154,7 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     const logs = [
       this.createLogEntry(
         'action',
-        `${player.playerId} rolled ${roll}, moving ${movement} spaces`,
+        `Rolled ${roll}, moving ${movement} spaces`,
         { senderId: player.playerId },
       ),
     ];
@@ -170,20 +170,16 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       const effects = applySpaceEffect(space.effect);
       if (effects.skipTurn) {
         logs.push(
-          this.createLogEntry(
-            'system',
-            `${player.playerId} hit an obstacle, skipping next turn`,
-            { senderId: player.playerId },
-          ),
+          this.createLogEntry('system', 'Hit an obstacle, skipping next turn', {
+            senderId: player.playerId,
+          }),
         );
       }
       if (effects.extraRoll) {
         logs.push(
-          this.createLogEntry(
-            'system',
-            `${player.playerId} found a bonus, rolling again`,
-            { senderId: player.playerId },
-          ),
+          this.createLogEntry('system', 'Found a bonus, rolling again', {
+            senderId: player.playerId,
+          }),
         );
       }
     }
@@ -192,11 +188,9 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       state.winner = player.playerId;
       state.gameOver = true;
       logs.push(
-        this.createLogEntry(
-          'system',
-          `${player.playerId} crossed the finish line! Game over!`,
-          { senderId: player.playerId },
-        ),
+        this.createLogEntry('system', 'Crossed the finish line! Game over!', {
+          senderId: player.playerId,
+        }),
       );
       state.gameResult = { winnerIds: [player.playerId], isDraw: false };
     }
@@ -221,11 +215,9 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     player.abilitiesUsed.push(abilityId);
     player.powerTokens -= 1;
 
-    const log = this.createLogEntry(
-      'action',
-      `${player.playerId} used ability ${abilityId}`,
-      { senderId: player.playerId },
-    );
+    const log = this.createLogEntry('action', `Used ability ${abilityId}`, {
+      senderId: player.playerId,
+    });
     this.addLog(state, log);
 
     return this.successResult(state, [log]);
@@ -236,11 +228,9 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     player: CatDashPlayer,
     pathIndex: number,
   ): GameActionResult<CatDashState> {
-    const log = this.createLogEntry(
-      'action',
-      `${player.playerId} chose path ${pathIndex}`,
-      { senderId: player.playerId },
-    );
+    const log = this.createLogEntry('action', `Chose path ${pathIndex}`, {
+      senderId: player.playerId,
+    });
     this.addLog(state, log);
 
     return this.successResult(state, [log]);
@@ -253,11 +243,9 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     player.isReady = false;
     player.position = -1;
 
-    const log = this.createLogEntry(
-      'system',
-      `${player.playerId} forfeited the race`,
-      { senderId: player.playerId },
-    );
+    const log = this.createLogEntry('system', 'Forfeited the race', {
+      senderId: player.playerId,
+    });
     this.addLog(state, log);
 
     const alivePlayers = state.players.filter(
@@ -270,10 +258,7 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
         winnerIds: [alivePlayers[0].playerId],
         isDraw: false,
       };
-      const winLog = this.createLogEntry(
-        'system',
-        `${alivePlayers[0].playerId} wins by default!`,
-      );
+      const winLog = this.createLogEntry('system', 'Wins by default!');
       this.addLog(state, winLog);
     } else if (alivePlayers.length === 0) {
       state.gameOver = true;

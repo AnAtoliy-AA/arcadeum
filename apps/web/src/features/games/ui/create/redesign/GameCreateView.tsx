@@ -100,6 +100,11 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       shipCount: 10,
     };
   }
+  if (form.gameId === 'cat_dash_v1') {
+    return {
+      theme: form.themeId || 'village',
+    };
+  }
   return {};
 }
 

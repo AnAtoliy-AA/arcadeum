@@ -156,6 +156,7 @@ export function ContactForm({ form }: ContactFormProps) {
                     label={form?.name ?? form?.nameLabel ?? 'Your name'}
                     required
                     autoComplete="name"
+                    maxLength={120}
                     error={!!fieldErrors?.name}
                     data-testid="contact-name-input"
                   />
@@ -189,6 +190,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   name="subject"
                   label={form?.subject ?? form?.subjectLabel ?? 'Subject'}
                   required
+                  maxLength={200}
                   error={!!fieldErrors?.subject}
                   data-testid="contact-subject-input"
                 />

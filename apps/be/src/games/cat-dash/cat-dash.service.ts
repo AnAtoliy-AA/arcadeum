@@ -16,7 +16,6 @@ import {
 import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import type { StartGameSessionResult } from '../games.types';
-import { CatDashEngine } from '../engines/cat-dash/cat-dash.engine';
 import {
   MIN_PLAYERS,
   MAX_PLAYERS,
@@ -36,7 +35,6 @@ export class CatDashService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => CatDashBotService))
     private readonly botService: CatDashBotService,
-    private readonly engine: CatDashEngine,
     @InjectConnection() private readonly mongoConnection: Connection,
   ) {
     this.watchdog = new GameBotWatchdog(

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.92] - 2026-07-23
+
+### Added
+- optimistic UI and multi-jump capture chains
+- add checkers web integration and landing page
+
+
 ## [1.23.91] - 2026-07-23
 
 ### Added

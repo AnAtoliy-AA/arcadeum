@@ -15,31 +15,20 @@ Arcadeum is a monorepo containing several applications and services. For specifi
 > [!IMPORTANT]
 > All contributions should be made to the `develop` branch. Pull Requests should target `develop` as the base branch.
 
-We use a structured branching model to keep our development organized. All branches should follow this format:
+We use Jira-ticket-based branch naming. All branches should follow this format:
 
-`<type>/<target>/<short-description>`
+`ARC-XXX-<short-description>`
 
-### Types
-
-- `feat`: New features or enhancements
-- `fix`: Bug fixes
-- `refactor`: Code restructuring without functional changes
-- `docs`: Documentation updates
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks (dependencies, build configuration, etc.)
-
-### Targets
-
-- `web`: Changes affecting the web application
-- `mobile`: Changes affecting the mobile application
-- `be`: Changes affecting the backend API
-- `root`: Changes affecting the workspace root (CI/CD, dependencies, global docs)
+Where `ARC-XXX` is the Jira ticket number (e.g., `ARC-123`).
 
 ### Examples
 
-- `feat/web/add-leaderboard`
-- `fix/mobile/crash-on-join`
-- `docs/root/update-contributing-guide`
+- `ARC-123-add-leaderboard`
+- `ARC-456-fix-crash-on-join`
+- `ARC-789-update-contributing-guide`
+
+> [!NOTE]
+> Branch names use `ARC-XXX` format. PR **titles** use [Conventional Commits](https://www.conventionalcommits.org/) format (see below).
 
 ---
 
@@ -52,6 +41,15 @@ Format: `<type>(<scope>): <description>`
 ### Scopes
 
 Use the application name or component as the scope (e.g., `web`, `mobile`, `be`, `shared`, `ci`).
+
+### Types
+
+- `feat`: New features or enhancements
+- `fix`: Bug fixes
+- `refactor`: Code restructuring without functional changes
+- `docs`: Documentation updates
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks (dependencies, build configuration, etc.)
 
 ### Examples
 
@@ -163,7 +161,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
     ```bash
     git checkout develop
     git pull upstream develop
-    git checkout -b feat/web/add-new-game
+    git checkout -b ARC-123-add-new-game
     ```
 
 2.  **Develop your feature**:
@@ -210,7 +208,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
 2.  **Push to your fork**:
 
     ```bash
-    git push origin feat/web/add-new-game
+    git push origin ARC-123-add-new-game
     ```
 
 3.  **Create a Pull Request** on GitHub targeting `develop`
@@ -269,7 +267,8 @@ Add screenshots or screen recordings to demonstrate UI changes.
 - `apps/mobile`: Expo React Native app (iOS/Android)
 - `apps/web`: Next.js web application
 - `apps/be`: NestJS API server
-- `apps/shared`: Shared code and utilities (if any)
+- `apps/tg-bot`: Telegram bot
+- `packages/ui`: Shared UI component library (`@arcadeum/ui`)
 - `docs`: General project documentation
 - `scripts`: Maintenance and build scripts
 - `.husky`: Git hooks configuration
@@ -289,7 +288,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
 ## Troubleshooting Common Issues
 
 - **"Module not found" errors**: Run `pnpm install` and restart dev server
-- **Port conflicts**: Kill processes on ports 3000 (web), 3333 (backend), or 19000 (mobile)
+- **Port conflicts**: Kill processes on ports 3000 (web), 4000 (backend), or 8081 (mobile)
 - **TypeScript errors**: Run `pnpm build` to see detailed type errors
 - **Cache issues**: Clear Turborepo cache with `pnpm turbo clean`
 - **Husky hooks failing**: Run `npx husky add .husky/pre-commit "pnpm lint && pnpm format"` to reinstall
@@ -300,9 +299,8 @@ Add screenshots or screen recordings to demonstrate UI changes.
 
 If you're stuck:
 
-1. Check the [GitHub Discussions](https://github.com/arcadeum/arcadeum/discussions)
-2. Ask in our [Discord server](link-to-discord) (if available)
-3. Tag a maintainer in your PR with a specific question
+1. Check the [GitHub Discussions](https://github.com/AnAtoliy-AA/arcadeum/discussions)
+2. Tag a maintainer in your PR with a specific question
 
 ---
 

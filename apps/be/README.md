@@ -94,36 +94,36 @@ For a comprehensive overview of the entire backend system — including authenti
 See [SECURITY.md](./SECURITY.md) for details on:
 
 - Password hashing (bcrypt)
-- JWT access tokens (15m) and planned refresh rotation
+- JWT access tokens (15m) with refresh token rotation
 - OAuth code exchange (confidential client)
-- Recommended rate limiting & brute force protections
+- Rate limiting & brute force protections (`@nestjs/throttler`)
 - Secret management and roadmap
 
-### Auth Endpoints (Current)
+### Auth Endpoints
 
 | Endpoint         | Method | Description                                |
 | ---------------- | ------ | ------------------------------------------ |
 | `/auth/register` | POST   | Register user (email, password)            |
-| `/auth/login`    | POST   | Obtain access token                        |
+| `/auth/login`    | POST   | Obtain access + refresh token pair         |
 | `/auth/token`    | POST   | OAuth code -> token exchange (Google/OIDC) |
+| `/auth/refresh`  | POST   | Rotate refresh token, issue new pair       |
 | `/auth/me`       | GET    | Test protected route (Bearer access token) |
 
-### (Upcoming) Refresh Tokens
+### Refresh Tokens
 
-Planned implementation will introduce:
+Fully implemented with secure rotation:
 
-1. `refresh_token` issued alongside `accessToken` on login.
-2. Rotation: each refresh invalidates the previous token.
-3. Endpoint: `POST /auth/refresh` returning new pair.
-4. Storage: HttpOnly Secure cookie (web) / secure storage (mobile).
+- `refresh_token` issued alongside `accessToken` on login and OAuth.
+- Rotation: each refresh invalidates the previous token.
+- Storage: HttpOnly Secure cookie (web) / secure storage (mobile).
+- Replay detection: rejects reused tokens.
 
-### (Upcoming) Password Reset Flow
+### Password Reset Flow
 
-Skeleton will include:
+Not yet implemented. Planned:
 
 1. `POST /auth/password/request` (email) – issues time-bound reset token.
 2. `POST /auth/password/reset` (token, newPassword) – validates & updates hash.
-3. Token format: signed, short-lived (e.g., 15–30 min) or DB persisted hashed token.
 
 Refer to SECURITY.md for more context and roadmap details.
 
@@ -134,7 +134,7 @@ Refer to SECURITY.md for more context and roadmap details.
 - Node.js v18+
 - pnpm
 - MongoDB (local or cloud)
-- Redis (for rate limiting and caching)
+- Redis (required for rate limiting and caching)
 
 ### Installation
 

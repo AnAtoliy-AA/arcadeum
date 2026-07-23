@@ -51,9 +51,9 @@ cp .env.example .env.local
 
 | Layer            | Technology                                     |
 | ---------------- | ---------------------------------------------- |
-| Framework        | Next.js 16.1.0                                 |
+| Framework        | Next.js 16.1.7                                 |
 | Language         | TypeScript                                     |
-| Styling          | Styled Components + CSS Variables              |
+| Styling          | Tamagui + CSS Variables                        |
 | State Management | Zustand + React Context                        |
 | Real-time        | Socket.io with optional AES-256-GCM encryption |
 | API              | @tanstack/react-query                          |

@@ -4,10 +4,10 @@
 
 **Existing infrastructure** (already built):
 
-- 6 games: Critical, Sea Battle, Texas Hold'em, Glimworm, Tic-Tac-Toe, Cascade
+- 8 games: Critical, Sea Battle, Texas Hold'em, Glimworm, Tic-Tac-Toe, Cascade, Chess, Checkers
 - Game engine architecture designed for 200+ games (`IGameEngine` interface, registry, base class)
 - Basic matchmaking: `GameRoomsQuickplayService` with bot matches and human lobby finding
-- Bot/AI opponents for 5 of 6 games
+- Bot/AI opponents for most games
 - Full chat system (1-on-1, group) + in-game history notes
 - `GameChat` widget for in-game text communication
 - Friends system, user auth (email, OAuth, JWT), 62 UI components
@@ -27,7 +27,7 @@
 | 1F. Password Rooms     | ARC-875 | `ARC-875-password-rooms`     | Partial         |
 | 2A. Matchmaking Queue  | ARC-876 | `ARC-876-matchmaking`        | Not started     |
 | 2B. Chess Engine       | ARC-877 | `ARC-877-chess-engine`       | **Implemented** |
-| 2C. Checkers Engine    | ARC-878 | `ARC-878-checkers-engine`    | Not started     |
+| 2C. Checkers Engine    | ARC-878 | `ARC-878-checkers-engine`    | **Implemented** |
 | 2D. Audio Cues         | ARC-879 | `ARC-879-audio-cues`         | Partial         |
 | 2E. AI Difficulty      | ARC-880 | `ARC-880-ai-difficulty`      | Not started     |
 | 2F. Ranked/ELO         | ARC-881 | `ARC-881-ranked-elo`         | Not started     |

@@ -20,8 +20,13 @@ games/
 ├── engines/                   # 🎯 Game engine implementations
 │   ├── base/                  # Core abstractions
 │   ├── registry/              # Engine registry
-│   ├── critical/        # Critical engine
+│   ├── critical/              # Critical engine
 │   ├── texas-holdem/          # Texas Hold'em engine
+│   ├── chess/                 # Chess engine
+│   ├── checkers/              # Checkers engine
+│   ├── sea-battle/            # Sea Battle engine
+│   ├── tic-tac-toe/           # Tic-Tac-Toe engine
+│   ├── cascade/               # Cascade engine
 │   └── engines.module.ts      # Auto-registration module
 ├── schemas/                   # MongoDB schemas (rooms, sessions)
 ├── dtos/                      # Data transfer objects
@@ -154,10 +159,16 @@ class GameEngineRegistry {
 
 ## 📊 Current Games
 
-| Game          | Game ID           | Status    | Players |
-| ------------- | ----------------- | --------- | ------- |
-| Critical      | `critical_v1`     | ✅ Active | 2-5     |
-| Texas Hold'em | `texas_holdem_v1` | ✅ Active | 2-9     |
+| Game          | Game ID           | Status                | Players |
+| ------------- | ----------------- | --------------------- | ------- |
+| Critical      | `critical_v1`     | ✅ Active             | 2-6     |
+| Sea Battle    | `sea_battle_v1`   | ✅ Active             | 2-6     |
+| Glimworm      | `glimworm_v1`     | ✅ Active             | 2-10    |
+| Tic-Tac-Toe   | `tic_tac_toe_v1`  | ✅ Active             | 2-4     |
+| Cascade       | `cascade_v1`      | ✅ Active             | 2-10    |
+| Chess         | `chess_v1`        | ✅ Active             | 2       |
+| Checkers      | `checkers_v1`     | 🔧 Engine ready       | 2       |
+| Texas Hold'em | `texas_holdem_v1` | 🔧 Temporarily hidden | 2-9     |
 
 ## 🔄 Migration Status
 
@@ -165,20 +176,12 @@ class GameEngineRegistry {
 
 - Base game engine interface and abstract class
 - Game engine registry system
-- Critical engine extraction
-- Texas Hold'em engine extraction
+- All 8 game engines implemented (Critical, Sea Battle, Glimworm, Tic-Tac-Toe, Cascade, Chess, Checkers, Texas Hold'em)
 - Engine auto-registration module
 - Comprehensive documentation
 
-### ⏳ In Progress
-
-- Update `GamesService` to delegate to engines
-- Update `GamesGateway` to use engine actions
-- Remove game-specific methods from service
-
 ### 📋 Future
 
-- Add more games (Chess, Checkers, Tic-Tac-Toe)
 - Game versioning support
 - AI opponent framework
 - Tournament system
@@ -216,13 +219,15 @@ describe('MyGameEngine', () => {
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Detailed architecture documentation
 - **[Example: Critical Engine](./engines/critical/critical.engine.ts)** - Complete example
 - **[Example: Texas Hold'em Engine](./engines/texas-holdem/texas-holdem.engine.ts)** - Another example
+- **[Example: Chess Engine](./engines/chess/chess.engine.ts)** - Board game example
+- **[Example: Sea Battle Engine](./engines/sea-battle/sea-battle.engine.ts)** - Strategy game example
 
 ## 🤝 Contributing
 
 When adding a new game:
 
 1. Read the [Architecture Guide](./ARCHITECTURE.md)
-2. Study existing engines (`critical`, `texas-holdem`)
+2. Study existing engines (`critical`, `sea-battle`, `chess`, etc.)
 3. Create your game state types
 4. Implement the `IGameEngine` interface
 5. Extend `BaseGameEngine` for utilities
@@ -256,6 +261,6 @@ Questions about the architecture? Check:
 
 ---
 
-**Last Updated**: 2025-01-28
-**Architecture Version**: 1.0.0
-**Total Games**: 2
+**Last Updated**: 2026-07-23
+**Architecture Version**: 2.0.0
+**Total Games**: 8

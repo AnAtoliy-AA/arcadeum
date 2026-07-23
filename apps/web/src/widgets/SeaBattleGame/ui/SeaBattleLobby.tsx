@@ -7,7 +7,7 @@ import {
   type GameLobbyTheme,
 } from '@/features/games/ui/ReusableGameLobby';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { MIN_PLAYERS } from '../types';
+import { MIN_PLAYERS, getDefaultShipCount } from '../types';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { IconButton } from '@/features/games/ui/ReusableGameLobby';
@@ -110,8 +110,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
 
   const handleOptionChange = React.useCallback(
     (options: Record<string, unknown>) => {
-      if (options.gridSize !== undefined) setCurrentGridSize(options.gridSize as number);
-      if (options.shipCount !== undefined) setCurrentShipCount(options.shipCount as number);
+      if (options.gridSize !== undefined)
+        setCurrentGridSize(options.gridSize as number);
+      if (options.shipCount !== undefined)
+        setCurrentShipCount(options.shipCount as number);
       setOption(options);
     },
     [setOption],
@@ -132,7 +134,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         variant: opts.variant ?? 'classic',
       });
     }
-  }, [room.id, room.status]);
+  }, [room.id, room.status, room.gameOptions, setOption]);
 
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
@@ -194,7 +196,14 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         variant: selectedVariant,
       });
     },
-    [onStartGame, teamStartBlocked, currentGridSize, currentShipCount, selectedVariant, setOption],
+    [
+      onStartGame,
+      teamStartBlocked,
+      currentGridSize,
+      currentShipCount,
+      selectedVariant,
+      setOption,
+    ],
   );
 
   const roomMembers = (room.members ?? []).map((m) => ({

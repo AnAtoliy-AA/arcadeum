@@ -2,7 +2,10 @@
 
 import { memo, useCallback, useMemo, useState } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
+import {
+  GameWidgetContainer,
+  RematchInvitationModal,
+} from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -16,10 +19,15 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type { CheckersGameProps, MoveStep } from '../types';
+import type { Board, CheckersGameProps, MoveStep } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
 import { CheckersThemeProvider } from '../lib/CheckersThemeContext';
+import {
+  findCapturesFrom,
+  applyMoveToBoard,
+  getPlayerColor,
+} from '../lib/checkersClientLogic';
 import { CheckersLobby } from './CheckersLobby';
 import { CheckersBoard } from './CheckersBoard';
 import { TurnBadge } from './TurnBadge';
@@ -130,8 +138,7 @@ function CheckersGameImpl({
 
   const variantTokens = useMemo(
     () =>
-      CHECKERS_VARIANTS.find((v) => v.id === variant) ??
-      CHECKERS_VARIANTS[0],
+      CHECKERS_VARIANTS.find((v) => v.id === variant) ?? CHECKERS_VARIANTS[0],
     [variant],
   );
 
@@ -139,21 +146,41 @@ function CheckersGameImpl({
     void handleRematch([], undefined);
   }, [handleRematch]);
 
-  const [selectedPiece, setSelectedPiece] = useState<{ row: number; col: number } | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const [pendingSteps, setPendingSteps] = useState<MoveStep[]>([]);
+  const [optimisticBoard, setOptimisticBoard] = useState<Board | null>(null);
+  const [lastServerBoard, setLastServerBoard] = useState<Board | null>(null);
+
+  const displayBoard = optimisticBoard ?? snapshot?.board ?? null;
+
+  // Clear optimistic board when server state changes
+  if (snapshot?.board && snapshot.board !== lastServerBoard) {
+    setLastServerBoard(snapshot.board);
+    if (optimisticBoard) {
+      setOptimisticBoard(null);
+    }
+  }
 
   const handleCellClick = useCallback(
     (row: number, col: number) => {
       if (!snapshot || !currentUserId || isGameOver || !myTurn) return;
+      if (!displayBoard) return;
 
-      const piece = snapshot.board[row][col];
+      const piece = displayBoard[row][col];
 
-      // If clicking own piece, select it
+      // If clicking own piece, select it (start or restart chain)
       if (piece && piece.playerId === currentUserId) {
         setSelectedPiece({ row, col });
         setPendingSteps([]);
+        setOptimisticBoard(null);
         return;
       }
+
+      // If clicking on a piece that isn't ours, ignore
+      if (piece) return;
 
       // If a piece is selected and clicking empty, try to move
       if (selectedPiece) {
@@ -176,20 +203,47 @@ function CheckersGameImpl({
 
         const newSteps = [...pendingSteps, moveStep];
 
-        // If it's a capture chain, check if more captures are available from the destination
         if (isCapture) {
-          // For simplicity, send the chain immediately
-          movePiece(newSteps);
-          setSelectedPiece(null);
-          setPendingSteps([]);
+          const nextBoard = applyMoveToBoard(displayBoard, newSteps);
+
+          // Check if more captures available from the landing square
+          const playerColor = getPlayerColor(snapshot.players, currentUserId);
+          const moreCaptures = playerColor
+            ? findCapturesFrom(nextBoard, row, col, currentUserId, playerColor)
+            : [];
+
+          if (moreCaptures.length > 0) {
+            // Multi-jump: keep piece selected at landing, show optimistic board
+            setPendingSteps(newSteps);
+            setOptimisticBoard(nextBoard);
+            setSelectedPiece({ row, col });
+          } else {
+            // End of chain: send full chain to server, show optimistic board
+            setOptimisticBoard(nextBoard);
+            setSelectedPiece(null);
+            setPendingSteps([]);
+            movePiece(newSteps);
+          }
         } else {
-          movePiece(newSteps);
+          // Simple move: send to server, show optimistic board
+          const nextBoard = applyMoveToBoard(displayBoard, newSteps);
+          setOptimisticBoard(nextBoard);
           setSelectedPiece(null);
           setPendingSteps([]);
+          movePiece(newSteps);
         }
       }
     },
-    [snapshot, currentUserId, isGameOver, myTurn, selectedPiece, pendingSteps, movePiece],
+    [
+      snapshot,
+      currentUserId,
+      isGameOver,
+      myTurn,
+      displayBoard,
+      selectedPiece,
+      pendingSteps,
+      movePiece,
+    ],
   );
 
   if (!room) return null;
@@ -223,7 +277,7 @@ function CheckersGameImpl({
 
   const board = (
     <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
-      {snapshot ? (
+      {snapshot && displayBoard ? (
         <>
           <TurnBadge
             currentTurnUserId={currentTurnUserId}
@@ -232,7 +286,7 @@ function CheckersGameImpl({
             resolveName={resolveDisplayNameBound}
           />
           <CheckersBoard
-            board={snapshot.board}
+            board={displayBoard}
             players={snapshot.players}
             selectedPiece={selectedPiece}
             disabled={!myTurn || isGameOver}
@@ -263,10 +317,7 @@ function CheckersGameImpl({
         onDecline={handleDeclineInvitation}
         t={t}
       />
-      <RulesModal
-        open={showRulesOpen}
-        onClose={onShowRulesClose}
-      />
+      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
     </>
   );
 

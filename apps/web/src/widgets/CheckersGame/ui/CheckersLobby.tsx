@@ -6,7 +6,9 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
-} from '@/features/games/ui/ReusableGameLobby';
+  LobbyOptionSection,
+  LobbyChipGroup,
+} from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
 import { CHECKERS_VARIANTS } from '../lib/constants';
@@ -41,7 +43,10 @@ interface CheckersLobbyProps {
 }
 
 function resolveOptions(raw: unknown): CheckersOptions {
-  const r = (raw ?? {}) as Partial<{ variant: string; forcedCaptures: boolean }>;
+  const r = (raw ?? {}) as Partial<{
+    variant: string;
+    forcedCaptures: boolean;
+  }>;
   return {
     variant: (r.variant ?? 'classic') as CheckersVariant,
     forcedCaptures: r.forcedCaptures !== false,
@@ -76,31 +81,24 @@ export function CheckersLobby({
     return found ? t(found.name) : undefined;
   }, [variant, t]);
 
+  const variantOptions = CHECKERS_VARIANTS.map((v) => ({
+    id: v.id,
+    label: t(v.name),
+    emoji: v.emoji,
+  }));
+
   const optionsSlot = (
     <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontWeight="600">{t('games.checkers_v1.lobby.variant')}</Text>
-        <YStack flexDirection="row" flexWrap="wrap" gap="$2">
-          {CHECKERS_VARIANTS.map((v) => (
-            <Text
-              key={v.id}
-              paddingVertical="$2"
-              paddingHorizontal="$3"
-              borderRadius={8}
-              cursor={isHost ? 'pointer' : 'default'}
-              opacity={variant === v.id ? 1 : 0.5}
-              backgroundColor={variant === v.id ? 'rgba(37, 99, 235, 0.15)' : 'transparent'}
-              borderWidth={variant === v.id ? 1 : 0}
-              borderColor={variant === v.id ? 'rgba(37, 99, 235, 0.4)' : 'transparent'}
-              onPress={() => {
-                if (isHost) setOption({ variant: v.id });
-              }}
-            >
-              {v.emoji} {t(v.name)}
-            </Text>
-          ))}
-        </YStack>
-      </YStack>
+      <LobbyOptionSection title={t('games.checkers_v1.lobby.variant')}>
+        <LobbyChipGroup
+          options={variantOptions}
+          value={variant}
+          onChange={(v) => setOption({ variant: v })}
+          disabled={!isHost}
+          accentColor="#2563eb"
+          testIdPrefix="checkers-variant"
+        />
+      </LobbyOptionSection>
       <Text fontSize="$2" opacity={0.7}>
         {t('games.checkers_v1.rules.steps')}
       </Text>
@@ -133,10 +131,7 @@ export function CheckersLobby({
         showReorderControls
         onReorderPlayers={onReorderPlayers}
       />
-      <RulesModal
-        open={showRulesOpen}
-        onClose={onShowRulesClose}
-      />
+      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
     </>
   );
 }

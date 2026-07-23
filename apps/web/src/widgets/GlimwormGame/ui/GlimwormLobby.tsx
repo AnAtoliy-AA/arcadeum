@@ -6,7 +6,9 @@ import { Button } from '@arcadeum/ui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
-} from '@/features/games/ui/ReusableGameLobby';
+  LobbyOptionSection,
+  LobbyChipGroup,
+} from '@/features/games/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -71,9 +73,6 @@ export function GlimwormLobby({
     CatalogVariant[] | null
   >(null);
 
-  // One-shot catalog fetch on mount to filter the variant picker by what
-  // the caller's role can actually see (ARC-710). Failure is silent: the
-  // full list is shown and the BE will reject any restricted start.
   useEffect(() => {
     let cancelled = false;
     gamesApi
@@ -102,15 +101,12 @@ export function GlimwormLobby({
             allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
         }));
 
-  // Read which colors are claimed by which player. The BE pushes a fresh
-  // snapshot on join/leave/color-pick, so this reflects the live lobby state.
   const otherWorms =
     latestSnapshot?.worms.filter((w) => w.id !== currentUserId) ?? [];
   const takenColors = new Set(otherWorms.map((w) => w.color));
   const myWorm = latestSnapshot?.worms.find((w) => w.id === currentUserId);
   const effectiveSelectedColor = selectedColor ?? myWorm?.color ?? null;
 
-  // Listen for BE responses so we can clear busy + surface errors.
   useEffect(() => {
     const onAck = () => {
       setBusy(false);
@@ -155,108 +151,43 @@ export function GlimwormLobby({
       fillWithBots: !!options?.withBots,
       botCount: options?.botCount,
     });
-    // Failsafe: re-enable in case neither ack nor exception arrives.
     setTimeout(() => setBusy(false), 3000);
   };
 
   const variantInfo = GLIMWORM_VARIANTS.find((v) => v.id === variant);
 
+  const variantOptions = visibleVariants.map((v) => ({
+    id: v.id,
+    label: t(v.name as TranslationKey),
+    emoji: v.emoji,
+    comingSoon: v.comingSoon,
+  }));
+
   const optionsSlot =
     room.status === 'lobby' ? (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-          padding: '12px 0',
-        }}
-      >
-        {/* Variant picker — host-only interactive; guests see static label */}
-        <YStack>
-          <Text
-            fontSize={11}
-            letterSpacing={2}
-            textTransform="uppercase"
-            color="rgba(148,163,184,0.7)"
-            marginBottom={8}
-          >
-            {t('games.glimworm_v1.lobby.variant')}
-          </Text>
-          <XStack gap={8} flexWrap="wrap">
-            {visibleVariants.map((v) => {
-              const active = variant === v.id;
-              const isComingSoon = v.comingSoon;
-              const interactionAllowed = isHost && !isComingSoon;
-              return (
-                <Button
-                  key={v.id}
-                  variant="chip"
-                  size="sm"
-                  data-testid={`variant-tile-${v.id}`}
-                  disabled={!interactionAllowed}
-                  data-active={active}
-                  backgroundColor={
-                    active
-                      ? 'rgba(94,224,255,0.18)'
-                      : 'rgba(255,255,255,0.04)'
-                  }
-                  borderColor={
-                    active
-                      ? 'rgba(94,224,255,0.6)'
-                      : 'rgba(255,255,255,0.10)'
-                  }
-                  color={active ? '#a0e8ff' : '#cbd5e1'}
-                  hoverStyle={{
-                    backgroundColor: active
-                      ? 'rgba(94,224,255,0.25)'
-                      : 'rgba(255,255,255,0.08)',
-                  }}
-                  borderRadius={20}
-                  fontWeight={500}
-                  fontSize={13}
-                  opacity={isComingSoon ? 0.4 : isHost || active ? 1 : 0.5}
-                  onClick={() =>
-                    interactionAllowed && setVariant(v.id as GlimwormVariant)
-                  }
-                >
-                  {v.emoji} {t(v.name as TranslationKey)}
-                  {isComingSoon && (
-                    <Text
-                      data-testid="coming-soon-badge"
-                      marginLeft={6}
-                      fontSize={11}
-                      opacity={0.85}
-                    >
-                      {t('games.create.comingSoon') || 'Coming Soon'}
-                    </Text>
-                  )}
-                </Button>
-              );
-            })}
-          </XStack>
+      <YStack gap="$4" padding="$3" borderRadius="$3">
+        <LobbyOptionSection title={t('games.glimworm_v1.lobby.variant')}>
+          <LobbyChipGroup
+            options={variantOptions}
+            value={variant}
+            onChange={(v) => setVariant(v as GlimwormVariant)}
+            disabled={!isHost}
+            accentColor="#5ee0ff"
+            testIdPrefix="glimworm-variant"
+          />
           {!isHost && (
             <Text
-              marginTop={6}
-              fontSize={11}
-              color="rgba(148,163,184,0.6)"
+              marginTop={2}
+              fontSize="$1"
+              color="$textMuted"
               fontStyle="italic"
             >
               Host chooses the variant.
             </Text>
           )}
-        </YStack>
+        </LobbyOptionSection>
 
-        {/* Power-ups toggle — host-only */}
-        <YStack>
-          <Text
-            fontSize={11}
-            letterSpacing={2}
-            textTransform="uppercase"
-            color="rgba(148,163,184,0.7)"
-            marginBottom={8}
-          >
-            {t('games.glimworm_v1.lobby.powerups')}
-          </Text>
+        <LobbyOptionSection title={t('games.glimworm_v1.lobby.powerups')}>
           <Button
             variant="chip"
             size="sm"
@@ -282,26 +213,16 @@ export function GlimwormLobby({
             fontWeight={500}
             fontSize={13}
             opacity={isHost ? 1 : 0.7}
-            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
+            onPress={() => isHost && setPowerupsEnabled((p) => !p)}
           >
             {powerupsEnabled
               ? `✓ ${t('games.glimworm_v1.lobby.powerupsOn')}`
               : t('games.glimworm_v1.lobby.powerupsOff')}
           </Button>
-        </YStack>
+        </LobbyOptionSection>
 
-        {/* Color picker */}
-        <YStack>
-          <Text
-            fontSize={11}
-            letterSpacing={2}
-            textTransform="uppercase"
-            color="rgba(148,163,184,0.7)"
-            marginBottom={8}
-          >
-            {t('games.glimworm_v1.lobby.pickColor')}
-          </Text>
-          <XStack gap={6} flexWrap="wrap">
+        <LobbyOptionSection title={t('games.glimworm_v1.lobby.pickColor')}>
+          <XStack gap={2} flexWrap="wrap">
             {PALETTE.map((color) => {
               const isSelected = color === effectiveSelectedColor;
               const isTaken = takenColors.has(color) && !isSelected;
@@ -311,14 +232,12 @@ export function GlimwormLobby({
                   variant="chip"
                   size="sm"
                   padding={0}
-                  width={30}
-                  height={30}
-                  borderRadius="50%"
+                  width={32}
+                  height={32}
+                  borderRadius={16}
                   backgroundColor={color}
                   borderWidth={isSelected ? 3 : 2}
-                  borderColor={
-                    isSelected ? '#fff' : 'rgba(255,255,255,0.18)'
-                  }
+                  borderColor={isSelected ? '#fff' : 'rgba(255,255,255,0.18)'}
                   disabled={isTaken}
                   opacity={isTaken ? 0.3 : 1}
                   hoverStyle={{
@@ -327,27 +246,26 @@ export function GlimwormLobby({
                   aria-label={color}
                   aria-pressed={isSelected}
                   title={isTaken ? 'Taken by another player' : color}
-                  onClick={() => !isTaken && handleColor(color)}
+                  onPress={() => !isTaken && handleColor(color)}
                 />
               );
             })}
           </XStack>
-        </YStack>
+        </LobbyOptionSection>
 
         {error && (
-          <div
-            style={{
-              fontSize: 12,
-              padding: '6px 10px',
-              borderRadius: 4,
-              background: 'rgba(255,94,94,0.12)',
-              color: '#ffb0b0',
-            }}
+          <Text
+            fontSize="$2"
+            paddingVertical={6}
+            paddingHorizontal={10}
+            borderRadius={4}
+            backgroundColor="rgba(255,94,94,0.12)"
+            color="#ffb0b0"
           >
             {error}
-          </div>
+          </Text>
         )}
-      </div>
+      </YStack>
     ) : null;
 
   return (

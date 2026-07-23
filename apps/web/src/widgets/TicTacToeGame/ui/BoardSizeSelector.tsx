@@ -94,7 +94,7 @@ export function BoardSizeSelector({
             <Button
               key={size}
               variant="chip"
-              size="sm"
+              size="md"
               data-testid={`ttt-board-size-${size}`}
               disabled={disabled}
               data-active={isActive}
@@ -116,8 +116,10 @@ export function BoardSizeSelector({
               fontWeight={600}
               opacity={disabled ? 0.6 : 1}
               minWidth={72}
-              lineHeight={1.1}
+              height="auto"
+              paddingVertical="$3"
               flex={0}
+              overflow="hidden"
               onClick={() => handlePick(size)}
             >
               <YStack alignItems="center" gap={2}>

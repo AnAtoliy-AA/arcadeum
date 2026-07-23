@@ -19,6 +19,8 @@ export const en = {
   hapticsDescription:
     "Vibrate when it's your turn to play (mobile devices only).",
   soundLabel: 'Sound',
+  audioCuesLabel: 'Audio Cues',
+  audioCuesDescription: 'Play sounds for game events like moves, turns, and attacks.',
   musicLabel: 'Music',
   appearanceTitle: 'Appearance',
   appearanceDescription:
@@ -105,6 +107,8 @@ export const es = {
   hapticsDescription:
     'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
   soundLabel: 'Sonido',
+  audioCuesLabel: 'Señales de Audio',
+  audioCuesDescription: 'Reproducir sonidos para eventos del juego como movimientos, turnos y ataques.',
   musicLabel: 'Música',
   appearanceTitle: 'Apariencia',
   appearanceDescription:
@@ -197,6 +201,8 @@ export const fr = {
   hapticsDescription:
     "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
   soundLabel: 'Son',
+  audioCuesLabel: 'Signaux Audio',
+  audioCuesDescription: 'Jouer des sons pour les événements du jeu comme les coups, les tours et les attaques.',
   musicLabel: 'Musique',
   appearanceTitle: 'Apparence',
   appearanceDescription:
@@ -289,6 +295,8 @@ export const ru = {
   hapticsDescription:
     'Вибрировать, когда наступает ваш ход (только для мобильных устройств).',
   soundLabel: 'Звук',
+  audioCuesLabel: 'Звуковые сигналы',
+  audioCuesDescription: 'Воспроизводить звуки для игровых событий: ходы, очереди и атаки.',
   musicLabel: 'Музыка',
   appearanceTitle: 'Внешний вид',
   appearanceDescription: 'Выберите тему оформления для веб-версии {{appName}}.',
@@ -378,6 +386,8 @@ export const by = {
   hapticsDescription:
     'Вібраваць, калі наступае ваш ход (толькі для мабільных прылад).',
   soundLabel: 'Гук',
+  audioCuesLabel: 'Гукавыя сігналы',
+  audioCuesDescription: 'Прайграваць гукі для гульнявых падзей: хады, чаргі і атакі.',
   musicLabel: 'Музыка',
   appearanceTitle: 'Знешні выгляд',
   appearanceDescription: 'Выберыце тэму афармлення для вэб-версіі {{appName}}.',

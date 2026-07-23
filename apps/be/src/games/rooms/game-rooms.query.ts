@@ -1,10 +1,7 @@
 import { FilterQuery } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
 import { ListRoomsFilters } from './game-rooms.types';
-
-function escapeRegExp(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+import { escapeRegExp } from '../../common/utils/escape-regexp';
 
 export class GameRoomsQueryBuilder {
   static buildListQuery(filters: ListRoomsFilters): FilterQuery<GameRoom> {

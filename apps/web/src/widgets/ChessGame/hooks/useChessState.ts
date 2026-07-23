@@ -65,7 +65,8 @@ export function useChessState({
     snapshot?.winnerColor !== null ||
     snapshot?.isDrawByRepetition ||
     snapshot?.isDrawByFiftyMoveRule ||
-    snapshot?.isInsufficientMaterial;
+    snapshot?.isInsufficientMaterial ||
+    snapshot?.isDrawByAgreement;
 
   return {
     session,

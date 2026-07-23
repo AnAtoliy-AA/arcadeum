@@ -14,7 +14,7 @@ import {
   type TournamentLocale,
   type TournamentStatus,
 } from './schemas/tournament.schema';
-import { escapeRegExp } from '../admin/lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import {
   deriveEffectiveWindow,
   deriveEffectiveStatus,

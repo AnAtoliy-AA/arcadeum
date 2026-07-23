@@ -144,6 +144,7 @@ export const enMessages = {
     houseRuleIdleTimer: 'Idle Timer Autoplay',
     houseRuleIdleTimerHint: 'Automated play after {{seconds}}s',
     seaBattleGridSize: 'Grid Size',
+    seaBattleShipCount: 'Number of Ships',
     specialWeapons: 'Special Weapons',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Reveal ship locations',

@@ -144,6 +144,7 @@ export const esMessages = {
     houseRuleIdleTimer: 'Autoplay con Temporizador',
     houseRuleIdleTimerHint: 'Se activa tras {{seconds}}s de inactividad',
     seaBattleGridSize: 'Tamaño del Campo',
+    seaBattleShipCount: 'Número de Barcos',
     specialWeapons: 'Armas Especiales',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Revelar ubicaciones de barcos',
@@ -287,7 +288,8 @@ export const esMessages = {
     difficultyEasy: 'Fácil',
     difficultyMedium: 'Media',
     difficultyHard: 'Difícil',
-    difficultyEasyDesc: 'Movimientos aleatorios con jugadas inteligentes ocasionales',
+    difficultyEasyDesc:
+      'Movimientos aleatorios con jugadas inteligentes ocasionales',
     difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
     difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
   },

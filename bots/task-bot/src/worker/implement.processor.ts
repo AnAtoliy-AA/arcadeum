@@ -104,6 +104,18 @@ export class ImplementProcessor {
       return { success: false, message: (err as Error).message, worktreePath: cwd ?? undefined };
     } finally {
       this.activeTargets.delete(targetKey);
+      if (createdWorktree && cwd) {
+        try {
+          this.githubService.removeWorktree(jobId);
+        } catch {
+          try {
+            const { rmSync } = require('fs');
+            rmSync(cwd, { recursive: true, force: true });
+          } catch {
+            // ignore cleanup errors
+          }
+        }
+      }
     }
   }
 
@@ -266,12 +278,6 @@ export class ImplementProcessor {
       }
     }
 
-    // Clean up worktree on success
-    try {
-      this.githubService.removeWorktree(String(job.id));
-    } catch {
-      // ignore
-    }
   }
 
   @OnQueueActive()

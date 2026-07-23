@@ -30,6 +30,10 @@ export class GameHistoryStatsService {
         wins: g.wins,
         winRate: g.winRate,
       })),
+      currentStreak: stats.currentStreak,
+      currentStreakType: stats.currentStreakType,
+      bestWinStreak: stats.bestWinStreak,
+      favoriteGame: stats.favoriteGame,
     };
   }
 

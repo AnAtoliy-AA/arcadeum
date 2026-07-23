@@ -92,6 +92,8 @@ export const GameRoomSchema = SchemaFactory.createForClass(GameRoom);
 GameRoomSchema.index({ hostId: 1 });
 GameRoomSchema.index({ status: 1, gameId: 1 });
 GameRoomSchema.index({ 'participants.userId': 1 });
+GameRoomSchema.index({ status: 1, updatedAt: -1 });
+GameRoomSchema.index({ 'participants.userId': 1, updatedAt: -1 });
 // Auto-delete lobby rooms after 7 days
 GameRoomSchema.index(
   { createdAt: 1 },

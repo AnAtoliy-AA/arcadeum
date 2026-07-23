@@ -144,6 +144,7 @@ export const ruMessages = {
     houseRuleIdleTimer: 'Автоход при бездействии',
     houseRuleIdleTimerHint: 'Автоматический ход через {{seconds}} сек',
     seaBattleGridSize: 'Размер поля',
+    seaBattleShipCount: 'Количество кораблей',
     specialWeapons: 'Спецоружия',
     seaBattleSonar: 'Сонар',
     seaBattleSonarHint: 'Показать расположение кораблей',

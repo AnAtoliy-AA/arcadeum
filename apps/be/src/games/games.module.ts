@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { GamesController } from './games.controller';
+import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
@@ -12,6 +13,10 @@ import {
   GameHistoryHiddenSchema,
 } from './schemas/game-history-hidden.schema';
 import { PlayerStats, PlayerStatsSchema } from './schemas/player-stats.schema';
+import {
+  PlayerStatRecord,
+  PlayerStatRecordSchema,
+} from './schemas/player-stat-record.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GamesGateway } from './games.gateway';
@@ -87,6 +92,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       { name: GameSession.name, schema: GameSessionSchema },
       { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
       { name: PlayerStats.name, schema: PlayerStatsSchema },
+      { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
       { name: User.name, schema: UserSchema },
     ]),
     GameEnginesModule, // Import the game engines module
@@ -142,6 +148,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
+    GamesCatalogService,
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,

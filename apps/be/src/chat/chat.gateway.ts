@@ -87,8 +87,24 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(@MessageBody() payload: unknown): Promise<void> {
+  async handleMessage(
+    @MessageBody() payload: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
     const messageDTO = maybeDecrypt<MessageDTO>(payload);
+
+    const authUserId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    const isAuthenticated =
+      (client.data as Record<string, unknown>)?.authenticated === true;
+    if (isAuthenticated && authUserId && messageDTO.senderId !== authUserId) {
+      this.logger.warn(
+        `User ${authUserId} attempted to send message as ${messageDTO.senderId} — blocking`,
+      );
+      return;
+    }
+
     const message = await this.chatService.saveMessage(messageDTO);
 
     const outgoingMessage = maybeEncrypt(message);
@@ -116,6 +132,21 @@ export class ChatGateway {
 
     if (!chatId) {
       throw new WsException('chatId is required.');
+    }
+    if (!currentUserId) {
+      throw new WsException('currentUserId is required.');
+    }
+
+    const authUserId = (client.data as Record<string, unknown>)?.userId as
+      | string
+      | undefined;
+    const isAuthenticated =
+      (client.data as Record<string, unknown>)?.authenticated === true;
+    if (isAuthenticated && authUserId && currentUserId !== authUserId) {
+      this.logger.warn(
+        `User ${authUserId} attempted to join chat as ${currentUserId} — blocking`,
+      );
+      throw new WsException('Cannot join chat as another user.');
     }
     if (!currentUserId) {
       throw new WsException('currentUserId is required.');

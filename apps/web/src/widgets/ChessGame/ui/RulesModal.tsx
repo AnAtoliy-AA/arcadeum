@@ -1,9 +1,10 @@
 'use client';
 
 import { memo } from 'react';
-import { YStack, Text, Button, XStack } from 'tamagui';
+import { XStack, YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PIECE_SYMBOLS } from '../types';
+import { ModalOverlay, ModalContent, ModalTitle, ModalButton } from './styles';
 
 interface RulesModalProps {
   open: boolean;
@@ -15,97 +16,144 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
   if (!open) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-      }}
-    >
-      <YStack
-        gap="$4"
-        padding="$5"
-        borderRadius={16}
-        backgroundColor="$background"
-        alignItems="center"
-        maxWidth={480}
-        width="90%"
-        maxHeight="80vh"
-        style={{ overflow: 'auto' }}
-      >
-        <Text fontSize="$6" fontWeight="700">
-          {t('games.chess_v1.rules.title')}
-        </Text>
-        <YStack gap="$3" width="100%">
-          <Text fontSize="$4" fontWeight="600">
-            {t('games.chess_v1.rules.objective')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            {t('games.chess_v1.rules.objectiveText')}
-          </Text>
-          <Text fontSize="$4" fontWeight="600" mt="$2">
-            {t('games.chess_v1.rules.pieces')}
-          </Text>
-          <XStack flexWrap="wrap" gap="$2">
-            {(
-              ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'] as const
-            ).map((type) => (
-              <XStack
-                key={type}
-                gap="$1"
-                alignItems="center"
-                padding="$1"
-                paddingHorizontal="$2"
-                borderRadius={8}
-                backgroundColor="rgba(255,255,255,0.05)"
+    <ModalOverlay>
+      <ModalContent maxWidth={480} width="90%" maxHeight="80vh">
+        <ModalTitle fontSize={20}>{t('games.chess_v1.rules.title')}</ModalTitle>
+
+        <YStack gap={16} width="100%">
+          <YStack gap={2}>
+            <Text fontSize={15} fontWeight="600" color="#f8fafc">
+              {t('games.chess_v1.rules.objective')}
+            </Text>
+            <Text
+              fontSize={13}
+              color="rgba(148, 163, 184, 0.8)"
+              lineHeight={1.5}
+            >
+              {t('games.chess_v1.rules.objectiveText')}
+            </Text>
+          </YStack>
+
+          <YStack gap={2}>
+            <Text
+              fontSize={15}
+              fontWeight="600"
+              color="#f8fafc"
+              marginBottom={8}
+            >
+              {t('games.chess_v1.rules.pieces')}
+            </Text>
+            <XStack flexWrap="wrap" gap={8}>
+              {(
+                ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'] as const
+              ).map((type) => (
+                <XStack
+                  key={type}
+                  gap={6}
+                  alignItems="center"
+                  padding={6}
+                  paddingHorizontal={10}
+                  borderRadius={8}
+                  backgroundColor="rgba(255, 255, 255, 0.04)"
+                  borderWidth={1}
+                  borderColor="rgba(255, 255, 255, 0.06)"
+                >
+                  <Text fontSize={18}>{PIECE_SYMBOLS[type].white}</Text>
+                  <Text
+                    fontSize={12}
+                    textTransform="capitalize"
+                    color="rgba(148, 163, 184, 0.8)"
+                  >
+                    {type}
+                  </Text>
+                </XStack>
+              ))}
+            </XStack>
+          </YStack>
+
+          <YStack gap={2}>
+            <Text fontSize={15} fontWeight="600" color="#f8fafc">
+              {t('games.chess_v1.rules.special')}
+            </Text>
+            <YStack gap={1}>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
               >
-                <Text fontSize={20}>{PIECE_SYMBOLS[type].white}</Text>
-                <Text fontSize="$2" textTransform="capitalize">
-                  {type}
-                </Text>
-              </XStack>
-            ))}
-          </XStack>
-          <Text fontSize="$4" fontWeight="600" mt="$2">
-            {t('games.chess_v1.rules.special')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Castling:</Text>{' '}
-            {t('games.chess_v1.rules.castling')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">En passant:</Text>{' '}
-            {t('games.chess_v1.rules.enPassant')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • <Text fontWeight="600">Promotion:</Text>{' '}
-            {t('games.chess_v1.rules.promotion')}
-          </Text>
-          <Text fontSize="$4" fontWeight="600" mt="$2">
-            {t('games.chess_v1.rules.drawConditions')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • {t('games.chess_v1.rules.drawStalemate')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • {t('games.chess_v1.rules.drawFiftyMove')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • {t('games.chess_v1.rules.drawRepetition')}
-          </Text>
-          <Text fontSize="$3" opacity={0.8}>
-            • {t('games.chess_v1.rules.drawMaterial')}
-          </Text>
+                •{' '}
+                <Text fontWeight="600" color="#e2e8f0">
+                  Castling:
+                </Text>{' '}
+                {t('games.chess_v1.rules.castling')}
+              </Text>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                •{' '}
+                <Text fontWeight="600" color="#e2e8f0">
+                  En passant:
+                </Text>{' '}
+                {t('games.chess_v1.rules.enPassant')}
+              </Text>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                •{' '}
+                <Text fontWeight="600" color="#e2e8f0">
+                  Promotion:
+                </Text>{' '}
+                {t('games.chess_v1.rules.promotion')}
+              </Text>
+            </YStack>
+          </YStack>
+
+          <YStack gap={2}>
+            <Text fontSize={15} fontWeight="600" color="#f8fafc">
+              {t('games.chess_v1.rules.drawConditions')}
+            </Text>
+            <YStack gap={1}>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                • {t('games.chess_v1.rules.drawStalemate')}
+              </Text>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                • {t('games.chess_v1.rules.drawFiftyMove')}
+              </Text>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                • {t('games.chess_v1.rules.drawRepetition')}
+              </Text>
+              <Text
+                fontSize={13}
+                lineHeight={20}
+                color="rgba(148, 163, 184, 0.8)"
+              >
+                • {t('games.chess_v1.rules.drawMaterial')}
+              </Text>
+            </YStack>
+          </YStack>
         </YStack>
-        <Button size="$3" onPress={onClose} mt="$2">
+
+        <ModalButton onPress={onClose} marginTop={4}>
           {t('games.chess_v1.rules.gotIt')}
-        </Button>
-      </YStack>
-    </div>
+        </ModalButton>
+      </ModalContent>
+    </ModalOverlay>
   );
 }
 

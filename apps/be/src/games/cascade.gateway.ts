@@ -12,7 +12,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 
 import { CascadeService } from './cascade/cascade.service';
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
@@ -68,6 +72,7 @@ export class CascadeGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.cascadeService.startSession(
         userId,
@@ -98,6 +103,7 @@ export class CascadeGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     if (!payload?.cardId) throw new WsException('cardId is required');
     const chosenColor =
       payload.chosenColor && isActiveColor(payload.chosenColor)
@@ -128,6 +134,7 @@ export class CascadeGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.cascadeService.draw(userId, roomId);
       client.emit('cascade.session.drew', maybeEncrypt({ roomId, userId }));
@@ -148,6 +155,7 @@ export class CascadeGateway {
     payload: { roomId?: string; userId?: string; color?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     if (!isActiveColor(payload?.color))
       throw new WsException('color is required');
     try {
@@ -174,6 +182,7 @@ export class CascadeGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.cascadeService.callCascade(userId, roomId);
       client.emit(
@@ -196,6 +205,7 @@ export class CascadeGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.cascadeService.forfeit(userId, roomId);
       client.emit(

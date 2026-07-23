@@ -1,16 +1,20 @@
 import {
+  Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
-  Body,
   Req,
   UseGuards,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { ReferralService } from './referral.service';
+import { TrackReferralDto } from './dtos/track-referral.dto';
 
 @Controller('referrals')
 export class ReferralController {
@@ -38,13 +42,15 @@ export class ReferralController {
   }
 
   @Post('track')
-  async trackReferral(
-    @Body() body: { referralCode: string; referredUserId: string },
-  ) {
-    await this.referralService.trackReferral(
-      body.referralCode,
-      body.referredUserId,
-    );
+  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @HttpCode(HttpStatus.OK)
+  async trackReferral(@Req() req: Request, @Body() dto: TrackReferralDto) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    await this.referralService.trackReferral(dto.referralCode, user.userId);
     return { success: true };
   }
 }

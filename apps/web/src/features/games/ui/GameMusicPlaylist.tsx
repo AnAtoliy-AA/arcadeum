@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -20,7 +20,13 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Text, XStack, YStack } from 'tamagui';
-import { type MusicTrack, formatTime } from './GameMusicUtils';
+import {
+  type MusicTrack,
+  formatTime,
+  SPRITE_URL,
+  SPRITE_SIZE,
+  SPRITE_COLS,
+} from './GameMusicUtils';
 import { PlayingBars } from './GameMusicVisuals';
 
 interface SortableTrackItemProps {
@@ -112,14 +118,30 @@ function SortableTrackItem({
           aria-label={`Toggle ${track.title}`}
           data-testid={`game-music-track-toggle-${index}`}
         />
-        <Text
-          fontSize={10}
-          color={isActive ? 'rgba(165,180,252,0.9)' : 'rgba(255,255,255,0.45)'}
-          minWidth={16}
-          fontWeight="500"
-        >
-          {String(index + 1).padStart(2, '0')}
-        </Text>
+        {track.spriteIndex != null ? (
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 4,
+              flexShrink: 0,
+              backgroundImage: `url(${SPRITE_URL})`,
+              backgroundPosition: `-${(track.spriteIndex % SPRITE_COLS) * SPRITE_SIZE}px -${Math.floor(track.spriteIndex / SPRITE_COLS) * SPRITE_SIZE}px`,
+              backgroundSize: 'auto',
+            }}
+          />
+        ) : (
+          <Text
+            fontSize={10}
+            color={
+              isActive ? 'rgba(165,180,252,0.9)' : 'rgba(255,255,255,0.45)'
+            }
+            minWidth={16}
+            fontWeight="500"
+          >
+            {String(index + 1).padStart(2, '0')}
+          </Text>
+        )}
         <Text
           flex={1}
           fontSize={12}
@@ -204,6 +226,13 @@ interface PlaylistProps {
   onPlay: (trackIndex: number) => void;
 }
 
+type SortMode =
+  | 'default'
+  | 'title-asc'
+  | 'title-desc'
+  | 'duration-asc'
+  | 'duration-desc';
+
 export function Playlist({
   tracks,
   index,
@@ -214,6 +243,37 @@ export function Playlist({
   onReorder,
   onPlay,
 }: PlaylistProps) {
+  const [search, setSearch] = useState('');
+  const [sortMode, setSortMode] = useState<SortMode>('default');
+
+  const filteredTracks = useMemo(() => {
+    let result = [...tracks];
+
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter((t) => t.title.toLowerCase().includes(q));
+    }
+
+    if (sortMode !== 'default') {
+      result.sort((a, b) => {
+        switch (sortMode) {
+          case 'title-asc':
+            return a.title.localeCompare(b.title);
+          case 'title-desc':
+            return b.title.localeCompare(a.title);
+          case 'duration-asc':
+            return (a.duration ?? 0) - (b.duration ?? 0);
+          case 'duration-desc':
+            return (b.duration ?? 0) - (a.duration ?? 0);
+          default:
+            return 0;
+        }
+      });
+    }
+
+    return result;
+  }, [tracks, search, sortMode]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -257,39 +317,81 @@ export function Playlist({
       borderBottomWidth={1}
       borderBottomColor="rgba(255,255,255,0.08)"
     >
-      <Text
-        fontSize={10}
-        fontWeight="600"
-        color="rgba(255,255,255,0.6)"
-        letterSpacing={0.5}
-        textTransform="uppercase"
-        paddingHorizontal="$1"
-        marginBottom={2}
-      >
-        Playlist
-      </Text>
+      <XStack alignItems="center" gap="$2" paddingHorizontal="$1">
+        <Text
+          fontSize={10}
+          fontWeight="600"
+          color="rgba(255,255,255,0.6)"
+          letterSpacing={0.5}
+          textTransform="uppercase"
+        >
+          Playlist
+        </Text>
+        <Text fontSize={10} color="rgba(255,255,255,0.35)">
+          {filteredTracks.length}/{tracks.length}
+        </Text>
+      </XStack>
+      <XStack gap="$2" paddingHorizontal="$1">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            fontSize: 11,
+            padding: '4px 8px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.8)',
+            outline: 'none',
+          }}
+        />
+        <select
+          value={sortMode}
+          onChange={(e) => setSortMode(e.target.value as SortMode)}
+          style={{
+            fontSize: 11,
+            padding: '4px 6px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.8)',
+            outline: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <option value="default">Default</option>
+          <option value="title-asc">Title A→Z</option>
+          <option value="title-desc">Title Z→A</option>
+          <option value="duration-asc">Duration ↑</option>
+          <option value="duration-desc">Duration ↓</option>
+        </select>
+      </XStack>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={tracks.map((t) => t.src)}
+          items={filteredTracks.map((t) => t.src)}
           strategy={verticalListSortingStrategy}
         >
-          {tracks.map((track, i) => {
-            const isActive = i === index;
-            const isEnabled = enabledTracks.has(i);
+          {filteredTracks.map((track) => {
+            const realIndex = tracks.findIndex((t) => t.src === track.src);
+            const isActive = realIndex === index;
+            const isEnabled = enabledTracks.has(realIndex);
 
             return (
               <SortableTrackItem
                 key={track.src}
                 track={track}
-                index={i}
+                index={realIndex}
                 isActive={isActive}
                 isPlaying={isPlaying}
                 isEnabled={isEnabled}
-                duration={trackDurations[track.src] ?? 0}
+                duration={trackDurations[track.src] ?? track.duration ?? 0}
                 onToggleTrack={onToggleTrack}
                 onPlay={onPlay}
               />

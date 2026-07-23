@@ -9,7 +9,6 @@ import {
   mockGameSocket,
   checkNoBackendErrors,
   waitForRoomReady,
-  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Sea Battle Bot Count Selection', () => {
@@ -134,7 +133,12 @@ test.describe('Sea Battle Bot Count Selection', () => {
 
     const botButton4 = page.getByTestId('bot-count-4');
     await expect(botButton4).toBeVisible({});
-    await clickButtonByTestId(page, 'bot-count-4');
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="bot-count-4"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({});

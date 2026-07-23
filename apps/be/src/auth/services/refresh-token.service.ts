@@ -9,6 +9,7 @@ import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
   RefreshToken,
   RefreshTokenDocument,
@@ -40,7 +41,7 @@ export class RefreshTokenService {
   ): Promise<IssuedRefreshToken> {
     const raw = crypto.randomUUID() + '.' + crypto.randomUUID();
     const tokenId = this.extractRefreshTokenId(raw);
-    const hash = await bcrypt.hash(raw, 10);
+    const hash = await bcrypt.hash(raw, BCRYPT_SALT_ROUNDS);
     const ttlDays = Number(
       this.config.get<string>('REFRESH_TOKEN_TTL_DAYS') || '7',
     );

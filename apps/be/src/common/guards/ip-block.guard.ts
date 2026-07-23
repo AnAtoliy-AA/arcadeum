@@ -7,6 +7,18 @@ interface BlockedEntry {
   reason: string;
 }
 
+/**
+ * IP block service that tracks failed requests and blocks abusive IPs.
+ *
+ * NOTE: This service uses in-memory storage (Map). It is NOT safe for
+ * multi-instance deployments — state is lost on restart and not shared
+ * across horizontally-scaled instances. An attacker hitting different
+ * instances or triggering a restart can bypass IP blocking.
+ *
+ * If multi-instance support is needed, replace the Map backing store with
+ * Redis (atomic increment + TTL) or a MongoDB collection with a TTL index.
+ * Keep the same public method signatures and swap only the storage layer.
+ */
 @Injectable()
 export class IpBlockService {
   private readonly blocked = new Map<string, BlockedEntry>();

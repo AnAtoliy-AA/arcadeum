@@ -50,7 +50,9 @@ export async function handleJoinRoom(
     if (!client.data) {
       client.data = {};
     }
-    (client.data as Record<string, unknown>).userId = userId;
+    if (!(client.data as Record<string, unknown>).userId) {
+      (client.data as Record<string, unknown>).userId = userId;
+    }
     realtime.trackSocket(userId, client.id);
 
     let diffSession = session;
@@ -220,6 +222,8 @@ export async function handleSetOption(
     userId?: string;
     options?: Record<string, unknown>;
   },
+  validateUserId: (client: Socket, userId: string) => void,
+  client: Socket,
 ): Promise<void> {
   const { roomId, userId } = extractRoomAndUser(payload);
   const options = payload?.options;
@@ -227,6 +231,7 @@ export async function handleSetOption(
   if (!options || typeof options !== 'object') {
     throw new WsException('options object is required.');
   }
+  validateUserId(client, userId);
   try {
     await gamesService.updateRoomOptions(roomId, userId, options);
   } catch (error) {

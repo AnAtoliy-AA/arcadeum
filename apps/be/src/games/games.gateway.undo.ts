@@ -4,7 +4,7 @@ import {
   maybeDecrypt,
   maybeEncrypt,
 } from '../common/utils/socket-encryption.util';
-import { extractString } from './games.gateway.utils';
+import { extractString, validatePayloadUserId } from './games.gateway.utils';
 import type { GamesService } from './games.service';
 
 export function handleUndoRequest(
@@ -23,6 +23,7 @@ export function handleUndoRequest(
   const userId = extractString(decrypted, 'userId');
   const sessionId = extractString(decrypted, 'sessionId');
   if (!roomId || !userId) return;
+  validatePayloadUserId(client, userId);
   const channel = realtime.roomChannel(roomId);
   if (!client.rooms.has(channel)) return;
   server
@@ -52,6 +53,7 @@ export async function handleUndoResponse(
   const sessionId = extractString(decrypted, 'sessionId');
   const accepted = decrypted?.accepted ?? false;
   if (!roomId || !userId) return;
+  validatePayloadUserId(client, userId);
   const channel = realtime.roomChannel(roomId);
   if (!client.rooms.has(channel)) return;
 

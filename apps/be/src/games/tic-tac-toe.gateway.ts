@@ -12,7 +12,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 
 import { TicTacToeService } from './tic-tac-toe/tic-tac-toe.service';
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
@@ -67,6 +71,7 @@ export class TicTacToeGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.ticTacToeService.startSession(
         userId,
@@ -100,6 +105,7 @@ export class TicTacToeGateway {
     if (typeof payload?.row !== 'number' || typeof payload?.col !== 'number') {
       throw new WsException('row and col are required');
     }
+    validatePayloadUserId(client, userId);
     try {
       await this.ticTacToeService.placeMark(userId, roomId, {
         row: payload.row,
@@ -125,6 +131,7 @@ export class TicTacToeGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.ticTacToeService.forfeit(userId, roomId);
       client.emit(

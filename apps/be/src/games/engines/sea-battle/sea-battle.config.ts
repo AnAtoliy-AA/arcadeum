@@ -13,7 +13,7 @@ export function validateSeaBattleConfig(
   const resolvedGridSize = typeof gridSize === 'number' ? gridSize : 10;
   const shipCount = config.shipCount ?? getDefaultShipCount(resolvedGridSize);
 
-  if (typeof shipCount !== 'number' || shipCount < 3 || shipCount > 15) {
+  if (typeof shipCount !== 'number' || shipCount < 3 || shipCount > 26) {
     return false;
   }
 

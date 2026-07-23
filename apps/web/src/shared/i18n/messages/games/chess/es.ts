@@ -12,6 +12,7 @@ export const esMessages = {
           'Juega ajedrez multijugador en línea. Variantes estándar y Chess960, controles de tiempo opcionales, bots desde el primer día. Gratis, salas instantáneas.',
         keywords:
           'ajedrez, ajedrez online, ajedrez multijugador, chess960, juegos de tablero',
+        howToPlayTitle: 'Cómo jugar a {{gameName}}',
       },
       hero: {
         title: 'Ajedrez — el juego de estrategia atemporal',
@@ -21,6 +22,7 @@ export const esMessages = {
         ctaQuickplay: 'Jugar contra la IA',
         ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
         browseRooms: 'Explorar salas',
+        backToGames: '← Juegos',
       },
       highlights: {
         players: {
@@ -163,6 +165,7 @@ export const esMessages = {
       showAll: 'Mostrar todo ({{count}})',
       copied: '¡Copiado!',
       spectating: 'Observando',
+      boardLabel: 'Tablero de ajedrez, {{color}} a mover',
     },
   },
 };

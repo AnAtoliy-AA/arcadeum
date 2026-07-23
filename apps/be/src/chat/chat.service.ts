@@ -307,6 +307,13 @@ export class ChatService {
     return this.chatHelper.toMessageViews(messages as unknown as Message[]);
   }
 
+  async isUserParticipant(chatId: string, userId: string): Promise<boolean> {
+    const chat = await this.chatModel.findOne({ chatId }).lean().exec();
+    if (!chat) return false;
+    const users = this.chatHelper.normalizeUserIds(chat.users ?? []);
+    return users.includes(userId);
+  }
+
   async createChatForUsers(
     userIds: string[],
     providedChatId?: string,

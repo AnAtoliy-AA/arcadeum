@@ -2,21 +2,17 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
   useGameChatSend,
-  useRematch,
+  useGameEndState,
   useGameRoomActions,
-  useGameResultModal,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
 import { useTicTacToeActions } from '../hooks/useTicTacToeActions';
@@ -26,10 +22,7 @@ import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { WIN_LENGTHS } from '../types';
-import {
-  TIC_TAC_TOE_VARIANTS,
-  INFINITY_MAX_BOARD_SIZE,
-} from '../lib/constants';
+import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
 import {
   type BoardSize,
   type TicTacToeOptions,
@@ -64,7 +57,6 @@ function TicTacToeGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: TicTacToeGameProps) {
@@ -81,7 +73,6 @@ function TicTacToeGameImpl({
     myTurn,
     isGameOver,
     startBusy,
-    setStartBusy,
     session,
   } = useTicTacToeState({
     roomId,
@@ -114,18 +105,6 @@ function TicTacToeGameImpl({
     resolveDisplayNameBound,
   );
 
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
-
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
-
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
@@ -136,31 +115,28 @@ function TicTacToeGameImpl({
 
   useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
 
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-      isGameOver,
-    );
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result,
+    resultMessages: result
+      ? {
+          title: t(
+            `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+          message: t(
+            `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+        }
+      : undefined,
+  });
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
     [room?.gameOptions],
   );
-
-  const highlightedCell = useGameChatStore((s) => s.highlightedCell);
-  const persistedCell = useGameChatStore((s) => s.persistedCell);
-  const effectiveHighlight = highlightedCell ?? persistedCell;
 
   const variantTokens = useMemo(
     () =>
@@ -168,10 +144,6 @@ function TicTacToeGameImpl({
       TIC_TAC_TOE_VARIANTS[0],
     [options.variant],
   );
-
-  const onRematchClick = useCallback(() => {
-    void handleRematch([], undefined);
-  }, [handleRematch]);
 
   if (!room) return null;
 
@@ -186,14 +158,12 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onReorderPlayers={handleReorderPlayers}
-          onStartGame={(opts) => {
-            setStartBusy(true);
+          onStartGame={(opts) =>
             startSession({
               withBots: !!opts?.withBots,
               botCount: opts?.botCount,
-            });
-          }}
+            })
+          }
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
@@ -224,20 +194,9 @@ function TicTacToeGameImpl({
             players={snapshot.players}
             teams={snapshot.teams}
             teamMode={snapshot.options.teamMode}
-            origin={snapshot.origin}
             disabled={!myTurn || isGameOver}
-            highlightedCell={effectiveHighlight}
-            maxBoardSize={INFINITY_MAX_BOARD_SIZE}
-            currentPlayerId={currentShooterId}
-            ariaLabel={
-              snapshot.options.boardSize === 'infinity'
-                ? 'Tic-Tac-Toe Infinity board'
-                : `Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`
-            }
-            onCellClick={(row, col) => {
-              useGameChatStore.getState().setPersistedCell(null);
-              placeMark(row, col);
-            }}
+            ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
+            onCellClick={(row, col) => placeMark(row, col)}
           />
         </>
       ) : null}
@@ -245,30 +204,20 @@ function TicTacToeGameImpl({
   );
 
   const inGameBoardSize = snapshot?.options.boardSize ?? options.boardSize;
-  const inGameMargin =
-    snapshot?.options.expansionMargin ?? options.expansionMargin;
-  const inGameWinLength =
-    snapshot?.options.boardSize === 'infinity'
-      ? (snapshot?.options.infinityWinLength ?? options.infinityWinLength)
-      : (WIN_LENGTHS[inGameBoardSize as keyof typeof WIN_LENGTHS] ?? 5);
 
   const modals = (
     <>
-      <GameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={[]}
+        currentUserId={currentUserId}
         t={t}
-        messages={resultMessages}
       />
       <RulesModal
         open={showRulesOpen}
         onClose={onShowRulesClose}
         boardSize={inGameBoardSize}
-        winLength={inGameWinLength}
-        expansionMargin={inGameMargin}
+        winLength={WIN_LENGTHS[inGameBoardSize]}
       />
     </>
   );
@@ -281,7 +230,6 @@ function TicTacToeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
-        loading={!snapshot}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',

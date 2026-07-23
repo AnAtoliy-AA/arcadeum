@@ -74,6 +74,14 @@ export class GamesGateway {
       );
       this.realtime.trackSocket(authUserId, client.id);
     } else {
+      // Store the anonId from handshake to prevent impersonation
+      const anonId =
+        typeof client.handshake?.query?.anonId === 'string'
+          ? client.handshake.query.anonId
+          : undefined;
+      if (anonId) {
+        (client.data as Record<string, unknown>).anonId = anonId;
+      }
       this.logger.verbose(
         `Anonymous client connected to games namespace: ${client.id}`,
       );
@@ -129,7 +137,9 @@ export class GamesGateway {
   }
 
   /**
-   * Prevents authenticated users from impersonating others.
+   * Prevents users from impersonating others.
+   * For authenticated users: ensures payload userId matches JWT.
+   * For anonymous users: ensures payload userId matches the anonId from handshake.
    */
   private validateUserId(client: Socket, payloadUserId: string): void {
     const authUserId = (client.data as Record<string, unknown>)?.userId as
@@ -137,9 +147,20 @@ export class GamesGateway {
       | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
+    const anonId = (client.data as Record<string, unknown>)?.anonId as
+      | string
+      | undefined;
+
     if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
       this.logger.warn(
         `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+      );
+      throw new WsException('Cannot perform actions as another user.');
+    }
+
+    if (!isAuthenticated && anonId && payloadUserId !== anonId) {
+      this.logger.warn(
+        `Anonymous ${anonId} attempted to act as ${payloadUserId} — blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }
@@ -293,6 +314,8 @@ export class GamesGateway {
       this.realtime,
       this.gamesService,
       payload,
+      (c, u) => this.validateUserId(c, u),
+      client,
     );
   }
 
@@ -315,6 +338,8 @@ export class GamesGateway {
         ? payload.scope.trim().toLowerCase()
         : 'all';
     const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+
+    this.validateUserId(client, userId);
 
     try {
       await this.gamesService.postHistoryNote(

@@ -207,7 +207,7 @@ export class TaskBotService implements OnApplicationBootstrap {
 
     let engine: Engine = userId
       ? this.prefsService.getEngine(userId)
-      : 'opencode';
+      : 'mimo';
     const engineMatch = cleaned.match(/--engine[=:](\S+)/i);
     if (engineMatch) {
       const requested = engineMatch[1].toLowerCase();
@@ -376,7 +376,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     const text = ctx.message?.text?.replace(/^\/task\s*/, '');
     if (!text) {
       await ctx.reply(
-        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: opencode)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
+        'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: mimo)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
       );
       return;
     }
@@ -462,6 +462,27 @@ export class TaskBotService implements OnApplicationBootstrap {
       } catch (err) {
         this.logger.error(`Failed to ${action}: ${err}`);
         await ctx.reply(`Failed to ${action}. Send the command again.`);
+      }
+      return;
+    }
+
+    if (data.startsWith('timeout-continue:') || data.startsWith('timeout-abort:')) {
+      const action = data.startsWith('timeout-continue:') ? 'continue' : 'abort';
+      const timeoutKey = data.slice(data.indexOf(':') + 1);
+      const issueNum = timeoutKey.replace('timeout:', '');
+
+      await ctx.answerCallbackQuery();
+
+      await this.notificationService.publishTimeoutResponse({
+        jobId: `timeout-${issueNum}`,
+        action,
+        timestamp: Date.now(),
+      });
+
+      if (action === 'abort') {
+        await ctx.reply('Aborted.');
+      } else {
+        await ctx.reply('Continuing...');
       }
       return;
     }
@@ -754,7 +775,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     const current = this.prefsService.getAll(userId);
     await ctx.reply(
       `Current preferences:\n` +
-        `Engine: *${current?.engine ?? 'opencode'}*\n` +
+        `Engine: *${current?.engine ?? 'mimo'}*\n` +
         `Scope: *${current?.defaultScope?.join(', ') ?? 'web'}*\n\n` +
         `Usage:\n` +
         `/prefs opencode — set default engine\n` +
@@ -786,6 +807,10 @@ export class TaskBotService implements OnApplicationBootstrap {
         text = notification.success
           ? `*CI Passed* ✅\n${notification.message}`
           : `*CI Fix Failed* ❌\n${notification.message}`;
+        break;
+
+      case 'timeout-prompt':
+        text = `*AI Engine Timeout* ⏰\n${notification.message}`;
         break;
 
       case 'implement-failed':
@@ -825,6 +850,41 @@ export class TaskBotService implements OnApplicationBootstrap {
     }
 
     text = this.sanitizeMessage(text);
+
+    if (notification.type === 'timeout-prompt') {
+      const timeoutKey = `timeout:${notification.issueNum}`;
+      try {
+        await this.bot.api.sendMessage(chatId, text, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: '▶️ Continue', callback_data: `timeout-continue:${timeoutKey}` },
+                { text: '❌ Abort', callback_data: `timeout-abort:${timeoutKey}` },
+              ],
+            ],
+          },
+        });
+        this.logger.log(`Timeout prompt sent for #${notification.issueNum}`);
+      } catch {
+        try {
+          await this.bot.api.sendMessage(chatId, text, {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '▶️ Continue', callback_data: `timeout-continue:${timeoutKey}` },
+                  { text: '❌ Abort', callback_data: `timeout-abort:${timeoutKey}` },
+                ],
+              ],
+            },
+          });
+          this.logger.log(`Timeout prompt sent (plain text) for #${notification.issueNum}`);
+        } catch (err2) {
+          this.logger.error(`Failed to send timeout prompt: ${err2}`);
+        }
+      }
+      return;
+    }
 
     const isFailed = notification.type?.includes('failed') || (!notification.success && notification.type !== 'ci-failed');
 

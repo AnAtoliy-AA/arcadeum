@@ -19,6 +19,9 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
       withBots?: boolean;
       botCount?: number;
       difficulty?: 'easy' | 'medium' | 'hard';
+      gridSize?: number;
+      shipCount?: number;
+      variant?: string;
     }) => {
       if (!userId) return;
       onActionStart?.('start');
@@ -28,6 +31,9 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
         withBots: options?.withBots,
         botCount: options?.botCount,
         difficulty: options?.difficulty,
+        gridSize: options?.gridSize,
+        shipCount: options?.shipCount,
+        variant: options?.variant,
       });
     },
     [roomId, userId, onActionStart],

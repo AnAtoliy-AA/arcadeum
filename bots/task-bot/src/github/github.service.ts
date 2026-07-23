@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { execFileSync, spawn } from 'child_process';
 import { mkdirSync, rmSync } from 'fs';
+import { NotificationService } from '../notification/notification.service';
 
 interface GitHubIssue {
   arc: string | null;
@@ -19,7 +20,10 @@ export class GitHubService {
   private readonly logger = new Logger(GitHubService.name);
   private lastGhCallTime = 0;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   private throttleGitHub(): void {
     const now = Date.now();
@@ -41,7 +45,12 @@ export class GitHubService {
   private spawnAsync(
     cmd: string,
     args: string[],
-    opts: { cwd: string; timeout?: number; env?: Record<string, string> },
+    opts: {
+      cwd: string;
+      timeout?: number;
+      env?: Record<string, string>;
+      onTimeoutApproaching?: () => Promise<'continue' | 'abort'>;
+    },
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const child = spawn(cmd, args, {
@@ -52,33 +61,65 @@ export class GitHubService {
       let stdout = '';
       let stderr = '';
       let settled = false;
+      let currentTimer: NodeJS.Timeout | undefined;
+      let warningTimer: NodeJS.Timeout | undefined;
       child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
       child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
 
-      const timer = opts.timeout
-        ? setTimeout(() => {
+      const killChild = () => {
+        try {
+          process.kill(-child.pid!, 'SIGTERM');
+        } catch {
+          try { child.kill('SIGTERM'); } catch { /* ignore */ }
+        }
+      };
+
+      const startTimer = (remainingMs: number) => {
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+
+        const warningMs = Math.max(0, remainingMs - 100_000);
+        if (opts.onTimeoutApproaching && warningMs > 0) {
+          warningTimer = setTimeout(() => {
             if (settled) return;
-            settled = true;
-            try {
-              process.kill(-child.pid!, 'SIGTERM');
-            } catch {
-              try { child.kill('SIGTERM'); } catch { /* ignore */ }
-            }
-            reject(new Error(`Timeout after ${Math.round(opts.timeout! / 1000)}s`));
-          }, opts.timeout)
-        : undefined;
+            opts.onTimeoutApproaching!().then((action) => {
+              if (settled) return;
+              if (action === 'abort') {
+                settled = true;
+                killChild();
+                reject(new Error('Aborted by user'));
+              } else {
+                startTimer(900_000);
+              }
+            });
+          }, warningMs);
+        }
+
+        currentTimer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          killChild();
+          reject(new Error(`Timeout after ${Math.round(remainingMs / 1000)}s`));
+        }, remainingMs);
+      };
+
+      if (opts.timeout) {
+        startTimer(opts.timeout);
+      }
 
       child.on('close', (code) => {
         if (settled) return;
         settled = true;
-        if (timer) clearTimeout(timer);
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
         if (code === 0) resolve(stdout.trim());
         else reject(new Error(stderr || `Exit code ${code}`));
       });
       child.on('error', (err) => {
         if (settled) return;
         settled = true;
-        if (timer) clearTimeout(timer);
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
         reject(err);
       });
     });
@@ -104,7 +145,7 @@ export class GitHubService {
     for (const { name, cmd } of commands) {
       try {
         this.logger.log(`Verifying: ${name}`);
-        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 120_000 });
+        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 300_000 });
         this.logger.log(`✓ ${name} passed`);
       } catch (err) {
         const msg = (err as Error).message.slice(0, 500);
@@ -121,15 +162,16 @@ export class GitHubService {
       execFileSync('pnpm', ['install', '--frozen-lockfile'], {
         encoding: 'utf-8',
         cwd,
-        timeout: 120_000,
+        timeout: 180_000,
       });
       this.logger.log(`Dependencies installed in ${cwd}`);
     } catch {
       try {
+        this.logger.log(`Frozen lockfile install failed, trying without --frozen-lockfile`);
         execFileSync('pnpm', ['install'], {
           encoding: 'utf-8',
           cwd,
-          timeout: 120_000,
+          timeout: 180_000,
         });
         this.logger.log(`Dependencies installed (no frozen lockfile) in ${cwd}`);
       } catch (err) {
@@ -145,11 +187,6 @@ export class GitHubService {
     mkdirSync('/tmp/task-bot', { recursive: true });
 
     try {
-      execFileSync('git', ['checkout', '--detach'], {
-        encoding: 'utf-8',
-        cwd: repoCwd,
-        stdio: 'pipe',
-      });
       execFileSync('git', ['worktree', 'add', worktreePath, 'origin/develop'], {
         encoding: 'utf-8',
         cwd: repoCwd,
@@ -357,7 +394,13 @@ export class GitHubService {
           if (errorLines.length > 80) break;
         }
       }
-      return errorLines.length > 0 ? errorLines.join('\n').slice(0, 4000) : result.slice(0, 4000);
+      if (errorLines.length > 0) {
+        return errorLines.join('\n').slice(0, 4000);
+      }
+      const passingLines = lines.filter(l => l.includes('✓') || l.includes('PASS'));
+      const failingLines = lines.filter(l => l.includes('×') || l.includes('FAIL') || l.includes('Error'));
+      const summary = `Total tests: ${passingLines.length} passed, ${failingLines.length} failed`;
+      return [summary, '', 'Failing tests:', ...failingLines.slice(0, 20)].join('\n').slice(0, 4000);
     } catch {
       return '';
     }
@@ -591,17 +634,34 @@ export class GitHubService {
       } catch {
         // ignore
       }
-      execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
-      return { success: true, message: `Pushed ${branchName}` };
-    } catch (err) {
-      this.logger.warn(`git push failed, trying gh: ${(err as Error).message}`);
-      try {
-        execFileSync('gh', ['auth', 'setup-git'], { encoding: 'utf-8', cwd: workdir, timeout: 10_000 });
-        execFileSync('git', ['push', 'origin', branchName, '--no-verify'], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
-        return { success: true, message: `Pushed ${branchName} (via gh auth)` };
-      } catch (err2) {
-        return { success: false, message: `Failed to push: ${(err2 as Error).message}` };
+
+      const credHelper = '!/usr/bin/gh auth git-credential';
+      const maxRetries = 2;
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          execFileSync('git', [
+            '-c', `credential.helper=${credHelper}`,
+            'push', 'origin', branchName, '--no-verify',
+          ], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
+          this.logger.log(`Pushed ${branchName} (attempt ${attempt})`);
+          return { success: true, message: `Pushed ${branchName}` };
+        } catch (err) {
+          lastError = err as Error;
+          this.logger.warn(`git push attempt ${attempt}/${maxRetries} failed: ${lastError.message}`);
+          if (attempt < maxRetries) {
+            execFileSync('git', ['credential', 'reject'], {
+              input: 'protocol=https\nhost=github.com\n',
+              encoding: 'utf-8',
+              cwd: workdir,
+              timeout: 5_000,
+            });
+          }
+        }
       }
+      return { success: false, message: `Failed to push after ${maxRetries} attempts: ${lastError!.message}` };
+    } catch (err) {
+      return { success: false, message: `Failed to push: ${(err as Error).message}` };
     }
   }
 
@@ -627,6 +687,12 @@ export class GitHubService {
 
       this.cleanWorkdir(cwd);
 
+      try {
+        execFileSync('git', ['worktree', 'prune'], { encoding: 'utf-8', cwd: this.getCwd() });
+      } catch {
+        // ignore prune errors
+      }
+
       const branchExists = execFileSync(
         'git', ['branch', '--list', branchName],
         { encoding: 'utf-8', cwd },
@@ -636,9 +702,7 @@ export class GitHubService {
           'git', ['log', `origin/develop..${branchName}`, '--oneline'],
           { encoding: 'utf-8', cwd },
         ).trim();
-        if (!aheadCount) {
-          execFileSync('git', ['branch', '-D', branchName], { encoding: 'utf-8', cwd });
-        } else {
+        if (aheadCount) {
           return {
             success: false,
             message: `Branch ${branchName} already has commits.`,
@@ -646,7 +710,7 @@ export class GitHubService {
         }
       }
 
-      execFileSync('git', ['checkout', '-b', branchName], {
+      execFileSync('git', ['checkout', '-B', branchName], {
         encoding: 'utf-8',
         cwd,
       });
@@ -710,7 +774,23 @@ export class GitHubService {
         cli === 'opencode'
           ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
           : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-${issueNum}`,
+            issueNum,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on #${issueNum}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-${issueNum}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 
@@ -724,7 +804,7 @@ export class GitHubService {
       }
 
       if (!hasChanges) {
-        return { success: true, message: 'No changes to commit — the AI engine did not produce any modifications.' };
+        return { success: false, message: 'No changes to commit — the AI engine did not produce any modifications.' };
       }
 
       const scope = data.title.match(/ARC-\d+/)?.[0] || `task-${issueNum}`;
@@ -853,7 +933,23 @@ export class GitHubService {
           // ignore — token may already be valid
         }
       }
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-fix-${prNumber}`,
+            issueNum: prNumber,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on PR #${prNumber}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-fix-${prNumber}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 
@@ -960,7 +1056,23 @@ export class GitHubService {
       const runArgs = cli === 'opencode'
         ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
         : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      await this.spawnAsync(cli, runArgs, { cwd, timeout: 900_000, env: { HUSKY: '0' } }).catch((err) => {
+      await this.spawnAsync(cli, runArgs, {
+        cwd,
+        timeout: 900_000,
+        env: { HUSKY: '0' },
+        onTimeoutApproaching: async () => {
+          await this.notificationService.publish({
+            jobId: `timeout-ci-${prNumber}`,
+            issueNum: prNumber,
+            engine,
+            success: true,
+            message: `AI engine is taking longer than expected on CI fix for PR #${prNumber}. Continue or abort?`,
+            timestamp: Date.now(),
+            type: 'timeout-prompt',
+          });
+          return this.notificationService.waitForTimeoutResponse(`timeout-ci-${prNumber}`, 3 * 60 * 1000);
+        },
+      }).catch((err) => {
         this.logger.warn(`AI engine finished with error: ${(err as Error).message} — checking for partial changes`);
       });
 

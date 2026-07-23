@@ -239,6 +239,14 @@ export const shopEs = {
         name: 'Gato Bengalí Cibernético',
         desc: 'Un gato bengalí cibernético hiperrealista.',
       },
+      phoenixcyber: {
+        name: 'Fénix Cibernético',
+        desc: 'Un fénix cibernético hiperrealista.',
+      },
+      dragoncyber: {
+        name: 'Dragón Cibernético',
+        desc: 'Un dragón cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },

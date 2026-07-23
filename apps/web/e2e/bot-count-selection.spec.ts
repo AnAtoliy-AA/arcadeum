@@ -8,7 +8,6 @@ import {
   mockGameSocket,
   checkNoBackendErrors,
   waitForRoomReady,
-  clickButtonByTestId,
 } from './fixtures/test-utils';
 
 test.describe('Bot Count Selection', () => {
@@ -64,10 +63,17 @@ test.describe('Bot Count Selection', () => {
 
     await expect(page.getByText(/Number of bots/i)).toBeVisible({});
 
-    // Select 3 bots
+    // Select 3 bots — use direct DOM click to avoid the sticky start
+    // button (position: fixed; z-index: 150) intercepting the Playwright
+    // click event at these coordinates.
     const botButton3 = page.getByTestId('bot-count-3');
     await expect(botButton3).toBeVisible({});
-    await clickButtonByTestId(page, 'bot-count-3');
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="bot-count-3"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     // Start button should update label
     const startBtn = page.getByTestId('start-with-bots-button');

@@ -7,51 +7,239 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.86] - 2026-07-23
+
+### Added
+- add sprite sheet cover art and filter/sort to music player
+
+
+## [1.23.85] - 2026-07-23
+
+### Documentation
+- add PR title convention for staging/main
+
+
+## [1.23.84] - 2026-07-23
+
+### Fixed
+- forward isGameOver to useGameResultModal
+- remove vitest overrides that cause peer dep mismatches
+- escape regex input, gate CSP unsafe-eval, add socket auth validation
+
+
+## [1.23.83] - 2026-07-23
+
+### Added
+- add useGameEndState hook and GameEndModals for unified game end screen
+
+### Fixed
+- add expansionMargin/infinityWinLength to TicTacToe resolveOptions
+- fix TicTacToe isSize type guard for infinity board size
+- add openRematchModal to Critical GameEndModals gameEnd object
+- fix type error in Critical ActiveGameView rematch handler
+- add currentUserId/isGameOver back as optional to UseGameEndStateOptions
+- remove duplicate SeaBattleModals function from merge
+
+### Refactored
+- optimize useGameEndState performance and simplify GameEndModals API
+
+
+## [1.23.82] - 2026-07-23
+
+### Added
+- add cyber phoenix and cyber dragon premium avatars
+
+
+## [1.23.81] - 2026-07-23
+
+### Fixed
+- add missing getDefaultShipCount import, gridSize test prop, and fix useEffect deps
+- pass shipCount/gridSize directly in start event to bypass race condition
+- track gridSize/shipCount in local state to fix stale room race
+- sync lobby options to gameOptions before starting game
+- ensure shipCount reaches engine via gameOptions
+- use deterministic autoplacement for many ships
+- restore expanded SHIPS array and correct defaults
+- improve autoplacement reliability and sort ships big-to-small
+- sync frontend SHIPS array with backend and pass shipCount in team mode
+- pass gridSize to frontend placement helpers
+- fix ship placement for larger grids and add host-configurable ship count
+
+
+## [1.23.80] - 2026-07-23
+
+### Fixed
+- sanitize user-provided values in MongoDB queries to prevent NoSQL injection
+- replace Math.random() with crypto.randomInt() for CodeQL compliance
+- allow E2E+production in CI environments
+- harden backend security after comprehensive audit
+
+
+## [1.23.79] - 2026-07-23
+
+### Fixed
+- target Dependabot PRs to develop branch
+
+
+## [1.23.78] - 2026-07-22
+
+### Fixed
+- filter CI error logs to show only failures
+- add timeout prompt to fixPR and checkAndFixCI
+- eliminate credential race condition in pushBranch
+- improve pushBranch retry, sync verifyChanges, increase installDeps timeout
+- rm -rf worktree fallback when git worktree remove fails
+- simplify verification to lint+typecheck only, increase timeout to 5min
+- increase Bull lock duration to 15min for implementation queue
+- remove git checkout --detach from worktree creation
+- always setup gh auth before push in worktrees
+- use actual PR branch name for CI fix instead of constructing it
+- default engine to mimo, fix CI poll, add timeout prompt
+
+### Refactored
+- extract stripDisabledRules from games.controller
+
+
+## [1.23.77] - 2026-07-22
+
+### Added
+- audio cues (ARC-879)
+
+### Fixed
+- update sound test to use dynamic manifest count
+- resolve CI failures and review feedback
+- lint warning in ChatMessagePopup
+
+
+## [1.23.76] - 2026-07-22
+
+### Added
+- add display names and avatars to player cards
+
+### Fixed
+- reduce Jest workers from 4 to 2 to fix SIGSEGV
+
+### Refactored
+- extract GamesCatalogService from controller
+
+
+## [1.23.75] - 2026-07-21
+
+### Fixed
+- resolve periodic re-login by fixing token refresh and session recovery
+
+
+## [1.23.74] - 2026-07-21
+
+### Added
+- persistent stat tracking (ARC-871)
+
+### Fixed
+- sanitize user-controlled values in MongoDB queries (CodeQL)
+- add PlayerStatsService mock to GamesService spec
+- add missing PlayerStats fields to local stats objects
+- skip branch deletion, use checkout -B to avoid worktree conflicts
+
+
+## [1.23.73] - 2026-07-20
+
+### Fixed
+- clean up worktrees on failure
+
+
+## [1.23.72] - 2026-07-20
+
+### Improved
+- reduce gpu usage and split oversized backend files
+
+
+## [1.23.71] - 2026-07-20
+
+### Fixed
+
+- fix tic-tac-toe board rendering issues
+
+## [1.23.70] - 2026-07-20
+
+### Fixed
+
+- report failure when AI engine produces no changes, default to mimo engine
+
+## [1.23.69] - 2026-07-20
+
+### Fixed
+
+- prevent sticky start button from intercepting bot-count clicks
+- add bottom padding to LobbyContent to prevent sticky start button overlap on mobile
+- make lobby start button sticky on mobile and visible only for host
+
+## [1.23.68] - 2026-07-20
+
+### Added
+
+- chess game translations (ARC-877)
+
+## [1.23.67] - 2026-07-20
+
+### Fixed
+
+- add missing game result modal and rematch invitation to all games
+
+## [1.23.66] - 2026-07-20
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.23.65] - 2026-07-20
 
 ### Fixed
-- use separate row/col bounds in infinity board validator
 
+- use separate row/col bounds in infinity board validator
 
 ## [1.23.64] - 2026-07-20
 
 ### Added
+
 - CI poll now triggers fix instead of just logging
 - AI-powered conflict resolution before push
 
 ### Fixed
+
 - fix async return type to Promise<void>
 - remove unused failedCheckNames variable
 - make checkCIStatus async for await calls
 
-
 ## [1.23.63] - 2026-07-20
 
 ### Added
+
 - ai difficulty levels (ARC-880)
 
 ### Fixed
-- resolve CI failures and review feedback
 
+- resolve CI failures and review feedback
 
 ## [1.23.62] - 2026-07-20
 
 ### Added
+
 - add conflict resolution before push and .mimocode to gitignore
 
 ### Fixed
-- only verify on /fix, not /implement
 
+- only verify on /fix, not /implement
 
 ## [1.23.61] - 2026-07-20
 
 ### Added
-- add CI fix max attempts guard, CI polling, and rate limiting
 
+- add CI fix max attempts guard, CI polling, and rate limiting
 
 ## [1.23.60] - 2026-07-20
 
 ### Added
+
 - run lint/typecheck/build verification before push
 - chain auto-continue up to 3 retries
 - auto-continue after 3 min timeout
@@ -66,6 +254,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Redis pub/sub notifications for task completion
 
 ### Fixed
+
 - pass issue data directly in addJob to prevent race condition
 - add push timeout and gh auth fallback
 - re-fetch failed checks when worker starts processing
@@ -112,15 +301,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use execFileSync for gh CLI and truncate long Telegram messages
 
 ### Refactored
-- worktree isolation, permission separation, unified job types
 
+- worktree isolation, permission separation, unified job types
 
 ## [1.23.59] - 2026-07-20
 
 ### Added
+
 - add checkers engine with bot AI, web widget, and full i18n
 
 ### Fixed
+
 - resolve CI failures and review feedback
 - resolve CI failures and review feedback
 - use valid borderRadius value in CheckersBoard
@@ -128,19 +319,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - resolve all build and lint errors including i18n types
 - resolve all build and lint errors
 
-
 ## [1.23.58] - 2026-07-15
 
 ### Added
+
 - add review queue for automated PR code review after implementation
 
 ### Fixed
-- remove unused execSync import in review processor
 
+- remove unused execSync import in review processor
 
 ## [1.23.57] - 2026-07-15
 
 ### Fixed
+
 - remove fragile nav-not-visible check from language-switching test
 - rewrite language-switching test to use stable nav-games testid
 - handle mobile nav in language-switching test selectors
@@ -153,15 +345,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - improve accessibility contrast and performance
 - fix validateRoomId type to accept undefined
 
-
 ## [1.23.56] - 2026-07-15
 
 ### Added
+
 - add Redis queue system for concurrent task bot implementations
 
 ### Fixed
-- add missing backslash escaping in task-bot github service
 
+- add missing backslash escaping in task-bot github service
 
 ## [1.23.55] - 2026-07-14
 

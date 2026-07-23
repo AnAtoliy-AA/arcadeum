@@ -92,6 +92,13 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: form.themeId || 'standard',
     };
   }
+  if (form.gameId === 'sea_battle_v1') {
+    return {
+      variant: form.themeId || 'classic',
+      gridSize: 10,
+      shipCount: 10,
+    };
+  }
   return {};
 }
 

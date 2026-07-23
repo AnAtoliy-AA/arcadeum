@@ -12,6 +12,7 @@ export const enMessages = {
           'Play multiplayer Chess online. Standard and Chess960 variants, optional time controls, bots from day one. Free, instant rooms, no install.',
         keywords:
           'chess, chess online, multiplayer chess, chess960, chess game, board games',
+        howToPlayTitle: 'How to play {{gameName}}',
       },
       hero: {
         title: 'Chess — the timeless strategy game',
@@ -21,6 +22,7 @@ export const enMessages = {
         ctaQuickplay: 'Play vs AI now',
         ctaQuickplayError: "Couldn't start a game — try again",
         browseRooms: 'Browse rooms',
+        backToGames: '← Games',
       },
       highlights: {
         players: {
@@ -162,6 +164,7 @@ export const enMessages = {
       showAll: 'Show all ({{count}})',
       copied: 'Copied!',
       spectating: 'Spectating',
+      boardLabel: 'Chess board, {{color}} to move',
     },
   },
 };

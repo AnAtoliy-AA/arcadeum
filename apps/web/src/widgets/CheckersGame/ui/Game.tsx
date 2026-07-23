@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useMemo, useState } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameWidgetContainer, RematchInvitationModal } from '@/features/games/ui';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
@@ -78,7 +78,13 @@ function CheckersGameImpl({
     resolveDisplayNameBound,
   );
 
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
+  const {
+    rematchLoading,
+    handleRematch,
+    invitation,
+    handleAcceptInvitation,
+    handleDeclineInvitation,
+  } = useRematch({ roomId });
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
@@ -248,6 +254,14 @@ function CheckersGameImpl({
         rematchLoading={rematchLoading}
         t={t}
         messages={resultMessages}
+      />
+      <RematchInvitationModal
+        isOpen={!!invitation}
+        senderName={invitation?.hostName || ''}
+        message={invitation?.message}
+        onAccept={handleAcceptInvitation}
+        onDecline={handleDeclineInvitation}
+        t={t}
       />
       <RulesModal
         open={showRulesOpen}

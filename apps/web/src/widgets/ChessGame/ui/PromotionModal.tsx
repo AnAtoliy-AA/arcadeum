@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { YStack, XStack, Text, Button } from 'tamagui';
+import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   PIECE_SYMBOLS,
@@ -9,6 +9,14 @@ import {
   type PieceType,
   type PieceColor,
 } from '../types';
+import {
+  ModalOverlay,
+  ModalContent,
+  ModalTitle,
+  PromotionGrid,
+  PromotionOption,
+  CancelButton,
+} from './styles';
 
 interface PromotionModalProps {
   isOpen: boolean;
@@ -27,48 +35,26 @@ function PromotionModalImpl({
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-      }}
-    >
-      <YStack
-        gap="$4"
-        padding="$5"
-        borderRadius={16}
-        backgroundColor="$background"
-        alignItems="center"
-        minWidth={280}
-      >
-        <Text fontSize="$5" fontWeight="700">
-          {t('games.chess_v1.status.promotionTitle')}
-        </Text>
-        <XStack gap="$3" justifyContent="center">
+    <ModalOverlay>
+      <ModalContent minWidth={280}>
+        <ModalTitle>{t('games.chess_v1.status.promotionTitle')}</ModalTitle>
+        <PromotionGrid>
           {PROMOTION_PIECES.map((pieceType) => (
-            <Button
+            <PromotionOption
               key={pieceType}
-              size="$5"
               onPress={() => onSelect(pieceType)}
-              style={{
-                fontSize: 40,
-                lineHeight: 1,
-              }}
             >
-              {PIECE_SYMBOLS[pieceType][color]}
-            </Button>
+              <Text fontSize={40} lineHeight={1}>
+                {PIECE_SYMBOLS[pieceType][color]}
+              </Text>
+            </PromotionOption>
           ))}
-        </XStack>
-        <Button size="$3" variant="outlined" onPress={onCancel}>
+        </PromotionGrid>
+        <CancelButton onPress={onCancel}>
           {t('games.chess_v1.actions.declineDraw')}
-        </Button>
-      </YStack>
-    </div>
+        </CancelButton>
+      </ModalContent>
+    </ModalOverlay>
   );
 }
 

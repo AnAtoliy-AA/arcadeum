@@ -391,9 +391,9 @@ export function ActiveGameView({
                 rematchLoading: rematch.rematchLoading,
                 showRematchModal: rematch.showRematchModal,
                 closeRematchModal: rematch.closeRematchModal,
-                handleResultRematchClick: isHost
-                  ? rematch.openRematchModal
-                  : undefined,
+              handleResultRematchClick: isHost
+                ? rematch.openRematchModal
+                : () => {},
                 handleRematch: rematch.handleRematch,
                 invitation: rematch.invitation,
                 invitationTimeLeft: rematch.invitationTimeLeft,

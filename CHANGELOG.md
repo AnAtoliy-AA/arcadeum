@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.83] - 2026-07-23
+
+### Added
+- add useGameEndState hook and GameEndModals for unified game end screen
+
+### Fixed
+- add expansionMargin/infinityWinLength to TicTacToe resolveOptions
+- fix TicTacToe isSize type guard for infinity board size
+- add openRematchModal to Critical GameEndModals gameEnd object
+- fix type error in Critical ActiveGameView rematch handler
+- add currentUserId/isGameOver back as optional to UseGameEndStateOptions
+- remove duplicate SeaBattleModals function from merge
+
+### Refactored
+- optimize useGameEndState performance and simplify GameEndModals API
+
+
 ## [1.23.82] - 2026-07-23
 
 ### Added

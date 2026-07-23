@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.81] - 2026-07-23
+
+### Fixed
+- add missing getDefaultShipCount import, gridSize test prop, and fix useEffect deps
+- pass shipCount/gridSize directly in start event to bypass race condition
+- track gridSize/shipCount in local state to fix stale room race
+- sync lobby options to gameOptions before starting game
+- ensure shipCount reaches engine via gameOptions
+- use deterministic autoplacement for many ships
+- restore expanded SHIPS array and correct defaults
+- improve autoplacement reliability and sort ships big-to-small
+- sync frontend SHIPS array with backend and pass shipCount in team mode
+- pass gridSize to frontend placement helpers
+- fix ship placement for larger grids and add host-configurable ship count
+
+
 ## [1.23.80] - 2026-07-23
 
 ### Fixed

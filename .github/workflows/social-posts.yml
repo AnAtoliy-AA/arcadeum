@@ -61,6 +61,7 @@ jobs:
               "chore: bump version",
               "chore: update changelog",
               "chore: start next minor",
+              "resolve conflicts",
           ]
 
           type_emoji = {
@@ -88,8 +89,6 @@ jobs:
               m = re.match(r'^(\w+)(?:\([^)]*\))?!?:', line)
               if m:
                   commit_type = m.group(1)
-                  if commit_type == "resolve" and "conflict" in line.lower():
-                      commit_type = "docs"
                   emoji = type_emoji.get(commit_type, "📝")
                   cleaned = re.sub(r'^\w+(?:\([^)]*\))?!?:\s*', f'{emoji} ', line)
               else:
@@ -498,6 +497,7 @@ jobs:
                   "chore: bump version",
                   "chore: update changelog",
                   "chore: start next minor",
+                  "resolve conflicts",
               ]
 
               type_emoji = {
@@ -525,8 +525,6 @@ jobs:
                   m = re.match(r'^(\w+)(?:\([^)]*\))?!?:', line)
                   if m:
                       commit_type = m.group(1)
-                      if commit_type == "resolve" and "conflict" in line.lower():
-                          commit_type = "docs"
                       emoji = type_emoji.get(commit_type, "📝")
                       cleaned = re.sub(r'^\w+(?:\([^)]*\))?!?:\s*', f'{emoji} ', line)
                   else:

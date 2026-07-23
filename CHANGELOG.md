@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.86] - 2026-07-23
+
+### Added
+- add sprite sheet cover art and filter/sort to music player
+
+
 ## [1.23.85] - 2026-07-23
 
 ### Documentation

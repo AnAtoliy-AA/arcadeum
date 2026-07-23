@@ -65,6 +65,15 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 Branch naming: `ARC-XXX` (Jira tickets). Footer: `(ARC-XXX)` for issue tracking.
 
+### PR title rules
+
+PR titles are validated by CI (`branch-guard.yml`). The title must match the target branch:
+
+| Target branch | Title prefix | Example            |
+| ------------- | ------------ | ------------------ |
+| `staging`     | `demo`       | `demo: v1.23.84`   |
+| `main`        | `release`    | `release: v1.24.0` |
+
 ### Git rules
 
 - **Never push directly to `main`, `staging`, or `develop`** — always create a feature branch and open a PR targeting `develop`. These are protected branches; direct pushes bypass review.

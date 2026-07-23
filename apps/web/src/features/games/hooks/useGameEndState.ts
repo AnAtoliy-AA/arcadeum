@@ -41,6 +41,7 @@ export interface UseGameEndStateOptions {
 export function useGameEndState({
   roomId,
   session,
+  isGameOver,
   result,
   resultMessages,
   rematchGameOptions,
@@ -53,7 +54,7 @@ export function useGameEndState({
     sharedResult,
     resultMessages: defaultMessages,
     dismiss,
-  } = useGameResultModal(session, result, resultMessages);
+  } = useGameResultModal(session, result, resultMessages, isGameOver);
 
   const handleResultRematchClick = useCallback(() => {
     if (players.length > 1) {

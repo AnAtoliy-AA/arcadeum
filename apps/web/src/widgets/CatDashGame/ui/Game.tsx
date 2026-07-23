@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { YStack } from 'tamagui';
+import { YStack, Button, Text } from 'tamagui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -22,7 +22,16 @@ import { CatDashBoard } from './Board';
 import { CatDashTurnBadge } from './TurnBadge';
 import { CatDashRulesModal } from './RulesModal';
 import { CAT_DASH_VARIANTS } from '../lib/constants';
-import type { CatDashOptions, CatDashVariant } from '../types';
+import type { CatDashOptions, CatDashVariant, CatId } from '../types';
+
+const CAT_EMOJI: Record<CatId, string> = {
+  neon: '🐱',
+  whiskers: '😺',
+  stardust: '✨',
+  felix: '🐈',
+  shadow: '🐈‍⬛',
+  luna: '🌙',
+};
 
 function resolveOptions(raw: unknown): CatDashOptions {
   const r = (raw ?? {}) as Partial<{
@@ -161,15 +170,46 @@ function CatDashGameImpl({
             myTurn={myTurn}
             resolveName={resolveDisplayNameBound}
           />
-          <CatDashBoard snapshot={snapshot} disabled={!myTurn || isGameOver} />
+          <CatDashBoard
+            snapshot={snapshot}
+            disabled={!myTurn || isGameOver}
+            resolveName={resolveDisplayNameBound}
+          />
           <YStack gap="$2" alignItems="center" marginTop="$2">
             {myTurn && !isGameOver && (
-              <YStack gap="$2" alignItems="center">
-                <CatDashTurnButton
-                  disabled={!myTurn || isGameOver}
-                  onPress={rollDice}
-                  label="🎲 Roll Dice"
-                />
+              <Button
+                size="$5"
+                backgroundColor="#7c3aed"
+                hoverStyle={{ backgroundColor: '#6d28d9' }}
+                pressStyle={{ backgroundColor: '#5b21b6' }}
+                disabled={isGameOver}
+                onPress={rollDice}
+                borderRadius="$4"
+              >
+                <Text color="white" fontWeight="bold" fontSize={16}>
+                  🎲 Roll Dice
+                </Text>
+              </Button>
+            )}
+            {isGameOver && snapshot?.winner && (
+              <YStack
+                alignItems="center"
+                gap="$1"
+                padding="$3"
+                backgroundColor="rgba(34,197,94,0.15)"
+                borderRadius="$4"
+                borderWidth={1}
+                borderColor="rgba(34,197,94,0.3)"
+              >
+                <Text fontSize={20}>
+                  {CAT_EMOJI[
+                    snapshot.players.find((p) => p.playerId === snapshot.winner)
+                      ?.catId ?? 'neon'
+                  ] ?? '🐱'}
+                </Text>
+                <Text fontSize={14} fontWeight="bold" color="#22c55e">
+                  {resolveDisplayNameBound(snapshot.winner)} wins!
+                </Text>
               </YStack>
             )}
           </YStack>
@@ -213,36 +253,6 @@ function CatDashGameImpl({
         }}
       />
     </CatDashThemeProvider>
-  );
-}
-
-function CatDashTurnButton({
-  disabled,
-  onPress,
-  label,
-}: {
-  disabled: boolean;
-  onPress: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      disabled={disabled}
-      onClick={onPress}
-      style={{
-        padding: '12px 24px',
-        borderRadius: '8px',
-        border: 'none',
-        backgroundColor: disabled ? '#6b7280' : '#7c3aed',
-        color: '#fff',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-      }}
-    >
-      {label}
-    </button>
   );
 }
 

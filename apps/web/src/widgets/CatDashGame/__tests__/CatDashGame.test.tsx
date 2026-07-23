@@ -58,13 +58,25 @@ const mockSnapshot: CatDashClientState = {
 
 describe('CatDashBoard', () => {
   it('renders track spaces', () => {
-    renderWithTheme(<CatDashBoard snapshot={mockSnapshot} disabled={false} />);
+    renderWithTheme(
+      <CatDashBoard
+        snapshot={mockSnapshot}
+        disabled={false}
+        resolveName={(id) => id ?? ''}
+      />,
+    );
     expect(screen.getByText('0')).toBeTruthy();
     expect(screen.getByText('20')).toBeTruthy();
   });
 
   it('renders player indicators', () => {
-    renderWithTheme(<CatDashBoard snapshot={mockSnapshot} disabled={false} />);
+    renderWithTheme(
+      <CatDashBoard
+        snapshot={mockSnapshot}
+        disabled={false}
+        resolveName={(id) => id ?? ''}
+      />,
+    );
     expect(screen.getByText('p1')).toBeTruthy();
     expect(screen.getByText('p2')).toBeTruthy();
   });

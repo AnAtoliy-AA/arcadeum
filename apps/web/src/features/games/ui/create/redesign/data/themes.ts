@@ -453,7 +453,6 @@ import {
   findCatDashTheme,
   type CatDashThemeMeta,
 } from './cat-dash-themes';
-
 export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
@@ -475,5 +474,4 @@ export function findCriticalTheme(id: string | undefined): CriticalTheme {
 export function findSeaBattleTheme(id: string | undefined): SeaBattleThemeMeta {
   return SEA_BATTLE_THEMES.find((t) => t.id === id) ?? SEA_BATTLE_THEMES[0];
 }
-
 export { EXPANSION_PACK_LIST, type ExpansionPack } from './expansion-packs';

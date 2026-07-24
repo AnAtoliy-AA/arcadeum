@@ -38,7 +38,7 @@ const labels: ShopCardLabels = {
   sell: 'Sell',
 };
 
-const BALANCE: WalletBalanceView = { coins: 5_000, gems: 200 };
+const BALANCE: WalletBalanceView = { coins: 5_000, gems: 200, arcadeum: 1000 };
 
 function makeItem(
   overrides: Partial<EffectiveShopItem> = {},
@@ -154,7 +154,7 @@ describe('ShopCard', () => {
           item={item}
           owned={false}
           equipped={false}
-          balance={{ coins: 0, gems: 5 }}
+          balance={{ coins: 0, gems: 5, arcadeum: 0 }}
           labels={labels}
           onPurchaseFallback={() => {}}
         />
@@ -176,7 +176,7 @@ describe('ShopCard', () => {
           item={item}
           owned={false}
           equipped={false}
-          balance={{ coins: 0, gems: 5 }}
+          balance={{ coins: 0, gems: 5, arcadeum: 0 }}
           labels={labels}
           onPurchaseFallback={fallback}
         />

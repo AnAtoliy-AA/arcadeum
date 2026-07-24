@@ -30,6 +30,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { SolanaController } from './solana.controller';
 import { SolanaService } from './solana.service';
+import { EconomySettingsService } from '../economy/economy-settings.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
@@ -48,6 +49,11 @@ describe('SolanaController', () => {
     getPlatformBalance: jest.fn(),
     verifyTransaction: jest.fn(),
     getTokenMetadata: jest.fn(),
+    getArcadeumPrice: jest.fn(),
+  };
+
+  const economyService = {
+    getNumber: jest.fn(),
   };
 
   const adminUserId = 'admin-user-id';
@@ -55,7 +61,10 @@ describe('SolanaController', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [SolanaController],
-      providers: [{ provide: SolanaService, useValue: solanaService }],
+      providers: [
+        { provide: SolanaService, useValue: solanaService },
+        { provide: EconomySettingsService, useValue: economyService },
+      ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { EconomyKey, EconomySettingView } from '../server/economy.types';
 import { EconomyEditDialog } from './EconomyEditDialog';
 import { EconomyAuditDrawer } from './EconomyAuditDrawer';
@@ -26,6 +27,9 @@ interface EconomyRowLabels {
     newValueLabel: string;
     save: string;
     cancel: string;
+    reset: string;
+    enable: string;
+    disable: string;
   };
   buttons: { reset: string };
   errors: {
@@ -53,6 +57,7 @@ export function EconomyRow({
 }: EconomyRowProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const router = useRouter();
 
   const sourceStyle = SOURCE_STYLE[setting.source];
   const sourceLabel = labels.sources[setting.source];
@@ -63,7 +68,9 @@ export function EconomyRow({
     newValueLabel: labels.editDialog.newValueLabel,
     save: labels.editDialog.save,
     cancel: labels.editDialog.cancel,
-    reset: labels.buttons.reset,
+    reset: labels.editDialog.reset,
+    enable: labels.editDialog.enable,
+    disable: labels.editDialog.disable,
     errorInvalidValue: labels.errors.invalidValue,
     errorGeneric: labels.errors.generic,
     errorForbidden: labels.errors.forbidden,
@@ -201,7 +208,10 @@ export function EconomyRow({
         currentValue={setting.currentValue}
         defaultValue={setting.defaultValue}
         labels={dialogLabels}
-        onSuccess={() => setEditOpen(false)}
+        onSuccess={() => {
+          setEditOpen(false);
+          router.refresh();
+        }}
       />
 
       <EconomyAuditDrawer

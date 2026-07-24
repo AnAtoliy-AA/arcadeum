@@ -70,6 +70,12 @@ export function formatPrice(n: number): string {
   return `$${n.toExponential(2)}`;
 }
 
+export function formatPriceWithUsdc(n: number): string {
+  const price = formatPrice(n);
+  if (price === '—') return price;
+  return `${price} (${n.toFixed(2)} USDC)`;
+}
+
 export function formatVolume(n: number): string {
   if (!Number.isFinite(n) || n === 0) return '—';
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.23.93] - 2026-07-24
 
 ### Added
+
 - oval track board with 100 spaces
 - add landing sub-components, OG images, buildGameOptions, bot spec, and widget tests
 - add landing page, i18n, home/create page integration, engine tests, and e2e update
@@ -19,87 +20,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add backend types and constants
 
 ### Fixed
+
 - remove duplicate TIC_TAC_TOE_THEMES declaration in themes.ts
 - resolve player names in chat/board, add cat emojis, polish board UI with Tamagui button
 - remove direct CatDashEngine injection from service (use registry via sessions)
 
 ### Documentation
+
 - add Cat Dash implementation plan
 - add Cat Dash game design spec
-
 
 ## [1.23.92] - 2026-07-23
 
 ### Added
+
 - optimistic UI and multi-jump capture chains
 - add checkers web integration and landing page
-
 
 ## [1.23.91] - 2026-07-23
 
 ### Added
-- rework game lobbys for better UX and consistency
 
+- rework game lobbys for better UX and consistency
 
 ## [1.23.90] - 2026-07-23
 
 ### Added
+
 - add full client-side validation to contact form
 - add UI validation error display to contact form
-
 
 ## [1.23.89] - 2026-07-23
 
 ### Fixed
+
 - fully filter resolve-conflicts from daily updates
 - treat resolve-conflicts as docs type in release posts too
 - treat resolve-conflicts commits as docs type in daily updates
 - filter 'resolve conflicts' commits from daily update messages
 
 ### Documentation
+
 - clarify CONTRIBUTING.md structure and links
 - restore commit types section in CONTRIBUTING.md
 - update stale documentation across monorepo
 
-
 ## [1.23.88] - 2026-07-23
 
 ### Fixed
-- fix sea battle auto-place not placing all ships and state corruption
 
+- fix sea battle auto-place not placing all ships and state corruption
 
 ## [1.23.87] - 2026-07-23
 
 ### Fixed
-- migrate login-lockout and ip-block from in-memory Maps to shared RateStateStore
 
+- migrate login-lockout and ip-block from in-memory Maps to shared RateStateStore
 
 ## [1.23.86] - 2026-07-23
 
 ### Added
-- add sprite sheet cover art and filter/sort to music player
 
+- add sprite sheet cover art and filter/sort to music player
 
 ## [1.23.85] - 2026-07-23
 
 ### Documentation
-- add PR title convention for staging/main
 
+- add PR title convention for staging/main
 
 ## [1.23.84] - 2026-07-23
 
 ### Fixed
+
 - forward isGameOver to useGameResultModal
 - remove vitest overrides that cause peer dep mismatches
 - escape regex input, gate CSP unsafe-eval, add socket auth validation
 
-
 ## [1.23.83] - 2026-07-23
 
 ### Added
+
 - add useGameEndState hook and GameEndModals for unified game end screen
 
 ### Fixed
+
 - add expansionMargin/infinityWinLength to TicTacToe resolveOptions
 - fix TicTacToe isSize type guard for infinity board size
 - add openRematchModal to Critical GameEndModals gameEnd object
@@ -108,18 +113,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove duplicate SeaBattleModals function from merge
 
 ### Refactored
-- optimize useGameEndState performance and simplify GameEndModals API
 
+- optimize useGameEndState performance and simplify GameEndModals API
 
 ## [1.23.82] - 2026-07-23
 
 ### Added
-- add cyber phoenix and cyber dragon premium avatars
 
+- add cyber phoenix and cyber dragon premium avatars
 
 ## [1.23.81] - 2026-07-23
 
 ### Fixed
+
 - add missing getDefaultShipCount import, gridSize test prop, and fix useEffect deps
 - pass shipCount/gridSize directly in start event to bypass race condition
 - track gridSize/shipCount in local state to fix stale room race
@@ -132,25 +138,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pass gridSize to frontend placement helpers
 - fix ship placement for larger grids and add host-configurable ship count
 
-
 ## [1.23.80] - 2026-07-23
 
 ### Fixed
+
 - sanitize user-provided values in MongoDB queries to prevent NoSQL injection
 - replace Math.random() with crypto.randomInt() for CodeQL compliance
 - allow E2E+production in CI environments
 - harden backend security after comprehensive audit
 
-
 ## [1.23.79] - 2026-07-23
 
 ### Fixed
-- target Dependabot PRs to develop branch
 
+- target Dependabot PRs to develop branch
 
 ## [1.23.78] - 2026-07-22
 
 ### Fixed
+
 - filter CI error logs to show only failures
 - add timeout prompt to fixPR and checkAndFixCI
 - eliminate credential race condition in pushBranch
@@ -164,61 +170,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - default engine to mimo, fix CI poll, add timeout prompt
 
 ### Refactored
-- extract stripDisabledRules from games.controller
 
+- extract stripDisabledRules from games.controller
 
 ## [1.23.77] - 2026-07-22
 
 ### Added
+
 - audio cues (ARC-879)
 
 ### Fixed
+
 - update sound test to use dynamic manifest count
 - resolve CI failures and review feedback
 - lint warning in ChatMessagePopup
 
-
 ## [1.23.76] - 2026-07-22
 
 ### Added
+
 - add display names and avatars to player cards
 
 ### Fixed
+
 - reduce Jest workers from 4 to 2 to fix SIGSEGV
 
 ### Refactored
-- extract GamesCatalogService from controller
 
+- extract GamesCatalogService from controller
 
 ## [1.23.75] - 2026-07-21
 
 ### Fixed
-- resolve periodic re-login by fixing token refresh and session recovery
 
+- resolve periodic re-login by fixing token refresh and session recovery
 
 ## [1.23.74] - 2026-07-21
 
 ### Added
+
 - persistent stat tracking (ARC-871)
 
 ### Fixed
+
 - sanitize user-controlled values in MongoDB queries (CodeQL)
 - add PlayerStatsService mock to GamesService spec
 - add missing PlayerStats fields to local stats objects
 - skip branch deletion, use checkout -B to avoid worktree conflicts
 
-
 ## [1.23.73] - 2026-07-20
 
 ### Fixed
-- clean up worktrees on failure
 
+- clean up worktrees on failure
 
 ## [1.23.72] - 2026-07-20
 
 ### Improved
-- reduce gpu usage and split oversized backend files
 
+- reduce gpu usage and split oversized backend files
 
 ## [1.23.71] - 2026-07-20
 

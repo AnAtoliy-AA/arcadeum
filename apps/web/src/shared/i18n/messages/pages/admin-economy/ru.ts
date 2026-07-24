@@ -66,6 +66,44 @@ export const adminEconomyRu = {
       description:
         'Гемы, начисляемые в дополнение к монетам на 7-й день серии.',
     },
+    shop_allow_gems: {
+      name: 'Магазин: разрешить гемы',
+      description: 'Разрешить использование гемов в магазине.',
+    },
+    shop_allow_arcadeum: {
+      name: 'Магазин: разрешить Arcadeum',
+      description: 'Разрешить использование Arcadeum в магазине.',
+    },
+    gems_allow_arcadeum: {
+      name: 'Гемы: разрешить Arcadeum',
+      description: 'Разрешить конвертацию гемов в Arcadeum.',
+    },
+    gem_to_usd_rate: {
+      name: 'Курс гемов в USD',
+      description: 'Курс конвертации одного гема в доллары США.',
+    },
+    arcadeum_discount_percent: {
+      name: 'Скидка Arcadeum (%)',
+      description: 'Процент скидки при покупке за Arcadeum.',
+    },
+    geo_block_enabled: {
+      name: 'Гео-блокировка',
+      description: 'Включить блокировку доступа по геолокации.',
+    },
+    vpn_detection_enabled: {
+      name: 'Обнаружение VPN',
+      description: 'Включить обнаружение и блокировку VPN-соединений.',
+    },
+    signup_reward_coins: {
+      name: 'Награда за регистрацию: монеты',
+      description:
+        'Количество монет, начисляемых новому пользователю при регистрации.',
+    },
+    signup_reward_gems: {
+      name: 'Награда за регистрацию: гемы',
+      description:
+        'Количество гемов, начисляемых новому пользователю при регистрации.',
+    },
   },
   table: {
     key: 'Настройка',
@@ -92,6 +130,9 @@ export const adminEconomyRu = {
     newValueLabel: 'Новое значение',
     save: 'Сохранить',
     cancel: 'Отмена',
+    reset: 'Сбросить до умолчания',
+    enable: 'Включить',
+    disable: 'Выключить',
   },
   auditDrawer: {
     title: 'История: {{key}}',
@@ -103,7 +144,7 @@ export const adminEconomyRu = {
   },
   errors: {
     invalidValue:
-      'Значение должно быть положительным целым числом не более 1 000 000.',
+      'Значение должно быть неотрицательным целым числом не более 1 000 000.',
     keyNotFound: 'Неизвестная настройка.',
     forbidden: 'У вас нет прав.',
     generic: 'Не удалось сохранить. Повторите попытку.',

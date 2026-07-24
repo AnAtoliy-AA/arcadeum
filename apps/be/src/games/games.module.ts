@@ -66,6 +66,9 @@ import { ChessBotService } from './engines/chess/chess-bot.service';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
+import { CatDashService } from './cat-dash/cat-dash.service';
+import { CatDashBotService } from './cat-dash/cat-dash-bot.service';
+import { CatDashGateway } from './cat-dash.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -144,6 +147,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Checkers
     CheckersService,
     CheckersBotService,
+    // Cat Dash
+    CatDashService,
+    CatDashBotService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)
@@ -164,6 +170,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     CascadeGateway,
     ChessGateway,
     CheckersGateway,
+    CatDashGateway,
   ],
   exports: [GameHistoryStatsService],
 })

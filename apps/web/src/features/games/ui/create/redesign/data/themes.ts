@@ -5,7 +5,8 @@ export type GameId =
   | 'tic_tac_toe_v1'
   | 'cascade_v1'
   | 'chess_v1'
-  | 'checkers_v1';
+  | 'checkers_v1'
+  | 'cat_dash_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -105,6 +106,18 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators'],
   },
+  cat_dash_v1: {
+    id: 'cat_dash_v1',
+    title: 'Cat Dash',
+    desc: 'A cat racing dice game with unique abilities and themed tracks.',
+    players: { min: 2, max: 6, label: '2–6' },
+    duration: '10 min',
+    kind: 'Dice · race',
+    category: 'Dice Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators', 'teams'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -115,6 +128,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'cascade_v1',
   'chess_v1',
   'checkers_v1',
+  'cat_dash_v1',
 ];
 
 export function getGamesByCategory(): Array<{
@@ -418,52 +432,11 @@ export const SEA_BATTLE_THEMES: SeaBattleThemeMeta[] = [
   },
 ];
 
-export interface TicTacToeThemeMeta {
-  id: string;
-  name: string;
-  desc: string;
-  color: string;
-}
-
-export const TIC_TAC_TOE_THEMES: TicTacToeThemeMeta[] = [
-  {
-    id: 'classic',
-    name: 'Classic',
-    desc: 'Crisp black grid on paper white.',
-    color: '#1f2937',
-  },
-  {
-    id: 'neon',
-    name: 'Neon',
-    desc: 'Glowing violet and cyan marks.',
-    color: '#a855f7',
-  },
-  {
-    id: 'paper',
-    name: 'Paper',
-    desc: 'Handwritten on warm parchment.',
-    color: '#92400e',
-  },
-  {
-    id: 'pixel',
-    name: 'Pixel',
-    desc: 'Retro 8-bit greens.',
-    color: '#22c55e',
-  },
-  {
-    id: 'chalkboard',
-    name: 'Chalkboard',
-    desc: 'Loose chalk strokes on slate.',
-    color: '#e5e7eb',
-  },
-  {
-    id: 'retro',
-    name: 'Retro TV',
-    desc: 'Sunset amber and warm red.',
-    color: '#f59e0b',
-  },
-];
-
+import {
+  TIC_TAC_TOE_THEMES,
+  findTicTacToeTheme,
+  type TicTacToeThemeMeta,
+} from './tic-tac-toe-themes';
 import {
   CASCADE_THEMES,
   findCascadeTheme,
@@ -475,9 +448,16 @@ import {
   type ChessThemeMeta,
 } from './chess-themes';
 import { CHECKERS_THEMES } from './checkers-themes';
+import {
+  CAT_DASH_THEMES,
+  findCatDashTheme,
+  type CatDashThemeMeta,
+} from './cat-dash-themes';
 
+export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
+export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
 
 export function themesFor(gameId: GameId) {
   if (gameId === 'critical_v1') return CRITICAL_THEMES;
@@ -486,17 +466,12 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'cascade_v1') return CASCADE_THEMES;
   if (gameId === 'chess_v1') return CHESS_THEMES;
   if (gameId === 'checkers_v1') return CHECKERS_THEMES;
+  if (gameId === 'cat_dash_v1') return CAT_DASH_THEMES;
   return [];
 }
-
-export function findTicTacToeTheme(id: string | undefined): TicTacToeThemeMeta {
-  return TIC_TAC_TOE_THEMES.find((t) => t.id === id) ?? TIC_TAC_TOE_THEMES[0];
-}
-
 export function findCriticalTheme(id: string | undefined): CriticalTheme {
   return CRITICAL_THEMES.find((t) => t.id === id) ?? CRITICAL_THEMES[0];
 }
-
 export function findSeaBattleTheme(id: string | undefined): SeaBattleThemeMeta {
   return SEA_BATTLE_THEMES.find((t) => t.id === id) ?? SEA_BATTLE_THEMES[0];
 }

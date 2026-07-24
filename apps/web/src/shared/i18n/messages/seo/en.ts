@@ -47,6 +47,10 @@ export const en = {
     title: `Checkers · Multiplayer · ${APP}`,
     description: `Play Checkers online on ${APP} — standard 8×8 rules with forced captures, multi-jump, and king promotion. Free, instant rooms, no download.`,
   },
+  catDashLanding: {
+    title: `Cat Dash · Multiplayer Cat Racing Dice Game · ${APP}`,
+    description: `Play Cat Dash online on ${APP} — race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

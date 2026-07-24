@@ -5,3 +5,4 @@ export * from './TicTacToeSymbol';
 export * from './CascadeSymbol';
 export * from './ChessSymbol';
 export * from './CheckersSymbol';
+export * from './CatDashSymbol';

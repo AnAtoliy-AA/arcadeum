@@ -32,6 +32,8 @@ export const buildRoutes = (locale: Locale) => {
     chessLanding: `/${locale}/${s('games')}/chess`,
     checkers: `/${locale}/${s('games')}/checkers`,
     checkersLanding: `/${locale}/${s('games')}/checkers`,
+    catDash: `/${locale}/${s('games')}/cat-dash`,
+    catDashLanding: `/${locale}/${s('games')}/cat-dash`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

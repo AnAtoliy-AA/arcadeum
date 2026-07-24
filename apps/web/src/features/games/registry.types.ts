@@ -121,4 +121,5 @@ export type GameSlug =
   | 'deals_or_no_deals_v1'
   | 'who_wants_to_be_a_millionaire_v1'
   | 'the_heist_v1'
-  | 'the_cursed_banquet_v1';
+  | 'the_cursed_banquet_v1'
+  | 'cat_dash_v1';

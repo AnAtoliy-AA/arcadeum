@@ -203,4 +203,39 @@ export const featuredGames: FeaturedGame[] = [
       nameKey: v.name as TranslationKey,
     })),
   },
+  {
+    id: 'cat_dash_v1',
+    nameKey: 'games.cat_dash_v1.name' as TranslationKey,
+    descriptionKey: 'games.cat_dash_v1.description' as TranslationKey,
+    accentColor: '#7c3aed',
+    genre: 'Race',
+    pace: 'Casual',
+    category: 'Dice Game',
+    players: '2–6',
+    duration: '10 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/cat-dash',
+    type: 'board',
+    rulesPrefix: 'games.cat_dash_v1.rules',
+    rulesKeys: ['objective', 'howToPlay', 'abilities'],
+    variants: [
+      {
+        id: 'neon',
+        nameKey: 'games.cat_dash_v1.variants.neon.name' as TranslationKey,
+      },
+      {
+        id: 'village',
+        nameKey: 'games.cat_dash_v1.variants.village.name' as TranslationKey,
+      },
+      {
+        id: 'space',
+        nameKey: 'games.cat_dash_v1.variants.space.name' as TranslationKey,
+      },
+      {
+        id: 'nature',
+        nameKey: 'games.cat_dash_v1.variants.nature.name' as TranslationKey,
+      },
+    ],
+  },
 ];

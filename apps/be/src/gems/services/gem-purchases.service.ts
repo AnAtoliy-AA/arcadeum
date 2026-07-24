@@ -61,8 +61,12 @@ export class GemPurchasesService {
     userId: string,
     packageId: string,
   ): Promise<{ paypalOrderId: string; approveUrl: string }> {
+    if (!Types.ObjectId.isValid(packageId)) {
+      throw new BadRequestException('gems.packageNotFound');
+    }
+    const packageObjectId = new Types.ObjectId(packageId);
     const pkg = await this.packageModel
-      .findById(packageId)
+      .findById(packageObjectId)
       .lean<GemPackageLean | null>();
     if (!pkg) throw new NotFoundException('gems.packageNotFound');
     if (!pkg.active) throw new BadRequestException('gems.packageInactive');
@@ -241,8 +245,12 @@ export class GemPurchasesService {
       throw new BadRequestException('gems.arcPaymentDisabled');
     }
 
+    if (!Types.ObjectId.isValid(packageId)) {
+      throw new BadRequestException('gems.packageNotFound');
+    }
+    const packageObjectId = new Types.ObjectId(packageId);
     const pkg = await this.packageModel
-      .findById(packageId)
+      .findById(packageObjectId)
       .lean<GemPackageLean | null>();
     if (!pkg) throw new NotFoundException('gems.packageNotFound');
     if (!pkg.active) throw new BadRequestException('gems.packageInactive');

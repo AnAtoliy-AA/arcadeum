@@ -78,11 +78,14 @@ export class GeoBlockService {
   }
 
   async addBlockedCountry(countryCode: string, reason?: string) {
+    const sanitizedCode = String(countryCode)
+      .toUpperCase()
+      .replace(/[^A-Z]/g, '');
     return this.countryModel.findOneAndUpdate(
-      { countryCode: countryCode.toUpperCase() },
+      { countryCode: sanitizedCode },
       {
-        countryCode: countryCode.toUpperCase(),
-        reason: reason || '',
+        countryCode: sanitizedCode,
+        reason: String(reason || '').slice(0, 500),
         active: true,
       },
       { upsert: true, new: true },
@@ -90,8 +93,11 @@ export class GeoBlockService {
   }
 
   async removeBlockedCountry(countryCode: string) {
+    const sanitizedCode = String(countryCode)
+      .toUpperCase()
+      .replace(/[^A-Z]/g, '');
     return this.countryModel.findOneAndUpdate(
-      { countryCode: countryCode.toUpperCase() },
+      { countryCode: sanitizedCode },
       { active: false },
       { new: true },
     );

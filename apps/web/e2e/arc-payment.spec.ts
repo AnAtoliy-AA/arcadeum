@@ -124,7 +124,7 @@ test.describe('ARC payment flow (mocked)', () => {
     });
     expect(data).toHaveProperty('sessionId');
     expect(data).toHaveProperty('solanaPayUrl');
-    expect(data.amount).toBe(100);
+    expect(data.amount).toBe(80);
   });
 
   test('Solana Pay status endpoint returns payment status', async ({

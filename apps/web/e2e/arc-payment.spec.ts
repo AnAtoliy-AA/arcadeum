@@ -9,8 +9,8 @@
  */
 
 import { expect } from '@playwright/test';
-import { test, handleRoute } from '../fixtures/test-utils';
-import { navigateTo, mockSession } from '../fixtures/test-utils';
+import { test, handleRoute } from './fixtures/test-utils';
+import { navigateTo, mockSession } from './fixtures/test-utils';
 
 const MOCK_GEM_PACKAGES = [
   {

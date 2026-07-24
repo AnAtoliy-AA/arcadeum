@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.93] - 2026-07-24
+
+### Added
+- oval track board with 100 spaces
+- add landing sub-components, OG images, buildGameOptions, bot spec, and widget tests
+- add landing page, i18n, home/create page integration, engine tests, and e2e update
+- add frontend widget with types, hooks, UI components, and registry
+- add backend service, bot, gateway, and catalog entry
+- implement backend engine with utils, validators, and module registration
+- add backend types and constants
+
+### Fixed
+- remove duplicate TIC_TAC_TOE_THEMES declaration in themes.ts
+- resolve player names in chat/board, add cat emojis, polish board UI with Tamagui button
+- remove direct CatDashEngine injection from service (use registry via sessions)
+
+### Documentation
+- add Cat Dash implementation plan
+- add Cat Dash game design spec
+
+
 ## [1.23.92] - 2026-07-23
 
 ### Added

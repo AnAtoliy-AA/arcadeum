@@ -94,10 +94,12 @@ test.describe('ARC payment flow (mocked)', () => {
   });
 
   test('ARC pricing endpoint returns dynamic prices', async ({ page }) => {
-    const response = await page.request.get('/api/proxy/solana/pricing');
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/wallet');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/solana/pricing');
+      return res.json();
+    });
     expect(data).toHaveProperty('arcUsdPrice');
     expect(data).toHaveProperty('gemToUsdRate');
     expect(data).toHaveProperty('discountPercent');
@@ -107,15 +109,19 @@ test.describe('ARC payment flow (mocked)', () => {
   test('Solana Pay create endpoint returns payment request', async ({
     page,
   }) => {
-    const response = await page.request.post('/api/proxy/solana/pay/create', {
-      data: {
-        amount: 100,
-        tokenAddress: '7aRVHPcJnsGWBZMNe2igQsLQmQb4LCCtpuiJgxHjpump',
-      },
-    });
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/wallet');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/solana/pay/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 100,
+          tokenAddress: '7aRVHPcJnsGWBZMNe2igQsLQmQb4LCCtpuiJgxHjpump',
+        }),
+      });
+      return res.json();
+    });
     expect(data).toHaveProperty('sessionId');
     expect(data).toHaveProperty('solanaPayUrl');
     expect(data.amount).toBe(100);
@@ -124,12 +130,14 @@ test.describe('ARC payment flow (mocked)', () => {
   test('Solana Pay status endpoint returns payment status', async ({
     page,
   }) => {
-    const response = await page.request.get(
-      '/api/proxy/solana/pay/status/test-session-123',
-    );
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/wallet');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch(
+        '/api/proxy/solana/pay/status/test-session-123',
+      );
+      return res.json();
+    });
     expect(data).toHaveProperty('status');
     expect(['pending', 'confirmed', 'expired']).toContain(data.status);
   });
@@ -171,12 +179,12 @@ test.describe('ARC payment geo-blocking (mocked)', () => {
       ]);
     });
 
-    const response = await page.request.get(
-      '/api/proxy/admin/geo-block/countries',
-    );
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/admin/geo-block');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/admin/geo-block/countries');
+      return res.json();
+    });
     expect(Array.isArray(data)).toBeTruthy();
     expect(data.length).toBe(2);
     expect(data[0].countryCode).toBe('CN');
@@ -195,15 +203,16 @@ test.describe('ARC payment geo-blocking (mocked)', () => {
       }
     });
 
-    const response = await page.request.post(
-      '/api/proxy/admin/geo-block/countries',
-      {
-        data: { countryCode: 'XX', reason: 'Test block' },
-      },
-    );
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/admin/geo-block');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/admin/geo-block/countries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ countryCode: 'XX', reason: 'Test block' }),
+      });
+      return res.json();
+    });
     expect(data.countryCode).toBe('XX');
   });
 
@@ -216,10 +225,16 @@ test.describe('ARC payment geo-blocking (mocked)', () => {
       }
     });
 
-    const response = await page.request.delete(
-      '/api/proxy/admin/geo-block/countries/XX',
-    );
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/admin/geo-block');
+
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/admin/geo-block/countries/XX', {
+        method: 'DELETE',
+      });
+      return res.json();
+    });
+    expect(data).toHaveProperty('statusCode');
+    expect(data.statusCode).toBe(200);
   });
 });
 
@@ -233,10 +248,12 @@ test.describe('ARC payment wallet balance (mocked)', () => {
   });
 
   test('wallet balance includes arcadeum field', async ({ page }) => {
-    const response = await page.request.get('/api/proxy/wallet/balance');
-    expect(response.ok()).toBeTruthy();
+    await navigateTo(page, '/en/wallet');
 
-    const data = await response.json();
+    const data = await page.evaluate(async () => {
+      const res = await fetch('/api/proxy/wallet/balance');
+      return res.json();
+    });
     expect(data).toHaveProperty('arcadeum');
     expect(data.arcadeum).toBe(500);
   });

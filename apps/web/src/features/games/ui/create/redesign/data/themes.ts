@@ -448,6 +448,12 @@ import {
   type ChessThemeMeta,
 } from './chess-themes';
 import { CHECKERS_THEMES } from './checkers-themes';
+import {
+  CAT_DASH_THEMES,
+  findCatDashTheme,
+  type CatDashThemeMeta,
+} from './cat-dash-themes';
+export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };

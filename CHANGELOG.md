@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.94] - 2026-07-24
+
+### Added
+- add ARC token payment flow with Solana Pay integration
+
+### Fixed
+- add ObjectId validation to purchaseWithArc method
+- correct expected amount in solana pay create test
+- use page.evaluate for fetch calls in arc-payment tests to bypass route interceptors
+- correct test-utils import path in arc-payment.spec.ts
+- restore missing cat-dash and tic-tac-toe theme imports/exports in themes.ts
+
+
 ## [1.23.93] - 2026-07-24
 
 ### Added

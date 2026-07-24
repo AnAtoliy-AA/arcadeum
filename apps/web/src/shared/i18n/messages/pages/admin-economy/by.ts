@@ -68,6 +68,44 @@ export const adminEconomyBy = {
       description:
         'Гемы, якія налічваюцца дадаткова да манет на 7-ы дзень серыі.',
     },
+    shop_allow_gems: {
+      name: 'Крама: дазволіць гемы',
+      description: 'Дазволіць выкарыстанне гемаў у краме.',
+    },
+    shop_allow_arcadeum: {
+      name: 'Крама: дазволіць Arcadeum',
+      description: 'Дазволіць выкарыстанне Arcadeum у краме.',
+    },
+    gems_allow_arcadeum: {
+      name: 'Гемы: дазволіць Arcadeum',
+      description: 'Дазволіць канвертацыю гемаў у Arcadeum.',
+    },
+    gem_to_usd_rate: {
+      name: 'Курс гемаў у USD',
+      description: 'Курс канвертацыі аднаго гема ў долары ЗША.',
+    },
+    arcadeum_discount_percent: {
+      name: 'Зніжка Arcadeum (%)',
+      description: 'Працэнт зніжкі пры пакупцы за Arcadeum.',
+    },
+    geo_block_enabled: {
+      name: 'Геа-блокіроўка',
+      description: 'Уключыць блакіроўку доступу па геалакацыі.',
+    },
+    vpn_detection_enabled: {
+      name: 'Выяўленне VPN',
+      description: 'Уключыць выяўленне і блакіроўку VPN-злучэнняў.',
+    },
+    signup_reward_coins: {
+      name: 'Узнагарода за рэгістрацыю: манеты',
+      description:
+        'Колькасць манет, якія налічваюцца новаму карыстальніку пры рэгістрацыі.',
+    },
+    signup_reward_gems: {
+      name: 'Узнагарода за рэгістрацыю: гемы',
+      description:
+        'Колькасць гемаў, якія налічваюцца новаму карыстальніку пры рэгістрацыі.',
+    },
   },
   table: {
     key: 'Настройка',
@@ -94,6 +132,9 @@ export const adminEconomyBy = {
     newValueLabel: 'Новае значэнне',
     save: 'Захаваць',
     cancel: 'Адмена',
+    reset: 'Скінуць да змаўчання',
+    enable: 'Уключыць',
+    disable: 'Выключыць',
   },
   auditDrawer: {
     title: 'Гісторыя: {{key}}',
@@ -104,7 +145,7 @@ export const adminEconomyBy = {
     changedAt: '{{date}}',
   },
   errors: {
-    invalidValue: 'Значэнне мусіць быць дадатным цэлым лікам да 1 000 000.',
+    invalidValue: 'Значэнне мусіць быць неадмоўным цэлым лікам да 1 000 000.',
     keyNotFound: 'Невядомая настройка.',
     forbidden: 'У вас няма правоў.',
     generic: 'Не ўдалося захаваць. Паўтарыце спробу.',

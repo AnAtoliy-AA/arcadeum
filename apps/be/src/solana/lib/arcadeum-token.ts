@@ -1,4 +1,4 @@
-export const ARCADEUM_DECIMALS = 9;
+export const ARCADEUM_DECIMALS = 6;
 
 /**
  * Create the ARCADEUM mint PublicKey from a base58 address string.

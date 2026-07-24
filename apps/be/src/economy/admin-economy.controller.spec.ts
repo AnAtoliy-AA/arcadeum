@@ -126,11 +126,16 @@ describe('AdminEconomyController (integration)', () => {
   });
 
   describe('PUT /admin/economy/:key', () => {
-    it('returns 400 when value is 0 (DTO validation)', async () => {
+    it('returns 200 when value is 0 (toggle disable)', async () => {
+      economyService.setNumber.mockResolvedValue(undefined);
+      economyService.listAll.mockResolvedValue([
+        makeView('game_win_coin_reward', 0),
+      ]);
+
       await request(server())
         .put('/admin/economy/game_win_coin_reward')
         .send({ value: 0 })
-        .expect(400);
+        .expect(200);
     });
 
     it('returns 400 when value exceeds 1M', async () => {

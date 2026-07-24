@@ -5,6 +5,7 @@ import { CatalogService } from './catalog.service';
 import { ShopItemOverride } from '../schemas/shop-item-override.schema';
 import { BadRequestException } from '@nestjs/common';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
+import { SolanaService } from '../../solana/solana.service';
 
 type OverrideDoc = {
   itemId: string;
@@ -69,6 +70,10 @@ describe('CatalogService', () => {
           useValue: {
             getNumber: jest.fn().mockResolvedValue(1),
           },
+        },
+        {
+          provide: SolanaService,
+          useValue: {},
         },
       ],
     }).compile();

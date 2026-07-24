@@ -12,6 +12,8 @@ import { GemPackage } from '../schemas/gem-package.schema';
 import { GemPurchase } from '../schemas/gem-purchase.schema';
 import { PaypalGateway } from '../../payments/lib/paypal.gateway';
 import { WalletService } from '../../wallet/wallet.service';
+import { SolanaService } from '../../solana/solana.service';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 
 const oid = () => new Types.ObjectId();
 
@@ -108,6 +110,7 @@ describe('GemPurchasesService', () => {
     wallet = {
       credit: jest.fn(),
       getBalance: jest.fn(),
+      findByIdempotencyKey: jest.fn().mockResolvedValue(null),
     };
     configService = {
       get: jest.fn(),
@@ -121,6 +124,17 @@ describe('GemPurchasesService', () => {
         { provide: PaypalGateway, useValue: paypal },
         { provide: WalletService, useValue: wallet },
         { provide: ConfigService, useValue: configService },
+        {
+          provide: SolanaService,
+          useValue: {
+            getArcadeumPrice: jest.fn().mockResolvedValue(0.000002),
+            verifyTransaction: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: EconomySettingsService,
+          useValue: { getNumber: jest.fn().mockResolvedValue(0) },
+        },
       ],
     }).compile();
 

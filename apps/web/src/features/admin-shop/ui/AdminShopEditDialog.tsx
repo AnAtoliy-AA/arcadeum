@@ -24,9 +24,9 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
   const [priceAmount, setPriceAmount] = useState<string>(
     item ? String(item.priceAmount) : '',
   );
-  const [priceCurrency, setPriceCurrency] = useState<'coins' | 'gems'>(
-    item?.priceCurrency ?? 'coins',
-  );
+  const [priceCurrency, setPriceCurrency] = useState<
+    'coins' | 'gems' | 'arcadeum'
+  >(item?.priceCurrency ?? 'coins');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -121,7 +121,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
           <select
             value={priceCurrency}
             onChange={(e) =>
-              setPriceCurrency(e.target.value as 'coins' | 'gems')
+              setPriceCurrency(e.target.value as 'coins' | 'gems' | 'arcadeum')
             }
             data-testid="admin-shop-edit-price-currency"
             style={{
@@ -135,6 +135,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
           >
             <option value="coins">coins</option>
             <option value="gems">gems</option>
+            <option value="arcadeum">arcadeum</option>
           </select>
         </YStack>
 

@@ -15,6 +15,8 @@ import {
 } from '../schemas/gem-purchase.schema';
 import { PaypalGateway } from '../../payments/lib/paypal.gateway';
 import { WalletService } from '../../wallet/wallet.service';
+import { SolanaService } from '../../solana/solana.service';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 import type { GemPurchaseView } from '../interfaces/gem-purchase.interface';
 import type { WalletBalance } from '../../wallet/interfaces/wallet-balance.interface';
 
@@ -51,6 +53,8 @@ export class GemPurchasesService {
     private readonly paypal: PaypalGateway,
     private readonly wallet: WalletService,
     private readonly config: ConfigService,
+    private readonly solana: SolanaService,
+    private readonly economy: EconomySettingsService,
   ) {}
 
   async createOrder(
@@ -219,6 +223,83 @@ export class GemPurchasesService {
       throw new NotFoundException('gems.orderNotFound');
     }
     return { cancelled: true };
+  }
+
+  async purchaseWithArc(
+    userId: string,
+    packageId: string,
+    signature: string,
+    senderAddress: string,
+  ): Promise<{
+    success: boolean;
+    gemsCredited: number;
+    newBalance: WalletBalance;
+  }> {
+    const allowArc =
+      (await this.economy.getNumber('gems_allow_arcadeum')) === 1;
+    if (!allowArc) {
+      throw new BadRequestException('gems.arcPaymentDisabled');
+    }
+
+    const pkg = await this.packageModel
+      .findById(packageId)
+      .lean<GemPackageLean | null>();
+    if (!pkg) throw new NotFoundException('gems.packageNotFound');
+    if (!pkg.active) throw new BadRequestException('gems.packageInactive');
+
+    const totalGems = pkg.gems + (pkg.bonusGems ?? 0);
+
+    const discount = await this.economy.getNumber('arcadeum_discount_percent');
+    const discountedUsd = (pkg.priceUsd / 100) * (1 - discount / 100);
+    const arcUsdPrice = await this.solana.getArcadeumPrice();
+    if (arcUsdPrice <= 0) {
+      throw new BadRequestException('gems.arcPriceUnavailable');
+    }
+    const expectedArc = Math.ceil(discountedUsd / arcUsdPrice);
+
+    const isValid = await this.solana.verifyTransaction(
+      signature,
+      expectedArc,
+      senderAddress,
+    );
+    if (!isValid) {
+      throw new BadRequestException('gems.invalidTransaction');
+    }
+
+    const idempotencyKey = `gem-arc-${signature}`;
+    const existing = await this.wallet.findByIdempotencyKey(idempotencyKey);
+    if (existing) {
+      return {
+        success: true,
+        gemsCredited: 0,
+        newBalance: await this.wallet.getBalance(userId),
+      };
+    }
+
+    await this.wallet.credit(
+      userId,
+      'gems',
+      totalGems,
+      'gem_purchase_arc',
+      idempotencyKey,
+      {
+        packageId,
+        signature,
+        senderAddress,
+        arcAmount: expectedArc,
+        arcUsdPrice,
+      },
+    );
+
+    this.logger.log(
+      `ARC gem purchase for user ${userId}: +${totalGems} gems via ${signature.slice(0, 8)}...`,
+    );
+
+    return {
+      success: true,
+      gemsCredited: totalGems,
+      newBalance: await this.wallet.getBalance(userId),
+    };
   }
 
   private toView(doc: GemPurchaseLean): GemPurchaseView {

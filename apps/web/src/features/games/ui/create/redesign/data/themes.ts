@@ -475,7 +475,6 @@ import {
   type ChessThemeMeta,
 } from './chess-themes';
 import { CHECKERS_THEMES } from './checkers-themes';
-
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 
@@ -488,17 +487,13 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'checkers_v1') return CHECKERS_THEMES;
   return [];
 }
-
 export function findTicTacToeTheme(id: string | undefined): TicTacToeThemeMeta {
   return TIC_TAC_TOE_THEMES.find((t) => t.id === id) ?? TIC_TAC_TOE_THEMES[0];
 }
-
 export function findCriticalTheme(id: string | undefined): CriticalTheme {
   return CRITICAL_THEMES.find((t) => t.id === id) ?? CRITICAL_THEMES[0];
 }
-
 export function findSeaBattleTheme(id: string | undefined): SeaBattleThemeMeta {
   return SEA_BATTLE_THEMES.find((t) => t.id === id) ?? SEA_BATTLE_THEMES[0];
 }
-
 export { EXPANSION_PACK_LIST, type ExpansionPack } from './expansion-packs';

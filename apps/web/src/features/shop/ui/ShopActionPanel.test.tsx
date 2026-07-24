@@ -68,7 +68,7 @@ const EMPTY_PREVIEW = {
   background: null,
 } satisfies Record<ShopCategory, EffectiveShopItem | null | undefined>;
 
-const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };
+const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50, arcadeum: 0 };
 
 function item(overrides: Partial<EffectiveShopItem> = {}): EffectiveShopItem {
   return {

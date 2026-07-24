@@ -10,6 +10,7 @@ import {
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { GemPurchasesService } from '../services/gem-purchases.service';
 import { CreateGemOrderDto } from '../dto/create-gem-order.dto';
+import { PurchaseGemsWithArcDto } from '../dto/purchase-gems-with-arc.dto';
 import type { AuthenticatedUser } from '../../auth/jwt/jwt.strategy';
 
 @Controller('payments/gems/orders')
@@ -23,6 +24,19 @@ export class GemPurchasesController {
     @Body() dto: CreateGemOrderDto,
   ) {
     return this.service.createOrder(req.user.userId, dto.packageId);
+  }
+
+  @Post('arc')
+  purchaseWithArc(
+    @Req() req: { user: AuthenticatedUser },
+    @Body() dto: PurchaseGemsWithArcDto,
+  ) {
+    return this.service.purchaseWithArc(
+      req.user.userId,
+      dto.packageId,
+      dto.signature,
+      dto.senderAddress,
+    );
   }
 
   @Post(':orderId/finalize')

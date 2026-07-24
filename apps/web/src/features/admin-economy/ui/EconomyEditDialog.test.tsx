@@ -20,7 +20,9 @@ const labels = {
   save: 'Save',
   cancel: 'Cancel',
   reset: 'Reset to default',
-  errorInvalidValue: 'Value must be a positive integer up to 1,000,000.',
+  enable: 'Enable',
+  disable: 'Disable',
+  errorInvalidValue: 'Value must be a non-negative integer up to 1,000,000.',
   errorGeneric: 'Could not save. Please retry.',
   errorForbidden: 'You do not have permission.',
   errorNotFound: 'Unknown setting.',
@@ -80,7 +82,7 @@ describe('EconomyEditDialog', () => {
     renderDialog();
 
     const input = screen.getByTestId('economy-value-input');
-    fireEvent.change(input, { target: { value: '0' } });
+    fireEvent.change(input, { target: { value: '' } });
     // Submit via the form element directly
     fireEvent.submit(input.closest('form')!);
 
@@ -90,7 +92,7 @@ describe('EconomyEditDialog', () => {
 
     expect(
       screen.getByTestId('economy-validation-error').textContent,
-    ).toContain('positive integer');
+    ).toContain('non-negative integer');
     expect(setEconomyValueAction).not.toHaveBeenCalled();
   });
 

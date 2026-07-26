@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.97] - 2026-07-26
+
+### Added
+- add checkers variants support (ARC-878)
+
+
 ## [1.23.96] - 2026-07-26
 
 ### Fixed

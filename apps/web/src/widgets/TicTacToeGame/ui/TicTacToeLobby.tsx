@@ -16,6 +16,7 @@ import { RulesModal } from './RulesModal';
 import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
 import {
   BOARD_SIZES,
+  MAX_PLAYERS_BY_BOARD_SIZE,
   type BoardSize,
   type TicTacToeOptions,
   type TicTacToeVariant,
@@ -182,6 +183,7 @@ export function TicTacToeLobby({
         gameIcon="❌⭕"
         variantName={variantName}
         minPlayers={2}
+        maxPlayers={MAX_PLAYERS_BY_BOARD_SIZE[options.boardSize]}
         theme={lobbyTheme}
         enableBots
         labels={{

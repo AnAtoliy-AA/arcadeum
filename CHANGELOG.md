@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.95] - 2026-07-26
+
+### Added
+- add tamagui-pro skill for correct Tamagui patterns
+
+### Fixed
+- add no-important rule to tamagui-pro skill
+
+
 ## [1.23.94] - 2026-07-24
 
 ### Added

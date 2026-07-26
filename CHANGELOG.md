@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.98] - 2026-07-26
+
+### Fixed
+- remove broken head_commit conditions from deploy workflows
+
+
 ## [1.23.97] - 2026-07-26
 
 ### Added

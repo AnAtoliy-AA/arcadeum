@@ -51,6 +51,7 @@ export const byMessages = {
     },
     fastRoom: 'Хуткая гульня',
     gameLabel: 'Гульня',
+    createdLabel: 'Створана',
   },
   password: {
     label: 'Пароль зала (опцыянальна)',

@@ -51,6 +51,7 @@ export const ruMessages = {
     },
     fastRoom: 'Быстрая игра',
     gameLabel: 'Игра',
+    createdLabel: 'Создан',
   },
   password: {
     label: 'Пароль зала (опционально)',

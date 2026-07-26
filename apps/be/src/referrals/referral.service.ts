@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as crypto from 'crypto';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
@@ -82,9 +83,10 @@ export class ReferralService {
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const bytes = crypto.randomBytes(8);
     let code = '';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (let i = 0; i < 8; i += 1) {
+      code += chars.charAt(bytes[i] % chars.length);
     }
     return code;
   }
@@ -119,7 +121,9 @@ export class ReferralService {
   ): Promise<void> {
     const safeCode = String(referralCode);
     const safeReferredUserId = String(referredUserId);
-    const referrer = await this.userModel.findOne({ referralCode: safeCode }).exec();
+    const referrer = await this.userModel
+      .findOne({ referralCode: safeCode })
+      .exec();
     if (!referrer) {
       this.logger.warn(`Invalid referral code: ${safeCode}`);
       return;

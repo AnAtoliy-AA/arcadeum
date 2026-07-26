@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
@@ -7,6 +7,15 @@ import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsService } from './game-rooms.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import type { GameRoomSummary } from './game-rooms.types';
+import { GAME_CATALOG } from '../../games/games.catalog';
+
+const VALID_GAME_IDS = new Set(GAME_CATALOG.map((g) => g.gameId));
+
+function validateGameId(gameId: string): void {
+  if (!VALID_GAME_IDS.has(gameId)) {
+    throw new BadRequestException(`Invalid gameId: ${gameId}`);
+  }
+}
 
 const MATCHMAKING_CANDIDATE_LIMIT = 20;
 // Rooms younger than this are accepted without a socket-presence
@@ -39,6 +48,7 @@ export class GameRoomsQuickplayService {
     gameId: string,
     variant?: string,
   ): Promise<GameRoomSummary> {
+    validateGameId(gameId);
     const botId = `bot-${randomBytes(5).toString('hex')}`;
     const now = new Date();
     const room = await this.gameRoomModel.create({
@@ -66,6 +76,7 @@ export class GameRoomsQuickplayService {
     gameId: string,
     variant?: string,
   ): Promise<GameRoomSummary> {
+    validateGameId(gameId);
     // Tight pool: only matchmaking-created rooms ("Open Match"), and
     // only those that don't already contain an AI bot. Sorted
     // newest-first so a room just created by another matchmaker sits

@@ -2,11 +2,18 @@ import type {
   BaseGameState,
   GamePlayerState,
 } from '../base/game-engine.interface';
-import type { GamePhase, PlayerColor, Variant } from './checkers.constants';
+import type {
+  GamePhase,
+  PlayerColor,
+  RuleVariant,
+  Variant,
+} from './checkers.constants';
 
 export interface CheckersOptions {
   variant: Variant;
+  ruleVariant: RuleVariant;
   forcedCaptures: boolean;
+  backwardCaptures: boolean;
 }
 
 export type PieceType = 'man' | 'king';

@@ -5,12 +5,11 @@ import { YStack } from 'tamagui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import type { Board, CheckersPlayer } from '../types';
 
-const BOARD_SIZE = 8;
-
 interface CheckersBoardProps {
   board: Board;
   players: CheckersPlayer[];
   selectedPiece: { row: number; col: number } | null;
+  highlightedCell?: { row: number; col: number } | null;
   disabled: boolean;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
@@ -20,11 +19,13 @@ export function CheckersBoard({
   board,
   players,
   selectedPiece,
+  highlightedCell,
   disabled,
   ariaLabel,
   onCellClick,
 }: CheckersBoardProps) {
   const theme = useCheckersTheme();
+  const boardSize = board.length;
 
   const handleClick = useCallback(
     (row: number, col: number) => {
@@ -56,18 +57,15 @@ export function CheckersBoard({
       aria-label={ariaLabel}
       data-testid="checkers-board"
     >
-      {Array.from({ length: BOARD_SIZE }).map((_, row) => (
-        <YStack
-          key={row}
-          flexDirection="row"
-          flex={1}
-          role="row"
-        >
-          {Array.from({ length: BOARD_SIZE }).map((_, col) => {
+      {Array.from({ length: boardSize }).map((_, row) => (
+        <YStack key={row} flexDirection="row" flex={1} role="row">
+          {Array.from({ length: boardSize }).map((_, col) => {
             const isDarkSquare = (row + col) % 2 === 1;
             const piece = board[row][col];
             const isSelected =
               selectedPiece?.row === row && selectedPiece?.col === col;
+            const isHighlighted =
+              highlightedCell?.row === row && highlightedCell?.col === col;
             const pieceColor = piece ? playerColorMap[piece.playerId] : null;
 
             return (
@@ -80,9 +78,11 @@ export function CheckersBoard({
                 backgroundColor={
                   isSelected
                     ? theme.selectedPiece
-                    : isDarkSquare
-                      ? theme.darkSquare
-                      : theme.lightSquare
+                    : isHighlighted
+                      ? 'rgba(99, 102, 241, 0.35)'
+                      : isDarkSquare
+                        ? theme.darkSquare
+                        : theme.lightSquare
                 }
                 style={{
                   boxSizing: 'border-box',
@@ -100,11 +100,15 @@ export function CheckersBoard({
                     alignItems="center"
                     justifyContent="center"
                     backgroundColor={
-                      pieceColor === 'light' ? theme.lightPiece : theme.darkPiece
+                      pieceColor === 'light'
+                        ? theme.lightPiece
+                        : theme.darkPiece
                     }
                     borderWidth={2}
                     borderColor={
-                      pieceColor === 'light' ? theme.lightPieceBorder : theme.darkPieceBorder
+                      pieceColor === 'light'
+                        ? theme.lightPieceBorder
+                        : theme.darkPieceBorder
                     }
                     style={{
                       boxShadow: isSelected

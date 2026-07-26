@@ -19,7 +19,8 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type { Board, CheckersGameProps, MoveStep } from '../types';
+import type { Board, CheckersGameProps, MoveStep, RuleVariant } from '../types';
+import { RULE_VARIANT_CONFIGS } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
 import { CheckersThemeProvider } from '../lib/CheckersThemeContext';
@@ -136,6 +137,17 @@ function CheckersGameImpl({
     [room?.gameOptions],
   );
 
+  const ruleVariant = useMemo(
+    () =>
+      ((room?.gameOptions as Record<string, string>)?.ruleVariant ??
+        'american') as RuleVariant,
+    [room?.gameOptions],
+  );
+
+  const ruleConfig = RULE_VARIANT_CONFIGS[ruleVariant];
+  const backwardCaptures = ruleConfig.backwardCapturesForMen;
+  const flyingKings = ruleConfig.flyingKings;
+
   const variantTokens = useMemo(
     () =>
       CHECKERS_VARIANTS.find((v) => v.id === variant) ?? CHECKERS_VARIANTS[0],
@@ -209,7 +221,15 @@ function CheckersGameImpl({
           // Check if more captures available from the landing square
           const playerColor = getPlayerColor(snapshot.players, currentUserId);
           const moreCaptures = playerColor
-            ? findCapturesFrom(nextBoard, row, col, currentUserId, playerColor)
+            ? findCapturesFrom(
+                nextBoard,
+                row,
+                col,
+                currentUserId,
+                playerColor,
+                backwardCaptures,
+                flyingKings,
+              )
             : [];
 
           if (moreCaptures.length > 0) {
@@ -243,6 +263,8 @@ function CheckersGameImpl({
       selectedPiece,
       pendingSteps,
       movePiece,
+      backwardCaptures,
+      flyingKings,
     ],
   );
 
@@ -290,7 +312,7 @@ function CheckersGameImpl({
             players={snapshot.players}
             selectedPiece={selectedPiece}
             disabled={!myTurn || isGameOver}
-            ariaLabel="Checkers 8×8 board"
+            ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
           />
         </>

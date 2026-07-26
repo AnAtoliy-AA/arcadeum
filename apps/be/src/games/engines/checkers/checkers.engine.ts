@@ -5,7 +5,11 @@ import type {
   GameActionResult,
   GameMetadata,
 } from '../base/game-engine.interface';
-import { DEFAULT_OPTIONS, GAME_PHASE } from './checkers.constants';
+import {
+  DEFAULT_OPTIONS,
+  GAME_PHASE,
+  RULE_VARIANT_CONFIGS,
+} from './checkers.constants';
 import type {
   CheckersState,
   InitializeConfig,
@@ -37,9 +41,9 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       name: 'Checkers',
       minPlayers: 2,
       maxPlayers: 2,
-      version: '1.0.0',
+      version: '2.0.0',
       description:
-        'Classic 8×8 checkers with forced captures, multi-jump, king promotion, and bot AI',
+        'Checkers with American, International (10x10), and Russian variants — forced captures, flying kings, multi-jump, and bot AI',
       category: 'Board Game',
     };
   }
@@ -49,26 +53,31 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     config?: InitializeConfig,
   ): CheckersState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
+    const ruleConfig = RULE_VARIANT_CONFIGS[options.ruleVariant];
 
     const players = [
       {
         playerId: playerIds[0],
         color: 'light' as const,
         alive: true,
-        piecesRemaining: 12,
+        piecesRemaining: ruleConfig.piecesPerPlayer,
       },
       {
         playerId: playerIds[1],
         color: 'dark' as const,
         alive: true,
-        piecesRemaining: 12,
+        piecesRemaining: ruleConfig.piecesPerPlayer,
       },
     ];
 
     return {
       phase: GAME_PHASE.PLAYING,
       options,
-      board: createInitialBoard(playerIds[1], playerIds[0]),
+      board: createInitialBoard(
+        playerIds[1],
+        playerIds[0],
+        options.ruleVariant,
+      ),
       currentTurnIndex: 0,
       playerOrder: [...playerIds],
       players,
@@ -184,10 +193,14 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     const playerColor = getPlayerColor(newState, context.userId);
     if (!playerColor) return this.errorResult('Player color not found');
 
-    const newBoard = applyMove(newState.board, payload.steps);
+    const newBoard = applyMove(newState.board, payload.steps, playerColor);
     newState.board = newBoard;
 
-    // Count remaining pieces
+    const ruleConfig = RULE_VARIANT_CONFIGS[newState.options.ruleVariant];
+    const backwardCaptures =
+      newState.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
+    const flyingKings = ruleConfig.flyingKings;
+
     const player = newState.players.find((p) => p.playerId === context.userId);
     if (player) {
       player.piecesRemaining = countPieces(newBoard, context.userId);
@@ -210,7 +223,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       this.createLogEntry('action', moveDesc, { senderId: context.userId }),
     );
 
-    // Check for win
     const opponentId = getOpponentId(newState, context.userId);
     if (!opponentId) return this.errorResult('Opponent not found');
 
@@ -236,8 +248,13 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       return this.successResult(newState);
     }
 
-    // Check if opponent has any moves
-    const opponentHasMoves = hasAnyMoves(newBoard, opponentId, opponentColor);
+    const opponentHasMoves = hasAnyMoves(
+      newBoard,
+      opponentId,
+      opponentColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (!opponentHasMoves) {
       newState.winnerId = context.userId;
       newState.phase = GAME_PHASE.GAME_OVER;
@@ -250,8 +267,13 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       return this.successResult(newState);
     }
 
-    // Check if current player has no moves (shouldn't happen after a successful move, but be safe)
-    const currentHasMoves = hasAnyMoves(newBoard, context.userId, playerColor);
+    const currentHasMoves = hasAnyMoves(
+      newBoard,
+      context.userId,
+      playerColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (!currentHasMoves) {
       newState.winnerId = opponentId;
       newState.phase = GAME_PHASE.GAME_OVER;
@@ -264,7 +286,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       return this.successResult(newState);
     }
 
-    // Check for draw (very long game with only kings)
     const currentKingCount = this.countKings(newBoard, context.userId);
     const opponentKingCount = this.countKings(newBoard, opponentId);
     if (
@@ -272,7 +293,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       opponentKingCount > 0 &&
       currentPieces + opponentPieces <= 4
     ) {
-      // Simple draw detection for king-only endgames
       if (
         currentKingCount === opponentKingCount &&
         currentPieces <= 2 &&
@@ -287,7 +307,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       }
     }
 
-    // Advance turn
     newState.currentTurnIndex =
       (newState.currentTurnIndex + 1) % newState.playerOrder.length;
 
@@ -319,7 +338,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       return this.successResult(newState);
     }
 
-    this.successResult(newState);
     return this.successResult(newState);
   }
 
@@ -328,8 +346,9 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     playerId: string,
   ): number {
     let count = 0;
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
+    const size = board.length;
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
         if (board[r][c]?.playerId === playerId && board[r][c]?.type === 'king')
           count++;
       }

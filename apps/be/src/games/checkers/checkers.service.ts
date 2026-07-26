@@ -194,11 +194,16 @@ export class CheckersService implements OnModuleInit, OnModuleDestroy {
   private resolveOptions(raw: unknown): CheckersOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;
+      ruleVariant: string;
       forcedCaptures: boolean;
+      backwardCaptures: boolean;
     }>;
     return {
       variant: (r.variant as CheckersOptions['variant']) ?? 'classic',
+      ruleVariant:
+        (r.ruleVariant as CheckersOptions['ruleVariant']) ?? 'american',
       forcedCaptures: r.forcedCaptures !== false,
+      backwardCaptures: r.backwardCaptures === true,
     };
   }
 }

@@ -3,10 +3,7 @@
 import { XStack } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  BotCountSelector,
-  BotCountLabel,
-} from './lobbyStyles';
+import { BotCountSelector, BotCountLabel } from './lobbyStyles';
 
 export type BotDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -40,8 +37,8 @@ export function DifficultySelector({
               key={diff}
               variant="chip"
               size="sm"
-              flex={1}
               data-active={isActive}
+              overflow="hidden"
               backgroundColor={
                 isActive
                   ? 'rgba(99, 102, 241, 0.2)'

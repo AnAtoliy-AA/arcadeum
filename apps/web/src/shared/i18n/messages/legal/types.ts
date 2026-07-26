@@ -68,6 +68,25 @@ export type TermsMessages = {
       title?: string;
       content?: string;
     };
+    arcPayments?: {
+      title?: string;
+      content?: string;
+      items?: string[];
+    };
+    noCashout?: {
+      title?: string;
+      content?: string;
+    };
+    notSecurity?: {
+      title?: string;
+      content?: string;
+    };
+    taxes?: {
+      title?: string;
+      content?: string;
+      items?: string[];
+      important?: string;
+    };
   };
 };
 

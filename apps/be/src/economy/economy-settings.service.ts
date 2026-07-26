@@ -257,7 +257,7 @@ export class EconomySettingsService {
     return (
       typeof v === 'number' &&
       Number.isInteger(v) &&
-      v >= 1 &&
+      v >= 0 &&
       v <= WalletService.MAX_TRANSACTION_AMOUNT
     );
   }

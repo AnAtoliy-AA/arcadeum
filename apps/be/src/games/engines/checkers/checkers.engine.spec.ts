@@ -289,7 +289,7 @@ describe('CheckersEngine', () => {
   describe('sanitizeStateForPlayer', () => {
     it('returns full state', () => {
       const state = engine.initializeState(['a', 'b']);
-      const sanitized = engine.sanitizeStateForPlayer(state, 'a');
+      const sanitized = engine.sanitizeStateForPlayer(state);
       expect(sanitized).toBe(state);
     });
   });
@@ -361,6 +361,20 @@ describe('CheckersEngine', () => {
 
     it('rejects invalid forcedCaptures type', () => {
       expect(engine.validateConfig({ forcedCaptures: 'yes' })).toBe(false);
+    });
+
+    it('accepts ruleVariant in config', () => {
+      expect(engine.validateConfig({ ruleVariant: 'international' })).toBe(
+        true,
+      );
+    });
+
+    it('rejects invalid ruleVariant', () => {
+      expect(engine.validateConfig({ ruleVariant: 'invalid' })).toBe(false);
+    });
+
+    it('accepts backwardCaptures in config', () => {
+      expect(engine.validateConfig({ backwardCaptures: true })).toBe(true);
     });
   });
 });

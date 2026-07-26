@@ -36,6 +36,20 @@ const ChessRulesModal = dynamic(
   { ssr: false },
 );
 
+const CheckersRulesModal = dynamic(
+  () =>
+    import('@/widgets/CheckersGame/ui/RulesModal').then((m) => m.RulesModal),
+  { ssr: false },
+);
+
+const CatDashRulesModal = dynamic(
+  () =>
+    import('@/widgets/CatDashGame/ui/RulesModal').then(
+      (m) => m.CatDashRulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -100,6 +114,12 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'chess_v1' ? (
         <ChessRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'checkers_v1' ? (
+        <CheckersRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'cat_dash_v1' ? (
+        <CatDashRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

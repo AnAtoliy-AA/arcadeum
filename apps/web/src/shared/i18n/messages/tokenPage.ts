@@ -6,6 +6,9 @@ export interface TokenPageMessages {
   marketCap: string;
   totalSupply: string;
   created: string;
+  treasuryArc: string;
+  treasurySol: string;
+  treasuryTooltip: string;
   howToEarn: {
     title: string;
     subtitle: string;
@@ -43,6 +46,10 @@ export const en: TokenPageMessages = {
   marketCap: 'Market Cap',
   totalSupply: 'Total Supply',
   created: 'Created',
+  treasuryArc: 'Treasury ARC',
+  treasurySol: 'Treasury SOL',
+  treasuryTooltip:
+    'Platform treasury: tournament prizes, rewards, and operational funds. All transactions are on-chain and transparent.',
   howToEarn: {
     title: 'How to Earn',
     subtitle: 'Get ARC tokens through the platform',
@@ -85,6 +92,10 @@ export const ru: DeepPartial<TokenPageMessages> = {
   marketCap: 'Рыночная капитализация',
   totalSupply: 'Общее предложение',
   created: 'Создано',
+  treasuryArc: 'Казна ARC',
+  treasurySol: 'Казна SOL',
+  treasuryTooltip:
+    'Казна платформы: призы турниров, награды и операционные фонды. Все транзакции прозрачны и записаны в блокчейне.',
   howToEarn: {
     title: 'Как заработать',
     subtitle: 'Получайте токены ARC через платформу',
@@ -127,6 +138,10 @@ export const es: DeepPartial<TokenPageMessages> = {
   marketCap: 'Capitalización de Mercado',
   totalSupply: 'Suministro Total',
   created: 'Creado',
+  treasuryArc: 'Tesoro ARC',
+  treasurySol: 'Tesoro SOL',
+  treasuryTooltip:
+    'Tesoro de la plataforma: premios de torneos, recompensas y fondos operativos. Todas las transacciones son en cadena y transparentes.',
   howToEarn: {
     title: 'Cómo Ganar',
     subtitle: 'Obtén tokens ARC a través de la plataforma',
@@ -169,6 +184,10 @@ export const fr: DeepPartial<TokenPageMessages> = {
   marketCap: 'Capitalisation Boursière',
   totalSupply: 'Offre Totale',
   created: 'Créé',
+  treasuryArc: 'Trésor ARC',
+  treasurySol: 'Trésor SOL',
+  treasuryTooltip:
+    'Trésor de la plateforme : prix de tournois, récompenses et fonds opérationnels. Toutes les transactions sont en chaîne et transparentes.',
   howToEarn: {
     title: 'Comment Gagner',
     subtitle: 'Obtenez des tokens ARC via la plateforme',
@@ -180,7 +199,8 @@ export const fr: DeepPartial<TokenPageMessages> = {
   },
   howToSpend: {
     title: 'Comment Dépenser',
-    subtitle: 'Utilisez vos tokens pour personnaliser votre profil et vous démarquer',
+    subtitle:
+      'Utilisez vos tokens pour personnaliser votre profil et vous démarquer',
     shopItems: {
       title: 'Articles de Boutique',
       description:
@@ -211,6 +231,10 @@ export const by: DeepPartial<TokenPageMessages> = {
   marketCap: 'Рыначная капіталізацыя',
   totalSupply: 'Агульная прапанова',
   created: 'Створана',
+  treasuryArc: 'Казна ARC',
+  treasurySol: 'Казна SOL',
+  treasuryTooltip:
+    'Казна платформы: прызы турніраў, узнагароды і аператыўныя сродкі. Усе транзакцыі прадвызначаны ў блокчейне і празрыстыя.',
   howToEarn: {
     title: 'Як зарабіць',
     subtitle: 'Атрымлівайце токены ARC праз платформу',

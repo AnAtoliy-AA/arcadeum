@@ -17,6 +17,7 @@ import {
   TIME_RANGES,
   RANGE_LABEL,
   formatPrice,
+  formatPriceWithUsdc,
   formatVolume,
   formatTooltipLabel,
   formatXTick,
@@ -128,12 +129,8 @@ export default function MarketCapSparkline() {
         <span className={styles.label}>Price (USD)</span>
         <div className={styles.priceRow}>
           <span className={styles.value}>
-            {formatPrice(
-              Number(
-                poolStats?.priceUsd ??
-                  data[data.length - 1]?.value ??
-                  0,
-              ),
+            {formatPriceWithUsdc(
+              Number(poolStats?.priceUsd ?? data[data.length - 1]?.value ?? 0),
             )}
           </span>
           <span
@@ -159,23 +156,9 @@ export default function MarketCapSparkline() {
               margin={{ top: 8, right: 8, left: 8, bottom: 4 }}
             >
               <defs>
-                <linearGradient
-                  id="priceGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="0%"
-                    stopColor="#6366f1"
-                    stopOpacity={0.25}
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor="#6366f1"
-                    stopOpacity={0}
-                  />
+                <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid

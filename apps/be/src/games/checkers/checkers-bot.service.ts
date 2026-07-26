@@ -1,7 +1,10 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CheckersService } from './checkers.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
-import { GAME_PHASE, BOARD_SIZE } from '../engines/checkers/checkers.constants';
+import {
+  GAME_PHASE,
+  RULE_VARIANT_CONFIGS,
+} from '../engines/checkers/checkers.constants';
 import type {
   CheckersState,
   MovePayload,
@@ -72,32 +75,58 @@ export class CheckersBotService {
     const playerColor = getPlayerColor(state, botId);
     if (!playerColor) return null;
 
-    const captures = findAllCapturesForPlayer(state.board, botId, playerColor);
+    const ruleConfig = RULE_VARIANT_CONFIGS[state.options.ruleVariant];
+    const backwardCaptures =
+      state.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
+    const flyingKings = ruleConfig.flyingKings;
+
+    const captures = findAllCapturesForPlayer(
+      state.board,
+      botId,
+      playerColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (captures.length > 0) {
-      return this.bestCaptureSequence(state, botId, playerColor);
+      return this.bestCaptureSequence(
+        state,
+        botId,
+        playerColor,
+        backwardCaptures,
+        flyingKings,
+      );
     }
 
     const simpleMoves = getAvailableMovesForPlayer(
       state.board,
       botId,
       playerColor,
+      backwardCaptures,
+      flyingKings,
     );
     if (simpleMoves.length === 0) return null;
 
-    // Minimax for simple moves
-    return this.minimaxMove(state, botId, playerColor);
+    return this.minimaxMove(
+      state,
+      botId,
+      playerColor,
+      backwardCaptures,
+      flyingKings,
+    );
   }
 
   private bestCaptureSequence(
     state: CheckersState,
     botId: string,
     playerColor: string,
+    backwardCaptures: boolean,
+    flyingKings: boolean,
   ): MovePayload {
-    // Try to find the longest capture sequence for each starting piece
     let bestSteps: MoveStep[] = [];
+    const size = state.board.length;
 
-    for (let r = 0; r < BOARD_SIZE; r++) {
-      for (let c = 0; c < BOARD_SIZE; c++) {
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
         if (!isPlayerPiece(state.board[r][c], botId)) continue;
         const sequence = this.findLongestCapture(
           state.board,
@@ -105,6 +134,8 @@ export class CheckersBotService {
           c,
           botId,
           playerColor,
+          backwardCaptures,
+          flyingKings,
         );
         if (sequence.length > bestSteps.length) {
           bestSteps = sequence;
@@ -121,14 +152,24 @@ export class CheckersBotService {
     col: number,
     playerId: string,
     playerColor: string,
+    backwardCaptures: boolean,
+    flyingKings: boolean,
   ): MoveStep[] {
-    const captures = findCaptures(board, row, col, playerId, playerColor);
+    const captures = findCaptures(
+      board,
+      row,
+      col,
+      playerId,
+      playerColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (captures.length === 0) return [];
 
     let bestSequence: MoveStep[] = [];
 
     for (const capture of captures) {
-      const boardAfterCapture = applyMove(board, [capture]);
+      const boardAfterCapture = applyMove(board, [capture], playerColor);
       const piece = boardAfterCapture[capture.toRow][capture.toCol];
       if (!piece) continue;
 
@@ -138,6 +179,8 @@ export class CheckersBotService {
         capture.toCol,
         playerId,
         playerColor,
+        backwardCaptures,
+        flyingKings,
       );
 
       const sequence = [capture, ...furtherCaptures];
@@ -153,6 +196,8 @@ export class CheckersBotService {
     state: CheckersState,
     botId: string,
     playerColor: string,
+    backwardCaptures: boolean,
+    flyingKings: boolean,
   ): MovePayload | null {
     const opponentId = getOpponentId(state, botId);
     if (!opponentId) return null;
@@ -163,6 +208,8 @@ export class CheckersBotService {
       state.board,
       botId,
       playerColor,
+      backwardCaptures,
+      flyingKings,
     );
     if (simpleMoves.length === 0) return null;
 
@@ -170,7 +217,7 @@ export class CheckersBotService {
     let bestSteps: MoveStep[] = [];
 
     for (const move of simpleMoves) {
-      const probe = applyMove(state.board, [move]);
+      const probe = applyMove(state.board, [move], playerColor);
       const score = this.minimax(
         probe,
         botId,
@@ -180,6 +227,8 @@ export class CheckersBotService {
         false,
         0,
         4,
+        backwardCaptures,
+        flyingKings,
       );
       if (score > bestScore) {
         bestScore = score;
@@ -199,6 +248,8 @@ export class CheckersBotService {
     isMaximizing: boolean,
     depth: number,
     maxDepth: number,
+    backwardCaptures: boolean,
+    flyingKings: boolean,
   ): number {
     if (depth >= maxDepth) {
       return this.evaluateBoard(board, currentPlayerId);
@@ -207,13 +258,17 @@ export class CheckersBotService {
     const activeId = isMaximizing ? currentPlayerId : opponentId;
     const activeColor = isMaximizing ? currentColor : opponentColor;
 
-    const captures = findAllCapturesForPlayer(board, activeId, activeColor);
+    const captures = findAllCapturesForPlayer(
+      board,
+      activeId,
+      activeColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (captures.length > 0) {
-      // Forced capture
       let best = isMaximizing ? -Infinity : Infinity;
       for (const capture of captures) {
-        const newBoard = applyMove(board, [capture]);
-        // Check for multi-jumps
+        const newBoard = applyMove(board, [capture], activeColor);
         const piece = newBoard[capture.toRow][capture.toCol];
         if (piece) {
           const furtherCaptures = findCaptures(
@@ -222,17 +277,20 @@ export class CheckersBotService {
             capture.toCol,
             activeId,
             activeColor,
+            backwardCaptures,
+            flyingKings,
           );
           if (furtherCaptures.length > 0) {
-            // Continue the chain
             const chain = this.findLongestChain(
               newBoard,
               capture.toRow,
               capture.toCol,
               activeId,
               activeColor,
+              backwardCaptures,
+              flyingKings,
             );
-            const finalBoard = applyMove(newBoard, chain);
+            const finalBoard = applyMove(newBoard, chain, activeColor);
             const score = this.minimax(
               finalBoard,
               currentPlayerId,
@@ -242,6 +300,8 @@ export class CheckersBotService {
               !isMaximizing,
               depth + 1,
               maxDepth,
+              backwardCaptures,
+              flyingKings,
             );
             best = isMaximizing ? Math.max(best, score) : Math.min(best, score);
             continue;
@@ -256,6 +316,8 @@ export class CheckersBotService {
           !isMaximizing,
           depth + 1,
           maxDepth,
+          backwardCaptures,
+          flyingKings,
         );
         best = isMaximizing ? Math.max(best, score) : Math.min(best, score);
       }
@@ -266,6 +328,8 @@ export class CheckersBotService {
       board,
       activeId,
       activeColor,
+      backwardCaptures,
+      flyingKings,
     );
     if (simpleMoves.length === 0) {
       return isMaximizing ? -1000 + depth : 1000 - depth;
@@ -273,7 +337,7 @@ export class CheckersBotService {
 
     let best = isMaximizing ? -Infinity : Infinity;
     for (const move of simpleMoves) {
-      const newBoard = applyMove(board, [move]);
+      const newBoard = applyMove(board, [move], activeColor);
       const score = this.minimax(
         newBoard,
         currentPlayerId,
@@ -283,6 +347,8 @@ export class CheckersBotService {
         !isMaximizing,
         depth + 1,
         maxDepth,
+        backwardCaptures,
+        flyingKings,
       );
       best = isMaximizing ? Math.max(best, score) : Math.min(best, score);
     }
@@ -295,19 +361,31 @@ export class CheckersBotService {
     col: number,
     playerId: string,
     playerColor: string,
+    backwardCaptures: boolean,
+    flyingKings: boolean,
   ): MoveStep[] {
-    const captures = findCaptures(board, row, col, playerId, playerColor);
+    const captures = findCaptures(
+      board,
+      row,
+      col,
+      playerId,
+      playerColor,
+      backwardCaptures,
+      flyingKings,
+    );
     if (captures.length === 0) return [];
 
     let best: MoveStep[] = [];
     for (const cap of captures) {
-      const newBoard = applyMove(board, [cap]);
+      const newBoard = applyMove(board, [cap], playerColor);
       const chain = this.findLongestChain(
         newBoard,
         cap.toRow,
         cap.toCol,
         playerId,
         playerColor,
+        backwardCaptures,
+        flyingKings,
       );
       if (chain.length + 1 > best.length) {
         best = [cap, ...chain];
@@ -321,36 +399,33 @@ export class CheckersBotService {
     botId: string,
   ): number {
     let score = 0;
+    const size = board.length;
+    const center = (size - 1) / 2;
 
-    for (let r = 0; r < BOARD_SIZE; r++) {
-      for (let c = 0; c < BOARD_SIZE; c++) {
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
         const piece = board[r][c];
         if (!piece) continue;
 
         const isBot = piece.playerId === botId;
         const sign = isBot ? 1 : -1;
 
-        // Material value
         if (piece.type === 'king') {
           score += sign * 5;
         } else {
           score += sign * 1;
         }
 
-        // Positional value: pieces closer to promotion or center
         if (piece.type === 'man') {
           if (piece.playerId === botId) {
-            // Bot's pieces benefit from advancing (toward row 7)
-            score += sign * (r / BOARD_SIZE) * 0.5;
+            score += sign * (r / size) * 0.5;
           } else {
-            // Opponent's pieces benefit from advancing (toward row 0)
-            score += sign * ((BOARD_SIZE - 1 - r) / BOARD_SIZE) * 0.5;
+            score += sign * ((size - 1 - r) / size) * 0.5;
           }
         }
 
-        // Center control
-        const centerDist = Math.abs(r - 3.5) + Math.abs(c - 3.5);
-        score += sign * (7 - centerDist) * 0.05;
+        const centerDist = Math.abs(r - center) + Math.abs(c - center);
+        score += sign * (size - centerDist) * 0.05;
       }
     }
 

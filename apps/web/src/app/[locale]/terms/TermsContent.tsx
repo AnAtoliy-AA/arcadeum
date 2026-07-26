@@ -221,6 +221,91 @@ export default function TermsContent({
           </Section>
         )}
 
+        {s?.arcPayments && (
+          <Section variant="legal" title={s?.arcPayments?.title}>
+            <Typography variant="body" uiSize="md" alpha="high">
+              {s?.arcPayments?.content}
+            </Typography>
+            <YStack paddingLeft="$5" gap="$2">
+              <ul
+                style={{
+                  listStyleType: 'disc',
+                  margin: 0,
+                  paddingLeft: '1.25rem',
+                }}
+              >
+                {s?.arcPayments?.items?.map((item, index) => (
+                  <li key={index}>
+                    <Typography variant="body" uiSize="md" alpha="high">
+                      {item}
+                    </Typography>
+                  </li>
+                ))}
+              </ul>
+            </YStack>
+          </Section>
+        )}
+
+        {s?.noCashout && (
+          <Section variant="legal" title={s?.noCashout?.title}>
+            <Typography variant="body" uiSize="md" alpha="high">
+              {s?.noCashout?.content}
+            </Typography>
+          </Section>
+        )}
+
+        {s?.notSecurity && (
+          <Section variant="legal" title={s?.notSecurity?.title}>
+            <Typography variant="body" uiSize="md" alpha="high">
+              {s?.notSecurity?.content}
+            </Typography>
+          </Section>
+        )}
+
+        {s?.taxes && (
+          <Section variant="legal" title={s?.taxes?.title}>
+            <Typography variant="body" uiSize="md" alpha="high">
+              {s?.taxes?.content}
+            </Typography>
+            <YStack paddingLeft="$5" gap="$2">
+              <ul
+                style={{
+                  listStyleType: 'disc',
+                  margin: 0,
+                  paddingLeft: '1.25rem',
+                }}
+              >
+                {s?.taxes?.items?.map((item, index) => (
+                  <li key={index}>
+                    <Typography variant="body" uiSize="md" alpha="high">
+                      {item}
+                    </Typography>
+                  </li>
+                ))}
+              </ul>
+            </YStack>
+            {s?.taxes?.important && (
+              <YStack
+                marginTop="$4"
+                padding="$4"
+                borderRadius="$2"
+                backgroundColor="rgba(234, 179, 8, 0.15)"
+                borderLeftWidth={4}
+                borderLeftColor="#eab308"
+              >
+                <Typography
+                  variant="body"
+                  uiSize="md"
+                  alpha="high"
+                  fontWeight="bold"
+                >
+                  {s?.taxes?.important}
+                </Typography>
+              </YStack>
+            )}
+          </Section>
+        )}
+
         <Section variant="legal" title={s?.governingLaw?.title}>
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.governingLaw?.content}

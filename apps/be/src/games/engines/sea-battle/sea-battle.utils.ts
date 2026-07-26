@@ -220,14 +220,14 @@ export function randomlyPlaceShips(
   const activeShips = getActiveShips(shipCount);
   const sortedShips = [...activeShips].sort((a, b) => b.size - a.size);
 
-  // Try multiple times with different random seeds
-  for (let attempt = 0; attempt < 20; attempt++) {
+  const maxAttempts = Math.max(100, gridSize * gridSize);
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const board = createEmptyBoard(gridSize);
     const placements: Record<string, ShipCell[]> = {};
     let failed = false;
 
     for (const ship of sortedShips) {
-      // Collect all valid positions for this ship
       const validPositions: ShipCell[][] = [];
       for (let r = 0; r < gridSize; r++) {
         for (let c = 0; c < gridSize; c++) {
@@ -245,7 +245,6 @@ export function randomlyPlaceShips(
         break;
       }
 
-      // Pick a random valid position
       const chosen =
         validPositions[Math.floor(Math.random() * validPositions.length)];
       for (const cell of chosen) {

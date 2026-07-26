@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { RATE_STATE_STORE } from '../../common/rate-state';
+import type { RateStateStore } from '../../common/rate-state';
 
-interface FailedAttempt {
-  count: number;
-  windowStart: number;
-  lockedUntil: number | null;
-}
+const ATTEMPTS_PREFIX = 'lockout:count:';
+const LOCKED_UNTIL_PREFIX = 'lockout:until:';
 
 /**
  * Tracks failed login attempts per account and enforces progressive lockout.
- * In-memory — resets on server restart (acceptable for brute-force protection).
+ * Uses a shared RateStateStore for persistence across restarts and instances.
  */
 @Injectable()
 export class LoginLockoutService {
-  private readonly attempts = new Map<string, FailedAttempt>();
+  constructor(
+    @Inject(RATE_STATE_STORE) private readonly store: RateStateStore,
+  ) {}
 
   private readonly MAX_ATTEMPTS = 5;
   private readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
@@ -22,61 +23,46 @@ export class LoginLockoutService {
     60 * 60 * 1000, // 1 hour after 15 failures
   ];
 
-  /**
-   * Returns true if the account is currently locked.
-   */
-  isLocked(email: string): boolean {
-    const entry = this.attempts.get(email);
-    if (!entry?.lockedUntil) return false;
-
-    if (Date.now() > entry.lockedUntil) {
-      entry.lockedUntil = null;
-      entry.count = 0;
-      return false;
-    }
-    return true;
+  async isLocked(email: string): Promise<boolean> {
+    const lockedUntil = await this.store.get(LOCKED_UNTIL_PREFIX + email);
+    if (!lockedUntil) return false;
+    return Date.now() < lockedUntil;
   }
 
-  /**
-   * Returns the remaining lockout duration in ms, or 0 if not locked.
-   */
-  getLockoutRemainingMs(email: string): number {
-    const entry = this.attempts.get(email);
-    if (!entry?.lockedUntil) return 0;
-    return Math.max(0, entry.lockedUntil - Date.now());
+  async getLockoutRemainingMs(email: string): Promise<number> {
+    const lockedUntil = await this.store.get(LOCKED_UNTIL_PREFIX + email);
+    if (!lockedUntil) return 0;
+    return Math.max(0, lockedUntil - Date.now());
   }
 
-  /**
-   * Record a failed login attempt. Returns true if the account is now locked.
-   */
-  recordFailure(email: string): boolean {
-    const now = Date.now();
-    let entry = this.attempts.get(email);
+  async recordFailure(email: string): Promise<boolean> {
+    const count = await this.store.increment(
+      ATTEMPTS_PREFIX + email,
+      this.WINDOW_MS,
+    );
 
-    if (!entry || now - entry.windowStart > this.WINDOW_MS) {
-      entry = { count: 1, windowStart: now, lockedUntil: null };
-      this.attempts.set(email, entry);
-      return false;
-    }
-
-    entry.count++;
-
-    if (entry.count >= this.MAX_ATTEMPTS) {
+    if (count >= this.MAX_ATTEMPTS) {
       const lockIndex = Math.min(
-        Math.floor((entry.count - this.MAX_ATTEMPTS) / this.MAX_ATTEMPTS),
+        Math.floor((count - this.MAX_ATTEMPTS) / this.MAX_ATTEMPTS),
         this.LOCK_DURATIONS_MS.length - 1,
       );
-      entry.lockedUntil = now + this.LOCK_DURATIONS_MS[lockIndex];
+      const lockDuration = this.LOCK_DURATIONS_MS[lockIndex];
+      const lockedUntil = Date.now() + lockDuration;
+      await this.store.set(
+        LOCKED_UNTIL_PREFIX + email,
+        lockedUntil,
+        lockDuration,
+      );
       return true;
     }
 
     return false;
   }
 
-  /**
-   * Clear failed attempts on successful login.
-   */
-  recordSuccess(email: string): void {
-    this.attempts.delete(email);
+  async recordSuccess(email: string): Promise<void> {
+    await Promise.all([
+      this.store.delete(ATTEMPTS_PREFIX + email),
+      this.store.delete(LOCKED_UNTIL_PREFIX + email),
+    ]);
   }
 }

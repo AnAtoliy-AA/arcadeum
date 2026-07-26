@@ -6,7 +6,8 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
-} from '@/features/games/ui/ReusableGameLobby';
+  LobbyOptionSection,
+} from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { VariantSelector } from './VariantSelector';
 import { BoardSizeSelector } from './BoardSizeSelector';
@@ -23,10 +24,7 @@ import {
   WIN_LENGTHS,
 } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
-import {
-  DifficultySelector,
-  type BotDifficulty,
-} from '@/features/games/ui/DifficultySelector';
+import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
 
 const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
   const variant = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variantId);
@@ -110,7 +108,6 @@ export function TicTacToeLobby({
   }, [variant, t]);
 
   const [internalTeamMode, setInternalTeamMode] = useState(options.teamMode);
-  const [difficulty, setDifficulty] = useState<BotDifficulty>('medium');
 
   const handleTeamModeToggle = (val: boolean) => {
     if (!isHost) return;
@@ -144,22 +141,22 @@ export function TicTacToeLobby({
         onMarginChange={handleMarginChange}
         onWinLengthChange={handleWinLengthChange}
       />
-      <DifficultySelector value={difficulty} onChange={setDifficulty} />
-      <XStack alignItems="center" gap="$3">
-        <Text fontWeight="600">{t('games.tic_tac_toe_v1.lobby.teamMode')}</Text>
-        <Switch
-          checked={internalTeamMode}
-          onCheckedChange={handleTeamModeToggle}
-          disabled={!isHost}
-          size="$2"
-        >
-          <Switch.Thumb />
-        </Switch>
-      </XStack>
+      <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
+        <XStack alignItems="center" gap="$3">
+          <Switch
+            checked={internalTeamMode}
+            onCheckedChange={handleTeamModeToggle}
+            disabled={!isHost}
+            size="$2"
+          >
+            <Switch.Thumb />
+          </Switch>
+        </XStack>
+      </LobbyOptionSection>
       {internalTeamMode ? (
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
-      <Text fontSize="$2" opacity={0.7}>
+      <Text fontSize="$3" opacity={0.7}>
         {options.boardSize === 'infinity'
           ? t('games.tic_tac_toe_v1.lobby.winCondition')
           : t('games.tic_tac_toe_v1.rules.winLengths')}
@@ -175,7 +172,7 @@ export function TicTacToeLobby({
         isHost={isHost}
         startBusy={startBusy}
         onStartGame={(opts) =>
-          onStartGame({ ...opts, difficulty })
+          onStartGame({ ...opts, difficulty: opts?.difficulty ?? 'medium' })
         }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}

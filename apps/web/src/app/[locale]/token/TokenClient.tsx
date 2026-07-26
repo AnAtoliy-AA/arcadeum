@@ -31,7 +31,11 @@ function formatSupply(s: string): string {
 }
 
 function formatDate(ts: number): string {
-  return new Date(ts * 1000).toLocaleDateString('en-US', {
+  const date = new Date(ts > 1e12 ? ts : ts * 1000);
+  if (isNaN(date.getTime())) {
+    return 'Unknown';
+  }
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -163,66 +167,125 @@ export default function TokenClient({ mintAddress = '' }: Props) {
 
       <MarketCapSparkline />
 
-      {(metadata?.marketCapUsd != null ||
-        metadata?.totalSupply ||
-        metadata?.createdAt) && (
-        <div className={styles.stats}>
-          {metadata?.marketCapUsd != null && (
-            <div className={styles.stat}>
-              <span className={styles.statIcon}>📊</span>
-              <span className={styles.statLabel}>
-                {t('wallet.tokenPage.marketCap')}{' '}
-                <button
-                  onClick={handleRefresh}
-                  disabled={refreshing}
-                  className={styles.refreshBtn}
-                  title="Refresh data"
+      <div className={styles.stats}>
+        {metadata?.marketCapUsd != null && (
+          <div className={styles.stat}>
+            <span className={styles.statIcon}>📊</span>
+            <span className={styles.statLabel}>
+              {t('wallet.tokenPage.marketCap')}{' '}
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className={styles.refreshBtn}
+                title="Refresh data"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={refreshing ? styles.spinning : undefined}
                 >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={refreshing ? styles.spinning : undefined}
-                  >
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                    <polyline points="21 3 21 9 15 9" />
-                  </svg>
-                </button>
-              </span>
-              <span className={styles.statValue}>
-                {formatNumber(metadata.marketCapUsd)}
-              </span>
-            </div>
-          )}
-          {metadata?.totalSupply && (
-            <div className={styles.stat}>
-              <span className={styles.statIcon}>🪙</span>
-              <span className={styles.statLabel}>
-                {t('wallet.tokenPage.totalSupply')}
-              </span>
-              <span className={styles.statValue}>
-                {formatSupply(metadata.totalSupply)}
-              </span>
-            </div>
-          )}
-          {metadata?.createdAt && (
-            <div className={styles.stat}>
-              <span className={styles.statIcon}>📅</span>
-              <span className={styles.statLabel}>
-                {t('wallet.tokenPage.created')}
-              </span>
-              <span className={styles.statValue}>
-                {formatDate(metadata.createdAt)}
-              </span>
-            </div>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  <polyline points="21 3 21 9 15 9" />
+                </svg>
+              </button>
+            </span>
+            <span className={styles.statValue}>
+              {formatNumber(metadata.marketCapUsd)}
+            </span>
+          </div>
+        )}
+        {metadata?.totalSupply && (
+          <div className={styles.stat}>
+            <span className={styles.statIcon}>🪙</span>
+            <span className={styles.statLabel}>
+              {t('wallet.tokenPage.totalSupply')}
+            </span>
+            <span className={styles.statValue}>
+              {formatSupply(metadata.totalSupply)}
+            </span>
+          </div>
+        )}
+        {metadata?.createdAt && (
+          <div className={styles.stat}>
+            <span className={styles.statIcon}>📅</span>
+            <span className={styles.statLabel}>
+              {t('wallet.tokenPage.created')}
+            </span>
+            <span className={styles.statValue}>
+              {formatDate(metadata.createdAt)}
+            </span>
+          </div>
+        )}
+        <div className={`${styles.stat} ${styles.statTreasury}`}>
+          <span
+            className={styles.tooltip}
+            title={t('wallet.tokenPage.treasuryTooltip')}
+          >
+            ?
+          </span>
+          <span className={styles.statIcon}>🏦</span>
+          <span className={styles.statLabel}>
+            {t('wallet.tokenPage.treasuryArc')}
+          </span>
+          <span className={styles.statValue}>
+            {metadata?.treasuryBalance?.arcadeum != null
+              ? metadata.treasuryBalance.arcadeum >= 1_000_000
+                ? `${(metadata.treasuryBalance.arcadeum / 1_000_000).toFixed(2)}M`
+                : metadata.treasuryBalance.arcadeum >= 1_000
+                  ? `${(metadata.treasuryBalance.arcadeum / 1_000).toFixed(1)}K`
+                  : metadata.treasuryBalance.arcadeum.toLocaleString(
+                      undefined,
+                      { maximumFractionDigits: 2 },
+                    )
+              : '—'}
+          </span>
+          {metadata?.treasuryBalance?.arcadeum != null && (
+            <span className={styles.statSub}>
+              {metadata.treasuryBalance.arcadeum.toLocaleString(undefined, {
+                maximumFractionDigits: 0,
+              })}{' '}
+              ARC
+            </span>
           )}
         </div>
-      )}
+        {(metadata?.treasuryBalance?.sol ?? 0) > 1 && (
+          <div className={`${styles.stat} ${styles.statTreasury}`}>
+            <span
+              className={styles.tooltip}
+              title={t('wallet.tokenPage.treasuryTooltip')}
+            >
+              ?
+            </span>
+            <span className={styles.statIcon}>◎</span>
+            <span className={styles.statLabel}>
+              {t('wallet.tokenPage.treasurySol')}
+            </span>
+            <span className={styles.statValue}>
+              {metadata?.treasuryBalance?.sol != null
+                ? metadata.treasuryBalance.sol >= 1_000
+                  ? `${(metadata.treasuryBalance.sol / 1_000).toFixed(1)}K`
+                  : metadata.treasuryBalance.sol < 0.01
+                    ? `${metadata.treasuryBalance.sol.toFixed(4)}`
+                    : `${metadata.treasuryBalance.sol.toFixed(2)}`
+                : '—'}
+            </span>
+            {metadata?.treasuryBalance?.sol != null && (
+              <span className={styles.statSub}>
+                {metadata.treasuryBalance.sol.toLocaleString(undefined, {
+                  maximumFractionDigits: 4,
+                })}{' '}
+                SOL
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>

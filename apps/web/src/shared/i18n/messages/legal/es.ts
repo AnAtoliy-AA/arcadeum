@@ -96,15 +96,55 @@ export const es: LegalMessages = {
       crypto: {
         title: '11. Criptomonedas y Activos Digitales',
         content:
-          'Los tokens ARCADEUM y los puntos virtuales son activos de utilidad destinados exclusivamente para el entretenimiento dentro de nuestra plataforma de juegos basados en habilidades. No tienen valor monetario inherente fuera de la plataforma. Los usuarios son los únicos responsables del cumplimiento de las obligaciones fiscales y regulatorias de criptomonedas en su localidad. Arcadeum no garantiza el valor de ningún activo digital y los usuarios no deben tratarlos como inversiones.',
+          'Los tokens ARCADEUM y los puntos virtuales son activos de utilidad destinados exclusivamente para el entretenimiento dentro de nuestra plataforma de juegos basados en habilidades. No tienen valor monetario inherente fuera de la plataforma. Los usuarios son los únicos responsables del cumplimiento de las obligaciones fiscales y regulatorias de criptomonedas en su localidad. Arcadeum Games no garantiza el valor de ningún activo digital y los usuarios no deben tratarlos como inversiones.',
+      },
+      arcPayments: {
+        title: '12. Pagos con Tokens ARC',
+        content:
+          'Arcadeum Games acepta tokens ARCADEUM (ARC) en la blockchain Solana como pago por bienes y servicios virtuales. Al usar pagos con ARC, usted reconoce y acepta lo siguiente:',
+        items: [
+          'Los precios de los tokens ARC se calculan dinámicamente en base al tipo de cambio actual en USD y pueden fluctuar según las condiciones del mercado.',
+          'El porcentaje de descuento aplicado a los pagos con ARC es establecido por Arcadeum Games y puede ser modificado en cualquier momento sin previo aviso.',
+          'Todas las transacciones ARC son irreversibles una vez confirmadas en la blockchain Solana. Arcadeum Games no puede revertir, reembolsar o cancelar pagos ARC confirmados.',
+          'Usted es el único responsable de verificar la exactitud de la dirección de la billetera del destinatario y el monto de la transacción antes de enviar tokens ARC.',
+          'Arcadeum Games no es responsable de los fondos enviados a direcciones incorrectas o perdidos debido a errores de billetera.',
+          'La dirección de la billetera del tesoro para pagos ARC se muestra durante el pago. Siempre verifique que esta dirección coincida con la que se muestra en el sitio oficial de Arcadeum Games.',
+          'Los tokens ARC utilizados para pagos se convierten en moneda virtual de la plataforma (gems) al tipo de cambio actual. Las gems convertidas no tienen valor en efectivo y no pueden convertirse de nuevo a ARC o a cualquier moneda fiduciaria.',
+          'Los usuarios son responsables de todas las tarifas de red (gas) asociadas con las transacciones ARC.',
+          'Arcadeum Games se reserva el derecho de suspender o desactivar los pagos ARC en cualquier momento por mantenimiento, seguridad o razones regulatorias.',
+        ],
+      },
+      noCashout: {
+        title: '13. Sin Retiro de Efectivo',
+        content:
+          'Los tokens ARC, gems, monedas y todas las demás monedas virtuales y artículos de la plataforma Arcadeum Games no tienen valor monetario real y no pueden intercambiarse, convertirse o canjearse por moneda fiduciaria (USD, EUR, etc.), criptomonedas o bienes o servicios fuera de la plataforma. Arcadeum Games no ofrece, facilita ni admite ningún retiro, retiro o conversión de activos internos a valor externo. Cualquier intento de vender, intercambiar o transferir activos virtuales fuera de Arcadeum Games estrictamente prohibido y puede resultar en la terminación de la cuenta.',
+      },
+      notSecurity: {
+        title: '14. No es un Valor Mobiliario',
+        content:
+          'Los tokens ARC y todas las monedas virtuales de la plataforma Arcadeum Games son tokens de utilidad diseñados únicamente para su uso dentro de la plataforma. No son valores mobiliarios, acciones, bonos, contratos de inversión o instrumentos financieros de ningún tipo. Nada en la plataforma Arcadeum Games constituye una oferta de venta o una solicitud de oferta para comprar valores mobiliarios. Arcadeum Games no proporciona asesoramiento de inversión y la compra de tokens ARC no debe considerarse como una inversión. Los precios pasados de los tokens no garantizan el rendimiento futuro.',
+      },
+      taxes: {
+        title: '15. Obligaciones Fiscales',
+        content:
+          'Los usuarios son los únicos responsables de comprender y cumplir con todas las obligaciones fiscales aplicables en su jurisdicción. Arcadeum Games no proporciona asesoramiento fiscal, legal o contable. La siguiente información es solo general y puede no reflejar su situación específica:',
+        items: [
+          'Las transacciones con monedas virtuales pueden estar sujetas a impuesto sobre la renta, impuesto sobre ganancias de capital u otros impuestos en su jurisdicción.',
+          'Los usuarios deben reportar cualquier evento imponible relacionado con su uso de Arcadeum Games a las autoridades fiscales correspondientes.',
+          'Arcadeum Games puede estar obligado a proporcionar reportes fiscales o retener impuestos en ciertas jurisdicciones.',
+          'Las leyes fiscales varían por país y cambian frecuentemente. Consulte a un profesional calificado en impuestos para asesoramiento específico a su situación.',
+          'Arcadeum Games no es responsable de ninguna obligación fiscal que surja de su uso de la plataforma.',
+        ],
+        important:
+          'IMPORTANTE: Las obligaciones fiscales varían según la jurisdicción. Algunos países gravan las transacciones con monedas virtuales, otros no. Usted es el único responsable de comprender y cumplir con sus leyes fiscales locales.',
       },
       governingLaw: {
-        title: '12. Ley Aplicable',
+        title: '16. Ley Aplicable',
         content:
           'Estos Términos se rigen por las leyes de Georgia. Cualquier disputa se resolverá en los tribunales de Georgia, de acuerdo con la Ley de Comercio Electrónico de Georgia.',
       },
       contact: {
-        title: '13. Contáctenos',
+        title: '17. Contáctenos',
         content:
           'Si tiene preguntas sobre estos Términos, contáctenos a través de nuestra página de soporte o envíenos un correo a {{email}}.',
       },

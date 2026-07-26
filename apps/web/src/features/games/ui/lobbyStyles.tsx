@@ -178,6 +178,7 @@ export const LobbyStickyStart = styled(YStack, {
   alignItems: 'center',
   paddingVertical: '$3',
   paddingHorizontal: '$5',
+  overflow: 'hidden',
   $sm: {
     position: 'fixed' as unknown as 'absolute',
     left: 0,
@@ -193,6 +194,7 @@ export const LobbyStickyStart = styled(YStack, {
     borderColor: 'rgba(255, 255, 255, 0.12)',
     zIndex: 150,
     alignItems: 'center',
+    overflow: 'hidden',
   },
 } as unknown as Record<string, unknown>);
 

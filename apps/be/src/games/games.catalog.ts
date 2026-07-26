@@ -232,6 +232,31 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'cat_dash_v1',
+    startMode: 'immediate',
+    variants: ['neon', 'village', 'space', 'nature'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically roll the dice if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+      {
+        ruleId: 'abilities',
+        label: 'Cat abilities',
+        description:
+          'Each cat has unique abilities that can be used during the race.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

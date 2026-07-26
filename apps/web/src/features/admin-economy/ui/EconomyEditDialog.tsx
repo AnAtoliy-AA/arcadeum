@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import type { EconomyKey } from '../server/economy.types';
+import { createPortal } from 'react-dom';
+import { type EconomyKey, BOOLEAN_ECONOMY_KEYS } from '../server/economy.types';
 import {
   setEconomyValueAction,
   resetEconomyValueAction,
@@ -20,6 +21,8 @@ interface EconomyEditDialogProps {
     save: string;
     cancel: string;
     reset: string;
+    enable: string;
+    disable: string;
     errorInvalidValue: string;
     errorGeneric: string;
     errorForbidden: string;
@@ -28,6 +31,50 @@ interface EconomyEditDialogProps {
     toastReset: string;
   };
   onSuccess?: () => void;
+}
+
+function saveValue(
+  economyKey: EconomyKey,
+  value: number,
+  labels: EconomyEditDialogProps['labels'],
+  setValidationError: (v: string | null) => void,
+  setServerError: (v: string | null) => void,
+  setSuccessMessage: (v: string | null) => void,
+  startTransition: (cb: () => void) => void,
+  onSuccess?: () => void,
+  onClose?: () => void,
+) {
+  setValidationError(null);
+  setServerError(null);
+  setSuccessMessage(null);
+
+  startTransition(async () => {
+    const result = await setEconomyValueAction({
+      key: economyKey,
+      value,
+    });
+
+    if (result.ok) {
+      const msg = labels.toastSaved
+        .replace('{{key}}', economyKey)
+        .replace('{{value}}', String(value));
+      setSuccessMessage(msg);
+      onSuccess?.();
+      setTimeout(() => {
+        onClose?.();
+      }, 1200);
+    } else {
+      if (result.error === 'validation') {
+        setValidationError(labels.errorInvalidValue);
+      } else if (result.error === 'forbidden') {
+        setServerError(labels.errorForbidden);
+      } else if (result.error === 'not_found') {
+        setServerError(labels.errorNotFound);
+      } else {
+        setServerError(labels.errorGeneric);
+      }
+    }
+  });
 }
 
 export function EconomyEditDialog({
@@ -45,6 +92,9 @@ export function EconomyEditDialog({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const isBoolean = BOOLEAN_ECONOMY_KEYS.has(economyKey);
+  const isEnabled = currentValue === 1;
+
   if (!open) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,40 +106,38 @@ export function EconomyEditDialog({
     const parsed = parseInt(inputValue, 10);
     if (
       !Number.isInteger(parsed) ||
-      parsed < 1 ||
+      parsed < 0 ||
       String(parsed) !== inputValue.trim()
     ) {
       setValidationError(labels.errorInvalidValue);
       return;
     }
 
-    startTransition(async () => {
-      const result = await setEconomyValueAction({
-        key: economyKey,
-        value: parsed,
-      });
+    saveValue(
+      economyKey,
+      parsed,
+      labels,
+      setValidationError,
+      setServerError,
+      setSuccessMessage,
+      startTransition,
+      onSuccess,
+      onClose,
+    );
+  };
 
-      if (result.ok) {
-        const msg = labels.toastSaved
-          .replace('{{key}}', economyKey)
-          .replace('{{value}}', String(parsed));
-        setSuccessMessage(msg);
-        onSuccess?.();
-        setTimeout(() => {
-          onClose();
-        }, 1200);
-      } else {
-        if (result.error === 'validation') {
-          setValidationError(labels.errorInvalidValue);
-        } else if (result.error === 'forbidden') {
-          setServerError(labels.errorForbidden);
-        } else if (result.error === 'not_found') {
-          setServerError(labels.errorNotFound);
-        } else {
-          setServerError(labels.errorGeneric);
-        }
-      }
-    });
+  const handleToggle = (value: 0 | 1) => {
+    saveValue(
+      economyKey,
+      value,
+      labels,
+      setValidationError,
+      setServerError,
+      setSuccessMessage,
+      startTransition,
+      onSuccess,
+      onClose,
+    );
   };
 
   const handleReset = () => {
@@ -121,7 +169,7 @@ export function EconomyEditDialog({
 
   const dialogTitle = labels.title.replace('{{key}}', economyKey);
 
-  return (
+  return createPortal(
     <div
       data-testid="economy-edit-dialog"
       style={{
@@ -162,135 +210,211 @@ export function EconomyEditDialog({
           style={{ marginBottom: '16px', fontSize: '13px', color: '#71717a' }}
         >
           <span>{labels.currentLabel}: </span>
-          <strong style={{ color: '#a1a1aa' }}>{currentValue}</strong>
+          <strong
+            style={{
+              color: isBoolean
+                ? isEnabled
+                  ? '#22c55e'
+                  : '#ef4444'
+                : '#a1a1aa',
+            }}
+          >
+            {isBoolean
+              ? isEnabled
+                ? labels.enable
+                : labels.disable
+              : currentValue}
+          </strong>
           <span style={{ marginLeft: '12px' }}>Default: </span>
-          <strong style={{ color: '#a1a1aa' }}>{defaultValue}</strong>
+          <strong style={{ color: '#a1a1aa' }}>
+            {isBoolean
+              ? defaultValue === 1
+                ? labels.enable
+                : labels.disable
+              : defaultValue}
+          </strong>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
-            <label
-              htmlFor="economy-value-input"
+        {isBoolean ? (
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <button
+              type="button"
+              data-testid="economy-toggle-enable"
+              disabled={isPending || isEnabled}
+              onClick={() => handleToggle(1)}
               style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: '#a1a1aa',
-                marginBottom: '6px',
-              }}
-            >
-              {labels.newValueLabel}
-            </label>
-            <input
-              id="economy-value-input"
-              data-testid="economy-value-input"
-              type="number"
-              min="1"
-              step="1"
-              value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                setValidationError(null);
-              }}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: validationError
-                  ? '1px solid #ef4444'
+                flex: 1,
+                padding: '12px',
+                borderRadius: '8px',
+                border: isEnabled
+                  ? '2px solid #22c55e'
                   : '1px solid rgba(255,255,255,0.12)',
-                background: '#09090b',
-                color: '#e4e4e7',
+                background: isEnabled ? 'rgba(34,197,94,0.15)' : 'transparent',
+                color: isEnabled ? '#22c55e' : '#a1a1aa',
+                cursor: isPending || isEnabled ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
-                boxSizing: 'border-box',
+                fontWeight: 600,
               }}
-            />
-            {validationError && (
-              <div
-                data-testid="economy-validation-error"
-                style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px' }}
-              >
-                {validationError}
-              </div>
-            )}
+            >
+              {labels.enable}
+            </button>
+            <button
+              type="button"
+              data-testid="economy-toggle-disable"
+              disabled={isPending || !isEnabled}
+              onClick={() => handleToggle(0)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                borderRadius: '8px',
+                border: !isEnabled
+                  ? '2px solid #ef4444'
+                  : '1px solid rgba(255,255,255,0.12)',
+                background: !isEnabled ? 'rgba(239,68,68,0.15)' : 'transparent',
+                color: !isEnabled ? '#ef4444' : '#a1a1aa',
+                cursor: isPending || !isEnabled ? 'not-allowed' : 'pointer',
+                fontSize: '14px',
+                fontWeight: 600,
+              }}
+            >
+              {labels.disable}
+            </button>
           </div>
-
-          {serverError && (
-            <div
-              data-testid="economy-server-error"
-              style={{
-                fontSize: '13px',
-                color: '#ef4444',
-                marginBottom: '12px',
-                padding: '8px 12px',
-                background: 'rgba(239,68,68,0.08)',
-                borderRadius: '6px',
-              }}
-            >
-              {serverError}
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '16px' }}>
+              <label
+                htmlFor="economy-value-input"
+                style={{
+                  display: 'block',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#a1a1aa',
+                  marginBottom: '6px',
+                }}
+              >
+                {labels.newValueLabel}
+              </label>
+              <input
+                id="economy-value-input"
+                data-testid="economy-value-input"
+                type="number"
+                min="0"
+                step="1"
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setValidationError(null);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: validationError
+                    ? '1px solid #ef4444'
+                    : '1px solid rgba(255,255,255,0.12)',
+                  background: '#09090b',
+                  color: '#e4e4e7',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                }}
+              />
             </div>
-          )}
+          </form>
+        )}
 
-          {successMessage && (
-            <div
-              data-testid="economy-success-message"
-              style={{
-                fontSize: '13px',
-                color: '#22c55e',
-                marginBottom: '12px',
-                padding: '8px 12px',
-                background: 'rgba(34,197,94,0.08)',
-                borderRadius: '6px',
-              }}
-            >
-              {successMessage}
-            </div>
-          )}
-
+        {validationError && !isBoolean && (
           <div
-            style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}
+            data-testid="economy-validation-error"
+            style={{
+              fontSize: '12px',
+              color: '#ef4444',
+              marginTop: '4px',
+              marginBottom: '12px',
+            }}
           >
-            <button
-              type="button"
-              data-testid="economy-reset-btn"
-              onClick={handleReset}
-              disabled={isPending}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '6px',
-                border: '1px solid rgba(239,68,68,0.3)',
-                background: 'transparent',
-                color: '#ef4444',
-                cursor: isPending ? 'not-allowed' : 'pointer',
-                fontSize: '13px',
-                marginRight: 'auto',
-              }}
-            >
-              {labels.reset}
-            </button>
+            {validationError}
+          </div>
+        )}
 
-            <button
-              type="button"
-              data-testid="economy-cancel-btn"
-              onClick={onClose}
-              disabled={isPending}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.12)',
-                background: 'transparent',
-                color: '#a1a1aa',
-                cursor: isPending ? 'not-allowed' : 'pointer',
-                fontSize: '13px',
-              }}
-            >
-              {labels.cancel}
-            </button>
+        {serverError && (
+          <div
+            data-testid="economy-server-error"
+            style={{
+              fontSize: '13px',
+              color: '#ef4444',
+              marginBottom: '12px',
+              padding: '8px 12px',
+              background: 'rgba(239,68,68,0.08)',
+              borderRadius: '6px',
+            }}
+          >
+            {serverError}
+          </div>
+        )}
 
+        {successMessage && (
+          <div
+            data-testid="economy-success-message"
+            style={{
+              fontSize: '13px',
+              color: '#22c55e',
+              marginBottom: '12px',
+              padding: '8px 12px',
+              background: 'rgba(34,197,94,0.08)',
+              borderRadius: '6px',
+            }}
+          >
+            {successMessage}
+          </div>
+        )}
+
+        <div
+          style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}
+        >
+          <button
+            type="button"
+            data-testid="economy-reset-btn"
+            onClick={handleReset}
+            disabled={isPending}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid rgba(239,68,68,0.3)',
+              background: 'transparent',
+              color: '#ef4444',
+              cursor: isPending ? 'not-allowed' : 'pointer',
+              fontSize: '13px',
+              marginRight: 'auto',
+            }}
+          >
+            {labels.reset}
+          </button>
+
+          <button
+            type="button"
+            data-testid="economy-cancel-btn"
+            onClick={onClose}
+            disabled={isPending}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'transparent',
+              color: '#a1a1aa',
+              cursor: isPending ? 'not-allowed' : 'pointer',
+              fontSize: '13px',
+            }}
+          >
+            {labels.cancel}
+          </button>
+
+          {!isBoolean && (
             <button
               type="submit"
               data-testid="economy-save-btn"
               disabled={isPending}
+              onClick={handleSubmit}
               style={{
                 padding: '8px 16px',
                 borderRadius: '6px',
@@ -304,9 +428,10 @@ export function EconomyEditDialog({
             >
               {isPending ? '…' : labels.save}
             </button>
-          </div>
-        </form>
+          )}
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

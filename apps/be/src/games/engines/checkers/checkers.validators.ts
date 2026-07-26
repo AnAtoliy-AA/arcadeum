@@ -1,4 +1,4 @@
-import { GAME_PHASE } from './checkers.constants';
+import { GAME_PHASE, RULE_VARIANT_CONFIGS } from './checkers.constants';
 import type { CheckersState, MovePayload } from './checkers.types';
 import {
   applyMove,
@@ -41,8 +41,12 @@ export function validateMovePiece(
   }
 
   const steps = payload.steps;
+  const size = state.board.length;
+  const ruleConfig = RULE_VARIANT_CONFIGS[state.options.ruleVariant];
+  const backwardCaptures =
+    state.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
+  const flyingKings = ruleConfig.flyingKings;
 
-  // Validate multi-jump chain connectivity
   for (let i = 1; i < steps.length; i++) {
     const prev = steps[i - 1];
     const curr = steps[i];
@@ -51,17 +55,17 @@ export function validateMovePiece(
     }
   }
 
-  // Check if this chain is all captures (multi-jump must be all captures)
   const isCaptureChain = steps.every(
     (s) => s.capturedRow !== undefined && s.capturedCol !== undefined,
   );
 
-  // Forced captures: if captures are available, must capture
   if (state.options.forcedCaptures) {
     const availableCaptures = findAllCapturesForPlayer(
       state.board,
       userId,
       playerColor,
+      backwardCaptures,
+      flyingKings,
     );
 
     if (availableCaptures.length > 0 && !isCaptureChain) {
@@ -69,11 +73,10 @@ export function validateMovePiece(
     }
   }
 
-  // Validate first step
   const firstStep = steps[0];
   if (
-    !inBounds(firstStep.fromRow, firstStep.fromCol) ||
-    !inBounds(firstStep.toRow, firstStep.toCol)
+    !inBounds(firstStep.fromRow, firstStep.fromCol, size) ||
+    !inBounds(firstStep.toRow, firstStep.toCol, size)
   ) {
     return { ok: false, error: 'Move out of bounds' };
   }
@@ -87,7 +90,6 @@ export function validateMovePiece(
     return { ok: false, error: 'That is not your piece' };
   }
 
-  // Simulate the move and check each step
   let currentBoard = state.board;
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
@@ -95,6 +97,8 @@ export function validateMovePiece(
       currentBoard,
       userId,
       playerColor,
+      backwardCaptures,
+      flyingKings,
     );
 
     const validStep = availableMoves.find(
@@ -116,8 +120,7 @@ export function validateMovePiece(
     currentBoard = applyMove(currentBoard, [validStep]);
   }
 
-  // If multi-jump, verify the chain ends correctly (can't continue jumping)
-  if (isCaptureChain && steps.length > 1) {
+  if (isCaptureChain) {
     const lastStep = steps[steps.length - 1];
     const lastPiece = currentBoard[lastStep.toRow][lastStep.toCol];
     if (lastPiece) {
@@ -127,6 +130,8 @@ export function validateMovePiece(
         lastStep.toCol,
         userId,
         playerColor,
+        backwardCaptures,
+        flyingKings,
       );
       if (furtherCaptures.length > 0) {
         return {

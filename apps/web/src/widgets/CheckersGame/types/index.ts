@@ -15,6 +15,41 @@ export const CHECKERS_VARIANT_IDS = [
 ] as const;
 export type CheckersVariant = (typeof CHECKERS_VARIANT_IDS)[number];
 
+export const RULE_VARIANT_IDS = [
+  'american',
+  'international',
+  'russian',
+] as const;
+export type RuleVariant = (typeof RULE_VARIANT_IDS)[number];
+
+export interface RuleVariantConfig {
+  boardSize: number;
+  piecesPerPlayer: number;
+  flyingKings: boolean;
+  backwardCapturesForMen: boolean;
+}
+
+export const RULE_VARIANT_CONFIGS: Record<RuleVariant, RuleVariantConfig> = {
+  american: {
+    boardSize: 8,
+    piecesPerPlayer: 12,
+    flyingKings: false,
+    backwardCapturesForMen: false,
+  },
+  international: {
+    boardSize: 10,
+    piecesPerPlayer: 20,
+    flyingKings: true,
+    backwardCapturesForMen: true,
+  },
+  russian: {
+    boardSize: 8,
+    piecesPerPlayer: 8,
+    flyingKings: true,
+    backwardCapturesForMen: false,
+  },
+};
+
 export const GAME_PHASE = {
   LOBBY: 'lobby',
   PLAYING: 'playing',
@@ -50,7 +85,9 @@ export interface MoveStep {
 
 export interface CheckersOptions {
   variant: CheckersVariant;
+  ruleVariant: RuleVariant;
   forcedCaptures: boolean;
+  backwardCaptures: boolean;
 }
 
 export interface CheckersLogEntry {

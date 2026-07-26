@@ -68,6 +68,44 @@ export const adminEconomyFr = {
       description:
         'Gemmes attribuées en plus des pièces au Jour 7 de la série.',
     },
+    shop_allow_gems: {
+      name: 'Boutique : autoriser les gemmes',
+      description: "Autoriser l'utilisation des gemmes dans la boutique.",
+    },
+    shop_allow_arcadeum: {
+      name: 'Boutique : autoriser Arcadeum',
+      description: "Autoriser l'utilisation d'Arcadeum dans la boutique.",
+    },
+    gems_allow_arcadeum: {
+      name: 'Gemmes : autoriser Arcadeum',
+      description: 'Autoriser la conversion des gemmes en Arcadeum.',
+    },
+    gem_to_usd_rate: {
+      name: 'Taux gemmes-USD',
+      description: "Taux de conversion d'une gemme en dollars américains.",
+    },
+    arcadeum_discount_percent: {
+      name: 'Réduction Arcadeum (%)',
+      description: "Pourcentage de réduction lors de l'achat avec Arcadeum.",
+    },
+    geo_block_enabled: {
+      name: 'Blocage géographique',
+      description: "Activer le blocage d'accès par géolocalisation.",
+    },
+    vpn_detection_enabled: {
+      name: 'Détection VPN',
+      description: 'Activer la détection et le blocage des connexions VPN.',
+    },
+    signup_reward_coins: {
+      name: "Récompense d'inscription : pièces",
+      description:
+        'Nombre de pièces attribuées à un nouvel utilisateur lors de son inscription.',
+    },
+    signup_reward_gems: {
+      name: "Récompense d'inscription : gemmes",
+      description:
+        'Nombre de gemmes attribuées à un nouvel utilisateur lors de son inscription.',
+    },
   },
   table: {
     key: 'Paramètre',
@@ -94,6 +132,9 @@ export const adminEconomyFr = {
     newValueLabel: 'Nouvelle valeur',
     save: 'Enregistrer',
     cancel: 'Annuler',
+    reset: 'Réinitialiser',
+    enable: 'Activer',
+    disable: 'Désactiver',
   },
   auditDrawer: {
     title: 'Historique de {{key}}',
@@ -105,7 +146,7 @@ export const adminEconomyFr = {
   },
   errors: {
     invalidValue:
-      'La valeur doit être un entier positif inférieur à 1 000 000.',
+      'La valeur doit être un entier non négatif inférieur à 1 000 000.',
     keyNotFound: 'Paramètre inconnu.',
     forbidden: "Vous n'avez pas la permission.",
     generic: 'Impossible de sauvegarder. Veuillez réessayer.',

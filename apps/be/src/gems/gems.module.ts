@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
+import { SolanaModule } from '../solana/solana.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { GemPackage, GemPackageSchema } from './schemas/gem-package.schema';
@@ -31,6 +32,7 @@ import { GemsBootstrap } from './lib/gems-bootstrap';
     WalletModule,
     ConfigModule,
     EconomyModule,
+    SolanaModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: GemPackage.name, schema: GemPackageSchema },

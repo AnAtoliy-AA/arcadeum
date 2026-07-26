@@ -5,6 +5,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n/useLanguage';
+import { formatRelative } from '@/shared/i18n/formatters';
 import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
@@ -25,7 +27,6 @@ import {
   MetaIcon,
   MetaLabel,
   MetaValue,
-  MetaListContainer,
 } from './room-card.styles';
 import { LinkButton } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
@@ -33,7 +34,7 @@ import { XStack, YStack } from 'tamagui';
 
 import { useRoutes } from '@/shared/config/useRoutes';
 
-const MAX_VISIBLE_PARTICIPANTS = 4;
+const MAX_VISIBLE_PARTICIPANTS = 8;
 
 interface RoomCardComponentProps {
   room: GameRoomSummary;
@@ -42,6 +43,7 @@ interface RoomCardComponentProps {
 
 export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
 
@@ -86,112 +88,197 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
 
   const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
 
+  const createdAgo = useMemo(
+    () => formatRelative(room.createdAt, locale || 'en'),
+    [room.createdAt, locale],
+  );
+
   return (
     <StyledRoomCard
-      viewMode={viewMode}
       status={isCompleted ? 'completed' : undefined}
-      className={`${cardStyles.roomCard} ${isCompleted ? cardStyles.completed : ''}`}
+      hoverStyle={
+        viewMode === 'list'
+          ? {
+              scale: 1,
+              y: -2,
+              borderColor: 'rgba(122, 215, 255, 0.4)',
+              backgroundColor: '$backgroundHover',
+            }
+          : undefined
+      }
+      className={`${cardStyles.roomCard} ${viewMode === 'list' ? cardStyles.listView : ''} ${isCompleted ? cardStyles.completed : ''}`}
       data-testid="room-card"
     >
-      <StyledRoomHeader viewMode={viewMode}>
-        <YStack gap="$1" flex={1} minWidth={0}>
-          <h3 className={cardStyles.roomTitle} title={room.name}>
-            {room.name}
-          </h3>
-          <StyledGameName
-            className={variantGradient ? 'text-gradient' : undefined}
-            style={variantGradient ? { backgroundImage: variantGradient } : {}}
-          >
-            {gameName}
-          </StyledGameName>
-        </YStack>
+      <div
+        style={
+          viewMode === 'list'
+            ? {
+                display: 'grid',
+                gridTemplateColumns: '1fr 110px 120px 80px 80px 120px 200px',
+                alignItems: 'center',
+                gap: '0 1rem',
+              }
+            : undefined
+        }
+      >
+        <StyledRoomHeader className={cardStyles.roomHeader}>
+          <YStack gap="$1" minWidth={0}>
+            <h3 className={cardStyles.roomTitle} title={room.name}>
+              {room.name}
+            </h3>
+            <StyledGameName
+              className={variantGradient ? 'text-gradient' : undefined}
+              style={
+                variantGradient ? { backgroundImage: variantGradient } : {}
+              }
+            >
+              {gameName}
+            </StyledGameName>
+          </YStack>
 
-        <XStack gap="$2" alignItems="center">
           {room.gameOptions?.idleTimerEnabled && (
             <FastBadge>
               <BadgeIcon>⚡</BadgeIcon>
               <FastBadgeText>{t('games.rooms.fastRoom')}</FastBadgeText>
             </FastBadge>
           )}
-          {viewMode === 'list' && (
+        </StyledRoomHeader>
+
+        {viewMode === 'list' && (
+          <XStack alignItems="center" justifyContent="center">
             <StyledStatusBadge status={room.status}>
               {t(`games.rooms.status.${room.status}`) || room.status}
             </StyledStatusBadge>
-          )}
-        </XStack>
-      </StyledRoomHeader>
+          </XStack>
+        )}
 
-      {viewMode === 'grid' ? (
-        <RoomMeta>
-          <MetaGrid>
-            <MetaRow>
-              <MetaIcon>👑</MetaIcon>
-              <YStack>
-                <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-                <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-              </YStack>
-            </MetaRow>
-            <MetaRow>
-              <MetaIcon>👥</MetaIcon>
-              <YStack>
-                <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-                <MetaValue>
-                  {room.maxPlayers
-                    ? `${room.playerCount}/${room.maxPlayers}`
-                    : `${room.playerCount}`}
-                </MetaValue>
-              </YStack>
-            </MetaRow>
-            <MetaRow>
-              <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
-              <YStack>
-                <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
-                <MetaValue>
-                  {room.visibility === 'private'
-                    ? t('games.rooms.visibility.private')
-                    : t('games.rooms.visibility.public')}
-                  {room.hasPassword ? ' 🔑' : ''}
-                </MetaValue>
-              </YStack>
-            </MetaRow>
-            <MetaRow>
-              <MetaIcon>⏱️</MetaIcon>
-              <YStack>
-                <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-                <StyledStatusBadge status={room.status}>
-                  {t(`games.rooms.status.${room.status}`) || room.status}
-                </StyledStatusBadge>
-              </YStack>
-            </MetaRow>
-          </MetaGrid>
+        {viewMode === 'grid' ? (
+          <RoomMeta>
+            <MetaGrid>
+              <MetaRow>
+                <MetaIcon>👑</MetaIcon>
+                <YStack>
+                  <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
+                  <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+                </YStack>
+              </MetaRow>
+              <MetaRow>
+                <MetaIcon>👥</MetaIcon>
+                <YStack>
+                  <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
+                  <MetaValue>
+                    {room.maxPlayers
+                      ? `${room.playerCount}/${room.maxPlayers}`
+                      : `${room.playerCount}`}
+                  </MetaValue>
+                </YStack>
+              </MetaRow>
+              <MetaRow>
+                <MetaIcon>
+                  {room.visibility === 'private' ? '🔒' : '🌐'}
+                </MetaIcon>
+                <YStack>
+                  <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
+                  <MetaValue>
+                    {room.visibility === 'private'
+                      ? t('games.rooms.visibility.private')
+                      : t('games.rooms.visibility.public')}
+                    {room.hasPassword ? ' 🔑' : ''}
+                  </MetaValue>
+                </YStack>
+              </MetaRow>
+              <MetaRow>
+                <MetaIcon>⏱️</MetaIcon>
+                <YStack>
+                  <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
+                  <StyledStatusBadge status={room.status}>
+                    {t(`games.rooms.status.${room.status}`) || room.status}
+                  </StyledStatusBadge>
+                </YStack>
+              </MetaRow>
+            </MetaGrid>
 
-          {room.members && room.members.length > 0 && (
-            <YStack gap="$2">
-              <ParticipantsLabel>
-                {t('games.rooms.participants')}
-              </ParticipantsLabel>
-              <XStack className={cardStyles.participantAvatars}>
-                {room.members
-                  .slice(0, MAX_VISIBLE_PARTICIPANTS)
-                  .map((member) => (
-                    <div
-                      key={member.id}
-                      className={cardStyles.avatarOverlap}
-                      title={formatMemberLabel(member)}
-                    >
-                      <EquippedPlayerAvatar
-                        name={formatMemberLabel(member)}
-                        size="icon"
-                        equippedAvatarId={member.equippedAvatarId ?? null}
-                        equippedBadgeId={member.equippedBadgeId ?? null}
-                        equippedNameColorId={member.equippedNameColorId}
-                        equippedFrameId={member.equippedFrameId}
-                        equippedAuraId={member.equippedAuraId}
-                        equippedBannerId={member.equippedBannerId}
-                      />
+            {room.members && room.members.length > 0 && (
+              <YStack gap="$2">
+                <ParticipantsLabel>
+                  {t('games.rooms.participants')}
+                </ParticipantsLabel>
+                <XStack className={cardStyles.participantAvatars}>
+                  {room.members
+                    .slice(0, MAX_VISIBLE_PARTICIPANTS)
+                    .map((member) => (
+                      <div
+                        key={member.id}
+                        className={cardStyles.avatarOverlap}
+                        title={formatMemberLabel(member)}
+                      >
+                        <EquippedPlayerAvatar
+                          name={formatMemberLabel(member)}
+                          size="icon"
+                          equippedAvatarId={member.equippedAvatarId ?? null}
+                          equippedBadgeId={member.equippedBadgeId ?? null}
+                          equippedNameColorId={member.equippedNameColorId}
+                          equippedFrameId={member.equippedFrameId}
+                          equippedAuraId={member.equippedAuraId}
+                          equippedBannerId={member.equippedBannerId}
+                        />
+                      </div>
+                    ))}
+                  {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
+                    <div className={cardStyles.avatarOverlap}>
+                      <YStack
+                        width={32}
+                        height={32}
+                        borderRadius={16}
+                        backgroundColor="$backgroundFocus"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <MetaLabel
+                          style={{
+                            opacity: 1,
+                            fontSize: 10,
+                            fontWeight: '700',
+                          }}
+                        >
+                          +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
+                        </MetaLabel>
+                      </YStack>
                     </div>
-                  ))}
-                {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
+                  )}
+                </XStack>
+              </YStack>
+            )}
+          </RoomMeta>
+        ) : (
+          <>
+            <XStack
+              className={cardStyles.metaCol}
+              gap="$1.5"
+              alignItems="center"
+            >
+              {room.members
+                ?.slice(0, MAX_VISIBLE_PARTICIPANTS)
+                .map((member) => (
+                  <div
+                    key={member.id}
+                    className={cardStyles.avatarOverlap}
+                    title={formatMemberLabel(member)}
+                  >
+                    <EquippedPlayerAvatar
+                      name={formatMemberLabel(member)}
+                      size="icon"
+                      equippedAvatarId={member.equippedAvatarId ?? null}
+                      equippedBadgeId={member.equippedBadgeId ?? null}
+                      equippedNameColorId={member.equippedNameColorId}
+                      equippedFrameId={member.equippedFrameId}
+                      equippedAuraId={member.equippedAuraId}
+                      equippedBannerId={member.equippedBannerId}
+                    />
+                  </div>
+                ))}
+              {room.members &&
+                room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                   <div className={cardStyles.avatarOverlap}>
                     <YStack
                       width={32}
@@ -209,78 +296,67 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                     </YStack>
                   </div>
                 )}
-              </XStack>
-            </YStack>
-          )}
-        </RoomMeta>
-      ) : (
-        <MetaListContainer>
-          <MetaRow minWidth={150}>
-            <MetaIcon>👑</MetaIcon>
-            <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-          </MetaRow>
-          <MetaRow minWidth={80}>
-            <MetaIcon>👥</MetaIcon>
-            <MetaValue>
-              {room.maxPlayers
-                ? `${room.playerCount}/${room.maxPlayers}`
-                : room.playerCount}
-            </MetaValue>
-          </MetaRow>
-          <MetaRow minWidth={100}>
-            <MetaIcon>{room.visibility === 'private' ? '🔒' : '🌐'}</MetaIcon>
-            <MetaValue>
-              {room.visibility === 'private'
-                ? t('games.rooms.visibility.private')
-                : t('games.rooms.visibility.public')}
-              {room.hasPassword ? ' 🔑' : ''}
-            </MetaValue>
-          </MetaRow>
-          {room.members && room.members.length > 0 && (
-            <MetaRow minWidth={120}>
-              <MetaIcon>👤</MetaIcon>
-              <MetaValue>
-                {t('games.lounge.participantsCount', {
-                  count: room.members.length,
-                })}
-              </MetaValue>
+            </XStack>
+            <MetaRow className={cardStyles.metaCol}>
+              <YStack gap="$0.5">
+                <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
+                <MetaValue>
+                  {room.maxPlayers
+                    ? `${room.playerCount}/${room.maxPlayers}`
+                    : room.playerCount}
+                </MetaValue>
+              </YStack>
             </MetaRow>
-          )}
-        </MetaListContainer>
-      )}
+            <MetaRow className={cardStyles.metaCol}>
+              <YStack gap="$0.5">
+                <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
+                <MetaValue>
+                  {room.visibility === 'private'
+                    ? t('games.rooms.visibility.private')
+                    : t('games.rooms.visibility.public')}
+                  {room.hasPassword ? ' 🔑' : ''}
+                </MetaValue>
+              </YStack>
+            </MetaRow>
+            <MetaRow className={cardStyles.metaCol}>
+              <YStack gap="$0.5">
+                <MetaLabel>{t('games.rooms.createdLabel')}</MetaLabel>
+                <MetaValue>{createdAgo}</MetaValue>
+              </YStack>
+            </MetaRow>
+          </>
+        )}
 
-      <StyledRoomActions viewMode={viewMode}>
-        {!isCompleted &&
-          (room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
-            <LinkButton
-              href={routes.gameRoom(room.id)}
-              variant="primary"
-              size="md"
-              flex={viewMode === 'grid' ? 1 : 0}
-            >
-              {t('games.common.joinRoom')}
-            </LinkButton>
-          )}
-        {(isCompleted ||
-          room.status === GAME_ROOM_STATUS.LOBBY ||
-          !isParticipant) && (
-          <YStack
-            opacity={isCompleted ? 0.5 : 1}
-            flex={viewMode === 'grid' ? 1 : 0}
-          >
+        <StyledRoomActions className={cardStyles.actionsCol}>
+          {!isCompleted &&
+            (room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
+              <LinkButton
+                href={routes.gameRoom(room.id)}
+                variant="primary"
+                size="sm"
+                flex={viewMode === 'grid' ? 1 : 0}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {t('games.common.joinRoom')}
+              </LinkButton>
+            )}
+          {(isCompleted ||
+            room.status === GAME_ROOM_STATUS.LOBBY ||
+            !isParticipant) && (
             <LinkButton
               href={`${routes.gameRoom(room.id)}?mode=watch`}
               variant="secondary"
-              size="md"
-              flex={1}
+              size="sm"
+              style={{
+                whiteSpace: 'nowrap',
+                ...(isCompleted ? { opacity: 0.5 } : {}),
+              }}
             >
-              {isCompleted
-                ? t('games.common.watchResults')
-                : t('games.common.watchRoom')}
+              {t('games.common.watchRoom')}
             </LinkButton>
-          </YStack>
-        )}
-      </StyledRoomActions>
+          )}
+        </StyledRoomActions>
+      </div>
     </StyledRoomCard>
   );
 }

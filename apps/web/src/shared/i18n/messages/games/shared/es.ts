@@ -51,6 +51,7 @@ export const esMessages = {
     },
     fastRoom: 'Partida rápida',
     gameLabel: 'Juego',
+    createdLabel: 'Creado',
   },
   password: {
     label: 'Contraseña de la sala (opcional)',

@@ -78,6 +78,17 @@ import styles from './styles.module.scss'
 .chipLabel { line-height: 20px; white-space: nowrap; }
 ```
 
+**`whiteSpace: 'nowrap'` on a Tamagui container doesn't prevent text wrapping in child `Typography`** — Components like `LinkButton` wrap text in their own `Typography` child. CSS properties on the parent don't cascade into Tamagui's internal text wrappers.
+
+```tsx
+// ❌ BAD — text still wraps inside LinkButton
+<LinkButton style={{ whiteSpace: 'nowrap' }}>Long Text</LinkButton>
+
+// ✅ GOOD — use SCSS on the container's children
+// styles.module.scss
+.actionsCol > * { white-space: nowrap; flex-shrink: 0; }
+```
+
 ### Layout & positioning
 
 **`overflow: auto/hidden` clips absolutely positioned children** — Floating overlays inside scrollable Containers get clipped.
@@ -395,6 +406,9 @@ For CSS keyframe animations: use SCSS modules, not Tamagui animation props.
 
 ### Grid layouts (chess boards, data grids)
 Use SCSS modules with `display: grid` — Tamagui styled components don't support grid.
+
+### List/table views with variable content
+Use fixed column widths (`px`, `fr`) instead of `auto` to prevent columns from shifting when content changes (e.g., 1 vs 2 buttons). If buttons have multi-line text, ensure `white-space: nowrap` via SCSS on the container's children.
 
 ### Animations
 Use SCSS `@keyframes` modules, not Tamagui animation props. Each component imports its own module.

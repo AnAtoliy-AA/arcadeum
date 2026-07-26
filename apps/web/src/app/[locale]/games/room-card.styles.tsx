@@ -1,7 +1,5 @@
 import { styled, XStack, YStack, Text, GetProps } from 'tamagui';
 
-const LIST_VIEW_MIN_WIDTH = '200px';
-
 // ─── Styled Components ────────────────────────────────────────────────────────
 
 export const StyledRoomCard = styled(YStack, {
@@ -10,7 +8,6 @@ export const StyledRoomCard = styled(YStack, {
   backgroundColor: '$glassBg',
   cursor: 'pointer',
   position: 'relative',
-  overflow: 'hidden',
 
   hoverStyle: {
     scale: 1.05,
@@ -22,31 +19,6 @@ export const StyledRoomCard = styled(YStack, {
   },
 
   variants: {
-    animate: {
-      true: {
-        animation: 'slow',
-      },
-    },
-    viewMode: {
-      grid: {
-        flexDirection: 'column',
-        alignItems: 'stretch',
-        justifyContent: 'flex-start',
-        gap: '$5',
-        padding: '$6',
-        borderRadius: '$6',
-        minHeight: 280,
-      },
-      list: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '$4',
-        padding: '$4 $6',
-        borderRadius: '$4',
-        flexWrap: 'wrap',
-      },
-    },
     status: {
       completed: {
         borderColor: 'rgba(107, 114, 128, 0.2)',
@@ -60,11 +32,6 @@ export const StyledRoomCard = styled(YStack, {
       },
     },
   } as const,
-
-  defaultVariants: {
-    viewMode: 'grid',
-    animate: true,
-  },
 });
 
 export type StyledRoomCardProps = GetProps<typeof StyledRoomCard>;
@@ -113,50 +80,12 @@ export const StyledRoomHeader = styled(XStack, {
   name: 'StyledRoomHeader',
   alignItems: 'center',
   gap: '$4',
-
-  variants: {
-    viewMode: {
-      grid: {
-        justifyContent: 'space-between',
-        width: '100%',
-        marginBottom: '$2',
-      },
-      list: {
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        gap: '$1',
-        minWidth: LIST_VIEW_MIN_WIDTH,
-        maxWidth: 300,
-        flexShrink: 0,
-      },
-    },
-  } as const,
 });
 
 export const StyledRoomActions = styled(XStack, {
   name: 'StyledRoomActions',
   gap: '$3',
   flexShrink: 0,
-
-  variants: {
-    viewMode: {
-      grid: {
-        marginTop: 'auto',
-        paddingTop: '$4',
-        borderTopWidth: 1,
-        borderTopColor: '$glassBorder',
-        width: '100%',
-      },
-      list: {
-        marginTop: 0,
-        paddingTop: 0,
-        borderTopWidth: 0,
-        width: 'auto',
-        marginLeft: 'auto',
-      },
-    },
-  } as const,
 });
 
 export const StyledParticipantChip = styled(XStack, {
@@ -203,7 +132,7 @@ export const MetaRow = styled(XStack, {
   name: 'MetaRow',
   alignItems: 'center',
   gap: '$3',
-  minWidth: 'fit-content',
+  minWidth: 0,
 });
 
 export const MetaIcon = styled(Text, {
@@ -237,16 +166,6 @@ export const ParticipantsLabel = styled(Text, {
   textTransform: 'uppercase',
   letterSpacing: 1,
   marginBottom: '$2',
-});
-
-export const MetaListContainer = styled(XStack, {
-  name: 'MetaListContainer',
-  gap: '$6',
-  alignItems: 'center',
-  flex: 1,
-  flexWrap: 'wrap',
-  justifyContent: 'flex-start',
-  paddingHorizontal: '$2',
 });
 
 export const ParticipantsList = styled(XStack, {

@@ -51,6 +51,7 @@ export const enMessages = {
     },
     fastRoom: 'Fast Room',
     gameLabel: 'Game',
+    createdLabel: 'Created',
   },
   password: {
     label: 'Room Password (optional)',

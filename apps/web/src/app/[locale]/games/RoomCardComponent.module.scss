@@ -1,9 +1,35 @@
 .roomCard {
   animation: fadeInUp 0.5s ease-out both;
   position: relative;
-  overflow: hidden;
   isolation: isolate;
   border-width: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  min-height: 280px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.roomCard.gridView {
+  overflow: hidden;
+}
+
+.roomCard.gridView > .roomHeader {
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.roomCard.gridView > .actionsCol {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(122, 215, 255, 0.1);
+  width: 100%;
 }
 
 .roomCard::before {
@@ -170,13 +196,76 @@
   animation: none;
 }
 
+/* ─── List View ──────────────────────────────────────────────────────────── */
+
+.roomCard.listView {
+  padding: 0.625rem 1rem;
+  border-radius: 10px;
+  min-height: unset;
+}
+
+.roomCard.listView:hover .roomTitle {
+  animation-duration: 10s;
+}
+
+.roomCard.listView .roomTitle {
+  font-size: 1rem;
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.roomCard.listView .actionsCol > * {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .roomCard {
-    padding: 1.5rem !important;
-    border-radius: 20px !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    gap: 1rem !important;
+    padding: 1.5rem;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  .roomCard.listView {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .listGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .roomCard.listView > .roomHeader {
+    max-width: 100%;
+  }
+
+  .roomCard.listView > .actionsCol {
+    justify-self: start;
+  }
+
+  .roomCard.listView > .roomHeader {
+    max-width: 100%;
+  }
+
+  .roomCard.listView > .metaCol {
+    min-width: 0;
+  }
+
+  .roomCard.gridView > .roomHeader {
+    margin-bottom: 0;
+  }
+
+  .roomCard.gridView > .actionsCol {
+    border-top: none;
+    padding-top: 0;
   }
 }

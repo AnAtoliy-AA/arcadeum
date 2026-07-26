@@ -55,7 +55,6 @@ export interface CheckersState extends BaseGameState {
   players: CheckersPlayer[];
   winnerId: string | null;
   isDraw: boolean;
-  forcedCaptureChain: MoveStep[] | null;
 }
 
 export interface InitializeConfig {

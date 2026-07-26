@@ -83,7 +83,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       players,
       winnerId: null,
       isDraw: false,
-      forcedCaptureChain: null,
       logs: [this.createLogEntry('system', 'Game started.')],
     };
   }

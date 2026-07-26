@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
@@ -7,12 +11,18 @@ import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { HistoryRematchDto } from '../dtos/history-rematch.dto';
 import {
-  HistoryParticipantSummary, GameHistorySummary,
-  GroupedHistorySummary, PlayerStats, LeaderboardEntry,
+  HistoryParticipantSummary,
+  GameHistorySummary,
+  GroupedHistorySummary,
+  PlayerStats,
+  LeaderboardEntry,
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
-import { BaseGameState, ChatScope } from '../engines/base/game-engine.interface';
+import {
+  BaseGameState,
+  ChatScope,
+} from '../engines/base/game-engine.interface';
 import { escapeRegExp } from '../../common/utils/escape-regexp';
 
 /**
@@ -473,16 +483,12 @@ export class GameHistoryService {
     await session.save();
   }
 
-  /**
-   * Get player statistics (delegated to stats service)
-   */
+  /** Get player statistics (delegated to stats service) */
   async getPlayerStats(userId: string): Promise<PlayerStats> {
     return this.statsService.getPlayerStats(userId);
   }
 
-  /**
-   * Get leaderboard (delegated to stats service)
-   */
+  /** Get leaderboard (delegated to stats service) */
   async getLeaderboard(
     limit: number = 20,
     offset: number = 0,

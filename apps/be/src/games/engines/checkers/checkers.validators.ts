@@ -120,7 +120,7 @@ export function validateMovePiece(
     currentBoard = applyMove(currentBoard, [validStep]);
   }
 
-  if (isCaptureChain && steps.length > 1) {
+  if (isCaptureChain) {
     const lastStep = steps[steps.length - 1];
     const lastPiece = currentBoard[lastStep.toRow][lastStep.toCol];
     if (lastPiece) {

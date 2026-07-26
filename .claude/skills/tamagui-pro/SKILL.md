@@ -16,6 +16,8 @@ This project uses **Tamagui** (`@arcadeum/ui` in `packages/ui`) for cross-platfo
 
 **Never reach for inline styles when `styled()` or SCSS would work.**
 
+**NEVER use `!important`** — not in SCSS, not in inline styles, not anywhere. `!important` overrides Tamagui's variant system silently, creates cascading bugs that are hard to trace, and makes future style changes unpredictable. If a style isn't applying, the root cause is usually variant precedence, CSS specificity, or a different approach — not `!important`.
+
 ## Quick reference — "What's wrong?"
 
 | Symptom | Cause | Fix |
@@ -408,6 +410,7 @@ Use `FilterChip` from `@arcadeum/ui` (standalone `styled(XStack)`) — avoids Bu
 - [ ] Reused `@arcadeum/ui` components where possible
 - [ ] Used `styled()` for new components (not inline styles)
 - [ ] Used SCSS modules for grid, keyframes, complex media queries
+- [ ] No `!important` anywhere in styles
 - [ ] `lineHeight` uses pixel values, not bare numbers
 - [ ] No `className` in `styled()` options (pass as JSX prop)
 - [ ] No animation props in `styled()` (use SCSS `@keyframes`)

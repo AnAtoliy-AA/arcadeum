@@ -1,0 +1,22 @@
+name: "CodeQL Configuration"
+
+queries:
+  - uses: security-and-quality
+
+paths:
+  - apps/web/src
+  - apps/be/src
+  - apps/mobile/src
+  - packages/ui/src
+
+paths-ignore:
+  - "**/node_modules"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.tsx"
+  - "**/*.test.js"
+  - "**/*.spec.js"
+  - "**/dist/**"
+  - "**/.next/**"
+  - "**/coverage/**"

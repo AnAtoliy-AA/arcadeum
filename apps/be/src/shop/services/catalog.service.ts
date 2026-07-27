@@ -57,6 +57,9 @@ export class CatalogService {
   }
 
   async getEffective(itemId: string): Promise<EffectiveShopItem | null> {
+    if (typeof itemId !== 'string' || !itemId) {
+      return null;
+    }
     const def = getCatalogItem(itemId);
     if (!def) return null;
 

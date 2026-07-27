@@ -124,10 +124,15 @@ function generateRandomString(length: number): string {
   const randomValues = new Uint8Array(length);
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
     window.crypto.getRandomValues(randomValues);
+  } else if (
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto?.getRandomValues
+  ) {
+    globalThis.crypto.getRandomValues(randomValues);
   } else {
-    for (let i = 0; i < length; i += 1) {
-      randomValues[i] = Math.floor(Math.random() * charset.length);
-    }
+    throw new Error(
+      'Cryptographically secure random number generation is not available',
+    );
   }
   let result = '';
   for (let i = 0; i < length; i += 1) {

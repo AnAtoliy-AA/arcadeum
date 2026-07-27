@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as crypto from 'crypto';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
@@ -82,9 +83,16 @@ export class ReferralService {
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const charsLen = chars.length;
+    const threshold = Math.floor(256 / charsLen) * charsLen;
+    const bytes = crypto.randomBytes(32);
     let code = '';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    let i = 0;
+    while (code.length < 8) {
+      if (bytes[i] < threshold) {
+        code += chars.charAt(bytes[i] % charsLen);
+      }
+      i += 1;
     }
     return code;
   }

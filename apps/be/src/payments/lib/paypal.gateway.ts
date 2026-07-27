@@ -3,11 +3,20 @@ import {
   InternalServerErrorException,
   Logger,
   ServiceUnavailableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { paypalHttp } from '../../common/utils/paypal-http.util';
 import { randomUUID } from 'crypto';
+
+const PAYPAL_ORDER_ID_REGEX = /^[A-Z0-9]{17,}$/i;
+
+function validatePayPalOrderId(orderId: string): void {
+  if (!orderId || !PAYPAL_ORDER_ID_REGEX.test(orderId)) {
+    throw new BadRequestException('Invalid PayPal order ID format');
+  }
+}
 
 interface PayPalAuthResponse {
   access_token: string;
@@ -143,6 +152,7 @@ export class PaypalGateway {
   }
 
   async getOrder(orderId: string): Promise<PayPalGetOrderResponse> {
+    validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
     try {
@@ -170,6 +180,7 @@ export class PaypalGateway {
    * `COMPLETED`, but can be `VOIDED` if the capture failed.
    */
   async captureOrder(orderId: string): Promise<PayPalGetOrderResponse> {
+    validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
     try {

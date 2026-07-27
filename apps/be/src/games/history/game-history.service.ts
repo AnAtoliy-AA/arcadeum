@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
-import { GameRoom } from '../schemas/game-room.schema';
+import { GameRoom, type GameRoomStatus } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { HistoryRematchDto } from '../dtos/history-rematch.dto';
@@ -17,6 +17,7 @@ import {
   PlayerStats,
   LeaderboardEntry,
 } from './game-history.types';
+import { randomBytes } from 'crypto';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
 import { escapeRegExp } from '../../common/utils/escape-regexp';
@@ -92,10 +93,12 @@ export class GameHistoryService {
     };
 
     if (options.status && !options.grouped) {
-      if (!isValidStatus(options.status)) {
+      const validStatus = options.status;
+      if (!isValidStatus(validStatus)) {
         throw new BadRequestException('Invalid status value');
       }
-      query.status = options.status;
+      const status: GameRoomStatus = validStatus;
+      query.status = status;
     }
 
     const total = await this.gameRoomModel.countDocuments(query).exec();
@@ -232,7 +235,7 @@ export class GameHistoryService {
         }
 
         logs.push({
-          id: log.id || Math.random().toString(36).substring(7),
+          id: log.id || randomBytes(6).toString('base64url'),
           type: log.type || 'system',
           message: log.message || '',
           createdAt: log.createdAt || new Date().toISOString(),
@@ -460,7 +463,7 @@ export class GameHistoryService {
     }
     // Add message to logs in session state
     const logEntry = {
-      id: Math.random().toString(36).substring(7),
+      id: randomBytes(6).toString('base64url'),
       type: 'message' as const,
       message,
       createdAt: new Date().toISOString(),

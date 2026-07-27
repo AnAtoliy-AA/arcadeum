@@ -41,7 +41,7 @@ function readStoredEmail(): string | null {
     return null;
   }
   try {
-    const value = window.localStorage.getItem(EMAIL_STORAGE_KEY);
+    const value = window.sessionStorage.getItem(EMAIL_STORAGE_KEY);
     return value ?? null;
   } catch {
     return null;
@@ -54,9 +54,9 @@ function persistEmail(value: string | null) {
   }
   try {
     if (value) {
-      window.localStorage.setItem(EMAIL_STORAGE_KEY, value);
+      window.sessionStorage.setItem(EMAIL_STORAGE_KEY, value);
     } else {
-      window.localStorage.removeItem(EMAIL_STORAGE_KEY);
+      window.sessionStorage.removeItem(EMAIL_STORAGE_KEY);
     }
   } catch {
     // ignore

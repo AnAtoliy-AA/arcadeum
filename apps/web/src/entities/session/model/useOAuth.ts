@@ -358,7 +358,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
           // persist email alongside local auth convenience store
           if (typeof window !== 'undefined') {
             try {
-              window.localStorage.setItem('web_auth_email', snapshot.email);
+              window.sessionStorage.setItem('web_auth_email', snapshot.email);
             } catch {
               // ignore
             }

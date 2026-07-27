@@ -19,6 +19,10 @@ import type {
   LocalAuthState,
   SessionTokensSnapshot,
 } from './types';
+import {
+  decryptSensitiveValue,
+  encryptSensitiveValue,
+} from '@/entities/session/lib/encryptSensitive';
 
 const EMAIL_STORAGE_KEY = 'web_auth_email';
 
@@ -42,7 +46,7 @@ function readStoredEmail(): string | null {
   }
   try {
     const value = window.sessionStorage.getItem(EMAIL_STORAGE_KEY);
-    return value ?? null;
+    return value ? decryptSensitiveValue(value) : null;
   } catch {
     return null;
   }
@@ -54,7 +58,10 @@ function persistEmail(value: string | null) {
   }
   try {
     if (value) {
-      window.sessionStorage.setItem(EMAIL_STORAGE_KEY, value);
+      window.sessionStorage.setItem(
+        EMAIL_STORAGE_KEY,
+        encryptSensitiveValue(value),
+      );
     } else {
       window.sessionStorage.removeItem(EMAIL_STORAGE_KEY);
     }

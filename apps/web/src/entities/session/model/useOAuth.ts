@@ -16,6 +16,7 @@ import { type SessionTokensValue } from '@/entities/session/model/useSessionToke
 import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
+import { encryptSensitiveValue } from '@/entities/session/lib/encryptSensitive';
 
 interface OAuthDiscovery {
   authorization_endpoint?: string;
@@ -355,11 +356,12 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         }));
 
         if (snapshot.email) {
-          // persist email alongside local auth convenience store
-          // lgtm[js/clear-text-storage-of-sensitive-data]
           if (typeof window !== 'undefined') {
             try {
-              window.sessionStorage.setItem('web_auth_email', snapshot.email);
+              window.sessionStorage.setItem(
+                'web_auth_email',
+                encryptSensitiveValue(snapshot.email),
+              );
             } catch {
               // ignore
             }

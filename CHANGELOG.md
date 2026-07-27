@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.101] - 2026-07-27
+
+### Fixed
+- eliminate modulo bias in referral code generation (ARC-XXX)
+- add CodeQL config and cover staging branch to fix default scan failures
+- add input validation to resolve CodeQL NoSQL injection alerts
+- add input validation and replace Math.random with crypto PRNG
+
+
 ## [1.23.100] - 2026-07-27
 
 ### Fixed

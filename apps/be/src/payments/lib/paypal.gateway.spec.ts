@@ -42,7 +42,7 @@ function buildAuthResponse(
 }
 
 function buildOrderResponse(
-  id = 'ORDER-1',
+  id = '8PT12345678901234',
   approveHref = 'https://paypal.com/approve',
 ): {
   data: {
@@ -224,12 +224,16 @@ describe('PaypalGateway', () => {
       const gateway = new PaypalGateway(makeConfig());
       mockedAxios.post.mockResolvedValueOnce(buildAuthResponse());
       mockedAxios.get.mockResolvedValueOnce({
-        data: { id: 'ORD-1', status: 'COMPLETED', intent: 'CAPTURE' },
+        data: {
+          id: '8PT12345678901234',
+          status: 'COMPLETED',
+          intent: 'CAPTURE',
+        },
       });
 
-      const result = await gateway.getOrder('ORD-1');
+      const result = await gateway.getOrder('8PT12345678901234');
 
-      expect(result.id).toBe('ORD-1');
+      expect(result.id).toBe('8PT12345678901234');
       expect(result.status).toBe('COMPLETED');
       expect(result.intent).toBe('CAPTURE');
     });
@@ -239,9 +243,9 @@ describe('PaypalGateway', () => {
       mockedAxios.post.mockResolvedValueOnce(buildAuthResponse());
       mockedAxios.get.mockRejectedValueOnce(new Error('network error'));
 
-      await expect(gateway.getOrder('ORD-1')).rejects.toBeInstanceOf(
-        ServiceUnavailableException,
-      );
+      await expect(
+        gateway.getOrder('8PT12345678901234'),
+      ).rejects.toBeInstanceOf(ServiceUnavailableException);
     });
   });
 

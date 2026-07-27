@@ -94,6 +94,12 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<boolean> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (typeof itemId !== 'string' || !itemId) {
+      throw new BadRequestException('Invalid itemId');
+    }
     const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel
       .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
@@ -106,6 +112,12 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (typeof itemId !== 'string' || !itemId) {
+      throw new BadRequestException('Invalid itemId');
+    }
     const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
       .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
@@ -117,6 +129,12 @@ export class InventoryService {
     purchaseId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (typeof purchaseId !== 'string' || !purchaseId) {
+      throw new BadRequestException('Invalid purchaseId');
+    }
     const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
       .findOne({ userId: userObjId, purchaseId }, null, { session })

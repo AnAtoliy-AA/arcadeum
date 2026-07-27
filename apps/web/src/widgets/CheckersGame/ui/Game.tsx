@@ -196,6 +196,27 @@ function CheckersGameImpl({
 
       // If a piece is selected and clicking empty, try to move
       if (selectedPiece) {
+        const playerColor = getPlayerColor(snapshot.players, currentUserId);
+
+        // Detect capture by checking available captures from the piece's current position
+        const possibleCaptures = playerColor
+          ? findCapturesFrom(
+              displayBoard,
+              selectedPiece.row,
+              selectedPiece.col,
+              currentUserId,
+              playerColor,
+              backwardCaptures,
+              flyingKings,
+            )
+          : [];
+
+        const matchedCapture = possibleCaptures.find(
+          (c) => c.toRow === row && c.toCol === col,
+        );
+
+        const isCapture = !!matchedCapture;
+
         const moveStep: MoveStep = {
           fromRow: selectedPiece.row,
           fromCol: selectedPiece.col,
@@ -203,23 +224,17 @@ function CheckersGameImpl({
           toCol: col,
         };
 
-        // Check if this is a capture (piece between)
-        const midRow = (selectedPiece.row + row) / 2;
-        const midCol = (selectedPiece.col + col) / 2;
-        const isCapture = Math.abs(row - selectedPiece.row) === 2;
-
-        if (isCapture) {
-          moveStep.capturedRow = midRow;
-          moveStep.capturedCol = midCol;
+        if (matchedCapture) {
+          moveStep.capturedRow = matchedCapture.capturedRow;
+          moveStep.capturedCol = matchedCapture.capturedCol;
         }
 
         const newSteps = [...pendingSteps, moveStep];
 
         if (isCapture) {
-          const nextBoard = applyMoveToBoard(displayBoard, newSteps);
+          const nextBoard = applyMoveToBoard(displayBoard, [moveStep]);
 
           // Check if more captures available from the landing square
-          const playerColor = getPlayerColor(snapshot.players, currentUserId);
           const moreCaptures = playerColor
             ? findCapturesFrom(
                 nextBoard,
@@ -246,7 +261,7 @@ function CheckersGameImpl({
           }
         } else {
           // Simple move: send to server, show optimistic board
-          const nextBoard = applyMoveToBoard(displayBoard, newSteps);
+          const nextBoard = applyMoveToBoard(displayBoard, [moveStep]);
           setOptimisticBoard(nextBoard);
           setSelectedPiece(null);
           setPendingSteps([]);

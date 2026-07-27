@@ -3,14 +3,20 @@ import { NextRequest, NextResponse } from 'next/server';
 const GECKOTERMINAL_BASE =
   'https://api.geckoterminal.com/api/v2/networks/solana/pools';
 
-export async function GET(request: NextRequest) {
+const SOLANA_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
+function isValidSolanaAddress(address: string): boolean {
+  return SOLANA_ADDRESS_REGEX.test(address);
+}
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const { searchParams } = request.nextUrl;
   const pool = searchParams.get('pool');
   const timeframe = searchParams.get('timeframe');
   const aggregate = searchParams.get('aggregate');
   const limit = searchParams.get('limit');
 
-  if (!pool) {
+  if (!pool || !isValidSolanaAddress(pool)) {
     return NextResponse.json(
       { error: 'pool parameter required' },
       { status: 400 },
@@ -43,9 +49,6 @@ export async function GET(request: NextRequest) {
     const data = await res.json();
     return NextResponse.json(data);
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch' },
-      { status: 502 },
-    );
+    return NextResponse.json({ error: 'Failed to fetch' }, { status: 502 });
   }
 }

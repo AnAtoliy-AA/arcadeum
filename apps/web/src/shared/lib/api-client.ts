@@ -53,7 +53,24 @@ export async function getAnonymousIdWithSignature(): Promise<{
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
 
   if (!id) {
-    id = `anon_${Math.random().toString(36).substring(2, 10)}`;
+    const randomBytes = new Uint8Array(8);
+    if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+      window.crypto.getRandomValues(randomBytes);
+    } else if (
+      typeof globalThis !== 'undefined' &&
+      globalThis.crypto?.getRandomValues
+    ) {
+      globalThis.crypto.getRandomValues(randomBytes);
+    } else {
+      throw new Error(
+        'Cryptographically secure random number generation is not available',
+      );
+    }
+    const randomPart = Array.from(randomBytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+      .substring(0, 16);
+    id = `anon_${randomPart}`;
     localStorage.setItem(ANONYMOUS_ID_KEY, id);
   }
 

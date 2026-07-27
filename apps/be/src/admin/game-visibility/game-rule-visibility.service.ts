@@ -1,10 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   GameRuleVisibility,
   type GameRuleVisibilityDocument,
 } from './game-rule-visibility.schema';
+import { GAME_CATALOG } from '../../games/games.catalog';
+
+const VALID_GAME_IDS = new Set(GAME_CATALOG.map((g) => g.gameId));
+
+function validateGameId(gameId: string): void {
+  if (!VALID_GAME_IDS.has(gameId)) {
+    throw new BadRequestException(`Invalid gameId: ${gameId}`);
+  }
+}
+
+function validateRuleId(gameId: string, ruleId: string): void {
+  const game = GAME_CATALOG.find((g) => g.gameId === gameId);
+  if (!game || !game.rules.some((r) => r.ruleId === ruleId)) {
+    throw new BadRequestException(
+      `Invalid ruleId ${ruleId} for game ${gameId}`,
+    );
+  }
+}
 
 export interface RuleAvailability {
   ruleId: string;
@@ -21,6 +39,7 @@ export class GameRuleVisibilityService {
   ) {}
 
   async getRulesForGame(gameId: string): Promise<Map<string, boolean>> {
+    validateGameId(gameId);
     const rows = await this.model.find({ gameId }).exec();
     const map = new Map<string, boolean>();
     for (const row of rows) {
@@ -47,6 +66,8 @@ export class GameRuleVisibilityService {
     enabled: boolean,
     updatedBy: string,
   ): Promise<void> {
+    validateGameId(gameId);
+    validateRuleId(gameId, ruleId);
     await this.model.findOneAndUpdate(
       { gameId, ruleId },
       { enabled, updatedBy },
@@ -62,6 +83,10 @@ export class GameRuleVisibilityService {
     rules: Array<{ ruleId: string; enabled: boolean }>,
     updatedBy: string,
   ): Promise<void> {
+    validateGameId(gameId);
+    for (const r of rules) {
+      validateRuleId(gameId, r.ruleId);
+    }
     const ops = rules.map((r) =>
       this.model.findOneAndUpdate(
         { gameId, ruleId: r.ruleId },

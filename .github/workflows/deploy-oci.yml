@@ -11,11 +11,37 @@ on:
       - 'packages/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
+  workflow_dispatch:
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+      task-bot: ${{ steps.filter.outputs.task-bot }}
+      shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            be-or-tg:
+              - 'apps/be/**'
+              - 'bots/tg-bot/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+            task-bot:
+              - 'bots/task-bot/**'
+            shorts-factory:
+              - 'scripts/shorts-factory/**'
+
   deploy-tg-bot:
     name: Deploy TG Bot + Backend
-    if: contains(github.event.head_commit.modified, 'apps/be/') || contains(github.event.head_commit.modified, 'bots/tg-bot/') || contains(github.event.head_commit.modified, 'packages/') || contains(github.event.head_commit.added, 'apps/be/') || contains(github.event.head_commit.added, 'bots/tg-bot/') || contains(github.event.head_commit.added, 'packages/')
+    needs: changes
+    if: needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -48,7 +74,8 @@ jobs:
 
   deploy-task-bot:
     name: Deploy Task Bot
-    if: contains(github.event.head_commit.modified, 'bots/task-bot/') || contains(github.event.head_commit.added, 'bots/task-bot/')
+    needs: changes
+    if: needs.changes.outputs.task-bot == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -80,7 +107,8 @@ jobs:
 
   deploy-shorts-factory:
     name: Deploy Shorts Factory
-    if: contains(github.event.head_commit.modified, 'scripts/shorts-factory/') || contains(github.event.head_commit.added, 'scripts/shorts-factory/')
+    needs: changes
+    if: needs.changes.outputs.shorts-factory == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to OCI via SSH

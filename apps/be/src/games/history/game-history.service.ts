@@ -19,16 +19,13 @@ import {
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
+import { escapeRegExp } from '../../common/utils/escape-regexp';
+import { isValidStatus } from '../game-validation.util';
 import {
   BaseGameState,
   ChatScope,
 } from '../engines/base/game-engine.interface';
-import { escapeRegExp } from '../../common/utils/escape-regexp';
 
-/**
- * Game History Service
- * Handles game history tracking, viewing, and rematch functionality
- */
 @Injectable()
 export class GameHistoryService {
   constructor(
@@ -95,6 +92,9 @@ export class GameHistoryService {
     };
 
     if (options.status && !options.grouped) {
+      if (!isValidStatus(options.status)) {
+        throw new BadRequestException('Invalid status value');
+      }
       query.status = options.status;
     }
 
@@ -458,7 +458,6 @@ export class GameHistoryService {
     if (!session) {
       throw new NotFoundException('No session found for this room');
     }
-
     // Add message to logs in session state
     const logEntry = {
       id: Math.random().toString(36).substring(7),
@@ -483,12 +482,10 @@ export class GameHistoryService {
     await session.save();
   }
 
-  /** Get player statistics (delegated to stats service) */
   async getPlayerStats(userId: string): Promise<PlayerStats> {
     return this.statsService.getPlayerStats(userId);
   }
 
-  /** Get leaderboard (delegated to stats service) */
   async getLeaderboard(
     limit: number = 20,
     offset: number = 0,

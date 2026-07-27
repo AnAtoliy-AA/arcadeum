@@ -7,51 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.100] - 2026-07-27
+
+### Fixed
+
+- fix sunk ship surrounding cells marking with gridSize
+
 ## [1.23.99] - 2026-07-26
 
 ### Fixed
-- lobby bots issues
 
+- lobby bots issues
 
 ## [1.23.98] - 2026-07-26
 
 ### Fixed
-- remove broken head_commit conditions from deploy workflows
 
+- remove broken head_commit conditions from deploy workflows
 
 ## [1.23.97] - 2026-07-26
 
 ### Added
-- add checkers variants support (ARC-878)
 
+- add checkers variants support (ARC-878)
 
 ## [1.23.96] - 2026-07-26
 
 ### Fixed
-- align games list columns and fix button text wrapping
 
+- align games list columns and fix button text wrapping
 
 ## [1.23.95] - 2026-07-26
 
 ### Added
+
 - add tamagui-pro skill for correct Tamagui patterns
 
 ### Fixed
-- add no-important rule to tamagui-pro skill
 
+- add no-important rule to tamagui-pro skill
 
 ## [1.23.94] - 2026-07-24
 
 ### Added
+
 - add ARC token payment flow with Solana Pay integration
 
 ### Fixed
+
 - add ObjectId validation to purchaseWithArc method
 - correct expected amount in solana pay create test
 - use page.evaluate for fetch calls in arc-payment tests to bypass route interceptors
 - correct test-utils import path in arc-payment.spec.ts
 - restore missing cat-dash and tic-tac-toe theme imports/exports in themes.ts
-
 
 ## [1.23.93] - 2026-07-24
 

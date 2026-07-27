@@ -108,7 +108,7 @@ export function executeAttack(
         target.shipsRemaining--;
         result = ATTACK_RESULT.SUNK;
 
-        markSurroundingCellsAsMiss(target, hitShip);
+        markSurroundingCellsAsMiss(target, hitShip, state.gridSize);
         state.logs.push(
           createLog('action', `☠️ sunk ${shipName}!`, {
             senderId: player.playerId,

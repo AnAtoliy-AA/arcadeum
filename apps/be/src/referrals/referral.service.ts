@@ -110,6 +110,8 @@ export class ReferralService {
     let code = this.generateReferralCode();
     let attempts = 0;
     while (attempts < 10) {
+      if (typeof code !== 'string')
+        throw new BadRequestException('Invalid referral code');
       const existing = await this.userModel.findOne({ referralCode: code });
       if (!existing) break;
       code = this.generateReferralCode();
@@ -125,8 +127,12 @@ export class ReferralService {
     referralCode: string,
     referredUserId: string,
   ): Promise<void> {
-    const safeCode = String(referralCode);
-    const safeReferredUserId = String(referredUserId);
+    if (typeof referralCode !== 'string')
+      throw new BadRequestException('Invalid referralCode');
+    if (typeof referredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
+    const safeCode = referralCode;
+    const safeReferredUserId = referredUserId;
     const referrer = await this.userModel
       .findOne({ referralCode: safeCode })
       .exec();
@@ -159,6 +165,8 @@ export class ReferralService {
       completedAt: new Date(),
     });
 
+    if (typeof referredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
     await this.userModel.findByIdAndUpdate(referredUserId, {
       referredBy: referrerId,
     });

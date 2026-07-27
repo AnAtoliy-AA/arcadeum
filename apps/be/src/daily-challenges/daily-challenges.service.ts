@@ -117,6 +117,13 @@ export class DailyChallengesService {
     challengeId: string,
     date: string,
   ): Promise<ClaimResult> {
+    if (
+      typeof userId !== 'string' ||
+      typeof challengeId !== 'string' ||
+      typeof date !== 'string'
+    ) {
+      throw new Error('Invalid parameters');
+    }
     const all = await this.definitionModel.find().lean().exec();
     const definition = all.find((d) => d.challengeId === challengeId);
     if (!definition) throw new Error('Challenge not found');
@@ -250,6 +257,9 @@ export class DailyChallengesService {
   private getDefinitionsForDay(
     dayOfWeek: number,
   ): Promise<DailyChallengeDefinition[]> {
+    if (typeof dayOfWeek !== 'number') {
+      return Promise.resolve([]);
+    }
     return this.definitionModel
       .find({ dayInWeek: dayOfWeek })
       .lean()

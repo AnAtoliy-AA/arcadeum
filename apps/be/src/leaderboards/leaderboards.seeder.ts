@@ -122,6 +122,9 @@ export class LeaderboardsSeederService implements OnModuleInit {
     if (typeof season !== 'string' || !season) {
       throw new Error('Invalid season value');
     }
+    if (typeof rowsPerMode !== 'number') {
+      throw new Error('Invalid rowsPerMode value');
+    }
 
     // Idempotent — clear current season + cup/squads/events before re-inserting.
     await Promise.all([

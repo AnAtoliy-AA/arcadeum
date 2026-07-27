@@ -62,9 +62,6 @@ export class CatalogService {
     }
     const def = getCatalogItem(itemId);
     if (!def) return null;
-
-    if (typeof itemId !== 'string')
-      throw new BadRequestException('Invalid itemId');
     const now = Date.now();
     const cached = this.cache.get(itemId);
     if (cached && cached.expiresAt > now) return cached.value;

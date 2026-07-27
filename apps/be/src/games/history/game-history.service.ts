@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
-import { GameRoom, type GameRoomStatus } from '../schemas/game-room.schema';
+import { GameRoom } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
 import { User } from '../../auth/schemas/user.schema';
 import { HistoryRematchDto } from '../dtos/history-rematch.dto';
@@ -17,7 +17,6 @@ import {
   PlayerStats,
   LeaderboardEntry,
 } from './game-history.types';
-import { randomBytes } from 'crypto';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
 import { escapeRegExp } from '../../common/utils/escape-regexp';
@@ -42,11 +41,6 @@ export class GameHistoryService {
     private readonly statsService: GameHistoryStatsService,
   ) {}
 
-  /**
-   * List game history for a user
-   * @param userId User ID
-   * @param grouped Whether to group by room
-   */
   async listHistoryForUser(
     userId: string,
     options: {
@@ -63,6 +57,12 @@ export class GameHistoryService {
     limit: number;
     hasMore: boolean;
   }> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
+    if (options.search != null && typeof options.search !== 'string')
+      throw new BadRequestException('Invalid search');
+    if (options.status != null && typeof options.status !== 'string')
+      throw new BadRequestException('Invalid status');
     const page = options.page || 0;
     const limit = options.limit || 20;
     const skip = page * limit;
@@ -97,8 +97,7 @@ export class GameHistoryService {
       if (!isValidStatus(normalizedStatus)) {
         throw new BadRequestException('Invalid status value');
       }
-      const status: GameRoomStatus = normalizedStatus;
-      query.status = { $eq: status };
+      query.status = { $eq: normalizedStatus };
     }
 
     const total = await this.gameRoomModel.countDocuments(query).exec();
@@ -235,7 +234,7 @@ export class GameHistoryService {
         }
 
         logs.push({
-          id: log.id || randomBytes(6).toString('base64url'),
+          id: log.id || globalThis.crypto.randomUUID().slice(0, 12),
           type: log.type || 'system',
           message: log.message || '',
           createdAt: log.createdAt || new Date().toISOString(),
@@ -463,7 +462,7 @@ export class GameHistoryService {
     }
     // Add message to logs in session state
     const logEntry = {
-      id: randomBytes(6).toString('base64url'),
+      id: globalThis.crypto.randomUUID().slice(0, 12),
       type: 'message' as const,
       message,
       createdAt: new Date().toISOString(),
@@ -490,8 +489,8 @@ export class GameHistoryService {
   }
 
   async getLeaderboard(
-    limit: number = 20,
-    offset: number = 0,
+    limit = 20,
+    offset = 0,
     gameId?: string,
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
     return this.statsService.getLeaderboard(limit, offset, gameId);

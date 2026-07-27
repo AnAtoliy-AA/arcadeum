@@ -70,6 +70,15 @@ export class AnnouncementsService {
   async listForAdmin(
     args: ListForAdminArgs,
   ): Promise<AnnouncementsAdminListResponse> {
+    if (args.severity !== undefined && typeof args.severity !== 'string') {
+      throw new BadRequestException('Invalid severity');
+    }
+    if (args.q !== undefined && typeof args.q !== 'string') {
+      throw new BadRequestException('Invalid query');
+    }
+    if (args.status !== undefined && typeof args.status !== 'string') {
+      throw new BadRequestException('Invalid status');
+    }
     const page = args.page ?? 1;
     const pageSize = args.pageSize ?? 25;
     const now = new Date();

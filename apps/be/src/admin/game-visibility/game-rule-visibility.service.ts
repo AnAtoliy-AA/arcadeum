@@ -41,6 +41,9 @@ export class GameRuleVisibilityService {
   ) {}
 
   async getRulesForGame(gameId: string): Promise<Map<string, boolean>> {
+    if (typeof gameId !== 'string') {
+      throw new BadRequestException('Invalid gameId');
+    }
     const validGameId = assertValidGameId(gameId);
     const rows = await this.model.find({ gameId: { $eq: validGameId } }).exec();
     const map = new Map<string, boolean>();
@@ -68,6 +71,9 @@ export class GameRuleVisibilityService {
     enabled: boolean,
     updatedBy: string,
   ): Promise<void> {
+    if (typeof gameId !== 'string' || typeof ruleId !== 'string') {
+      throw new BadRequestException('Invalid gameId or ruleId');
+    }
     const validGameId = assertValidGameId(gameId);
     const validRuleId = assertValidRuleId(validGameId, ruleId);
     await this.model.findOneAndUpdate(
@@ -85,6 +91,9 @@ export class GameRuleVisibilityService {
     rules: Array<{ ruleId: string; enabled: boolean }>,
     updatedBy: string,
   ): Promise<void> {
+    if (typeof gameId !== 'string') {
+      throw new BadRequestException('Invalid gameId');
+    }
     const validGameId = assertValidGameId(gameId);
     const validatedRules = rules.map((r) => ({
       ...r,

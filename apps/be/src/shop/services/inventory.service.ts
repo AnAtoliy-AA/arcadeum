@@ -60,6 +60,8 @@ export class InventoryService {
   ) {}
 
   async listForUser(userId: string): Promise<InventoryView> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     // Inventory rows store userId as a BSON ObjectId (see schema). Mongoose's
     // string-to-ObjectId auto-cast on `find()` is unreliable here — observed
     // empty results in the dev DB even with a valid 24-char hex. Explicit
@@ -219,6 +221,8 @@ export class InventoryService {
     itemId: string,
     purchaseId: string,
   ): Promise<void> {
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
     const def = getCatalogItem(itemId);
     if (!def) throw new BadRequestException('shop.unknownItem');
     try {

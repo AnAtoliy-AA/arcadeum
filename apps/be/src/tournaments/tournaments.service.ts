@@ -91,8 +91,8 @@ export class TournamentsService {
   async listForAdmin(
     args: ListForAdminArgs,
   ): Promise<AdminTournamentsListResponse> {
-    const page = args.page ?? 1;
-    const pageSize = args.pageSize ?? 25;
+    const page = typeof args.page === 'number' ? args.page : 1;
+    const pageSize = typeof args.pageSize === 'number' ? args.pageSize : 25;
 
     const filter: FilterQuery<TournamentDocument> = {};
     if (args.gameType && typeof args.gameType === 'string') {

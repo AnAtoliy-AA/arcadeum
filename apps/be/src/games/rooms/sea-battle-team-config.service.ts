@@ -16,6 +16,7 @@ import {
 } from './sea-battle-team-config.types';
 import { SetTeamConfigDto } from '../dtos/set-team-config.dto';
 import { AssignTeamDto } from '../dtos/assign-team.dto';
+import crypto from 'crypto';
 
 const MIN_TEAMS = 2;
 const MIN_TEAM_SIZE = 2;
@@ -214,7 +215,7 @@ export class SeaBattleTeamConfigService {
       );
     }
 
-    const botId = `bot-${Math.random().toString(36).slice(2, 11)}`;
+    const botId = `bot-${crypto.randomBytes(6).toString('hex')}`;
     team.playerIds.push(botId);
     room.participants.push({ userId: botId, joinedAt: new Date() });
     room.gameOptions = opts;

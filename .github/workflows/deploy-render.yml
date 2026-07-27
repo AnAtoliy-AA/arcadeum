@@ -7,6 +7,8 @@ on:
       - 'apps/be/**'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   deploy-backend:
     name: Deploy Backend (${{ github.ref_name == 'main' && 'Production' || 'Dev' }})

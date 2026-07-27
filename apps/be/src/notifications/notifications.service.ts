@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
@@ -103,6 +103,8 @@ export class NotificationsService {
     userId: string,
     input: SubscriptionInput,
   ): Promise<void> {
+    if (typeof input.endpoint !== 'string')
+      throw new BadRequestException('Invalid endpoint');
     await this.subscriptionModel
       .updateOne(
         { endpoint: input.endpoint },
@@ -121,6 +123,8 @@ export class NotificationsService {
   }
 
   async removeSubscription(userId: string, endpoint: string): Promise<void> {
+    if (typeof endpoint !== 'string')
+      throw new BadRequestException('Invalid endpoint');
     await this.subscriptionModel
       .deleteOne({ userId: new Types.ObjectId(userId), endpoint })
       .exec();

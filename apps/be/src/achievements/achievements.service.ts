@@ -181,6 +181,9 @@ export class AchievementsService {
     userId: string,
     achievementId: string,
   ): Promise<ClaimResult> {
+    if (typeof userId !== 'string' || typeof achievementId !== 'string') {
+      throw new Error('Invalid parameters');
+    }
     const all = await this.definitionModel.find().lean().exec();
     const definition = all.find((d) => d.achievementId === achievementId);
     if (!definition) throw new Error('Achievement not found');

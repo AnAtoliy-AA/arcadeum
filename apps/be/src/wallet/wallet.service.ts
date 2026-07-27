@@ -168,6 +168,8 @@ export class WalletService {
   async findByIdempotencyKey(
     key: string,
   ): Promise<WalletTransactionView | null> {
+    if (typeof key !== 'string')
+      throw new BadRequestException('Invalid idempotencyKey');
     const doc = await this.txModel.findOne({ idempotencyKey: key });
     return doc ? this.toView(doc) : null;
   }
@@ -218,6 +220,8 @@ export class WalletService {
       direction,
     } = args;
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const filter: Record<string, unknown> = { _id: new Types.ObjectId(userId) };
     if (direction === -1) filter[currency] = { $gte: amount };
 
@@ -252,6 +256,8 @@ export class WalletService {
       arcadeum: balanceFields.arcadeum,
     };
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const docs = await this.txModel.create(
       [
         {

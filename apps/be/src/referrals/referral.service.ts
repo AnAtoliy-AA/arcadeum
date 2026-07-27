@@ -83,10 +83,16 @@ export class ReferralService {
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const bytes = crypto.randomBytes(8);
+    const charsLen = chars.length;
+    const threshold = Math.floor(256 / charsLen) * charsLen;
+    const bytes = crypto.randomBytes(32);
     let code = '';
-    for (let i = 0; i < 8; i += 1) {
-      code += chars.charAt(bytes[i] % chars.length);
+    let i = 0;
+    while (code.length < 8) {
+      if (bytes[i] < threshold) {
+        code += chars.charAt(bytes[i] % charsLen);
+      }
+      i += 1;
     }
     return code;
   }

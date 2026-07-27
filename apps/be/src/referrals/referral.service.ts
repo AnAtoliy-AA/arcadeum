@@ -119,7 +119,9 @@ export class ReferralService {
   ): Promise<void> {
     const safeCode = String(referralCode);
     const safeReferredUserId = String(referredUserId);
-    const referrer = await this.userModel.findOne({ referralCode: safeCode }).exec();
+    const referrer = await this.userModel
+      .findOne({ referralCode: safeCode })
+      .exec();
     if (!referrer) {
       this.logger.warn(`Invalid referral code: ${safeCode}`);
       return;

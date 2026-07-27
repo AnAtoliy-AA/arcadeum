@@ -42,7 +42,7 @@ export class GameRuleVisibilityService {
 
   async getRulesForGame(gameId: string): Promise<Map<string, boolean>> {
     const validGameId = assertValidGameId(gameId);
-    const rows = await this.model.find({ gameId: validGameId }).exec();
+    const rows = await this.model.find({ gameId: { $eq: validGameId } }).exec();
     const map = new Map<string, boolean>();
     for (const row of rows) {
       map.set(row.ruleId, row.enabled);
@@ -71,7 +71,7 @@ export class GameRuleVisibilityService {
     const validGameId = assertValidGameId(gameId);
     const validRuleId = assertValidRuleId(validGameId, ruleId);
     await this.model.findOneAndUpdate(
-      { gameId: validGameId, ruleId: validRuleId },
+      { gameId: { $eq: validGameId }, ruleId: { $eq: validRuleId } },
       { enabled, updatedBy },
       { upsert: true },
     );
@@ -92,7 +92,7 @@ export class GameRuleVisibilityService {
     }));
     const ops = validatedRules.map((r) =>
       this.model.findOneAndUpdate(
-        { gameId: validGameId, ruleId: r.ruleId },
+        { gameId: { $eq: validGameId }, ruleId: { $eq: r.ruleId } },
         { enabled: r.enabled, updatedBy },
         { upsert: true },
       ),

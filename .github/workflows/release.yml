@@ -5,6 +5,9 @@ on:
     branches: [ main ]
     tags: [ "v*.*.*" ]
 
+permissions:
+  contents: read
+
 env:
   NEXT_PUBLIC_E2E: 'true'
   E2E_PROD: 'true'

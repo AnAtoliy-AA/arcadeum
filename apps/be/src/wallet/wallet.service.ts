@@ -110,6 +110,8 @@ export class WalletService {
   }
 
   async getBalance(userId: string): Promise<WalletBalance> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const user = await this.userModel.findById(userId).lean();
     if (!user) throw new NotFoundException('wallet.userNotFound');
     const balances = user as unknown as UserBalanceFields;
@@ -124,6 +126,8 @@ export class WalletService {
     userId: string,
     opts: { currency?: WalletCurrency; cursor?: string; limit?: number },
   ): Promise<PaginatedWalletTransactions> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     const filter: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
@@ -228,6 +232,8 @@ export class WalletService {
 
     if (!user) {
       if (direction === -1) {
+        if (typeof userId !== 'string')
+          throw new BadRequestException('Invalid userId');
         const current = await this.userModel
           .findById(userId, null, { session })
           .lean();

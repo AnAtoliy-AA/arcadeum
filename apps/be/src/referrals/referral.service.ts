@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as crypto from 'crypto';
@@ -142,6 +142,8 @@ export class ReferralService {
       return;
     }
 
+    if (typeof safeReferredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
     const existingReferral = await this.referralModel.findOne({
       referredUserId: safeReferredUserId,
     });

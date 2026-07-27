@@ -113,6 +113,10 @@ export class TournamentsService {
       };
     }
 
+    if (typeof page !== 'number' || typeof pageSize !== 'number') {
+      throw new BadRequestException('Invalid pagination');
+    }
+
     const [docs, total] = await Promise.all([
       this.model
         .find(filter)

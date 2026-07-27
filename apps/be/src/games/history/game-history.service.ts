@@ -92,10 +92,11 @@ export class GameHistoryService {
     };
 
     if (options.status && !options.grouped) {
-      if (!isValidStatus(options.status)) {
+      const normalizedStatus = options.status.trim();
+      if (!isValidStatus(normalizedStatus)) {
         throw new BadRequestException('Invalid status value');
       }
-      query.status = options.status;
+      query.status = { $eq: normalizedStatus };
     }
 
     const total = await this.gameRoomModel.countDocuments(query).exec();

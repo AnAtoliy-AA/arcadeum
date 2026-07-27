@@ -155,14 +155,13 @@ export class PaypalGateway {
     validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
+    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
+    const orderUrl = `${baseUrl}/v2/checkout/orders/${normalizedOrderId}`;
     try {
-      const res = await paypalHttp.get<PayPalGetOrderResponse>(
-        `${baseUrl}/v2/checkout/orders/${orderId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 10000,
-        },
-      );
+      const res = await paypalHttp.get<PayPalGetOrderResponse>(orderUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000,
+      });
       return res.data;
     } catch (err) {
       this.logger.error(
@@ -183,9 +182,10 @@ export class PaypalGateway {
     validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
+    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
     try {
       const res = await paypalHttp.post<PayPalGetOrderResponse>(
-        `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
+        `${baseUrl}/v2/checkout/orders/${normalizedOrderId}/capture`,
         {},
         {
           headers: {

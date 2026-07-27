@@ -77,6 +77,9 @@ export class GameRoomsQuickplayService {
     variant?: string,
   ): Promise<GameRoomSummary> {
     validateGameId(gameId);
+    if (typeof gameId !== 'string' || !VALID_GAME_IDS.has(gameId)) {
+      throw new BadRequestException(`Invalid gameId: ${gameId}`);
+    }
     // Tight pool: only matchmaking-created rooms ("Open Match"), and
     // only those that don't already contain an AI bot. Sorted
     // newest-first so a room just created by another matchmaker sits

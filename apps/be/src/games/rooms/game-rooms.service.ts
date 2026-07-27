@@ -254,7 +254,9 @@ export class GameRoomsService {
 
     // If it's the last player, delete the room
     if (room.participants.length === 1) {
-      await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
+      await this.gameRoomModel
+        .findByIdAndDelete(new Types.ObjectId(dto.roomId))
+        .exec();
       return {
         room: null,
         deleted: true,
@@ -314,6 +316,9 @@ export class GameRoomsService {
     roomId: string,
     status: GameRoomStatus,
   ): Promise<GameRoom> {
+    if (!Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    }
     const room = await this.gameRoomModel.findById(roomId).exec();
 
     if (!room) {
@@ -345,6 +350,9 @@ export class GameRoomsService {
     userId: string,
     options: Record<string, unknown>,
   ): Promise<GameRoomSummary> {
+    if (!Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    }
     const room = await this.gameRoomModel.findById(roomId).exec();
 
     if (!room) {

@@ -356,7 +356,7 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
 
         if (snapshot.email) {
           // persist email alongside local auth convenience store
-          // lgtm[js/clear-text-storage-sensitive-information]
+          // lgtm[js/clear-text-storage-of-sensitive-data]
           if (typeof window !== 'undefined') {
             try {
               window.sessionStorage.setItem('web_auth_email', snapshot.email);

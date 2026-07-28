@@ -56,13 +56,12 @@ function setTokenCookies(
   const maxAgeRefresh =
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
-  const sameSite = secure ? 'none' : 'lax';
-
   // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure,
-    sameSite,
+    sameSite: 'lax',
+    domain: '.arcadeum.games',
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
@@ -70,7 +69,8 @@ function setTokenCookies(
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure,
-    sameSite,
+    sameSite: 'lax',
+    domain: '.arcadeum.games',
     path: '/',
     maxAge: Math.max(maxAgeRefresh, 0),
   });
@@ -78,8 +78,13 @@ function setTokenCookies(
 
 function clearTokenCookies(res: Response, req: Request): void {
   const secure = isSecureOrigin(req);
-  const sameSite: 'strict' | 'none' | 'lax' = secure ? 'none' : 'lax';
-  const options = { path: '/', httpOnly: true, secure, sameSite };
+  const options = {
+    path: '/',
+    httpOnly: true,
+    secure,
+    sameSite: 'lax' as const,
+    domain: '.arcadeum.games',
+  };
   res.clearCookie('access_token', options);
   res.clearCookie('refresh_token', options);
 }

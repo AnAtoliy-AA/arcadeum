@@ -110,6 +110,8 @@ export class WalletService {
   }
 
   async getBalance(userId: string): Promise<WalletBalance> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const user = await this.userModel.findById(userId).lean();
     if (!user) throw new NotFoundException('wallet.userNotFound');
     const balances = user as unknown as UserBalanceFields;
@@ -124,6 +126,8 @@ export class WalletService {
     userId: string,
     opts: { currency?: WalletCurrency; cursor?: string; limit?: number },
   ): Promise<PaginatedWalletTransactions> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     const filter: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
@@ -164,6 +168,8 @@ export class WalletService {
   async findByIdempotencyKey(
     key: string,
   ): Promise<WalletTransactionView | null> {
+    if (typeof key !== 'string')
+      throw new BadRequestException('Invalid idempotencyKey');
     const doc = await this.txModel.findOne({ idempotencyKey: key });
     return doc ? this.toView(doc) : null;
   }
@@ -214,6 +220,8 @@ export class WalletService {
       direction,
     } = args;
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const filter: Record<string, unknown> = { _id: new Types.ObjectId(userId) };
     if (direction === -1) filter[currency] = { $gte: amount };
 
@@ -228,6 +236,8 @@ export class WalletService {
 
     if (!user) {
       if (direction === -1) {
+        if (typeof userId !== 'string')
+          throw new BadRequestException('Invalid userId');
         const current = await this.userModel
           .findById(userId, null, { session })
           .lean();
@@ -246,6 +256,8 @@ export class WalletService {
       arcadeum: balanceFields.arcadeum,
     };
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const docs = await this.txModel.create(
       [
         {

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Logger, HttpCode } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  Logger,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotificationService } from '../notification/notification.service';
 import { ImplementQueueService } from '../queue/implement-queue.service';
@@ -28,13 +36,13 @@ export class CIController {
   @HttpCode(200)
   async handleCIFailure(@Body() payload: CIFailurePayload) {
     const secret = this.config.get<string>('CI_WEBHOOK_SECRET');
-    if (secret && payload.secret !== secret) {
-      this.logger.warn('Invalid CI webhook secret');
-      return { status: 'rejected' };
-    }
+    this.requireValidWebhook(payload?.secret, secret);
+    this.validateFailurePayload(payload);
 
     const maxAttempts = this.ciFixTracker.getMaxAttempts();
-    const currentAttempts = await this.ciFixTracker.getAttempts(payload.prNumber);
+    const currentAttempts = await this.ciFixTracker.getAttempts(
+      payload.prNumber,
+    );
 
     if (currentAttempts >= maxAttempts) {
       this.logger.warn(
@@ -88,9 +96,16 @@ export class CIController {
         },
       );
 
-      this.logger.log(`CI fix queued: job ${jobId} for PR #${payload.prNumber} (attempt ${currentAttempts + 1}/${maxAttempts})`);
+      this.logger.log(
+        `CI fix queued: job ${jobId} for PR #${payload.prNumber} (attempt ${currentAttempts + 1}/${maxAttempts})`,
+      );
 
-      return { status: 'queued', jobId, attempt: currentAttempts + 1, maxAttempts };
+      return {
+        status: 'queued',
+        jobId,
+        attempt: currentAttempts + 1,
+        maxAttempts,
+      };
     } catch (err) {
       this.logger.error(`Failed to queue CI fix: ${(err as Error).message}`);
 
@@ -112,10 +127,47 @@ export class CIController {
   @HttpCode(200)
   async resetAttempts(@Body() body: { prNumber: string; secret?: string }) {
     const secret = this.config.get<string>('CI_WEBHOOK_SECRET');
-    if (secret && body.secret !== secret) {
-      return { status: 'rejected' };
+    this.requireValidWebhook(body?.secret, secret);
+    if (!/^\d{1,8}$/.test(body?.prNumber ?? '')) {
+      throw new BadRequestException('Invalid PR number');
     }
     await this.ciFixTracker.resetAttempts(body.prNumber);
     return { status: 'reset' };
+  }
+
+  private requireValidWebhook(
+    provided: string | undefined,
+    expected: string | undefined,
+  ): void {
+    if (!expected || !provided || provided !== expected) {
+      this.logger.warn('Rejected CI webhook request');
+      throw new UnauthorizedException();
+    }
+  }
+
+  private validateFailurePayload(payload: CIFailurePayload): void {
+    if (!/^\d{1,8}$/.test(payload?.prNumber ?? '')) {
+      throw new BadRequestException('Invalid PR number');
+    }
+    if (
+      !/^task-\d{1,8}(?:-[a-z0-9][a-z0-9-]*)?$/.test(payload?.branchName ?? '')
+    ) {
+      throw new BadRequestException('Invalid task branch name');
+    }
+    if (
+      !Array.isArray(payload?.failedChecks) ||
+      payload.failedChecks.length > 100 ||
+      payload.failedChecks.some(
+        (name) => typeof name !== 'string' || name.length > 200,
+      )
+    ) {
+      throw new BadRequestException('Invalid failed checks');
+    }
+    if (
+      typeof payload?.runUrl !== 'string' ||
+      !/^https:\/\/github\.com\//.test(payload.runUrl)
+    ) {
+      throw new BadRequestException('Invalid workflow URL');
+    }
   }
 }

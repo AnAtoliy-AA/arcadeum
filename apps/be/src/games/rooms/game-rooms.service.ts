@@ -132,6 +132,9 @@ export class GameRoomsService {
     code: string,
     viewerId?: string,
   ): Promise<GameRoomSummary> {
+    if (typeof code !== 'string') {
+      throw new NotFoundException('Invalid invite code');
+    }
     const normalized = code.trim().toUpperCase();
     if (!normalized) throw new NotFoundException('Room not found');
     const room = await this.gameRoomModel
@@ -146,6 +149,9 @@ export class GameRoomsService {
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
+    if (typeof roomId !== 'string') {
+      throw new NotFoundException('Invalid room ID');
+    }
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
@@ -218,6 +224,9 @@ export class GameRoomsService {
   }
 
   async ensureParticipant(roomId: string, userId: string): Promise<boolean> {
+    if (typeof roomId !== 'string' || typeof userId !== 'string') {
+      throw new BadRequestException('Invalid roomId or userId');
+    }
     const room = await this.gameRoomModel.findById(roomId).exec();
     if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
     const isParticipant = room.participants.some((p) => p.userId === userId);
@@ -234,6 +243,9 @@ export class GameRoomsService {
     dto: LeaveGameRoomDto,
     userId: string,
   ): Promise<LeaveGameRoomResult> {
+    if (typeof userId !== 'string') {
+      throw new BadRequestException('Invalid userId');
+    }
     validateRoomId(dto.roomId);
     const room = await this.gameRoomModel
       .findById(new Types.ObjectId(dto.roomId))
@@ -316,6 +328,9 @@ export class GameRoomsService {
     roomId: string,
     status: GameRoomStatus,
   ): Promise<GameRoom> {
+    if (typeof roomId !== 'string') {
+      throw new NotFoundException('Invalid room ID');
+    }
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
@@ -333,6 +348,9 @@ export class GameRoomsService {
   }
 
   async getRoomParticipants(roomId: string): Promise<string[]> {
+    if (typeof roomId !== 'string') {
+      throw new NotFoundException('Invalid room ID');
+    }
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
@@ -350,6 +368,9 @@ export class GameRoomsService {
     userId: string,
     options: Record<string, unknown>,
   ): Promise<GameRoomSummary> {
+    if (typeof roomId !== 'string' || typeof userId !== 'string') {
+      throw new BadRequestException('Invalid roomId or userId');
+    }
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
@@ -385,6 +406,9 @@ export class GameRoomsService {
     userId: string,
     newOrder: string[],
   ): Promise<GameRoomSummary> {
+    if (typeof roomId !== 'string' || typeof userId !== 'string') {
+      throw new BadRequestException('Invalid roomId or userId');
+    }
     const room = await this.gameRoomModel.findById(roomId).exec();
 
     if (!room) {

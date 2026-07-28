@@ -112,6 +112,9 @@ export class GameSessionsService {
    * Find session by room ID
    */
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
+    if (typeof roomId !== 'string') {
+      return null;
+    }
     const safeRoomId = String(roomId);
     const session = await this.gameSessionModel
       .findOne({ roomId: safeRoomId })

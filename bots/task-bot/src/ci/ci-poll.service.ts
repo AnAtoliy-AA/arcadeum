@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { NotificationService } from '../notification/notification.service';
 import { ImplementQueueService } from '../queue/implement-queue.service';
 import { CIFixTrackerService } from './ci-fix-tracker.service';
-import { execFileSync } from 'child_process';
+import { execFile } from 'child_process';
 import { ConfigService } from '@nestjs/config';
 
 interface PollEntry {
@@ -19,6 +19,25 @@ export class CIFollService implements OnModuleDestroy {
   private readonly activePolls = new Map<string, PollEntry>();
   private readonly pollIntervalMs = 30_000;
   private readonly maxPollTimeMs = 15 * 60 * 1000;
+  private readonly maxConcurrentPolls = 4;
+  private activeChecks = 0;
+
+  private execGh(args: string[], cwd: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      execFile(
+        'gh',
+        args,
+        { encoding: 'utf-8', cwd, timeout: 15_000 },
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(new Error(stderr || error.message));
+            return;
+          }
+          resolve(stdout);
+        },
+      );
+    });
+  }
 
   constructor(
     private readonly notificationService: NotificationService,
@@ -34,11 +53,7 @@ export class CIFollService implements OnModuleDestroy {
     }
   }
 
-  startPolling(
-    prNumber: string,
-    issueNum: string,
-    engine: string,
-  ): void {
+  startPolling(prNumber: string, issueNum: string, engine: string): void {
     if (this.activePolls.has(prNumber)) {
       this.logger.log(`Already polling PR #${prNumber}`);
       return;
@@ -65,10 +80,26 @@ export class CIFollService implements OnModuleDestroy {
   ): void {
     const timer = setTimeout(() => {
       this.activePolls.delete(prNumber);
-      void this.checkCIStatus(prNumber, issueNum, engine, startTime);
+      if (this.activeChecks >= this.maxConcurrentPolls) {
+        this.scheduleNext(prNumber, issueNum, engine, startTime);
+        return;
+      }
+
+      this.activeChecks += 1;
+      void this.checkCIStatus(prNumber, issueNum, engine, startTime).finally(
+        () => {
+          this.activeChecks -= 1;
+        },
+      );
     }, this.pollIntervalMs);
 
-    this.activePolls.set(prNumber, { timer, prNumber, issueNum, engine, startTime });
+    this.activePolls.set(prNumber, {
+      timer,
+      prNumber,
+      issueNum,
+      engine,
+      startTime,
+    });
   }
 
   private async checkCIStatus(
@@ -79,30 +110,31 @@ export class CIFollService implements OnModuleDestroy {
   ): Promise<void> {
     const elapsed = Date.now() - startTime;
     if (elapsed > this.maxPollTimeMs) {
-      this.logger.log(`CI poll timeout for PR #${prNumber} after ${Math.round(elapsed / 1000)}s`);
+      this.logger.log(
+        `CI poll timeout for PR #${prNumber} after ${Math.round(elapsed / 1000)}s`,
+      );
       return;
     }
 
     try {
       const repoPath = this.config.get<string>('REPO_PATH') ?? process.cwd();
 
-      const prJson = execFileSync(
-        'gh',
-        ['pr', 'view', prNumber, '--json', 'headRefOid'],
-        { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
-      );
+      const [prJson, repoSlug] = await Promise.all([
+        this.execGh(['pr', 'view', prNumber, '--json', 'headRefOid'], repoPath),
+        this.execGh(['repo', 'view', '--json', 'nameWithOwner'], repoPath),
+      ]);
       const { headRefOid } = JSON.parse(prJson) as { headRefOid: string };
-      const repoSlug = execFileSync(
-        'gh',
-        ['repo', 'view', '--json', 'nameWithOwner'],
-        { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
-      );
-      const { nameWithOwner } = JSON.parse(repoSlug) as { nameWithOwner: string };
+      const { nameWithOwner } = JSON.parse(repoSlug) as {
+        nameWithOwner: string;
+      };
 
-      const apiResult = execFileSync(
-        'gh',
-        ['api', `repos/${nameWithOwner}/commits/${headRefOid}/check-runs`, '--paginate'],
-        { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
+      const apiResult = await this.execGh(
+        [
+          'api',
+          `repos/${nameWithOwner}/commits/${headRefOid}/check-runs`,
+          '--paginate',
+        ],
+        repoPath,
       );
       const { check_runs: runs } = JSON.parse(apiResult) as {
         check_runs: Array<{
@@ -119,14 +151,18 @@ export class CIFollService implements OnModuleDestroy {
       }
 
       const pending = runs.filter(
-        (c) => c.status === 'queued' || c.status === 'in_progress' || c.conclusion === null,
+        (c) =>
+          c.status === 'queued' ||
+          c.status === 'in_progress' ||
+          c.conclusion === null,
       );
       const failed = runs.filter(
-        (c) => c.conclusion === 'failure' || c.conclusion === 'action_required' || c.conclusion === 'cancelled',
+        (c) =>
+          c.conclusion === 'failure' ||
+          c.conclusion === 'action_required' ||
+          c.conclusion === 'cancelled',
       );
-      const passed = runs.filter(
-        (c) => c.conclusion === 'success',
-      );
+      const passed = runs.filter((c) => c.conclusion === 'success');
 
       this.logger.log(
         `PR #${prNumber} CI: ${passed.length} passed, ${failed.length} failed, ${pending.length} pending`,
@@ -137,7 +173,9 @@ export class CIFollService implements OnModuleDestroy {
         const currentAttempts = await this.ciFixTracker.getAttempts(prNumber);
 
         if (currentAttempts >= maxAttempts) {
-          this.logger.warn(`CI fix max attempts (${maxAttempts}) reached for PR #${prNumber}. Giving up.`);
+          this.logger.warn(
+            `CI fix max attempts (${maxAttempts}) reached for PR #${prNumber}. Giving up.`,
+          );
           this.notificationService.publish({
             jobId: `ci-poll-max-${prNumber}`,
             issueNum,
@@ -150,16 +188,19 @@ export class CIFollService implements OnModuleDestroy {
           return;
         }
 
-        this.logger.log(`CI failures on PR #${prNumber}, queuing fix (attempt ${currentAttempts + 1}/${maxAttempts})`);
+        this.logger.log(
+          `CI failures on PR #${prNumber}, queuing fix (attempt ${currentAttempts + 1}/${maxAttempts})`,
+        );
         await this.ciFixTracker.incrementAttempts(prNumber);
 
         try {
-          const prJson = execFileSync(
-            'gh',
+          const prJson = await this.execGh(
             ['pr', 'view', prNumber, '--json', 'headRefName'],
-            { encoding: 'utf-8', cwd: repoPath, timeout: 15_000 },
+            repoPath,
           );
-          const { headRefName: prBranchName } = JSON.parse(prJson) as { headRefName: string };
+          const { headRefName: prBranchName } = JSON.parse(prJson) as {
+            headRefName: string;
+          };
 
           await this.queueService.addCIFixJob(
             prNumber,
@@ -178,7 +219,9 @@ export class CIFollService implements OnModuleDestroy {
           );
           this.logger.log(`CI fix queued for PR #${prNumber}`);
         } catch (err) {
-          this.logger.error(`Failed to queue CI fix: ${(err as Error).message}`);
+          this.logger.error(
+            `Failed to queue CI fix: ${(err as Error).message}`,
+          );
         }
         return;
       }
@@ -202,7 +245,9 @@ export class CIFollService implements OnModuleDestroy {
         return;
       }
     } catch (err) {
-      this.logger.warn(`CI poll error for PR #${prNumber}: ${(err as Error).message}`);
+      this.logger.warn(
+        `CI poll error for PR #${prNumber}: ${(err as Error).message}`,
+      );
       this.scheduleNext(prNumber, issueNum, engine, startTime);
     }
   }

@@ -317,13 +317,11 @@ describe('MatchWidget (ARC-635)', () => {
     expect(toggleFullscreen).toHaveBeenCalledTimes(1);
   });
 
-  it('mounts RulesModal in-place and toggles it via HandRail menu', () => {
-    render(<MatchWidget {...makeProps()} />);
-    expect(screen.queryByTestId('rules-modal-stub')).not.toBeInTheDocument();
+  it('calls onOpenRules when HandRail rules button is clicked', () => {
+    const onOpenRules = vi.fn();
+    render(<MatchWidget {...makeProps({ onOpenRules })} />);
     fireEvent.click(screen.getByTestId('hand-zone-stub-rules'));
-    expect(screen.getByTestId('rules-modal-stub')).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId('rules-modal-close'));
-    expect(screen.queryByTestId('rules-modal-stub')).not.toBeInTheDocument();
+    expect(onOpenRules).toHaveBeenCalledTimes(1);
   });
 });
 

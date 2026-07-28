@@ -9,6 +9,8 @@ on:
       - 'apps/tg-bot/**'
       - 'packages/**'
 
+permissions: {}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -81,8 +81,53 @@ function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   return false;
 }
 
+function isVercelFeedbackOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+
+  try {
+    const url = new URL(origin);
+    return (
+      url.protocol === 'https:' &&
+      (url.hostname === 'vercel.live' ||
+        url.hostname === 'arcadeum.vercel.app' ||
+        url.hostname === 'arcadeum-dev.vercel.app')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function handleVercelFeedbackPreflight(req: NextRequest): NextResponse | null {
+  if (req.method !== 'OPTIONS') return null;
+
+  const origin = req.headers.get('origin');
+  if (
+    !req.headers.get('access-control-request-method') ||
+    !isVercelFeedbackOrigin(origin)
+  ) {
+    return null;
+  }
+
+  const response = new NextResponse(null, { status: 204 });
+  response.headers.set('Access-Control-Allow-Origin', origin!);
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.headers.set(
+    'Access-Control-Allow-Headers',
+    req.headers.get('access-control-request-headers') ?? 'content-type',
+  );
+  response.headers.set('Access-Control-Max-Age', '600');
+  response.headers.set(
+    'Vary',
+    'Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
+  );
+  return response;
+}
+
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  const feedbackPreflight = handleVercelFeedbackPreflight(req);
+  if (feedbackPreflight) return feedbackPreflight;
 
   if (SKIP_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();

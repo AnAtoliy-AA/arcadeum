@@ -76,6 +76,9 @@ export class GameRoomsQuickplayService {
     gameId: string,
     variant?: string,
   ): Promise<GameRoomSummary> {
+    if (typeof userId !== 'string') {
+      throw new BadRequestException('Invalid userId');
+    }
     validateGameId(gameId);
     if (typeof gameId !== 'string' || !VALID_GAME_IDS.has(gameId)) {
       throw new BadRequestException(`Invalid gameId: ${gameId}`);

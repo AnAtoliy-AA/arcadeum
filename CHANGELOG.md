@@ -7,14 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.162] - 2026-07-28
+
+### Fixed
+- support feedback preflight and production API domains
+
+
+## [1.23.161] - 2026-07-28
+
+### Fixed
+- fix critical rules modal in active games
+- pass onOpenRules through widget tree and fix hand background bleed
+- lift RulesModal to Game.tsx outside widget tree
+- add background to Critical hand section so scene covers full widget
+- fix Critical card images not loading and rules modal not opening in lobby
+
+
+## [1.23.160] - 2026-07-28
+
+### Added
+- husky develop branch pysh protection
+
+
+## [1.23.159] - 2026-07-28
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.158] - 2026-07-28
+
+### Fixed
+- encrypt sensitive email storage to resolve CodeQL alert
+- add typeof guards, URL validation, crypto fixes, and workflow permissions for CodeQL compliance
+- correct CodeQL suppression comment query ID (ARC-XXX)
+- resolve all CodeQL security alerts across codebase
+
+
+## [1.23.102] - 2026-07-27
+
+### Fixed
+
+- address CodeQL injection findings
+- secure CI webhook and polling
+
 ## [1.23.101] - 2026-07-27
 
 ### Fixed
+
 - eliminate modulo bias in referral code generation (ARC-XXX)
 - add CodeQL config and cover staging branch to fix default scan failures
 - add input validation to resolve CodeQL NoSQL injection alerts
 - add input validation and replace Math.random with crypto PRNG
-
 
 ## [1.23.100] - 2026-07-27
 

@@ -29,7 +29,7 @@ import { GameEndModals, GameWidgetContainer } from '@/features/games/ui';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
-import { CRITICAL_VARIANTS } from '../lib/constants';
+import { CRITICAL_VARIANTS, GAME_VARIANT } from '../lib/constants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
@@ -52,6 +52,7 @@ interface ActiveGameViewProps {
   // Rules modal state from parent
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
+  onOpenRules: () => void;
   // Rematch props
   rematch: {
     rematchLoading: boolean;
@@ -86,11 +87,12 @@ export function ActiveGameView({
   aliveOpponents,
   isGameOver,
   rematch,
+  onOpenRules,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
   const media = useMedia();
   const isMobile = media.sm;
-  const cardVariant = room.gameOptions?.cardVariant;
+  const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const scenePalette = useMemo(
     () => getVariantStyles(cardVariant).scene,
     [cardVariant],
@@ -272,6 +274,7 @@ export function ActiveGameView({
         variant={cardVariant as GameVariant}
         isMyTurn={isMyTurn}
         isGameOver={isGameOver}
+        containerBackground={scenePalette.handBackground}
         // Critical shows incoming chat as per-opponent bubbles over each tile,
         // so it opts out of the shared corner popup to avoid double display.
         showChatPopup={false}
@@ -312,6 +315,7 @@ export function ActiveGameView({
                 idleTimerTriggered={idleTimerTriggered}
                 handleIdleTimeout={handleIdleTimeout}
                 handleStopAutoplay={handleStopAutoplay}
+                onOpenRules={onOpenRules}
               />
             </YStack>
             {currentPlayer && (

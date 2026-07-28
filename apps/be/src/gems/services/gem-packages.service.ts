@@ -69,6 +69,9 @@ export class GemPackagesService {
   }
 
   async update(id: string, dto: UpdateGemPackageDto): Promise<GemPackageAdmin> {
+    if (typeof id !== 'string') {
+      throw new BadRequestException('Invalid package id');
+    }
     const updatePayload: Partial<GemPackageLean> = {};
     if (dto.name !== undefined) updatePayload.name = dto.name;
     if (dto.gems !== undefined) updatePayload.gems = dto.gems;

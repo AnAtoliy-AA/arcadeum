@@ -9,19 +9,21 @@ import { GAME_CATALOG } from '../../games/games.catalog';
 
 const VALID_GAME_IDS = new Set(GAME_CATALOG.map((g) => g.gameId));
 
-function validateGameId(gameId: string): void {
+function assertValidGameId(gameId: string): string {
   if (!VALID_GAME_IDS.has(gameId)) {
     throw new BadRequestException(`Invalid gameId: ${gameId}`);
   }
+  return gameId;
 }
 
-function validateRuleId(gameId: string, ruleId: string): void {
+function assertValidRuleId(gameId: string, ruleId: string): string {
   const game = GAME_CATALOG.find((g) => g.gameId === gameId);
   if (!game || !game.rules.some((r) => r.ruleId === ruleId)) {
     throw new BadRequestException(
       `Invalid ruleId ${ruleId} for game ${gameId}`,
     );
   }
+  return ruleId;
 }
 
 export interface RuleAvailability {
@@ -39,8 +41,11 @@ export class GameRuleVisibilityService {
   ) {}
 
   async getRulesForGame(gameId: string): Promise<Map<string, boolean>> {
-    validateGameId(gameId);
-    const rows = await this.model.find({ gameId }).exec();
+    if (typeof gameId !== 'string') {
+      throw new BadRequestException('Invalid gameId');
+    }
+    const validGameId = assertValidGameId(gameId);
+    const rows = await this.model.find({ gameId: { $eq: validGameId } }).exec();
     const map = new Map<string, boolean>();
     for (const row of rows) {
       map.set(row.ruleId, row.enabled);
@@ -66,15 +71,18 @@ export class GameRuleVisibilityService {
     enabled: boolean,
     updatedBy: string,
   ): Promise<void> {
-    validateGameId(gameId);
-    validateRuleId(gameId, ruleId);
+    if (typeof gameId !== 'string' || typeof ruleId !== 'string') {
+      throw new BadRequestException('Invalid gameId or ruleId');
+    }
+    const validGameId = assertValidGameId(gameId);
+    const validRuleId = assertValidRuleId(validGameId, ruleId);
     await this.model.findOneAndUpdate(
-      { gameId, ruleId },
+      { gameId: { $eq: validGameId }, ruleId: { $eq: validRuleId } },
       { enabled, updatedBy },
       { upsert: true },
     );
     this.logger.log(
-      `Rule ${ruleId} for ${gameId} set to ${enabled ? 'enabled' : 'disabled'} by ${updatedBy}`,
+      `Rule ${validRuleId} for ${validGameId} set to ${enabled ? 'enabled' : 'disabled'} by ${updatedBy}`,
     );
   }
 
@@ -83,13 +91,17 @@ export class GameRuleVisibilityService {
     rules: Array<{ ruleId: string; enabled: boolean }>,
     updatedBy: string,
   ): Promise<void> {
-    validateGameId(gameId);
-    for (const r of rules) {
-      validateRuleId(gameId, r.ruleId);
+    if (typeof gameId !== 'string') {
+      throw new BadRequestException('Invalid gameId');
     }
-    const ops = rules.map((r) =>
+    const validGameId = assertValidGameId(gameId);
+    const validatedRules = rules.map((r) => ({
+      ...r,
+      ruleId: assertValidRuleId(validGameId, r.ruleId),
+    }));
+    const ops = validatedRules.map((r) =>
       this.model.findOneAndUpdate(
-        { gameId, ruleId: r.ruleId },
+        { gameId: { $eq: validGameId }, ruleId: { $eq: r.ruleId } },
         { enabled: r.enabled, updatedBy },
         { upsert: true },
       ),

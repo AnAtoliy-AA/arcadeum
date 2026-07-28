@@ -48,7 +48,10 @@ export default function CriticalGame({
 
   const [rulesOpen, setRulesOpen] = useState(false);
   const handleOpenRules = useCallback(() => setRulesOpen(true), []);
-  const handleCloseRules = useCallback(() => setRulesOpen(false), []);
+  const handleCloseRules = useCallback(() => {
+    setRulesOpen(false);
+    onShowRulesClose();
+  }, [onShowRulesClose]);
 
   const cardVariant = room?.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
 
@@ -108,7 +111,7 @@ export default function CriticalGame({
         onOpenRules={handleOpenRules}
       />
       <RulesModal
-        isOpen={rulesOpen}
+        isOpen={rulesOpen || showRulesOpen}
         onClose={handleCloseRules}
         currentVariant={cardVariant}
         isPrivate={room.visibility === 'private'}

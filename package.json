@@ -31,10 +31,10 @@
     "husky": "^9.1.4",
     "jimp": "^0.22.12",
     "lint-staged": "^15.2.10",
-    "markdown-it": "^14.1.1",
+    "markdown-it": "^14.2.0",
     "prettier": "3.4.2",
     "standard-version": "^9.5.0",
-    "turbo": "^2.1.3"
+    "turbo": "^2.9.14"
   },
   "pnpm": {
     "overrides": {

@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   check-pr-title:
     runs-on: ubuntu-latest

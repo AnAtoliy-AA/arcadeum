@@ -58,6 +58,7 @@ function setTokenCookies(
 
   const sameSite = secure ? 'none' : 'lax';
 
+  // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure,
@@ -65,6 +66,7 @@ function setTokenCookies(
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
+  // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure,

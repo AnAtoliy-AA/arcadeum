@@ -61,6 +61,8 @@ export class GemPurchasesService {
     userId: string,
     packageId: string,
   ): Promise<{ paypalOrderId: string; approveUrl: string }> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     if (!Types.ObjectId.isValid(packageId)) {
       throw new BadRequestException('gems.packageNotFound');
     }

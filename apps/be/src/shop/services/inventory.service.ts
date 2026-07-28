@@ -60,6 +60,8 @@ export class InventoryService {
   ) {}
 
   async listForUser(userId: string): Promise<InventoryView> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     // Inventory rows store userId as a BSON ObjectId (see schema). Mongoose's
     // string-to-ObjectId auto-cast on `find()` is unreliable here — observed
     // empty results in the dev DB even with a valid 24-char hex. Explicit
@@ -94,15 +96,27 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<boolean> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
     if (!Types.ObjectId.isValid(userId)) {
       throw new BadRequestException('Invalid userId format');
     }
-    if (typeof itemId !== 'string' || !itemId) {
+    if (!itemId) {
       throw new BadRequestException('Invalid itemId');
     }
     const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel
-      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .findOne(
+        {
+          userId: userObjId,
+          itemId,
+          soldAt: null,
+        },
+        null,
+        { session },
+      )
       .lean();
     return row !== null;
   }
@@ -112,15 +126,27 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
     if (!Types.ObjectId.isValid(userId)) {
       throw new BadRequestException('Invalid userId format');
     }
-    if (typeof itemId !== 'string' || !itemId) {
+    if (!itemId) {
       throw new BadRequestException('Invalid itemId');
     }
     const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
-      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .findOne(
+        {
+          userId: userObjId,
+          itemId,
+          soldAt: null,
+        },
+        null,
+        { session },
+      )
       .lean<LeanInventoryRow | null>();
   }
 
@@ -195,6 +221,8 @@ export class InventoryService {
     itemId: string,
     purchaseId: string,
   ): Promise<void> {
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
     const def = getCatalogItem(itemId);
     if (!def) throw new BadRequestException('shop.unknownItem');
     try {

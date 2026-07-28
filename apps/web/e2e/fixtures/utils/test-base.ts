@@ -159,7 +159,13 @@ export const test = base.extend({
           lowerErr.includes('canceled') ||
           lowerErr.includes('cancelled') ||
           lowerErr.includes('navigation cancel') ||
-          url.includes('accounts.google.com') ||
+          (() => {
+            try {
+              return new URL(url).hostname === 'accounts.google.com';
+            } catch {
+              return false;
+            }
+          })() ||
           url.includes('__nextjs_original-stack-frames') ||
           (url.includes('/_next/static/chunks/') &&
             /NS_ERROR_NET_PARTIAL_TRANSFER|ERR_HTTP2_PROTOCOL_ERROR|ERR_CONTENT_LENGTH_MISMATCH|ERR_INCOMPLETE_CHUNKED_ENCODING/i.test(

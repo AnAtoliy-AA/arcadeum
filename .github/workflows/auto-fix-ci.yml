@@ -5,6 +5,9 @@ on:
     workflows: [CI]
     types: [completed]
 
+permissions:
+  contents: read
+
 jobs:
   auto-fix:
     if: >

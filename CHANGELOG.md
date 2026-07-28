@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.163] - 2026-07-28
+
+### Fixed
+- scope auth cookies to .arcadeum.games with SameSite=Lax
+
+
 ## [1.23.162] - 2026-07-28
 
 ### Fixed

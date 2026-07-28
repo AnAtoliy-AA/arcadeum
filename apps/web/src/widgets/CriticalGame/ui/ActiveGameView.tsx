@@ -52,6 +52,7 @@ interface ActiveGameViewProps {
   // Rules modal state from parent
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
+  onOpenRules: () => void;
   // Rematch props
   rematch: {
     rematchLoading: boolean;
@@ -86,6 +87,7 @@ export function ActiveGameView({
   aliveOpponents,
   isGameOver,
   rematch,
+  onOpenRules,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
   const media = useMedia();
@@ -272,6 +274,7 @@ export function ActiveGameView({
         variant={cardVariant as GameVariant}
         isMyTurn={isMyTurn}
         isGameOver={isGameOver}
+        containerBackground={scenePalette.handBackground}
         // Critical shows incoming chat as per-opponent bubbles over each tile,
         // so it opts out of the shared corner popup to avoid double display.
         showChatPopup={false}
@@ -312,6 +315,7 @@ export function ActiveGameView({
                 idleTimerTriggered={idleTimerTriggered}
                 handleIdleTimeout={handleIdleTimeout}
                 handleStopAutoplay={handleStopAutoplay}
+                onOpenRules={onOpenRules}
               />
             </YStack>
             {currentPlayer && (

@@ -69,6 +69,8 @@ export default function CriticalGame({
           currentUserId ? () => onLeaveRoom(currentUserId) : undefined
         }
         onRefresh={onRefresh}
+        showRulesOpen={showRulesOpen}
+        onShowRulesClose={onShowRulesClose}
         t={t}
       />
     );

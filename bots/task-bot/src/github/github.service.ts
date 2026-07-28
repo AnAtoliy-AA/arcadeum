@@ -4,14 +4,14 @@ import { execFileSync, spawn } from 'child_process';
 import { mkdirSync, rmSync } from 'fs';
 import { NotificationService } from '../notification/notification.service';
 
-interface GitHubIssue {
-  arc: string | null;
-  title: string;
-  priority: string;
-  engine: string;
-  requirements: string[];
-  scope: string[];
-}
+import { GitHubApiService } from './github.api.service';
+import { GitHubGitService } from './github.git.service';
+import {
+  GitHubIssue,
+  GitHubIssueListItem,
+  GitHubReview,
+  GitHubIssueBody,
+} from './github.types';
 
 const GITHUB_RATE_LIMIT_DELAY_MS = 500;
 
@@ -22,256 +22,13 @@ export class GitHubService {
 
   constructor(
     private readonly config: ConfigService,
+    private readonly api: GitHubApiService,
+    private readonly git: GitHubGitService,
     private readonly notificationService: NotificationService,
   ) {}
 
-  private throttleGitHub(): void {
-    const now = Date.now();
-    const elapsed = now - this.lastGhCallTime;
-    if (elapsed < GITHUB_RATE_LIMIT_DELAY_MS) {
-      const waitMs = GITHUB_RATE_LIMIT_DELAY_MS - elapsed;
-      const start = Date.now();
-      while (Date.now() - start < waitMs) {
-        // busy wait for rate limit
-      }
-    }
-    this.lastGhCallTime = Date.now();
-  }
-
-  private getCwd(): string {
-    return this.config.get<string>('REPO_PATH') ?? process.cwd();
-  }
-
-  private spawnAsync(
-    cmd: string,
-    args: string[],
-    opts: {
-      cwd: string;
-      timeout?: number;
-      env?: Record<string, string>;
-      onTimeoutApproaching?: () => Promise<'continue' | 'abort'>;
-    },
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const child = spawn(cmd, args, {
-        cwd: opts.cwd,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: { ...process.env, ...opts.env },
-      });
-      let stdout = '';
-      let stderr = '';
-      let settled = false;
-      let currentTimer: NodeJS.Timeout | undefined;
-      let warningTimer: NodeJS.Timeout | undefined;
-      child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
-      child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
-
-      const killChild = () => {
-        try {
-          process.kill(-child.pid!, 'SIGTERM');
-        } catch {
-          try { child.kill('SIGTERM'); } catch { /* ignore */ }
-        }
-      };
-
-      const startTimer = (remainingMs: number) => {
-        if (currentTimer) clearTimeout(currentTimer);
-        if (warningTimer) clearTimeout(warningTimer);
-
-        const warningMs = Math.max(0, remainingMs - 100_000);
-        if (opts.onTimeoutApproaching && warningMs > 0) {
-          warningTimer = setTimeout(() => {
-            if (settled) return;
-            opts.onTimeoutApproaching!().then((action) => {
-              if (settled) return;
-              if (action === 'abort') {
-                settled = true;
-                killChild();
-                reject(new Error('Aborted by user'));
-              } else {
-                startTimer(900_000);
-              }
-            });
-          }, warningMs);
-        }
-
-        currentTimer = setTimeout(() => {
-          if (settled) return;
-          settled = true;
-          killChild();
-          reject(new Error(`Timeout after ${Math.round(remainingMs / 1000)}s`));
-        }, remainingMs);
-      };
-
-      if (opts.timeout) {
-        startTimer(opts.timeout);
-      }
-
-      child.on('close', (code) => {
-        if (settled) return;
-        settled = true;
-        if (currentTimer) clearTimeout(currentTimer);
-        if (warningTimer) clearTimeout(warningTimer);
-        if (code === 0) resolve(stdout.trim());
-        else reject(new Error(stderr || `Exit code ${code}`));
-      });
-      child.on('error', (err) => {
-        if (settled) return;
-        settled = true;
-        if (currentTimer) clearTimeout(currentTimer);
-        if (warningTimer) clearTimeout(warningTimer);
-        reject(err);
-      });
-    });
-  }
-
-  private cleanWorkdir(cwd: string): void {
-    try {
-      execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
-      execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
-    } catch {
-      // ignore — repo may be in a bad state
-    }
-  }
-
-  verifyChanges(cwd: string): { ok: boolean; errors: string[] } {
-    const errors: string[] = [];
-    const commands = [
-      { name: 'lint', cmd: ['pnpm', 'lint'] },
-      { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
-      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
-      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
-    ];
-    for (const { name, cmd } of commands) {
-      try {
-        this.logger.log(`Verifying: ${name}`);
-        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 300_000 });
-        this.logger.log(`✓ ${name} passed`);
-      } catch (err) {
-        const msg = (err as Error).message.slice(0, 500);
-        this.logger.error(`✗ ${name} failed: ${msg}`);
-        errors.push(`${name}: ${msg}`);
-      }
-    }
-    return { ok: errors.length === 0, errors };
-  }
-
-  private installDeps(cwd: string): void {
-    try {
-      this.logger.log(`Installing dependencies in ${cwd}`);
-      execFileSync('pnpm', ['install', '--frozen-lockfile'], {
-        encoding: 'utf-8',
-        cwd,
-        timeout: 180_000,
-      });
-      this.logger.log(`Dependencies installed in ${cwd}`);
-    } catch {
-      try {
-        this.logger.log(`Frozen lockfile install failed, trying without --frozen-lockfile`);
-        execFileSync('pnpm', ['install'], {
-          encoding: 'utf-8',
-          cwd,
-          timeout: 180_000,
-        });
-        this.logger.log(`Dependencies installed (no frozen lockfile) in ${cwd}`);
-      } catch (err) {
-        this.logger.warn(`Failed to install deps: ${(err as Error).message}`);
-      }
-    }
-  }
-
-  createWorktree(jobId: string): string {
-    const repoCwd = this.getCwd();
-    const worktreePath = `/tmp/task-bot/${jobId}`;
-
-    mkdirSync('/tmp/task-bot', { recursive: true });
-
-    try {
-      execFileSync('git', ['worktree', 'add', worktreePath, 'origin/develop'], {
-        encoding: 'utf-8',
-        cwd: repoCwd,
-      });
-      try {
-        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], {
-          encoding: 'utf-8',
-          cwd: worktreePath,
-        });
-      } catch {
-        // ignore
-      }
-      try {
-        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], {
-          encoding: 'utf-8',
-          cwd: worktreePath,
-        });
-      } catch {
-        // ignore
-      }
-      this.logger.log(`Created worktree at ${worktreePath}`);
-      return worktreePath;
-    } catch (err) {
-      this.logger.error(`Failed to create worktree: ${(err as Error).message}`);
-      throw err;
-    }
-  }
-
-  removeWorktree(jobId: string): void {
-    const repoCwd = this.getCwd();
-    const worktreePath = `/tmp/task-bot/${jobId}`;
-
-    try {
-      execFileSync('git', ['worktree', 'remove', worktreePath, '--force'], {
-        encoding: 'utf-8',
-        cwd: repoCwd,
-      });
-      this.logger.log(`Removed worktree at ${worktreePath}`);
-    } catch {
-      try {
-        rmSync(worktreePath, { recursive: true, force: true });
-        execFileSync('git', ['worktree', 'prune'], {
-          encoding: 'utf-8',
-          cwd: repoCwd,
-        });
-        this.logger.log(`Force-removed worktree at ${worktreePath}`);
-      } catch {
-        // ignore — worktree may already be gone
-      }
-    }
-  }
-
-  createIssue(issue: GitHubIssue): string | null {
-    const title = issue.arc ? `${issue.arc}: ${issue.title}` : issue.title;
-    const body = this.buildIssueBody(issue);
-    const labels = ['task', 'automated'];
-    if (issue.priority === 'high' || issue.priority === 'urgent') {
-      labels.push('priority');
-    }
-    if (issue.arc) {
-      const existingLabels = this.listLabels();
-      if (existingLabels.includes(issue.arc)) {
-        labels.push(issue.arc);
-      }
-    }
-
-    const labelArgs = labels.flatMap((l) => ['--label', l]);
-    const args = [
-      'issue', 'create',
-      '--title', title,
-      '--body', body,
-      ...labelArgs,
-    ];
-
-    try {
-      this.throttleGitHub();
-      const result = execFileSync('gh', args, {
-        encoding: 'utf-8',
-        cwd: this.getCwd(),
-      });
-      return result.trim();
-    } catch (err) {
-      this.logger.error(`Failed to create issue: ${err}`);
-      return null;
-    }
+  createIssue(issue: GitHubIssueBody): string | null {
+    return this.api.createIssue(issue);
   }
 
   extractIssueNumber(url: string): string | null {
@@ -280,217 +37,48 @@ export class GitHubService {
   }
 
   triggerWorkflow(issueNumber: string, engine: string): boolean {
-    try {
-      execFileSync(
-        'gh',
-        ['workflow', 'run', 'implement-task.yml', '--ref', 'develop', '-f', `issue_number=${issueNumber}`, '-f', `engine=${engine}`],
-        { encoding: 'utf-8', cwd: this.getCwd(), stdio: 'pipe' },
-      );
-      this.logger.log(
-        `Workflow triggered for issue #${issueNumber} with engine ${engine}`,
-      );
-      return true;
-    } catch (err) {
-      this.logger.error(`Failed to trigger workflow: ${err}`);
-      return false;
-    }
+    return this.api.triggerWorkflow(issueNumber, engine);
   }
 
-  viewIssue(issueNum: string): {
-    state: string;
-    title: string;
-    body: string;
-    comments: Array<{ body: string; createdAt: string }>;
-    labels: Array<{ name: string }>;
-  } | null {
-    try {
-      this.throttleGitHub();
-      const result = execFileSync(
-        'gh',
-        ['issue', 'view', issueNum, '--json', 'state,title,body,comments,labels'],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      return JSON.parse(result) as {
-        state: string;
-        title: string;
-        body: string;
-        comments: Array<{ body: string; createdAt: string }>;
-        labels: Array<{ name: string }>;
-      };
-    } catch {
-      return null;
-    }
+  viewIssue(issueNum: string): GitHubIssue | null {
+    return this.api.viewIssue(issueNum);
   }
 
   viewIssueSimple(issueNum: string): { state: string; title: string } | null {
-    try {
-      const result = execFileSync('gh', ['issue', 'view', issueNum, '--json', 'state,title'], {
-        encoding: 'utf-8',
-        cwd: this.getCwd(),
-      });
-      return JSON.parse(result) as { state: string; title: string };
-    } catch {
-      return null;
-    }
+    return this.api.viewIssueSimple(issueNum);
   }
 
-  viewPr(prNum: string): {
-    state: string;
-    headRefName: string;
-    statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
-  } | null {
-    try {
-      this.throttleGitHub();
-      const result = execFileSync(
-        'gh',
-        ['pr', 'view', prNum, '--json', 'state,headRefName,statusCheckRollup'],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      return JSON.parse(result) as {
-        state: string;
-        headRefName: string;
-        statusCheckRollup: Array<{ name: string; conclusion: string | null }>;
-      };
-    } catch {
-      return null;
-    }
+  viewPr(prNum: string): GitHubServiceTypes.GitHubPR | null {
+    return this.api.viewPr(prNum);
   }
 
   getPrChecks(
     prNumber: string,
   ): Array<{ name: string; state: string; link: string }> {
-    try {
-      this.throttleGitHub();
-      const result = execFileSync(
-        'gh',
-        ['pr', 'checks', prNumber, '--json', 'name,state,link'],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      return JSON.parse(result) as Array<{ name: string; state: string; link: string }>;
-    } catch {
-      return [];
-    }
+    return this.api.getPrChecks(prNumber);
   }
 
   getCIFailureLogs(runUrl: string): string {
-    try {
-      const runIdMatch = runUrl.match(/\/runs\/(\d+)/);
-      if (!runIdMatch) return '';
-      const runId = runIdMatch[1];
-      const result = execFileSync(
-        'gh',
-        ['run', 'view', runId, '--log-failed', '--repo', 'AnAtoliy-AA/arcadeum'],
-        { encoding: 'utf-8', cwd: this.getCwd(), timeout: 30_000 },
-      );
-      const lines = result.split('\n');
-      const errorLines: string[] = [];
-      let capture = false;
-      for (const line of lines) {
-        if (line.includes('ERROR') || line.includes('error') || line.includes('FAIL') || line.includes('fail')) {
-          capture = true;
-        }
-        if (capture) {
-          errorLines.push(line);
-          if (errorLines.length > 80) break;
-        }
-      }
-      if (errorLines.length > 0) {
-        return errorLines.join('\n').slice(0, 4000);
-      }
-      const passingLines = lines.filter(l => l.includes('✓') || l.includes('PASS'));
-      const failingLines = lines.filter(l => l.includes('×') || l.includes('FAIL') || l.includes('Error'));
-      const summary = `Total tests: ${passingLines.length} passed, ${failingLines.length} failed`;
-      return [summary, '', 'Failing tests:', ...failingLines.slice(0, 20)].join('\n').slice(0, 4000);
-    } catch {
-      return '';
-    }
+    return this.api.getCIFailureLogs(runUrl);
   }
 
   getPrReviews(
     prNumber: string,
   ): Array<{ body: string; state: string }> {
-    try {
-      this.throttleGitHub();
-      const result = execFileSync(
-        'gh',
-        ['pr', 'view', prNumber, '--json', 'reviews'],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      const data = JSON.parse(result) as {
-        reviews: Array<{ body: string; state: string }>;
-      };
-      return data.reviews ?? [];
-    } catch {
-      return [];
-    }
+    return this.api.getPrReviews(prNumber);
   }
 
   listIssues(
     label: string,
     limit: number,
-  ): Array<{
-    number: number;
-    title: string;
-    state: string;
-    labels: Array<{ name: string }>;
-    comments: Array<{ body: string; createdAt: string }>;
-  }> {
-    try {
-      const result = execFileSync(
-        'gh',
-        ['issue', 'list', '--label', label, '--json', 'number,title,state,labels,comments', '--limit', String(limit)],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      return JSON.parse(result) as Array<{
-        number: number;
-        title: string;
-        state: string;
-        labels: Array<{ name: string }>;
-        comments: Array<{ body: string; createdAt: string }>;
-      }>;
-    } catch {
-      return [];
-    }
+  ): GitHubIssueListItem[] {
+    return this.api.listIssues(label, limit);
   }
 
   findDuplicateIssue(
     title: string,
   ): { number: number; title: string; state: string } | null {
-    try {
-      const result = execFileSync(
-        'gh',
-        ['issue', 'list', '--state', 'all', '--json', 'number,title,state', '--limit', '100'],
-        { encoding: 'utf-8', cwd: this.getCwd() },
-      );
-      const issues = JSON.parse(result) as Array<{
-        number: number;
-        title: string;
-        state: string;
-      }>;
-      const normalizedTitle = title.toLowerCase().replace(/^arc-\d+:\s*/, '');
-      return (
-        issues.find(
-          (i) =>
-            i.title.toLowerCase().replace(/^arc-\d+:\s*/, '') ===
-            normalizedTitle,
-        ) ?? null
-      );
-    } catch {
-      return null;
-    }
-  }
-
-  private listLabels(): string[] {
-    try {
-      const result = execFileSync('gh', ['label', 'list', '--json', 'name', '--limit', '100'], {
-        encoding: 'utf-8',
-        cwd: this.getCwd(),
-      });
-      const labels = JSON.parse(result) as Array<{ name: string }>;
-      return labels.map((l) => l.name);
-    } catch {
-      return [];
-    }
+    return this.api.findDuplicateIssue(title);
   }
 
   createPR(
@@ -498,34 +86,7 @@ export class GitHubService {
     branchName: string,
     cwd?: string,
   ): { success: boolean; prUrl?: string; message: string } {
-    const workdir = cwd ?? this.getCwd();
-    try {
-      const issue = this.viewIssue(issueNum);
-      if (!issue) {
-        return { success: false, message: `Issue #${issueNum} not found` };
-      }
-      this.throttleGitHub();
-      const prUrl = execFileSync(
-        'gh',
-        [
-          'pr', 'create',
-          '--title', issue.title,
-          '--body', `Closes #${issueNum}`,
-          '--base', 'develop',
-          '--head', branchName,
-        ],
-        { encoding: 'utf-8', cwd: workdir },
-      ).trim();
-
-      execFileSync('gh', [
-        'issue', 'comment', issueNum,
-        '--body', `PR created: ${prUrl}`,
-      ], { encoding: 'utf-8', cwd: workdir });
-
-      return { success: true, prUrl, message: `PR created: ${prUrl}` };
-    } catch (err) {
-      return { success: false, message: `Failed to create PR: ${(err as Error).message}` };
-    }
+    return this.git.createPR(issueNum, branchName, cwd);
   }
 
   resolveConflicts(
@@ -534,135 +95,14 @@ export class GitHubService {
     cwd?: string,
     engine: 'mimo' | 'opencode' = 'mimo',
   ): { success: boolean; message: string } {
-    const workdir = cwd ?? this.getCwd();
-    try {
-      execFileSync('git', ['fetch', 'origin', baseBranch], { encoding: 'utf-8', cwd: workdir, timeout: 30_000 });
-      try {
-        execFileSync('git', ['merge', `origin/${baseBranch}`, '--no-edit'], { encoding: 'utf-8', cwd: workdir, timeout: 30_000 });
-        this.logger.log(`Merged ${baseBranch} into ${branchName} cleanly`);
-        return { success: true, message: 'Merged cleanly' };
-      } catch {
-        this.logger.log(`Merge conflict detected, getting conflicted files`);
-        const conflictedFiles = this.getConflictedFiles(workdir);
-        if (conflictedFiles.length === 0) {
-          try { execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir }); } catch { /* ignore */ }
-          return { success: true, message: 'No conflicts after all' };
-        }
-
-        this.logger.log(`Conflicted files: ${conflictedFiles.join(', ')}`);
-        const resolution = this.resolveWithAI(conflictedFiles, workdir, engine);
-
-        if (resolution) {
-          execFileSync('git', ['add', ...conflictedFiles], { encoding: 'utf-8', cwd: workdir });
-          execFileSync('git', ['commit', '--no-verify', '-m', 'merge: resolve conflicts with AI'], { encoding: 'utf-8', cwd: workdir });
-          this.logger.log(`Conflicts resolved by AI`);
-          return { success: true, message: 'Resolved by AI' };
-        }
-
-        try { execFileSync('git', ['merge', '--abort'], { encoding: 'utf-8', cwd: workdir }); } catch { /* ignore */ }
-        return { success: false, message: 'AI could not resolve conflicts' };
-      }
-    } catch (err) {
-      return { success: false, message: `Conflict resolution failed: ${(err as Error).message}` };
-    }
-  }
-
-  private getConflictedFiles(cwd: string): string[] {
-    try {
-      const output = execFileSync('git', ['diff', '--name-only', '--diff-filter=U'], { encoding: 'utf-8', cwd });
-      return output.trim().split('\n').filter(Boolean);
-    } catch {
-      return [];
-    }
-  }
-
-  private resolveWithAI(files: string[], cwd: string, engine: 'mimo' | 'opencode'): boolean {
-    try {
-      const conflicts = files.map((f) => {
-        try {
-          const content = execFileSync('git', ['show', `:${f}`], { encoding: 'utf-8', cwd });
-          return `--- ${f}\n${content}`;
-        } catch {
-          return `--- ${f}\n(unable to read)`;
-        }
-      }).join('\n\n');
-
-      const prompt = [
-        'Resolve the merge conflicts in these files.',
-        'Keep the correct code from both sides. Do not remove functionality.',
-        '',
-        'Conflicted files:',
-        ...files.map((f) => `- ${f}`),
-        '',
-        'Conflict content:',
-        '```',
-        conflicts,
-        '```',
-        '',
-        'For each file, write the resolved version using Edit tool.',
-        'After resolving all files, run `pnpm --filter web type-check` to verify.',
-        'Do NOT commit or push — the processor handles git operations.',
-      ].join('\n');
-
-      const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      const runArgs = cli === 'opencode'
-        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-
-      if (cli === 'mimo') {
-        try {
-          execFileSync('mimo', ['auth', 'login', '-p', 'mimo-free'], { cwd, timeout: 30_000, encoding: 'utf-8' });
-        } catch { /* ignore */ }
-      }
-      execFileSync(cli, runArgs, { cwd, timeout: 120_000, env: { ...process.env, HUSKY: '0' } });
-      return true;
-    } catch (err) {
-      this.logger.error(`AI conflict resolution failed: ${(err as Error).message}`);
-      return false;
-    }
+    return this.git.resolveConflicts(branchName, baseBranch, cwd, engine);
   }
 
   pushBranch(
     branchName: string,
     cwd?: string,
   ): { success: boolean; message: string } {
-    const workdir = cwd ?? this.getCwd();
-    try {
-      try {
-        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], { encoding: 'utf-8', cwd: workdir });
-      } catch {
-        // ignore
-      }
-
-      const credHelper = '!/usr/bin/gh auth git-credential';
-      const maxRetries = 2;
-      let lastError: Error | null = null;
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          execFileSync('git', [
-            '-c', `credential.helper=${credHelper}`,
-            'push', 'origin', branchName, '--no-verify',
-          ], { encoding: 'utf-8', cwd: workdir, timeout: 60_000 });
-          this.logger.log(`Pushed ${branchName} (attempt ${attempt})`);
-          return { success: true, message: `Pushed ${branchName}` };
-        } catch (err) {
-          lastError = err as Error;
-          this.logger.warn(`git push attempt ${attempt}/${maxRetries} failed: ${lastError.message}`);
-          if (attempt < maxRetries) {
-            execFileSync('git', ['credential', 'reject'], {
-              input: 'protocol=https\nhost=github.com\n',
-              encoding: 'utf-8',
-              cwd: workdir,
-              timeout: 5_000,
-            });
-          }
-        }
-      }
-      return { success: false, message: `Failed to push after ${maxRetries} attempts: ${lastError!.message}` };
-    } catch (err) {
-      return { success: false, message: `Failed to push: ${(err as Error).message}` };
-    }
+    return this.git.pushBranch(branchName, cwd);
   }
 
   async implementLocally(
@@ -716,7 +156,7 @@ export class GitHubService {
       });
       this.logger.log(`Created branch ${branchName} in worktree`);
 
-      this.installDeps(cwd);
+      this.git.installDeps(cwd);
 
       const requirements = this.extractRequirements(data.body);
       const hasRealRequirements =
@@ -916,7 +356,7 @@ export class GitHubService {
         // ignore
       }
 
-      this.installDeps(cwd);
+      this.git.installDeps(cwd);
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       const runArgs =
@@ -1040,7 +480,7 @@ export class GitHubService {
         // ignore
       }
 
-      this.installDeps(cwd);
+      this.git.installDeps(cwd);
 
       const cli = engine === 'mimo' ? 'mimo' : 'opencode';
       if (cli === 'mimo') {
@@ -1099,6 +539,113 @@ export class GitHubService {
     }
   }
 
+  createWorktree(jobId: string): string {
+    const repoCwd = this.getCwd();
+    const worktreePath = `/tmp/task-bot/${jobId}`;
+
+    mkdirSync('/tmp/task-bot', { recursive: true });
+
+    try {
+      execFileSync('git', ['worktree', 'add', worktreePath, 'origin/develop'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+      });
+      try {
+        execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
+      try {
+        execFileSync('git', ['remote', 'set-url', 'origin', 'https://github.com/AnAtoliy-AA/arcadeum.git'], {
+          encoding: 'utf-8',
+          cwd: worktreePath,
+        });
+      } catch {
+        // ignore
+      }
+      this.logger.log(`Created worktree at ${worktreePath}`);
+      return worktreePath;
+    } catch (err) {
+      this.logger.error(`Failed to create worktree: ${(err as Error).message}`);
+      throw err;
+    }
+  }
+
+  removeWorktree(jobId: string): void {
+    const repoCwd = this.getCwd();
+    const worktreePath = `/tmp/task-bot/${jobId}`;
+
+    try {
+      execFileSync('git', ['worktree', 'remove', worktreePath, '--force'], {
+        encoding: 'utf-8',
+        cwd: repoCwd,
+      });
+      this.logger.log(`Removed worktree at ${worktreePath}`);
+    } catch {
+      try {
+        rmSync(worktreePath, { recursive: true, force: true });
+        execFileSync('git', ['worktree', 'prune'], {
+          encoding: 'utf-8',
+          cwd: repoCwd,
+        });
+        this.logger.log(`Force-removed worktree at ${worktreePath}`);
+      } catch {
+        // ignore — worktree may already be gone
+      }
+    }
+  }
+
+  verifyChanges(cwd: string): { ok: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const commands = [
+      { name: 'lint', cmd: ['pnpm', 'lint'] },
+      { name: 'typecheck', cmd: ['pnpm', '--filter', 'web', 'type-check'] },
+      { name: 'build:be', cmd: ['pnpm', '--filter', 'be', 'build'] },
+      { name: 'build:web', cmd: ['pnpm', '--filter', 'web', 'build'] },
+    ];
+    for (const { name, cmd } of commands) {
+      try {
+        this.logger.log(`Verifying: ${name}`);
+        execFileSync(cmd[0], cmd.slice(1), { encoding: 'utf-8', cwd, timeout: 300_000 });
+        this.logger.log(`✓ ${name} passed`);
+      } catch (err) {
+        const msg = (err as Error).message.slice(0, 500);
+        this.logger.error(`✗ ${name} failed: ${msg}`);
+        errors.push(`${name}: ${msg}`);
+      }
+    }
+    return { ok: errors.length === 0, errors };
+  }
+
+  private getCwd(): string {
+    return this.config.get<string>('REPO_PATH') ?? process.cwd();
+  }
+
+  private throttleGitHub(): void {
+    const now = Date.now();
+    const elapsed = now - this.lastGhCallTime;
+    if (elapsed < GITHUB_RATE_LIMIT_DELAY_MS) {
+      const waitMs = GITHUB_RATE_LIMIT_DELAY_MS - elapsed;
+      const start = Date.now();
+      while (Date.now() - start < waitMs) {
+        // busy wait for rate limit
+      }
+    }
+    this.lastGhCallTime = Date.now();
+  }
+
+  private cleanWorkdir(cwd: string): void {
+    try {
+      execFileSync('git', ['checkout', '--', '.'], { encoding: 'utf-8', cwd });
+      execFileSync('git', ['clean', '-fd'], { encoding: 'utf-8', cwd });
+    } catch {
+      // ignore — repo may be in a bad state
+    }
+  }
+
   private fetchErrorLogs(
     failedChecks: Array<{ name: string; state: string; link: string }>,
   ): string {
@@ -1122,46 +669,86 @@ export class GitHubService {
       .map((l) => l.replace(/^- \[ \]\s*/, ''));
   }
 
-  private buildIssueBody(issue: GitHubIssue): string {
-    const requirements =
-      issue.requirements.length > 0
-        ? issue.requirements.map((r) => `- [ ] ${r}`).join('\n')
-        : '- [ ] TBD';
+  private spawnAsync(
+    cmd: string,
+    args: string[],
+    opts: {
+      cwd: string;
+      timeout?: number;
+      env?: Record<string, string>;
+      onTimeoutApproaching?: () => Promise<'continue' | 'abort'>;
+    },
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const child = spawn(cmd, args, {
+        cwd: opts.cwd,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, ...opts.env },
+      });
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
+      let currentTimer: NodeJS.Timeout | undefined;
+      let warningTimer: NodeJS.Timeout | undefined;
+      child.stdout?.on('data', (d: Buffer) => (stdout += d.toString()));
+      child.stderr?.on('data', (d: Buffer) => (stderr += d.toString()));
 
-    const scopeLabels = issue.scope
-      .map((s) => `- [ ] ${s.charAt(0).toUpperCase() + s.slice(1)}`)
-      .join('\n');
+      const killChild = () => {
+        try {
+          process.kill(-child.pid!, 'SIGTERM');
+        } catch {
+          try { child.kill('SIGTERM'); } catch { /* ignore */ }
+        }
+      };
 
-    const prioEmoji = { low: '🟢', normal: '🟡', high: '🟠', urgent: '🔴' }[
-      issue.priority
-    ];
+      const startTimer = (remainingMs: number) => {
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
 
-    return `## ARC Ticket
+        const warningMs = Math.max(0, remainingMs - 100_000);
+        if (opts.onTimeoutApproaching && warningMs > 0) {
+          warningTimer = setTimeout(() => {
+            if (settled) return;
+            opts.onTimeoutApproaching!().then((action) => {
+              if (settled) return;
+              if (action === 'abort') {
+                settled = true;
+                killChild();
+                reject(new Error('Aborted by user'));
+              } else {
+                startTimer(900_000);
+              }
+            });
+          }, warningMs);
+        }
 
-\`${issue.arc || 'ARC-NEW'}\` — ${issue.title}
+        currentTimer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          killChild();
+          reject(new Error(`Timeout after ${Math.round(remainingMs / 1000)}s`));
+        }, remainingMs);
+      };
 
-## Priority
+      if (opts.timeout) {
+        startTimer(opts.timeout);
+      }
 
-${prioEmoji} ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}
-
-## Engine
-
-\`${issue.engine}\`
-
-## Requirements
-
-${requirements}
-
-## Scope
-
-${scopeLabels}
-
-## Acceptance Criteria
-
-- [ ] Feature works as described
-- [ ] No \`any\` types used
-- [ ] i18n keys added for all user-facing strings
-- [ ] Handles loading, error, and empty states
-- [ ] Lint and typecheck pass`;
+      child.on('close', (code) => {
+        if (settled) return;
+        settled = true;
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+        if (code === 0) resolve(stdout.trim());
+        else reject(new Error(stderr || `Exit code ${code}`));
+      });
+      child.on('error', (err) => {
+        if (settled) return;
+        settled = true;
+        if (currentTimer) clearTimeout(currentTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+        reject(err);
+      });
+    });
   }
 }

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.158] - 2026-07-28
+
+### Fixed
+- encrypt sensitive email storage to resolve CodeQL alert
+- add typeof guards, URL validation, crypto fixes, and workflow permissions for CodeQL compliance
+- correct CodeQL suppression comment query ID (ARC-XXX)
+- resolve all CodeQL security alerts across codebase
+
+
 ## [1.23.102] - 2026-07-27
 
 ### Fixed

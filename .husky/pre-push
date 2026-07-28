@@ -2,6 +2,18 @@
 
 set -e
 
+# Block direct pushes to protected branches
+protected_branches="main staging develop"
+current_branch=$(git symbolic-ref --short HEAD)
+
+for branch in $protected_branches; do
+  if [ "$current_branch" = "$branch" ]; then
+    echo "❌ Direct pushes to '$branch' are blocked."
+    echo "   Create a feature branch and open a PR targeting 'develop' instead."
+    exit 1
+  fi
+done
+
 pnpm run build
 
 # Run backend unit tests before pushing

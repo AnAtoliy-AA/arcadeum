@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.162] - 2026-07-28
+
+### Fixed
+- support feedback preflight and production API domains
+
+
 ## [1.23.161] - 2026-07-28
 
 ### Fixed

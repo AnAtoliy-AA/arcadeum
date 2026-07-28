@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.161] - 2026-07-28
+
+### Fixed
+- fix critical rules modal in active games
+- pass onOpenRules through widget tree and fix hand background bleed
+- lift RulesModal to Game.tsx outside widget tree
+- add background to Critical hand section so scene covers full widget
+- fix Critical card images not loading and rules modal not opening in lobby
+
+
 ## [1.23.160] - 2026-07-28
 
 ### Added

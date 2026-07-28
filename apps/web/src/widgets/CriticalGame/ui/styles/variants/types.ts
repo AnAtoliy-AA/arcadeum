@@ -144,6 +144,9 @@ export interface VariantScenePalette {
   lastPlayedGradient: string;
   lastPlayedHaloColor: string;
 
+  // Background for the hand / cards section below the scene backdrop
+  handBackground: string;
+
   // Hand card gradients by role
   handColorByRole: {
     attack: string;

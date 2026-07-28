@@ -54,6 +54,7 @@ export function HandZone(props: HandZoneProps) {
         gap="$2"
         paddingHorizontal="$2"
         paddingTop="$2"
+        marginHorizontal="-$2"
         style={{ background: palette.handBackground }}
       >
         <HandCards
@@ -95,6 +96,7 @@ export function HandZone(props: HandZoneProps) {
       gap="$3"
       paddingHorizontal="$2"
       paddingVertical="$2"
+      marginHorizontal="-$3"
       style={{ background: palette.handBackground }}
     >
       <HandRail

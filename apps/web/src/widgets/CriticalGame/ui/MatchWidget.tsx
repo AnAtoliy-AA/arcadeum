@@ -5,7 +5,6 @@ import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
-import { RulesModal } from './RulesModal';
 import { IdleTimerDisplay } from './IdleTimerDisplay';
 import { AutoplayControls } from './AutoplayControls';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
@@ -84,6 +83,7 @@ export interface MatchWidgetProps {
   idleTimerTriggered: boolean;
   handleIdleTimeout: () => void;
   handleStopAutoplay: () => void;
+  onOpenRules: () => void;
 }
 
 /**
@@ -93,7 +93,7 @@ export interface MatchWidgetProps {
  * arena's `ComboCard` (label + tint) and the rail's `Play` button.
  */
 export function MatchWidget({
-  room,
+  room: _room,
   snapshot,
   currentUserId,
   currentPlayer,
@@ -116,6 +116,7 @@ export function MatchWidget({
   idleTimerTriggered,
   handleIdleTimeout,
   handleStopAutoplay,
+  onOpenRules,
 }: MatchWidgetProps) {
   // Read the widget-level fullscreen state from the context owned by
   // GameWidgetContainer. The prop `isFullscreen` is the legacy path;
@@ -130,7 +131,6 @@ export function MatchWidget({
     deserialize: SELECTED_UIDS_DESERIALIZE,
   });
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
-  const [rulesOpen, setRulesOpen] = useState(false);
   // Persist show/hide for the card name + description rows per user. New
   // players see both rows by default (rules text helps them learn);
   // experienced players who collapse to art-only stay collapsed across
@@ -181,8 +181,6 @@ export function MatchWidget({
     if (!hydratedFromStorage.current) return;
     writeHandToggle(togglesStorageKey, 'description', showCardDescription);
   }, [togglesStorageKey, showCardDescription]);
-  const handleOpenRules = useCallback(() => setRulesOpen(true), []);
-  const handleCloseRules = useCallback(() => setRulesOpen(false), []);
   const handleToggleCardName = useCallback(
     () => setShowCardName((v) => !v),
     [],
@@ -465,7 +463,7 @@ export function MatchWidget({
               onPlay={handlePlay}
               onDraw={handleDrawAndEnd}
               onNope={actions.playNope}
-              onOpenRules={handleOpenRules}
+              onOpenRules={onOpenRules}
               onToggleFullscreen={toggleFullscreen}
               onToggleCardName={handleToggleCardName}
               onToggleCardDescription={handleToggleCardDescription}
@@ -473,13 +471,6 @@ export function MatchWidget({
           )}
         </MatchWidgetGrid>
       </NarrowViewportProvider>
-      <RulesModal
-        isOpen={rulesOpen}
-        onClose={handleCloseRules}
-        currentVariant={cardVariant || 'default'}
-        isPrivate={room?.visibility === 'private'}
-        t={t}
-      />
     </div>
   );
 }

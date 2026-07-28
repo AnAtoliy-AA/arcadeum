@@ -5,6 +5,7 @@ import { HandCards } from './HandCards';
 import { HandRail } from './HandRail';
 import { MobileHandBar } from './MobileHandBar';
 import { useIsNarrow } from '../../lib/useNarrowViewport';
+import { useScenePalette } from '../ScenePaletteContext';
 import type { HandCardInstance, ComboKind } from '../../lib/combo';
 
 interface HandZoneProps {
@@ -42,6 +43,7 @@ export function HandZone(props: HandZoneProps) {
   // `NarrowViewportProvider` at the widget root so HandZone, Arena, and
   // OpponentsRow commit the same flip on the same React frame.
   const isMobile = useIsNarrow(480);
+  const palette = useScenePalette();
 
   if (isMobile) {
     return (
@@ -52,6 +54,8 @@ export function HandZone(props: HandZoneProps) {
         gap="$2"
         paddingHorizontal="$2"
         paddingTop="$2"
+        marginHorizontal="-$2"
+        style={{ background: palette.handBackground }}
       >
         <HandCards
           cards={props.cards}
@@ -92,6 +96,8 @@ export function HandZone(props: HandZoneProps) {
       gap="$3"
       paddingHorizontal="$2"
       paddingVertical="$2"
+      marginHorizontal="-$3"
+      style={{ background: palette.handBackground }}
     >
       <HandRail
         handCount={props.cards.length}

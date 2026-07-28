@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { styled, YStack, XStack, Text } from 'tamagui';
 import { Button, GameVariant, ModalButton, OptionButton } from '@arcadeum/ui';
 
@@ -20,11 +21,11 @@ const VARIANT_COLORS = {
 
 const Overlay = styled(YStack, {
   name: 'ModalOverlay',
-  position: 'sticky' as unknown as 'sticky',
+  position: 'fixed' as unknown as 'fixed',
   top: 0,
   left: 0,
   right: 0,
-  minHeight: '100%',
+  bottom: 0,
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
   justifyContent: 'center' as never,
@@ -44,11 +45,16 @@ export function Modal({ open = false, onOpenChange, children }: ModalProps) {
 
   if (!open) return null;
 
-  return (
+  const overlay = (
     <Overlay onPress={handleOverlayClick} data-testid="modal-overlay">
       {children}
     </Overlay>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(overlay, document.body);
+  }
+  return overlay;
 }
 
 const StyledModalFrame = styled(YStack, {

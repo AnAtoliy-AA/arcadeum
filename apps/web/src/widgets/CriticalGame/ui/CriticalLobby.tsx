@@ -55,6 +55,8 @@ export interface CriticalLobbyProps {
   onKickPlayer?: (userId: string) => void;
   onLeaveRoom?: () => void;
   onRefresh?: () => void;
+  showRulesOpen?: boolean;
+  onShowRulesClose?: () => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -73,6 +75,8 @@ export function CriticalLobby({
   onKickPlayer,
   onLeaveRoom,
   onRefresh,
+  showRulesOpen,
+  onShowRulesClose,
   t,
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
@@ -134,69 +138,70 @@ export function CriticalLobby({
     </IconButton>
   );
 
-  const rulesModalSlot = (
-    <RulesModal
-      isOpen={showRules}
-      onClose={() => setShowRules(false)}
-      currentVariant={cardVariant}
-      isFastMode={isFastMode}
-      isPrivate={room.visibility === 'private'}
-      t={t}
-    />
-  );
-
   return (
-    <ReusableGameLobby
-      room={room}
-      userId={userId}
-      isHost={isHost}
-      startBusy={startBusy}
-      isFullscreen={isFullscreen}
-      containerRef={containerRef}
-      onToggleFullscreen={onToggleFullscreen}
-      onStartGame={onStartGame}
-      onReorderPlayers={onReorderPlayers}
-      onReinvite={onReinvite}
-      onDeleteRoom={onDeleteRoom}
-      onKickPlayer={onKickPlayer}
-      onLeaveRoom={onLeaveRoom}
-      onRefresh={onRefresh}
-      gameName={t('games.critical_v1.name')}
-      gameIcon="🐱💣"
-      variantName={t(variantInfo.name as TranslationKey)}
-      roomIcon={variantInfo.emoji}
-      minPlayers={2}
-      labels={{
-        waitingLabel: t('games.table.lobby.waitingToStart'),
-        subtitleText: getSubtitleText(),
-        playersLabel: t('games.table.lobby.players'),
-        hostControlsLabel: t('games.table.lobby.hostControls'),
-        startLabel: t('games.table.actions.start'),
-        startingLabel: t('games.table.actions.starting'),
-        roomInfoLabel: t('games.table.lobby.roomInfo'),
-        statusLabel: t('games.table.lobby.status'),
-        visibilityLabel: t('games.table.lobby.visibility'),
-        visibilityPublicLabel: t('games.table.lobby.visibilityPublic'),
-        visibilityPrivateLabel: t('games.table.lobby.visibilityPrivate'),
-        inviteCodeLabel: t('games.table.lobby.inviteCode'),
-        waitingForPlayerLabel: t('games.table.lobby.waitingForPlayer'),
-        invitedPlayersLabel: t('games.table.lobby.invitedPlayers'),
-        declinedLabel: t('games.table.lobby.statusDeclined'),
-        reinviteLabel: t('games.table.lobby.reinvite'),
-        fastRoomLabel: t('games.rooms.fastRoom'),
-        botCountLabel: t('games.lobby.botCountLabel'),
-        startWithBotsLabel: t('games.lobby.startWithBots'),
-      }}
-      theme={theme}
-      isFastMode={isFastMode}
-      optionsSlot={optionsSlot}
-      headerActionsSlot={headerActionsSlot}
-      rulesModalSlot={rulesModalSlot}
-      showFullscreenButton={true}
-      showReorderControls={true}
-      showInvitedPlayers={true}
-      enableBots={true}
-      onRuleComingSoonChange={setRuleComingSoon}
-    />
+    <>
+      <RulesModal
+        isOpen={showRules || !!showRulesOpen}
+        onClose={() => {
+          setShowRules(false);
+          onShowRulesClose?.();
+        }}
+        currentVariant={cardVariant}
+        isFastMode={isFastMode}
+        isPrivate={room.visibility === 'private'}
+        t={t}
+      />
+      <ReusableGameLobby
+        room={room}
+        userId={userId}
+        isHost={isHost}
+        startBusy={startBusy}
+        isFullscreen={isFullscreen}
+        containerRef={containerRef}
+        onToggleFullscreen={onToggleFullscreen}
+        onStartGame={onStartGame}
+        onReorderPlayers={onReorderPlayers}
+        onReinvite={onReinvite}
+        onDeleteRoom={onDeleteRoom}
+        onKickPlayer={onKickPlayer}
+        onLeaveRoom={onLeaveRoom}
+        onRefresh={onRefresh}
+        gameName={t('games.critical_v1.name')}
+        gameIcon="🐱💣"
+        variantName={t(variantInfo.name as TranslationKey)}
+        roomIcon={variantInfo.emoji}
+        minPlayers={2}
+        labels={{
+          waitingLabel: t('games.table.lobby.waitingToStart'),
+          subtitleText: getSubtitleText(),
+          playersLabel: t('games.table.lobby.players'),
+          hostControlsLabel: t('games.table.lobby.hostControls'),
+          startLabel: t('games.table.actions.start'),
+          startingLabel: t('games.table.actions.starting'),
+          roomInfoLabel: t('games.table.lobby.roomInfo'),
+          statusLabel: t('games.table.lobby.status'),
+          visibilityLabel: t('games.table.lobby.visibility'),
+          visibilityPublicLabel: t('games.table.lobby.visibilityPublic'),
+          visibilityPrivateLabel: t('games.table.lobby.visibilityPrivate'),
+          inviteCodeLabel: t('games.table.lobby.inviteCode'),
+          waitingForPlayerLabel: t('games.table.lobby.waitingForPlayer'),
+          invitedPlayersLabel: t('games.table.lobby.invitedPlayers'),
+          declinedLabel: t('games.table.lobby.statusDeclined'),
+          reinviteLabel: t('games.table.lobby.reinvite'),
+          fastRoomLabel: t('games.rooms.fastRoom'),
+          botCountLabel: t('games.lobby.botCountLabel'),
+          startWithBotsLabel: t('games.lobby.startWithBots'),
+        }}
+        theme={theme}
+        isFastMode={isFastMode}
+        optionsSlot={optionsSlot}
+        headerActionsSlot={headerActionsSlot}
+        showFullscreenButton={true}
+        showReorderControls={true}
+        showInvitedPlayers={true}
+        enableBots={true}
+        onRuleComingSoonChange={setRuleComingSoon}
+      />
+    </>
   );
 }

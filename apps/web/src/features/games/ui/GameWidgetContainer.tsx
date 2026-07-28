@@ -55,6 +55,7 @@ interface GameWidgetContainerProps {
   isGameOver?: boolean;
   showChatPopup?: boolean;
   loading?: boolean;
+  containerBackground?: string;
 }
 
 export const GameWidgetContainer = React.memo(function GameWidgetContainer({
@@ -69,6 +70,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   isGameOver,
   showChatPopup = true,
   loading = false,
+  containerBackground,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeEmotes = useActiveEmotes();
@@ -175,6 +177,11 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             isFullscreen={isFullscreen}
             $variant={variant as Parameters<typeof Container>[0]['$variant']}
             data-testid="game-widget-container"
+            style={
+              containerBackground
+                ? { background: containerBackground }
+                : undefined
+            }
           >
             {renderedHeader}
             <SharedGameBoard data-testid="game-board-section">

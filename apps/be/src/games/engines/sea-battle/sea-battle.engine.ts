@@ -257,6 +257,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   }
 
   isGameOver(state: SeaBattleState): boolean {
+    if (state.phase === GAME_PHASE.COMPLETED) return true;
     if (state.phase !== GAME_PHASE.BATTLE) return false;
     if (state.teams) return countAliveTeams(state) <= 1;
     return state.players.filter((p) => p.alive).length <= 1;
@@ -360,6 +361,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         );
         if (winningTeamId) {
           state.winnerId = winningTeamId;
+          state.phase = GAME_PHASE.COMPLETED;
           state.logs.push(
             this.createLogEntry('system', 'Game Over! Team has won!'),
           );
@@ -370,6 +372,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     const alivePlayers = state.players.filter((p) => p.alive);
     if (alivePlayers.length === 1) {
       state.winnerId = alivePlayers[0].playerId;
+      state.phase = GAME_PHASE.COMPLETED;
       state.logs.push(
         this.createLogEntry('system', 'Game Over! We have a winner!'),
       );

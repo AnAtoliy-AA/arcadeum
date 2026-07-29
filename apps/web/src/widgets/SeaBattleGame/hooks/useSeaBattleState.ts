@@ -5,6 +5,7 @@ import type {
   SeaBattlePlayerState,
   SeaBattleTeam,
 } from '../types';
+import { GAME_PHASE } from '../types';
 
 import { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -79,10 +80,10 @@ export function useSeaBattleState({
   }, [snapshot, currentUserId]);
 
   const gamePhase = snapshot?.phase || 'lobby';
-  const isPlacementPhase = gamePhase === 'placement';
-  const isBattlePhase = gamePhase === 'battle';
+  const isPlacementPhase = gamePhase === GAME_PHASE.PLACEMENT;
+  const isBattlePhase = gamePhase === GAME_PHASE.BATTLE;
   const isGameOver =
-    gamePhase === 'game_over' || session?.status === 'completed';
+    gamePhase === GAME_PHASE.COMPLETED || session?.status === 'completed';
 
   const winnerTeam = useMemo<SeaBattleTeam | undefined>(() => {
     if (!isGameOver || !snapshot || !teams) return undefined;

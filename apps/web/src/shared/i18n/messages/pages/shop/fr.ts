@@ -286,6 +286,8 @@ export const shopFr = {
       },
       nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique brillant.' },
       glitch: { name: 'Glitch', desc: 'Une couleur d’artéfact numérique changeante.' },
+      neon: { name: 'Néon', desc: 'Un dégradé éclatant de vert néon et de cyan.' },
+      solar: { name: 'Solaire', desc: 'Un dégradé solaire éclatant d’orange.' },
     },
     game_skin: {
       default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
@@ -316,6 +318,8 @@ export const shopFr = {
       prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
       gold: { name: 'Cadre doré', desc: 'Un anneau doré poli et brillant.' },
       cyberpunk: { name: 'Cadre cyberpunk', desc: 'Un cadre cyberpunk néon vibrant.' },
+      neon: { name: 'Cadre néon', desc: 'Un anneau éclatant de vert néon et de cyan.' },
+      solar: { name: 'Cadre solaire', desc: 'Un anneau solaire éclatant d’orange.' },
     },
     background: {
       default: { name: 'Par défaut', desc: 'Arrière-plan de départ.' },

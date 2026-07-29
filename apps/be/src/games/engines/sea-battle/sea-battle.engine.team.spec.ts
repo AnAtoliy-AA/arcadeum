@@ -365,6 +365,7 @@ describe('SeaBattleEngine — team mode', () => {
         { targetPlayerId: 'c', row: 0, col: 0 },
       );
       const ns = result.state!;
+      expect(ns.phase).toBe(GAME_PHASE.COMPLETED);
       expect(engine.isGameOver(ns)).toBe(true);
       expect(ns.winnerId).toBe('t1');
       expect(

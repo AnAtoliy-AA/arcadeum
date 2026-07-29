@@ -221,6 +221,7 @@ function checkAndSetWinner(state: SeaBattleState): void {
       const winningTeamId = aliveTeamIds[0];
       if (winningTeamId) {
         state.winnerId = winningTeamId;
+        state.phase = GAME_PHASE.COMPLETED;
         state.logs.push(createLog('system', 'Game Over! Team has won!'));
       }
     }
@@ -229,6 +230,7 @@ function checkAndSetWinner(state: SeaBattleState): void {
   const alivePlayers = state.players.filter((p) => p.alive);
   if (alivePlayers.length === 1) {
     state.winnerId = alivePlayers[0].playerId;
+    state.phase = GAME_PHASE.COMPLETED;
     state.logs.push(createLog('system', 'Game Over! We have a winner!'));
   }
 }

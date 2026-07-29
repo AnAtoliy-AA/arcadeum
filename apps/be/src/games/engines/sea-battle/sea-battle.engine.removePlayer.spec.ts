@@ -101,6 +101,7 @@ describe('SeaBattleEngine — removePlayer', () => {
       const ns = result.state!;
 
       expect(ns.winnerId).toBe('t2');
+      expect(ns.phase).toBe(GAME_PHASE.COMPLETED);
       expect(engine.isGameOver(ns)).toBe(true);
     });
   });

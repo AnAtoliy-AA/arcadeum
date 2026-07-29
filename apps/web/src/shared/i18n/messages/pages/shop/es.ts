@@ -280,6 +280,8 @@ export const shopEs = {
       aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
       nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico brillante.' },
       glitch: { name: 'Glitch', desc: 'Un color de artefacto digital cambiante.' },
+      neon: { name: 'Neón', desc: 'Un degradado brillante de verde neón y cian.' },
+      solar: { name: 'Solar', desc: 'Un degradado solar radiante de naranja.' },
     },
     game_skin: {
       default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
@@ -310,6 +312,8 @@ export const shopEs = {
       prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
       gold: { name: 'Marco dorado', desc: 'Un anillo de oro pulido y brillante.' },
       cyberpunk: { name: 'Marco cyberpunk', desc: 'Un marco cyberpunk de neón vibrante.' },
+      neon: { name: 'Marco neón', desc: 'Un anillo brillante de verde neón y cian.' },
+      solar: { name: 'Marco solar', desc: 'Un anillo solar radiante de naranja.' },
     },
     background: {
       default: { name: 'Predeterminado', desc: 'Fondo inicial.' },

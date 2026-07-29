@@ -44,7 +44,7 @@ export const GAME_PHASE = {
   LOBBY: 'lobby',
   PLACEMENT: 'placement',
   BATTLE: 'battle',
-  GAME_OVER: 'game_over',
+  COMPLETED: 'completed',
 } as const;
 
 export type GamePhase = (typeof GAME_PHASE)[keyof typeof GAME_PHASE];

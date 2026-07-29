@@ -108,6 +108,28 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     defaultPriceAmount: 15,
     defaultPriceCurrency: 'gems',
   },
+  'name-color-neon': {
+    id: 'name-color-neon',
+    category: 'name_color',
+    rarity: 'epic',
+    nameKey: 'items.name_color.neon.name',
+    descKey: 'items.name_color.neon.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(90deg, #39ff14 0%, #00ffff 100%)',
+    defaultPriceAmount: 15,
+    defaultPriceCurrency: 'gems',
+  },
+  'name-color-solar': {
+    id: 'name-color-solar',
+    category: 'name_color',
+    rarity: 'rare',
+    nameKey: 'items.name_color.solar.name',
+    descKey: 'items.name_color.solar.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(90deg, #ff4500 0%, #ff8c00 100%)',
+    defaultPriceAmount: 5,
+    defaultPriceCurrency: 'gems',
+  },
 
   // Banners — backdrop panel behind the avatar. `colorValue` is a solid
   // hex or linear-gradient; ItemAsset renders a wide gradient tile.
@@ -352,6 +374,28 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     colorValue:
       'linear-gradient(135deg, #ec4899 0%, #f43f5e 50%, #06b6d4 100%)',
     defaultPriceAmount: 48,
+    defaultPriceCurrency: 'gems',
+  },
+  'frame-neon': {
+    id: 'frame-neon',
+    category: 'frame',
+    rarity: 'legendary',
+    nameKey: 'items.frame.neon.name',
+    descKey: 'items.frame.neon.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(135deg, #39ff14 0%, #00ffff 100%)',
+    defaultPriceAmount: 45,
+    defaultPriceCurrency: 'gems',
+  },
+  'frame-solar': {
+    id: 'frame-solar',
+    category: 'frame',
+    rarity: 'epic',
+    nameKey: 'items.frame.solar.name',
+    descKey: 'items.frame.solar.desc',
+    assetUrl: '',
+    colorValue: 'linear-gradient(135deg, #ff4500 0%, #ff8c00 50%, #ffd700 100%)',
+    defaultPriceAmount: 18,
     defaultPriceCurrency: 'gems',
   },
 };

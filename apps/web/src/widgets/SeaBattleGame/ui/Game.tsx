@@ -196,12 +196,26 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [currentUserId, room, t, snapshot],
   );
 
+  const gameResult = useMemo(() => {
+    if (!isGameOver) return null;
+    if (teamMode) {
+      return isWinner ? 'victory' : 'defeat';
+    }
+    if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
+    return 'defeat';
+  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
+
+  const localGameResult = useMemo(() => {
+    if (!gameResult) return null;
+    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
+  }, [gameResult]);
+  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
   const gameEnd = useGameEndState({
     roomId,
     currentUserId,
     session,
     isGameOver,
-    result: null,
+    result: localGameResult,
     rematchGameOptions,
     players:
       snapshot?.players
@@ -295,21 +309,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       resolveDisplayNameBound,
     ],
   );
-
-  const gameResult = useMemo(() => {
-    if (!isGameOver) return null;
-    if (teamMode) {
-      return isWinner ? 'victory' : 'defeat';
-    }
-    if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
-    return 'defeat';
-  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
-
-  const localGameResult = useMemo(() => {
-    if (!gameResult) return null;
-    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
-  }, [gameResult]);
-  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
 
   const headerTitle = useMemo(
     () =>

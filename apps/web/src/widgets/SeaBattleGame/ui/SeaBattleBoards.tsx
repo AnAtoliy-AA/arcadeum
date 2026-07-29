@@ -219,9 +219,9 @@ export function SeaBattleBoards({
         </Card>
       )}
 
-      {isBattlePhase && snapshot && (
+      {(isBattlePhase || isGameOver) && snapshot && (
         <>
-          {isMyTurn && (hasSonar || hasRadar) && (
+          {!isGameOver && isMyTurn && (hasSonar || hasRadar) && (
             <div
               style={{
                 display: 'flex',
@@ -376,6 +376,8 @@ export function SeaBattleBoards({
             isMyTurn={isMyTurn}
             onAttack={isWeaponMode ? handleWeaponFire : attack}
             resolveDisplayName={resolveDisplayNameBound}
+            disabled={isGameOver}
+            showEliminatedPlayers={isGameOver}
             teammateIds={teammateIds}
             teams={teams}
             gridSize={snapshot.gridSize}

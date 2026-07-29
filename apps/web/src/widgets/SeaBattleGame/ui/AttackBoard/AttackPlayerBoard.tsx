@@ -76,7 +76,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
-  const showTargeting = isMyTurn && !isTeammate;
+  const showTargeting = isMyTurn && !isAttackDisabled;
   const boardSize = player.board.length || 10;
   const rowLbls = rowLabels(boardSize);
   const colLbls = colLabels(boardSize);
@@ -149,11 +149,13 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           const isAttackable =
             !isMe &&
             !isTeammate &&
+            !disabled &&
             cellState !== CELL_STATE.HIT &&
             cellState !== CELL_STATE.MISS &&
             !isSunk &&
             !isPending;
-          const isWeaponClickable = !isMe && !isTeammate && !!weaponMode;
+          const isWeaponClickable =
+            !isMe && !isTeammate && !disabled && !!weaponMode;
           const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
           const isSonarCell = !isMe && sonarHighlightCells?.has(cellKey);
           const isRadarCell = !isMe && radarHighlightCells?.has(cellKey);

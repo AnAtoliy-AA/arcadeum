@@ -136,6 +136,13 @@ export class WalletService {
 
     if (opts.cursor) {
       const decoded = this.decodeCursor(opts.cursor);
+      if (
+        !(decoded.createdAt instanceof Date) ||
+        Number.isNaN(decoded.createdAt.getTime()) ||
+        !Types.ObjectId.isValid(decoded._id)
+      ) {
+        throw new BadRequestException('wallet.invalidCursor');
+      }
       filter.$or = [
         { createdAt: { $lt: decoded.createdAt } },
         {
@@ -274,7 +281,7 @@ export class WalletService {
     );
     createdTx = docs[0];
 
-    if (!createdTx || !lastBalance) {
+    if (!createdTx) {
       throw new InternalServerErrorException('wallet.transactionFailed');
     }
 

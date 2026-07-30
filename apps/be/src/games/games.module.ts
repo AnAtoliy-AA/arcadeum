@@ -103,9 +103,16 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
         { name: GameSession.name, schema: GameSessionSchema },
         { name: GameRoom.name, schema: GameRoomSchema },
         { name: User.name, schema: UserSchema },
+        { name: PlayerStats.name, schema: PlayerStatsSchema },
+        { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
       ],
       OCI_CONNECTION,
     ),
+    // Default connection models (for services that inject without connectionName)
+    MongooseModule.forFeature([
+      { name: PlayerStats.name, schema: PlayerStatsSchema },
+      { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+    ]),
     // Atlas connection models (archive, history, stats) — only when Atlas is configured
     ...(resolveAtlasUri()
       ? [

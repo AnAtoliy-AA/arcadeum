@@ -82,7 +82,6 @@ export class GameHistoryService {
     const hiddenEntries = await this.historyHiddenModel!.find({ userId })
       .select('roomId')
       .exec();
-
     const hiddenRoomIds = hiddenEntries.map((h) => h.roomId);
     const orFilters: FilterQuery<GameRoom>[] = [
       { hostId: userId },

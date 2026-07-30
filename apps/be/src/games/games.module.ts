@@ -50,6 +50,7 @@ import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
 } from '../common/providers/mongo-connections.provider';
+import { resolveAtlasUri } from '../common/utils/mongo-uri.util';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -105,18 +106,22 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       ],
       OCI_CONNECTION,
     ),
-    // Atlas connection models (archive, history, stats)
-    MongooseModule.forFeature(
-      [
-        { name: GameSession.name, schema: GameSessionSchema },
-        { name: GameRoom.name, schema: GameRoomSchema },
-        { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
-        { name: PlayerStats.name, schema: PlayerStatsSchema },
-        { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
-        { name: User.name, schema: UserSchema },
-      ],
-      ATLAS_CONNECTION,
-    ),
+    // Atlas connection models (archive, history, stats) — only when Atlas is configured
+    ...(resolveAtlasUri()
+      ? [
+          MongooseModule.forFeature(
+            [
+              { name: GameSession.name, schema: GameSessionSchema },
+              { name: GameRoom.name, schema: GameRoomSchema },
+              { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
+              { name: PlayerStats.name, schema: PlayerStatsSchema },
+              { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+              { name: User.name, schema: UserSchema },
+            ],
+            ATLAS_CONNECTION,
+          ),
+        ]
+      : []),
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
     forwardRef(() => LeaderboardsModule),

@@ -8,7 +8,7 @@ const DEV_MAX_POOL_SIZE = 10;
 const MIN_MAX_POOL_SIZE = 1;
 
 /**
- * Resolve the Mongo connection string.
+ * Resolve the primary Mongo connection string (OCI).
  *
  * - If `MONGODB_URI` is set and looks like a valid scheme, returns it.
  * - In production we throw — a missing URI must never silently fall back.
@@ -34,6 +34,33 @@ export function resolveMongoUri(): string {
       `Set MONGODB_URI in apps/be/.env to silence this.`,
   );
   return DEV_DEFAULT;
+}
+
+/**
+ * Resolve the Atlas Mongo connection string (archive).
+ *
+ * - If `MONGODB_ATLAS_URI` is set and looks like a valid scheme, returns it.
+ * - In production we throw — a missing URI must never silently fall back.
+ * - In development, returns undefined (Atlas is optional in dev).
+ */
+export function resolveAtlasUri(): string | undefined {
+  const configured = process.env.MONGODB_ATLAS_URI?.trim();
+  if (configured && /^mongodb(\+srv)?:\/\//.test(configured)) {
+    return configured;
+  }
+
+  const env = (process.env.NODE_ENV ?? '').toLowerCase();
+  if (env === 'production') {
+    throw new Error(
+      'MONGODB_ATLAS_URI is not set or invalid. Required in production.',
+    );
+  }
+
+  logger.warn(
+    `MONGODB_ATLAS_URI is not set or invalid; Atlas archive disabled. ` +
+      `Set MONGODB_ATLAS_URI in apps/be/.env to enable dual MongoDB.`,
+  );
+  return undefined;
 }
 
 /**

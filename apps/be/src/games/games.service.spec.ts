@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
+import { GamesHistoryFacade } from './games-history.facade';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -97,11 +99,27 @@ describe('GamesService', () => {
       getPlayerStats: jest.fn().mockResolvedValue({}),
     };
 
+    const mockArchiveService = {
+      archiveSessionToAtlas: jest.fn().mockResolvedValue(undefined),
+      deleteSessionFromOci: jest.fn().mockResolvedValue(undefined),
+      loadSessionFromAtlas: jest.fn().mockResolvedValue(null),
+      sessionExistsInOci: jest.fn().mockResolvedValue(true),
+    };
+
+    const mockHistoryFacade = {
+      createHistoryRecord: jest.fn(),
+      listHistoryByPlayer: jest.fn(),
+      listPublicHistoryByPlayer: jest.fn(),
+      getHistoryRecord: jest.fn(),
+    };
+
     module = await Test.createTestingModule({
       providers: [
         GamesService,
         { provide: GameRoomsService, useValue: mockRoomsService },
         { provide: GameSessionsService, useValue: mockSessionsService },
+        { provide: GameSessionsArchiveService, useValue: mockArchiveService },
+        { provide: GamesHistoryFacade, useValue: mockHistoryFacade },
         { provide: GameHistoryService, useValue: mockHistoryService },
         { provide: GamesRealtimeService, useValue: mockRealtimeService },
         { provide: GameUtilitiesService, useValue: mockUtilities },

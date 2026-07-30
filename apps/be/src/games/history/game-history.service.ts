@@ -25,17 +25,18 @@ import {
   BaseGameState,
   ChatScope,
 } from '../engines/base/game-engine.interface';
+import { ATLAS_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 @Injectable()
 export class GameHistoryService {
   constructor(
-    @InjectModel(GameSession.name)
+    @InjectModel(GameSession.name, ATLAS_CONNECTION)
     private readonly gameSessionModel: Model<GameSession>,
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, ATLAS_CONNECTION)
     private readonly gameRoomModel: Model<GameRoom>,
-    @InjectModel(GameHistoryHidden.name)
+    @InjectModel(GameHistoryHidden.name, ATLAS_CONNECTION)
     private readonly historyHiddenModel: Model<GameHistoryHidden>,
-    @InjectModel(User.name)
+    @InjectModel(User.name, ATLAS_CONNECTION)
     private readonly userModel: Model<User>,
     private readonly builder: GameHistoryBuilderService,
     private readonly statsService: GameHistoryStatsService,

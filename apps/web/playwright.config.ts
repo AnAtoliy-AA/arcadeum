@@ -44,9 +44,9 @@ process.env.SUPPORT_INTERNAL_TOKEN = SUPPORT_INTERNAL_TOKEN;
  */
 export default defineConfig({
   testDir: './e2e',
-  // Boots an in-memory MongoMemoryReplSet and exports MONGODB_URI on
+  // Boots an in-memory MongoMemoryReplSet and exports MONGODB_OCI_URI on
   // process.env before the BE webServer is spawned, so e2e doesn't depend on
-  // a local mongod. Honors an external MONGODB_URI when one is set.
+  // a local mongod. Honors an external MONGODB_OCI_URI when one is set.
   globalSetup: require.resolve('./e2e/global-setup.ts'),
   globalTeardown: require.resolve('./e2e/global-teardown.ts'),
   fullyParallel: true,
@@ -162,7 +162,7 @@ export default defineConfig({
         // and a flake source (Atlas timeouts surfacing through
         // checkNoBackendErrors). Disable for the whole e2e webServer.
         LEADERBOARDS_CAPTURE_DISABLED: 'true',
-        // MONGODB_URI intentionally omitted — globalSetup writes it to
+        // MONGODB_OCI_URI intentionally omitted — globalSetup writes it to
         // process.env (after the in-memory replset starts), and Playwright
         // inherits process.env into the child, so the BE picks it up at
         // spawn time. Setting it statically here would freeze the value at

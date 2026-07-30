@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
 import { GameRoom } from '../schemas/game-room.schema';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 export interface UserSummary {
   id: string;
@@ -22,9 +23,9 @@ export interface UserSummary {
 @Injectable()
 export class GameUtilitiesService {
   constructor(
-    @InjectModel(User.name)
+    @InjectModel(User.name, OCI_CONNECTION)
     private readonly userModel: Model<User>,
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly gameRoomModel: Model<GameRoom>,
   ) {}
 

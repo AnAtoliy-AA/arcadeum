@@ -227,7 +227,7 @@ describe('GemPackagesService', () => {
       await service.update(id.toString(), { priceUsdCents: 750 });
 
       expect(packageModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        id.toString(),
+        new Types.ObjectId(id.toString()),
         expect.objectContaining({ priceUsd: 750 }),
         { new: true },
       );

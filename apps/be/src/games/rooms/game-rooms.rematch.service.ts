@@ -8,11 +8,12 @@ import { Model } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomSummary } from './game-rooms.types';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 @Injectable()
 export class GameRoomsRematchService {
   constructor(
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly gameRoomModel: Model<GameRoom>,
     private readonly gameRoomsMapper: GameRoomsMapper,
   ) {}

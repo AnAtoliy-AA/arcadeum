@@ -15,7 +15,7 @@ concurrency:
 
 env:
   CI: true
-  MONGODB_URI: mongodb://localhost:27017/arcadeum_test
+  MONGODB_OCI_URI: mongodb://localhost:27017/arcadeum_test
   AUTH_JWT_SECRET: test_secret
   NEXT_PUBLIC_E2E: true
   NEXT_PUBLIC_AUTH_WEB_CLIENT_ID: dummy-client-id

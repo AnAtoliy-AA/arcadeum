@@ -30,7 +30,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import {
   resolveMongoUri,
   resolveMongoOptions,
+  resolveAtlasUri,
 } from './common/utils/mongo-uri.util';
+import {
+  OCI_CONNECTION,
+  ATLAS_CONNECTION,
+} from './common/providers/mongo-connections.provider';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
@@ -68,7 +73,23 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     SupportModule,
     BulkRewardsModule,
     FriendsModule,
+    MongooseModule.forRoot(resolveMongoUri(), {
+      ...resolveMongoOptions(),
+      connectionName: OCI_CONNECTION,
+    }),
+    // Default connection for other modules (points to OCI)
     MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
+    ...(resolveAtlasUri()
+      ? [
+          MongooseModule.forRoot(resolveAtlasUri()!, {
+            connectionName: ATLAS_CONNECTION,
+            maxPoolSize: 30,
+            serverSelectionTimeoutMS: 15_000,
+            retryWrites: true,
+            retryReads: true,
+          }),
+        ]
+      : []),
   ],
   controllers: [AppController],
   providers: [

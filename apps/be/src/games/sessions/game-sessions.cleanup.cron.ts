@@ -4,6 +4,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 /** Mark sessions stale after 7 days of inactivity. */
 const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
@@ -13,9 +14,9 @@ export class GameSessionsCleanupCron {
   private readonly logger = new Logger(GameSessionsCleanupCron.name);
 
   constructor(
-    @InjectModel(GameSession.name)
+    @InjectModel(GameSession.name, OCI_CONNECTION)
     private readonly sessionModel: Model<GameSession>,
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly roomModel: Model<GameRoom>,
   ) {}
 

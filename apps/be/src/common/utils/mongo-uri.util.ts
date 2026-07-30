@@ -40,20 +40,13 @@ export function resolveMongoUri(): string {
  * Resolve the Atlas Mongo connection string (archive).
  *
  * - If `MONGODB_ATLAS_URI` is set and looks like a valid scheme, returns it.
- * - In production we throw — a missing URI must never silently fall back.
- * - In development, returns undefined (Atlas is optional in dev).
+ * - If not set, returns undefined — Atlas is always optional.
+ *   When absent, archive/history features are disabled gracefully.
  */
 export function resolveAtlasUri(): string | undefined {
   const configured = process.env.MONGODB_ATLAS_URI?.trim();
   if (configured && /^mongodb(\+srv)?:\/\//.test(configured)) {
     return configured;
-  }
-
-  const env = (process.env.NODE_ENV ?? '').toLowerCase();
-  if (env === 'production') {
-    throw new Error(
-      'MONGODB_ATLAS_URI is not set or invalid. Required in production.',
-    );
   }
 
   logger.warn(

@@ -58,12 +58,16 @@ echo ""
 echo "==> Creating MongoDB admin user..."
 mongosh --eval "db.createUser({user:'admin',pwd:'${MONGO_PASS}',roles:['root']})" --authenticationDatabase admin 2>/dev/null || true
 
+# Secure .env file permissions
+chmod 600 "${DEPLOY_DIR}/apps/be/.env"
+echo "==> Set .env permissions to 600 (owner read/write only)"
+
 echo ""
 echo "1. Edit backend env:"
 echo "   nano ${DEPLOY_DIR}/apps/be/.env"
 echo ""
 echo "   Set this line:"
-echo "   MONGODB_URI=mongodb://admin:${MONGO_PASS}@localhost:27017/arcadeum?authSource=admin"
+echo "   MONGODB_OCI_URI=mongodb://admin:${MONGO_PASS}@localhost:27017/arcadeum?authSource=admin"
 echo ""
 echo "   Also fill in: AUTH_JWT_SECRET, SOLANA_PRIVATE_KEY, OAUTH_*, etc."
 echo ""

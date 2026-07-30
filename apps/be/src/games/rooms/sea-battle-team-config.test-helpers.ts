@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomSummary } from './game-rooms.types';
 import { SeaBattleTeamConfigService } from './sea-battle-team-config.service';
@@ -79,7 +80,10 @@ export async function buildService(
   const moduleRef = await Test.createTestingModule({
     providers: [
       SeaBattleTeamConfigService,
-      { provide: getModelToken(GameRoom.name), useValue: model },
+      {
+        provide: getModelToken(GameRoom.name, OCI_CONNECTION),
+        useValue: model,
+      },
       { provide: GameRoomsMapper, useValue: mapperStub },
     ],
   }).compile();

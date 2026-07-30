@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.166] - 2026-07-30
+
+### Fixed
+- make Atlas URI optional in all environments including production
+- register PlayerStats models on default connection for DI resolution
+- conditionally register Atlas MongooseModule.forFeature
+- make Atlas models optional for CI E2E compatibility
+- add missing test providers for dual MongoDB services
+
+### Refactored
+- rename MONGODB_URI to MONGODB_OCI_URI for clarity
+
+
 ## [1.23.165] - 2026-07-29
 
 ### Added

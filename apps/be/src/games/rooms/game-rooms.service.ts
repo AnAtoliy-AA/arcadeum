@@ -7,6 +7,7 @@ import {
   ForbiddenException,
   NotFoundException,
   Logger,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -54,13 +55,15 @@ export class GameRoomsService {
   constructor(
     @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly ociRoomModel: Model<GameRoom>,
-    @InjectModel(GameRoom.name, ATLAS_CONNECTION)
-    private readonly atlasRoomModel: Model<GameRoom>,
-    @InjectModel(User.name, ATLAS_CONNECTION)
-    private readonly userModel: Model<User>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsRematchService: GameRoomsRematchService,
     private readonly engineRegistry: GameEngineRegistry,
+    @Optional()
+    @InjectModel(GameRoom.name, ATLAS_CONNECTION)
+    private readonly atlasRoomModel?: Model<GameRoom>,
+    @Optional()
+    @InjectModel(User.name, ATLAS_CONNECTION)
+    private readonly userModel?: Model<User>,
   ) {}
   async createRoom(
     userId: string,
@@ -95,16 +98,18 @@ export class GameRoomsService {
     });
 
     // Mirror room to Atlas for history queries
-    try {
-      await this.atlasRoomModel.findOneAndUpdate(
-        { _id: room._id },
-        { $set: room.toObject() },
-        { upsert: true },
-      );
-    } catch (err) {
-      this.logger.warn(
-        `Failed to mirror room ${room._id.toString()} to Atlas: ${(err as Error).message}`,
-      );
+    if (this.atlasRoomModel) {
+      try {
+        await this.atlasRoomModel.findOneAndUpdate(
+          { _id: room._id },
+          { $set: room.toObject() },
+          { upsert: true },
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to mirror room ${room._id.toString()} to Atlas: ${(err as Error).message}`,
+        );
+      }
     }
 
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
@@ -367,15 +372,17 @@ export class GameRoomsService {
     await room.save();
 
     // Mirror status update to Atlas
-    try {
-      await this.atlasRoomModel.updateOne(
-        { _id: roomId },
-        { $set: { status, updatedAt: room.updatedAt } },
-      );
-    } catch (err) {
-      this.logger.warn(
-        `Failed to mirror room status to Atlas for room ${roomId}: ${(err as Error).message}`,
-      );
+    if (this.atlasRoomModel) {
+      try {
+        await this.atlasRoomModel.updateOne(
+          { _id: roomId },
+          { $set: { status, updatedAt: room.updatedAt } },
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to mirror room status to Atlas for room ${roomId}: ${(err as Error).message}`,
+        );
+      }
     }
 
     return room;

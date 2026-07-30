@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
@@ -10,7 +10,10 @@ import type { GameSessionSummary } from './game-sessions.service';
 
 /**
  * Game Sessions Archive Service
- * Handles archiving sessions between OCI and Atlas
+ * Handles archiving sessions between OCI and Atlas.
+ *
+ * The Atlas model is optional — when MONGODB_ATLAS_URI is not configured
+ * (e.g. in CI E2E tests), archive/load operations no-op gracefully.
  */
 @Injectable()
 export class GameSessionsArchiveService {
@@ -19,8 +22,9 @@ export class GameSessionsArchiveService {
   constructor(
     @InjectModel(GameSession.name, OCI_CONNECTION)
     private readonly ociSessionModel: Model<GameSession>,
+    @Optional()
     @InjectModel(GameSession.name, ATLAS_CONNECTION)
-    private readonly atlasSessionModel: Model<GameSession>,
+    private readonly atlasSessionModel?: Model<GameSession>,
   ) {}
 
   /**
@@ -28,6 +32,9 @@ export class GameSessionsArchiveService {
    * Uses upsert to handle re-archives gracefully.
    */
   async archiveSessionToAtlas(session: GameSessionSummary): Promise<void> {
+    if (!this.atlasSessionModel) {
+      return;
+    }
     try {
       await this.atlasSessionModel.findOneAndUpdate(
         { roomId: session.roomId },
@@ -73,6 +80,9 @@ export class GameSessionsArchiveService {
   async loadSessionFromAtlas(
     roomId: string,
   ): Promise<GameSessionSummary | null> {
+    if (!this.atlasSessionModel) {
+      return null;
+    }
     try {
       const atlasSession = await this.atlasSessionModel
         .findOne({ roomId })

@@ -70,6 +70,8 @@ const cspConnectSrc = [
   'wss://api.arcadeum.games',
   'https://api2.arcadeum.games',
   'wss://api2.arcadeum.games',
+  'https://api-dev.arcadeum.games',
+  'wss://api-dev.arcadeum.games',
   'https://accounts.google.com',
   'https://vercel.live',
   'wss://*.vercel.live',

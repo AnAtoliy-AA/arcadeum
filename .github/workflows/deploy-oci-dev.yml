@@ -1,0 +1,81 @@
+name: Deploy to OCI (Dev)
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'apps/be/**'
+      - 'bots/tg-bot/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'develop'
+
+permissions: {}
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            be-or-tg:
+              - 'apps/be/**'
+              - 'bots/tg-bot/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+  deploy-be-and-tg-bot:
+    name: Deploy BE + TG Bot (Dev)
+    needs: changes
+    if: needs.changes.outputs.be-or-tg == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'develop' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            pnpm --filter be build
+            pnpm --filter tg-bot build
+
+            mkdir -p "${DEPLOY_DIR}/scripts"
+
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env.dev\nset +a\nexec node apps/be/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-be-dev.sh"
+            chmod +x "${DEPLOY_DIR}/scripts/start-be-dev.sh"
+
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/tg-bot/.env.dev\nset +a\nexec node bots/tg-bot/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
+            chmod +x "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
+
+            pm2 restart arcadeum-be-dev arcadeum-tg-bot-dev || \
+              (pm2 start "${DEPLOY_DIR}/scripts/start-be-dev.sh" --name arcadeum-be-dev && \
+               pm2 start "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh" --name arcadeum-tg-bot-dev && \
+               pm2 save)
+
+            echo "==> Dev deploy done (branch: $BRANCH)!"
+            pm2 list

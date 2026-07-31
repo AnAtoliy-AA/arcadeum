@@ -10,12 +10,22 @@ import { Bot } from 'grammy';
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 10_000;
 
+interface DbHealth {
+  ok: boolean;
+  mongo: {
+    oci: 'connected' | 'disconnected';
+    atlas: 'connected' | 'disconnected' | 'not_configured';
+  };
+}
+
 @Injectable()
 export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(HealthMonitorService.name);
   private timer: ReturnType<typeof setInterval> | null = null;
   private isFirstCheck = true;
-  private isUp = true;
+  private isBeUp = true;
+  private isOciUp = true;
+  private isAtlasUp = true;
   private beUrl = '';
   private discordWebhook = '';
   private dmChatId = '';
@@ -53,47 +63,100 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async check(): Promise<void> {
-    let up = false;
+    let beUp = false;
+    let dbHealth: DbHealth | null = null;
 
     try {
       const resp = await fetch(`${this.beUrl}/health`, {
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
       const data: unknown = await resp.json();
-      up =
+      beUp =
         resp.ok &&
         typeof data === 'object' &&
         data !== null &&
         'ok' in data &&
         (data as { ok: boolean }).ok === true;
     } catch (err) {
-      this.logger.warn(`Health check failed: ${err}`);
+      this.logger.warn(`Backend health check failed: ${err}`);
     }
+
+    if (beUp) {
+      try {
+        const resp = await fetch(`${this.beUrl}/health/db`, {
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        });
+        if (resp.ok) {
+          dbHealth = (await resp.json()) as DbHealth;
+        }
+      } catch (err) {
+        this.logger.warn(`DB health check failed: ${err}`);
+      }
+    }
+
+    const ociUp = dbHealth?.mongo.oci === 'connected';
+    const atlasUp =
+      dbHealth?.mongo.atlas === 'connected' ||
+      dbHealth?.mongo.atlas === 'not_configured';
 
     if (this.isFirstCheck) {
       this.isFirstCheck = false;
-      if (up) {
-        this.isUp = true;
-        this.logger.log('Backend is online');
-        await this.notify('✅ Backend is online and responding');
+      this.isBeUp = beUp;
+      this.isOciUp = ociUp;
+      this.isAtlasUp = atlasUp;
+
+      const messages: string[] = [];
+      if (beUp) {
+        messages.push('✅ Backend is online and responding');
       } else {
-        this.isUp = false;
-        this.logger.error('Backend is DOWN on first check');
-        await this.notify(
-          '🔴 Backend is DOWN — not responding to health checks',
+        messages.push('🔴 Backend is DOWN — not responding to health checks');
+      }
+      if (beUp) {
+        messages.push(
+          `OCI MongoDB: ${ociUp ? '✅ connected' : '🔴 disconnected'}`,
+        );
+        messages.push(
+          `Atlas MongoDB: ${atlasUp ? '✅ connected' : dbHealth?.mongo.atlas === 'disconnected' ? '🟠 disconnected' : '⚪ not configured'}`,
         );
       }
+
+      this.logger.log(messages.join(' | '));
+      await this.notify(messages.join('\n'));
       return;
     }
 
-    if (up && !this.isUp) {
-      this.isUp = true;
-      this.logger.log('Backend recovered');
-      await this.notify('✅ Backend is back online and responding');
-    } else if (!up && this.isUp) {
-      this.isUp = false;
-      this.logger.error('Backend is DOWN');
-      await this.notify('🔴 Backend is DOWN — not responding to health checks');
+    const alerts: string[] = [];
+
+    if (beUp && !this.isBeUp) {
+      alerts.push('✅ Backend is back online and responding');
+    } else if (!beUp && this.isBeUp) {
+      alerts.push('🔴 Backend is DOWN — not responding to health checks');
+    }
+    this.isBeUp = beUp;
+
+    if (beUp) {
+      if (ociUp && !this.isOciUp) {
+        alerts.push('✅ OCI MongoDB is back online');
+      } else if (!ociUp && this.isOciUp) {
+        alerts.push(
+          '🔴 OCI MongoDB is DOWN — backend running but database disconnected',
+        );
+      }
+      this.isOciUp = ociUp;
+
+      if (atlasUp && !this.isAtlasUp) {
+        alerts.push('✅ Atlas MongoDB is back online');
+      } else if (!atlasUp && this.isAtlasUp) {
+        alerts.push(
+          '🟠 Atlas MongoDB is DOWN — backend running but archive database disconnected',
+        );
+      }
+      this.isAtlasUp = atlasUp;
+    }
+
+    if (alerts.length > 0) {
+      this.logger.log(alerts.join(' | '));
+      await this.notify(alerts.join('\n'));
     }
   }
 

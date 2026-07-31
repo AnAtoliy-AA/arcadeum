@@ -609,23 +609,54 @@ const SCENARIOS = [
 ];
 
 // ============================================================================
-// AUDIO TRACKS (same as in-game music player)
+// AUDIO TRACKS (fetched dynamically from CDN tracks.json)
 // ============================================================================
 
 const CDN_BASE = process.env.SHORTS_CDN_URL;
 const MUSIC_FOLDER = 'music';
 const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
+const TRACKS_JSON_URL = `${CDN_BASE}/${MUSIC_FOLDER}/tracks.json`;
 
-const AUDIO_TRACKS = [
-  `${MUSIC_CDN_URL}/battleship-grid.mp3`,
-  `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
-  `${MUSIC_CDN_URL}/glass-grid.mp3`,
-  `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
-  `${MUSIC_CDN_URL}/gridline-armada.mp3`,
-  `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
-  `${MUSIC_CDN_URL}/iron-tide.mp3`,
-  `${MUSIC_CDN_URL}/iron-wake.mp3`,
-];
+let cachedTracks = null;
+
+/**
+ * Fetches available audio tracks from CDN tracks.json.
+ * Falls back to a small hardcoded list if the fetch fails.
+ */
+async function getAudioTracks() {
+  if (cachedTracks) return cachedTracks;
+
+  try {
+    log('info', `Fetching tracks from ${TRACKS_JSON_URL}`);
+    const response = await axios.get(TRACKS_JSON_URL, { timeout: 10000 });
+    const tracks = response.data
+      .filter((t) => t.src && t.src.endsWith('.mp3'))
+      .map((t) => `${CDN_BASE}${t.src}`);
+    if (tracks.length > 0) {
+      cachedTracks = tracks;
+      log('info', `Loaded ${tracks.length} audio tracks from CDN`);
+      return tracks;
+    }
+  } catch (error) {
+    log('warn', 'Failed to fetch tracks.json, using fallback', {
+      error: error.message,
+    });
+  }
+
+  // Fallback: tracks known to exist on CDN
+  cachedTracks = [
+    `${MUSIC_CDN_URL}/battleship-grid.mp3`,
+    `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
+    `${MUSIC_CDN_URL}/glass-grid.mp3`,
+    `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
+    `${MUSIC_CDN_URL}/gridline-armada.mp3`,
+    `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
+    `${MUSIC_CDN_URL}/iron-tide.mp3`,
+    `${MUSIC_CDN_URL}/iron-wake.mp3`,
+  ];
+  log('info', `Using ${cachedTracks.length} fallback audio tracks`);
+  return cachedTracks;
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -883,7 +914,8 @@ async function processVideo(rawVideoPath, recordedDuration) {
   await ensureDir(CONFIG.outputDir);
 
   // Select a random audio track
-  const audioTrack = randomElement(AUDIO_TRACKS);
+  const tracks = await getAudioTracks();
+  const audioTrack = randomElement(tracks);
   log('info', `Selected audio track: ${audioTrack}`);
 
   // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)

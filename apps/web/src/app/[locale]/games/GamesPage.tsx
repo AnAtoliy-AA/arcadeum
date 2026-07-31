@@ -106,7 +106,6 @@ export default function GamesPage({
 
   const handleStatusChange = useCallback(
     (statuses: GamesStatusFilter) => {
-      setSelectedStatuses(statuses);
       const serialized = serializeStatusFilterToUrl(statuses);
       updateParams({ status: serialized });
     },

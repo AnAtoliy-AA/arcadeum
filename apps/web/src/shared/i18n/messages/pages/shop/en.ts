@@ -217,6 +217,8 @@ export const shopEn = {
       catbengal: { name: 'Cyber Bengal', desc: 'A hyperrealistic cybernetic Bengal cat.' },
       phoenixcyber: { name: 'Cyber Phoenix', desc: 'A hyperrealistic cybernetic phoenix.' },
       dragoncyber: { name: 'Cyber Dragon', desc: 'A hyperrealistic cybernetic dragon.' },
+      leopardcyber: { name: 'Cyber Leopard', desc: 'A hyperrealistic cybernetic leopard.' },
+      eaglecyber: { name: 'Cyber Eagle Elite', desc: 'A hyperrealistic cybernetic eagle variant.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },

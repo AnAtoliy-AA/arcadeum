@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.171] - 2026-07-31
+
+### Fixed
+- add image quality 80 to allowed qualities config
+
+
 ## [1.23.170] - 2026-07-31
 
 ### Fixed

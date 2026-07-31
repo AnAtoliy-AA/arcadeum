@@ -88,7 +88,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
           const isLast = index === heroCards.length - 1;
           const x = (index - 1) * FAN_OFFSET;
           const rotate = `${(index - 1) * 12}deg`;
-          const y = index * -15;
+          const y = 0;
           const isActive = hoveredIndex === index;
 
           return (

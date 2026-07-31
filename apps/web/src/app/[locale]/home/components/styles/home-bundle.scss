@@ -129,6 +129,12 @@
   .hero-title-shimmer::after {
     display: none;
   }
+
+  .hero-title-shimmer {
+    perspective: none;
+    transform-style: flat;
+    animation: none;
+  }
 }
 
 .hero-section-container {

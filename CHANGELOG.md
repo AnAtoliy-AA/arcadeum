@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.172] - 2026-07-31
+
+### Improved
+- disable3D effects and animation on mobile for faster LCP
+
+
 ## [1.23.171] - 2026-07-31
 
 ### Fixed

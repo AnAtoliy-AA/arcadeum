@@ -34,6 +34,7 @@ function useCountdown(
   useEffect(() => {
     if (!clock) return;
     if (isGameOver || !isMyTurn) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate clock sync
       setDisplaySeconds(computeRemaining(clock));
       return;
     }

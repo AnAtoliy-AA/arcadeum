@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Select } from '@arcadeum/ui';
 import {
   useTranslation,
@@ -40,12 +40,7 @@ export function GameVariantSelector({
   const { setOption } = useRoomOptions({ roomId, userId: hostId ?? '' });
 
   // Local state for optimistic updates
-  const [internalVariant, setInternalVariant] = useState(currentVariant);
-
-  // Sync internal state when prop changes
-  useEffect(() => {
-    setInternalVariant(currentVariant);
-  }, [currentVariant]);
+  const [internalVariant, setInternalVariant] = useState<string | null>(null);
 
   const handleVariantChange = (e: { target: { value: string } }) => {
     const newVariant = e.target.value;
@@ -98,7 +93,7 @@ export function GameVariantSelector({
     <Select
       id={selectId}
       name={optionKey}
-      value={internalVariant || ''}
+      value={internalVariant ?? currentVariant || ''}
       onChange={handleVariantChange}
       disabled={disabled}
       style={{ minWidth: '200px' }}

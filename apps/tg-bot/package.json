@@ -17,7 +17,7 @@
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.0.1",
+    "@nestjs/core": "^11.1.18",
     "@solana/web3.js": "^1.98.4",
     "dotenv": "^16.5.0",
     "grammy": "^1.35.0",

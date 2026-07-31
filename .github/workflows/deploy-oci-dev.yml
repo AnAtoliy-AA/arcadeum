@@ -66,10 +66,10 @@ jobs:
 
             mkdir -p "${DEPLOY_DIR}/scripts"
 
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env.dev\nset +a\nexec node apps/be/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-be-dev.sh"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env.dev\nset +a\ncd /opt/arcadeum\nexec node apps/be/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-be-dev.sh"
             chmod +x "${DEPLOY_DIR}/scripts/start-be-dev.sh"
 
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/tg-bot/.env.dev\nset +a\nexec node bots/tg-bot/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/tg-bot/.env.dev\nset +a\ncd /opt/arcadeum\nexec node bots/tg-bot/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
             chmod +x "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
 
             pm2 restart arcadeum-be-dev arcadeum-tg-bot-dev || \

@@ -50,9 +50,11 @@ export default async function HomeHero() {
           <h1
             id="hero-heading"
             className="hero-title-main hero-title-shimmer"
-            data-text={appConfig.appName}
+            data-text="Arcadeum Games"
           >
-            {appConfig.appName}
+            Arcadeum
+            <br />
+            Games
           </h1>
 
           <div

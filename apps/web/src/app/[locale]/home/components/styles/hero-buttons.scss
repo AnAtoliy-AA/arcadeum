@@ -1,0 +1,78 @@
+/* Hero CTA Button Styles */
+
+.home-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  border-radius: var(--t-radius-5);
+  cursor: pointer;
+  height: 60px;
+  padding: 0 var(--t-space-8);
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    filter 0.2s ease-in-out;
+}
+
+.home-link-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.home-link-button:active {
+  transform: scale(0.98);
+}
+
+.home-link-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.home-link-button-primary {
+  background-image: linear-gradient(160deg, #ffe866 0%, #ff9500 100%);
+  color: rgb(26, 26, 26);
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: rgba(255, 165, 0, 0.7) 0px 4px 12px;
+}
+
+.home-link-button-ghost {
+  background-color: var(--secondary);
+  background-image: linear-gradient(160deg,
+      var(--secondaryGradientStart) 0%,
+      var(--secondaryGradientEnd) 100%);
+  color: var(--secondaryText);
+  border: 1px solid var(--glassBorder);
+  border-top-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.home-link-button-ghost:hover {
+  background-color: var(--accent);
+  background-image: linear-gradient(160deg,
+      var(--accent) 0%,
+      var(--secondaryGradientStart) 100%);
+  color: var(--secondaryText);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+}
+
+.home-btn-gap-2 {
+  gap: 12px;
+}
+
+.hero-actions-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--t-space-4);
+  margin-top: var(--t-space-2);
+  justify-content: center;
+}
+
+@media (min-width: 1151px) {
+  .hero-actions-responsive {
+    justify-content: flex-start;
+  }
+}

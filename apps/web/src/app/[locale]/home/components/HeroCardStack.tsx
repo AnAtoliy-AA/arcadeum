@@ -9,6 +9,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
+import { useHeroBackgroundStore } from '../store/heroBackgroundStore';
 
 const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
 const MAX_TILT_DEG = 8;
@@ -29,11 +30,15 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const pointerDownRef = useRef(false);
   const { t } = useTranslation();
   const routes = useRoutes();
+  const setBgImage = useHeroBackgroundStore((s) => s.setBgImage);
+  const resetBgImage = useHeroBackgroundStore((s) => s.resetBgImage);
 
-  const heroCards = HERO_VARIANT_IDS.map((id) => {
-    const v = CARD_VARIANTS.find((c) => c.id === id);
-    return { id, nameKey: v?.name ?? '', bgImage: v?.bgImage };
-  });
+  const heroCards = React.useMemo(() => {
+    return HERO_VARIANT_IDS.map((id) => {
+      const v = CARD_VARIANTS.find((c) => c.id === id);
+      return { id, nameKey: v?.name ?? '', bgImage: v?.bgImage };
+    });
+  }, []);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -50,10 +55,15 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
       stack.style.setProperty('--tilt-x', `${px * MAX_TILT_DEG * 2}deg`);
       stack.style.setProperty('--tilt-y', `${-py * MAX_TILT_DEG * 2}deg`);
       if (!pointerDownRef.current) {
-        setHoveredIndex(indexFromPointerX(e.clientX, stack));
+        const nextHovered = indexFromPointerX(e.clientX, stack);
+        setHoveredIndex(nextHovered);
+        const card = heroCards[nextHovered];
+        if (card?.bgImage) {
+          setBgImage(card.bgImage);
+        }
       }
     },
-    [],
+    [heroCards, setBgImage],
   );
 
   const handlePointerDown = useCallback(() => {
@@ -71,7 +81,8 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
     stack.style.setProperty('--tilt-y', '0deg');
     pointerDownRef.current = false;
     setHoveredIndex(null);
-  }, []);
+    resetBgImage();
+  }, [resetBgImage]);
 
   return (
     <div data-testid="hero-visual" className="hero-visual-main fade-on-mount">
@@ -114,8 +125,8 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
                   alt={`${t(card.nameKey as TranslationKey)} game card preview`}
                   fill
                   priority
-                  quality={80}
-                  sizes="(max-width: 1150px) 60vw, 280px"
+                  quality={70}
+                  sizes="(max-width: 1150px) 240px, 280px"
                   placeholder="blur"
                   blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="
                   className="hero-card-image"

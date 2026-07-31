@@ -178,7 +178,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       const targetBotCount = botCount !== undefined ? botCount : 1;
       const needed = Math.min(cap - 1, targetBotCount);
       for (let i = 0; i < needed; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     } else if (!teamMode && withBots) {
       const targetTotalPlayers = playerIds.length + (botCount || 1);
@@ -187,7 +187,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
         Math.max(0, targetTotalPlayers - playerIds.length),
       );
       for (let i = 0; i < needed; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 

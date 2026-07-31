@@ -31,7 +31,7 @@ import type {
 export function fillWithBots(session: GlimwormSession, target: number): void {
   const used = new Set(Object.values(session.worms).map((w) => w.color));
   while (Object.keys(session.worms).length < target) {
-    const id = `bot-${Math.random().toString(36).slice(2, 10)}`;
+    const id = `bot-${crypto.randomUUID()}`;
     const color =
       GLIMWORM_PALETTE.find((c) => !used.has(c)) ?? GLIMWORM_PALETTE[0];
     used.add(color);

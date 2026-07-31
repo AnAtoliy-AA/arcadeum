@@ -17,7 +17,7 @@
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.0.1",
+    "@nestjs/core": "^11.1.18",
     "@solana/web3.js": "^1.98.4",
     "dotenv": "^16.5.0",
     "grammy": "^1.35.0",
@@ -25,7 +25,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",

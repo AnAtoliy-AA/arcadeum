@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.169] - 2026-07-31
+
+### Fixed
+- increase hero card fan offset for touch target spacing
+
+
 ## [1.23.168] - 2026-07-31
 
 ### Changed

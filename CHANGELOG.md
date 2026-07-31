@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.177] - 2026-07-31
+
+### Added
+- db health check
+
+### Fixed
+- use ConnectionStates enum for readyState comparison
+
+
 ## [1.23.176] - 2026-07-31
 
 ### Fixed

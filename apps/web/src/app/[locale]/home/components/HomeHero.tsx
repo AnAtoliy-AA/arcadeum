@@ -4,6 +4,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { SupportIcon } from '@arcadeum/ui';
 import { getTranslations } from '@/shared/i18n/server';
+import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
 
 export default async function HomeHero() {
@@ -28,14 +29,11 @@ export default async function HomeHero() {
       aria-labelledby="hero-heading"
       data-testid="hero-section"
     >
-      <div className="hero-background-overlay" />
+      <HeroBackground />
 
       <div className="hero-container-main">
         <div className="hero-content-main">
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.2s' }}
-          >
+          <div className="animate-fade-in-up hero-delay-200">
             <span className="hero-kicker-main kicker-hydration-shimmer">
               ✦ {kicker}
             </span>
@@ -56,24 +54,15 @@ export default async function HomeHero() {
             <span className="hero-title-sub">Games</span>
           </h1>
 
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.1s' }}
-          >
+          <div className="animate-fade-in-up hero-delay-100">
             <p className="hero-tagline-main">{tagline}</p>
           </div>
 
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.3s' }}
-          >
+          <div className="animate-fade-in-up hero-delay-300">
             <p className="hero-description-main">{description}</p>
           </div>
 
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.4s' }}
-          >
+          <div className="animate-fade-in-up hero-delay-400">
             <div className="hero-actions-responsive">
               <Link
                 href={routes.games}

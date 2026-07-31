@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.3] - 2026-07-31
+
+### Fixed
+- resolve react-hooks/set-state-in-effect error in HeroBackground
+- remove aria-label mismatch on install PWA button
+
+### Improved
+- optimize hero background images and split SCSS
+
+### Refactored
+- simplify ObjectId string conversion in auth and payment-notes
+
+
 ## [1.24.2] - 2026-07-31
 
 ### Fixed

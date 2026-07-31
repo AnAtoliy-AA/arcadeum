@@ -132,8 +132,11 @@ export class WalletService {
     const filter: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
     };
-    if (opts.currency && this.isValidCurrency(opts.currency)) {
-      filter.currency = opts.currency;
+    if (opts.currency) {
+      const validCurrency = this.isValidCurrency(opts.currency)
+        ? opts.currency
+        : undefined;
+      if (validCurrency) filter.currency = validCurrency;
     }
 
     if (opts.cursor) {

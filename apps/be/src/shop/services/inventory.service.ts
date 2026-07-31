@@ -1,3 +1,4 @@
+import { runInTransaction } from '../../common/utils/transaction.util';
 import {
   BadRequestException,
   Injectable,
@@ -261,7 +262,7 @@ export class InventoryService {
     if (!equipKey) throw new BadRequestException('shop.categoryNotEquippable');
 
     let updatedUser: LeanUser | null = null;
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       const owned = await this.owns(userId, itemId, session);
       if (!owned) throw new BadRequestException('shop.notOwned');
       const result = await this.userModel
@@ -324,7 +325,7 @@ export class InventoryService {
     userId: string,
     itemId: string,
     category: ShopCategory,
-    session: ClientSession,
+    session?: ClientSession,
   ): Promise<void> {
     const equipKey = equipKeyFor(category);
     if (!equipKey) return;

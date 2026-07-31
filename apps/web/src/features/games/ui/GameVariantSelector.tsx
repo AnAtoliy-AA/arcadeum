@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Select } from '@arcadeum/ui';
 import {
   useTranslation,
@@ -40,12 +40,7 @@ export function GameVariantSelector({
   const { setOption } = useRoomOptions({ roomId, userId: hostId ?? '' });
 
   // Local state for optimistic updates
-  const [internalVariant, setInternalVariant] = useState(currentVariant);
-
-  // Sync internal state when prop changes
-  useEffect(() => {
-    setInternalVariant(currentVariant);
-  }, [currentVariant]);
+  const [internalVariant, setInternalVariant] = useState<string | null>(null);
 
   const handleVariantChange = (e: { target: { value: string } }) => {
     const newVariant = e.target.value;
@@ -55,27 +50,27 @@ export function GameVariantSelector({
     setOption({ [optionKey]: newVariant });
   };
 
-  // Check if internalVariant exists in the list
+  // Use currentVariant as the effective value for display logic
+  const effectiveVariant = internalVariant ?? currentVariant;
+
+  // Check if effectiveVariant exists in the list
   const displayVariants = useMemo(() => {
-    // If internalVariant is falsy, we don't need to add a fallback
-    if (!internalVariant) return variants;
+    if (!effectiveVariant) return variants;
 
-    const isVariantValid = variants.some((v) => v.id === internalVariant);
+    const isVariantValid = variants.some((v) => v.id === effectiveVariant);
 
-    // If valid, just return original variants
     if (isVariantValid) return variants;
 
-    // If invalid, prepend the unknown option
     return [
       {
-        id: internalVariant,
-        name: `Unknown Variant (${internalVariant})`,
+        id: effectiveVariant,
+        name: `Unknown Variant (${effectiveVariant})`,
         emoji: '❓',
         disabled: true,
       },
       ...variants,
     ];
-  }, [internalVariant, variants]);
+  }, [effectiveVariant, variants]);
 
   // Translate variant names and descriptions
   const translatedVariants = useMemo(() => {
@@ -98,7 +93,7 @@ export function GameVariantSelector({
     <Select
       id={selectId}
       name={optionKey}
-      value={internalVariant || ''}
+      value={internalVariant ?? currentVariant ?? ''}
       onChange={handleVariantChange}
       disabled={disabled}
       style={{ minWidth: '200px' }}

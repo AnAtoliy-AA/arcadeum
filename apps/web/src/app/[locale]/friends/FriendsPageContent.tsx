@@ -99,6 +99,7 @@ export default function FriendsPageContent({
   }, [token]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data-fetch on mount
     void loadData();
   }, [loadData]);
 

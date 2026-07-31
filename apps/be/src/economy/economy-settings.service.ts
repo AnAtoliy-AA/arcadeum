@@ -1,3 +1,4 @@
+import { runInTransaction } from '../common/utils/transaction.util';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -92,30 +93,25 @@ export class EconomySettingsService {
       throw new BadRequestException('economy.invalidValue');
     }
 
-    const session = await this.connection.startSession();
-    try {
-      await session.withTransaction(async () => {
-        const fromValue = await this.resolveWithSession(key, session);
-        await this.settingModel.findOneAndUpdate(
-          { key },
-          { $set: { value, updatedBy: new Types.ObjectId(adminUserId) } },
-          { upsert: true, session, new: true },
-        );
-        await this.auditModel.create(
-          [
-            {
-              key,
-              fromValue,
-              toValue: value,
-              adminUserId: new Types.ObjectId(adminUserId),
-            },
-          ],
-          { session },
-        );
-      });
-    } finally {
-      await session.endSession();
-    }
+    await runInTransaction(this.connection, async (session) => {
+      const fromValue = await this.resolveWithSession(key, session);
+      await this.settingModel.findOneAndUpdate(
+        { key },
+        { $set: { value, updatedBy: new Types.ObjectId(adminUserId) } },
+        { upsert: true, session, new: true },
+      );
+      await this.auditModel.create(
+        [
+          {
+            key,
+            fromValue,
+            toValue: value,
+            adminUserId: new Types.ObjectId(adminUserId),
+          },
+        ],
+        { session },
+      );
+    });
 
     this.invalidateKey(key);
   }
@@ -125,27 +121,22 @@ export class EconomySettingsService {
       throw new BadRequestException('economy.unknownKey');
     }
 
-    const session = await this.connection.startSession();
-    try {
-      await session.withTransaction(async () => {
-        const fromValue = await this.resolveWithSession(key, session);
-        await this.settingModel.deleteOne({ key }, { session });
-        const toValue = this.resolveWithoutDb(key);
-        await this.auditModel.create(
-          [
-            {
-              key,
-              fromValue,
-              toValue,
-              adminUserId: new Types.ObjectId(adminUserId),
-            },
-          ],
-          { session },
-        );
-      });
-    } finally {
-      await session.endSession();
-    }
+    await runInTransaction(this.connection, async (session) => {
+      const fromValue = await this.resolveWithSession(key, session);
+      await this.settingModel.deleteOne({ key }, { session });
+      const toValue = this.resolveWithoutDb(key);
+      await this.auditModel.create(
+        [
+          {
+            key,
+            fromValue,
+            toValue,
+            adminUserId: new Types.ObjectId(adminUserId),
+          },
+        ],
+        { session },
+      );
+    });
 
     this.invalidateKey(key);
   }
@@ -236,7 +227,7 @@ export class EconomySettingsService {
 
   private async resolveWithSession(
     key: EconomyKey,
-    session: ClientSession,
+    session?: ClientSession,
   ): Promise<number> {
     const doc = await this.settingModel
       .findOne({ key }, null, { session })

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.170] - 2026-07-31
+
+### Fixed
+- equalize hero card sizing and vertical alignment
+
+### Improved
+- optimize images, polyfills, lazy-load, bfcache headers
+
+
 ## [1.23.169] - 2026-07-31
 
 ### Fixed

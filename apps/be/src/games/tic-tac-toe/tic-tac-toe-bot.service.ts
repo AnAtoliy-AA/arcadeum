@@ -14,6 +14,7 @@ import {
   findWinningLine,
   isBoardFull,
 } from '../engines/tic-tac-toe/tic-tac-toe.utils';
+import { randomInt } from 'crypto';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
@@ -26,6 +27,14 @@ export class TicTacToeBotService {
     @Inject(forwardRef(() => TicTacToeService))
     private readonly ticTacToeService: TicTacToeService,
   ) {}
+
+  private secureRandom(max: number): number {
+    return randomInt(max);
+  }
+
+  private secureRandomRange(min: number, max: number): number {
+    return min + this.secureRandom(max - min + 1);
+  }
 
   isBot(userId: string): boolean {
     return userId.startsWith('bot-');
@@ -231,7 +240,7 @@ export class TicTacToeBotService {
       }
     }
     if (empties.length === 0) return null;
-    return empties[Math.floor(Math.random() * empties.length)];
+    return empties[this.secureRandom(empties.length - 1)];
   }
 
   private getOwnerId(state: TicTacToeState, botId: string): string | null {
@@ -266,7 +275,7 @@ export class TicTacToeBotService {
   }
 
   private async randomDelay(range: { min: number; max: number }) {
-    const ms = range.min + Math.random() * (range.max - range.min);
+    const ms = this.secureRandomRange(range.min, range.max);
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 

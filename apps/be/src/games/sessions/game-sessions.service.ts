@@ -15,6 +15,7 @@ import {
   GameActionContext,
   BaseGameState,
 } from '../engines/base/game-engine.interface';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 export interface GameSessionSummary {
   id: string;
@@ -61,8 +62,8 @@ export class GameSessionsService {
   private readonly sessionLocks = new Map<string, Promise<void>>();
 
   constructor(
-    @InjectModel(GameSession.name)
-    private readonly gameSessionModel: Model<GameSession>,
+    @InjectModel(GameSession.name, OCI_CONNECTION)
+    private readonly ociSessionModel: Model<GameSession>,
     private readonly engineRegistry: GameEngineRegistry,
   ) {}
 
@@ -95,7 +96,7 @@ export class GameSessionsService {
     const initialState = engine.initializeState(playerIds, config);
 
     // Create session document
-    const session = await this.gameSessionModel.create({
+    const session = await this.ociSessionModel.create({
       roomId,
       gameId,
       engine: gameId, // Engine identifier
@@ -116,7 +117,7 @@ export class GameSessionsService {
       return null;
     }
     const safeRoomId = String(roomId);
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findOne({ roomId: safeRoomId })
       .sort({ createdAt: -1 })
       .lean()
@@ -136,7 +137,7 @@ export class GameSessionsService {
     limit: number = 100,
   ): Promise<GameSessionSummary[]> {
     const thresholdDate = new Date(Date.now() - staleThresholdMs);
-    const sessions = await this.gameSessionModel
+    const sessions = await this.ociSessionModel
       .find({
         gameId,
         status: 'active',
@@ -155,7 +156,7 @@ export class GameSessionsService {
    * Get session by ID
    */
   async getSession(sessionId: string): Promise<GameSessionSummary> {
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findById(sessionId)
       .lean()
       .exec();
@@ -175,7 +176,7 @@ export class GameSessionsService {
   ): Promise<GameSessionSummary> {
     const { sessionId, state, status } = options;
 
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.ociSessionModel.findById(sessionId).exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);
@@ -223,7 +224,7 @@ export class GameSessionsService {
 
     const release = await this.acquireSessionLock(sessionId);
     try {
-      const session = await this.gameSessionModel.findById(sessionId).exec();
+      const session = await this.ociSessionModel.findById(sessionId).exec();
 
       if (!session) {
         throw new NotFoundException(`Session not found: ${sessionId}`);
@@ -315,7 +316,7 @@ export class GameSessionsService {
   async revertToPreviousState(
     sessionId: string,
   ): Promise<GameSessionSummary | null> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.ociSessionModel.findById(sessionId).exec();
     if (!session) return null;
     const state = session.state;
     const history = state.stateHistory as unknown[] | undefined;
@@ -336,7 +337,7 @@ export class GameSessionsService {
     sessionId: string,
     playerId: string,
   ): Promise<unknown> {
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findById(sessionId)
       .select('gameId state')
       .lean()
@@ -377,7 +378,7 @@ export class GameSessionsService {
     sessionId: string,
     playerId: string,
   ): Promise<string[]> {
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findById(sessionId)
       .select('gameId state')
       .lean()
@@ -399,7 +400,7 @@ export class GameSessionsService {
    * Check if game is over
    */
   async isGameOver(sessionId: string): Promise<boolean> {
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findById(sessionId)
       .select('gameId state')
       .lean()
@@ -418,7 +419,7 @@ export class GameSessionsService {
    * Get winners if game is over
    */
   async getWinners(sessionId: string): Promise<string[]> {
-    const session = await this.gameSessionModel
+    const session = await this.ociSessionModel
       .findById(sessionId)
       .select('gameId state')
       .lean()
@@ -440,7 +441,7 @@ export class GameSessionsService {
     sessionId: string,
     playerId: string,
   ): Promise<GameSessionSummary> {
-    const session = await this.gameSessionModel.findById(sessionId).exec();
+    const session = await this.ociSessionModel.findById(sessionId).exec();
 
     if (!session) {
       throw new NotFoundException(`Session not found: ${sessionId}`);

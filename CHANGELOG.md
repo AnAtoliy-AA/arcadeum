@@ -7,6 +7,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.179] - 2026-07-31
+
+### Fixed
+- replace Math.random with crypto.randomInt in tic-tac-toe bot; explicit currency validation in wallet query
+
+
+## [1.23.178] - 2026-07-31
+
+### Fixed
+- update appleboy/ssh-action to v1.0.3 in deploy workflows
+
+
+## [1.23.177] - 2026-07-31
+
+### Added
+- db health check
+
+### Fixed
+- use ConnectionStates enum for readyState comparison
+
+
+## [1.23.176] - 2026-07-31
+
+### Fixed
+- use randomInt to avoid biased modulo in code generation
+- replace Math.random() with crypto APIs and sanitize query inputs
+
+
+## [1.23.175] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.174] - 2026-07-31
+
+### Added
+- restyle hero h1 with Arcadeum Games two-line layout
+
+
+## [1.23.173] - 2026-07-31
+
+### Added
+- rename H1 to Arcadeum Games (two lines)
+
+
+## [1.23.172] - 2026-07-31
+
+### Improved
+- disable3D effects and animation on mobile for faster LCP
+
+
+## [1.23.171] - 2026-07-31
+
+### Fixed
+- add image quality 80 to allowed qualities config
+
+
+## [1.23.170] - 2026-07-31
+
+### Fixed
+- equalize hero card sizing and vertical alignment
+
+### Improved
+- optimize images, polyfills, lazy-load, bfcache headers
+
+
+## [1.23.169] - 2026-07-31
+
+### Fixed
+- increase hero card fan offset for touch target spacing
+
+
+## [1.23.168] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.167] - 2026-07-31
+
+### Added
+- add dev OCI deploy, branch selection, api-dev.arcadeum.games, fix music URL
+
+
+## [1.23.166] - 2026-07-30
+
+### Fixed
+- make Atlas URI optional in all environments including production
+- register PlayerStats models on default connection for DI resolution
+- conditionally register Atlas MongooseModule.forFeature
+- make Atlas models optional for CI E2E compatibility
+- add missing test providers for dual MongoDB services
+
+### Refactored
+- rename MONGODB_URI to MONGODB_OCI_URI for clarity
+
+
+## [1.23.165] - 2026-07-29
+
+### Added
+- add neon and solar themed name colors and frames
+
+
 ## [1.23.164] - 2026-07-29
 
 ### Fixed

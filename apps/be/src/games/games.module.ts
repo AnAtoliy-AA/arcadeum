@@ -6,6 +6,7 @@ import { GamesController } from './games.controller';
 import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
+import { GamesHistoryFacade } from './games-history.facade';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
 import { GameSession, GameSessionSchema } from './schemas/game-session.schema';
 import {
@@ -31,6 +32,7 @@ import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
 import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
@@ -44,6 +46,11 @@ import { GamePostMatchService } from './game-post-match.service';
 import { PlayerStatsService } from './player-stats.service';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
+import {
+  OCI_CONNECTION,
+  ATLAS_CONNECTION,
+} from '../common/providers/mongo-connections.provider';
+import { resolveAtlasUri } from '../common/utils/mongo-uri.util';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -90,14 +97,38 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
         secret: resolveJwtSecret(config),
       }),
     }),
+    // OCI connection models (fast, local gameplay)
+    MongooseModule.forFeature(
+      [
+        { name: GameSession.name, schema: GameSessionSchema },
+        { name: GameRoom.name, schema: GameRoomSchema },
+        { name: User.name, schema: UserSchema },
+        { name: PlayerStats.name, schema: PlayerStatsSchema },
+        { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+      ],
+      OCI_CONNECTION,
+    ),
+    // Default connection models (for services that inject without connectionName)
     MongooseModule.forFeature([
-      { name: GameRoom.name, schema: GameRoomSchema },
-      { name: GameSession.name, schema: GameSessionSchema },
-      { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
       { name: PlayerStats.name, schema: PlayerStatsSchema },
       { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
-      { name: User.name, schema: UserSchema },
     ]),
+    // Atlas connection models (archive, history, stats) — only when Atlas is configured
+    ...(resolveAtlasUri()
+      ? [
+          MongooseModule.forFeature(
+            [
+              { name: GameSession.name, schema: GameSessionSchema },
+              { name: GameRoom.name, schema: GameRoomSchema },
+              { name: GameHistoryHidden.name, schema: GameHistoryHiddenSchema },
+              { name: PlayerStats.name, schema: PlayerStatsSchema },
+              { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+              { name: User.name, schema: UserSchema },
+            ],
+            ATLAS_CONNECTION,
+          ),
+        ]
+      : []),
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
     forwardRef(() => LeaderboardsModule),
@@ -117,6 +148,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsQuickplayService,
     SeaBattleTeamConfigService,
     GameSessionsService,
+    GameSessionsArchiveService,
     GameSessionsCleanupCron,
     GameHistoryService,
     GameHistoryBuilderService,
@@ -154,6 +186,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameUtilitiesService,
     // Facade service (main entry point)
     GamesService,
+    GamesHistoryFacade,
     GamesCatalogService,
     GamesRematchService,
     GamesLeaderboardSyncService,

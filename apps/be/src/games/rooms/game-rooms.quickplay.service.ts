@@ -8,6 +8,7 @@ import { GameRoomsService } from './game-rooms.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import type { GameRoomSummary } from './game-rooms.types';
 import { GAME_CATALOG } from '../../games/games.catalog';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 const VALID_GAME_IDS = new Set(GAME_CATALOG.map((g) => g.gameId));
 
@@ -36,7 +37,7 @@ export class GameRoomsQuickplayService {
   private readonly logger = new Logger(GameRoomsQuickplayService.name);
 
   constructor(
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly gameRoomModel: Model<GameRoom>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsService: GameRoomsService,

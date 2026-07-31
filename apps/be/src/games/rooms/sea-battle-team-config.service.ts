@@ -17,6 +17,7 @@ import {
 import { SetTeamConfigDto } from '../dtos/set-team-config.dto';
 import { AssignTeamDto } from '../dtos/assign-team.dto';
 import crypto from 'crypto';
+import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 const MIN_TEAMS = 2;
 const MIN_TEAM_SIZE = 2;
@@ -31,7 +32,7 @@ function resolveMaxTotalPlayers(opts: SeaBattleGameOptions): number {
 @Injectable()
 export class SeaBattleTeamConfigService {
   constructor(
-    @InjectModel(GameRoom.name)
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly gameRoomModel: Model<GameRoom>,
     private readonly mapper: GameRoomsMapper,
   ) {}

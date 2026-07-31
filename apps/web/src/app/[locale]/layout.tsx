@@ -8,7 +8,13 @@ import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/Announcement
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
-import { WalletLiveBridge } from '@/features/wallet/ui/WalletLiveBridge';
+import dynamic from 'next/dynamic';
+
+const WalletLiveBridge = dynamic(() =>
+  import('@/features/wallet/ui/WalletLiveBridge').then(
+    (m) => m.WalletLiveBridge,
+  ),
+);
 import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import {

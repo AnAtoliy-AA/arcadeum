@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -6,17 +7,26 @@ describe('AppController', () => {
   let app: TestingModule;
   let appController: AppController;
 
+  const mockConnection = {
+    readyState: 1,
+    db: { admin: () => ({ command: () => ({}) }) },
+  } as unknown as Connection;
+
   beforeEach(async () => {
     app = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        AppService,
+        { provide: 'OCIConnection', useValue: mockConnection },
+        { provide: 'ATLASConnection', useValue: mockConnection },
+      ],
     }).compile();
 
     appController = app.get<AppController>(AppController);
   });
 
   afterAll(async () => {
-    await app.close();
+    await app?.close();
   });
 
   describe('root', () => {

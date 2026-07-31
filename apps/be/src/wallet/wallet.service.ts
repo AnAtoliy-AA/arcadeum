@@ -132,7 +132,9 @@ export class WalletService {
     const filter: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
     };
-    if (opts.currency) filter.currency = opts.currency;
+    if (opts.currency && this.isValidCurrency(opts.currency)) {
+      filter.currency = opts.currency;
+    }
 
     if (opts.cursor) {
       const decoded = this.decodeCursor(opts.cursor);
@@ -143,11 +145,13 @@ export class WalletService {
       ) {
         throw new BadRequestException('wallet.invalidCursor');
       }
+      const safeCreatedAt = new Date(decoded.createdAt.getTime());
+      const safeId = new Types.ObjectId(decoded._id.toHexString());
       filter.$or = [
-        { createdAt: { $lt: decoded.createdAt } },
+        { createdAt: { $lt: safeCreatedAt } },
         {
-          createdAt: decoded.createdAt,
-          _id: { $lt: decoded._id },
+          createdAt: safeCreatedAt,
+          _id: { $lt: safeId },
         },
       ];
     }
@@ -312,13 +316,13 @@ export class WalletService {
   }
 
   private assertCurrency(currency: string): void {
-    if (
-      currency !== 'coins' &&
-      currency !== 'gems' &&
-      currency !== 'arcadeum'
-    ) {
+    if (!this.isValidCurrency(currency)) {
       throw new InvalidCurrencyException(currency);
     }
+  }
+
+  private isValidCurrency(value: unknown): value is WalletCurrency {
+    return value === 'coins' || value === 'gems' || value === 'arcadeum';
   }
 
   private isDuplicateIdempotencyKey(err: unknown): boolean {

@@ -90,7 +90,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
         botCount !== undefined ? Math.max(botCount, needed) : needed;
       const cap = Math.min(sizeCap - playerIds.length, desiredCount);
       for (let i = 0; i < cap; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).slice(2, 10)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 

@@ -93,7 +93,7 @@ export function GameVariantSelector({
     <Select
       id={selectId}
       name={optionKey}
-      value={internalVariant ?? currentVariant || ''}
+      value={internalVariant ?? currentVariant ?? ''}
       onChange={handleVariantChange}
       disabled={disabled}
       style={{ minWidth: '200px' }}

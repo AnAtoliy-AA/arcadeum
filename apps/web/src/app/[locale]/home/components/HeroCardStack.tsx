@@ -112,7 +112,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
                   '--card-x': `${x}px`,
                   '--card-y': `${y}px`,
                   '--card-rotate': rotate,
-                  '--card-scale': 1,
+                  '--card-scale': index === 1 ? 1.04 : 1,
                   zIndex: isActive ? 100 : index,
                   opacity: isLast ? 1 : 0.8,
                 } as React.CSSProperties

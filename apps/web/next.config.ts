@@ -146,6 +146,12 @@ const nextConfig: NextConfig = {
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
+            key: 'Cache-Control',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
+          },
+          {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },

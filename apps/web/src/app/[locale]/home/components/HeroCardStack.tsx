@@ -113,7 +113,8 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
                   src={card.bgImage}
                   alt={`${t(card.nameKey as TranslationKey)} game card preview`}
                   fill
-                  priority={isLast}
+                  priority
+                  quality={80}
                   sizes="(max-width: 1150px) 60vw, 280px"
                   placeholder="blur"
                   blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="

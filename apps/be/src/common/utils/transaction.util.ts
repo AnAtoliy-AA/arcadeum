@@ -7,6 +7,9 @@ export async function runInTransaction<T>(
   connection: Connection,
   fn: (session: ClientSession | undefined) => Promise<T>,
 ): Promise<T> {
+  if (typeof connection?.startSession !== 'function') {
+    return fn(undefined);
+  }
   try {
     const session = await connection.startSession();
     try {

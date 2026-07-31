@@ -1,6 +1,6 @@
 import { Controller, Get, Logger, Optional } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Connection, ConnectionStates } from 'mongoose';
 import { AppService } from './app.service';
 import {
   OCI_CONNECTION,
@@ -56,7 +56,10 @@ export class AppController {
     connection: Connection,
   ): Promise<'connected' | 'disconnected'> {
     try {
-      if (connection.readyState !== 1 || !connection.db) {
+      if (
+        connection.readyState !== ConnectionStates.connected ||
+        !connection.db
+      ) {
         return 'disconnected';
       }
       await connection.db.admin().command({ ping: 1 });

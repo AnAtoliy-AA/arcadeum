@@ -394,7 +394,8 @@ export const SHOP_COSMETIC_ITEMS: Record<string, ShopItemDef> = {
     nameKey: 'items.frame.solar.name',
     descKey: 'items.frame.solar.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #ff4500 0%, #ff8c00 50%, #ffd700 100%)',
+    colorValue:
+      'linear-gradient(135deg, #ff4500 0%, #ff8c00 50%, #ffd700 100%)',
     defaultPriceAmount: 18,
     defaultPriceCurrency: 'gems',
   },

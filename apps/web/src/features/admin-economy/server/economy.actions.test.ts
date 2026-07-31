@@ -99,16 +99,6 @@ describe('setEconomyValueAction', () => {
     );
   });
 
-  it('returns validation error for non-integer value (0) without calling fetch', async () => {
-    const result = await setEconomyValueAction({
-      key: 'game_win_coin_reward',
-      value: 0,
-    });
-
-    expect(result).toEqual({ ok: false, error: 'validation' });
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
   it('returns validation error for negative value without calling fetch', async () => {
     const result = await setEconomyValueAction({
       key: 'game_win_coin_reward',

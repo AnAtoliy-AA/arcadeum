@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomInt, randomUUID } from 'crypto';
 import {
   IGameEngine,
   BaseGameState,
@@ -19,6 +19,8 @@ export abstract class BaseGameEngine<
   TState extends BaseGameState = BaseGameState,
 > implements IGameEngine<TState>
 {
+  /** Max log entries per session to prevent BSON document bloat. */
+  protected static readonly MAX_LOG_ENTRIES = 100;
   /**
    * Subclasses must implement this to provide game metadata
    */
@@ -125,7 +127,7 @@ export abstract class BaseGameEngine<
    */
   protected shuffleArray<T>(array: T[]): void {
     for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = randomInt(i + 1);
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
@@ -170,10 +172,13 @@ export abstract class BaseGameEngine<
   }
 
   /**
-   * Helper: Add log to state
+   * Helper: Add log to state (capped to prevent unbounded growth)
    */
   protected addLog(state: TState, log: GameLogEntry): void {
     state.logs.push(log);
+    if (state.logs.length > BaseGameEngine.MAX_LOG_ENTRIES) {
+      state.logs = state.logs.slice(-BaseGameEngine.MAX_LOG_ENTRIES);
+    }
   }
 
   /**

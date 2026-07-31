@@ -37,6 +37,18 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Cascade · Jeu de cartes multijoueur de défausse · ${APP}`,
     description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
   },
+  chessLanding: {
+    title: `Échecs · Multijoueur · Standard & Chess960 · ${APP}`,
+    description: `Jouez aux échecs sur ${APP} — variantes standard et Chess960, contrôles de temps, bots IA. Gratuit, salles instantanées, sans téléchargement.`,
+  },
+  checkersLanding: {
+    title: `Dames · Multijoueur · ${APP}`,
+    description: `Jouez aux dames sur ${APP} — plateau 8×8 avec prises obligatoires, sauts multiples et promotion en dame. Gratuit, salles instantanées.`,
+  },
+  catDashLanding: {
+    title: `Cat Dash · Course de chats multijoueur · ${APP}`,
+    description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

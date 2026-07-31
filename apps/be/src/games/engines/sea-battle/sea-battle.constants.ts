@@ -37,7 +37,34 @@ export const SHIPS: ShipConfig[] = [
   { id: 'submarine-2', name: 'Submarine', size: 1 },
   { id: 'submarine-3', name: 'Submarine', size: 1 },
   { id: 'submarine-4', name: 'Submarine', size: 1 },
+  { id: 'patrol-1', name: 'Patrol', size: 2 },
+  { id: 'patrol-2', name: 'Patrol', size: 2 },
+  { id: 'frigate-1', name: 'Frigate', size: 3 },
+  { id: 'frigate-2', name: 'Frigate', size: 3 },
+  { id: 'carrier-1', name: 'Carrier', size: 5 },
+  { id: 'cruiser-3', name: 'Cruiser', size: 3 },
+  { id: 'destroyer-4', name: 'Destroyer', size: 2 },
+  { id: 'destroyer-5', name: 'Destroyer', size: 2 },
+  { id: 'submarine-5', name: 'Submarine', size: 1 },
+  { id: 'submarine-6', name: 'Submarine', size: 1 },
+  { id: 'patrol-3', name: 'Patrol', size: 2 },
+  { id: 'patrol-4', name: 'Patrol', size: 2 },
+  { id: 'frigate-3', name: 'Frigate', size: 3 },
+  { id: 'battleship-2', name: 'Battleship', size: 4 },
+  { id: 'submarine-7', name: 'Submarine', size: 1 },
+  { id: 'submarine-8', name: 'Submarine', size: 1 },
 ];
+
+export function getDefaultShipCount(gridSize: number): number {
+  if (gridSize <= 10) return 10;
+  if (gridSize <= 15) return 18;
+  return 24;
+}
+
+export function getActiveShips(shipCount?: number): ShipConfig[] {
+  const count = shipCount ?? 10;
+  return SHIPS.slice(0, Math.min(count, SHIPS.length));
+}
 
 export const GAME_PHASE = {
   LOBBY: 'lobby',
@@ -76,5 +103,47 @@ export const BATTLE_ROYALE_SHRINK_INTERVAL_MS = 60_000;
 export const BATTLE_ROYALE_MAX_ROUNDS = 20;
 
 // Grid labels
-export const ROW_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-export const COL_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+export const ROW_LABELS = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+];
+export const COL_LABELS = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+];

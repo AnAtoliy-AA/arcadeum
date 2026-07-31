@@ -23,6 +23,7 @@ export type FloatingLabelInputProps = {
   autoComplete?: string;
   fullWidth?: boolean;
   error?: boolean;
+  maxLength?: number;
   'data-testid'?: string;
 };
 
@@ -93,6 +94,7 @@ export const FloatingLabelInput = forwardRef<
     autoComplete,
     fullWidth = true,
     error,
+    maxLength,
     'data-testid': testId,
   },
   ref,
@@ -154,6 +156,7 @@ export const FloatingLabelInput = forwardRef<
         disabled={disabled}
         autoComplete={autoComplete}
         error={error}
+        maxLength={maxLength}
         placeholder=" "
         data-testid={testId}
       />

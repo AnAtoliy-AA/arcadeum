@@ -18,6 +18,7 @@ import {
   type ShopItemOverrideDocument,
 } from '../schemas/shop-item-override.schema';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
+import { SolanaService } from '../../solana/solana.service';
 
 interface CacheEntry {
   value: EffectiveShopItem;
@@ -47,6 +48,7 @@ export class CatalogService {
     private readonly overrideModel: Model<ShopItemOverrideDocument>,
     private readonly config: ConfigService,
     private readonly economy: EconomySettingsService,
+    private readonly solana: SolanaService,
   ) {
     const raw = this.config.get<string>('SHOP_CACHE_TTL_SECONDS');
     const parsed = raw !== undefined && raw !== '' ? Number(raw) : 60;
@@ -55,9 +57,11 @@ export class CatalogService {
   }
 
   async getEffective(itemId: string): Promise<EffectiveShopItem | null> {
+    if (typeof itemId !== 'string' || !itemId) {
+      return null;
+    }
     const def = getCatalogItem(itemId);
     if (!def) return null;
-
     const now = Date.now();
     const cached = this.cache.get(itemId);
     if (cached && cached.expiresAt > now) return cached.value;
@@ -201,6 +205,10 @@ export class CatalogService {
       priceAmount = def.defaultPriceAmount;
     }
 
+    if (priceCurrency === 'arcadeum' && allowArc) {
+      priceAmount = await this.calculateArcPrice(def, override);
+    }
+
     const overridden =
       override !== null &&
       override !== undefined &&
@@ -214,5 +222,41 @@ export class CatalogService {
       priceCurrency,
       overridden,
     };
+  }
+
+  private async calculateArcPrice(
+    def: ShopItemDef,
+    override: Partial<{
+      priceAmount: number | null;
+      priceCurrency: ShopPriceCurrency | null;
+    }> | null,
+  ): Promise<number> {
+    const gemToUsd = await this.economy.getNumber('gem_to_usd_rate');
+    const discount = await this.economy.getNumber('arcadeum_discount_percent');
+
+    const originalCurrency =
+      override?.priceCurrency === null || override?.priceCurrency === undefined
+        ? def.defaultPriceCurrency
+        : override.priceCurrency;
+    const originalAmount =
+      override?.priceAmount === null || override?.priceAmount === undefined
+        ? def.defaultPriceAmount
+        : override.priceAmount;
+
+    let usdValue: number;
+    if (originalCurrency === 'gems') {
+      usdValue = originalAmount * gemToUsd;
+    } else {
+      usdValue = originalAmount * gemToUsd * 0.01;
+    }
+
+    if (usdValue <= 0) return 1;
+
+    const arcUsdPrice = await this.solana.getArcadeumPrice();
+    if (arcUsdPrice <= 0) return 1;
+
+    const multiplier = 1 - discount / 100;
+    const arcPrice = Math.ceil((usdValue / arcUsdPrice) * multiplier);
+    return Math.max(1, arcPrice);
   }
 }

@@ -12,7 +12,7 @@ import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 
 const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
 const MAX_TILT_DEG = 8;
-const FAN_OFFSET = 65;
+const FAN_OFFSET = 140;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();
@@ -88,7 +88,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
           const isLast = index === heroCards.length - 1;
           const x = (index - 1) * FAN_OFFSET;
           const rotate = `${(index - 1) * 12}deg`;
-          const y = index * -15;
+          const y = 0;
           const isActive = hoveredIndex === index;
 
           return (
@@ -113,7 +113,8 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
                   src={card.bgImage}
                   alt={`${t(card.nameKey as TranslationKey)} game card preview`}
                   fill
-                  priority={isLast}
+                  priority
+                  quality={80}
                   sizes="(max-width: 1150px) 60vw, 280px"
                   placeholder="blur"
                   blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="

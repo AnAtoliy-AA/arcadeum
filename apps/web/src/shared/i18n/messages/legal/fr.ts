@@ -96,15 +96,55 @@ export const fr: LegalMessages = {
       crypto: {
         title: '11. Cryptomonnaies et Actifs Numériques',
         content:
-          "Les jetons ARCADEUM et les points virtuels sont des actifs utilitaires destinés exclusivement au divertissement au sein de notre plateforme de jeux basés sur les compétences. Ils n'ont aucune valeur monétaire intrinsèque en dehors de la plateforme. Les utilisateurs sont seuls responsables de leurs obligations fiscales et réglementaires en matière de cryptomonnaies. Arcadeum ne garantit la valeur d'aucun actif numérique et les utilisateurs ne doivent pas les considérer comme des investissements.",
+          "Les jetons ARCADEUM et les points virtuels sont des actifs utilitaires destinés exclusivement au divertissement au sein de notre plateforme de jeux basés sur les compétences. Ils n'ont aucune valeur monétaire intrinsèque en dehors de la plateforme. Les utilisateurs sont seuls responsables de leurs obligations fiscales et réglementaires en matière de cryptomonnaies. Arcadeum Games ne garantit la valeur d'aucun actif numérique et les utilisateurs ne doivent pas les considérer comme des investissements.",
+      },
+      arcPayments: {
+        title: '12. Paiements par Jetons ARC',
+        content:
+          'Arcadeum Games accepte les jetons ARCADEUM (ARC) sur la blockchain Solana comme mode de paiement pour les biens et services virtuels. En utilisant les paiements ARC, vous reconnaissez et acceptez ce qui suit:',
+        items: [
+          'Les prix des jetons ARC sont calculés dynamiquement en fonction du taux de change USD actuel et peuvent fluctuer selon les conditions du marché.',
+          'Le pourcentage de réduction appliqué aux paiements ARC est défini par Arcadeum Games et peut être modifié à tout moment sans préavis.',
+          'Toutes les transactions ARC sont irréversibles une fois confirmées sur la blockchain Solana. Arcadeum Games ne peut pas annuler, rembourser ou annuler les paiements ARC confirmés.',
+          "Vous êtes seul responsable de la vérification de l'exactitude de l'adresse du portefeuille du destinataire et du montant de la transaction avant d'envoyer des jetons ARC.",
+          "Arcadeum Games n'est pas responsable des fonds envoyés à des adresses incorrectes ou perdus en raison d'erreurs de portefeuille.",
+          "L'adresse du portefeuille du trésor pour les paiements ARC est affichée lors du paiement. Vérifiez toujours que cette adresse correspond à celle affichée sur le site officiel d'Arcadeum Games.",
+          "Les jetons ARC utilisés pour les paiements sont convertis en monnaie virtuelle de la plateforme (gems) au taux de change actuel. Les gems converties n'ont aucune valeur monétaire et ne peuvent pas être reconverties en ARC ou en toute monnaie fiduciaire.",
+          'Les utilisateurs sont responsables de tous les frais de réseau (gas) associés aux transactions ARC.',
+          'Arcadeum Games se réserve le droit de suspendre ou de désactiver les paiements ARC à tout moment pour maintenance, sécurité ou raisons réglementaires.',
+        ],
+      },
+      noCashout: {
+        title: '13. Pas de Retrait en Argent',
+        content:
+          "Les jetons ARC, gems, pièces et toutes les autres monnaies virtuels et objets de la plateforme Arcadeum Games n'ont aucune valeur monétaire réelle et ne peuvent pas être échangés, convertis ou échangés contre des monnaies fiduciaires (USD, EUR, etc.), des cryptomonnaies ou des biens ou services en dehors de la plateforme. Arcadeum Games n'offre, ne facilite et ne soutient aucun retrait, retrait ou conversion d'actifs internes en valeur externe. Toute tentative de vente, d'échange ou de transfert d'actifs virtuels en dehors d'Arcadeum Games est strictement interdite et peut entraîner la résiliation du compte.",
+      },
+      notSecurity: {
+        title: '14. Pas une Valeur Mobilière',
+        content:
+          "Les jetons ARC et toutes les monnaies virtuelles de la plateforme Arcadeum Games sont des jetons utilitaires conçus uniquement pour une utilisation sur la plateforme. Ils ne sont pas des valeurs mobilières, des actions, des obligations, des contrats d'investissement ou des instruments financiers de quelque nature que ce soit. Rien dans la plateforme Arcadeum Games ne constitue une offre de vente ou une sollicitation d'offre d'achat de valeurs mobilières. Arcadeum Games ne fournit pas de conseils en investissement et l'achat de jetons ARC ne doit pas être considéré comme un investissement. Les prix passés des jetons ne garantissent pas les performances futures.",
+      },
+      taxes: {
+        title: '15. Obligations Fiscales',
+        content:
+          'Les utilisateurs sont seuls responsables de la compréhension et du respect de toutes les obligations fiscales applicables dans leur juridiction. Arcadeum Games ne fournit pas de conseils fiscaux, juridiques ou comptables. Les informations suivantes ne sont que génériques et peuvent ne pas refléter votre situation spécifique:',
+        items: [
+          "Les transactions en monnaie virtuelle peuvent être soumises à l'impôt sur le revenu, à l'impôt sur les plus-values ou à d'autres impôts dans votre juridiction.",
+          "Les utilisateurs doivent déclarer tous les événements imposables liés à leur utilisation d'Arcadeum Games aux autorités fiscales compétentes.",
+          'Arcadeum Games peut être tenu de fournir des rapports fiscaux ou de retenir des impôts dans certaines juridictions.',
+          "Les lois fiscales varient d'un pays à l'autre et changent fréquemment. Consultez un professionnel qualifié en fiscalité pour des conseils spécifiques à votre situation.",
+          "Arcadeum Games n'est pas responsable de quelconques obligations fiscales découlant de votre utilisation de la plateforme.",
+        ],
+        important:
+          "IMPORTANT: Les obligations fiscales varient selon la juridiction. Certains pays imposent les transactions en monnaie virtuelle, d'autres non. Vous êtes seul responsable de la compréhension et du respect des lois fiscales locales.",
       },
       governingLaw: {
-        title: '12. Droit Applicable',
+        title: '16. Droit Applicable',
         content:
           'Ces Conditions sont régies par les lois de la Géorgie. Tout litige sera résolu devant les tribunaux de Géorgie, conformément à la Loi géorgienne sur le Commerce Électronique.',
       },
       contact: {
-        title: '13. Nous Contacter',
+        title: '17. Nous Contacter',
         content:
           'Si vous avez des questions concernant ces Conditions, veuillez nous contacter via notre page de support ou nous envoyer un email à {{email}}.',
       },

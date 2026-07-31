@@ -1,15 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  Inject,
-  forwardRef,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
-import { GameHistoryService } from './history/game-history.service';
+import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
+import { GamesHistoryFacade } from './games-history.facade';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
 import { AuthService } from '../auth/auth.service';
@@ -21,7 +16,6 @@ import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { StartGameDto } from './dtos/start-game.dto';
 import { StartGameSessionResult } from './games.types';
 import { ListRoomsFilters } from './rooms/game-rooms.types';
-import { GamesRematchService } from './games.rematch.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
@@ -35,11 +29,11 @@ export class GamesService {
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
-    private readonly historyService: GameHistoryService,
+    private readonly archiveService: GameSessionsArchiveService,
+    private readonly historyFacade: GamesHistoryFacade,
     private readonly realtimeService: GamesRealtimeService,
     private readonly utilities: GameUtilitiesService,
     private readonly authService: AuthService,
-    private readonly rematchService: GamesRematchService,
     private readonly roomsQuickplayService: GameRoomsQuickplayService,
     @Inject(forwardRef(() => SeaBattleService))
     private readonly seaBattleService: SeaBattleService,
@@ -50,14 +44,11 @@ export class GamesService {
     private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
 
-  private async sanitizeForPlayer(
+  private sanitizeForPlayer(
     s: GameSessionSummary,
     pId: string,
-  ): Promise<GameSessionSummary> {
-    const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-      s.id,
-      pId,
-    );
+  ): GameSessionSummary {
+    const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
     if (sanitized && typeof sanitized === 'object') {
       return { ...s, state: sanitized as Record<string, unknown> };
     }
@@ -76,9 +67,6 @@ export class GamesService {
   }
 
   async quickplay(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Quickplay not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.createQuickplayRoom(
       userId,
       gameId,
@@ -87,9 +75,6 @@ export class GamesService {
   }
 
   async findHumanMatch(userId: string, gameId: string, variant?: string) {
-    if (gameId !== 'sea_battle_v1') {
-      throw new BadRequestException(`Matchmaking not supported for ${gameId}`);
-    }
     return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
   }
 
@@ -111,9 +96,11 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        session = await this.sanitizeForPlayer(session, userId);
-      } catch {
-        // safely continue with unsanitized session state
+        session = this.sanitizeForPlayer(session, userId);
+      } catch (err) {
+        this.logger.warn(
+          `Sanitization failed for user ${userId} in room ${roomId}: ${err}`,
+        );
       }
     }
 
@@ -132,9 +119,19 @@ export class GamesService {
       this.realtimeService.emitPlayerJoined(room, userId);
     }
 
-    const session = dto.roomId
+    let session = dto.roomId
       ? await this.sessionsService.findSessionByRoom(dto.roomId)
       : null;
+
+    // If not in OCI, try to load from Atlas (player rejoin after exit)
+    if (!session && dto.roomId) {
+      session = await this.archiveService.loadSessionFromAtlas(dto.roomId);
+      if (session) {
+        this.logger.log(
+          `Loaded session ${session.id} from Atlas for room ${dto.roomId}`,
+        );
+      }
+    }
 
     // Trigger bot if exists
     if (session) {
@@ -169,6 +166,13 @@ export class GamesService {
             dto.roomId,
           );
           await this.leaderboardSync.syncInMatch(remaining, false);
+          // Archive completed session to Atlas
+          await this.archiveService.archiveSessionToAtlas(updatedSession);
+        } else if (updatedSession.status === 'active') {
+          // Archive active session to Atlas before player exit
+          await this.archiveService.archiveSessionToAtlas(updatedSession);
+          // Delete from OCI (free up resources, player can rejoin from Atlas)
+          await this.archiveService.deleteSessionFromOci(updatedSession.id);
         }
       }
     }
@@ -229,16 +233,17 @@ export class GamesService {
 
     // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
 
     // Mark players as in-match for the leaderboard LIVE chip.
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
     // Emit real-time event
-    await this.realtimeService.emitGameStarted(room, session, async (s, pId) =>
+    await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
       this.sanitizeForPlayer(s, pId),
     );
 
-    return { room, session };
+    return { room: updatedRoom, session };
   }
 
   /**
@@ -262,7 +267,7 @@ export class GamesService {
       session,
       action,
       userId,
-      async (s, pId) => this.sanitizeForPlayer(s, pId),
+      (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
     // Sync room status if game completed
@@ -273,6 +278,9 @@ export class GamesService {
       );
       await this.leaderboardSync.syncInMatch(players, false);
       await this.postMatch.payoutGameWin(session);
+
+      // Archive completed session to Atlas
+      await this.archiveService.archiveSessionToAtlas(session);
 
       // Post-match side effects (daily challenges, achievements)
       try {
@@ -307,9 +315,6 @@ export class GamesService {
 
   // ========== History Operations ==========
 
-  /**
-   * List game history for a user
-   */
   async listHistoryForUser(
     userId: string,
     options?: {
@@ -320,24 +325,35 @@ export class GamesService {
       grouped?: boolean;
     },
   ) {
-    // Use the optimized service with DB-level pagination
-    return this.historyService.listHistoryForUser(userId, options);
+    return this.historyFacade.listHistoryForUser(userId, options);
   }
 
   async getHistoryEntry(userId: string, roomId: string) {
-    return this.historyService.getHistoryEntry(roomId, userId);
+    return this.historyFacade.getHistoryEntry(userId, roomId);
   }
 
   async hideHistoryEntry(userId: string, roomId: string) {
-    return this.historyService.hideHistoryEntry(userId, roomId);
+    return this.historyFacade.hideHistoryEntry(userId, roomId);
   }
 
   async getPlayerStats(userId: string) {
-    return this.historyService.getPlayerStats(userId);
+    return this.historyFacade.getPlayerStats(userId);
+  }
+
+  async syncPlayerStats(
+    userId: string,
+    records: Array<{
+      gameId: string;
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>,
+  ) {
+    return this.historyFacade.syncPlayerStats(userId, records);
   }
 
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
-    return this.historyService.getLeaderboard(limit, offset, gameId);
+    return this.historyFacade.getLeaderboard(limit, offset, gameId);
   }
 
   async createRematchFromHistory(
@@ -352,7 +368,7 @@ export class GamesService {
       message?: string;
     },
   ) {
-    return this.rematchService.createRematchFromHistory(
+    return this.historyFacade.createRematchFromHistory(
       userId,
       roomId,
       participantIds,
@@ -361,11 +377,11 @@ export class GamesService {
   }
 
   async declineInvitation(roomId: string, userId: string): Promise<void> {
-    return this.rematchService.declineInvitation(roomId, userId);
+    return this.historyFacade.declineInvitation(roomId, userId);
   }
 
   async blockRematchRoom(roomId: string, userId: string): Promise<void> {
-    return this.rematchService.blockRematchRoom(roomId, userId);
+    return this.historyFacade.blockRematchRoom(roomId, userId);
   }
 
   async reinvitePlayers(
@@ -373,7 +389,7 @@ export class GamesService {
     hostId: string,
     userIds: string[],
   ): Promise<void> {
-    return this.rematchService.reinvitePlayers(roomId, hostId, userIds);
+    return this.historyFacade.reinvitePlayers(roomId, hostId, userIds);
   }
 
   async postHistoryNote(
@@ -382,17 +398,13 @@ export class GamesService {
     message: string,
     scope: ChatScope = 'all',
   ) {
-    await this.historyService.postHistoryNote(roomId, userId, message, scope);
-
-    // Broadcast the updated session to all clients
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      await this.realtimeService.emitSessionSnapshot(
-        roomId,
-        session,
-        async (s, pId) => this.sanitizeForPlayer(s, pId),
-      );
-    }
+    await this.historyFacade.postHistoryNote(
+      roomId,
+      userId,
+      message,
+      scope,
+      (s, pId) => this.sanitizeForPlayer(s, pId),
+    );
   }
 
   // ========== Utility Operations ==========
@@ -400,11 +412,10 @@ export class GamesService {
   async findSessionByRoom(roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
-      if (session.gameId === 'sea_battle_v1') {
+      if (session.gameId === 'sea_battle_v1')
         await this.seaBattleService.findSessionByRoom(roomId);
-      } else if (session.gameId === 'critical_v1') {
+      else if (session.gameId === 'critical_v1')
         await this.criticalService.findSessionByRoom(roomId);
-      }
     }
     return session;
   }
@@ -412,11 +423,7 @@ export class GamesService {
   async ensureParticipant(roomId: string, userId: string) {
     const added = await this.roomsService.ensureParticipant(roomId, userId);
     const room = await this.roomsService.getRoom(roomId, userId);
-
-    if (added) {
-      this.realtimeService.emitPlayerJoined(room, userId);
-    }
-
+    if (added) this.realtimeService.emitPlayerJoined(room, userId);
     return room;
   }
 
@@ -429,15 +436,15 @@ export class GamesService {
     userId: string,
     options: Record<string, unknown>,
   ) {
-    // Strip disabled rules before persisting.
     try {
       const room = await this.roomsService.getRoom(roomId);
       const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
       this.stripDisabledRules(options, ruleMap);
-    } catch {
-      // Room not found or inaccessible — proceed without stripping.
+    } catch (err) {
+      this.logger.warn(
+        `Rule stripping failed for room ${roomId}: ${err}. Proceeding without stripping.`,
+      );
     }
-
     const updated = await this.roomsService.updateRoomOptions(
       roomId,
       userId,
@@ -451,29 +458,20 @@ export class GamesService {
     options: Record<string, unknown>,
     ruleMap: Map<string, boolean>,
   ): void {
-    if (ruleMap.get('gridSize') === false) {
-      delete options.gridSize;
-    }
-
+    if (ruleMap.get('gridSize') === false) delete options.gridSize;
     const sw = options.specialWeapons;
     if (typeof sw === 'object' && sw !== null) {
       const weapons = sw as Record<string, unknown>;
       if (ruleMap.get('sonar') === false) delete weapons.sonar;
       if (ruleMap.get('radar') === false) delete weapons.radar;
-      if (Object.keys(weapons).length === 0) {
-        delete options.specialWeapons;
-      }
+      if (Object.keys(weapons).length === 0) delete options.specialWeapons;
     }
-
     if (ruleMap.get('teams') === false) {
       delete options.teams;
       delete options.teamConfig;
       if (options.mode === 'team') delete options.mode;
     }
-
-    if (ruleMap.get('combos') === false) {
-      delete options.expansions;
-    }
+    if (ruleMap.get('combos') === false) delete options.expansions;
   }
 
   async reorderParticipants(
@@ -486,10 +484,7 @@ export class GamesService {
       userId,
       newOrder,
     );
-
-    // Emit real-time event
     this.realtimeService.emitRoomUpdate(room);
-
     return room;
   }
 }

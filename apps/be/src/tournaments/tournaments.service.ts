@@ -14,7 +14,7 @@ import {
   type TournamentLocale,
   type TournamentStatus,
 } from './schemas/tournament.schema';
-import { escapeRegExp } from '../admin/lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import {
   deriveEffectiveWindow,
   deriveEffectiveStatus,
@@ -91,17 +91,30 @@ export class TournamentsService {
   async listForAdmin(
     args: ListForAdminArgs,
   ): Promise<AdminTournamentsListResponse> {
-    const page = args.page ?? 1;
-    const pageSize = args.pageSize ?? 25;
+    const page = typeof args.page === 'number' ? args.page : 1;
+    const pageSize = typeof args.pageSize === 'number' ? args.pageSize : 25;
 
     const filter: FilterQuery<TournamentDocument> = {};
-    if (args.gameType) filter.gameType = args.gameType;
-    if (args.status && args.status !== 'all') filter.status = args.status;
-    if (args.q && args.q.trim()) {
+    if (args.gameType && typeof args.gameType === 'string') {
+      filter.gameType = args.gameType;
+    }
+    if (
+      args.status &&
+      args.status !== 'all' &&
+      typeof args.status === 'string'
+    ) {
+      filter.status = args.status;
+    }
+    if (args.q && typeof args.q === 'string' && args.q.trim()) {
+      const sanitized = args.q.trim().slice(0, 200);
       filter['content.en.name'] = {
-        $regex: escapeRegExp(args.q.trim()),
+        $regex: escapeRegExp(sanitized),
         $options: 'i',
       };
+    }
+
+    if (typeof page !== 'number' || typeof pageSize !== 'number') {
+      throw new BadRequestException('Invalid pagination');
     }
 
     const [docs, total] = await Promise.all([

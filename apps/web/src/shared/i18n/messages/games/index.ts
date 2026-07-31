@@ -5,6 +5,9 @@ import * as seaBattle from './sea-battle/index';
 import * as glimworm from './glimworm/index';
 import * as ticTacToe from './tic-tac-toe/index';
 import * as cascade from './cascade/index';
+import * as chess from './chess/index';
+import * as checkers from './checkers/index';
+import * as catDash from './cat-dash/index';
 
 /** Combined games messages type derived from actual message objects */
 export type GamesMessagesBundle = shared.SharedGamesMessages &
@@ -13,7 +16,10 @@ export type GamesMessagesBundle = shared.SharedGamesMessages &
   seaBattle.SeaBattleGamesMessages &
   glimworm.GlimwormGamesMessages &
   ticTacToe.TicTacToeMessages &
-  cascade.CascadeMessages;
+  cascade.CascadeMessages &
+  chess.ChessMessages &
+  checkers.CheckersMessages &
+  catDash.CatDashMessages;
 
 export const en = {
   ...shared.en,
@@ -23,6 +29,9 @@ export const en = {
   ...glimworm.en,
   ...ticTacToe.en,
   ...cascade.en,
+  ...chess.en,
+  ...checkers.en,
+  ...catDash.en,
 };
 
 export const es = {
@@ -33,6 +42,9 @@ export const es = {
   ...glimworm.es,
   ...ticTacToe.es,
   ...cascade.es,
+  ...chess.es,
+  ...checkers.es,
+  ...catDash.es,
 };
 
 export const fr = {
@@ -43,6 +55,9 @@ export const fr = {
   ...glimworm.fr,
   ...ticTacToe.fr,
   ...cascade.fr,
+  ...chess.fr,
+  ...checkers.fr,
+  ...catDash.fr,
 };
 
 export const ru = {
@@ -53,6 +68,9 @@ export const ru = {
   ...glimworm.ru,
   ...ticTacToe.ru,
   ...cascade.ru,
+  ...chess.ru,
+  ...checkers.ru,
+  ...catDash.ru,
 };
 
 export const by = {
@@ -63,6 +81,9 @@ export const by = {
   ...glimworm.by,
   ...ticTacToe.by,
   ...cascade.by,
+  ...chess.by,
+  ...checkers.by,
+  ...catDash.by,
 };
 
 export const gamesMessages = {

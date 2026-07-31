@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
 
 export const statsOverviewCSS = `
@@ -16,21 +15,21 @@ export const statsOverviewCSS = `
 interface StatsOverviewProps {
   stats: PlayerStats | null;
   loading: boolean;
+  currentStreak?: number;
+  currentStreakType?: 'won' | 'lost' | null;
+  bestWinStreak?: number;
+  favoriteGame?: string | null;
 }
 
-export function StatsOverview({ stats, loading }: StatsOverviewProps) {
+export function StatsOverview({
+  stats,
+  loading,
+  currentStreak,
+  currentStreakType,
+  bestWinStreak,
+  favoriteGame,
+}: StatsOverviewProps) {
   const { t } = useTranslation();
-  const records = useLocalStatsStore((s) => s.records);
-  const streaks = useMemo(
-    () => useLocalStatsStore.getState().getStreaks(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
-    [records.length],
-  );
-  const favoriteGame = useMemo(
-    () => useLocalStatsStore.getState().getFavoriteGame(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
-    [records.length],
-  );
 
   if (loading && !stats) {
     return (
@@ -82,27 +81,25 @@ export function StatsOverview({ stats, loading }: StatsOverviewProps) {
             <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
           </WinRateCardContent>
         </Card>
-        {streaks.currentStreak > 0 && (
+        {currentStreak != null && currentStreak > 0 && (
           <Card variant="glass" cardPadding="md">
             <StatLabel>{t('stats.currentStreak')}</StatLabel>
             <StatValue
               data-testid="stats-current-streak"
-              color={
-                streaks.currentStreakType === 'won' ? '$success' : '$danger'
-              }
+              color={currentStreakType === 'won' ? '$success' : '$danger'}
             >
-              {streaks.currentStreak}
+              {currentStreak}
               <StreakSuffix>
-                {streaks.currentStreakType === 'won' ? 'W' : 'L'}
+                {currentStreakType === 'won' ? 'W' : 'L'}
               </StreakSuffix>
             </StatValue>
           </Card>
         )}
-        {streaks.bestWinStreak > 0 && (
+        {bestWinStreak != null && bestWinStreak > 0 && (
           <Card variant="glass" cardPadding="md">
             <StatLabel>{t('stats.bestWinStreak')}</StatLabel>
             <StatValue data-testid="stats-best-win-streak" color="$success">
-              {streaks.bestWinStreak}
+              {bestWinStreak}
               <StreakSuffix>W</StreakSuffix>
             </StatValue>
           </Card>

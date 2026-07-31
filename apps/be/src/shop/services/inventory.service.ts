@@ -60,6 +60,8 @@ export class InventoryService {
   ) {}
 
   async listForUser(userId: string): Promise<InventoryView> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     // Inventory rows store userId as a BSON ObjectId (see schema). Mongoose's
     // string-to-ObjectId auto-cast on `find()` is unreliable here — observed
     // empty results in the dev DB even with a valid 24-char hex. Explicit
@@ -94,9 +96,27 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<boolean> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (!itemId) {
+      throw new BadRequestException('Invalid itemId');
+    }
     const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel
-      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .findOne(
+        {
+          userId: userObjId,
+          itemId,
+          soldAt: null,
+        },
+        null,
+        { session },
+      )
       .lean();
     return row !== null;
   }
@@ -106,9 +126,27 @@ export class InventoryService {
     itemId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (!itemId) {
+      throw new BadRequestException('Invalid itemId');
+    }
     const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
-      .findOne({ userId: userObjId, itemId, soldAt: null }, null, { session })
+      .findOne(
+        {
+          userId: userObjId,
+          itemId,
+          soldAt: null,
+        },
+        null,
+        { session },
+      )
       .lean<LeanInventoryRow | null>();
   }
 
@@ -117,6 +155,12 @@ export class InventoryService {
     purchaseId: string,
     session?: ClientSession,
   ): Promise<LeanInventoryRow | null> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId format');
+    }
+    if (typeof purchaseId !== 'string' || !purchaseId) {
+      throw new BadRequestException('Invalid purchaseId');
+    }
     const userObjId = new Types.ObjectId(userId);
     return this.inventoryModel
       .findOne({ userId: userObjId, purchaseId }, null, { session })
@@ -127,44 +171,43 @@ export class InventoryService {
     const starters = listStarterItems();
     if (starters.length === 0) return;
 
-    for (const item of starters) {
-      const purchaseId = starterPurchaseId(userId, item.id);
-      try {
-        await this.inventoryModel.create(
-          [
-            {
-              userId: new Types.ObjectId(userId),
-              itemId: item.id,
-              purchaseId,
-              acquiredVia: 'starter',
-              paidAmount: null,
-              paidCurrency: null,
-            },
-          ],
-          { session },
-        );
-      } catch (err) {
-        if (this.isDuplicateKey(err)) {
-          continue; // already granted — idempotent
-        }
-        throw err;
-      }
+    const userObjId = new Types.ObjectId(userId);
+    const docs = starters.map((item) => ({
+      userId: userObjId,
+      itemId: item.id,
+      purchaseId: starterPurchaseId(userId, item.id),
+      acquiredVia: 'starter' as const,
+      paidAmount: null,
+      paidCurrency: null,
+    }));
+
+    try {
+      await this.inventoryModel.insertMany(docs, {
+        session,
+        ordered: false,
+      });
+    } catch (err) {
+      if (!this.isDuplicateKey(err)) throw err;
     }
 
-    // Auto-equip every starter whose category has an equip slot. Filter on
-    // null/undefined so re-runs (bootstrap back-fill, multi-tab races) never
-    // clobber a slot the user has since equipped themselves. Iterating over
-    // starters + equipKeyFor keeps this honest as new equippable categories
-    // land — no need to remember to add another if-block here.
-    const userObjId = new Types.ObjectId(userId);
-    for (const starter of starters) {
-      const equipKey = equipKeyFor(starter.category);
-      if (!equipKey) continue;
-      await this.userModel.updateOne(
-        { _id: userObjId, [equipKey]: { $in: [null, undefined] } },
-        { $set: { [equipKey]: starter.id } },
-        { session },
-      );
+    const equipOps = starters
+      .map((starter) => {
+        const equipKey = equipKeyFor(starter.category);
+        if (!equipKey) return null;
+        return {
+          updateOne: {
+            filter: {
+              _id: userObjId,
+              [equipKey]: { $in: [null, undefined] },
+            },
+            update: { $set: { [equipKey]: starter.id } },
+          },
+        };
+      })
+      .filter((op): op is NonNullable<typeof op> => op !== null);
+
+    if (equipOps.length > 0) {
+      await this.userModel.bulkWrite(equipOps, { session });
     }
   }
 
@@ -178,6 +221,8 @@ export class InventoryService {
     itemId: string,
     purchaseId: string,
   ): Promise<void> {
+    if (typeof itemId !== 'string')
+      throw new BadRequestException('Invalid itemId');
     const def = getCatalogItem(itemId);
     if (!def) throw new BadRequestException('shop.unknownItem');
     try {

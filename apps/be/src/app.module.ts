@@ -22,7 +22,6 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { ShopModule } from './shop/shop.module';
 import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
-import { SolanaModule } from './solana/solana.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { BulkRewardsModule } from './bulk-rewards/bulk-rewards.module';
 import { FriendsModule } from './friends/friends.module';
@@ -31,7 +30,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import {
   resolveMongoUri,
   resolveMongoOptions,
+  resolveAtlasUri,
 } from './common/utils/mongo-uri.util';
+import {
+  OCI_CONNECTION,
+  ATLAS_CONNECTION,
+} from './common/providers/mongo-connections.provider';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { MessageCodeInterceptor } from './common/interceptors/message-code.interceptor';
@@ -67,10 +71,25 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
       { name: 'strict', ttl: 60_000 * 60, limit: 5 },
     ]),
     SupportModule,
-    SolanaModule,
     BulkRewardsModule,
     FriendsModule,
+    MongooseModule.forRoot(resolveMongoUri(), {
+      ...resolveMongoOptions(),
+      connectionName: OCI_CONNECTION,
+    }),
+    // Default connection for other modules (points to OCI)
     MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
+    ...(resolveAtlasUri()
+      ? [
+          MongooseModule.forRoot(resolveAtlasUri()!, {
+            connectionName: ATLAS_CONNECTION,
+            maxPoolSize: 30,
+            serverSelectionTimeoutMS: 15_000,
+            retryWrites: true,
+            retryReads: true,
+          }),
+        ]
+      : []),
   ],
   controllers: [AppController],
   providers: [

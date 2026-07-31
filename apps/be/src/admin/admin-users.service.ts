@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import type { UserRole } from '../auth/lib/roles';
-import { escapeRegExp } from './lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -44,6 +44,15 @@ export class AdminUsersService {
   ) {}
 
   async list(args: ListArgs): Promise<AdminUsersResponse> {
+    if (args.role !== undefined && typeof args.role !== 'string') {
+      throw new BadRequestException({ code: 'INVALID_ROLE' });
+    }
+    if (args.q !== undefined && typeof args.q !== 'string') {
+      throw new BadRequestException({ code: 'INVALID_QUERY' });
+    }
+    if (args.status !== undefined && typeof args.status !== 'string') {
+      throw new BadRequestException({ code: 'INVALID_STATUS' });
+    }
     const page = args.page ?? 1;
     const pageSize = args.pageSize ?? 50;
     const filter: Record<string, unknown> = {};

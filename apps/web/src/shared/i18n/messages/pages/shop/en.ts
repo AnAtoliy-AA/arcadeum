@@ -215,6 +215,8 @@ export const shopEn = {
       catsiam: { name: 'Cyber Siamese', desc: 'A hyperrealistic cybernetic Siamese cat.' },
       catpersian: { name: 'Cyber Persian', desc: 'A hyperrealistic cybernetic Persian cat.' },
       catbengal: { name: 'Cyber Bengal', desc: 'A hyperrealistic cybernetic Bengal cat.' },
+      phoenixcyber: { name: 'Cyber Phoenix', desc: 'A hyperrealistic cybernetic phoenix.' },
+      dragoncyber: { name: 'Cyber Dragon', desc: 'A hyperrealistic cybernetic dragon.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },
@@ -236,6 +238,8 @@ export const shopEn = {
       aurora: { name: 'Aurora', desc: 'A shifting aurora gradient.' },
       nebula: { name: 'Nebula', desc: 'A brilliant cosmic gradient.' },
       glitch: { name: 'Glitch', desc: 'A shifting digital artifact color.' },
+      neon: { name: 'Neon', desc: 'A bright glowing neon green and cyan gradient.' },
+      solar: { name: 'Solar', desc: 'A radiant solar flare orange gradient.' },
     },
     game_skin: {
       default: { name: 'Default', desc: 'The starter game theme.' },
@@ -266,6 +270,8 @@ export const shopEn = {
       prism: { name: 'Prism Frame', desc: 'A shifting prism ring.' },
       gold: { name: 'Gold Frame', desc: 'A shining polished golden ring.' },
       cyberpunk: { name: 'Cyberpunk Frame', desc: 'A vibrant neon cyberpunk frame.' },
+      neon: { name: 'Neon Frame', desc: 'A bright glowing neon green and cyan ring.' },
+      solar: { name: 'Solar Frame', desc: 'A radiant solar flare orange ring.' },
     },
     background: {
       default: { name: 'Default', desc: 'The starter backdrop.' },

@@ -10,6 +10,9 @@ export type GameType =
   | 'glimworm_v1'
   | 'tic_tac_toe_v1'
   | 'cascade_v1'
+  | 'chess_v1'
+  | 'checkers_v1'
+  | 'cat_dash_v1'
   | null;
 
 // Valid game IDs for type checking
@@ -19,6 +22,9 @@ const VALID_GAME_IDS = [
   'glimworm_v1',
   'tic_tac_toe_v1',
   'cascade_v1',
+  'chess_v1',
+  'checkers_v1',
+  'cat_dash_v1',
 ] as const;
 
 /**

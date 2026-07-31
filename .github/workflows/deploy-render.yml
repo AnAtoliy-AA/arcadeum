@@ -1,0 +1,36 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [main, develop, staging]
+    paths:
+      - 'apps/be/**'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Render service to deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - prod
+          - dev
+
+permissions: {}
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend (${{ inputs.service || (github.ref_name == 'main' && 'prod' || 'dev') }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Backend Deploy
+        run: |
+          if [ "${{ inputs.service }}" = "prod" ] || [ "${{ github.ref_name }}" = "main" ]; then
+            SERVICE_ID="${{ secrets.RENDER_SERVICE_ID }}"
+          else
+            SERVICE_ID="${{ secrets.RENDER_SERVICE_ID_DEV }}"
+          fi
+          curl -X POST \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            "https://api.render.com/v1/services/${SERVICE_ID}/deploys"

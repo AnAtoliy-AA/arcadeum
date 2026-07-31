@@ -265,6 +265,13 @@ export const buildContactStyles = (t: ContactStyleTokens) => {
     fontSize: 13.5,
   };
 
+  const errorTextStyle: CSSProperties = {
+    fontSize: 12,
+    color: '#ef4444',
+    marginTop: 4,
+    lineHeight: 1.3,
+  };
+
   return {
     tokens: t,
     heroWrapStyle,
@@ -296,6 +303,7 @@ export const buildContactStyles = (t: ContactStyleTokens) => {
     faqAnswerStyle,
     chevronStyle,
     helpLinkStyle,
+    errorTextStyle,
   };
 };
 

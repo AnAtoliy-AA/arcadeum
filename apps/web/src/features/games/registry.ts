@@ -12,9 +12,9 @@ export const gameLoaders: Record<
   glimworm_v1: () => import('@/widgets/GlimwormGame'),
   tic_tac_toe_v1: () => import('@/widgets/TicTacToeGame'),
   cascade_v1: () => import('@/widgets/CascadeGame'),
-  // Future game implementations will be added here
-  // chess_v1: () => import("@/widgets/ChessGame"),
-  // checkers_v1: () => import("@/widgets/CheckersGame"),
+  chess_v1: () => import('@/widgets/ChessGame'),
+  checkers_v1: () => import('@/widgets/CheckersGame'),
+  cat_dash_v1: () => import('@/widgets/CatDashGame'),
   // Add more games as they are implemented
 } as const;
 
@@ -202,5 +202,23 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     implementationPath: '@/widgets/TheCursedBanquetGame',
     lastUpdated: '2026-02-20',
     status: 'coming_soon',
+  },
+  cat_dash_v1: {
+    slug: 'cat_dash_v1',
+    name: 'Cat Dash',
+    description: 'A cat racing dice game with unique abilities and themes',
+    category: 'Race',
+    minPlayers: 2,
+    maxPlayers: 6,
+    estimatedDuration: 15,
+    complexity: 1,
+    ageRating: 'PG',
+    thumbnail: '/games/cat-dash.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['cats', 'race', 'dice', 'family', 'fun'],
+    implementationPath: '@/widgets/CatDashGame',
+    lastUpdated: '2026-07-23',
+    status: 'active',
   },
 };

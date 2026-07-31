@@ -9,6 +9,7 @@ export const WALLET_REASONS = [
   'tournament_refund',
   'tournament_prize',
   'gem_purchase',
+  'gem_purchase_arc',
   'gem_to_coin_conversion_debit',
   'gem_to_coin_conversion_credit',
   'referral_bonus',

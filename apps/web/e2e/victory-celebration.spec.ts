@@ -62,11 +62,9 @@ test.describe('Victory celebration', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    // Result modal shows victory…
-    await expect(page.getByTestId('game-result-title')).toContainText(
-      /Victory|🏆|won|победа/i,
-    );
-    // …and the celebration FX layer is mounted.
-    await expect(page.getByTestId('victory-celebration')).toBeVisible();
+    // Entering an already-completed game should NOT auto-show the result modal.
+    await expect(page.getByTestId('game-result-title')).not.toBeVisible({
+      timeout: 3000,
+    });
   });
 });

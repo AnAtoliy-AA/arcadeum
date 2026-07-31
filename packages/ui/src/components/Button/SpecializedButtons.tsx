@@ -18,11 +18,10 @@ export const BotCountButton = ({
     variant="chip"
     size="sm"
     data-active={isActive}
-    width={32}
-    height={32}
-    padding={0}
+    padding="$2 $3"
     borderRadius={8}
     fontWeight="600"
+    overflow="hidden"
     backgroundColor={
       isActive ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'
     }

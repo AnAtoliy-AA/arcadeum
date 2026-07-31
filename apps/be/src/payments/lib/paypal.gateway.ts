@@ -3,11 +3,20 @@ import {
   InternalServerErrorException,
   Logger,
   ServiceUnavailableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { paypalHttp } from '../../common/utils/paypal-http.util';
 import { randomUUID } from 'crypto';
+
+const PAYPAL_ORDER_ID_REGEX = /^[A-Z0-9]{17,}$/i;
+
+function validatePayPalOrderId(orderId: string): void {
+  if (!orderId || !PAYPAL_ORDER_ID_REGEX.test(orderId)) {
+    throw new BadRequestException('Invalid PayPal order ID format');
+  }
+}
 
 interface PayPalAuthResponse {
   access_token: string;
@@ -90,6 +99,8 @@ export class PaypalGateway {
   async createOrder(
     input: CreatePayPalOrderInput,
   ): Promise<CreatePayPalOrderResult> {
+    this.validatePayPalUrl(input.returnUrl);
+    this.validatePayPalUrl(input.cancelUrl);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
     const brand =
@@ -143,16 +154,16 @@ export class PaypalGateway {
   }
 
   async getOrder(orderId: string): Promise<PayPalGetOrderResponse> {
+    validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
+    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
+    const orderUrl = `${baseUrl}/v2/checkout/orders/${normalizedOrderId}`;
     try {
-      const res = await paypalHttp.get<PayPalGetOrderResponse>(
-        `${baseUrl}/v2/checkout/orders/${orderId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 10000,
-        },
-      );
+      const res = await paypalHttp.get<PayPalGetOrderResponse>(orderUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000,
+      });
       return res.data;
     } catch (err) {
       this.logger.error(
@@ -170,11 +181,13 @@ export class PaypalGateway {
    * `COMPLETED`, but can be `VOIDED` if the capture failed.
    */
   async captureOrder(orderId: string): Promise<PayPalGetOrderResponse> {
+    validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
+    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
     try {
       const res = await paypalHttp.post<PayPalGetOrderResponse>(
-        `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
+        `${baseUrl}/v2/checkout/orders/${normalizedOrderId}/capture`,
         {},
         {
           headers: {
@@ -216,5 +229,17 @@ export class PaypalGateway {
 
   private optionalEnv(name: string): string | undefined {
     return this.config.get<string>(name);
+  }
+
+  private validatePayPalUrl(rawUrl: string): void {
+    try {
+      const url = new URL(rawUrl);
+      if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+        throw new BadRequestException('Invalid URL: must use http or https');
+      }
+    } catch (err) {
+      if (err instanceof BadRequestException) throw err;
+      throw new BadRequestException('Invalid URL');
+    }
   }
 }

@@ -15,14 +15,20 @@ import type {
   ShipCell,
 } from '../types';
 
-type WeaponMode = null | { weapon: 'sonar' | 'radar'; targetPlayerId: string; radarAxis?: 'row' | 'col' };
+type WeaponMode = null | {
+  weapon: 'sonar' | 'radar';
+  targetPlayerId: string;
+  radarAxis?: 'row' | 'col';
+};
 
 interface SeaBattleBoardsProps {
   isPlacementPhase: boolean;
   currentPlayer: SeaBattlePlayerState | null;
   placeShip: (shipId: string, cells: ShipCell[]) => void;
   moveShip: (shipId: string, cells: ShipCell[]) => void;
-  confirmPlacement: () => void;
+  confirmPlacement: (
+    ships?: Array<{ shipId: string; cells: ShipCell[] }>,
+  ) => void;
   resetPlacement: () => void;
   isPlacementComplete: boolean;
   handleAutoPlace: () => void;
@@ -176,6 +182,7 @@ export function SeaBattleBoards({
           isPlacementComplete={isPlacementComplete}
           onAutoPlace={handleAutoPlace}
           gridSize={snapshot?.gridSize}
+          shipCount={snapshot?.shipCount}
         />
       )}
 
@@ -212,9 +219,9 @@ export function SeaBattleBoards({
         </Card>
       )}
 
-      {isBattlePhase && snapshot && (
+      {(isBattlePhase || isGameOver) && snapshot && (
         <>
-          {isMyTurn && (hasSonar || hasRadar) && (
+          {!isGameOver && isMyTurn && (hasSonar || hasRadar) && (
             <div
               style={{
                 display: 'flex',
@@ -302,16 +309,15 @@ export function SeaBattleBoards({
                       setWeaponMode({
                         weapon: 'radar',
                         targetPlayerId: targetId,
-                        radarAxis: weaponMode?.radarAxis === 'col' ? 'row' : 'col',
+                        radarAxis:
+                          weaponMode?.radarAxis === 'col' ? 'row' : 'col',
                       });
                     }}
                     style={{
                       ...buttonBase,
                       padding: '8px 10px',
                       color:
-                        weaponMode?.weapon === 'radar'
-                          ? '#c084fc'
-                          : '#a0a0a0',
+                        weaponMode?.weapon === 'radar' ? '#c084fc' : '#a0a0a0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
                       borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
                       borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
@@ -350,7 +356,8 @@ export function SeaBattleBoards({
                 <span
                   style={{
                     fontSize: 12,
-                    color: weaponMode.weapon === 'sonar' ? '#06b6d4' : '#a855f7',
+                    color:
+                      weaponMode.weapon === 'sonar' ? '#06b6d4' : '#a855f7',
                     fontWeight: 600,
                   }}
                 >
@@ -369,9 +376,12 @@ export function SeaBattleBoards({
             isMyTurn={isMyTurn}
             onAttack={isWeaponMode ? handleWeaponFire : attack}
             resolveDisplayName={resolveDisplayNameBound}
+            disabled={isGameOver}
+            showEliminatedPlayers={isGameOver}
             teammateIds={teammateIds}
             teams={teams}
             gridSize={snapshot.gridSize}
+            shipCount={snapshot.shipCount}
             snapshot={snapshot}
             weaponPreviewCells={
               weaponMode?.weapon === 'sonar'
@@ -389,7 +399,9 @@ export function SeaBattleBoards({
                   }
                 : undefined
             }
-            onCellHoverEnd={isWeaponMode ? () => setHoveredCell(null) : undefined}
+            onCellHoverEnd={
+              isWeaponMode ? () => setHoveredCell(null) : undefined
+            }
             weaponMode={isWeaponMode}
           />
         </>

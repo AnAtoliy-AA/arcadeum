@@ -25,6 +25,7 @@ export type FloatingLabelTextAreaProps = {
   disabled?: boolean;
   fullWidth?: boolean;
   error?: boolean;
+  minLength?: number;
   maxLength?: number;
   rows?: number;
   'data-testid'?: string;
@@ -94,6 +95,7 @@ export const FloatingLabelTextArea = forwardRef<
     disabled,
     fullWidth = true,
     error,
+    minLength,
     maxLength,
     rows,
     'data-testid': testId,
@@ -166,6 +168,7 @@ export const FloatingLabelTextArea = forwardRef<
         disabled={disabled}
         error={error}
         rows={rows}
+        minLength={minLength}
         maxLength={maxLength}
         placeholder=" "
         data-testid={testId}

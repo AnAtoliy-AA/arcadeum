@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -28,14 +30,12 @@ import type {
   PlayCardPayload,
 } from '../engines/cascade/cascade.types';
 import { CascadeBotService } from './cascade-bot.service';
-
-const WATCHDOG_INTERVAL_MS = 10000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20000;
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 @Injectable()
 export class CascadeService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CascadeService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
+  private readonly watchdog: GameBotWatchdog;
   /** Per-room mutex to serialize action execution and prevent TOCTOU races. */
   private readonly roomLocks = new Map<string, Promise<void>>();
 
@@ -46,19 +46,22 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => CascadeBotService))
     private readonly botService: CascadeBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'cascade_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, WATCHDOG_INTERVAL_MS);
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   async findSessionByRoom(roomId: string) {
@@ -87,7 +90,7 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
         botCount !== undefined ? botCount : Math.max(0, 2 - playerIds.length);
       const cap = Math.min(MAX_PLAYERS - playerIds.length, desiredCount);
       for (let i = 0; i < cap; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).slice(2, 10)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 
@@ -185,6 +188,15 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   private async afterSessionStep(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
@@ -214,27 +226,6 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
         return Promise.resolve(s);
       },
     );
-  }
-
-  private async runWatchdog() {
-    try {
-      const stale = await this.sessionsService.findStaleActiveSessions(
-        'cascade_v1',
-        WATCHDOG_STALE_THRESHOLD_MS,
-        100,
-      );
-      for (const session of stale) {
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-    } catch (err) {
-      this.logger.error(`Watchdog failed: ${err}`);
-    }
   }
 
   private resolveOptions(raw: unknown): CascadeOptions {

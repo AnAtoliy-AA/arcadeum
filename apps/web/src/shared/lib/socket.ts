@@ -176,8 +176,9 @@ export function connectFriendsSocket(
 
 /**
  * Connect game socket without authentication (for spectating public games)
+ * Pass the anonymous userId so the backend sends the encryption key
  */
-export function connectSocketsAnonymous(): void {
+export function connectSocketsAnonymous(userId?: string): void {
   // Disconnect if currently authenticated
   if (currentAuthToken) {
     disconnectSockets();
@@ -185,6 +186,14 @@ export function connectSocketsAnonymous(): void {
 
   // Clear any auth
   gamesSocket.auth = {};
+
+  // Pass anonId so gateway recognizes the client and sends encryption key
+  if (userId) {
+    gamesSocket.io.opts.query = {
+      ...(gamesSocket.io.opts.query as Record<string, string>),
+      anonId: userId,
+    };
+  }
 
   if (!gamesSocket.connected) {
     gamesSocket.connect();

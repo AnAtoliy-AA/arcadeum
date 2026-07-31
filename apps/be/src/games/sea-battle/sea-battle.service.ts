@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -21,6 +23,7 @@ import {
   MAX_PLAYERS_TEAM_MODE,
 } from '../engines/sea-battle/sea-battle.constants';
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -41,7 +44,7 @@ interface AttackPayload {
 @Injectable()
 export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SeaBattleService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -50,51 +53,22 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => SeaBattleBotService))
     private readonly botService: SeaBattleBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'sea_battle_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.startWatchdog();
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    this.stopWatchdog();
-  }
-
-  private stopWatchdog() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
-  }
-
-  private startWatchdog() {
-    // Every 10 seconds, check active Sea Battle sessions that haven't moved for 20 seconds
-    this.watchdogInterval = setInterval(() => {
-      void (async () => {
-        try {
-          const staleSessions =
-            await this.sessionsService.findStaleActiveSessions(
-              'sea_battle_v1',
-              20000, // 20 seconds stale threshold
-              100, // Limit to 100 per cycle for safety
-            );
-
-          if (staleSessions.length > 0) {
-            for (const session of staleSessions) {
-              this.botService
-                .checkAndPlay(session)
-                .catch((err) =>
-                  this.logger.error(
-                    `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-                  ),
-                );
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Watchdog failed: ${error}`);
-        }
-      })();
-    }, 10000);
+    this.watchdog.stop();
   }
 
   /**
@@ -106,6 +80,18 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       return this.checkAndSyncRoomStatus(session);
     }
     return null;
+  }
+
+  /**
+   * Complete a game session (e.g. when no human players remain alive)
+   */
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
   }
 
   private async checkAndSyncRoomStatus(session: GameSessionSummary) {
@@ -154,6 +140,10 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
+    difficulty?: 'easy' | 'medium' | 'hard',
+    gridSize?: number,
+    shipCount?: number,
+    variant?: string,
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
 
@@ -162,6 +152,19 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     }
 
     const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
+
+    // Client-side values override stale room.gameOptions (race condition fix)
+    if (gridSize !== undefined) opts.gridSize = gridSize;
+    if (shipCount !== undefined) opts.shipCount = shipCount;
+    if (variant !== undefined) opts.variant = variant;
+
+    // Persist overrides so bots and reconnects see the same config
+    await this.roomsService.updateRoomOptions(roomId, userId, {
+      ...(gridSize !== undefined ? { gridSize } : {}),
+      ...(shipCount !== undefined ? { shipCount } : {}),
+      ...(variant !== undefined ? { variant } : {}),
+    });
+
     const teamMode = !!opts.teamMode;
     const cap = teamMode ? MAX_PLAYERS_TEAM_MODE : MAX_PLAYERS;
 
@@ -175,7 +178,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       const targetBotCount = botCount !== undefined ? botCount : 1;
       const needed = Math.min(cap - 1, targetBotCount);
       for (let i = 0; i < needed; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     } else if (!teamMode && withBots) {
       const targetTotalPlayers = playerIds.length + (botCount || 1);
@@ -184,7 +187,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
         Math.max(0, targetTotalPlayers - playerIds.length),
       );
       for (let i = 0; i < needed; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 
@@ -211,22 +214,27 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       roomId,
       gameId: room.gameId,
       playerIds,
-      config: teamMode
-        ? {
-            teams: opts.teams!.map((t) => ({
-              id: t.id,
-              name: t.name,
-              color: t.color,
-              playerIds: t.playerIds,
-            })),
-            hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
-          }
-        : { ...room.gameOptions },
+      config: {
+        ...opts,
+        ...(teamMode
+          ? {
+              teams: opts.teams!.map((t) => ({
+                id: t.id,
+                name: t.name,
+                color: t.color,
+                playerIds: t.playerIds,
+              })),
+              hideShipsFromTeammates: !!opts.hideShipsFromTeammates,
+            }
+          : {}),
+        ...(difficulty ? { aiDifficulty: difficulty } : {}),
+      },
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
     await this.realtimeService.emitGameStarted(
-      room,
+      updatedRoom,
       session,
       async (s, pId) => {
         const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
@@ -241,7 +249,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     );
 
     const updatedSession = await this.checkAndSyncRoomStatus(session);
-    return { room, session: updatedSession };
+    return { room: updatedRoom, session: updatedSession };
   }
 
   /**
@@ -293,7 +301,11 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   /**
    * Confirm ship placement is complete
    */
-  async confirmPlacementByRoom(userId: string, roomId: string) {
+  async confirmPlacementByRoom(
+    userId: string,
+    roomId: string,
+    ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>,
+  ) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
 
@@ -301,7 +313,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       sessionId: session.id,
       userId,
       action: 'confirmPlacement',
-      payload: {},
+      payload: ships ? { ships } : {},
     });
 
     await this.checkAndSyncRoomStatus(updatedSession);

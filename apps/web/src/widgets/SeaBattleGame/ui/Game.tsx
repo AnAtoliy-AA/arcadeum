@@ -10,7 +10,7 @@ import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import { useRematch } from '@/features/games/hooks';
+import { useGameEndState } from '@/features/games/hooks';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
@@ -73,9 +73,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   // session id (instead of a plain boolean) means the dismissal naturally
   // resets when a rematch produces a new session, so the next game-over
   // shows the modal again instead of only the win confetti.
-  const [dismissedForSessionId, setDismissedForSessionId] = useState<
-    string | null
-  >(null);
 
   const {
     startSession,
@@ -186,40 +183,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     [room?.gameOptions, previousBotCount],
   );
 
-  const {
-    rematchLoading,
-    showRematchModal,
-    openRematchModal,
-    closeRematchModal,
-    handleRematch,
-    invitation,
-    handleAcceptInvitation,
-    handleDeclineInvitation,
-  } = useRematch({
-    roomId,
-    gameOptions: rematchGameOptions,
-  });
-
-  const handleOpenRematch = useCallback(() => {
-    if (session?.id) setDismissedForSessionId(session.id);
-    openRematchModal();
-  }, [openRematchModal, session?.id]);
-
-  // Non-hosts can request a rematch but can't actually start one — only the
-  // host creates the new room. The request posts a public chat note so the
-  // host (and everyone else) sees the ask.
-  const handleRematchClick = useCallback(() => {
-    if (isHost) {
-      handleOpenRematch();
-      return;
-    }
-    postHistoryNoteAction('🔁 Wants a rematch!', 'all');
-    if (session?.id) setDismissedForSessionId(session.id);
-  }, [isHost, handleOpenRematch, postHistoryNoteAction, session?.id]);
-
-  const resultModalDismissed =
-    !!session?.id && dismissedForSessionId === session.id;
-
   const resolveDisplayNameBound = useCallback(
     (id?: string | null, fallback?: string | null) =>
       resolveDisplayName(id, {
@@ -232,6 +195,49 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       }),
     [currentUserId, room, t, snapshot],
   );
+
+  const gameResult = useMemo(() => {
+    if (!isGameOver) return null;
+    if (teamMode) {
+      return isWinner ? 'victory' : 'defeat';
+    }
+    if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
+    return 'defeat';
+  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
+
+  const localGameResult = useMemo(() => {
+    if (!gameResult) return null;
+    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
+  }, [gameResult]);
+  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result: localGameResult,
+    rematchGameOptions,
+    players:
+      snapshot?.players
+        .filter((p) => !p.playerId.startsWith('bot-'))
+        .map((p) => ({
+          playerId: p.playerId,
+          displayName: resolveDisplayNameBound(p.playerId),
+          alive: p.alive,
+        })) || [],
+  });
+
+  // Non-hosts can request a rematch but can't actually start one — only the
+  // host creates the new room. The request posts a public chat note so the
+  // host (and everyone else) sees the ask.
+  const handleRematchClick = useCallback(() => {
+    if (isHost) {
+      gameEnd.handleResultRematchClick();
+      return;
+    }
+    postHistoryNoteAction('🔁 Wants a rematch!', 'all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHost, gameEnd.handleResultRematchClick, postHistoryNoteAction]);
 
   const resolveActorColor = useCallback(
     (id?: string | null) => {
@@ -303,21 +309,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       resolveDisplayNameBound,
     ],
   );
-
-  const gameResult = useMemo(() => {
-    if (!isGameOver) return null;
-    if (teamMode) {
-      return isWinner ? 'victory' : 'defeat';
-    }
-    if (isWinner || snapshot?.winnerId === currentUserId) return 'victory';
-    return 'defeat';
-  }, [isGameOver, isWinner, snapshot?.winnerId, currentUserId, teamMode]);
-
-  const localGameResult = useMemo(() => {
-    if (!gameResult) return null;
-    return gameResult === 'victory' ? ('won' as const) : ('lost' as const);
-  }, [gameResult]);
-  useRecordGameResult(localGameResult, 'sea_battle_v1', session?.id);
 
   const headerTitle = useMemo(
     () =>
@@ -433,23 +424,12 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             showRulesOpen={showRulesOpen}
             onShowRulesClose={onShowRulesClose}
             setShowRules={setShowRules}
-            isGameOver={isGameOver}
-            resultModalDismissed={resultModalDismissed}
-            gameResult={gameResult}
-            handleRematchClick={handleRematchClick}
-            session={session}
-            setDismissedForSessionId={setDismissedForSessionId}
-            rematchLoading={rematchLoading}
-            showRematchModal={showRematchModal}
+            gameEnd={gameEnd}
             snapshot={snapshot}
             resolveDisplayNameBound={resolveDisplayNameBound}
             currentUserId={currentUserId}
-            closeRematchModal={closeRematchModal}
-            handleRematch={handleRematch}
             cardVariant={cardVariant}
-            invitation={invitation}
-            handleAcceptInvitation={handleAcceptInvitation}
-            handleDeclineInvitation={handleDeclineInvitation}
+            onRematch={handleRematchClick}
           />
         }
         variant={cardVariant}

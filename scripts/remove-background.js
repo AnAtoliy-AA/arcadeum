@@ -69,6 +69,14 @@ const ASSET_MAPPING = [
     dest: path.join(AVATARS_DIR, 'cat-bengal.png')
   },
   {
+    src: path.join(SOURCE_DIR, 'phoenix_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'phoenix-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'dragon_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'dragon-cyber.png')
+  },
+  {
     src: path.join(SOURCE_DIR, 'newcomer_badge_dark_bg.png'),
     dest: path.join(BADGES_DIR, 'newcomer.png')
   },

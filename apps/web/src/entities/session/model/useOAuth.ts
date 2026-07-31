@@ -16,6 +16,7 @@ import { type SessionTokensValue } from '@/entities/session/model/useSessionToke
 import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
+import { encryptSensitiveValue } from '@/entities/session/lib/encryptSensitive';
 
 interface OAuthDiscovery {
   authorization_endpoint?: string;
@@ -124,10 +125,15 @@ function generateRandomString(length: number): string {
   const randomValues = new Uint8Array(length);
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
     window.crypto.getRandomValues(randomValues);
+  } else if (
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto?.getRandomValues
+  ) {
+    globalThis.crypto.getRandomValues(randomValues);
   } else {
-    for (let i = 0; i < length; i += 1) {
-      randomValues[i] = Math.floor(Math.random() * charset.length);
-    }
+    throw new Error(
+      'Cryptographically secure random number generation is not available',
+    );
   }
   let result = '';
   for (let i = 0; i < length; i += 1) {
@@ -350,10 +356,12 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         }));
 
         if (snapshot.email) {
-          // persist email alongside local auth convenience store
           if (typeof window !== 'undefined') {
             try {
-              window.localStorage.setItem('web_auth_email', snapshot.email);
+              window.sessionStorage.setItem(
+                'web_auth_email',
+                encryptSensitiveValue(snapshot.email),
+              );
             } catch {
               // ignore
             }

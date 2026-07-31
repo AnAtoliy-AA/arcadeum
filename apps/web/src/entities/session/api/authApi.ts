@@ -45,6 +45,9 @@ function api(url: string): string {
 
 async function readJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error('Unauthorized');
+    }
     const text = await res.text();
     throw new Error(text || `Request failed (${res.status})`);
   }
@@ -79,6 +82,7 @@ export async function checkUsernameAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/username/${encodeURIComponent(username)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }
@@ -88,6 +92,7 @@ export async function checkEmailAvailable(
 ): Promise<{ available: boolean }> {
   const res = await fetch(
     api(`/auth/check/email/${encodeURIComponent(email)}`),
+    { next: { revalidate: 30 } },
   );
   return readJson<{ available: boolean }>(res);
 }
@@ -183,13 +188,17 @@ export async function refreshSession(
 }
 
 export async function refreshSessionFromCookie(): Promise<LoginResponse> {
-  const res = await fetch(api('/auth/refresh'), {
-    method: 'POST',
-    headers: apiHeaders(),
-    credentials: 'include',
-    body: JSON.stringify({}),
-  });
-  return readJson<LoginResponse>(res);
+  try {
+    const res = await fetch(api('/auth/refresh'), {
+      method: 'POST',
+      headers: apiHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({}),
+    });
+    return readJson<LoginResponse>(res);
+  } catch {
+    throw new Error('No session to refresh');
+  }
 }
 
 export async function logoutSession(): Promise<void> {

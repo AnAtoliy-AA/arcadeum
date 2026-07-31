@@ -6,6 +6,8 @@ import {
   OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -27,14 +29,12 @@ import type {
   TicTacToeState,
 } from '../engines/tic-tac-toe/tic-tac-toe.types';
 import { TicTacToeBotService } from './tic-tac-toe-bot.service';
-
-const WATCHDOG_INTERVAL_MS = 10000;
-const WATCHDOG_STALE_THRESHOLD_MS = 20000;
+import { GameBotWatchdog } from '../game-bot-watchdog';
 
 @Injectable()
 export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TicTacToeService.name);
-  private watchdogInterval: NodeJS.Timeout | null = null;
+  private readonly watchdog: GameBotWatchdog;
 
   constructor(
     private readonly roomsService: GameRoomsService,
@@ -43,19 +43,22 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => TicTacToeBotService))
     private readonly botService: TicTacToeBotService,
-  ) {}
+    @InjectConnection() private readonly mongoConnection: Connection,
+  ) {
+    this.watchdog = new GameBotWatchdog(
+      'tic_tac_toe_v1',
+      sessionsService,
+      botService,
+      mongoConnection,
+    );
+  }
 
   onModuleInit() {
-    this.watchdogInterval = setInterval(() => {
-      void this.runWatchdog();
-    }, WATCHDOG_INTERVAL_MS);
+    this.watchdog.start();
   }
 
   onModuleDestroy() {
-    if (this.watchdogInterval) {
-      clearInterval(this.watchdogInterval);
-      this.watchdogInterval = null;
-    }
+    this.watchdog.stop();
   }
 
   async findSessionByRoom(roomId: string) {
@@ -82,11 +85,12 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     const playerIds = [...participants];
 
     if (withBots || playerIds.length === 1) {
+      const needed = Math.max(0, MIN_PLAYERS - playerIds.length);
       const desiredCount =
-        botCount !== undefined ? botCount : Math.max(0, 2 - playerIds.length);
+        botCount !== undefined ? Math.max(botCount, needed) : needed;
       const cap = Math.min(sizeCap - playerIds.length, desiredCount);
       for (let i = 0; i < cap; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).slice(2, 10)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 
@@ -107,14 +111,12 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
+    const updatedRoom = { ...room, status: 'in_progress' as const };
     await this.realtimeService.emitGameStarted(
-      room,
+      updatedRoom,
       session,
-      async (s, pId) => {
-        const sanitized = await this.sessionsService.getSanitizedStateForPlayer(
-          s.id,
-          pId,
-        );
+      (s, pId) => {
+        const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
         if (sanitized && typeof sanitized === 'object') {
           return { ...s, state: sanitized as Record<string, unknown> };
         }
@@ -123,7 +125,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     );
 
     const updatedSession = await this.afterSessionStep(session);
-    return { room, session: updatedSession };
+    return { room: updatedRoom, session: updatedSession };
   }
 
   async placeMark(userId: string, roomId: string, payload: PlaceMarkPayload) {
@@ -158,6 +160,15 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     return updatedSession;
   }
 
+  async completeSession(sessionId: string, roomId: string): Promise<void> {
+    await this.sessionsService.updateSessionState({
+      sessionId,
+      state: {},
+      status: 'completed',
+    });
+    await this.roomsService.updateRoomStatus(roomId, 'completed');
+  }
+
   private async afterSessionStep(session: GameSessionSummary) {
     if (session.status === 'completed') {
       await this.roomsService.updateRoomStatus(session.roomId, 'completed');
@@ -190,43 +201,39 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  private async runWatchdog() {
-    try {
-      const stale = await this.sessionsService.findStaleActiveSessions(
-        'tic_tac_toe_v1',
-        WATCHDOG_STALE_THRESHOLD_MS,
-        100,
-      );
-      for (const session of stale) {
-        this.botService
-          .checkAndPlay(session)
-          .catch((err) =>
-            this.logger.error(
-              `Watchdog trigger failed for room ${session.roomId}: ${err}`,
-            ),
-          );
-      }
-    } catch (err) {
-      this.logger.error(`Watchdog failed: ${err}`);
-    }
-  }
-
   private resolveOptions(raw: unknown): TicTacToeOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;
-      boardSize: number;
+      boardSize: number | string;
       teamMode: boolean;
+      expansionMargin: number;
+      infinityWinLength: number;
     }>;
     const allowedSizes: number[] = [3, 5, 7, 9];
-    const boardSize = (
-      allowedSizes.includes(r.boardSize ?? 3)
-        ? r.boardSize
-        : DEFAULT_OPTIONS.boardSize
-    ) as BoardSize;
+    const rawSize = r.boardSize;
+    let boardSize: BoardSize;
+    if (rawSize === 'infinity') {
+      boardSize = 'infinity';
+    } else {
+      const numSize: number =
+        Number(rawSize) || (DEFAULT_OPTIONS.boardSize as number);
+      boardSize = (
+        allowedSizes.includes(numSize) ? numSize : DEFAULT_OPTIONS.boardSize
+      ) as BoardSize;
+    }
+    const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
+      n === 1 || n === 2 || n === 3;
+    const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
     return {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
       boardSize,
       teamMode: !!r.teamMode,
+      expansionMargin: isMargin(r.expansionMargin)
+        ? r.expansionMargin
+        : DEFAULT_OPTIONS.expansionMargin,
+      infinityWinLength: isWinLen(r.infinityWinLength)
+        ? r.infinityWinLength
+        : DEFAULT_OPTIONS.infinityWinLength,
     };
   }
 }

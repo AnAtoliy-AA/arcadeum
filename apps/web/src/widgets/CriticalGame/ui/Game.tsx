@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useRematch } from '../hooks';
@@ -6,6 +6,8 @@ import { useGameRoomActions } from '@/features/games/hooks';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
+import { RulesModal } from './RulesModal';
+import { GAME_VARIANT } from '../lib/constants';
 
 export default function CriticalGame({
   roomId,
@@ -44,6 +46,15 @@ export default function CriticalGame({
 
   const rematch = useRematch({ roomId, gameOptions: room?.gameOptions });
 
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const handleOpenRules = useCallback(() => setRulesOpen(true), []);
+  const handleCloseRules = useCallback(() => {
+    setRulesOpen(false);
+    onShowRulesClose();
+  }, [onShowRulesClose]);
+
+  const cardVariant = room?.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
+
   if (!room) return null;
 
   // Game not started yet - show Lobby
@@ -69,6 +80,8 @@ export default function CriticalGame({
           currentUserId ? () => onLeaveRoom(currentUserId) : undefined
         }
         onRefresh={onRefresh}
+        showRulesOpen={showRulesOpen}
+        onShowRulesClose={onShowRulesClose}
         t={t}
       />
     );
@@ -79,21 +92,31 @@ export default function CriticalGame({
   // popup, my-turn border), so Critical no longer wraps its own container or
   // runs a second fullscreen system here.
   return (
-    <ActiveGameView
-      currentUserId={currentUserId}
-      room={room}
-      snapshot={snapshot}
-      isHost={isHost}
-      actions={actions}
-      currentPlayer={currentPlayer}
-      isMyTurn={!!isMyTurn}
-      canAct={!!canAct}
-      canPlayNope={!!canPlayNope}
-      aliveOpponents={aliveOpponents}
-      isGameOver={!!isGameOver}
-      rematch={rematch}
-      showRulesOpen={showRulesOpen}
-      onShowRulesClose={onShowRulesClose}
-    />
+    <>
+      <ActiveGameView
+        currentUserId={currentUserId}
+        room={room}
+        snapshot={snapshot}
+        isHost={isHost}
+        actions={actions}
+        currentPlayer={currentPlayer}
+        isMyTurn={!!isMyTurn}
+        canAct={!!canAct}
+        canPlayNope={!!canPlayNope}
+        aliveOpponents={aliveOpponents}
+        isGameOver={!!isGameOver}
+        rematch={rematch}
+        showRulesOpen={showRulesOpen}
+        onShowRulesClose={onShowRulesClose}
+        onOpenRules={handleOpenRules}
+      />
+      <RulesModal
+        isOpen={rulesOpen || showRulesOpen}
+        onClose={handleCloseRules}
+        currentVariant={cardVariant}
+        isPrivate={room.visibility === 'private'}
+        t={t}
+      />
+    </>
   );
 }

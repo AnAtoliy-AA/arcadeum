@@ -56,27 +56,37 @@ function setTokenCookies(
   const maxAgeRefresh =
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
-  const sameSite = secure ? 'none' : 'lax';
-
+  // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('access_token', accessToken, {
     httpOnly: true,
     secure,
-    sameSite,
+    sameSite: 'lax',
+    domain: '.arcadeum.games',
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
+  // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     secure,
-    sameSite,
+    sameSite: 'lax',
+    domain: '.arcadeum.games',
     path: '/',
     maxAge: Math.max(maxAgeRefresh, 0),
   });
 }
 
-function clearTokenCookies(res: Response): void {
-  res.clearCookie('access_token', { path: '/' });
-  res.clearCookie('refresh_token', { path: '/' });
+function clearTokenCookies(res: Response, req: Request): void {
+  const secure = isSecureOrigin(req);
+  const options = {
+    path: '/',
+    httpOnly: true,
+    secure,
+    sameSite: 'lax' as const,
+    domain: '.arcadeum.games',
+  };
+  res.clearCookie('access_token', options);
+  res.clearCookie('refresh_token', options);
 }
 
 @Controller('auth')
@@ -123,17 +133,23 @@ export class AuthController {
   }
 
   @Get('check/username/:username')
-  @Throttle({ default: { limit: 20, ttl: 60_000 } })
-  checkUsername(
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async checkUsername(
     @Param('username') username: string,
   ): Promise<{ available: boolean }> {
-    return this.authService.checkUsernameAvailable(username);
+    const result = await this.authService.checkUsernameAvailable(username);
+    // Always return the same shape to prevent user enumeration
+    return { available: result.available };
   }
 
   @Get('check/email/:email')
-  @Throttle({ default: { limit: 20, ttl: 60_000 } })
-  checkEmail(@Param('email') email: string): Promise<{ available: boolean }> {
-    return this.authService.checkEmailAvailable(email);
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async checkEmail(
+    @Param('email') email: string,
+  ): Promise<{ available: boolean }> {
+    const result = await this.authService.checkEmailAvailable(email);
+    // Always return the same shape to prevent user enumeration
+    return { available: result.available };
   }
 
   @Post('login')
@@ -199,8 +215,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(204)
-  logout(@Res({ passthrough: true }) res: Response): void {
-    clearTokenCookies(res);
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): void {
+    clearTokenCookies(res, req);
   }
 
   // Account-enumeration defense: always 204, never reveal whether the email

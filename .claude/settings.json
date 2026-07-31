@@ -67,6 +67,47 @@
             "asyncRewake": true,
             "timeout": 10,
             "statusMessage": "Checking UI component placement..."
+          },
+          {
+            "type": "command",
+            "command": "bash $PWD/.claude/hooks/file-length-check.sh",
+            "asyncRewake": true,
+            "timeout": 30,
+            "statusMessage": "Checking file length..."
+          },
+          {
+            "type": "command",
+            "command": "bash $PWD/.claude/hooks/no-any-check.sh",
+            "asyncRewake": true,
+            "timeout": 30,
+            "statusMessage": "Checking for 'any' types..."
+          },
+{
+  "type": "command",
+  "command": "bash $PWD/.claude/hooks/i18n-check.sh",
+  "asyncRewake": true,
+  "timeout": 30,
+  "statusMessage": "Checking i18n..."
+},
+{
+  "type": "command",
+  "command": "bash $PWD/.claude/hooks/import-boundary-check.sh",
+  "asyncRewake": true,
+  "timeout": 30,
+  "statusMessage": "Checking import boundaries..."
+}
+        ]
+      }
+    ],
+    "PreCommit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $PWD/.claude/hooks/pre-commit-check.sh",
+            "timeout": 120,
+            "statusMessage": "Running pre-commit checks..."
           }
         ]
       }

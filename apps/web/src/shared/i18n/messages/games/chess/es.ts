@@ -1,0 +1,171 @@
+export const esMessages = {
+  chess_v1: {
+    name: 'Ajedrez',
+    description:
+      'El clásico juego de tablero de estrategia con reglas completas incluyendo enroque, captura al paso y promoción',
+    summary:
+      'Desafía a amigos o bots a una partida de ajedrez con variantes estándar y Chess960 con controles de tiempo opcionales.',
+    landing: {
+      meta: {
+        title: 'Ajedrez — multijugador con variantes estándar y Chess960',
+        description:
+          'Juega ajedrez multijugador en línea. Variantes estándar y Chess960, controles de tiempo opcionales, bots desde el primer día. Gratis, salas instantáneas.',
+        keywords:
+          'ajedrez, ajedrez online, ajedrez multijugador, chess960, juegos de tablero',
+        howToPlayTitle: 'Cómo jugar a {{gameName}}',
+      },
+      hero: {
+        title: 'Ajedrez — el juego de estrategia atemporal',
+        subtitle:
+          'Reglas estándar, variante Chess960 y controles de tiempo opcionales. Juega contra amigos o bots.',
+        createRoom: 'Crear sala',
+        ctaQuickplay: 'Jugar contra la IA',
+        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        browseRooms: 'Explorar salas',
+        backToGames: '← Juegos',
+      },
+      highlights: {
+        players: {
+          title: '2 jugadores',
+          body: 'Desafía a un amigo o juega contra un oponente bot inteligente.',
+        },
+        variants: {
+          title: '2 variantes',
+          body: 'Posición estándar clásica y Chess960 con disposición aleatoria.',
+        },
+        clock: {
+          title: 'Controles de tiempo',
+          body: 'Rápido, blitz o clásico. O juega sin reloj.',
+        },
+      },
+      steps: {
+        create: {
+          title: 'Crea una sala',
+          body: 'Elige una variante y control de tiempo. Pública o solo por invitación.',
+        },
+        join: {
+          title: 'Invita a un amigo o añade un bot',
+          body: 'Comparte el enlace o haz clic en "Empezar con bots" para jugar al instante.',
+        },
+        play: {
+          title: 'Juega y chatea',
+          body: 'Haz tus movimientos, mira el reloj y charla durante la partida.',
+        },
+      },
+      faq: {
+        chess960: {
+          question: '¿Qué es Chess960?',
+          answer:
+            'Chess960 (Fischer Random) usa una posición inicial aleatoria con 960 configuraciones posibles. Las reglas de enroque se adaptan, pero todas las demás reglas del ajedrez permanecen iguales.',
+        },
+        clock: {
+          question: '¿Cómo funcionan los controles de tiempo?',
+          answer:
+            'Cada jugador tiene un reloj. Cuando es tu turno, tu reloj cuenta hacia atrás. Si se acaba tu tiempo, pierdes. Algunos controles añaden tiempo después de cada movimiento.',
+        },
+        promotion: {
+          question: '¿Cómo funciona la promoción de peón?',
+          answer:
+            'Cuando un peón llega al extremo opuesto del tablero, debes promocionarlo a dama, torre, alfil o caballo.',
+        },
+      },
+    },
+    lobby: {
+      variant: 'Variante',
+      timeControl: 'Control de tiempo',
+      startWithBots: 'Empezar con bots',
+      waitingForPlayers: 'Esperando jugadores…',
+      minPlayers: 'Mínimo 2 jugadores',
+      standard: 'Estándar',
+      chess960: 'Chess960',
+      standardDesc: 'Posición inicial clásica',
+      chess960Desc: 'Posición inicial aleatoria',
+      noClock: 'Sin reloj',
+      unlimitedTime: 'Tiempo ilimitado',
+      blitz: 'Blitz',
+      rapid: 'Rápido',
+      classical: 'Clásico',
+      easy: 'Fácil',
+      medium: 'Medio',
+      hard: 'Difícil',
+    },
+    rules: {
+      title: 'Reglas del Ajedrez',
+      objective: 'Objetivo',
+      objectiveText:
+        'Jaque mate al rey de tu oponente. El rey está en jaque mate cuando está en jaque y no hay movimiento legal para escapar.',
+      pieces: 'Piezas',
+      special: 'Movimientos Especiales',
+      castling:
+        'El rey mueve dos casillas hacia una torre, y la torre salta sobre el rey. Debe estar despejado, el rey no en jaque, y ninguna pieza se ha movido.',
+      enPassant:
+        'Un peón puede capturar un peón oponente que acaba de mover dos casillas adelante, como si hubiera movido solo una.',
+      promotion:
+        'Un peón que alcanza el extremo opuesto se promociona a dama, torre, alfil o caballo.',
+      drawConditions: 'Condiciones de Empate',
+      drawStalemate: 'Tablas (sin movimientos legales, no en jaque)',
+      drawFiftyMove:
+        'Regla de 50 movimientos (50 movimientos sin capturas ni movimientos de peón)',
+      drawRepetition: 'Triple repetición',
+      drawMaterial: 'Material insuficiente',
+      gotIt: 'Entendido',
+    },
+    gameOver: {
+      won: '¡Ganaste!',
+      lost: 'Perdiste.',
+      draw: 'Empate.',
+      messages: {
+        won: '¡Jaque mate! Derrotaste a tu oponente. ¿Listo para otra partida?',
+        lost: '¡Jaque mate! Tu oponente ganó. ¿Quieres revancha?',
+        draw: 'La partida terminó en empate. ¿Prueba otra variante?',
+      },
+    },
+    actions: {
+      move: 'Mover pieza',
+      resign: 'Rendirse',
+      rematch: 'Revancha',
+      leave: 'Salir',
+      draw: 'Empate',
+      drawOffered: 'Empate ofrecido',
+      acceptDraw: 'Aceptar empate',
+      declineDraw: 'Rechazar',
+      moveList: 'Lista de movimientos',
+      copyPGN: 'Copiar PGN',
+    },
+    chat: {
+      move: '{{name}} movió {{notation}}',
+      check: '¡{{name}} está en jaque!',
+      checkmate: '¡{{name}} gana por jaque mate!',
+      castle: '{{name}} enrocó',
+      capture: '{{name}} capturó {{piece}}',
+      promotion: '{{name}} promocionó a {{piece}}',
+      resign: '{{name}} se rindió',
+      draw: 'La partida terminó en empate',
+      joined: '{{name}} se unió.',
+      left: '{{name}} salió.',
+    },
+    errors: {
+      notYourTurn: 'Aún no es tu turno.',
+      invalidMove: 'Ese no es un movimiento legal.',
+      gameOver: 'La partida ha terminado.',
+      gameNotStarted: 'La partida aún no ha comenzado.',
+    },
+    status: {
+      turn: 'Turno de {{player}}',
+      white: 'Blancas',
+      black: 'Negras',
+      toMove: 'a mover',
+      check: '¡Jaque!',
+      checkmate: '¡Jaque mate!',
+      winner: '{{player}} ganó',
+      draw: 'Empate',
+      moves: '{{count}} movimientos',
+      promotionTitle: 'Promocionar peón a:',
+      collapse: 'Colapsar',
+      showAll: 'Mostrar todo ({{count}})',
+      copied: '¡Copiado!',
+      spectating: 'Observando',
+      boardLabel: 'Tablero de ajedrez, {{color}} a mover',
+    },
+  },
+};

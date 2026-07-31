@@ -66,6 +66,12 @@ const cspConnectSrc = [
   'wss://arcadeum-be.onrender.com',
   'https://arcadeum-be-reserve.onrender.com',
   'wss://arcadeum-be-reserve.onrender.com',
+  'https://api.arcadeum.games',
+  'wss://api.arcadeum.games',
+  'https://api2.arcadeum.games',
+  'wss://api2.arcadeum.games',
+  'https://api-dev.arcadeum.games',
+  'wss://api-dev.arcadeum.games',
   'https://accounts.google.com',
   'https://vercel.live',
   'wss://*.vercel.live',
@@ -110,7 +116,7 @@ const nextConfig: NextConfig = {
 
     const csp = [
       "default-src 'self';",
-      `script-src 'self' 'unsafe-eval' ${cspScriptSrc};`,
+      `script-src 'self'${allowLocalhost ? " 'unsafe-eval'" : ''} ${cspScriptSrc};`,
       `style-src ${cspStyleSrc};`,
       `img-src ${cspImgSrc};`,
       `font-src ${cspFontSrc};`,
@@ -138,6 +144,12 @@ const nextConfig: NextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Cache-Control',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
           },
           {
             key: 'X-Content-Type-Options',
@@ -377,6 +389,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    qualities: [75, 80],
     minimumCacheTTL: 3600,
   },
 };

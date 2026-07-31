@@ -19,6 +19,7 @@ import {
   extractString,
   toCriticalCard,
   isSimpleActionCard,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
@@ -88,6 +89,8 @@ export class CriticalActionsGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 
+    validatePayloadUserId(client, userId);
+
     try {
       // Get session from room
       const session = await this.criticalService.findSessionByRoom(roomId);
@@ -128,6 +131,8 @@ export class CriticalActionsGateway {
     const { roomId, userId } = extractRoomAndUser(payload);
     const { card, targetPlayerId, cardsToStash, cardsToUnstash } =
       extractPlayActionPayload(payload as unknown as Record<string, unknown>);
+
+    validatePayloadUserId(client, userId);
 
     if (process.env.NODE_ENV !== 'test') {
       this.logger.log(
@@ -193,6 +198,8 @@ export class CriticalActionsGateway {
       payload as unknown as Record<string, unknown>,
     );
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.playCatComboByRoom(userId, roomId, cat, {
         mode,
@@ -239,6 +246,8 @@ export class CriticalActionsGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.criticalService.playFavorByRoom(
@@ -287,6 +296,8 @@ export class CriticalActionsGateway {
       throw new WsException('Invalid cardToGive value.');
     }
 
+    validatePayloadUserId(client, userId);
+
     try {
       await this.criticalService.giveFavorCardByRoom(userId, roomId, cardValue);
 
@@ -319,6 +330,8 @@ export class CriticalActionsGateway {
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+
+    validatePayloadUserId(client, userId);
 
     try {
       const result = await this.criticalService.seeTheFutureByRoom(

@@ -29,6 +29,7 @@ import {
   runGameTick,
   seedWormSpawns,
 } from './glimworm.service.lifecycle';
+import { cleanupStaleSessions } from './glimworm.cleanup';
 import type {
   GlimwormDiscreteEvent,
   GlimwormInputPayload,
@@ -53,14 +54,17 @@ export interface GlimwormStartOpts {
 
 const MAX_WORMS = 10;
 const INPUT_MIN_INTERVAL_MS = 1000 / GLIMWORM_INPUT_RATE_LIMIT_HZ;
+const STALE_SESSION_CLEANUP_MS = 5 * 60_000;
 
 @Injectable()
 export class GlimwormService implements OnModuleDestroy {
   private readonly logger = new Logger(GlimwormService.name);
   private readonly tickIntervals = new Map<string, NodeJS.Timeout>();
+  private readonly countdownTimers = new Map<string, NodeJS.Timeout>();
   private readonly strategies = new Map<string, VariantStrategy>();
   private readonly growthTargets = new Map<string, Map<WormId, number>>();
   private readonly random: RandomFn;
+  private readonly staleCleanupInterval: NodeJS.Timeout;
 
   constructor(
     private readonly stateStore: GlimwormStateStore,
@@ -69,16 +73,32 @@ export class GlimwormService implements OnModuleDestroy {
     @Optional() random?: RandomFn,
   ) {
     this.random = random ?? Math.random;
+    this.staleCleanupInterval = setInterval(() => {
+      cleanupStaleSessions({
+        stateStore: this.stateStore,
+        logger: this.logger,
+        stopTickLoop: (id) => this.stopTickLoop(id),
+        cancelCountdown: (id) => this.cancelCountdown(id),
+        strategies: this.strategies,
+        growthTargets: this.growthTargets,
+      });
+    }, STALE_SESSION_CLEANUP_MS);
+    if (this.staleCleanupInterval.unref) this.staleCleanupInterval.unref();
   }
 
   /** Minimum total worms required to start. Used when filling with bots. */
   private static readonly SOLO_FILL_TARGET = 3;
 
   onModuleDestroy(): void {
+    clearInterval(this.staleCleanupInterval);
     for (const [, timer] of this.tickIntervals) {
       clearInterval(timer);
     }
     this.tickIntervals.clear();
+    for (const [, timer] of this.countdownTimers) {
+      clearTimeout(timer);
+    }
+    this.countdownTimers.clear();
   }
 
   // ========== Lobby / lifecycle ==========
@@ -138,6 +158,12 @@ export class GlimwormService implements OnModuleDestroy {
       delete session.lastInputAt[userId];
       delete session.damageTickAt[userId];
       this.emitSnapshots(session);
+      if (Object.keys(session.worms).length === 0) {
+        this.cancelCountdown(roomId);
+        this.strategies.delete(roomId);
+        this.growthTargets.delete(roomId);
+        this.stateStore.remove(roomId);
+      }
       return;
     }
 
@@ -328,6 +354,7 @@ export class GlimwormService implements OnModuleDestroy {
       throw new Error('Only host can restart');
     }
     this.stopTickLoop(roomId);
+    this.cancelCountdown(roomId);
     this.strategies.delete(roomId);
     this.growthTargets.delete(roomId);
 
@@ -369,20 +396,23 @@ export class GlimwormService implements OnModuleDestroy {
     ]);
 
     this.stopTickLoop(roomId);
+    this.cancelCountdown(roomId);
+    this.strategies.delete(roomId);
+    this.growthTargets.delete(roomId);
   }
-
-  // ========== Tick orchestration ==========
 
   private startTickLoop(roomId: string): void {
     if (this.tickIntervals.has(roomId)) return;
     // Schedule the countdown→playing transition. Until then the tick loop
     // emits snapshots without running the simulation.
-    setTimeout(() => {
+    const countdownTimer = setTimeout(() => {
+      this.countdownTimers.delete(roomId);
       const session = this.stateStore.get(roomId);
       if (session && session.status === 'countdown') {
         session.status = 'playing';
       }
     }, GLIMWORM_COUNTDOWN_MS);
+    this.countdownTimers.set(roomId, countdownTimer);
 
     const timer = setInterval(() => {
       try {
@@ -402,8 +432,20 @@ export class GlimwormService implements OnModuleDestroy {
       clearInterval(timer);
       this.tickIntervals.delete(roomId);
     }
+    const countdown = this.countdownTimers.get(roomId);
+    if (countdown) {
+      clearTimeout(countdown);
+      this.countdownTimers.delete(roomId);
+    }
   }
 
+  private cancelCountdown(roomId: string): void {
+    const timer = this.countdownTimers.get(roomId);
+    if (timer) {
+      clearTimeout(timer);
+      this.countdownTimers.delete(roomId);
+    }
+  }
   tick(roomId: string): void {
     const session = this.stateStore.get(roomId);
     if (!session) return;

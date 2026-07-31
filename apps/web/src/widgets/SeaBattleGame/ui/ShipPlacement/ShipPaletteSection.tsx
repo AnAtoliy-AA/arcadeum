@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { Text } from 'tamagui';
-import { SHIPS } from '../../types';
+import type { ShipConfig } from '../../types';
 import {
   ShipPalette,
   ShipItem,
@@ -23,6 +23,7 @@ interface ShipPaletteSectionProps {
     draggable: boolean;
     onDragStart: (e: React.DragEvent<HTMLElement>) => void;
   };
+  activeShips: ShipConfig[];
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -34,9 +35,12 @@ export const ShipPaletteSection = memo(
     selectedShipId,
     setSelectedShipId,
     getDragProps,
+    activeShips,
     t,
   }: ShipPaletteSectionProps) => {
-    const shipItems = SHIPS.map((ship) => {
+    const shipItems = [...activeShips]
+      .sort((a, b) => b.size - a.size)
+      .map((ship) => {
       const isPlaced = placedShipIds.has(ship.id);
       const isSelected = selectedShipId === ship.id;
 

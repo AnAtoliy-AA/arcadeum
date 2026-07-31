@@ -260,6 +260,8 @@ export const baseVariantStyles: VariantStyleConfig = {
     lastPlayedGradient:
       'linear-gradient(160deg, rgba(236, 72, 153, 1) 0%, rgba(168, 85, 247, 1) 55%, rgba(99, 102, 241, 1) 100%)',
     lastPlayedHaloColor: 'rgba(245, 197, 106, 0.5)',
+    handBackground:
+      'linear-gradient(180deg, rgba(15, 5, 24, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%)',
     handColorByRole: {
       attack:
         'linear-gradient(160deg, rgba(236, 72, 153, 1) 0%, rgba(139, 28, 98, 1) 100%)',

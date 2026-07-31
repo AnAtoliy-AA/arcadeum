@@ -60,6 +60,10 @@ export interface PlayerStats {
   losses: number;
   winRate: number;
   byGameType: GameTypeStats[];
+  currentStreak: number;
+  currentStreakType: 'won' | 'lost' | null;
+  bestWinStreak: number;
+  favoriteGame: string | null;
 }
 
 export interface LeaderboardEntry {

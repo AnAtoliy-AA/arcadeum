@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DragEvent } from 'react';
-import type { ShipCell, CellState, Ship } from '../types';
-import { CELL_STATE, SHIPS } from '../types';
+import type { ShipCell, CellState, Ship, ShipConfig } from '../types';
+import { CELL_STATE } from '../types';
 import { getCells, canPlace, cellsEqual } from './drag-helpers';
 
 interface UseDragPlacementArgs {
@@ -11,6 +11,7 @@ interface UseDragPlacementArgs {
   isVertical: boolean;
   placedShipIds: Set<string>;
   ships: Ship[];
+  activeShips: ShipConfig[];
   placementComplete: boolean;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
   onMoveShip: (shipId: string, cells: ShipCell[]) => void;
@@ -76,6 +77,7 @@ export function useDragPlacement({
   isVertical,
   placedShipIds,
   ships,
+  activeShips,
   placementComplete,
   onPlaceShip,
   onMoveShip,
@@ -183,7 +185,7 @@ export function useDragPlacement({
       e.preventDefault();
       const shipId = draggingShipId.current;
       if (!shipId) return;
-      const ship = SHIPS.find((s) => s.id === shipId);
+      const ship = activeShips.find((s) => s.id === shipId);
       if (!ship) return;
 
       if (dragMode.current === 'board') {
@@ -192,7 +194,13 @@ export function useDragPlacement({
         const vertical = origin.orientation === 'v';
         const startRow = vertical ? row - origin.anchorOffset : row;
         const startCol = vertical ? col : col - origin.anchorOffset;
-        const cells = getCells(startRow, startCol, ship.size, vertical);
+        const cells = getCells(
+          startRow,
+          startCol,
+          ship.size,
+          vertical,
+          board.length,
+        );
         const virtualBoard = boardWithout(board, origin.originalCells);
         if (cells && canPlace(cells, virtualBoard)) {
           setHoveredCells(cells);
@@ -205,7 +213,7 @@ export function useDragPlacement({
       }
 
       // palette mode
-      const cells = getCells(row, col, ship.size, isVertical);
+      const cells = getCells(row, col, ship.size, isVertical, board.length);
       if (cells && canPlace(cells, board)) {
         setHoveredCells(cells);
         setIsInvalidHover?.(false);
@@ -214,7 +222,7 @@ export function useDragPlacement({
         setIsInvalidHover?.(true);
       }
     },
-    [board, isVertical, setHoveredCells, setIsInvalidHover],
+    [board, isVertical, activeShips, setHoveredCells, setIsInvalidHover],
   );
 
   const clearDragState = useCallback(() => {
@@ -235,7 +243,7 @@ export function useDragPlacement({
         clearDragState();
         return;
       }
-      const ship = SHIPS.find((s) => s.id === shipId);
+      const ship = activeShips.find((s) => s.id === shipId);
       if (!ship) {
         clearDragState();
         return;
@@ -248,7 +256,13 @@ export function useDragPlacement({
         const vertical = origin.orientation === 'v';
         const startRow = vertical ? row - origin.anchorOffset : row;
         const startCol = vertical ? col : col - origin.anchorOffset;
-        const cells = getCells(startRow, startCol, ship.size, vertical);
+        const cells = getCells(
+          startRow,
+          startCol,
+          ship.size,
+          vertical,
+          board.length,
+        );
         const virtualBoard = boardWithout(board, origin.originalCells);
         if (
           cells &&
@@ -262,13 +276,13 @@ export function useDragPlacement({
       }
 
       // palette mode
-      const cells = getCells(row, col, ship.size, isVertical);
+      const cells = getCells(row, col, ship.size, isVertical, board.length);
       if (cells && canPlace(cells, board)) {
         onPlaceShip(shipId, cells);
       }
       clearDragState();
     },
-    [board, isVertical, onPlaceShip, onMoveShip, clearDragState],
+    [board, isVertical, activeShips, onPlaceShip, onMoveShip, clearDragState],
   );
 
   const onDragLeave = useCallback(() => {
@@ -332,7 +346,7 @@ export function useDragPlacement({
 
         const cell = findCellFromPoint(me.clientX, me.clientY);
         if (cell && t.origin) {
-          const shipDef = SHIPS.find((s) => s.id === t.shipId);
+          const shipDef = activeShips.find((s) => s.id === t.shipId);
           if (!shipDef) return;
           const vertical = t.origin.orientation === 'v';
           const startRow = vertical
@@ -341,7 +355,13 @@ export function useDragPlacement({
           const startCol = vertical
             ? cell.col
             : cell.col - t.origin.anchorOffset;
-          const cells = getCells(startRow, startCol, shipDef.size, vertical);
+          const cells = getCells(
+            startRow,
+            startCol,
+            shipDef.size,
+            vertical,
+            boardRef.current.length,
+          );
           const virtualBoard = boardWithout(
             boardRef.current,
             t.origin.originalCells,
@@ -364,7 +384,7 @@ export function useDragPlacement({
         if (t.started && t.shipId && t.origin) {
           const cell = findCellFromPoint(ue.clientX, ue.clientY);
           if (cell) {
-            const shipDef = SHIPS.find((s) => s.id === t.shipId);
+            const shipDef = activeShips.find((s) => s.id === t.shipId);
             if (shipDef) {
               const vertical = t.origin.orientation === 'v';
               const startRow = vertical
@@ -378,6 +398,7 @@ export function useDragPlacement({
                 startCol,
                 shipDef.size,
                 vertical,
+                boardRef.current.length,
               );
               const virtualBoard = boardWithout(
                 boardRef.current,
@@ -414,6 +435,7 @@ export function useDragPlacement({
     },
     [
       ships,
+      activeShips,
       placementComplete,
       setSelectedShipId,
       setHoveredCells,

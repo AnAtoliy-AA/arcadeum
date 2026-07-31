@@ -14,6 +14,7 @@ import {
   findWinningLine,
   isBoardFull,
 } from '../engines/tic-tac-toe/tic-tac-toe.utils';
+import { randomInt } from 'crypto';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
@@ -27,6 +28,14 @@ export class TicTacToeBotService {
     private readonly ticTacToeService: TicTacToeService,
   ) {}
 
+  private secureRandom(max: number): number {
+    return randomInt(max);
+  }
+
+  private secureRandomRange(min: number, max: number): number {
+    return min + this.secureRandom(max - min + 1);
+  }
+
   isBot(userId: string): boolean {
     return userId.startsWith('bot-');
   }
@@ -35,6 +44,17 @@ export class TicTacToeBotService {
     if (session.status !== 'active') return;
     const state = session.state as unknown as TicTacToeState | undefined;
     if (!state || state.phase !== GAME_PHASE.PLAYING) return;
+
+    const hasAliveHuman = state.players.some(
+      (p) => p.alive && !this.isBot(p.playerId),
+    );
+    if (!hasAliveHuman) {
+      this.logger.log(
+        `No alive humans in room ${session.roomId} — completing session`,
+      );
+      await this.ticTacToeService.completeSession(session.id, session.roomId);
+      return;
+    }
 
     const currentShooterId = this.getCurrentShooterId(state);
     if (!currentShooterId || !this.isBot(currentShooterId)) return;
@@ -63,15 +83,17 @@ export class TicTacToeBotService {
    * Pick a move for the bot. Strategy varies by boardSize:
    * - 3 → perfect minimax (only ~9 cells, trivially fast)
    * - 5 → heuristic: win → block → center bias
-   * - 7, 9 → heuristic: win → block → random
+   * - 7, 9, infinity → heuristic: win → block → random
    */
   pickMove(state: TicTacToeState, botId: string): PlaceMarkPayload | null {
     const ownerId = this.getOwnerId(state, botId);
     if (!ownerId) return null;
+    if (!state.board || state.board.length === 0) return null;
     const opponentIds = this.getOpponentIds(state, ownerId);
-    const size = state.options.boardSize;
+    const size = state.board.length;
+    const boardSize = state.options.boardSize;
 
-    if (size === 3) {
+    if (boardSize === 3) {
       return this.minimaxMove(state, ownerId, opponentIds);
     }
 
@@ -95,7 +117,7 @@ export class TicTacToeBotService {
     state: TicTacToeState,
     ownerId: string,
   ): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
         if (state.board[row][col] !== null) continue;
@@ -128,7 +150,7 @@ export class TicTacToeBotService {
     let bestScore = -Infinity;
     let bestMove: PlaceMarkPayload | null = null;
 
-    const size = state.options.boardSize;
+    const size = state.board.length;
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
         if (state.board[row][col] !== null) continue;
@@ -189,7 +211,7 @@ export class TicTacToeBotService {
   }
 
   private centerBiasedRandom(state: TicTacToeState): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     const center = Math.floor(size / 2);
     const empties: Array<PlaceMarkPayload & { weight: number }> = [];
     for (let row = 0; row < size; row++) {
@@ -210,7 +232,7 @@ export class TicTacToeBotService {
   }
 
   private randomEmptyCell(state: TicTacToeState): PlaceMarkPayload | null {
-    const size = state.options.boardSize;
+    const size = state.board.length;
     const empties: PlaceMarkPayload[] = [];
     for (let row = 0; row < size; row++) {
       for (let col = 0; col < size; col++) {
@@ -218,7 +240,7 @@ export class TicTacToeBotService {
       }
     }
     if (empties.length === 0) return null;
-    return empties[Math.floor(Math.random() * empties.length)];
+    return empties[this.secureRandom(empties.length - 1)];
   }
 
   private getOwnerId(state: TicTacToeState, botId: string): string | null {
@@ -243,7 +265,9 @@ export class TicTacToeBotService {
     if (!currentEntryId) return null;
     if (!state.options.teamMode) return currentEntryId;
     const team = state.teams.find((t) => t.id === currentEntryId);
-    return team ? team.playerIds[team.currentShooterIndex] : null;
+    if (!team) return null;
+    const shooterId = team.playerIds[team.currentShooterIndex];
+    return shooterId ?? null;
   }
 
   private cloneBoard(board: CellValue[][]): CellValue[][] {
@@ -251,13 +275,19 @@ export class TicTacToeBotService {
   }
 
   private async randomDelay(range: { min: number; max: number }) {
-    const ms = range.min + Math.random() * (range.max - range.min);
+    const ms = this.secureRandomRange(range.min, range.max);
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // Exposed for test inspection; not part of the public API.
   /** @internal */
-  _boardSizeGuard(size: number): size is BoardSize {
-    return size === 3 || size === 5 || size === 7 || size === 9;
+  _boardSizeGuard(size: number | string): size is BoardSize {
+    return (
+      size === 3 ||
+      size === 5 ||
+      size === 7 ||
+      size === 9 ||
+      size === 'infinity'
+    );
   }
 }

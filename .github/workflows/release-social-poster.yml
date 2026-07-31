@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   post-release:
     runs-on: ubuntu-latest
@@ -114,6 +117,7 @@ jobs:
                   "chore: bump version",
                   "chore: update changelog",
                   "chore: start next minor",
+                  "resolve conflicts",
               ]
 
               type_emoji = {
@@ -134,7 +138,7 @@ jobs:
               seen = set()
               for line in raw_commits.split('\n'):
                   line = line.strip()
-                  if not line or any(p in line for p in skip_patterns) or line in seen:
+                  if not line or any(p.lower() in line.lower() for p in skip_patterns) or line in seen:
                       continue
                   seen.add(line)
 

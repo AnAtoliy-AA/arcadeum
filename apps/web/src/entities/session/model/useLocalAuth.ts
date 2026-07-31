@@ -19,6 +19,10 @@ import type {
   LocalAuthState,
   SessionTokensSnapshot,
 } from './types';
+import {
+  decryptSensitiveValue,
+  encryptSensitiveValue,
+} from '@/entities/session/lib/encryptSensitive';
 
 const EMAIL_STORAGE_KEY = 'web_auth_email';
 
@@ -41,8 +45,8 @@ function readStoredEmail(): string | null {
     return null;
   }
   try {
-    const value = window.localStorage.getItem(EMAIL_STORAGE_KEY);
-    return value ?? null;
+    const value = window.sessionStorage.getItem(EMAIL_STORAGE_KEY);
+    return value ? decryptSensitiveValue(value) : null;
   } catch {
     return null;
   }
@@ -54,9 +58,12 @@ function persistEmail(value: string | null) {
   }
   try {
     if (value) {
-      window.localStorage.setItem(EMAIL_STORAGE_KEY, value);
+      window.sessionStorage.setItem(
+        EMAIL_STORAGE_KEY,
+        encryptSensitiveValue(value),
+      );
     } else {
-      window.localStorage.removeItem(EMAIL_STORAGE_KEY);
+      window.sessionStorage.removeItem(EMAIL_STORAGE_KEY);
     }
   } catch {
     // ignore
@@ -89,7 +96,8 @@ function mergeSnapshot(
 
 export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const router = useRouter();
-  const { mode, setMode } = useSessionStore();
+  const mode = useSessionStore((s) => s.mode);
+  const setMode = useSessionStore((s) => s.setMode);
   const [state, setState] = useState<Omit<LocalAuthState, 'mode'>>(() => ({
     loading: false,
     error: null,

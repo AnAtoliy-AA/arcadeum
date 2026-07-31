@@ -2,14 +2,12 @@
 
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { YStack } from 'tamagui';
-import { GameWidgetContainer } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
   useGameChatSend,
-  useRematch,
+  useGameEndState,
   useGameRoomActions,
-  useGameResultModal,
   usePendingStart,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
@@ -106,8 +104,6 @@ function CascadeGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
   useGameChatIntegration(snapshot?.logs as never, sendChat);
 
-  const { rematchLoading, handleRematch } = useRematch({ roomId });
-
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
     backendResult: (session?.state as Record<string, unknown>)?.gameResult as
@@ -117,21 +113,23 @@ function CascadeGameImpl({
 
   useRecordGameResult(result, 'cascade_v1', session?.id);
 
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-    );
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result,
+    resultMessages: result
+      ? {
+          title: t(
+            `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+          message: t(
+            `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+          ),
+        }
+      : undefined,
+  });
 
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
@@ -144,10 +142,6 @@ function CascadeGameImpl({
       CASCADE_VARIANTS[0],
     [options.variant],
   );
-
-  const onRematchClick = useCallback(() => {
-    void handleRematch([], undefined);
-  }, [handleRematch]);
 
   const handlePlayCard = useCallback(
     (cardId: string, chosenColor?: ActiveColor) => {
@@ -209,14 +203,11 @@ function CascadeGameImpl({
 
   const modals = (
     <>
-      <GameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={[]}
+        currentUserId={currentUserId}
         t={t}
-        messages={resultMessages}
       />
       <RulesModal
         open={showRulesOpen}

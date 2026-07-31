@@ -1,7 +1,6 @@
-'use client';
-
 /**
- * Client-side cookie utilities
+ * Client-side cookie utilities.
+ * Runtime guards handle SSR safely without 'use client'.
  */
 export const cookies = {
   get(name: string): string | undefined {

@@ -1,12 +1,14 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 export class TrackChallengeProgressDto {
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[a-z0-9_-]+$/, { message: 'Invalid challengeId format' })
   challengeId!: string;
 
   @IsString()
   @IsNotEmpty()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Invalid date format' })
   date!: string;
 
   @IsString()
@@ -21,9 +23,11 @@ export class TrackChallengeProgressDto {
 export class ClaimChallengeRewardDto {
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[a-z0-9_-]+$/, { message: 'Invalid challengeId format' })
   challengeId!: string;
 
   @IsString()
   @IsNotEmpty()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Invalid date format' })
   date!: string;
 }

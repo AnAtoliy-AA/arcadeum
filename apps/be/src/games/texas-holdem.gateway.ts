@@ -15,6 +15,7 @@ import {
   extractRoomAndUser,
   extractString,
   handleError,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
@@ -79,6 +80,8 @@ export class TexasHoldemGateway {
     const engine =
       typeof payload?.engine === 'string' ? payload.engine.trim() : undefined;
 
+    validatePayloadUserId(client, userId);
+
     try {
       const result = await this.texasHoldemService.startSession(
         userId,
@@ -119,6 +122,8 @@ export class TexasHoldemGateway {
     if (!validActions.includes(action)) {
       throw new WsException('Invalid action.');
     }
+
+    validatePayloadUserId(client, userId);
 
     const raiseAmount =
       typeof payload?.raiseAmount === 'number'
@@ -175,6 +180,8 @@ export class TexasHoldemGateway {
         : 'all';
 
     const scope = scopeRaw === 'players' ? 'players' : 'all';
+
+    validatePayloadUserId(client, userId);
 
     try {
       await this.texasHoldemService.postHistoryNote(userId, roomId, message);

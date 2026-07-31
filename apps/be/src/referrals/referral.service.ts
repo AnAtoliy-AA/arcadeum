@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as crypto from 'crypto';
 import { Referral } from './schemas/referral.schema';
 import { ReferralReward, RewardType } from './schemas/referral-reward.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
@@ -82,9 +83,16 @@ export class ReferralService {
 
   generateReferralCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const charsLen = chars.length;
+    const threshold = Math.floor(256 / charsLen) * charsLen;
+    const bytes = crypto.randomBytes(32);
     let code = '';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    let i = 0;
+    while (code.length < 8) {
+      if (bytes[i] < threshold) {
+        code += chars.charAt(bytes[i] % charsLen);
+      }
+      i += 1;
     }
     return code;
   }
@@ -102,6 +110,8 @@ export class ReferralService {
     let code = this.generateReferralCode();
     let attempts = 0;
     while (attempts < 10) {
+      if (typeof code !== 'string')
+        throw new BadRequestException('Invalid referral code');
       const existing = await this.userModel.findOne({ referralCode: code });
       if (!existing) break;
       code = this.generateReferralCode();
@@ -117,34 +127,46 @@ export class ReferralService {
     referralCode: string,
     referredUserId: string,
   ): Promise<void> {
-    const referrer = await this.userModel.findOne({ referralCode }).exec();
+    if (typeof referralCode !== 'string')
+      throw new BadRequestException('Invalid referralCode');
+    if (typeof referredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
+    const safeCode = referralCode;
+    const safeReferredUserId = referredUserId;
+    const referrer = await this.userModel
+      .findOne({ referralCode: safeCode })
+      .exec();
     if (!referrer) {
-      this.logger.warn(`Invalid referral code: ${referralCode}`);
+      this.logger.warn(`Invalid referral code: ${safeCode}`);
       return;
     }
 
     const referrerId = (referrer as UserDocument).id as string;
 
-    if (referrerId === referredUserId) {
+    if (referrerId === safeReferredUserId) {
       this.logger.warn('User cannot refer themselves');
       return;
     }
 
+    if (typeof safeReferredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
     const existingReferral = await this.referralModel.findOne({
-      referredUserId,
+      referredUserId: safeReferredUserId,
     });
     if (existingReferral) {
-      this.logger.warn(`User ${referredUserId} already has a referral`);
+      this.logger.warn(`User ${safeReferredUserId} already has a referral`);
       return;
     }
 
     const referral = await this.referralModel.create({
       referrerId,
-      referredUserId,
+      referredUserId: safeReferredUserId,
       status: 'completed',
       completedAt: new Date(),
     });
 
+    if (typeof referredUserId !== 'string')
+      throw new BadRequestException('Invalid referredUserId');
     await this.userModel.findByIdAndUpdate(referredUserId, {
       referredBy: referrerId,
     });

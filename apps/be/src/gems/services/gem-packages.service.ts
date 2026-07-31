@@ -69,6 +69,9 @@ export class GemPackagesService {
   }
 
   async update(id: string, dto: UpdateGemPackageDto): Promise<GemPackageAdmin> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid package id');
+    }
     const updatePayload: Partial<GemPackageLean> = {};
     if (dto.name !== undefined) updatePayload.name = dto.name;
     if (dto.gems !== undefined) updatePayload.gems = dto.gems;
@@ -80,7 +83,7 @@ export class GemPackagesService {
     if (dto.active !== undefined) updatePayload.active = dto.active;
 
     const doc = await this.model
-      .findByIdAndUpdate(id, updatePayload, { new: true })
+      .findByIdAndUpdate(new Types.ObjectId(id), updatePayload, { new: true })
       .lean<GemPackageLean | null>();
     if (!doc) throw new NotFoundException('gems.packageNotFound');
     return this.toAdminView(doc);

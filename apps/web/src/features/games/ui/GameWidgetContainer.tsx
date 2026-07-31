@@ -8,6 +8,7 @@ import { SubtitleText } from './SubtitleText';
 import { TurnIndicator, resolveTurnStatus } from './TurnIndicator';
 import { EmoteBubble } from './EmoteBubble';
 import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   WidgetFullscreenContext,
   useActiveEmotes,
@@ -53,6 +54,8 @@ interface GameWidgetContainerProps {
   isMyTurn?: boolean;
   isGameOver?: boolean;
   showChatPopup?: boolean;
+  loading?: boolean;
+  containerBackground?: string;
 }
 
 export const GameWidgetContainer = React.memo(function GameWidgetContainer({
@@ -66,11 +69,14 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   isMyTurn,
   isGameOver,
   showChatPopup = true,
+  loading = false,
+  containerBackground,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeEmotes = useActiveEmotes();
   const { isFullscreen, toggleFullscreen, exitFullscreen } =
     useFullscreen(containerRef);
+  const { t } = useTranslation();
 
   useAutoExitFullscreen({
     status: isGameOver ? 'completed' : 'active',
@@ -171,10 +177,29 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             isFullscreen={isFullscreen}
             $variant={variant as Parameters<typeof Container>[0]['$variant']}
             data-testid="game-widget-container"
+            style={
+              containerBackground
+                ? { background: containerBackground }
+                : undefined
+            }
           >
             {renderedHeader}
             <SharedGameBoard data-testid="game-board-section">
-              {board}
+              {loading ? (
+                <YStack
+                  flex={1}
+                  alignItems="center"
+                  justifyContent="center"
+                  gap="$3"
+                  minHeight={300}
+                >
+                  <Text fontSize="$5" fontWeight="500" opacity={0.8}>
+                    {t('games.roomPage.loadingGame')}
+                  </Text>
+                </YStack>
+              ) : (
+                board
+              )}
             </SharedGameBoard>
             {tableArea && (
               <SharedTableArea data-testid="game-table-section">

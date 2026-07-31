@@ -1,0 +1,99 @@
+name: Auto-fix CI Failures
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  auto-fix:
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR info
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: context.repo.owner + ':' + context.payload.workflow_run.head_branch,
+            });
+            if (prs.data.length === 0) {
+              console.log('No open PR found for branch');
+              return;
+            }
+            const pr = prs.data[0];
+            console.log(`Found PR #${pr.number}: ${pr.title}`);
+
+            const checks = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.payload.workflow_run.head_sha,
+            });
+
+            const failed = checks.data.check_runs
+              .filter(c => c.conclusion === 'failure')
+              .map(c => c.name);
+
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('branch', context.payload.workflow_run.head_branch);
+            core.setOutput('failed_checks', JSON.stringify(failed));
+
+      - name: Check if PR is from task bot
+        id: check
+        if: steps.pr.outputs.pr_number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(context.payload.workflow_run.head_branch.match(/task-(\d+)/)?.[1] || '0'),
+            }).catch(() => null);
+
+            const branch = context.payload.workflow_run.head_branch;
+            const isTaskBot = branch.startsWith('task-');
+            core.setOutput('is_task_bot', isTaskBot);
+
+      - name: Notify task bot
+        if: steps.pr.outputs.pr_number != '' && steps.check.outputs.is_task_bot == 'true'
+        uses: actions/github-script@v7
+        env:
+          TASK_BOT_HOST: ${{ secrets.TASK_BOT_HOST }}
+          CI_WEBHOOK_SECRET: ${{ secrets.CI_WEBHOOK_SECRET }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          BRANCH_NAME: ${{ steps.pr.outputs.branch }}
+          FAILED_CHECKS: ${{ steps.pr.outputs.failed_checks }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        with:
+          script: |
+            const host = process.env.TASK_BOT_HOST;
+            const secret = process.env.CI_WEBHOOK_SECRET;
+            if (!host || !secret) {
+              core.setFailed('TASK_BOT_HOST and CI_WEBHOOK_SECRET must be configured');
+              return;
+            }
+
+            const response = await fetch(`https://${host}/ci/fix`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                prNumber: process.env.PR_NUMBER,
+                branchName: process.env.BRANCH_NAME,
+                failedChecks: JSON.parse(process.env.FAILED_CHECKS || '[]'),
+                runUrl: process.env.RUN_URL,
+                secret,
+              }),
+            });
+
+            if (!response.ok) {
+              core.setFailed(`Task bot notification failed: HTTP ${response.status}`);
+            }

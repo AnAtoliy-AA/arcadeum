@@ -33,7 +33,7 @@ export async function generateMetadata({
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'shop' }) : {};
 }
 
-const EMPTY_BALANCE: WalletBalanceView = { coins: 0, gems: 0 };
+const EMPTY_BALANCE: WalletBalanceView = { coins: 0, gems: 0, arcadeum: 0 };
 
 export default async function ShopInventoryPage({
   params,

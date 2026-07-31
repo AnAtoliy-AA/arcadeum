@@ -4,13 +4,6 @@
 import type { ParsedRedirectEntry } from './types';
 
 /**
- * Escape special regex characters in a string.
- */
-export function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-/**
  * Sanitize a string value by trimming whitespace.
  * Returns undefined if the value is empty or null.
  */

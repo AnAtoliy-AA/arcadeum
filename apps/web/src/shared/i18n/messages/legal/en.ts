@@ -97,13 +97,53 @@ export const en: LegalMessages = {
         content:
           'ARCADEUM tokens and virtual points are utility assets meant exclusively for entertainment within our skill-based gaming platform. They have no inherent monetary value outside the platform. Users are solely responsible for their local cryptocurrency tax compliance and regulatory obligations. Arcadeum does not guarantee the value of any digital assets and users should not treat them as investments.',
       },
+      arcPayments: {
+        title: '12. ARC Token Payments',
+        content:
+          'Arcadeum Games accepts ARCADEUM (ARC) tokens on the Solana blockchain as payment for virtual goods and services. By using ARC payments, you acknowledge and agree to the following:',
+        items: [
+          'ARC token prices are dynamically calculated based on the current USD exchange rate and may fluctuate with market conditions.',
+          'A discount percentage applied to ARC payments is set by Arcadeum Games and may be changed at any time without prior notice.',
+          'All ARC transactions are irreversible once confirmed on the Solana blockchain. Arcadeum Games cannot reverse, refund, or cancel confirmed ARC payments.',
+          'You are solely responsible for verifying the correctness of the recipient wallet address and transaction amount before sending ARC tokens.',
+          'Arcadeum Games is not responsible for funds sent to incorrect addresses or lost due to wallet errors.',
+          'The treasury wallet address for ARC payments is displayed at checkout. Always verify this address matches what is shown on the official Arcadeum Games website.',
+          'ARC tokens used for payments are converted to in-platform virtual currency (gems) at the current exchange rate. The converted gems have no cash value and cannot be converted back to ARC or any fiat currency.',
+          'Users are responsible for all network fees (gas) associated with ARC transactions.',
+          'Arcadeum Games reserves the right to suspend or disable ARC payments at any time for maintenance, security, or regulatory reasons.',
+        ],
+      },
+      noCashout: {
+        title: '13. No Cash-Out',
+        content:
+          'ARC tokens, gems, coins, and all other virtual currencies and items within Arcadeum Games have no real-world monetary value and cannot be exchanged, converted, or redeemed for fiat currency (USD, EUR, etc.), cryptocurrency, or any goods or services outside the platform. Arcadeum Games does not offer, facilitate, or support any cash-out, withdrawal, or conversion of in-platform assets to external value. Any attempt to sell, trade, or transfer virtual assets outside Arcadeum Games is strictly prohibited and may result in account termination.',
+      },
+      notSecurity: {
+        title: '14. Not a Security',
+        content:
+          'ARC tokens and all virtual currencies within Arcadeum Games are utility tokens designed solely for use within the platform. They are not securities, stocks, bonds, investment contracts, or financial instruments of any kind. Nothing in the Arcadeum Games platform constitutes an offer to sell or a solicitation of an offer to buy any security. Arcadeum Games does not provide investment advice, and the purchase of ARC tokens should not be considered an investment. Past token prices do not guarantee future performance.',
+      },
+      taxes: {
+        title: '15. Tax Obligations',
+        content:
+          'Users are solely responsible for understanding and complying with all applicable tax obligations in their jurisdiction. Arcadeum Games does not provide tax, legal, or accounting advice. The following is general information only and may not reflect your specific situation:',
+        items: [
+          'Virtual currency transactions may be subject to income tax, capital gains tax, or other taxes in your jurisdiction.',
+          'Users must report any taxable events related to their use of Arcadeum Games to the appropriate tax authorities.',
+          'Arcadeum Games may be required to provide tax reports or withhold taxes in certain jurisdictions.',
+          'Tax laws vary by country and change frequently. Consult a qualified tax professional for advice specific to your situation.',
+          'Arcadeum Games is not responsible for any tax liabilities arising from your use of the platform.',
+        ],
+        important:
+          'IMPORTANT: Tax obligations vary by jurisdiction. Some countries tax virtual currency transactions, others do not. You are solely responsible for understanding and complying with your local tax laws.',
+      },
       governingLaw: {
-        title: '12. Governing Law',
+        title: '16. Governing Law',
         content:
           'These Terms are governed by the laws of Georgia. Any disputes shall be resolved in the courts of Georgia, in accordance with the Georgian Law on Electronic Commerce.',
       },
       contact: {
-        title: '13. Contact Us',
+        title: '17. Contact Us',
         content:
           'If you have questions about these Terms, please contact us through our support page or email us at {{email}}.',
       },

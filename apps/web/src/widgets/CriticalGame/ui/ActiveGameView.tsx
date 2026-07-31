@@ -25,12 +25,11 @@ import {
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameEndModals, GameWidgetContainer } from '@/features/games/ui';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
-import { CRITICAL_VARIANTS } from '../lib/constants';
+import { CRITICAL_VARIANTS, GAME_VARIANT } from '../lib/constants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
@@ -53,6 +52,7 @@ interface ActiveGameViewProps {
   // Rules modal state from parent
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
+  onOpenRules: () => void;
   // Rematch props
   rematch: {
     rematchLoading: boolean;
@@ -87,11 +87,12 @@ export function ActiveGameView({
   aliveOpponents,
   isGameOver,
   rematch,
+  onOpenRules,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
   const media = useMedia();
   const isMobile = media.sm;
-  const cardVariant = room.gameOptions?.cardVariant;
+  const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const scenePalette = useMemo(
     () => getVariantStyles(cardVariant).scene,
     [cardVariant],
@@ -111,6 +112,13 @@ export function ActiveGameView({
   // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
 
+  const [wasAlreadyOverOnMount] = useState(() => isGameOver === true);
+  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
+
+  if (!wasAlreadyOverOnMount && isGameOver && !hasSeenActiveGame) {
+    setHasSeenActiveGame(true);
+  }
+
   // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
 
@@ -120,7 +128,7 @@ export function ActiveGameView({
     setModalDismissed(false);
   }
 
-  const showResultModal = isGameOver && !modalDismissed;
+  const showResultModal = isGameOver && !modalDismissed && hasSeenActiveGame;
   useWebGameHaptics(isMyTurn);
 
   // Record game result to local stats
@@ -266,6 +274,7 @@ export function ActiveGameView({
         variant={cardVariant as GameVariant}
         isMyTurn={isMyTurn}
         isGameOver={isGameOver}
+        containerBackground={scenePalette.handBackground}
         // Critical shows incoming chat as per-opponent bubbles over each tile,
         // so it opts out of the shared corner popup to avoid double display.
         showChatPopup={false}
@@ -306,6 +315,7 @@ export function ActiveGameView({
                 idleTimerTriggered={idleTimerTriggered}
                 handleIdleTimeout={handleIdleTimeout}
                 handleStopAutoplay={handleStopAutoplay}
+                onOpenRules={onOpenRules}
               />
             </YStack>
             {currentPlayer && (
@@ -373,18 +383,39 @@ export function ActiveGameView({
               }}
               resolveDisplayName={resolveDisplayName}
             />
-            <GameResultModal
-              isOpen={!!showResultModal}
-              data-testid="game-result-modal"
-              result={
-                snapshot.players.find((p) => p.alive)?.playerId ===
-                currentUserId
-                  ? 'victory'
-                  : 'defeat'
-              }
-              onRematch={isHost ? rematch.openRematchModal : undefined}
-              onClose={() => setModalDismissed(true)}
-              rematchLoading={rematch.rematchLoading}
+            <GameEndModals
+              gameEnd={{
+                showResultModal: !!showResultModal,
+                sharedResult:
+                  snapshot.players.find((p) => p.alive)?.playerId ===
+                  currentUserId
+                    ? 'victory'
+                    : 'defeat',
+                dismissResult: () => setModalDismissed(true),
+                rematchLoading: rematch.rematchLoading,
+                showRematchModal: rematch.showRematchModal,
+                openRematchModal: rematch.openRematchModal,
+                closeRematchModal: rematch.closeRematchModal,
+                handleResultRematchClick: isHost
+                  ? rematch.openRematchModal
+                  : () => {},
+                handleRematch: rematch.handleRematch,
+                invitation: rematch.invitation,
+                invitationTimeLeft: rematch.invitationTimeLeft,
+                handleAcceptInvitation: rematch.handleAcceptInvitation,
+                handleDeclineInvitation: rematch.handleDeclineInvitation,
+                isAcceptingInvitation: rematch.isAcceptingInvitation,
+                handleReinvite: rematch.handleReinvite,
+                handleBlockRematch: rematch.handleBlockRematch,
+                handleBlockUser: rematch.handleBlockUser,
+                resultMessages: undefined,
+              }}
+              players={snapshot.players.map((p) => ({
+                playerId: p.playerId,
+                displayName: resolveDisplayName(p.playerId),
+                alive: p.alive,
+              }))}
+              currentUserId={currentUserId}
               t={t}
             />
           </>

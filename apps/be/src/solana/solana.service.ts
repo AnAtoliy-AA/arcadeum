@@ -1,45 +1,73 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { getAssociatedTokenAddress, getAccount } from '@solana/spl-token';
 import { ConfigService } from '@nestjs/config';
 import { getPlatformKeypair } from './lib/solana-keypair';
-import {
-  getArcadeumMint,
-  toRawAmount,
-  fromRawAmount,
-} from './lib/arcadeum-token';
+import { toRawAmount, fromRawAmount } from './lib/arcadeum-token';
+
+type Web3Module = typeof import('@solana/web3.js');
+type SplTokenModule = typeof import('@solana/spl-token');
 
 @Injectable()
 export class SolanaService {
   private readonly logger = new Logger(SolanaService.name);
-  private readonly connection: Connection;
-  private readonly arcadeumMint: PublicKey;
+  private connection: import('@solana/web3.js').Connection | null = null;
+  private arcadeumMint: import('@solana/web3.js').PublicKey | null = null;
+  private web3: Web3Module | null = null;
+  private splToken: SplTokenModule | null = null;
 
   private solPriceCache: { price: number; expiresAt: number } | null = null;
   private arcadeumPriceCache: { price: number; expiresAt: number } | null =
     null;
   private static readonly CACHE_TTL_MS = 60_000;
 
-  constructor(private readonly config: ConfigService) {
-    const rpcUrl =
-      this.config.get<string>('SOLANA_RPC_URL') ??
-      'https://api.mainnet-beta.solana.com';
-    this.connection = new Connection(rpcUrl, 'confirmed');
+  constructor(private readonly config: ConfigService) {}
 
-    const mintAddress = this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
-    const isValidMint =
-      mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
-    if (!isValidMint && mintAddress) {
-      this.logger.warn(
-        `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
-      );
+  private async loadWeb3(): Promise<Web3Module> {
+    if (!this.web3) {
+      this.web3 = await import('@solana/web3.js');
     }
-    this.arcadeumMint = isValidMint
-      ? getArcadeumMint(mintAddress)
-      : new PublicKey('11111111111111111111111111111111');
+    return this.web3;
   }
 
-  private getKeypair() {
+  private async loadSplToken(): Promise<SplTokenModule> {
+    if (!this.splToken) {
+      this.splToken = await import('@solana/spl-token');
+    }
+    return this.splToken;
+  }
+
+  private async getConnection(): Promise<import('@solana/web3.js').Connection> {
+    if (!this.connection) {
+      const { Connection } = await this.loadWeb3();
+      const rpcUrl =
+        this.config.get<string>('SOLANA_RPC_URL') ??
+        'https://api.mainnet-beta.solana.com';
+      this.connection = new Connection(rpcUrl, 'confirmed');
+    }
+    return this.connection;
+  }
+
+  private async getArcadeumMintKey(): Promise<
+    import('@solana/web3.js').PublicKey
+  > {
+    if (!this.arcadeumMint) {
+      const { PublicKey } = await this.loadWeb3();
+      const mintAddress =
+        this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
+      const isValidMint =
+        mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
+      if (!isValidMint && mintAddress) {
+        this.logger.warn(
+          `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
+        );
+      }
+      this.arcadeumMint = isValidMint
+        ? new PublicKey(mintAddress)
+        : new PublicKey('11111111111111111111111111111111');
+    }
+    return this.arcadeumMint;
+  }
+
+  private async getKeypair() {
     const secretKeyJson = this.config.get<string>('SOLANA_PRIVATE_KEY') ?? '';
     return getPlatformKeypair(secretKeyJson);
   }
@@ -72,22 +100,59 @@ export class SolanaService {
       return this.arcadeumPriceCache.price;
     }
 
-    const mintAddress = this.arcadeumMint.toBase58();
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mintAddress}&vs_currencies=usd`,
-    );
-    if (!res.ok) {
-      this.logger.warn(`Failed to fetch ARCADEUM price: ${res.status}`);
-      return 0;
-    }
-    const data = (await res.json()) as Record<string, { usd?: number }>;
-    const price = data?.[mintAddress]?.usd ?? 0;
+    const mint = await this.getArcadeumMintKey();
+    const mintAddress = mint.toBase58();
 
-    this.arcadeumPriceCache = {
-      price,
-      expiresAt: now + SolanaService.CACHE_TTL_MS,
-    };
-    return price;
+    // Try CoinGecko first
+    try {
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mintAddress}&vs_currencies=usd`,
+      );
+      if (res.ok) {
+        const data = (await res.json()) as Record<string, { usd?: number }>;
+        const price = data?.[mintAddress]?.usd ?? 0;
+        if (price > 0) {
+          this.arcadeumPriceCache = {
+            price,
+            expiresAt: now + SolanaService.CACHE_TTL_MS,
+          };
+          return price;
+        }
+      }
+    } catch {
+      // Fall through to pump.fun
+    }
+
+    // Fallback: calculate from pump.fun market cap
+    try {
+      const pfRes = await fetch(
+        `https://frontend-api-v3.pump.fun/coins/${mintAddress}`,
+      );
+      if (pfRes.ok) {
+        const pfData = (await pfRes.json()) as {
+          usd_market_cap?: number;
+          total_supply_str?: string;
+          base_decimals?: number;
+        };
+        const mc = pfData.usd_market_cap ?? 0;
+        const supply = parseFloat(pfData.total_supply_str ?? '0');
+        const decimals = pfData.base_decimals ?? 6;
+        const supplyHuman = supply / 10 ** decimals;
+        if (mc > 0 && supplyHuman > 0) {
+          const price = mc / supplyHuman;
+          this.arcadeumPriceCache = {
+            price,
+            expiresAt: now + SolanaService.CACHE_TTL_MS,
+          };
+          return price;
+        }
+      }
+    } catch {
+      // Fall through
+    }
+
+    this.logger.warn('Could not fetch ARCADEUM price from any source');
+    return 0;
   }
 
   async getTokenMetadata(): Promise<{
@@ -102,7 +167,8 @@ export class SolanaService {
     twitter: string | null;
     website: string | null;
   } | null> {
-    const mintAddress = this.arcadeumMint.toBase58();
+    const mint = await this.getArcadeumMintKey();
+    const mintAddress = mint.toBase58();
 
     try {
       const res = await fetch(
@@ -144,19 +210,43 @@ export class SolanaService {
   }
 
   async getPlatformBalance(): Promise<{ sol: number; arcadeum: number }> {
-    const keypair = this.getKeypair();
-    const solBalance = await this.connection.getBalance(keypair.publicKey);
+    const { LAMPORTS_PER_SOL, PublicKey } = await this.loadWeb3();
+    const { getAssociatedTokenAddress, getAccount } = await this.loadSplToken();
+    const connection = await this.getConnection();
+    const mint = await this.getArcadeumMintKey();
+
+    const treasuryAddress =
+      this.config.get<string>('SOLANA_TREASURY_ADDRESS') ?? '';
+    if (!treasuryAddress) {
+      this.logger.warn('SOLANA_TREASURY_ADDRESS not set');
+      return { sol: 0, arcadeum: 0 };
+    }
+
+    const treasuryPubkey = new PublicKey(treasuryAddress);
+    const solBalance = await connection.getBalance(treasuryPubkey);
+
+    // ARC is a Token-2022 token (pump.fun), must use Token-2022 program
+    const TOKEN_2022_PROGRAM_ID = new PublicKey(
+      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+    );
 
     let arcadeumBalance = 0;
     try {
       const ata = await getAssociatedTokenAddress(
-        this.arcadeumMint,
-        keypair.publicKey,
+        mint,
+        treasuryPubkey,
+        true,
+        TOKEN_2022_PROGRAM_ID,
       );
-      const account = await getAccount(this.connection, ata);
+      const account = await getAccount(
+        connection,
+        ata,
+        'confirmed',
+        TOKEN_2022_PROGRAM_ID,
+      );
       arcadeumBalance = fromRawAmount(account.amount);
     } catch {
-      this.logger.warn('Platform wallet has no ARCADEUM token account');
+      this.logger.warn('Treasury wallet has no ARCADEUM token account');
     }
 
     return {
@@ -171,10 +261,12 @@ export class SolanaService {
     senderAddress: string,
   ): Promise<boolean> {
     try {
-      const keypair = this.getKeypair();
+      const { PublicKey } = await this.loadWeb3();
+      const connection = await this.getConnection();
+      const keypair = await this.getKeypair();
       const treasuryAddress = keypair.publicKey.toBase58();
 
-      const transaction = await this.connection.getTransaction(signature, {
+      const transaction = await connection.getTransaction(signature, {
         commitment: 'confirmed',
         maxSupportedTransactionVersion: 0,
       });

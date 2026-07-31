@@ -1,6 +1,8 @@
 import {
   createEmptyBoard,
+  expandBoard,
   findWinningLine,
+  indexToCentered,
   isBoardFull,
   nextTurnIndex,
 } from './tic-tac-toe.utils';
@@ -132,6 +134,144 @@ describe('tic-tac-toe utils', () => {
     it('returns the current index when only one entry is alive', () => {
       const isAlive = (id: string) => id === 'a';
       expect(nextTurnIndex(0, ['a', 'b', 'c'], isAlive)).toBe(0);
+    });
+  });
+
+  describe('expandBoard', () => {
+    it('returns the same board when far from all edges', () => {
+      const board = createEmptyBoard(9);
+      const result = expandBoard(board, 4, 4, 3);
+      expect(result.board).toBe(board);
+      expect(result.originDelta).toEqual({ row: 0, col: 0 });
+    });
+
+    it('expands only at the top when mark is placed near the top edge', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 3);
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[3][4]).toBe('x');
+    });
+
+    it('expands only at the bottom when mark is placed near the bottom edge', () => {
+      const board = createEmptyBoard(9);
+      board[8][4] = 'x';
+      const result = expandBoard(board, 8, 4, 3);
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[8][4]).toBe('x');
+    });
+
+    it('expands only at the left when mark is placed near the left edge', () => {
+      const board = createEmptyBoard(9);
+      board[4][0] = 'x';
+      const result = expandBoard(board, 4, 0, 3);
+      expect(result.board.length).toBe(9);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(3);
+      expect(result.board[4][3]).toBe('x');
+    });
+
+    it('expands only at the right when mark is placed near the right edge', () => {
+      const board = createEmptyBoard(9);
+      board[4][8] = 'x';
+      const result = expandBoard(board, 4, 8, 3);
+      expect(result.board.length).toBe(9);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(0);
+      expect(result.originDelta.col).toBe(0);
+      expect(result.board[4][8]).toBe('x');
+    });
+
+    it('expands both axes when placed in a corner', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      const result = expandBoard(board, 0, 0, 3);
+      expect(result.board.length).toBe(12);
+      expect(result.board[0].length).toBe(12);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(3);
+      expect(result.board[3][3]).toBe('x');
+    });
+
+    it('preserves existing marks after expansion', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      board[8][8] = 'o';
+      const result = expandBoard(board, 0, 0, 3);
+      const cells = result.board.flat().filter((c) => c !== null);
+      expect(cells).toContain('x');
+      expect(cells).toContain('o');
+    });
+
+    it('guarantees mark is at least margin cells from the expanded edge', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 3);
+      const markRow = 0 + result.originDelta.row;
+      expect(markRow).toBeGreaterThanOrEqual(3);
+    });
+
+    it('guarantees column mark is at least margin cells from the expanded edge', () => {
+      const board = createEmptyBoard(9);
+      board[4][0] = 'x';
+      const result = expandBoard(board, 4, 0, 3);
+      const markCol = 0 + result.originDelta.col;
+      expect(markCol).toBeGreaterThanOrEqual(3);
+    });
+
+    it('expands correctly with margin=1', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 1);
+      expect(result.board.length).toBe(10);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(1);
+    });
+
+    it('expands correctly with margin=2', () => {
+      const board = createEmptyBoard(9);
+      board[0][4] = 'x';
+      const result = expandBoard(board, 0, 4, 2);
+      expect(result.board.length).toBe(11);
+      expect(result.board[0].length).toBe(9);
+      expect(result.originDelta.row).toBe(2);
+    });
+
+    it('expands only on needed sides for corner placement', () => {
+      const board = createEmptyBoard(9);
+      board[0][0] = 'x';
+      const result = expandBoard(board, 0, 0, 3);
+      const addedRows = result.board.length - 9;
+      const addedCols = result.board[0].length - 9;
+      expect(addedRows).toBe(3);
+      expect(addedCols).toBe(3);
+      expect(result.originDelta.row).toBe(3);
+      expect(result.originDelta.col).toBe(3);
+    });
+  });
+
+  describe('indexToCentered', () => {
+    it('converts board index to centered coordinates', () => {
+      const origin = { row: 4, col: 4 };
+      expect(indexToCentered({ row: 4, col: 4 }, origin)).toEqual({
+        row: 0,
+        col: 0,
+      });
+      expect(indexToCentered({ row: 0, col: 0 }, origin)).toEqual({
+        row: -4,
+        col: -4,
+      });
+      expect(indexToCentered({ row: 8, col: 8 }, origin)).toEqual({
+        row: 4,
+        col: 4,
+      });
     });
   });
 });

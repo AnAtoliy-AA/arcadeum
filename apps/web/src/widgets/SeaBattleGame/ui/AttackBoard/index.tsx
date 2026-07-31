@@ -23,12 +23,28 @@ export interface AttackBoardProps {
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
   gridSize?: number;
+  shipCount?: number;
   snapshot?: SeaBattleSnapshot | null;
   weaponPreviewCells?: Set<string> | null;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   onCellHover?: (playerId: string, row: number, col: number) => void;
   onCellHoverEnd?: () => void;
   weaponMode?: boolean;
+  showEliminatedPlayers?: boolean;
+}
+
+export function getVisibleOpponents<
+  T extends Pick<SeaBattlePlayerState, 'playerId' | 'alive'>,
+>(
+  players: T[],
+  currentUserId: string | null,
+  showEliminatedPlayers: boolean,
+): T[] {
+  return players.filter(
+    (player) =>
+      player.playerId !== currentUserId &&
+      (showEliminatedPlayers || player.alive),
+  );
 }
 
 export const AttackBoard = memo(function AttackBoard({
@@ -42,11 +58,13 @@ export const AttackBoard = memo(function AttackBoard({
   teammateIds,
   teams,
   snapshot,
+  shipCount,
   weaponPreviewCells,
   weaponPreviewType,
   onCellHover,
   onCellHoverEnd,
   weaponMode,
+  showEliminatedPlayers = false,
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -57,8 +75,8 @@ export const AttackBoard = memo(function AttackBoard({
   );
 
   const opponents = useMemo(
-    () => players.filter((p) => p.playerId !== currentUserId && p.alive),
-    [players, currentUserId],
+    () => getVisibleOpponents(players, currentUserId, showEliminatedPlayers),
+    [players, currentUserId, showEliminatedPlayers],
   );
 
   const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
@@ -154,6 +172,7 @@ export const AttackBoard = memo(function AttackBoard({
               tt.playerIds.includes(currentPlayer.playerId),
             )}
             sunkCellSet={sunkCellSet}
+            shipCount={shipCount}
             t={t}
           />
         )}
@@ -181,6 +200,7 @@ export const AttackBoard = memo(function AttackBoard({
               isTeammate={isTeammate}
               team={team}
               sunkCellSet={sunkCellSet}
+              shipCount={shipCount}
               onAttack={isTeammate ? undefined : onAttack}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
               sonarCellStates={isSonarTarget ? sonarCellStates : null}

@@ -1,0 +1,145 @@
+name: Deploy to OCI (Prod)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/be/**'
+      - 'bots/tg-bot/**'
+      - 'bots/task-bot/**'
+      - 'scripts/shorts-factory/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+permissions: {}
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+      task-bot: ${{ steps.filter.outputs.task-bot }}
+      shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            be-or-tg:
+              - 'apps/be/**'
+              - 'bots/tg-bot/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+            task-bot:
+              - 'bots/task-bot/**'
+            shorts-factory:
+              - 'scripts/shorts-factory/**'
+
+  deploy-tg-bot:
+    name: Deploy TG Bot + Backend
+    needs: changes
+    if: needs.changes.outputs.be-or-tg == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            pnpm --filter be build
+            pnpm --filter tg-bot build
+
+            pm2 restart arcadeum-be arcadeum-tg-bot || \
+              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
+               pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
+               pm2 save)
+
+            echo "==> Prod deploy done (branch: $BRANCH)!"
+            pm2 list
+
+  deploy-task-bot:
+    name: Deploy Task Bot
+    needs: changes
+    if: needs.changes.outputs.task-bot == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR/bots/task-bot"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git -C "$DEPLOY_DIR" fetch origin "$BRANCH"
+            git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
+
+            cd "$DEPLOY_DIR/bots/task-bot"
+            npm install --legacy-peer-deps 2>/dev/null || npm install
+            npx tsc
+
+            pm2 restart task-bot task-bot-worker || \
+              (pm2 start dist/main.js --name task-bot --cwd "$DEPLOY_DIR/bots/task-bot" && \
+               pm2 start dist/worker.js --name task-bot-worker --cwd "$DEPLOY_DIR/bots/task-bot" && \
+               pm2 save)
+
+            echo "==> Task Bot deployed (branch: $BRANCH)!"
+            pm2 list
+
+  deploy-shorts-factory:
+    name: Deploy Shorts Factory
+    needs: changes
+    if: needs.changes.outputs.shorts-factory == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to OCI via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /opt/arcadeum
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+
+            echo "==> Pulling latest code (branch: $BRANCH)..."
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            echo "==> Installing dependencies..."
+            pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+            echo "==> Restarting shorts-factory timer..."
+            sudo systemctl restart shorts-factory.timer 2>/dev/null || true
+
+            echo "==> Deploy complete"

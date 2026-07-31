@@ -110,6 +110,8 @@ export class WalletService {
   }
 
   async getBalance(userId: string): Promise<WalletBalance> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const user = await this.userModel.findById(userId).lean();
     if (!user) throw new NotFoundException('wallet.userNotFound');
     const balances = user as unknown as UserBalanceFields;
@@ -124,19 +126,35 @@ export class WalletService {
     userId: string,
     opts: { currency?: WalletCurrency; cursor?: string; limit?: number },
   ): Promise<PaginatedWalletTransactions> {
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     const filter: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
     };
-    if (opts.currency) filter.currency = opts.currency;
+    if (opts.currency) {
+      const validCurrency = this.isValidCurrency(opts.currency)
+        ? opts.currency
+        : undefined;
+      if (validCurrency) filter.currency = validCurrency;
+    }
 
     if (opts.cursor) {
       const decoded = this.decodeCursor(opts.cursor);
+      if (
+        !(decoded.createdAt instanceof Date) ||
+        Number.isNaN(decoded.createdAt.getTime()) ||
+        !Types.ObjectId.isValid(decoded._id)
+      ) {
+        throw new BadRequestException('wallet.invalidCursor');
+      }
+      const safeCreatedAt = new Date(decoded.createdAt.getTime());
+      const safeId = new Types.ObjectId(decoded._id.toHexString());
       filter.$or = [
-        { createdAt: { $lt: decoded.createdAt } },
+        { createdAt: { $lt: safeCreatedAt } },
         {
-          createdAt: decoded.createdAt,
-          _id: { $lt: decoded._id },
+          createdAt: safeCreatedAt,
+          _id: { $lt: safeId },
         },
       ];
     }
@@ -164,6 +182,8 @@ export class WalletService {
   async findByIdempotencyKey(
     key: string,
   ): Promise<WalletTransactionView | null> {
+    if (typeof key !== 'string')
+      throw new BadRequestException('Invalid idempotencyKey');
     const doc = await this.txModel.findOne({ idempotencyKey: key });
     return doc ? this.toView(doc) : null;
   }
@@ -214,6 +234,8 @@ export class WalletService {
       direction,
     } = args;
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const filter: Record<string, unknown> = { _id: new Types.ObjectId(userId) };
     if (direction === -1) filter[currency] = { $gte: amount };
 
@@ -228,6 +250,8 @@ export class WalletService {
 
     if (!user) {
       if (direction === -1) {
+        if (typeof userId !== 'string')
+          throw new BadRequestException('Invalid userId');
         const current = await this.userModel
           .findById(userId, null, { session })
           .lean();
@@ -246,6 +270,8 @@ export class WalletService {
       arcadeum: balanceFields.arcadeum,
     };
 
+    if (typeof userId !== 'string')
+      throw new BadRequestException('Invalid userId');
     const docs = await this.txModel.create(
       [
         {
@@ -262,7 +288,7 @@ export class WalletService {
     );
     createdTx = docs[0];
 
-    if (!createdTx || !lastBalance) {
+    if (!createdTx) {
       throw new InternalServerErrorException('wallet.transactionFailed');
     }
 
@@ -293,13 +319,13 @@ export class WalletService {
   }
 
   private assertCurrency(currency: string): void {
-    if (
-      currency !== 'coins' &&
-      currency !== 'gems' &&
-      currency !== 'arcadeum'
-    ) {
+    if (!this.isValidCurrency(currency)) {
       throw new InvalidCurrencyException(currency);
     }
+  }
+
+  private isValidCurrency(value: unknown): value is WalletCurrency {
+    return value === 'coins' || value === 'gems' || value === 'arcadeum';
   }
 
   private isDuplicateIdempotencyKey(err: unknown): boolean {

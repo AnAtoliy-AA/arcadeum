@@ -70,6 +70,44 @@ export const adminEconomyEn = {
       description:
         'Gems awarded in addition to coins on Day 7 of the daily streak.',
     },
+    shop_allow_gems: {
+      name: 'Allow gem purchases in shop',
+      description: 'Toggle whether users can purchase items with gems.',
+    },
+    shop_allow_arcadeum: {
+      name: 'Allow ARC purchases in shop',
+      description:
+        'Toggle whether users can purchase items with Arcadeum tokens.',
+    },
+    gems_allow_arcadeum: {
+      name: 'Allow ARC gem purchases',
+      description:
+        'Toggle whether users can purchase gems with Arcadeum tokens.',
+    },
+    gem_to_usd_rate: {
+      name: 'Gem-to-USD rate',
+      description: 'How many USD one gem is worth.',
+    },
+    arcadeum_discount_percent: {
+      name: 'ARC discount percent',
+      description: 'Percentage discount when paying with Arcadeum tokens.',
+    },
+    geo_block_enabled: {
+      name: 'Geo-block enabled',
+      description: 'Toggle geo-blocking for restricted countries.',
+    },
+    vpn_detection_enabled: {
+      name: 'VPN detection enabled',
+      description: 'Toggle VPN detection enforcement.',
+    },
+    signup_reward_coins: {
+      name: 'Signup reward — coins',
+      description: 'Coins credited to new users upon registration.',
+    },
+    signup_reward_gems: {
+      name: 'Signup reward — gems',
+      description: 'Gems credited to new users upon registration.',
+    },
   },
   table: {
     key: 'Setting',
@@ -96,6 +134,9 @@ export const adminEconomyEn = {
     newValueLabel: 'New value',
     save: 'Save',
     cancel: 'Cancel',
+    reset: 'Reset to default',
+    enable: 'Enable',
+    disable: 'Disable',
   },
   auditDrawer: {
     title: 'History for {{key}}',
@@ -106,7 +147,7 @@ export const adminEconomyEn = {
     changedAt: '{{date}}',
   },
   errors: {
-    invalidValue: 'Value must be a positive integer up to 1,000,000.',
+    invalidValue: 'Value must be a non-negative integer up to 1,000,000.',
     keyNotFound: 'Unknown setting.',
     forbidden: 'You do not have permission.',
     generic: 'Could not save. Please retry.',

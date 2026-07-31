@@ -7,17 +7,28 @@ import { CriticalMiniCluster } from './art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';
 import { TicTacToeBoardPoster } from './art/TicTacToeBoardPoster';
 import { CascadeBoardPoster } from './art/CascadeBoardPoster';
+import { ChessBoardPoster } from './art/ChessBoardPoster';
+import { CheckersBoardPoster } from './art/CheckersBoardPoster';
+import { CatDashBoardPoster } from './art/CatDashBoardPoster';
 import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
   TIC_TAC_TOE_THEMES,
   CASCADE_THEMES,
+  CHESS_THEMES,
+  CAT_DASH_THEMES,
   type CriticalTheme,
   type SeaBattleThemeMeta,
   type TicTacToeThemeMeta,
   type CascadeThemeMeta,
+  type ChessThemeMeta,
+  type CatDashThemeMeta,
   type GameId,
 } from './data/themes';
+import {
+  CHECKERS_THEMES,
+  type CheckersThemeMeta,
+} from './data/checkers-themes';
 
 const SeaBattleRealPreview = dynamic(() => import('./SeaBattleRealPreview'), {
   ssr: false,
@@ -202,6 +213,135 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
     );
   }
 
+  if (gameId === 'chess_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Chess variant"
+          data-testid="theme-picker-chess"
+        >
+          {CHESS_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <ChessThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gameId === 'checkers_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Checkers variant"
+          data-testid="theme-picker-checkers"
+        >
+          {CHECKERS_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <CheckersThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gameId === 'cat_dash_v1') {
+    return (
+      <div className={s.themeStripWrap}>
+        <div
+          className={s.themeStrip}
+          role="radiogroup"
+          aria-label="Cat Dash theme"
+          data-testid="theme-picker-cat-dash"
+        >
+          {CAT_DASH_THEMES.map((theme) => {
+            const active = value === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-testid={`theme-${theme.id}`}
+                onClick={() => onChange(theme.id)}
+                style={{ '--theme-color': theme.color } as CSSProperties}
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+              >
+                <div className={s.themeArt}>
+                  <CatDashThumbnail theme={theme} />
+                </div>
+                <div className={s.themeBody}>
+                  <div className={s.themeRow}>
+                    <span className={s.themeDot} />
+                    <span className={s.themeName}>{theme.name}</span>
+                  </div>
+                  <p className={s.themeDesc}>{theme.desc}</p>
+                </div>
+                <span className={s.themeCheck} aria-hidden="true">
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
 
@@ -211,6 +351,18 @@ function TicTacToeThumbnail({ theme }: { theme: TicTacToeThemeMeta }) {
 
 function CascadeThumbnail({ theme }: { theme: CascadeThemeMeta }) {
   return <CascadeBoardPoster theme={theme} size="sm" />;
+}
+
+function ChessThumbnail({ theme }: { theme: ChessThemeMeta }) {
+  return <ChessBoardPoster theme={theme} size="sm" />;
+}
+
+function CheckersThumbnail({ theme }: { theme: CheckersThemeMeta }) {
+  return <CheckersBoardPoster theme={theme} size="sm" />;
+}
+
+function CatDashThumbnail({ theme }: { theme: CatDashThemeMeta }) {
+  return <CatDashBoardPoster theme={theme} size="sm" />;
 }
 
 // Three-card fan. The SVG poster shows as a placeholder until the variant's

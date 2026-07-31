@@ -4,15 +4,19 @@ export interface GameCatalogRule {
   description?: string;
 }
 
+export type GameStartMode = 'immediate' | 'placement';
+
 export interface GameCatalogEntry {
   gameId: string;
   variants: ReadonlyArray<string>;
   rules: ReadonlyArray<GameCatalogRule>;
+  startMode: GameStartMode;
 }
 
 export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'critical_v1',
+    startMode: 'immediate',
     variants: [
       'cyberpunk',
       'underwater',
@@ -51,6 +55,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   },
   {
     gameId: 'sea_battle_v1',
+    startMode: 'placement',
     variants: [
       'classic',
       'modern',
@@ -112,11 +117,13 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   },
   {
     gameId: 'texas_holdem_v1',
+    startMode: 'immediate',
     variants: [],
     rules: [],
   },
   {
     gameId: 'glimworm_v1',
+    startMode: 'immediate',
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
     rules: [
       {
@@ -135,6 +142,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   },
   {
     gameId: 'tic_tac_toe_v1',
+    startMode: 'immediate',
     variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
     rules: [
       {
@@ -153,6 +161,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   },
   {
     gameId: 'cascade_v1',
+    startMode: 'immediate',
     variants: [
       'cosmic',
       'arcane',
@@ -177,6 +186,74 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
         label: 'Allow spectators',
         description:
           'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
+  {
+    gameId: 'chess_v1',
+    startMode: 'immediate',
+    variants: ['standard', 'chess960'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically make a move if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
+  {
+    gameId: 'checkers_v1',
+    startMode: 'immediate',
+    variants: ['classic', 'neon', 'wood', 'marble', 'neon_glow'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically make a move if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+      {
+        ruleId: 'forcedCaptures',
+        label: 'Forced captures',
+        description: 'Players must capture when a capture is available.',
+      },
+    ],
+  },
+  {
+    gameId: 'cat_dash_v1',
+    startMode: 'immediate',
+    variants: ['neon', 'village', 'space', 'nature'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically roll the dice if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+      {
+        ruleId: 'abilities',
+        label: 'Cat abilities',
+        description:
+          'Each cat has unique abilities that can be used during the race.',
       },
     ],
   },

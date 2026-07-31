@@ -32,9 +32,9 @@ function registerCleanupSignals(): void {
 }
 
 export default async function globalSetup(): Promise<void> {
-  // Honor an external MONGODB_URI so a developer pointing at a local mongod —
+  // Honor an external MONGODB_OCI_URI so a developer pointing at a local mongod —
   // or a CI service container — wins over the throwaway replset.
-  if (process.env.MONGODB_URI) {
+  if (process.env.MONGODB_OCI_URI) {
     return;
   }
 
@@ -43,9 +43,9 @@ export default async function globalSetup(): Promise<void> {
   const replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   globalThis.__arcadeumMongoReplSet = replSet;
   // Child webServer processes inherit process.env, so removing the
-  // MONGODB_URI line from playwright.config.ts's webServer.env lets the BE
+  // MONGODB_OCI_URI line from playwright.config.ts's webServer.env lets the BE
   // pick this up at spawn time.
-  process.env.MONGODB_URI = replSet.getUri();
+  process.env.MONGODB_OCI_URI = replSet.getUri();
 
   registerCleanupSignals();
 }

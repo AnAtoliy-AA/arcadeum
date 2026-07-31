@@ -1,12 +1,20 @@
 export interface MusicTrack {
   src: string;
   title: string;
+  duration?: number;
+  spriteIndex?: number;
 }
 
-export const CDN_BASE = process.env.NEXT_PUBLIC_CDN_URL || '';
+export const CDN_BASE = (process.env.NEXT_PUBLIC_CDN_URL || '').replace(
+  /\/+$/,
+  '',
+);
 export const MUSIC_FOLDER = 'music';
 export const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
 export const TRACKS_JSON_URL = `${MUSIC_CDN_URL}/tracks.json`;
+export const SPRITE_URL = `${MUSIC_CDN_URL}/sprite.webp`;
+export const SPRITE_SIZE = 40;
+export const SPRITE_COLS = 20;
 
 export const FALLBACK_TRACKS: MusicTrack[] = [
   { src: `${MUSIC_CDN_URL}/battleship-grid.mp3`, title: 'Battleship Grid' },
@@ -43,13 +51,16 @@ async function loadTracksJson(): Promise<MusicTrack[] | null> {
 
 export async function fetchTracks(): Promise<readonly MusicTrack[]> {
   if (cachedTracks) return cachedTracks;
-  if (CDN_BASE) {
+
+  if (CDN_BASE && typeof window !== 'undefined') {
     try {
       const data = await loadTracksJson();
       if (data) {
         const resolved = data.map((t) => ({
           ...t,
-          src: t.src.startsWith('http') ? t.src : `${CDN_BASE}/${t.src}`,
+          src: t.src.startsWith('http')
+            ? t.src
+            : `${CDN_BASE}/${t.src.replace(/^\/+/, '')}`,
         }));
         cachedTracks = resolved;
         return resolved;

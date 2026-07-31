@@ -12,8 +12,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt = appConfig.appName;
 
-// Static-render one OG image per locale at build time. Without this, each
-// social-card request would re-run ImageResponse on the fly.
 export const dynamic = 'force-static';
 export function generateStaticParams() {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
@@ -23,8 +21,6 @@ interface Props {
   params: Promise<{ locale: string }>;
 }
 
-// Locale-specific accent palettes so the unfurl looks visually
-// differentiated per language at a glance (without forking the layout).
 const PALETTE: Record<Locale, { accent: string; gradient: string }> = {
   en: {
     accent: '#3aa0ff',
@@ -48,6 +44,14 @@ const PALETTE: Record<Locale, { accent: string; gradient: string }> = {
   },
 };
 
+const GAME_ICONS = [
+  { emoji: '♟', x: 780, y: 60, size: 48, rotate: -8 },
+  { emoji: '🎮', x: 900, y: 140, size: 40, rotate: 5 },
+  { emoji: '🃏', x: 820, y: 260, size: 44, rotate: -12 },
+  { emoji: '🎲', x: 960, y: 320, size: 38, rotate: 10 },
+  { emoji: '🎯', x: 860, y: 420, size: 42, rotate: -6 },
+];
+
 export default async function OpengraphImage({ params }: Props) {
   const { locale: rawLocale } = await params;
   const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
@@ -63,7 +67,6 @@ export default async function OpengraphImage({ params }: Props) {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
           width: '100%',
           height: '100%',
           backgroundImage: palette.gradient,
@@ -73,14 +76,73 @@ export default async function OpengraphImage({ params }: Props) {
           position: 'relative',
         }}
       >
-        {/* Subtle accent glow */}
+        {/* Main glow */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: `radial-gradient(circle at 80% 20%, ${palette.accent}33 0%, transparent 55%)`,
+            background: `radial-gradient(circle at 80% 25%, ${palette.accent}28 0%, transparent 55%)`,
           }}
         />
+
+        {/* Secondary glow bottom-left */}
+        <div
+          style={{
+            position: 'absolute',
+            left: -100,
+            bottom: -100,
+            width: 360,
+            height: 360,
+            borderRadius: 180,
+            background: `radial-gradient(circle, ${palette.accent}15 0%, transparent 60%)`,
+          }}
+        />
+
+        {/* Decorative grid dots */}
+        <div
+          style={{
+            position: 'absolute',
+            right: 80,
+            top: 70,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 24,
+            opacity: 0.08,
+          }}
+        >
+          {Array.from({ length: 7 }).map((_, row) => (
+            <div key={row} style={{ display: 'flex', gap: 24 }}>
+              {Array.from({ length: 7 }).map((_, col) => (
+                <div
+                  key={col}
+                  style={{
+                    width: 4,
+                    height: 4,
+                    borderRadius: 2,
+                    background: 'white',
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Floating game icons */}
+        {GAME_ICONS.map((icon, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: icon.x,
+              top: icon.y,
+              fontSize: icon.size,
+              opacity: 0.12,
+              transform: `rotate(${icon.rotate}deg)`,
+            }}
+          >
+            {icon.emoji}
+          </div>
+        ))}
 
         {/* Locale chip */}
         <div
@@ -89,6 +151,8 @@ export default async function OpengraphImage({ params }: Props) {
             alignItems: 'center',
             gap: 18,
             marginBottom: 36,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <div
@@ -99,8 +163,8 @@ export default async function OpengraphImage({ params }: Props) {
               width: 64,
               height: 64,
               borderRadius: 16,
-              background: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
               fontSize: 26,
               fontWeight: 900,
               letterSpacing: 2,
@@ -114,7 +178,7 @@ export default async function OpengraphImage({ params }: Props) {
               display: 'flex',
               fontSize: 28,
               fontWeight: 800,
-              color: 'rgba(255, 255, 255, 0.92)',
+              color: 'rgba(255, 255, 255, 0.9)',
               letterSpacing: 1.4,
             }}
           >
@@ -131,7 +195,9 @@ export default async function OpengraphImage({ params }: Props) {
             fontWeight: 900,
             letterSpacing: -1.5,
             marginBottom: 28,
-            maxWidth: 1000,
+            maxWidth: 700,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           {title}
@@ -143,8 +209,10 @@ export default async function OpengraphImage({ params }: Props) {
             display: 'flex',
             fontSize: 30,
             lineHeight: 1.35,
-            color: 'rgba(255, 255, 255, 0.78)',
-            maxWidth: 950,
+            color: 'rgba(255, 255, 255, 0.75)',
+            maxWidth: 680,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           {description}
@@ -175,6 +243,18 @@ export default async function OpengraphImage({ params }: Props) {
           />
           arcadeum.games
         </div>
+
+        {/* Accent line at bottom */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            width: '100%',
+            height: 3,
+            background: `linear-gradient(90deg, transparent 0%, ${palette.accent}44 30%, ${palette.accent}88 50%, ${palette.accent}44 70%, transparent 100%)`,
+          }}
+        />
       </div>
     ),
     size,

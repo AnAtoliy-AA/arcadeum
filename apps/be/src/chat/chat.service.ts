@@ -79,7 +79,8 @@ export class ChatService {
     const users = (await this.userModel
       .find({ _id: { $in: validIds } })
       .select(['username', 'email', 'displayName'])
-      .exec()) as UserDocument[];
+      .lean()
+      .exec()) as unknown as UserDocument[];
 
     for (const user of users) {
       const id =
@@ -142,25 +143,27 @@ export class ChatService {
       return new Map<string, MessageView>();
     }
 
-    const results = await Promise.all(
-      chatIds.map(async (chatId) => ({
-        chatId,
-        message: await this.messageModel
-          .findOne({ chatId })
-          .sort({ timestamp: -1 })
-          .exec(),
-      })),
-    );
+    const lastMessages = await this.messageModel.aggregate<{
+      _id: string;
+      doc: Message;
+    }>([
+      { $match: { chatId: { $in: chatIds } } },
+      { $sort: { timestamp: -1 } },
+      {
+        $group: {
+          _id: '$chatId',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+    ]);
 
     const messages: Message[] = [];
     const order: string[] = [];
 
-    results.forEach((result) => {
-      if (result.message) {
-        messages.push(result.message);
-        order.push(result.chatId);
-      }
-    });
+    for (const result of lastMessages) {
+      messages.push(result.doc);
+      order.push(result._id);
+    }
 
     const lookup = new Map<string, MessageView>();
     if (!messages.length) {
@@ -293,12 +296,22 @@ export class ChatService {
     return { ...view, tempId: messageDTO.tempId };
   }
 
-  async getMessagesByChatId(chatId: string) {
+  async getMessagesByChatId(chatId: string, limit = 200) {
     const messages = await this.messageModel
       .find({ chatId })
-      .sort({ timestamp: 1 })
+      .sort({ timestamp: -1 })
+      .limit(Math.min(limit, 500))
+      .lean()
       .exec();
-    return this.chatHelper.toMessageViews(messages);
+    messages.reverse();
+    return this.chatHelper.toMessageViews(messages as unknown as Message[]);
+  }
+
+  async isUserParticipant(chatId: string, userId: string): Promise<boolean> {
+    const chat = await this.chatModel.findOne({ chatId }).lean().exec();
+    if (!chat) return false;
+    const users = this.chatHelper.normalizeUserIds(chat.users ?? []);
+    return users.includes(userId);
   }
 
   async createChatForUsers(
@@ -350,7 +363,11 @@ export class ChatService {
   }
 
   async listChatsForUser(userId: string): Promise<ChatSummary[]> {
-    const chats = await this.chatModel.find({ users: userId }).exec();
+    const chats = await this.chatModel
+      .find({ users: userId })
+      .select('chatId users')
+      .lean()
+      .exec();
     if (!chats.length) {
       return [];
     }

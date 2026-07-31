@@ -1,22 +1,84 @@
+'use client';
+
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import type { GemPackagePublic } from '../server/gems.types';
 import { BuyGemsButton } from './BuyGemsButton';
+import { BuyGemsWithArc } from './BuyGemsWithArc';
+import { useArcPricing } from '@/features/solana-pay/hooks/useArcPricing';
 
 interface GemPackageCardProps {
   pkg: GemPackagePublic;
   locale?: Locale;
   isAuthenticated?: boolean;
+  token?: string;
 }
 
 export function GemPackageCard({
   pkg,
   locale = DEFAULT_LOCALE,
   isAuthenticated = true,
+  token,
 }: GemPackageCardProps) {
-  const priceDisplay = formatCurrency(pkg.priceUsdCents / 100, locale, 'USD');
+  const [showArcPayment, setShowArcPayment] = useState(false);
+  const { pricing, calculateArcPrice } = useArcPricing();
+
+  const priceUsd = pkg.priceUsdCents / 100;
+  const priceDisplay = formatCurrency(priceUsd, locale, 'USD');
   const totalGems = pkg['gems'] + pkg['bonusGems'];
   const fmt = (n: number) => formatNumber(n, locale);
+  const arcPrice = calculateArcPrice(priceUsd);
+  const arcUsdEquivalent =
+    priceUsd * (1 - (pricing?.discountPercent ?? 0) / 100);
+
+  if (showArcPayment) {
+    return createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.9)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '16px',
+          overflow: 'auto',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        <div
+          data-testid={`gem-package-card-${pkg.id}`}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            padding: '20px',
+            borderRadius: '16px',
+            background: 'rgba(20,20,30,0.98)',
+            border: '1px solid rgba(124,58,237,0.3)',
+            width: '100%',
+            maxWidth: '360px',
+            margin: 'auto',
+          }}
+        >
+          <BuyGemsWithArc
+            packageId={pkg.id}
+            amount={arcPrice}
+            token={token}
+            onPurchased={() => setShowArcPayment(false)}
+            onCancel={() => setShowArcPayment(false)}
+          />
+        </div>
+      </div>,
+      document.body,
+    );
+  }
 
   return (
     <div
@@ -73,15 +135,13 @@ export function GemPackageCard({
         </div>
       )}
 
-      {/* Price + Buy button — pinned to the bottom of the card so cards
-          with different content heights (e.g. with vs without bonus row)
-          still align their CTAs in a single row. */}
+      {/* Price + Buy buttons — pinned to the bottom */}
       <div
         style={{
           marginTop: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: '8px',
         }}
       >
         <div
@@ -90,7 +150,50 @@ export function GemPackageCard({
         >
           {priceDisplay}
         </div>
+
+        {arcPrice > 0 && pricing?.gemsAllowArc !== false && (
+          <div
+            data-testid="arc-price"
+            style={{
+              fontSize: '14px',
+              color: '#22c55e',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
+            }}
+          >
+            <span>or {fmt(arcPrice)} ARC</span>
+            {arcUsdEquivalent < priceUsd && (
+              <span style={{ fontSize: '11px', color: '#71717a' }}>
+                ~{arcUsdEquivalent.toFixed(2)} USDC
+              </span>
+            )}
+          </div>
+        )}
+
         <BuyGemsButton packageId={pkg.id} isAuthenticated={isAuthenticated} />
+
+        {arcPrice > 0 && pricing?.gemsAllowArc !== false && (
+          <button
+            type="button"
+            onClick={() => setShowArcPayment(true)}
+            disabled={!isAuthenticated}
+            style={{
+              width: '100%',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#22c55e',
+              color: '#fff',
+              cursor: isAuthenticated ? 'pointer' : 'not-allowed',
+              fontSize: '14px',
+              fontWeight: 600,
+              opacity: isAuthenticated ? 1 : 0.5,
+            }}
+          >
+            Pay with ARC
+          </button>
+        )}
       </div>
     </div>
   );

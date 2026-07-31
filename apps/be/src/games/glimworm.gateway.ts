@@ -10,7 +10,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 
-import { extractRoomAndUser, handleError } from './games.gateway.utils';
+import {
+  extractRoomAndUser,
+  handleError,
+  validatePayloadUserId,
+} from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
@@ -138,6 +142,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const color =
         typeof payload.color === 'string' ? payload.color : undefined;
@@ -165,6 +170,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const ready = payload.ready === true;
       this.glimwormService.markReady(roomId, userId, ready);
@@ -192,6 +198,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const angle =
         typeof payload.angle === 'number' ? payload.angle : Number.NaN;
@@ -216,6 +223,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const variantRaw =
         typeof payload.variant === 'string' ? payload.variant : '';
@@ -260,6 +268,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       this.glimwormService.restart(roomId, userId);
       client.emit('glimworm.restart.ack', maybeEncrypt({ roomId, userId }));
@@ -282,6 +291,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       this.glimwormService.rematch(roomId, userId);
       client.emit('glimworm.rematch.ack', maybeEncrypt({ roomId, userId }));
@@ -304,6 +314,7 @@ export class GlimwormGateway {
     const { roomId, userId } = extractRoomAndUser(
       payload as unknown as Record<string, unknown>,
     );
+    validatePayloadUserId(client, userId);
     try {
       const color = typeof payload.color === 'string' ? payload.color : '';
       const picked = this.glimwormService.setColor(roomId, userId, color);

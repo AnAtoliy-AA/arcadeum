@@ -1,4 +1,5 @@
 import { SecureStoreShim } from './secureStore';
+import * as Crypto from 'expo-crypto';
 
 const ANON_ID_KEY = 'aico_anon_id';
 
@@ -9,7 +10,7 @@ export async function getAnonymousId(): Promise<string> {
   let id = await SecureStoreShim.getItemAsync(ANON_ID_KEY);
 
   if (!id) {
-    id = `anon_${Math.random().toString(36).substring(2, 10)}`;
+    id = `anon_${Crypto.randomUUID()}`;
     await SecureStoreShim.setItemAsync(ANON_ID_KEY, id);
   }
 

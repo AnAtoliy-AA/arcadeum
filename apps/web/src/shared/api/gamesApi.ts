@@ -58,6 +58,7 @@ export async function getGameRoomSession(
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    next: { revalidate: 5 },
   });
 
   if (!response.ok) {

@@ -15,6 +15,7 @@ export const esMessages = {
     filters: {
       statusLabel: 'Estado',
       participationLabel: 'Participación',
+      categoryLabel: 'Categoría',
       status: {
         all: 'Todos',
         lobby: 'Sala de espera',
@@ -50,6 +51,7 @@ export const esMessages = {
     },
     fastRoom: 'Partida rápida',
     gameLabel: 'Juego',
+    createdLabel: 'Creado',
   },
   password: {
     label: 'Contraseña de la sala (opcional)',
@@ -76,6 +78,7 @@ export const esMessages = {
     joinRoom: 'Unirse a Sala',
     joining: 'Uniéndose...',
     watchRoom: 'Ver',
+    watchResults: 'Ver Resultados',
     joinByCode: 'Unirse con código',
     cancel: 'Cancelar',
     share: 'Compartir',
@@ -142,6 +145,7 @@ export const esMessages = {
     houseRuleIdleTimer: 'Autoplay con Temporizador',
     houseRuleIdleTimerHint: 'Se activa tras {{seconds}}s de inactividad',
     seaBattleGridSize: 'Tamaño del Campo',
+    seaBattleShipCount: 'Número de Barcos',
     specialWeapons: 'Armas Especiales',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Revelar ubicaciones de barcos',
@@ -212,7 +216,12 @@ export const esMessages = {
       },
       spectators: {
         title: 'Permitir espectadores',
-        desc: 'Cualquiera con el enlace puede mirar en silencio.',
+        desc: 'Cualquiera con el enlace puede observar en silencio.',
+      },
+      firstPlayer: {
+        title: 'Quién va primero',
+        host: 'Anfitrión (predeterminado)',
+        random: 'Aleatorio',
       },
     },
     summary: {
@@ -276,6 +285,14 @@ export const esMessages = {
     startWithBots: 'Comenzar con {{count}} 🤖',
     playWithBotsNotice:
       'Empieza con bots inmediatamente o espera a otros jugadores',
+    difficultyLabel: 'Dificultad de IA',
+    difficultyEasy: 'Fácil',
+    difficultyMedium: 'Media',
+    difficultyHard: 'Difícil',
+    difficultyEasyDesc:
+      'Movimientos aleatorios con jugadas inteligentes ocasionales',
+    difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
+    difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
   },
   shared: {
     rules: {
@@ -295,6 +312,7 @@ export const esMessages = {
     tags: {
       strategy: 'Estrategia',
       cards: 'Cartas',
+      action: 'Acción',
     },
   },
   connectionOverlay: {

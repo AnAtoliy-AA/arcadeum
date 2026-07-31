@@ -25,7 +25,7 @@ export async function setEconomyValueAction(input: {
   key: EconomyKey;
   value: number;
 }): Promise<EconomyActionResult<EconomySettingView>> {
-  if (!Number.isInteger(input.value) || input.value < 1) {
+  if (!Number.isInteger(input.value) || input.value < 0) {
     return { ok: false, error: 'validation' };
   }
 

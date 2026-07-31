@@ -53,6 +53,8 @@ export const enMessages = {
         subtitle:
           'Match color or number. Chain penalties. Pick from eight distinct visual themes. 2–10 players.',
         createRoom: 'Create a room',
+        ctaQuickplay: 'Play vs AI now',
+        ctaQuickplayError: "Couldn't start a game — try again",
         browseRooms: 'Browse rooms',
       },
       highlights: {

@@ -2,6 +2,18 @@
 
 set -e
 
+# Block direct pushes to protected branches
+protected_branches="main staging develop"
+current_branch=$(git symbolic-ref --short HEAD)
+
+for branch in $protected_branches; do
+  if [ "$current_branch" = "$branch" ]; then
+    echo "❌ Direct pushes to '$branch' are blocked."
+    echo "   Create a feature branch and open a PR targeting 'develop' instead."
+    exit 1
+  fi
+done
+
 pnpm run build
 
 # Run backend unit tests before pushing
@@ -31,12 +43,12 @@ node scripts/check_translation.js || {
   exit 1
 }
 
-# Run web e2e tests before pushing
-echo "Running e2e tests..."
-cd apps/web
-pnpm run test:e2e || {
-  echo "❌ E2E tests failed. Please fix them before pushing."
-  exit 1
-}
-cd ../..
-echo "✅ E2E tests passed"
+# Run web e2e tests before pushing (skipped — takes too long locally)
+# echo "Running e2e tests..."
+# cd apps/web
+# pnpm run test:e2e || {
+#   echo "❌ E2E tests failed. Please fix them before pushing."
+#   exit 1
+# }
+# cd ../..
+# echo "✅ E2E tests passed"

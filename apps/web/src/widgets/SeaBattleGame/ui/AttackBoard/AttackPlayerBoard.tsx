@@ -36,6 +36,7 @@ interface AttackPlayerBoardProps {
   isTeammate?: boolean;
   team?: SeaBattleTeam;
   sunkCellSet: Set<string>;
+  shipCount?: number;
   sonarHighlightCells?: Set<string> | null;
   sonarCellStates?: Map<string, number> | null;
   radarHighlightCells?: Set<string> | null;
@@ -61,6 +62,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   isTeammate = false,
   team,
   sunkCellSet,
+  shipCount,
   sonarHighlightCells,
   sonarCellStates,
   radarHighlightCells,
@@ -74,7 +76,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
-  const showTargeting = isMyTurn && !isTeammate;
+  const showTargeting = isMyTurn && !isAttackDisabled;
   const boardSize = player.board.length || 10;
   const rowLbls = rowLabels(boardSize);
   const colLbls = colLabels(boardSize);
@@ -101,9 +103,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     (e: React.MouseEvent) => {
       if (!isMyTurn || isAttackDisabled || !onAttack) return;
       const cell = (e.target as HTMLElement).closest(
-        weaponMode
-          ? '.sb-cell[data-row]'
-          : '.sb-cell.sb-attackable',
+        weaponMode ? '.sb-cell[data-row]' : '.sb-cell.sb-attackable',
       );
       if (!cell) return;
       const row = cell.getAttribute('data-row');
@@ -149,24 +149,28 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           const isAttackable =
             !isMe &&
             !isTeammate &&
+            !disabled &&
             cellState !== CELL_STATE.HIT &&
             cellState !== CELL_STATE.MISS &&
             !isSunk &&
             !isPending;
-          const isWeaponClickable = !isMe && !isTeammate && !!weaponMode;
+          const isWeaponClickable =
+            !isMe && !isTeammate && !disabled && !!weaponMode;
           const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
           const isSonarCell = !isMe && sonarHighlightCells?.has(cellKey);
           const isRadarCell = !isMe && radarHighlightCells?.has(cellKey);
-          const highlight: 'sonar' | 'radar' | null =
-            isSonarCell ? 'sonar' : isRadarCell ? 'radar' : null;
+          const highlight: 'sonar' | 'radar' | null = isSonarCell
+            ? 'sonar'
+            : isRadarCell
+              ? 'radar'
+              : null;
           const highlightCellState =
             isSonarCell && sonarCellStates
               ? sonarCellStates.get(cellKey)
               : isRadarCell && radarCellStates
                 ? radarCellStates.get(cellKey)
                 : undefined;
-          const isWeaponPreview =
-            !isMe && weaponPreviewCells?.has(cellKey);
+          const isWeaponPreview = !isMe && weaponPreviewCells?.has(cellKey);
 
           return (
             <AttackBoardCell
@@ -190,7 +194,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                   ? () => onCellHover(player.playerId, rIndex, cIndex)
                   : undefined
               }
-              onMouseLeave={!isMe && onCellHoverEnd ? onCellHoverEnd : undefined}
+              onMouseLeave={
+                !isMe && onCellHoverEnd ? onCellHoverEnd : undefined
+              }
             />
           );
         }),
@@ -288,7 +294,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
           </PlayerName>
           <PlayerStats>
-            <ShipsLeft ships={player.ships} isMe={true} />
+            <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
           <BoardWithLabels>
             <div />
@@ -382,7 +388,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           {idlePlayers.includes(player.playerId) && <IdleBadge />}
         </PlayerName>
         <PlayerStats>
-          <ShipsLeft ships={player.ships} isMe={false} />
+          <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
         <BoardWithLabels>
           <div />

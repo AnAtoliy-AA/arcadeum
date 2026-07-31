@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
-import { AuthService } from '../auth/auth.service';
+import { User } from '../auth/schemas/user.schema';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
 
 @Injectable()
@@ -11,7 +13,7 @@ export class GamesRematchService {
     private readonly roomsService: GameRoomsService,
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
-    private readonly authService: AuthService,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
   /**
@@ -128,12 +130,19 @@ export class GamesRematchService {
     hostId: string,
     userIds: string[],
   ): Promise<string[]> {
-    const results = await Promise.all(
-      userIds.map(async (userId) => {
-        const isBlocked = await this.authService.isUserBlocked(userId, hostId);
-        return isBlocked ? null : userId;
-      }),
-    );
-    return results.filter((id): id is string => id !== null);
+    const validIds = userIds.filter((id) => Types.ObjectId.isValid(id));
+    if (validIds.length === 0) return userIds;
+    const users = await this.userModel
+      .find({ _id: { $in: validIds } })
+      .select('blockedUsers')
+      .lean()
+      .exec();
+    const blocked = new Set<string>();
+    for (const user of users) {
+      if ((user.blockedUsers || []).includes(hostId)) {
+        blocked.add((user._id as unknown as Types.ObjectId).toHexString());
+      }
+    }
+    return userIds.filter((id) => !blocked.has(id));
   }
 }

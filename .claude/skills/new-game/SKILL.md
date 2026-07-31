@@ -155,19 +155,48 @@ which shows Get ready / In play / Round over with no avatar).
 
 **Critical Board.tsx pattern** — the grid container MUST have explicit `width: '100%'` plus `boxSizing: 'border-box'`. Without `width`, an `aspectRatio: '1/1'` grid of empty buttons collapses to ~0px and you see only a colored sliver. See [apps/web/src/widgets/TicTacToeGame/ui/TicTacToeBoard.tsx](apps/web/src/widgets/TicTacToeGame/ui/TicTacToeBoard.tsx).
 
-**End-game UI: reuse the shared [GameResultModal](apps/web/src/features/games/ui/GameResultModal.tsx).** Don't write a per-game game-over modal. It already handles victory/defeat/draw tones (gold / red / silver), confetti, rematch button, animated entrance, and `Back to home` link. If your game's vocabulary differs from `games.table.victory/defeat/draw`, pass a `messages={{ title, message? }}` prop to override the headline/body without touching shared i18n. Map your game's local result type (`'won'|'lost'|'draw'`) to the shared `'victory'|'defeat'|'draw'` before passing it in. See [apps/web/src/widgets/TicTacToeGame/ui/Game.tsx](apps/web/src/widgets/TicTacToeGame/ui/Game.tsx).
+**End-game UI: use the shared `useGameEndState` hook + `GameEndModals` component.** Don't write per-game result modal or rematch wiring — the shared infrastructure handles it all:
 
-**Required Game.tsx hooks:** every widget needs the same shared hooks wired the same way. Forgetting one means: no rematch (no `useRematch`), no chat panel (no `useGameChatIntegration`), or runtime errors when passing `t` to `GameResultModal` (no `useTranslation`).
+```tsx
+import { useGameEndState } from '@/features/games/hooks';
+import { GameEndModals } from '@/features/games/ui';
+
+const gameEnd = useGameEndState({
+  roomId, session,
+  result: computeGameResult(isGameOver, currentUserId, { winnerId }),
+  players: snapshot?.players.map(p => ({
+    playerId: p.playerId,
+    displayName: resolveDisplayName(p.playerId),
+    alive: p.alive,
+  })),
+});
+
+// In JSX modals slot:
+<GameEndModals gameEnd={gameEnd} players={players} currentUserId={currentUserId} t={t} />
+```
+
+The hook combines `useRematch` + `useGameResultModal` + `computeGameResult` into one call with a stable return object. `GameEndModals` renders `GameResultModal` + `RematchModal` (only when players > 1) + `RematchInvitationModal`. For games with custom rematch behavior (e.g. non-host posts a chat note), pass `onRematch` to override the default:
+
+```tsx
+<GameEndModals gameEnd={gameEnd} players={players} currentUserId={currentUserId} t={t}
+  onRematch={() => {
+    if (isHost) gameEnd.handleResultRematchClick();
+    else postHistoryNote('🔁 Wants a rematch!', 'all');
+  }}
+/>
+```
+
+**Required Game.tsx hooks:** every widget needs the same shared hooks wired the same way. Forgetting one means: no rematch (no `useGameEndState`), no chat panel (no `useGameChatIntegration`), or runtime errors when passing `t` to `GameEndModals` (no `useTranslation`).
 
 ```tsx
 const { t } = useTranslation();
-const { rematchLoading, handleRematch } = useRematch({ roomId });
+const gameEnd = useGameEndState({ roomId, session, result, players });
 useGameChatIntegration(snapshot?.logs as never, (_msg, _scope) => {
   // chat sends go through the shared composer — no game-specific socket event
 });
 ```
 
-**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`.
+**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`).
 
 ### 6. Web registry — three files
 
@@ -256,7 +285,7 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] Home featured-card: data entry in `home/data/games.ts` + symbol branch in `gameMeta.tsx`.
 - [ ] Create page: `themes.ts` + `ThemePicker.tsx` block + `art/<Name>BoardPoster.tsx` + `GameArt.tsx` branch + `GameCreateView.tsx` branch.
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
-- [ ] End-game modal is the shared `GameResultModal`, not a per-game one.
+- [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
 - [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
 - [ ] [`apps/web/e2e/home-games-slider.spec.ts`](apps/web/e2e/home-games-slider.spec.ts) — bump the expected `toHaveCount(N)` and add the new game's `<h3>` assertion; the test hardcodes the featured-games count and order.
@@ -287,6 +316,8 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 
 2. **Lobby inside `GameWidgetContainer.board` collapses.** That slot is sized for the in-game grid. Early-return the lobby OUTSIDE the container (sea-battle pattern).
 
+3. **`onReorderPlayers` must be wired.** `ReusableGameLobby` shows DnD reordering by default (`showReorderControls=true`), but the reorder callback must be passed through from the Game.tsx → Lobby → ReusableGameLobby chain. Import `reorderRoomParticipants` from `@/shared/api/gamesApi` and create a handler. Without it, the drag UI renders but does nothing.
+
 3. **Grid `aspectRatio` without `width: '100%'` collapses to 0px** when children are empty buttons. Always set both `width: '100%'` and `boxSizing: 'border-box'` on the grid container.
 
 4. **Write i18n keys first.** `TranslationKey` validates strictly — component code referencing missing keys won't typecheck.
@@ -301,7 +332,7 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 
 7. **`TurnStatusVariant`** union is `'completed' | 'yourTurn' | 'waiting'` — camelCase, not kebab.
 
-8. **`useRematch`** returns `{ rematchLoading, handleRematch }` (not `loading` / `handleRematchClick`). No `currentUserId` option.
+8. **`useGameEndState`** returns `{ showResultModal, sharedResult, dismissResult, rematchLoading, handleResultRematchClick, handleRematch, invitation, ... }` — a stable object via useMemo. Pass it directly to `GameEndModals`. Don't wire `useRematch` + `useGameResultModal` separately.
 
 9. **`useGameChatIntegration`** signature is positional: `(logs, sendMessage, resolveDisplayName?, resolveActorColor?)`. Not an options object.
 
@@ -327,7 +358,7 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 
 20. **`Dialog.Description` renders as `<p>` — only string/inline children allowed.** Putting a `<YStack>` (or any block element) inside `Dialog.Description` produces invalid HTML (`<div> cannot be a descendant of <p>`) and triggers React's hydration error. Keep `Dialog.Description` as a single short string (it's the `aria-describedby` summary anyway) and hoist any multi-block content out as a sibling of `Description` inside `Dialog.Content`. Or skip raw `Dialog` entirely — `@arcadeum/ui`'s `Modal` / `ModalContent` / `ModalHeader` / `ModalBody` primitives don't have this trap.
 
-21. **Don't write a per-game end-game modal.** [GameResultModal](apps/web/src/features/games/ui/GameResultModal.tsx) is the shared end-game UI (confetti, gold/red/silver tones, rematch button, home link). It accepts `result: 'victory'|'defeat'|'draw'|null` and an optional `messages={{title, message?}}` override for games whose copy doesn't match the shared `games.table.*` keys — tic-tac-toe uses this to surface its own `gameOver.won/lost/draw` strings without touching shared i18n.
+21. **Don't write a per-game end-game modal.** Use `useGameEndState` + `GameEndModals`. The hook combines result computation, rematch logic, and modal state. The component renders all three modals (result, rematch player selection, rematch invitation) with consistent styling. If your game's copy doesn't match the shared `games.table.*` keys, pass `resultMessages={{ title, message? }}` to `useGameEndState`.
 
 22. **Per-option player caps go through the service, not the room.** If players-per-game depends on a game-option (board size, mode, etc.), don't try to mutate the room's `maxPlayers` when the option changes — leave room.maxPlayers at the overall ceiling. Enforce the per-option cap at `startSession` (BE) and surface it in the lobby selector ("3×3 · up to 2"). The BE error message tells the host to reduce players or pick a different option.
 

@@ -118,6 +118,7 @@ export const sharedButtonVariants = {
       backgroundColor: 'transparent',
       borderWidth: 0,
       shadowOpacity: 0,
+      color: '$color',
       hoverStyle: {
         y: -3,
         opacity: 1,

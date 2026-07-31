@@ -10,6 +10,17 @@
  * 5. Conversion idempotency (same conversionId twice = one debit + one credit)
  * 6. Insufficient gems for conversion (throws, balance unchanged)
  */
+jest.mock('../solana/solana.service', () => ({ SolanaService: class {} }));
+jest.mock('../solana/lib/solana-pay.service', () => ({
+  SolanaPayService: class {},
+}));
+jest.mock('../common/guards/geo-block.guard', () => ({
+  GeoBlockService: class {},
+  GeoBlockGuard: class {},
+}));
+jest.mock('../common/lib/geo-block-bootstrap', () => ({
+  GeoBlockBootstrap: class {},
+}));
 import { Test } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';

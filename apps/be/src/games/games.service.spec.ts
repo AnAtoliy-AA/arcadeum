@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
+import { GamesHistoryFacade } from './games-history.facade';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -13,6 +15,7 @@ import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
 import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
+import { PlayerStatsService } from './player-stats.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -91,12 +94,32 @@ describe('GamesService', () => {
     const mockRuleVisibility = {
       getRulesForGame: jest.fn().mockResolvedValue(new Map()),
     };
+    const mockPlayerStats = {
+      recordGameResult: jest.fn().mockResolvedValue(undefined),
+      getPlayerStats: jest.fn().mockResolvedValue({}),
+    };
+
+    const mockArchiveService = {
+      archiveSessionToAtlas: jest.fn().mockResolvedValue(undefined),
+      deleteSessionFromOci: jest.fn().mockResolvedValue(undefined),
+      loadSessionFromAtlas: jest.fn().mockResolvedValue(null),
+      sessionExistsInOci: jest.fn().mockResolvedValue(true),
+    };
+
+    const mockHistoryFacade = {
+      createHistoryRecord: jest.fn(),
+      listHistoryByPlayer: jest.fn(),
+      listPublicHistoryByPlayer: jest.fn(),
+      getHistoryRecord: jest.fn(),
+    };
 
     module = await Test.createTestingModule({
       providers: [
         GamesService,
         { provide: GameRoomsService, useValue: mockRoomsService },
         { provide: GameSessionsService, useValue: mockSessionsService },
+        { provide: GameSessionsArchiveService, useValue: mockArchiveService },
+        { provide: GamesHistoryFacade, useValue: mockHistoryFacade },
         { provide: GameHistoryService, useValue: mockHistoryService },
         { provide: GamesRealtimeService, useValue: mockRealtimeService },
         { provide: GameUtilitiesService, useValue: mockUtilities },
@@ -114,6 +137,7 @@ describe('GamesService', () => {
         },
         { provide: GamePostMatchService, useValue: mockPostMatchService },
         { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
+        { provide: PlayerStatsService, useValue: mockPlayerStats },
       ],
     }).compile();
 
@@ -172,11 +196,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(service.quickplay('user1', 'critical_v1')).rejects.toThrow(
-        /Quickplay not supported/,
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room1', gameId: 'critical_v1' };
+      roomsQuickplayService.createQuickplayRoom.mockResolvedValue(
+        room as unknown as GameRoomSummary,
       );
-      expect(roomsQuickplayService.createQuickplayRoom).not.toHaveBeenCalled();
+
+      const result = await service.quickplay('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.createQuickplayRoom).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 
@@ -197,11 +230,20 @@ describe('GamesService', () => {
       expect(result).toEqual(room);
     });
 
-    it('rejects unsupported game ids', async () => {
-      await expect(
-        service.findHumanMatch('user1', 'critical_v1'),
-      ).rejects.toThrow(/Matchmaking not supported/);
-      expect(roomsQuickplayService.findHumanMatch).not.toHaveBeenCalled();
+    it('delegates to the quickplay service for any game', async () => {
+      const room = { id: 'room2', gameId: 'critical_v1' };
+      roomsQuickplayService.findHumanMatch.mockResolvedValue(
+        room as unknown as GameRoomSummary,
+      );
+
+      const result = await service.findHumanMatch('user1', 'critical_v1');
+
+      expect(roomsQuickplayService.findHumanMatch).toHaveBeenCalledWith(
+        'user1',
+        'critical_v1',
+        undefined,
+      );
+      expect(result).toEqual(room);
     });
   });
 
@@ -237,11 +279,14 @@ describe('GamesService', () => {
         'in_progress',
       );
       expect(realtimeService.emitGameStarted).toHaveBeenCalledWith(
-        room,
+        { ...room, status: 'in_progress' },
         session,
         expect.any(Function),
       );
-      expect(result).toEqual({ room, session });
+      expect(result).toEqual({
+        room: { ...room, status: 'in_progress' },
+        session,
+      });
     });
 
     it('should throw if user is not host', async () => {

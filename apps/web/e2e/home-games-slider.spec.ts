@@ -15,13 +15,16 @@ test.describe('Home Page Games Grid Refinement', () => {
     // We are filtering to only show available (playable) games
     const gamesSection = page.locator('#games');
     const gameCards = gamesSection.locator('h3');
-    await expect(gameCards).toHaveCount(5);
+    await expect(gameCards).toHaveCount(8);
 
     await expect(gameCards.nth(0)).toHaveText(/Critical/i);
     await expect(gameCards.nth(1)).toHaveText(/Sea Battle/i);
     await expect(gameCards.nth(2)).toHaveText(/Glimworm/i);
     await expect(gameCards.nth(3)).toHaveText(/Tic-Tac-Toe/i);
     await expect(gameCards.nth(4)).toHaveText(/Cascade/i);
+    await expect(gameCards.nth(5)).toHaveText(/Chess/i);
+    await expect(gameCards.nth(6)).toHaveText(/Checkers/i);
+    await expect(gameCards.nth(7)).toHaveText(/Cat Dash/i);
   });
 
   test('should navigate slider via arrows', async ({ page }) => {
@@ -70,7 +73,7 @@ test.describe('Home Page Games Grid Refinement', () => {
     ).toBeVisible();
   });
 
-  test('should redirect to create page with preselected game', async ({
+  test('should redirect to game landing page with preselected game', async ({
     page,
   }) => {
     const criticalCard = page
@@ -82,14 +85,7 @@ test.describe('Home Page Games Grid Refinement', () => {
 
     await playNowButton.click({ force: true });
 
-    // Should be on create page with gameId param
-    await expect(page).toHaveURL(/\/games\/create\?gameId=critical_v1/);
-
-    // Game should be selected (check for active state on game tile)
-    // From CreateGameRoomPage.tsx, selected tile has $active prop which likely maps to a class/style
-    // Let's verify by heading or some identifiable trait
-    await expect(
-      page.getByRole('heading', { name: /Create Game Room/i }),
-    ).toBeVisible();
+    // Should be on the game landing page
+    await expect(page).toHaveURL(/\/games\/critical/);
   });
 });

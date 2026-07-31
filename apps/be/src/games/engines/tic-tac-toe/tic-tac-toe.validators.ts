@@ -11,14 +11,15 @@ export function validatePlaceMark(
   }
 
   const { row, col } = payload ?? { row: -1, col: -1 };
-  const size = state.options.boardSize;
+  const rows = state.board.length;
+  const cols = state.board[0]?.length ?? rows;
   if (
     !Number.isInteger(row) ||
     !Number.isInteger(col) ||
     row < 0 ||
-    row >= size ||
+    row >= rows ||
     col < 0 ||
-    col >= size
+    col >= cols
   ) {
     return { ok: false, error: 'Move out of bounds' };
   }

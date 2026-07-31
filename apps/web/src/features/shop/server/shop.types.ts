@@ -11,8 +11,13 @@ export type ShopCategory =
   | 'frame'
   | 'background';
 export type ShopRarity = 'common' | 'rare' | 'epic' | 'legendary';
-export type ShopPriceCurrency = 'coins' | 'gems';
-export type ShopAcquiredVia = 'coins' | 'gems' | 'grant' | 'starter';
+export type ShopPriceCurrency = 'coins' | 'gems' | 'arcadeum';
+export type ShopAcquiredVia =
+  | 'coins'
+  | 'gems'
+  | 'arcadeum'
+  | 'grant'
+  | 'starter';
 
 export interface EffectiveShopItem {
   id: string;
@@ -57,6 +62,7 @@ export interface InventoryView {
 export interface WalletBalanceView {
   coins: number;
   gems: number;
+  arcadeum: number;
 }
 
 export interface PurchaseResult {

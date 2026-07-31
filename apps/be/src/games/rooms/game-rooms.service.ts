@@ -1,10 +1,13 @@
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
+import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
   Injectable,
   BadRequestException,
   ForbiddenException,
   NotFoundException,
+  Logger,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -28,24 +31,40 @@ import { GameRoomsRematchService } from './game-rooms.rematch.service';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 import { validateGameOptions } from './game-rooms.config-validator';
+import {
+  validateRoomId,
+  validateInviteCode,
+  validatePassword,
+  validateMaxPlayers,
+  validateHost,
+  validateKick,
+  validateParticipantOrder,
+} from './game-rooms.validation';
+import {
+  OCI_CONNECTION,
+  ATLAS_CONNECTION,
+} from '../../common/providers/mongo-connections.provider';
 /**
  * Game Rooms Service
  * Handles all room-related operations (CRUD, joining, leaving)
  */
 @Injectable()
 export class GameRoomsService {
+  private readonly logger = new Logger(GameRoomsService.name);
+
   constructor(
-    @InjectModel(GameRoom.name)
-    private readonly gameRoomModel: Model<GameRoom>,
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
+    private readonly ociRoomModel: Model<GameRoom>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsRematchService: GameRoomsRematchService,
     private readonly engineRegistry: GameEngineRegistry,
+    @Optional()
+    @InjectModel(GameRoom.name, ATLAS_CONNECTION)
+    private readonly atlasRoomModel?: Model<GameRoom>,
+    @Optional()
+    @InjectModel(User.name, ATLAS_CONNECTION)
+    private readonly userModel?: Model<User>,
   ) {}
-  /**
-   * Create a new game room
-   */
   async createRoom(
     userId: string,
     dto: CreateGameRoomDto,
@@ -55,10 +74,10 @@ export class GameRoomsService {
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
     const hashedPassword = dto.password
-      ? await bcrypt.hash(dto.password, 10)
+      ? await bcrypt.hash(dto.password, BCRYPT_SALT_ROUNDS)
       : undefined;
 
-    const room = await this.gameRoomModel.create({
+    const room = await this.ociRoomModel.create({
       gameId: dto.gameId,
       name: dto.name,
       hostId: userId,
@@ -78,12 +97,24 @@ export class GameRoomsService {
       updatedAt: new Date(),
     });
 
+    // Mirror room to Atlas for history queries
+    if (this.atlasRoomModel) {
+      try {
+        await this.atlasRoomModel.findOneAndUpdate(
+          { _id: room._id },
+          { $set: room.toObject() },
+          { upsert: true },
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to mirror room ${room._id.toString()} to Atlas: ${(err as Error).message}`,
+        );
+      }
+    }
+
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * List game rooms based on filters
-   */
   async listRooms(
     filters: ListRoomsFilters = {},
     viewerId?: string,
@@ -95,18 +126,22 @@ export class GameRoomsService {
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
 
     const [rooms, total] = await Promise.all([
-      this.gameRoomModel
+      this.ociRoomModel
         .find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
+        .lean()
         .exec(),
-      this.gameRoomModel.countDocuments(query).exec(),
+      this.ociRoomModel.countDocuments(query).exec(),
     ]);
 
     const summaries = await Promise.all(
       rooms.map((room) =>
-        this.gameRoomsMapper.prepareRoomSummary(room, viewerId),
+        this.gameRoomsMapper.prepareRoomSummary(
+          room as unknown as GameRoom,
+          viewerId,
+        ),
       ),
     );
 
@@ -124,41 +159,56 @@ export class GameRoomsService {
     code: string,
     viewerId?: string,
   ): Promise<GameRoomSummary> {
+    if (typeof code !== 'string') {
+      throw new NotFoundException('Invalid invite code');
+    }
     const normalized = code.trim().toUpperCase();
     if (!normalized) throw new NotFoundException('Room not found');
-    const room = await this.gameRoomModel
+    const room = await this.ociRoomModel
       .findOne({ inviteCode: normalized })
+      .lean()
       .exec();
     if (!room) throw new NotFoundException('Room not found');
-    return this.gameRoomsMapper.prepareRoomSummary(room, viewerId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as import('../schemas/game-room.schema').GameRoom,
+      viewerId,
+    );
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
+    if (typeof roomId !== 'string') {
+      throw new NotFoundException('Invalid room ID');
+    }
     if (!Types.ObjectId.isValid(roomId)) {
       throw new NotFoundException(`Invalid room ID format: ${roomId}`);
     }
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.ociRoomModel
+      .findById(roomId)
+      .select('-password')
+      .lean()
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
     }
 
-    if (!this.canViewRoom(room, userId)) {
+    if (!this.canViewRoom(room as unknown as GameRoom, userId)) {
       throw new ForbiddenException('Cannot view this room');
     }
 
-    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+    return this.gameRoomsMapper.prepareRoomSummary(
+      room as unknown as GameRoom,
+      userId,
+    );
   }
 
-  /**
-   * Join a game room
-   */
   async joinRoom(
     dto: JoinGameRoomDto,
     userId: string,
   ): Promise<JoinGameRoomResult> {
-    const room = await this.gameRoomModel
-      .findById(dto.roomId)
+    validateRoomId(dto.roomId);
+    const room = await this.ociRoomModel
+      .findById(new Types.ObjectId(dto.roomId))
       .select('+password')
       .exec();
 
@@ -181,21 +231,9 @@ export class GameRoomsService {
       throw new BadRequestException('Cannot join - game already started');
     }
 
-    // Validate invite code for private rooms
-    if (room.visibility === 'private' && room.inviteCode !== dto.inviteCode) {
-      throw new ForbiddenException('Invalid invite code');
-    }
-    // Validate password if room is password-protected
-    if (room.password) {
-      if (!dto.password)
-        throw new ForbiddenException('Room requires a password');
-      const passwordValid = await bcrypt.compare(dto.password, room.password);
-      if (!passwordValid) throw new ForbiddenException('Invalid room password');
-    }
-    // Check max players
-    if (room.maxPlayers && room.participants.length >= room.maxPlayers) {
-      throw new BadRequestException('Room is full');
-    }
+    validateInviteCode(room, dto.inviteCode);
+    await validatePassword(room, dto.password);
+    validateMaxPlayers(room);
 
     // Add participant
     room.participants.push({
@@ -212,23 +250,15 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Ensure user is a participant (join if not already)
-   */
   async ensureParticipant(roomId: string, userId: string): Promise<boolean> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
+    if (typeof roomId !== 'string' || typeof userId !== 'string') {
+      throw new BadRequestException('Invalid roomId or userId');
     }
-
+    const room = await this.ociRoomModel.findById(roomId).exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
     const isParticipant = room.participants.some((p) => p.userId === userId);
-
     if (!isParticipant) {
-      room.participants.push({
-        userId,
-        joinedAt: new Date(),
-      });
+      room.participants.push({ userId, joinedAt: new Date() });
       room.updatedAt = new Date();
       await room.save();
       return true;
@@ -236,14 +266,17 @@ export class GameRoomsService {
     return false;
   }
 
-  /**
-   * Leave a game room
-   */
   async leaveRoom(
     dto: LeaveGameRoomDto,
     userId: string,
   ): Promise<LeaveGameRoomResult> {
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    if (typeof userId !== 'string') {
+      throw new BadRequestException('Invalid userId');
+    }
+    validateRoomId(dto.roomId);
+    const room = await this.ociRoomModel
+      .findById(new Types.ObjectId(dto.roomId))
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
@@ -256,24 +289,13 @@ export class GameRoomsService {
       throw new BadRequestException('Not a member of this room');
     }
 
-    // Kick flow: verify caller is host and target is not the caller
-    if (dto.kickedBy) {
-      if (dto.kickedBy !== room.hostId) {
-        throw new ForbiddenException('Only the host can kick players');
-      }
-      if (userId === dto.kickedBy) {
-        throw new BadRequestException('Cannot kick yourself');
-      }
-      if (!isParticipant) {
-        throw new BadRequestException(
-          'Target user is not a participant of this room',
-        );
-      }
-    }
+    validateKick(room, userId, dto.kickedBy);
 
     // If it's the last player, delete the room
     if (room.participants.length === 1) {
-      await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
+      await this.ociRoomModel
+        .findByIdAndDelete(new Types.ObjectId(dto.roomId))
+        .exec();
       return {
         room: null,
         deleted: true,
@@ -287,7 +309,6 @@ export class GameRoomsService {
 
     // If host left, assign new host (next player in list)
     if (isHost) {
-      // Participants are ordered by join time usually, so [0] is the next oldest
       room.hostId = room.participants[0].userId;
     }
 
@@ -304,24 +325,25 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Delete a game room (host only)
-   */
   async deleteRoom(
     dto: DeleteGameRoomDto,
     userId: string,
   ): Promise<DeleteGameRoomResult> {
-    const room = await this.gameRoomModel.findById(dto.roomId).exec();
+    validateRoomId(dto.roomId);
+    const room = await this.ociRoomModel
+      .findById(new Types.ObjectId(dto.roomId))
+      .lean()
+      .exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
     }
 
-    if (room.hostId !== userId) {
-      throw new ForbiddenException('Only the host can delete the room');
-    }
+    validateHost(room.hostId, userId);
 
-    await this.gameRoomModel.findByIdAndDelete(dto.roomId).exec();
+    await this.ociRoomModel
+      .findByIdAndDelete(new Types.ObjectId(dto.roomId))
+      .exec();
 
     return {
       roomId: dto.roomId,
@@ -329,14 +351,17 @@ export class GameRoomsService {
     };
   }
 
-  /**
-   * Update room status
-   */
   async updateRoomStatus(
     roomId: string,
     status: GameRoomStatus,
   ): Promise<GameRoom> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    if (typeof roomId !== 'string') {
+      throw new NotFoundException('Invalid room ID');
+    }
+    if (!Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    }
+    const room = await this.ociRoomModel.findById(roomId).exec();
 
     if (!room) {
       throw new NotFoundException(`Room not found: ${roomId}`);
@@ -346,105 +371,81 @@ export class GameRoomsService {
     room.updatedAt = new Date();
     await room.save();
 
+    // Mirror status update to Atlas
+    if (this.atlasRoomModel) {
+      try {
+        await this.atlasRoomModel.updateOne(
+          { _id: roomId },
+          { $set: { status, updatedAt: room.updatedAt } },
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to mirror room status to Atlas for room ${roomId}: ${(err as Error).message}`,
+        );
+      }
+    }
+
     return room;
   }
 
-  /**
-   * Get room participants
-   */
   async getRoomParticipants(roomId: string): Promise<string[]> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
+    if (typeof roomId !== 'string')
+      throw new NotFoundException('Invalid room ID');
+    if (!Types.ObjectId.isValid(roomId))
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    const room = await this.ociRoomModel.findById(roomId).lean().exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
     return room.participants.map((p) => p.userId);
   }
 
-  /**
-   * Update room options (host only, lobby only)
-   */
   async updateRoomOptions(
     roomId: string,
     userId: string,
     options: Record<string, unknown>,
   ): Promise<GameRoomSummary> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
-    if (room.hostId !== userId) {
+    if (typeof roomId !== 'string' || typeof userId !== 'string')
+      throw new BadRequestException('Invalid roomId or userId');
+    if (!Types.ObjectId.isValid(roomId))
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    const room = await this.ociRoomModel.findById(roomId).exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+    if (room.hostId !== userId)
       throw new ForbiddenException('Only the host can update room options');
-    }
-
-    if (room.status !== 'lobby') {
+    if (room.status !== 'lobby')
       throw new BadRequestException(
         'Cannot update options after game has started',
       );
-    }
-
-    room.gameOptions = {
-      ...room.gameOptions,
-      ...options,
-    };
+    room.gameOptions = { ...room.gameOptions, ...options };
     room.updatedAt = new Date();
-
     await room.save();
-
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
-  /**
-   * Reorder participants (host only)
-   */
   async reorderParticipants(
     roomId: string,
     userId: string,
     newOrder: string[],
   ): Promise<GameRoomSummary> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
-    if (room.hostId !== userId) {
-      throw new ForbiddenException('Only the host can reorder participants');
-    }
-
-    // Verify all participants are present in newOrder
-    const currentParticipantIds = room.participants.map((p) => p.userId);
-    const isValidOrder =
-      newOrder.length === currentParticipantIds.length &&
-      newOrder.every((id) => currentParticipantIds.includes(id));
-
-    if (!isValidOrder) {
-      throw new BadRequestException('Invalid participant order');
-    }
-
-    // Create a map for quick access
+    if (typeof roomId !== 'string' || typeof userId !== 'string')
+      throw new BadRequestException('Invalid roomId or userId');
+    const room = await this.ociRoomModel.findById(roomId).exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+    validateHost(room.hostId, userId);
+    validateParticipantOrder(room.participants, newOrder);
     const participantMap = new Map(room.participants.map((p) => [p.userId, p]));
-
-    // Reconstruct participants array in new order
     room.participants = newOrder.map((id) => participantMap.get(id)!);
     room.updatedAt = new Date();
-
     await room.save();
-
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
-
-  // ========== Private Helper Methods ==========
 
   private canViewRoom(room: GameRoom, userId?: string | null): boolean {
     if (room.visibility === 'public') return true;
     if (!userId) return false;
-    if (room.hostId === userId) return true;
-    if (room.participants.some((p) => p.userId === userId)) return true;
-    return false;
+    return (
+      room.hostId === userId ||
+      room.participants.some((p) => p.userId === userId)
+    );
   }
 
   async declineRematchInvitation(
@@ -457,9 +458,6 @@ export class GameRoomsService {
     );
   }
 
-  /**
-   * Block re-invites for a specific rematch room
-   */
   async blockRematchRoom(
     roomId: string,
     userId: string,
@@ -467,9 +465,6 @@ export class GameRoomsService {
     return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
   }
 
-  /**
-   * Re-invite players to a rematch
-   */
   async reinviteRematchPlayers(
     roomId: string,
     hostId: string,
@@ -485,15 +480,13 @@ export class GameRoomsService {
   private async generateInviteCode(): Promise<string> {
     let code: string;
     let exists = true;
-
     while (exists) {
       code = randomBytes(4).toString('hex').toUpperCase();
-      const existing = await this.gameRoomModel
+      const existing = await this.ociRoomModel
         .findOne({ inviteCode: code })
         .exec();
       exists = !!existing;
     }
-
     return code!;
   }
 }

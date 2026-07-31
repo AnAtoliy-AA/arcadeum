@@ -56,6 +56,7 @@ export function makeProps(
     idleTimerTriggered: false,
     handleIdleTimeout: vi.fn(),
     handleStopAutoplay: vi.fn(),
+    onOpenRules: vi.fn(),
     ...override,
   } as MatchWidgetProps;
 }

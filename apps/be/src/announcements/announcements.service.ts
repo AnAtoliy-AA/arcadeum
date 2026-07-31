@@ -16,7 +16,7 @@ import {
   type AnnouncementLocale,
   type AnnouncementSeverity,
 } from './schemas/announcement.schema';
-import { escapeRegExp } from '../admin/lib/escape-regexp';
+import { escapeRegExp } from '../common/utils/escape-regexp';
 import { buildActiveFilter, deriveStatus } from './lib/announcement-status';
 import type {
   AnnouncementAdminItem,
@@ -70,6 +70,15 @@ export class AnnouncementsService {
   async listForAdmin(
     args: ListForAdminArgs,
   ): Promise<AnnouncementsAdminListResponse> {
+    if (args.severity !== undefined && typeof args.severity !== 'string') {
+      throw new BadRequestException('Invalid severity');
+    }
+    if (args.q !== undefined && typeof args.q !== 'string') {
+      throw new BadRequestException('Invalid query');
+    }
+    if (args.status !== undefined && typeof args.status !== 'string') {
+      throw new BadRequestException('Invalid status');
+    }
     const page = args.page ?? 1;
     const pageSize = args.pageSize ?? 25;
     const now = new Date();

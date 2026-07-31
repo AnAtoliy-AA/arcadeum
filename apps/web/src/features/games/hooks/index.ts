@@ -15,3 +15,5 @@ export type {
   ResultMessages,
 } from './useGameResultModal';
 export { usePendingStart } from './usePendingStart';
+export { useGameEndState } from './useGameEndState';
+export type { UseGameEndStateOptions, PlayerInfo } from './useGameEndState';

@@ -11,6 +11,8 @@ description: >
 
 # SEO Skill (Agentic / Claude / Codex)
 
+> **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules including performance, accessibility, and mobile-first design.
+
 LLM-first SEO analysis skill with 16 specialized sub-skills, 10 specialist agents, and 89 scripts for website, blog, and GitHub repository optimization.
 
 ## Deterministic Trigger Mapping

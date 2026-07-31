@@ -1,16 +1,15 @@
 import { FilterQuery } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
 import { ListRoomsFilters } from './game-rooms.types';
-
-function escapeRegExp(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+import { escapeRegExp } from '../../common/utils/escape-regexp';
+import { validateGameId, isValidStatus } from '../game-validation.util';
 
 export class GameRoomsQueryBuilder {
   static buildListQuery(filters: ListRoomsFilters): FilterQuery<GameRoom> {
     const query: FilterQuery<GameRoom> = {};
 
     if (filters.gameId) {
+      validateGameId(filters.gameId);
       query.gameId = filters.gameId;
     }
 
@@ -21,8 +20,17 @@ export class GameRoomsQueryBuilder {
     }
 
     if (filters.status) {
-      query.status = filters.status;
+      const status = filters.status;
+      if (!isValidStatus(status)) {
+        throw new Error(`Invalid status: ${String(status)}`);
+      }
+      query.status = status;
     } else if (filters.statuses && filters.statuses.length > 0) {
+      for (const s of filters.statuses) {
+        if (!isValidStatus(s)) {
+          throw new Error(`Invalid status: ${String(s)}`);
+        }
+      }
       query.status = { $in: filters.statuses };
     }
 

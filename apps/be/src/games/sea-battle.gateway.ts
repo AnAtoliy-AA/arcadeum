@@ -15,6 +15,7 @@ import {
   extractRoomAndUser,
   extractString,
   handleError,
+  validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
@@ -31,14 +32,13 @@ import {
   handleRemoveBotFromTeam,
   handleToggleHideShips,
 } from './sea-battle.gateway.lobby';
-
-interface ShipOpPayload {
+type ShipOpPayload = {
   roomId?: string;
   userId?: string;
   shipId?: string;
   cells?: { row: number; col: number }[];
   [key: string]: unknown;
-}
+};
 
 @WebSocketGateway({
   namespace: 'games',
@@ -57,7 +57,6 @@ export class SeaBattleGateway {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
-
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
 
@@ -89,15 +88,24 @@ export class SeaBattleGateway {
       userId?: string;
       withBots?: boolean;
       botCount?: number;
+      difficulty?: 'easy' | 'medium' | 'hard';
+      gridSize?: number;
+      shipCount?: number;
+      variant?: string;
     },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       const result = await this.seaBattleService.startSession(
         userId,
         roomId,
         !!payload?.withBots,
         payload?.botCount,
+        payload?.difficulty,
+        payload?.gridSize,
+        payload?.shipCount,
+        payload?.variant,
       );
       client.emit('seaBattle.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -129,6 +137,7 @@ export class SeaBattleGateway {
     const cells = payload.cells;
     if (!shipId || !cells || !Array.isArray(cells))
       throw new WsException('shipId and cells are required');
+    validatePayloadUserId(client, userId);
     try {
       await op.svc(userId, roomId, { shipId, cells });
       client.emit(op.ackEvent, maybeEncrypt({ roomId, userId, shipId }));
@@ -171,11 +180,21 @@ export class SeaBattleGateway {
   @SubscribeMessage('seaBattle.session.confirm_placement')
   async handleConfirmPlacement(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>;
+    },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
-      await this.seaBattleService.confirmPlacementByRoom(userId, roomId);
+      await this.seaBattleService.confirmPlacementByRoom(
+        userId,
+        roomId,
+        payload.ships,
+      );
       client.emit(
         'seaBattle.session.placement_confirmed',
         maybeEncrypt({ roomId, userId }),
@@ -196,6 +215,7 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.resetPlacementByRoom(userId, roomId);
       client.emit(
@@ -218,6 +238,7 @@ export class SeaBattleGateway {
     @MessageBody() payload: { roomId?: string; userId?: string },
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.autoPlaceShipsByRoom(userId, roomId);
       client.emit(
@@ -251,6 +272,7 @@ export class SeaBattleGateway {
     const { row, col } = payload;
     if (!targetPlayerId || row === undefined || col === undefined)
       throw new WsException('targetPlayerId, row, and col are required');
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.attackByRoom(userId, roomId, {
         targetPlayerId,
@@ -271,10 +293,8 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.use_sonar')
-  async handleUseSonar(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
+  private async dispatchAction(
+    client: Socket,
     payload: {
       roomId?: string;
       userId?: string;
@@ -282,71 +302,59 @@ export class SeaBattleGateway {
       row?: number;
       col?: number;
     },
+    action: string,
+    ackEvent: string,
+    emitExtra?: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
     if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    validatePayloadUserId(client, userId);
     try {
-      await this.seaBattleService.executeActionByRoom(
-        userId,
-        roomId,
-        'useSonar',
-        { targetPlayerId, row: payload.row, col: payload.col },
-      );
+      await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
+        targetPlayerId,
+        row: payload.row,
+        col: payload.col,
+      });
       client.emit(
-        'seaBattle.session.sonar_result',
-        maybeEncrypt({ roomId, userId, targetPlayerId }),
+        ackEvent,
+        maybeEncrypt({ roomId, userId, targetPlayerId, ...emitExtra }),
       );
     } catch (error) {
       handleError(
         this.logger,
         error,
-        { action: 'useSonar', roomId, userId },
-        'Unable to use sonar.',
+        { action, roomId, userId },
+        `Unable to ${action}.`,
       );
     }
   }
 
-  @SubscribeMessage('seaBattle.session.use_radar')
-  async handleUseRadar(
+  @SubscribeMessage('seaBattle.session.use_sonar')
+  handleUseSonar(
     @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetPlayerId?: string;
-      row?: number;
-      col?: number;
-    },
+    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
-    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
-    try {
-      await this.seaBattleService.executeActionByRoom(
-        userId,
-        roomId,
-        'useRadar',
-        { targetPlayerId, row: payload.row, col: payload.col },
-      );
-      client.emit(
-        'seaBattle.session.radar_result',
-        maybeEncrypt({
-          roomId,
-          userId,
-          targetPlayerId,
-          row: payload.row,
-          col: payload.col,
-        }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'useRadar', roomId, userId },
-        'Unable to use radar.',
-      );
-    }
+    return this.dispatchAction(
+      client,
+      payload,
+      'useSonar',
+      'seaBattle.session.sonar_result',
+    );
+  }
+
+  @SubscribeMessage('seaBattle.session.use_radar')
+  handleUseRadar(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
+  ): Promise<void> {
+    return this.dispatchAction(
+      client,
+      payload,
+      'useRadar',
+      'seaBattle.session.radar_result',
+      { row: payload.row, col: payload.col },
+    );
   }
 
   @SubscribeMessage('seaBattle.session.history_note')
@@ -362,13 +370,14 @@ export class SeaBattleGateway {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
-    const scopeRaw =
+    const raw =
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
     const scope = (
-      ['players', 'private', 'team'].includes(scopeRaw) ? scopeRaw : 'all'
+      ['players', 'private', 'team'].includes(raw) ? raw : 'all'
     ) as ChatScope;
+    validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.postHistoryNote(
         userId,

@@ -15,6 +15,7 @@ export const enMessages = {
     filters: {
       statusLabel: 'Status',
       participationLabel: 'Participation',
+      categoryLabel: 'Category',
       status: {
         all: 'All',
         lobby: 'Lobby',
@@ -50,6 +51,7 @@ export const enMessages = {
     },
     fastRoom: 'Fast Room',
     gameLabel: 'Game',
+    createdLabel: 'Created',
   },
   password: {
     label: 'Room Password (optional)',
@@ -76,6 +78,7 @@ export const enMessages = {
     joinRoom: 'Join Room',
     joining: 'Joining...',
     watchRoom: 'Watch',
+    watchResults: 'Watch Results',
     joinByCode: 'Join by Code',
     cancel: 'Cancel',
     share: 'Share',
@@ -142,6 +145,7 @@ export const enMessages = {
     houseRuleIdleTimer: 'Idle Timer Autoplay',
     houseRuleIdleTimerHint: 'Automated play after {{seconds}}s',
     seaBattleGridSize: 'Grid Size',
+    seaBattleShipCount: 'Number of Ships',
     specialWeapons: 'Special Weapons',
     seaBattleSonar: 'Sonar',
     seaBattleSonarHint: 'Reveal ship locations',
@@ -212,6 +216,11 @@ export const enMessages = {
         title: 'Allow spectators',
         desc: 'Anyone with the link can watch silently.',
       },
+      firstPlayer: {
+        title: 'Who goes first',
+        host: 'Host (default)',
+        random: 'Random',
+      },
     },
     summary: {
       game: 'Game',
@@ -271,6 +280,13 @@ export const enMessages = {
     botCountLabel: 'Number of bots',
     startWithBots: 'Start with {{count}} 🤖',
     playWithBotsNotice: 'Start with bots immediately or wait for other players',
+    difficultyLabel: 'AI Difficulty',
+    difficultyEasy: 'Easy',
+    difficultyMedium: 'Medium',
+    difficultyHard: 'Hard',
+    difficultyEasyDesc: 'Random moves with occasional smart plays',
+    difficultyMediumDesc: 'Smart targeting with locked-on strategy',
+    difficultyHardDesc: 'Probability-based precision targeting',
   },
   shared: {
     rules: {
@@ -290,6 +306,7 @@ export const enMessages = {
     tags: {
       strategy: 'Strategy',
       cards: 'Cards',
+      action: 'Action',
     },
   },
   connectionOverlay: {

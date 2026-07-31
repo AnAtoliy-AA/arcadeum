@@ -9,6 +9,18 @@ import { extractString } from './games.gateway.utils';
 
 const emoteRateLimits = new Map<string, number>();
 const EMOTE_RATE_LIMIT_MS = 2000;
+const EMOTE_ENTRY_TTL_MS = 60_000;
+const EMOTE_MAX_ENTRIES = 10_000;
+let lastEviction = 0;
+
+const emoteSweepInterval = setInterval(() => {
+  const now = Date.now();
+  if (emoteRateLimits.size === 0) return;
+  for (const [key, ts] of emoteRateLimits) {
+    if (now - ts > EMOTE_ENTRY_TTL_MS) emoteRateLimits.delete(key);
+  }
+}, EMOTE_ENTRY_TTL_MS);
+if (emoteSweepInterval.unref) emoteSweepInterval.unref();
 
 export function handleEmote(
   logger: Logger,
@@ -31,6 +43,21 @@ export function handleEmote(
 
   if (!roomId || !userId || !emoteId) return;
 
+  const now = Date.now();
+  if (now - lastEviction > EMOTE_ENTRY_TTL_MS) {
+    lastEviction = now;
+    for (const [key, ts] of emoteRateLimits) {
+      if (now - ts > EMOTE_ENTRY_TTL_MS) emoteRateLimits.delete(key);
+    }
+  }
+  if (emoteRateLimits.size >= EMOTE_MAX_ENTRIES) {
+    const sorted = [...emoteRateLimits.entries()].sort((a, b) => a[1] - b[1]);
+    const toRemove = sorted.slice(0, sorted.length - EMOTE_MAX_ENTRIES + 1000);
+    for (const [key] of toRemove) {
+      emoteRateLimits.delete(key);
+    }
+  }
+
   if (!(EMOTE_IDS as readonly string[]).includes(emoteId)) {
     logger.warn(
       `Invalid emoteId "${emoteId}" from user ${userId} in room ${roomId}`,
@@ -39,7 +66,6 @@ export function handleEmote(
   }
 
   const rateKey = `${roomId}:${userId}`;
-  const now = Date.now();
   const lastEmote = emoteRateLimits.get(rateKey);
   if (lastEmote && now - lastEmote < EMOTE_RATE_LIMIT_MS) return;
   emoteRateLimits.set(rateKey, now);

@@ -7,47 +7,773 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.179] - 2026-07-31
+
+### Fixed
+- replace Math.random with crypto.randomInt in tic-tac-toe bot; explicit currency validation in wallet query
+
+
+## [1.23.178] - 2026-07-31
+
+### Fixed
+- update appleboy/ssh-action to v1.0.3 in deploy workflows
+
+
+## [1.23.177] - 2026-07-31
+
+### Added
+- db health check
+
+### Fixed
+- use ConnectionStates enum for readyState comparison
+
+
+## [1.23.176] - 2026-07-31
+
+### Fixed
+- use randomInt to avoid biased modulo in code generation
+- replace Math.random() with crypto APIs and sanitize query inputs
+
+
+## [1.23.175] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.174] - 2026-07-31
+
+### Added
+- restyle hero h1 with Arcadeum Games two-line layout
+
+
+## [1.23.173] - 2026-07-31
+
+### Added
+- rename H1 to Arcadeum Games (two lines)
+
+
+## [1.23.172] - 2026-07-31
+
+### Improved
+- disable3D effects and animation on mobile for faster LCP
+
+
+## [1.23.171] - 2026-07-31
+
+### Fixed
+- add image quality 80 to allowed qualities config
+
+
+## [1.23.170] - 2026-07-31
+
+### Fixed
+- equalize hero card sizing and vertical alignment
+
+### Improved
+- optimize images, polyfills, lazy-load, bfcache headers
+
+
+## [1.23.169] - 2026-07-31
+
+### Fixed
+- increase hero card fan offset for touch target spacing
+
+
+## [1.23.168] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.167] - 2026-07-31
+
+### Added
+- add dev OCI deploy, branch selection, api-dev.arcadeum.games, fix music URL
+
+
+## [1.23.166] - 2026-07-30
+
+### Fixed
+- make Atlas URI optional in all environments including production
+- register PlayerStats models on default connection for DI resolution
+- conditionally register Atlas MongooseModule.forFeature
+- make Atlas models optional for CI E2E compatibility
+- add missing test providers for dual MongoDB services
+
+### Refactored
+- rename MONGODB_URI to MONGODB_OCI_URI for clarity
+
+
+## [1.23.165] - 2026-07-29
+
+### Added
+- add neon and solar themed name colors and frames
+
+
+## [1.23.164] - 2026-07-29
+
+### Fixed
+- show sea battle boards after game over (ARC-899)
+
+
+## [1.23.163] - 2026-07-28
+
+### Fixed
+- scope auth cookies to .arcadeum.games with SameSite=Lax
+
+
+## [1.23.162] - 2026-07-28
+
+### Fixed
+- support feedback preflight and production API domains
+
+
+## [1.23.161] - 2026-07-28
+
+### Fixed
+- fix critical rules modal in active games
+- pass onOpenRules through widget tree and fix hand background bleed
+- lift RulesModal to Game.tsx outside widget tree
+- add background to Critical hand section so scene covers full widget
+- fix Critical card images not loading and rules modal not opening in lobby
+
+
+## [1.23.160] - 2026-07-28
+
+### Added
+- husky develop branch pysh protection
+
+
+## [1.23.159] - 2026-07-28
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.23.158] - 2026-07-28
+
+### Fixed
+- encrypt sensitive email storage to resolve CodeQL alert
+- add typeof guards, URL validation, crypto fixes, and workflow permissions for CodeQL compliance
+- correct CodeQL suppression comment query ID (ARC-XXX)
+- resolve all CodeQL security alerts across codebase
+
+
+## [1.23.102] - 2026-07-27
+
+### Fixed
+
+- address CodeQL injection findings
+- secure CI webhook and polling
+
+## [1.23.101] - 2026-07-27
+
+### Fixed
+
+- eliminate modulo bias in referral code generation (ARC-XXX)
+- add CodeQL config and cover staging branch to fix default scan failures
+- add input validation to resolve CodeQL NoSQL injection alerts
+- add input validation and replace Math.random with crypto PRNG
+
+## [1.23.100] - 2026-07-27
+
+### Fixed
+
+- fix sunk ship surrounding cells marking with gridSize
+
+## [1.23.99] - 2026-07-26
+
+### Fixed
+
+- lobby bots issues
+
+## [1.23.98] - 2026-07-26
+
+### Fixed
+
+- remove broken head_commit conditions from deploy workflows
+
+## [1.23.97] - 2026-07-26
+
+### Added
+
+- add checkers variants support (ARC-878)
+
+## [1.23.96] - 2026-07-26
+
+### Fixed
+
+- align games list columns and fix button text wrapping
+
+## [1.23.95] - 2026-07-26
+
+### Added
+
+- add tamagui-pro skill for correct Tamagui patterns
+
+### Fixed
+
+- add no-important rule to tamagui-pro skill
+
+## [1.23.94] - 2026-07-24
+
+### Added
+
+- add ARC token payment flow with Solana Pay integration
+
+### Fixed
+
+- add ObjectId validation to purchaseWithArc method
+- correct expected amount in solana pay create test
+- use page.evaluate for fetch calls in arc-payment tests to bypass route interceptors
+- correct test-utils import path in arc-payment.spec.ts
+- restore missing cat-dash and tic-tac-toe theme imports/exports in themes.ts
+
+## [1.23.93] - 2026-07-24
+
+### Added
+
+- oval track board with 100 spaces
+- add landing sub-components, OG images, buildGameOptions, bot spec, and widget tests
+- add landing page, i18n, home/create page integration, engine tests, and e2e update
+- add frontend widget with types, hooks, UI components, and registry
+- add backend service, bot, gateway, and catalog entry
+- implement backend engine with utils, validators, and module registration
+- add backend types and constants
+
+### Fixed
+
+- remove duplicate TIC_TAC_TOE_THEMES declaration in themes.ts
+- resolve player names in chat/board, add cat emojis, polish board UI with Tamagui button
+- remove direct CatDashEngine injection from service (use registry via sessions)
+
+### Documentation
+
+- add Cat Dash implementation plan
+- add Cat Dash game design spec
+
+## [1.23.92] - 2026-07-23
+
+### Added
+
+- optimistic UI and multi-jump capture chains
+- add checkers web integration and landing page
+
+## [1.23.91] - 2026-07-23
+
+### Added
+
+- rework game lobbys for better UX and consistency
+
+## [1.23.90] - 2026-07-23
+
+### Added
+
+- add full client-side validation to contact form
+- add UI validation error display to contact form
+
+## [1.23.89] - 2026-07-23
+
+### Fixed
+
+- fully filter resolve-conflicts from daily updates
+- treat resolve-conflicts as docs type in release posts too
+- treat resolve-conflicts commits as docs type in daily updates
+- filter 'resolve conflicts' commits from daily update messages
+
+### Documentation
+
+- clarify CONTRIBUTING.md structure and links
+- restore commit types section in CONTRIBUTING.md
+- update stale documentation across monorepo
+
+## [1.23.88] - 2026-07-23
+
+### Fixed
+
+- fix sea battle auto-place not placing all ships and state corruption
+
+## [1.23.87] - 2026-07-23
+
+### Fixed
+
+- migrate login-lockout and ip-block from in-memory Maps to shared RateStateStore
+
+## [1.23.86] - 2026-07-23
+
+### Added
+
+- add sprite sheet cover art and filter/sort to music player
+
+## [1.23.85] - 2026-07-23
+
+### Documentation
+
+- add PR title convention for staging/main
+
+## [1.23.84] - 2026-07-23
+
+### Fixed
+
+- forward isGameOver to useGameResultModal
+- remove vitest overrides that cause peer dep mismatches
+- escape regex input, gate CSP unsafe-eval, add socket auth validation
+
+## [1.23.83] - 2026-07-23
+
+### Added
+
+- add useGameEndState hook and GameEndModals for unified game end screen
+
+### Fixed
+
+- add expansionMargin/infinityWinLength to TicTacToe resolveOptions
+- fix TicTacToe isSize type guard for infinity board size
+- add openRematchModal to Critical GameEndModals gameEnd object
+- fix type error in Critical ActiveGameView rematch handler
+- add currentUserId/isGameOver back as optional to UseGameEndStateOptions
+- remove duplicate SeaBattleModals function from merge
+
+### Refactored
+
+- optimize useGameEndState performance and simplify GameEndModals API
+
+## [1.23.82] - 2026-07-23
+
+### Added
+
+- add cyber phoenix and cyber dragon premium avatars
+
+## [1.23.81] - 2026-07-23
+
+### Fixed
+
+- add missing getDefaultShipCount import, gridSize test prop, and fix useEffect deps
+- pass shipCount/gridSize directly in start event to bypass race condition
+- track gridSize/shipCount in local state to fix stale room race
+- sync lobby options to gameOptions before starting game
+- ensure shipCount reaches engine via gameOptions
+- use deterministic autoplacement for many ships
+- restore expanded SHIPS array and correct defaults
+- improve autoplacement reliability and sort ships big-to-small
+- sync frontend SHIPS array with backend and pass shipCount in team mode
+- pass gridSize to frontend placement helpers
+- fix ship placement for larger grids and add host-configurable ship count
+
+## [1.23.80] - 2026-07-23
+
+### Fixed
+
+- sanitize user-provided values in MongoDB queries to prevent NoSQL injection
+- replace Math.random() with crypto.randomInt() for CodeQL compliance
+- allow E2E+production in CI environments
+- harden backend security after comprehensive audit
+
+## [1.23.79] - 2026-07-23
+
+### Fixed
+
+- target Dependabot PRs to develop branch
+
+## [1.23.78] - 2026-07-22
+
+### Fixed
+
+- filter CI error logs to show only failures
+- add timeout prompt to fixPR and checkAndFixCI
+- eliminate credential race condition in pushBranch
+- improve pushBranch retry, sync verifyChanges, increase installDeps timeout
+- rm -rf worktree fallback when git worktree remove fails
+- simplify verification to lint+typecheck only, increase timeout to 5min
+- increase Bull lock duration to 15min for implementation queue
+- remove git checkout --detach from worktree creation
+- always setup gh auth before push in worktrees
+- use actual PR branch name for CI fix instead of constructing it
+- default engine to mimo, fix CI poll, add timeout prompt
+
+### Refactored
+
+- extract stripDisabledRules from games.controller
+
+## [1.23.77] - 2026-07-22
+
+### Added
+
+- audio cues (ARC-879)
+
+### Fixed
+
+- update sound test to use dynamic manifest count
+- resolve CI failures and review feedback
+- lint warning in ChatMessagePopup
+
+## [1.23.76] - 2026-07-22
+
+### Added
+
+- add display names and avatars to player cards
+
+### Fixed
+
+- reduce Jest workers from 4 to 2 to fix SIGSEGV
+
+### Refactored
+
+- extract GamesCatalogService from controller
+
+## [1.23.75] - 2026-07-21
+
+### Fixed
+
+- resolve periodic re-login by fixing token refresh and session recovery
+
+## [1.23.74] - 2026-07-21
+
+### Added
+
+- persistent stat tracking (ARC-871)
+
+### Fixed
+
+- sanitize user-controlled values in MongoDB queries (CodeQL)
+- add PlayerStatsService mock to GamesService spec
+- add missing PlayerStats fields to local stats objects
+- skip branch deletion, use checkout -B to avoid worktree conflicts
+
+## [1.23.73] - 2026-07-20
+
+### Fixed
+
+- clean up worktrees on failure
+
+## [1.23.72] - 2026-07-20
+
+### Improved
+
+- reduce gpu usage and split oversized backend files
+
+## [1.23.71] - 2026-07-20
+
+### Fixed
+
+- fix tic-tac-toe board rendering issues
+
+## [1.23.70] - 2026-07-20
+
+### Fixed
+
+- report failure when AI engine produces no changes, default to mimo engine
+
+## [1.23.69] - 2026-07-20
+
+### Fixed
+
+- prevent sticky start button from intercepting bot-count clicks
+- add bottom padding to LobbyContent to prevent sticky start button overlap on mobile
+- make lobby start button sticky on mobile and visible only for host
+
+## [1.23.68] - 2026-07-20
+
+### Added
+
+- chess game translations (ARC-877)
+
+## [1.23.67] - 2026-07-20
+
+### Fixed
+
+- add missing game result modal and rematch invitation to all games
+
+## [1.23.66] - 2026-07-20
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.23.65] - 2026-07-20
+
+### Fixed
+
+- use separate row/col bounds in infinity board validator
+
+## [1.23.64] - 2026-07-20
+
+### Added
+
+- CI poll now triggers fix instead of just logging
+- AI-powered conflict resolution before push
+
+### Fixed
+
+- fix async return type to Promise<void>
+- remove unused failedCheckNames variable
+- make checkCIStatus async for await calls
+
+## [1.23.63] - 2026-07-20
+
+### Added
+
+- ai difficulty levels (ARC-880)
+
+### Fixed
+
+- resolve CI failures and review feedback
+
+## [1.23.62] - 2026-07-20
+
+### Added
+
+- add conflict resolution before push and .mimocode to gitignore
+
+### Fixed
+
+- only verify on /fix, not /implement
+
+## [1.23.61] - 2026-07-20
+
+### Added
+
+- add CI fix max attempts guard, CI polling, and rate limiting
+
+## [1.23.60] - 2026-07-20
+
+### Added
+
+- run lint/typecheck/build verification before push
+- chain auto-continue up to 3 retries
+- auto-continue after 3 min timeout
+- continue/retry/cancel buttons on failed jobs
+- add retry button on failed jobs
+- add descriptive failure notifications to Telegram
+- worker no longer pushes — commits locally, processor handles push + PR creation
+- add /fix command for CI failures + review feedback
+- full autonomous CI fix loop with TG notifications
+- auto-check and fix CI failures after PR creation
+- add --req flag for specifying task requirements
+- add Redis pub/sub notifications for task completion
+
+### Fixed
+
+- pass issue data directly in addJob to prevent race condition
+- add push timeout and gh auth fallback
+- re-fetch failed checks when worker starts processing
+- accept colon syntax for --engine flag
+- force HTTPS remote for worktree push
+- skip failure notifications for already-processed jobs
+- increase AI timeout to 900s and commit partial changes on timeout
+- prevent mimo from loading skills and exploring during fix tasks
+- fetch actual CI error output and add backend verification to fix prompts
+- per-target locking with concurrency 5
+- set worker concurrency to 1
+- robust timeout + hooks disable in all methods
+- keep worktree on failure for auto-continue
+- disable git hooks in worktrees via core.hooksPath
+- set HUSKY=0 to prevent pre-commit hooks in AI spawns
+- forbid AI from running git commit
+- sanitize notification messages for Telegram
+- use correct type-check command in AI prompts
+- install deps in worktree so pre-commit hooks work and AI can fix real issues
+- set HUSKY=0 in spawn env instead of deleting .husky
+- remove .husky from worktrees — AI ignores 'do not commit' prompt
+- checkout remote branch in worktree — avoids stale local branch state
+- detach HEAD before creating worktree — prevents branch-in-use error
+- tell AI not to commit/push — processor handles git ops
+- skip pre-commit hooks in worktrees — no node_modules available
+- regenerate pnpm lockfile to match overrides config
+- resolve CodeQL warnings — unused vars and useless assignments
+- use opencode for CI fixes to avoid git permission issues
+- focus fixPR prompt on local commands instead of fetching CI logs
+- register commands with Telegram Bot API for autocomplete menu
+- clean workdir before branch checkout to prevent dirty state errors
+- remove duplicate handleFix code
+- queue /fix jobs to Bull worker instead of running in API
+- limit jest workers to prevent SIGSEGV crashes
+- use mimo for CI auto-fix and update roadmap statuses
+- use gh pr checks state field instead of conclusion
+- make bot.start() non-blocking to unblock HTTP server
+- fix TypeScript errors in implementLocally
+- create PR from main instance when worker can't
+- instruct AI to handle pre-commit failures and create PR
+- use opencode/mimo-v2.5-free model for AI implementation
+- enhance AI prompt with context when requirements are TBD
+- always show implementation details in Telegram notification
+- use execFileSync for gh CLI and truncate long Telegram messages
+
+### Refactored
+
+- worktree isolation, permission separation, unified job types
+
+## [1.23.59] - 2026-07-20
+
+### Added
+
+- add checkers engine with bot AI, web widget, and full i18n
+
+### Fixed
+
+- resolve CI failures and review feedback
+- resolve CI failures and review feedback
+- use valid borderRadius value in CheckersBoard
+- use valid ARIA role in CheckersBoard
+- resolve all build and lint errors including i18n types
+- resolve all build and lint errors
+
+## [1.23.58] - 2026-07-15
+
+### Added
+
+- add review queue for automated PR code review after implementation
+
+### Fixed
+
+- remove unused execSync import in review processor
+
+## [1.23.57] - 2026-07-15
+
+### Fixed
+
+- remove fragile nav-not-visible check from language-switching test
+- rewrite language-switching test to use stable nav-games testid
+- handle mobile nav in language-switching test selectors
+- scope language-switching test to main navigation nav element
+- scope language-switching test assertions to nav element
+- remove Main navigation scope from language-switching e2e test
+- resolve e2e test failures, console errors, and Lighthouse issues
+- add type declaration for compression module
+- remove invalid color prop from Tamagui styled components
+- improve accessibility contrast and performance
+- fix validateRoomId type to accept undefined
+
+## [1.23.56] - 2026-07-15
+
+### Added
+
+- add Redis queue system for concurrent task bot implementations
+
+### Fixed
+
+- add missing backslash escaping in task-bot github service
+
+## [1.23.55] - 2026-07-14
+
+### Added
+
+- redesign OG images with richer visuals for social unfurls
+
+## [1.23.54] - 2026-07-14
+
+### Added
+
+- unified quickplay flow across all game landing pages
+
+### Fixed
+
+- update e2e test for landing page redirect, fix CodeQL security alerts
+- remove duplicate version keys in package.json files
+- remove 'use client' from critical/glimworm landing views to fix hydration mismatch
+- fix tic-tac-toe lobby icon clipping and add player symbols
+
+## [1.23.53] - 2026-07-14
+
+### Added
+
+- unified quickplay flow across all game landing pages
+- shared QuickplayButton and QuickplayCta components
+- ctaQuickplay i18n labels for Tic-Tac-Toe, Cascade, Chess
+- attractive Play vs AI button with gradient and glow
+- add backend and fullstack skills
+- add comprehensive UI/UX design skills
+
+### Fixed
+
+- tic-tac-toe lobby icon clipping and float animation
+- backend quickplay restriction (was sea-battle-only)
+- add explicit ObjectId validation for room queries
+- escape backslashes in shell commands
+
+## [1.22.38] - 2026-07-14
+
+### Added
+
+- add game category grouping across UI surfaces
+
+### Fixed
+
+- fix TypeScript build error in getOrCreateProgress
+- replace findOne with find+filter for tainted Mongoose queries
+- use sanitized variables in Mongoose queries for CodeQL
+- add service-level input validation for Mongoose queries
+- add input validation for Mongoose query parameters
+
+## [1.22.37] - 2026-07-14
+
+### Fixed
+
+- ships remaining shows correct count based on game shipCount
+- ship placement moves persist until confirm, no revert on next move
+
+## [1.22.36] - 2026-07-14
+
+### Fixed
+
+- daily changelog poster runs on schedule only, not on push
+
+## [1.22.35] - 2026-07-14
+
+### Added
+
+- batch placement and grid-based fleet count
+
+### Fixed
+
+- suppress compression() lint error in main.ts
+
 ## [1.22.34] - 2026-07-04
 
 ### Fixed
+
 - clear httpOnly cookies on logout from header and settings (N/A)
 - modernize private room and password form UI (N/A)
-
 
 ## [1.22.33] - 2026-07-04
 
 ### Added
+
 - show emotes and messages as floating bubbles in game room (N/A)
 
 ### Fixed
-- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
+- cast emoteId to EmoteId type in GameWidgetContainer (N/A)
 
 ## [1.22.32] - 2026-07-04
 
 ### Added
+
 - add bulk user delete with select all on page (N/A)
 
 ### Fixed
+
 - handle unknown user roles in RoleBadge fallback (N/A)
 - call backend /auth/logout to clear httpOnly cookies on signout (N/A)
 - prevent session loss on page refresh by removing race condition (N/A)
 
-
 ## [1.22.31] - 2026-07-03
 
 ### Fixed
-- enable music from header nav without in-game toggle (N/A)
 
+- enable music from header nav without in-game toggle (N/A)
 
 ## [1.22.30] - 2026-07-03
 
 ### Added
+
 - bots use sonar/radar when enabled in game state (N/A)
 - improve sonar/radar UX with board hover preview (N/A)
 - add missing sea battle rules and rule descriptions to game catalog (N/A)
 
 ### Fixed
+
 - audio player repeat one and lint issues (N/A)
 - weapon preview works on any opponent board (N/A)
 - cache lastSonar/lastRadar in ref so highlights persist across state updates (N/A)
@@ -65,10 +791,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - enforce game rule visibility in createRoom (N/A)
 - add CSRF header to server actions and fix game rules response (N/A)
 
-
 ## [1.22.29] - 2026-07-03
 
 ### Fixed
+
 - play next track when previous ends (wasPlaying was false after ended) (N/A)
 - show music icon in mobile menu by using navItem.icon fallback (N/A)
 - remove crossOrigin and use removeAttribute(src) to clear old audio (N/A)
@@ -83,10 +809,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - change Cross-Origin-Resource-Policy to cross-origin for CDN audio (N/A)
 - persist refresh token and restore session on page reload (N/A)
 
-
 ## [1.22.28] - 2026-07-03
 
 ### Added
+
 - add undo/take-back and password-protected rooms (N/A)
 - add CreationConfig for TicTacToe and Cascade (N/A)
 - add i18n for emote labels (N/A)
@@ -94,6 +820,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add streaks and favorite game to local stats (N/A)
 
 ### Fixed
+
 - skip finally URL cleanup on successful OAuth redirect (N/A)
 - use router.replace after OAuth to avoid hard page reload (N/A)
 - restore hard navigation after OAuth, session survives via cookies (N/A)
@@ -108,7 +835,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update GameMusic tests for no-auto-play behavior (N/A)
 - prevent music auto-playing on page load/refresh (N/A)
 - wire undo to actually revert game state on acceptance (N/A)
-
 
 ## [1.22.27] - 2026-07-02
 

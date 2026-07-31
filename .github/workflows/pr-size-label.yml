@@ -1,0 +1,49 @@
+name: PR Size Label
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Label PR by size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Calculate diff size and label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          HEAD=${{ github.event.pull_request.head.sha }}
+
+          ADDED=$(git diff --numstat "$BASE" "$HEAD" | awk '{s+=$1} END {print s+0}')
+          DELETED=$(git diff --numstat "$BASE" "$HEAD" | awk '{s+=$2} END {print s+0}')
+          TOTAL=$((ADDED + DELETED))
+
+          echo "Changes: +$ADDED -$DELETED = $TOTAL lines"
+
+          if [ "$TOTAL" -le 10 ]; then
+            SIZE="size/XS"
+          elif [ "$TOTAL" -le 100 ]; then
+            SIZE="size/S"
+          elif [ "$TOTAL" -le 500 ]; then
+            SIZE="size/M"
+          elif [ "$TOTAL" -le 1000 ]; then
+            SIZE="size/L"
+          else
+            SIZE="size/XL"
+          fi
+
+          echo "Label: $SIZE"
+
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --add-label "$SIZE" || true

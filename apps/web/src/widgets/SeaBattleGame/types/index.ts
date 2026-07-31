@@ -6,6 +6,21 @@ export const MAX_PLAYERS = 6;
 
 export const BOARD_SIZE = 10;
 
+export function getDefaultShipCount(gridSize: number): number {
+  if (gridSize <= 10) return 10;
+  if (gridSize <= 15) return 14;
+  return 14;
+}
+
+export function getShipCountOptions(gridSize: number): number[] {
+  const maxForGrid = gridSize <= 10 ? 14 : 14;
+  const options: number[] = [];
+  for (let i = 5; i <= Math.min(maxForGrid, SHIPS.length); i++) {
+    options.push(i);
+  }
+  return options;
+}
+
 export function rowLabels(size: number): string[] {
   return Array.from({ length: size }, (_, i) => String.fromCharCode(65 + i));
 }
@@ -29,7 +44,7 @@ export const GAME_PHASE = {
   LOBBY: 'lobby',
   PLACEMENT: 'placement',
   BATTLE: 'battle',
-  GAME_OVER: 'game_over',
+  COMPLETED: 'completed',
 } as const;
 
 export type GamePhase = (typeof GAME_PHASE)[keyof typeof GAME_PHASE];
@@ -59,7 +74,28 @@ export const SHIPS: ShipConfig[] = [
   { id: 'submarine-2', name: 'Submarine', size: 1 },
   { id: 'submarine-3', name: 'Submarine', size: 1 },
   { id: 'submarine-4', name: 'Submarine', size: 1 },
+  { id: 'patrol-1', name: 'Patrol', size: 2 },
+  { id: 'patrol-2', name: 'Patrol', size: 2 },
+  { id: 'frigate-1', name: 'Frigate', size: 3 },
+  { id: 'frigate-2', name: 'Frigate', size: 3 },
+  { id: 'carrier-1', name: 'Carrier', size: 5 },
+  { id: 'cruiser-3', name: 'Cruiser', size: 3 },
+  { id: 'destroyer-4', name: 'Destroyer', size: 2 },
+  { id: 'destroyer-5', name: 'Destroyer', size: 2 },
+  { id: 'submarine-5', name: 'Submarine', size: 1 },
+  { id: 'submarine-6', name: 'Submarine', size: 1 },
+  { id: 'patrol-3', name: 'Patrol', size: 2 },
+  { id: 'patrol-4', name: 'Patrol', size: 2 },
+  { id: 'frigate-3', name: 'Frigate', size: 3 },
+  { id: 'battleship-2', name: 'Battleship', size: 4 },
+  { id: 'submarine-7', name: 'Submarine', size: 1 },
+  { id: 'submarine-8', name: 'Submarine', size: 1 },
 ];
+
+export function getActiveShips(shipCount?: number): ShipConfig[] {
+  const count = shipCount ?? 10;
+  return SHIPS.slice(0, Math.min(count, SHIPS.length));
+}
 
 export interface ShipCell {
   row: number;
@@ -119,6 +155,7 @@ export interface SeaBattleSnapshot {
   winnerId?: string;
   logs: GameLogEntry[];
   gridSize?: number;
+  shipCount?: number;
   lastAttack?: LastAttack;
   teams?: SeaBattleTeam[];
   teamOrder?: string[];
@@ -162,7 +199,9 @@ export interface ShipPlacementProps {
   placedShips: Ship[];
   currentShip: ShipConfig | null;
   onPlaceShip: (shipId: string, cells: ShipCell[]) => void;
-  onConfirmPlacement: () => void;
+  onConfirmPlacement: (
+    ships?: Array<{ shipId: string; cells: ShipCell[] }>,
+  ) => void;
 }
 
 export interface PlaceShipPayload {

@@ -171,11 +171,20 @@ describe('EconomySettingsService', () => {
 
     it('rejects invalid values (DTO catches most; service is defensive)', async () => {
       await expect(
-        service.setNumber('game_win_coin_reward', 0, adminId),
-      ).rejects.toThrow(/invalidValue/);
-      await expect(
         service.setNumber('game_win_coin_reward', 1_000_001, adminId),
       ).rejects.toThrow(/invalidValue/);
+    });
+
+    it('allows value 0 (toggle disable)', async () => {
+      settingModel.findOne.mockReturnValue({
+        lean: () => Promise.resolve({ value: 50 }),
+      });
+      settingModel.findOneAndUpdate.mockResolvedValue({ value: 0 });
+      auditModel.create.mockResolvedValue([{ _id: oid() }]);
+
+      await expect(
+        service.setNumber('game_win_coin_reward', 0, adminId),
+      ).resolves.toBeUndefined();
     });
 
     it('rejects fractional values', async () => {

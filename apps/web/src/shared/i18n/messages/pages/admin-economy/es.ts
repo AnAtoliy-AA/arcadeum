@@ -62,6 +62,44 @@ export const adminEconomyEs = {
       description:
         'Gemas otorgadas además de las monedas el Día 7 de la racha.',
     },
+    shop_allow_gems: {
+      name: 'Tienda: permitir gemas',
+      description: 'Permitir el uso de gemas en la tienda.',
+    },
+    shop_allow_arcadeum: {
+      name: 'Tienda: permitir Arcadeum',
+      description: 'Permitir el uso de Arcadeum en la tienda.',
+    },
+    gems_allow_arcadeum: {
+      name: 'Gemas: permitir Arcadeum',
+      description: 'Permitir la conversión de gemas a Arcadeum.',
+    },
+    gem_to_usd_rate: {
+      name: 'Tasa gemas a USD',
+      description: 'Tasa de conversión de una gema a dólares estadounidenses.',
+    },
+    arcadeum_discount_percent: {
+      name: 'Descuento Arcadeum (%)',
+      description: 'Porcentaje de descuento al comprar con Arcadeum.',
+    },
+    geo_block_enabled: {
+      name: 'Bloqueo geográfico',
+      description: 'Activar el bloqueo de acceso por geolocalización.',
+    },
+    vpn_detection_enabled: {
+      name: 'Detección de VPN',
+      description: 'Activar la detección y bloqueo de conexiones VPN.',
+    },
+    signup_reward_coins: {
+      name: 'Recompensa de registro: monedas',
+      description:
+        'Cantidad de monedas otorgadas a un nuevo usuario al registrarse.',
+    },
+    signup_reward_gems: {
+      name: 'Recompensa de registro: gemas',
+      description:
+        'Cantidad de gemas otorgadas a un nuevo usuario al registrarse.',
+    },
   },
   table: {
     key: 'Ajuste',
@@ -88,6 +126,9 @@ export const adminEconomyEs = {
     newValueLabel: 'Nuevo valor',
     save: 'Guardar',
     cancel: 'Cancelar',
+    reset: 'Restablecer predeterminado',
+    enable: 'Habilitar',
+    disable: 'Deshabilitar',
   },
   auditDrawer: {
     title: 'Historial de {{key}}',
@@ -98,7 +139,7 @@ export const adminEconomyEs = {
     changedAt: '{{date}}',
   },
   errors: {
-    invalidValue: 'El valor debe ser un entero positivo hasta 1.000.000.',
+    invalidValue: 'El valor debe ser un entero no negativo hasta 1.000.000.',
     keyNotFound: 'Configuración desconocida.',
     forbidden: 'No tienes permiso.',
     generic: 'No se pudo guardar. Por favor, inténtalo de nuevo.',

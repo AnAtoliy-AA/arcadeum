@@ -31,6 +31,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   private retryQueue: QueuedMessage[] = [];
   private retryTimer: ReturnType<typeof setInterval> | null = null;
   private rateLimitedUntil = 0;
+  private startTime = Date.now();
 
   constructor(private readonly config: ConfigService) {}
 
@@ -64,35 +65,102 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   }
 
   private registerCommands() {
-    this.bot.command('start', (ctx: Context) =>
-      ctx.reply(
-        'PumpFun Transaction Monitor is active.\n' +
-          `Monitoring: ${this.mintAddress}\n` +
-          'You will receive buy/sell notifications in this chat.',
-      ),
+    this.bot.command(
+      'start',
+      (ctx: Context) =>
+        void ctx.reply(
+          '🟢 <b>PumpFun Transaction Monitor</b>\n\n' +
+            'You will receive real-time buy/sell notifications for the monitored token.\n\n' +
+            `<b>Token:</b> <code>${this.mintAddress}</code>\n` +
+            `<b>Supply:</b> ${this.totalSupply.toLocaleString('en-US')}\n\n` +
+            'Type /help to see available commands.',
+          { parse_mode: 'HTML' },
+        ),
     );
 
-    this.bot.command('status', (ctx: Context) =>
-      ctx.reply(
-        `Monitoring: ${this.mintAddress}\n` +
-          `Chat ID: ${this.chatId}\n` +
-          `Token supply: ${this.totalSupply.toLocaleString('en-US')}\n` +
-          'Status: Active',
-      ),
-    );
+    this.bot.command('status', (ctx: Context) => {
+      const uptime = this.formatUptime(Date.now() - this.startTime);
+      const queueSize = this.retryQueue.length;
 
-    this.bot.command('help', (ctx: Context) =>
-      ctx.reply(
-        'Available commands:\n' +
-          '/start - Welcome message\n' +
-          '/status - Monitor status\n' +
-          '/help - Show this message',
-      ),
+      void ctx.reply(
+        '📊 <b>Monitor Status</b>\n\n' +
+          `<b>Token:</b> <code>${this.mintAddress}</code>\n` +
+          `<b>Chat ID:</b> <code>${this.chatId}</code>\n` +
+          `<b>Supply:</b> ${this.totalSupply.toLocaleString('en-US')}\n` +
+          `<b>Uptime:</b> ${uptime}\n` +
+          `<b>Queue:</b> ${queueSize} pending\n` +
+          `<b>Status:</b> ✅ Active`,
+        { parse_mode: 'HTML' },
+      );
+    });
+
+    this.bot.command('ca', (ctx: Context) => {
+      const mint = this.mintAddress;
+      void ctx.reply(
+        '📋 <b>Contract Address</b>\n\n' +
+          `<pre>${mint}</pre>\n\n` +
+          `<b>Explorer:</b>\n` +
+          `• <a href="https://solscan.io/token/${mint}">Solscan</a>\n` +
+          `• <a href="https://pump.fun/coin/${mint}">PumpFun</a>\n\n` +
+          `<b>Charts & Analytics:</b>\n` +
+          `• <a href="https://dexscreener.com/solana/${mint}">DEXScreener</a>\n` +
+          `• <a href="https://birdeye.so/token/${mint}?chain=solana">Birdeye</a>\n` +
+          `• <a href="https://gmgn.ai/sol/token/${mint}">GMGN</a>`,
+        { parse_mode: 'HTML' },
+      );
+    });
+
+    this.bot.command('chart', (ctx: Context) => {
+      const mint = this.mintAddress;
+      void ctx.reply(
+        '📈 <b>Charts</b>\n\n' +
+          `• <a href="https://dexscreener.com/solana/${mint}">DEXScreener</a>\n` +
+          `• <a href="https://birdeye.so/token/${mint}?chain=solana">Birdeye</a>\n` +
+          `• <a href="https://pump.fun/coin/${mint}">PumpFun</a>\n` +
+          `• <a href="https://gmgn.ai/sol/token/${mint}">GMGN</a>`,
+        { parse_mode: 'HTML' },
+      );
+    });
+
+    this.bot.command('holders', (ctx: Context) => {
+      const mint = this.mintAddress;
+      void ctx.reply(
+        '👥 <b>Holder Info</b>\n\n' +
+          `• <a href="https://solscan.io/token/${mint}#holders">Solscan Holders</a>\n` +
+          `• <a href="https://solscan.io/token/${mint}">Token Overview</a>`,
+        { parse_mode: 'HTML' },
+      );
+    });
+
+    this.bot.command(
+      'help',
+      (ctx: Context) =>
+        void ctx.reply(
+          '📖 <b>Available Commands</b>\n\n' +
+            '/start — Welcome message\n' +
+            '/status — Monitor status & uptime\n' +
+            '/ca — Contract address & links\n' +
+            '/chart — Price chart links\n' +
+            '/holders — Holder distribution\n' +
+            '/help — Show this message',
+          { parse_mode: 'HTML' },
+        ),
     );
 
     void this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),
     });
+  }
+
+  private formatUptime(ms: number): string {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ${hours % 24}h ${minutes % 60}m`;
+    if (hours > 0) return `${hours}h ${minutes % 60}m`;
+    return `${minutes}m ${seconds % 60}s`;
   }
 
   async sendTransaction(tx: TransactionData) {

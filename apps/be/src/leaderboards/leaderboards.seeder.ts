@@ -119,6 +119,12 @@ export class LeaderboardsSeederService implements OnModuleInit {
   async seed(options: SeedOptions = {}): Promise<SeedSummary> {
     const rowsPerMode = options.rowsPerMode ?? 200;
     const season = options.season ?? currentSeason();
+    if (typeof season !== 'string' || !season) {
+      throw new Error('Invalid season value');
+    }
+    if (typeof rowsPerMode !== 'number') {
+      throw new Error('Invalid rowsPerMode value');
+    }
 
     // Idempotent — clear current season + cup/squads/events before re-inserting.
     await Promise.all([

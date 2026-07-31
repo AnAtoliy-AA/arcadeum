@@ -32,6 +32,8 @@ export const esMessages = {
         subtitle:
           'Tableros temáticos, equipos y bots. Entra solo o con amigos, en tableros del 3×3 al 9×9.',
         createRoom: 'Crear sala',
+        ctaQuickplay: 'Jugar contra la IA',
+        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
         browseRooms: 'Buscar salas',
       },
       highlights: {
@@ -93,19 +95,28 @@ export const esMessages = {
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
+      infinityLabel: 'Infinito',
+      expansionMargin: 'Margen de expansión',
+      winCondition: 'Condición de victoria',
+      inARow: '{{n}} en línea',
     },
     rules: {
       title: 'Reglas',
       objective:
         'Sé el primero en colocar tu marca en {{winLength}} casillas en línea — horizontal, vertical o diagonal.',
+      objectiveInfinity:
+        'Sé el primero en colocar tu marca en {{winLength}} casillas en línea. El tablero comienza en 9×9 y se expande en {{margin}} casillas cuando juegas cerca del borde.',
       steps:
         '• En tu turno, haz clic en una casilla vacía.\n• Gana completando una línea.\n• Si el tablero se llena sin ganador, la ronda es empate.',
       winLengths:
-        'Longitud ganadora por tablero: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5.',
+        'Longitud ganadora por tablero: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
+      infinityDescription:
+        'En el modo Infinito, el tablero comienza en 9×9 y se expande automáticamente en {{margin}} casillas en todas las direcciones cuando se coloca una marca cerca del borde. El juego nunca termina en empate — el tablero sigue creciendo hasta que alguien gane.',
       headers: {
         objective: 'Objetivo',
         howToPlay: 'Cómo jugar',
         boardSizes: 'Tamaños del tablero',
+        infinityMode: 'Modo infinito',
       },
       inARow: '{{n}} en línea',
     },

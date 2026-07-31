@@ -55,7 +55,7 @@ const EQUIPPED_EMPTY: EquippedView = {
   background: null,
 };
 
-const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50 };
+const BALANCE: WalletBalanceView = { coins: 1_000, gems: 50, arcadeum: 0 };
 
 function item(id: string): EffectiveShopItem {
   return {

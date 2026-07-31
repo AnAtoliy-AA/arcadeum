@@ -39,6 +39,18 @@ export const en = {
     title: `Cascade · Multiplayer shedding card game · ${APP}`,
     description: `Play Cascade online on ${APP} — a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
   },
+  chessLanding: {
+    title: `Chess · Multiplayer · Standard & Chess960 · ${APP}`,
+    description: `Play Chess online on ${APP} — standard and Chess960 variants, optional time controls, AI bots. Free, instant rooms, no download.`,
+  },
+  checkersLanding: {
+    title: `Checkers · Multiplayer · ${APP}`,
+    description: `Play Checkers online on ${APP} — standard 8×8 rules with forced captures, multi-jump, and king promotion. Free, instant rooms, no download.`,
+  },
+  catDashLanding: {
+    title: `Cat Dash · Multiplayer Cat Racing Dice Game · ${APP}`,
+    description: `Play Cat Dash online on ${APP} — race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

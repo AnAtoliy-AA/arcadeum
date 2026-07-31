@@ -5,6 +5,7 @@ import {
   SeaBattleState,
   SeaBattlePlayer,
   Ship,
+  type AiDifficulty,
 } from '../engines/sea-battle/sea-battle.types';
 import {
   CELL_STATE,
@@ -12,8 +13,10 @@ import {
   BOARD_SIZE,
 } from '../engines/sea-battle/sea-battle.constants';
 import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
+import { getSmartTarget, getProbabilisticTarget } from './bot-targeting';
 
-const LOCK_TIMEOUT_MS = 30000;
+const LOCK_TIMEOUT_MS = 60000;
+const PROCESSING_ENTRY_TTL_MS = 120_000;
 
 // Randomised bot delays make matches feel human without dragging on.
 const PLACEMENT_DELAY_MS = { min: 500, max: 1500 };
@@ -37,10 +40,13 @@ export class SeaBattleBotService {
   ): Promise<T> {
     const prev = this.placementChain.get(roomId) ?? Promise.resolve();
     const next = prev.catch(() => undefined).then(task);
-    this.placementChain.set(
-      roomId,
-      next.catch(() => undefined),
-    );
+    const settled = next.catch(() => undefined);
+    this.placementChain.set(roomId, settled);
+    void settled.finally(() => {
+      if (this.placementChain.get(roomId) === settled) {
+        this.placementChain.delete(roomId);
+      }
+    });
     return next;
   }
 
@@ -60,11 +66,22 @@ export class SeaBattleBotService {
       }
 
       const state = session.state as unknown as SeaBattleState;
-      if (!state) {
-        this.logger.warn(
-          `checkAndPlay skipped: no state for session ${session.roomId}`,
+      if (!state) return;
+
+      const hasAliveHuman = state.players.some(
+        (p: SeaBattlePlayer) => p.alive && !this.isBot(p.playerId),
+      );
+      if (!hasAliveHuman) {
+        this.logger.log(
+          `No alive humans in room ${session.roomId} — completing session`,
         );
+        await this.seaBattleService.completeSession(session.id, session.roomId);
         return;
+      }
+
+      const now = Date.now();
+      for (const [key, ts] of this.processing) {
+        if (now - ts > PROCESSING_ENTRY_TTL_MS) this.processing.delete(key);
       }
 
       const bots = state.players.filter((p: SeaBattlePlayer) =>
@@ -141,12 +158,8 @@ export class SeaBattleBotService {
       let state = currentSession.state as unknown as SeaBattleState;
       let botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Auto place ships — serialized per room so concurrent bots don't
       // overwrite each other's freshly-placed ships.
@@ -164,12 +177,8 @@ export class SeaBattleBotService {
       state = currentSession.state as unknown as SeaBattleState;
       botPlayer = state.players.find((p) => p.playerId === botId);
 
-      if (
-        state.phase !== GAME_PHASE.PLACEMENT ||
-        botPlayer?.placementComplete
-      ) {
+      if (state.phase !== GAME_PHASE.PLACEMENT || botPlayer?.placementComplete)
         return;
-      }
 
       // Confirm placement — same per-room queue so the confirm only runs
       // after this bot's autoPlace save has landed.
@@ -182,11 +191,10 @@ export class SeaBattleBotService {
       const latestSession = await this.seaBattleService.findSessionByRoom(
         session.roomId,
       );
-      if (latestSession) {
+      if (latestSession)
         this.checkAndPlay(latestSession).catch((err) =>
           this.logger.error(`Re-trigger failed for ${botId}: ${err}`),
         );
-      }
     }
   }
 
@@ -223,8 +231,6 @@ export class SeaBattleBotService {
         const activeOpponents = state.players.filter(
           (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
         );
-
-        // In team mode, exclude teammates from the candidate pool
         const botTeam = getTeamForPlayer(state, botId);
         const eligibleOpponents = botTeam
           ? activeOpponents.filter(
@@ -240,17 +246,13 @@ export class SeaBattleBotService {
         const damagedOpponent = eligibleOpponents.find((p) =>
           p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
         );
-
         const target =
           damagedOpponent ||
           eligibleOpponents[
             Math.floor(Math.random() * eligibleOpponents.length)
           ];
 
-        // --- Special weapons: sonar / radar ---
-        // Weapons are available if state.specialWeapons has them enabled.
-        // Admin exclusion via stripDisabledRules already removes excluded
-        // weapons from gameOptions before engine init, so we just check state.
+        // --- Special weapons: sonar / radar (free action, no turn advancement) ---
         const myUsage = state.specialWeaponUsage?.[botId];
         const hasSonar = !!state.specialWeapons?.sonar && !myUsage?.sonarUsed;
         const hasRadar = !!state.specialWeapons?.radar && !myUsage?.radarUsed;
@@ -269,15 +271,6 @@ export class SeaBattleBotService {
           );
           if (!refreshed) break;
           currentSession = refreshed;
-          const postSonar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterSonar =
-            postSonar.playerOrder[postSonar.currentTurnIndex];
-          if (
-            nextAfterSonar !== botId ||
-            postSonar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
         } else if (hasRadar) {
           const row = Math.floor(Math.random() * gridSize);
           await this.seaBattleService.executeActionByRoom(
@@ -286,43 +279,37 @@ export class SeaBattleBotService {
             'useRadar',
             { targetPlayerId: target.playerId, row },
           );
-          const refreshedRadar = await this.seaBattleService.findSessionByRoom(
+          const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
           );
-          if (!refreshedRadar) break;
-          currentSession = refreshedRadar;
-          const postRadar = currentSession.state as unknown as SeaBattleState;
-          const nextAfterRadar =
-            postRadar.playerOrder[postRadar.currentTurnIndex];
-          if (
-            nextAfterRadar !== botId ||
-            postRadar.phase !== GAME_PHASE.BATTLE
-          ) {
-            break;
-          }
+          if (!refreshed) break;
+          currentSession = refreshed;
         }
 
-        // Smart Target Logic: Finish off damaged ships
-        let choice: { r: number; c: number } | null = this.getSmartTarget(
-          target,
-          gridSize,
-        );
+        // Difficulty-based targeting
+        const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
+        let choice: { r: number; c: number } | null = null;
+        if (difficulty === 'easy') {
+          if (Math.random() < 0.3)
+            choice = this.getSmartTarget(target, gridSize);
+        } else if (difficulty === 'hard') {
+          choice =
+            this.getProbabilisticTarget(target, gridSize) ||
+            this.getSmartTarget(target, gridSize);
+        } else {
+          choice = this.getSmartTarget(target, gridSize);
+        }
 
         if (!choice) {
-          // Use Hunt Mode (Random)
           const validCells: { r: number; c: number }[] = [];
-          for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-              const cell = target.board[r][c];
-              if (cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS) {
+          for (let r = 0; r < gridSize; r++)
+            for (let c = 0; c < gridSize; c++)
+              if (
+                target.board[r][c] !== CELL_STATE.HIT &&
+                target.board[r][c] !== CELL_STATE.MISS
+              )
                 validCells.push({ r, c });
-              }
-            }
-          }
-
-          if (validCells.length === 0) {
-            break;
-          }
+          if (validCells.length === 0) break;
           choice = validCells[Math.floor(Math.random() * validCells.length)];
         }
 
@@ -348,104 +335,7 @@ export class SeaBattleBotService {
     }
   }
 
-  private getSmartTarget(
-    target: SeaBattlePlayer,
-    gridSize: number = BOARD_SIZE,
-  ): { r: number; c: number } | null {
-    // Cells of already-sunk ships are public info; exclude them so we focus
-    // on hits that still belong to damaged-but-unsunk ships.
-    const sunkCells = new Set<string>();
-    for (const ship of target.ships) {
-      if (!ship.sunk) continue;
-      for (const cell of ship.cells) {
-        sunkCells.add(`${cell.row},${cell.col}`);
-      }
-    }
+  private getSmartTarget = getSmartTarget;
 
-    const activeHits: { row: number; col: number }[] = [];
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        if (target.board[r][c] !== CELL_STATE.HIT) continue;
-        if (sunkCells.has(`${r},${c}`)) continue;
-        activeHits.push({ row: r, col: c });
-      }
-    }
-
-    if (activeHits.length === 0) return null;
-
-    const isOpen = (r: number, c: number): boolean => {
-      if (r < 0 || r >= gridSize || c < 0 || c >= gridSize) return false;
-      const cell = target.board[r][c];
-      return cell !== CELL_STATE.HIT && cell !== CELL_STATE.MISS;
-    };
-
-    // Line mode: if two adjacent active hits sit in a line (e.g. d3+d4),
-    // extend the line from either endpoint (d2 or d5).
-    const activeSet = new Set(activeHits.map((h) => `${h.row},${h.col}`));
-    const lineCandidates = new Map<string, { r: number; c: number }>();
-    const axes: [number, number][] = [
-      [0, 1],
-      [1, 0],
-    ];
-
-    for (const hit of activeHits) {
-      for (const [dr, dc] of axes) {
-        if (!activeSet.has(`${hit.row + dr},${hit.col + dc}`)) continue;
-
-        // Walk forward to the far end of the line.
-        let fr = hit.row;
-        let fc = hit.col;
-        while (activeSet.has(`${fr + dr},${fc + dc}`)) {
-          fr += dr;
-          fc += dc;
-        }
-        if (isOpen(fr + dr, fc + dc)) {
-          lineCandidates.set(`${fr + dr},${fc + dc}`, {
-            r: fr + dr,
-            c: fc + dc,
-          });
-        }
-
-        // Walk backward to the near end of the line.
-        let br = hit.row;
-        let bc = hit.col;
-        while (activeSet.has(`${br - dr},${bc - dc}`)) {
-          br -= dr;
-          bc -= dc;
-        }
-        if (isOpen(br - dr, bc - dc)) {
-          lineCandidates.set(`${br - dr},${bc - dc}`, {
-            r: br - dr,
-            c: bc - dc,
-          });
-        }
-      }
-    }
-
-    if (lineCandidates.size > 0) {
-      const arr = Array.from(lineCandidates.values());
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    // Single-hit mode: probe a random orthogonal neighbour of any active hit.
-    const neighbours = new Map<string, { r: number; c: number }>();
-    const directions: [number, number][] = [
-      [-1, 0],
-      [1, 0],
-      [0, -1],
-      [0, 1],
-    ];
-    for (const hit of activeHits) {
-      for (const [dr, dc] of directions) {
-        const nr = hit.row + dr;
-        const nc = hit.col + dc;
-        if (!isOpen(nr, nc)) continue;
-        neighbours.set(`${nr},${nc}`, { r: nr, c: nc });
-      }
-    }
-
-    if (neighbours.size === 0) return null;
-    const arr = Array.from(neighbours.values());
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+  private getProbabilisticTarget = getProbabilisticTarget;
 }

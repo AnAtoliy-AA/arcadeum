@@ -30,15 +30,21 @@ export function HeroBackground() {
     };
   }, []);
 
-  useEffect(() => {
+  const [prevBgImage, setPrevBgImage] = useState(bgImage);
+  if (bgImage !== prevBgImage) {
+    setPrevBgImage(bgImage);
     if (
       bgImage !== DEFAULT_HERO_BG &&
       !loadedVariants.has(bgImage) &&
       VARIANT_IMAGES.includes(bgImage)
     ) {
-      setLoadedVariants((prev) => new Set(prev).add(bgImage));
+      setLoadedVariants((prev) => {
+        const next = new Set(prev);
+        next.add(bgImage);
+        return next;
+      });
     }
-  }, [bgImage, loadedVariants]);
+  }
 
   const shouldShowVariants = !isMobile;
 

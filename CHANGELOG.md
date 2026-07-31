@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.178] - 2026-07-31
+
+### Fixed
+- update appleboy/ssh-action to v1.0.3 in deploy workflows
+
+
 ## [1.23.177] - 2026-07-31
 
 ### Added

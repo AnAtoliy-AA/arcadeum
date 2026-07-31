@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.173] - 2026-07-31
+
+### Added
+- rename H1 to Arcadeum Games (two lines)
+
+
 ## [1.23.172] - 2026-07-31
 
 ### Improved

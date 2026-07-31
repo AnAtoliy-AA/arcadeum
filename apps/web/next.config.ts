@@ -70,6 +70,8 @@ const cspConnectSrc = [
   'wss://api.arcadeum.games',
   'https://api2.arcadeum.games',
   'wss://api2.arcadeum.games',
+  'https://api-dev.arcadeum.games',
+  'wss://api-dev.arcadeum.games',
   'https://accounts.google.com',
   'https://vercel.live',
   'wss://*.vercel.live',
@@ -142,6 +144,12 @@ const nextConfig: NextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Cache-Control',
+            value: isDev
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
           },
           {
             key: 'X-Content-Type-Options',
@@ -381,6 +389,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    qualities: [75, 80],
     minimumCacheTTL: 3600,
   },
 };

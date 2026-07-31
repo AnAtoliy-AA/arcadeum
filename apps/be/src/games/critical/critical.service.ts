@@ -231,7 +231,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       // If not, we default to 4 total players (3 bots for 1 human) for Critical.
       const targetBotCount = botCount !== undefined ? botCount : 3;
       for (let i = 0; i < targetBotCount; i++) {
-        playerIds.push(`bot-${Math.random().toString(36).substr(2, 9)}`);
+        playerIds.push(`bot-${crypto.randomUUID()}`);
       }
     }
 

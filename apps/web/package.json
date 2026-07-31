@@ -1,12 +1,12 @@
 {
   "name": "web",
-  "version": "1.23.166",
+  "version": "1.23.177",
   "private": true,
   "browserslist": [
-    "chrome >= 87",
-    "firefox >= 78",
-    "safari >= 14",
-    "edge >= 88"
+    "chrome >= 93",
+    "firefox >= 92",
+    "safari >= 15.4",
+    "edge >= 93"
   ],
   "scripts": {
     "dev": "rm -rf .next && next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",

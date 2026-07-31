@@ -5,7 +5,10 @@ export interface MusicTrack {
   spriteIndex?: number;
 }
 
-export const CDN_BASE = process.env.NEXT_PUBLIC_CDN_URL || '';
+export const CDN_BASE = (process.env.NEXT_PUBLIC_CDN_URL || '').replace(
+  /\/+$/,
+  '',
+);
 export const MUSIC_FOLDER = 'music';
 export const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
 export const TRACKS_JSON_URL = `${MUSIC_CDN_URL}/tracks.json`;
@@ -55,7 +58,9 @@ export async function fetchTracks(): Promise<readonly MusicTrack[]> {
       if (data) {
         const resolved = data.map((t) => ({
           ...t,
-          src: t.src.startsWith('http') ? t.src : `${CDN_BASE}${t.src}`,
+          src: t.src.startsWith('http')
+            ? t.src
+            : `${CDN_BASE}/${t.src.replace(/^\/+/, '')}`,
         }));
         cachedTracks = resolved;
         return resolved;

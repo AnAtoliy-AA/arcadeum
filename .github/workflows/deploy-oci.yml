@@ -1,4 +1,4 @@
-name: Deploy to OCI
+name: Deploy to OCI (Prod)
 
 on:
   push:
@@ -12,6 +12,11 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
 
 permissions: {}
 
@@ -58,8 +63,9 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
-            git fetch origin main
-            git reset --hard origin/main
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile
 
@@ -71,7 +77,7 @@ jobs:
                pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
                pm2 save)
 
-            echo "==> Done!"
+            echo "==> Prod deploy done (branch: $BRANCH)!"
             pm2 list
 
   deploy-task-bot:
@@ -92,8 +98,9 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR/bots/task-bot"
 
-            git -C "$DEPLOY_DIR" fetch origin main
-            git -C "$DEPLOY_DIR" reset --hard origin/main
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git -C "$DEPLOY_DIR" fetch origin "$BRANCH"
+            git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
 
             cd "$DEPLOY_DIR/bots/task-bot"
             npm install --legacy-peer-deps 2>/dev/null || npm install
@@ -104,7 +111,7 @@ jobs:
                pm2 start dist/worker.js --name task-bot-worker --cwd "$DEPLOY_DIR/bots/task-bot" && \
                pm2 save)
 
-            echo "==> Task Bot deployed!"
+            echo "==> Task Bot deployed (branch: $BRANCH)!"
             pm2 list
 
   deploy-shorts-factory:
@@ -123,9 +130,11 @@ jobs:
             set -e
             cd /opt/arcadeum
 
-            echo "==> Pulling latest code..."
-            git fetch origin main
-            git reset --hard origin/main
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+
+            echo "==> Pulling latest code (branch: $BRANCH)..."
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
 
             echo "==> Installing dependencies..."
             pnpm install --frozen-lockfile 2>/dev/null || pnpm install

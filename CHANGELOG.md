@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.176] - 2026-07-31
+
+### Fixed
+- use randomInt to avoid biased modulo in code generation
+- replace Math.random() with crypto APIs and sanitize query inputs
+
+
 ## [1.23.175] - 2026-07-31
 
 ### Changed

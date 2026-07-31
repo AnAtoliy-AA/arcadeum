@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@arcadeum/ui": "workspace:*",
-    "@expo/vector-icons": "^15.0.3",
+    "@expo/vector-icons": "^15.1.1",
     "@noble/ciphers": "^2.1.1",
     "@react-native-community/slider": "^5.0.1",
     "@react-navigation/bottom-tabs": "^7.3.10",

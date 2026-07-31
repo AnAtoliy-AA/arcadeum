@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 import { ShopService } from './shop.service';
 import { CatalogService } from './catalog.service';
 import { InventoryService } from './inventory.service';
@@ -140,6 +140,15 @@ export class FakeConnection {
   async transaction<T>(work: (session: unknown) => Promise<T>): Promise<T> {
     if (this.shouldFail) throw new Error('transaction failed');
     return work({});
+  }
+  startSession(): Promise<ClientSession> {
+    return Promise.resolve({
+      withTransaction: async <T>(work: () => Promise<T>): Promise<T> => {
+        if (this.shouldFail) throw new Error('transaction failed');
+        return work();
+      },
+      endSession: () => {},
+    } as unknown as ClientSession);
   }
 }
 

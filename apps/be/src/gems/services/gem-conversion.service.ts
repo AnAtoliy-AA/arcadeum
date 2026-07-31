@@ -1,3 +1,4 @@
+import { runInTransaction } from '../../common/utils/transaction.util';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
@@ -45,9 +46,8 @@ export class GemConversionService {
       throw new BadRequestException('gems.conversionExceedsCap');
     }
 
-    const session = await this.connection.startSession();
     try {
-      await session.withTransaction(async () => {
+      await runInTransaction(this.connection, async (session) => {
         await this.wallet.debit(
           userId,
           'gems',
@@ -88,8 +88,6 @@ export class GemConversionService {
       } else {
         throw err;
       }
-    } finally {
-      await session.endSession();
     }
 
     const balance = await this.wallet.getBalance(userId);

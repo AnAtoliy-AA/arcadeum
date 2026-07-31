@@ -50,11 +50,10 @@ export default async function HomeHero() {
           <h1
             id="hero-heading"
             className="hero-title-main hero-title-shimmer"
-            data-text="Arcadeum Games"
+            data-text="Arcadeum"
           >
             Arcadeum
-            <br />
-            Games
+            <span className="hero-title-sub">Games</span>
           </h1>
 
           <div

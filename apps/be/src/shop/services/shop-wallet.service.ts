@@ -1,3 +1,4 @@
+import { runInTransaction } from '../../common/utils/transaction.util';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Types } from 'mongoose';
@@ -113,7 +114,7 @@ export class ShopWalletService {
       background: null,
     };
 
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       const created = await this.inventoryModel.create(
         [
           {

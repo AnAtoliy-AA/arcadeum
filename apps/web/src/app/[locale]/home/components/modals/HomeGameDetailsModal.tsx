@@ -69,12 +69,6 @@ export function HomeGameDetailsModal({
 
   const homeCopy = messages.home ?? {};
 
-  React.useEffect(() => {
-    if (isOpen) {
-      setActiveTab(initialTab);
-    }
-  }, [isOpen, initialTab]);
-
   const rulesData = useMemo(() => {
     if (!game) return [];
 
@@ -213,7 +207,7 @@ export function HomeGameDetailsModal({
   if (!isOpen || !game) return null;
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal key={isOpen ? gameId : undefined} open={isOpen} onClose={onClose}>
       <ModalGlassContent maxWidth="800px">
         <style>{tabStyles}</style>
         <HeaderBackgroundEmoji aria-hidden>

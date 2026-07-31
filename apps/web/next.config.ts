@@ -389,7 +389,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    qualities: [75, 80],
+    qualities: [70, 75, 80, 85],
     minimumCacheTTL: 3600,
   },
 };

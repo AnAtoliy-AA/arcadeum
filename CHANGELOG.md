@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.2] - 2026-07-31
+
+### Fixed
+- fix remaining CI failures from GamesPage and GameVariantSelector
+- fix @arcadeum/ui test failures from Tamagui duplicate packages
+- add parens for nullish coalescing in GameVariantSelector
+- resolve lint and backend e2e test failures from dependabot upgrades
+
+
+## [1.24.1] - 2026-07-31
+
+### Fixed
+- add standalone mongo transaction fallback to shop services
+- resolve cookie domain and standalone mongo transaction fallback
+
+
 ## [1.24.0] - 2026-07-31
 
 ### Changed

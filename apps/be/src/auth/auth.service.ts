@@ -371,7 +371,7 @@ export class AuthService {
       .select('displayName username email')
       .lean();
     return blocked.map((u) => ({
-      id: (u._id as Types.ObjectId).toString(),
+      id: u._id.toString(),
       displayName: u.displayName || u.username || u.email || 'Unknown',
       username: u.username || '',
     }));

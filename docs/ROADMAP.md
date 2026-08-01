@@ -19,16 +19,16 @@
 
 | Feature                | ARC     | Branch                       | Status          |
 | ---------------------- | ------- | ---------------------------- | --------------- |
-| 1A. Stat Tracking      | ARC-871 | `ARC-871-stat-tracking`      | Partial         |
+| 1A. Stat Tracking      | ARC-871 | `ARC-871-stat-tracking`      | **Implemented** |
 | 1B. Emotes             | ARC-872 | `ARC-872-emotes`             | **Implemented** |
-| 1C. House Rules        | ARC-873 | `ARC-873-house-rules`        | Partial         |
+| 1C. House Rules        | ARC-873 | `ARC-873-house-rules`        | **Implemented** |
 | 1D. Dark Mode          | —       | —                            | **Implemented** |
 | 1E. Undo/Take-Back     | ARC-874 | `ARC-874-undo-takeback`      | **Implemented** |
-| 1F. Password Rooms     | ARC-875 | `ARC-875-password-rooms`     | Partial         |
+| 1F. Password Rooms     | ARC-875 | `ARC-875-password-rooms`     | **Implemented** |
 | 2A. Matchmaking Queue  | ARC-876 | `ARC-876-matchmaking`        | Not started     |
 | 2B. Chess Engine       | ARC-877 | `ARC-877-chess-engine`       | **Implemented** |
 | 2C. Checkers Engine    | ARC-878 | `ARC-878-checkers-engine`    | **Implemented** |
-| 2D. Audio Cues         | ARC-879 | `ARC-879-audio-cues`         | Partial         |
+| 2D. Audio Cues         | ARC-879 | `ARC-879-audio-cues`         | **Implemented** |
 | 2E. AI Difficulty      | ARC-880 | `ARC-880-ai-difficulty`      | Not started     |
 | 2F. Ranked/ELO         | ARC-881 | `ARC-881-ranked-elo`         | Not started     |
 | 2G. Achievements       | —       | —                            | **Implemented** |
@@ -39,20 +39,20 @@
 | 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | Not started     |
 | 3D. Go                 | ARC-887 | `ARC-887-go`                 | Not started     |
 | 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
-| 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | Partial         |
+| 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
 | 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | Not started     |
 | 3I. Clans              | ARC-891 | `ARC-891-clans`              | Not started     |
 | 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
-| 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | Partial         |
+| 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
 | 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
 | 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
 | 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | Partial         |
 | 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
 | 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
-| 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | Partial         |
-| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | Not started     |
+| 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | **Implemented** |
+| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | Partial         |
 | 4K. Web Share          | —       | —                            | **Implemented** |
 | 4L. Push Notifications | —       | —                            | **Implemented** |
 | 4M. Tournaments        | —       | —                            | **Implemented** |
@@ -928,19 +928,56 @@ Revenue without compromising the free, frictionless core.
 
 ---
 
-## Recommended Implementation Order
+## Tier 6 — Growth, SEO, and Analytics (8-Week Action Plan)
 
-| Phase       | Features                                                                  | Est. Days | Impact                            |
-| ----------- | ------------------------------------------------------------------------- | --------- | --------------------------------- |
-| **Phase 1** | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms | 8-12      | Immediate engagement boost        |
-| **Phase 2** | Chess + Checkers + AI difficulty + Audio cues + Hints/Coach               | 14-20     | Game catalog doubles, skill depth |
-| **Phase 3** | Matchmaking queue + Ranked/ELO + Achievements + Leaderboards              | 15-20     | Competitive infrastructure        |
-| **Phase 4** | Hearts + Spades + Backgammon + Pachisi + Post-game analysis               | 22-28     | Broadens audience                 |
-| **Phase 5** | Go + Clans + Game nights + Replays + Spectator mode                       | 28-38     | Community + hardcore depth        |
-| **Phase 6** | Tournaments + Seasons + Daily challenges + Colorblind + A11y              | 20-28     | Retention + accessibility         |
-| **Phase 7** | PWA + Offline + Push notifications + Share + Timer system                 | 10-16     | Platform maturity                 |
-| **Phase 8** | Board game creator + Mobile port + Monetization                           | 35-51     | Full platform vision              |
+This tier prioritizes marketing, positioning, acquisition channels, and viral loops to surface the extensive features already built on the platform.
 
-**Total estimated: 152-213 working days for all features.**
+### 6A. Viral & Invite Loop Optimization
 
-Phase 1 alone (under 2 weeks) delivers immediate value: players track progress, react to each other, customize games, and get quality-of-life improvements — making the platform feel alive before the big game additions land.
+- **One-Tap Share Sheet**: Native share sheet support on mobile/browser for instant WhatsApp/Telegram/Discord invite copying.
+- **Room QR Codes**: Dynamic QR code generation per game room for in-person local multiplayer setup.
+- **OG Preview Images**: Auto-generation of dynamic social sharing preview images showing game type, title, and current lobby status.
+- **Group Rematch Flow**: Instant one-click "Play Again" button that recreates the room and auto-notifies or re-invites previous players.
+
+### 6B. SEO & Crawler Optimizations
+
+- **Game-Specific Landing Pages**: Dedicated, crawlable index routes for Chess, Sea Battle, Cascade, Checkers, Critical, Glimworm, and Tic-Tac-Toe.
+- **Structured Schema Markup**: Integrate `schema.org` `VideoGame` and `FAQPage` JSON-LD microdata on all game templates.
+- **Hreflang Configuration**: Ensure fully optimized search crawler indexing across all 5 supported locales.
+- **SEO Strategy Articles**: In-depth strategy and rule guides to target long-tail terms like "play chess with friends free online no signup".
+
+### 6C. Analytics & Funnel Instrumentation
+
+- **Privacy-First Funnel tracking**: Integrate Plausible or PostHog to map visitor conversion rates.
+- **Separated Funnel Cohorts**: Build separate dashboard tracking for the Solo vs. Social (invite friends) play path.
+- **Campaign Attribution**: Instrument UTM and `?ref=` query tracking on invite links to measure virality K-factor.
+
+### 6D. Homepage & UX Refactoring (Surfacing features)
+
+- **Primary CTAs**: Elevate "Play vs AI" to co-primary status next to "Create Private Room" to capture cold traffic.
+- **Featured Games Carousel**: Ensure high-search-volume games like Chess are prominently highlighted.
+- **Interactive Lobby Fallbacks**: Seed always-joinable AI practice rooms on the `/games` active rooms explorer to prevent an empty/abandoned appearance.
+
+---
+
+## Recommended Implementation & Status Order
+
+The platform's core infrastructure is highly mature. Phase 1 is fully complete, and several advanced features from later phases are already shipped.
+
+| Phase / Focus                | Features & Ticket Scope                                                                                           | Est. Days | Status / Progress                                       |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------- |
+| **Phase 1: Core UX**         | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                         | 10        | **100% Completed**                                      |
+| **Phase 2: Growth & SEO**    | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning | 12        | **In Progress (Active Focus)**                          |
+| **Phase 3: Classic Games**   | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                         | 15        | **100% Completed**                                      |
+| **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                      |
+| **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | Not started                                             |
+| **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | Not started                                             |
+| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode Completed** (Rest Not started)         |
+| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial) |
+| **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                             |
+
+### Summary of Completed vs. Outstanding Tasks
+
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B).
+- **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
+- **Next Engineering Priorities**: Improved Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Rating system (2F).

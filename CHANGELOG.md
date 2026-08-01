@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.4] - 2026-08-01
+
+### Added
+- add Cyber Falcon & Gorilla avatars and restrict ARC pricing to gems
+- add Cyber Leopard and Cyber Eagle Elite avatars
+- add 24 new premium cosmetics including magma, oceanic, and sakura themes
+
+
 ## [1.24.3] - 2026-07-31
 
 ### Fixed

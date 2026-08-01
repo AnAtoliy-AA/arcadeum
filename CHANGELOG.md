@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.8] - 2026-08-01
+
+### Refactored
+- remove mimo engine, use opencode only
+- remove mimo engine, use opencode only
+
+
 ## [1.24.7] - 2026-08-01
 
 ### Documentation

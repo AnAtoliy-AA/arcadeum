@@ -256,6 +256,24 @@ async function cleanDirectory(dirPath) {
   } catch {}
 }
 
+async function cleanOldOutput(maxAgeDays) {
+  try {
+    const files = await readdir(CONFIG.outputDir);
+    const now = Date.now();
+    const maxAge = maxAgeDays * 24 * 60 * 60 * 1000;
+    let deleted = 0;
+    for (const file of files) {
+      const filePath = path.join(CONFIG.outputDir, file);
+      const s = await stat(filePath);
+      if (now - s.mtimeMs > maxAge) {
+        await unlink(filePath);
+        deleted++;
+      }
+    }
+    if (deleted > 0) log('info', `Cleaned ${deleted} old output files`);
+  } catch {}
+}
+
 // ============================================================================
 // AUDIO TRACKS
 // ============================================================================
@@ -765,6 +783,9 @@ async function main() {
     }
 
     await cleanDirectory(CONFIG.rawCapturesDir);
+
+    // Clean up old output files (older than 2 days)
+    await cleanOldOutput(2);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     log('info', `=== Gameplay Factory Completed in ${duration}s ===`);

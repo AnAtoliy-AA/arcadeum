@@ -255,6 +255,14 @@ export const shopFr = {
         name: 'Aigle Cybernétique Élite',
         desc: 'Une variante d’aigle cybernétique hyperréaliste.',
       },
+      falconcyber: {
+        name: 'Faucon Cybernétique',
+        desc: 'Un faucon cybernétique hyperréaliste.',
+      },
+      gorillacyber: {
+        name: 'Gorille Cybernétique',
+        desc: 'Un gorille cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },

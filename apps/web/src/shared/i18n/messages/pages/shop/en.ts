@@ -219,6 +219,8 @@ export const shopEn = {
       dragoncyber: { name: 'Cyber Dragon', desc: 'A hyperrealistic cybernetic dragon.' },
       leopardcyber: { name: 'Cyber Leopard', desc: 'A hyperrealistic cybernetic leopard.' },
       eaglecyber: { name: 'Cyber Eagle Elite', desc: 'A hyperrealistic cybernetic eagle variant.' },
+      falconcyber: { name: 'Cyber Falcon', desc: 'A hyperrealistic cybernetic falcon.' },
+      gorillacyber: { name: 'Cyber Gorilla', desc: 'A hyperrealistic cybernetic gorilla.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },

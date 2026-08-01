@@ -255,6 +255,14 @@ export const shopEs = {
         name: 'Águila Cibernética Élite',
         desc: 'Una variante de águila cibernética hiperrealista.',
       },
+      falconcyber: {
+        name: 'Halcón Cibernético',
+        desc: 'Un halcón cibernético hiperrealista.',
+      },
+      gorillacyber: {
+        name: 'Gorila Cibernético',
+        desc: 'Un gorila cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },

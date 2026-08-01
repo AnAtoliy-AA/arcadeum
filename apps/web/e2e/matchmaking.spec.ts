@@ -9,8 +9,8 @@ test.describe('Matchmaking Queue', () => {
   test('should open matchmaking modal when playing vs human and support cancellation', async ({
     page,
   }) => {
-    // Navigate to a game page (e.g. Chess)
-    await navigateTo(page, '/games/chess');
+    // Navigate to a game page (e.g. Sea Battle)
+    await navigateTo(page, '/games/sea-battle');
 
     // Click "Play vs Human" or the quickplay human button
     const humanBtn = page.getByTestId('quickplay-human-button');

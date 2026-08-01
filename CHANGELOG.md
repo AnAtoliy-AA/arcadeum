@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.6] - 2026-08-01
+
+### Added
+- auto-cleanup old videos + Instagram + multi-theme (ARC-212) (ARC-212)
+- dual output (full video + short clip), stable selectors (ARC-212) (ARC-212)
+- add gameplay recording script (ARC-212) (ARC-212)
+- add arcadeum.games end card to videos
+
+### Fixed
+- Instagram posting via Postiz (ARC-212) (ARC-212)
+- audio in shorts + random themes + varied card play (ARC-212) (ARC-212)
+- animated end card + faster navigation (ARC-212) (ARC-212)
+- real mobile emulation + working gameplay (ARC-212) (ARC-212)
+- two separate sessions - desktop full + mobile short (ARC-212) (ARC-212)
+- desktop viewport for full video, vertical crop for shorts (ARC-212) (ARC-212)
+- full video 80-90s to avoid YouTube Shorts classification (ARC-212) (ARC-212)
+- fetch audio tracks dynamically from CDN tracks.json
+- fix OCI deployment and add multi-platform support
+
+
 ## [1.24.5] - 2026-08-01
 
 ### Added

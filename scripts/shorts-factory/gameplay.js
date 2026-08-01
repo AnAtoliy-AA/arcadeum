@@ -64,7 +64,7 @@ const GAMES = [
       { row: 2, col: 1 },
     ],
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid="ttt-cell-0-0"], [data-testid="game-board-section"]', { timeout: 15000 });
+      await page.waitForSelector('[data-testid="ttt-cell-0-0"], [data-testid="game-board-section"], [data-testid="turn-status-pill"]', { timeout: 20000 });
     },
     async makeMove(page, move) {
       const cell = page.locator(`[data-testid="ttt-cell-${move.row}-${move.col}"]`);
@@ -87,6 +87,8 @@ const GAMES = [
     url: '/en/games/cascade',
     caption: 'Cascade - match the colors! 🃏',
     moves: [],
+    _lastLabel: null,
+    _stuckCount: 0,
     async waitForGame(page) {
       await page.waitForSelector('[data-testid="cascade-turn-avatar"]', { timeout: 15000 });
       await page.waitForTimeout(2000);
@@ -103,10 +105,37 @@ const GAMES = [
         }
       }
 
-      // Click enabled (playable) hand buttons — force:true to bypass any overlays
+      // Click enabled (playable) hand buttons — try a different card if stuck
       const playable = page.locator('[data-testid="game-board-section"] button:not([disabled]):not([aria-label*="Draw"]):not([aria-label*="Discard"])');
       const count = await playable.count();
       if (count > 0) {
+        // Get labels of all playable cards
+        const labels = [];
+        for (let i = 0; i < count; i++) {
+          const label = await playable.nth(i).getAttribute('aria-label');
+          labels.push(label || `card-${i}`);
+        }
+        // If stuck on same card, try draw pile instead
+        const currentLabel = labels[0];
+        if (currentLabel === this._lastLabel) {
+          this._stuckCount++;
+        } else {
+          this._stuckCount = 0;
+        }
+        this._lastLabel = currentLabel;
+
+        if (this._stuckCount >= 2) {
+          // Draw a card instead
+          const drawPile = page.locator('[data-testid="game-board-section"] button[aria-label*="Draw"]');
+          if ((await drawPile.count()) > 0) {
+            await drawPile.first().click({ force: true });
+            this._stuckCount = 0;
+            this._lastLabel = null;
+            return true;
+          }
+        }
+
+        // Pick a random playable card (not always the first one)
         const idx = Math.floor(Math.random() * count);
         await playable.nth(idx).click({ force: true });
         return true;
@@ -115,6 +144,8 @@ const GAMES = [
       const drawPile = page.locator('[data-testid="game-board-section"] button[aria-label*="Draw"]');
       if ((await drawPile.count()) > 0) {
         await drawPile.first().click({ force: true });
+        this._lastLabel = null;
+        this._stuckCount = 0;
         return true;
       }
       return false;
@@ -147,9 +178,12 @@ const GAMES = [
         await playBtn.click({ force: true });
         return true;
       }
-      const card = page.locator('[data-testid^="hand-card-"][data-testid$="-0"]').first();
-      if ((await card.count()) > 0) {
-        await card.click({ force: true });
+      // Pick a random hand card instead of always index 0
+      const cards = page.locator('[data-testid^="hand-card-"]');
+      const count = await cards.count();
+      if (count > 0) {
+        const idx = Math.floor(Math.random() * count);
+        await cards.nth(idx).click({ force: true });
         return true;
       }
       return false;
@@ -289,10 +323,20 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
     await quickplayBtn.click({ force: true });
     log('info', `${label}: clicked Play vs AI`);
 
-    // Step 2: Wait for lobby, then click "Start Game"
+    // Step 2: Wait for lobby, then select random theme and click "Start Game"
     log('info', `${label}: looking for Start Game button...`);
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     await startBtn.waitFor({ state: 'visible', timeout: 15000 });
+
+    // Select a random theme if available (Cascade has variant buttons)
+    const themes = await page.locator('[data-testid^="cascade-variant-"]').all();
+    if (themes.length > 0) {
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+      await randomTheme.click({ force: true });
+      log('info', `${label}: selected theme ${await randomTheme.getAttribute('data-testid')}`);
+      await sleep(500);
+    }
+
     await startBtn.click({ force: true });
     log('info', `${label}: clicked Start Game`);
 
@@ -481,17 +525,20 @@ async function processShortClip(rawVideoPath, recordedDuration) {
   const outputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
 
   // Scale from 430x932 (real mobile) to 1080x1920 (YouTube Shorts) and pad to fill
+  // Audio: trim to match clip duration and apply fade out
   await runFFmpeg(
     [
+      '-ss', String(clipStart),
       '-i', rawVideoPath,
       '-i', audioTrack,
-      '-ss', String(clipStart),
       '-t', String(shortLen),
       '-vf', `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black`,
       '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
+      '-map', '0:v:0',
+      '-map', '1:a:0',
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
-      '-y', '-shortest', mainPath,
+      '-y', mainPath,
     ],
     'short highlight clip',
   );

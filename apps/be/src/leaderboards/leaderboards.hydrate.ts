@@ -47,6 +47,7 @@ export type RealLeaderboardEntry = {
   wins: number;
   losses: number;
   winRate: number;
+  elo?: number;
   role?: string | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
@@ -133,7 +134,7 @@ export function hydratePlayer(
     countryCode: COUNTRIES_BY_REGION[region],
     tier,
     rating,
-    elo: rating + 80,
+    elo: real.elo ?? rating + 80,
     wins: real.wins,
     losses: real.losses,
     draws: 0,

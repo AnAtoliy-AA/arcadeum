@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type PipelineStage } from 'mongoose';
-import { PlayerStats } from './schemas/player-stats.schema';
+import {
+  PlayerStats,
+  PlayerStatsDocument,
+} from './schemas/player-stats.schema';
 import { PlayerStatRecord } from './schemas/player-stat-record.schema';
 
 interface SyncRecord {
@@ -28,6 +31,85 @@ export class PlayerStatsService {
     winners: string[],
   ): Promise<void> {
     const humanIds = playerIds.filter((id) => !id.startsWith('anon_'));
+
+    // If it's a 2-player human-vs-human game, we calculate ELO
+    if (humanIds.length === 2) {
+      const p1 = humanIds[0];
+      const p2 = humanIds[1];
+
+      try {
+        const getOrCreateStats = async (userId: string) => {
+          let stats = await this.statsModel
+            .findOne({ userId: { $eq: userId }, gameId: { $eq: gameId } })
+            .exec();
+          if (!stats) {
+            stats = new this.statsModel({
+              userId,
+              gameId,
+              totalGames: 0,
+              wins: 0,
+              losses: 0,
+              draws: 0,
+              elo: 1200,
+            });
+          }
+          return stats;
+        };
+
+        const stats1 = await getOrCreateStats(p1);
+        const stats2 = await getOrCreateStats(p2);
+
+        const r1 = stats1.elo ?? 1200;
+        const r2 = stats2.elo ?? 1200;
+
+        const e1 = 1 / (1 + Math.pow(10, (r2 - r1) / 400));
+        const e2 = 1 / (1 + Math.pow(10, (r1 - r2) / 400));
+
+        let s1 = 0.5;
+        let s2 = 0.5;
+        if (winners.includes(p1) && !winners.includes(p2)) {
+          s1 = 1;
+          s2 = 0;
+        } else if (winners.includes(p2) && !winners.includes(p1)) {
+          s1 = 0;
+          s2 = 1;
+        }
+
+        const k = 32;
+        stats1.elo = Math.round(r1 + k * (s1 - e1));
+        stats2.elo = Math.round(r2 + k * (s2 - e2));
+
+        const updateDocStats = (
+          stats: PlayerStatsDocument,
+          isWinner: boolean,
+          isLoser: boolean,
+          isDraw: boolean,
+        ) => {
+          stats.totalGames = (stats.totalGames || 0) + 1;
+          stats.wins = (stats.wins || 0) + (isWinner ? 1 : 0);
+          stats.losses = (stats.losses || 0) + (isLoser ? 1 : 0);
+          stats.draws = (stats.draws || 0) + (isDraw ? 1 : 0);
+        };
+
+        updateDocStats(
+          stats1,
+          winners.includes(p1),
+          !winners.includes(p1) && winners.length > 0,
+          winners.length === 0,
+        );
+        updateDocStats(
+          stats2,
+          winners.includes(p2),
+          !winners.includes(p2) && winners.length > 0,
+          winners.length === 0,
+        );
+
+        await Promise.all([stats1.save(), stats2.save()]);
+        return;
+      } catch (err) {
+        this.logger.error(`Failed to calculate ELO for match: ${String(err)}`);
+      }
+    }
 
     for (const userId of humanIds) {
       try {
@@ -88,7 +170,13 @@ export class PlayerStatsService {
     const docs = await this.statsModel
       .find({ userId: { $eq: userId } })
       .lean<
-        { gameId: string; totalGames: number; wins: number; losses: number }[]
+        {
+          gameId: string;
+          totalGames: number;
+          wins: number;
+          losses: number;
+          elo?: number;
+        }[]
       >()
       .exec();
 
@@ -96,6 +184,7 @@ export class PlayerStatsService {
       gameId: d.gameId,
       totalGames: d.totalGames,
       wins: d.wins,
+      elo: d.elo ?? 1200,
       winRate:
         d.totalGames > 0
           ? Math.round((d.wins / d.totalGames) * 10000) / 100
@@ -187,6 +276,7 @@ export class PlayerStatsService {
           totalGames: { $sum: '$totalGames' },
           wins: { $sum: '$wins' },
           losses: { $sum: '$losses' },
+          elo: { $max: '$elo' },
         },
       },
       {
@@ -200,9 +290,10 @@ export class PlayerStatsService {
               else: 0,
             },
           },
+          elo: { $ifNull: ['$elo', 1200] },
         },
       },
-      { $sort: { wins: -1, winRate: -1 } },
+      { $sort: gameId ? { elo: -1, wins: -1 } : { wins: -1, winRate: -1 } },
       {
         $facet: {
           entries: [
@@ -216,6 +307,7 @@ export class PlayerStatsService {
                 wins: 1,
                 losses: 1,
                 winRate: 1,
+                elo: 1,
               },
             },
           ],
@@ -232,6 +324,7 @@ export class PlayerStatsService {
           wins: number;
           winRate: number;
           losses: number;
+          elo: number;
         }>;
         total: Array<{ count: number }>;
       }>(pipeline)

@@ -95,7 +95,11 @@ describe('AnnouncementsService (admin)', () => {
         { provide: NotificationsService, useValue: notificationsMock },
         {
           provide: CACHE_MANAGER,
-          useValue: { get: jest.fn().mockResolvedValue(undefined), set: jest.fn().mockResolvedValue(undefined) },
+          useValue: {
+            get: jest.fn().mockResolvedValue(undefined),
+            set: jest.fn().mockResolvedValue(undefined),
+            del: jest.fn().mockResolvedValue(undefined),
+          },
         },
       ],
     }).compile();

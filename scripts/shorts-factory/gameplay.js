@@ -64,7 +64,7 @@ const GAMES = [
       { row: 2, col: 1 },
     ],
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid="ttt-cell-0-0"]', { timeout: 15000 });
+      await page.waitForSelector('[data-testid="ttt-cell-0-0"], [data-testid="game-board-section"]', { timeout: 15000 });
     },
     async makeMove(page, move) {
       const cell = page.locator(`[data-testid="ttt-cell-${move.row}-${move.col}"]`);
@@ -133,7 +133,12 @@ const GAMES = [
     caption: 'Critical - card combos for the win! ⚡',
     moves: [],
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid="hand-rail-play"]', { timeout: 15000 });
+      // Try hand-rail-play first, fallback to cascade-turn-avatar or any game indicator
+      try {
+        await page.waitForSelector('[data-testid="hand-rail-play"]', { timeout: 10000 });
+      } catch {
+        await page.waitForSelector('[data-testid="game-board-section"], [data-testid="turn-status-pill"]', { timeout: 10000 });
+      }
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
@@ -276,49 +281,23 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
 
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await sleep(3000);
 
-    // Step 1: Click "Play vs AI now" button (on landing page)
+    // Step 1: Wait for and click "Play vs AI now" button
     log('info', `${label}: looking for Play vs AI button...`);
     const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
-    try {
-      await quickplayBtn.waitFor({ state: 'visible', timeout: 10000 });
-      await quickplayBtn.click({ force: true });
-      log('info', `${label}: clicked Play vs AI`);
-      await sleep(3000);
-    } catch {
-      log('info', `${label}: Play vs AI button not found, trying alternative...`);
-      // Fallback: click any button with "Play" text
-      const playBtn = page.getByRole('link', { name: /play/i }).first();
-      if ((await playBtn.count()) > 0) {
-        await playBtn.click({ force: true });
-        await sleep(3000);
-      }
-    }
+    await quickplayBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await quickplayBtn.click({ force: true });
+    log('info', `${label}: clicked Play vs AI`);
 
-    // Step 2: Wait for lobby to load, then click "Start Game"
+    // Step 2: Wait for lobby, then click "Start Game"
     log('info', `${label}: looking for Start Game button...`);
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
-    try {
-      await startBtn.waitFor({ state: 'visible', timeout: 15000 });
-      await sleep(2000);
-      await startBtn.click({ force: true });
-      log('info', `${label}: clicked Start Game`);
-      // Wait longer for game to actually start (especially on mobile)
-      await sleep(8000);
-    } catch {
-      log('info', `${label}: Start Game button not found`);
-    }
+    await startBtn.waitFor({ state: 'visible', timeout: 15000 });
+    await startBtn.click({ force: true });
+    log('info', `${label}: clicked Start Game`);
 
-    // Step 3: Wait for game board — try multiple selectors
-    try {
-      await game.waitForGame(page);
-    } catch {
-      // If game board not found, wait a bit more and retry
-      log('info', `${label}: game board not found yet, waiting more...`);
-      await sleep(5000);
-      await game.waitForGame(page);
-    }
+    // Step 3: Wait for game board
+    await game.waitForGame(page);
     log('info', `${label}: game board loaded`);
 
     const startTime = Date.now();
@@ -346,9 +325,9 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
         if (success) {
           moveCount++;
           log('info', `${label}: move ${moveCount}`);
-          await sleep(randomInt(800, 2000));
+          await sleep(randomInt(300, 800));
         } else {
-          await sleep(1000);
+          await sleep(300);
         }
       } else {
         await sleep(500);
@@ -361,8 +340,6 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
     await context.close();
     await browser.close();
     browser = null;
-
-    await sleep(1000);
 
     const latestVideo = await getLatestFile(CONFIG.rawCapturesDir);
     if (!latestVideo) throw new Error('No video file found');
@@ -405,14 +382,26 @@ function runFFmpeg(args, label) {
 
 async function buildEndCard(timestamp, suffix, width, height) {
   const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${suffix}-${timestamp}.mp4`);
-  const fontSize = height > width ? 72 : 56;
+  const titleSize = height > width ? 80 : 64;
+  const subtitleSize = height > width ? 32 : 24;
+  const dur = CONFIG.endCardDuration;
+
+  // Animation: title fades in + scales from 0.8→1.0, subtitle fades in slightly later
+  const vf = [
+    `scale=${width}:${height}`,
+    `drawtext=text='arcadeum.games':fontcolor=white:fontsize=${titleSize}:x=(w-text_w)/2:y=(h/2-text_h-30):font=sans-serif:alpha='if(lt(t,0.6),t/0.6,1)'`,
+    `drawtext=text='forever free online board games':fontcolor=0xBBBBBB:fontsize=${subtitleSize}:x=(w-text_w)/2:y=(h/2+30):font=sans-serif:alpha='if(lt(t,1.0),(t-0.4)/0.6,1)'`,
+    `fade=t=in:st=0:d=0.5`,
+    `fade=t=out:st=${dur - 0.5}:d=0.5`,
+  ].join(',');
+
   await runFFmpeg(
     [
-      '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:d=${CONFIG.endCardDuration}:r=30`,
+      '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:d=${dur}:r=30`,
       '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
-      '-vf', `drawtext=text='arcadeum.games':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
-      '-af', 'afade=t=in:st=0:d=0.5',
-      '-t', String(CONFIG.endCardDuration),
+      '-vf', vf,
+      '-af', 'afade=t=in:st=0:d=0.3,afade=t=out:st=' + (dur - 0.5) + ':d=0.5',
+      '-t', String(dur),
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
       '-shortest', '-y', endCardPath,

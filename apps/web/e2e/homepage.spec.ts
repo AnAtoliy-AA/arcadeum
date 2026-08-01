@@ -129,6 +129,6 @@ test.describe('Home Page', () => {
     const playVsAiButton = page.getByRole('link', { name: /play vs ai/i });
     await expect(playVsAiButton).toBeVisible();
     await playVsAiButton.click();
-    await expect(page).toHaveURL(/\/games\?status=lobby%2Cin_progress/);
+    await expect(page).toHaveURL(/\/games\?status=lobby,in_progress/);
   });
 });

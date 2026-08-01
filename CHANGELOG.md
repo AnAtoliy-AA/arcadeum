@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.5] - 2026-08-01
+
+### Added
+- cache achievement definitions in achievements service
+- add Redis caching to public announcements fetch
+- import AppCacheModule globally in Appmodule
+- add AppCacheModule configuration with Redis/Memory fallback support
+
+### Fixed
+- resolve mongoose model typecast warning in achievements service cache
+
+### Improved
+- implement Redis Pub/Sub adapter support in CompressedIoAdapter
+- implement active announcement cache eviction on mutations
+- enable Socket.IO WebSocket compression adapter
+- add compound index for refresh tokens validation and rotation
+- add compound index for achievement definitions category and sort order
+- add compound index for referrals status and date
+- add compound index for player-stat-record query path
+
+### Documentation
+- add environment variable documentation for APP_CACHE_TTL_SECONDS
+
+
 ## [1.24.4] - 2026-08-01
 
 ### Added

@@ -166,7 +166,18 @@ export class AnnouncementsService {
       audience,
       body,
     );
+    await this.clearActiveCache();
     return announcement;
+  }
+
+  private async clearActiveCache(): Promise<void> {
+    const auths = ['auth', 'anon'];
+    const locales = ['en', 'ru', 'es', 'fr', 'by'];
+    for (const auth of auths) {
+      for (const locale of locales) {
+        await this.cache.del(`announcement:active:${auth}:${locale}`).catch(() => {});
+      }
+    }
   }
 
   private async maybeDispatchAnnouncementNotification(
@@ -224,6 +235,7 @@ export class AnnouncementsService {
     if (!updated) {
       throw new NotFoundException({ code: 'ANNOUNCEMENT_NOT_FOUND' });
     }
+    await this.clearActiveCache();
     return this.findById(id);
   }
 
@@ -235,6 +247,7 @@ export class AnnouncementsService {
     if (!result) {
       throw new NotFoundException({ code: 'ANNOUNCEMENT_NOT_FOUND' });
     }
+    await this.clearActiveCache();
   }
 
   async findById(id: string): Promise<AnnouncementAdminItem> {

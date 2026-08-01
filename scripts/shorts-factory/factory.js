@@ -905,7 +905,44 @@ async function captureBrowsing() {
 // ============================================================================
 
 /**
- * Processes the raw video with FFmpeg to add audio and trim to target duration
+ * Runs an FFmpeg command and returns a promise
+ */
+function runFFmpeg(args, label) {
+  log('info', `Executing FFmpeg (${label})`, { args });
+
+  return new Promise((resolve, reject) => {
+    const ffmpeg = spawn('ffmpeg', args);
+    let stderr = '';
+
+    ffmpeg.stdout.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    ffmpeg.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    ffmpeg.on('close', (code) => {
+      if (code === 0) {
+        log('info', `FFmpeg (${label}) complete`);
+        resolve();
+      } else {
+        log('error', `FFmpeg (${label}) failed`, { code, stderr });
+        reject(new Error(`FFmpeg exited with code ${code}: ${stderr}`));
+      }
+    });
+
+    ffmpeg.on('error', (error) => {
+      log('error', `Failed to spawn FFmpeg (${label})`, {
+        error: error.message,
+      });
+      reject(error);
+    });
+  });
+}
+
+/**
+ * Processes the raw video with FFmpeg: trim, add audio, append end card
  */
 async function processVideo(rawVideoPath, recordedDuration) {
   log('info', 'Starting FFmpeg video processing...');
@@ -921,72 +958,125 @@ async function processVideo(rawVideoPath, recordedDuration) {
   // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
   const trimDuration = Math.min(Math.ceil(recordedDuration / 1000), 8);
   const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
+  const endCardDuration = 2;
 
   log(
     'info',
-    `Trim duration: ${trimDuration}s, fade-out starts at: ${fadeOutStart}s`,
+    `Trim duration: ${trimDuration}s, end card: ${endCardDuration}s, fade-out starts at: ${fadeOutStart}s`,
   );
 
-  // Generate unique output filename
   const timestamp = Date.now();
+  const mainVideoPath = path.join(
+    CONFIG.outputDir,
+    `arcadeum-main-${timestamp}.mp4`,
+  );
+  const endCardPath = path.join(
+    CONFIG.outputDir,
+    `arcadeum-endcard-${timestamp}.mp4`,
+  );
   const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
 
-  // Build FFmpeg command
-  const ffmpegArgs = [
-    '-i',
-    rawVideoPath,
-    '-i',
-    audioTrack,
-    '-t',
-    String(trimDuration),
-    '-af',
-    `afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}`,
-    '-c:v',
-    'libx264',
-    '-preset',
-    'fast',
-    '-crf',
-    '23',
-    '-c:a',
-    'aac',
-    '-b:a',
-    '128k',
-    '-y',
-    '-shortest',
-    outputPath,
-  ];
+  // Step 1: Trim video and add audio
+  await runFFmpeg(
+    [
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(trimDuration),
+      '-af',
+      `afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}`,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      '-shortest',
+      mainVideoPath,
+    ],
+    'main video',
+  );
 
-  log('info', 'Executing FFmpeg command', { args: ffmpegArgs });
+  // Step 2: Create end card (black background + arcadeum.games text + fade-in audio)
+  await runFFmpeg(
+    [
+      '-f',
+      'lavfi',
+      '-i',
+      `color=c=black:s=1080x1920:d=${endCardDuration}:r=30`,
+      '-f',
+      'lavfi',
+      '-i',
+      `anullsrc=r=44100:cl=stereo`,
+      '-vf',
+      `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
+      '-af',
+      `afade=t=in:st=0:d=0.5`,
+      '-t',
+      String(endCardDuration),
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
+      '-y',
+      endCardPath,
+    ],
+    'end card',
+  );
 
-  return new Promise((resolve, reject) => {
-    const ffmpeg = spawn('ffmpeg', ffmpegArgs);
+  // Step 3: Concatenate main video + end card
+  const concatListPath = path.join(CONFIG.outputDir, `concat-${timestamp}.txt`);
+  const { writeFile } = require('fs/promises');
+  await writeFile(
+    concatListPath,
+    `file '${mainVideoPath}'\nfile '${endCardPath}'`,
+  );
 
-    let stdout = '';
-    let stderr = '';
+  await runFFmpeg(
+    [
+      '-f',
+      'concat',
+      '-safe',
+      '0',
+      '-i',
+      concatListPath,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      outputPath,
+    ],
+    'concat',
+  );
 
-    ffmpeg.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
+  // Cleanup temp files
+  await unlink(mainVideoPath).catch(() => {});
+  await unlink(endCardPath).catch(() => {});
+  await unlink(concatListPath).catch(() => {});
 
-    ffmpeg.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    ffmpeg.on('close', (code) => {
-      if (code === 0) {
-        log('info', `FFmpeg processing complete: ${outputPath}`);
-        resolve(outputPath);
-      } else {
-        log('error', 'FFmpeg processing failed', { code, stderr });
-        reject(new Error(`FFmpeg exited with code ${code}: ${stderr}`));
-      }
-    });
-
-    ffmpeg.on('error', (error) => {
-      log('error', 'Failed to spawn FFmpeg', { error: error.message });
-      reject(error);
-    });
-  });
+  log('info', `Final video with end card: ${outputPath}`);
+  return outputPath;
 }
 
 // ============================================================================

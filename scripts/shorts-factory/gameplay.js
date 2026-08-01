@@ -30,8 +30,8 @@ const CONFIG = {
   baseUrl: 'https://arcadeum.games',
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
-  // Full video: 55-65s of gameplay + 2s end card
-  fullDuration: { min: 55000, max: 65000 },
+  // Full video: 80-90s of gameplay + 2s end card (>60s so YouTube treats as regular video, not Short)
+  fullDuration: { min: 80000, max: 90000 },
   // Short clip: 5-10s highlight + 2s end card
   shortDuration: { min: 5, max: 10 },
   fadeOutDuration: 2,
@@ -429,7 +429,7 @@ async function processVideos(rawVideoPath, recordedDuration) {
   const timestamp = Date.now();
 
   // === FULL VIDEO (55-65s + 2s end card) ===
-  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 65);
+  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 95);
   const fullFadeStart = Math.max(0, fullDurationSec - CONFIG.fadeOutDuration);
   const fullMainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
   const fullEndCardPath = await buildEndCard(timestamp, 'full');

@@ -359,4 +359,20 @@ export class GamesRealtimeService {
     }
     return delivered;
   }
+
+  emitToUser(userId: string, event: string, payload: unknown): void {
+    if (!this.server) return;
+    const socketIds = this.userIdToSockets.get(userId);
+    if (socketIds) {
+      for (const socketId of socketIds) {
+        this.server
+          .to(socketId)
+          .emit(event, maybeEncrypt(payload as Record<string, unknown>));
+      }
+    }
+  }
+
+  emitMatchmakingSuccess(userId: string, roomId: string): void {
+    this.emitToUser(userId, 'games.matchmaking.success', { roomId });
+  }
 }

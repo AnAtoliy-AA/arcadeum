@@ -6,6 +6,8 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 
+import { useMatchmaking } from '@/features/games/ui';
+
 type Mode = 'ai' | 'human';
 
 interface Props {
@@ -32,6 +34,7 @@ export function QuickplayButton({
   const { snapshot } = useSessionTokens();
   const [loading, setLoading] = useState(false);
   const [errored, setErrored] = useState(false);
+  const { joinQueue } = useMatchmaking();
 
   useEffect(() => {
     if (!errored) return undefined;
@@ -41,16 +44,17 @@ export function QuickplayButton({
 
   const handleClick = async () => {
     setErrored(false);
+    if (mode === 'human') {
+      joinQueue(gameId, variant);
+      return;
+    }
     setLoading(true);
     try {
       const options = {
         token: snapshot.accessToken || undefined,
         variant,
       };
-      const { room } =
-        mode === 'ai'
-          ? await gamesApi.quickplay(gameId, options)
-          : await gamesApi.findHumanMatch(gameId, options);
+      const { room } = await gamesApi.quickplay(gameId, options);
       router.push(routes.gameRoom(room.id));
     } catch (err) {
       console.warn(`Quickplay (${mode}) failed:`, err);

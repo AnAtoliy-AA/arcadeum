@@ -19,7 +19,7 @@ export async function handleTask(
   const text = ctx.message?.text?.replace(/^\/task\s*/, '');
   if (!text) {
     await ctx.reply(
-      'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=mimo (default: mimo)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
+      'Usage:\n/task Chess Engine\n/task high Add emotes to games\n\nOptional flags:\n--engine=opencode (default: opencode)\n--high / --urgent / --low\n--req " requirement 1, requirement 2"\nScope: backend, web, mobile, game',
     );
     return;
   }
@@ -74,7 +74,7 @@ export async function handleImplement(
   const text = ctx.message?.text ?? '';
   const issueNum = text.match(/#?(\d+)/)?.[1];
   if (!issueNum) {
-    await ctx.reply('Usage: /implement #12 --engine=mimo\n\nValid engines: mimo, opencode');
+    await ctx.reply('Usage: /implement #12 --engine=opencode\n\nValid engines: opencode');
     return;
   }
 
@@ -82,11 +82,11 @@ export async function handleImplement(
   const engineMatch = text.match(/--engine[=:](\S+)/i);
   if (engineMatch) {
     const requested = engineMatch[1].toLowerCase();
-    if (requested !== 'mimo' && requested !== 'opencode') {
-      await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /implement #${issueNum} --engine=mimo`);
+    if (requested !== 'opencode') {
+      await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: opencode\n\nExample: /implement #${issueNum} --engine=opencode`);
       return;
     }
-    engine = requested as 'opencode' | 'mimo';
+    engine = requested as 'opencode';
   }
 
   await queueImplementation(service, issueNum, engine, ctx);
@@ -103,7 +103,7 @@ export async function handleFix(
   const text = ctx.message?.text ?? '';
   const prNum = text.match(/#?(\d+)/)?.[1];
   if (!prNum) {
-    await ctx.reply('Usage: /fix #12 --engine=mimo\n\nFixes CI failures, review comments, and common issues on a PR.\nValid engines: mimo, opencode');
+    await ctx.reply('Usage: /fix #12 --engine=opencode\n\nFixes CI failures, review comments, and common issues on a PR.\nValid engines: opencode');
     return;
   }
 
@@ -111,11 +111,11 @@ export async function handleFix(
   const engineMatch = text.match(/--engine[=:](\S+)/i);
   if (engineMatch) {
     const requested = engineMatch[1].toLowerCase();
-    if (requested !== 'mimo' && requested !== 'opencode') {
-      await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: mimo, opencode\n\nExample: /fix #${prNum} --engine=mimo`);
+    if (requested !== 'opencode') {
+      await ctx.reply(`Invalid engine: ${requested}\n\nValid engines: opencode\n\nExample: /fix #${prNum} --engine=opencode`);
       return;
     }
-    engine = requested as 'opencode' | 'mimo';
+    engine = requested as 'opencode';
   }
 
   const chatId = ctx.chat?.id ?? 0;
@@ -241,9 +241,9 @@ export async function handlePrefs(
   const text = ctx.message?.text ?? '';
   const userId = ctx.from?.id ?? 0;
 
-  const setMatch = text.match(/\/prefs\s+(opencode|mimo)/i);
+  const setMatch = text.match(/\/prefs\s+(opencode)/i);
   if (setMatch) {
-    const engine = setMatch[1].toLowerCase() as 'opencode' | 'mimo';
+    const engine = setMatch[1].toLowerCase() as 'opencode';
     service.prefsService.setEngine(userId, engine);
     await ctx.reply(`Default engine set to *${engine}*`, {
       parse_mode: 'Markdown',
@@ -264,11 +264,11 @@ export async function handlePrefs(
   const current = service.prefsService.getAll(userId);
   await ctx.reply(
     `Current preferences:\n` +
-      `Engine: *${current?.engine ?? 'mimo'}*\n` +
+      `Engine: *${current?.engine ?? 'opencode'}*\n` +
       `Scope: *${current?.defaultScope?.join(', ') ?? 'web'}*\n\n` +
       `Usage:\n` +
       `/prefs opencode — set default engine\n` +
-      `/prefs mimo — set default engine\n` +
+      `/prefs opencode — set default engine\n` +
       `/prefs scope: backend, web — set default scope`,
     { parse_mode: 'Markdown' },
   );

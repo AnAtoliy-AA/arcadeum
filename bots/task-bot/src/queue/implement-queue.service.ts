@@ -6,7 +6,7 @@ export type JobType = 'implement' | 'fix' | 'ci-fix';
 
 export interface ImplementJobData {
   issueNum: string;
-  engine: 'opencode' | 'mimo';
+  engine: 'opencode';
   chatId: number;
   userId: number;
   type: JobType;
@@ -31,7 +31,7 @@ export class ImplementQueueService {
 
   async addJob(
     issueNum: string,
-    engine: 'opencode' | 'mimo',
+    engine: 'opencode',
     chatId: number,
     userId: number,
     data?: Partial<ImplementJobData>,
@@ -63,7 +63,7 @@ export class ImplementQueueService {
 
   async addFixJob(
     prNumber: string,
-    engine: 'opencode' | 'mimo',
+    engine: 'opencode',
     chatId: number,
     userId: number,
     data: {
@@ -101,7 +101,7 @@ export class ImplementQueueService {
 
   async addCIFixJob(
     prNumber: string,
-    engine: 'opencode' | 'mimo',
+    engine: 'opencode',
     chatId: number,
     userId: number,
     data: {

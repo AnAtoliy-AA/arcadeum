@@ -34,7 +34,7 @@ describe('ReviewQueueService', () => {
     it('should add a review job to the queue', async () => {
       const result = await service.addJob(
         '123',
-        'mimo',
+        'opencode',
         123456,
         789,
         'https://github.com/test/pr/1',
@@ -43,7 +43,7 @@ describe('ReviewQueueService', () => {
       expect(mockQueue.add).toHaveBeenCalledWith(
         {
           issueNum: '123',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           prUrl: 'https://github.com/test/pr/1',

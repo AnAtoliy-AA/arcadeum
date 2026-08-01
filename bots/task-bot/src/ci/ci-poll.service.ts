@@ -204,7 +204,7 @@ export class CIFollService implements OnModuleDestroy {
 
           await this.queueService.addCIFixJob(
             prNumber,
-            engine as 'mimo' | 'opencode',
+            engine as 'opencode',
             0,
             0,
             {

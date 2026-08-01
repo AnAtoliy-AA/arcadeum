@@ -4,7 +4,7 @@ import { Queue } from 'bull';
 
 export interface ReviewJobData {
   issueNum: string;
-  engine: 'opencode' | 'mimo';
+  engine: 'opencode';
   chatId: number;
   userId: number;
   prUrl: string;
@@ -21,7 +21,7 @@ export class ReviewQueueService {
 
   async addJob(
     issueNum: string,
-    engine: 'opencode' | 'mimo',
+    engine: 'opencode',
     chatId: number,
     userId: number,
     prUrl: string,

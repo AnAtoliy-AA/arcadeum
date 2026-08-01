@@ -52,7 +52,7 @@ export class CIController {
       await this.notificationService.publish({
         jobId: `ci-fix-max-${payload.prNumber}`,
         issueNum: payload.issueNum ?? payload.prNumber,
-        engine: 'mimo',
+        engine: 'opencode',
         success: false,
         message: `CI fix failed after ${maxAttempts} attempts. Manual intervention needed.\nFailed checks: ${payload.failedChecks.join(', ')}`,
         timestamp: Date.now(),
@@ -71,7 +71,7 @@ export class CIController {
     await this.notificationService.publish({
       jobId: `ci-fail-${payload.prNumber}`,
       issueNum: payload.issueNum ?? payload.prNumber,
-      engine: 'mimo',
+      engine: 'opencode',
       success: false,
       message: `CI failed (attempt ${currentAttempts + 1}/${maxAttempts}): ${payload.failedChecks.join(', ')}`,
       timestamp: Date.now(),
@@ -82,7 +82,7 @@ export class CIController {
     try {
       const jobId = await this.queueService.addCIFixJob(
         payload.prNumber,
-        'mimo',
+        'opencode',
         0,
         0,
         {
@@ -112,7 +112,7 @@ export class CIController {
       await this.notificationService.publish({
         jobId: `ci-fix-${payload.prNumber}`,
         issueNum: payload.issueNum ?? payload.prNumber,
-        engine: 'mimo',
+        engine: 'opencode',
         success: false,
         message: (err as Error).message,
         timestamp: Date.now(),

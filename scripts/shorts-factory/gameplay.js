@@ -3,12 +3,10 @@
 /**
  * Gameplay Factory - Records actual gameplay footage
  *
- * Two outputs per run:
- *   1. Full gameplay video (~60s, horizontal 1920x1080) → YouTube Video
- *   2. Short highlight clip (3-5s, vertical 1080x1920) → YouTube Short + Instagram Reel
+ * Two separate Playwright sessions:
+ *   1. Desktop (1920x1080) → full video → YouTube Video
+ *   2. Mobile (1080x1920) → short clip → YouTube Short + Instagram Reel
  *
- * Full video is recorded in desktop viewport (16:9).
- * Short clip is cropped from the desktop recording to vertical with blurred BG.
  * Both get an arcadeum.games end card.
  *
  * Usage:
@@ -28,8 +26,6 @@ require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 // ============================================================================
 
 const CONFIG = {
-  // Record in desktop viewport (16:9) — guarantees YouTube classifies as video, not Short
-  viewport: { width: 1920, height: 1080 },
   baseUrl: 'https://arcadeum.games',
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
@@ -229,15 +225,13 @@ async function getAudioTracks() {
 }
 
 // ============================================================================
-// GAMEPLAY RECORDING (desktop 1920x1080)
+// GAMEPLAY RECORDING (parameterized viewport)
 // ============================================================================
 
-async function recordGameplay() {
-  log('info', 'Starting gameplay recording (desktop viewport)...');
+async function recordSession(game, viewport, maxDurationMs, label) {
+  log('info', `Recording ${label} session (${viewport.width}x${viewport.height})...`);
 
   let browser = null;
-  const game = randomElement(GAMES);
-  log('info', `Selected game: ${game.name}`);
 
   try {
     await ensureDir(CONFIG.rawCapturesDir);
@@ -248,51 +242,48 @@ async function recordGameplay() {
     });
 
     const context = await browser.newContext({
-      viewport: CONFIG.viewport,
+      viewport,
       recordVideo: {
         dir: CONFIG.rawCapturesDir,
-        size: CONFIG.viewport,
+        size: viewport,
       },
     });
 
     const page = await context.newPage();
 
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
-    log('info', `Navigating to ${gameUrl}`);
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(2000);
 
-    log('info', 'Clicking "Play vs AI" button...');
+    // Click "Play vs AI"
     const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
     if ((await quickplayBtn.count()) > 0) {
       await quickplayBtn.click();
       await sleep(5000);
     }
 
+    // Handle lobby
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     if ((await startBtn.count()) > 0) {
-      log('info', 'In lobby, waiting for bot...');
       await sleep(3000);
-      log('info', 'Clicking "Start Game"');
       await startBtn.click();
       await sleep(5000);
     }
 
-    log('info', 'Waiting for game board...');
+    // Wait for game board
     await game.waitForGame(page);
-    log('info', 'Game board loaded!');
+    log('info', `${label}: game board loaded`);
 
     const startTime = Date.now();
-    const maxDuration = randomInt(CONFIG.fullDuration.min, CONFIG.fullDuration.max);
     let moveCount = 0;
     let moveIndex = 0;
 
-    while (Date.now() - startTime < maxDuration) {
+    while (Date.now() - startTime < maxDurationMs) {
       let attempts = 0;
       while (!(await game.isMyTurn(page)) && attempts < 30) {
         await sleep(500);
         attempts++;
-        if (Date.now() - startTime >= maxDuration) break;
+        if (Date.now() - startTime >= maxDurationMs) break;
       }
 
       if (await game.isMyTurn(page)) {
@@ -307,7 +298,7 @@ async function recordGameplay() {
         const success = await game.makeMove(page, move);
         if (success) {
           moveCount++;
-          log('info', `Move ${moveCount}`);
+          log('info', `${label}: move ${moveCount}`);
           await sleep(randomInt(800, 2000));
         } else {
           await sleep(1000);
@@ -318,7 +309,7 @@ async function recordGameplay() {
     }
 
     const finalDuration = Date.now() - startTime;
-    log('info', `Gameplay recorded: ${moveCount} moves in ${(finalDuration / 1000).toFixed(1)}s`);
+    log('info', `${label}: recorded ${moveCount} moves in ${(finalDuration / 1000).toFixed(1)}s`);
 
     await context.close();
     await browser.close();
@@ -329,15 +320,12 @@ async function recordGameplay() {
     const latestVideo = await getLatestFile(CONFIG.rawCapturesDir);
     if (!latestVideo) throw new Error('No video file found');
 
-    log('info', `Raw gameplay captured: ${latestVideo}`);
     return {
       videoPath: latestVideo,
       duration: finalDuration,
-      caption: game.caption,
-      gameName: game.name,
     };
   } catch (error) {
-    log('error', 'Failed to record gameplay', { error: error.message, stack: error.stack });
+    log('error', `${label} recording failed`, { error: error.message });
     throw error;
   } finally {
     if (browser) await browser.close();
@@ -370,11 +358,12 @@ function runFFmpeg(args, label) {
 
 async function buildEndCard(timestamp, suffix, width, height) {
   const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${suffix}-${timestamp}.mp4`);
+  const fontSize = height > width ? 72 : 56;
   await runFFmpeg(
     [
       '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:d=${CONFIG.endCardDuration}:r=30`,
       '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
-      '-vf', `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
+      '-vf', `drawtext=text='arcadeum.games':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
       '-af', 'afade=t=in:st=0:d=0.5',
       '-t', String(CONFIG.endCardDuration),
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
@@ -404,55 +393,55 @@ async function concatVideos(parts, outputPath, label) {
   await unlink(concatList).catch(() => {});
 }
 
-async function processVideos(rawVideoPath, recordedDuration) {
-  log('info', 'Processing gameplay videos...');
-  await ensureDir(CONFIG.outputDir);
+async function processFullVideo(rawVideoPath, recordedDuration) {
+  log('info', 'Processing full video (desktop)...');
 
   const tracks = await getAudioTracks();
   const audioTrack = randomElement(tracks);
   const timestamp = Date.now();
+  const durationSec = Math.min(Math.ceil(recordedDuration / 1000), 70);
+  const fadeStart = Math.max(0, durationSec - CONFIG.fadeOutDuration);
 
-  // === FULL VIDEO (horizontal 1920x1080 + 2s end card) ===
-  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 70);
-  const fullFadeStart = Math.max(0, fullDurationSec - CONFIG.fadeOutDuration);
-  const fullMainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
-  const fullEndCardPath = await buildEndCard(timestamp, 'full', 1920, 1080);
-  const fullOutputPath = path.join(CONFIG.outputDir, `gameplay-full-${timestamp}.mp4`);
+  const mainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
+  const endCardPath = await buildEndCard(timestamp, 'full', 1920, 1080);
+  const outputPath = path.join(CONFIG.outputDir, `gameplay-full-${timestamp}.mp4`);
 
   await runFFmpeg(
     [
       '-i', rawVideoPath,
       '-i', audioTrack,
-      '-t', String(fullDurationSec),
-      '-af', `afade=t=out:st=${fullFadeStart}:d=${CONFIG.fadeOutDuration}`,
+      '-t', String(durationSec),
+      '-af', `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
-      '-y', '-shortest', fullMainPath,
+      '-y', '-shortest', mainPath,
     ],
     'full main video',
   );
 
-  await concatVideos([fullMainPath, fullEndCardPath], fullOutputPath, 'full');
-  await unlink(fullMainPath).catch(() => {});
-  await unlink(fullEndCardPath).catch(() => {});
+  await concatVideos([mainPath, endCardPath], outputPath, 'full');
+  await unlink(mainPath).catch(() => {});
+  await unlink(endCardPath).catch(() => {});
 
-  log('info', `Full video (1920x1080): ${fullOutputPath}`);
+  log('info', `Full video: ${outputPath}`);
+  return outputPath;
+}
 
-  // === SHORT CLIP (vertical 1080x1920, 3-5s from desktop recording + blurred BG) ===
-  const totalSec = recordedDuration / 1000;
+async function processShortClip(rawVideoPath, recordedDuration) {
+  log('info', 'Processing short clip (mobile)...');
+
+  const tracks = await getAudioTracks();
+  const audioTrack = randomElement(tracks);
+  const timestamp = Date.now();
   const shortLen = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
+  const totalSec = recordedDuration / 1000;
   const earliestStart = Math.max(0, totalSec * 0.1);
   const latestStart = Math.max(earliestStart, totalSec - shortLen - 2);
   const clipStart = randomInt(Math.floor(earliestStart), Math.floor(latestStart));
 
-  const shortMainPath = path.join(CONFIG.outputDir, `gameplay-short-main-${timestamp}.mp4`);
-  const shortEndCardPath = await buildEndCard(timestamp, 'short', 1080, 1920);
-  const shortOutputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
-
-  // Crop desktop to vertical center + add blurred BG
-  // 1920x1080 → extract center 608x1080 → scale to 1080x1920 with blurred backdrop
-  const cropW = Math.floor((1080 / 1920) * 1080); // ~608
-  const cropX = Math.floor((1920 - cropW) / 2);
+  const mainPath = path.join(CONFIG.outputDir, `gameplay-short-main-${timestamp}.mp4`);
+  const endCardPath = await buildEndCard(timestamp, 'short', 1080, 1920);
+  const outputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
 
   await runFFmpeg(
     [
@@ -460,29 +449,20 @@ async function processVideos(rawVideoPath, recordedDuration) {
       '-i', audioTrack,
       '-ss', String(clipStart),
       '-t', String(shortLen),
-      '-filter_complex',
-      [
-        `[0:v]split=2[bg][fg]`,
-        `[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:5[blurred]`,
-        `[fg]scale=${cropW}:1080:force_original_aspect_ratio=decrease[scaled]`,
-        `[blurred][scaled]overlay=(W-w)/2:(H-h)/2[out]`,
-      ].join(';'),
-      '-map', '[out]', '-map', '0:a?',
       '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
-      '-y', '-shortest', shortMainPath,
+      '-y', '-shortest', mainPath,
     ],
-    'short highlight clip (vertical crop)',
+    'short highlight clip',
   );
 
-  await concatVideos([shortMainPath, shortEndCardPath], shortOutputPath, 'short');
-  await unlink(shortMainPath).catch(() => {});
-  await unlink(shortEndCardPath).catch(() => {});
+  await concatVideos([mainPath, endCardPath], outputPath, 'short');
+  await unlink(mainPath).catch(() => {});
+  await unlink(endCardPath).catch(() => {});
 
-  log('info', `Short clip (1080x1920): ${shortOutputPath}`);
-
-  return { fullOutputPath, shortOutputPath };
+  log('info', `Short clip: ${outputPath}`);
+  return outputPath;
 }
 
 // ============================================================================
@@ -595,10 +575,10 @@ async function publishBoth(fullPath, shortPath, caption) {
 
   const results = { full: null, short: null };
 
-  // --- Full video → YouTube Video ---
+  // --- Full video → YouTube Video (horizontal) ---
   if (CONFIG.postizYouTubeId) {
     try {
-      log('info', 'Uploading full video (horizontal)...');
+      log('info', 'Uploading full video (desktop 1920x1080)...');
       const fullFile = await uploadVideo(fullPath);
       log('info', 'Full video uploaded', { id: fullFile.id });
       results.full = await postToYouTube(fullFile, caption);
@@ -608,9 +588,9 @@ async function publishBoth(fullPath, shortPath, caption) {
     }
   }
 
-  // --- Short clip → YouTube Short + Instagram Reel + TikTok ---
+  // --- Short clip → YouTube Short + Instagram Reel + TikTok (vertical) ---
   try {
-    log('info', 'Uploading short clip (vertical)...');
+    log('info', 'Uploading short clip (mobile 1080x1920)...');
     const shortFile = await uploadVideo(shortPath);
     log('info', 'Short clip uploaded', { id: shortFile.id });
 
@@ -655,18 +635,34 @@ async function main() {
   const startTime = Date.now();
   log('info', '=== Gameplay Factory Started ===');
 
-  let rawVideoPath = null;
-
   try {
-    const capture = await recordGameplay();
-    rawVideoPath = capture.videoPath;
+    const game = randomElement(GAMES);
+    log('info', `Selected game: ${game.name}`);
 
-    const { fullOutputPath, shortOutputPath } = await processVideos(
-      capture.videoPath,
-      capture.duration,
+    // --- Session 1: Desktop (1920x1080) for full video ---
+    const fullDuration = randomInt(CONFIG.fullDuration.min, CONFIG.fullDuration.max);
+    const desktopCapture = await recordSession(
+      game,
+      { width: 1920, height: 1080 },
+      fullDuration,
+      'desktop',
     );
 
-    await publishBoth(fullOutputPath, shortOutputPath, capture.caption);
+    // --- Session 2: Mobile (1080x1920) for short clip ---
+    const shortDuration = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max) * 1000;
+    const mobileCapture = await recordSession(
+      game,
+      { width: 1080, height: 1920 },
+      shortDuration + 5000, // a bit extra for lobby loading
+      'mobile',
+    );
+
+    // --- Process both ---
+    const fullOutputPath = await processFullVideo(desktopCapture.videoPath, desktopCapture.duration);
+    const shortOutputPath = await processShortClip(mobileCapture.videoPath, mobileCapture.duration);
+
+    // --- Publish ---
+    await publishBoth(fullOutputPath, shortOutputPath, game.caption);
 
     await cleanDirectory(CONFIG.rawCapturesDir);
 

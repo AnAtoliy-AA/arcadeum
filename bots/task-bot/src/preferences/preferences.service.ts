@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
-type Engine = 'opencode' | 'mimo';
+type Engine = 'opencode';
 
 interface UserPreference {
   engine: Engine;
@@ -51,7 +51,7 @@ export class PreferencesService {
   }
 
   getEngine(userId: number): Engine {
-    return this.preferences.get(userId)?.engine ?? 'mimo';
+    return this.preferences.get(userId)?.engine ?? 'opencode';
   }
 
   getScope(userId: number): string[] {
@@ -60,7 +60,7 @@ export class PreferencesService {
 
   setEngine(userId: number, engine: Engine) {
     const current = this.preferences.get(userId) ?? {
-      engine: 'mimo' as Engine,
+      engine: 'opencode' as Engine,
       defaultScope: ['web'],
     };
     this.preferences.set(userId, { ...current, engine });
@@ -69,7 +69,7 @@ export class PreferencesService {
 
   setScope(userId: number, scope: string[]) {
     const current = this.preferences.get(userId) ?? {
-      engine: 'mimo' as Engine,
+      engine: 'opencode' as Engine,
       defaultScope: ['web'],
     };
     this.preferences.set(userId, { ...current, defaultScope: scope });

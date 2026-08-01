@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.10] - 2026-08-01
+
+### Fixed
+- add missing providers to GitHubModule
+
+
 ## [1.24.9] - 2026-08-01
 
 ### Changed

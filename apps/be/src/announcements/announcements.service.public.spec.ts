@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Types } from 'mongoose';
 import { AnnouncementsService } from './announcements.service';
 import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
@@ -64,6 +65,10 @@ describe('AnnouncementsService (public)', () => {
           useValue: {
             listUserIdsWithCategoryEnabled: jest.fn().mockResolvedValue([]),
           },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: { get: jest.fn().mockResolvedValue(undefined), set: jest.fn().mockResolvedValue(undefined) },
         },
       ],
     }).compile();

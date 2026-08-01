@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 import { Types } from 'mongoose';
@@ -91,6 +92,10 @@ describe('AdminAnnouncementsController (integration)', () => {
           useValue: {
             listUserIdsWithCategoryEnabled: jest.fn().mockResolvedValue([]),
           },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: { get: jest.fn().mockResolvedValue(undefined), set: jest.fn().mockResolvedValue(undefined) },
         },
       ],
     })

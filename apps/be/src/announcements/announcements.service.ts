@@ -1,9 +1,12 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, FilterQuery } from 'mongoose';
 import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
@@ -59,12 +62,14 @@ interface ListForAdminArgs {
 @Injectable()
 export class AnnouncementsService {
   private readonly logger = new Logger(AnnouncementsService.name);
+  private static readonly ACTIVE_CACHE_TTL_MS = 30_000;
 
   constructor(
     @InjectModel(Announcement.name)
     private readonly model: Model<AnnouncementDocument>,
     private readonly notificationDispatcher: NotificationDispatcher,
     private readonly notificationsService: NotificationsService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
   async listForAdmin(
@@ -116,6 +121,10 @@ export class AnnouncementsService {
     isAuthenticated: boolean,
     locale: AnnouncementLocale,
   ): Promise<AnnouncementPublicItem | null> {
+    const cacheKey = `announcement:active:${isAuthenticated ? 'auth' : 'anon'}:${locale}`;
+    const cached = await this.cache.get<AnnouncementPublicItem | null>(cacheKey);
+    if (cached !== undefined) return cached;
+
     const now = new Date();
     const audienceFilter = isAuthenticated
       ? { audience: { $in: ['all', 'authenticated'] } }
@@ -128,8 +137,9 @@ export class AnnouncementsService {
       .findOne(filter)
       .sort({ severityRank: -1, startsAt: -1, _id: -1 })
       .lean<AnnouncementLean | null>();
-    if (!doc) return null;
-    return this.toPublicItem(doc, locale);
+    const result = doc ? this.toPublicItem(doc, locale) : null;
+    await this.cache.set(cacheKey, result, AnnouncementsService.ACTIVE_CACHE_TTL_MS);
+    return result;
   }
 
   async create(

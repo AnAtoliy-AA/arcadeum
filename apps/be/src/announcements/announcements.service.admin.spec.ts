@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Types } from 'mongoose';
 import { AnnouncementsService } from './announcements.service';
 import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
@@ -92,6 +93,10 @@ describe('AnnouncementsService (admin)', () => {
         { provide: getModelToken(Announcement.name), useValue: model },
         { provide: NotificationDispatcher, useValue: dispatcherMock },
         { provide: NotificationsService, useValue: notificationsMock },
+        {
+          provide: CACHE_MANAGER,
+          useValue: { get: jest.fn().mockResolvedValue(undefined), set: jest.fn().mockResolvedValue(undefined) },
+        },
       ],
     }).compile();
     service = moduleRef.get(AnnouncementsService);

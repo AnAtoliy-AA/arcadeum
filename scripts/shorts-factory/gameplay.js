@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Gameplay Shorts Factory - Records actual gameplay footage
+ * Gameplay Factory - Records actual gameplay footage
  *
- * Launches Playwright, starts an anonymous bot game, records gameplay,
- * processes with FFmpeg (music + end card), and posts via Postiz API.
+ * Two outputs per run:
+ *   1. Full gameplay video (~60s) → YouTube video
+ *   2. Short highlight clip (5-10s) → YouTube Short + Instagram Reel
+ *
+ * Both get an arcadeum.games end card.
  *
  * Usage:
  *   node scripts/shorts-factory/gameplay.js
@@ -27,8 +30,12 @@ const CONFIG = {
   baseUrl: 'https://arcadeum.games',
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
-  gameplayDuration: { min: 6000, max: 8000 },
+  // Full video: 55-65s of gameplay + 2s end card
+  fullDuration: { min: 55000, max: 65000 },
+  // Short clip: 5-10s highlight + 2s end card
+  shortDuration: { min: 5, max: 10 },
   fadeOutDuration: 2,
+  endCardDuration: 2,
   postizBaseUrl:
     process.env.POSTIZ_BASE_URL ||
     'https://postiz.arcadeum.games/api/public/v1',
@@ -48,18 +55,19 @@ const GAMES = [
     slug: 'tic_tac_toe_v1',
     url: '/en/games/tic-tac-toe',
     caption: 'Tic Tac Toe - classic showdown! ❌⭕',
-    // Pre-defined move sequence (row, col) for 3x3 board
-    // Player is X (first move), bot is O
     moves: [
-      { row: 1, col: 1 }, // center
-      { row: 0, col: 0 }, // top-left
-      { row: 0, col: 2 }, // top-right
-      { row: 2, col: 0 }, // bottom-left
+      { row: 1, col: 1 },
+      { row: 0, col: 0 },
+      { row: 0, col: 2 },
+      { row: 2, col: 0 },
+      { row: 2, col: 2 },
+      { row: 1, col: 0 },
+      { row: 1, col: 2 },
+      { row: 0, col: 1 },
+      { row: 2, col: 1 },
     ],
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid^="ttt-cell-"]', {
-        timeout: 15000,
-      });
+      await page.waitForSelector('[data-testid="ttt-cell-0-0"]', { timeout: 15000 });
     },
     async makeMove(page, move) {
       const cell = page.locator(`[data-testid="ttt-cell-${move.row}-${move.col}"]`);
@@ -70,8 +78,10 @@ const GAMES = [
       return false;
     },
     async isMyTurn(page) {
-      const badge = page.locator('text=Your turn');
-      return (await badge.count()) > 0;
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
     },
   },
   {
@@ -79,28 +89,31 @@ const GAMES = [
     slug: 'cascade_v1',
     url: '/en/games/cascade',
     caption: 'Cascade - match the colors! 🃏',
-    moves: [], // dynamic: click playable cards
+    moves: [],
     async waitForGame(page) {
-      await page.waitForTimeout(3000); // wait for cards to deal
+      await page.waitForSelector('[data-testid="cascade-turn-avatar"]', { timeout: 15000 });
+      await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      // Click any glowing/playable card
-      const playableCards = page.locator('button[style*="pulsing"], button:has([class*="glow"])');
-      if ((await playableCards.count()) > 0) {
-        await playableCards.first().click();
+      // Click any button with a pulsing/glowing animation (playable cards)
+      const playable = page.locator('[data-testid="hand-rail"] button[style*="pulsing"], [data-testid="hand-rail"] button:has([class*="glow"])');
+      if ((await playable.count()) > 0) {
+        await playable.first().click();
         return true;
       }
-      // Fallback: click draw pile
-      const drawPile = page.locator('text=Draw').first();
-      if ((await drawPile.count()) > 0) {
-        await drawPile.click();
+      // Fallback: try any clickable card in the hand area
+      const handCard = page.locator('[data-testid="hand-cards"] button').first();
+      if ((await handCard.count()) > 0) {
+        await handCard.click();
         return true;
       }
       return false;
     },
     async isMyTurn(page) {
-      const badge = page.locator('text=Your turn');
-      return (await badge.count()) > 0;
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
     },
   },
   {
@@ -110,20 +123,29 @@ const GAMES = [
     caption: 'Critical - card combos for the win! ⚡',
     moves: [],
     async waitForGame(page) {
-      await page.waitForTimeout(3000);
+      await page.waitForSelector('[data-testid="hand-rail-play"]', { timeout: 15000 });
+      await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      // Click any playable card in hand
-      const cards = page.locator('[class*="hand"] button, [data-testid*="card"]');
-      if ((await cards.count()) > 0) {
-        await cards.first().click();
+      // Try to play a card via the play button
+      const playBtn = page.locator('[data-testid="hand-rail-play"]');
+      if ((await playBtn.count()) > 0 && await playBtn.isEnabled()) {
+        await playBtn.click();
+        return true;
+      }
+      // Fallback: click a card in hand
+      const card = page.locator('[data-testid^="hand-card-"][data-testid$="-0"]').first();
+      if ((await card.count()) > 0) {
+        await card.click();
         return true;
       }
       return false;
     },
     async isMyTurn(page) {
-      const badge = page.locator('text=Your turn');
-      return (await badge.count()) > 0;
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
     },
   },
 ];
@@ -188,7 +210,7 @@ async function cleanDirectory(dirPath) {
 }
 
 // ============================================================================
-// AUDIO TRACKS (shared with factory.js)
+// AUDIO TRACKS
 // ============================================================================
 
 const CDN_BASE = process.env.SHORTS_CDN_URL;
@@ -207,15 +229,6 @@ async function getAudioTracks() {
     cachedTracks = [`${CDN_BASE}/music/battleship-grid.mp3`];
   }
   return cachedTracks;
-}
-
-// ============================================================================
-// AUTHENTICATION
-// ============================================================================
-
-async function login(page) {
-  log('info', 'Using anonymous play (no login required)');
-  return true;
 }
 
 // ============================================================================
@@ -247,40 +260,32 @@ async function recordGameplay() {
 
     const page = await context.newPage();
 
-    // Login
-    const loggedIn = await login(page);
-    if (!loggedIn) {
-      log('warn', 'Not logged in, proceeding with guest mode (spectating)');
-    }
-
     // Navigate to game page
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     log('info', `Navigating to ${gameUrl}`);
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(2000);
 
-    // Click "Play vs AI" quickplay button
-    log('info', 'Looking for "Play vs AI now" button...');
-    const quickplayBtn = page.locator(
-      'button:has-text("Play vs AI now"), button:has-text("Play vs AI"), button:has-text("Quickplay")',
-    ).first();
+    // Click "Play vs AI"
+    log('info', 'Clicking "Play vs AI" button...');
+    const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
 
     if ((await quickplayBtn.count()) > 0) {
-      log('info', 'Clicking "Play vs AI now"');
+      log('info', 'Clicking quickplay button');
       await quickplayBtn.click();
-      await sleep(5000); // wait for lobby to load
+      await sleep(5000);
     } else {
       log('warn', 'No quickplay button found');
     }
 
-    // Handle lobby: wait for bot, then start game
-    const startBtn = page.locator('button:has-text("Start Game")');
+    // Handle lobby
+    const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     if ((await startBtn.count()) > 0) {
       log('info', 'In lobby, waiting for bot to join...');
       await sleep(3000);
       log('info', 'Clicking "Start Game"');
       await startBtn.click();
-      await sleep(5000); // wait for game board
+      await sleep(5000);
     }
 
     // Wait for game board
@@ -288,39 +293,45 @@ async function recordGameplay() {
     await game.waitForGame(page);
     log('info', 'Game board loaded!');
 
-    // Play moves
+    // Play moves for full duration (~60s)
     const startTime = Date.now();
-    const maxDuration = randomInt(
-      CONFIG.gameplayDuration.min,
-      CONFIG.gameplayDuration.max,
-    );
+    const maxDuration = randomInt(CONFIG.fullDuration.min, CONFIG.fullDuration.max);
     let moveCount = 0;
+    let moveIndex = 0;
 
-    for (const move of game.moves) {
-      if (Date.now() - startTime >= maxDuration) break;
-
+    while (Date.now() - startTime < maxDuration) {
       // Wait for our turn
       let attempts = 0;
-      while (!(await game.isMyTurn(page)) && attempts < 20) {
+      while (!(await game.isMyTurn(page)) && attempts < 30) {
         await sleep(500);
         attempts++;
+        if (Date.now() - startTime >= maxDuration) break;
       }
 
       if (await game.isMyTurn(page)) {
+        let move;
+        if (game.moves.length > 0) {
+          move = game.moves[moveIndex % game.moves.length];
+          moveIndex++;
+        } else {
+          move = null; // dynamic games handle their own moves
+        }
+
         const success = await game.makeMove(page, move);
         if (success) {
           moveCount++;
-          log('info', `Move ${moveCount}: (${move.row}, ${move.col})`);
+          log('info', `Move ${moveCount}`);
+          await sleep(randomInt(800, 2000)); // natural pacing
+        } else {
           await sleep(1000);
         }
+      } else {
+        await sleep(500);
       }
     }
 
-    // Record a bit more for visual interest
-    await sleep(2000);
-
     const finalDuration = Date.now() - startTime;
-    log('info', `Gameplay recorded: ${moveCount} moves in ${finalDuration}ms`);
+    log('info', `Gameplay recorded: ${moveCount} moves in ${(finalDuration / 1000).toFixed(1)}s`);
 
     await context.close();
     await browser.close();
@@ -350,7 +361,7 @@ async function recordGameplay() {
 }
 
 // ============================================================================
-// FFMPEG PROCESSING (with end card)
+// FFMPEG PROCESSING
 // ============================================================================
 
 function runFFmpeg(args, label) {
@@ -365,7 +376,7 @@ function runFFmpeg(args, label) {
         log('info', `FFmpeg (${label}) complete`);
         resolve();
       } else {
-        log('error', `FFmpeg (${label}) failed`, { code, stderr });
+        log('error', `FFmpeg (${label}) failed`, { code, stderr: stderr.slice(-500) });
         reject(new Error(`FFmpeg exited with code ${code}`));
       }
     });
@@ -373,53 +384,28 @@ function runFFmpeg(args, label) {
   });
 }
 
-async function processVideo(rawVideoPath, recordedDuration) {
-  log('info', 'Processing gameplay video...');
-  await ensureDir(CONFIG.outputDir);
-
-  const tracks = await getAudioTracks();
-  const audioTrack = randomElement(tracks);
-  const trimDuration = Math.min(Math.ceil(recordedDuration / 1000), 10);
-  const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
-  const endCardDuration = 2;
-  const timestamp = Date.now();
-
-  const mainPath = path.join(CONFIG.outputDir, `gameplay-main-${timestamp}.mp4`);
-  const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${timestamp}.mp4`);
-  const outputPath = path.join(CONFIG.outputDir, `gameplay-${timestamp}.mp4`);
-
-  // Step 1: Trim + add audio
+async function buildEndCard(timestamp, suffix) {
+  const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${suffix}-${timestamp}.mp4`);
   await runFFmpeg(
     [
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-t', String(trimDuration),
-      '-af', `afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}`,
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-y', '-shortest', mainPath,
-    ],
-    'main video',
-  );
-
-  // Step 2: End card
-  await runFFmpeg(
-    [
-      '-f', 'lavfi', '-i', `color=c=black:s=1080x1920:d=${endCardDuration}:r=30`,
+      '-f', 'lavfi', '-i', `color=c=black:s=1080x1920:d=${CONFIG.endCardDuration}:r=30`,
       '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
       '-vf', `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
       '-af', 'afade=t=in:st=0:d=0.5',
-      '-t', String(endCardDuration),
+      '-t', String(CONFIG.endCardDuration),
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
       '-shortest', '-y', endCardPath,
     ],
-    'end card',
+    `end card (${suffix})`,
   );
+  return endCardPath;
+}
 
-  // Step 3: Concat
-  const concatList = path.join(CONFIG.outputDir, `concat-gameplay-${timestamp}.txt`);
-  await writeFile(concatList, `file '${mainPath}'\nfile '${endCardPath}'`);
+async function concatVideos(parts, outputPath, label) {
+  const timestamp = Date.now();
+  const concatList = path.join(CONFIG.outputDir, `concat-${label}-${timestamp}.txt`);
+  await writeFile(concatList, parts.map((p) => `file '${p}'`).join('\n'));
 
   await runFFmpeg(
     [
@@ -428,83 +414,89 @@ async function processVideo(rawVideoPath, recordedDuration) {
       '-c:a', 'aac', '-b:a', '128k',
       '-y', outputPath,
     ],
-    'concat',
+    `concat (${label})`,
   );
 
-  // Cleanup
-  await unlink(mainPath).catch(() => {});
-  await unlink(endCardPath).catch(() => {});
   await unlink(concatList).catch(() => {});
+}
 
-  log('info', `Final gameplay video: ${outputPath}`);
-  return outputPath;
+async function processVideos(rawVideoPath, recordedDuration) {
+  log('info', 'Processing gameplay videos...');
+  await ensureDir(CONFIG.outputDir);
+
+  const tracks = await getAudioTracks();
+  const audioTrack = randomElement(tracks);
+  const timestamp = Date.now();
+
+  // === FULL VIDEO (55-65s + 2s end card) ===
+  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 65);
+  const fullFadeStart = Math.max(0, fullDurationSec - CONFIG.fadeOutDuration);
+  const fullMainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
+  const fullEndCardPath = await buildEndCard(timestamp, 'full');
+  const fullOutputPath = path.join(CONFIG.outputDir, `gameplay-full-${timestamp}.mp4`);
+
+  await runFFmpeg(
+    [
+      '-i', rawVideoPath,
+      '-i', audioTrack,
+      '-t', String(fullDurationSec),
+      '-af', `afade=t=out:st=${fullFadeStart}:d=${CONFIG.fadeOutDuration}`,
+      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
+      '-c:a', 'aac', '-b:a', '128k',
+      '-y', '-shortest', fullMainPath,
+    ],
+    'full main video',
+  );
+
+  await concatVideos([fullMainPath, fullEndCardPath], fullOutputPath, 'full');
+
+  await unlink(fullMainPath).catch(() => {});
+  await unlink(fullEndCardPath).catch(() => {});
+
+  log('info', `Full video: ${fullOutputPath}`);
+
+  // === SHORT CLIP (5-10s highlight from middle + 2s end card) ===
+  const totalSec = recordedDuration / 1000;
+  const shortLen = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
+  // Pick from middle 70% of the video
+  const earliestStart = Math.max(0, totalSec * 0.15);
+  const latestStart = Math.max(earliestStart, totalSec - shortLen - 2);
+  const clipStart = randomInt(Math.floor(earliestStart), Math.floor(latestStart));
+
+  const shortMainPath = path.join(CONFIG.outputDir, `gameplay-short-main-${timestamp}.mp4`);
+  const shortEndCardPath = await buildEndCard(timestamp, 'short');
+  const shortOutputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
+
+  await runFFmpeg(
+    [
+      '-i', rawVideoPath,
+      '-i', audioTrack,
+      '-ss', String(clipStart),
+      '-t', String(shortLen),
+      '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
+      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
+      '-c:a', 'aac', '-b:a', '128k',
+      '-y', '-shortest', shortMainPath,
+    ],
+    'short highlight clip',
+  );
+
+  await concatVideos([shortMainPath, shortEndCardPath], shortOutputPath, 'short');
+
+  await unlink(shortMainPath).catch(() => {});
+  await unlink(shortEndCardPath).catch(() => {});
+
+  log('info', `Short clip: ${shortOutputPath}`);
+
+  return { fullOutputPath, shortOutputPath };
 }
 
 // ============================================================================
 // POSTING
 // ============================================================================
 
-async function publishToSocials(videoPath, caption) {
-  log('info', 'Publishing gameplay to social platforms...');
-
-  if (!CONFIG.postizApiKey) throw new Error('POSTIZ_API_KEY must be set');
-
-  const platforms = [];
-  if (CONFIG.postizYouTubeId) {
-    platforms.push({
-      id: CONFIG.postizYouTubeId,
-      type: 'youtube',
-      buildPost: (file, cap) => ({
-        integration: { id: CONFIG.postizYouTubeId },
-        value: [{ content: cap, image: [{ id: file.id, path: file.path }] }],
-        settings: {
-          __type: 'youtube',
-          title: cap.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 100),
-          type: 'public',
-          selfDeclaredMadeForKids: 'no',
-        },
-      }),
-    });
-  }
-  if (CONFIG.postizInstagramId) {
-    platforms.push({
-      id: CONFIG.postizInstagramId,
-      type: 'Instagram',
-      buildPost: (file, cap) => ({
-        integration: { id: CONFIG.postizInstagramId },
-        value: [{ content: cap, image: [{ id: file.id, path: file.path }] }],
-        settings: { __type: 'instagram', post_type: 'reel' },
-      }),
-    });
-  }
-  if (CONFIG.postizTiktokId) {
-    platforms.push({
-      id: CONFIG.postizTiktokId,
-      type: 'TikTok',
-      buildPost: (file, cap) => ({
-        integration: { id: CONFIG.postizTiktokId },
-        value: [{ content: cap, image: [{ id: file.id, path: file.path }] }],
-        settings: {
-          __type: 'tiktok',
-          title: cap.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 90),
-          privacy_level: 'PUBLIC_TO_EVERYONE',
-          duet: false, stitch: false, comment: true,
-          autoAddMusic: 'no',
-          brand_content_toggle: false, brand_organic_toggle: false,
-          video_made_with_ai: false,
-          content_posting_method: 'DIRECT_POST',
-        },
-      }),
-    });
-  }
-
-  if (platforms.length === 0) {
-    throw new Error('No platform integration IDs set');
-  }
-
+async function uploadVideo(videoPath) {
   const headers = { Authorization: CONFIG.postizApiKey };
-
-  // Upload
   const videoBuffer = await readFile(videoPath);
   const form = new FormData();
   form.append('file', videoBuffer, {
@@ -516,38 +508,152 @@ async function publishToSocials(videoPath, caption) {
     headers: { ...headers, ...form.headers },
     timeout: 120000,
   });
-  const uploadedFile = uploadRes.data;
-  log('info', 'Video uploaded', { id: uploadedFile.id });
+  return uploadRes.data;
+}
 
-  // Post to each platform
-  const results = [];
-  for (const platform of platforms) {
+async function postToYouTube(uploadedFile, caption, type = 'public') {
+  if (!CONFIG.postizYouTubeId) return null;
+  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+
+  const postData = {
+    type: 'now',
+    date: new Date().toISOString(),
+    shortLink: false,
+    tags: [],
+    posts: [{
+      integration: { id: CONFIG.postizYouTubeId },
+      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
+      settings: {
+        __type: 'youtube',
+        title: caption.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 100),
+        type,
+        selfDeclaredMadeForKids: 'no',
+      },
+    }],
+  };
+
+  const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
+    headers,
+    timeout: 120000,
+  });
+  return res.data;
+}
+
+async function postToInstagram(uploadedFile, caption) {
+  if (!CONFIG.postizInstagramId) return null;
+  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+
+  const postData = {
+    type: 'now',
+    date: new Date().toISOString(),
+    shortLink: false,
+    tags: [],
+    posts: [{
+      integration: { id: CONFIG.postizInstagramId },
+      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
+      settings: { __type: 'instagram', post_type: 'reel' },
+    }],
+  };
+
+  const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
+    headers,
+    timeout: 120000,
+  });
+  return res.data;
+}
+
+async function postToTikTok(uploadedFile, caption) {
+  if (!CONFIG.postizTiktokId) return null;
+  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+
+  const postData = {
+    type: 'now',
+    date: new Date().toISOString(),
+    shortLink: false,
+    tags: [],
+    posts: [{
+      integration: { id: CONFIG.postizTiktokId },
+      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
+      settings: {
+        __type: 'tiktok',
+        title: caption.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 90),
+        privacy_level: 'PUBLIC_TO_EVERYONE',
+        duet: false, stitch: false, comment: true,
+        autoAddMusic: 'no',
+        brand_content_toggle: false, brand_organic_toggle: false,
+        video_made_with_ai: false,
+        content_posting_method: 'DIRECT_POST',
+      },
+    }],
+  };
+
+  const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
+    headers,
+    timeout: 120000,
+  });
+  return res.data;
+}
+
+async function publishBoth(fullPath, shortPath, caption) {
+  log('info', 'Publishing to social platforms...');
+
+  if (!CONFIG.postizApiKey) throw new Error('POSTIZ_API_KEY must be set');
+
+  const results = { full: null, short: null };
+
+  // --- Upload full video ---
+  if (CONFIG.postizYouTubeId) {
     try {
-      const postData = {
-        type: 'now',
-        date: new Date().toISOString(),
-        shortLink: false,
-        tags: [],
-        posts: [platform.buildPost(uploadedFile, caption)],
-      };
-      const postRes = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        timeout: 120000,
-      });
-      log('info', `${platform.type} post created`, { response: postRes.data });
-      results.push({ platform: platform.type, success: true, data: postRes.data });
-    } catch (error) {
-      log('error', `${platform.type} post failed`, { error: error.message });
-      results.push({ platform: platform.type, success: false, error: error.message });
+      log('info', 'Uploading full video...');
+      const fullFile = await uploadVideo(fullPath);
+      log('info', 'Full video uploaded', { id: fullFile.id });
+      results.full = await postToYouTube(fullFile, caption, 'public');
+      log('info', 'YouTube full video posted', results.full);
+    } catch (err) {
+      log('error', 'Full video YouTube post failed', { error: err.message });
     }
   }
 
-  const successes = results.filter((r) => r.success);
-  return {
-    success: successes.length > 0,
-    message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
-    results,
-  };
+  // --- Upload short clip ---
+  try {
+    log('info', 'Uploading short clip...');
+    const shortFile = await uploadVideo(shortPath);
+    log('info', 'Short clip uploaded', { id: shortFile.id });
+
+    // YouTube Short
+    if (CONFIG.postizYouTubeId) {
+      try {
+        results.short = await postToYouTube(shortFile, caption, 'public');
+        log('info', 'YouTube Short posted', results.short);
+      } catch (err) {
+        log('error', 'YouTube Short post failed', { error: err.message });
+      }
+    }
+
+    // Instagram Reel
+    if (CONFIG.postizInstagramId) {
+      try {
+        const igResult = await postToInstagram(shortFile, caption);
+        log('info', 'Instagram Reel posted', igResult);
+      } catch (err) {
+        log('error', 'Instagram Reel post failed', { error: err.message });
+      }
+    }
+
+    // TikTok
+    if (CONFIG.postizTiktokId) {
+      try {
+        const ttResult = await postToTikTok(shortFile, caption);
+        log('info', 'TikTok posted', ttResult);
+      } catch (err) {
+        log('error', 'TikTok post failed', { error: err.message });
+      }
+    }
+  } catch (err) {
+    log('error', 'Short clip upload failed', { error: err.message });
+  }
+
+  return results;
 }
 
 // ============================================================================
@@ -556,7 +662,7 @@ async function publishToSocials(videoPath, caption) {
 
 async function main() {
   const startTime = Date.now();
-  log('info', '=== Gameplay Shorts Factory Started ===');
+  log('info', '=== Gameplay Factory Started ===');
 
   let rawVideoPath = null;
 
@@ -564,18 +670,23 @@ async function main() {
     const capture = await recordGameplay();
     rawVideoPath = capture.videoPath;
 
-    const outputPath = await processVideo(capture.videoPath, capture.duration);
-    await publishToSocials(outputPath, capture.caption);
+    const { fullOutputPath, shortOutputPath } = await processVideos(
+      capture.videoPath,
+      capture.duration,
+    );
+
+    await publishBoth(fullOutputPath, shortOutputPath, capture.caption);
 
     await cleanDirectory(CONFIG.rawCapturesDir);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    log('info', `=== Gameplay Shorts Factory Completed in ${duration}s ===`);
-    log('info', `Output: ${outputPath}`);
+    log('info', `=== Gameplay Factory Completed in ${duration}s ===`);
+    log('info', `Full: ${fullOutputPath}`);
+    log('info', `Short: ${shortOutputPath}`);
 
-    return { success: true, videoPath: outputPath, caption: capture.caption };
+    return { success: true, full: fullOutputPath, short: shortOutputPath };
   } catch (error) {
-    log('error', '=== Gameplay Shorts Factory Failed ===', {
+    log('error', '=== Gameplay Factory Failed ===', {
       error: error.message,
     });
     await cleanDirectory(CONFIG.rawCapturesDir).catch(() => {});

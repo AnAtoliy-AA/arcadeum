@@ -65,11 +65,11 @@ export class AchievementsService {
     const cached = await this.cache.get<AchievementDefinition[]>(cacheKey);
     if (cached) return cached;
 
-    const definitions = await this.definitionModel
+    const definitions = (await this.definitionModel
       .find()
       .sort({ sortOrder: 1 })
       .lean()
-      .exec();
+      .exec()) as unknown as AchievementDefinition[];
     await this.cache.set(cacheKey, definitions, 300_000);
     return definitions;
   }

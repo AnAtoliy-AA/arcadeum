@@ -69,7 +69,7 @@ const GAMES = [
     async makeMove(page, move) {
       const cell = page.locator(`[data-testid="ttt-cell-${move.row}-${move.col}"]`);
       if (await cell.isEnabled()) {
-        await cell.click();
+        await cell.click({ force: true });
         return true;
       }
       return false;
@@ -92,23 +92,38 @@ const GAMES = [
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      const playable = page.locator('[data-testid="hand-rail"] button[style*="pulsing"], [data-testid="hand-rail"] button:has([class*="glow"])');
-      if ((await playable.count()) > 0) {
-        await playable.first().click();
+      // If color picker overlay is open, dismiss it by clicking a color
+      const picker = page.locator('.CascadeGame-module__WaeW-q__pickerBackdrop');
+      if ((await picker.count()) > 0 && await picker.isVisible()) {
+        const colorBtn = page.locator('.CascadeGame-module__WaeW-q__pickerBackdrop button').first();
+        if ((await colorBtn.count()) > 0) {
+          await colorBtn.click({ force: true });
+          await sleep(500);
+          return true;
+        }
+      }
+
+      // Click enabled (playable) hand buttons — force:true to bypass any overlays
+      const playable = page.locator('[data-testid="game-board-section"] button:not([disabled]):not([aria-label*="Draw"]):not([aria-label*="Discard"])');
+      const count = await playable.count();
+      if (count > 0) {
+        const idx = Math.floor(Math.random() * count);
+        await playable.nth(idx).click({ force: true });
         return true;
       }
-      const handCard = page.locator('[data-testid="hand-cards"] button').first();
-      if ((await handCard.count()) > 0) {
-        await handCard.click();
+      // If no playable cards, click the draw pile
+      const drawPile = page.locator('[data-testid="game-board-section"] button[aria-label*="Draw"]');
+      if ((await drawPile.count()) > 0) {
+        await drawPile.first().click({ force: true });
         return true;
       }
       return false;
     },
     async isMyTurn(page) {
-      const label = page.locator('[data-testid="turn-indicator-label"]');
-      if ((await label.count()) === 0) return false;
-      const text = await label.textContent();
-      return text && text.trim().length > 0;
+      const pill = page.locator('[data-testid="turn-status-pill"]');
+      if ((await pill.count()) === 0) return false;
+      const text = await pill.textContent();
+      return text && text.includes('Your turn');
     },
   },
   {
@@ -124,12 +139,12 @@ const GAMES = [
     async makeMove(page) {
       const playBtn = page.locator('[data-testid="hand-rail-play"]');
       if ((await playBtn.count()) > 0 && await playBtn.isEnabled()) {
-        await playBtn.click();
+        await playBtn.click({ force: true });
         return true;
       }
       const card = page.locator('[data-testid^="hand-card-"][data-testid$="-0"]').first();
       if ((await card.count()) > 0) {
-        await card.click();
+        await card.click({ force: true });
         return true;
       }
       return false;
@@ -228,7 +243,7 @@ async function getAudioTracks() {
 // GAMEPLAY RECORDING (parameterized viewport)
 // ============================================================================
 
-async function recordSession(game, viewport, maxDurationMs, label) {
+async function recordSession(game, viewport, maxDurationMs, label, isMobile = false) {
   log('info', `Recording ${label} session (${viewport.width}x${viewport.height})...`);
 
   let browser = null;
@@ -241,37 +256,69 @@ async function recordSession(game, viewport, maxDurationMs, label) {
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     });
 
-    const context = await browser.newContext({
+    const contextOptions = {
       viewport,
       recordVideo: {
         dir: CONFIG.rawCapturesDir,
         size: viewport,
       },
-    });
+    };
+
+    if (isMobile) {
+      contextOptions.isMobile = true;
+      contextOptions.hasTouch = true;
+      contextOptions.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1';
+    }
+
+    const context = await browser.newContext(contextOptions);
 
     const page = await context.newPage();
 
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await sleep(2000);
+    await sleep(3000);
 
-    // Click "Play vs AI"
+    // Step 1: Click "Play vs AI now" button (on landing page)
+    log('info', `${label}: looking for Play vs AI button...`);
     const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
-    if ((await quickplayBtn.count()) > 0) {
-      await quickplayBtn.click();
-      await sleep(5000);
-    }
-
-    // Handle lobby
-    const startBtn = page.locator('[data-testid="start-with-bots-button"]');
-    if ((await startBtn.count()) > 0) {
+    try {
+      await quickplayBtn.waitFor({ state: 'visible', timeout: 10000 });
+      await quickplayBtn.click({ force: true });
+      log('info', `${label}: clicked Play vs AI`);
       await sleep(3000);
-      await startBtn.click();
-      await sleep(5000);
+    } catch {
+      log('info', `${label}: Play vs AI button not found, trying alternative...`);
+      // Fallback: click any button with "Play" text
+      const playBtn = page.getByRole('link', { name: /play/i }).first();
+      if ((await playBtn.count()) > 0) {
+        await playBtn.click({ force: true });
+        await sleep(3000);
+      }
     }
 
-    // Wait for game board
-    await game.waitForGame(page);
+    // Step 2: Wait for lobby to load, then click "Start Game"
+    log('info', `${label}: looking for Start Game button...`);
+    const startBtn = page.locator('[data-testid="start-with-bots-button"]');
+    try {
+      await startBtn.waitFor({ state: 'visible', timeout: 15000 });
+      await sleep(2000);
+      await startBtn.click({ force: true });
+      log('info', `${label}: clicked Start Game`);
+      // Wait longer for game to actually start (especially on mobile)
+      await sleep(8000);
+    } catch {
+      log('info', `${label}: Start Game button not found`);
+    }
+
+    // Step 3: Wait for game board — try multiple selectors
+    try {
+      await game.waitForGame(page);
+    } catch {
+      // If game board not found, wait a bit more and retry
+      log('info', `${label}: game board not found yet, waiting more...`);
+      await sleep(5000);
+      await game.waitForGame(page);
+    }
     log('info', `${label}: game board loaded`);
 
     const startTime = Date.now();
@@ -435,7 +482,8 @@ async function processShortClip(rawVideoPath, recordedDuration) {
   const timestamp = Date.now();
   const shortLen = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
   const totalSec = recordedDuration / 1000;
-  const earliestStart = Math.max(0, totalSec * 0.1);
+  // Start from 60% of the video to skip landing page / lobby
+  const earliestStart = Math.max(0, totalSec * 0.6);
   const latestStart = Math.max(earliestStart, totalSec - shortLen - 2);
   const clipStart = randomInt(Math.floor(earliestStart), Math.floor(latestStart));
 
@@ -443,12 +491,14 @@ async function processShortClip(rawVideoPath, recordedDuration) {
   const endCardPath = await buildEndCard(timestamp, 'short', 1080, 1920);
   const outputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
 
+  // Scale from 430x932 (real mobile) to 1080x1920 (YouTube Shorts) and pad to fill
   await runFFmpeg(
     [
       '-i', rawVideoPath,
       '-i', audioTrack,
       '-ss', String(clipStart),
       '-t', String(shortLen),
+      '-vf', `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black`,
       '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
@@ -633,7 +683,13 @@ async function publishBoth(fullPath, shortPath, caption) {
 
 async function main() {
   const startTime = Date.now();
-  log('info', '=== Gameplay Factory Started ===');
+  const previewMode = process.argv.includes('--preview');
+
+  if (previewMode) {
+    log('info', '=== Gameplay Factory Started (PREVIEW MODE - no posting) ===');
+  } else {
+    log('info', '=== Gameplay Factory Started ===');
+  }
 
   try {
     const game = randomElement(GAMES);
@@ -646,23 +702,31 @@ async function main() {
       { width: 1920, height: 1080 },
       fullDuration,
       'desktop',
+      false,
     );
 
-    // --- Session 2: Mobile (1080x1920) for short clip ---
-    const shortDuration = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max) * 1000;
+    // --- Session 2: Mobile (real phone viewport) for short clip ---
+    // Use actual iPhone dimensions (430x932) to get real mobile layout
     const mobileCapture = await recordSession(
       game,
-      { width: 1080, height: 1920 },
-      shortDuration + 5000, // a bit extra for lobby loading
+      { width: 430, height: 932 },
+      30000, // 30s total — enough for navigation + real gameplay
       'mobile',
+      true,
     );
 
     // --- Process both ---
     const fullOutputPath = await processFullVideo(desktopCapture.videoPath, desktopCapture.duration);
     const shortOutputPath = await processShortClip(mobileCapture.videoPath, mobileCapture.duration);
 
-    // --- Publish ---
-    await publishBoth(fullOutputPath, shortOutputPath, game.caption);
+    // --- Publish (skip in preview mode) ---
+    if (previewMode) {
+      log('info', '=== PREVIEW MODE: Skipping publish ===');
+      log('info', 'Full video saved to: ' + fullOutputPath);
+      log('info', 'Short clip saved to: ' + shortOutputPath);
+    } else {
+      await publishBoth(fullOutputPath, shortOutputPath, game.caption);
+    }
 
     await cleanDirectory(CONFIG.rawCapturesDir);
 

@@ -611,7 +611,7 @@ async function postToInstagram(uploadedFile, caption) {
     posts: [{
       integration: { id: CONFIG.postizInstagramId },
       value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
-      settings: { __type: 'instagram', post_type: 'reel' },
+      settings: { __type: 'instagram', post_type: 'post' },
     }],
   };
 

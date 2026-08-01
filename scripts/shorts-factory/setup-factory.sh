@@ -51,10 +51,12 @@ SHORTS_CDN_URL=SET_ME
 POSTIZ_BASE_URL=https://postiz.arcadeum.games/api/public/v1
 POSTIZ_API_KEY=SET_ME
 POSTIZ_YOUTUBE_INTEGRATION_ID=SET_ME
+POSTIZ_INSTAGRAM_INTEGRATION_ID=
+POSTIZ_TIKTOK_INTEGRATION_ID=
 ENVEOF
-  echo "Created .env file — edit it and fill in POSTIZ_API_KEY and POSTIZ_YOUTUBE_INTEGRATION_ID"
+  echo "Created .env file — edit it and fill in POSTIZ_API_KEY and platform integration IDs"
   echo "Get API key from: https://postiz.arcadeum.games -> Settings -> API Keys"
-  echo "Get integration ID from: https://postiz.arcadeum.games -> Integrations -> YouTube"
+  echo "Get integration IDs from: https://postiz.arcadeum.games -> Integrations"
 fi
 
 # Create wrapper script with random delay

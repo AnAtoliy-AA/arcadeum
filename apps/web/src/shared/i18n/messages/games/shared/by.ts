@@ -4,7 +4,7 @@ export const byMessages = {
   glimworm_v1: { name: 'Глімворм' },
   lounge: {
     activeTitle: 'Гульнявыя залы',
-    emptyTitle: 'Залы не знойдзены. Стварыце першы, каб пачаць!',
+    emptyTitle: 'Зараз няма адкрытых пакояў — пачніце гульню супраць ІІ.',
     emptyFeaturedLink: 'Або сыграйце ў Марскі бой супраць ШI →',
     loadingRooms: 'Загрузка залаў...',
     searchPlaceholder: 'Пошук гульняў...',

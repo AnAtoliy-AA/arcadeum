@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.7] - 2026-08-01
+
+### Documentation
+- update roadmap with growth plan and current status (ARC-ROADMAP)
+
+
 ## [1.24.6] - 2026-08-01
 
 ### Added

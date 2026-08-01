@@ -4,9 +4,11 @@
  * Gameplay Factory - Records actual gameplay footage
  *
  * Two outputs per run:
- *   1. Full gameplay video (~60s) → YouTube video
- *   2. Short highlight clip (5-10s) → YouTube Short + Instagram Reel
+ *   1. Full gameplay video (~60s, horizontal 1920x1080) → YouTube Video
+ *   2. Short highlight clip (3-5s, vertical 1080x1920) → YouTube Short + Instagram Reel
  *
+ * Full video is recorded in desktop viewport (16:9).
+ * Short clip is cropped from the desktop recording to vertical with blurred BG.
  * Both get an arcadeum.games end card.
  *
  * Usage:
@@ -26,14 +28,13 @@ require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 // ============================================================================
 
 const CONFIG = {
-  viewport: { width: 1080, height: 1920 },
+  // Record in desktop viewport (16:9) — guarantees YouTube classifies as video, not Short
+  viewport: { width: 1920, height: 1080 },
   baseUrl: 'https://arcadeum.games',
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
-  // Full video: 80-90s of gameplay + 2s end card (>60s so YouTube treats as regular video, not Short)
-  fullDuration: { min: 80000, max: 90000 },
-  // Short clip: 5-10s highlight + 2s end card
-  shortDuration: { min: 5, max: 10 },
+  fullDuration: { min: 55000, max: 65000 },
+  shortDuration: { min: 3, max: 5 },
   fadeOutDuration: 2,
   endCardDuration: 2,
   postizBaseUrl:
@@ -95,13 +96,11 @@ const GAMES = [
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      // Click any button with a pulsing/glowing animation (playable cards)
       const playable = page.locator('[data-testid="hand-rail"] button[style*="pulsing"], [data-testid="hand-rail"] button:has([class*="glow"])');
       if ((await playable.count()) > 0) {
         await playable.first().click();
         return true;
       }
-      // Fallback: try any clickable card in the hand area
       const handCard = page.locator('[data-testid="hand-cards"] button').first();
       if ((await handCard.count()) > 0) {
         await handCard.click();
@@ -127,13 +126,11 @@ const GAMES = [
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      // Try to play a card via the play button
       const playBtn = page.locator('[data-testid="hand-rail-play"]');
       if ((await playBtn.count()) > 0 && await playBtn.isEnabled()) {
         await playBtn.click();
         return true;
       }
-      // Fallback: click a card in hand
       const card = page.locator('[data-testid^="hand-card-"][data-testid$="-0"]').first();
       if ((await card.count()) > 0) {
         await card.click();
@@ -232,11 +229,11 @@ async function getAudioTracks() {
 }
 
 // ============================================================================
-// GAMEPLAY RECORDING
+// GAMEPLAY RECORDING (desktop 1920x1080)
 // ============================================================================
 
 async function recordGameplay() {
-  log('info', 'Starting gameplay recording...');
+  log('info', 'Starting gameplay recording (desktop viewport)...');
 
   let browser = null;
   const game = randomElement(GAMES);
@@ -260,47 +257,37 @@ async function recordGameplay() {
 
     const page = await context.newPage();
 
-    // Navigate to game page
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     log('info', `Navigating to ${gameUrl}`);
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
     await sleep(2000);
 
-    // Click "Play vs AI"
     log('info', 'Clicking "Play vs AI" button...');
     const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
-
     if ((await quickplayBtn.count()) > 0) {
-      log('info', 'Clicking quickplay button');
       await quickplayBtn.click();
       await sleep(5000);
-    } else {
-      log('warn', 'No quickplay button found');
     }
 
-    // Handle lobby
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     if ((await startBtn.count()) > 0) {
-      log('info', 'In lobby, waiting for bot to join...');
+      log('info', 'In lobby, waiting for bot...');
       await sleep(3000);
       log('info', 'Clicking "Start Game"');
       await startBtn.click();
       await sleep(5000);
     }
 
-    // Wait for game board
     log('info', 'Waiting for game board...');
     await game.waitForGame(page);
     log('info', 'Game board loaded!');
 
-    // Play moves for full duration (~60s)
     const startTime = Date.now();
     const maxDuration = randomInt(CONFIG.fullDuration.min, CONFIG.fullDuration.max);
     let moveCount = 0;
     let moveIndex = 0;
 
     while (Date.now() - startTime < maxDuration) {
-      // Wait for our turn
       let attempts = 0;
       while (!(await game.isMyTurn(page)) && attempts < 30) {
         await sleep(500);
@@ -314,14 +301,14 @@ async function recordGameplay() {
           move = game.moves[moveIndex % game.moves.length];
           moveIndex++;
         } else {
-          move = null; // dynamic games handle their own moves
+          move = null;
         }
 
         const success = await game.makeMove(page, move);
         if (success) {
           moveCount++;
           log('info', `Move ${moveCount}`);
-          await sleep(randomInt(800, 2000)); // natural pacing
+          await sleep(randomInt(800, 2000));
         } else {
           await sleep(1000);
         }
@@ -350,10 +337,7 @@ async function recordGameplay() {
       gameName: game.name,
     };
   } catch (error) {
-    log('error', 'Failed to record gameplay', {
-      error: error.message,
-      stack: error.stack,
-    });
+    log('error', 'Failed to record gameplay', { error: error.message, stack: error.stack });
     throw error;
   } finally {
     if (browser) await browser.close();
@@ -384,11 +368,11 @@ function runFFmpeg(args, label) {
   });
 }
 
-async function buildEndCard(timestamp, suffix) {
+async function buildEndCard(timestamp, suffix, width, height) {
   const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${suffix}-${timestamp}.mp4`);
   await runFFmpeg(
     [
-      '-f', 'lavfi', '-i', `color=c=black:s=1080x1920:d=${CONFIG.endCardDuration}:r=30`,
+      '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:d=${CONFIG.endCardDuration}:r=30`,
       '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
       '-vf', `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
       '-af', 'afade=t=in:st=0:d=0.5',
@@ -428,11 +412,11 @@ async function processVideos(rawVideoPath, recordedDuration) {
   const audioTrack = randomElement(tracks);
   const timestamp = Date.now();
 
-  // === FULL VIDEO (55-65s + 2s end card) ===
-  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 95);
+  // === FULL VIDEO (horizontal 1920x1080 + 2s end card) ===
+  const fullDurationSec = Math.min(Math.ceil(recordedDuration / 1000), 70);
   const fullFadeStart = Math.max(0, fullDurationSec - CONFIG.fadeOutDuration);
   const fullMainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
-  const fullEndCardPath = await buildEndCard(timestamp, 'full');
+  const fullEndCardPath = await buildEndCard(timestamp, 'full', 1920, 1080);
   const fullOutputPath = path.join(CONFIG.outputDir, `gameplay-full-${timestamp}.mp4`);
 
   await runFFmpeg(
@@ -449,23 +433,26 @@ async function processVideos(rawVideoPath, recordedDuration) {
   );
 
   await concatVideos([fullMainPath, fullEndCardPath], fullOutputPath, 'full');
-
   await unlink(fullMainPath).catch(() => {});
   await unlink(fullEndCardPath).catch(() => {});
 
-  log('info', `Full video: ${fullOutputPath}`);
+  log('info', `Full video (1920x1080): ${fullOutputPath}`);
 
-  // === SHORT CLIP (5-10s highlight from middle + 2s end card) ===
+  // === SHORT CLIP (vertical 1080x1920, 3-5s from desktop recording + blurred BG) ===
   const totalSec = recordedDuration / 1000;
   const shortLen = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
-  // Pick from middle 70% of the video
-  const earliestStart = Math.max(0, totalSec * 0.15);
+  const earliestStart = Math.max(0, totalSec * 0.1);
   const latestStart = Math.max(earliestStart, totalSec - shortLen - 2);
   const clipStart = randomInt(Math.floor(earliestStart), Math.floor(latestStart));
 
   const shortMainPath = path.join(CONFIG.outputDir, `gameplay-short-main-${timestamp}.mp4`);
-  const shortEndCardPath = await buildEndCard(timestamp, 'short');
+  const shortEndCardPath = await buildEndCard(timestamp, 'short', 1080, 1920);
   const shortOutputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
+
+  // Crop desktop to vertical center + add blurred BG
+  // 1920x1080 → extract center 608x1080 → scale to 1080x1920 with blurred backdrop
+  const cropW = Math.floor((1080 / 1920) * 1080); // ~608
+  const cropX = Math.floor((1920 - cropW) / 2);
 
   await runFFmpeg(
     [
@@ -473,20 +460,27 @@ async function processVideos(rawVideoPath, recordedDuration) {
       '-i', audioTrack,
       '-ss', String(clipStart),
       '-t', String(shortLen),
+      '-filter_complex',
+      [
+        `[0:v]split=2[bg][fg]`,
+        `[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:5[blurred]`,
+        `[fg]scale=${cropW}:1080:force_original_aspect_ratio=decrease[scaled]`,
+        `[blurred][scaled]overlay=(W-w)/2:(H-h)/2[out]`,
+      ].join(';'),
+      '-map', '[out]', '-map', '0:a?',
       '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
       '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
       '-c:a', 'aac', '-b:a', '128k',
       '-y', '-shortest', shortMainPath,
     ],
-    'short highlight clip',
+    'short highlight clip (vertical crop)',
   );
 
   await concatVideos([shortMainPath, shortEndCardPath], shortOutputPath, 'short');
-
   await unlink(shortMainPath).catch(() => {});
   await unlink(shortEndCardPath).catch(() => {});
 
-  log('info', `Short clip: ${shortOutputPath}`);
+  log('info', `Short clip (1080x1920): ${shortOutputPath}`);
 
   return { fullOutputPath, shortOutputPath };
 }
@@ -511,7 +505,7 @@ async function uploadVideo(videoPath) {
   return uploadRes.data;
 }
 
-async function postToYouTube(uploadedFile, caption, type = 'public') {
+async function postToYouTube(uploadedFile, caption) {
   if (!CONFIG.postizYouTubeId) return null;
   const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
 
@@ -526,7 +520,7 @@ async function postToYouTube(uploadedFile, caption, type = 'public') {
       settings: {
         __type: 'youtube',
         title: caption.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 100),
-        type,
+        type: 'public',
         selfDeclaredMadeForKids: 'no',
       },
     }],
@@ -601,36 +595,34 @@ async function publishBoth(fullPath, shortPath, caption) {
 
   const results = { full: null, short: null };
 
-  // --- Upload full video ---
+  // --- Full video → YouTube Video ---
   if (CONFIG.postizYouTubeId) {
     try {
-      log('info', 'Uploading full video...');
+      log('info', 'Uploading full video (horizontal)...');
       const fullFile = await uploadVideo(fullPath);
       log('info', 'Full video uploaded', { id: fullFile.id });
-      results.full = await postToYouTube(fullFile, caption, 'public');
-      log('info', 'YouTube full video posted', results.full);
+      results.full = await postToYouTube(fullFile, caption);
+      log('info', 'YouTube video posted', results.full);
     } catch (err) {
       log('error', 'Full video YouTube post failed', { error: err.message });
     }
   }
 
-  // --- Upload short clip ---
+  // --- Short clip → YouTube Short + Instagram Reel + TikTok ---
   try {
-    log('info', 'Uploading short clip...');
+    log('info', 'Uploading short clip (vertical)...');
     const shortFile = await uploadVideo(shortPath);
     log('info', 'Short clip uploaded', { id: shortFile.id });
 
-    // YouTube Short
     if (CONFIG.postizYouTubeId) {
       try {
-        results.short = await postToYouTube(shortFile, caption, 'public');
+        results.short = await postToYouTube(shortFile, caption);
         log('info', 'YouTube Short posted', results.short);
       } catch (err) {
         log('error', 'YouTube Short post failed', { error: err.message });
       }
     }
 
-    // Instagram Reel
     if (CONFIG.postizInstagramId) {
       try {
         const igResult = await postToInstagram(shortFile, caption);
@@ -640,7 +632,6 @@ async function publishBoth(fullPath, shortPath, caption) {
       }
     }
 
-    // TikTok
     if (CONFIG.postizTiktokId) {
       try {
         const ttResult = await postToTikTok(shortFile, caption);
@@ -686,9 +677,7 @@ async function main() {
 
     return { success: true, full: fullOutputPath, short: shortOutputPath };
   } catch (error) {
-    log('error', '=== Gameplay Factory Failed ===', {
-      error: error.message,
-    });
+    log('error', '=== Gameplay Factory Failed ===', { error: error.message });
     await cleanDirectory(CONFIG.rawCapturesDir).catch(() => {});
     process.exit(1);
   }

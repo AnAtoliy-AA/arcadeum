@@ -13,7 +13,7 @@ test.describe('Matchmaking Queue', () => {
     await navigateTo(page, '/games/sea-battle');
 
     // Click "Play vs Human" or the quickplay human button
-    const humanBtn = page.getByTestId('quickplay-human-button');
+    const humanBtn = page.getByTestId('quickplay-human-button').first();
     await expect(humanBtn).toBeVisible();
     await humanBtn.click();
 

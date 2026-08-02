@@ -8,6 +8,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
 import { setupTamagui } from '@/shared/config/tamagui.config';
@@ -159,6 +160,7 @@ export default async function RootLayout({
         </a>
         <WebVitalsReporter />
         <SpeedInsights />
+        <Analytics />
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>
             <LazySessionRoleSync />

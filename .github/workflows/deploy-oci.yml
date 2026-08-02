@@ -117,7 +117,7 @@ jobs:
             pnpm --filter tg-bot build
 
             pm2 restart arcadeum-be arcadeum-tg-bot || \
-              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
+              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be -i max && \
                pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
                pm2 save)
 

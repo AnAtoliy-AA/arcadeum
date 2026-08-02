@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/be/**'
+      - 'apps/web/**'
       - 'bots/tg-bot/**'
       - 'bots/task-bot/**'
       - 'scripts/shorts-factory/**'
@@ -26,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+      web: ${{ steps.filter.outputs.web }}
       task-bot: ${{ steps.filter.outputs.task-bot }}
       shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
     steps:
@@ -40,10 +42,52 @@ jobs:
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
+            web:
+              - 'apps/web/**'
+              - 'packages/ui/**'
             task-bot:
               - 'bots/task-bot/**'
             shorts-factory:
               - 'scripts/shorts-factory/**'
+
+  deploy-web:
+    name: Deploy Web (Next.js)
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            docker build -f apps/web/Dockerfile -t arcadeum-web .
+
+            docker stop arcadeum-web 2>/dev/null || true
+            docker rm arcadeum-web 2>/dev/null || true
+
+            docker run -d \
+              --name arcadeum-web \
+              --restart unless-stopped \
+              --env-file apps/web/.env.production \
+              -p 3000:3000 \
+              arcadeum-web
+
+            echo "==> Web deploy done (branch: $BRANCH)!"
+            docker ps --filter name=arcadeum-web
 
   deploy-tg-bot:
     name: Deploy TG Bot + Backend

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.14] - 2026-08-02
+
+### Fixed
+- use ecosystem.config.js for PM2 and fix Socket.IO CORS on OCI
+
+
 ## [1.24.13] - 2026-08-02
 
 ### Added

@@ -74,20 +74,19 @@ jobs:
 
             pnpm install --frozen-lockfile
 
-            docker build -f apps/web/Dockerfile -t arcadeum-web .
+            cd apps/web
+            pnpm build
 
-            docker stop arcadeum-web 2>/dev/null || true
-            docker rm arcadeum-web 2>/dev/null || true
+            # Copy static assets + public into standalone output
+            STANDALONE=".next/standalone/apps/web"
+            cp -r .next/static "$STANDALONE/.next/static"
+            cp -r public "$STANDALONE/public" 2>/dev/null || true
 
-            docker run -d \
-              --name arcadeum-web \
-              --restart unless-stopped \
-              --env-file apps/web/.env.production \
-              -p 3000:3000 \
-              arcadeum-web
+            cd "$DEPLOY_DIR"
+            pm2 restart arcadeum-web
 
             echo "==> Web deploy done (branch: $BRANCH)!"
-            docker ps --filter name=arcadeum-web
+            pm2 list arcadeum-web
 
   deploy-tg-bot:
     name: Deploy TG Bot + Backend
@@ -116,10 +115,10 @@ jobs:
             pnpm --filter be build
             pnpm --filter tg-bot build
 
-            pm2 restart arcadeum-be arcadeum-tg-bot || \
-              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be -i max && \
-               pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
-               pm2 save)
+            pm2 restart arcadeum-be || \
+              (pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js" && pm2 save)
+            pm2 restart arcadeum-tg-bot || \
+              (pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && pm2 save)
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
             pm2 list

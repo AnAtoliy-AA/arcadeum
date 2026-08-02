@@ -190,6 +190,7 @@ export const apiClient = {
       credentials: 'include',
       cache: options.cache ?? 'no-cache',
       signal: customSignal || controller.signal,
+      ...(typeof window === 'undefined' ? { next: { revalidate: 60 } } : {}),
     };
 
     if (data) {

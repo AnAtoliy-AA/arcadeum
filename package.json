@@ -1,8 +1,8 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.24.8",
+  "version": "1.24.13",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node scripts/patch-tamagui-token-init.mjs",

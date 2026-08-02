@@ -9,8 +9,8 @@
  *   presentation.scss    — slide deck component
  */
 
-@import 'hero-title';
-@import 'hero-background';
-@import 'hero-cards';
-@import 'hero-buttons';
-@import 'presentation';
+@use 'hero-title' as *;
+@use 'hero-background' as *;
+@use 'hero-cards' as *;
+@use 'hero-buttons' as *;
+@use 'presentation' as *;

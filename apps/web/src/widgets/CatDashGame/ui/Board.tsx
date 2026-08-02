@@ -169,17 +169,20 @@ export const CatDashBoard = memo(function CatDashBoard({
                 style={{ transition: 'all 0.3s ease' }}
               />
 
-              {/* Space number (every 5th) */}
-              {i % 5 === 0 && !isOccupied && (
+              {/* Space number (always rendered for better cell identification) */}
+              {!isOccupied && (
                 <text
                   x={pos.x}
                   y={pos.y + 1}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize={8}
-                  fontWeight="bold"
-                  fill={tokens.textSecondary}
-                  opacity={0.5}
+                  fontSize={10}
+                  fontWeight="800"
+                  fill="#ffffff"
+                  style={{
+                    pointerEvents: 'none',
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))',
+                  }}
                 >
                   {i}
                 </text>
@@ -229,17 +232,18 @@ export const CatDashBoard = memo(function CatDashBoard({
                 </text>
               )}
 
-              {/* Obstacle / Bonus icons */}
+              {/* Obstacle / Bonus icons (rendered offset below the space so they don't overlap the cell number) */}
               {!isOccupied &&
                 !isStart &&
                 !isFinish &&
                 space.type !== 'normal' && (
                   <text
                     x={pos.x}
-                    y={pos.y + 1}
+                    y={pos.y + spaceRadius + 7}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={8}
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   >
                     {space.type === 'obstacle'
                       ? '⚡'

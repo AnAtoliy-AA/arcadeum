@@ -18,6 +18,8 @@
 | Backend (NestJS)   | OCI Primary (same machine) | ~5ms             |
 | Database (MongoDB) | OCI Primary (same machine) | ~1ms             |
 
+**Subdomain**: `fast.arcadeum.games` (keeps Vercel as fallback on apex)
+
 ## Resource Requirements
 
 | Resource  | Primary (current) | Next.js needs      | Available        |
@@ -135,10 +137,11 @@ module.exports = {
 
 ### 6. DNS Update
 
-| Record               | Type  | Value          | TTL |
-| -------------------- | ----- | -------------- | --- |
-| `arcadeum.games`     | A     | 152.70.47.29   | 300 |
-| `www.arcadeum.games` | CNAME | arcadeum.games | 300 |
+| Record                | Type  | Value          | TTL |
+| --------------------- | ----- | -------------- | --- |
+| `fast.arcadeum.games` | A     | 152.70.47.29   | 300 |
+| `arcadeum.games`      | CNAME | vercel.app     | 300 |
+| `www.arcadeum.games`  | CNAME | arcadeum.games | 300 |
 
 Keep `api.arcadeum.games` → 152.70.47.29 (unchanged).
 
@@ -176,8 +179,8 @@ jobs:
 ### 8. SSL Certificate
 
 ```bash
-# On OCI primary
-sudo certbot --nginx -d arcadeum.games -d www.arcadeum.games
+# On OCI primary — fast.arcadeum.games
+sudo certbot --nginx -d fast.arcadeum.games
 ```
 
 ## Static Assets Strategy
@@ -209,9 +212,10 @@ Since OCI is single-region, static assets (images, fonts, JS bundles) will be sl
 - [ ] Create Dockerfile
 - [ ] Test locally with Docker
 - [ ] Deploy to OCI
-- [ ] Configure nginx
-- [ ] Update DNS
-- [ ] Verify SSL
-- [ ] Update CI/CD
+- [ ] Configure nginx for `fast.arcadeum.games`
+- [ ] Add DNS A record: `fast.arcadeum.games` → 152.70.47.29
+- [ ] Verify SSL on `fast.arcadeum.games`
+- [ ] CI/CD auto-deploy from main ✅ (updated deploy-oci.yml)
+- [ ] Disable Vercel auto-deploy ✅ (deploy-web.yml now manual only)
 - [ ] Monitor for 24h
 - [ ] Remove Vercel (optional)

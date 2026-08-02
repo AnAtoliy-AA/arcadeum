@@ -37,6 +37,8 @@
     "@tamagui/config": "2.0.0-rc.23",
     "@tamagui/next-plugin": "2.0.0-rc.23",
     "@tamagui/shorthands": "2.0.0-rc.23",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "next": "16.2.11",
     "pixi-filters": "^6",
     "pixi.js": "^8",

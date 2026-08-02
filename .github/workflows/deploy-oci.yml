@@ -80,6 +80,39 @@ jobs:
             echo "==> Prod deploy done (branch: $BRANCH)!"
             pm2 list
 
+  deploy-be-reserve:
+    name: Deploy Reserve Backend (Worker)
+    needs: changes
+    if: needs.changes.outputs.be-or-tg == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_WORKER_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_WORKER_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+            pnpm --filter be build
+
+            pm2 restart arcadeum-be-reserve || \
+              pm2 start /opt/arcadeum/scripts/start-be-reserve.sh --name arcadeum-be-reserve
+
+            pm2 save
+
+            echo "==> Reserve BE deploy done (branch: $BRANCH)!"
+            pm2 list
+
   deploy-task-bot:
     name: Deploy Task Bot
     needs: changes

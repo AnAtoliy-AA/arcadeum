@@ -79,8 +79,11 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,
     }),
-    // Default connection for other modules (points to OCI)
-    MongooseModule.forRoot(resolveMongoUri(), resolveMongoOptions()),
+    // Default connection for other modules (Atlas for shared data, falls back to local)
+    MongooseModule.forRoot(
+      resolveAtlasUri() ?? resolveMongoUri(),
+      resolveMongoOptions(),
+    ),
     ...(resolveAtlasUri()
       ? [
           MongooseModule.forRoot(resolveAtlasUri()!, {

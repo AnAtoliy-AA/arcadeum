@@ -1,5 +1,5 @@
 import { CLIENT_TIMEOUT, SSR_TIMEOUT } from '../config/app-config';
-import { resolveApiUrl } from './api-base';
+import { resolveApiFallbackUrl, resolveApiUrl } from './api-base';
 import { HttpStatus } from './http-status';
 
 function defaultTimeout(): number {
@@ -127,15 +127,19 @@ export const apiClient = {
 
     const requestPromise = (async () => {
       try {
-        const result = await this.performFetch<T>(url, {
-          method,
-          token,
-          data,
-          headers: customHeaders,
-          timeout,
-          signal: customSignal,
-          ...fetchOptions,
-        });
+        const result = await this.performFetch<T>(
+          url,
+          {
+            method,
+            token,
+            data,
+            headers: customHeaders,
+            timeout,
+            signal: customSignal,
+            ...fetchOptions,
+          },
+          path,
+        );
         return result;
       } finally {
         if (cacheKey) inFlightRequests.delete(cacheKey);
@@ -152,6 +156,7 @@ export const apiClient = {
   async performFetch<T>(
     url: string,
     options: ApiClientOptions = {},
+    path?: string,
   ): Promise<T> {
     const {
       token,
@@ -241,7 +246,10 @@ export const apiClient = {
             networkError.code === 'ECONNREFUSED' ||
             (networkError.cause instanceof Error &&
               networkError.cause.message.includes('ECONNREFUSED')) ||
-            networkError.cause?.code === 'ECONNREFUSED');
+            networkError.cause?.code === 'ECONNREFUSED' ||
+            networkError.message.includes('fetch failed') ||
+            networkError.code === 'ENOTFOUND' ||
+            networkError.cause?.code === 'ENOTFOUND');
 
         if (isConnectionError && attempts < maxAttempts) {
           if (isDev) {
@@ -260,6 +268,27 @@ export const apiClient = {
           console.error(
             `[apiClient] Final attempt failed. Connection refused to ${url}. Please ensure the backend is running and reachable.`,
           );
+        }
+
+        // Production fallback: try backup instance on network/timeout errors
+        const isClient = typeof window !== 'undefined';
+        if (isClient && isConnectionError) {
+          const fallbackUrl = resolveApiFallbackUrl(path ?? '');
+          if (fallbackUrl && fallbackUrl !== url) {
+            try {
+              console.warn(
+                `[apiClient] Primary ${url} unreachable, trying fallback ${fallbackUrl}`,
+              );
+              clearTimeout(id);
+              const fallbackResult = await this.performFetch<T>(
+                fallbackUrl,
+                options,
+              );
+              return fallbackResult;
+            } catch {
+              // Fallback also failed, fall through to throw original error
+            }
+          }
         }
 
         clearTimeout(id);

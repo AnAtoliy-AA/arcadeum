@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.12] - 2026-08-02
+
+### Added
+- add @vercel/analytics for detailed performance monitoring
+
+### Fixed
+- destructure wallet balance to pass ESLint rule
+- resolve all build warnings
+
+
 ## [1.24.11] - 2026-08-02
 
 ### Added

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat Dash</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface-2: #1a1a25;
+      --surface-3: #222230;
+      --fg: #e8e8ed;
+      --muted: #6b6b80;
+      --border: rgba(255, 255, 255, 0.06);
+      --accent: #7c5cfc;
+      --accent-glow: rgba(124, 92, 252, 0.35);
+      
+      --color-normal: #1e1e2a;
+      --color-start: #22c55e;
+      --color-finish: #eab308;
+      --color-obstacle: #ef4444;
+      --color-bonus: #7c5cfc;
+      
+      --player-you: #7c5cfc;
+      --player-bot: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* --- Header --- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 28px;
+    }
+
+    .brand-details h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-details p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .turn-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .turn-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s ease;
+    }
+
+    .turn-badge.active .turn-dot {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    /* --- Turn Banner --- */
+    .turn-banner {
+      width: 100%;
+      padding: 14px;
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+    }
+
+    .turn-banner.active {
+      background: var(--surface-3);
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* --- Board --- */
+    .board-wrapper {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .tile-node {
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tile-node:hover {
+      filter: brightness(1.2);
+    }
+
+    .tile-node:hover circle {
+      transform: scale(1.08);
+    }
+
+    circle {
+      transform-origin: center;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tile-number {
+      font-size: 11px;
+      font-weight: 700;
+      fill: #ffffff;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .tile-type-indicator {
+      font-size: 10px;
+      pointer-events: none;
+    }
+
+    .player-token {
+      transition: cx 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), cy 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+    }
+
+    /* --- Controls --- */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 24px;
+      gap: 16px;
+    }
+
+    .player-stat-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 180px;
+    }
+
+    .stat-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .player-stat-card.you .stat-avatar {
+      background: var(--player-you);
+    }
+
+    .player-stat-card.bot .stat-avatar {
+      background: var(--player-bot);
+    }
+
+    .stat-details h3 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stat-details p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .roll-btn {
+      flex: 1;
+      max-width: 200px;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--accent-glow);
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .roll-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 92, 252, 0.5);
+    }
+
+    .roll-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .roll-btn:disabled {
+      background: var(--surface-2);
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+
+    /* --- Legend --- */
+    .legend {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* --- Overlays & Notifications --- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-backdrop {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 5, 8, 0.85);
+      backdrop-filter: blur(8px);
+    }
+
+    .winner-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 40px var(--accent-glow);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .overlay.show .winner-card {
+      transform: scale(1);
+    }
+
+    .winner-trophy {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .winner-card h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .winner-card p {
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .play-again-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .play-again-btn:hover {
+      box-shadow: 0 4px 15px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    /* Animated Dice Roll Overlay */
+    .dice-roll-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(5, 5, 8, 0.4);
+      backdrop-filter: blur(3px);
+      transition: opacity 0.2s ease;
+    }
+
+    .dice-roll-overlay.show {
+      opacity: 1;
+    }
+
+    .dice-container {
+      background: var(--surface-2);
+      border: 2px solid var(--accent);
+      border-radius: 24px;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transform: rotate(0deg) scale(0.8);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dice-roll-overlay.show .dice-container {
+      transform: rotate(360deg) scale(1.1);
+      animation: shake 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(2px, 1px) rotate(355deg); }
+      10% { transform: translate(-1px, -2px) rotate(360deg); }
+      20% { transform: translate(-3px, 0px) rotate(362deg); }
+      30% { transform: translate(0px, 2px) rotate(358deg); }
+      40% { transform: translate(1px, -1px) rotate(361deg); }
+      50% { transform: translate(-1px, 2px) rotate(359deg); }
+      60% { transform: translate(-3px, 1px) rotate(360deg); }
+      70% { transform: translate(2px, 1px) rotate(358deg); }
+      80% { transform: translate(-1px, -1px) rotate(362deg); }
+      90% { transform: translate(2px, 2px) rotate(360deg); }
+      100% { transform: translate(1px, -2px) rotate(359deg); }
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1001;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .toast-container.show {
+      transform: translateX(-50%) translateY(0px);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+      header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .turn-badge {
+        width: 100%;
+        justify-content: center;
+      }
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .player-stat-card {
+        min-width: unset;
+      }
+      .roll-btn {
+        max-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <span class="brand-icon">🐱</span>
+        <div class="brand-details">
+          <h1>Cat Dash</h1>
+          <p>Race along the serpentine track</p>
+        </div>
+      </div>
+      <div class="turn-badge id-badge active">
+        <span class="turn-dot"></span>
+        <span class="turn-text">Your turn</span>
+      </div>
+    </header>
+
+    <!-- Turn Banner -->
+    <div class="turn-banner active" id="turnBanner">
+      Your turn — roll the dice!
+    </div>
+
+    <!-- Board -->
+    <div class="board-wrapper">
+      <svg id="gameBoard" viewBox="0 0 840 480" width="100%"></svg>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <!-- Player 1 -->
+      <div class="player-stat-card you">
+        <div class="stat-avatar">🐱</div>
+        <div class="stat-details">
+          <h3>You</h3>
+          <p id="playerCoins">Coins: 3</p>
+        </div>
+      </div>
+
+      <!-- Roll Button -->
+      <button class="roll-btn" id="rollBtn" onclick="rollTurn()">Roll Dice</button>
+
+      <!-- Bot 1 -->
+      <div class="player-stat-card bot">
+        <div class="stat-avatar">😺</div>
+        <div class="stat-details">
+          <h3>Bot 1</h3>
+          <p id="botCoins">Coins: 3</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--color-start)"></div>
+        <span>Start</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--color-normal)"></div>
+        <span>Normal</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--color-obstacle)"></div>
+        <span>Obstacle (-1 🪙)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--color-bonus)"></div>
+        <span>Bonus (+1 🪙, Roll again)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: var(--color-finish)"></div>
+        <span>Finish</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animated Dice Roll Overlay -->
+  <div class="dice-roll-overlay" id="diceOverlay">
+    <div class="dice-container" id="diceContainer">⚀</div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast-container" id="toast">
+    <span id="toastIcon"></span>
+    <span id="toastText"></span>
+  </div>
+
+  <!-- Winner Overlay -->
+  <div class="overlay" id="winnerOverlay">
+    <div class="overlay-backdrop"></div>
+    <div class="winner-card">
+      <div class="winner-trophy" id="winnerTrophy">🏆</div>
+      <h2 id="winnerTitle">You Win!</h2>
+      <p id="winnerSubtitle">Congratulations on reaching the finish line first!</p>
+      <button class="play-again-btn" onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const TILE_RADIUS = 24;
+    const SPACING_X = 80;
+    const SPACING_Y = 80;
+    const START_X = 60;
+    const START_Y = 50;
+
+    const obstacleTiles = [5, 15, 25, 35, 45, 55];
+    const bonusTiles = [3, 13, 23, 33, 43, 53];
+
+    // Build the tile positions mapping
+    const positions = {};
+    const track = [];
+
+    function generatePositions() {
+      let index = 1;
+      for (let row = 0; row < 6; row++) {
+        const isLeftToRight = (row % 2 === 0);
+        const y = START_Y + row * SPACING_Y;
+        for (let col = 0; col < 10; col++) {
+          const colIndex = isLeftToRight ? col : (9 - col);
+          const x = START_X + colIndex * SPACING_X;
+          positions[index] = { x, y };
+          
+          let type = 'normal';
+          if (colIndex === 0) type = 'start';
+          else if (colIndex === 9) type = 'finish';
+          else if (obstacleTiles.includes(index)) type = 'obstacle';
+          else if (bonusTiles.includes(index)) type = 'bonus';
+
+          track.push({ id: index, x, y, type });
+          index++;
+        }
+      }
+    }
+
+    generatePositions();
+
+    // Game state
+    let state = {
+      playerPos: 1,
+      playerCoins: 3,
+      botPos: 1,
+      botCoins: 3,
+      isPlayerTurn: true,
+      hasBonusReroll: false,
+    };
+
+    // Render board SVG
+    const svg = document.getElementById('gameBoard');
+
+    function drawBoard() {
+      // 1. Draw Winding Serpentine Path Line
+      let pathD = '';
+      for (let i = 1; i <= 60; i++) {
+        const p = positions[i];
+        if (i === 1) {
+          pathD += `M ${p.x} ${p.y}`;
+        } else {
+          pathD += ` L ${p.x} ${p.y}`;
+        }
+      }
+
+      const pathLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathLine.setAttribute('d', pathD);
+      pathLine.setAttribute('fill', 'none');
+      pathLine.setAttribute('stroke', 'rgba(124, 92, 252, 0.15)');
+      pathLine.setAttribute('stroke-width', '16');
+      pathLine.setAttribute('stroke-linecap', 'round');
+      pathLine.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(pathLine);
+
+      const pathDotted = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathDotted.setAttribute('d', pathD);
+      pathDotted.setAttribute('fill', 'none');
+      pathDotted.setAttribute('stroke', 'rgba(255, 255, 255, 0.08)');
+      pathDotted.setAttribute('stroke-width', '2');
+      pathDotted.setAttribute('stroke-dasharray', '8 8');
+      pathDotted.setAttribute('stroke-linecap', 'round');
+      pathDotted.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(pathDotted);
+
+      // 2. Draw Direction Arrows between tiles
+      for (let i = 1; i < 60; i++) {
+        const curr = positions[i];
+        const next = positions[i + 1];
+        
+        // Midpoint coordinates
+        const midX = (curr.x + next.x) / 2;
+        const midY = (curr.y + next.y) / 2;
+        
+        // Angle calculation
+        const angle = Math.atan2(next.y - curr.y, next.x - curr.x) * 180 / Math.PI;
+
+        const arrowGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        arrowGroup.setAttribute('transform', `translate(${midX}, ${midY}) rotate(${angle})`);
+
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrow.setAttribute('d', 'M -4 -4 L 2 0 L -4 4');
+        arrow.setAttribute('fill', 'none');
+        arrow.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+        arrow.setAttribute('stroke-width', '1.5');
+        arrow.setAttribute('stroke-linecap', 'round');
+        arrow.setAttribute('stroke-linejoin', 'round');
+
+        arrowGroup.appendChild(arrow);
+        svg.appendChild(arrowGroup);
+      }
+
+      // 3. Draw Winding Path Node circles
+      track.forEach(tile => {
+        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        group.setAttribute('class', 'tile-node');
+        group.setAttribute('id', `tile-${tile.id}`);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', tile.x);
+        circle.setAttribute('cy', tile.y);
+        circle.setAttribute('r', TILE_RADIUS);
+
+        let color = 'var(--color-normal)';
+        if (tile.type === 'start') color = 'var(--color-start)';
+        else if (tile.type === 'finish') color = 'var(--color-finish)';
+        else if (tile.type === 'obstacle') color = 'var(--color-obstacle)';
+        else if (tile.type === 'bonus') color = 'var(--color-bonus)';
+        
+        circle.setAttribute('fill', color);
+        circle.setAttribute('stroke', 'var(--border)');
+        circle.setAttribute('stroke-width', '1.5');
+        group.appendChild(circle);
+
+        // Add index / status indicator numbers
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', tile.x);
+        text.setAttribute('y', tile.y + 1);
+        text.setAttribute('class', 'tile-number');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.textContent = tile.id;
+        group.appendChild(text);
+
+        // Subtext markers for obstacles / bonuses
+        if (tile.type === 'obstacle' || tile.type === 'bonus') {
+          const marker = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          marker.setAttribute('x', tile.x);
+          marker.setAttribute('y', tile.y + TILE_RADIUS + 12);
+          marker.setAttribute('class', 'tile-type-indicator');
+          marker.setAttribute('text-anchor', 'middle');
+          marker.setAttribute('fill', tile.type === 'obstacle' ? 'var(--color-obstacle)' : 'var(--accent)');
+          marker.setAttribute('font-weight', 'bold');
+          marker.textContent = tile.type === 'obstacle' ? '⚡' : '⭐';
+          group.appendChild(marker);
+        }
+
+        svg.appendChild(group);
+      });
+
+      // 4. Draw Player You & Bot 1 tokens
+      const drawPlayerToken = (id, color, emoji) => {
+        const token = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        token.setAttribute('id', id);
+        token.setAttribute('class', 'player-token');
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', '13');
+        circle.setAttribute('fill', color);
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '1.5');
+        token.appendChild(circle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('y', '1');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '14px');
+        text.textContent = emoji;
+        token.appendChild(text);
+
+        svg.appendChild(token);
+      };
+
+      drawPlayerToken('playerTokenYou', 'var(--player-you)', '🐱');
+      drawPlayerToken('playerTokenBot', 'var(--player-bot)', '😺');
+    }
+
+    drawBoard();
+
+    // Position updates
+    function updateTokenPositions() {
+      const you = positions[state.playerPos];
+      const bot = positions[state.botPos];
+
+      const tokenYou = document.getElementById('playerTokenYou');
+      const tokenBot = document.getElementById('playerTokenBot');
+
+      // Add a tiny offset if they are on the same cell
+      const overlap = (state.playerPos === state.botPos);
+      const youOffsetX = overlap ? -8 : 0;
+      const botOffsetX = overlap ? 8 : 0;
+
+      tokenYou.setAttribute('transform', `translate(${you.x + youOffsetX}, ${you.y})`);
+      tokenBot.setAttribute('transform', `translate(${bot.x + botOffsetX}, ${bot.y})`);
+    }
+
+    updateTokenPositions();
+
+    // State Display UI Update
+    const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+    
+    function showNotification(text, isObstacle = false) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      const textNode = document.getElementById('toastText');
+
+      icon.textContent = isObstacle ? '⚡' : '⭐';
+      textNode.textContent = text;
+
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function triggerDiceRoll(roll, callback) {
+      const overlay = document.getElementById('diceOverlay');
+      const container = document.getElementById('diceContainer');
+      
+      overlay.classList.add('show');
+      
+      let rollsCount = 0;
+      const interval = setInterval(() => {
+        container.textContent = diceFaces[Math.floor(Math.random() * 6)];
+        rollsCount++;
+        if (rollsCount > 6) {
+          clearInterval(interval);
+          container.textContent = diceFaces[roll - 1];
+          setTimeout(() => {
+            overlay.classList.remove('show');
+            callback();
+          }, 600);
+        }
+      }, 800 / 6);
+    }
+
+    // Play flow
+    function executeMovement(playerKey, spaces, callback) {
+      const posKey = playerKey === 'you' ? 'playerPos' : 'botPos';
+      const startPos = state[posKey];
+      const targetPos = Math.min(60, startPos + spaces);
+      
+      let current = startPos;
+      const stepInterval = setInterval(() => {
+        if (current < targetPos) {
+          current++;
+          state[posKey] = current;
+          updateTokenPositions();
+        } else {
+          clearInterval(stepInterval);
+          callback();
+        }
+      }, 150);
+    }
+
+    function rollTurn() {
+      if (!state.isPlayerTurn) return;
+      document.getElementById('rollBtn').disabled = true;
+
+      const roll = Math.floor(Math.random() * 6) + 1;
+      triggerDiceRoll(roll, () => {
+        executeMovement('you', roll, () => {
+          handleLanding('you');
+        });
+      });
+    }
+
+    function handleLanding(playerKey) {
+      const posKey = playerKey === 'you' ? 'playerPos' : 'botPos';
+      const coinKey = playerKey === 'you' ? 'playerCoins' : 'botCoins';
+      const pos = state[posKey];
+
+      // Win check
+      if (pos >= 60) {
+        endGame(playerKey === 'you');
+        return;
+      }
+
+      // Obstacle check
+      if (obstacleTiles.includes(pos)) {
+        state[coinKey] = Math.max(0, state[coinKey] - 1);
+        document.getElementById(playerKey === 'you' ? 'playerCoins' : 'botCoins').textContent = `Coins: ${state[coinKey]}`;
+        showNotification(`${playerKey === 'you' ? 'You' : 'Bot 1'} hit an obstacle! Lost 1 coin.`, true);
+        
+        // Skip further logic, pass turn
+        state.hasBonusReroll = false;
+        endTurnFlow();
+      }
+      // Bonus check
+      else if (bonusTiles.includes(pos) && !state.hasBonusReroll) {
+        state[coinKey] += 1;
+        document.getElementById(playerKey === 'you' ? 'playerCoins' : 'botCoins').textContent = `Coins: ${state[coinKey]}`;
+        showNotification(`${playerKey === 'you' ? 'You' : 'Bot 1'} got a bonus! +1 coin and roll again!`, false);
+        
+        state.hasBonusReroll = true;
+        if (playerKey === 'you') {
+          document.getElementById('rollBtn').disabled = false;
+        } else {
+          setTimeout(botTurn, 1000);
+        }
+      }
+      // Normal landing
+      else {
+        state.hasBonusReroll = false;
+        endTurnFlow();
+      }
+    }
+
+    function endTurnFlow() {
+      state.isPlayerTurn = !state.isPlayerTurn;
+      const turnBanner = document.getElementById('turnBanner');
+      const badge = document.querySelector('.turn-badge');
+      const badgeText = document.querySelector('.turn-text');
+      const rollBtn = document.getElementById('rollBtn');
+
+      if (state.isPlayerTurn) {
+        turnBanner.textContent = 'Your turn — roll the dice!';
+        turnBanner.classList.add('active');
+        badge.classList.add('active');
+        badgeText.textContent = 'Your turn';
+        rollBtn.disabled = false;
+      } else {
+        turnBanner.textContent = 'Bot is thinking...';
+        turnBanner.classList.remove('active');
+        badge.classList.remove('active');
+        badgeText.textContent = "Bot's turn";
+        rollBtn.disabled = true;
+        setTimeout(botTurn, 1200);
+      }
+    }
+
+    function botTurn() {
+      if (state.isPlayerTurn) return;
+
+      const roll = Math.floor(Math.random() * 6) + 1;
+      triggerDiceRoll(roll, () => {
+        executeMovement('bot', roll, () => {
+          handleLanding('bot');
+        });
+      });
+    }
+
+    function endGame(isYouWinner) {
+      const overlay = document.getElementById('winnerOverlay');
+      const title = document.getElementById('winnerTitle');
+      const subtitle = document.getElementById('winnerSubtitle');
+      const trophy = document.getElementById('winnerTrophy');
+
+      if (isYouWinner) {
+        trophy.textContent = '🏆';
+        title.textContent = 'You Win!';
+        subtitle.textContent = 'Congratulations on reaching the finish line first!';
+      } else {
+        trophy.textContent = '🤖';
+        title.textContent = 'Bot 1 Wins!';
+        subtitle.textContent = 'The bot reached the finish line first. Better luck next time!';
+      }
+
+      overlay.classList.add('show');
+    }
+
+    function resetGame() {
+      state = {
+        playerPos: 1,
+        playerCoins: 3,
+        botPos: 1,
+        botCoins: 3,
+        isPlayerTurn: true,
+        hasBonusReroll: false,
+      };
+
+      document.getElementById('playerCoins').textContent = 'Coins: 3';
+      document.getElementById('botCoins').textContent = 'Coins: 3';
+      
+      const turnBanner = document.getElementById('turnBanner');
+      const badge = document.querySelector('.turn-badge');
+      const badgeText = document.querySelector('.turn-text');
+      
+      turnBanner.textContent = 'Your turn — roll the dice!';
+      turnBanner.classList.add('active');
+      badge.classList.add('active');
+      badgeText.textContent = 'Your turn';
+
+      document.getElementById('rollBtn').disabled = false;
+      document.getElementById('winnerOverlay').classList.remove('show');
+
+      updateTokenPositions();
+    }
+  </script>
+</body>
+</html>

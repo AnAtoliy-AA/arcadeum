@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.11] - 2026-08-02
+
+### Added
+- switch default MongoDB connection to Atlas for shared data
+- add Atlas-to-local MongoDB sync script
+- add reserve BE failover with automatic client-side fallback
+
+### Fixed
+- archive abandoned games to Atlas before cleanup
+
+
 ## [1.24.10] - 2026-08-01
 
 ### Fixed

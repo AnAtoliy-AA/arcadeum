@@ -5,14 +5,7 @@ import { YStack, XStack, Text } from 'tamagui';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
-const CAT_EMOJI: Record<CatId, string> = {
-  neon: '🐱',
-  whiskers: '😺',
-  stardust: '✨',
-  felix: '🐈',
-  shadow: '🐈‍⬛',
-  luna: '🌙',
-};
+import { RealisticCat } from './RealisticCat';
 
 const CAT_COLORS: Record<CatId, string> = {
   neon: '#a855f7',
@@ -64,19 +57,38 @@ export const CatDashBoard = memo(function CatDashBoard({
     [snapshot.track, total, cx, cy, rx, ry],
   );
 
-  const spaceRadius = 12;
+  const spaceRadius = 15;
 
   return (
     <YStack gap="$3" alignItems="center" width="100%" padding="$3">
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
-        style={{ maxWidth: svgW, borderRadius: 16, overflow: 'hidden' }}
+        style={{
+          maxWidth: svgW,
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25)',
+          border: `1px solid ${tokens.trackBorder}33`,
+        }}
       >
-        {/* Background */}
-        <rect width={svgW} height={svgH} fill={tokens.track} rx={16} />
+        {/* Background with beautiful radial gradient simulated in SVG */}
+        <defs>
+          <radialGradient id="bgGlow" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stopColor={`${tokens.track}aa`} />
+            <stop offset="100%" stopColor={tokens.background} />
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <rect width={svgW} height={svgH} fill="url(#bgGlow)" rx={20} />
 
-        {/* Track path line */}
+        {/* Track path line with neon glow style */}
         <ellipse
           cx={cx}
           cy={cy}
@@ -84,8 +96,19 @@ export const CatDashBoard = memo(function CatDashBoard({
           ry={ry}
           fill="none"
           stroke={tokens.trackBorder}
-          strokeWidth={spaceRadius * 2 + 6}
-          opacity={0.15}
+          strokeWidth={spaceRadius * 2 + 8}
+          opacity={0.12}
+        />
+        <ellipse
+          cx={cx}
+          cy={cy}
+          rx={rx}
+          ry={ry}
+          fill="none"
+          stroke={tokens.trackBorder}
+          strokeWidth={2}
+          opacity={0.4}
+          strokeDasharray="4 6"
         />
 
         {/* Track spaces */}
@@ -107,6 +130,18 @@ export const CatDashBoard = memo(function CatDashBoard({
 
           return (
             <g key={space.id}>
+              {/* Space circle shadow/glow */}
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={spaceRadius + 2}
+                fill="none"
+                stroke={fill}
+                strokeWidth={1.5}
+                opacity={isOccupied ? 0.8 : 0.2}
+                filter="url(#glow)"
+              />
+
               {/* Space circle */}
               <circle
                 cx={pos.x}
@@ -114,9 +149,10 @@ export const CatDashBoard = memo(function CatDashBoard({
                 r={spaceRadius}
                 fill={fill}
                 stroke={
-                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
+                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.15)'
                 }
                 strokeWidth={isOccupied ? 2.5 : 1}
+                style={{ transition: 'all 0.3s ease' }}
               />
 
               {/* Space number (every 5th) */}
@@ -126,38 +162,41 @@ export const CatDashBoard = memo(function CatDashBoard({
                   y={pos.y + 1}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize={7}
+                  fontSize={8}
+                  fontWeight="bold"
                   fill={tokens.textSecondary}
-                  opacity={0.4}
+                  opacity={0.5}
                 >
                   {i}
                 </text>
               )}
 
-              {/* Player cat emoji */}
+              {/* Player cat SVG */}
               {isOccupied &&
-                playersHere.map((p) => (
-                  <text
-                    key={p.playerId}
-                    x={pos.x}
-                    y={pos.y + 1}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={14}
-                  >
-                    {CAT_EMOJI[p.catId] ?? '🐱'}
-                  </text>
-                ))}
+                playersHere.map((p, idx) => {
+                  const size = 26;
+                  // Shift slightly if multiple players are on the same spot
+                  const offsetX = (idx - (playersHere.length - 1) / 2) * 8;
+                  return (
+                    <g
+                      key={p.playerId}
+                      transform={`translate(${pos.x - size / 2 + offsetX}, ${pos.y - size / 2})`}
+                    >
+                      <RealisticCat catId={p.catId} size={size} />
+                    </g>
+                  );
+                })}
 
               {/* Start / Finish labels */}
               {isStart && (
                 <text
                   x={pos.x}
-                  y={pos.y - spaceRadius - 6}
+                  y={pos.y - spaceRadius - 8}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={10}
                   fontWeight="bold"
                   fill="#22c55e"
+                  filter="url(#glow)"
                 >
                   START
                 </text>
@@ -165,11 +204,12 @@ export const CatDashBoard = memo(function CatDashBoard({
               {isFinish && (
                 <text
                   x={pos.x}
-                  y={pos.y - spaceRadius - 6}
+                  y={pos.y - spaceRadius - 8}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={10}
                   fontWeight="bold"
                   fill="#f59e0b"
+                  filter="url(#glow)"
                 >
                   🏁 FINISH
                 </text>
@@ -208,19 +248,27 @@ export const CatDashBoard = memo(function CatDashBoard({
           return (
             <XStack
               key={player.playerId}
-              gap="$1"
+              gap="$2"
               alignItems="center"
               opacity={player.isReady ? 1 : 0.4}
               backgroundColor={
-                isCurrent ? 'rgba(124,58,237,0.15)' : 'transparent'
+                isCurrent ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)'
               }
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
-              borderWidth={isCurrent ? 1 : 0}
-              borderColor={isCurrent ? tokens.playerBorder : 'transparent'}
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor={
+                isCurrent ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
+              }
+              style={{
+                boxShadow: isCurrent
+                  ? `0 0 12px ${tokens.playerBorder}55`
+                  : 'none',
+                transition: 'all 0.2s ease',
+              }}
             >
-              <Text fontSize={16}>{CAT_EMOJI[player.catId] ?? '🐱'}</Text>
+              <RealisticCat catId={player.catId} size={18} />
               <Text
                 fontSize={12}
                 fontWeight={isCurrent ? 'bold' : 'normal'}

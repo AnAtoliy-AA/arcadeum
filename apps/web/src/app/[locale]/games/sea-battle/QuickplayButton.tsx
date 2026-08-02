@@ -7,6 +7,7 @@ import type { ButtonProps } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useMatchmaking } from '@/features/games/ui';
 
 type Mode = 'ai' | 'human';
 
@@ -38,6 +39,7 @@ export function QuickplayButton({
   const { snapshot } = useSessionTokens();
   const [loading, setLoading] = useState(false);
   const [errored, setErrored] = useState(false);
+  const { joinQueue } = useMatchmaking();
 
   // Clear the error state after a few seconds so the user can retry
   // without the button looking permanently broken.
@@ -49,16 +51,17 @@ export function QuickplayButton({
 
   const handleClick = async () => {
     setErrored(false);
+    if (mode === 'human') {
+      joinQueue(gameId, variant);
+      return;
+    }
     setLoading(true);
     try {
       const options = {
         token: snapshot.accessToken || undefined,
         variant,
       };
-      const { room } =
-        mode === 'ai'
-          ? await gamesApi.quickplay(gameId, options)
-          : await gamesApi.findHumanMatch(gameId, options);
+      const { room } = await gamesApi.quickplay(gameId, options);
       router.push(routes.gameRoom(room.id));
     } catch (err) {
       // warn, not error — the button surfaces this to the user via the
@@ -82,7 +85,11 @@ export function QuickplayButton({
       onClick={handleClick}
       loading={loading}
       aria-live="polite"
-      data-testid={`sea-battle-quickplay-${mode}-button`}
+      data-testid={
+        mode === 'human'
+          ? 'quickplay-human-button'
+          : `sea-battle-quickplay-${mode}-button`
+      }
     >
       {displayLabel}
     </Button>

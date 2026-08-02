@@ -22,7 +22,8 @@ interface BoardProps {
   resolveName: (id?: string | null) => string;
 }
 
-function getOvalPoint(
+// Generate a gorgeous figure-8 / infinity track layout coordinates
+function getTrackPoint(
   index: number,
   total: number,
   cx: number,
@@ -30,10 +31,15 @@ function getOvalPoint(
   rx: number,
   ry: number,
 ): { x: number; y: number } {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  // Map index [0..total-1] to [0..2PI]
+  const t = (index / total) * 2 * Math.PI - Math.PI / 2;
+
+  // Infinity / Figure-8 Lissajous curve formula:
+  // x = cx + rx * cos(t)
+  // y = cy + ry * sin(2t) / 2
   return {
-    x: cx + rx * Math.cos(angle),
-    y: cy + ry * Math.sin(angle),
+    x: cx + rx * Math.cos(t),
+    y: cy + ry * Math.sin(2 * t) * 0.5,
   };
 }
 
@@ -50,12 +56,22 @@ export const CatDashBoard = memo(function CatDashBoard({
   const cx = svgW / 2;
   const cy = svgH / 2;
   const rx = svgW * 0.42;
-  const ry = svgH * 0.4;
+  const ry = svgH * 0.65; // Make vertical spread slightly larger to fit figure-8
 
   const positions = useMemo(
-    () => snapshot.track.map((_, i) => getOvalPoint(i, total, cx, cy, rx, ry)),
+    () => snapshot.track.map((_, i) => getTrackPoint(i, total, cx, cy, rx, ry)),
     [snapshot.track, total, cx, cy, rx, ry],
   );
+
+  // Generate SVG path string for the track line
+  const trackPathD = useMemo(() => {
+    if (positions.length === 0) return '';
+    const points = positions.map((p) => `${p.x},${p.y}`);
+    return `M ${points[0]} ${points
+      .slice(1)
+      .map((pt) => `L ${pt}`)
+      .join(' ')} Z`;
+  }, [positions]);
 
   const spaceRadius = 15;
 
@@ -89,26 +105,24 @@ export const CatDashBoard = memo(function CatDashBoard({
         <rect width={svgW} height={svgH} fill="url(#bgGlow)" rx={20} />
 
         {/* Track path line with neon glow style */}
-        <ellipse
-          cx={cx}
-          cy={cy}
-          rx={rx}
-          ry={ry}
+        <path
+          d={trackPathD}
           fill="none"
           stroke={tokens.trackBorder}
           strokeWidth={spaceRadius * 2 + 8}
           opacity={0.12}
+          strokeLinejoin="round"
+          strokeLinecap="round"
         />
-        <ellipse
-          cx={cx}
-          cy={cy}
-          rx={rx}
-          ry={ry}
+        <path
+          d={trackPathD}
           fill="none"
           stroke={tokens.trackBorder}
           strokeWidth={2}
           opacity={0.4}
-          strokeDasharray="4 6"
+          strokeDasharray="6 8"
+          strokeLinejoin="round"
+          strokeLinecap="round"
         />
 
         {/* Track spaces */}

@@ -59,13 +59,14 @@ export function useMatchmaking() {
 
   const joinQueue = useCallback(
     async (gameId: string, variant?: string) => {
+      store.startQueue(gameId, variant);
+
       let userId = snapshot.userId;
       if (!userId) {
         await getAnonymousIdWithSignature();
         userId = localStorage.getItem('arcadeum_anon_id');
       }
       if (!userId) return;
-      store.startQueue(gameId, variant);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
         gameId,

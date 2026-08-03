@@ -60,7 +60,7 @@ export const CatDashBoard = memo(function CatDashBoard({
       .join(' ')}${isClosed ? ' Z' : ''}`;
   }, [positions, snapshot.trackType]);
 
-  const spaceRadius = 18;
+  const spaceRadius = 22;
 
   return (
     <YStack gap="$3" alignItems="center" width="100%" padding="$3">
@@ -290,9 +290,9 @@ export const CatDashBoard = memo(function CatDashBoard({
               {/* Player cat SVG */}
               {isOccupied &&
                 playersHere.map((p, idx) => {
-                  const size = 32;
+                  const size = 38;
                   // Shift slightly if multiple players are on the same spot
-                  const offsetX = (idx - (playersHere.length - 1) / 2) * 10;
+                  const offsetX = (idx - (playersHere.length - 1) / 2) * 12;
                   return (
                     <g
                       key={p.playerId}
@@ -410,14 +410,14 @@ export const CatDashBoard = memo(function CatDashBoard({
           return (
             <XStack
               key={player.playerId}
-              gap="$2.5"
+              gap="$3"
               alignItems="center"
               opacity={player.isReady ? 1 : 0.4}
               backgroundColor={
                 isCurrent ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)'
               }
-              paddingHorizontal="$3.5"
-              paddingVertical="$2.5"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
               borderRadius="$4"
               borderWidth={1.5}
               borderColor={
@@ -430,15 +430,15 @@ export const CatDashBoard = memo(function CatDashBoard({
                 transition: 'all 0.2s ease',
               }}
             >
-              <RealisticCat catId={player.catId} size={22} />
+              <RealisticCat catId={player.catId} size={28} />
               <Text
-                fontSize={13}
+                fontSize={14}
                 fontWeight={isCurrent ? 'bold' : 'normal'}
                 color={CAT_COLORS[player.catId] ?? tokens.text}
               >
                 {resolveName(player.playerId)}
               </Text>
-              <Text fontSize={11} color={tokens.textSecondary}>
+              <Text fontSize={12} color={tokens.textSecondary}>
                 🎲 {player.powerTokens}
               </Text>
             </XStack>

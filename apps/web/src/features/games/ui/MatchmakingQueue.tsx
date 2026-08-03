@@ -6,6 +6,7 @@ import { Dialog, YStack, Text, Spinner } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { getAnonymousIdWithSignature } from '@/shared/lib/api-client';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { create } from 'zustand';
 
@@ -57,8 +58,12 @@ export function useMatchmaking() {
   const store = useMatchmakingStore();
 
   const joinQueue = useCallback(
-    (gameId: string, variant?: string) => {
-      const userId = snapshot.userId;
+    async (gameId: string, variant?: string) => {
+      let userId = snapshot.userId;
+      if (!userId) {
+        await getAnonymousIdWithSignature();
+        userId = localStorage.getItem('arcadeum_anon_id');
+      }
       if (!userId) return;
       store.startQueue(gameId, variant);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {

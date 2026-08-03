@@ -50,9 +50,9 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-      <RealisticCat catId={currentPlayer.catId} size={24} />
+      <RealisticCat catId={currentPlayer.catId} size={32} />
       <Text
-        fontSize={14}
+        fontSize={16}
         fontWeight="bold"
         color={tokens.text}
         letterSpacing={0.5}

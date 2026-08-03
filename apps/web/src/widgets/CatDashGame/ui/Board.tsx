@@ -60,7 +60,7 @@ export const CatDashBoard = memo(function CatDashBoard({
       .join(' ')}${isClosed ? ' Z' : ''}`;
   }, [positions, snapshot.trackType]);
 
-  const spaceRadius = 15;
+  const spaceRadius = 18;
 
   return (
     <YStack gap="$3" alignItems="center" width="100%" padding="$3">
@@ -290,9 +290,9 @@ export const CatDashBoard = memo(function CatDashBoard({
               {/* Player cat SVG */}
               {isOccupied &&
                 playersHere.map((p, idx) => {
-                  const size = 26;
+                  const size = 32;
                   // Shift slightly if multiple players are on the same spot
-                  const offsetX = (idx - (playersHere.length - 1) / 2) * 8;
+                  const offsetX = (idx - (playersHere.length - 1) / 2) * 10;
                   return (
                     <g
                       key={p.playerId}
@@ -410,16 +410,16 @@ export const CatDashBoard = memo(function CatDashBoard({
           return (
             <XStack
               key={player.playerId}
-              gap="$2"
+              gap="$2.5"
               alignItems="center"
               opacity={player.isReady ? 1 : 0.4}
               backgroundColor={
                 isCurrent ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)'
               }
-              paddingHorizontal="$3"
-              paddingVertical="$2"
+              paddingHorizontal="$3.5"
+              paddingVertical="$2.5"
               borderRadius="$4"
-              borderWidth={1}
+              borderWidth={1.5}
               borderColor={
                 isCurrent ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
               }
@@ -430,15 +430,15 @@ export const CatDashBoard = memo(function CatDashBoard({
                 transition: 'all 0.2s ease',
               }}
             >
-              <RealisticCat catId={player.catId} size={18} />
+              <RealisticCat catId={player.catId} size={22} />
               <Text
-                fontSize={12}
+                fontSize={13}
                 fontWeight={isCurrent ? 'bold' : 'normal'}
                 color={CAT_COLORS[player.catId] ?? tokens.text}
               >
                 {resolveName(player.playerId)}
               </Text>
-              <Text fontSize={10} color={tokens.textSecondary}>
+              <Text fontSize={11} color={tokens.textSecondary}>
                 🎲 {player.powerTokens}
               </Text>
             </XStack>

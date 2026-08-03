@@ -6,6 +6,7 @@ import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
 import { RealisticCat } from './RealisticCat';
+import { BoardBackground } from './BoardBackground';
 import {
   CAT_COLORS,
   getSerpentineTrackPoint,
@@ -31,7 +32,7 @@ export const CatDashBoard = memo(function CatDashBoard({
   const rows = Math.ceil(total / cols);
   const svgW = 560;
   const svgH =
-    snapshot.trackType === 'linear' ? Math.max(340, rows * 48 + 48) : 340;
+    snapshot.trackType === 'linear' ? Math.max(340, rows * 64 + 64) : 340;
   const cx = svgW / 2;
   const cy = svgH / 2;
   const rx = svgW * 0.42;
@@ -52,13 +53,33 @@ export const CatDashBoard = memo(function CatDashBoard({
   // Generate SVG path string for the track line
   const trackPathD = useMemo(() => {
     if (positions.length === 0) return '';
-    const points = positions.map((p) => `${p.x},${p.y}`);
-    const isClosed = snapshot.trackType !== 'linear';
-    return `M ${points[0]} ${points
-      .slice(1)
-      .map((pt) => `L ${pt}`)
-      .join(' ')}${isClosed ? ' Z' : ''}`;
-  }, [positions, snapshot.trackType]);
+    if (snapshot.trackType !== 'linear') {
+      const points = positions.map((p) => `${p.x},${p.y}`);
+      return `M ${points[0]} ${points
+        .slice(1)
+        .map((pt) => `L ${pt}`)
+        .join(' ')} Z`;
+    }
+
+    // Smooth winding serpentine curves for linear track layout
+    let d = `M ${positions[0].x},${positions[0].y}`;
+    for (let i = 0; i < positions.length - 1; i++) {
+      const current = positions[i];
+      const next = positions[i + 1];
+      const currRow = Math.floor(i / cols);
+      const nextRow = Math.floor((i + 1) / cols);
+
+      if (currRow !== nextRow) {
+        // Smooth out-of-row loop transition curve at the end of rows
+        const isRightTurn = currRow % 2 === 0;
+        const dx = isRightTurn ? 32 : -32;
+        d += ` C ${current.x + dx},${current.y} ${next.x + dx},${next.y} ${next.x},${next.y}`;
+      } else {
+        d += ` L ${next.x},${next.y}`;
+      }
+    }
+    return d;
+  }, [positions, snapshot.trackType, cols]);
 
   const spaceRadius = 22;
 
@@ -75,133 +96,12 @@ export const CatDashBoard = memo(function CatDashBoard({
           border: `1px solid ${tokens.trackBorder}33`,
         }}
       >
-        {/* Background with beautiful radial gradient simulated in SVG */}
-        <defs>
-          <radialGradient id="bgGlow" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stopColor={`${tokens.track}aa`} />
-            <stop offset="100%" stopColor={tokens.background} />
-          </radialGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-
-          {/* Glowing cyber grid pattern for Neon Cyber */}
-          <pattern
-            id="cyberGrid"
-            width="30"
-            height="30"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 30 0 L 0 0 0 30"
-              fill="none"
-              stroke={tokens.trackBorder}
-              strokeWidth="0.5"
-              opacity="0.1"
-            />
-          </pattern>
-
-          {/* Cosmic star coordinates for Space Cats */}
-          <pattern
-            id="spaceStars"
-            width="100"
-            height="100"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="20" cy="20" r="1.2" fill="#ffffff" opacity="0.25" />
-            <circle cx="80" cy="35" r="1.8" fill="#ffffff" opacity="0.45" />
-            <circle cx="45" cy="75" r="0.8" fill="#ffffff" opacity="0.2" />
-            <circle cx="70" cy="85" r="1.4" fill="#ffffff" opacity="0.35" />
-            <path
-              d="M 50 15 L 52 20 L 57 20 L 53 23 L 55 28 L 50 25 L 45 28 L 47 23 L 43 20 L 48 20 Z"
-              fill="#ffffff"
-              opacity="0.08"
-              transform="scale(0.5) translate(50, 50)"
-            />
-          </pattern>
-
-          {/* Cozy cobblestone pattern for Classic Village */}
-          <pattern
-            id="villageTiles"
-            width="40"
-            height="40"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 0 20 Q 10 10 20 20 T 40 20 M 0 40 Q 10 30 20 40 T 40 40"
-              fill="none"
-              stroke={tokens.trackBorder}
-              strokeWidth="0.8"
-              opacity="0.08"
-            />
-          </pattern>
-
-          {/* Organic leaf pattern for Nature Wild */}
-          <pattern
-            id="natureLeaves"
-            width="60"
-            height="60"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 10 20 Q 20 15 20 30 Q 20 45 10 40 Q 0 45 0 30 Q 0 15 10 20 Z"
-              fill="none"
-              stroke={tokens.trackBorder}
-              strokeWidth="0.8"
-              opacity="0.06"
-              transform="scale(0.6) translate(10, 10)"
-            />
-            <path
-              d="M 40 45 Q 50 40 50 50 Q 50 60 40 55 Q 30 60 30 50 Q 30 40 40 45 Z"
-              fill="none"
-              stroke={tokens.trackBorder}
-              strokeWidth="0.8"
-              opacity="0.06"
-              transform="scale(0.6) translate(30, 20)"
-            />
-          </pattern>
-        </defs>
-        <rect width={svgW} height={svgH} fill="url(#bgGlow)" rx={20} />
-        {variant === 'neon' && (
-          <rect
-            width={svgW}
-            height={svgH}
-            fill="url(#cyberGrid)"
-            rx={20}
-            pointerEvents="none"
-          />
-        )}
-        {variant === 'space' && (
-          <rect
-            width={svgW}
-            height={svgH}
-            fill="url(#spaceStars)"
-            rx={20}
-            pointerEvents="none"
-          />
-        )}
-        {variant === 'village' && (
-          <rect
-            width={svgW}
-            height={svgH}
-            fill="url(#villageTiles)"
-            rx={20}
-            pointerEvents="none"
-          />
-        )}
-        {variant === 'nature' && (
-          <rect
-            width={svgW}
-            height={svgH}
-            fill="url(#natureLeaves)"
-            rx={20}
-            pointerEvents="none"
-          />
-        )}
+        <BoardBackground
+          variant={variant}
+          tokens={tokens}
+          svgW={svgW}
+          svgH={svgH}
+        />
 
         {/* Track path line with neon glow style */}
         <path

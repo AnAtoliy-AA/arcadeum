@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { Dialog, YStack, Text, Spinner } from 'tamagui';
+import { YStack, Text, Spinner } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -140,67 +141,69 @@ export function MatchmakingQueueModal() {
     return `${m}:${s}`;
   };
 
-  return (
-    <Dialog open={isQueued}>
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" backgroundColor="rgba(0,0,0,0.85)" />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          maxWidth={400}
-          width="90%"
-          borderRadius={24}
-          padding="$6"
-          gap="$4"
-          backgroundColor="#18001e"
-          borderColor="rgba(192, 38, 211, 0.6)"
-          borderWidth={2}
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1300,
-          }}
-        >
-          <YStack alignItems="center" gap="$4">
-            <Spinner size="large" color="#d946ef" />
-            <Text
-              fontSize="$6"
-              fontWeight="700"
-              color="#f8fafc"
-              textAlign="center"
-            >
-              Searching for Opponent
-            </Text>
-            <Text fontSize="$3" color="#94a3b8" textAlign="center">
-              Finding a match for{' '}
-              {gameId
-                ? gameId.replace('_v1', '').replace('_', ' ').toUpperCase()
-                : 'game'}
-              ...
-            </Text>
-            <Text
-              fontSize="$7"
-              fontWeight="800"
-              color="#38bdf8"
-              fontFamily="$body"
-            >
-              {formatTime(elapsed)}
-            </Text>
-            <Button
-              variant="primary"
-              backgroundColor="#dc2626"
-              hoverStyle={{ backgroundColor: '#b91c1c' }}
-              onClick={leaveQueue}
-              style={{ width: '100%', marginTop: 10 }}
-            >
-              Cancel Matchmaking
-            </Button>
-          </YStack>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+  return createPortal(
+    <>
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          zIndex: 1299,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1300,
+          maxWidth: 400,
+          width: '90%',
+          borderRadius: 24,
+          padding: 24,
+          backgroundColor: '#18001e',
+          border: '2px solid rgba(192, 38, 211, 0.6)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+        }}
+      >
+        <YStack alignItems="center" gap="$4">
+          <Spinner size="large" color="#d946ef" />
+          <Text
+            fontSize="$6"
+            fontWeight="700"
+            color="#f8fafc"
+            textAlign="center"
+          >
+            Searching for Opponent
+          </Text>
+          <Text fontSize="$3" color="#94a3b8" textAlign="center">
+            Finding a match for{' '}
+            {gameId
+              ? gameId.replace('_v1', '').replace('_', ' ').toUpperCase()
+              : 'game'}
+            ...
+          </Text>
+          <Text
+            fontSize="$7"
+            fontWeight="800"
+            color="#38bdf8"
+            fontFamily="$body"
+          >
+            {formatTime(elapsed)}
+          </Text>
+          <Button
+            variant="primary"
+            backgroundColor="#dc2626"
+            hoverStyle={{ backgroundColor: '#b91c1c' }}
+            onClick={leaveQueue}
+            style={{ width: '100%', marginTop: 10 }}
+          >
+            Cancel Matchmaking
+          </Button>
+        </YStack>
+      </div>
+    </>,
+    document.body,
   );
 }

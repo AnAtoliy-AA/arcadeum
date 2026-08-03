@@ -105,6 +105,40 @@ export function RealisticCat({
         strokeWidth="2"
       />
 
+      {/* Fluffy Cheek Fur */}
+      <polygon
+        points="18,55 10,60 20,65"
+        fill={c.main}
+        stroke={c.accent}
+        strokeWidth="1.5"
+      />
+      <polygon
+        points="82,55 90,60 80,65"
+        fill={c.main}
+        stroke={c.accent}
+        strokeWidth="1.5"
+      />
+
+      {/* Cute Little Paws */}
+      <circle
+        cx="38"
+        cy="84"
+        r="7"
+        fill={c.main}
+        stroke={c.accent}
+        strokeWidth="1.5"
+      />
+      <circle cx="38" cy="84" r="4" fill={c.ear} />
+      <circle
+        cx="62"
+        cy="84"
+        r="7"
+        fill={c.main}
+        stroke={c.accent}
+        strokeWidth="1.5"
+      />
+      <circle cx="62" cy="84" r="4" fill={c.ear} />
+
       {/* Inner Face Mask / Cheeks */}
       <ellipse cx="50" cy="62" rx="20" ry="14" fill="#ffffff" opacity="0.95" />
 

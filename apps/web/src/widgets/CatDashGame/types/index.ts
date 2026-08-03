@@ -52,6 +52,8 @@ export interface TrackSpace {
 export interface CatDashOptions {
   trackType: TrackType;
   theme: Theme;
+  columns?: number;
+  trackLength?: number;
 }
 
 export interface CatDashLogEntry {
@@ -68,6 +70,8 @@ export interface CatDashLogEntry {
 export interface CatDashClientState {
   trackType: TrackType;
   theme: Theme;
+  columns: number;
+  trackLength: number;
   players: CatDashPlayer[];
   currentPlayerIndex: number;
   turnNumber: number;

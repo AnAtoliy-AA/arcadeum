@@ -22,8 +22,36 @@ interface BoardProps {
   resolveName: (id?: string | null) => string;
 }
 
-// Generate a gorgeous figure-8 / infinity track layout coordinates
-function getTrackPoint(
+// Generate serpentine track layout coordinates
+function getSerpentineTrackPoint(
+  index: number,
+  total: number,
+  width: number,
+  height: number,
+  cols: number = 10,
+): { x: number; y: number } {
+  const rows = Math.ceil(total / cols);
+  const row = Math.floor(index / cols);
+  const isLeftToRight = row % 2 === 0;
+  const col = isLeftToRight ? index % cols : cols - 1 - (index % cols);
+
+  const paddingX = 32;
+  const paddingY = 32;
+
+  const innerWidth = width - 2 * paddingX;
+  const innerHeight = height - 2 * paddingY;
+
+  const stepX = innerWidth / (cols - 1);
+  const stepY = innerHeight / (rows - 1 || 1);
+
+  return {
+    x: paddingX + col * stepX,
+    y: paddingY + row * stepY,
+  };
+}
+
+// Generate circular/elliptical track layout coordinates
+function getCircularTrackPoint(
   index: number,
   total: number,
   cx: number,
@@ -31,12 +59,23 @@ function getTrackPoint(
   rx: number,
   ry: number,
 ): { x: number; y: number } {
-  // Map index [0..total-1] to [0..2PI]
   const t = (index / total) * 2 * Math.PI - Math.PI / 2;
+  return {
+    x: cx + rx * Math.cos(t),
+    y: cy + ry * Math.sin(t),
+  };
+}
 
-  // Infinity / Figure-8 Lissajous curve formula:
-  // x = cx + rx * cos(t)
-  // y = cy + ry * sin(2t) / 2
+// Generate figure-8 / infinity track layout coordinates
+function getFigure8TrackPoint(
+  index: number,
+  total: number,
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+): { x: number; y: number } {
+  const t = (index / total) * 2 * Math.PI - Math.PI / 2;
   return {
     x: cx + rx * Math.cos(t),
     y: cy + ry * Math.sin(2 * t) * 0.5,
@@ -51,27 +90,38 @@ export const CatDashBoard = memo(function CatDashBoard({
   const { tokens } = useCatDashTheme();
 
   const total = snapshot.track.length;
+  const cols = snapshot.columns || 10;
+  const rows = Math.ceil(total / cols);
   const svgW = 560;
-  const svgH = 340;
+  const svgH =
+    snapshot.trackType === 'linear' ? Math.max(340, rows * 48 + 48) : 340;
   const cx = svgW / 2;
   const cy = svgH / 2;
   const rx = svgW * 0.42;
-  const ry = svgH * 0.65; // Make vertical spread slightly larger to fit figure-8
+  const ry = svgH * 0.65;
 
-  const positions = useMemo(
-    () => snapshot.track.map((_, i) => getTrackPoint(i, total, cx, cy, rx, ry)),
-    [snapshot.track, total, cx, cy, rx, ry],
-  );
+  const positions = useMemo(() => {
+    return snapshot.track.map((_, i) => {
+      if (snapshot.trackType === 'linear') {
+        return getSerpentineTrackPoint(i, total, svgW, svgH, cols);
+      }
+      if (snapshot.trackType === 'circular') {
+        return getCircularTrackPoint(i, total, cx, cy, rx, ry * 0.58);
+      }
+      return getFigure8TrackPoint(i, total, cx, cy, rx, ry);
+    });
+  }, [snapshot.track, snapshot.trackType, cols, total, svgH, cx, cy, rx, ry]);
 
   // Generate SVG path string for the track line
   const trackPathD = useMemo(() => {
     if (positions.length === 0) return '';
     const points = positions.map((p) => `${p.x},${p.y}`);
+    const isClosed = snapshot.trackType !== 'linear';
     return `M ${points[0]} ${points
       .slice(1)
       .map((pt) => `L ${pt}`)
-      .join(' ')} Z`;
-  }, [positions]);
+      .join(' ')}${isClosed ? ' Z' : ''}`;
+  }, [positions, snapshot.trackType]);
 
   const spaceRadius = 15;
 
@@ -184,7 +234,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))',
                   }}
                 >
-                  {i}
+                  {i + 1}
                 </text>
               )}
 
@@ -204,8 +254,8 @@ export const CatDashBoard = memo(function CatDashBoard({
                   );
                 })}
 
-              {/* Start / Finish labels */}
-              {isStart && (
+              {/* Start / Finish labels (Only for circular/multiple layouts as linear uses dots/flags under the cells) */}
+              {snapshot.trackType !== 'linear' && isStart && (
                 <text
                   x={pos.x}
                   y={pos.y - spaceRadius - 8}
@@ -218,7 +268,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                   START
                 </text>
               )}
-              {isFinish && (
+              {snapshot.trackType !== 'linear' && isFinish && (
                 <text
                   x={pos.x}
                   y={pos.y - spaceRadius - 8}
@@ -232,8 +282,52 @@ export const CatDashBoard = memo(function CatDashBoard({
                 </text>
               )}
 
-              {/* Obstacle / Bonus icons (rendered offset below the space so they don't overlap the cell number) */}
-              {!isOccupied &&
+              {/* Layout indicators always rendered under cells */}
+              {snapshot.trackType === 'linear' ? (
+                isStart ? (
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y + spaceRadius + 7}
+                    r={3.5}
+                    fill="#22c55e"
+                    filter="url(#glow)"
+                  />
+                ) : isFinish ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    🏁
+                  </text>
+                ) : space.type === 'obstacle' ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    ⚡
+                  </text>
+                ) : space.type === 'bonus' ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    ⭐
+                  </text>
+                ) : null
+              ) : (
+                !isOccupied &&
                 !isStart &&
                 !isFinish &&
                 space.type !== 'normal' && (
@@ -251,7 +345,8 @@ export const CatDashBoard = memo(function CatDashBoard({
                         ? '⭐'
                         : '🔀'}
                   </text>
-                )}
+                )
+              )}
             </g>
           );
         })}

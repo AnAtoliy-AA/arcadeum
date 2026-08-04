@@ -1,21 +1,30 @@
 import type { TrackSpace, SpaceEffect } from './cat-dash.types';
-import {
-  TRACK_LENGTH,
-  CAT_ABILITIES,
-  THEME_BONUSES,
-} from './cat-dash.constants';
+import { CAT_ABILITIES, THEME_BONUSES } from './cat-dash.constants';
 import type { TrackType } from './cat-dash.constants';
 
-export function generateTrack(trackType: TrackType): TrackSpace[] {
+export function generateTrack(
+  trackType: TrackType,
+  trackLength: number = 60,
+): TrackSpace[] {
   const track: TrackSpace[] = [];
 
-  for (let i = 0; i <= TRACK_LENGTH; i++) {
+  const maxIndex = trackLength - 1;
+
+  for (let i = 0; i <= maxIndex; i++) {
     const space: TrackSpace = { id: i, type: 'normal' };
 
     if (i === 0) {
       space.type = 'normal';
-    } else if (i === TRACK_LENGTH) {
+    } else if (i === maxIndex) {
       space.type = 'normal';
+    } else if (trackType === 'linear') {
+      if (i % 10 === 4) {
+        space.type = 'obstacle';
+        space.effect = { type: 'skip_turn' };
+      } else if (i % 10 === 2) {
+        space.type = 'bonus';
+        space.effect = { type: 'extra_roll' };
+      }
     } else if (trackType === 'circular' && i % 7 === 0) {
       space.type = 'fork';
     } else if (i % 5 === 0) {
@@ -45,8 +54,11 @@ export function calculateMovement(
   return Math.max(1, movement);
 }
 
-export function checkWinCondition(position: number): boolean {
-  return position >= TRACK_LENGTH;
+export function checkWinCondition(
+  position: number,
+  trackLength: number = 60,
+): boolean {
+  return position >= trackLength - 1;
 }
 
 export function getAvailableAbilities(

@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
@@ -43,6 +44,7 @@ export class GamesGateway {
     private readonly realtime: GamesRealtimeService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly matchmakingService: GameRoomsMatchmakingService,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -120,10 +122,15 @@ export class GamesGateway {
     const userId = (client.data as Record<string, unknown>)?.userId as
       | string
       | undefined;
-    if (userId) {
-      this.realtime.untrackSocket(userId, client.id);
+    const anonId = (client.data as Record<string, unknown>)?.anonId as
+      | string
+      | undefined;
+    const activeUserId = userId || anonId;
+    if (activeUserId) {
+      this.realtime.untrackSocket(activeUserId, client.id);
+      this.matchmakingService.leaveQueue(activeUserId);
     }
-    if (!userId || !this.server) return;
+    if (!activeUserId || !this.server) return;
 
     for (const room of client.rooms) {
       if (room.startsWith('game-room:')) {
@@ -386,5 +393,39 @@ export class GamesGateway {
     payload: unknown,
   ): void {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
+  }
+
+  @SubscribeMessage('games.matchmaking.join')
+  handleMatchmakingJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      userId: string;
+      gameId: string;
+      variant?: string;
+    },
+  ): void {
+    const userId = extractString(payload, 'userId');
+    const gameId = extractString(payload, 'gameId');
+    const variant = payload.variant ? String(payload.variant) : undefined;
+
+    this.validateUserId(client, userId);
+
+    this.matchmakingService.joinQueue(userId, client.id, gameId, variant);
+    client.emit('games.matchmaking.joined', maybeEncrypt({ gameId, variant }));
+  }
+
+  @SubscribeMessage('games.matchmaking.leave')
+  handleMatchmakingLeave(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      userId: string;
+    },
+  ): void {
+    const userId = extractString(payload, 'userId');
+    this.validateUserId(client, userId);
+    this.matchmakingService.leaveQueue(userId);
+    client.emit('games.matchmaking.left', maybeEncrypt({}));
   }
 }

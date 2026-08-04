@@ -4,7 +4,8 @@ export const frMessages = {
   glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Salles de Jeu',
-    emptyTitle: 'Aucune salle trouvée. Créez-en une pour commencer !',
+    emptyTitle:
+      "Pas de salon ouvert pour le moment — commencez une partie contre l'IA.",
     emptyFeaturedLink: 'Ou lancez une Bataille Navale contre l’IA →',
     loadingRooms: 'Chargement des salles...',
     searchPlaceholder: 'Rechercher des jeux...',

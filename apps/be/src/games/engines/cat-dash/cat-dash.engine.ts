@@ -53,9 +53,13 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     const options = (config?.options ?? {}) as Partial<{
       trackType: TrackType;
       theme: Theme;
+      columns?: number;
+      trackLength?: number;
     }>;
     const trackType = options.trackType || DEFAULT_OPTIONS.trackType;
     const theme = options.theme || DEFAULT_OPTIONS.theme;
+    const columns = Number(options.columns) || 10;
+    const trackLength = Number(options.trackLength) || 60;
 
     const players: CatDashPlayer[] = playerIds.map((id, index) => ({
       playerId: id,
@@ -70,10 +74,12 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     return {
       trackType,
       theme,
+      columns,
+      trackLength,
       players,
       currentPlayerIndex: 0,
       turnNumber: 1,
-      track: generateTrack(trackType),
+      track: generateTrack(trackType, trackLength),
       gameOver: false,
       logs: [
         this.createLogEntry(
@@ -184,7 +190,7 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       }
     }
 
-    if (checkWinCondition(player.position)) {
+    if (checkWinCondition(player.position, state.trackLength)) {
       state.winner = player.playerId;
       state.gameOver = true;
       logs.push(

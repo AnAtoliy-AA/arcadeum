@@ -20,6 +20,7 @@ export default async function HomeHero() {
     homeCopy.description?.replace('{{appName}}', appConfig.appName) ??
     `Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
+  const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play vs AI';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
   const playLabel = homeCopy.heroCardPlayCta ?? 'Play';
 
@@ -69,6 +70,12 @@ export default async function HomeHero() {
                 className="home-link-button home-link-button-primary"
               >
                 {primaryLabel}
+              </Link>
+              <Link
+                href={`${routes.games}?status=lobby,in_progress`}
+                className="home-link-button home-link-button-ghost"
+              >
+                {playWithBotsLabel}
               </Link>
               <Link
                 href={appConfig.supportCta.href}

@@ -52,7 +52,13 @@ export default function GamesPage({
 
   // URL state management
   const selectedStatuses = useMemo<GamesStatusFilter>(
-    () => parseStatusFilterFromUrl(searchParams?.get('status') ?? null),
+    () => {
+      const raw = searchParams ? searchParams.get('status') : null;
+      if (raw === null || raw === undefined) {
+        return ['lobby', 'in_progress'];
+      }
+      return parseStatusFilterFromUrl(raw);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
     [searchParams, pathname],
   );

@@ -15,6 +15,14 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   {
+    icon: '🤖',
+    titleKey: 'featureBotsTitle',
+    descriptionKey: 'featureBotsDescription',
+    defaultTitle: 'Play vs AI & Bots',
+    defaultDescription:
+      'Practice solo or challenge intelligent bots at easy, medium, or hard difficulties whenever friends are offline.',
+  },
+  {
     icon: '🎮',
     titleKey: 'featureRoomsTitle',
     descriptionKey: 'featureRoomsDescription',

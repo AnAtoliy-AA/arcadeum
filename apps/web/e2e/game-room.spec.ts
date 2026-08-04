@@ -63,11 +63,11 @@ test.describe('Game Room Detail', () => {
     await navigateTo(page, '/games/empty-game');
 
     // The shared GamesEmpty component is reused here — same copy as the
-    // /games lounge ("No rooms found. Create one to get started!").
+    // /games lounge ("No open rooms right now — start one vs AI.").
     await expect(
       page
         .getByRole('main')
-        .getByText(/no rooms found/i)
+        .getByText(/no open rooms/i)
         .first(),
     ).toBeVisible();
   });

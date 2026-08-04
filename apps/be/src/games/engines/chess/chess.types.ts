@@ -71,6 +71,7 @@ export interface LegalMove {
 export interface ChessState extends BaseGameState {
   variant: ChessVariant;
   timeControl: TimeControl | null;
+  botDifficulty?: 'easy' | 'medium' | 'hard';
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -104,4 +105,5 @@ export interface MovePayload {
 export interface ChessEngineConfig {
   timeControl?: TimeControl;
   variant?: ChessVariant;
+  botDifficulty?: 'easy' | 'medium' | 'hard';
 }

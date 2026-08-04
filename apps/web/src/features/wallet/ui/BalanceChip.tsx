@@ -21,17 +21,19 @@ interface WalletBalance {
 }
 
 const pillStyle = (bg: string, border: string, color: string) => ({
-  display: 'inline-flex' as const,
-  alignItems: 'center' as const,
-  gap: '4px',
-  padding: '2px 10px',
-  borderRadius: '999px',
-  fontSize: '13px',
-  fontWeight: 600,
-  background: bg,
-  border: `1px solid ${border}`,
-  color,
-  whiteSpace: 'nowrap' as const,
+  style: {
+    display: 'inline-flex' as const,
+    alignItems: 'center' as const,
+    gap: '4px',
+    padding: '2px 10px',
+    borderRadius: '999px',
+    fontSize: '13px',
+    fontWeight: 600,
+    background: bg,
+    border: `1px solid ${border}`,
+    color,
+    whiteSpace: 'nowrap' as const,
+  },
 });
 
 const fmt = (n: number) => new Intl.NumberFormat().format(n);

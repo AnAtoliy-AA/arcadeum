@@ -25,6 +25,7 @@ import { CriticalGateway } from './critical.gateway';
 import { CriticalActionsGateway } from './critical-actions.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
+// Game handlers — plain services, not gateways (single-namespace architecture)
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';

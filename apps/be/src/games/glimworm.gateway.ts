@@ -1,14 +1,9 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import {
   extractRoomAndUser,
@@ -16,8 +11,6 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { GlimwormService } from './glimworm/glimworm.service';
 import type { GlimwormVariant } from './glimworm/glimworm.types';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
@@ -25,90 +18,21 @@ import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 
 const GLIMWORM_GAME_ID = 'glimworm_v1';
 
-interface GlimwormInputBody {
-  roomId: string;
-  userId: string;
-  angle: unknown;
-  usePowerup?: unknown;
-}
-
-interface GlimwormStartBody {
-  roomId: string;
-  userId: string;
-  variant: unknown;
-  powerupsEnabled?: unknown;
-  fillWithBots?: unknown;
-  botCount?: unknown;
-}
-
-interface GlimwormColorPickBody {
-  roomId: string;
-  userId: string;
-  color: unknown;
-}
-
-interface GlimwormJoinBody {
-  roomId: string;
-  userId: string;
-  color?: unknown;
-}
-
-interface GlimwormReadyBody {
-  roomId: string;
-  userId: string;
-  ready: unknown;
-}
-
-interface GlimwormRestartBody {
-  roomId: string;
-  userId: string;
-}
-
 const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
   'battle_royale',
   'time_attack',
   'lives_heats',
 ]);
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class GlimwormGateway {
+export class GlimwormGateway implements GameMessageHandler {
   private readonly logger = new Logger(GlimwormGateway.name);
-
-  @WebSocketServer() server: Server;
 
   constructor(
     private readonly glimwormService: GlimwormService,
     private readonly visibility: GameVisibilityService,
     private readonly roleResolver: UserRoleResolver,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
   ) {}
-
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'GlimwormGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to Glimworm namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to Glimworm namespace: ${client.id}`,
-      );
-    }
-  }
 
   private async assertCanSee(
     userId: string | undefined,
@@ -134,14 +58,21 @@ export class GlimwormGateway {
     );
   }
 
-  @SubscribeMessage('glimworm.join')
-  handleJoin(
-    @MessageBody() payload: GlimwormJoinBody,
-    @ConnectedSocket() client: Socket,
-  ): void {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'glimworm.join': (client, payload) => this.handleJoin(client, payload),
+    'glimworm.ready': (client, payload) => this.handleReady(client, payload),
+    'glimworm.input': (client, payload) => this.handleInput(client, payload),
+    'glimworm.start': (client, payload) => this.handleStart(client, payload),
+    'glimworm.restart': (client, payload) =>
+      this.handleRestart(client, payload),
+    'glimworm.rematch': (client, payload) =>
+      this.handleRematch(client, payload),
+    'glimworm.color.pick': (client, payload) =>
+      this.handleColorPick(client, payload),
+  };
+
+  private handleJoin(client: Socket, payload: Record<string, unknown>): void {
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       const color =
@@ -162,14 +93,8 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.ready')
-  handleReady(
-    @MessageBody() payload: GlimwormReadyBody,
-    @ConnectedSocket() client: Socket,
-  ): void {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+  private handleReady(client: Socket, payload: Record<string, unknown>): void {
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       const ready = payload.ready === true;
@@ -189,15 +114,8 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.input')
-  handleInput(
-    @MessageBody() payload: GlimwormInputBody,
-    @ConnectedSocket() client: Socket,
-  ): void {
-    void client;
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+  private handleInput(client: Socket, payload: Record<string, unknown>): void {
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       const angle =
@@ -215,14 +133,11 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.start')
-  async handleStart(
-    @MessageBody() payload: GlimwormStartBody,
-    @ConnectedSocket() client: Socket,
+  private async handleStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       const variantRaw =
@@ -260,14 +175,11 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.restart')
-  handleRestart(
-    @MessageBody() payload: GlimwormRestartBody,
-    @ConnectedSocket() client: Socket,
+  private handleRestart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): void {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       this.glimwormService.restart(roomId, userId);
@@ -283,14 +195,11 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.rematch')
-  handleRematch(
-    @MessageBody() payload: GlimwormRestartBody,
-    @ConnectedSocket() client: Socket,
+  private handleRematch(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): void {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       this.glimwormService.rematch(roomId, userId);
@@ -306,14 +215,11 @@ export class GlimwormGateway {
     }
   }
 
-  @SubscribeMessage('glimworm.color.pick')
-  handleColorPick(
-    @MessageBody() payload: GlimwormColorPickBody,
-    @ConnectedSocket() client: Socket,
+  private handleColorPick(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): void {
-    const { roomId, userId } = extractRoomAndUser(
-      payload as unknown as Record<string, unknown>,
-    );
+    const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
       const color = typeof payload.color === 'string' ? payload.color : '';

@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import { CheckersService } from './checkers/checkers.service';
 import {
@@ -18,58 +13,26 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { MoveStep } from './engines/checkers/checkers.types';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class CheckersGateway {
+export class CheckersGateway implements GameMessageHandler {
   private readonly logger = new Logger(CheckersGateway.name);
 
-  @WebSocketServer() server: Server;
+  constructor(private readonly checkersService: CheckersService) {}
 
-  constructor(
-    private readonly checkersService: CheckersService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'checkers.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'checkers.session.move_piece': (client, payload) =>
+      this.handleMovePiece(client, payload),
+    'checkers.session.forfeit': (client, payload) =>
+      this.handleForfeit(client, payload),
+  };
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'CheckersGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to Checkers namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to Checkers namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('checkers.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -78,7 +41,7 @@ export class CheckersGateway {
         userId,
         roomId,
         !!payload?.withBots,
-        payload?.botCount,
+        payload?.botCount as number | undefined,
       );
       client.emit('checkers.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -91,15 +54,9 @@ export class CheckersGateway {
     }
   }
 
-  @SubscribeMessage('checkers.session.move_piece')
-  async handleMovePiece(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      steps?: MoveStep[];
-    },
+  private async handleMovePiece(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -112,7 +69,7 @@ export class CheckersGateway {
     }
     try {
       await this.checkersService.movePiece(userId, roomId, {
-        steps: payload.steps,
+        steps: payload.steps as MoveStep[],
       });
       client.emit(
         'checkers.session.piece_moved',
@@ -128,10 +85,9 @@ export class CheckersGateway {
     }
   }
 
-  @SubscribeMessage('checkers.session.forfeit')
-  async handleForfeit(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleForfeit(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);

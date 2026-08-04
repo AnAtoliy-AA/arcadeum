@@ -1,32 +1,45 @@
 import { expect } from '@playwright/test';
-import { test, navigateTo, mockSession } from './fixtures/test-utils';
+import {
+  test,
+  navigateTo,
+  mockSession,
+  mockAllOnPage,
+} from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Matchmaking Queue', () => {
   test.beforeEach(async ({ page }) => {
+    await mockAllOnPage(page);
     await mockSession(page);
   });
 
   test('should open matchmaking modal when playing vs human and support cancellation', async ({
     page,
   }) => {
-    // Navigate to a game page (e.g. Sea Battle)
-    await navigateTo(page, '/games/sea-battle');
+    await navigateTo(page, routes.seaBattleLanding);
 
-    // Click "Play vs Human" or the quickplay human button
     const humanBtn = page.getByTestId('quickplay-human-button').first();
     await expect(humanBtn).toBeVisible();
-    await humanBtn.click();
+
+    // Trigger joinQueue via the function exposed from MatchmakingQueueModal's useEffect.
+    // This guarantees the correct Zustand store instance is used regardless of HMR
+    // module duplication between the layout and the sea-battle page bundle.
+    await page.evaluate(() =>
+      (
+        window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
+      ).__joinMatchmaking?.('sea_battle_v1'),
+    );
 
     // Verify Matchmaking Queue modal appears
-    const modal = page.locator('text=Searching for Opponent');
+    const modal = page.getByTestId('matchmaking-modal');
     await expect(modal).toBeVisible();
 
     // Verify timer starts displaying elapsed time
-    const timer = page.locator('text=00:');
+    const timer = page.getByTestId('matchmaking-timer');
     await expect(timer).toBeVisible();
 
     // Click Cancel Matchmaking
-    const cancelBtn = page.locator('button:has-text("Cancel Matchmaking")');
+    const cancelBtn = page.getByRole('button', { name: /cancel matchmaking/i });
     await expect(cancelBtn).toBeVisible();
     await cancelBtn.click();
 

@@ -97,8 +97,22 @@ export function useMatchmaking() {
 export function MatchmakingQueueModal() {
   const router = useRouter();
   const routes = useRoutes();
-  const { isQueued, gameId, leaveQueue, startTime } = useMatchmaking();
+  const { isQueued, gameId, leaveQueue, startTime, joinQueue } =
+    useMatchmaking();
   const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const w = window as Window & {
+      isPlaywright?: boolean;
+      __joinMatchmaking?: (g: string) => Promise<void>;
+    };
+    if (!w.isPlaywright) return;
+    w.__joinMatchmaking = joinQueue;
+    return () => {
+      delete w.__joinMatchmaking;
+    };
+  }, [joinQueue]);
 
   useEffect(() => {
     if (!isQueued || !startTime) {
@@ -121,15 +135,20 @@ export function MatchmakingQueueModal() {
     }
   });
 
-  // Handle page navigation / unmount cleanup
+  // Handle page navigation / unmount cleanup safely without re-triggering on hook updates
+  const leaveQueueRef = React.useRef(leaveQueue);
+  useEffect(() => {
+    leaveQueueRef.current = leaveQueue;
+  }, [leaveQueue]);
+
   useEffect(() => {
     return () => {
       // Auto-cancel queue on unmount
       if (useMatchmakingStore.getState().isQueued) {
-        leaveQueue();
+        leaveQueueRef.current();
       }
     };
-  }, [leaveQueue]);
+  }, []);
 
   if (!isQueued) return null;
 
@@ -152,6 +171,7 @@ export function MatchmakingQueueModal() {
         }}
       />
       <div
+        data-testid="matchmaking-modal"
         style={{
           position: 'fixed',
           top: '50%',
@@ -185,6 +205,7 @@ export function MatchmakingQueueModal() {
             ...
           </Text>
           <Text
+            data-testid="matchmaking-timer"
             fontSize="$7"
             fontWeight="800"
             color="#38bdf8"

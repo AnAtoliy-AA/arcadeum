@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.16] - 2026-08-04
+
+### Added
+- add 5 new premium cyber animal avatars
+- add Cyber Panda & Cyber Cheetah avatars
+- add Supernova and Synthwave themed cosmetics
+
+
 ## [1.24.15] - 2026-08-04
 
 ### Added

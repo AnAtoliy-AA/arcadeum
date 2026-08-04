@@ -305,6 +305,8 @@ export const shopEs = {
       void: { name: 'Vacío', desc: 'Un degradado violeta oscuro del espacio profundo.' },
       sakura: { name: 'Sakura', desc: 'Un degradado rosa suave de flor de cerezo.' },
       gold: { name: 'Dorado', desc: 'Un prestigioso degradado dorado brillante.' },
+      supernova: { name: 'Supernova', desc: 'Un degradado deslumbrante de explosión cósmica.' },
+      synthwave: { name: 'Synthwave', desc: 'Un degradado retro de neón magenta y cian.' },
     },
     game_skin: {
       default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
@@ -323,6 +325,8 @@ export const shopEs = {
       neon: { name: 'Neón', desc: 'Un degradado neón brillante.' },
       oceanic: { name: 'Oceánico', desc: 'Un degradado azul oceánico profundo.' },
       prismatic: { name: 'Prismático', desc: 'Un degradado prismático cambiante.' },
+      supernova: { name: 'Supernova', desc: 'Un degradado de explosión de supernova cósmica.' },
+      synthwave: { name: 'Synthwave', desc: 'Un degradado retrofuturista de neón synthwave.' },
     },
     aura: {
       default: { name: 'Predeterminada', desc: 'El aura inicial.' },
@@ -338,6 +342,8 @@ export const shopEs = {
       oceanic: { name: 'Aura oceánica', desc: 'Un brillo azul oceánico profundo.' },
       sakura: { name: 'Aura sakura', desc: 'Un brillo rosa suave de flor de cerezo.' },
       void: { name: 'Aura vacío', desc: 'Un brillo de distorsión cósmica oscura.' },
+      supernova: { name: 'Aura supernova', desc: 'Un brillo cegador de energía cósmica.' },
+      synthwave: { name: 'Aura synthwave', desc: 'Un aura brillante de neón retro.' },
     },
     frame: {
       default: { name: 'Predeterminado', desc: 'El marco inicial.' },
@@ -354,6 +360,8 @@ export const shopEs = {
       sakura: { name: 'Marco sakura', desc: 'Un anillo rosa suave de flor de cerezo.' },
       prismatic: { name: 'Marco prismático', desc: 'Un anillo prismático cambiante.' },
       void: { name: 'Marco vacío', desc: 'Un anillo cósmico oscuro.' },
+      supernova: { name: 'Marco supernova', desc: 'Un anillo radiante de explosión cósmica.' },
+      synthwave: { name: 'Marco synthwave', desc: 'Un anillo retro de neón synthwave.' },
     },
     background: {
       default: { name: 'Predeterminado', desc: 'Fondo inicial.' },

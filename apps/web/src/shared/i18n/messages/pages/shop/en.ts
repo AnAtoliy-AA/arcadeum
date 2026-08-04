@@ -251,6 +251,8 @@ export const shopEn = {
       void: { name: 'Void', desc: 'A deep space dark violet gradient.' },
       sakura: { name: 'Sakura', desc: 'A soft cherry blossom pink gradient.' },
       gold: { name: 'Gold', desc: 'A prestigious shining golden gradient.' },
+      supernova: { name: 'Supernova', desc: 'A dazzling cosmic explosion gradient.' },
+      synthwave: { name: 'Synthwave', desc: 'A vibrant retro neon magenta-cyan gradient.' },
     },
     game_skin: {
       default: { name: 'Default', desc: 'The starter game theme.' },
@@ -269,6 +271,8 @@ export const shopEn = {
       neon: { name: 'Neon', desc: 'A bright glowing neon gradient.' },
       oceanic: { name: 'Oceanic', desc: 'A deep blue oceanic gradient.' },
       prismatic: { name: 'Prismatic', desc: 'A shifting prismatic gradient.' },
+      supernova: { name: 'Supernova', desc: 'A cosmic supernova explosion gradient.' },
+      synthwave: { name: 'Synthwave', desc: 'A retro-futuristic neon synthwave gradient.' },
     },
     aura: {
       default: { name: 'Default', desc: 'The starter aura.' },
@@ -284,6 +288,8 @@ export const shopEn = {
       oceanic: { name: 'Oceanic Aura', desc: 'A deep blue oceanic glow.' },
       sakura: { name: 'Sakura Aura', desc: 'A soft cherry blossom glow.' },
       void: { name: 'Void Aura', desc: 'A dark cosmic distortion glow.' },
+      supernova: { name: 'Supernova Aura', desc: 'A blinding cosmic energy glow.' },
+      synthwave: { name: 'Synthwave Aura', desc: 'A glowing retro neon aura.' },
     },
     frame: {
       default: { name: 'Default', desc: 'The starter frame.' },
@@ -300,6 +306,8 @@ export const shopEn = {
       sakura: { name: 'Sakura Frame', desc: 'A soft cherry blossom ring.' },
       prismatic: { name: 'Prism Frame', desc: 'A shifting prismatic ring.' },
       void: { name: 'Void Frame', desc: 'A dark cosmic ring.' },
+      supernova: { name: 'Supernova Frame', desc: 'A radiant cosmic explosion ring.' },
+      synthwave: { name: 'Synthwave Frame', desc: 'A neon retro synthwave ring.' },
     },
     background: {
       default: { name: 'Default', desc: 'The starter backdrop.' },

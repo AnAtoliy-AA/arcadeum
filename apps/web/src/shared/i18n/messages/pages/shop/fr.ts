@@ -311,6 +311,8 @@ export const shopFr = {
       void: { name: 'Vide', desc: 'Un dégradé violet foncé de l’espace profond.' },
       sakura: { name: 'Sakura', desc: 'Un dégradé rose doux de fleur de cerisier.' },
       gold: { name: 'Doré', desc: 'Un dégradé doré prestigieux et brillant.' },
+      supernova: { name: 'Supernova', desc: 'Un dégradé éblouissant d’explosion cosmique.' },
+      synthwave: { name: 'Synthwave', desc: 'Un dégradé rétro de néon magenta et cyan.' },
     },
     game_skin: {
       default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
@@ -329,6 +331,8 @@ export const shopFr = {
       neon: { name: 'Néon', desc: 'Un dégradé néon éclatant.' },
       oceanic: { name: 'Océanique', desc: 'Un dégradé bleu océanique profond.' },
       prismatic: { name: 'Prismatique', desc: 'Un dégradé prismatique changeant.' },
+      supernova: { name: 'Supernova', desc: 'Un dégradé d’explosion de supernova cosmique.' },
+      synthwave: { name: 'Synthwave', desc: 'Un dégradé rétro-futuriste de néon synthwave.' },
     },
     aura: {
       default: { name: 'Par défaut', desc: 'L’aura initiale.' },
@@ -344,6 +348,8 @@ export const shopFr = {
       oceanic: { name: 'Aura océanique', desc: 'Un éclat bleu océanique profond.' },
       sakura: { name: 'Aura sakura', desc: 'Un éclat rose doux de fleur de cerisier.' },
       void: { name: 'Aura vide', desc: 'Un éclat de distorsion cosmique sombre.' },
+      supernova: { name: 'Aura supernova', desc: 'Un éclat aveuglant d’énergie cosmique.' },
+      synthwave: { name: 'Aura synthwave', desc: 'Une aura brillante de néon rétro.' },
     },
     frame: {
       default: { name: 'Par défaut', desc: 'Le cadre initial.' },
@@ -360,6 +366,8 @@ export const shopFr = {
       sakura: { name: 'Cadre sakura', desc: 'Un anneau rose doux de fleur de cerisier.' },
       prismatic: { name: 'Cadre prismatique', desc: 'Un anneau prismatique changeant.' },
       void: { name: 'Cadre vide', desc: 'Un anneau cosmique sombre.' },
+      supernova: { name: 'Cadre supernova', desc: 'Un anneau radiant d’explosion cosmique.' },
+      synthwave: { name: 'Cadre synthwave', desc: 'Un anneau rétro de néon synthwave.' },
     },
     background: {
       default: { name: 'Par défaut', desc: 'Arrière-plan de départ.' },

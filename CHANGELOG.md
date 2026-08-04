@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.18] - 2026-08-04
+
+### Fixed
+- add @Optional() decorators to GameHistoryRematchService model injections
+- make Atlas connection optional in GameHistoryRematchService
+- add currentPlayerId to TicTacToeBoard for hover cursor with sign
+- fix sea battle rematch button and disable Vercel analytics in e2e
+
+
 ## [1.24.17] - 2026-08-04
 
 ### Fixed

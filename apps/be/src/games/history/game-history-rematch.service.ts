@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -19,10 +20,12 @@ export class GameHistoryRematchService {
   private readonly mirror: Model<GameRoom> | undefined;
 
   constructor(
+    @Optional()
     @InjectModel(GameRoom.name, ATLAS_CONNECTION)
-    atlasModel: Model<GameRoom> | undefined,
+    atlasModel?: Model<GameRoom>,
+    @Optional()
     @InjectModel(GameRoom.name, OCI_CONNECTION)
-    ociModel: Model<GameRoom> | undefined,
+    ociModel?: Model<GameRoom>,
   ) {
     // Prefer Atlas when available; fall back to OCI
     this.primary = atlasModel ?? ociModel!;

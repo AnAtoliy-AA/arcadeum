@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.17] - 2026-08-04
+
+### Fixed
+- skip Vercel analytics scripts in non-production environments
+
+### Improved
+- fix MongoDB idle connections and batch N+1 queries (ARC-883)
+
+### Refactored
+- consolidate game gateways into single-namespace handler registry (ARC-883)
+
+
 ## [1.24.16] - 2026-08-04
 
 ### Added

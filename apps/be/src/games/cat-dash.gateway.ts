@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import { CatDashService } from './cat-dash/cat-dash.service';
 import {
@@ -18,57 +13,29 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class CatDashGateway {
+export class CatDashGateway implements GameMessageHandler {
   private readonly logger = new Logger(CatDashGateway.name);
 
-  @WebSocketServer() server: Server;
+  constructor(private readonly catDashService: CatDashService) {}
 
-  constructor(
-    private readonly catDashService: CatDashService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'catDash.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'catDash.session.rollDice': (client, payload) =>
+      this.handleRollDice(client, payload),
+    'catDash.session.useAbility': (client, payload) =>
+      this.handleUseAbility(client, payload),
+    'catDash.session.choosePath': (client, payload) =>
+      this.handleChoosePath(client, payload),
+    'catDash.session.forfeit': (client, payload) =>
+      this.handleForfeit(client, payload),
+  };
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'CatDashGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to CatDash namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to CatDash namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('catDash.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -77,7 +44,7 @@ export class CatDashGateway {
         userId,
         roomId,
         !!payload?.withBots,
-        payload?.botCount,
+        payload?.botCount as number | undefined,
       );
       client.emit('catDash.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -90,14 +57,9 @@ export class CatDashGateway {
     }
   }
 
-  @SubscribeMessage('catDash.session.rollDice')
-  async handleRollDice(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-    },
+  private async handleRollDice(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -117,15 +79,9 @@ export class CatDashGateway {
     }
   }
 
-  @SubscribeMessage('catDash.session.useAbility')
-  async handleUseAbility(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      abilityId?: string;
-    },
+  private async handleUseAbility(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     if (!payload?.abilityId) {
@@ -133,7 +89,11 @@ export class CatDashGateway {
     }
     validatePayloadUserId(client, userId);
     try {
-      await this.catDashService.useAbility(userId, roomId, payload.abilityId);
+      await this.catDashService.useAbility(
+        userId,
+        roomId,
+        payload.abilityId as string,
+      );
       client.emit(
         'catDash.session.abilityUsed',
         maybeEncrypt({ roomId, userId, abilityId: payload.abilityId }),
@@ -148,15 +108,9 @@ export class CatDashGateway {
     }
   }
 
-  @SubscribeMessage('catDash.session.choosePath')
-  async handleChoosePath(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      pathIndex?: number;
-    },
+  private async handleChoosePath(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     if (typeof payload?.pathIndex !== 'number') {
@@ -179,10 +133,9 @@ export class CatDashGateway {
     }
   }
 
-  @SubscribeMessage('catDash.session.forfeit')
-  async handleForfeit(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleForfeit(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);

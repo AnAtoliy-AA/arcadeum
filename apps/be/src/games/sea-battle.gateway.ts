@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import {
   extractRoomAndUser,
@@ -18,8 +13,6 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { ChatScope } from './engines';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GamesRealtimeService } from './games.realtime.service';
@@ -32,90 +25,25 @@ import {
   handleRemoveBotFromTeam,
   handleToggleHideShips,
 } from './sea-battle.gateway.lobby';
-type ShipOpPayload = {
-  roomId?: string;
-  userId?: string;
+import type { SeaBattleTeamConfigItemDto } from './dtos/set-team-config.dto';
+
+type ShipOpPayload = Record<string, unknown> & {
   shipId?: string;
   cells?: { row: number; col: number }[];
-  [key: string]: unknown;
 };
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class SeaBattleGateway {
+export class SeaBattleGateway implements GameMessageHandler {
   private readonly logger = new Logger(SeaBattleGateway.name);
-
-  @WebSocketServer() server: Server;
 
   constructor(
     private readonly seaBattleService: SeaBattleService,
     private readonly teamConfigService: SeaBattleTeamConfigService,
     private readonly realtimeService: GamesRealtimeService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
   ) {}
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
 
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'SeaBattleGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to SeaBattle namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to SeaBattle namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('seaBattle.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-      difficulty?: 'easy' | 'medium' | 'hard';
-      gridSize?: number;
-      shipCount?: number;
-      variant?: string;
-    },
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    validatePayloadUserId(client, userId);
-    try {
-      const result = await this.seaBattleService.startSession(
-        userId,
-        roomId,
-        !!payload?.withBots,
-        payload?.botCount,
-        payload?.difficulty,
-        payload?.gridSize,
-        payload?.shipCount,
-        payload?.variant,
-      );
-      client.emit('seaBattle.session.started', maybeEncrypt(result));
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'start Sea Battle session', roomId, userId },
-        'Unable to start session.',
-      );
-    }
+  private get runTeamAction() {
+    return createRunTeamAction(this.logger, this.realtimeService);
   }
 
   private async dispatchShipOp(
@@ -151,12 +79,105 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.place_ship')
-  handlePlaceShip(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: ShipOpPayload,
+  private async dispatchAction(
+    client: Socket,
+    payload: Record<string, unknown>,
+    action: string,
+    ackEvent: string,
+    emitExtra?: Record<string, unknown>,
   ): Promise<void> {
-    return this.dispatchShipOp(client, payload, {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    const targetPlayerId = extractString(payload, 'targetPlayerId');
+    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    validatePayloadUserId(client, userId);
+    try {
+      await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
+        targetPlayerId,
+        row: payload.row as number | undefined,
+        col: payload.col as number | undefined,
+      });
+      client.emit(
+        ackEvent,
+        maybeEncrypt({ roomId, userId, targetPlayerId, ...emitExtra }),
+      );
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action, roomId, userId },
+        `Unable to ${action}.`,
+      );
+    }
+  }
+
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'seaBattle.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'seaBattle.session.place_ship': (client, payload) =>
+      this.handlePlaceShip(client, payload),
+    'seaBattle.session.move_ship': (client, payload) =>
+      this.handleMoveShip(client, payload),
+    'seaBattle.session.confirm_placement': (client, payload) =>
+      this.handleConfirmPlacement(client, payload),
+    'seaBattle.session.reset_placement': (client, payload) =>
+      this.handleResetPlacement(client, payload),
+    'seaBattle.session.auto_place': (client, payload) =>
+      this.handleAutoPlace(client, payload),
+    'seaBattle.session.attack': (client, payload) =>
+      this.handleAttack(client, payload),
+    'seaBattle.session.use_sonar': (client, payload) =>
+      this.handleUseSonar(client, payload),
+    'seaBattle.session.use_radar': (client, payload) =>
+      this.handleUseRadar(client, payload),
+    'seaBattle.session.history_note': (client, payload) =>
+      this.handleHistoryNote(client, payload),
+    'seaBattle.lobby.set_team_mode': (client, payload) =>
+      this.handleSetTeamMode(client, payload),
+    'seaBattle.lobby.set_team_config': (client, payload) =>
+      this.handleSetTeamConfig(client, payload),
+    'seaBattle.lobby.assign_team': (client, payload) =>
+      this.handleAssignTeam(client, payload),
+    'seaBattle.lobby.add_bot_to_team': (client, payload) =>
+      this.handleAddBotToTeam(client, payload),
+    'seaBattle.lobby.remove_bot_from_team': (client, payload) =>
+      this.handleRemoveBotFromTeam(client, payload),
+    'seaBattle.lobby.toggle_hide_ships': (client, payload) =>
+      this.handleToggleHideShips(client, payload),
+  };
+
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
+  ): Promise<void> {
+    const { roomId, userId } = extractRoomAndUser(payload);
+    validatePayloadUserId(client, userId);
+    try {
+      const result = await this.seaBattleService.startSession(
+        userId,
+        roomId,
+        !!payload?.withBots,
+        payload?.botCount as number | undefined,
+        payload?.difficulty as 'easy' | 'medium' | 'hard' | undefined,
+        payload?.gridSize as number | undefined,
+        payload?.shipCount as number | undefined,
+        payload?.variant as string | undefined,
+      );
+      client.emit('seaBattle.session.started', maybeEncrypt(result));
+    } catch (error) {
+      handleError(
+        this.logger,
+        error,
+        { action: 'start Sea Battle session', roomId, userId },
+        'Unable to start session.',
+      );
+    }
+  }
+
+  private handlePlaceShip(
+    client: Socket,
+    payload: Record<string, unknown>,
+  ): Promise<void> {
+    return this.dispatchShipOp(client, payload as ShipOpPayload, {
       svc: (u, r, b) => this.seaBattleService.placeShipByRoom(u, r, b),
       ackEvent: 'seaBattle.session.ship_placed',
       errorAction: 'place ship',
@@ -164,12 +185,11 @@ export class SeaBattleGateway {
     });
   }
 
-  @SubscribeMessage('seaBattle.session.move_ship')
-  handleMoveShip(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: ShipOpPayload,
+  private handleMoveShip(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
-    return this.dispatchShipOp(client, payload, {
+    return this.dispatchShipOp(client, payload as ShipOpPayload, {
       svc: (u, r, b) => this.seaBattleService.moveShipByRoom(u, r, b),
       ackEvent: 'seaBattle.session.ship_moved',
       errorAction: 'move ship',
@@ -177,15 +197,9 @@ export class SeaBattleGateway {
     });
   }
 
-  @SubscribeMessage('seaBattle.session.confirm_placement')
-  async handleConfirmPlacement(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>;
-    },
+  private async handleConfirmPlacement(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -193,7 +207,9 @@ export class SeaBattleGateway {
       await this.seaBattleService.confirmPlacementByRoom(
         userId,
         roomId,
-        payload.ships,
+        payload.ships as
+          | Array<{ shipId: string; cells: { row: number; col: number }[] }>
+          | undefined,
       );
       client.emit(
         'seaBattle.session.placement_confirmed',
@@ -209,10 +225,9 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.reset_placement')
-  async handleResetPlacement(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleResetPlacement(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -232,10 +247,9 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.auto_place')
-  async handleAutoPlace(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleAutoPlace(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -255,21 +269,14 @@ export class SeaBattleGateway {
     }
   }
 
-  @SubscribeMessage('seaBattle.session.attack')
-  async handleAttack(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetPlayerId?: string;
-      row?: number;
-      col?: number;
-    },
+  private async handleAttack(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
-    const { row, col } = payload;
+    const row = payload.row as number | undefined;
+    const col = payload.col as number | undefined;
     if (!targetPlayerId || row === undefined || col === undefined)
       throw new WsException('targetPlayerId, row, and col are required');
     validatePayloadUserId(client, userId);
@@ -293,47 +300,9 @@ export class SeaBattleGateway {
     }
   }
 
-  private async dispatchAction(
+  private handleUseSonar(
     client: Socket,
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetPlayerId?: string;
-      row?: number;
-      col?: number;
-    },
-    action: string,
-    ackEvent: string,
-    emitExtra?: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
-    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
-    validatePayloadUserId(client, userId);
-    try {
-      await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
-        targetPlayerId,
-        row: payload.row,
-        col: payload.col,
-      });
-      client.emit(
-        ackEvent,
-        maybeEncrypt({ roomId, userId, targetPlayerId, ...emitExtra }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action, roomId, userId },
-        `Unable to ${action}.`,
-      );
-    }
-  }
-
-  @SubscribeMessage('seaBattle.session.use_sonar')
-  handleUseSonar(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
+    payload: Record<string, unknown>,
   ): Promise<void> {
     return this.dispatchAction(
       client,
@@ -343,10 +312,9 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.session.use_radar')
-  handleUseRadar(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: Parameters<SeaBattleGateway['dispatchAction']>[1],
+  private handleUseRadar(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     return this.dispatchAction(
       client,
@@ -357,16 +325,9 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.session.history_note')
-  async handleHistoryNote(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      message?: string;
-      scope?: ChatScope;
-    },
+  private async handleHistoryNote(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
@@ -399,15 +360,9 @@ export class SeaBattleGateway {
     }
   }
 
-  private get runTeamAction() {
-    return createRunTeamAction(this.logger, this.realtimeService);
-  }
-
-  @SubscribeMessage('seaBattle.lobby.set_team_mode')
-  async handleSetTeamMode(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: { roomId?: string; userId?: string; enabled?: boolean },
+  private async handleSetTeamMode(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleSetTeamMode(
       this.runTeamAction,
@@ -417,35 +372,26 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.lobby.set_team_config')
-  async handleSetTeamConfig(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      teams?: import('./dtos/set-team-config.dto').SeaBattleTeamConfigItemDto[];
-      hideShipsFromTeammates?: boolean;
-    },
+  private async handleSetTeamConfig(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleSetTeamConfig(
       this.runTeamAction,
       client,
-      payload,
+      payload as {
+        roomId?: string;
+        userId?: string;
+        teams?: SeaBattleTeamConfigItemDto[];
+        hideShipsFromTeammates?: boolean;
+      },
       this.teamConfigService,
     );
   }
 
-  @SubscribeMessage('seaBattle.lobby.assign_team')
-  async handleAssignTeam(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetUserId?: string;
-      teamId?: string | null;
-    },
+  private async handleAssignTeam(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleAssignTeam(
       this.runTeamAction,
@@ -455,11 +401,9 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.lobby.add_bot_to_team')
-  async handleAddBotToTeam(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: { roomId?: string; userId?: string; teamId?: string },
+  private async handleAddBotToTeam(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleAddBotToTeam(
       this.runTeamAction,
@@ -469,11 +413,9 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.lobby.remove_bot_from_team')
-  async handleRemoveBotFromTeam(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: { roomId?: string; userId?: string; targetUserId?: string },
+  private async handleRemoveBotFromTeam(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleRemoveBotFromTeam(
       this.runTeamAction,
@@ -483,11 +425,9 @@ export class SeaBattleGateway {
     );
   }
 
-  @SubscribeMessage('seaBattle.lobby.toggle_hide_ships')
-  async handleToggleHideShips(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: { roomId?: string; userId?: string; enabled?: boolean },
+  private async handleToggleHideShips(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     await handleToggleHideShips(
       this.runTeamAction,

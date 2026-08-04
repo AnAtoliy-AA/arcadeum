@@ -30,6 +30,18 @@ import {
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
+import type { GameMessageHandler } from './game-message-handler.interface';
+import { CheckersGateway } from './checkers.gateway';
+import { TicTacToeGateway } from './tic-tac-toe.gateway';
+import { ChessGateway } from './chess.gateway';
+import { CascadeGateway } from './cascade.gateway';
+import { CatDashGateway } from './cat-dash.gateway';
+import { TexasHoldemGateway } from './texas-holdem.gateway';
+import { CriticalGateway } from './critical.gateway';
+import { CriticalActionsGateway } from './critical-actions.gateway';
+import { SeaBattleGateway } from './sea-battle.gateway';
+import { GlimwormGateway } from './glimworm.gateway';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -45,23 +57,56 @@ export class GamesGateway {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly matchmakingService: GameRoomsMatchmakingService,
+    private readonly checkersHandler: CheckersGateway,
+    private readonly ticTacToeHandler: TicTacToeGateway,
+    private readonly chessHandler: ChessGateway,
+    private readonly cascadeHandler: CascadeGateway,
+    private readonly catDashHandler: CatDashGateway,
+    private readonly texasHoldemHandler: TexasHoldemGateway,
+    private readonly criticalHandler: CriticalGateway,
+    private readonly criticalActionsHandler: CriticalActionsGateway,
+    private readonly seaBattleHandler: SeaBattleGateway,
+    private readonly glimwormHandler: GlimwormGateway,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
 
-    // Raise per-socket listener cap for the shared games namespace.
-    const PER_SOCKET_LISTENER_CAP = 20;
-    this.server.use((socket, next) => {
-      socket.setMaxListeners(PER_SOCKET_LISTENER_CAP);
-      next();
+    const gameHandlers: GameMessageHandler[] = [
+      this.checkersHandler,
+      this.ticTacToeHandler,
+      this.chessHandler,
+      this.cascadeHandler,
+      this.catDashHandler,
+      this.texasHoldemHandler,
+      this.criticalHandler,
+      this.criticalActionsHandler,
+      this.seaBattleHandler,
+      this.glimwormHandler,
+    ];
+
+    const registry = new Map<string, GameMessageHandler['handlers'][string]>();
+    for (const handler of gameHandlers) {
+      for (const [event, fn] of Object.entries(handler.handlers)) {
+        registry.set(event, fn);
+      }
+    }
+
+    this.server.on('connection', (socket: Socket) => {
+      socket.onAny((event: string, ...args: unknown[]) => {
+        const handler = registry.get(event);
+        if (handler) {
+          void handler(socket, (args[0] as Record<string, unknown>) ?? {});
+        }
+      });
     });
 
-    this.logger.debug('Games gateway initialized.');
+    this.logger.debug(
+      `Games gateway initialized with ${registry.size} game event handlers.`,
+    );
   }
 
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
-    // Verify JWT if present (optional — guest mode allowed without token)
     const authUserId = await verifySocketJwt(
       client,
       this.jwt,
@@ -76,7 +121,6 @@ export class GamesGateway {
       );
       this.realtime.trackSocket(authUserId, client.id);
     } else {
-      // Store the anonId from handshake to prevent impersonation
       const anonId =
         typeof client.handshake?.query?.anonId === 'string'
           ? client.handshake.query.anonId
@@ -89,9 +133,6 @@ export class GamesGateway {
       );
     }
 
-    // Only send encryption key to clients with a valid identity
-    // (JWT-authenticated or anonymous with a proper anon_ ID).
-    // Never broadcast the key to completely unauthenticated connections.
     if (isSocketEncryptionEnabled()) {
       const hasIdentity =
         authUserId ||
@@ -143,11 +184,6 @@ export class GamesGateway {
     }
   }
 
-  /**
-   * Prevents users from impersonating others.
-   * For authenticated users: ensures payload userId matches JWT.
-   * For anonymous users: ensures payload userId matches the anonId from handshake.
-   */
   private validateUserId(client: Socket, payloadUserId: string): void {
     const authUserId = (client.data as Record<string, unknown>)?.userId as
       | string

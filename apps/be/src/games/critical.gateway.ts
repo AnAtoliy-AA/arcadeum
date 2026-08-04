@@ -1,65 +1,26 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
+
+import { CriticalService } from './critical/critical.service';
 import {
   extractRoomAndUser,
   extractString,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
-
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
-import { CriticalService } from './critical/critical.service';
 import { ChatScope } from './engines';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class CriticalGateway {
+export class CriticalGateway implements GameMessageHandler {
   private readonly logger = new Logger(CriticalGateway.name);
 
-  @WebSocketServer() server: Server;
-
-  constructor(
-    private readonly criticalService: CriticalService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
-
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'CriticalGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to Critical namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to Critical namespace: ${client.id}`,
-      );
-    }
-  }
+  constructor(private readonly criticalService: CriticalService) {}
 
   private handleException(params: {
     error: unknown;
@@ -77,33 +38,31 @@ export class CriticalGateway {
     );
   }
 
-  // Handlers moved to CriticalActionsGateway:
-  // - handleSessionDraw
-  // - handleSessionPlayAction
-  // - handleSessionPlayCatCombo
-  // - handleSessionPlayFavor
-  // - handleSessionGiveFavorCard
-  // - handleSessionPlaySeeTheFuture
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'games.session.history_note': (client, payload) =>
+      this.handleHistoryNote(client, payload),
+    'games.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'games.session.play_defuse': (client, payload) =>
+      this.handleSessionPlayDefuse(client, payload),
+    'games.session.play_nope': (client, payload) =>
+      this.handleSessionPlayNope(client, payload),
+    'games.session.commit_alter_future': (client, payload) =>
+      this.handleSessionCommitAlterFuture(client, payload),
+  };
 
-  @SubscribeMessage('games.session.history_note')
-  async handleHistoryNote(
-    @MessageBody()
-    payload: {
-      roomId: string;
-      userId: string;
-      message: string;
-      scope: ChatScope;
-    },
-    @ConnectedSocket() client: Socket,
+  private async handleHistoryNote(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
-    const scopeRaw =
+    const raw =
       typeof payload?.scope === 'string'
         ? payload.scope.trim().toLowerCase()
         : 'all';
 
-    const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+    const scope = ['players', 'private'].includes(raw) ? raw : 'all';
 
     validatePayloadUserId(client, userId);
 
@@ -133,17 +92,9 @@ export class CriticalGateway {
     }
   }
 
-  @SubscribeMessage('games.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      engine?: string;
-      withBots?: boolean;
-      botCount?: number;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const userId = extractString(payload, 'userId');
     const roomIdRaw =
@@ -161,7 +112,7 @@ export class CriticalGateway {
         roomId,
         engine,
         withBots,
-        payload?.botCount,
+        payload?.botCount as number | undefined,
       );
 
       client.emit('games.session.started', maybeEncrypt(result));
@@ -176,15 +127,9 @@ export class CriticalGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_defuse')
-  async handleSessionPlayDefuse(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      position?: number;
-    },
+  private async handleSessionPlayDefuse(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const position =
@@ -220,14 +165,9 @@ export class CriticalGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_nope')
-  async handleSessionPlayNope(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-    },
+  private async handleSessionPlayNope(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 
@@ -253,15 +193,10 @@ export class CriticalGateway {
       });
     }
   }
-  @SubscribeMessage('games.session.commit_alter_future')
-  async handleSessionCommitAlterFuture(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      newOrder?: string[];
-    },
+
+  private async handleSessionCommitAlterFuture(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const newOrder = Array.isArray(payload.newOrder) ? payload.newOrder : [];
@@ -272,7 +207,7 @@ export class CriticalGateway {
       await this.criticalService.commitAlterFutureByRoom(
         userId,
         roomId,
-        newOrder,
+        newOrder as string[],
       );
 
       client.emit(

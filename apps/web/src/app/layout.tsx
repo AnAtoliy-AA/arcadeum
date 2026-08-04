@@ -159,8 +159,12 @@ export default async function RootLayout({
           Skip to content
         </a>
         <WebVitalsReporter />
-        <SpeedInsights />
-        <Analytics />
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )}
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>
             <LazySessionRoleSync />

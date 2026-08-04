@@ -157,7 +157,8 @@ export const BANNERS: Record<string, ShopItemDef> = {
     nameKey: 'items.banner.supernova.name',
     descKey: 'items.banner.supernova.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #ff007f 0%, #ffaa00 50%, #00ffff 100%)',
+    colorValue:
+      'linear-gradient(135deg, #ff007f 0%, #ffaa00 50%, #00ffff 100%)',
     defaultPriceAmount: 30,
     defaultPriceCurrency: 'gems',
   },
@@ -168,7 +169,8 @@ export const BANNERS: Record<string, ShopItemDef> = {
     nameKey: 'items.banner.synthwave.name',
     descKey: 'items.banner.synthwave.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #2e0854 0%, #ff00a0 50%, #00ffff 100%)',
+    colorValue:
+      'linear-gradient(135deg, #2e0854 0%, #ff00a0 50%, #00ffff 100%)',
     defaultPriceAmount: 25,
     defaultPriceCurrency: 'gems',
   },

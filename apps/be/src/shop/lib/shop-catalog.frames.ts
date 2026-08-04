@@ -170,7 +170,8 @@ export const FRAMES: Record<string, ShopItemDef> = {
     nameKey: 'items.frame.supernova.name',
     descKey: 'items.frame.supernova.desc',
     assetUrl: '',
-    colorValue: 'linear-gradient(135deg, #ff007f 0%, #ffaa00 50%, #00ffff 100%)',
+    colorValue:
+      'linear-gradient(135deg, #ff007f 0%, #ffaa00 50%, #00ffff 100%)',
     defaultPriceAmount: 35,
     defaultPriceCurrency: 'gems',
   },

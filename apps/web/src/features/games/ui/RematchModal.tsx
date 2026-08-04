@@ -22,6 +22,7 @@ interface RematchModalProps {
   players: PlayerInfo[];
   currentUserId: string | null;
   rematchLoading: boolean;
+  rematchError?: string | null;
   onClose: () => void;
   onConfirm: (selectedPlayerIds: string[], message?: string) => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
@@ -126,6 +127,7 @@ export function RematchModal({
   players,
   currentUserId,
   rematchLoading,
+  rematchError,
   onClose,
   onConfirm,
   t,
@@ -221,6 +223,17 @@ export function RematchModal({
             onChangeText={setMessage}
             disabled={rematchLoading}
           />
+
+          {rematchError && (
+            <Text
+              color="$red10"
+              fontSize="$3"
+              textAlign="center"
+              marginBottom="$3"
+            >
+              {rematchError}
+            </Text>
+          )}
 
           <ModalActions>
             <ModalButton

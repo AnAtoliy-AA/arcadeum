@@ -159,7 +159,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <WebVitalsReporter />
-        {process.env.NODE_ENV === 'production' && (
+        {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
           <>
             <SpeedInsights />
             <Analytics />

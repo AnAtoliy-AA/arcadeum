@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.15] - 2026-08-04
+
+### Added
+- implement smooth serpentine winding curves and expand row padding (ARC-882) (ARC-882)
+- scale up board cells to 22px and tokens to 38px (ARC-882) (ARC-882)
+- scale up board cells, tokens, and turn badge sizes (ARC-882) (ARC-882)
+- enhance cat designs and add themed board backgrounds (ARC-882) (ARC-882)
+- integrate serpentine layout and configurable board size (ARC-882) (ARC-882)
+- add standalone serpentine game page
+- add AI play CTA, bot features, lobby empty states and fix player count
+- add player ELO rating schema and calculations with E2E tests (ARC-881) (ARC-881)
+- implement matchmaking queue system with frontend status modal (ARC-876) (ARC-876)
+- add AI bot difficulty support for Chess and Checkers (ARC-880) (ARC-880)
+
+### Fixed
+- fix matchmaking portal unmount logic and update E2E test scripts
+- replace Tamagui Dialog.Portal with direct createPortal to fix CI rendering
+- use locale-aware routes in footer to fix identical links a11y issue
+- fix matchmaking modal not appearing and consolidate QuickplayButton
+- generate anon id in joinQueue for anonymous matchmaking
+- resolve strict mode violation in matchmaking test by using first() locator
+- update Sea Battle QuickplayButton to support matchmaking and match test ID
+- correct matchmaking and empty state text assertions
+- correct url assertion with literal comma in homepage test
+
+
 ## [1.24.14] - 2026-08-02
 
 ### Fixed

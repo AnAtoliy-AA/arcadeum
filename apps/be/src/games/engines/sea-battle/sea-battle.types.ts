@@ -78,6 +78,7 @@ export interface SeaBattleState {
     targetId: string;
     row?: number;
     col?: number;
+    halfWidth: number;
     cells: { row: number; col: number; state: CellState }[];
   };
   [key: string]: unknown;

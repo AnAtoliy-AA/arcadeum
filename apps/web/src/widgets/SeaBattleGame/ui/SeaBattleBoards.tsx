@@ -124,12 +124,13 @@ export function SeaBattleBoards({
     setHoveredCell(null);
   }, []);
 
-  // Compute preview cells for sonar (3×3 area around hovered cell, matching SONAR_RADIUS=1)
+  // Compute preview cells for sonar (area scales with grid size, matching backend getSonarRadius)
   const sonarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
+    const radius = Math.floor(gridSize / 3);
     const cells = new Set<string>();
-    for (let dr = -1; dr <= 1; dr++) {
-      for (let dc = -1; dc <= 1; dc++) {
+    for (let dr = -radius; dr <= radius; dr++) {
+      for (let dc = -radius; dc <= radius; dc++) {
         const r = hoveredCell.row + dr;
         const c = hoveredCell.col + dc;
         if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
@@ -140,18 +141,27 @@ export function SeaBattleBoards({
     return cells;
   })();
 
-  // Compute preview cells for radar (row or column of hovered cell)
+  // Compute preview cells for radar (band of rows/columns, matching backend getRadarHalfWidth)
   const radarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
+    const halfWidth = Math.floor(gridSize / 7);
     const cells = new Set<string>();
     const axis = weaponMode.radarAxis ?? 'row';
     if (axis === 'row') {
-      for (let c = 0; c < gridSize; c++) {
-        cells.add(`${weaponMode.targetPlayerId}-${hoveredCell.row}-${c}`);
+      for (let dr = -halfWidth; dr <= halfWidth; dr++) {
+        const r = hoveredCell.row + dr;
+        if (r < 0 || r >= gridSize) continue;
+        for (let c = 0; c < gridSize; c++) {
+          cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
+        }
       }
     } else {
-      for (let r = 0; r < gridSize; r++) {
-        cells.add(`${weaponMode.targetPlayerId}-${r}-${hoveredCell.col}`);
+      for (let dc = -halfWidth; dc <= halfWidth; dc++) {
+        const c = hoveredCell.col + dc;
+        if (c < 0 || c >= gridSize) continue;
+        for (let r = 0; r < gridSize; r++) {
+          cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
+        }
       }
     }
     return cells;

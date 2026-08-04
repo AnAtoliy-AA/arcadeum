@@ -47,27 +47,23 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
-        row: 0,
-        col: 1,
+        row: 2,
+        col: 2,
       });
 
       expect(result.success).toBe(true);
       expect(result.state!.lastSonar).toBeDefined();
       expect(result.state!.lastSonar!.attackerId).toBe('a');
       expect(result.state!.lastSonar!.targetId).toBe('b');
-      expect(result.state!.lastSonar!.centerRow).toBe(0);
-      expect(result.state!.lastSonar!.centerCol).toBe(1);
-      expect(result.state!.lastSonar!.radius).toBe(1);
-      // 3×3 area around (0,1): rows 0-1, cols 0-2 (row -1 clamped to 0)
+      expect(result.state!.lastSonar!.centerRow).toBe(2);
+      expect(result.state!.lastSonar!.centerCol).toBe(2);
+      // radius = Math.floor(10 / 3) = 3 → 7×7 area around (2,2), clamped to 6×6
+      expect(result.state!.lastSonar!.radius).toBe(3);
       const cells = result.state!.lastSonar!.cells;
-      expect(cells).toEqual([
-        { row: 0, col: 0, state: CELL_STATE.SHIP },
-        { row: 0, col: 1, state: CELL_STATE.SHIP },
-        { row: 0, col: 2, state: CELL_STATE.SHIP },
-        { row: 1, col: 0, state: CELL_STATE.EMPTY },
-        { row: 1, col: 1, state: CELL_STATE.EMPTY },
-        { row: 1, col: 2, state: CELL_STATE.EMPTY },
-      ]);
+      expect(cells.length).toBe(36);
+      expect(cells).toContainEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 0, col: 1, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 2, col: 2, state: CELL_STATE.EMPTY });
     });
 
     it('only reveals cells within radius', () => {
@@ -75,20 +71,14 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
         row: 0,
-        col: 3,
+        col: 9,
       });
 
       expect(result.success).toBe(true);
-      // 3×3 area around (0,3): rows 0-1, cols 2-4
+      // radius = 3 → 7×7 area around (0,9): rows 0-3, cols 6-9 (clamped)
       const cells = result.state!.lastSonar!.cells;
-      expect(cells).toEqual([
-        { row: 0, col: 2, state: CELL_STATE.SHIP },
-        { row: 0, col: 3, state: CELL_STATE.SHIP },
-        { row: 0, col: 4, state: CELL_STATE.EMPTY },
-        { row: 1, col: 2, state: CELL_STATE.EMPTY },
-        { row: 1, col: 3, state: CELL_STATE.EMPTY },
-        { row: 1, col: 4, state: CELL_STATE.EMPTY },
-      ]);
+      expect(cells.length).toBe(16); // 4 rows × 4 cols (clamped at right edge)
+      expect(cells).toContainEqual({ row: 0, col: 9, state: CELL_STATE.EMPTY });
     });
 
     it('marks sonar as used for the player', () => {
@@ -216,42 +206,47 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
   });
 
   describe('useRadar', () => {
-    it('scans a row and reveals cell states', () => {
+    it('scans a row band and reveals cell states', () => {
       const s = battleState({ radar: true });
       const result = engine.executeAction(s, 'useRadar', ctx('a'), {
         targetPlayerId: 'b',
-        row: 0,
+        row: 1,
       });
 
       expect(result.success).toBe(true);
       expect(result.state!.lastRadar).toBeDefined();
       expect(result.state!.lastRadar!.attackerId).toBe('a');
       expect(result.state!.lastRadar!.targetId).toBe('b');
-      expect(result.state!.lastRadar!.row).toBe(0);
+      expect(result.state!.lastRadar!.row).toBe(1);
       expect(result.state!.lastRadar!.col).toBeUndefined();
+      // halfWidth = Math.floor(10 / 7) = 1 → rows 0, 1, 2
+      expect(result.state!.lastRadar!.halfWidth).toBe(1);
 
       const cells = result.state!.lastRadar!.cells;
-      expect(cells.length).toBe(10);
-      expect(cells[0]).toEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
-      expect(cells[1]).toEqual({ row: 0, col: 1, state: CELL_STATE.SHIP });
-      expect(cells[4]).toEqual({ row: 0, col: 4, state: CELL_STATE.EMPTY });
+      expect(cells.length).toBe(30); // 3 rows × 10 cols
+      expect(cells).toContainEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 1, col: 0, state: CELL_STATE.EMPTY });
+      expect(cells).toContainEqual({ row: 2, col: 0, state: CELL_STATE.EMPTY });
     });
 
-    it('scans a column and reveals cell states', () => {
+    it('scans a column band and reveals cell states', () => {
       const s = battleState({ radar: true });
       const result = engine.executeAction(s, 'useRadar', ctx('a'), {
         targetPlayerId: 'b',
-        col: 0,
+        col: 2,
       });
 
       expect(result.success).toBe(true);
-      expect(result.state!.lastRadar!.col).toBe(0);
+      expect(result.state!.lastRadar!.col).toBe(2);
       expect(result.state!.lastRadar!.row).toBeUndefined();
+      // halfWidth = Math.floor(10 / 7) = 1 → cols 1, 2, 3
+      expect(result.state!.lastRadar!.halfWidth).toBe(1);
 
       const cells = result.state!.lastRadar!.cells;
-      expect(cells.length).toBe(10);
-      expect(cells[0]).toEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
-      expect(cells[1]).toEqual({ row: 1, col: 0, state: CELL_STATE.EMPTY });
+      expect(cells.length).toBe(30); // 3 cols × 10 rows
+      expect(cells).toContainEqual({ row: 0, col: 1, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 0, col: 2, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 0, col: 3, state: CELL_STATE.SHIP });
     });
 
     it('marks radar as used for the player', () => {

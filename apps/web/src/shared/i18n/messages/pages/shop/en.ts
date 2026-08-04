@@ -223,6 +223,11 @@ export const shopEn = {
       gorillacyber: { name: 'Cyber Gorilla', desc: 'A hyperrealistic cybernetic gorilla.' },
       pandacyber: { name: 'Cyber Panda', desc: 'A hyperrealistic cybernetic panda.' },
       cheetahcyber: { name: 'Cyber Cheetah', desc: 'A hyperrealistic cybernetic cheetah.' },
+      wolfcyber: { name: 'Cyber Wolf Elite', desc: 'A hyperrealistic cybernetic wolf variant.' },
+      tigercyber: { name: 'Cyber Tiger Elite', desc: 'A hyperrealistic cybernetic tiger variant.' },
+      bearcyber: { name: 'Cyber Bear', desc: 'A hyperrealistic cybernetic bear.' },
+      lioncyber: { name: 'Cyber Lion Elite', desc: 'A hyperrealistic cybernetic lion variant.' },
+      sharkcyber: { name: 'Cyber Shark Elite', desc: 'A hyperrealistic cybernetic shark variant.' },
     },
     badge: {
       newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },

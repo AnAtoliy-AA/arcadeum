@@ -271,6 +271,26 @@ export const shopEs = {
         name: 'Guepardo Cibernético',
         desc: 'Un guepardo cibernético hiperrealista.',
       },
+      wolfcyber: {
+        name: 'Lobo Cibernético Élite',
+        desc: 'Una variante de lobo cibernético hiperrealista.',
+      },
+      tigercyber: {
+        name: 'Tigre Cibernético Élite',
+        desc: 'Una variante de tigre cibernético hiperrealista.',
+      },
+      bearcyber: {
+        name: 'Oso Cibernético',
+        desc: 'Un oso cibernético hiperrealista.',
+      },
+      lioncyber: {
+        name: 'León Cibernético Élite',
+        desc: 'Una variante de león cibernético hiperrealista.',
+      },
+      sharkcyber: {
+        name: 'Tiburón Cibernético Élite',
+        desc: 'Una variante de tiburón cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },

@@ -13,11 +13,12 @@ import {
   SeaBattleState,
   PlaceShipPayload,
   MoveShipPayload,
+  BatchPlacementPayload,
 } from './sea-battle.types';
 
 function maybeBuildScanWave(state: SeaBattleState): void {
   if (!state.specialWeapons?.revealAll) return;
-  const duration = state.revealAllDuration ?? 1;
+  const duration = (state.revealAllDuration as number | undefined) ?? 1;
   state.lastScanWave = {
     cells: state.players.map((p) => ({
       playerId: p.playerId,

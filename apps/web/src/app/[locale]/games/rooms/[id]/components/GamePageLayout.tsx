@@ -9,6 +9,7 @@ import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/Con
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
+import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -142,6 +143,31 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   const { isGameOver, onRematch, rematchLoading } = useGameRematchStore();
 
+  const isLobby = room.status === 'lobby';
+  const isHost = room.hostId === userId;
+
+  const { sendMessage: roomChatSend, deleteMessage: roomChatDelete } =
+    useGameRoomChat(roomId, userId, isLobby);
+
+  // In lobby mode, register the room-level chat send function
+  useEffect(() => {
+    if (isLobby && roomChatSend) {
+      useGameChatStore.getState().registerSendMessage(roomChatSend);
+    }
+  }, [isLobby, roomChatSend]);
+
+  // Seed chat store with existing room chat logs when in lobby
+  useEffect(() => {
+    if (isLobby && Array.isArray(room.chatLogs) && room.chatLogs.length > 0) {
+      const logs = room.chatLogs.map((l) => ({
+        ...l,
+        type: 'message' as const,
+        scope: (l.scope || 'all') as import('@/shared/types/games').ChatScope,
+      }));
+      useGameChatStore.getState().setLogs(logs);
+    }
+  }, [isLobby, room.chatLogs]);
+
   return (
     <>
       <style>{fullscreenStyles}</style>
@@ -207,6 +233,8 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               resolveEquipped={resolveEquipped}
               currentUserId={userId}
               onEmote={sendEmote}
+              isHost={isHost}
+              onDeleteMessage={roomChatDelete}
             />
           </ChatPanel>
         </GameRow>

@@ -407,6 +407,30 @@ export class GamesService {
     );
   }
 
+  async postRoomChat(
+    roomId: string,
+    userId: string,
+    senderName: string,
+    message: string,
+    scope: string,
+  ) {
+    return this.roomsService.postRoomChat(
+      roomId,
+      userId,
+      senderName,
+      message,
+      scope,
+    );
+  }
+
+  async deleteRoomChatMessage(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ) {
+    return this.roomsService.deleteRoomChatMessage(roomId, callerId, messageId);
+  }
+
   // ========== Utility Operations ==========
 
   async findSessionByRoom(roomId: string) {

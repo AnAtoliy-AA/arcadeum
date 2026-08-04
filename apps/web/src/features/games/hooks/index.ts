@@ -5,6 +5,7 @@ export type { GameType } from './useGameActions';
 export { useRematch } from './useRematch';
 export { useGameChatIntegration } from './useGameChatIntegration';
 export { useGameChatSend } from './useGameChatSend';
+export { useGameRoomChat } from './useGameRoomChat';
 export { useFullscreen } from './useFullscreen';
 export { useAutoExitFullscreen } from './useAutoExitFullscreen';
 export { useGameRoomActions } from './useGameRoomActions';

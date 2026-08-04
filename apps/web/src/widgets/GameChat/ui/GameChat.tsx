@@ -56,6 +56,9 @@ interface GameChatProps {
   onClose?: () => void;
   teamMode?: boolean;
   onEmote?: (emoteId: EmoteId) => void;
+  isHost?: boolean;
+  onDeleteMessage?: (messageId: string) => void;
+  signInPlaceholder?: string;
 }
 
 const FFA_SCOPES: ChatScope[] = ['all', 'players', 'private'];
@@ -129,6 +132,9 @@ export function GameChat({
   onClose,
   teamMode,
   onEmote,
+  isHost,
+  onDeleteMessage,
+  signInPlaceholder = 'Sign in to chat',
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
@@ -227,6 +233,7 @@ export function GameChat({
 
   return (
     <Panel data-testid="game-chat-panel">
+      <style>{`.chat-msg-row:hover .chat-delete-btn { opacity: 1 !important; }`}</style>
       <Head>
         <HeadRow>
           <TitleDot />
@@ -388,18 +395,59 @@ export function GameChat({
                 }
                 const isOwn = !!currentUserId && log.senderId === currentUserId;
                 return (
-                  <GameChatRow
+                  <div
                     key={log.id}
-                    senderId={log.senderId ?? null}
-                    senderName={log.senderId ? senderName : undefined}
-                    senderColor={senderColor}
-                    targetName={targetId ? targetName : undefined}
-                    targetColor={targetColor}
-                    content={log.message}
-                    type={log.type}
-                    isOwn={isOwn}
-                    resolveEquipped={resolveEquipped}
-                  />
+                    className="chat-msg-row"
+                    style={{ position: 'relative' }}
+                  >
+                    <GameChatRow
+                      senderId={log.senderId ?? null}
+                      senderName={log.senderId ? senderName : undefined}
+                      senderColor={senderColor}
+                      targetName={targetId ? targetName : undefined}
+                      targetColor={targetColor}
+                      content={log.message}
+                      type={log.type}
+                      isOwn={isOwn}
+                      resolveEquipped={resolveEquipped}
+                    />
+                    {(isHost || log.senderId === currentUserId) && onDeleteMessage && log.type === 'message' && (
+                      <button
+                        className="chat-delete-btn"
+                        onClick={() => onDeleteMessage(log.id)}
+                        title="Delete message"
+                        aria-label="Delete message"
+                        style={{
+                          position: 'absolute',
+                          top: 4,
+                          right: 4,
+                          background: 'rgba(239,68,68,0.8)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: 4,
+                          width: 20,
+                          height: 20,
+                          fontSize: 12,
+                          lineHeight: '20px',
+                          cursor: 'pointer',
+                          opacity: 0,
+                          transition: 'opacity 120ms ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: 0,
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.opacity = '1')
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.opacity = '0')
+                        }
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </ListGap>
@@ -414,10 +462,19 @@ export function GameChat({
         />
 
         <InputPill
-          focusStyle={{
-            borderColor: `${ACCENT_PINK}88`,
-            backgroundColor: 'rgba(0,0,0,0.32)',
-          }}
+          focusStyle={
+            currentUserId
+              ? {
+                  borderColor: `${ACCENT_PINK}88`,
+                  backgroundColor: 'rgba(0,0,0,0.32)',
+                }
+              : undefined
+          }
+          style={
+            !currentUserId
+              ? { opacity: 0.5, pointerEvents: 'none' as const }
+              : undefined
+          }
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
             {SCOPE_CHIP[scope]}
@@ -427,7 +484,12 @@ export function GameChat({
             maxLength={240}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={SCOPE_PLACEHOLDER[scope]}
+            placeholder={
+              currentUserId
+                ? SCOPE_PLACEHOLDER[scope]
+                : signInPlaceholder
+            }
+            disabled={!currentUserId}
             aria-label="Message"
             style={{
               flex: 1,

@@ -431,6 +431,92 @@ export class GamesGateway {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
   }
 
+  @SubscribeMessage('games.room.chat')
+  async handleRoomChat(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      message?: string;
+      scope?: string;
+    },
+  ): Promise<void> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const message = extractString(payload, 'message');
+    const scopeRaw =
+      typeof payload?.scope === 'string'
+        ? payload.scope.trim().toLowerCase()
+        : 'all';
+    const scope = ['players', 'private', 'team'].includes(scopeRaw)
+      ? scopeRaw
+      : 'all';
+
+    this.validateUserId(client, userId);
+
+    const channel = this.realtime.roomChannel(roomId);
+    if (!client.rooms.has(channel)) return;
+
+    // Resolve sender name from room members
+    let senderName = '';
+    try {
+      const room = await this.gamesService.getRoom(roomId);
+      senderName =
+        room.members?.find((m) => m.id === userId)?.displayName ?? '';
+    } catch {
+      // ignore — senderName stays empty
+    }
+
+    const entry = await this.gamesService.postRoomChat(
+      roomId,
+      userId,
+      senderName,
+      message,
+      scope,
+    );
+
+    if (entry) {
+      this.server.to(channel).emit('games.room.chat', maybeEncrypt(entry));
+      client.emit(
+        'games.room.chat.ack',
+        maybeEncrypt({ roomId, userId, scope }),
+      );
+    }
+  }
+
+  @SubscribeMessage('games.room.delete_chat')
+  async handleDeleteRoomChat(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      roomId?: string;
+      userId?: string;
+      messageId?: string;
+    },
+  ): Promise<void> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const messageId = extractString(payload, 'messageId');
+
+    this.validateUserId(client, userId);
+
+    const channel = this.realtime.roomChannel(roomId);
+    if (!client.rooms.has(channel)) return;
+
+    const deleted = await this.gamesService.deleteRoomChatMessage(
+      roomId,
+      userId,
+      messageId,
+    );
+
+    if (deleted) {
+      this.server
+        .to(channel)
+        .emit('games.room.delete_chat', maybeEncrypt({ messageId }));
+    }
+  }
+
   @SubscribeMessage('games.matchmaking.join')
   handleMatchmakingJoin(
     @ConnectedSocket() client: Socket,

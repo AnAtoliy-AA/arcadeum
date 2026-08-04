@@ -48,7 +48,7 @@ export interface SeaBattleState {
   logs: GameLogEntry[];
   gridSize: number;
   shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeapons?: { sonar?: boolean; radar?: boolean; revealAll?: boolean };
   lastAttack?: {
     attackerId: string;
     targetId: string;

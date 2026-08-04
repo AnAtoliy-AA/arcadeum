@@ -263,6 +263,14 @@ export const shopEs = {
         name: 'Gorila Cibernético',
         desc: 'Un gorila cibernético hiperrealista.',
       },
+      pandacyber: {
+        name: 'Panda Cibernético',
+        desc: 'Un panda cibernético hiperrealista.',
+      },
+      cheetahcyber: {
+        name: 'Guepardo Cibernético',
+        desc: 'Un guepardo cibernético hiperrealista.',
+      },
     },
     badge: {
       newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },

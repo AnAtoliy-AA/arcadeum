@@ -263,6 +263,14 @@ export const shopFr = {
         name: 'Gorille Cybernétique',
         desc: 'Un gorille cybernétique hyperréaliste.',
       },
+      pandacyber: {
+        name: 'Panda Cybernétique',
+        desc: 'Un panda cybernétique hyperréaliste.',
+      },
+      cheetahcyber: {
+        name: 'Guépard Cybernétique',
+        desc: 'Un guépard cybernétique hyperréaliste.',
+      },
     },
     badge: {
       newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },

@@ -151,6 +151,8 @@ export const ruMessages = {
     seaBattleSonarHint: 'Показать расположение кораблей',
     seaBattleRadar: 'Радар',
     seaBattleRadarHint: 'Сканировать строку или столбец',
+    seaBattleRevealAll: 'Волна сканирования',
+    seaBattleRevealAllHint: 'Кратко показать все корабли в начале боя',
     tttBoardSize: 'Размер поля',
     tttWinLength: '{{n}} подряд для победы',
     tttMaxPlayers: 'До {{n}} игроков',

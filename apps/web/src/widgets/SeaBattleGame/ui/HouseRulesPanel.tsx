@@ -28,7 +28,7 @@ export function HouseRulesPanel({
   const shipCount =
     (gameOptions.shipCount as number) ?? getDefaultShipCount(gridSize);
   const sw = gameOptions.specialWeapons as
-    | { sonar?: boolean; radar?: boolean }
+    | { sonar?: boolean; radar?: boolean; revealAll?: boolean }
     | undefined;
 
   return (
@@ -183,6 +183,66 @@ export function HouseRulesPanel({
           {t('games.create.seaBattleRadar') || 'Radar'} —{' '}
           {t('games.create.seaBattleRadarHint') || 'Scan a row or column'}
         </label>
+
+        <label
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={!!sw?.revealAll}
+            onChange={() =>
+              onOptionChange({
+                specialWeapons: { ...sw, revealAll: !sw?.revealAll },
+              })
+            }
+          />
+          {t('games.create.seaBattleRevealAll') || 'Scan Wave'} —{' '}
+          {t('games.create.seaBattleRevealAllHint') ||
+            'Reveal all ships briefly at battle start'}
+        </label>
+
+        {sw?.revealAll && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 24 }}>
+            <Text fontSize={12} opacity={0.6}>
+              Duration:
+            </Text>
+            {[1, 2, 3].map((sec) => {
+              const currentDuration =
+                (gameOptions.revealAllDuration as number) ?? 1;
+              return (
+                <button
+                  key={sec}
+                  type="button"
+                  onClick={() => onOptionChange({ revealAllDuration: sec })}
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    border: '1px solid',
+                    borderColor:
+                      currentDuration === sec
+                        ? '#f59e0b'
+                        : 'rgba(255,255,255,0.2)',
+                    background:
+                      currentDuration === sec
+                        ? 'rgba(251,191,36,0.2)'
+                        : 'transparent',
+                    color: currentDuration === sec ? '#f59e0b' : '#999',
+                  }}
+                >
+                  {sec}s
+                </button>
+              );
+            })}
+          </div>
+        )}
       </YStack>
     </YStack>
   );

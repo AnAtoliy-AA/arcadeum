@@ -151,6 +151,8 @@ export const enMessages = {
     seaBattleSonarHint: 'Reveal ship locations',
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Scan a row or column',
+    seaBattleRevealAll: 'Scan Wave',
+    seaBattleRevealAllHint: 'Reveal all ships briefly at battle start',
     tttBoardSize: 'Board Size',
     tttWinLength: '{{n}} in a row to win',
     tttMaxPlayers: 'Up to {{n}} players',

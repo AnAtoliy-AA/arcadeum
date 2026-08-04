@@ -161,11 +161,18 @@ export interface SeaBattleSnapshot {
   teamOrder?: string[];
   currentTeamIndex?: number;
   hideShipsFromTeammates?: boolean;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeapons?: { sonar?: boolean; radar?: boolean; revealAll?: boolean };
   specialWeaponUsage?: Record<
     string,
     { sonarUsed?: boolean; radarUsed?: boolean }
   >;
+  lastScanWave?: {
+    cells: {
+      playerId: string;
+      board: CellState[][];
+    }[];
+    duration: number;
+  };
   lastSonar?: {
     attackerId: string;
     targetId: string;

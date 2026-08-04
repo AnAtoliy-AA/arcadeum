@@ -152,6 +152,8 @@ export const esMessages = {
     seaBattleSonarHint: 'Revelar ubicaciones de barcos',
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Escanear una fila o columna',
+    seaBattleRevealAll: 'Onda de escaneo',
+    seaBattleRevealAllHint: 'Revelar todos los barcos brevemente al inicio del combate',
     tttBoardSize: 'Tamaño del Tablero',
     tttWinLength: '{{n}} en fila para ganar',
     tttMaxPlayers: 'Hasta {{n}} jugadores',

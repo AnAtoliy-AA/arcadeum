@@ -122,7 +122,9 @@ export class AnnouncementsService {
     locale: AnnouncementLocale,
   ): Promise<AnnouncementPublicItem | null> {
     const cacheKey = `announcement:active:${isAuthenticated ? 'auth' : 'anon'}:${locale}`;
-    const cached = await this.cache.get<AnnouncementPublicItem | null>(cacheKey);
+    const cached = await this.cache.get<AnnouncementPublicItem | null>(
+      cacheKey,
+    );
     if (cached !== undefined) return cached;
 
     const now = new Date();
@@ -138,7 +140,11 @@ export class AnnouncementsService {
       .sort({ severityRank: -1, startsAt: -1, _id: -1 })
       .lean<AnnouncementLean | null>();
     const result = doc ? this.toPublicItem(doc, locale) : null;
-    await this.cache.set(cacheKey, result, AnnouncementsService.ACTIVE_CACHE_TTL_MS);
+    await this.cache.set(
+      cacheKey,
+      result,
+      AnnouncementsService.ACTIVE_CACHE_TTL_MS,
+    );
     return result;
   }
 
@@ -175,7 +181,9 @@ export class AnnouncementsService {
     const locales = ['en', 'ru', 'es', 'fr', 'by'];
     for (const auth of auths) {
       for (const locale of locales) {
-        await this.cache.del(`announcement:active:${auth}:${locale}`).catch(() => {});
+        await this.cache
+          .del(`announcement:active:${auth}:${locale}`)
+          .catch(() => {});
       }
     }
   }

@@ -83,6 +83,9 @@ export class GameRoom extends Document {
   @Prop({ type: Object, default: {} })
   gameOptions?: Record<string, unknown>;
 
+  @Prop({ type: Boolean, default: false })
+  rematchPending?: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }

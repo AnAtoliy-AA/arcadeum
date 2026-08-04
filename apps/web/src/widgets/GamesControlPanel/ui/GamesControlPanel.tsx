@@ -35,6 +35,9 @@ interface GamesControlPanelProps {
   isFullscreen?: boolean;
   toggleFullscreen?: () => void;
   isSpectating?: boolean;
+  isGameOver?: boolean;
+  onRematch?: () => void;
+  rematchLoading?: boolean;
 }
 
 export function GamesControlPanel(props: GamesControlPanelProps) {
@@ -53,6 +56,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     isFullscreen,
     toggleFullscreen,
     isSpectating,
+    isGameOver,
+    onRematch,
+    rematchLoading,
   } = props;
 
   const { snapshot } = useSessionTokens();
@@ -316,6 +322,31 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       )}
 
       {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
+
+      {isGameOver && onRematch && (
+        <Button
+          variant="primary"
+          size="sm"
+          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          onClick={onRematch}
+          disabled={rematchLoading}
+          data-testid="rematch-button"
+          animation="quick"
+          pressStyle={{ scale: 0.95 }}
+        >
+          🔄
+          <Text $sm={{ display: 'none' }}>
+            {' ' +
+              (rematchLoading
+                ? t(
+                    'games.table.rematch.loading' as import('@/shared/lib/useTranslation').TranslationKey,
+                  ) || 'Loading...'
+                : t(
+                    'games.table.rematch.button' as import('@/shared/lib/useTranslation').TranslationKey,
+                  ) || 'Play Again')}
+          </Text>
+        </Button>
+      )}
 
       <Button
         variant="glass"

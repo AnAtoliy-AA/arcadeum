@@ -73,6 +73,7 @@ export function useGameEndState({
       dismissResult: dismiss,
 
       rematchLoading: rematch.rematchLoading,
+      rematchError: rematch.rematchError,
       showRematchModal: rematch.showRematchModal,
       openRematchModal: rematch.openRematchModal,
       closeRematchModal: rematch.closeRematchModal,
@@ -96,6 +97,7 @@ export function useGameEndState({
       defaultMessages,
       dismiss,
       rematch.rematchLoading,
+      rematch.rematchError,
       rematch.showRematchModal,
       rematch.openRematchModal,
       rematch.closeRematchModal,

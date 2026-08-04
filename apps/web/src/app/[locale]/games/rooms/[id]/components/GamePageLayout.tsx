@@ -12,6 +12,7 @@ import { useEmotes } from '@/features/games/hooks/useEmotes';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
@@ -139,6 +140,8 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       .registerFallbackResolveDisplayName(resolveDisplayName);
   }, [resolveDisplayName]);
 
+  const { isGameOver, onRematch, rematchLoading } = useGameRematchStore();
+
   return (
     <>
       <style>{fullscreenStyles}</style>
@@ -184,10 +187,15 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
           isSpectating={isSpectating}
+          isGameOver={isGameOver}
+          onRematch={onRematch ?? undefined}
+          rematchLoading={rematchLoading}
         />
 
         <GameRow flexDirection={roomFlexDirection}>
-          <ActiveEmotesProvider value={{ emotes: activeEmotes, resolveDisplayName }}>
+          <ActiveEmotesProvider
+            value={{ emotes: activeEmotes, resolveDisplayName }}
+          >
             {children({ isFullscreen, toggleFullscreen })}
           </ActiveEmotesProvider>
 

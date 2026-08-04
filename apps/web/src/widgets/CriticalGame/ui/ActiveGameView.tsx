@@ -56,6 +56,7 @@ interface ActiveGameViewProps {
   // Rematch props
   rematch: {
     rematchLoading: boolean;
+    rematchError: string | null;
     showRematchModal: boolean;
     openRematchModal: () => void;
     closeRematchModal: () => void;
@@ -393,6 +394,7 @@ export function ActiveGameView({
                     : 'defeat',
                 dismissResult: () => setModalDismissed(true),
                 rematchLoading: rematch.rematchLoading,
+                rematchError: rematch.rematchError ?? null,
                 showRematchModal: rematch.showRematchModal,
                 openRematchModal: rematch.openRematchModal,
                 closeRematchModal: rematch.closeRematchModal,

@@ -39,6 +39,7 @@ import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { GameHistoryStatsService } from './history/game-history-stats.service';
+import { GameHistoryRematchService } from './history/game-history-rematch.service';
 import { CriticalActionsService } from './actions/critical/critical-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -156,6 +157,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameHistoryService,
     GameHistoryBuilderService,
     GameHistoryStatsService,
+    GameHistoryRematchService,
     GamesRealtimeService,
     // Game-specific action handlers
     CriticalActionsService,

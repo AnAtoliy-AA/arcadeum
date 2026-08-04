@@ -3,7 +3,7 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
-const DEFAULT_MAX_POOL_SIZE = 50;
+const DEFAULT_MAX_POOL_SIZE = 1000;
 const DEV_MAX_POOL_SIZE = 10;
 const MIN_MAX_POOL_SIZE = 1;
 

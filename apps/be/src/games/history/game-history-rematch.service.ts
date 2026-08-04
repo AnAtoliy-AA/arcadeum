@@ -15,12 +15,19 @@ import {
 
 @Injectable()
 export class GameHistoryRematchService {
+  private readonly primary: Model<GameRoom>;
+  private readonly mirror: Model<GameRoom> | undefined;
+
   constructor(
     @InjectModel(GameRoom.name, ATLAS_CONNECTION)
-    private readonly gameRoomModel: Model<GameRoom>,
+    atlasModel: Model<GameRoom> | undefined,
     @InjectModel(GameRoom.name, OCI_CONNECTION)
-    private readonly ociRoomModel?: Model<GameRoom>,
-  ) {}
+    ociModel: Model<GameRoom> | undefined,
+  ) {
+    // Prefer Atlas when available; fall back to OCI
+    this.primary = atlasModel ?? ociModel!;
+    this.mirror = atlasModel ? ociModel : undefined;
+  }
 
   async createRematchFromHistory(
     dto: HistoryRematchDto,
@@ -31,7 +38,7 @@ export class GameHistoryRematchService {
     // Atomically claim the rematch lock — only one player can create a
     // rematch from a given room at a time.  If rematchPending is already
     // true we reject immediately instead of creating duplicate rooms.
-    const lockedRoom = await this.gameRoomModel
+    const lockedRoom = await this.primary
       .findOneAndUpdate(
         { _id: originalRoomId, rematchPending: { $ne: true } },
         { $set: { rematchPending: true } },
@@ -42,9 +49,9 @@ export class GameHistoryRematchService {
 
     let originalRoom = lockedRoom;
 
-    // If Atlas didn't have it (or it was already locked), try OCI
-    if (!originalRoom && this.ociRoomModel) {
-      const ociLocked = await this.ociRoomModel
+    // If primary didn't have it (or it was already locked), try mirror
+    if (!originalRoom && this.mirror) {
+      const mirrorLocked = await this.mirror
         .findOneAndUpdate(
           { _id: originalRoomId, rematchPending: { $ne: true } },
           { $set: { rematchPending: true } },
@@ -52,23 +59,23 @@ export class GameHistoryRematchService {
         )
         .lean()
         .exec();
-      if (ociLocked) {
-        originalRoom = ociLocked;
-        // Mirror the lock back to Atlas
+      if (mirrorLocked) {
+        originalRoom = mirrorLocked;
+        // Mirror the lock back to primary
         try {
-          await this.gameRoomModel.updateOne(
+          await this.primary.updateOne(
             { _id: originalRoomId },
             { $set: { rematchPending: true } },
           );
         } catch {
-          // Best-effort mirror — game works from OCI if Atlas fails
+          // Best-effort mirror — game works from mirror if primary fails
         }
       }
     }
 
     if (!originalRoom) {
       // Either room doesn't exist or rematch is already in progress
-      const exists = await this.gameRoomModel
+      const exists = await this.primary
         .findById(originalRoomId)
         .select('_id')
         .lean()
@@ -143,7 +150,7 @@ export class GameHistoryRematchService {
         : originalRoom.name;
 
       const escapedBaseName = escapeRegExp(baseName);
-      const existingRematches = await this.gameRoomModel
+      const existingRematches = await this.primary
         .find({
           name: { $regex: new RegExp(`^${escapedBaseName} Rematch \\d+$`) },
         })
@@ -166,7 +173,7 @@ export class GameHistoryRematchService {
       }
       const rematchName = `${baseName} Rematch ${rematchNumber}`;
 
-      const newRoom = await this.gameRoomModel.create({
+      const newRoom = await this.primary.create({
         gameId: originalRoom.gameId,
         name: rematchName,
         hostId: userId,
@@ -184,26 +191,26 @@ export class GameHistoryRematchService {
         },
       });
 
-      if (this.ociRoomModel) {
+      if (this.mirror) {
         try {
-          await this.ociRoomModel.findOneAndUpdate(
+          await this.mirror.findOneAndUpdate(
             { _id: newRoom._id },
             { $set: newRoom.toObject() },
             { upsert: true },
           );
         } catch {
-          // OCI mirror is best-effort; game works from Atlas
+          // Mirror is best-effort; game works from primary
         }
       }
 
       return { id: newRoom._id.toString(), invitedIds };
     } catch (err) {
       // Release the lock on failure so the other player can retry
-      await this.gameRoomModel
+      await this.primary
         .updateOne({ _id: originalRoomId }, { $set: { rematchPending: false } })
         .catch(() => {});
-      if (this.ociRoomModel) {
-        await this.ociRoomModel
+      if (this.mirror) {
+        await this.mirror
           .updateOne(
             { _id: originalRoomId },
             { $set: { rematchPending: false } },

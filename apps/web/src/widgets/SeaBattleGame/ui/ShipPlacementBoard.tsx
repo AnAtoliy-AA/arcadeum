@@ -1,15 +1,20 @@
 'use client';
 
-import { useState, useCallback, useMemo, memo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react';
 import { Text, YStack, useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { ShipCell, ShipConfig, SeaBattlePlayerState } from '../types';
+import type {
+  ShipCell,
+  ShipConfig,
+  SeaBattlePlayerState,
+  Ship,
+  CellState,
+} from '../types';
 import { CELL_STATE, getActiveShips } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
 import { useMobileShipMove } from '../hooks/useMobileShipMove';
-import { usePlacementOptimistic } from '../hooks/usePlacementOptimistic';
 import {
   createEmptyBoard,
   getCellsForPlacement,
@@ -33,9 +38,19 @@ interface ShipPlacementBoardProps {
   shipCount?: number;
 }
 
+function deriveBoard(localShips: Ship[], boardSize: number): CellState[][] {
+  const next = createEmptyBoard(boardSize);
+  for (const ship of localShips) {
+    for (const c of ship.cells) {
+      next[c.row][c.col] = CELL_STATE.SHIP;
+    }
+  }
+  return next;
+}
+
 export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   currentPlayer,
-  onPlaceShip,
+  onPlaceShip: _onPlaceShip,
   onMoveShip,
   onConfirmPlacement,
   onResetPlacement,
@@ -58,21 +73,38 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     () => currentPlayer?.ships ?? [],
     [currentPlayer?.ships],
   );
-  const serverBoard = useMemo(
-    () => currentPlayer?.board || createEmptyBoard(boardSize),
-    [currentPlayer?.board, boardSize],
-  );
 
-  const { ships, board, registerPlacement, registerMove, clearPendingMoves } =
-    usePlacementOptimistic({ serverShips, serverBoard });
+  const [localShips, setLocalShips] = useState<Ship[]>([]);
+  const localShipsRef = useRef<Ship[]>([]);
+  const localShipsModifiedRef = useRef(false);
+  const prevServerShipsRef = useRef(serverShips);
+
+  useEffect(() => {
+    localShipsRef.current = localShips;
+  });
+
+  useEffect(() => {
+    if (localShipsModifiedRef.current) return;
+    if (prevServerShipsRef.current === serverShips) return;
+    prevServerShipsRef.current = serverShips;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server snapshot to local placement state
+    setLocalShips(serverShips);
+  }, [serverShips]);
+
+  const board = useMemo(
+    () => deriveBoard(localShips, boardSize),
+    [localShips, boardSize],
+  );
 
   const handleMoveShip = useCallback(
     (shipId: string, cells: ShipCell[]) => {
-      const ship = serverShips.find((s) => s.id === shipId);
-      if (ship) registerMove(shipId, ship.cells, cells);
+      localShipsModifiedRef.current = true;
+      setLocalShips((prev) =>
+        prev.map((s) => (s.id === shipId ? { ...s, cells } : s)),
+      );
       onMoveShip(shipId, cells);
     },
-    [serverShips, onMoveShip, registerMove],
+    [onMoveShip],
   );
 
   const {
@@ -80,7 +112,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     clearMovingState,
     handleCellClick: handleMobileCellClick,
   } = useMobileShipMove({
-    ships,
+    ships: localShips,
     board,
     isPlacementComplete,
     isMobile,
@@ -90,7 +122,10 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     setIsInvalidHover,
   });
 
-  const placedShipIds = useMemo(() => new Set(ships.map((s) => s.id)), [ships]);
+  const placedShipIds = useMemo(
+    () => new Set(localShips.map((s) => s.id)),
+    [localShips],
+  );
   const activeShips = useMemo(() => getActiveShips(shipCount), [shipCount]);
   const unplacedShips = useMemo(
     () => activeShips.filter((s) => !placedShipIds.has(s.id)),
@@ -104,10 +139,24 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const handlePlaceShip = useCallback(
     (shipId: string, cells: ShipCell[]) => {
       const cfg = activeShips.find((s) => s.id === shipId);
-      if (cfg) registerPlacement(shipId, cfg.name, cfg.size, cells);
-      onPlaceShip(shipId, cells);
+      if (!cfg) return;
+      const ship: Ship = {
+        id: shipId,
+        name: cfg.name,
+        size: cfg.size,
+        cells,
+        hits: 0,
+        sunk: false,
+      };
+      localShipsModifiedRef.current = true;
+      const nextShips = [...localShipsRef.current, ship];
+      setLocalShips(nextShips);
+      const nextShip = activeShips.find(
+        (s) => s.id !== shipId && !nextShips.some((p) => p.id === s.id),
+      );
+      setSelectedShipId(nextShip?.id ?? null);
     },
-    [activeShips, onPlaceShip, registerPlacement],
+    [activeShips],
   );
 
   const {
@@ -125,7 +174,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     board,
     isVertical,
     placedShipIds,
-    ships,
+    ships: localShips,
     activeShips,
     placementComplete: isPlacementComplete,
     onPlaceShip: handlePlaceShip,
@@ -138,7 +187,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const handleRotateInPlace = useCallback(
     (row: number, col: number) => {
       if (isPlacementComplete) return;
-      const ship = ships.find((s) =>
+      const ship = localShipsRef.current.find((s) =>
         s.cells.some((c) => c.row === row && c.col === col),
       );
       if (!ship || ship.cells.length < 2) return;
@@ -193,7 +242,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
       handleMoveShip(ship.id, newCells);
     },
-    [ships, board, boardSize, isPlacementComplete, handleMoveShip],
+    [board, boardSize, isPlacementComplete, handleMoveShip],
   );
 
   const canPlaceAt = useCallback(
@@ -279,10 +328,6 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
       handlePlaceShip(selectedShip.id, cells);
 
-      const nextShip = activeShips.find(
-        (s) => s.id !== selectedShip.id && !placedShipIds.has(s.id),
-      );
-      setSelectedShipId(nextShip?.id ?? null);
       setHoveredCells([]);
       setIsInvalidHover(false);
     },
@@ -291,9 +336,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       isVertical,
       canPlaceAt,
       handlePlaceShip,
-      placedShipIds,
       handleMobileCellClick,
-      activeShips,
     ],
   );
 
@@ -308,27 +351,32 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const handleRotate = useCallback(() => setIsVertical((p) => !p), []);
 
   const handleConfirm = useCallback(() => {
-    const shipsData = ships.map((s) => ({ shipId: s.id, cells: s.cells }));
+    localShipsModifiedRef.current = false;
+    const shipsData = localShipsRef.current.map((s) => ({
+      shipId: s.id,
+      cells: s.cells,
+    }));
     onConfirmPlacement(shipsData);
-  }, [ships, onConfirmPlacement]);
+  }, [onConfirmPlacement]);
 
   const handleReset = useCallback(() => {
-    clearPendingMoves();
+    localShipsModifiedRef.current = false;
+    setLocalShips([]);
     onResetPlacement();
-  }, [clearPendingMoves, onResetPlacement]);
+  }, [onResetPlacement]);
 
   const isAllShipsPlaced = unplacedShips.length === 0;
   const pendingCells: ShipCell[] = [];
 
   const shipHeadKeys = useMemo(() => {
     const keys = new Set<string>();
-    for (const ship of ships) {
+    for (const ship of localShips) {
       if (ship.cells.length < 2) continue;
       const head = ship.cells[0];
       if (head) keys.add(`${head.row}-${head.col}`);
     }
     return keys;
-  }, [ships]);
+  }, [localShips]);
 
   const boardEl = (
     <PlacementBoardGrid
@@ -345,7 +393,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       isPlacementComplete={isPlacementComplete}
       movingShipCells={
         movingShipId
-          ? (ships.find((s) => s.id === movingShipId)?.cells ?? [])
+          ? (localShips.find((s) => s.id === movingShipId)?.cells ?? [])
           : []
       }
       onCellHover={handleCellHover}

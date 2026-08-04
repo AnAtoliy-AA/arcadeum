@@ -95,6 +95,8 @@ export function SeaBattleBoards({
     snapshot?.specialWeaponUsage?.[currentUserId ?? '']?.radarUsed ?? false;
   const hasSonar = !!snapshot?.specialWeapons?.sonar;
   const hasRadar = !!snapshot?.specialWeapons?.radar;
+  const isSonarDisabled = sonarUsed || !isMyTurn;
+  const isRadarDisabled = radarUsed || !isMyTurn;
 
   const gridSize = snapshot?.gridSize ?? 10;
 
@@ -236,7 +238,7 @@ export function SeaBattleBoards({
                 <button
                   type="button"
                   onClick={() => {
-                    if (sonarUsed || !isMyTurn) return;
+                    if (isSonarDisabled) return;
                     if (opponents?.length === 1) {
                       setWeaponMode({
                         weapon: 'sonar',
@@ -249,11 +251,11 @@ export function SeaBattleBoards({
                       });
                     }
                   }}
-                  disabled={sonarUsed || !isMyTurn}
+                  disabled={isSonarDisabled}
                   style={{
                     ...buttonBase,
-                    opacity: sonarUsed || !isMyTurn ? 0.35 : 1,
-                    cursor: sonarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
+                    opacity: isSonarDisabled ? 0.35 : 1,
+                    cursor: isSonarDisabled ? 'not-allowed' : 'pointer',
                     color:
                       weaponMode?.weapon === 'sonar' ? '#06b6d4' : '#e0e0e0',
                     borderTop: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
@@ -275,7 +277,7 @@ export function SeaBattleBoards({
                   <button
                     type="button"
                     onClick={() => {
-                      if (radarUsed || !isMyTurn) return;
+                      if (isRadarDisabled) return;
                       if (opponents?.length === 1) {
                         setWeaponMode({
                           weapon: 'radar',
@@ -290,12 +292,12 @@ export function SeaBattleBoards({
                         });
                       }
                     }}
-                    disabled={radarUsed || !isMyTurn}
+                    disabled={isRadarDisabled}
                     style={{
                       ...buttonBase,
-                      opacity: radarUsed || !isMyTurn ? 0.35 : 1,
+                      opacity: isRadarDisabled ? 0.35 : 1,
                       cursor:
-                        radarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
+                        isRadarDisabled ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
@@ -315,7 +317,7 @@ export function SeaBattleBoards({
                   <button
                     type="button"
                     onClick={() => {
-                      if (radarUsed || !isMyTurn) return;
+                      if (isRadarDisabled) return;
                       const targetId = opponents?.[0]?.playerId;
                       if (!targetId) return;
                       setWeaponMode({
@@ -325,13 +327,13 @@ export function SeaBattleBoards({
                           weaponMode?.radarAxis === 'col' ? 'row' : 'col',
                       });
                     }}
-                    disabled={radarUsed || !isMyTurn}
+                    disabled={isRadarDisabled}
                     style={{
                       ...buttonBase,
                       padding: '8px 10px',
-                      opacity: radarUsed || !isMyTurn ? 0.35 : 1,
+                      opacity: isRadarDisabled ? 0.35 : 1,
                       cursor:
-                        radarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
+                        isRadarDisabled ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#c084fc' : '#a0a0a0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,

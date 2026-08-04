@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.19] - 2026-08-04
+
+### Fixed
+- keep ship placement in local state until confirm
+
+
 ## [1.24.18] - 2026-08-04
 
 ### Fixed

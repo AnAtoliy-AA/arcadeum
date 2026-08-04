@@ -1,11 +1,11 @@
 export const fr = {
   kicker: 'Jeux de société gratuits en ligne',
   tagline:
-    '{{appName}} est votre plateforme pour jouer gratuitement à des jeux de société en ligne entre amis — Bataille navale, stratégie, cartes et plus.',
+    "{{appName}} est votre plateforme pour jouer gratuitement à des jeux de société en ligne entre amis ou en solo contre l'IA — Bataille navale, stratégie, cartes et plus.",
   description:
-    "Profitez d'une large sélection de jeux de société gratuits en ligne. Créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
+    "Profitez d'une large sélection de jeux de société gratuits en ligne. Défiez des bots intelligents, créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
   primaryCtaLabel: 'Commencer',
-  playWithBotsLabel: 'Jouer avec des Bots',
+  playWithBotsLabel: "Jouer contre l'IA",
   defaultRoomName: 'Partie de {{name}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Jouer',
@@ -33,10 +33,12 @@ export const fr = {
   gamesPagerPrev: 'Jeu précédent',
   gamesPagerNext: 'Jeu suivant',
   demoBadgeLabel: 'Version démo',
-  // Features section
   featuresTitle: 'Pourquoi {{appName}} ?',
   featuresSubtitle:
     'Tout ce dont vous avez besoin pour jouer aux jeux de société en ligne with vos amis',
+  featureBotsTitle: "Jouer contre l'IA",
+  featureBotsDescription:
+    'Entraînez-vous en solo ou défiez des bots intelligents en mode facile, moyen ou difficile quand vos amis ne sont pas en ligne.',
   featureRoomsTitle: 'Salons en Temps Réel',
   featureRoomsDescription:
     'Créez des salons de jeu instantanément et commencez à jouer avec vos amis en quelques secondes.',

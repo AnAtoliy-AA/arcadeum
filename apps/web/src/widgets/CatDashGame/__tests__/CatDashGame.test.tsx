@@ -65,8 +65,8 @@ describe('CatDashBoard', () => {
         resolveName={(id) => id ?? ''}
       />,
     );
-    expect(screen.getByText('0')).toBeTruthy();
-    expect(screen.getByText('20')).toBeTruthy();
+    expect(screen.getByText('1')).toBeTruthy();
+    expect(screen.getByText('21')).toBeTruthy();
   });
 
   it('renders player indicators', () => {

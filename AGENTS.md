@@ -9,7 +9,7 @@
 
 ## Package Manager & Build
 
-- **pnpm** (v9.15.0) with workspaces
+- **pnpm** (v9.15.9) with workspaces
 - **Turborepo** orchestrates builds across apps/packages
 - Run tasks from repo root: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm lint`
 
@@ -48,6 +48,11 @@
 ### File size
 
 - **Max 500 lines per file** — enforced by `pnpm check-file-length`. Split large files into focused modules before they hit the limit.
+
+### Deprecated patterns — do not use
+
+- **Sass: no `@import`** — use `@use` (with `as *` for plain CSS partials). `@import` is deprecated and emits build warnings.
+- **Next.js: no `export const runtime = 'edge'`** on API routes unless edge features are actually needed. It disables static generation and emits build warnings.
 
 ### Tests
 

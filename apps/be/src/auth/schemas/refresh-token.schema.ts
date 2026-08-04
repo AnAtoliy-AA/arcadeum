@@ -28,3 +28,4 @@ RefreshTokenSchema.index(
   { expiresAt: 1 },
   { expireAfterSeconds: 0, partialFilterExpression: { revoked: true } },
 );
+RefreshTokenSchema.index({ userId: 1, revoked: 1, expiresAt: 1 });

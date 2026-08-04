@@ -53,6 +53,8 @@ const CONFIG = {
     'https://postiz.arcadeum.games/api/public/v1',
   postizApiKey: process.env.POSTIZ_API_KEY || '',
   postizIntegrationId: process.env.POSTIZ_YOUTUBE_INTEGRATION_ID || '',
+  postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
+  postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
 };
 
 // ============================================================================
@@ -68,6 +70,10 @@ const CAPTIONS = [
   'Gaming meets Web3 - experience the difference 🚀',
   'Your next favorite game is waiting 🎯',
   'Play. Compete. Earn. Repeat! 🔄',
+  'Level up your gaming experience! ⬆️',
+  'Where gamers become champions! 👑',
+  'Unlock exclusive rewards today! 🔓',
+  'The ultimate gaming destination awaits! 🌟',
 ];
 
 // ============================================================================
@@ -443,36 +449,214 @@ const SCENARIOS = [
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
+
+  // --- Dynamic & Engaging Scenarios ---
+  {
+    name: 'gameSpeedrun',
+    caption: 'Speedrun through Arcadeum games! ⚡',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 400 },
+      { type: 'click', x: 300, y: 600, wait: 1500 },
+      { type: 'navigate', url: '/en/games', wait: 1500 },
+      { type: 'click', x: 780, y: 600, wait: 1500 },
+      { type: 'navigate', url: '/en/games', wait: 1500 },
+      { type: 'click', x: 540, y: 900, wait: 1500 },
+      { type: 'navigate', url: '/en/leaderboards', wait: 2000 },
+    ],
+  },
+  {
+    name: 'socialButterfly',
+    caption: 'Connect with gamers worldwide! 🦋',
+    steps: [
+      { type: 'navigate', url: '/en/community', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'hover', x: 300, y: 600, wait: 800 },
+      { type: 'hover', x: 780, y: 600, wait: 800 },
+      { type: 'navigate', url: '/en/tournaments', wait: 2000 },
+      { type: 'scroll', y: 250, wait: 500 },
+      { type: 'click', x: 540, y: 700, wait: 2000 },
+      { type: 'navigate', url: '/en/leaderboards', wait: 2000 },
+      { type: 'hover', x: 540, y: 500, wait: 1000 },
+    ],
+  },
+  {
+    name: 'rewardHunt',
+    caption: 'Hunt for the best rewards! 🎁',
+    steps: [
+      { type: 'navigate', url: '/en/wallet', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+      { type: 'navigate', url: '/en/shop', wait: 2000 },
+      { type: 'scroll', y: 300, wait: 500 },
+      { type: 'hover', x: 300, y: 700, wait: 800 },
+      { type: 'hover', x: 780, y: 700, wait: 800 },
+      { type: 'navigate', url: '/en/rewards', wait: 2000 },
+      { type: 'scroll', y: 250, wait: 800 },
+    ],
+  },
+  {
+    name: 'quickPlaySession',
+    caption: 'Jump into a game in seconds! 🚀',
+    steps: [
+      { type: 'navigate', url: '/en', wait: 2000 },
+      { type: 'scroll', y: 600, wait: 500 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'click', x: 540, y: 700, wait: 3000 },
+      { type: 'hover', x: 540, y: 900, wait: 1500 },
+      { type: 'scroll', y: 150, wait: 500 },
+    ],
+  },
+  {
+    name: 'profileShowcase',
+    caption: 'Show off your gaming stats! 📊',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'click', x: 540, y: 500, wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 1000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'hover', x: 300, y: 600, wait: 800 },
+      { type: 'hover', x: 780, y: 600, wait: 800 },
+    ],
+  },
+  {
+    name: 'shopWindowShopping',
+    caption: 'So many items to unlock! 🛍️',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2000 },
+      { type: 'scroll', y: 250, wait: 500 },
+      { type: 'hover', x: 300, y: 600, wait: 700 },
+      { type: 'hover', x: 780, y: 600, wait: 700 },
+      { type: 'scroll', y: 300, wait: 500 },
+      { type: 'hover', x: 540, y: 700, wait: 700 },
+      { type: 'scroll', y: 250, wait: 500 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+    ],
+  },
+  {
+    name: 'gameShowcase',
+    caption: 'Pick your next favorite game! 🎮',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 400 },
+      { type: 'hover', x: 300, y: 600, wait: 600 },
+      { type: 'hover', x: 780, y: 600, wait: 600 },
+      { type: 'scroll', y: 350, wait: 400 },
+      { type: 'hover', x: 540, y: 700, wait: 600 },
+      { type: 'click', x: 540, y: 700, wait: 2500 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+    ],
+  },
+  {
+    name: 'battlePassScroll',
+    caption: 'Unlock exclusive battle pass rewards! 🎫',
+    steps: [
+      { type: 'navigate', url: '/en/battle-pass', wait: 2000 },
+      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'hover', x: 300, y: 700, wait: 800 },
+      { type: 'hover', x: 540, y: 700, wait: 800 },
+      { type: 'hover', x: 780, y: 700, wait: 800 },
+      { type: 'scroll', y: 350, wait: 600 },
+      { type: 'hover', x: 540, y: 800, wait: 1000 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+    ],
+  },
+  {
+    name: 'tokenTracker',
+    caption: 'Track your Arcadeum tokens! 💎',
+    steps: [
+      { type: 'navigate', url: '/en/token', wait: 2000 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'hover', x: 540, y: 600, wait: 1200 },
+      { type: 'scroll', y: 300, wait: 500 },
+      { type: 'hover', x: 300, y: 700, wait: 800 },
+      { type: 'hover', x: 780, y: 700, wait: 800 },
+      { type: 'scroll', y: 250, wait: 600 },
+    ],
+  },
+  {
+    name: 'tournamentHype',
+    caption: 'Join the tournament action! 🏆',
+    steps: [
+      { type: 'navigate', url: '/en/tournaments', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'click', x: 540, y: 600, wait: 2500 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'hover', x: 300, y: 700, wait: 700 },
+      { type: 'hover', x: 780, y: 700, wait: 700 },
+      { type: 'scroll', y: 250, wait: 500 },
+      { type: 'click', x: 540, y: 800, wait: 2000 },
+    ],
+  },
+  {
+    name: 'referralBoost',
+    caption: 'Invite friends, earn bigger rewards! 🚀',
+    steps: [
+      { type: 'navigate', url: '/en/referrals', wait: 2000 },
+      { type: 'scroll', y: 250, wait: 600 },
+      { type: 'hover', x: 540, y: 600, wait: 1000 },
+      { type: 'scroll', y: 300, wait: 500 },
+      { type: 'hover', x: 300, y: 700, wait: 800 },
+      { type: 'hover', x: 780, y: 700, wait: 800 },
+      { type: 'scroll', y: 200, wait: 500 },
+      { type: 'click', x: 540, y: 900, wait: 2000 },
+    ],
+  },
 ];
 
 // ============================================================================
-// AUDIO TRACKS (same as in-game music player)
+// AUDIO TRACKS (fetched dynamically from CDN tracks.json)
 // ============================================================================
 
 const CDN_BASE = process.env.SHORTS_CDN_URL;
 const MUSIC_FOLDER = 'music';
 const MUSIC_CDN_URL = `${CDN_BASE}/${MUSIC_FOLDER}`;
+const TRACKS_JSON_URL = `${CDN_BASE}/${MUSIC_FOLDER}/tracks.json`;
 
-const AUDIO_TRACKS = [
-  `${MUSIC_CDN_URL}/battleship-grid.mp3`,
-  `${MUSIC_CDN_URL}/battleship-grid-v2.mp3`,
-  `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
-  `${MUSIC_CDN_URL}/clockwork-horizon-v2.mp3`,
-  `${MUSIC_CDN_URL}/glass-grid.mp3`,
-  `${MUSIC_CDN_URL}/glass-grid-v2.mp3`,
-  `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
-  `${MUSIC_CDN_URL}/grid-of-torpedoes-v2.mp3`,
-  `${MUSIC_CDN_URL}/gridline-armada.mp3`,
-  `${MUSIC_CDN_URL}/gridline-armada-v2.mp3`,
-  `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
-  `${MUSIC_CDN_URL}/gridwater-clash-v2.mp3`,
-  `${MUSIC_CDN_URL}/iron-tide.mp3`,
-  `${MUSIC_CDN_URL}/iron-tide-v2.mp3`,
-  `${MUSIC_CDN_URL}/iron-wake.mp3`,
-  `${MUSIC_CDN_URL}/iron-wake-v2.mp3`,
-  `${MUSIC_CDN_URL}/iron-wake-v3.mp3`,
-  `${MUSIC_CDN_URL}/saltwater-coordinates-v2.mp3`,
-];
+let cachedTracks = null;
+
+/**
+ * Fetches available audio tracks from CDN tracks.json.
+ * Falls back to a small hardcoded list if the fetch fails.
+ */
+async function getAudioTracks() {
+  if (cachedTracks) return cachedTracks;
+
+  try {
+    log('info', `Fetching tracks from ${TRACKS_JSON_URL}`);
+    const response = await axios.get(TRACKS_JSON_URL, { timeout: 10000 });
+    const tracks = response.data
+      .filter((t) => t.src && t.src.endsWith('.mp3'))
+      .map((t) => `${CDN_BASE}${t.src}`);
+    if (tracks.length > 0) {
+      cachedTracks = tracks;
+      log('info', `Loaded ${tracks.length} audio tracks from CDN`);
+      return tracks;
+    }
+  } catch (error) {
+    log('warn', 'Failed to fetch tracks.json, using fallback', {
+      error: error.message,
+    });
+  }
+
+  // Fallback: tracks known to exist on CDN
+  cachedTracks = [
+    `${MUSIC_CDN_URL}/battleship-grid.mp3`,
+    `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
+    `${MUSIC_CDN_URL}/glass-grid.mp3`,
+    `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
+    `${MUSIC_CDN_URL}/gridline-armada.mp3`,
+    `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
+    `${MUSIC_CDN_URL}/iron-tide.mp3`,
+    `${MUSIC_CDN_URL}/iron-wake.mp3`,
+  ];
+  log('info', `Using ${cachedTracks.length} fallback audio tracks`);
+  return cachedTracks;
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -721,66 +905,17 @@ async function captureBrowsing() {
 // ============================================================================
 
 /**
- * Processes the raw video with FFmpeg to add audio and trim to target duration
+ * Runs an FFmpeg command and returns a promise
  */
-async function processVideo(rawVideoPath, recordedDuration) {
-  log('info', 'Starting FFmpeg video processing...');
-
-  // Ensure output directory exists
-  await ensureDir(CONFIG.outputDir);
-
-  // Select a random audio track
-  const audioTrack = randomElement(AUDIO_TRACKS);
-  log('info', `Selected audio track: ${audioTrack}`);
-
-  // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
-  const trimDuration = Math.min(Math.ceil(recordedDuration / 1000), 8);
-  const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
-
-  log(
-    'info',
-    `Trim duration: ${trimDuration}s, fade-out starts at: ${fadeOutStart}s`,
-  );
-
-  // Generate unique output filename
-  const timestamp = Date.now();
-  const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
-
-  // Build FFmpeg command
-  const ffmpegArgs = [
-    '-i',
-    rawVideoPath,
-    '-i',
-    audioTrack,
-    '-t',
-    String(trimDuration),
-    '-af',
-    `afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}`,
-    '-c:v',
-    'libx264',
-    '-preset',
-    'fast',
-    '-crf',
-    '23',
-    '-c:a',
-    'aac',
-    '-b:a',
-    '128k',
-    '-y',
-    '-shortest',
-    outputPath,
-  ];
-
-  log('info', 'Executing FFmpeg command', { args: ffmpegArgs });
+function runFFmpeg(args, label) {
+  log('info', `Executing FFmpeg (${label})`, { args });
 
   return new Promise((resolve, reject) => {
-    const ffmpeg = spawn('ffmpeg', ffmpegArgs);
-
-    let stdout = '';
+    const ffmpeg = spawn('ffmpeg', args);
     let stderr = '';
 
     ffmpeg.stdout.on('data', (data) => {
-      stdout += data.toString();
+      stderr += data.toString();
     });
 
     ffmpeg.stderr.on('data', (data) => {
@@ -789,19 +924,159 @@ async function processVideo(rawVideoPath, recordedDuration) {
 
     ffmpeg.on('close', (code) => {
       if (code === 0) {
-        log('info', `FFmpeg processing complete: ${outputPath}`);
-        resolve(outputPath);
+        log('info', `FFmpeg (${label}) complete`);
+        resolve();
       } else {
-        log('error', 'FFmpeg processing failed', { code, stderr });
+        log('error', `FFmpeg (${label}) failed`, { code, stderr });
         reject(new Error(`FFmpeg exited with code ${code}: ${stderr}`));
       }
     });
 
     ffmpeg.on('error', (error) => {
-      log('error', 'Failed to spawn FFmpeg', { error: error.message });
+      log('error', `Failed to spawn FFmpeg (${label})`, {
+        error: error.message,
+      });
       reject(error);
     });
   });
+}
+
+/**
+ * Processes the raw video with FFmpeg: trim, add audio, append end card
+ */
+async function processVideo(rawVideoPath, recordedDuration) {
+  log('info', 'Starting FFmpeg video processing...');
+
+  // Ensure output directory exists
+  await ensureDir(CONFIG.outputDir);
+
+  // Select a random audio track
+  const tracks = await getAudioTracks();
+  const audioTrack = randomElement(tracks);
+  log('info', `Selected audio track: ${audioTrack}`);
+
+  // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
+  const trimDuration = Math.min(Math.ceil(recordedDuration / 1000), 8);
+  const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
+  const endCardDuration = 2;
+
+  log(
+    'info',
+    `Trim duration: ${trimDuration}s, end card: ${endCardDuration}s, fade-out starts at: ${fadeOutStart}s`,
+  );
+
+  const timestamp = Date.now();
+  const mainVideoPath = path.join(
+    CONFIG.outputDir,
+    `arcadeum-main-${timestamp}.mp4`,
+  );
+  const endCardPath = path.join(
+    CONFIG.outputDir,
+    `arcadeum-endcard-${timestamp}.mp4`,
+  );
+  const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
+
+  // Step 1: Trim video and add audio
+  await runFFmpeg(
+    [
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(trimDuration),
+      '-af',
+      `afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}`,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      '-shortest',
+      mainVideoPath,
+    ],
+    'main video',
+  );
+
+  // Step 2: Create end card (black background + arcadeum.games text + fade-in audio)
+  await runFFmpeg(
+    [
+      '-f',
+      'lavfi',
+      '-i',
+      `color=c=black:s=1080x1920:d=${endCardDuration}:r=30`,
+      '-f',
+      'lavfi',
+      '-i',
+      `anullsrc=r=44100:cl=stereo`,
+      '-vf',
+      `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
+      '-af',
+      `afade=t=in:st=0:d=0.5`,
+      '-t',
+      String(endCardDuration),
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
+      '-y',
+      endCardPath,
+    ],
+    'end card',
+  );
+
+  // Step 3: Concatenate main video + end card
+  const concatListPath = path.join(CONFIG.outputDir, `concat-${timestamp}.txt`);
+  const { writeFile } = require('fs/promises');
+  await writeFile(
+    concatListPath,
+    `file '${mainVideoPath}'\nfile '${endCardPath}'`,
+  );
+
+  await runFFmpeg(
+    [
+      '-f',
+      'concat',
+      '-safe',
+      '0',
+      '-i',
+      concatListPath,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      outputPath,
+    ],
+    'concat',
+  );
+
+  // Cleanup temp files
+  await unlink(mainVideoPath).catch(() => {});
+  await unlink(endCardPath).catch(() => {});
+  await unlink(concatListPath).catch(() => {});
+
+  log('info', `Final video with end card: ${outputPath}`);
+  return outputPath;
 }
 
 // ============================================================================
@@ -812,11 +1087,96 @@ async function processVideo(rawVideoPath, recordedDuration) {
  * Publishes video to YouTube via Postiz Public API
  */
 async function publishToSocials(videoPath, caption) {
-  log('info', 'Publishing to YouTube via Postiz API...');
+  log('info', 'Publishing to social platforms via Postiz API...');
 
-  if (!CONFIG.postizApiKey || !CONFIG.postizIntegrationId) {
+  if (!CONFIG.postizApiKey) {
+    throw new Error('POSTIZ_API_KEY must be set');
+  }
+
+  const platforms = [];
+
+  if (CONFIG.postizIntegrationId) {
+    platforms.push({
+      id: CONFIG.postizIntegrationId,
+      type: 'youtube',
+      buildPost: (uploadedFile, cap) => ({
+        integration: { id: CONFIG.postizIntegrationId },
+        value: [
+          {
+            content: cap,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'youtube',
+          title: cap
+            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
+            .trim()
+            .slice(0, 100),
+          type: 'public',
+          selfDeclaredMadeForKids: 'no',
+        },
+      }),
+    });
+  }
+
+  if (CONFIG.postizInstagramId) {
+    platforms.push({
+      id: CONFIG.postizInstagramId,
+      type: 'Instagram',
+      buildPost: (uploadedFile, cap) => ({
+        integration: { id: CONFIG.postizInstagramId },
+        value: [
+          {
+            content: cap,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'instagram',
+          post_type: 'reel',
+          is_trial_reel: false,
+          collaborators: [],
+        },
+      }),
+    });
+  }
+
+  if (CONFIG.postizTiktokId) {
+    platforms.push({
+      id: CONFIG.postizTiktokId,
+      type: 'TikTok',
+      buildPost: (uploadedFile, cap) => ({
+        integration: { id: CONFIG.postizTiktokId },
+        value: [
+          {
+            content: cap,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'tiktok',
+          title: cap
+            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
+            .trim()
+            .slice(0, 90),
+          privacy_level: 'PUBLIC_TO_EVERYONE',
+          duet: false,
+          stitch: false,
+          comment: true,
+          autoAddMusic: 'no',
+          brand_content_toggle: false,
+          brand_organic_toggle: false,
+          video_made_with_ai: false,
+          content_posting_method: 'DIRECT_POST',
+        },
+      }),
+    });
+  }
+
+  if (platforms.length === 0) {
     throw new Error(
-      'POSTIZ_API_KEY and POSTIZ_YOUTUBE_INTEGRATION_ID must be set',
+      'At least one integration ID must be set (POSTIZ_YOUTUBE_INTEGRATION_ID, POSTIZ_INSTAGRAM_INTEGRATION_ID, or POSTIZ_TIKTOK_INTEGRATION_ID)',
     );
   }
 
@@ -825,7 +1185,7 @@ async function publishToSocials(videoPath, caption) {
   };
 
   // Step 1: Upload video to Postiz
-  log('info', 'Step 1: Uploading video...');
+  log('info', `Step 1: Uploading video...`);
   const { readFile } = require('fs/promises');
   const videoBuffer = await readFile(videoPath);
 
@@ -853,55 +1213,56 @@ async function publishToSocials(videoPath, caption) {
     path: uploadedFile.path,
   });
 
-  // Step 2: Create YouTube post
-  log('info', 'Step 2: Creating YouTube post...');
-  const postData = {
-    type: 'now',
-    date: new Date().toISOString(),
-    shortLink: false,
-    tags: [],
-    posts: [
-      {
-        integration: { id: CONFIG.postizIntegrationId },
-        value: [
-          {
-            content: caption,
-            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+  // Step 2: Create posts for each platform
+  const results = [];
+  for (const platform of platforms) {
+    log('info', `Step 2: Creating ${platform.type} post...`);
+    try {
+      const postData = {
+        type: 'now',
+        date: new Date().toISOString(),
+        shortLink: false,
+        tags: [],
+        posts: [platform.buildPost(uploadedFile, caption)],
+      };
+
+      const postResponse = await axios.post(
+        `${CONFIG.postizBaseUrl}/posts`,
+        postData,
+        {
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json',
           },
-        ],
-        settings: {
-          __type: 'youtube',
-          title: caption
-            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
-            .trim()
-            .slice(0, 100),
-          type: 'public',
-          selfDeclaredMadeForKids: 'no',
+          timeout: 120000,
         },
-      },
-    ],
-  };
+      );
 
-  const postResponse = await axios.post(
-    `${CONFIG.postizBaseUrl}/posts`,
-    postData,
-    {
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-      },
-      timeout: 120000,
-    },
-  );
+      log('info', `${platform.type} post created successfully`, {
+        response: postResponse.data,
+      });
+      results.push({
+        platform: platform.type,
+        success: true,
+        data: postResponse.data,
+      });
+    } catch (error) {
+      log('error', `${platform.type} post failed`, {
+        error: error.message,
+      });
+      results.push({
+        platform: platform.type,
+        success: false,
+        error: error.message,
+      });
+    }
+  }
 
-  log('info', 'YouTube post created successfully', {
-    response: postResponse.data,
-  });
-
+  const successes = results.filter((r) => r.success);
   return {
-    success: true,
-    message: 'Published to YouTube',
-    data: postResponse.data,
+    success: successes.length > 0,
+    message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
+    results,
   };
 }
 

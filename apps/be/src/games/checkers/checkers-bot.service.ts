@@ -22,6 +22,12 @@ import {
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
+const DIFFICULTY_CONFIG = {
+  easy: { maxDepth: 1, noiseRate: 0.4 },
+  medium: { maxDepth: 3, noiseRate: 0.1 },
+  hard: { maxDepth: 5, noiseRate: 0.0 },
+};
+
 @Injectable()
 export class CheckersBotService {
   private readonly logger = new Logger(CheckersBotService.name);
@@ -213,8 +219,17 @@ export class CheckersBotService {
     );
     if (simpleMoves.length === 0) return null;
 
+    const difficulty = state.options.botDifficulty ?? 'medium';
+    const config = DIFFICULTY_CONFIG[difficulty] ?? DIFFICULTY_CONFIG.medium;
+
+    if (Math.random() < config.noiseRate) {
+      const randomMove =
+        simpleMoves[Math.floor(Math.random() * simpleMoves.length)];
+      return { steps: [randomMove] };
+    }
+
     let bestScore = -Infinity;
-    let bestSteps: MoveStep[] = [];
+    let bestMoves: MoveStep[][] = [];
 
     for (const move of simpleMoves) {
       const probe = applyMove(state.board, [move], playerColor);
@@ -226,17 +241,21 @@ export class CheckersBotService {
         opponentColor,
         false,
         0,
-        4,
+        config.maxDepth,
         backwardCaptures,
         flyingKings,
       );
       if (score > bestScore) {
         bestScore = score;
-        bestSteps = [move];
+        bestMoves = [[move]];
+      } else if (score === bestScore) {
+        bestMoves.push([move]);
       }
     }
 
-    return bestSteps.length > 0 ? { steps: bestSteps } : null;
+    if (bestMoves.length === 0) return null;
+    const chosenSteps = bestMoves[Math.floor(Math.random() * bestMoves.length)];
+    return { steps: chosenSteps };
   }
 
   private minimax(

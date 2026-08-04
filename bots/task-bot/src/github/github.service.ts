@@ -93,7 +93,7 @@ export class GitHubService {
     branchName: string,
     baseBranch: string,
     cwd?: string,
-    engine: 'mimo' | 'opencode' = 'mimo',
+    engine: 'opencode',
   ): { success: boolean; message: string } {
     return this.git.resolveConflicts(branchName, baseBranch, cwd, engine);
   }
@@ -199,21 +199,7 @@ export class GitHubService {
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      if (cli === 'mimo') {
-        try {
-          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
-            cwd,
-            timeout: 30_000,
-          });
-        } catch {
-          // ignore — token may already be valid
-        }
-      }
-      const runArgs =
-        cli === 'opencode'
-          ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-          : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
       await this.spawnAsync(cli, runArgs, {
         cwd,
         timeout: 900_000,
@@ -358,21 +344,7 @@ export class GitHubService {
 
       this.git.installDeps(cwd);
 
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      const runArgs =
-        cli === 'opencode'
-          ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-          : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-      if (cli === 'mimo') {
-        try {
-          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
-            cwd,
-            timeout: 30_000,
-          });
-        } catch {
-          // ignore — token may already be valid
-        }
-      }
+      const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
       await this.spawnAsync(cli, runArgs, {
         cwd,
         timeout: 900_000,
@@ -418,7 +390,7 @@ export class GitHubService {
 
   async checkAndFixCI(
     prNumber: string,
-    engine: 'opencode' | 'mimo',
+    engine: 'opencode',
     cwd: string,
     data: {
       branchName: string;
@@ -482,20 +454,8 @@ export class GitHubService {
 
       this.git.installDeps(cwd);
 
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      if (cli === 'mimo') {
-        try {
-          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
-            cwd,
-            timeout: 30_000,
-          });
-        } catch {
-          // ignore — token may already be valid
-        }
-      }
-      const runArgs = cli === 'opencode'
-        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
+      const cli = 'opencode';
+      const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
       await this.spawnAsync(cli, runArgs, {
         cwd,
         timeout: 900_000,

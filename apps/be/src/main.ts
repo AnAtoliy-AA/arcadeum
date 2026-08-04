@@ -10,6 +10,7 @@ import { getAllowedOrigins } from './common/utils/cors.util';
 import { IpBlockGuard, IpBlockService } from './common/guards/ip-block.guard';
 import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
+import { CompressedIoAdapter } from './common/adapters/compressed-io.adapter';
 
 async function bootstrap() {
   if (
@@ -25,6 +26,7 @@ async function bootstrap() {
   const logger = new ArcadeumLogger();
   logger.setLogLevels(['error', 'warn', 'log']);
   const app = await NestFactory.create(AppModule, { logger });
+  app.useWebSocketAdapter(new CompressedIoAdapter(app));
 
   app.use(
     helmet({

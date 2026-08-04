@@ -4,7 +4,7 @@ export const enMessages = {
   glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Game Rooms',
-    emptyTitle: 'No rooms found. Create one to get started!',
+    emptyTitle: 'No open rooms right now — start one vs AI.',
     emptyFeaturedLink: 'Or jump into Sea Battle vs AI →',
     loadingRooms: 'Loading rooms...',
     searchPlaceholder: 'Search games...',

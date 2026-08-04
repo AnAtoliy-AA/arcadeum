@@ -28,7 +28,7 @@ describe('ReviewProcessor', () => {
         id: '1',
         data: {
           issueNum: '123',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           prUrl: 'invalid-url',

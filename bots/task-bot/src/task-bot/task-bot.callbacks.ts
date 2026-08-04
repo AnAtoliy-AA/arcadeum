@@ -184,7 +184,7 @@ async function queueImplementation(
     logger: any;
   },
   issueNum: string,
-  engine: 'opencode' | 'mimo',
+  engine: 'opencode',
   ctx: Context,
 ): Promise<void> {
   const chatId = ctx.chat?.id ?? 0;

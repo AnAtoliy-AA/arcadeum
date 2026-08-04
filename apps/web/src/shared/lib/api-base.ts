@@ -20,6 +20,12 @@ export function resolveApiBase(): string {
   return normalizeBase(fromEnv);
 }
 
+export function resolveApiFallbackBase(): string | null {
+  const fromEnv = process.env.NEXT_PUBLIC_API_FALLBACK_URL;
+  if (!fromEnv) return null;
+  return normalizeBase(fromEnv);
+}
+
 export function resolveApiUrl(path: string): string {
   const base = resolveApiBase();
   if (!path) {
@@ -32,4 +38,18 @@ export function resolveApiUrl(path: string): string {
 
   const separator = path.startsWith('/') ? '' : '/';
   return `${base}${separator}${path}`;
+}
+
+export function resolveApiFallbackUrl(path: string): string | null {
+  const fallback = resolveApiFallbackBase();
+  if (!fallback) return null;
+
+  if (!path) return fallback;
+
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+
+  const separator = path.startsWith('/') ? '' : '/';
+  return `${fallback}${separator}${path}`;
 }

@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { resolveApiBase, resolveApiUrl } from './api-base';
+import {
+  resolveApiBase,
+  resolveApiUrl,
+  resolveApiFallbackBase,
+  resolveApiFallbackUrl,
+} from './api-base';
 
 describe('api-base', () => {
   beforeEach(() => {
@@ -45,5 +50,63 @@ describe('api-base', () => {
 
   it('handles empty path', () => {
     expect(resolveApiUrl('')).toBe('http://api.example.com');
+  });
+
+  describe('resolveApiFallbackBase', () => {
+    it('returns null when NEXT_PUBLIC_API_FALLBACK_URL is not set', () => {
+      vi.stubEnv('NEXT_PUBLIC_API_FALLBACK_URL', '');
+      expect(resolveApiFallbackBase()).toBeNull();
+    });
+
+    it('resolves fallback base from environment', () => {
+      vi.stubEnv(
+        'NEXT_PUBLIC_API_FALLBACK_URL',
+        'https://api-reserve.example.com',
+      );
+      expect(resolveApiFallbackBase()).toBe('https://api-reserve.example.com');
+    });
+
+    it('strips trailing slash from fallback URL', () => {
+      vi.stubEnv(
+        'NEXT_PUBLIC_API_FALLBACK_URL',
+        'https://api-reserve.example.com/',
+      );
+      expect(resolveApiFallbackBase()).toBe('https://api-reserve.example.com');
+    });
+  });
+
+  describe('resolveApiFallbackUrl', () => {
+    it('returns null when no fallback is configured', () => {
+      vi.stubEnv('NEXT_PUBLIC_API_FALLBACK_URL', '');
+      expect(resolveApiFallbackUrl('/users')).toBeNull();
+    });
+
+    it('resolves fallback URL with path', () => {
+      vi.stubEnv(
+        'NEXT_PUBLIC_API_FALLBACK_URL',
+        'https://api-reserve.example.com',
+      );
+      expect(resolveApiFallbackUrl('/users')).toBe(
+        'https://api-reserve.example.com/users',
+      );
+    });
+
+    it('returns fallback base for empty path', () => {
+      vi.stubEnv(
+        'NEXT_PUBLIC_API_FALLBACK_URL',
+        'https://api-reserve.example.com',
+      );
+      expect(resolveApiFallbackUrl('')).toBe('https://api-reserve.example.com');
+    });
+
+    it('returns absolute URL as-is', () => {
+      vi.stubEnv(
+        'NEXT_PUBLIC_API_FALLBACK_URL',
+        'https://api-reserve.example.com',
+      );
+      expect(resolveApiFallbackUrl('https://other.com/api')).toBe(
+        'https://other.com/api',
+      );
+    });
   });
 });

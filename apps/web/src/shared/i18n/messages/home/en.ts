@@ -1,11 +1,11 @@
 export const en = {
   kicker: 'Free online board games',
   tagline:
-    '{{appName}} is the ultimate platform to play free board games online with friends — Battleship, strategy, cards, and more.',
+    '{{appName}} is the ultimate platform to play free board games online with friends or solo vs AI — Battleship, strategy, cards, and more.',
   description:
-    'Enjoy a wide variety of free board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
+    'Enjoy a wide variety of free board games and tabletop experiences online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
   primaryCtaLabel: 'Get started',
-  playWithBotsLabel: 'Play with Bots',
+  playWithBotsLabel: 'Play vs AI',
   defaultRoomName: "{{name}}'s game",
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Play',
@@ -42,6 +42,9 @@ export const en = {
   featuresTitle: 'Why {{appName}}?',
   featuresSubtitle:
     'Everything you need to play board games online with friends',
+  featureBotsTitle: 'Play vs AI & Bots',
+  featureBotsDescription:
+    'Practice solo or challenge intelligent bots at easy, medium, or hard difficulties whenever friends are offline.',
   featureRoomsTitle: 'Real-time Rooms',
   featureRoomsDescription:
     'Create game rooms instantly and start playing with friends in seconds. No downloads required.',

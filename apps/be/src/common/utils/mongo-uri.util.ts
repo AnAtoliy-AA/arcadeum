@@ -3,7 +3,7 @@ import type { MongooseModuleOptions } from '@nestjs/mongoose';
 
 const logger = new Logger('MongoUri');
 const DEV_DEFAULT = 'mongodb://localhost:27017/arcadeum_dev';
-const DEFAULT_MAX_POOL_SIZE = 1000;
+const DEFAULT_MAX_POOL_SIZE = 50;
 const DEV_MAX_POOL_SIZE = 10;
 const MIN_MAX_POOL_SIZE = 1;
 
@@ -59,10 +59,12 @@ export function resolveAtlasUri(): string | undefined {
 /**
  * Resolve mongoose connection options.
  *
- * `maxPoolSize` defaults to 50 (was 200 — caused OOM on Mongo outages).
+ * `maxPoolSize` defaults to 50 in production, 10 in dev.
  * Override via `MONGODB_MAX_POOL_SIZE` per environment.
+ * `minPoolSize` is 1 — idle connections are evicted after `maxIdleTimeMS`.
+ * `maxIdleTimeMS` is 30s — prevents idle connection accumulation.
  *
- * `serverSelectionTimeoutMS` — fail fast when Atlas is unreachable (10s).
+ * `serverSelectionTimeoutMS` — fail fast when Mongo is unreachable (10s).
  * `connectTimeoutMS` / `socketTimeoutMS` — prevent hanging on dead
  * connections, which was the root cause of the OOM crash.
  * `retryWrites` / `retryReads` — auto-retry transient network errors.
@@ -85,7 +87,8 @@ export function resolveMongoOptions(): MongooseModuleOptions {
 
   return {
     maxPoolSize,
-    minPoolSize: Math.max(1, Math.floor(maxPoolSize / 4)),
+    minPoolSize: 1,
+    maxIdleTimeMS: 30_000,
     serverSelectionTimeoutMS: 10_000,
     connectTimeoutMS: 8_000,
     socketTimeoutMS: 30_000,

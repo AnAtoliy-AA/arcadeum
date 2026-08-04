@@ -111,15 +111,14 @@ export class PlayerStatsService {
       }
     }
 
-    for (const userId of humanIds) {
-      try {
-        const isWinner = winners.includes(userId);
-        const isLoser = !isWinner && winners.length > 0;
-        const isDraw = winners.length === 0;
-
-        await this.statsModel.findOneAndUpdate(
-          { userId: { $eq: userId }, gameId: { $eq: gameId } },
-          {
+    const bulkOps = humanIds.map((userId) => {
+      const isWinner = winners.includes(userId);
+      const isLoser = !isWinner && winners.length > 0;
+      const isDraw = winners.length === 0;
+      return {
+        updateOne: {
+          filter: { userId: { $eq: userId }, gameId: { $eq: gameId } },
+          update: {
             $inc: {
               totalGames: 1,
               wins: isWinner ? 1 : 0,
@@ -127,13 +126,17 @@ export class PlayerStatsService {
               draws: isDraw ? 1 : 0,
             },
           },
-          { upsert: true },
-        );
-      } catch (err) {
-        this.logger.warn(
-          `Failed to record stats for ${userId}: ${(err as Error).message}`,
-        );
-      }
+          upsert: true,
+        },
+      };
+    });
+
+    try {
+      await this.statsModel.bulkWrite(bulkOps);
+    } catch (err) {
+      this.logger.warn(
+        `Failed to record stats in batch: ${(err as Error).message}`,
+      );
     }
   }
 
@@ -197,6 +200,7 @@ export class PlayerStatsService {
     const records = await this.recordModel
       .find({ userId: { $eq: userId } })
       .sort({ timestamp: -1 })
+      .limit(200)
       .lean<{ result: string; gameId: string }[]>()
       .exec();
 
@@ -343,50 +347,60 @@ export class PlayerStatsService {
     userId: string,
     records: SyncRecord[],
   ): Promise<{ synced: number; duplicates: number }> {
-    let synced = 0;
-    let duplicates = 0;
+    if (records.length === 0) return { synced: 0, duplicates: 0 };
 
-    for (const record of records) {
-      try {
-        const existing = await this.recordModel.findOne({
-          userId: { $eq: userId },
-          sessionId: { $eq: record.sessionId },
-        });
+    const sessionIds = records.map((r) => r.sessionId);
+    const existing = await this.recordModel
+      .find({
+        userId: { $eq: userId },
+        sessionId: { $in: sessionIds },
+      })
+      .select('sessionId')
+      .lean<{ sessionId: string }[]>()
+      .exec();
+    const existingSet = new Set(existing.map((e) => e.sessionId));
 
-        if (existing) {
-          duplicates++;
-          continue;
-        }
+    const newRecords = records.filter((r) => !existingSet.has(r.sessionId));
+    const duplicates = records.length - newRecords.length;
 
-        await this.recordModel.create({
+    if (newRecords.length === 0) return { synced: 0, duplicates };
+
+    const recordOps = newRecords.map((r) => ({
+      insertOne: {
+        document: {
           userId,
-          gameId: record.gameId,
-          result: record.result,
-          sessionId: record.sessionId,
-          timestamp: record.timestamp,
-        });
+          gameId: r.gameId,
+          result: r.result,
+          sessionId: r.sessionId,
+          timestamp: r.timestamp,
+        },
+      },
+    }));
 
-        await this.statsModel.findOneAndUpdate(
-          { userId: { $eq: userId }, gameId: { $eq: record.gameId } },
-          {
-            $inc: {
-              totalGames: 1,
-              wins: record.result === 'won' ? 1 : 0,
-              losses: record.result === 'lost' ? 1 : 0,
-              draws: record.result === 'draw' ? 1 : 0,
-            },
+    const statsOps = newRecords.map((r) => ({
+      updateOne: {
+        filter: { userId: { $eq: userId }, gameId: { $eq: r.gameId } },
+        update: {
+          $inc: {
+            totalGames: 1,
+            wins: r.result === 'won' ? 1 : 0,
+            losses: r.result === 'lost' ? 1 : 0,
+            draws: r.result === 'draw' ? 1 : 0,
           },
-          { upsert: true },
-        );
+        },
+        upsert: true,
+      },
+    }));
 
-        synced++;
-      } catch (err) {
-        this.logger.warn(
-          `Failed to sync record for ${userId}: ${(err as Error).message}`,
-        );
-      }
+    try {
+      await this.recordModel.bulkWrite(recordOps);
+      await this.statsModel.bulkWrite(statsOps);
+      return { synced: newRecords.length, duplicates };
+    } catch (err) {
+      this.logger.warn(
+        `Failed to batch sync records for ${userId}: ${(err as Error).message}`,
+      );
+      return { synced: 0, duplicates };
     }
-
-    return { synced, duplicates };
   }
 }

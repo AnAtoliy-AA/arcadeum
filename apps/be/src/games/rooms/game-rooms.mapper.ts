@@ -90,7 +90,7 @@ export class GameRoomsMapper {
           }
         : undefined,
       members,
-      chatLogs: Array.isArray(room.chatLogs) ? room.chatLogs : [],
+      chatLogs: room.chatLogs ?? [],
     };
 
     if (viewerId) {

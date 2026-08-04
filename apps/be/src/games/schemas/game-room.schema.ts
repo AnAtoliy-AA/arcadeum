@@ -16,6 +16,15 @@ export interface GameRoomParticipant {
   joinedAt: Date;
 }
 
+export interface GameRoomChatLog {
+  id: string;
+  senderId: string;
+  senderName: string;
+  message: string;
+  scope: string;
+  createdAt: string;
+}
+
 @Schema({ timestamps: true })
 export class GameRoom extends Document {
   declare _id: Types.ObjectId;
@@ -99,14 +108,7 @@ export class GameRoom extends Document {
     ],
     default: [],
   })
-  chatLogs?: Array<{
-    id: string;
-    senderId: string;
-    senderName: string;
-    message: string;
-    scope: string;
-    createdAt: string;
-  }>;
+  chatLogs: GameRoomChatLog[];
 
   createdAt: Date;
   updatedAt: Date;

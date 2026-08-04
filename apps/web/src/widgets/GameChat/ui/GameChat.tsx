@@ -411,7 +411,7 @@ export function GameChat({
                       isOwn={isOwn}
                       resolveEquipped={resolveEquipped}
                     />
-                    {(isHost || log.senderId === currentUserId) && onDeleteMessage && log.type === 'message' && (
+                    {(isHost || log.senderId === currentUserId) && onDeleteMessage && (log.type === 'message' || log.type === 'action') && (
                       <button
                         className="chat-delete-btn"
                         onClick={() => onDeleteMessage(log.id)}

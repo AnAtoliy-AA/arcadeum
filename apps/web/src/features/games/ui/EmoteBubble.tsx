@@ -2,6 +2,8 @@
 
 import { useRef, useEffect } from 'react';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
+import { useActiveEmotes } from './GameWidgetContainer.styles';
 
 const KEYFRAMES_CSS = `
 @keyframes emoteFloat {
@@ -71,6 +73,8 @@ let stylesInjected = false;
 
 export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const ctx = useActiveEmotes();
+  const equipped = ctx.resolveEquipped?.(playerId) ?? null;
 
   useEffect(() => {
     if (!stylesInjected) {
@@ -111,27 +115,38 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
     >
       <div
         style={{
+          position: 'relative',
           width: 72,
           height: 72,
-          borderRadius: 36,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(15, 5, 24, 0.88)',
-          borderWidth: 1.5,
-          borderStyle: 'solid',
-          borderColor: 'rgba(236, 72, 153, 0.5)',
-          boxShadow: '0 0 18px 2px rgba(236, 72, 153, 0.45)',
-          fontSize: 42,
-          lineHeight: '48px',
         }}
       >
-        {findEmoji(current.emoteId)}
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(15, 5, 24, 0.88)',
+            borderWidth: 1.5,
+            borderStyle: 'solid',
+            borderColor: 'rgba(236, 72, 153, 0.5)',
+            boxShadow: '0 0 18px 2px rgba(236, 72, 153, 0.45)',
+            fontSize: 42,
+            lineHeight: '48px',
+          }}
+        >
+          {findEmoji(current.emoteId)}
+        </div>
       </div>
       {senderName && (
         <div
           data-emote-label=""
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
             color: '#fff',
             fontSize: 12,
             fontWeight: 800,
@@ -145,6 +160,16 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
             opacity: 0,
           }}
         >
+          <EquippedPlayerAvatar
+            name={senderName}
+            size="icon"
+            equippedAvatarId={equipped?.equippedAvatarId ?? null}
+            equippedBadgeId={equipped?.equippedBadgeId ?? null}
+            equippedNameColorId={equipped?.equippedNameColorId}
+            equippedFrameId={equipped?.equippedFrameId}
+            equippedAuraId={equipped?.equippedAuraId}
+            equippedBannerId={equipped?.equippedBannerId}
+          />
           {senderName}
         </div>
       )}

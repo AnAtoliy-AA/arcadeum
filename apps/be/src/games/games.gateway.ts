@@ -15,6 +15,10 @@ import { GamesRealtimeService } from './games.realtime.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
+import {
+  handleRoomChat,
+  handleDeleteRoomChat,
+} from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
 import {
   handleJoinRoom,
@@ -91,11 +95,46 @@ export class GamesGateway {
       }
     }
 
+    registry.set('games.room.chat', (socket, payload) =>
+      handleRoomChat(
+        this.logger,
+        this.server,
+        socket,
+        this.realtime,
+        this.gamesService,
+        payload,
+      ),
+    );
+    registry.set('games.room.delete_chat', (socket, payload) =>
+      handleDeleteRoomChat(
+        this.logger,
+        this.server,
+        socket,
+        this.realtime,
+        this.gamesService,
+        payload,
+      ),
+    );
+
+    registry.set('games.session.history_note', (socket, payload) =>
+      this.handleHistoryNote(payload, socket),
+    );
+
     this.server.on('connection', (socket: Socket) => {
       socket.onAny((event: string, ...args: unknown[]) => {
         const handler = registry.get(event);
         if (handler) {
-          void handler(socket, (args[0] as Record<string, unknown>) ?? {});
+          const result = handler(
+            socket,
+            (args[0] as Record<string, unknown>) ?? {},
+          );
+          if (result && typeof result === 'object' && 'catch' in result) {
+            (result as Promise<void>).catch((err: unknown) => {
+              this.logger.error(
+                `onAny handler failed for ${event}: ${err instanceof Error ? err.message : err}`,
+              );
+            });
+          }
         }
       });
     });
@@ -362,16 +401,9 @@ export class GamesGateway {
     );
   }
 
-  @SubscribeMessage('games.session.history_note')
   async handleHistoryNote(
-    @MessageBody()
-    payload: {
-      roomId: string;
-      userId: string;
-      message: string;
-      scope: string;
-    },
-    @ConnectedSocket() client: Socket,
+    payload: Record<string, unknown>,
+    client: Socket,
   ): Promise<void> {
     const roomId = extractString(payload, 'roomId');
     const userId = extractString(payload, 'userId');
@@ -429,92 +461,6 @@ export class GamesGateway {
     payload: unknown,
   ): void {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
-  }
-
-  @SubscribeMessage('games.room.chat')
-  async handleRoomChat(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      message?: string;
-      scope?: string;
-    },
-  ): Promise<void> {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-    const message = extractString(payload, 'message');
-    const scopeRaw =
-      typeof payload?.scope === 'string'
-        ? payload.scope.trim().toLowerCase()
-        : 'all';
-    const scope = ['players', 'private', 'team'].includes(scopeRaw)
-      ? scopeRaw
-      : 'all';
-
-    this.validateUserId(client, userId);
-
-    const channel = this.realtime.roomChannel(roomId);
-    if (!client.rooms.has(channel)) return;
-
-    // Resolve sender name from room members
-    let senderName = '';
-    try {
-      const room = await this.gamesService.getRoom(roomId);
-      senderName =
-        room.members?.find((m) => m.id === userId)?.displayName ?? '';
-    } catch {
-      // ignore — senderName stays empty
-    }
-
-    const entry = await this.gamesService.postRoomChat(
-      roomId,
-      userId,
-      senderName,
-      message,
-      scope,
-    );
-
-    if (entry) {
-      this.server.to(channel).emit('games.room.chat', maybeEncrypt(entry));
-      client.emit(
-        'games.room.chat.ack',
-        maybeEncrypt({ roomId, userId, scope }),
-      );
-    }
-  }
-
-  @SubscribeMessage('games.room.delete_chat')
-  async handleDeleteRoomChat(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      messageId?: string;
-    },
-  ): Promise<void> {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-    const messageId = extractString(payload, 'messageId');
-
-    this.validateUserId(client, userId);
-
-    const channel = this.realtime.roomChannel(roomId);
-    if (!client.rooms.has(channel)) return;
-
-    const deleted = await this.gamesService.deleteRoomChatMessage(
-      roomId,
-      userId,
-      messageId,
-    );
-
-    if (deleted) {
-      this.server
-        .to(channel)
-        .emit('games.room.delete_chat', maybeEncrypt({ messageId }));
-    }
   }
 
   @SubscribeMessage('games.matchmaking.join')

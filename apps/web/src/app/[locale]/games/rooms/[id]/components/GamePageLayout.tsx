@@ -149,12 +149,31 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   const { sendMessage: roomChatSend, deleteMessage: roomChatDelete } =
     useGameRoomChat(roomId, userId, isLobby);
 
-  // In lobby mode, register the room-level chat send function
+  const handleDeleteMessage = useCallback(
+    (messageId: string) => {
+      const log = useGameChatStore.getState().logs.find((l) => l.id === messageId);
+      if (!log) return;
+      if (log.type === 'action') {
+        useGameChatStore.setState((s) => ({
+          logs: s.logs.filter((l) => l.id !== messageId),
+        }));
+      } else {
+        roomChatDelete?.(messageId);
+      }
+    },
+    [roomChatDelete],
+  );
+
+  // Subscribe to the store's sendMessage so we can detect when a game widget
+  // overwrites it with a session-based function.  When that happens we
+  // re-register the lobby-level function so chat keeps working in lobby mode.
+  const storeSendMessage = useGameChatStore((s) => s.sendMessage);
+
   useEffect(() => {
     if (isLobby && roomChatSend) {
       useGameChatStore.getState().registerSendMessage(roomChatSend);
     }
-  }, [isLobby, roomChatSend]);
+  }, [isLobby, roomChatSend, storeSendMessage]);
 
   // Seed chat store with existing room chat logs when in lobby
   useEffect(() => {
@@ -220,7 +239,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
         <GameRow flexDirection={roomFlexDirection}>
           <ActiveEmotesProvider
-            value={{ emotes: activeEmotes, resolveDisplayName }}
+            value={{ emotes: activeEmotes, resolveDisplayName, resolveEquipped }}
           >
             {children({ isFullscreen, toggleFullscreen })}
           </ActiveEmotesProvider>
@@ -234,7 +253,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               currentUserId={userId}
               onEmote={sendEmote}
               isHost={isHost}
-              onDeleteMessage={roomChatDelete}
+              onDeleteMessage={handleDeleteMessage}
             />
           </ChatPanel>
         </GameRow>

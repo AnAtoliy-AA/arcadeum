@@ -93,6 +93,34 @@ const ASSET_MAPPING = [
     dest: path.join(AVATARS_DIR, 'gorilla-cyber.png')
   },
   {
+    src: path.join(SOURCE_DIR, 'panda_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'panda-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'cheetah_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'cheetah-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'wolf_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'wolf-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'tiger_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'tiger-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'bear_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'bear-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'lion_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'lion-cyber.png')
+  },
+  {
+    src: path.join(SOURCE_DIR, 'shark_cyber_avatar_dark_bg.png'),
+    dest: path.join(AVATARS_DIR, 'shark-cyber.png')
+  },
+  {
     src: path.join(SOURCE_DIR, 'newcomer_badge_dark_bg.png'),
     dest: path.join(BADGES_DIR, 'newcomer.png')
   },

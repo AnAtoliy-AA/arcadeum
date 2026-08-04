@@ -221,7 +221,7 @@ export function SeaBattleBoards({
 
       {(isBattlePhase || isGameOver) && snapshot && (
         <>
-          {!isGameOver && isMyTurn && (hasSonar || hasRadar) && (
+          {!isGameOver && (hasSonar || hasRadar) && (
             <div
               style={{
                 display: 'flex',
@@ -232,10 +232,11 @@ export function SeaBattleBoards({
                 alignItems: 'center',
               }}
             >
-              {hasSonar && !sonarUsed && (
+              {hasSonar && (
                 <button
                   type="button"
                   onClick={() => {
+                    if (sonarUsed || !isMyTurn) return;
                     if (opponents?.length === 1) {
                       setWeaponMode({
                         weapon: 'sonar',
@@ -248,8 +249,11 @@ export function SeaBattleBoards({
                       });
                     }
                   }}
+                  disabled={sonarUsed || !isMyTurn}
                   style={{
                     ...buttonBase,
+                    opacity: sonarUsed || !isMyTurn ? 0.35 : 1,
+                    cursor: sonarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
                     color:
                       weaponMode?.weapon === 'sonar' ? '#06b6d4' : '#e0e0e0',
                     borderTop: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
@@ -263,13 +267,15 @@ export function SeaBattleBoards({
                   }}
                 >
                   🔊 {t('games.create.seaBattleSonar') || 'Sonar'}
+                  {sonarUsed && ' ✓'}
                 </button>
               )}
-              {hasRadar && !radarUsed && (
+              {hasRadar && (
                 <div style={{ display: 'flex', gap: 4 }}>
                   <button
                     type="button"
                     onClick={() => {
+                      if (radarUsed || !isMyTurn) return;
                       if (opponents?.length === 1) {
                         setWeaponMode({
                           weapon: 'radar',
@@ -284,8 +290,12 @@ export function SeaBattleBoards({
                         });
                       }
                     }}
+                    disabled={radarUsed || !isMyTurn}
                     style={{
                       ...buttonBase,
+                      opacity: radarUsed || !isMyTurn ? 0.35 : 1,
+                      cursor:
+                        radarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
@@ -300,10 +310,12 @@ export function SeaBattleBoards({
                     }}
                   >
                     📡 {t('games.create.seaBattleRadar') || 'Radar'}
+                    {radarUsed && ' ✓'}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
+                      if (radarUsed || !isMyTurn) return;
                       const targetId = opponents?.[0]?.playerId;
                       if (!targetId) return;
                       setWeaponMode({
@@ -313,9 +325,13 @@ export function SeaBattleBoards({
                           weaponMode?.radarAxis === 'col' ? 'row' : 'col',
                       });
                     }}
+                    disabled={radarUsed || !isMyTurn}
                     style={{
                       ...buttonBase,
                       padding: '8px 10px',
+                      opacity: radarUsed || !isMyTurn ? 0.35 : 1,
+                      cursor:
+                        radarUsed || !isMyTurn ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#c084fc' : '#a0a0a0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,

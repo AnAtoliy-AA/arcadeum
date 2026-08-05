@@ -253,8 +253,8 @@ importers:
         specifier: ^29.4.0
         version: 29.4.5(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.2.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.2.0(@types/node@22.19.1)(esbuild-register@3.6.0(esbuild@0.28.1))(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3)))(typescript@5.9.3)
       ts-loader:
-        specifier: ^9.5.2
-        version: 9.5.4(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1))
+        specifier: ^9.6.2
+        version: 9.6.2(loader-utils@3.3.1)(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.19.1)(typescript@5.9.3)
@@ -549,8 +549,8 @@ importers:
         specifier: ^29.2.5
         version: 29.4.5(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.2.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.4.1)(jest@30.2.0(@types/node@22.19.1)(esbuild-register@3.6.0(esbuild@0.28.1))(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3)))(typescript@5.9.3)
       ts-loader:
-        specifier: ^9.5.2
-        version: 9.5.4(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1))
+        specifier: ^9.6.2
+        version: 9.6.2(loader-utils@3.3.1)(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.19.1)(typescript@5.9.3)
@@ -10942,9 +10942,6 @@ packages:
   lodash.snakecase@4.1.1:
     resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
 
-  lodash.sortby@4.7.0:
-    resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
-
   lodash.startcase@4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
 
@@ -11994,12 +11991,16 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  picomatch@2.3.1:
-    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
+  picomatch@2.3.2:
+    resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
 
   picomatch@3.0.1:
     resolution: {integrity: sha512-I3EurrIQMlRc9IaAZnqRR044Phh2DXY+55o7uJ0V+hYZAcQYSuFWsc9q5PvyDHUSCe1Qxn/iBz+78s86zWnGag==}
+    engines: {node: '>=10'}
+
+  picomatch@3.0.2:
+    resolution: {integrity: sha512-cfDHL6LStTEKlNilboNtobT/kEa30PtAf2Q1OgszfrG/rpVl1xaFWT9ktfkS306GmHgmnad1Sw4wabhlvFtsTw==}
     engines: {node: '>=10'}
 
   picomatch@4.0.2:
@@ -12008,6 +12009,10 @@ packages:
 
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.5:
+    resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
     engines: {node: '>=12'}
 
   pidtree@0.6.0:
@@ -13098,11 +13103,6 @@ packages:
     resolution: {integrity: sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==}
     engines: {node: '>= 12'}
 
-  source-map@0.8.0-beta.0:
-    resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
-    engines: {node: '>= 8'}
-    deprecated: The work that was done in this beta branch won't be included in future versions
-
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     deprecated: Please use @jridgewell/sourcemap-codec instead
@@ -13611,9 +13611,6 @@ packages:
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
 
-  tr46@1.0.1:
-    resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
-
   tr46@3.0.0:
     resolution: {integrity: sha512-l7FvfAHlcmulp8kr+flpQZmVwtu7nfRV7NZujtN0OqES8EL4O4e0qqzL0DC5gAvx/ZC/9lk6rhcUwYvkBnBnYA==}
     engines: {node: '>=12'}
@@ -13678,12 +13675,16 @@ packages:
       jest-util:
         optional: true
 
-  ts-loader@9.5.4:
-    resolution: {integrity: sha512-nCz0rEwunlTZiy6rXFByQU1kVVpCIgUpc/psFiKVrUwrizdnIbRFu8w7bxhUF0X613DYwT4XzrZHpVyMe758hQ==}
+  ts-loader@9.6.2:
+    resolution: {integrity: sha512-R4iuczmtgxvtuI556s+hTZ6/7Ee03VCAk/l/M8LY1OAsUgB7YydsCxkgq9D9pKRaD7GJqUi2u8fp9zZP/ufjKA==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
+      loader-utils: '*'
       typescript: '*'
-      webpack: ^5.0.0
+      webpack: ^4.0.0 || ^5.0.0
+    peerDependenciesMeta:
+      loader-utils:
+        optional: true
 
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
@@ -14174,9 +14175,6 @@ packages:
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
-  webidl-conversions@4.0.2:
-    resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
-
   webidl-conversions@5.0.0:
     resolution: {integrity: sha512-VlZwKPCkYKxQgeSbH5EyngOmRp7Ww7I9rQLERETtf5ofd9pGeswWiOtogpEO850jziPRarreGxn5QIiTqpb2wA==}
     engines: {node: '>=8'}
@@ -14260,9 +14258,6 @@ packages:
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
-
-  whatwg-url@7.1.0:
-    resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
 
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
@@ -16251,7 +16246,7 @@ snapshots:
       node-forge: 1.3.1
       npm-package-arg: 11.0.3
       ora: 3.4.0
-      picomatch: 3.0.1
+      picomatch: 3.0.2
       pretty-bytes: 5.6.0
       pretty-format: 29.7.0
       progress: 2.0.3
@@ -18473,7 +18468,7 @@ snapshots:
       detect-libc: 2.1.2
       is-glob: 4.0.3
       node-addon-api: 7.1.1
-      picomatch: 4.0.3
+      picomatch: 4.0.5
     optionalDependencies:
       '@parcel/watcher-android-arm64': 2.5.6
       '@parcel/watcher-darwin-arm64': 2.5.6
@@ -19052,14 +19047,14 @@ snapshots:
     dependencies:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
-      picomatch: 2.3.1
+      picomatch: 2.3.2
       rollup: 2.79.2
 
   '@rollup/pluginutils@5.3.0(rollup@2.79.2)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.3
+      picomatch: 4.0.5
     optionalDependencies:
       rollup: 2.79.2
 
@@ -19067,7 +19062,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.3
+      picomatch: 4.0.5
     optionalDependencies:
       rollup: 4.54.0
 
@@ -25354,7 +25349,7 @@ snapshots:
   anymatch@3.1.3:
     dependencies:
       normalize-path: 3.0.0
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   append-field@1.0.0: {}
 
@@ -28140,6 +28135,10 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
+  fdir@6.5.0(picomatch@4.0.5):
+    optionalDependencies:
+      picomatch: 4.0.5
+
   fetch-retry@4.1.1: {}
 
   fflate@0.8.2: {}
@@ -29521,7 +29520,7 @@ snapshots:
       jest-regex-util: 30.4.0
       jest-util: 30.4.1
       jest-worker: 30.4.1
-      picomatch: 4.0.3
+      picomatch: 4.0.5
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.3
@@ -29589,7 +29588,7 @@ snapshots:
       chalk: 4.1.2
       graceful-fs: 4.2.11
       jest-util: 30.4.1
-      picomatch: 4.0.3
+      picomatch: 4.0.5
       pretty-format: 30.4.1
       slash: 3.0.0
       stack-utils: 2.0.6
@@ -29854,7 +29853,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   jest-util@30.2.0:
     dependencies:
@@ -29863,7 +29862,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 4.3.1
       graceful-fs: 4.2.11
-      picomatch: 4.0.3
+      picomatch: 4.0.5
 
   jest-util@30.4.1:
     dependencies:
@@ -29872,7 +29871,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 4.3.1
       graceful-fs: 4.2.11
-      picomatch: 4.0.3
+      picomatch: 4.0.5
 
   jest-validate@29.7.0:
     dependencies:
@@ -30404,8 +30403,6 @@ snapshots:
   lodash.once@4.1.1: {}
 
   lodash.snakecase@4.1.1: {}
-
-  lodash.sortby@4.7.0: {}
 
   lodash.startcase@4.4.0: {}
 
@@ -30991,7 +30988,7 @@ snapshots:
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   mime-db@1.33.0: {}
 
@@ -31757,13 +31754,17 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@2.3.1: {}
+  picomatch@2.3.2: {}
 
   picomatch@3.0.1: {}
+
+  picomatch@3.0.2: {}
 
   picomatch@4.0.2: {}
 
   picomatch@4.0.3: {}
+
+  picomatch@4.0.5: {}
 
   pidtree@0.6.0: {}
 
@@ -33214,10 +33215,6 @@ snapshots:
 
   source-map@0.8.0: {}
 
-  source-map@0.8.0-beta.0:
-    dependencies:
-      whatwg-url: 7.1.0
-
   sourcemap-codec@1.4.8: {}
 
   sparse-bitfield@3.0.3:
@@ -33933,8 +33930,8 @@ snapshots:
 
   tinyglobby@0.2.15:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tinyrainbow@2.0.0: {}
 
@@ -33984,10 +33981,6 @@ snapshots:
 
   tr46@0.0.3: {}
 
-  tr46@1.0.1:
-    dependencies:
-      punycode: 2.3.1
-
   tr46@3.0.0:
     dependencies:
       punycode: 2.3.1
@@ -34035,15 +34028,15 @@ snapshots:
       esbuild: 0.28.1
       jest-util: 30.4.1
 
-  ts-loader@9.5.4(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1)):
+  ts-loader@9.6.2(loader-utils@3.3.1)(typescript@5.9.3)(webpack@5.100.2(esbuild@0.28.1)):
     dependencies:
       chalk: 4.1.2
-      enhanced-resolve: 5.18.3
-      micromatch: 4.0.8
-      semver: 7.7.3
+      picomatch: 4.0.5
       source-map: 0.7.6
       typescript: 5.9.3
       webpack: 5.100.2(esbuild@0.28.1)
+    optionalDependencies:
+      loader-utils: 3.3.1
 
   ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3):
     dependencies:
@@ -34248,7 +34241,7 @@ snapshots:
     dependencies:
       '@jridgewell/remapping': 2.3.5
       acorn: 8.15.0
-      picomatch: 4.0.3
+      picomatch: 4.0.5
       webpack-virtual-modules: 0.6.2
 
   unrs-resolver@1.11.1:
@@ -34594,8 +34587,6 @@ snapshots:
 
   webidl-conversions@3.0.1: {}
 
-  webidl-conversions@4.0.2: {}
-
   webidl-conversions@5.0.0: {}
 
   webidl-conversions@7.0.0: {}
@@ -34770,12 +34761,6 @@ snapshots:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
 
-  whatwg-url@7.1.0:
-    dependencies:
-      lodash.sortby: 4.7.0
-      tr46: 1.0.1
-      webidl-conversions: 4.0.2
-
   which-boxed-primitive@1.1.1:
     dependencies:
       is-bigint: 1.1.0
@@ -34915,7 +34900,7 @@ snapshots:
       lodash: 4.17.21
       pretty-bytes: 5.6.0
       rollup: 2.79.2
-      source-map: 0.8.0-beta.0
+      source-map: 0.8.0
       stringify-object: 3.3.0
       strip-comments: 2.0.1
       tempy: 0.6.0

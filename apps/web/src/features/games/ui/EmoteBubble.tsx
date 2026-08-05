@@ -2,57 +2,8 @@
 
 import { useRef, useEffect } from 'react';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
+import { FloatingBubbleLabel } from './FloatingBubble';
 import { useActiveEmotes } from './GameWidgetContainer.styles';
-
-const KEYFRAMES_CSS = `
-@keyframes emoteFloat {
-  0% {
-    opacity: 0;
-    transform: translateY(140px) translateX(10px) scale(0.4) rotate(-8deg);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(70px) translateX(-15px) scale(1.2) rotate(5deg);
-  }
-  20% {
-    transform: translateY(20px) translateX(8px) scale(0.95) rotate(-3deg);
-  }
-  30% {
-    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
-  }
-  65% {
-    opacity: 1;
-    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-140px) translateX(-5px) scale(0.6) rotate(4deg);
-  }
-}
-
-@keyframes labelPop {
-  0% {
-    opacity: 0;
-    transform: translateY(10px) scale(0.5);
-  }
-  15% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.15);
-  }
-  30% {
-    transform: translateY(0) scale(1);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.8);
-  }
-}
-`;
 
 interface ActiveEmote {
   id: string;
@@ -69,7 +20,7 @@ function findEmoji(emoteId: EmoteId): string {
   return EMOTES.find((e) => e.id === emoteId)?.emoji ?? '❓';
 }
 
-let stylesInjected = false;
+const ACCENT_COLOR = 'rgba(236,72,153,0.9)';
 
 export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -77,25 +28,32 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
   const equipped = ctx.resolveEquipped?.(playerId) ?? null;
 
   useEffect(() => {
-    if (!stylesInjected) {
-      const style = document.createElement('style');
-      style.textContent = KEYFRAMES_CSS;
-      document.head.appendChild(style);
-      stylesInjected = true;
-    }
     const el = ref.current;
     if (el) {
-      el.style.animation = 'emoteFloat 2.4s ease-out forwards';
-      const label = el.querySelector('[data-emote-label]');
+      el.style.animation = 'floatingBubbleFloat 2.4s ease-out forwards';
+      const label = el.querySelector('[data-bubble-label]');
       if (label) {
         (label as HTMLElement).style.animation =
-          'labelPop 2.4s ease-out forwards';
+          'floatingLabelPop 2.4s ease-out forwards';
       }
     }
   }, []);
 
   const current = activeEmotes.find((e) => e.id === playerId);
   if (!current) return null;
+
+  const label = senderName ? (
+    <FloatingBubbleLabel
+      senderName={senderName}
+      equippedAvatarId={equipped?.equippedAvatarId ?? null}
+      equippedBadgeId={equipped?.equippedBadgeId ?? null}
+      equippedNameColorId={equipped?.equippedNameColorId}
+      equippedFrameId={equipped?.equippedFrameId}
+      equippedAuraId={equipped?.equippedAuraId}
+      equippedBannerId={equipped?.equippedBannerId}
+      accentColor={ACCENT_COLOR}
+    />
+  ) : undefined;
 
   return (
     <div
@@ -140,39 +98,7 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
           {findEmoji(current.emoteId)}
         </div>
       </div>
-      {senderName && (
-        <div
-          data-emote-label=""
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 5,
-            color: '#fff',
-            fontSize: 12,
-            fontWeight: 800,
-            textShadow:
-              '0 0 8px rgba(236,72,153,0.9), 0 2px 10px rgba(0,0,0,0.8)',
-            letterSpacing: 1,
-            padding: '3px 10px',
-            borderRadius: 8,
-            backgroundColor: 'rgba(236, 72, 153, 0.35)',
-            whiteSpace: 'nowrap',
-            opacity: 0,
-          }}
-        >
-          <EquippedPlayerAvatar
-            name={senderName}
-            size="icon"
-            equippedAvatarId={equipped?.equippedAvatarId ?? null}
-            equippedBadgeId={equipped?.equippedBadgeId ?? null}
-            equippedNameColorId={equipped?.equippedNameColorId}
-            equippedFrameId={equipped?.equippedFrameId}
-            equippedAuraId={equipped?.equippedAuraId}
-            equippedBannerId={equipped?.equippedBannerId}
-          />
-          {senderName}
-        </div>
-      )}
+      {label}
     </div>
   );
 }

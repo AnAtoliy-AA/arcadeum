@@ -267,7 +267,11 @@ export class AuthController {
   @Get('users/search')
   @UseGuards(JwtAuthGuard)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
-  async searchUsers(@Req() req: Request, @Query('q') query?: string) {
+  async searchUsers(
+    @Req() req: Request,
+    @Query('q') query?: string,
+    @Query('includeSelf') includeSelf?: string,
+  ) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
@@ -275,6 +279,7 @@ export class AuthController {
     return this.authService.searchUsers({
       query: query ?? '',
       requestingUserId: user.userId,
+      includeSelf: includeSelf === 'true',
     });
   }
 

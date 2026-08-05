@@ -267,6 +267,7 @@ export class AuthService {
     query: string;
     requestingUserId: string;
     limit?: number;
+    includeSelf?: boolean;
   }): Promise<
     Array<{
       id: string;
@@ -283,16 +284,26 @@ export class AuthService {
 
     const limit = Math.min(Math.max(params.limit ?? 10, 1), 25);
     const pattern = new RegExp(escapeRegExp(trimmed), 'i');
+    const orConditions: Record<string, unknown>[] = [
+      { username: pattern },
+      { usernameNormalized: pattern },
+      { email: pattern },
+      { displayName: pattern },
+    ];
+
+    if (Types.ObjectId.isValid(trimmed)) {
+      orConditions.push({ _id: new Types.ObjectId(trimmed) });
+    }
+
+    const query: Record<string, any> = {
+      $or: orConditions,
+    };
+    if (!params.includeSelf) {
+      query._id = { $ne: params.requestingUserId };
+    }
 
     const users = await this.userModel
-      .find({
-        _id: { $ne: params.requestingUserId },
-        $or: [
-          { username: pattern },
-          { usernameNormalized: pattern },
-          { email: pattern },
-        ],
-      })
+      .find(query)
       .select('username email usernameNormalized displayName role')
       .sort({ usernameNormalized: 1 })
       .limit(limit)
@@ -300,7 +311,7 @@ export class AuthService {
       .exec();
 
     return users.map((user) => ({
-      id: String(user.id),
+      id: String(user._id),
       email: user.email,
       username: user.username,
       displayName: resolveDisplayName(user),

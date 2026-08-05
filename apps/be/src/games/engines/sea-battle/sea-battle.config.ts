@@ -34,7 +34,19 @@ export function validateSeaBattleConfig(
     const sw = specialWeapons as Record<string, unknown>;
     if (
       (sw.sonar !== undefined && typeof sw.sonar !== 'boolean') ||
-      (sw.radar !== undefined && typeof sw.radar !== 'boolean')
+      (sw.radar !== undefined && typeof sw.radar !== 'boolean') ||
+      (sw.revealAll !== undefined && typeof sw.revealAll !== 'boolean')
+    ) {
+      return false;
+    }
+  }
+
+  const revealAllDuration = config.revealAllDuration;
+  if (revealAllDuration !== undefined) {
+    if (
+      typeof revealAllDuration !== 'number' ||
+      revealAllDuration < 1 ||
+      revealAllDuration > 3
     ) {
       return false;
     }

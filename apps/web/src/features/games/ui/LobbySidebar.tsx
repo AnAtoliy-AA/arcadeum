@@ -44,6 +44,7 @@ import {
 } from './lobbyStyles';
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
 import { ConfirmationModal } from './ConfirmationModal';
+import { InGameAvatar } from './InGameAvatar';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
@@ -251,11 +252,19 @@ export function LobbySidebar({
                 AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
                 <PlayerItem key={member.id} $isHost={isRoomHost}>
-                  <LobbyPlayerAvatar backgroundColor={avatarColor}>
-                    <LobbyPlayerAvatarText>
-                      {getInitials(member.displayName)}
-                    </LobbyPlayerAvatarText>
-                  </LobbyPlayerAvatar>
+                  {member.equippedAvatarId ? (
+                    <InGameAvatar
+                      playerId={member.id}
+                      name={member.displayName}
+                      size="sm"
+                    />
+                  ) : (
+                    <LobbyPlayerAvatar backgroundColor={avatarColor}>
+                      <LobbyPlayerAvatarText>
+                        {getInitials(member.displayName)}
+                      </LobbyPlayerAvatarText>
+                    </LobbyPlayerAvatar>
+                  )}
                   <PlayerInfo>
                     <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
                     {isRoomHost && (

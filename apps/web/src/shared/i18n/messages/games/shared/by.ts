@@ -151,6 +151,8 @@ export const byMessages = {
     seaBattleSonarHint: 'Паказаць размяшчэнне караблёў',
     seaBattleRadar: 'Радар',
     seaBattleRadarHint: 'Сканіраваць радок або слупок',
+    seaBattleRevealAll: 'Хваля сканіравання',
+    seaBattleRevealAllHint: 'Каротка паказаць усе караблі ў пачатку бою',
     tttBoardSize: 'Памер поля',
     tttWinLength: '{{n}} запар для перамогі',
     tttMaxPlayers: 'Да {{n}} гульцоў',

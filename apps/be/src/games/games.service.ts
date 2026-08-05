@@ -397,6 +397,7 @@ export class GamesService {
     userId: string,
     message: string,
     scope: ChatScope = 'all',
+    isAuthenticated = false,
   ) {
     await this.historyFacade.postHistoryNote(
       roomId,
@@ -404,7 +405,32 @@ export class GamesService {
       message,
       scope,
       (s, pId) => this.sanitizeForPlayer(s, pId),
+      isAuthenticated,
     );
+  }
+
+  async postRoomChat(
+    roomId: string,
+    userId: string,
+    senderName: string,
+    message: string,
+    scope: string,
+  ) {
+    return this.roomsService.postRoomChat(
+      roomId,
+      userId,
+      senderName,
+      message,
+      scope,
+    );
+  }
+
+  async deleteRoomChatMessage(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ) {
+    return this.roomsService.deleteRoomChatMessage(roomId, callerId, messageId);
   }
 
   // ========== Utility Operations ==========

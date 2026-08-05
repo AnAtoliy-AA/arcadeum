@@ -107,8 +107,15 @@ export class GamesHistoryFacade {
       s: GameSessionSummary,
       pId: string,
     ) => GameSessionSummary,
+    isAuthenticated = false,
   ) {
-    await this.historyService.postHistoryNote(roomId, userId, message, scope);
+    await this.historyService.postHistoryNote(
+      roomId,
+      userId,
+      message,
+      scope,
+      isAuthenticated,
+    );
 
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {

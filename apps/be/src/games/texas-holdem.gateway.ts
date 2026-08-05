@@ -9,6 +9,7 @@ import { GamesService } from './games.service';
 import {
   extractRoomAndUser,
   extractString,
+  getIsAuthenticated,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
@@ -122,11 +123,18 @@ export class TexasHoldemGateway implements GameMessageHandler {
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
+    const isAuthenticated = getIsAuthenticated(client);
 
     validatePayloadUserId(client, userId);
 
     try {
-      await this.texasHoldemService.postHistoryNote(userId, roomId, message);
+      await this.texasHoldemService.postHistoryNote(
+        userId,
+        roomId,
+        message,
+        'all',
+        isAuthenticated,
+      );
       client.emit(
         'games.session.holdem_history_note.ack',
         maybeEncrypt({
@@ -135,15 +143,12 @@ export class TexasHoldemGateway implements GameMessageHandler {
         }),
       );
     } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
-        'Unable to post history note.',
+      const msg =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to post history note.';
+      this.logger.warn(
+        `Failed to post history note for room ${roomId}, user ${userId}: ${msg}`,
       );
     }
   }

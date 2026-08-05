@@ -23,10 +23,6 @@ import {
   GameTileItem,
   GameTileContainer,
   ComingSoonBadge,
-  ExpansionGrid,
-  ExpansionCheckbox,
-  ExpansionLabel,
-  ExpansionBadge,
 } from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
@@ -36,7 +32,6 @@ interface SeaBattleOptions {
   variant?: string;
   gridSize?: number;
   shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
 }
 
 const GRID_SIZES = [
@@ -225,80 +220,6 @@ export default function SeaBattleCreationConfig({
               ))}
             </XStack>
           </YStack>
-
-          <ExpansionGrid>
-            <ExpansionCheckbox
-              style={{
-                opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={!!options.specialWeapons?.sonar}
-                disabled={!!ruleComingSoon.get('sonar')}
-                onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      sonar: !options.specialWeapons?.sonar,
-                    },
-                  })
-                }
-              />
-              <YStack flex={1} gap="$0.5">
-                <XStack alignItems="center" gap="$2">
-                  <ExpansionLabel>
-                    {t('games.create.seaBattleSonar') || 'Sonar'}
-                  </ExpansionLabel>
-                  {ruleComingSoon.get('sonar') && (
-                    <ComingSoonBadge>
-                      {t('games.create.comingSoon') || 'Coming Soon'}
-                    </ComingSoonBadge>
-                  )}
-                </XStack>
-                <ExpansionBadge>
-                  {t('games.create.seaBattleSonarHint') ||
-                    'Reveal ship locations'}
-                </ExpansionBadge>
-              </YStack>
-            </ExpansionCheckbox>
-
-            <ExpansionCheckbox
-              style={{
-                opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={!!options.specialWeapons?.radar}
-                disabled={!!ruleComingSoon.get('radar')}
-                onChange={() =>
-                  handleUpdate({
-                    specialWeapons: {
-                      ...options.specialWeapons,
-                      radar: !options.specialWeapons?.radar,
-                    },
-                  })
-                }
-              />
-              <YStack flex={1} gap="$0.5">
-                <XStack alignItems="center" gap="$2">
-                  <ExpansionLabel>
-                    {t('games.create.seaBattleRadar') || 'Radar'}
-                  </ExpansionLabel>
-                  {ruleComingSoon.get('radar') && (
-                    <ComingSoonBadge>
-                      {t('games.create.comingSoon') || 'Coming Soon'}
-                    </ComingSoonBadge>
-                  )}
-                </XStack>
-                <ExpansionBadge>
-                  {t('games.create.seaBattleRadarHint') ||
-                    'Scan a row or column'}
-                </ExpansionBadge>
-              </YStack>
-            </ExpansionCheckbox>
-          </ExpansionGrid>
         </YStack>
       </Section>
 

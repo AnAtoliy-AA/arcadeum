@@ -136,7 +136,6 @@ export function AdminWalletDrawer({
       setData(null);
       reload();
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- legitimate data-fetch on drawer open
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, userId]);
 

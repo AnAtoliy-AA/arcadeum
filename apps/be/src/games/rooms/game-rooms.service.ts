@@ -489,4 +489,65 @@ export class GameRoomsService {
     }
     return code!;
   }
+
+  async postRoomChat(
+    roomId: string,
+    userId: string,
+    senderName: string,
+    message: string,
+    scope: string,
+  ): Promise<{
+    id: string;
+    senderId: string;
+    senderName: string;
+    message: string;
+    scope: string;
+    createdAt: string;
+  } | null> {
+    if (!Types.ObjectId.isValid(roomId)) return null;
+    const room = await this.ociRoomModel.findById(roomId).exec();
+    if (!room) return null;
+
+    const isParticipant =
+      room.hostId === userId ||
+      room.participants.some((p) => p.userId === userId);
+    if (!isParticipant) return null;
+
+    const entry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      senderId: userId,
+      senderName,
+      message: message.slice(0, 240),
+      scope,
+      createdAt: new Date().toISOString(),
+    };
+
+    room.chatLogs = [...(room.chatLogs ?? []), entry];
+    room.updatedAt = new Date();
+    await room.save();
+
+    return entry;
+  }
+
+  async deleteRoomChatMessage(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ): Promise<boolean> {
+    if (!Types.ObjectId.isValid(roomId)) return false;
+    const room = await this.ociRoomModel.findById(roomId).exec();
+    if (!room) return false;
+
+    const targetMessage = (room.chatLogs ?? []).find((l) => l.id === messageId);
+    if (!targetMessage) return false;
+
+    const isHost = room.hostId === callerId;
+    const isOwnMessage = targetMessage.senderId === callerId;
+    if (!isHost && !isOwnMessage) return false;
+
+    room.chatLogs = (room.chatLogs ?? []).filter((l) => l.id !== messageId);
+    room.updatedAt = new Date();
+    await room.save();
+    return true;
+  }
 }

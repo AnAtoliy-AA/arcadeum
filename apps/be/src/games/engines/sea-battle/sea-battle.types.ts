@@ -48,7 +48,7 @@ export interface SeaBattleState {
   logs: GameLogEntry[];
   gridSize: number;
   shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeapons?: { sonar?: boolean; radar?: boolean; revealAll?: boolean };
   lastAttack?: {
     attackerId: string;
     targetId: string;
@@ -78,7 +78,15 @@ export interface SeaBattleState {
     targetId: string;
     row?: number;
     col?: number;
+    halfWidth: number;
     cells: { row: number; col: number; state: CellState }[];
+  };
+  lastScanWave?: {
+    cells: {
+      playerId: string;
+      board: CellState[][];
+    }[];
+    duration: number;
   };
   [key: string]: unknown;
 }
@@ -96,7 +104,8 @@ export interface SeaBattleConfig {
   mode?: GameModeVariant;
   gridSize?: number;
   shipCount?: number;
-  specialWeapons?: { sonar?: boolean; radar?: boolean };
+  specialWeapons?: { sonar?: boolean; radar?: boolean; revealAll?: boolean };
+  revealAllDuration?: number;
   aiDifficulty?: AiDifficulty;
 }
 

@@ -214,6 +214,36 @@ export class GameSessionsService {
     return this.toSessionSummary(session);
   }
 
+  async pushChatLog(
+    roomId: string,
+    userId: string,
+    message: string,
+    scope: string,
+    senderName?: string,
+  ): Promise<GameSessionSummary | null> {
+    const session = await this.ociSessionModel
+      .findOne({ roomId })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (!session) return null;
+
+    const state = session.state;
+    if (!Array.isArray(state.logs)) state.logs = [];
+    (state.logs as Array<Record<string, unknown>>).push({
+      id: globalThis.crypto.randomUUID().slice(0, 12),
+      type: 'message',
+      message,
+      createdAt: new Date().toISOString(),
+      scope,
+      senderId: userId,
+      senderName: senderName ?? null,
+    });
+    session.markModified('state');
+    session.updatedAt = new Date();
+    await session.save();
+    return this.toSessionSummary(session);
+  }
+
   /**
    * Execute a player action using the game engine
    */

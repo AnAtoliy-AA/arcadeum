@@ -16,6 +16,15 @@ export interface GameRoomParticipant {
   joinedAt: Date;
 }
 
+export interface GameRoomChatLog {
+  id: string;
+  senderId: string;
+  senderName: string;
+  message: string;
+  scope: string;
+  createdAt: string;
+}
+
 @Schema({ timestamps: true })
 export class GameRoom extends Document {
   declare _id: Types.ObjectId;
@@ -85,6 +94,21 @@ export class GameRoom extends Document {
 
   @Prop({ type: Boolean, default: false })
   rematchPending?: boolean;
+
+  @Prop({
+    type: [
+      {
+        id: { type: String, required: true },
+        senderId: { type: String, required: true },
+        senderName: { type: String, default: '' },
+        message: { type: String, default: '' },
+        scope: { type: String, default: 'all' },
+        createdAt: { type: String, required: true },
+      },
+    ],
+    default: [],
+  })
+  chatLogs: GameRoomChatLog[];
 
   createdAt: Date;
   updatedAt: Date;

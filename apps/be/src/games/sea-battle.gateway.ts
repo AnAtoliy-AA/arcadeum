@@ -351,11 +351,12 @@ export class SeaBattleGateway implements GameMessageHandler {
         maybeEncrypt({ roomId, userId, scope }),
       );
     } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'post history note', roomId, userId },
-        'Unable to post history note.',
+      const message =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to post history note.';
+      this.logger.warn(
+        `Failed to post history note for room ${roomId}, user ${userId}: ${message}`,
       );
     }
   }

@@ -612,3 +612,12 @@
 .sb-cell.sb-cell-pending .sb-missile {
   animation: sb-missile-fly 1s cubic-bezier(0.45, 0, 0.9, 0.55) 0.3s both;
 }
+
+@keyframes sb-scanwave-pulse {
+  0% {
+    box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 16px 6px rgba(251, 191, 36, 1);
+  }
+}

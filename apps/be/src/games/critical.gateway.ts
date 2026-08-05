@@ -10,6 +10,7 @@ import { CriticalService } from './critical/critical.service';
 import {
   extractRoomAndUser,
   extractString,
+  getIsAuthenticated,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
@@ -63,6 +64,7 @@ export class CriticalGateway implements GameMessageHandler {
         : 'all';
 
     const scope = ['players', 'private'].includes(raw) ? raw : 'all';
+    const isAuthenticated = getIsAuthenticated(client);
 
     validatePayloadUserId(client, userId);
 
@@ -72,6 +74,7 @@ export class CriticalGateway implements GameMessageHandler {
         roomId,
         message,
         scope as ChatScope,
+        isAuthenticated,
       );
       client.emit(
         'games.session.history_note.ack',
@@ -82,13 +85,13 @@ export class CriticalGateway implements GameMessageHandler {
         }),
       );
     } catch (error) {
-      this.handleException({
-        error,
-        action: 'post history note',
-        roomId,
-        userId,
-        userMessage: 'Unable to post history note.',
-      });
+      const msg =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to post history note.';
+      this.logger.warn(
+        `Failed to post history note for room ${roomId}, user ${userId}: ${msg}`,
+      );
     }
   }
 

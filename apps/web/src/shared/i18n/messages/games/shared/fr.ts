@@ -152,6 +152,8 @@ export const frMessages = {
     seaBattleSonarHint: 'Révéler les positions des navires',
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Scanner une ligne ou une colonne',
+    seaBattleRevealAll: 'Vague de scan',
+    seaBattleRevealAllHint: 'Révéler brièvement tous les navires au début du combat',
     tttBoardSize: 'Taille du Plateau',
     tttWinLength: '{{n}} en ligne pour gagner',
     tttMaxPlayers: "Jusqu'à {{n}} joueurs",

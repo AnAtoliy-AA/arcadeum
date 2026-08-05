@@ -295,7 +295,7 @@ export class AuthService {
       orConditions.push({ _id: new Types.ObjectId(trimmed) });
     }
 
-    const query: Record<string, any> = {
+    const query: Record<string, unknown> = {
       $or: orConditions,
     };
     if (!params.includeSelf) {

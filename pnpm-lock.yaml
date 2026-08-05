@@ -718,8 +718,8 @@ importers:
         specifier: ^7.3.5
         version: 7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1)
       vite-tsconfig-paths:
-        specifier: ^6.0.5
-        version: 6.0.5(typescript@5.9.3)(vite@7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1))
+        specifier: ^6.1.1
+        version: 6.1.1(typescript@5.9.3)(vite@7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1))
       vitest:
         specifier: ^4.1.0
         version: 4.1.10(@types/node@20.19.25)(@vitest/browser-playwright@4.0.16)(@vitest/coverage-v8@4.0.16)(jsdom@27.4.0(@noble/hashes@1.8.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(vite@7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1))
@@ -14050,8 +14050,8 @@ packages:
       vite:
         optional: true
 
-  vite-tsconfig-paths@6.0.5:
-    resolution: {integrity: sha512-f/WvY6ekHykUF1rWJUAbCU7iS/5QYDIugwpqJA+ttwKbxSbzNlqlE8vZSrsnxNQciUW+z6lvhlXMaEyZn9MSig==}
+  vite-tsconfig-paths@6.1.1:
+    resolution: {integrity: sha512-2cihq7zliibCCZ8P9cKJrQBkfgdvcFkOOc3Y02o3GWUDLgqjWsZudaoiuOwO/gzTzy17cS5F7ZPo4bsnS4DGkg==}
     peerDependencies:
       vite: '*'
 
@@ -34451,7 +34451,7 @@ snapshots:
       - supports-color
       - typescript
 
-  vite-tsconfig-paths@6.0.5(typescript@5.9.3)(vite@7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1)):
+  vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@7.3.6(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.101.0)(terser@5.44.1)(yaml@2.8.1)):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       globrex: 0.1.2

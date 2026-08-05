@@ -270,8 +270,9 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     message: string,
     scope: ChatScope,
+    isAuthenticated = false,
   ) {
-    await this.historyService.postHistoryNote(roomId, userId, message, scope);
+    await this.historyService.postHistoryNote(roomId, userId, message, scope, isAuthenticated);
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {
       await this.realtimeService.emitSessionSnapshot(

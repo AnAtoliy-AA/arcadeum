@@ -13,7 +13,7 @@ import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
-import { extractString } from './games.gateway.utils';
+import { extractString, getIsAuthenticated } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
 import {
   handleRoomChat,
@@ -413,6 +413,7 @@ export class GamesGateway {
         ? payload.scope.trim().toLowerCase()
         : 'all';
     const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
+    const isAuthenticated = getIsAuthenticated(client);
 
     this.validateUserId(client, userId);
 
@@ -422,6 +423,7 @@ export class GamesGateway {
         userId,
         message,
         scope as 'all' | 'players' | 'private',
+        isAuthenticated,
       );
       client.emit(
         'games.session.history_note.ack',

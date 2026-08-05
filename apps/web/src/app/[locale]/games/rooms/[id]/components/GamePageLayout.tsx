@@ -14,6 +14,7 @@ import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
@@ -24,6 +25,7 @@ interface GamePageLayoutProps {
   session?: GameSessionSummary | null;
   inviteCode?: string;
   userId: string | null;
+  isAuthenticated?: boolean;
 
   // Connection overlays
   isDisconnected: boolean;
@@ -50,6 +52,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     session,
     inviteCode,
     userId,
+    isAuthenticated = false,
     isDisconnected,
     isReconnecting,
     isIdle,
@@ -98,17 +101,30 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     (id?: string | null) => {
       if (!id) return null;
       const member = room.members?.find((m) => m.id === id);
-      if (!member) return null;
-      return {
-        equippedAvatarId: member.equippedAvatarId ?? null,
-        equippedBadgeId: member.equippedBadgeId ?? null,
-        equippedNameColorId: member.equippedNameColorId ?? null,
-        equippedFrameId: member.equippedFrameId ?? null,
-        equippedAuraId: member.equippedAuraId ?? null,
-        equippedBannerId: member.equippedBannerId ?? null,
-      };
+      if (member) {
+        return {
+          equippedAvatarId: member.equippedAvatarId ?? null,
+          equippedBadgeId: member.equippedBadgeId ?? null,
+          equippedNameColorId: member.equippedNameColorId ?? null,
+          equippedFrameId: member.equippedFrameId ?? null,
+          equippedAuraId: member.equippedAuraId ?? null,
+          equippedBannerId: member.equippedBannerId ?? null,
+        };
+      }
+      if (id === userId) {
+        const snap = useSessionStore.getState().snapshot;
+        return {
+          equippedAvatarId: snap.equippedAvatarId ?? null,
+          equippedBadgeId: snap.equippedBadgeId ?? null,
+          equippedNameColorId: snap.equippedNameColorId ?? null,
+          equippedFrameId: snap.equippedFrameId ?? null,
+          equippedAuraId: snap.equippedAuraId ?? null,
+          equippedBannerId: snap.equippedBannerId ?? null,
+        };
+      }
+      return null;
     },
-    [room.members],
+    [room.members, userId],
   );
 
   const gameRegisteredResolver = useGameChatStore((s) => s.resolveDisplayName);
@@ -145,6 +161,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   const isLobby = room.status === 'lobby';
   const isHost = room.hostId === userId;
+  const isPlayer = !!(userId && (isHost || room.members?.some((m) => m.id === userId)));
 
   const { sendMessage: roomChatSend, deleteMessage: roomChatDelete } =
     useGameRoomChat(roomId, userId, isLobby);
@@ -251,6 +268,8 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               resolveDisplayName={resolveDisplayNameForList}
               resolveEquipped={resolveEquipped}
               currentUserId={userId}
+              isPlayer={isPlayer}
+              isAuthenticated={isAuthenticated}
               onEmote={sendEmote}
               isHost={isHost}
               onDeleteMessage={handleDeleteMessage}

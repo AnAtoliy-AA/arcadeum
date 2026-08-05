@@ -397,6 +397,7 @@ export class GamesService {
     userId: string,
     message: string,
     scope: ChatScope = 'all',
+    isAuthenticated = false,
   ) {
     await this.historyFacade.postHistoryNote(
       roomId,
@@ -404,6 +405,7 @@ export class GamesService {
       message,
       scope,
       (s, pId) => this.sanitizeForPlayer(s, pId),
+      isAuthenticated,
     );
   }
 

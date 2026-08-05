@@ -311,6 +311,7 @@ export class GameHistoryService {
     userId: string,
     message: string,
     scope: ChatScope,
+    isAuthenticated = false,
   ): Promise<void> {
     if (!this.gameRoomModel || !this.gameSessionModel) return;
     const room = await this.gameRoomModel.findById(roomId).lean().exec();
@@ -319,13 +320,15 @@ export class GameHistoryService {
       throw new NotFoundException(`Room not found: ${roomId}`);
     }
 
-    // Check if user was a participant
-    const isParticipant =
-      room.hostId === userId ||
-      room.participants.some((p) => p.userId === userId);
+    // Anonymous users must be participants to chat
+    if (!isAuthenticated) {
+      const isParticipant =
+        room.hostId === userId ||
+        room.participants.some((p) => p.userId === userId);
 
-    if (!isParticipant) {
-      throw new BadRequestException('You were not a participant in this game');
+      if (!isParticipant) {
+        throw new BadRequestException('You were not a participant in this game');
+      }
     }
 
     // Get latest session for this room
@@ -335,6 +338,8 @@ export class GameHistoryService {
       .exec();
 
     if (!session) {
+      // No session yet (lobby state) — silently skip, lobby has its own room chat
+      if (isAuthenticated) return;
       throw new NotFoundException('No session found for this room');
     }
     // Add message to logs in session state

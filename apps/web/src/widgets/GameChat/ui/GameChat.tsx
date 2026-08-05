@@ -53,6 +53,8 @@ interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
   resolveEquipped?: EquippedResolver;
   currentUserId?: string | null;
+  isAuthenticated?: boolean;
+  isPlayer?: boolean;
   onClose?: () => void;
   teamMode?: boolean;
   onEmote?: (emoteId: EmoteId) => void;
@@ -144,6 +146,8 @@ export function GameChat({
   resolveDisplayName,
   resolveEquipped,
   currentUserId,
+  isAuthenticated = false,
+  isPlayer = false,
   onClose,
   teamMode,
   onEmote,
@@ -208,9 +212,10 @@ export function GameChat({
     [logs, scope],
   );
 
+  const canSend = isPlayer || isAuthenticated;
   const send = () => {
     const trimmed = draft.trim();
-    if (!trimmed || !sendMessage) return;
+    if (!trimmed || !sendMessage || !canSend) return;
     sendMessage(trimmed, scope);
     setDraft('');
   };
@@ -218,7 +223,7 @@ export function GameChat({
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      send();
+      if (canSend) send();
     }
   };
 
@@ -545,18 +550,15 @@ export function GameChat({
 
         <InputPill
           focusStyle={
-            currentUserId
+            canSend
               ? {
                   borderColor: `${ACCENT_PINK}88`,
                   backgroundColor: 'rgba(0,0,0,0.32)',
                 }
               : undefined
           }
-          style={
-            !currentUserId
-              ? { opacity: 0.5, pointerEvents: 'none' as const }
-              : undefined
-          }
+          opacity={canSend ? 1 : 0.5}
+          pointerEvents={canSend ? 'auto' : 'none'}
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
             {SCOPE_CHIP[scope]}
@@ -567,11 +569,11 @@ export function GameChat({
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={
-              currentUserId
+              canSend
                 ? SCOPE_PLACEHOLDER[scope]
                 : signInPlaceholder
             }
-            disabled={!currentUserId}
+            disabled={!canSend}
             aria-label="Message"
             style={{
               flex: 1,
@@ -587,11 +589,11 @@ export function GameChat({
             size="sm"
             padding="$1"
             onClick={send}
-            disabled={!draft.trim()}
+            disabled={!draft.trim() || !canSend}
             aria-label="Send message"
             style={{
-              background: draft.trim() ? ACCENT_GRADIENT : undefined,
-              opacity: draft.trim() ? 1 : 0.4,
+              background: draft.trim() && canSend ? ACCENT_GRADIENT : undefined,
+              opacity: draft.trim() && canSend ? 1 : 0.4,
               width: 30,
               height: 30,
               borderRadius: 9,

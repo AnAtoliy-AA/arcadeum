@@ -410,10 +410,15 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     message: string,
     scope: ChatScope,
-    isAuthenticated = false,
   ) {
     const senderName = await this.historyService.getUserDisplayName(userId);
-    const updated = await this.sessionsService.pushChatLog(roomId, userId, message, scope, senderName || undefined);
+    const updated = await this.sessionsService.pushChatLog(
+      roomId,
+      userId,
+      message,
+      scope,
+      senderName || undefined,
+    );
     if (updated) {
       await this.emitSessionUpdate(updated);
     }

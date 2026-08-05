@@ -1,7 +1,6 @@
 'use client';
 
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import type { EquippedResolver } from './types';
 
 interface ChatSenderLabelProps {

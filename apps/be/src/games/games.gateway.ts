@@ -129,9 +129,9 @@ export class GamesGateway {
             (args[0] as Record<string, unknown>) ?? {},
           );
           if (result && typeof result === 'object' && 'catch' in result) {
-            (result as Promise<void>).catch((err: unknown) => {
+            result.catch((err: unknown) => {
               this.logger.error(
-                `onAny handler failed for ${event}: ${err instanceof Error ? err.message : err}`,
+                `onAny handler failed for ${event}: ${err instanceof Error ? err.message : String(err)}`,
               );
             });
           }

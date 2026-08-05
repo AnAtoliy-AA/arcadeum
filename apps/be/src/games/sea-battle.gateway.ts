@@ -9,7 +9,6 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import {
   extractRoomAndUser,
   extractString,
-  getIsAuthenticated,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
@@ -339,7 +338,6 @@ export class SeaBattleGateway implements GameMessageHandler {
     const scope = (
       ['players', 'private', 'team'].includes(raw) ? raw : 'all'
     ) as ChatScope;
-    const isAuthenticated = getIsAuthenticated(client);
     validatePayloadUserId(client, userId);
     try {
       await this.seaBattleService.postHistoryNote(
@@ -347,7 +345,6 @@ export class SeaBattleGateway implements GameMessageHandler {
         roomId,
         message,
         scope,
-        isAuthenticated,
       );
       client.emit(
         'seaBattle.session.history_note.ack',

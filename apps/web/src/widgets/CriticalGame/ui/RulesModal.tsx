@@ -88,7 +88,6 @@ export function RulesModal({
   React.useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount-tracking for animation
   }, []);
 
   if (!isOpen || !mounted) return null;

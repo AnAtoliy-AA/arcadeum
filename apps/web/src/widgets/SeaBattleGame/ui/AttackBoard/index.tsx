@@ -125,7 +125,8 @@ export const AttackBoard = memo(function AttackBoard({
     const sw = snapshot?.lastScanWave;
     if (!sw || snapshot?.phase !== 'battle') return;
 
-    setScanWaveActive(true);
+    // Defer state update to avoid synchronous cascading renders
+    const raf = requestAnimationFrame(() => setScanWaveActive(true));
     if (scanWaveTimerRef.current) clearTimeout(scanWaveTimerRef.current);
     scanWaveTimerRef.current = setTimeout(() => {
       setScanWaveActive(false);
@@ -133,6 +134,7 @@ export const AttackBoard = memo(function AttackBoard({
     }, sw.duration * 1000);
 
     return () => {
+      cancelAnimationFrame(raf);
       if (scanWaveTimerRef.current) {
         clearTimeout(scanWaveTimerRef.current);
         scanWaveTimerRef.current = null;
@@ -197,7 +199,7 @@ export const AttackBoard = memo(function AttackBoard({
       cellMap.set(entry.playerId, states);
     }
     return { highlights: map, states: cellMap };
-  }, [scanWaveActive, snapshot?.lastScanWave]);
+  }, [scanWaveActive, snapshot]);
 
   return (
     <MainGameArea data-testid="game-main-area">

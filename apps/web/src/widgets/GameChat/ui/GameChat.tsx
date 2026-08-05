@@ -425,14 +425,55 @@ export function GameChat({
                 const emote = parseEmoteMessage(log.message);
                 if (emote) {
                   return (
-                    <GameChatEmoteRow
+                    <div
                       key={log.id}
-                      emoji={emote.emoji}
-                      senderName={senderName}
-                      senderColor={senderColor}
-                      senderId={log.senderId ?? null}
-                      resolveEquipped={resolveEquipped}
-                    />
+                      className="chat-msg-row"
+                      style={{ position: 'relative' }}
+                    >
+                      <GameChatEmoteRow
+                        emoji={emote.emoji}
+                        senderName={senderName}
+                        senderColor={senderColor}
+                        senderId={log.senderId ?? null}
+                        resolveEquipped={resolveEquipped}
+                      />
+                      {(isHost || log.senderId === currentUserId) && onDeleteMessage && (
+                        <button
+                          className="chat-delete-btn"
+                          onClick={() => onDeleteMessage(log.id)}
+                          title="Delete message"
+                          aria-label="Delete message"
+                          style={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            background: 'rgba(239,68,68,0.8)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 4,
+                            width: 20,
+                            height: 20,
+                            fontSize: 12,
+                            lineHeight: '20px',
+                            cursor: 'pointer',
+                            opacity: 0,
+                            transition: 'opacity 120ms ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: 0,
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.opacity = '1')
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.opacity = '0')
+                          }
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
                   );
                 }
                 return (

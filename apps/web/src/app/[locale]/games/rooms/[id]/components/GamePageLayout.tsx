@@ -153,15 +153,15 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     (messageId: string) => {
       const log = useGameChatStore.getState().logs.find((l) => l.id === messageId);
       if (!log) return;
-      if (log.type === 'action') {
+      if (isLobby && log.type !== 'action') {
+        roomChatDelete?.(messageId);
+      } else {
         useGameChatStore.setState((s) => ({
           logs: s.logs.filter((l) => l.id !== messageId),
         }));
-      } else {
-        roomChatDelete?.(messageId);
       }
     },
-    [roomChatDelete],
+    [isLobby, roomChatDelete],
   );
 
   // Subscribe to the store's sendMessage so we can detect when a game widget

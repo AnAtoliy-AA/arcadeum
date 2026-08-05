@@ -33,7 +33,7 @@
     "jimp": "^0.22.12",
     "lint-staged": "^15.2.10",
     "markdown-it": "^14.2.0",
-    "prettier": "3.4.2",
+    "prettier": "3.9.6",
     "standard-version": "^9.5.0",
     "turbo": "^2.9.14"
   },

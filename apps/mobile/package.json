@@ -41,7 +41,7 @@
     "axios": "^1.18.0",
     "expo": "54.0.22",
     "expo-application": "~7.0.8",
-    "expo-auth-session": "^7.0.8",
+    "expo-auth-session": "^57.0.5",
     "expo-blur": "~15.0.7",
     "expo-build-properties": "~1.0.10",
     "expo-clipboard": "~8.0.7",

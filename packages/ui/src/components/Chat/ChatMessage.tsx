@@ -9,6 +9,8 @@ export type ChatMessageProps = {
    * precedence over `content` for system/action rows. Used to inject
    * inline colored spans (e.g. HIT/MISS/SUNK keywords). */
   contentNode?: React.ReactNode;
+  /** When set, renders an emoji instead of the text bubble. */
+  emoji?: string;
   senderName?: string;
   senderColor?: string;
   /**
@@ -39,15 +41,16 @@ export type ChatMessageProps = {
 const MessageGroup = styled(ThemeableStack, {
   name: 'MessageGroup',
   flexDirection: 'column',
-  gap: '$1',
+  gap: '$0.5',
   maxWidth: '85%',
   minWidth: 0,
+  paddingVertical: '$1',
   
   variants: {
     isOwn: {
       true: {
         alignItems: 'flex-start',
-        alignSelf: 'flex-start',
+        alignSelf: 'flex-end',
       },
       false: {
         alignItems: 'flex-start',
@@ -83,6 +86,7 @@ const MessageBubble = styled(YStack, {
   paddingVertical: '$2.5',
   flexShrink: 1,
   minWidth: 0,
+  alignSelf: 'flex-start',
   
   hoverStyle: {
     scale: 1.01,
@@ -91,6 +95,7 @@ const MessageBubble = styled(YStack, {
   variants: {
     isOwn: {
       true: {
+        alignSelf: 'flex-end',
         borderRadius: '$4',
         borderBottomRightRadius: '$1',
         background: 'linear-gradient(135deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
@@ -147,6 +152,7 @@ export const ChatMessage = memo(function ChatMessage({
   badgeUrl,
   senderAvatar,
   isEncrypted,
+  emoji,
   type = 'message',
 }: ChatMessageProps) {
   const isSystem = type === 'system' || type === 'action';
@@ -157,10 +163,16 @@ export const ChatMessage = memo(function ChatMessage({
       type={type}
       enterStyle={{ opacity: 0, scale: 0.9, y: 15 }}
     >
-      {(isOwn || !isOwn) && !isSystem && senderName && (
-        <XStack ai="center" gap="$2" width="100%" flexShrink={1}>
+      {!isSystem && senderName && (
+        <XStack
+          ai="flex-end"
+          gap="$2"
+          width="100%"
+          flexShrink={1}
+          {...(isOwn ? { jc: 'flex-end' } : {})}
+        >
           {senderAvatar ?? (
-            <>
+            <View flexShrink={0}>
               <Avatar name={senderName} size="sm" src={avatarUrl} />
               {badgeUrl ? (
                 <View width={16} height={16}>
@@ -173,38 +185,45 @@ export const ChatMessage = memo(function ChatMessage({
                   />
                 </View>
               ) : null}
-            </>
+            </View>
           )}
-          <Typography
-            uiSize="xs"
-            weight="600"
-            {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
-            {...(senderNameStyle ? { style: senderNameStyle } : {})}
-            letterSpacing={0.5}
-            textTransform="uppercase"
-          >
-            {senderName}
-          </Typography>
-          <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message" flex={1} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-            <Typography
-              uiSize="sm"
-              color={isOwn ? 'white' : '$color'}
-              textAlign="left"
-            >
-              {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
-            </Typography>
-            {timestamp && (
-              <Typography
-                uiSize="xs"
-                alpha="low"
-                color={isOwn ? 'white' : '$color'}
-                mt="$1"
-                opacity={0.7}
-              >
-                {timestamp}
-              </Typography>
+          <YStack flex={1} minWidth={0} gap="$1">
+            {emoji ? (
+              <span style={{ fontSize: 36, lineHeight: 1 }}>{emoji}</span>
+            ) : (
+              <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', width: '100%' }}>
+                <Typography
+                  uiSize="sm"
+                  color={isOwn ? 'white' : '$color'}
+                  textAlign="left"
+                >
+                  {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
+                </Typography>
+                {timestamp && (
+                  <Typography
+                    uiSize="xs"
+                    alpha="low"
+                    color={isOwn ? 'white' : '$color'}
+                    mt="$1"
+                    opacity={0.7}
+                  >
+                    {timestamp}
+                  </Typography>
+                )}
+              </MessageBubble>
             )}
-          </MessageBubble>
+            <Typography
+              uiSize="xs"
+              weight="600"
+              {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
+              letterSpacing={0.5}
+              textTransform="uppercase"
+              numberOfLines={1}
+              style={{ fontSize: 11, lineHeight: '16px', ...senderNameStyle }}
+            >
+              {senderName}
+            </Typography>
+          </YStack>
         </XStack>
       )}
       {isSystem && (

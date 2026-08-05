@@ -3,6 +3,8 @@
 import type { ReactNode } from 'react';
 import { ChatMessage } from '@arcadeum/ui';
 import { ChatSenderLabel } from './ChatSenderLabel';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import type { EquippedResolver } from './types';
 
 interface GameChatRowProps {
@@ -38,6 +40,17 @@ export function GameChatRow({
 }: GameChatRowProps) {
   const isMove = !!moveCell;
 
+  const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
+  const { nameColor } = useEquippedCosmetics({
+    equippedAvatarId: resolved?.equippedAvatarId,
+    equippedBadgeId: resolved?.equippedBadgeId,
+    equippedNameColorId: resolved?.equippedNameColorId,
+    equippedFrameId: resolved?.equippedFrameId,
+    equippedAuraId: resolved?.equippedAuraId,
+    equippedBannerId: resolved?.equippedBannerId,
+  });
+  const nameStyleProps = nameColorRenderProps(nameColor);
+
   return (
     <div
       onMouseEnter={
@@ -56,7 +69,9 @@ export function GameChatRow({
       }
     >
       <ChatMessage
-        senderName={senderName ? '\u200B' : undefined}
+        senderName={senderName}
+        senderColor={nameStyleProps.color ?? senderColor}
+        senderNameStyle={nameStyleProps.style}
         targetName={targetName}
         targetColor={targetColor}
         content={content}
@@ -67,7 +82,6 @@ export function GameChatRow({
           senderName ? (
             <ChatSenderLabel
               senderName={senderName}
-              senderColor={senderColor}
               senderId={senderId}
               resolveEquipped={resolveEquipped}
             />

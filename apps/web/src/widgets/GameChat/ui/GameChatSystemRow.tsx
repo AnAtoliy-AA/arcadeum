@@ -1,8 +1,11 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { ChatMessage } from '@arcadeum/ui';
 import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styled';
 import { ChatSenderLabel } from './ChatSenderLabel';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import type { EquippedResolver } from './types';
 
 export type SystemRowKind = 'elim' | 'round' | 'combo' | 'join';
@@ -89,20 +92,36 @@ export function GameChatEmoteRow({
   senderId,
   resolveEquipped,
 }: EmoteRowProps) {
+  const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
+  const { nameColor } = useEquippedCosmetics({
+    equippedAvatarId: resolved?.equippedAvatarId,
+    equippedBadgeId: resolved?.equippedBadgeId,
+    equippedNameColorId: resolved?.equippedNameColorId,
+    equippedFrameId: resolved?.equippedFrameId,
+    equippedAuraId: resolved?.equippedAuraId,
+    equippedBannerId: resolved?.equippedBannerId,
+  });
+  const nameStyleProps = nameColorRenderProps(nameColor);
+
   return (
-    <div
-      data-testid="game-chat-emote-row"
-      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}
-    >
-      {senderName ? (
-        <ChatSenderLabel
-          senderName={senderName}
-          senderColor={senderColor}
-          senderId={senderId}
-          resolveEquipped={resolveEquipped}
-        />
-      ) : null}
-      <span style={{ fontSize: 36, lineHeight: 1 }}>{emoji}</span>
+    <div data-testid="game-chat-emote-row">
+      <ChatMessage
+        content=""
+        emoji={emoji}
+        senderName={senderName}
+        senderColor={nameStyleProps.color ?? senderColor}
+        senderNameStyle={nameStyleProps.style}
+        isOwn={false}
+        senderAvatar={
+          senderName ? (
+            <ChatSenderLabel
+              senderName={senderName}
+              senderId={senderId}
+              resolveEquipped={resolveEquipped}
+            />
+          ) : undefined
+        }
+      />
     </div>
   );
 }

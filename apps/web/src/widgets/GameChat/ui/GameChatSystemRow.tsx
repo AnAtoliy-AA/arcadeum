@@ -2,6 +2,8 @@
 
 import type { ReactNode } from 'react';
 import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styled';
+import { ChatSenderLabel } from './ChatSenderLabel';
+import type { EquippedResolver } from './types';
 
 export type SystemRowKind = 'elim' | 'round' | 'combo' | 'join';
 
@@ -69,5 +71,38 @@ export function GameChatSystemRow({
       </SysText>
       {time ? <SysTime>{time}</SysTime> : null}
     </SysWrap>
+  );
+}
+
+interface EmoteRowProps {
+  emoji: string;
+  senderName?: string;
+  senderColor?: string;
+  senderId?: string | null;
+  resolveEquipped?: EquippedResolver;
+}
+
+export function GameChatEmoteRow({
+  emoji,
+  senderName,
+  senderColor,
+  senderId,
+  resolveEquipped,
+}: EmoteRowProps) {
+  return (
+    <div
+      data-testid="game-chat-emote-row"
+      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}
+    >
+      {senderName ? (
+        <ChatSenderLabel
+          senderName={senderName}
+          senderColor={senderColor}
+          senderId={senderId}
+          resolveEquipped={resolveEquipped}
+        />
+      ) : null}
+      <span style={{ fontSize: 36, lineHeight: 1 }}>{emoji}</span>
+    </div>
   );
 }

@@ -169,13 +169,15 @@ export const ChatBubbleContainer = memo(function ChatBubbleContainer({
   $visible,
   $position,
   $variant,
+  style,
   ...props
-}: ChatBubbleContainerProps): ReactElement {
+}: ChatBubbleContainerProps & { style?: React.CSSProperties }): ReactElement {
   return (
     <StyledChatBubbleContainer
       $visible={$visible}
       $position={$position}
       $variant={$variant}
+      style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', ...style }}
       {...props}
     />
   );

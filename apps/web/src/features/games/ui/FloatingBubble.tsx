@@ -99,16 +99,18 @@ export function FloatingBubbleLabel({
         opacity: 0,
       }}
     >
-      <EquippedPlayerAvatar
-        name={senderName}
-        size="icon"
-        equippedAvatarId={equippedAvatarId ?? null}
-        equippedBadgeId={equippedBadgeId ?? null}
-        equippedNameColorId={equippedNameColorId}
-        equippedFrameId={equippedFrameId}
-        equippedAuraId={equippedAuraId}
-        equippedBannerId={equippedBannerId}
-      />
+      <span style={{ display: 'inline-flex', transform: 'scale(0.7)', transformOrigin: 'center' }}>
+        <EquippedPlayerAvatar
+          name={senderName}
+          size="icon"
+          equippedAvatarId={equippedAvatarId ?? null}
+          equippedBadgeId={equippedBadgeId ?? null}
+          equippedNameColorId={equippedNameColorId}
+          equippedFrameId={equippedFrameId}
+          equippedAuraId={equippedAuraId}
+          equippedBannerId={equippedBannerId}
+        />
+      </span>
       {senderName}
     </div>
   );

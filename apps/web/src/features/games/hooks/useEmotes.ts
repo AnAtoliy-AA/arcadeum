@@ -7,7 +7,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useGameChatStore } from '@/widgets/GameChat/store/gameChatStore';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 
-const BUBBLE_DURATION_MS = 3000;
+const BUBBLE_DURATION_MS = 5000;
 const RATE_LIMIT_MS = 2000;
 
 interface ActiveEmote {
@@ -58,19 +58,6 @@ export function useEmotes(): UseEmotesReturn {
       }, BUBBLE_DURATION_MS);
 
       timersRef.current.set(d.userId, timer);
-
-      // Add emote to chat log
-      const addLog = useGameChatStore.getState().addLog;
-      if (addLog) {
-        addLog({
-          id: `emote-${d.userId}-${d.ts ?? Date.now()}`,
-          type: 'action',
-          kind: 'system',
-          message: `${findEmoji(d.emoteId)} ${d.emoteId.replace(/_/g, ' ')}`,
-          createdAt: new Date(d.ts ?? Date.now()).toISOString(),
-          senderId: d.userId,
-        });
-      }
     }, []),
   );
 
@@ -95,6 +82,12 @@ export function useEmotes(): UseEmotesReturn {
         userId,
         emoteId,
       });
+
+      // Also send as chat message so it persists in server history
+      const sendMessage = useGameChatStore.getState().sendMessage;
+      if (sendMessage) {
+        sendMessage(`${findEmoji(emoteId)} ${emoteId.replace(/_/g, ' ')}`, 'all');
+      }
     },
     [roomId, userId],
   );

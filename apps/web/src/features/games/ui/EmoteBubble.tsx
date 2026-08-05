@@ -60,7 +60,7 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
       ref={ref}
       style={{
         position: 'absolute',
-        top: 24,
+        top: 100,
         right: 24,
         zIndex: 10,
         pointerEvents: 'none',
@@ -74,15 +74,15 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
       <div
         style={{
           position: 'relative',
-          width: 72,
-          height: 72,
+          width: 96,
+          height: 96,
         }}
       >
         <div
           style={{
-            width: 72,
-            height: 72,
-            borderRadius: 36,
+            width: 96,
+            height: 96,
+            borderRadius: 48,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -91,8 +91,8 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
             borderStyle: 'solid',
             borderColor: 'rgba(236, 72, 153, 0.5)',
             boxShadow: '0 0 18px 2px rgba(236, 72, 153, 0.45)',
-            fontSize: 42,
-            lineHeight: '48px',
+            fontSize: 56,
+            lineHeight: '64px',
           }}
         >
           {findEmoji(current.emoteId)}

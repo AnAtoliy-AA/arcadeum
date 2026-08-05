@@ -2,9 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { ChatMessage } from '@arcadeum/ui';
-import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
-import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
+import { ChatSenderLabel } from './ChatSenderLabel';
 import type { EquippedResolver } from './types';
 
 interface GameChatRowProps {
@@ -38,18 +36,6 @@ export function GameChatRow({
   onMoveHover,
   onMoveClick,
 }: GameChatRowProps) {
-  const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
-  const { nameColor } = useEquippedCosmetics({
-    equippedAvatarId: resolved?.equippedAvatarId,
-    equippedBadgeId: resolved?.equippedBadgeId,
-    equippedNameColorId: resolved?.equippedNameColorId,
-    equippedFrameId: resolved?.equippedFrameId,
-    equippedAuraId: resolved?.equippedAuraId,
-    equippedBannerId: resolved?.equippedBannerId,
-  });
-  const nameProps = nameColorRenderProps(nameColor);
-  const resolvedSenderColor = nameProps.color ?? senderColor;
-
   const isMove = !!moveCell;
 
   return (
@@ -70,9 +56,7 @@ export function GameChatRow({
       }
     >
       <ChatMessage
-        senderName={senderName}
-        senderColor={resolvedSenderColor}
-        senderNameStyle={nameProps.style}
+        senderName={senderName ? '\u200B' : undefined}
         targetName={targetName}
         targetColor={targetColor}
         content={content}
@@ -81,15 +65,11 @@ export function GameChatRow({
         isOwn={isOwn}
         senderAvatar={
           senderName ? (
-            <EquippedPlayerAvatar
-              name={senderName}
-              size="sm"
-              equippedAvatarId={resolved?.equippedAvatarId ?? null}
-              equippedBadgeId={resolved?.equippedBadgeId ?? null}
-              equippedNameColorId={resolved?.equippedNameColorId}
-              equippedFrameId={resolved?.equippedFrameId}
-              equippedAuraId={resolved?.equippedAuraId}
-              equippedBannerId={resolved?.equippedBannerId}
+            <ChatSenderLabel
+              senderName={senderName}
+              senderColor={senderColor}
+              senderId={senderId}
+              resolveEquipped={resolveEquipped}
             />
           ) : undefined
         }

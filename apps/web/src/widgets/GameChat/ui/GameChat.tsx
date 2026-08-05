@@ -16,7 +16,7 @@ import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
 import { useChatCollapsed } from '../hooks/useChatCollapsed';
 import { GameChatRow } from './GameChatRow';
-import { GameChatSystemRow, type SystemRowKind } from './GameChatSystemRow';
+import { GameChatSystemRow, type SystemRowKind, GameChatEmoteRow } from './GameChatSystemRow';
 import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';
 import { ChatQuickBar } from './ChatQuickBar';
@@ -104,6 +104,21 @@ function inferSysKind(log: ChatLogEntry): SystemRowKind {
   if (msg.includes('join') || msg.includes('placing') || msg.includes('left '))
     return 'join';
   return log.type === 'action' ? 'combo' : 'elim';
+}
+
+const EMOJI_STARTER = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+
+function parseEmoteMessage(message: string): { emoji: string; name: string } | null {
+  const firstCodePoint = message.codePointAt(0);
+  if (firstCodePoint === undefined) return null;
+  const firstChar = String.fromCodePoint(firstCodePoint);
+  if (!EMOJI_STARTER.test(firstChar)) return null;
+  const spaceIdx = message.indexOf(' ');
+  if (spaceIdx === -1) return { emoji: message, name: '' };
+  return {
+    emoji: message.slice(0, spaceIdx),
+    name: message.slice(spaceIdx + 1),
+  };
 }
 
 function logBelongsToScope(log: ChatLogEntry, scope: ChatScope): boolean {
@@ -381,6 +396,19 @@ export function GameChat({
                       />
                     );
                   }
+                  const emote = parseEmoteMessage(log.message);
+                  if (emote) {
+                    return (
+                      <GameChatEmoteRow
+                        key={log.id}
+                        emoji={emote.emoji}
+                        senderName={senderName}
+                        senderColor={senderColor}
+                        senderId={log.senderId ?? null}
+                        resolveEquipped={resolveEquipped}
+                      />
+                    );
+                  }
                   return (
                     <GameChatSystemRow
                       key={log.id}
@@ -394,6 +422,19 @@ export function GameChat({
                   );
                 }
                 const isOwn = !!currentUserId && log.senderId === currentUserId;
+                const emote = parseEmoteMessage(log.message);
+                if (emote) {
+                  return (
+                    <GameChatEmoteRow
+                      key={log.id}
+                      emoji={emote.emoji}
+                      senderName={senderName}
+                      senderColor={senderColor}
+                      senderId={log.senderId ?? null}
+                      resolveEquipped={resolveEquipped}
+                    />
+                  );
+                }
                 return (
                   <div
                     key={log.id}

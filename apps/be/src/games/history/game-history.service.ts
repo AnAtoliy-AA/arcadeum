@@ -60,6 +60,17 @@ export class GameHistoryService {
       this.historyHiddenModel
     );
   }
+
+  async getUserDisplayName(userId: string): Promise<string> {
+    if (!this.userModel) return '';
+    try {
+      const user = await this.userModel.findById(userId).select('displayName username').lean().exec();
+      return user?.displayName ?? user?.username ?? '';
+    } catch {
+      return '';
+    }
+  }
+
   async listHistoryForUser(
     userId: string,
     options: {

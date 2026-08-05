@@ -219,6 +219,7 @@ export class GameSessionsService {
     userId: string,
     message: string,
     scope: string,
+    senderName?: string,
   ): Promise<GameSessionSummary | null> {
     const session = await this.ociSessionModel
       .findOne({ roomId })
@@ -235,7 +236,7 @@ export class GameSessionsService {
       createdAt: new Date().toISOString(),
       scope,
       senderId: userId,
-      senderName: null,
+      senderName: senderName ?? null,
     });
     session.markModified('state');
     session.updatedAt = new Date();

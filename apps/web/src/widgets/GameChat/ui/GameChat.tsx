@@ -12,7 +12,7 @@ import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { useGameChatStore } from '../store/gameChatStore';
-import type { ChatScope } from '../store/gameChatStore';
+import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
 import { useChatCollapsed } from '../hooks/useChatCollapsed';
 import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';

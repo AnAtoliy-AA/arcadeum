@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.21] - 2026-08-05
+
+### Added
+- lobby chat with message deletion
+- add scan wave weapon - reveal all ships at battle start
+- scale sonar/radar size with grid dimensions
+
+### Fixed
+- eslint warnings
+- restore ChatLogEntry import in GameChat.tsx
+- resolve lint errors in gateway and sea-battle service
+- resolve watcher display names in chat log entries
+- enable authenticated watcher chat and resolve watcher avatars in game chat
+- unify game chat layout with bottom-aligned avatar and name
+- enable message deletion for emotes in game chat
+- add avatar to emote bubble and fix lobby chat
+- decrypt encrypted socket events in lobby chat listener
+- show player avatars in lobby player list
+- always show sonar/radar buttons and disable when unavailable
+
+### Refactored
+- extract ChatLogItem and chat helpers to reduce GameChat.tsx below 500 lines
+- clean up formatting in game services and gateway
+- extract SenderName component from ChatMessage
+- unify game chat avatar+name rendering and fix emote display
+- extract shared FloatingBubbleLabel for popup avatar and name badge
+- simplify useGameRoomChat decryption logic
+- extract isSonarDisabled/isRadarDisabled booleans
+
+
 ## [1.24.20] - 2026-08-05
 
 ### Changed

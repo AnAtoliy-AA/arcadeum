@@ -11,15 +11,17 @@ import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
-import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useGameChatStore } from '../store/gameChatStore';
-import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
+import type { ChatScope } from '../store/gameChatStore';
 import { useChatCollapsed } from '../hooks/useChatCollapsed';
-import { GameChatRow } from './GameChatRow';
-import { GameChatSystemRow, type SystemRowKind, GameChatEmoteRow } from './GameChatSystemRow';
 import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';
 import { ChatQuickBar } from './ChatQuickBar';
+import { ChatLogItem } from './ChatLogItem';
+import {
+  logBelongsToScope,
+  lastMessagePreview,
+} from './chatHelpers';
 import {
   ACCENT_GRADIENT,
   ACCENT_PINK,
@@ -45,7 +47,6 @@ import {
   TitleDot,
   UnreadBadge,
 } from './GameChat.styled';
-import { parseMoveCell, renderResultHighlights } from './chatHelpers';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -98,49 +99,6 @@ const MONO_STYLE: React.CSSProperties = {
   fontFamily:
     "ui-monospace, SFMono-Regular, 'JetBrains Mono', 'Menlo', monospace",
 };
-
-function inferSysKind(log: ChatLogEntry): SystemRowKind {
-  const msg = log.message?.toLowerCase() ?? '';
-  if (msg.includes('round')) return 'round';
-  if (msg.includes('combo')) return 'combo';
-  if (msg.includes('join') || msg.includes('placing') || msg.includes('left '))
-    return 'join';
-  return log.type === 'action' ? 'combo' : 'elim';
-}
-
-const EMOJI_STARTER = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
-
-function parseEmoteMessage(message: string): { emoji: string; name: string } | null {
-  const firstCodePoint = message.codePointAt(0);
-  if (firstCodePoint === undefined) return null;
-  const firstChar = String.fromCodePoint(firstCodePoint);
-  if (!EMOJI_STARTER.test(firstChar)) return null;
-  const spaceIdx = message.indexOf(' ');
-  if (spaceIdx === -1) return { emoji: message, name: '' };
-  return {
-    emoji: message.slice(0, spaceIdx),
-    name: message.slice(spaceIdx + 1),
-  };
-}
-
-function logBelongsToScope(log: ChatLogEntry, scope: ChatScope): boolean {
-  if (log.type !== 'message') return scope === 'all';
-  const logScope = (log as ChatLogEntry & { scope?: ChatScope }).scope;
-  if (!logScope) return scope === 'all';
-  return logScope === scope;
-}
-
-function lastMessagePreview(logs: ChatLogEntry[]): string {
-  for (let i = logs.length - 1; i >= 0; i--) {
-    const log = logs[i];
-    if (log.type === 'message') {
-      const name = log.senderName ?? 'Someone';
-      const text = log.message ?? '';
-      return `${name}: ${text}`;
-    }
-  }
-  return 'No messages yet';
-}
 
 export function GameChat({
   resolveDisplayName,
@@ -367,7 +325,7 @@ export function GameChat({
                   : undefined;
                 const senderColor = log.senderId
                   ? (resolveActorColor?.(log.senderId) ??
-                    getPlayerColor(log.senderId))
+                    undefined)
                   : undefined;
                 const targetId = log.targetId;
                 const targetName = targetId
@@ -376,165 +334,21 @@ export function GameChat({
                     : targetId
                   : undefined;
                 const targetColor = targetId
-                  ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
+                  ? (resolveActorColor?.(targetId) ?? undefined)
                   : undefined;
-                if (log.type === 'system' || log.type === 'action') {
-                  const moveCell = parseMoveCell(log.message);
-                  if (moveCell) {
-                    return (
-                      <GameChatRow
-                        key={log.id}
-                        senderId={log.senderId ?? null}
-                        senderName={log.senderId ? senderName : undefined}
-                        senderColor={senderColor}
-                        content={log.message}
-                        type="action"
-                        isOwn={false}
-                        resolveEquipped={resolveEquipped}
-                        moveCell={moveCell}
-                        onMoveHover={(cell) =>
-                          useGameChatStore.getState().setHighlightedCell(cell)
-                        }
-                        onMoveClick={(cell) =>
-                          useGameChatStore.getState().setPersistedCell(cell)
-                        }
-                      />
-                    );
-                  }
-                  const emote = parseEmoteMessage(log.message);
-                  if (emote) {
-                    return (
-                      <GameChatEmoteRow
-                        key={log.id}
-                        emoji={emote.emoji}
-                        senderName={senderName}
-                        senderColor={senderColor}
-                        senderId={log.senderId ?? null}
-                        resolveEquipped={resolveEquipped}
-                      />
-                    );
-                  }
-                  return (
-                    <GameChatSystemRow
-                      key={log.id}
-                      kind={inferSysKind(log)}
-                      content={renderResultHighlights(log.message)}
-                      senderName={senderName}
-                      senderColor={senderColor}
-                      targetName={targetName}
-                      targetColor={targetColor}
-                    />
-                  );
-                }
-                const isOwn = !!currentUserId && log.senderId === currentUserId;
-                const emote = parseEmoteMessage(log.message);
-                if (emote) {
-                  return (
-                    <div
-                      key={log.id}
-                      className="chat-msg-row"
-                      style={{ position: 'relative' }}
-                    >
-                      <GameChatEmoteRow
-                        emoji={emote.emoji}
-                        senderName={senderName}
-                        senderColor={senderColor}
-                        senderId={log.senderId ?? null}
-                        resolveEquipped={resolveEquipped}
-                      />
-                      {(isHost || log.senderId === currentUserId) && onDeleteMessage && (
-                        <button
-                          className="chat-delete-btn"
-                          onClick={() => onDeleteMessage(log.id)}
-                          title="Delete message"
-                          aria-label="Delete message"
-                          style={{
-                            position: 'absolute',
-                            top: 4,
-                            right: 4,
-                            background: 'rgba(239,68,68,0.8)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: 4,
-                            width: 20,
-                            height: 20,
-                            fontSize: 12,
-                            lineHeight: '20px',
-                            cursor: 'pointer',
-                            opacity: 0,
-                            transition: 'opacity 120ms ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: 0,
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.opacity = '1')
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.opacity = '0')
-                          }
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  );
-                }
                 return (
-                  <div
+                  <ChatLogItem
                     key={log.id}
-                    className="chat-msg-row"
-                    style={{ position: 'relative' }}
-                  >
-                    <GameChatRow
-                      senderId={log.senderId ?? null}
-                      senderName={log.senderId ? senderName : undefined}
-                      senderColor={senderColor}
-                      targetName={targetId ? targetName : undefined}
-                      targetColor={targetColor}
-                      content={log.message}
-                      type={log.type}
-                      isOwn={isOwn}
-                      resolveEquipped={resolveEquipped}
-                    />
-                    {(isHost || log.senderId === currentUserId) && onDeleteMessage && (log.type === 'message' || log.type === 'action') && (
-                      <button
-                        className="chat-delete-btn"
-                        onClick={() => onDeleteMessage(log.id)}
-                        title="Delete message"
-                        aria-label="Delete message"
-                        style={{
-                          position: 'absolute',
-                          top: 4,
-                          right: 4,
-                          background: 'rgba(239,68,68,0.8)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: 4,
-                          width: 20,
-                          height: 20,
-                          fontSize: 12,
-                          lineHeight: '20px',
-                          cursor: 'pointer',
-                          opacity: 0,
-                          transition: 'opacity 120ms ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: 0,
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.opacity = '1')
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.opacity = '0')
-                        }
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
+                    log={log}
+                    senderName={senderName}
+                    senderColor={senderColor}
+                    targetName={targetName}
+                    targetColor={targetColor}
+                    currentUserId={currentUserId}
+                    resolveEquipped={resolveEquipped}
+                    isHost={isHost}
+                    onDeleteMessage={onDeleteMessage}
+                  />
                 );
               })}
             </ListGap>

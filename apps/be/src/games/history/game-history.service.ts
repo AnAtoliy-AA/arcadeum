@@ -64,7 +64,11 @@ export class GameHistoryService {
   async getUserDisplayName(userId: string): Promise<string> {
     if (!this.userModel) return '';
     try {
-      const user = await this.userModel.findById(userId).select('displayName username').lean().exec();
+      const user = await this.userModel
+        .findById(userId)
+        .select('displayName username')
+        .lean()
+        .exec();
       return user?.displayName ?? user?.username ?? '';
     } catch {
       return '';
@@ -338,7 +342,9 @@ export class GameHistoryService {
         room.participants.some((p) => p.userId === userId);
 
       if (!isParticipant) {
-        throw new BadRequestException('You were not a participant in this game');
+        throw new BadRequestException(
+          'You were not a participant in this game',
+        );
       }
     }
 

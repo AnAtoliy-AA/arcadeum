@@ -71,8 +71,7 @@ export async function handleRoomChat(
   let senderName = '';
   try {
     const room = await gamesService.getRoom(roomId);
-    senderName =
-      room.members?.find((m) => m.id === userId)?.displayName ?? '';
+    senderName = room.members?.find((m) => m.id === userId)?.displayName ?? '';
   } catch {
     // ignore — senderName stays empty
   }
@@ -87,10 +86,7 @@ export async function handleRoomChat(
 
   if (entry) {
     server.to(channel).emit('games.room.chat', maybeEncrypt(entry));
-    client.emit(
-      'games.room.chat.ack',
-      maybeEncrypt({ roomId, userId, scope }),
-    );
+    client.emit('games.room.chat.ack', maybeEncrypt({ roomId, userId, scope }));
   }
 }
 

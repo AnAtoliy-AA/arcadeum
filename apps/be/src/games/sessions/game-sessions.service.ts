@@ -227,7 +227,7 @@ export class GameSessionsService {
       .exec();
     if (!session) return null;
 
-    const state = session.state as Record<string, unknown>;
+    const state = session.state;
     if (!Array.isArray(state.logs)) state.logs = [];
     (state.logs as Array<Record<string, unknown>>).push({
       id: globalThis.crypto.randomUUID().slice(0, 12),

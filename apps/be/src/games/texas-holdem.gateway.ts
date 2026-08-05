@@ -128,7 +128,13 @@ export class TexasHoldemGateway implements GameMessageHandler {
     validatePayloadUserId(client, userId);
 
     try {
-      await this.texasHoldemService.postHistoryNote(userId, roomId, message, 'all', isAuthenticated);
+      await this.texasHoldemService.postHistoryNote(
+        userId,
+        roomId,
+        message,
+        'all',
+        isAuthenticated,
+      );
       client.emit(
         'games.session.holdem_history_note.ack',
         maybeEncrypt({

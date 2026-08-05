@@ -138,6 +138,32 @@ const MessageBubble = styled(YStack, {
   } as const,
 });
 
+const NAME_STYLE = { fontSize: 11, lineHeight: '16px' } as const;
+
+function SenderName({
+  name,
+  color,
+  nameStyle,
+}: {
+  name: string;
+  color?: string;
+  nameStyle?: React.CSSProperties;
+}) {
+  return (
+    <Typography
+      uiSize="xs"
+      weight="600"
+      {...(color ? { color } : { alpha: 'medium' })}
+      letterSpacing={0.5}
+      textTransform="uppercase"
+      numberOfLines={1}
+      style={{ ...NAME_STYLE, ...nameStyle }}
+    >
+      {name}
+    </Typography>
+  );
+}
+
 export const ChatMessage = memo(function ChatMessage({
   content,
   contentNode,
@@ -212,17 +238,11 @@ export const ChatMessage = memo(function ChatMessage({
                 )}
               </MessageBubble>
             )}
-            <Typography
-              uiSize="xs"
-              weight="600"
-              {...(senderColor ? { color: senderColor } : { alpha: 'medium' })}
-              letterSpacing={0.5}
-              textTransform="uppercase"
-              numberOfLines={1}
-              style={{ fontSize: 11, lineHeight: '16px', ...senderNameStyle }}
-            >
-              {senderName}
-            </Typography>
+            <SenderName
+              name={senderName}
+              color={senderColor}
+              nameStyle={senderNameStyle}
+            />
           </YStack>
         </XStack>
       )}

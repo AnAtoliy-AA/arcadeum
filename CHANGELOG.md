@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.22] - 2026-08-05
+
+### Added
+- admin update abbility to grant shop items to users
+
+### Fixed
+- avoid any in query condition
+
+
 ## [1.24.21] - 2026-08-05
 
 ### Added

@@ -198,6 +198,14 @@
   }
 }
 
+@media (max-width: 480px) {
+  .hero-card-stack {
+    transform: scale(0.52);
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-card-main {
     touch-action: manipulation;

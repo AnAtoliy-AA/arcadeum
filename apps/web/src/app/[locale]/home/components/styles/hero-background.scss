@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
   min-height: 90vh;
   position: relative;
   overflow: visible;
@@ -43,6 +43,14 @@
   background:
     radial-gradient(circle at 50% 50%, transparent 20%, var(--background) 95%),
     linear-gradient(to bottom, transparent 60%, var(--background) 100%);
+}
+
+@media (max-width: 768px) {
+  .hero-background-overlay {
+    background:
+      radial-gradient(circle at 50% 50%, transparent 40%, var(--background) 110%),
+      linear-gradient(to bottom, transparent 60%, var(--background) 100%);
+  }
 }
 
 .hero-background-overlay::before {

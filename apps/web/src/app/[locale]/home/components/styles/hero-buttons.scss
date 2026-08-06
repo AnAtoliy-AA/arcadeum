@@ -68,11 +68,5 @@
   flex-wrap: wrap;
   gap: var(--t-space-4);
   margin-top: var(--t-space-2);
-  justify-content: center;
-}
-
-@media (min-width: 1151px) {
-  .hero-actions-responsive {
-    justify-content: flex-start;
-  }
+  justify-content: flex-start;
 }

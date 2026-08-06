@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.25] - 2026-08-06
+
+### Added
+- game picker respects admin visibility and adds translations
+- use create-room game art in picker modal and lazy-load it
+- game picker modal uses SVG symbols and adds category tabs
+- play vs AI hero button opens game picker modal
+
+### Fixed
+- reduce desktop hero padding to keep buttons visible
+- hero section buttons and card overflow on mobile
+
+### Refactored
+- split oversized game services under 500-line limit
+
+
 ## [1.24.24] - 2026-08-06
 
 ### Added

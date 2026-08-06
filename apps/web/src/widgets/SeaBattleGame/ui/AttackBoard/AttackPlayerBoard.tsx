@@ -21,6 +21,7 @@ import { type TranslationKey } from '@/shared/lib/useTranslation';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
+import { FieldStatus } from './FieldStatus';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
 
@@ -305,24 +306,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <PlayerStats>
             <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
-          <BoardWithLabels>
-            <div />
-            <ColLabels gridSize={boardSize}>
-              {colLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </ColLabels>
-            <RowLabels gridSize={boardSize}>
-              {rowLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </RowLabels>
-            {boardGrid}
-          </BoardWithLabels>
+          <YStack position="relative" width="100%">
+            <BoardWithLabels>
+              <div />
+              <ColLabels gridSize={boardSize}>
+                {colLbls.map((label) => (
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                    {label}
+                  </Label>
+                ))}
+              </ColLabels>
+              <RowLabels gridSize={boardSize}>
+                {rowLbls.map((label) => (
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                    {label}
+                  </Label>
+                ))}
+              </RowLabels>
+              {boardGrid}
+            </BoardWithLabels>
+            <FieldStatus board={player.board} isMe={true} />
+          </YStack>
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -399,24 +403,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerStats>
           <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
-        <BoardWithLabels>
-          <div />
-          <ColLabels gridSize={boardSize}>
-            {colLbls.map((label) => (
-              <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                {label}
-              </Label>
-            ))}
-          </ColLabels>
-          <RowLabels gridSize={boardSize}>
-            {rowLbls.map((label) => (
-              <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                {label}
-              </Label>
-            ))}
-          </RowLabels>
-          {boardGrid}
-        </BoardWithLabels>
+        <YStack position="relative" width="100%">
+          <BoardWithLabels>
+            <div />
+            <ColLabels gridSize={boardSize}>
+              {colLbls.map((label) => (
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  {label}
+                </Label>
+              ))}
+            </ColLabels>
+            <RowLabels gridSize={boardSize}>
+              {rowLbls.map((label) => (
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  {label}
+                </Label>
+              ))}
+            </RowLabels>
+            {boardGrid}
+          </BoardWithLabels>
+          <FieldStatus board={player.board} isMe={false} />
+        </YStack>
       </PlayerSection>
     </PlayerSectionWrapper>
   );

@@ -18,6 +18,7 @@ export function HeroPlayVsAiButton({ label }: Props) {
   return (
     <>
       <button
+        data-testid="hero-play-vs-ai-button"
         className="home-link-button home-link-button-ghost"
         onClick={() => setOpen(true)}
         type="button"

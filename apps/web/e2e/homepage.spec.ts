@@ -123,12 +123,12 @@ test.describe('Home Page', () => {
     await expect(page).toHaveURL(/\/games/);
   });
 
-  test('should navigate to games page with active filters via Play vs AI button', async ({
+  test('should open game picker modal via Play vs AI button', async ({
     page,
   }) => {
-    const playVsAiButton = page.getByRole('link', { name: /play vs ai/i });
+    const playVsAiButton = page.getByTestId('hero-play-vs-ai-button');
     await expect(playVsAiButton).toBeVisible();
     await playVsAiButton.click();
-    await expect(page).toHaveURL(/\/games\?status=lobby,in_progress/);
+    await expect(page.getByTestId('game-picker-title')).toBeVisible();
   });
 });

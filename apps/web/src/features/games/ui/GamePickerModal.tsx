@@ -136,7 +136,9 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
     <Modal open={open} onClose={onClose}>
       <ModalContent maxWidth={720}>
         <ModalHeader onClose={onClose}>
-          <ModalTitle>{t('games.gamePicker.title')}</ModalTitle>
+          <ModalTitle data-testid="game-picker-title">
+            {t('games.gamePicker.title')}
+          </ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div

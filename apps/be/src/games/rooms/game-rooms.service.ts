@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
@@ -28,6 +27,8 @@ import {
 } from './game-rooms.types';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
+import { GameRoomsChatService } from './game-rooms.chat.service';
+import { generateUniqueInviteCode } from './game-rooms.invite-code';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 import { validateGameOptions } from './game-rooms.config-validator';
@@ -57,6 +58,7 @@ export class GameRoomsService {
     private readonly ociRoomModel: Model<GameRoom>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsRematchService: GameRoomsRematchService,
+    private readonly gameRoomsChatService: GameRoomsChatService,
     private readonly engineRegistry: GameEngineRegistry,
     @Optional()
     @InjectModel(GameRoom.name, ATLAS_CONNECTION)
@@ -69,7 +71,7 @@ export class GameRoomsService {
     userId: string,
     dto: CreateGameRoomDto,
   ): Promise<GameRoomSummary> {
-    const inviteCode = await this.generateInviteCode();
+    const inviteCode = await generateUniqueInviteCode(this.ociRoomModel);
 
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
@@ -477,77 +479,21 @@ export class GameRoomsService {
     );
   }
 
-  private async generateInviteCode(): Promise<string> {
-    let code: string;
-    let exists = true;
-    while (exists) {
-      code = randomBytes(4).toString('hex').toUpperCase();
-      const existing = await this.ociRoomModel
-        .findOne({ inviteCode: code })
-        .exec();
-      exists = !!existing;
-    }
-    return code!;
-  }
-
   async postRoomChat(
     roomId: string,
     userId: string,
     senderName: string,
     message: string,
     scope: string,
-  ): Promise<{
-    id: string;
-    senderId: string;
-    senderName: string;
-    message: string;
-    scope: string;
-    createdAt: string;
-  } | null> {
-    if (!Types.ObjectId.isValid(roomId)) return null;
-    const room = await this.ociRoomModel.findById(roomId).exec();
-    if (!room) return null;
-
-    const isParticipant =
-      room.hostId === userId ||
-      room.participants.some((p) => p.userId === userId);
-    if (!isParticipant) return null;
-
-    const entry = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      senderId: userId,
-      senderName,
-      message: message.slice(0, 240),
-      scope,
-      createdAt: new Date().toISOString(),
-    };
-
-    room.chatLogs = [...(room.chatLogs ?? []), entry];
-    room.updatedAt = new Date();
-    await room.save();
-
-    return entry;
+  ) {
+    return this.gameRoomsChatService.postRoomChat(roomId, userId, senderName, message, scope);
   }
 
   async deleteRoomChatMessage(
     roomId: string,
     callerId: string,
     messageId: string,
-  ): Promise<boolean> {
-    if (!Types.ObjectId.isValid(roomId)) return false;
-    const room = await this.ociRoomModel.findById(roomId).exec();
-    if (!room) return false;
-
-    const targetMessage = (room.chatLogs ?? []).find((l) => l.id === messageId);
-    if (!targetMessage) return false;
-
-    const isHost = room.hostId === callerId;
-    const isOwnMessage = targetMessage.senderId === callerId;
-    if (!isHost && !isOwnMessage) return false;
-
-    room.chatLogs = (room.chatLogs ?? []).filter((l) => l.id !== messageId);
-    room.updatedAt = new Date();
-    await room.save();
-    return true;
+  ) {
+    return this.gameRoomsChatService.deleteRoomChatMessage(roomId, callerId, messageId);
   }
 }

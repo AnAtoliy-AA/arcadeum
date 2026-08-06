@@ -30,6 +30,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
+import { GameRoomsChatService } from './rooms/game-rooms.chat.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
@@ -148,6 +149,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsService,
     GameRoomsMapper,
     GameRoomsRematchService,
+    GameRoomsChatService,
     GameRoomsQuickplayService,
     GameRoomsMatchmakingService,
     SeaBattleTeamConfigService,

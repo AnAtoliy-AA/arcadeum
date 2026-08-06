@@ -21,6 +21,7 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { stripDisabledRules } from './games.service-rules';
 
 @Injectable()
 export class GamesService {
@@ -465,7 +466,7 @@ export class GamesService {
     try {
       const room = await this.roomsService.getRoom(roomId);
       const ruleMap = await this.ruleVisibility.getRulesForGame(room.gameId);
-      this.stripDisabledRules(options, ruleMap);
+      stripDisabledRules(options, ruleMap);
     } catch (err) {
       this.logger.warn(
         `Rule stripping failed for room ${roomId}: ${err}. Proceeding without stripping.`,
@@ -478,26 +479,6 @@ export class GamesService {
     );
     this.realtimeService.emitRoomUpdated(updated);
     return updated;
-  }
-
-  private stripDisabledRules(
-    options: Record<string, unknown>,
-    ruleMap: Map<string, boolean>,
-  ): void {
-    if (ruleMap.get('gridSize') === false) delete options.gridSize;
-    const sw = options.specialWeapons;
-    if (typeof sw === 'object' && sw !== null) {
-      const weapons = sw as Record<string, unknown>;
-      if (ruleMap.get('sonar') === false) delete weapons.sonar;
-      if (ruleMap.get('radar') === false) delete weapons.radar;
-      if (Object.keys(weapons).length === 0) delete options.specialWeapons;
-    }
-    if (ruleMap.get('teams') === false) {
-      delete options.teams;
-      delete options.teamConfig;
-      if (options.mode === 'team') delete options.mode;
-    }
-    if (ruleMap.get('combos') === false) delete options.expansions;
   }
 
   async reorderParticipants(

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Modal,
@@ -12,6 +12,10 @@ import {
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import dynamic from 'next/dynamic';
 import { gameMetadata, gameLoaders } from '@/features/games/registry';
 import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
@@ -34,16 +38,17 @@ interface GamePickerModalProps {
   onClose: () => void;
 }
 
-const AI_GAMES = Object.values(gameMetadata).filter(
-  (g) => g.supportsAI && g.status !== 'coming_soon' && g.slug in gameLoaders,
+const ALL_AI_GAMES = Object.values(gameMetadata).filter(
+  (g) => g.supportsAI && g.slug in gameLoaders,
 );
 
-const CATEGORIES = [
-  'All',
-  ...Array.from(new Set(AI_GAMES.map((g) => g.category))).filter((cat) =>
-    AI_GAMES.some((g) => g.category === cat),
-  ),
-];
+const CATEGORY_KEY: Record<string, string> = {
+  'Card Game': 'games.shared.category.cardGame',
+  'Board Game': 'games.shared.category.boardGame',
+  Action: 'games.shared.category.action',
+  Strategy: 'games.shared.category.strategy',
+  Race: 'games.shared.category.race',
+};
 
 function GameTilePreview({ gameId }: { gameId: GameId }) {
   if (gameId === 'critical_v1') {
@@ -73,15 +78,41 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
   const router = useRouter();
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
+  const { t } = useTranslation();
   const [loadingGame, setLoadingGame] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [comingSoonIds, setComingSoonIds] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    gamesApi.getCatalog().then((catalog) => {
+      if (cancelled) return;
+      setComingSoonIds(
+        new Set(catalog.games.filter((g) => g.comingSoon).map((g) => g.gameId)),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  const games = useMemo(
+    () => (comingSoonIds === null ? [] : ALL_AI_GAMES),
+    [comingSoonIds],
+  );
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(games.map((g) => g.category)))],
+    [games],
+  );
 
   const filteredGames = useMemo(
     () =>
       activeCategory === 'All'
-        ? AI_GAMES
-        : AI_GAMES.filter((g) => g.category === activeCategory),
-    [activeCategory],
+        ? games
+        : games.filter((g) => g.category === activeCategory),
+    [activeCategory, games],
   );
 
   const handleSelectGame = useCallback(
@@ -105,7 +136,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
     <Modal open={open} onClose={onClose}>
       <ModalContent maxWidth={720}>
         <ModalHeader onClose={onClose}>
-          <ModalTitle>Pick a game to play vs AI</ModalTitle>
+          <ModalTitle>{t('games.gamePicker.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div
@@ -116,7 +147,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
               flexWrap: 'wrap',
             }}
           >
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -140,7 +171,9 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                   transition: 'all 0.15s ease',
                 }}
               >
-                {cat}
+                {cat === 'All'
+                  ? t('games.gamePicker.allCategory')
+                  : t((CATEGORY_KEY[cat] ?? cat) as TranslationKey)}
               </button>
             ))}
           </div>
@@ -157,11 +190,12 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
           >
             {filteredGames.map((game) => {
               const isLoading = loadingGame === game.slug;
+              const isComingSoon = comingSoonIds?.has(game.slug) ?? false;
               return (
                 <button
                   key={game.slug}
-                  onClick={() => handleSelectGame(game.slug)}
-                  disabled={loadingGame !== null}
+                  onClick={() => !isComingSoon && handleSelectGame(game.slug)}
+                  disabled={loadingGame !== null || isComingSoon}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -171,8 +205,16 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                     background: isLoading
                       ? 'rgba(255,255,255,0.06)'
                       : 'rgba(255,255,255,0.03)',
-                    cursor: loadingGame ? 'not-allowed' : 'pointer',
-                    opacity: loadingGame && !isLoading ? 0.5 : 1,
+                    cursor: isComingSoon
+                      ? 'not-allowed'
+                      : loadingGame
+                        ? 'not-allowed'
+                        : 'pointer',
+                    opacity: isComingSoon
+                      ? 0.5
+                      : loadingGame && !isLoading
+                        ? 0.5
+                        : 1,
                     transition: 'all 0.2s ease',
                     color: 'inherit',
                     textAlign: 'left',
@@ -205,7 +247,11 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                   </div>
                   <div style={{ padding: '10px 12px 12px' }}>
                     <div style={{ fontWeight: 600, fontSize: 14 }}>
-                      {isLoading ? 'Starting...' : game.name}
+                      {isComingSoon
+                        ? t('games.create.comingSoon')
+                        : isLoading
+                          ? t('games.gamePicker.starting')
+                          : game.name}
                     </div>
                     <div
                       style={{
@@ -214,7 +260,10 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                         marginTop: 2,
                       }}
                     >
-                      {game.category}
+                      {t(
+                        (CATEGORY_KEY[game.category] ??
+                          game.category) as TranslationKey,
+                      )}
                     </div>
                   </div>
                 </button>

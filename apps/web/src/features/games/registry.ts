@@ -219,6 +219,6 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     tags: ['cats', 'race', 'dice', 'family', 'fun'],
     implementationPath: '@/widgets/CatDashGame',
     lastUpdated: '2026-07-23',
-    status: 'active',
+    status: 'coming_soon',
   },
 };

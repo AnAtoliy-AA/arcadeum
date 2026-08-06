@@ -305,6 +305,9 @@ export const ruMessages = {
     category: {
       cardGame: 'Карточная игра',
       boardGame: 'Настольная игра',
+      action: 'Экшн',
+      strategy: 'Стратегия',
+      race: 'Гонка',
     },
     tags: {
       strategy: 'Стратегия',
@@ -388,5 +391,10 @@ export const ruMessages = {
     skull: 'Мёртвый',
     sweat: 'Туго!',
     clown: 'Клоун',
+  },
+  gamePicker: {
+    title: 'Выберите игру против ИИ',
+    starting: 'Запуск...',
+    allCategory: 'Все',
   },
 };

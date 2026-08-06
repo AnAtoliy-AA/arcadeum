@@ -304,6 +304,9 @@ export const byMessages = {
     category: {
       cardGame: 'Картачная гульня',
       boardGame: 'Настольная гульня',
+      action: 'Экшн',
+      strategy: 'Стратэгія',
+      race: 'Гонка',
     },
     tags: {
       strategy: 'Стратэгія',
@@ -387,5 +390,10 @@ export const byMessages = {
     skull: 'Мёртвы',
     sweat: 'Туга!',
     clown: 'Клоун',
+  },
+  gamePicker: {
+    title: 'Выбярыце гульню супраць ІІ',
+    starting: 'Запуск...',
+    allCategory: 'Усе',
   },
 };

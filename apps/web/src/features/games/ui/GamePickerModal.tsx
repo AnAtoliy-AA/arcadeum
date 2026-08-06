@@ -2,15 +2,32 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from '@arcadeum/ui';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { gameMetadata } from '@/features/games/registry';
+import dynamic from 'next/dynamic';
+import { gameMetadata, gameLoaders } from '@/features/games/registry';
+import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
+import { CriticalMiniCluster } from '@/features/games/ui/create/redesign/art/CriticalMiniCluster';
+import { SeaBattleBoardPoster } from '@/features/games/ui/create/redesign/art/SeaBattleBoardPoster';
 import {
-  GameSymbol,
-  FALLBACK_ACCENT,
-} from '@/app/[locale]/home/components/featured-games/gameMeta';
+  CRITICAL_THEMES,
+  SEA_BATTLE_THEMES,
+  findSeaBattleTheme,
+  type GameId,
+} from '@/features/games/ui/create/redesign/data/themes';
+
+const SeaBattleRealPreview = dynamic(
+  () => import('@/features/games/ui/create/redesign/SeaBattleRealPreview'),
+  { ssr: false },
+);
 
 interface GamePickerModalProps {
   open: boolean;
@@ -18,10 +35,39 @@ interface GamePickerModalProps {
 }
 
 const AI_GAMES = Object.values(gameMetadata).filter(
-  (g) => g.supportsAI && g.status !== 'coming_soon',
+  (g) => g.supportsAI && g.status !== 'coming_soon' && g.slug in gameLoaders,
 );
 
-const CATEGORIES = ['All', ...Array.from(new Set(AI_GAMES.map((g) => g.category)))];
+const CATEGORIES = [
+  'All',
+  ...Array.from(new Set(AI_GAMES.map((g) => g.category))).filter((cat) =>
+    AI_GAMES.some((g) => g.category === cat),
+  ),
+];
+
+function GameTilePreview({ gameId }: { gameId: GameId }) {
+  if (gameId === 'critical_v1') {
+    return (
+      <CriticalMiniCluster themeId={CRITICAL_THEMES[0].id} cardWidth={48} />
+    );
+  }
+  if (gameId === 'sea_battle_v1') {
+    const theme = findSeaBattleTheme(SEA_BATTLE_THEMES[0].id);
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <SeaBattleBoardPoster theme={theme} size="sm" />
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SeaBattleRealPreview
+            themeId={theme.id}
+            cellSize={12}
+            background={theme.palette.bg}
+          />
+        </div>
+      </div>
+    );
+  }
+  return <GameArt gameId={gameId} size="sm" />;
+}
 
 export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
   const router = useRouter();
@@ -119,9 +165,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '16px 12px',
+                    gap: '0',
                     borderRadius: '14px',
                     border: '1px solid rgba(255,255,255,0.08)',
                     background: isLoading
@@ -131,39 +175,35 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                     opacity: loadingGame && !isLoading ? 0.5 : 1,
                     transition: 'all 0.2s ease',
                     color: 'inherit',
-                    textAlign: 'center',
+                    textAlign: 'left',
+                    overflow: 'hidden',
                   }}
                   onMouseEnter={(e) => {
                     if (!loadingGame) {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                      e.currentTarget.style.background =
+                        'rgba(255,255,255,0.08)';
+                      e.currentTarget.style.borderColor =
+                        'rgba(255,255,255,0.15)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                    e.currentTarget.style.borderColor =
+                      'rgba(255,255,255,0.08)';
                   }}
                 >
                   <div
                     style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 12,
+                      width: '100%',
+                      aspectRatio: '16 / 11',
+                      borderRadius: 10,
                       overflow: 'hidden',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
                       background: 'rgba(255,255,255,0.05)',
                     }}
                   >
-                    <GameSymbol
-                      gameId={game.slug}
-                      width={64}
-                      height={64}
-                      style={{ color: FALLBACK_ACCENT }}
-                    />
+                    <GameTilePreview gameId={game.slug as GameId} />
                   </div>
-                  <div>
+                  <div style={{ padding: '10px 12px 12px' }}>
                     <div style={{ fontWeight: 600, fontSize: 14 }}>
                       {isLoading ? 'Starting...' : game.name}
                     </div>

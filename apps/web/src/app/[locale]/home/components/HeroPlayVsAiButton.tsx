@@ -1,7 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { GamePickerModal } from '@/features/games/ui/GamePickerModal';
+import { useState, lazy, Suspense } from 'react';
+
+const GamePickerModal = lazy(() =>
+  import('@/features/games/ui/GamePickerModal').then((m) => ({
+    default: m.GamePickerModal,
+  })),
+);
 
 interface Props {
   label: string;
@@ -19,7 +24,11 @@ export function HeroPlayVsAiButton({ label }: Props) {
       >
         {label}
       </button>
-      <GamePickerModal open={open} onClose={() => setOpen(false)} />
+      {open && (
+        <Suspense fallback={null}>
+          <GamePickerModal open={open} onClose={() => setOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 }

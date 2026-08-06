@@ -24,3 +24,4 @@ export const PlayerStatRecordSchema =
   SchemaFactory.createForClass(PlayerStatRecord);
 
 PlayerStatRecordSchema.index({ userId: 1, sessionId: 1 }, { unique: true });
+PlayerStatRecordSchema.index({ userId: 1, gameId: 1, timestamp: -1 });

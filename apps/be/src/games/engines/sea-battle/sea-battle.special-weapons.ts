@@ -7,7 +7,13 @@ import {
 } from './sea-battle.types';
 import { GameActionResult } from '../base/game-engine.interface';
 
-const SONAR_RADIUS = 1;
+function getSonarRadius(gridSize: number): number {
+  return Math.floor(gridSize / 3);
+}
+
+function getRadarHalfWidth(gridSize: number): number {
+  return Math.floor(gridSize / 7);
+}
 
 export function executeSonar(
   state: SeaBattleState,
@@ -30,10 +36,11 @@ export function executeSonar(
   const centerCol = payload.col!;
 
   const gSize = state.gridSize ?? BOARD_SIZE;
+  const radius = getSonarRadius(gSize);
   const cells: { row: number; col: number; state: CellState }[] = [];
 
-  for (let r = centerRow - SONAR_RADIUS; r <= centerRow + SONAR_RADIUS; r++) {
-    for (let c = centerCol - SONAR_RADIUS; c <= centerCol + SONAR_RADIUS; c++) {
+  for (let r = centerRow - radius; r <= centerRow + radius; r++) {
+    for (let c = centerCol - radius; c <= centerCol + radius; c++) {
       if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         cells.push({ row: r, col: c, state: target.board[r][c] });
       }
@@ -45,7 +52,7 @@ export function executeSonar(
     targetId: target.playerId,
     centerRow,
     centerCol,
-    radius: SONAR_RADIUS,
+    radius,
     cells,
   };
 
@@ -81,23 +88,32 @@ export function executeRadar(
   state.specialWeaponUsage[player.playerId].radarUsed = true;
 
   const gSize = state.gridSize ?? BOARD_SIZE;
+  const halfWidth = getRadarHalfWidth(gSize);
   const cells: { row: number; col: number; state: CellState }[] = [];
 
   if (payload.row !== undefined) {
-    for (let col = 0; col < gSize; col++) {
-      cells.push({
-        row: payload.row,
-        col,
-        state: target.board[payload.row][col],
-      });
+    for (let dr = -halfWidth; dr <= halfWidth; dr++) {
+      const r = payload.row + dr;
+      if (r < 0 || r >= gSize) continue;
+      for (let col = 0; col < gSize; col++) {
+        cells.push({
+          row: r,
+          col,
+          state: target.board[r][col],
+        });
+      }
     }
   } else if (payload.col !== undefined) {
-    for (let row = 0; row < gSize; row++) {
-      cells.push({
-        row,
-        col: payload.col,
-        state: target.board[row][payload.col],
-      });
+    for (let dc = -halfWidth; dc <= halfWidth; dc++) {
+      const c = payload.col + dc;
+      if (c < 0 || c >= gSize) continue;
+      for (let row = 0; row < gSize; row++) {
+        cells.push({
+          row,
+          col: c,
+          state: target.board[row][c],
+        });
+      }
     }
   }
 
@@ -106,6 +122,7 @@ export function executeRadar(
     targetId: target.playerId,
     row: payload.row,
     col: payload.col,
+    halfWidth,
     cells,
   };
 

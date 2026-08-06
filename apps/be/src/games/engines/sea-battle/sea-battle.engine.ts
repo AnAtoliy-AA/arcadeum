@@ -141,6 +141,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     const { userId } = context;
     const player = state.players.find((p) => p.playerId === userId);
 
+    if (action === 'chat') return true;
+
     if (!player || !player.alive) return false;
 
     switch (action) {
@@ -171,8 +173,6 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return validateUseRadar(state, player, payload as RadarPayload);
       case 'resetPlacement':
         return validateResetPlacement(state, player);
-      case 'chat':
-        return true;
       default:
         return false;
     }

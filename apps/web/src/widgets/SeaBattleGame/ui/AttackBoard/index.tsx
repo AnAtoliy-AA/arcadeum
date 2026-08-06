@@ -1,5 +1,5 @@
 'use client';
-import { memo, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   SeaBattlePlayerState,
   SeaBattleSnapshot,
@@ -117,6 +117,31 @@ export const AttackBoard = memo(function AttackBoard({
   const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar;
   const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar;
 
+  // Scan wave: show all ships for a limited duration when battle starts
+  const [scanWaveActive, setScanWaveActive] = useState(false);
+  const scanWaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const sw = snapshot?.lastScanWave;
+    if (!sw || snapshot?.phase !== 'battle') return;
+
+    // Defer state update to avoid synchronous cascading renders
+    const raf = requestAnimationFrame(() => setScanWaveActive(true));
+    if (scanWaveTimerRef.current) clearTimeout(scanWaveTimerRef.current);
+    scanWaveTimerRef.current = setTimeout(() => {
+      setScanWaveActive(false);
+      scanWaveTimerRef.current = null;
+    }, sw.duration * 1000);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (scanWaveTimerRef.current) {
+        clearTimeout(scanWaveTimerRef.current);
+        scanWaveTimerRef.current = null;
+      }
+    };
+  }, [snapshot?.lastScanWave, snapshot?.phase]);
+
   const sonarHighlightSet = (() => {
     const ls = effectiveLastSonar;
     if (!ls) return null;
@@ -155,6 +180,27 @@ export const AttackBoard = memo(function AttackBoard({
     return map;
   })();
 
+  // Scan wave: highlight sets for all opponents
+  const scanWaveHighlightSets = useMemo(() => {
+    if (!scanWaveActive || !snapshot?.lastScanWave) return null;
+    const map = new Map<string, Set<string>>();
+    const cellMap = new Map<string, Map<string, number>>();
+    for (const entry of snapshot.lastScanWave.cells) {
+      const set = new Set<string>();
+      const states = new Map<string, number>();
+      for (let r = 0; r < entry.board.length; r++) {
+        for (let c = 0; c < entry.board[r].length; c++) {
+          const key = `${entry.playerId}-${r}-${c}`;
+          set.add(key);
+          states.set(key, entry.board[r][c]);
+        }
+      }
+      map.set(entry.playerId, set);
+      cellMap.set(entry.playerId, states);
+    }
+    return { highlights: map, states: cellMap };
+  }, [scanWaveActive, snapshot]);
+
   return (
     <MainGameArea data-testid="game-main-area">
       <SeaBattleGrids>
@@ -186,6 +232,10 @@ export const AttackBoard = memo(function AttackBoard({
             effectiveLastSonar?.targetId === opponent.playerId;
           const isRadarTarget =
             effectiveLastRadar?.targetId === opponent.playerId;
+          const scanWaveSet =
+            scanWaveHighlightSets?.highlights.get(opponent.playerId) ?? null;
+          const scanWaveStates =
+            scanWaveHighlightSets?.states.get(opponent.playerId) ?? null;
           return (
             <AttackPlayerBoard
               key={opponent.playerId}
@@ -206,6 +256,8 @@ export const AttackBoard = memo(function AttackBoard({
               sonarCellStates={isSonarTarget ? sonarCellStates : null}
               radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
               radarCellStates={isRadarTarget ? radarCellStates : null}
+              scanWaveHighlightCells={scanWaveSet}
+              scanWaveCellStates={scanWaveStates}
               weaponPreviewCells={
                 weaponPreviewType && weaponPreviewCells
                   ? weaponPreviewCells

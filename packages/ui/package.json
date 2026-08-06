@@ -1,6 +1,6 @@
 {
   "name": "@arcadeum/ui",
-  "version": "1.23.179",
+  "version": "1.24.25",
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -31,7 +31,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.0",
     "jsdom": "^27.4.0",
-    "storybook": "10.4.0",
+    "storybook": "10.5.5",
     "typescript": "^5",
     "vitest": "^4.1.0"
   }

@@ -352,7 +352,7 @@ export function ShopCard({
 
         {/* ARC payment option */}
         {!owned &&
-          item.priceCurrency !== 'arcadeum' &&
+          item.priceCurrency === 'gems' &&
           arcPrice > 0 &&
           pricing?.shopAllowArc !== false && (
             <ActionButton

@@ -7,7 +7,7 @@ const GAMES = [
     name: 'Sea Battle (Battleship)',
     description:
       'Classic naval combat strategy game. Place your ships, guess coordinates, and sink the enemy fleet.',
-    players: '2–6',
+    players: '2–4',
     duration: '10 min',
     href: '/games/sea-battle',
   },

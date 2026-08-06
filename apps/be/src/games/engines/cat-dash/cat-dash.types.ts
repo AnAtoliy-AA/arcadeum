@@ -30,11 +30,15 @@ export interface CatDashPlayer {
 export interface CatDashOptions {
   trackType: TrackType;
   theme: Theme;
+  columns?: number;
+  trackLength?: number;
 }
 
 export interface CatDashState extends BaseGameState {
   trackType: TrackType;
   theme: Theme;
+  columns: number;
+  trackLength: number;
   players: CatDashPlayer[];
   currentPlayerIndex: number;
   turnNumber: number;

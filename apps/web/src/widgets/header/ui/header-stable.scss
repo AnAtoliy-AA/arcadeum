@@ -116,6 +116,15 @@
   color: #ffffff;
 }
 
+.gear-icon-wrapper {
+  display: inline-flex;
+  transition: transform 0.4s ease;
+}
+
+.gear-icon-wrapper:hover {
+  transform: rotate(90deg);
+}
+
 .header-inner .mobile-menu-container {
   display: none;
 }

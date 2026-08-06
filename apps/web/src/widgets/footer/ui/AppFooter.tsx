@@ -16,6 +16,7 @@ import { Footer, type SocialLink } from '@arcadeum/ui/components/Footer/Footer';
 import { View } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useRoutes } from '@/shared/config/useRoutes';
 
 const SOCIAL_MAPPING = [
   { id: 'instagram', label: 'Instagram', Icon: InstagramIcon },
@@ -33,37 +34,38 @@ const SOCIAL_MAPPING = [
 export default function AppFooter() {
   const { social, appName, appVersion } = appConfig;
   const { t } = useTranslation();
+  const routes = useRoutes();
 
   const sections = [
     {
       title: t('home.footerPlatformTitle'),
       links: [
-        { href: '/games', label: t('home.footerAllGames') },
-        { href: '/games/sea-battle', label: t('home.footerSeaBattle') },
-        { href: '/tournaments', label: t('home.footerTournaments') },
-        { href: '/leaderboards', label: t('home.footerLeaderboards') },
-        { href: '/rewards', label: t('home.footerRewards') },
-        { href: '/token', label: t('home.footerToken') },
+        { href: routes.games, label: t('home.footerAllGames') },
+        { href: routes.seaBattleLanding, label: t('home.footerSeaBattle') },
+        { href: routes.tournaments, label: t('home.footerTournaments') },
+        { href: routes.leaderboards, label: t('home.footerLeaderboards') },
+        { href: routes.rewards, label: t('home.footerRewards') },
+        { href: routes.token, label: t('home.footerToken') },
       ],
     },
     {
       title: t('home.footerResourcesTitle'),
       links: [
-        { href: '/help', label: t('home.footerHelpCenter') },
-        { href: '/roadmap', label: t('home.footerRoadmap') },
-        { href: '/changelog', label: t('home.footerChangelog') },
-        { href: '/blog', label: t('home.footerGamingBlog') },
-        { href: '/community', label: t('home.footerCommunity') },
-        { href: '/developers', label: t('home.footerDevelopers') },
+        { href: routes.help, label: t('home.footerHelpCenter') },
+        { href: routes.roadmap, label: t('home.footerRoadmap') },
+        { href: routes.changelog, label: t('home.footerChangelog') },
+        { href: routes.blog, label: t('home.footerGamingBlog') },
+        { href: routes.community, label: t('home.footerCommunity') },
+        { href: routes.developers, label: t('home.footerDevelopers') },
       ],
     },
     {
       title: t('home.footerLegalTitle'),
       links: [
-        { href: '/privacy', label: t('home.footerPrivacyPolicy') },
-        { href: '/terms', label: t('home.footerTermsOfService') },
-        { href: '/cookies', label: t('home.footerCookiePolicy') },
-        { href: '/contact', label: t('home.footerContactUs') },
+        { href: routes.privacy, label: t('home.footerPrivacyPolicy') },
+        { href: routes.terms, label: t('home.footerTermsOfService') },
+        { href: routes.cookies, label: t('home.footerCookiePolicy') },
+        { href: routes.contact, label: t('home.footerContactUs') },
       ],
     },
   ];

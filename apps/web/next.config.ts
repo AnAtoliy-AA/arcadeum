@@ -53,23 +53,11 @@ const withPWA = withPWAInit({
   },
 });
 
-const cspConnectSrc = [
+const defaultConnectSrc = [
   'https://arcadeum.games',
   'wss://arcadeum.games',
-  'https://arcadeum.vercel.app',
-  'wss://arcadeum.vercel.app',
-  'https://arcadeum-dev.vercel.app',
-  'wss://arcadeum-dev.vercel.app',
-  'https://arcadeum-be-dev.onrender.com',
-  'wss://arcadeum-be-dev.onrender.com',
-  'https://arcadeum-be.onrender.com',
-  'wss://arcadeum-be.onrender.com',
-  'https://arcadeum-be-reserve.onrender.com',
-  'wss://arcadeum-be-reserve.onrender.com',
   'https://api.arcadeum.games',
   'wss://api.arcadeum.games',
-  'https://api2.arcadeum.games',
-  'wss://api2.arcadeum.games',
   'https://api-dev.arcadeum.games',
   'wss://api-dev.arcadeum.games',
   'https://accounts.google.com',
@@ -79,20 +67,20 @@ const cspConnectSrc = [
   process.env.NEXT_PUBLIC_CDN_URL || '',
 ];
 
+const cspConnectSrc = process.env.CSP_CONNECT_SRC
+  ? (JSON.parse(process.env.CSP_CONNECT_SRC) as string[])
+  : defaultConnectSrc;
+
 const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";
-
 const cspStyleSrc = "'self' 'unsafe-inline'";
-
 const cspImgSrc = "'self' blob: data: https:";
-
 const cspFontSrc = "'self' data:";
-
 const cspFrameSrc =
   "'self' https://www.youtube-nocookie.com https://vercel.com https://vercel.live";
-
 const cspMediaSrc = `'self' ${process.env.NEXT_PUBLIC_CDN_URL || ''}`;
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
     const isE2E =
@@ -389,7 +377,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    qualities: [75, 80],
+    qualities: [70, 75, 80, 85],
     minimumCacheTTL: 3600,
   },
 };

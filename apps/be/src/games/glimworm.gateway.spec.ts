@@ -4,14 +4,15 @@ import type { Socket } from 'socket.io';
 import type { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
 import type { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 
-const mockJwt = {} as never;
-const mockConfig = {} as never;
-
 const makeService = () =>
   ({
     submitInput: jest.fn(),
     start: jest.fn(),
     setColor: jest.fn(),
+    joinRoom: jest.fn(),
+    markReady: jest.fn(),
+    restart: jest.fn(),
+    rematch: jest.fn(),
   }) as unknown as GlimwormService & {
     submitInput: jest.Mock;
     start: jest.Mock;
@@ -42,18 +43,19 @@ const buildGateway = (
   service: GlimwormService,
   vis: GameVisibilityService = makeVisibility(),
   resolver: UserRoleResolver = makeResolver(),
-): GlimwormGateway =>
-  new GlimwormGateway(service, vis, resolver, mockJwt, mockConfig);
+): GlimwormGateway => new GlimwormGateway(service, vis, resolver);
 
 describe('GlimwormGateway', () => {
   describe('handleInput', () => {
     it('forwards a valid input to the service', () => {
       const service = makeService();
       const gw = buildGateway(service);
-      gw.handleInput(
-        { roomId: 'r1', userId: 'u1', angle: 0.5, usePowerup: false },
-        makeSocket(),
-      );
+      gw['handleInput'](makeSocket(), {
+        roomId: 'r1',
+        userId: 'u1',
+        angle: 0.5,
+        usePowerup: false,
+      });
       expect(service.submitInput).toHaveBeenCalledWith('r1', 'u1', {
         angle: 0.5,
         usePowerup: false,
@@ -67,10 +69,11 @@ describe('GlimwormGateway', () => {
       });
       const gw = buildGateway(service);
       expect(() =>
-        gw.handleInput(
-          { roomId: 'r1', userId: 'u1', angle: 'not-a-number' },
-          makeSocket(),
-        ),
+        gw['handleInput'](makeSocket(), {
+          roomId: 'r1',
+          userId: 'u1',
+          angle: 'not-a-number',
+        }),
       ).toThrow();
       expect(service.submitInput).toHaveBeenCalled();
       const calls = service.submitInput.mock.calls as Array<
@@ -82,10 +85,12 @@ describe('GlimwormGateway', () => {
     it('treats usePowerup as boolean (truthy strings are not "true")', () => {
       const service = makeService();
       const gw = buildGateway(service);
-      gw.handleInput(
-        { roomId: 'r1', userId: 'u1', angle: 0, usePowerup: 'yes' },
-        makeSocket(),
-      );
+      gw['handleInput'](makeSocket(), {
+        roomId: 'r1',
+        userId: 'u1',
+        angle: 0,
+        usePowerup: 'yes',
+      });
       const calls = service.submitInput.mock.calls as Array<
         [string, string, { angle: number; usePowerup: boolean }]
       >;
@@ -98,10 +103,11 @@ describe('GlimwormGateway', () => {
       const service = makeService();
       const gw = buildGateway(service);
       await expect(
-        gw.handleStart(
-          { roomId: 'r1', userId: 'u1', variant: 'made_up' },
-          makeSocket(),
-        ),
+        gw['handleStart'](makeSocket(), {
+          roomId: 'r1',
+          userId: 'u1',
+          variant: 'made_up',
+        }),
       ).rejects.toThrow();
       expect(service.start).not.toHaveBeenCalled();
     });
@@ -110,16 +116,13 @@ describe('GlimwormGateway', () => {
       const service = makeService();
       const socket = makeSocket();
       const gw = buildGateway(service);
-      await gw.handleStart(
-        {
-          roomId: 'r1',
-          userId: 'u1',
-          variant: 'battle_royale',
-          powerupsEnabled: true,
-          fillWithBots: false,
-        },
-        socket,
-      );
+      await gw['handleStart'](socket, {
+        roomId: 'r1',
+        userId: 'u1',
+        variant: 'battle_royale',
+        powerupsEnabled: true,
+        fillWithBots: false,
+      });
       expect(service.start).toHaveBeenCalledWith('r1', 'u1', {
         variant: 'battle_royale',
         powerupsEnabled: true,
@@ -138,15 +141,12 @@ describe('GlimwormGateway', () => {
       });
       const gw = buildGateway(service);
       await expect(
-        gw.handleStart(
-          {
-            roomId: 'r1',
-            userId: 'guest',
-            variant: 'time_attack',
-            powerupsEnabled: false,
-          },
-          makeSocket(),
-        ),
+        gw['handleStart'](makeSocket(), {
+          roomId: 'r1',
+          userId: 'guest',
+          variant: 'time_attack',
+          powerupsEnabled: false,
+        }),
       ).rejects.toThrow();
     });
 
@@ -163,15 +163,12 @@ describe('GlimwormGateway', () => {
       const resolver = makeResolver('free');
       const gw = buildGateway(service, vis, resolver);
       await expect(
-        gw.handleStart(
-          {
-            roomId: 'r1',
-            userId: 'u1',
-            variant: 'time_attack',
-            powerupsEnabled: false,
-          },
-          makeSocket(),
-        ),
+        gw['handleStart'](makeSocket(), {
+          roomId: 'r1',
+          userId: 'u1',
+          variant: 'time_attack',
+          powerupsEnabled: false,
+        }),
       ).rejects.toThrow();
       expect(resolver.resolveRole).toHaveBeenCalledWith('u1');
       expect(vis.assertVisible).toHaveBeenCalledWith(
@@ -187,15 +184,12 @@ describe('GlimwormGateway', () => {
       const vis = makeVisibility();
       const resolver = makeResolver('vip');
       const gw = buildGateway(service, vis, resolver);
-      await gw.handleStart(
-        {
-          roomId: 'r1',
-          userId: 'u1',
-          variant: 'battle_royale',
-          powerupsEnabled: false,
-        },
-        makeSocket(),
-      );
+      await gw['handleStart'](makeSocket(), {
+        roomId: 'r1',
+        userId: 'u1',
+        variant: 'battle_royale',
+        powerupsEnabled: false,
+      });
       expect(resolver.resolveRole).toHaveBeenCalledWith('u1');
       expect(vis.assertVisible).toHaveBeenCalledWith(
         'vip',
@@ -212,10 +206,11 @@ describe('GlimwormGateway', () => {
       service.setColor.mockReturnValue('#5ee0ff');
       const socket = makeSocket();
       const gw = buildGateway(service);
-      gw.handleColorPick(
-        { roomId: 'r1', userId: 'u1', color: '#5ee0ff' },
-        socket,
-      );
+      gw['handleColorPick'](socket, {
+        roomId: 'r1',
+        userId: 'u1',
+        color: '#5ee0ff',
+      });
       expect(service.setColor).toHaveBeenCalledWith('r1', 'u1', '#5ee0ff');
       expect(socket.emit).toHaveBeenCalledWith(
         'glimworm.color.pick.ack',

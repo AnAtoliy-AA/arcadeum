@@ -2,7 +2,7 @@ name: Deploy to OCI (Dev)
 
 on:
   push:
-    branches: [develop]
+    branches: [staging]
     paths:
       - 'apps/be/**'
       - 'bots/tg-bot/**'
@@ -14,7 +14,7 @@ on:
       branch:
         description: 'Branch to deploy'
         required: true
-        default: 'develop'
+        default: 'staging'
 
 permissions: {}
 
@@ -55,7 +55,7 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
-            BRANCH="${{ github.event.inputs.branch || 'develop' }}"
+            BRANCH="${{ github.event.inputs.branch || 'staging' }}"
             git fetch origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
 

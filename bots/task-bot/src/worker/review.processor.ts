@@ -76,17 +76,7 @@ export class ReviewProcessor {
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      if (cli === 'mimo') {
-        try {
-          await this.spawnAsync('mimo', ['auth', 'login', '-p', 'mimo-free'], {
-            cwd,
-            timeout: 30_000,
-          });
-        } catch {
-          // ignore — token may already be valid
-        }
-      }
+      const cli = 'opencode';
 
       await job.progress(50);
 

@@ -14,6 +14,7 @@ export interface CheckersOptions {
   ruleVariant: RuleVariant;
   forcedCaptures: boolean;
   backwardCaptures: boolean;
+  botDifficulty?: 'easy' | 'medium' | 'hard';
 }
 
 export type PieceType = 'man' | 'king';

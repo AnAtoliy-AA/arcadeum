@@ -156,7 +156,8 @@ export class ChessBotService {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
     }
-    const cfg = DIFFICULTY[this.currentDifficulty];
+    const difficulty = state.botDifficulty ?? this.currentDifficulty;
+    const cfg = DIFFICULTY[difficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;
     if (legalMoves.length === 1) return legalMoves[0];
@@ -429,7 +430,8 @@ export class ChessBotService {
     timeBudgetMs: number,
     startTime: number,
   ): ChessMove | null {
-    const cfg = DIFFICULTY[this.currentDifficulty];
+    const difficulty = state.botDifficulty ?? this.currentDifficulty;
+    const cfg = DIFFICULTY[difficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;
     if (legalMoves.length === 1) return legalMoves[0];

@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import { TicTacToeService } from './tic-tac-toe/tic-tac-toe.service';
 import {
@@ -18,57 +13,25 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class TicTacToeGateway {
+export class TicTacToeGateway implements GameMessageHandler {
   private readonly logger = new Logger(TicTacToeGateway.name);
 
-  @WebSocketServer() server: Server;
+  constructor(private readonly ticTacToeService: TicTacToeService) {}
 
-  constructor(
-    private readonly ticTacToeService: TicTacToeService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'ticTacToe.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'ticTacToe.session.place_mark': (client, payload) =>
+      this.handlePlaceMark(client, payload),
+    'ticTacToe.session.forfeit': (client, payload) =>
+      this.handleForfeit(client, payload),
+  };
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'TicTacToeGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to TicTacToe namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to TicTacToe namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('ticTacToe.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -77,7 +40,7 @@ export class TicTacToeGateway {
         userId,
         roomId,
         !!payload?.withBots,
-        payload?.botCount,
+        payload?.botCount as number | undefined,
       );
       client.emit('ticTacToe.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -90,16 +53,9 @@ export class TicTacToeGateway {
     }
   }
 
-  @SubscribeMessage('ticTacToe.session.place_mark')
-  async handlePlaceMark(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      row?: number;
-      col?: number;
-    },
+  private async handlePlaceMark(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     if (typeof payload?.row !== 'number' || typeof payload?.col !== 'number') {
@@ -125,10 +81,9 @@ export class TicTacToeGateway {
     }
   }
 
-  @SubscribeMessage('ticTacToe.session.forfeit')
-  async handleForfeit(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleForfeit(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);

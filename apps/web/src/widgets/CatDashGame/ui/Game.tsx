@@ -19,19 +19,11 @@ import { useCatDashActions } from '../hooks/useCatDashActions';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import { CatDashLobby } from './Lobby';
 import { CatDashBoard } from './Board';
+import { RealisticCat } from './RealisticCat';
 import { CatDashTurnBadge } from './TurnBadge';
 import { CatDashRulesModal } from './RulesModal';
 import { CAT_DASH_VARIANTS } from '../lib/constants';
-import type { CatDashOptions, CatDashVariant, CatId } from '../types';
-
-const CAT_EMOJI: Record<CatId, string> = {
-  neon: '🐱',
-  whiskers: '😺',
-  stardust: '✨',
-  felix: '🐈',
-  shadow: '🐈‍⬛',
-  luna: '🌙',
-};
+import type { CatDashOptions, CatDashVariant } from '../types';
 
 function resolveOptions(raw: unknown): CatDashOptions {
   const r = (raw ?? {}) as Partial<{
@@ -194,20 +186,30 @@ function CatDashGameImpl({
             {isGameOver && snapshot?.winner && (
               <YStack
                 alignItems="center"
-                gap="$1"
-                padding="$3"
+                gap="$2"
+                padding="$4"
                 backgroundColor="rgba(34,197,94,0.15)"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="rgba(34,197,94,0.3)"
+                borderRadius="$5"
+                borderWidth={1.5}
+                borderColor="rgba(34,197,94,0.4)"
+                style={{
+                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.15)',
+                  backdropFilter: 'blur(10px)',
+                }}
               >
-                <Text fontSize={20}>
-                  {CAT_EMOJI[
+                <RealisticCat
+                  catId={
                     snapshot.players.find((p) => p.playerId === snapshot.winner)
                       ?.catId ?? 'neon'
-                  ] ?? '🐱'}
-                </Text>
-                <Text fontSize={14} fontWeight="bold" color="#22c55e">
+                  }
+                  size={48}
+                />
+                <Text
+                  fontSize={16}
+                  fontWeight="bold"
+                  color="#22c55e"
+                  marginTop="$1"
+                >
                   {resolveDisplayNameBound(snapshot.winner)} wins!
                 </Text>
               </YStack>

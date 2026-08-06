@@ -12,6 +12,7 @@ import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useGameEndState } from '@/features/games/hooks';
 import { useGameChatIntegration } from '@/features/games/hooks';
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   GameWidgetContainer,
@@ -227,17 +228,31 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         })) || [],
   });
 
-  // Non-hosts can request a rematch but can't actually start one — only the
-  // host creates the new room. The request posts a public chat note so the
-  // host (and everyone else) sees the ask.
   const handleRematchClick = useCallback(() => {
-    if (isHost) {
-      gameEnd.handleResultRematchClick();
-      return;
+    gameEnd.handleResultRematchClick();
+  }, [gameEnd]);
+
+  const setRematchState = useGameRematchStore((s) => s.setRematchState);
+  const resetRematch = useGameRematchStore((s) => s.reset);
+
+  useEffect(() => {
+    if (isGameOver && gameEnd.sharedResult) {
+      setRematchState({
+        isGameOver: true,
+        onRematch: handleRematchClick,
+        rematchLoading: gameEnd.rematchLoading,
+      });
+    } else {
+      resetRematch();
     }
-    postHistoryNoteAction('🔁 Wants a rematch!', 'all');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHost, gameEnd.handleResultRematchClick, postHistoryNoteAction]);
+  }, [
+    isGameOver,
+    gameEnd.sharedResult,
+    gameEnd.rematchLoading,
+    handleRematchClick,
+    setRematchState,
+    resetRematch,
+  ]);
 
   const resolveActorColor = useCallback(
     (id?: string | null) => {

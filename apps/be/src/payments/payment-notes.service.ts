@@ -119,14 +119,11 @@ export class PaymentNotesService {
         : [];
 
     const userMap = new Map(
-      users.map((u) => [
-        (u._id as Types.ObjectId).toString(),
-        u.displayName || u.username,
-      ]),
+      users.map((u) => [u._id.toString(), u.displayName || u.username]),
     );
 
     const notesWithUsers: NoteWithUser[] = notes.map((n) => ({
-      id: (n._id as Types.ObjectId).toString(),
+      id: n._id.toString(),
       note: n.note,
       amount: n.amount,
       currency: n.currency,
@@ -195,10 +192,7 @@ export class PaymentNotesService {
         : [];
 
     const userMap = new Map(
-      users.map((u) => [
-        (u._id as Types.ObjectId).toString(),
-        u.displayName || u.username,
-      ]),
+      users.map((u) => [u._id.toString(), u.displayName || u.username]),
     );
 
     const items: AdminPaymentNoteItem[] = docs.map((d) => ({

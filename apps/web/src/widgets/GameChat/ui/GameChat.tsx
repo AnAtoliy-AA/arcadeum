@@ -11,15 +11,17 @@ import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
 import type { ScrollView as TamaguiScrollView } from 'tamagui';
 import { scrollbarStyles } from '@/shared/lib/styles';
-import { getPlayerColor } from '@/shared/lib/playerColors';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
 import { useChatCollapsed } from '../hooks/useChatCollapsed';
-import { GameChatRow } from './GameChatRow';
-import { GameChatSystemRow, type SystemRowKind } from './GameChatSystemRow';
 import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';
 import { ChatQuickBar } from './ChatQuickBar';
+import { ChatLogItem } from './ChatLogItem';
+import {
+  logBelongsToScope,
+  lastMessagePreview,
+} from './chatHelpers';
 import {
   ACCENT_GRADIENT,
   ACCENT_PINK,
@@ -45,7 +47,6 @@ import {
   TitleDot,
   UnreadBadge,
 } from './GameChat.styled';
-import { parseMoveCell, renderResultHighlights } from './chatHelpers';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -53,9 +54,14 @@ interface GameChatProps {
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
   resolveEquipped?: EquippedResolver;
   currentUserId?: string | null;
+  isAuthenticated?: boolean;
+  isPlayer?: boolean;
   onClose?: () => void;
   teamMode?: boolean;
   onEmote?: (emoteId: EmoteId) => void;
+  isHost?: boolean;
+  onDeleteMessage?: (messageId: string) => void;
+  signInPlaceholder?: string;
 }
 
 const FFA_SCOPES: ChatScope[] = ['all', 'players', 'private'];
@@ -94,41 +100,18 @@ const MONO_STYLE: React.CSSProperties = {
     "ui-monospace, SFMono-Regular, 'JetBrains Mono', 'Menlo', monospace",
 };
 
-function inferSysKind(log: ChatLogEntry): SystemRowKind {
-  const msg = log.message?.toLowerCase() ?? '';
-  if (msg.includes('round')) return 'round';
-  if (msg.includes('combo')) return 'combo';
-  if (msg.includes('join') || msg.includes('placing') || msg.includes('left '))
-    return 'join';
-  return log.type === 'action' ? 'combo' : 'elim';
-}
-
-function logBelongsToScope(log: ChatLogEntry, scope: ChatScope): boolean {
-  if (log.type !== 'message') return scope === 'all';
-  const logScope = (log as ChatLogEntry & { scope?: ChatScope }).scope;
-  if (!logScope) return scope === 'all';
-  return logScope === scope;
-}
-
-function lastMessagePreview(logs: ChatLogEntry[]): string {
-  for (let i = logs.length - 1; i >= 0; i--) {
-    const log = logs[i];
-    if (log.type === 'message') {
-      const name = log.senderName ?? 'Someone';
-      const text = log.message ?? '';
-      return `${name}: ${text}`;
-    }
-  }
-  return 'No messages yet';
-}
-
 export function GameChat({
   resolveDisplayName,
   resolveEquipped,
   currentUserId,
+  isAuthenticated = false,
+  isPlayer = false,
   onClose,
   teamMode,
   onEmote,
+  isHost,
+  onDeleteMessage,
+  signInPlaceholder = 'Sign in to chat',
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
@@ -187,9 +170,10 @@ export function GameChat({
     [logs, scope],
   );
 
+  const canSend = isPlayer || isAuthenticated;
   const send = () => {
     const trimmed = draft.trim();
-    if (!trimmed || !sendMessage) return;
+    if (!trimmed || !sendMessage || !canSend) return;
     sendMessage(trimmed, scope);
     setDraft('');
   };
@@ -197,7 +181,7 @@ export function GameChat({
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      send();
+      if (canSend) send();
     }
   };
 
@@ -227,6 +211,7 @@ export function GameChat({
 
   return (
     <Panel data-testid="game-chat-panel">
+      <style>{`.chat-msg-row:hover .chat-delete-btn { opacity: 1 !important; }`}</style>
       <Head>
         <HeadRow>
           <TitleDot />
@@ -340,7 +325,7 @@ export function GameChat({
                   : undefined;
                 const senderColor = log.senderId
                   ? (resolveActorColor?.(log.senderId) ??
-                    getPlayerColor(log.senderId))
+                    undefined)
                   : undefined;
                 const targetId = log.targetId;
                 const targetName = targetId
@@ -349,56 +334,20 @@ export function GameChat({
                     : targetId
                   : undefined;
                 const targetColor = targetId
-                  ? (resolveActorColor?.(targetId) ?? getPlayerColor(targetId))
+                  ? (resolveActorColor?.(targetId) ?? undefined)
                   : undefined;
-                if (log.type === 'system' || log.type === 'action') {
-                  const moveCell = parseMoveCell(log.message);
-                  if (moveCell) {
-                    return (
-                      <GameChatRow
-                        key={log.id}
-                        senderId={log.senderId ?? null}
-                        senderName={log.senderId ? senderName : undefined}
-                        senderColor={senderColor}
-                        content={log.message}
-                        type="action"
-                        isOwn={false}
-                        resolveEquipped={resolveEquipped}
-                        moveCell={moveCell}
-                        onMoveHover={(cell) =>
-                          useGameChatStore.getState().setHighlightedCell(cell)
-                        }
-                        onMoveClick={(cell) =>
-                          useGameChatStore.getState().setPersistedCell(cell)
-                        }
-                      />
-                    );
-                  }
-                  return (
-                    <GameChatSystemRow
-                      key={log.id}
-                      kind={inferSysKind(log)}
-                      content={renderResultHighlights(log.message)}
-                      senderName={senderName}
-                      senderColor={senderColor}
-                      targetName={targetName}
-                      targetColor={targetColor}
-                    />
-                  );
-                }
-                const isOwn = !!currentUserId && log.senderId === currentUserId;
                 return (
-                  <GameChatRow
+                  <ChatLogItem
                     key={log.id}
-                    senderId={log.senderId ?? null}
-                    senderName={log.senderId ? senderName : undefined}
+                    log={log}
+                    senderName={senderName}
                     senderColor={senderColor}
-                    targetName={targetId ? targetName : undefined}
+                    targetName={targetName}
                     targetColor={targetColor}
-                    content={log.message}
-                    type={log.type}
-                    isOwn={isOwn}
+                    currentUserId={currentUserId}
                     resolveEquipped={resolveEquipped}
+                    isHost={isHost}
+                    onDeleteMessage={onDeleteMessage}
                   />
                 );
               })}
@@ -414,10 +363,16 @@ export function GameChat({
         />
 
         <InputPill
-          focusStyle={{
-            borderColor: `${ACCENT_PINK}88`,
-            backgroundColor: 'rgba(0,0,0,0.32)',
-          }}
+          focusStyle={
+            canSend
+              ? {
+                  borderColor: `${ACCENT_PINK}88`,
+                  backgroundColor: 'rgba(0,0,0,0.32)',
+                }
+              : undefined
+          }
+          opacity={canSend ? 1 : 0.5}
+          pointerEvents={canSend ? 'auto' : 'none'}
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
             {SCOPE_CHIP[scope]}
@@ -427,7 +382,12 @@ export function GameChat({
             maxLength={240}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={SCOPE_PLACEHOLDER[scope]}
+            placeholder={
+              canSend
+                ? SCOPE_PLACEHOLDER[scope]
+                : signInPlaceholder
+            }
+            disabled={!canSend}
             aria-label="Message"
             style={{
               flex: 1,
@@ -443,11 +403,11 @@ export function GameChat({
             size="sm"
             padding="$1"
             onClick={send}
-            disabled={!draft.trim()}
+            disabled={!draft.trim() || !canSend}
             aria-label="Send message"
             style={{
-              background: draft.trim() ? ACCENT_GRADIENT : undefined,
-              opacity: draft.trim() ? 1 : 0.4,
+              background: draft.trim() && canSend ? ACCENT_GRADIENT : undefined,
+              opacity: draft.trim() && canSend ? 1 : 0.4,
               width: 30,
               height: 30,
               borderRadius: 9,

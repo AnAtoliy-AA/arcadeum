@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { XStack, YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -46,18 +46,6 @@ export function BoardSizeSelector({
     useState<InfinityMargin>(currentMargin);
   const [internalWinLength, setInternalWinLength] =
     useState<InfinityWinLength>(currentWinLength);
-
-  useEffect(() => {
-    setInternalSize(currentSize);
-  }, [currentSize]);
-
-  useEffect(() => {
-    setInternalMargin(currentMargin);
-  }, [currentMargin]);
-
-  useEffect(() => {
-    setInternalWinLength(currentWinLength);
-  }, [currentWinLength]);
 
   const handlePick = (size: BoardSize) => {
     if (disabled || size === internalSize) return;

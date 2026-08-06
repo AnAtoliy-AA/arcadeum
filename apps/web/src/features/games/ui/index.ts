@@ -29,3 +29,5 @@ export {
   LobbyChipGroup,
   LobbyToggle,
 } from './LobbyOptions';
+export { MatchmakingQueueModal, useMatchmaking } from './MatchmakingQueue';
+export { QuickplayButton } from './QuickplayButton';

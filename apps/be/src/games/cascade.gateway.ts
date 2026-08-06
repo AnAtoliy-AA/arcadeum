@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import { CascadeService } from './cascade/cascade.service';
 import {
@@ -18,58 +13,32 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { isActiveColor } from './engines/cascade/cascade.utils';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class CascadeGateway {
+export class CascadeGateway implements GameMessageHandler {
   private readonly logger = new Logger(CascadeGateway.name);
 
-  @WebSocketServer() server: Server;
+  constructor(private readonly cascadeService: CascadeService) {}
 
-  constructor(
-    private readonly cascadeService: CascadeService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'cascade.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'cascade.session.play_card': (client, payload) =>
+      this.handlePlayCard(client, payload),
+    'cascade.session.draw': (client, payload) =>
+      this.handleDraw(client, payload),
+    'cascade.session.name_color': (client, payload) =>
+      this.handleNameColor(client, payload),
+    'cascade.session.call_cascade': (client, payload) =>
+      this.handleCallCascade(client, payload),
+    'cascade.session.forfeit': (client, payload) =>
+      this.handleForfeit(client, payload),
+  };
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'CascadeGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to Cascade namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to Cascade namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('cascade.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -78,7 +47,7 @@ export class CascadeGateway {
         userId,
         roomId,
         !!payload?.withBots,
-        payload?.botCount,
+        payload?.botCount as number | undefined,
       );
       client.emit('cascade.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -91,27 +60,21 @@ export class CascadeGateway {
     }
   }
 
-  @SubscribeMessage('cascade.session.play_card')
-  async handlePlayCard(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      cardId?: string;
-      chosenColor?: string;
-    },
+  private async handlePlayCard(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     if (!payload?.cardId) throw new WsException('cardId is required');
     const chosenColor =
-      payload.chosenColor && isActiveColor(payload.chosenColor)
+      typeof payload.chosenColor === 'string' &&
+      isActiveColor(payload.chosenColor)
         ? payload.chosenColor
         : undefined;
     try {
       await this.cascadeService.playCard(userId, roomId, {
-        cardId: payload.cardId,
+        cardId: payload.cardId as string,
         chosenColor,
       });
       client.emit(
@@ -128,10 +91,9 @@ export class CascadeGateway {
     }
   }
 
-  @SubscribeMessage('cascade.session.draw')
-  async handleDraw(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleDraw(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -148,15 +110,13 @@ export class CascadeGateway {
     }
   }
 
-  @SubscribeMessage('cascade.session.name_color')
-  async handleNameColor(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: { roomId?: string; userId?: string; color?: string },
+  private async handleNameColor(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
-    if (!isActiveColor(payload?.color))
+    if (typeof payload?.color !== 'string' || !isActiveColor(payload.color))
       throw new WsException('color is required');
     try {
       await this.cascadeService.nameColor(userId, roomId, {
@@ -176,10 +136,9 @@ export class CascadeGateway {
     }
   }
 
-  @SubscribeMessage('cascade.session.call_cascade')
-  async handleCallCascade(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleCallCascade(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -199,10 +158,9 @@ export class CascadeGateway {
     }
   }
 
-  @SubscribeMessage('cascade.session.forfeit')
-  async handleForfeit(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleForfeit(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);

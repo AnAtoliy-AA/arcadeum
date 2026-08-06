@@ -1,7 +1,12 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { ChatMessage } from '@arcadeum/ui';
 import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styled';
+import { ChatSenderLabel } from './ChatSenderLabel';
+import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
+import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
+import type { EquippedResolver } from './types';
 
 export type SystemRowKind = 'elim' | 'round' | 'combo' | 'join';
 
@@ -69,5 +74,54 @@ export function GameChatSystemRow({
       </SysText>
       {time ? <SysTime>{time}</SysTime> : null}
     </SysWrap>
+  );
+}
+
+interface EmoteRowProps {
+  emoji: string;
+  senderName?: string;
+  senderColor?: string;
+  senderId?: string | null;
+  resolveEquipped?: EquippedResolver;
+}
+
+export function GameChatEmoteRow({
+  emoji,
+  senderName,
+  senderColor,
+  senderId,
+  resolveEquipped,
+}: EmoteRowProps) {
+  const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
+  const { nameColor } = useEquippedCosmetics({
+    equippedAvatarId: resolved?.equippedAvatarId,
+    equippedBadgeId: resolved?.equippedBadgeId,
+    equippedNameColorId: resolved?.equippedNameColorId,
+    equippedFrameId: resolved?.equippedFrameId,
+    equippedAuraId: resolved?.equippedAuraId,
+    equippedBannerId: resolved?.equippedBannerId,
+  });
+  const nameStyleProps = nameColorRenderProps(nameColor);
+
+  return (
+    <div data-testid="game-chat-emote-row">
+      <ChatMessage
+        content=""
+        emoji={emoji}
+        senderName={senderName}
+        senderColor={nameStyleProps.color ?? senderColor}
+        senderNameStyle={nameStyleProps.style}
+        isOwn={false}
+        senderAvatar={
+          senderName ? (
+            <ChatSenderLabel
+              senderName={senderName}
+              senderId={senderId}
+              resolveEquipped={resolveEquipped}
+            />
+          ) : undefined
+        }
+      />
+    </div>
   );
 }

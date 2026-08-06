@@ -1,13 +1,77 @@
+# .github/dependabot.yml
+# Optimized to minimize PR noise on `develop` while staying safe on major bumps.
+#
+# Strategy:
+#  - Group minor+patch updates into ONE PR per ecosystem per run (low risk, bulk them).
+#  - Keep major updates SEPARATE and un-grouped (higher risk, review individually).
+#  - Weekly schedule (not daily) to avoid re-triggering constantly.
+#  - rebase-strategy: auto -> Dependabot pushes rebase commits to the SAME open PR
+#    whenever `develop` moves, instead of opening a duplicate.
+#  - open-pull-requests-limit kept tight so old/stale PRs get closed/superseded
+#    instead of piling up.
+#  - Security updates are handled by Dependabot's separate (always-on) alert flow;
+#    `applies-to: security-updates` pulls them into the same groups too, so a
+#    security patch doesn't spawn its own extra PR when it can piggyback the
+#    grouped one.
+
 version: 2
+
 updates:
+  # ---- npm / yarn / pnpm example -------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
-    target-branch: "develop"
-    open-pull-requests-limit: 10
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Tbilisi"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      minor-patch:
+        applies-to: "version-updates"
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+      security-fixes:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+    ignore:
+      # keep majors out of the grouped bulk PR -> they still get their own PR,
+      # reviewed individually, instead of being silently bundled.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # ---- GitHub Actions example -----------------------------------------------
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
-    target-branch: "develop"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Tbilisi"
+    open-pull-requests-limit: 3
+    rebase-strategy: "auto"
+    groups:
+      actions-minor-patch:
+        applies-to: "version-updates"
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+
+  # ---- Add one block per additional ecosystem you use, e.g.: --------------
+  # - package-ecosystem: "pip"
+  # - package-ecosystem: "docker"
+  # - package-ecosystem: "gomod"
+  # (copy the npm block's shape above and adjust `directory`)

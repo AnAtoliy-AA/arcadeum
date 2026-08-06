@@ -4,7 +4,7 @@ export const ruMessages = {
   glimworm_v1: { name: 'Глимворм' },
   lounge: {
     activeTitle: 'Игровые залы',
-    emptyTitle: 'Залы не найдены. Создайте первый, чтобы начать!',
+    emptyTitle: 'Сейчас нет открытых комнат — начните игру против ИИ.',
     emptyFeaturedLink: 'Или сыграйте в Морской бой против ИИ →',
     loadingRooms: 'Загрузка залов...',
     searchPlaceholder: 'Поиск игр...',
@@ -151,6 +151,8 @@ export const ruMessages = {
     seaBattleSonarHint: 'Показать расположение кораблей',
     seaBattleRadar: 'Радар',
     seaBattleRadarHint: 'Сканировать строку или столбец',
+    seaBattleRevealAll: 'Волна сканирования',
+    seaBattleRevealAllHint: 'Кратко показать все корабли в начале боя',
     tttBoardSize: 'Размер поля',
     tttWinLength: '{{n}} подряд для победы',
     tttMaxPlayers: 'До {{n}} игроков',
@@ -303,6 +305,9 @@ export const ruMessages = {
     category: {
       cardGame: 'Карточная игра',
       boardGame: 'Настольная игра',
+      action: 'Экшн',
+      strategy: 'Стратегия',
+      race: 'Гонка',
     },
     tags: {
       strategy: 'Стратегия',
@@ -386,5 +391,10 @@ export const ruMessages = {
     skull: 'Мёртвый',
     sweat: 'Туго!',
     clown: 'Клоун',
+  },
+  gamePicker: {
+    title: 'Выберите игру против ИИ',
+    starting: 'Запуск...',
+    allCategory: 'Все',
   },
 };

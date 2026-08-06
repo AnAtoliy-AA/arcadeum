@@ -5,8 +5,9 @@
  * Each method opens its own Mongo session, runs the writes atomically, and
  * emits the post-commit balance via WalletService.emitAfterCommit.
  */
+import { runInTransaction } from '../../common/utils/transaction.util';
 import { ConflictException } from '@nestjs/common';
-import { ClientSession, Connection, Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import type { TournamentDocument } from '../schemas/tournament.schema';
 import type { WalletService } from '../../wallet/wallet.service';
 
@@ -50,9 +51,8 @@ export class TournamentWalletOps {
     const tournamentId = doc._id.toHexString();
     const entryKey = `tournament-${tournamentId}-entry-${userId}`;
 
-    const session: ClientSession = await this.connection.startSession();
     try {
-      await session.withTransaction(async () => {
+      await runInTransaction(this.connection, async (session) => {
         await this.wallet.debit(
           userId,
           'coins',
@@ -76,8 +76,6 @@ export class TournamentWalletOps {
         if (prior) return;
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -96,9 +94,8 @@ export class TournamentWalletOps {
     const refundKey = `tournament-${tournamentId}-refund-${userId}`;
     const userOid = new Types.ObjectId(userId);
 
-    const session: ClientSession = await this.connection.startSession();
     try {
-      await session.withTransaction(async () => {
+      await runInTransaction(this.connection, async (session) => {
         await this.wallet.credit(
           userId,
           'coins',
@@ -122,8 +119,6 @@ export class TournamentWalletOps {
         if (prior) return true;
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
 
     return true;
@@ -147,33 +142,28 @@ export class TournamentWalletOps {
     }
 
     const tournamentId = doc._id.toHexString();
-    const session: ClientSession = await this.connection.startSession();
-    try {
-      await session.withTransaction(async () => {
-        await this.model.findByIdAndUpdate(doc._id, { $set }, { session });
-        for (const reg of paidRegs) {
-          const regUserId = reg.userId.toHexString();
-          const refundKey = `tournament-${tournamentId}-refund-${regUserId}`;
-          await this.wallet.credit(
-            regUserId,
-            'coins',
-            fee,
-            'tournament_refund',
-            refundKey,
-            { tournamentId, reason: 'admin_cancel' },
-            session,
-          );
-        }
-      });
-
-      // Emit balance updates after commit for each refunded user.
+    await runInTransaction(this.connection, async (session) => {
+      await this.model.findByIdAndUpdate(doc._id, { $set }, { session });
       for (const reg of paidRegs) {
         const regUserId = reg.userId.toHexString();
-        const balance = await this.wallet.getBalance(regUserId);
-        this.wallet.emitAfterCommit(regUserId, balance);
+        const refundKey = `tournament-${tournamentId}-refund-${regUserId}`;
+        await this.wallet.credit(
+          regUserId,
+          'coins',
+          fee,
+          'tournament_refund',
+          refundKey,
+          { tournamentId, reason: 'admin_cancel' },
+          session,
+        );
       }
-    } finally {
-      await session.endSession();
+    });
+
+    // Emit balance updates after commit for each refunded user.
+    for (const reg of paidRegs) {
+      const regUserId = reg.userId.toHexString();
+      const balance = await this.wallet.getBalance(regUserId);
+      this.wallet.emitAfterCommit(regUserId, balance);
     }
   }
 
@@ -190,9 +180,8 @@ export class TournamentWalletOps {
     const tournamentId = doc._id.toHexString();
     const prizeKey = `tournament-${tournamentId}-prize-${winnerUserId}`;
 
-    const session: ClientSession = await this.connection.startSession();
     try {
-      await session.withTransaction(async () => {
+      await runInTransaction(this.connection, async (session) => {
         const result = await this.model.updateOne(
           { _id: doc._id, status: 'live' },
           { $set: { status: 'completed', winnerUserId } },
@@ -223,8 +212,6 @@ export class TournamentWalletOps {
         if (prior) return true;
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
 
     return true;

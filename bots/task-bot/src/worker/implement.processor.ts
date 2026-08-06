@@ -187,7 +187,7 @@ export class ImplementProcessor {
     const { type, issueNum } = job.data;
 
     this.logger.log(`Resolving conflicts for ${branchName}`);
-    const conflictResult = this.githubService.resolveConflicts(branchName, 'develop', cwd, job.data.engine as 'mimo' | 'opencode');
+    const conflictResult = this.githubService.resolveConflicts(branchName, 'develop', cwd, job.data.engine as 'opencode');
     if (!conflictResult.success) {
       this.logger.warn(`Conflict resolution: ${conflictResult.message}`);
     }

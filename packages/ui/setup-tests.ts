@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import './src/tamagui.config';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

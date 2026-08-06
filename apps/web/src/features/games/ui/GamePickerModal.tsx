@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import Image from 'next/image';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { gameMetadata } from '@/features/games/registry';
+import {
+  GameSymbol,
+  FALLBACK_ACCENT,
+} from '@/app/[locale]/home/components/featured-games/gameMeta';
 
 interface GamePickerModalProps {
   open: boolean;
@@ -18,11 +21,22 @@ const AI_GAMES = Object.values(gameMetadata).filter(
   (g) => g.supportsAI && g.status !== 'coming_soon',
 );
 
+const CATEGORIES = ['All', ...Array.from(new Set(AI_GAMES.map((g) => g.category)))];
+
 export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
   const router = useRouter();
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
   const [loadingGame, setLoadingGame] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const filteredGames = useMemo(
+    () =>
+      activeCategory === 'All'
+        ? AI_GAMES
+        : AI_GAMES.filter((g) => g.category === activeCategory),
+    [activeCategory],
+  );
 
   const handleSelectGame = useCallback(
     async (gameId: string) => {
@@ -50,12 +64,52 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
         <ModalBody>
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-              gap: '16px',
+              display: 'flex',
+              gap: '8px',
+              marginBottom: '20px',
+              flexWrap: 'wrap',
             }}
           >
-            {AI_GAMES.map((game) => {
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                type="button"
+                style={{
+                  padding: '6px 16px',
+                  borderRadius: '999px',
+                  border: '1px solid',
+                  borderColor:
+                    activeCategory === cat
+                      ? 'rgba(56, 189, 248, 0.5)'
+                      : 'rgba(255,255,255,0.1)',
+                  background:
+                    activeCategory === cat
+                      ? 'rgba(56, 189, 248, 0.15)'
+                      : 'transparent',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  fontWeight: activeCategory === cat ? 600 : 400,
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: '12px',
+              maxHeight: '60vh',
+              overflowY: 'auto',
+              paddingRight: '4px',
+            }}
+          >
+            {filteredGames.map((game) => {
               const isLoading = loadingGame === game.slug;
               return (
                 <button
@@ -66,9 +120,9 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '12px',
-                    padding: '20px 16px',
-                    borderRadius: '16px',
+                    gap: '10px',
+                    padding: '16px 12px',
+                    borderRadius: '14px',
                     border: '1px solid rgba(255,255,255,0.08)',
                     background: isLoading
                       ? 'rgba(255,255,255,0.06)'
@@ -96,27 +150,28 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                       height: 80,
                       borderRadius: 12,
                       overflow: 'hidden',
-                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       background: 'rgba(255,255,255,0.05)',
                     }}
                   >
-                    <Image
-                      src={game.thumbnail}
-                      alt={game.name}
-                      fill
-                      sizes="80px"
-                      style={{ objectFit: 'cover' }}
+                    <GameSymbol
+                      gameId={game.slug}
+                      width={64}
+                      height={64}
+                      style={{ color: FALLBACK_ACCENT }}
                     />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 600, fontSize: 15 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>
                       {isLoading ? 'Starting...' : game.name}
                     </div>
                     <div
                       style={{
-                        fontSize: 12,
+                        fontSize: 11,
                         opacity: 0.5,
-                        marginTop: 4,
+                        marginTop: 2,
                       }}
                     >
                       {game.category}

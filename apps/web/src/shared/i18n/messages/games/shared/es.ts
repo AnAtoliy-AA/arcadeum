@@ -153,7 +153,8 @@ export const esMessages = {
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Escanear una fila o columna',
     seaBattleRevealAll: 'Onda de escaneo',
-    seaBattleRevealAllHint: 'Revelar todos los barcos brevemente al inicio del combate',
+    seaBattleRevealAllHint:
+      'Revelar todos los barcos brevemente al inicio del combate',
     tttBoardSize: 'Tamaño del Tablero',
     tttWinLength: '{{n}} en fila para ganar',
     tttMaxPlayers: 'Hasta {{n}} jugadores',
@@ -309,8 +310,11 @@ export const esMessages = {
       powerups: 'Bonificaciones',
     },
     category: {
-      cardGame: 'Juego de cartas',
-      boardGame: 'Juego de mesa',
+      cardGame: 'Juego de Cartas',
+      boardGame: 'Juego de Mesa',
+      action: 'Acción',
+      strategy: 'Estrategia',
+      race: 'Carrera',
     },
     tags: {
       strategy: 'Estrategia',
@@ -395,5 +399,10 @@ export const esMessages = {
     skull: 'Muerto',
     sweat: '¡Casi!',
     clown: 'Payaso',
+  },
+  gamePicker: {
+    title: 'Elige un juego para jugar contra la IA',
+    starting: 'Iniciando...',
+    allCategory: 'Todos',
   },
 };

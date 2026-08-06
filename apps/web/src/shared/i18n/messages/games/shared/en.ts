@@ -304,6 +304,9 @@ export const enMessages = {
     category: {
       cardGame: 'Card Game',
       boardGame: 'Board Game',
+      action: 'Action',
+      strategy: 'Strategy',
+      race: 'Race',
     },
     tags: {
       strategy: 'Strategy',
@@ -387,5 +390,10 @@ export const enMessages = {
     skull: 'Dead',
     sweat: 'Close!',
     clown: 'Clown',
+  },
+  gamePicker: {
+    title: 'Pick a game to play vs AI',
+    starting: 'Starting...',
+    allCategory: 'All',
   },
 };

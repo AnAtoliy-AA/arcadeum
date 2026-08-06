@@ -13,13 +13,14 @@ import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
-import { extractString, getIsAuthenticated } from './games.gateway.utils';
+import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
 import {
   handleRoomChat,
   handleDeleteRoomChat,
 } from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
+import { handleHistoryNote } from './games.gateway.history-note';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -117,7 +118,13 @@ export class GamesGateway {
     );
 
     registry.set('games.session.history_note', (socket, payload) =>
-      this.handleHistoryNote(payload, socket),
+      handleHistoryNote(
+        this.logger,
+        socket,
+        this.gamesService,
+        (c, u) => this.validateUserId(c, u),
+        payload,
+      ),
     );
 
     this.server.on('connection', (socket: Socket) => {
@@ -401,40 +408,6 @@ export class GamesGateway {
     );
   }
 
-  async handleHistoryNote(
-    payload: Record<string, unknown>,
-    client: Socket,
-  ): Promise<void> {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-    const message = extractString(payload, 'message');
-    const scopeRaw =
-      typeof payload?.scope === 'string'
-        ? payload.scope.trim().toLowerCase()
-        : 'all';
-    const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
-    const isAuthenticated = getIsAuthenticated(client);
-
-    this.validateUserId(client, userId);
-
-    try {
-      await this.gamesService.postHistoryNote(
-        roomId,
-        userId,
-        message,
-        scope as 'all' | 'players' | 'private',
-        isAuthenticated,
-      );
-      client.emit(
-        'games.session.history_note.ack',
-        maybeEncrypt({ roomId, userId, scope }),
-      );
-    } catch (error) {
-      this.logger.error(
-        `handleHistoryNote failed for room ${roomId}: ${error}`,
-      );
-    }
-  }
   @SubscribeMessage('games.session.undo_request')
   onUndoRequest(
     @ConnectedSocket() client: Socket,

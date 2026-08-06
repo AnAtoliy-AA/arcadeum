@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.24] - 2026-08-06
+
+### Added
+- add field status overlay showing hits, misses, and unexplored cells
+
+
+## [1.24.23] - 2026-08-06
+
+### Added
+- add settings gear icon for unauthenticated desktop users
+
+
 ## [1.24.22] - 2026-08-05
 
 ### Added

@@ -6,6 +6,7 @@ import { SupportIcon } from '@arcadeum/ui';
 import { getTranslations } from '@/shared/i18n/server';
 import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
+import { HeroPlayVsAiButton } from './HeroPlayVsAiButton';
 
 export default async function HomeHero() {
   const messages = await getTranslations();
@@ -71,12 +72,7 @@ export default async function HomeHero() {
               >
                 {primaryLabel}
               </Link>
-              <Link
-                href={`${routes.games}?status=lobby,in_progress`}
-                className="home-link-button home-link-button-ghost"
-              >
-                {playWithBotsLabel}
-              </Link>
+              <HeroPlayVsAiButton label={playWithBotsLabel} />
               <Link
                 href={appConfig.supportCta.href}
                 className="home-link-button home-link-button-ghost home-btn-gap-2"

@@ -166,6 +166,16 @@ function CheckersGameImpl({
   const [optimisticBoard, setOptimisticBoard] = useState<Board | null>(null);
   const [lastServerBoard, setLastServerBoard] = useState<Board | null>(null);
 
+  const playerColor = useMemo(
+    () =>
+      currentUserId && snapshot
+        ? getPlayerColor(snapshot.players, currentUserId)
+        : null,
+    [snapshot, currentUserId],
+  );
+
+  const isFlipped = playerColor === 'dark';
+
   const displayBoard = optimisticBoard ?? snapshot?.board ?? null;
 
   // Clear optimistic board when server state changes
@@ -329,6 +339,7 @@ function CheckersGameImpl({
             disabled={!myTurn || isGameOver}
             ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
+            isFlipped={isFlipped}
           />
         </>
       ) : null}

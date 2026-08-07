@@ -13,6 +13,7 @@ interface CheckersBoardProps {
   disabled: boolean;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
+  isFlipped?: boolean;
 }
 
 export function CheckersBoard({
@@ -23,6 +24,7 @@ export function CheckersBoard({
   disabled,
   ariaLabel,
   onCellClick,
+  isFlipped = false,
 }: CheckersBoardProps) {
   const theme = useCheckersTheme();
   const boardSize = board.length;
@@ -42,6 +44,16 @@ export function CheckersBoard({
     return map;
   }, [players]);
 
+  const rows = useMemo(() => {
+    const arr = Array.from({ length: boardSize }, (_, i) => i);
+    return isFlipped ? arr.reverse() : arr;
+  }, [boardSize, isFlipped]);
+
+  const cols = useMemo(() => {
+    const arr = Array.from({ length: boardSize }, (_, i) => i);
+    return isFlipped ? arr.reverse() : arr;
+  }, [boardSize, isFlipped]);
+
   return (
     <YStack
       width="100%"
@@ -57,9 +69,9 @@ export function CheckersBoard({
       aria-label={ariaLabel}
       data-testid="checkers-board"
     >
-      {Array.from({ length: boardSize }).map((_, row) => (
+      {rows.map((row) => (
         <YStack key={row} flexDirection="row" flex={1} role="row">
-          {Array.from({ length: boardSize }).map((_, col) => {
+          {cols.map((col) => {
             const isDarkSquare = (row + col) % 2 === 1;
             const piece = board[row][col];
             const isSelected =

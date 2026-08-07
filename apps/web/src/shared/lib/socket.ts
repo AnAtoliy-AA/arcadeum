@@ -32,19 +32,6 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
-// Leaderboards realtime is a "nice-to-have" push channel — the page renders
-// fine without it. Going websocket-only skips socket.io's polling preamble
-// (~3 XHRs per connect) and the long-poll heartbeats it keeps alive when
-// polling is in the transport list. If the websocket can't be established
-// (e.g. behind a strict proxy) the page just falls back to capture-driven
-// refetches; nothing breaks.
-const LEADERBOARD_SOCKET_OPTIONS = {
-  transports: ['websocket'],
-  autoConnect: false,
-  reconnectionAttempts: 5,
-  reconnectionDelayMax: 10_000,
-};
-
 const gamesSocket = io(
   `${SOCKET_BASE_URL}/games`,
   SOCKET_OPTIONS,
@@ -54,7 +41,7 @@ const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
 
 const leaderboardsSocket = io(
   `${SOCKET_BASE_URL}/leaderboards`,
-  LEADERBOARD_SOCKET_OPTIONS,
+  SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
 const friendsSock = io(

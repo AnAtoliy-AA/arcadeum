@@ -62,6 +62,11 @@ const friendsSock = io(
   SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
+const walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
+  transports: ['websocket'],
+  autoConnect: false,
+}) as AuthenticatedSocket;
+
 let currentAuthToken: string | null = null;
 
 /**
@@ -174,6 +179,15 @@ export function connectFriendsSocket(
   };
 }
 
+export function connectWalletSocket(token: string): void {
+  walletSock.auth = { token };
+  if (!walletSock.connected) walletSock.connect();
+}
+
+export function disconnectWalletSocket(): void {
+  if (walletSock.connected) walletSock.disconnect();
+}
+
 /**
  * Connect game socket without authentication (for spectating public games)
  * Pass the anonymous userId so the backend sends the encryption key
@@ -215,11 +229,15 @@ export function disconnectSockets(): void {
   if (friendsSock) {
     friendsSock.disconnect();
   }
+  if (walletSock) {
+    walletSock.disconnect();
+  }
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
   leaderboardsSocket.auth = {};
   friendsSock.auth = {};
+  walletSock.auth = {};
   resetEncryptionKey();
 }
 
@@ -227,6 +245,7 @@ export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 export const leaderboardSocket: Socket = leaderboardsSocket;
 export const friendsSocket: Socket = friendsSock;
+export const walletSocket: Socket = walletSock;
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {

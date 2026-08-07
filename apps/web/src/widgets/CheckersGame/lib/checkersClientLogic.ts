@@ -187,27 +187,24 @@ export function applyMoveToBoard(board: Board, steps: MoveStep[]): Board {
   if (steps.length === 0) return newBoard;
 
   const firstStep = steps[0];
-  const piece = newBoard[firstStep.fromRow][firstStep.fromCol];
+  let piece = newBoard[firstStep.fromRow][firstStep.fromCol];
   if (!piece) return newBoard;
+
+  newBoard[firstStep.fromRow][firstStep.fromCol] = null;
+
+  const size = newBoard.length;
 
   for (const step of steps) {
     if (step.capturedRow !== undefined && step.capturedCol !== undefined) {
       newBoard[step.capturedRow][step.capturedCol] = null;
     }
-  }
-
-  const lastStep = steps[steps.length - 1];
-  const movingPiece = { ...piece };
-
-  if (movingPiece.type === 'man') {
-    const size = newBoard.length;
-    if (lastStep.toRow === 0 || lastStep.toRow === size - 1) {
-      movingPiece.type = 'king';
+    if (piece.type === 'man' && (step.toRow === 0 || step.toRow === size - 1)) {
+      piece = { ...piece, type: 'king' };
     }
   }
 
-  newBoard[firstStep.fromRow][firstStep.fromCol] = null;
-  newBoard[lastStep.toRow][lastStep.toCol] = movingPiece;
+  const lastStep = steps[steps.length - 1];
+  newBoard[lastStep.toRow][lastStep.toCol] = piece;
 
   return newBoard;
 }

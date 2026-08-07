@@ -117,7 +117,7 @@ export function validateMovePiece(
       return { ok: false, error: `Invalid step ${i + 1}` };
     }
 
-    currentBoard = applyMove(currentBoard, [validStep]);
+    currentBoard = applyMove(currentBoard, [validStep], playerColor);
   }
 
   if (isCaptureChain) {

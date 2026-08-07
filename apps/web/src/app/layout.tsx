@@ -152,6 +152,18 @@ export default async function RootLayout({
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
           </>
         )}
+        {process.env.NEXT_PUBLIC_API_BASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_API_BASE_URL}
+            />
+            <link
+              rel="dns-prefetch"
+              href={process.env.NEXT_PUBLIC_API_BASE_URL}
+            />
+          </>
+        )}
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>

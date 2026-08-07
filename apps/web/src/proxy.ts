@@ -123,6 +123,75 @@ function handleVercelFeedbackPreflight(req: NextRequest): NextResponse | null {
   return response;
 }
 
+function getLocaleFromCountry(countryCode?: string | null): Locale | null {
+  if (!countryCode) return null;
+  const code = countryCode.toUpperCase();
+  if (
+    [
+      'ES',
+      'MX',
+      'AR',
+      'CO',
+      'PE',
+      'VE',
+      'CL',
+      'EC',
+      'GT',
+      'CU',
+      'BO',
+      'DO',
+      'HN',
+      'PY',
+      'SV',
+      'NI',
+      'CR',
+      'PA',
+      'UY',
+      'GQ',
+    ].includes(code)
+  ) {
+    return 'es';
+  }
+  if (
+    [
+      'FR',
+      'CA',
+      'MC',
+      'CD',
+      'CG',
+      'CI',
+      'SN',
+      'MG',
+      'CM',
+      'ML',
+      'NE',
+      'TG',
+      'BJ',
+      'BI',
+      'DJ',
+      'RW',
+      'GQ',
+      'KM',
+      'LU',
+      'CH',
+      'BE',
+    ].includes(code)
+  ) {
+    return 'fr';
+  }
+  if (code === 'BY') {
+    return 'by';
+  }
+  if (
+    ['RU', 'UA', 'KZ', 'UZ', 'KG', 'TJ', 'TM', 'MD', 'AM', 'AZ', 'GE'].includes(
+      code,
+    )
+  ) {
+    return 'ru';
+  }
+  return null;
+}
+
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
@@ -166,7 +235,7 @@ export function proxy(req: NextRequest) {
   }
 
   // Case 2: URL has no locale prefix. Pick locale via cookie -> Accept-
-  // Language -> default, then map the (possibly English) first segment
+  // Language -> GeoIP -> default, then map the (possibly English) first segment
   // to the localized slug for that locale in one redirect.
   const cookieLocale = req.cookies.get('app-language')?.value;
   const headerLocale = req.headers
@@ -175,9 +244,14 @@ export function proxy(req: NextRequest) {
     ?.split('-')[0]
     ?.toLowerCase();
 
+  const ipCountry =
+    req.headers.get('x-vercel-ip-country') ?? req.headers.get('cf-ipcountry');
+  const ipLocale = getLocaleFromCountry(ipCountry);
+
   const locale =
     pickSupported(cookieLocale) ??
     pickSupported(headerLocale) ??
+    ipLocale ??
     DEFAULT_LOCALE;
 
   const url = req.nextUrl.clone();

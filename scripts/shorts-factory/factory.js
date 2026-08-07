@@ -1134,9 +1134,7 @@ async function publishToSocials(videoPath, caption) {
         ],
         settings: {
           __type: 'instagram',
-          post_type: 'reel',
-          is_trial_reel: false,
-          collaborators: [],
+          post_type: 'post',
         },
       }),
     });

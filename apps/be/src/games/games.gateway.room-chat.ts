@@ -14,13 +14,11 @@ function validateUserId(
   payloadUserId: string,
 ): void {
   const authUserId = (client.data as Record<string, unknown>)?.userId as
-    | string
-    | undefined;
+    string | undefined;
   const isAuthenticated =
     (client.data as Record<string, unknown>)?.authenticated === true;
   const anonId = (client.data as Record<string, unknown>)?.anonId as
-    | string
-    | undefined;
+    string | undefined;
 
   if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
     logger.warn(

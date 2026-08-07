@@ -43,8 +43,8 @@ class FakeOverrideModel {
       priceCurrency: null,
     };
     const next = { ...existing, ...update.$set };
-    this.docs.set(filter.itemId, next as OverrideDoc);
-    return Promise.resolve(next as OverrideDoc);
+    this.docs.set(filter.itemId, next);
+    return Promise.resolve(next);
   }
 }
 

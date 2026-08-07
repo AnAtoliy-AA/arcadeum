@@ -25,7 +25,6 @@ import {
   handleRemoveBotFromTeam,
   handleToggleHideShips,
 } from './sea-battle.gateway.lobby';
-import type { SeaBattleTeamConfigItemDto } from './dtos/set-team-config.dto';
 
 type ShipOpPayload = Record<string, unknown> & {
   shipId?: string;
@@ -93,8 +92,8 @@ export class SeaBattleGateway implements GameMessageHandler {
     try {
       await this.seaBattleService.executeActionByRoom(userId, roomId, action, {
         targetPlayerId,
-        row: payload.row as number | undefined,
-        col: payload.col as number | undefined,
+        row: payload.row,
+        col: payload.col,
       });
       client.emit(
         ackEvent,
@@ -177,7 +176,7 @@ export class SeaBattleGateway implements GameMessageHandler {
     client: Socket,
     payload: Record<string, unknown>,
   ): Promise<void> {
-    return this.dispatchShipOp(client, payload as ShipOpPayload, {
+    return this.dispatchShipOp(client, payload, {
       svc: (u, r, b) => this.seaBattleService.placeShipByRoom(u, r, b),
       ackEvent: 'seaBattle.session.ship_placed',
       errorAction: 'place ship',
@@ -189,7 +188,7 @@ export class SeaBattleGateway implements GameMessageHandler {
     client: Socket,
     payload: Record<string, unknown>,
   ): Promise<void> {
-    return this.dispatchShipOp(client, payload as ShipOpPayload, {
+    return this.dispatchShipOp(client, payload, {
       svc: (u, r, b) => this.seaBattleService.moveShipByRoom(u, r, b),
       ackEvent: 'seaBattle.session.ship_moved',
       errorAction: 'move ship',
@@ -380,12 +379,7 @@ export class SeaBattleGateway implements GameMessageHandler {
     await handleSetTeamConfig(
       this.runTeamAction,
       client,
-      payload as {
-        roomId?: string;
-        userId?: string;
-        teams?: SeaBattleTeamConfigItemDto[];
-        hideShipsFromTeammates?: boolean;
-      },
+      payload,
       this.teamConfigService,
     );
   }

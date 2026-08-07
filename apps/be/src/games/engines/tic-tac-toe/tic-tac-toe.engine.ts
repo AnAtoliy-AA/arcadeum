@@ -14,7 +14,6 @@ import {
   WIN_LENGTH,
 } from './tic-tac-toe.constants';
 import type {
-  CellValue,
   InitializeConfig,
   PlaceMarkPayload,
   TicTacToePlayer,
@@ -235,7 +234,7 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       : context.userId;
     if (!ownerId) return this.errorResult('Owner not found');
 
-    newState.board[payload.row][payload.col] = ownerId as CellValue;
+    newState.board[payload.row][payload.col] = ownerId;
 
     let originDelta = { row: 0, col: 0 };
     const isInfinity = newState.options.boardSize === 'infinity';

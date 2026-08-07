@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { YStack, Text } from 'tamagui';
 
 interface Props {
@@ -53,14 +54,13 @@ export function AdminShopItemPreview({
           Aa
         </Text>
       ) : assetUrl ? (
-        <img
+        <Image
           src={assetUrl}
           alt={itemId}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-          }}
+          width={size}
+          height={size}
+          unoptimized
+          style={{ objectFit: 'contain' }}
           onError={(e) => {
             e.currentTarget.style.display = 'none';
           }}

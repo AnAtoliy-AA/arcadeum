@@ -117,8 +117,7 @@ export type LeaderboardSnapshotDto = {
   page: number;
   mythic: MythicPlayerDto | null;
   podium:
-    | [LeaderboardPlayerDto, LeaderboardPlayerDto, LeaderboardPlayerDto]
-    | null;
+    [LeaderboardPlayerDto, LeaderboardPlayerDto, LeaderboardPlayerDto] | null;
   rows: LeaderboardPlayerDto[];
   totalRows: number;
   cup: CupSnapshotDto | null;

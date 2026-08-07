@@ -5,7 +5,6 @@ import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GamesCatalogService } from './games-catalog.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
-import { QuickplayGameDto } from './dtos/quickplay-game.dto';
 
 function buildCatalog(
   vis: { assertVisible: jest.Mock; filterVisible?: jest.Mock },
@@ -45,14 +44,11 @@ describe('createRoom visibility gate', () => {
     const games = { createRoom: jest.fn() } as unknown as GamesService;
     const controller = buildController(games, catalog);
     await expect(
-      controller.createRoom(
-        { user: { userId: 'u-1' } } as unknown as Request,
-        {
-          gameId: 'glimworm_v1',
-          name: 'x',
-          visibility: 'public',
-        } as CreateGameRoomDto,
-      ),
+      controller.createRoom({ user: { userId: 'u-1' } } as unknown as Request, {
+        gameId: 'glimworm_v1',
+        name: 'x',
+        visibility: 'public',
+      }),
     ).rejects.toThrow();
     expect(games.createRoom).not.toHaveBeenCalled();
   });
@@ -96,7 +92,7 @@ describe('createRoom visibility gate', () => {
         gameId: 'critical_v1',
         name: 'x',
         visibility: 'public',
-      } as CreateGameRoomDto,
+      },
     );
     expect(vis.assertVisible).toHaveBeenCalledWith(
       'premium',
@@ -193,10 +189,10 @@ describe('quickplay visibility gate', () => {
     } as unknown as GamesService;
     const controller = buildController(games, catalog);
     await expect(
-      controller.quickplay(
-        { user: { userId: 'u-1' } } as unknown as Request,
-        { gameId: 'glimworm_v1', variant: 'time_attack' } as QuickplayGameDto,
-      ),
+      controller.quickplay({ user: { userId: 'u-1' } } as unknown as Request, {
+        gameId: 'glimworm_v1',
+        variant: 'time_attack',
+      }),
     ).rejects.toThrow();
     expect(games.quickplay).not.toHaveBeenCalled();
     expect(games.findHumanMatch).not.toHaveBeenCalled();
@@ -213,7 +209,7 @@ describe('quickplay visibility gate', () => {
     const controller = buildController(games, catalog);
     await controller.quickplay(
       { user: { userId: 'u-1' } } as unknown as Request,
-      { gameId: 'glimworm_v1', variant: 'time_attack' } as QuickplayGameDto,
+      { gameId: 'glimworm_v1', variant: 'time_attack' },
     );
     expect(vis.assertVisible).toHaveBeenCalledWith(
       'vip',
@@ -238,7 +234,7 @@ describe('quickplay visibility gate', () => {
         gameId: 'glimworm_v1',
         mode: 'human',
         variant: 'battle_royale',
-      } as QuickplayGameDto,
+      },
     );
     expect(vis.assertVisible).toHaveBeenCalledWith(
       'premium',

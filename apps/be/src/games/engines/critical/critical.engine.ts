@@ -29,7 +29,6 @@ import {
   validateCriticalAction,
   CriticalPayload,
   FavorExecutePayload,
-  TheftPackPayload,
 } from './critical-validation.utils';
 import { executeFavor, executeGiveFavorCard } from './critical-favor.utils';
 import {
@@ -193,7 +192,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
               requestedCard: typedPayload?.requestedCard,
               cardsToStash: typedPayload?.cardsToStash,
               cardsToUnstash: typedPayload?.cardsToUnstash,
-            } as TheftPackPayload,
+            },
           );
           if (theftPackResult) {
             return theftPackResult;

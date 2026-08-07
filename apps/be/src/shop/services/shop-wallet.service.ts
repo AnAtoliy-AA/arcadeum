@@ -130,7 +130,7 @@ export class ShopWalletService {
         ],
         { session },
       );
-      inventoryRow = created[0] as unknown as InventoryRowSnapshot;
+      inventoryRow = created[0];
       equipped = await this.ensureEquipped(userId, effective, session);
     });
 

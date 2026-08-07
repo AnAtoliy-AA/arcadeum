@@ -42,7 +42,7 @@ export class GameSessionsCleanupCron {
           gameId: session.gameId,
           engine: session.engine,
           status: 'completed',
-          state: session.state as Record<string, unknown>,
+          state: session.state,
           createdAt:
             session.createdAt instanceof Date
               ? session.createdAt.toISOString()
@@ -135,7 +135,7 @@ export class GameSessionsCleanupCron {
           gameId: session.gameId,
           engine: session.engine,
           status: session.status,
-          state: session.state as Record<string, unknown>,
+          state: session.state,
           createdAt:
             session.createdAt instanceof Date
               ? session.createdAt.toISOString()

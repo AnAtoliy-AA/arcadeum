@@ -157,13 +157,6 @@ export function MatchWidget({
   // effects below — without this, a fresh-page write would echo the
   // just-read value straight back into storage on every match start.
   const hydratedFromStorage = useRef(false);
-  /* eslint-disable react-hooks/set-state-in-effect --
-   * One-shot hydration when `currentUserId` arrives async (auth bootstrap
-   * resolved after the widget mounted). This is the documented pattern
-   * for syncing local state to a value that wasn't available at mount —
-   * the rule guards against cascading renders, not external-event syncs.
-   * The `hydratedFromStorage` ref makes this exactly-once.
-   */
   useEffect(() => {
     if (!togglesStorageKey || hydratedFromStorage.current) return;
     hydratedFromStorage.current = true;
@@ -172,7 +165,6 @@ export function MatchWidget({
     setShowCardName(name);
     setShowCardDescription(desc);
   }, [togglesStorageKey]);
-  /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!hydratedFromStorage.current) return;
     writeHandToggle(togglesStorageKey, 'name', showCardName);
@@ -208,18 +200,6 @@ export function MatchWidget({
     () => selectedCards.map((c) => c.uid),
     [selectedCards],
   );
-  /* eslint-disable react-hooks/set-state-in-effect --
-   * State sync with derived data:
-   * 1. Hand-shrink: when Favor/Nope strips a card mid-turn, selectedUids
-   *    holds a uid that no longer matches the hand. If a new card lands
-   *    on the same index it reuses the uid and silently re-selects.
-   *    We must mirror `validSelectedUids` back into state.
-   * 2. Turn-flip: armed target + selection only make sense while it's
-   *    my turn. Clearing on `!isMyTurn` avoids carrying intent across
-   *    turns.
-   * Both are external-event syncs (server snapshot pushes), not the
-   * cascading-renders pattern the rule guards against.
-   */
   useEffect(() => {
     // Length-only check missed the same-length-different-uids case: when
     // Nope clears the played card but a fresh draw lands on the same
@@ -239,7 +219,6 @@ export function MatchWidget({
     }
     prevIsMyTurn.current = isMyTurn;
   }, [isMyTurn, setSelectedUids]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSelectTarget = useCallback(
     (id: string) => setTargetPlayerId((curr) => (curr === id ? null : id)),

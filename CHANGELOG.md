@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.32] - 2026-08-07
+
+### Added
+- add Telegram approval flow for video review
+
+### Fixed
+- replace dynamic require() with static imports for lint compliance
+- add Playwright install to CI/CD and fix Instagram post type
+
+
 ## [1.24.31] - 2026-08-07
 
 ### Fixed

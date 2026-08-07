@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.31] - 2026-08-07
+
+### Fixed
+- fix CI workflow issues across multiple workflows
+
+
 ## [1.24.30] - 2026-08-07
 
 ### Fixed

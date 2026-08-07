@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { navigateTo } from './fixtures/utils/navigation';
 
 test.describe('Mobile Menu', () => {
   test.beforeEach(async ({ page, context }) => {
@@ -8,11 +9,9 @@ test.describe('Mobile Menu', () => {
     // Set viewport to mobile size
     await page.setViewportSize({ width: 375, height: 812 });
 
-    // Navigate first to establish origin
-    await page.goto('/');
-
-    // Wait for hydration (robust method)
-    await page.waitForSelector('html[data-app-ready="true"]');
+    // Navigate with commit to avoid cold-compile timeout; wait for hydration
+    // markers separately (same pattern as every other e2e spec).
+    await navigateTo(page, '/');
 
     // Now safe to clear storage
     await page.evaluate(() => {

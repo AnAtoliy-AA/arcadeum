@@ -124,15 +124,17 @@ export function SeaBattleBoards({
     setHoveredCell(null);
   }, []);
 
-  // Compute preview cells for sonar (area scales with grid size, matching backend getSonarRadius)
+  // Compute preview cells for sonar (area scales with grid size, matching backend getSonarSide)
   const sonarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
-    const radius = Math.floor(gridSize / 3);
+    const side = gridSize <= 10 ? 3 : gridSize <= 15 ? 5 : 7;
     const cells = new Set<string>();
-    for (let dr = -radius; dr <= radius; dr++) {
-      for (let dc = -radius; dc <= radius; dc++) {
-        const r = hoveredCell.row + dr;
-        const c = hoveredCell.col + dc;
+    const rStart = hoveredCell.row - Math.floor((side - 1) / 2);
+    const rEnd = rStart + side - 1;
+    const cStart = hoveredCell.col - Math.floor((side - 1) / 2);
+    const cEnd = cStart + side - 1;
+    for (let r = rStart; r <= rEnd; r++) {
+      for (let c = cStart; c <= cEnd; c++) {
         if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
           cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
         }
@@ -141,10 +143,11 @@ export function SeaBattleBoards({
     return cells;
   })();
 
-  // Compute preview cells for radar (band of rows/columns, matching backend getRadarHalfWidth)
+  // Compute preview cells for radar (band of rows/columns, matching backend getRadarLines)
   const radarPreviewCells = (() => {
     if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
-    const halfWidth = Math.floor(gridSize / 7);
+    const lines = gridSize <= 10 ? 1 : gridSize <= 15 ? 3 : 5;
+    const halfWidth = Math.floor(lines / 2);
     const cells = new Set<string>();
     const axis = weaponMode.radarAxis ?? 'row';
     if (axis === 'row') {
@@ -306,8 +309,7 @@ export function SeaBattleBoards({
                     style={{
                       ...buttonBase,
                       opacity: isRadarDisabled ? 0.35 : 1,
-                      cursor:
-                        isRadarDisabled ? 'not-allowed' : 'pointer',
+                      cursor: isRadarDisabled ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
@@ -342,8 +344,7 @@ export function SeaBattleBoards({
                       ...buttonBase,
                       padding: '8px 10px',
                       opacity: isRadarDisabled ? 0.35 : 1,
-                      cursor:
-                        isRadarDisabled ? 'not-allowed' : 'pointer',
+                      cursor: isRadarDisabled ? 'not-allowed' : 'pointer',
                       color:
                         weaponMode?.weapon === 'radar' ? '#c084fc' : '#a0a0a0',
                       borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,

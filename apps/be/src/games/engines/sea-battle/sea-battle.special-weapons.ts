@@ -7,12 +7,16 @@ import {
 } from './sea-battle.types';
 import { GameActionResult } from '../base/game-engine.interface';
 
-function getSonarRadius(gridSize: number): number {
-  return Math.floor(gridSize / 3);
+function getSonarSide(gridSize: number): number {
+  if (gridSize <= 10) return 3;
+  if (gridSize <= 15) return 5;
+  return 7;
 }
 
-function getRadarHalfWidth(gridSize: number): number {
-  return Math.floor(gridSize / 7);
+function getRadarLines(gridSize: number): number {
+  if (gridSize <= 10) return 1;
+  if (gridSize <= 15) return 3;
+  return 5;
 }
 
 export function executeSonar(
@@ -36,11 +40,16 @@ export function executeSonar(
   const centerCol = payload.col!;
 
   const gSize = state.gridSize ?? BOARD_SIZE;
-  const radius = getSonarRadius(gSize);
+  const side = getSonarSide(gSize);
   const cells: { row: number; col: number; state: CellState }[] = [];
 
-  for (let r = centerRow - radius; r <= centerRow + radius; r++) {
-    for (let c = centerCol - radius; c <= centerCol + radius; c++) {
+  const rStart = centerRow - Math.floor((side - 1) / 2);
+  const rEnd = rStart + side - 1;
+  const cStart = centerCol - Math.floor((side - 1) / 2);
+  const cEnd = cStart + side - 1;
+
+  for (let r = rStart; r <= rEnd; r++) {
+    for (let c = cStart; c <= cEnd; c++) {
       if (r >= 0 && r < gSize && c >= 0 && c < gSize) {
         cells.push({ row: r, col: c, state: target.board[r][c] });
       }
@@ -52,7 +61,7 @@ export function executeSonar(
     targetId: target.playerId,
     centerRow,
     centerCol,
-    radius,
+    radius: Math.floor((side - 1) / 2),
     cells,
   };
 
@@ -88,7 +97,8 @@ export function executeRadar(
   state.specialWeaponUsage[player.playerId].radarUsed = true;
 
   const gSize = state.gridSize ?? BOARD_SIZE;
-  const halfWidth = getRadarHalfWidth(gSize);
+  const lines = getRadarLines(gSize);
+  const halfWidth = Math.floor(lines / 2);
   const cells: { row: number; col: number; state: CellState }[] = [];
 
   if (payload.row !== undefined) {

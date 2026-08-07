@@ -133,10 +133,26 @@ export function sanitizeSeaBattleState(
     return true;
   });
 
-  if (sanitized.lastSonar && sanitized.lastSonar.attackerId !== playerId) {
+  const isTeammateOf = (otherId: string): boolean => {
+    if (!viewerTeamId) return false;
+    const otherTeam = sanitized.teams?.find((t) =>
+      t.playerIds.includes(otherId),
+    );
+    return otherTeam?.id === viewerTeamId;
+  };
+
+  if (
+    sanitized.lastSonar &&
+    sanitized.lastSonar.attackerId !== playerId &&
+    !isTeammateOf(sanitized.lastSonar.attackerId)
+  ) {
     delete sanitized.lastSonar;
   }
-  if (sanitized.lastRadar && sanitized.lastRadar.attackerId !== playerId) {
+  if (
+    sanitized.lastRadar &&
+    sanitized.lastRadar.attackerId !== playerId &&
+    !isTeammateOf(sanitized.lastRadar.attackerId)
+  ) {
     delete sanitized.lastRadar;
   }
 

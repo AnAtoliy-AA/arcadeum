@@ -207,11 +207,18 @@ export function HouseRulesPanel({
         </label>
 
         {sw?.revealAll && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 24 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              paddingLeft: 24,
+            }}
+          >
             <Text fontSize={12} opacity={0.6}>
               Duration:
             </Text>
-            {[1, 2, 3].map((sec) => {
+            {[1, 2, 3, 4, 5].map((sec) => {
               const currentDuration =
                 (gameOptions.revealAllDuration as number) ?? 1;
               return (

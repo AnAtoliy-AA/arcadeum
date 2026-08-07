@@ -47,7 +47,7 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       const s = battleState({ sonar: true });
       const result = engine.executeAction(s, 'useSonar', ctx('a'), {
         targetPlayerId: 'b',
-        row: 2,
+        row: 1,
         col: 2,
       });
 
@@ -55,15 +55,15 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(result.state!.lastSonar).toBeDefined();
       expect(result.state!.lastSonar!.attackerId).toBe('a');
       expect(result.state!.lastSonar!.targetId).toBe('b');
-      expect(result.state!.lastSonar!.centerRow).toBe(2);
+      expect(result.state!.lastSonar!.centerRow).toBe(1);
       expect(result.state!.lastSonar!.centerCol).toBe(2);
-      // radius = Math.floor(10 / 3) = 3 → 7×7 area around (2,2), clamped to 6×6
-      expect(result.state!.lastSonar!.radius).toBe(3);
+      // side = 3 → radius = 1 → 3×3 area around (1,2)
+      expect(result.state!.lastSonar!.radius).toBe(1);
       const cells = result.state!.lastSonar!.cells;
-      expect(cells.length).toBe(36);
-      expect(cells).toContainEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
+      expect(cells.length).toBe(9);
       expect(cells).toContainEqual({ row: 0, col: 1, state: CELL_STATE.SHIP });
-      expect(cells).toContainEqual({ row: 2, col: 2, state: CELL_STATE.EMPTY });
+      expect(cells).toContainEqual({ row: 0, col: 2, state: CELL_STATE.SHIP });
+      expect(cells).toContainEqual({ row: 1, col: 2, state: CELL_STATE.EMPTY });
     });
 
     it('only reveals cells within radius', () => {
@@ -75,9 +75,9 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       });
 
       expect(result.success).toBe(true);
-      // radius = 3 → 7×7 area around (0,9): rows 0-3, cols 6-9 (clamped)
+      // side = 3 → radius = 1 → 3×3 area around (0,9): rows 0-1, cols 8-9 (clamped)
       const cells = result.state!.lastSonar!.cells;
-      expect(cells.length).toBe(16); // 4 rows × 4 cols (clamped at right edge)
+      expect(cells.length).toBe(4); // 2 rows × 2 cols (clamped at edges)
       expect(cells).toContainEqual({ row: 0, col: 9, state: CELL_STATE.EMPTY });
     });
 
@@ -219,14 +219,12 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(result.state!.lastRadar!.targetId).toBe('b');
       expect(result.state!.lastRadar!.row).toBe(1);
       expect(result.state!.lastRadar!.col).toBeUndefined();
-      // halfWidth = Math.floor(10 / 7) = 1 → rows 0, 1, 2
-      expect(result.state!.lastRadar!.halfWidth).toBe(1);
+      // lines = 1 → halfWidth = 0 → just row 1
+      expect(result.state!.lastRadar!.halfWidth).toBe(0);
 
       const cells = result.state!.lastRadar!.cells;
-      expect(cells.length).toBe(30); // 3 rows × 10 cols
-      expect(cells).toContainEqual({ row: 0, col: 0, state: CELL_STATE.SHIP });
+      expect(cells.length).toBe(10); // 1 row × 10 cols
       expect(cells).toContainEqual({ row: 1, col: 0, state: CELL_STATE.EMPTY });
-      expect(cells).toContainEqual({ row: 2, col: 0, state: CELL_STATE.EMPTY });
     });
 
     it('scans a column band and reveals cell states', () => {
@@ -239,14 +237,12 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
       expect(result.success).toBe(true);
       expect(result.state!.lastRadar!.col).toBe(2);
       expect(result.state!.lastRadar!.row).toBeUndefined();
-      // halfWidth = Math.floor(10 / 7) = 1 → cols 1, 2, 3
-      expect(result.state!.lastRadar!.halfWidth).toBe(1);
+      // lines = 1 → halfWidth = 0 → just col 2
+      expect(result.state!.lastRadar!.halfWidth).toBe(0);
 
       const cells = result.state!.lastRadar!.cells;
-      expect(cells.length).toBe(30); // 3 cols × 10 rows
-      expect(cells).toContainEqual({ row: 0, col: 1, state: CELL_STATE.SHIP });
+      expect(cells.length).toBe(10); // 1 col × 10 rows
       expect(cells).toContainEqual({ row: 0, col: 2, state: CELL_STATE.SHIP });
-      expect(cells).toContainEqual({ row: 0, col: 3, state: CELL_STATE.SHIP });
     });
 
     it('marks radar as used for the player', () => {

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.27] - 2026-08-07
+
+### Added
+- use premium spritesheets for avatars and badges (ARC-777) (ARC-777)
+
+### Fixed
+- decrypt socket payload in handleHistoryNote (ARC-777) (ARC-777)
+
+
 ## [1.24.26] - 2026-08-06
 
 ### Changed

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.29] - 2026-08-07
+
+### Fixed
+- scan wave shows once, weapon sizes, teammate visibility
+
+
 ## [1.24.28] - 2026-08-07
 
 ### Fixed

@@ -8,6 +8,7 @@ import {
   setEncryptionKey,
   resetEncryptionKey,
 } from './socket-encryption';
+import { useSocketStatus } from './socket-status';
 
 function resolveSocketUrl(): string {
   const apiUrl = resolveApiUrl('');
@@ -101,6 +102,23 @@ function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
 
 // Set up encryption key handler for games socket
 setupEncryptionKeyHandler(gamesSocket);
+
+// Wire up global connection status tracking
+gamesSocket.on('connect', () => {
+  useSocketStatus.getState().setConnected(true);
+});
+
+gamesSocket.on('disconnect', () => {
+  useSocketStatus.getState().setConnected(false);
+});
+
+gamesSocket.io.on('reconnect_attempt', () => {
+  useSocketStatus.getState().incrementReconnectAttempts();
+});
+
+gamesSocket.io.on('reconnect', () => {
+  useSocketStatus.getState().resetReconnectAttempts();
+});
 
 function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
   socketInstance.auth = { token };

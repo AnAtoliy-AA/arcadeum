@@ -23,6 +23,9 @@ const { mockSocket } = vi.hoisted(() => {
       off: vi.fn(),
       emit: vi.fn(),
       auth: {},
+      io: {
+        on: vi.fn(),
+      },
     },
   };
 });

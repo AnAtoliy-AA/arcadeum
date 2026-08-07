@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.30] - 2026-08-07
+
+### Fixed
+- bot turn detection in team mode and mobile-menu e2e timeout
+- lint errors across web and backend (set-state-in-effect, unused imports, any assignments)
+- disable standalone output on Vercel for Next.js 16.3 compat
+
+
 ## [1.24.29] - 2026-08-07
 
 ### Fixed

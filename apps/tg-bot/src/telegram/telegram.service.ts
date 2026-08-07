@@ -5,6 +5,8 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Bot, type Context } from 'grammy';
 import type { PendingVideo } from '../shorts-factory/shorts-factory.service';
 
@@ -153,15 +155,13 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       const data = ctx.callbackQuery.data;
       if (data.startsWith('sf_')) {
         const [action, videoId] = data.split(':');
-        const fs = require('fs');
-        const path = require('path');
         const pendingDir =
           process.env.SHORTS_FACTORY_PENDING_DIR ?? '/opt/arcadeum/pending';
         const filePath = path.join(pendingDir, `${videoId}.json`);
 
         try {
           const raw = fs.readFileSync(filePath, 'utf-8');
-          const pending: PendingVideo = JSON.parse(raw);
+          const pending = JSON.parse(raw) as PendingVideo;
 
           if (action === 'sf_confirm' && pending.status === 'pending') {
             pending.status = 'approved';
@@ -174,10 +174,15 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
                 `<b>Approved at:</b> ${new Date().toLocaleString()}`,
               { parse_mode: 'HTML' },
             );
-          } else if (action === 'sf_regenerate' && pending.status === 'pending') {
+          } else if (
+            action === 'sf_regenerate' &&
+            pending.status === 'pending'
+          ) {
             pending.status = 'regenerated';
             fs.writeFileSync(filePath, JSON.stringify(pending, null, 2));
-            await ctx.answerCallbackQuery({ text: '🔄 Video will be regenerated' });
+            await ctx.answerCallbackQuery({
+              text: '🔄 Video will be regenerated',
+            });
             await ctx.editMessageText(
               `🔄 <b>Short Regeneration Requested</b>\n\n` +
                 `<b>Scenario:</b> ${pending.scenario}\n` +

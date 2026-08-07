@@ -8,6 +8,8 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   ShortsFactoryService,
   type PendingVideo,
@@ -37,13 +39,14 @@ export class ShortsFactoryController {
 
   @Get('status/:id')
   getStatus(@Param('id') id: string) {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(this.shortsFactory.getPendingDir(), `${id}.json`);
+    const filePath = path.join(
+      this.shortsFactory.getPendingDir(),
+      `${id}.json`,
+    );
 
     try {
       const data = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(data);
+      return JSON.parse(data) as { status: string };
     } catch {
       return { status: 'not_found' };
     }

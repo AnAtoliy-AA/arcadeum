@@ -29,7 +29,9 @@ export class ShortsFactoryService {
     private readonly telegram: TelegramService,
   ) {
     this.adminChatId =
-      this.config.get<string>('SHORTS_FACTORY_ADMIN_CHAT_ID') ?? '';
+      this.config.get<string>('SHORTS_FACTORY_ADMIN_CHAT_ID') ??
+      this.config.get<string>('TELEGRAM_DM_CHAT_ID') ??
+      '';
     this.pendingDir =
       this.config.get<string>('SHORTS_FACTORY_PENDING_DIR') ??
       '/opt/arcadeum/pending';

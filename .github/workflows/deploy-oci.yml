@@ -215,6 +215,12 @@ jobs:
             echo "==> Installing dependencies..."
             pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 
+            echo "==> Installing Playwright browsers..."
+            npx playwright install chromium --with-deps 2>/dev/null || npx playwright install chromium
+
+            echo "==> Creating directories..."
+            mkdir -p raw_captures output pending
+
             echo "==> Ensuring shorts-factory wrapper script exists..."
             if [ ! -f /opt/arcadeum/scripts/shorts-factory-random.sh ]; then
               sudo tee /opt/arcadeum/scripts/shorts-factory-random.sh > /dev/null <<'WRAPPER'

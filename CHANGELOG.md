@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.28] - 2026-08-07
+
+### Fixed
+- fix checkers multi-step validation and board orientation
+
+
 ## [1.24.27] - 2026-08-07
 
 ### Added

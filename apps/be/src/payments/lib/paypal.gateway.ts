@@ -207,8 +207,7 @@ export class PaypalGateway {
       // caller sees its real status.
       const status = axiosErr.response?.status;
       const data = axiosErr.response?.data as
-        | { name?: string; details?: { issue?: string }[] }
-        | undefined;
+        { name?: string; details?: { issue?: string }[] } | undefined;
       const issue = data?.details?.[0]?.issue;
       if (status === 422 && issue === 'ORDER_ALREADY_CAPTURED') {
         return this.getOrder(orderId);

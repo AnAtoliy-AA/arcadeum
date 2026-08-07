@@ -2,10 +2,7 @@ import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type SupportChannelStatus =
-  | 'pending'
-  | 'sent'
-  | 'failed'
-  | 'unconfigured';
+  'pending' | 'sent' | 'failed' | 'unconfigured';
 
 @Schema({ _id: false })
 class SupportDeliveryStatus {

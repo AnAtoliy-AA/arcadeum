@@ -133,6 +133,7 @@ export function AdminWalletDrawer({
 
   useEffect(() => {
     if (open && userId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- conditional data fetch
       setData(null);
       reload();
     }

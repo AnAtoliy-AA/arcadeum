@@ -79,8 +79,10 @@ const cspFrameSrc =
   "'self' https://www.youtube-nocookie.com https://vercel.com https://vercel.live";
 const cspMediaSrc = `'self' ${process.env.NEXT_PUBLIC_CDN_URL || ''}`;
 
+const isVercel = !!process.env.VERCEL;
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: isVercel ? undefined : 'standalone',
   headers: async () => {
     const isDev = process.env.NODE_ENV === 'development';
     const isE2E =

@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import webpush, {
-  type PushSubscription as WebPushSubscription,
-} from 'web-push';
+import webpush from 'web-push';
 
 const MAX_PAYLOAD_BYTES = 3 * 1024;
 
@@ -52,7 +50,7 @@ export class PushSender {
 
     const body = truncatePayload(JSON.stringify(payload));
     try {
-      await webpush.sendNotification(subscription as WebPushSubscription, body);
+      await webpush.sendNotification(subscription, body);
     } catch (err) {
       if (isSubscriptionGone(err)) {
         throw new SubscriptionGoneError(subscription.endpoint);
@@ -117,7 +115,7 @@ function isSubscriptionGone(err: unknown): boolean {
     typeof err === 'object' &&
     err !== null &&
     'statusCode' in err &&
-    typeof (err as { statusCode: unknown }).statusCode === 'number'
+    typeof err.statusCode === 'number'
   ) {
     const status = (err as { statusCode: number }).statusCode;
     return status === 404 || status === 410;

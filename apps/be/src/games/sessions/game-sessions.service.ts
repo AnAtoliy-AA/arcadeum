@@ -16,9 +16,7 @@ import {
   BaseGameState,
 } from '../engines/base/game-engine.interface';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
-import {
-  enforceStateSizeLimit,
-} from './game-sessions.size-check';
+import { enforceStateSizeLimit } from './game-sessions.size-check';
 
 export interface GameSessionSummary {
   id: string;
@@ -260,7 +258,7 @@ export class GameSessionsService {
       if (engine.normalizeState) {
         session.state = engine.normalizeState(
           session.state as unknown as BaseGameState,
-        ) as unknown as Record<string, unknown>;
+        );
         session.markModified('state');
       }
 
@@ -287,7 +285,7 @@ export class GameSessionsService {
 
       // Update session with new state
       if (result.state) {
-        session.state = result.state as unknown as Record<string, unknown>;
+        session.state = result.state;
         session.markModified('state');
       }
 
@@ -467,7 +465,7 @@ export class GameSessionsService {
     }
 
     if (result.state) {
-      session.state = result.state as unknown as Record<string, unknown>;
+      session.state = result.state;
       session.markModified('state');
     }
     session.updatedAt = new Date();

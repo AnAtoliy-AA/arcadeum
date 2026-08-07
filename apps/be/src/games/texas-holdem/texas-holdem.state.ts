@@ -3,19 +3,7 @@ import { GameLogEntry, ChatScope } from '../engines/base/game-engine.interface';
 
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
 export type Rank =
-  | '2'
-  | '3'
-  | '4'
-  | '5'
-  | '6'
-  | '7'
-  | '8'
-  | '9'
-  | '10'
-  | 'J'
-  | 'Q'
-  | 'K'
-  | 'A';
+  '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A';
 
 export interface Card {
   suit: Suit;
@@ -25,12 +13,7 @@ export interface Card {
 export type BettingRound = 'pre-flop' | 'flop' | 'turn' | 'river' | 'showdown';
 
 export type PlayerAction =
-  | 'fold'
-  | 'check'
-  | 'call'
-  | 'raise'
-  | 'all-in'
-  | 'waiting';
+  'fold' | 'check' | 'call' | 'raise' | 'all-in' | 'waiting';
 
 export interface TexasHoldemPlayerState {
   playerId: string;

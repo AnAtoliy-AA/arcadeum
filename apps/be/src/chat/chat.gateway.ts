@@ -94,8 +94,7 @@ export class ChatGateway {
     const messageDTO = maybeDecrypt<MessageDTO>(payload);
 
     const authUserId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
     if (isAuthenticated && authUserId && messageDTO.senderId !== authUserId) {
@@ -138,8 +137,7 @@ export class ChatGateway {
     }
 
     const authUserId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
     if (isAuthenticated && authUserId && currentUserId !== authUserId) {

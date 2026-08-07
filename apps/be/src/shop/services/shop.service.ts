@@ -283,7 +283,7 @@ export class ShopService {
         session,
       );
       if (prior) {
-        row = prior as InventoryRowSnapshot;
+        row = prior;
         return;
       }
       const created = await this.inventoryModel.create(

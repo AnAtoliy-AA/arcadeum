@@ -247,9 +247,7 @@ export class WalletService {
         const current = await this.userModel
           .findById(userId, null, { session })
           .lean();
-        const available = current
-          ? this.pickBalance(current as unknown as UserBalanceFields, currency)
-          : 0;
+        const available = current ? this.pickBalance(current, currency) : 0;
         throw new InsufficientFundsException(currency, amount, available);
       }
       throw new NotFoundException('wallet.userNotFound');

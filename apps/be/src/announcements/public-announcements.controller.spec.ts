@@ -82,7 +82,7 @@ describe('PublicAnnouncementsController (integration)', () => {
       userId: '507f1f77bcf86cd799439011',
       email: 'me@x',
       username: 'me',
-    } as AuthenticatedUser;
+    };
     await request(server()).get('/announcements/active').expect(200);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(true, 'en');
   });
@@ -92,7 +92,7 @@ describe('PublicAnnouncementsController (integration)', () => {
       userId: 'anon_abcd',
       email: 'anonymous@example.com',
       username: 'Anonymous',
-    } as AuthenticatedUser;
+    };
     await request(server()).get('/announcements/active').expect(200);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'en');
   });

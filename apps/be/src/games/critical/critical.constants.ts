@@ -16,12 +16,7 @@ export const COLLECTION_CARDS: CriticalCollectionCard[] = [
 
 // ===== BASE GAME CARDS =====
 export type BaseActionCard =
-  | 'strike'
-  | 'evade'
-  | 'trade'
-  | 'reorder'
-  | 'insight'
-  | 'cancel';
+  'strike' | 'evade' | 'trade' | 'reorder' | 'insight' | 'cancel';
 
 export const BASE_ACTION_CARDS: BaseActionCard[] = [
   'strike',
@@ -36,11 +31,7 @@ export const BASE_SPECIAL_CARDS = ['critical_event', 'neutralizer'] as const;
 
 // ===== EXPANSION PACK IDENTIFIERS =====
 export type CriticalExpansion =
-  | 'attack'
-  | 'future'
-  | 'theft'
-  | 'chaos'
-  | 'deity';
+  'attack' | 'future' | 'theft' | 'chaos' | 'deity';
 
 // ===== ATTACK PACK EXPANSION CARDS =====
 export type AttackPackCard =
@@ -106,12 +97,7 @@ export const FUTURE_PACK_CARDS: FuturePackCard[] = [
 
 // ===== THEFT PACK EXPANSION CARDS =====
 export type TheftPackCard =
-  | 'wildcard'
-  | 'mark'
-  | 'steal_draw'
-  | 'stash'
-  | 'swap_hands'
-  | 'snatch';
+  'wildcard' | 'mark' | 'steal_draw' | 'stash' | 'swap_hands' | 'snatch';
 
 export const THEFT_PACK_CARDS: TheftPackCard[] = [
   'wildcard',

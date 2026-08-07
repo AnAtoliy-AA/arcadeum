@@ -7,9 +7,7 @@ import type {
 export type { TournamentStatus, TournamentGameType, TournamentLocale };
 
 export type EffectiveTournamentStatus =
-  | TournamentStatus
-  | 'registration_closed'
-  | 'awaiting_results';
+  TournamentStatus | 'registration_closed' | 'awaiting_results';
 
 export interface TournamentLocaleContentItem {
   name: string;

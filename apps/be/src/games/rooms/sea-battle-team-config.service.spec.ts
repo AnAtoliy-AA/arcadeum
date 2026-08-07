@@ -115,7 +115,7 @@ describe('SeaBattleTeamConfigService — config', () => {
           { id: 't2', name: 'Team 2', color: '#2563EB', targetSize: 2 },
         ],
         ...overrides,
-      } as SetTeamConfigDto;
+      };
     }
 
     it('rejects when teams.length < 2', async () => {

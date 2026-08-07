@@ -14,10 +14,7 @@ export function enforceStateSizeLimit(
   sessionId: string,
   logger: Logger,
 ): boolean {
-  const approxSize = Buffer.byteLength(
-    JSON.stringify(session.state),
-    'utf-8',
-  );
+  const approxSize = Buffer.byteLength(JSON.stringify(session.state), 'utf-8');
   if (approxSize > STRIP_DOC_SIZE_BYTES) {
     logger.warn(
       `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,

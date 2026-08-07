@@ -207,11 +207,9 @@ export class GamesGateway {
     this.logger.verbose(`Client disconnected ${client.id}`);
 
     const userId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     const anonId = (client.data as Record<string, unknown>)?.anonId as
-      | string
-      | undefined;
+      string | undefined;
     const activeUserId = userId || anonId;
     if (activeUserId) {
       this.realtime.untrackSocket(activeUserId, client.id);
@@ -232,13 +230,11 @@ export class GamesGateway {
 
   private validateUserId(client: Socket, payloadUserId: string): void {
     const authUserId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
     const anonId = (client.data as Record<string, unknown>)?.anonId as
-      | string
-      | undefined;
+      string | undefined;
 
     if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
       this.logger.warn(
@@ -331,8 +327,7 @@ export class GamesGateway {
     const session = await this.gamesService.findSessionByRoom(roomId);
     if (!session) return;
     const userId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     let diffSession = session;
     if (userId) {
       try {

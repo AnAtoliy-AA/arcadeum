@@ -70,8 +70,7 @@ export class FriendsGateway
 
   async handleDisconnect(client: Socket): Promise<void> {
     const userId = (client.data as Record<string, unknown>)?.['userId'] as
-      | string
-      | undefined;
+      string | undefined;
     if (!userId) return;
 
     const hasOtherSockets = await this.server.in(userId).fetchSockets();

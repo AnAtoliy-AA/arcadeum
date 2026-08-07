@@ -8,6 +8,7 @@ export const fr: DeepPartial<SeoMessages> = {
   home: {
     title: `${APP} — Jouez gratuitement à des jeux de société en ligne entre amis`,
     description: `Jouez gratuitement à des jeux de société en ligne entre amis sur ${APP}. Bataille navale, stratégie, cartes — créez un salon, partagez le lien et jouez dans votre navigateur. Sans téléchargement, sans inscription.`,
+    badge: "Jouez avec des amis ou contre l'IA",
   },
   games: {
     title: `Jeux de société gratuits en ligne · ${APP}`,

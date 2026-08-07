@@ -21,36 +21,29 @@ interface Props {
   params: Promise<{ locale: string }>;
 }
 
-const PALETTE: Record<Locale, { accent: string; gradient: string }> = {
-  en: {
-    accent: '#3aa0ff',
-    gradient: 'linear-gradient(135deg, #0a1530 0%, #0e2950 45%, #1a3d6e 100%)',
-  },
-  es: {
-    accent: '#ffb547',
-    gradient: 'linear-gradient(135deg, #2a0e1e 0%, #441832 45%, #6e2a4a 100%)',
-  },
-  fr: {
-    accent: '#7d9bff',
-    gradient: 'linear-gradient(135deg, #0d1138 0%, #1a205c 45%, #2c3590 100%)',
-  },
-  ru: {
-    accent: '#ff7d5c',
-    gradient: 'linear-gradient(135deg, #1f0d2a 0%, #371547 45%, #5a2270 100%)',
-  },
-  by: {
-    accent: '#43d9a6',
-    gradient: 'linear-gradient(135deg, #0a2a1e 0%, #11402e 45%, #1a5e44 100%)',
-  },
-};
-
-const GAME_ICONS = [
-  { emoji: '♟', x: 780, y: 60, size: 48, rotate: -8 },
-  { emoji: '🎮', x: 900, y: 140, size: 40, rotate: 5 },
-  { emoji: '🃏', x: 820, y: 260, size: 44, rotate: -12 },
-  { emoji: '🎲', x: 960, y: 320, size: 38, rotate: 10 },
-  { emoji: '🎯', x: 860, y: 420, size: 42, rotate: -6 },
-];
+const PALETTE: Record<Locale, { accent: string; gradient: [string, string] }> =
+  {
+    en: {
+      accent: '#3aa0ff',
+      gradient: ['#040a1b', '#0d1a3a'],
+    },
+    es: {
+      accent: '#ffb547',
+      gradient: ['#140710', '#300e23'],
+    },
+    fr: {
+      accent: '#7d9bff',
+      gradient: ['#03051c', '#0f1442'],
+    },
+    ru: {
+      accent: '#ff7d5c',
+      gradient: ['#100716', '#260f33'],
+    },
+    by: {
+      accent: '#43d9a6',
+      gradient: ['#03140f', '#0a3023'],
+    },
+  };
 
 export default async function OpengraphImage({ params }: Props) {
   const { locale: rawLocale } = await params;
@@ -60,6 +53,7 @@ export default async function OpengraphImage({ params }: Props) {
 
   const title = seo?.title ?? appConfig.seoTitle;
   const description = seo?.description ?? appConfig.seoDescription;
+  const badge = (seo as { badge?: string })?.badge ?? 'Play with Friends or AI';
   const palette = PALETTE[locale];
 
   return new ImageResponse(
@@ -69,192 +63,387 @@ export default async function OpengraphImage({ params }: Props) {
           display: 'flex',
           width: '100%',
           height: '100%',
-          backgroundImage: palette.gradient,
-          padding: '72px 88px',
+          backgroundImage: `linear-gradient(145deg, ${palette.gradient[0]} 0%, ${palette.gradient[1]} 100%)`,
+          padding: '64px 80px',
           color: 'white',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
+          overflow: 'hidden',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        {/* Main glow */}
+        {/* Ambient Glow Orb - Top Right */}
+        <div
+          style={{
+            position: 'absolute',
+            right: -150,
+            top: -150,
+            width: 650,
+            height: 650,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${palette.accent}22 0%, ${palette.accent}05 50%, transparent 70%)`,
+            filter: 'blur(50px)',
+          }}
+        />
+
+        {/* Ambient Glow Orb - Bottom Left */}
+        <div
+          style={{
+            position: 'absolute',
+            left: -150,
+            bottom: -150,
+            width: 500,
+            height: 500,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${palette.accent}12 0%, ${palette.accent}02 50%, transparent 70%)`,
+            filter: 'blur(35px)',
+          }}
+        />
+
+        {/* Futuristic Cyber Grid Pattern */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: `radial-gradient(circle at 80% 25%, ${palette.accent}28 0%, transparent 55%)`,
+            backgroundImage:
+              'radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+            opacity: 0.8,
           }}
         />
 
-        {/* Secondary glow bottom-left */}
+        {/* Outer border frame */}
         <div
           style={{
             position: 'absolute',
-            left: -100,
-            bottom: -100,
-            width: 360,
-            height: 360,
-            borderRadius: 180,
-            background: `radial-gradient(circle, ${palette.accent}15 0%, transparent 60%)`,
+            inset: 24,
+            border: '1px solid rgba(255, 255, 255, 0.04)',
+            borderRadius: 24,
+            pointerEvents: 'none',
           }}
         />
 
-        {/* Decorative grid dots */}
+        {/* Corner Accents */}
         <div
           style={{
             position: 'absolute',
-            right: 80,
-            top: 70,
+            top: 24,
+            left: 24,
+            width: 16,
+            height: 16,
+            borderTop: `2px solid ${palette.accent}`,
+            borderLeft: `2px solid ${palette.accent}`,
+            borderTopLeftRadius: 8,
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 24,
+            right: 24,
+            width: 16,
+            height: 16,
+            borderBottom: `2px solid ${palette.accent}`,
+            borderRight: `2px solid ${palette.accent}`,
+            borderBottomRightRadius: 8,
+          }}
+        />
+
+        {/* Left Column - Marketing copy */}
+        <div
+          style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 24,
-            opacity: 0.08,
+            flex: 1,
+            justifyContent: 'space-between',
+            height: '100%',
+            maxWidth: 580,
+            position: 'relative',
           }}
         >
-          {Array.from({ length: 7 }).map((_, row) => (
-            <div key={row} style={{ display: 'flex', gap: 24 }}>
-              {Array.from({ length: 7 }).map((_, col) => (
+          {/* Header Tag / Logo */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: palette.accent,
+                  boxShadow: `0 0 12px ${palette.accent}`,
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: 900,
+                  letterSpacing: 3,
+                  color: palette.accent,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {appConfig.appName}
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '6px 14px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 99,
+                alignSelf: 'flex-start',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  letterSpacing: 1.5,
+                  color: '#ffffff',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {locale.toUpperCase()} · {badge}
+              </span>
+            </div>
+          </div>
+
+          {/* Core Content */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 18,
+              margin: '20px 0',
+            }}
+          >
+            <span
+              style={{
+                fontSize: 64,
+                fontWeight: 900,
+                lineHeight: 1.08,
+                letterSpacing: -2,
+                color: '#ffffff',
+                textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              }}
+            >
+              {title}
+            </span>
+
+            <span
+              style={{
+                fontSize: 20,
+                fontWeight: 500,
+                lineHeight: 1.45,
+                color: 'rgba(255, 255, 255, 0.65)',
+              }}
+            >
+              {description}
+            </span>
+          </div>
+
+          {/* Footer branding */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: palette.accent,
+                boxShadow: `0 0 14px ${palette.accent}aa`,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                color: '#ffffff',
+                letterSpacing: 1,
+              }}
+            >
+              arcadeum.games
+            </span>
+          </div>
+        </div>
+
+        {/* Right Column - Glassmorphic Lobby Mockup */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 440,
+            height: '100%',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              borderRadius: 24,
+              boxShadow:
+                '0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              padding: 24,
+              gap: 16,
+            }}
+          >
+            {/* Lobby Title Header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  letterSpacing: 1.5,
+                }}
+              >
+                LIVE MATCHMAKING
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div
-                  key={col}
                   style={{
-                    width: 4,
-                    height: 4,
-                    borderRadius: 2,
-                    background: 'white',
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: '#10b981',
+                    boxShadow: '0 0 10px #10b981',
                   }}
                 />
+                <span
+                  style={{ fontSize: 12, fontWeight: 700, color: '#10b981' }}
+                >
+                  ONLINE
+                </span>
+              </div>
+            </div>
+
+            {/* Simulated Lobby Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                {
+                  title: '♟ Chess Arena',
+                  players: '4,102 active',
+                  accent: palette.accent,
+                },
+                {
+                  title: '🚢 Sea Battle',
+                  players: '2,891 active',
+                  accent: '#ffb547',
+                },
+                {
+                  title: '🐛 Glimworm Arena',
+                  players: '1,940 active',
+                  accent: '#43d9a6',
+                },
+              ].map((game, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderRadius: 14,
+                  }}
+                >
+                  <span
+                    style={{ fontSize: 15, fontWeight: 700, color: '#ffffff' }}
+                  >
+                    {game.title}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: game.accent,
+                    }}
+                  >
+                    {game.players}
+                  </span>
+                </div>
               ))}
             </div>
-          ))}
-        </div>
 
-        {/* Floating game icons */}
-        {GAME_ICONS.map((icon, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: icon.x,
-              top: icon.y,
-              fontSize: icon.size,
-              opacity: 0.12,
-              transform: `rotate(${icon.rotate}deg)`,
-            }}
-          >
-            {icon.emoji}
+            {/* Latency / Stats bar */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingTop: 8,
+                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    fontWeight: 600,
+                  }}
+                >
+                  LATENCY
+                </span>
+                <span
+                  style={{ fontSize: 14, fontWeight: 800, color: '#10b981' }}
+                >
+                  &lt; 15ms
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    fontWeight: 600,
+                  }}
+                >
+                  REGION
+                </span>
+                <span
+                  style={{ fontSize: 14, fontWeight: 800, color: '#ffffff' }}
+                >
+                  GLOBAL
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    fontWeight: 600,
+                  }}
+                >
+                  TICKRATE
+                </span>
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: palette.accent,
+                  }}
+                >
+                  60 Hz
+                </span>
+              </div>
+            </div>
           </div>
-        ))}
-
-        {/* Locale chip */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 18,
-            marginBottom: 36,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              fontSize: 26,
-              fontWeight: 900,
-              letterSpacing: 2,
-              color: palette.accent,
-            }}
-          >
-            {locale.toUpperCase()}
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 28,
-              fontWeight: 800,
-              color: 'rgba(255, 255, 255, 0.9)',
-              letterSpacing: 1.4,
-            }}
-          >
-            {appConfig.appName.toUpperCase()}
-          </div>
         </div>
-
-        {/* Title */}
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 72,
-            lineHeight: 1.06,
-            fontWeight: 900,
-            letterSpacing: -1.5,
-            marginBottom: 28,
-            maxWidth: 700,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          {title}
-        </div>
-
-        {/* Description */}
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 30,
-            lineHeight: 1.35,
-            color: 'rgba(255, 255, 255, 0.75)',
-            maxWidth: 680,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          {description}
-        </div>
-
-        {/* Domain bar */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 88,
-            bottom: 64,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            fontSize: 28,
-            fontWeight: 700,
-            color: palette.accent,
-          }}
-        >
-          <div
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 6,
-              background: palette.accent,
-              boxShadow: `0 0 18px ${palette.accent}`,
-            }}
-          />
-          arcadeum.games
-        </div>
-
-        {/* Accent line at bottom */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            bottom: 0,
-            width: '100%',
-            height: 3,
-            background: `linear-gradient(90deg, transparent 0%, ${palette.accent}44 30%, ${palette.accent}88 50%, ${palette.accent}44 70%, transparent 100%)`,
-          }}
-        />
       </div>
     ),
     size,

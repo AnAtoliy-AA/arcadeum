@@ -6,11 +6,13 @@ jest.mock('grammy', () => {
   const mockStart = jest.fn();
   const mockStop = jest.fn();
   const mockCommand = jest.fn();
+  const mockOn = jest.fn();
 
   return {
     Bot: jest.fn().mockImplementation(() => ({
       api: { sendMessage: mockSendMessage },
       command: mockCommand,
+      on: mockOn,
       start: mockStart,
       stop: mockStop,
     })),
@@ -18,6 +20,7 @@ jest.mock('grammy', () => {
     __mockStart: mockStart,
     __mockStop: mockStop,
     __mockCommand: mockCommand,
+    __mockOn: mockOn,
   };
 });
 

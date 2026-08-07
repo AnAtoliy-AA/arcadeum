@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Bot, type Context } from 'grammy';
+import type { PendingVideo } from '../shorts-factory/shorts-factory.service';
 
 interface TransactionData {
   type: 'buy' | 'sell';
@@ -142,10 +143,62 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
             '/ca — Contract address & links\n' +
             '/chart — Price chart links\n' +
             '/holders — Holder distribution\n' +
+            '/shorts — Shorts factory status\n' +
             '/help — Show this message',
           { parse_mode: 'HTML' },
         ),
     );
+
+    this.bot.on('callback_query:data', async (ctx) => {
+      const data = ctx.callbackQuery.data;
+      if (data.startsWith('sf_')) {
+        const [action, videoId] = data.split(':');
+        const fs = require('fs');
+        const path = require('path');
+        const pendingDir =
+          process.env.SHORTS_FACTORY_PENDING_DIR ?? '/opt/arcadeum/pending';
+        const filePath = path.join(pendingDir, `${videoId}.json`);
+
+        try {
+          const raw = fs.readFileSync(filePath, 'utf-8');
+          const pending: PendingVideo = JSON.parse(raw);
+
+          if (action === 'sf_confirm' && pending.status === 'pending') {
+            pending.status = 'approved';
+            fs.writeFileSync(filePath, JSON.stringify(pending, null, 2));
+            await ctx.answerCallbackQuery({ text: '✅ Video approved' });
+            await ctx.editMessageText(
+              `✅ <b>Short Approved</b>\n\n` +
+                `<b>Scenario:</b> ${pending.scenario}\n` +
+                `<b>Caption:</b> ${pending.caption}\n` +
+                `<b>Approved at:</b> ${new Date().toLocaleString()}`,
+              { parse_mode: 'HTML' },
+            );
+          } else if (action === 'sf_regenerate' && pending.status === 'pending') {
+            pending.status = 'regenerated';
+            fs.writeFileSync(filePath, JSON.stringify(pending, null, 2));
+            await ctx.answerCallbackQuery({ text: '🔄 Video will be regenerated' });
+            await ctx.editMessageText(
+              `🔄 <b>Short Regeneration Requested</b>\n\n` +
+                `<b>Scenario:</b> ${pending.scenario}\n` +
+                `<b>Requested at:</b> ${new Date().toLocaleString()}`,
+              { parse_mode: 'HTML' },
+            );
+          } else {
+            await ctx.answerCallbackQuery({
+              text: '⚠️ Already processed',
+              show_alert: true,
+            });
+          }
+        } catch (err) {
+          this.logger.error(`Callback query error: ${err}`);
+          await ctx.answerCallbackQuery({
+            text: '❌ Error processing request',
+            show_alert: true,
+          });
+        }
+      }
+    });
 
     void this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),
@@ -176,6 +229,10 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       `<a href="https://solscan.io/tx/${tx.signature}">Solscan</a> | <a href="https://pump.fun/coin/${this.mintAddress}">PumpFun</a>`;
 
     await this.sendMessage(message);
+  }
+
+  getBot(): Bot {
+    return this.bot;
   }
 
   async sendAlert(text: string): Promise<void> {

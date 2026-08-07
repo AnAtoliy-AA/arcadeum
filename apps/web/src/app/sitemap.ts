@@ -36,6 +36,9 @@ type RouteKey =
   | 'glimwormLanding'
   | 'ticTacToeLanding'
   | 'cascadeLanding'
+  | 'chessLanding'
+  | 'checkersLanding'
+  | 'catDashLanding'
   | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
@@ -73,6 +76,9 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   glimwormLanding: '2026-05-21',
   ticTacToeLanding: '2026-05-21',
   cascadeLanding: '2026-05-21',
+  chessLanding: '2026-05-21',
+  checkersLanding: '2026-05-21',
+  catDashLanding: '2026-05-21',
   shop: '2026-05-21',
 };
 
@@ -105,6 +111,9 @@ const GAME_LANDING_KEYS: RouteKey[] = [
   'glimwormLanding',
   'ticTacToeLanding',
   'cascadeLanding',
+  'chessLanding',
+  'checkersLanding',
+  'catDashLanding',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -164,6 +173,9 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   glimwormLanding: 0.9,
   ticTacToeLanding: 0.9,
   cascadeLanding: 0.9,
+  chessLanding: 0.9,
+  checkersLanding: 0.9,
+  catDashLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,

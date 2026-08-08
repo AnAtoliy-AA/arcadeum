@@ -35,7 +35,9 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const resetBgImage = useHeroBackgroundStore((s) => s.resetBgImage);
 
   React.useEffect(() => {
-    setIsHydrated(true);
+    requestAnimationFrame(() => {
+      setIsHydrated(true);
+    });
   }, []);
 
   const heroCards = React.useMemo(() => {

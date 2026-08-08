@@ -4,10 +4,11 @@ import { useSocketStatus } from '@/shared/lib/socket-status';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export function ConnectionBanner() {
-  const { isConnected, reconnectAttempts } = useSocketStatus();
+  const { isConnected, hasEverConnected, reconnectAttempts } =
+    useSocketStatus();
   const { t } = useTranslation();
 
-  if (isConnected) return null;
+  if (isConnected || !hasEverConnected) return null;
 
   return (
     <div

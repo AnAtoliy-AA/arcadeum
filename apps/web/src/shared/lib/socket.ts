@@ -103,23 +103,6 @@ function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
 // Set up encryption key handler for games socket
 setupEncryptionKeyHandler(gamesSocket);
 
-// Wire up global connection status tracking
-gamesSocket.on('connect', () => {
-  useSocketStatus.getState().setConnected(true);
-});
-
-gamesSocket.on('disconnect', () => {
-  useSocketStatus.getState().setConnected(false);
-});
-
-gamesSocket.io.on('reconnect_attempt', () => {
-  useSocketStatus.getState().incrementReconnectAttempts();
-});
-
-gamesSocket.io.on('reconnect', () => {
-  useSocketStatus.getState().resetReconnectAttempts();
-});
-
 function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
   socketInstance.auth = { token };
 }
@@ -257,6 +240,26 @@ if (typeof window !== 'undefined') {
   const win = window as unknown as Record<string, unknown>;
   win.gameSocket = gameSocket;
   win.chatSocket = chatSocket;
+
+  // Wire up global connection status tracking AFTER exposing to window.
+  // In E2E tests, the Playwright mock wraps the socket via a defineProperty
+  // setter on window.gameSocket — listeners registered before the wrap only
+  // land on the real socket and are invisible to the mock's trigger().
+  gamesSocket.on('connect', () => {
+    useSocketStatus.getState().setConnected(true);
+  });
+
+  gamesSocket.on('disconnect', () => {
+    useSocketStatus.getState().setConnected(false);
+  });
+
+  gamesSocket.io.on('reconnect_attempt', () => {
+    useSocketStatus.getState().incrementReconnectAttempts();
+  });
+
+  gamesSocket.io.on('reconnect', () => {
+    useSocketStatus.getState().resetReconnectAttempts();
+  });
 }
 
 /**

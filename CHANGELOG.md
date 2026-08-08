@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.35] - 2026-08-08
+
+### Fixed
+- remove overflow hidden from chat GlassCard to fix pointer events
+- fix custom eslint set-state-in-effect rule in HeroCardStack
+- optimize pagespeed scores and accessibility, fix hydration mismatch and bg hover
+
+
 ## [1.24.34] - 2026-08-08
 
 ### Added

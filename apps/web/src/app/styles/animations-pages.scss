@@ -746,8 +746,6 @@
   align-items: center;
   gap: var(--t-space-8);
   padding: var(--t-space-12) var(--t-space-4);
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
 }
 
 @media (min-width: 1151px) {

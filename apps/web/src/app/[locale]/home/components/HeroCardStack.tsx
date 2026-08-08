@@ -27,11 +27,18 @@ function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
 export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const stackRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const pointerDownRef = useRef(false);
   const { t } = useTranslation();
   const routes = useRoutes();
   const setBgImage = useHeroBackgroundStore((s) => s.setBgImage);
   const resetBgImage = useHeroBackgroundStore((s) => s.resetBgImage);
+
+  React.useEffect(() => {
+    requestAnimationFrame(() => {
+      setIsHydrated(true);
+    });
+  }, []);
 
   const heroCards = React.useMemo(() => {
     return HERO_VARIANT_IDS.map((id) => {
@@ -106,7 +113,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
             <Link
               key={index}
               href={`${routes.gameCreate}?variant=${card.id}`}
-              className={`hero-card-main${isActive ? ' hero-card-active' : ''}`}
+              className={`hero-card-main${isActive ? ' hero-card-active' : ''}${isHydrated ? ' is-hydrated' : ''}`}
               style={
                 {
                   '--card-x': `${x}px`,

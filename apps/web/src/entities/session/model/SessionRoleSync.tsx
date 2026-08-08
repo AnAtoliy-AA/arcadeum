@@ -29,6 +29,10 @@ export function SessionRoleSync(): null {
       if (!stateBefore.hydrated) return;
 
       if (!stateBefore.snapshot.accessToken) {
+        const hadPriorSession =
+          stateBefore.snapshot.userId || stateBefore.snapshot.refreshToken;
+        if (!hadPriorSession) return;
+
         try {
           const refreshed = await refreshSessionFromCookie();
           if (refreshed.accessToken) {
@@ -50,9 +54,7 @@ export function SessionRoleSync(): null {
               role: refreshed.user?.role ?? null,
             });
           }
-        } catch {
-          // Cookie refresh failed — no session to recover
-        }
+        } catch {}
         return;
       }
 

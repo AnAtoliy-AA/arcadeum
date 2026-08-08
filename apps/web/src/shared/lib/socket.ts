@@ -60,15 +60,26 @@ const walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
 // state socket.io's _packet() blows up with
 // "Cannot read properties of undefined (reading 'write')".
 // Swallowing the emit is safe — the data is silently dropped.
+//
+// We use try-catch rather than checking `socket.connected` because
+// E2E mocks (Playwright) override `connected` via defineProperty to
+// return `true` even when the underlying engine was never created.
 function guardEmit(socket: Socket): void {
   const originalEmit = socket.emit.bind(socket);
   socket.emit = ((event: string, ...args: unknown[]) => {
-    if (!socket.connected) return socket;
-    return originalEmit(event, ...args);
+    try {
+      return originalEmit(event, ...args);
+    } catch {
+      return socket;
+    }
   }) as Socket['emit'];
 }
 
+guardEmit(gamesSocket);
 guardEmit(chatsSocket);
+guardEmit(leaderboardsSocket);
+guardEmit(friendsSock);
+guardEmit(walletSock);
 
 let currentAuthToken: string | null = null;
 

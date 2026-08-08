@@ -55,6 +55,21 @@ const walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
   autoConnect: false,
 }) as AuthenticatedSocket;
 
+// Guard against emit() calls on a socket whose transport was never
+// initialised (autoConnect: false + never called connect()).  In that
+// state socket.io's _packet() blows up with
+// "Cannot read properties of undefined (reading 'write')".
+// Swallowing the emit is safe — the data is silently dropped.
+function guardEmit(socket: Socket): void {
+  const originalEmit = socket.emit.bind(socket);
+  socket.emit = ((event: string, ...args: unknown[]) => {
+    if (!socket.connected) return socket;
+    return originalEmit(event, ...args);
+  }) as Socket['emit'];
+}
+
+guardEmit(chatsSocket);
+
 let currentAuthToken: string | null = null;
 
 /**

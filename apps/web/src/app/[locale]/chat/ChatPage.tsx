@@ -147,7 +147,6 @@ export default function ChatPage() {
         <GlassCard
           flex={1}
           p={0}
-          overflow="hidden"
           gap={0}
           borderWidth={1}
           borderColor="$glassBorder"

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.34] - 2026-08-08
+
+### Added
+- add global socket connection status tracking and reconnection banner
+
+### Fixed
+- use try-catch in guardEmit to survive mock-overridden connected state
+- guard chat socket emit against transport crash in E2E
+- prevent ConnectionBanner from blocking E2E test selectors
+- reuse shared chatSocket instead of creating ad-hoc connections
+
+### Refactored
+- use default reconnection for leaderboards socket
+- consolidate walletSocket into shared socket module
+
+
 ## [1.24.33] - 2026-08-07
 
 ### Added

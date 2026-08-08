@@ -1,11 +1,3 @@
 packages:
   - apps/*
   - packages/*
-
-shamefully-hoist: true
-public-hoist-pattern:
-  - '*tamagui*'
-  - '@tamagui/*'
-hoist-pattern:
-  - '*tamagui*'
-  - '@tamagui/*'

@@ -30,11 +30,7 @@ export type EffectiveTournamentStatus =
 
 export function deriveEffectiveStatus(args: {
   status:
-    | 'scheduled'
-    | 'registration_open'
-    | 'live'
-    | 'completed'
-    | 'cancelled';
+    'scheduled' | 'registration_open' | 'live' | 'completed' | 'cancelled';
   scheduledAt: Date;
   registrationOpensAt: Date | null;
   registrationClosesAt: Date | null;

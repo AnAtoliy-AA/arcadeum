@@ -15,10 +15,6 @@ type SavedDoc = {
   save: jest.Mock;
 };
 
-type FindOneChain = {
-  lean: () => { exec: () => Promise<unknown> };
-};
-
 const FIXED_NOW = new Date('2026-05-20T12:00:00.000Z');
 
 function buildDto(overrides: Partial<SubmitContactDto> = {}): SubmitContactDto {
@@ -43,7 +39,7 @@ describe('SupportService', () => {
   const mockFindOneResult = (result: unknown) => {
     model.findOne.mockReturnValue({
       lean: () => ({ exec: () => Promise.resolve(result) }),
-    } as FindOneChain);
+    });
   };
 
   beforeEach(async () => {
@@ -93,7 +89,8 @@ describe('SupportService', () => {
         subject: 'Help',
         ip: '1.2.3.4',
         status: { discord: 'pending', email: 'pending' },
-        dedupeHash: expect.any(String) as unknown as string,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Jest expect.any() matcher
+        dedupeHash: expect.any(String),
       }),
     );
     expect(discord.notify).toHaveBeenCalledTimes(1);
@@ -193,7 +190,8 @@ describe('SupportService', () => {
 
       expect(model.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          dedupeHash: expect.any(String) as unknown as string,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Jest expect.any() matcher
+          dedupeHash: expect.any(String),
           createdAt: { $gte: new Date(FIXED_NOW.getTime() - 60 * 60 * 1000) },
         }),
       );

@@ -46,7 +46,7 @@ export function validateSeaBattleConfig(
     if (
       typeof revealAllDuration !== 'number' ||
       revealAllDuration < 1 ||
-      revealAllDuration > 3
+      revealAllDuration > 5
     ) {
       return false;
     }

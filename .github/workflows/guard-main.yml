@@ -14,7 +14,7 @@ jobs:
       - name: Check PR title starts with 'release'
         run: |
           TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! "$TITLE" =~ ^release ]]; then
+          if [[ ! "$TITLE" =~ ^[Rr]elease ]]; then
             echo "❌ PR title must start with 'release' to merge to main."
             echo "   Got: $TITLE"
             exit 1

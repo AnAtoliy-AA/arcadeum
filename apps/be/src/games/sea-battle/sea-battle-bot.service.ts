@@ -12,7 +12,10 @@ import {
   GAME_PHASE,
   BOARD_SIZE,
 } from '../engines/sea-battle/sea-battle.constants';
-import { getTeamForPlayer } from '../engines/sea-battle/team-rotation.utils';
+import {
+  getActiveShooterId,
+  getTeamForPlayer,
+} from '../engines/sea-battle/team-rotation.utils';
 import { getSmartTarget, getProbabilisticTarget } from './bot-targeting';
 
 const LOCK_TIMEOUT_MS = 60000;
@@ -88,7 +91,9 @@ export class SeaBattleBotService {
         this.isBot(p.playerId),
       );
 
-      const currentPlayerId = state.playerOrder[state.currentTurnIndex];
+      const currentPlayerId = state.teams
+        ? getActiveShooterId(state)
+        : state.playerOrder[state.currentTurnIndex];
 
       for (const bot of bots) {
         const lockKey = `${session.roomId}:${bot.playerId}`;
@@ -222,7 +227,9 @@ export class SeaBattleBotService {
         }
 
         // Verify it is still our turn (in case of double triggers or phase changes)
-        const currentPlayerId = state.playerOrder[state.currentTurnIndex];
+        const currentPlayerId = state.teams
+          ? getActiveShooterId(state)
+          : state.playerOrder[state.currentTurnIndex];
         if (currentPlayerId !== botId || state.phase !== GAME_PHASE.BATTLE) {
           break;
         }
@@ -326,7 +333,9 @@ export class SeaBattleBotService {
 
         // Check if it's still our turn after the attack (hit = true, miss = false)
         const newState = currentSession.state as unknown as SeaBattleState;
-        const nextPlayerId = newState.playerOrder[newState.currentTurnIndex];
+        const nextPlayerId = newState.teams
+          ? getActiveShooterId(newState)
+          : newState.playerOrder[newState.currentTurnIndex];
         isStillMyTurn =
           nextPlayerId === botId && newState.phase === GAME_PHASE.BATTLE;
       }

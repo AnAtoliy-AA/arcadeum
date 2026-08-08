@@ -87,7 +87,6 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     if (localShipsModifiedRef.current) return;
     if (prevServerShipsRef.current === serverShips) return;
     prevServerShipsRef.current = serverShips;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server snapshot to local placement state
     setLocalShips(serverShips);
   }, [serverShips]);
 

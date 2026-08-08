@@ -35,9 +35,7 @@ export class CriticalLogic {
     state: CriticalState,
     playerId: string,
   ): CriticalPlayerState | undefined {
-    return state.players.find(
-      (p) => p.playerId === playerId,
-    ) as CriticalPlayerState;
+    return state.players.find((p) => p.playerId === playerId);
   }
   /** Helper to check if a player has a card */
   static hasCard(player: CriticalPlayerState, card: CriticalCard): boolean {

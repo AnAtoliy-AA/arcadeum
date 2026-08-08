@@ -22,8 +22,7 @@ export function validatePayloadUserId(
   payloadUserId: string,
 ): void {
   const authUserId = (client.data as Record<string, unknown>)?.userId as
-    | string
-    | undefined;
+    string | undefined;
   const isAuthenticated = getIsAuthenticated(client);
   if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
     throw new WsException('Cannot perform actions as another user.');

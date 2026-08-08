@@ -18,7 +18,14 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
-const { readdir, unlink, mkdir, stat, readFile } = require('fs/promises');
+const {
+  readdir,
+  unlink,
+  mkdir,
+  stat,
+  readFile,
+  writeFile,
+} = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
@@ -41,6 +48,7 @@ const CONFIG = {
   // Directories
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
+  pendingDir: path.join(__dirname, '..', '..', 'pending'),
 
   // Video settings
   videoDuration: { min: 5, max: 10 }, // seconds (randomized)
@@ -55,7 +63,152 @@ const CONFIG = {
   postizIntegrationId: process.env.POSTIZ_YOUTUBE_INTEGRATION_ID || '',
   postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
   postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
+
+  // Telegram Bot API
+  tgBotUrl: process.env.TG_BOT_URL || 'http://localhost:4001',
+
+  // Approval settings
+  approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
+  pollIntervalMs: 30 * 1000, // 30 seconds
+  enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
 };
+
+// ============================================================================
+// APPROVAL FLOW
+// ============================================================================
+
+/**
+ * Generates a unique ID for pending videos
+ */
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+/**
+ * Ensures the pending directory exists
+ */
+async function ensurePendingDir() {
+  await mkdir(CONFIG.pendingDir, { recursive: true });
+}
+
+/**
+ * Saves video to pending directory and notifies Telegram bot
+ */
+async function requestApproval(videoPath, caption, scenario) {
+  if (!CONFIG.enableApproval) {
+    log('info', 'Approval flow disabled, posting directly');
+    return { approved: true, autoApproved: false, pendingId: null };
+  }
+
+  await ensurePendingDir();
+  const id = generateId();
+
+  const pending = {
+    id,
+    videoPath,
+    caption,
+    scenario,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+
+  // Save pending metadata
+  const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  log('info', `Saved pending video metadata: ${metadataPath}`);
+
+  // Notify Telegram bot
+  try {
+    const response = await axios.post(
+      `${CONFIG.tgBotUrl}/shorts-factory/pending`,
+      pending,
+      { timeout: 10000 },
+    );
+    log('info', 'Notified Telegram bot for approval', {
+      messageId: response.data.messageId,
+    });
+    pending.messageId = response.data.messageId;
+    await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  } catch (err) {
+    log('error', 'Failed to notify Telegram bot', { error: err.message });
+    // Continue without approval if bot is unavailable
+    return { approved: true, autoApproved: true, pendingId: id };
+  }
+
+  // Poll for approval
+  const pollResult = await pollForApproval(id, metadataPath);
+  return { ...pollResult, pendingId: id };
+}
+
+/**
+ * Polls the pending metadata file for status changes
+ */
+async function pollForApproval(id, metadataPath) {
+  const startTime = Date.now();
+  log(
+    'info',
+    `Polling for approval (timeout: ${CONFIG.approvalTimeoutMs / 1000 / 60}min)...`,
+  );
+
+  while (Date.now() - startTime < CONFIG.approvalTimeoutMs) {
+    await new Promise((r) => setTimeout(r, CONFIG.pollIntervalMs));
+
+    try {
+      const raw = await readFile(metadataPath, 'utf-8');
+      const pending = JSON.parse(raw);
+
+      if (pending.status === 'approved') {
+        log('info', 'Video approved by admin');
+        return { approved: true, autoApproved: false };
+      }
+
+      if (pending.status === 'regenerated') {
+        log('info', 'Video regeneration requested by admin');
+        return { approved: false, regenerated: true };
+      }
+
+      const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
+      log('info', `Still pending... (${elapsed}min elapsed)`);
+    } catch (err) {
+      log('error', 'Error reading pending metadata', { error: err.message });
+    }
+  }
+
+  // Auto-approve after timeout
+  log('info', 'Approval timeout reached, auto-approving');
+  try {
+    const raw = await readFile(metadataPath, 'utf-8');
+    const pending = JSON.parse(raw);
+    pending.status = 'approved';
+    await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  } catch (err) {
+    log('error', 'Failed to auto-approve', { error: err.message });
+  }
+
+  return { approved: true, autoApproved: true };
+}
+
+/**
+ * Reports the posting result to Telegram bot
+ */
+async function reportResult(id, success, message, platforms) {
+  if (!CONFIG.enableApproval) return;
+
+  try {
+    await axios.post(
+      `${CONFIG.tgBotUrl}/shorts-factory/result`,
+      {
+        id,
+        status: success ? 'posted' : 'failed',
+        result: { success, message, platforms },
+      },
+      { timeout: 10000 },
+    );
+    log('info', 'Reported result to Telegram bot');
+  } catch (err) {
+    log('error', 'Failed to report result', { error: err.message });
+  }
+}
 
 // ============================================================================
 // CAPTIONS POOL
@@ -885,6 +1038,7 @@ async function captureBrowsing() {
       videoPath: latestVideo,
       duration: finalDuration,
       caption: scenario.caption,
+      scenario: scenario.name,
     };
   } catch (error) {
     log('error', 'Failed to capture browsing', {
@@ -1134,9 +1288,7 @@ async function publishToSocials(videoPath, caption) {
         ],
         settings: {
           __type: 'instagram',
-          post_type: 'reel',
-          is_trial_reel: false,
-          collaborators: [],
+          post_type: 'post',
         },
       }),
     });
@@ -1262,6 +1414,7 @@ async function publishToSocials(videoPath, caption) {
   return {
     success: successes.length > 0,
     message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
+    platforms: successes.map((r) => r.platform),
     results,
   };
 }
@@ -1276,6 +1429,24 @@ async function publishToSocials(videoPath, caption) {
 async function cleanup() {
   log('info', 'Cleaning up temporary files...');
   await cleanDirectory(CONFIG.rawCapturesDir);
+
+  // Clean old pending files (older than 24 hours)
+  try {
+    await mkdir(CONFIG.pendingDir, { recursive: true });
+    const files = await readdir(CONFIG.pendingDir);
+    const now = Date.now();
+    for (const file of files) {
+      const filePath = path.join(CONFIG.pendingDir, file);
+      const fileStat = await stat(filePath);
+      if (now - fileStat.mtimeMs > 24 * 60 * 60 * 1000) {
+        await unlink(filePath);
+        log('info', `Cleaned old pending file: ${file}`);
+      }
+    }
+  } catch (err) {
+    log('error', 'Error cleaning pending directory', { error: err.message });
+  }
+
   log('info', 'Cleanup complete');
 }
 
@@ -1292,6 +1463,7 @@ async function main() {
 
   let rawVideoPath = null;
   let outputVideoPath = null;
+  let pendingId = null;
 
   try {
     // Step 1: Capture browsing video
@@ -1308,13 +1480,34 @@ async function main() {
     outputVideoPath = await processVideo(rawVideoPath, captureResult.duration);
     log('info', `Processed video saved at: ${outputVideoPath}`);
 
-    // Step 3: Prepare for social media posting
-    log('info', 'Step 3: Preparing social media post...');
+    // Step 3: Request approval (if enabled)
     const caption = captureResult.caption || randomElement(CAPTIONS);
+    const scenario = captureResult.scenario || 'unknown';
     log('info', `Selected caption: "${caption}"`);
-    await publishToSocials(outputVideoPath, caption);
 
-    // Step 4: Cleanup temporary files
+    const approval = await requestApproval(outputVideoPath, caption, scenario);
+
+    if (approval.approved) {
+      // Step 4: Post to social media
+      log('info', 'Step 3: Publishing to social platforms...');
+      const result = await publishToSocials(outputVideoPath, caption);
+
+      // Report result if we have a pending ID
+      if (approval.pendingId) {
+        await reportResult(
+          approval.pendingId,
+          result.success,
+          result.message,
+          result.platforms,
+        );
+      }
+    } else if (approval.regenerated) {
+      log('info', 'Regeneration requested, restarting...');
+      await cleanup();
+      return main(); // Recursive call to regenerate
+    }
+
+    // Step 5: Cleanup temporary files
     log('info', 'Step 4: Cleaning up...');
     await cleanup();
 
@@ -1332,6 +1525,11 @@ async function main() {
       error: error.message,
       stack: error.stack,
     });
+
+    // Report failure
+    if (pendingId) {
+      await reportResult(pendingId, false, error.message);
+    }
 
     // Attempt cleanup even on failure
     await cleanup().catch(() => {});

@@ -179,7 +179,7 @@ jobs:
             git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
 
             cd "$DEPLOY_DIR/bots/task-bot"
-            npm install --legacy-peer-deps 2>/dev/null || npm install
+            npm install --legacy-peer-deps --ignore-scripts 2>/dev/null || npm install --ignore-scripts
             npx tsc
 
             pm2 restart task-bot task-bot-worker || \
@@ -214,6 +214,26 @@ jobs:
 
             echo "==> Installing dependencies..."
             pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+            echo "==> Installing Playwright browsers..."
+            npx playwright install chromium --with-deps 2>/dev/null || npx playwright install chromium
+
+            echo "==> Creating directories..."
+            mkdir -p raw_captures output pending
+
+            echo "==> Ensuring shorts-factory wrapper script exists..."
+            if [ ! -f /opt/arcadeum/scripts/shorts-factory-random.sh ]; then
+              sudo tee /opt/arcadeum/scripts/shorts-factory-random.sh > /dev/null <<'WRAPPER'
+            #!/usr/bin/env bash
+            DELAY=$(( RANDOM % 7200 ))
+            echo "[$(date)] Waiting ${DELAY} seconds before running shorts factory..."
+            sleep $DELAY
+            cd /opt/arcadeum
+            exec node scripts/shorts-factory/factory.js
+            WRAPPER
+              sudo chmod +x /opt/arcadeum/scripts/shorts-factory-random.sh
+              echo "Created shorts-factory-random.sh"
+            fi
 
             echo "==> Restarting shorts-factory timer..."
             sudo systemctl restart shorts-factory.timer 2>/dev/null || true

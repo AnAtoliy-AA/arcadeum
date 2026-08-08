@@ -7,6 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.35] - 2026-08-08
+
+### Fixed
+- remove overflow hidden from chat GlassCard to fix pointer events
+- fix custom eslint set-state-in-effect rule in HeroCardStack
+- optimize pagespeed scores and accessibility, fix hydration mismatch and bg hover
+
+
+## [1.24.34] - 2026-08-08
+
+### Added
+- add global socket connection status tracking and reconnection banner
+
+### Fixed
+- use try-catch in guardEmit to survive mock-overridden connected state
+- guard chat socket emit against transport crash in E2E
+- prevent ConnectionBanner from blocking E2E test selectors
+- reuse shared chatSocket instead of creating ad-hoc connections
+
+### Refactored
+- use default reconnection for leaderboards socket
+- consolidate walletSocket into shared socket module
+
+
+## [1.24.33] - 2026-08-07
+
+### Added
+- add GeoIP redirection and sitemap/rich schema optimization (ARC-890) (ARC-890)
+
+
+## [1.24.32] - 2026-08-07
+
+### Added
+- add Telegram approval flow for video review
+
+### Fixed
+- replace dynamic require() with static imports for lint compliance
+- add Playwright install to CI/CD and fix Instagram post type
+
+
+## [1.24.31] - 2026-08-07
+
+### Fixed
+- fix CI workflow issues across multiple workflows
+
+
+## [1.24.30] - 2026-08-07
+
+### Fixed
+- bot turn detection in team mode and mobile-menu e2e timeout
+- lint errors across web and backend (set-state-in-effect, unused imports, any assignments)
+- disable standalone output on Vercel for Next.js 16.3 compat
+
+
+## [1.24.29] - 2026-08-07
+
+### Fixed
+- scan wave shows once, weapon sizes, teammate visibility
+
+
+## [1.24.28] - 2026-08-07
+
+### Fixed
+- fix checkers multi-step validation and board orientation
+
+
+## [1.24.27] - 2026-08-07
+
+### Added
+- use premium spritesheets for avatars and badges (ARC-777) (ARC-777)
+
+### Fixed
+- decrypt socket payload in handleHistoryNote (ARC-777) (ARC-777)
+
+
 ## [1.24.26] - 2026-08-06
 
 ### Changed

@@ -52,18 +52,10 @@ export interface ListRoomsFilters {
   status?: GameRoomStatus;
   statuses?: GameRoomStatus[];
   visibility?:
-    | 'public'
-    | 'private'
-    | 'friends'
-    | ('public' | 'private' | 'friends')[];
+    'public' | 'private' | 'friends' | ('public' | 'private' | 'friends')[];
   userId?: string;
   participation?:
-    | 'host'
-    | 'participant'
-    | 'any'
-    | 'hosting'
-    | 'joined'
-    | 'not_joined';
+    'host' | 'participant' | 'any' | 'hosting' | 'joined' | 'not_joined';
   page?: number;
   limit?: number;
 }

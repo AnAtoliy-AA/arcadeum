@@ -18,6 +18,7 @@ npx playwright install-deps chromium
 echo "==> Creating directories..."
 mkdir -p raw_captures
 mkdir -p output
+mkdir -p pending
 
 echo "==> Deploy complete!"
 echo ""

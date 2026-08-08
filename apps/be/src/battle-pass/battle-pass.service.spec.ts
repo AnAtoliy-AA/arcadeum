@@ -9,7 +9,7 @@ function leanChain<T>(value: T): { select: () => Lean<T> } & Lean<T> {
     select: () => chain,
     lean: () => Promise.resolve(value),
   };
-  return chain as unknown as { select: () => Lean<T> } & Lean<T>;
+  return chain;
 }
 
 describe('BattlePassService', () => {

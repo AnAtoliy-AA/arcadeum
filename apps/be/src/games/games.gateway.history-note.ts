@@ -1,7 +1,10 @@
 import type { Logger } from '@nestjs/common';
 import type { Socket } from 'socket.io';
 import { extractString, getIsAuthenticated } from './games.gateway.utils';
-import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+import {
+  maybeEncrypt,
+  maybeDecrypt,
+} from '../common/utils/socket-encryption.util';
 import type { GamesService } from './games.service';
 
 export async function handleHistoryNote(
@@ -11,12 +14,19 @@ export async function handleHistoryNote(
   validateUserId: (client: Socket, userId: string) => void,
   payload: Record<string, unknown>,
 ): Promise<void> {
-  const roomId = extractString(payload, 'roomId');
-  const userId = extractString(payload, 'userId');
-  const message = extractString(payload, 'message');
+  const decrypted = maybeDecrypt<{
+    roomId?: string;
+    userId?: string;
+    message?: string;
+    scope?: string;
+  }>(payload);
+
+  const roomId = extractString(decrypted, 'roomId');
+  const userId = extractString(decrypted, 'userId');
+  const message = extractString(decrypted, 'message');
   const scopeRaw =
-    typeof payload?.scope === 'string'
-      ? payload.scope.trim().toLowerCase()
+    typeof decrypted?.scope === 'string'
+      ? decrypted.scope.trim().toLowerCase()
       : 'all';
   const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
   const isAuthenticated = getIsAuthenticated(client);
@@ -36,8 +46,6 @@ export async function handleHistoryNote(
       maybeEncrypt({ roomId, userId, scope }),
     );
   } catch (error) {
-    logger.error(
-      `handleHistoryNote failed for room ${roomId}: ${error}`,
-    );
+    logger.error(`handleHistoryNote failed for room ${roomId}: ${error}`);
   }
 }

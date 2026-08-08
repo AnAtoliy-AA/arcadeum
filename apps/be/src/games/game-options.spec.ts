@@ -31,14 +31,7 @@ describe('extractVariantFromOptions', () => {
 
   it('returns undefined when neither key is a string', () => {
     expect(extractVariantFromOptions({})).toBeUndefined();
-    expect(
-      extractVariantFromOptions({ variant: 42 } as Record<string, unknown>),
-    ).toBeUndefined();
-    expect(
-      extractVariantFromOptions({ cardVariant: null } as Record<
-        string,
-        unknown
-      >),
-    ).toBeUndefined();
+    expect(extractVariantFromOptions({ variant: 42 })).toBeUndefined();
+    expect(extractVariantFromOptions({ cardVariant: null })).toBeUndefined();
   });
 });

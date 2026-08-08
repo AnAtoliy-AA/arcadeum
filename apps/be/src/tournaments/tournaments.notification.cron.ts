@@ -130,7 +130,6 @@ function idToHex(value: unknown): string {
 
 function nameFor(t: Pick<TournamentDocument, 'content'>): string {
   const content = t.content as unknown as
-    | { en?: { name?: string } }
-    | undefined;
+    { en?: { name?: string } } | undefined;
   return content?.en?.name ?? 'Tournament';
 }

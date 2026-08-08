@@ -415,9 +415,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   private markDraw(
     state: ChessState,
     key:
-      | 'isDrawByFiftyMoveRule'
-      | 'isInsufficientMaterial'
-      | 'isDrawByRepetition',
+      'isDrawByFiftyMoveRule' | 'isInsufficientMaterial' | 'isDrawByRepetition',
     message: string,
   ): void {
     (state as Record<string, unknown>)[key] = true;

@@ -173,6 +173,31 @@ describe('CheckersEngine', () => {
       expect(result.state!.board[1][4]!.playerId).toBe('a');
     });
 
+    it('allows a multi-jump chain with promotion and continues as king in russian variant', () => {
+      const state = engine.initializeState(['a', 'b'], {
+        options: {
+          ruleVariant: 'russian',
+          forcedCaptures: true,
+          variant: 'classic',
+          backwardCaptures: false,
+        },
+      });
+      clearBoard(state);
+      state.board[2][1] = { playerId: 'a', type: 'man' };
+      state.board[1][2] = { playerId: 'b', type: 'man' };
+      state.board[1][4] = { playerId: 'b', type: 'man' };
+
+      const result = doMove(
+        state,
+        'a',
+        multiCapture([s(2, 1, 0, 3, 1, 2), s(0, 3, 2, 5, 1, 4)]),
+      );
+      expect(result.success).toBe(true);
+      expect(result.state!.board[2][5]!.type).toBe('king');
+      expect(result.state!.board[1][2]).toBeNull();
+      expect(result.state!.board[1][4]).toBeNull();
+    });
+
     it('rejects multi-jump with disconnected steps', () => {
       const state = engine.initializeState(['a', 'b']);
       clearBoard(state);

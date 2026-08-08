@@ -312,7 +312,7 @@ export class CriticalBotService {
     await this.criticalService.commitAlterFutureByRoom(
       botId,
       session.roomId,
-      shuffled as string[],
+      shuffled,
     );
   }
 

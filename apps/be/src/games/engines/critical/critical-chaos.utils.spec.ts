@@ -38,7 +38,7 @@ function makeState(
       markedCards: [],
     })),
     logs: [],
-  } as unknown as CriticalState;
+  };
 }
 
 function makeHelpers(overrides?: Partial<EngineHelpers>): EngineHelpers {
@@ -188,12 +188,7 @@ describe('executeEcho', () => {
     );
 
     const helpers = makeHelpers({ dispatchCard });
-    const result = executeEcho(
-      state,
-      'A',
-      'strike' as import('../../critical/critical.state').CriticalCard,
-      helpers,
-    );
+    const result = executeEcho(state, 'A', 'strike', helpers);
 
     expect(result.success).toBe(true);
     expect(dispatchCard).toHaveBeenCalledWith(state, 'A', 'strike', undefined);
@@ -203,57 +198,32 @@ describe('executeEcho', () => {
 
   it('rejects echoing echo (infinite loop guard)', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(
-      state,
-      'A',
-      'echo' as import('../../critical/critical.state').CriticalCard,
-      makeHelpers(),
-    );
+    const result = executeEcho(state, 'A', 'echo', makeHelpers());
     expect(result.success).toBe(false);
   });
 
   it('rejects echoing critical_event', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(
-      state,
-      'A',
-      'critical_event' as import('../../critical/critical.state').CriticalCard,
-      makeHelpers(),
-    );
+    const result = executeEcho(state, 'A', 'critical_event', makeHelpers());
     expect(result.success).toBe(false);
   });
 
   it('rejects echoing neutralizer', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(
-      state,
-      'A',
-      'neutralizer' as import('../../critical/critical.state').CriticalCard,
-      makeHelpers(),
-    );
+    const result = executeEcho(state, 'A', 'neutralizer', makeHelpers());
     expect(result.success).toBe(false);
   });
 
   it('rejects critical_implosion', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
-    const result = executeEcho(
-      state,
-      'A',
-      'critical_implosion' as import('../../critical/critical.state').CriticalCard,
-      makeHelpers(),
-    );
+    const result = executeEcho(state, 'A', 'critical_implosion', makeHelpers());
     expect(result.success).toBe(false);
   });
 
   it('returns failure when dispatchCard helper is not provided', () => {
     const state = makeState([{ id: 'A', hand: ['echo'] }]);
     // No dispatchCard in helpers
-    const result = executeEcho(
-      state,
-      'A',
-      'strike' as import('../../critical/critical.state').CriticalCard,
-      makeHelpers(),
-    );
+    const result = executeEcho(state, 'A', 'strike', makeHelpers());
     expect(result.success).toBe(false);
   });
 });

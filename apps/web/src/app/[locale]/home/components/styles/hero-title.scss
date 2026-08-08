@@ -46,6 +46,13 @@
   text-align: right;
   line-height: 1;
   margin-right: 0.05em;
+  color: #ccfbf1;
+  -webkit-text-fill-color: #ccfbf1;
+  text-shadow:
+    1px 1px #2dd4bf, 2px 2px #14b8a6, 3px 3px #0d9488,
+    4px 4px #0f766e, 5px 5px #115e59, 6px 6px #134e4a,
+    10px 14px 24px rgba(0, 0, 0, 0.6);
+  will-change: filter;
   animation: sub-hue-shift 15s linear infinite;
 }
 
@@ -53,39 +60,15 @@
 
   0%,
   100% {
-    color: #ccfbf1;
-    -webkit-text-fill-color: #ccfbf1;
-    text-shadow:
-      1px 1px #2dd4bf, 2px 2px #14b8a6, 3px 3px #0d9488,
-      4px 4px #0f766e, 5px 5px #115e59, 6px 6px #134e4a,
-      10px 14px 24px rgba(0, 0, 0, 0.6);
+    filter: hue-rotate(0deg);
   }
 
-  25% {
-    color: #f3e8ff;
-    -webkit-text-fill-color: #f3e8ff;
-    text-shadow:
-      1px 1px #c084fc, 2px 2px #a855f7, 3px 3px #9333ea,
-      4px 4px #7e22ce, 5px 5px #6b21a8, 6px 6px #581c87,
-      10px 14px 24px rgba(0, 0, 0, 0.6);
+  33% {
+    filter: hue-rotate(120deg);
   }
 
-  50% {
-    color: #dbeafe;
-    -webkit-text-fill-color: #dbeafe;
-    text-shadow:
-      1px 1px #60a5fa, 2px 2px #3b82f6, 3px 3px #2563eb,
-      4px 4px #1d4ed8, 5px 5px #1e40af, 6px 6px #1e3a8a,
-      10px 14px 24px rgba(0, 0, 0, 0.6);
-  }
-
-  75% {
-    color: #ffedd5;
-    -webkit-text-fill-color: #ffedd5;
-    text-shadow:
-      1px 1px #fb923c, 2px 2px #f97316, 3px 3px #ea580c,
-      4px 4px #c2410c, 5px 5px #9a3412, 6px 6px #7c2d12,
-      10px 14px 24px rgba(0, 0, 0, 0.6);
+  66% {
+    filter: hue-rotate(240deg);
   }
 }
 

@@ -152,7 +152,7 @@ export default async function LocaleLayout({
             <LayoutShell>
               <AnnouncementBanner />
               <Header />
-              <main style={{ flex: 1 }}>
+              <main id="main-content" className="layout-main">
                 <Suspense>{children}</Suspense>
               </main>
               <LayoutFooter />

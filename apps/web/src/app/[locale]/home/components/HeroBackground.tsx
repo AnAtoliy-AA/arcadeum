@@ -16,14 +16,16 @@ const VARIANT_IMAGES = [
 export function HeroBackground() {
   const bgImage = useHeroBackgroundStore((s) => s.bgImage);
   const [loadedVariants, setLoadedVariants] = useState<Set<string>>(new Set());
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return !window.matchMedia('(min-width: 1151px)').matches;
+  });
 
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 1151px)');
-    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+    const handleChange = (e: MediaQueryListEvent) => {
       setIsMobile(!e.matches);
     };
-    handleChange(mql);
     mql.addEventListener('change', handleChange);
     return () => {
       mql.removeEventListener('change', handleChange);

@@ -64,7 +64,7 @@
   background: transparent;
   color: var(--textSecondary, rgba(180, 180, 200, 0.7));
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
   white-space: nowrap;
 }
 
@@ -568,13 +568,12 @@
   justify-content: center;
   position: relative;
   z-index: 1;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 
 .step-number-main:hover {
   transform: scale(1.08);
   box-shadow: 0 0 28px rgba(87, 195, 255, 0.35);
-  border-color: rgba(87, 195, 255, 0.2);
 }
 
 .step-content-main {
@@ -641,7 +640,7 @@
   flex: 1;
   min-width: 280px;
   position: relative;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out, background-color 0.2s ease-out;
 }
 
 .feature-card-main:hover {
@@ -821,7 +820,7 @@
   cursor: pointer;
   position: absolute;
   z-index: 2;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out;
 }
 
 .play-btn-main:hover {

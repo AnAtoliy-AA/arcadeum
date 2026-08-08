@@ -42,7 +42,6 @@ export default function ChatPage() {
   // Store
   const {
     messages,
-    isConnected,
     setMessages,
     reset,
     loading: isLoading,
@@ -59,7 +58,7 @@ export default function ChatPage() {
   }
 
   // Socket Hook
-  const { sendMessage } = useChatSocket({ chatId, receiverIds });
+  const { sendMessage, isConnected } = useChatSocket({ chatId, receiverIds });
 
   // Initial fetch
   useEffect(() => {

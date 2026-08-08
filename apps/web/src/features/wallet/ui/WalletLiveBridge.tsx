@@ -6,7 +6,7 @@ import {
   walletSocket,
   connectWalletSocket,
   disconnectWalletSocket,
-} from '../lib/wallet-socket';
+} from '@/shared/lib/socket';
 
 interface Props {
   authToken: string;

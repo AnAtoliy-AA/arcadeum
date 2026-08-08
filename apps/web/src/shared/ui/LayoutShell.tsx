@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { GameMusic } from '@/features/games/ui/GameMusic';
+import { ConnectionBanner } from './ConnectionBanner';
 
 function RouteChangeAnnouncer() {
   const pathname = usePathname();
@@ -54,6 +55,7 @@ export function LayoutShell({ children }: { children: ReactNode }) {
         minHeight: '100dvh',
       }}
     >
+      <ConnectionBanner />
       <RouteChangeAnnouncer />
       {children}
       <GameMusic />

@@ -2,11 +2,7 @@ import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 export type TournamentStatus =
-  | 'scheduled'
-  | 'registration_open'
-  | 'live'
-  | 'completed'
-  | 'cancelled';
+  'scheduled' | 'registration_open' | 'live' | 'completed' | 'cancelled';
 export type TournamentGameType = 'critical_v1' | 'sea_battle_v1';
 export type TournamentLocale = 'en' | 'ru' | 'es' | 'fr' | 'by';
 

@@ -3,25 +3,16 @@
 import { memo, useMemo } from 'react';
 import { YStack, XStack, Text } from 'tamagui';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
-import type { CatDashClientState, CatId } from '../types';
+import type { CatDashClientState } from '../types';
 
-const CAT_EMOJI: Record<CatId, string> = {
-  neon: '🐱',
-  whiskers: '😺',
-  stardust: '✨',
-  felix: '🐈',
-  shadow: '🐈‍⬛',
-  luna: '🌙',
-};
-
-const CAT_COLORS: Record<CatId, string> = {
-  neon: '#a855f7',
-  whiskers: '#f59e0b',
-  stardust: '#3b82f6',
-  felix: '#22c55e',
-  shadow: '#6b7280',
-  luna: '#ec4899',
-};
+import { RealisticCat } from './RealisticCat';
+import { BoardBackground } from './BoardBackground';
+import {
+  CAT_COLORS,
+  getSerpentineTrackPoint,
+  getCircularTrackPoint,
+  getFigure8TrackPoint,
+} from '../lib/boardUtils';
 
 interface BoardProps {
   snapshot: CatDashClientState;
@@ -29,63 +20,108 @@ interface BoardProps {
   resolveName: (id?: string | null) => string;
 }
 
-function getOvalPoint(
-  index: number,
-  total: number,
-  cx: number,
-  cy: number,
-  rx: number,
-  ry: number,
-): { x: number; y: number } {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  return {
-    x: cx + rx * Math.cos(angle),
-    y: cy + ry * Math.sin(angle),
-  };
-}
-
 export const CatDashBoard = memo(function CatDashBoard({
   snapshot,
   disabled: _disabled,
   resolveName,
 }: BoardProps) {
-  const { tokens } = useCatDashTheme();
+  const { tokens, variant } = useCatDashTheme();
 
   const total = snapshot.track.length;
+  const cols = snapshot.columns || 10;
+  const rows = Math.ceil(total / cols);
   const svgW = 560;
-  const svgH = 340;
+  const svgH =
+    snapshot.trackType === 'linear' ? Math.max(340, rows * 64 + 64) : 340;
   const cx = svgW / 2;
   const cy = svgH / 2;
   const rx = svgW * 0.42;
-  const ry = svgH * 0.4;
+  const ry = svgH * 0.65;
 
-  const positions = useMemo(
-    () => snapshot.track.map((_, i) => getOvalPoint(i, total, cx, cy, rx, ry)),
-    [snapshot.track, total, cx, cy, rx, ry],
-  );
+  const positions = useMemo(() => {
+    return snapshot.track.map((_, i) => {
+      if (snapshot.trackType === 'linear') {
+        return getSerpentineTrackPoint(i, total, svgW, svgH, cols);
+      }
+      if (snapshot.trackType === 'circular') {
+        return getCircularTrackPoint(i, total, cx, cy, rx, ry * 0.58);
+      }
+      return getFigure8TrackPoint(i, total, cx, cy, rx, ry);
+    });
+  }, [snapshot.track, snapshot.trackType, cols, total, svgH, cx, cy, rx, ry]);
 
-  const spaceRadius = 12;
+  // Generate SVG path string for the track line
+  const trackPathD = useMemo(() => {
+    if (positions.length === 0) return '';
+    if (snapshot.trackType !== 'linear') {
+      const points = positions.map((p) => `${p.x},${p.y}`);
+      return `M ${points[0]} ${points
+        .slice(1)
+        .map((pt) => `L ${pt}`)
+        .join(' ')} Z`;
+    }
+
+    // Smooth winding serpentine curves for linear track layout
+    let d = `M ${positions[0].x},${positions[0].y}`;
+    for (let i = 0; i < positions.length - 1; i++) {
+      const current = positions[i];
+      const next = positions[i + 1];
+      const currRow = Math.floor(i / cols);
+      const nextRow = Math.floor((i + 1) / cols);
+
+      if (currRow !== nextRow) {
+        // Smooth out-of-row loop transition curve at the end of rows
+        const isRightTurn = currRow % 2 === 0;
+        const dx = isRightTurn ? 32 : -32;
+        d += ` C ${current.x + dx},${current.y} ${next.x + dx},${next.y} ${next.x},${next.y}`;
+      } else {
+        d += ` L ${next.x},${next.y}`;
+      }
+    }
+    return d;
+  }, [positions, snapshot.trackType, cols]);
+
+  const spaceRadius = 22;
 
   return (
     <YStack gap="$3" alignItems="center" width="100%" padding="$3">
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
-        style={{ maxWidth: svgW, borderRadius: 16, overflow: 'hidden' }}
+        style={{
+          maxWidth: svgW,
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25)',
+          border: `1px solid ${tokens.trackBorder}33`,
+        }}
       >
-        {/* Background */}
-        <rect width={svgW} height={svgH} fill={tokens.track} rx={16} />
+        <BoardBackground
+          variant={variant}
+          tokens={tokens}
+          svgW={svgW}
+          svgH={svgH}
+        />
 
-        {/* Track path line */}
-        <ellipse
-          cx={cx}
-          cy={cy}
-          rx={rx}
-          ry={ry}
+        {/* Track path line with neon glow style */}
+        <path
+          d={trackPathD}
           fill="none"
           stroke={tokens.trackBorder}
-          strokeWidth={spaceRadius * 2 + 6}
-          opacity={0.15}
+          strokeWidth={spaceRadius * 2 + 8}
+          opacity={0.12}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        <path
+          d={trackPathD}
+          fill="none"
+          stroke={tokens.trackBorder}
+          strokeWidth={2}
+          opacity={0.4}
+          strokeDasharray="6 8"
+          strokeLinejoin="round"
+          strokeLinecap="round"
         />
 
         {/* Track spaces */}
@@ -107,6 +143,18 @@ export const CatDashBoard = memo(function CatDashBoard({
 
           return (
             <g key={space.id}>
+              {/* Space circle shadow/glow */}
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={spaceRadius + 2}
+                fill="none"
+                stroke={fill}
+                strokeWidth={1.5}
+                opacity={isOccupied ? 0.8 : 0.2}
+                filter="url(#glow)"
+              />
+
               {/* Space circle */}
               <circle
                 cx={pos.x}
@@ -114,78 +162,131 @@ export const CatDashBoard = memo(function CatDashBoard({
                 r={spaceRadius}
                 fill={fill}
                 stroke={
-                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
+                  isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.15)'
                 }
                 strokeWidth={isOccupied ? 2.5 : 1}
+                style={{ transition: 'all 0.3s ease' }}
               />
 
-              {/* Space number (every 5th) */}
-              {i % 5 === 0 && !isOccupied && (
+              {/* Space number (always rendered for better cell identification) */}
+              {!isOccupied && (
                 <text
                   x={pos.x}
                   y={pos.y + 1}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize={7}
-                  fill={tokens.textSecondary}
-                  opacity={0.4}
+                  fontSize={10}
+                  fontWeight="800"
+                  fill="#ffffff"
+                  style={{
+                    pointerEvents: 'none',
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))',
+                  }}
                 >
-                  {i}
+                  {i + 1}
                 </text>
               )}
 
-              {/* Player cat emoji */}
+              {/* Player cat SVG */}
               {isOccupied &&
-                playersHere.map((p) => (
-                  <text
-                    key={p.playerId}
-                    x={pos.x}
-                    y={pos.y + 1}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={14}
-                  >
-                    {CAT_EMOJI[p.catId] ?? '🐱'}
-                  </text>
-                ))}
+                playersHere.map((p, idx) => {
+                  const size = 38;
+                  // Shift slightly if multiple players are on the same spot
+                  const offsetX = (idx - (playersHere.length - 1) / 2) * 12;
+                  return (
+                    <g
+                      key={p.playerId}
+                      transform={`translate(${pos.x - size / 2 + offsetX}, ${pos.y - size / 2})`}
+                    >
+                      <RealisticCat catId={p.catId} size={size} />
+                    </g>
+                  );
+                })}
 
-              {/* Start / Finish labels */}
-              {isStart && (
+              {/* Start / Finish labels (Only for circular/multiple layouts as linear uses dots/flags under the cells) */}
+              {snapshot.trackType !== 'linear' && isStart && (
                 <text
                   x={pos.x}
-                  y={pos.y - spaceRadius - 6}
+                  y={pos.y - spaceRadius - 8}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={10}
                   fontWeight="bold"
                   fill="#22c55e"
+                  filter="url(#glow)"
                 >
                   START
                 </text>
               )}
-              {isFinish && (
+              {snapshot.trackType !== 'linear' && isFinish && (
                 <text
                   x={pos.x}
-                  y={pos.y - spaceRadius - 6}
+                  y={pos.y - spaceRadius - 8}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={10}
                   fontWeight="bold"
                   fill="#f59e0b"
+                  filter="url(#glow)"
                 >
                   🏁 FINISH
                 </text>
               )}
 
-              {/* Obstacle / Bonus icons */}
-              {!isOccupied &&
+              {/* Layout indicators always rendered under cells */}
+              {snapshot.trackType === 'linear' ? (
+                isStart ? (
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y + spaceRadius + 7}
+                    r={3.5}
+                    fill="#22c55e"
+                    filter="url(#glow)"
+                  />
+                ) : isFinish ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    🏁
+                  </text>
+                ) : space.type === 'obstacle' ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    ⚡
+                  </text>
+                ) : space.type === 'bonus' ? (
+                  <text
+                    x={pos.x}
+                    y={pos.y + spaceRadius + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  >
+                    ⭐
+                  </text>
+                ) : null
+              ) : (
+                !isOccupied &&
                 !isStart &&
                 !isFinish &&
                 space.type !== 'normal' && (
                   <text
                     x={pos.x}
-                    y={pos.y + 1}
+                    y={pos.y + spaceRadius + 7}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={8}
+                    fontSize={11}
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   >
                     {space.type === 'obstacle'
                       ? '⚡'
@@ -193,7 +294,8 @@ export const CatDashBoard = memo(function CatDashBoard({
                         ? '⭐'
                         : '🔀'}
                   </text>
-                )}
+                )
+              )}
             </g>
           );
         })}
@@ -208,27 +310,35 @@ export const CatDashBoard = memo(function CatDashBoard({
           return (
             <XStack
               key={player.playerId}
-              gap="$1"
+              gap="$3"
               alignItems="center"
               opacity={player.isReady ? 1 : 0.4}
               backgroundColor={
-                isCurrent ? 'rgba(124,58,237,0.15)' : 'transparent'
+                isCurrent ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)'
               }
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
-              borderWidth={isCurrent ? 1 : 0}
-              borderColor={isCurrent ? tokens.playerBorder : 'transparent'}
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              borderRadius="$4"
+              borderWidth={1.5}
+              borderColor={
+                isCurrent ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
+              }
+              style={{
+                boxShadow: isCurrent
+                  ? `0 0 12px ${tokens.playerBorder}55`
+                  : 'none',
+                transition: 'all 0.2s ease',
+              }}
             >
-              <Text fontSize={16}>{CAT_EMOJI[player.catId] ?? '🐱'}</Text>
+              <RealisticCat catId={player.catId} size={28} />
               <Text
-                fontSize={12}
+                fontSize={14}
                 fontWeight={isCurrent ? 'bold' : 'normal'}
                 color={CAT_COLORS[player.catId] ?? tokens.text}
               >
                 {resolveName(player.playerId)}
               </Text>
-              <Text fontSize={10} color={tokens.textSecondary}>
+              <Text fontSize={12} color={tokens.textSecondary}>
                 🎲 {player.powerTokens}
               </Text>
             </XStack>

@@ -1,9 +1,6 @@
 import { CascadeBotService } from './cascade-bot.service';
 import type { CascadeService } from './cascade.service';
-import type {
-  CascadeCard,
-  CascadeState,
-} from '../engines/cascade/cascade.types';
+import type { CascadeState } from '../engines/cascade/cascade.types';
 
 // We exercise only the pure pickMove strategy. The forwardRef on CascadeService
 // is never invoked, so an empty stub is enough.
@@ -26,10 +23,8 @@ function baseState(overrides: Partial<CascadeState> = {}): CascadeState {
     currentTurnIndex: 0,
     direction: 1,
     drawPile: [],
-    discardPile: [
-      { id: 'top', color: 'R', kind: 'NUMBER', value: 5 } as CascadeCard,
-    ],
-    topCard: { id: 'top', color: 'R', kind: 'NUMBER', value: 5 } as CascadeCard,
+    discardPile: [{ id: 'top', color: 'R', kind: 'NUMBER', value: 5 }],
+    topCard: { id: 'top', color: 'R', kind: 'NUMBER', value: 5 },
     activeColor: 'R',
     lastCardWindow: null,
     pendingDraw: 0,

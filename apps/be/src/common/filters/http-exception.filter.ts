@@ -24,8 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse() as
-      | ExceptionResponseShape
-      | string;
+      ExceptionResponseShape | string;
 
     const {
       message,

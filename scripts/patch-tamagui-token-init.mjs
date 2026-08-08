@@ -23,10 +23,10 @@ const PATCH_MARKER = '/* __tamagui-token-init-patch__ */';
 
 const PATCH_CODE = `
   // --- BEGIN tamagui token-init patch ---
-  // Auto-initialize tokensMerged from globalThis.__tamaguiConfig when
+  // Auto-initialize tokensMerged from globalThis.TamaguiConfig when
   // createTamagui() was not called on this @tamagui/web instance.
   if (!tokensMerged && typeof globalThis !== 'undefined') {
-    var _gTC = globalThis.__tamaguiConfig;
+    var _gTC = globalThis.TamaguiConfig;
     if (_gTC && _gTC.tokens) {
       tokensMerged = {};
       for (var _cat in _gTC.tokens) {
@@ -48,17 +48,12 @@ function findTamaguiWebConfigs() {
 
   for (const entry of readdirSync(pnpmDir)) {
     if (!entry.startsWith('@tamagui+web@')) continue;
-    const configPath = join(
-      pnpmDir,
-      entry,
-      'node_modules',
-      '@tamagui',
-      'web',
-      'dist',
-      'esm',
-      'config.mjs',
-    );
-    if (existsSync(configPath)) results.push(configPath);
+    const base = join(pnpmDir, entry, 'node_modules', '@tamagui', 'web', 'dist');
+    // Patch both ESM (config.mjs) and CJS (config.js) — vitest may resolve either
+    for (const [subdir, filename] of [['esm', 'config.mjs'], ['cjs', 'config.js']]) {
+      const configPath = join(base, subdir, filename);
+      if (existsSync(configPath)) results.push(configPath);
+    }
   }
   return results;
 }

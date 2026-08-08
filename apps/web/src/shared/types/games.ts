@@ -56,6 +56,14 @@ export interface GameRoomSummary {
   rematchDeclinedUsers?: GameRoomMemberSummary[];
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
+  chatLogs?: Array<{
+    id: string;
+    senderId: string;
+    senderName: string;
+    message: string;
+    scope: string;
+    createdAt: string;
+  }>;
 }
 
 export interface GameSessionSummary {

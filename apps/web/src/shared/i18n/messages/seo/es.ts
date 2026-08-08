@@ -8,6 +8,7 @@ export const es: DeepPartial<SeoMessages> = {
   home: {
     title: `${APP} — Juega gratis a juegos de mesa en línea con amigos`,
     description: `Juega gratis a juegos de mesa en línea con amigos en ${APP}. Battleship, estrategia y cartas — crea una sala, comparte el enlace y juega en tu navegador. Sin descarga, sin registro.`,
+    badge: 'Juega con amigos o con IA',
   },
   games: {
     title: `Juegos de mesa gratis en línea · ${APP}`,

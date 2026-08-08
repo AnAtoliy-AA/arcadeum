@@ -17,10 +17,9 @@ jobs:
       - name: Extract and lock linked issues
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-
           ISSUES=$(echo "$PR_BODY" | grep -oE '(Closes|Fixes|Resolves) #([0-9]+)' | grep -oE '[0-9]+' || true)
 
           for ISSUE_NUM in $ISSUES; do

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { YStack } from '@arcadeum/ui';
+import { YStack, AVATAR_SPRITE_MAP, BADGE_SPRITE_MAP } from '@arcadeum/ui';
 import { Text } from 'tamagui';
 import { nameColorRenderProps } from '../lib/nameColor';
 import type { EffectiveShopItem } from '../server/shop.types';
@@ -214,6 +214,34 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
           style={
             isGradient ? { backgroundImage: value } : { backgroundColor: value }
           }
+        />
+      </YStack>
+    );
+  }
+
+  const isAvatar = item.category === 'avatar';
+  const isBadge = item.category === 'badge';
+  const sprite = isAvatar
+    ? AVATAR_SPRITE_MAP[item.assetUrl]
+    : isBadge
+      ? BADGE_SPRITE_MAP[item.assetUrl]
+      : null;
+
+  if (sprite) {
+    return (
+      <YStack
+        width={size}
+        height={size}
+        alignItems="center"
+        justifyContent="center"
+        data-testid={`shop-asset-${item.id}`}
+      >
+        <YStack
+          width={size}
+          height={size}
+          backgroundImage={`url(${sprite.spritesheet})`}
+          backgroundSize={`${size * sprite.cols}px auto`}
+          backgroundPosition={`-${(sprite.index % sprite.cols) * size}px -${Math.floor(sprite.index / sprite.cols) * size}px`}
         />
       </YStack>
     );

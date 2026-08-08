@@ -17,8 +17,7 @@ import {
  */
 export abstract class BaseGameEngine<
   TState extends BaseGameState = BaseGameState,
-> implements IGameEngine<TState>
-{
+> implements IGameEngine<TState> {
   /** Max log entries per session to prevent BSON document bloat. */
   protected static readonly MAX_LOG_ENTRIES = 100;
   /**

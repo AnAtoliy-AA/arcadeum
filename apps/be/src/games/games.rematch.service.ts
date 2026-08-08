@@ -140,7 +140,7 @@ export class GamesRematchService {
     const blocked = new Set<string>();
     for (const user of users) {
       if ((user.blockedUsers || []).includes(hostId)) {
-        blocked.add((user._id as unknown as Types.ObjectId).toHexString());
+        blocked.add(user._id.toHexString());
       }
     }
     return userIds.filter((id) => !blocked.has(id));

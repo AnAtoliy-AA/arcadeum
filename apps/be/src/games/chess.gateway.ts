@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 
 import { ChessService } from './chess/chess.service';
 import {
@@ -18,58 +13,28 @@ import {
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class ChessGateway {
+export class ChessGateway implements GameMessageHandler {
   private readonly logger = new Logger(ChessGateway.name);
 
-  @WebSocketServer() server: Server;
+  constructor(private readonly chessService: ChessService) {}
 
-  constructor(
-    private readonly chessService: ChessService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
-  ) {}
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'chess.session.start': (client, payload) =>
+      this.handleSessionStart(client, payload),
+    'chess.session.move': (client, payload) => this.handleMove(client, payload),
+    'chess.session.resign': (client, payload) =>
+      this.handleForfeit(client, payload),
+    'chess.session.draw_offer': (client, payload) =>
+      this.handleDrawOffer(client, payload),
+    'chess.session.draw_accept': (client, payload) =>
+      this.handleDrawAccept(client, payload),
+  };
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'ChessGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to Chess namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to Chess namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('chess.session.start')
-  async handleSessionStart(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      withBots?: boolean;
-      botCount?: number;
-      botDifficulty?: string;
-    },
+  private async handleSessionStart(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -78,8 +43,8 @@ export class ChessGateway {
         userId,
         roomId,
         !!payload?.withBots,
-        payload?.botCount,
-        payload?.botDifficulty,
+        payload?.botCount as number | undefined,
+        payload?.botDifficulty as string | undefined,
       );
       client.emit('chess.session.started', maybeEncrypt(result));
     } catch (error) {
@@ -92,19 +57,9 @@ export class ChessGateway {
     }
   }
 
-  @SubscribeMessage('chess.session.move')
-  async handleMove(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      fromFile?: string;
-      fromRank?: number;
-      toFile?: string;
-      toRank?: number;
-      promotion?: string;
-    },
+  private async handleMove(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -118,11 +73,11 @@ export class ChessGateway {
     }
     try {
       await this.chessService.move(userId, roomId, {
-        fromFile: payload.fromFile,
-        fromRank: payload.fromRank,
-        toFile: payload.toFile,
-        toRank: payload.toRank,
-        promotion: payload.promotion,
+        fromFile: payload.fromFile as string,
+        fromRank: payload.fromRank as number,
+        toFile: payload.toFile as string,
+        toRank: payload.toRank as number,
+        promotion: payload.promotion as string | undefined,
       });
       client.emit(
         'chess.session.moved',
@@ -145,10 +100,9 @@ export class ChessGateway {
     }
   }
 
-  @SubscribeMessage('chess.session.resign')
-  async handleForfeit(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleForfeit(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -165,10 +119,9 @@ export class ChessGateway {
     }
   }
 
-  @SubscribeMessage('chess.session.draw_offer')
-  async handleDrawOffer(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleDrawOffer(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
@@ -188,10 +141,9 @@ export class ChessGateway {
     }
   }
 
-  @SubscribeMessage('chess.session.draw_accept')
-  async handleDrawAccept(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  private async handleDrawAccept(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);

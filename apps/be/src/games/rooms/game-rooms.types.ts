@@ -28,7 +28,7 @@ export interface GameRoomSummary {
   inviteCode?: string;
   gameOptions?: Record<string, unknown>;
   hasPassword?: boolean;
-  rematchInvitedUsers?: GameRoomMemberSummary[]; // Re-using member summary or partial
+  rematchInvitedUsers?: GameRoomMemberSummary[];
   rematchDeclinedUsers?: GameRoomMemberSummary[];
   invitationTimeout?: number;
   host?: GameRoomMemberSummary;
@@ -36,6 +36,14 @@ export interface GameRoomSummary {
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;
+  chatLogs?: Array<{
+    id: string;
+    senderId: string;
+    senderName: string;
+    message: string;
+    scope: string;
+    createdAt: string;
+  }>;
 }
 
 export interface ListRoomsFilters {
@@ -44,18 +52,10 @@ export interface ListRoomsFilters {
   status?: GameRoomStatus;
   statuses?: GameRoomStatus[];
   visibility?:
-    | 'public'
-    | 'private'
-    | 'friends'
-    | ('public' | 'private' | 'friends')[];
+    'public' | 'private' | 'friends' | ('public' | 'private' | 'friends')[];
   userId?: string;
   participation?:
-    | 'host'
-    | 'participant'
-    | 'any'
-    | 'hosting'
-    | 'joined'
-    | 'not_joined';
+    'host' | 'participant' | 'any' | 'hosting' | 'joined' | 'not_joined';
   page?: number;
   limit?: number;
 }

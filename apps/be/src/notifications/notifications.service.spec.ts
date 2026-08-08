@@ -13,7 +13,7 @@ function chain<T>(value: T): Lean & Exec<T> {
   const obj: Lean & Exec<T> = {
     lean: jest.fn().mockReturnThis(),
     exec: jest.fn().mockResolvedValue(value),
-  } as unknown as Lean & Exec<T>;
+  };
   return obj;
 }
 
@@ -29,7 +29,7 @@ function listChain<T>(value: T[]): {
     lean: jest.fn().mockReturnThis(),
     exec: jest.fn().mockResolvedValue(value),
   };
-  return obj as unknown as typeof obj;
+  return obj;
 }
 
 describe('NotificationsService', () => {

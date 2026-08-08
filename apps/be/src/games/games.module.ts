@@ -25,11 +25,14 @@ import { CriticalGateway } from './critical.gateway';
 import { CriticalActionsGateway } from './critical-actions.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
+// Game handlers — plain services, not gateways (single-namespace architecture)
 import { GameEnginesModule } from './engines/engines.module';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
+import { GameRoomsChatService } from './rooms/game-rooms.chat.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
+import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
@@ -37,6 +40,7 @@ import { GameSessionsCleanupCron } from './sessions/game-sessions.cleanup.cron';
 import { GameHistoryService } from './history/game-history.service';
 import { GameHistoryBuilderService } from './history/game-history-builder.service';
 import { GameHistoryStatsService } from './history/game-history-stats.service';
+import { GameHistoryRematchService } from './history/game-history-rematch.service';
 import { CriticalActionsService } from './actions/critical/critical-actions.service';
 import { TexasHoldemActionsService } from './actions/texas-holdem/texas-holdem-actions.service';
 import { GameUtilitiesService } from './utilities/game-utilities.service';
@@ -145,7 +149,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRoomsService,
     GameRoomsMapper,
     GameRoomsRematchService,
+    GameRoomsChatService,
     GameRoomsQuickplayService,
+    GameRoomsMatchmakingService,
     SeaBattleTeamConfigService,
     GameSessionsService,
     GameSessionsArchiveService,
@@ -153,6 +159,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameHistoryService,
     GameHistoryBuilderService,
     GameHistoryStatsService,
+    GameHistoryRematchService,
     GamesRealtimeService,
     // Game-specific action handlers
     CriticalActionsService,
@@ -205,6 +212,6 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     CheckersGateway,
     CatDashGateway,
   ],
-  exports: [GameHistoryStatsService],
+  exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
 })
 export class GamesModule {}

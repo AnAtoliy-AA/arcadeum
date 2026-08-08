@@ -84,6 +84,8 @@ export async function generateMetadata({
   };
 }
 
+import { MatchmakingQueueModal } from '@/features/games/ui/MatchmakingQueue';
+
 export default async function LocaleLayout({
   children,
   params,
@@ -150,12 +152,13 @@ export default async function LocaleLayout({
             <LayoutShell>
               <AnnouncementBanner />
               <Header />
-              <main style={{ flex: 1 }}>
+              <main id="main-content" className="layout-main">
                 <Suspense>{children}</Suspense>
               </main>
               <LayoutFooter />
             </LayoutShell>
             {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+            <MatchmakingQueueModal />
           </SoundProvider>
         </PWAProvider>
       </LanguageProvider>

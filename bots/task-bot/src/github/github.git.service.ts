@@ -65,7 +65,7 @@ export class GitHubGitService {
     branchName: string,
     baseBranch: string,
     cwd?: string,
-    engine: 'mimo' | 'opencode' = 'mimo',
+    engine: 'opencode',
   ): { success: boolean; message: string } {
     const workdir = cwd ?? this.getCwd();
     try {
@@ -109,7 +109,7 @@ export class GitHubGitService {
     }
   }
 
-  private resolveWithAI(files: string[], cwd: string, engine: 'mimo' | 'opencode'): boolean {
+  private resolveWithAI(files: string[], cwd: string, engine: 'opencode'): boolean {
     try {
       const conflicts = files.map((f) => {
         try {
@@ -138,17 +138,8 @@ export class GitHubGitService {
       ].join('\n');
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
-      const cli = engine === 'mimo' ? 'mimo' : 'opencode';
-      const runArgs = cli === 'opencode'
-        ? ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions']
-        : ['run', escapedPrompt, '--dangerously-skip-permissions'];
-
-      if (cli === 'mimo') {
-        try {
-          execFileSync('mimo', ['auth', 'login', '-p', 'mimo-free'], { cwd, timeout: 30_000, encoding: 'utf-8' });
-        } catch { /* ignore */ }
-      }
-      execFileSync(cli, runArgs, { cwd, timeout: 120_000, env: { ...process.env, HUSKY: '0' } });
+      const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
+      execFileSync('opencode', runArgs, { cwd, timeout: 120_000, env: { ...process.env, HUSKY: '0' } });
       return true;
     } catch (err) {
       this.logger.error(`AI conflict resolution failed: ${(err as Error).message}`);

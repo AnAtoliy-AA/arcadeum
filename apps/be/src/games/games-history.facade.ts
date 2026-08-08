@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameHistoryService } from './history/game-history.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -10,6 +11,7 @@ import type { GameSessionSummary } from './sessions/game-sessions.service';
  * Games History Facade
  * Delegates history-related operations from GamesService
  */
+@Injectable()
 export class GamesHistoryFacade {
   constructor(
     private readonly historyService: GameHistoryService,
@@ -105,8 +107,15 @@ export class GamesHistoryFacade {
       s: GameSessionSummary,
       pId: string,
     ) => GameSessionSummary,
+    isAuthenticated = false,
   ) {
-    await this.historyService.postHistoryNote(roomId, userId, message, scope);
+    await this.historyService.postHistoryNote(
+      roomId,
+      userId,
+      message,
+      scope,
+      isAuthenticated,
+    );
 
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (session) {

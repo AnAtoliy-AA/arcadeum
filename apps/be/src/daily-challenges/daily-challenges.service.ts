@@ -89,8 +89,10 @@ export class DailyChallengesService {
     increment: number = 1,
   ): Promise<void> {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
-    const all = await this.definitionModel.find().lean().exec();
-    const definition = all.find((d) => d.challengeId === challengeId);
+    const definition = await this.definitionModel
+      .findOne({ challengeId })
+      .lean()
+      .exec();
     if (!definition) return;
 
     const progress = await this.getOrCreateProgress(userId, date, [
@@ -124,8 +126,10 @@ export class DailyChallengesService {
     ) {
       throw new Error('Invalid parameters');
     }
-    const all = await this.definitionModel.find().lean().exec();
-    const definition = all.find((d) => d.challengeId === challengeId);
+    const definition = await this.definitionModel
+      .findOne({ challengeId })
+      .lean()
+      .exec();
     if (!definition) throw new Error('Challenge not found');
 
     const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
@@ -183,60 +187,19 @@ export class DailyChallengesService {
     const dayOfWeek = this.getDayOfWeek(today);
     const definitions = await this.getDefinitionsForDay(dayOfWeek);
 
-    for (const userId of playerIds) {
-      if (userId.startsWith('bot-')) continue;
-
-      const progress = await this.getOrCreateProgress(
-        userId,
-        today,
-        definitions,
-      );
-      const isWinner = winners.includes(userId);
-
-      for (const def of definitions) {
-        const userChallenge = progress.challenges.find(
-          (c) => c.challengeId === def.challengeId,
-        );
-        if (!userChallenge || userChallenge.completed) continue;
-
-        let increment = 0;
-        switch (def.type) {
-          case 'play_games':
-            increment = 1;
-            break;
-          case 'win_games':
-            increment = isWinner ? 1 : 0;
-            break;
-          case 'play_specific_game':
-            increment = def.gameId === gameId ? 1 : 0;
-            break;
-          case 'sink_ships':
-            increment = stats.shipsSunk ?? 0;
-            break;
-          case 'total_shots':
-            increment = stats.shots ?? 0;
-            break;
-          case 'win_streak':
-            increment = isWinner ? 1 : 0;
-            break;
-          case 'play_without_firing':
-            increment = (stats.shots ?? 0) === 0 ? 1 : 0;
-            break;
-        }
-
-        if (increment > 0) {
-          userChallenge.progress = Math.min(
-            userChallenge.progress + increment,
-            def.targetCount,
-          );
-          if (userChallenge.progress >= def.targetCount) {
-            userChallenge.completed = true;
-          }
-        }
-      }
-
-      await progress.save();
-    }
+    const humanPlayers = playerIds.filter((id) => !id.startsWith('bot-'));
+    await Promise.all(
+      humanPlayers.map((userId) =>
+        this.updatePlayerProgress(
+          userId,
+          today,
+          definitions,
+          gameId,
+          winners,
+          stats,
+        ),
+      ),
+    );
   }
 
   private todayUtc(): string {
@@ -272,11 +235,10 @@ export class DailyChallengesService {
     definitions: DailyChallengeDefinitionDocument[],
   ): Promise<UserDailyChallengeDocument> {
     const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
-    const all = await this.progressModel
-      .find({ userId: new Types.ObjectId(userId) })
+    const existing = await this.progressModel
+      .findOne({ userId: new Types.ObjectId(userId), date: safeDate })
       .lean()
       .exec();
-    const existing = all.find((p) => p.date === safeDate);
     if (existing) {
       return existing as unknown as UserDailyChallengeDocument;
     }
@@ -291,6 +253,62 @@ export class DailyChallengesService {
       date: safeDate,
       challenges,
     });
+  }
+
+  private async updatePlayerProgress(
+    userId: string,
+    today: string,
+    definitions: DailyChallengeDefinitionDocument[],
+    gameId: string,
+    winners: string[],
+    stats: { shots?: number; shipsSunk?: number },
+  ): Promise<void> {
+    const progress = await this.getOrCreateProgress(userId, today, definitions);
+    const isWinner = winners.includes(userId);
+
+    for (const def of definitions) {
+      const userChallenge = progress.challenges.find(
+        (c) => c.challengeId === def.challengeId,
+      );
+      if (!userChallenge || userChallenge.completed) continue;
+
+      let increment = 0;
+      switch (def.type) {
+        case 'play_games':
+          increment = 1;
+          break;
+        case 'win_games':
+          increment = isWinner ? 1 : 0;
+          break;
+        case 'play_specific_game':
+          increment = def.gameId === gameId ? 1 : 0;
+          break;
+        case 'sink_ships':
+          increment = stats.shipsSunk ?? 0;
+          break;
+        case 'total_shots':
+          increment = stats.shots ?? 0;
+          break;
+        case 'win_streak':
+          increment = isWinner ? 1 : 0;
+          break;
+        case 'play_without_firing':
+          increment = (stats.shots ?? 0) === 0 ? 1 : 0;
+          break;
+      }
+
+      if (increment > 0) {
+        userChallenge.progress = Math.min(
+          userChallenge.progress + increment,
+          def.targetCount,
+        );
+        if (userChallenge.progress >= def.targetCount) {
+          userChallenge.completed = true;
+        }
+      }
+    }
+
+    await progress.save();
   }
 
   private getDescription(def: DailyChallengeDefinition): string {

@@ -21,6 +21,7 @@ import { type TranslationKey } from '@/shared/lib/useTranslation';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
+import { FieldStatus } from './FieldStatus';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
 
@@ -41,6 +42,8 @@ interface AttackPlayerBoardProps {
   sonarCellStates?: Map<string, number> | null;
   radarHighlightCells?: Set<string> | null;
   radarCellStates?: Map<string, number> | null;
+  scanWaveHighlightCells?: Set<string> | null;
+  scanWaveCellStates?: Map<string, number> | null;
   weaponPreviewCells?: Set<string> | null;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
@@ -67,6 +70,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   sonarCellStates,
   radarHighlightCells,
   radarCellStates,
+  scanWaveHighlightCells,
+  scanWaveCellStates,
   weaponPreviewCells,
   weaponPreviewType,
   onAttack,
@@ -159,17 +164,22 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           const cellKey = `${player.playerId}-${rIndex}-${cIndex}`;
           const isSonarCell = !isMe && sonarHighlightCells?.has(cellKey);
           const isRadarCell = !isMe && radarHighlightCells?.has(cellKey);
-          const highlight: 'sonar' | 'radar' | null = isSonarCell
+          const isScanWaveCell = !isMe && scanWaveHighlightCells?.has(cellKey);
+          const highlight: 'sonar' | 'radar' | 'scanWave' | null = isSonarCell
             ? 'sonar'
             : isRadarCell
               ? 'radar'
-              : null;
+              : isScanWaveCell
+                ? 'scanWave'
+                : null;
           const highlightCellState =
             isSonarCell && sonarCellStates
               ? sonarCellStates.get(cellKey)
               : isRadarCell && radarCellStates
                 ? radarCellStates.get(cellKey)
-                : undefined;
+                : isScanWaveCell && scanWaveCellStates
+                  ? scanWaveCellStates.get(cellKey)
+                  : undefined;
           const isWeaponPreview = !isMe && weaponPreviewCells?.has(cellKey);
 
           return (
@@ -296,24 +306,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <PlayerStats>
             <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
-          <BoardWithLabels>
-            <div />
-            <ColLabels gridSize={boardSize}>
-              {colLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </ColLabels>
-            <RowLabels gridSize={boardSize}>
-              {rowLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </RowLabels>
-            {boardGrid}
-          </BoardWithLabels>
+          <YStack position="relative" width="100%">
+            <BoardWithLabels>
+              <div />
+              <ColLabels gridSize={boardSize}>
+                {colLbls.map((label) => (
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                    {label}
+                  </Label>
+                ))}
+              </ColLabels>
+              <RowLabels gridSize={boardSize}>
+                {rowLbls.map((label) => (
+                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                    {label}
+                  </Label>
+                ))}
+              </RowLabels>
+              {boardGrid}
+            </BoardWithLabels>
+            <FieldStatus board={player.board} isMe={true} />
+          </YStack>
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -390,24 +403,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerStats>
           <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
-        <BoardWithLabels>
-          <div />
-          <ColLabels gridSize={boardSize}>
-            {colLbls.map((label) => (
-              <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                {label}
-              </Label>
-            ))}
-          </ColLabels>
-          <RowLabels gridSize={boardSize}>
-            {rowLbls.map((label) => (
-              <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                {label}
-              </Label>
-            ))}
-          </RowLabels>
-          {boardGrid}
-        </BoardWithLabels>
+        <YStack position="relative" width="100%">
+          <BoardWithLabels>
+            <div />
+            <ColLabels gridSize={boardSize}>
+              {colLbls.map((label) => (
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  {label}
+                </Label>
+              ))}
+            </ColLabels>
+            <RowLabels gridSize={boardSize}>
+              {rowLbls.map((label) => (
+                <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  {label}
+                </Label>
+              ))}
+            </RowLabels>
+            {boardGrid}
+          </BoardWithLabels>
+          <FieldStatus board={player.board} isMe={false} />
+        </YStack>
       </PlayerSection>
     </PlayerSectionWrapper>
   );

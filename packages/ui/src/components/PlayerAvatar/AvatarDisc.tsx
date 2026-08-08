@@ -4,6 +4,8 @@ import { Text, View, YStack } from 'tamagui';
 import { getInitials, isGradient, pickSwatchColor } from './colors';
 import { BADGE_SIZE, DISC_SIZE, RING_WIDTH, type PlayerAvatarSize } from './constants';
 
+import { AVATAR_SPRITE_MAP, BADGE_SPRITE_MAP } from './sprite-maps';
+
 interface AvatarDiscProps {
   name: string;
   size: PlayerAvatarSize;
@@ -78,6 +80,9 @@ export function AvatarDisc({
           backgroundImage: `radial-gradient(circle at 50% 40%, ${discBgSource}73 0%, ${discBgSource}24 65%, transparent 100%)`,
         };
 
+  const avatarSprite = avatarUrl ? AVATAR_SPRITE_MAP[avatarUrl] : null;
+  const badgeSprite = badgeUrl ? BADGE_SPRITE_MAP[badgeUrl] : null;
+
   return (
     <YStack
       width={disc}
@@ -132,7 +137,17 @@ export function AvatarDisc({
           data-testid={testId ? `${testId}-bg` : undefined}
         />
       ) : null}
-      {avatarUrl ? (
+      {avatarSprite ? (
+        <View
+          width={innerImage}
+          height={innerImage}
+          backgroundImage={`url(${avatarSprite.spritesheet})`}
+          backgroundSize={`${innerImage * avatarSprite.cols}px auto`}
+          backgroundPosition={`-${(avatarSprite.index % avatarSprite.cols) * innerImage}px -${Math.floor(avatarSprite.index / avatarSprite.cols) * innerImage}px`}
+          position="relative"
+          zIndex={1}
+        />
+      ) : avatarUrl ? (
         <img
           src={avatarUrl}
           alt={name}
@@ -179,15 +194,26 @@ export function AvatarDisc({
           zIndex={2}
           data-testid={testId ? `${testId}-badge` : undefined}
         >
-          <img
-            src={badgeUrl as string}
-            alt=""
-            width={Math.round(badge * 0.75)}
-            height={Math.round(badge * 0.75)}
-            style={{ objectFit: 'contain' }}
-          />
+          {badgeSprite ? (
+            <View
+              backgroundImage={`url(${badgeSprite.spritesheet})`}
+              backgroundSize={`${Math.round(badge * 0.75) * badgeSprite.cols}px auto`}
+              backgroundPosition={`-${(badgeSprite.index % badgeSprite.cols) * Math.round(badge * 0.75)}px -${Math.floor(badgeSprite.index / badgeSprite.cols) * Math.round(badge * 0.75)}px`}
+              width={Math.round(badge * 0.75)}
+              height={Math.round(badge * 0.75)}
+            />
+          ) : (
+            <img
+              src={badgeUrl as string}
+              alt=""
+              width={Math.round(badge * 0.75)}
+              height={Math.round(badge * 0.75)}
+              style={{ objectFit: 'contain' }}
+            />
+          )}
         </View>
       ) : null}
     </YStack>
   );
 }
+

@@ -1,8 +1,5 @@
 export type GameHistoryStatus =
-  | 'active'
-  | 'completed'
-  | 'abandoned'
-  | 'waiting';
+  'active' | 'completed' | 'abandoned' | 'waiting';
 
 export interface HistoryParticipantSummary {
   id: string;

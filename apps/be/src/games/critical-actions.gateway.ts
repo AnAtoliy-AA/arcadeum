@@ -1,15 +1,10 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 import { GamesService } from './games.service';
 import {
   extractRoomAndUser,
@@ -21,50 +16,17 @@ import {
   isSimpleActionCard,
   validatePayloadUserId,
 } from './games.gateway.utils';
-
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { CriticalService } from './critical/critical.service';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class CriticalActionsGateway {
+export class CriticalActionsGateway implements GameMessageHandler {
   private readonly logger = new Logger(CriticalActionsGateway.name);
-
-  @WebSocketServer() server: Server;
 
   constructor(
     private readonly gamesService: GamesService,
     private readonly criticalService: CriticalService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
   ) {}
-
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
-
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'CriticalActionsGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to CriticalActions namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to CriticalActions namespace: ${client.id}`,
-      );
-    }
-  }
 
   private handleException(params: {
     error: unknown;
@@ -82,17 +44,30 @@ export class CriticalActionsGateway {
     );
   }
 
-  @SubscribeMessage('games.session.draw')
-  async handleSessionDraw(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId?: string; userId?: string },
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'games.session.draw': (client, payload) =>
+      this.handleSessionDraw(client, payload),
+    'games.session.play_action': (client, payload) =>
+      this.handleSessionPlayAction(client, payload),
+    'games.session.play_cat_combo': (client, payload) =>
+      this.handleSessionPlayCatCombo(client, payload),
+    'games.session.play_favor': (client, payload) =>
+      this.handleSessionPlayFavor(client, payload),
+    'games.session.give_favor_card': (client, payload) =>
+      this.handleSessionGiveFavorCard(client, payload),
+    'games.session.play_see_the_future': (client, payload) =>
+      this.handleSessionPlaySeeTheFuture(client, payload),
+  };
+
+  private async handleSessionDraw(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 
     validatePayloadUserId(client, userId);
 
     try {
-      // Get session from room
       const session = await this.criticalService.findSessionByRoom(roomId);
       if (!session) {
         throw new WsException('No active session found for this room');
@@ -117,20 +92,13 @@ export class CriticalActionsGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_action')
-  async handleSessionPlayAction(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      card?: string;
-      targetPlayerId?: string;
-    },
+  private async handleSessionPlayAction(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const { card, targetPlayerId, cardsToStash, cardsToUnstash } =
-      extractPlayActionPayload(payload as unknown as Record<string, unknown>);
+      extractPlayActionPayload(payload);
 
     validatePayloadUserId(client, userId);
 
@@ -170,21 +138,9 @@ export class CriticalActionsGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_cat_combo')
-  async handleSessionPlayCatCombo(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      cat?: string;
-      mode?: string;
-      targetPlayerId?: string;
-      desiredCard?: string;
-      selectedIndex?: number;
-      requestedDiscardCard?: string;
-      cards?: string[];
-    },
+  private async handleSessionPlayCatCombo(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const {
@@ -194,9 +150,7 @@ export class CriticalActionsGateway {
       desiredCard,
       selectedIndex,
       requestedDiscardCard,
-    } = extractCollectionComboPayload(
-      payload as unknown as Record<string, unknown>,
-    );
+    } = extractCollectionComboPayload(payload);
 
     validatePayloadUserId(client, userId);
 
@@ -207,7 +161,11 @@ export class CriticalActionsGateway {
         desiredCard,
         selectedIndex,
         requestedDiscardCard,
-        cards: payload.cards?.map((c) => String(c).trim().toLowerCase()),
+        cards: Array.isArray(payload.cards)
+          ? (payload.cards as unknown[]).map((c) =>
+              String(c).trim().toLowerCase(),
+            )
+          : undefined,
       });
 
       client.emit(
@@ -234,15 +192,9 @@ export class CriticalActionsGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_favor')
-  async handleSessionPlayFavor(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      targetPlayerId?: string;
-    },
+  private async handleSessionPlayFavor(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const targetPlayerId = extractString(payload, 'targetPlayerId');
@@ -256,7 +208,6 @@ export class CriticalActionsGateway {
         targetPlayerId,
       );
 
-      // Notify that favor has been played and target needs to respond
       client.emit(
         'games.session.favor.pending',
         maybeEncrypt({
@@ -276,15 +227,9 @@ export class CriticalActionsGateway {
     }
   }
 
-  @SubscribeMessage('games.session.give_favor_card')
-  async handleSessionGiveFavorCard(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      cardToGive?: string;
-    },
+  private async handleSessionGiveFavorCard(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const cardToGive = extractString(payload, 'cardToGive', {
@@ -320,14 +265,9 @@ export class CriticalActionsGateway {
     }
   }
 
-  @SubscribeMessage('games.session.play_see_the_future')
-  async handleSessionPlaySeeTheFuture(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-    },
+  private async handleSessionPlaySeeTheFuture(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
 

@@ -122,4 +122,13 @@ test.describe('Home Page', () => {
     await getStartedButton.click();
     await expect(page).toHaveURL(/\/games/);
   });
+
+  test('should open game picker modal via Play vs AI button', async ({
+    page,
+  }) => {
+    const playVsAiButton = page.getByTestId('hero-play-vs-ai-button');
+    await expect(playVsAiButton).toBeVisible();
+    await playVsAiButton.click();
+    await expect(page.getByTestId('game-picker-title')).toBeVisible();
+  });
 });

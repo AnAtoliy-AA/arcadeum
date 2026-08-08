@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { XStack } from 'tamagui';
 import { Button, Input } from '@arcadeum/ui';
 
@@ -22,11 +22,6 @@ export function GamesSearch({
   className,
 }: GamesSearchProps) {
   const [searchText, setSearchText] = useState(initialValue);
-
-  // Sync with initialValue if it changes externally
-  useEffect(() => {
-    setSearchText(initialValue);
-  }, [initialValue]);
 
   const handleSearchClick = () => {
     onSearch(searchText);

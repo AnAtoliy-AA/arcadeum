@@ -1,3 +1,4 @@
+import { runInTransaction } from '../common/utils/transaction.util';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
@@ -173,21 +174,12 @@ export class DailyRewardsService {
 
   private async withSession<T>(
     parent: ClientSession | undefined,
-    fn: (session: ClientSession) => Promise<T>,
+    fn: (session: ClientSession | undefined) => Promise<T>,
   ): Promise<T> {
     if (parent) {
       return fn(parent);
     }
-    const own = await this.connection.startSession();
-    try {
-      let result!: T;
-      await own.withTransaction(async () => {
-        result = await fn(own);
-      });
-      return result;
-    } finally {
-      await own.endSession();
-    }
+    return runInTransaction(this.connection, fn);
   }
 }
 

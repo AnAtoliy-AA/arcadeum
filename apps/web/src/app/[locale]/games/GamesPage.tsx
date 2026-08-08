@@ -51,20 +51,21 @@ export default function GamesPage({
   const pathname = usePathname();
 
   // URL state management
-  const [selectedStatuses, setSelectedStatuses] = useState<GamesStatusFilter>(
-    parseStatusFilterFromUrl(searchParams?.get('status') ?? null),
+  const selectedStatuses = useMemo<GamesStatusFilter>(
+    () => {
+      const raw = searchParams ? searchParams.get('status') : null;
+      if (raw === null || raw === undefined) {
+        return ['lobby', 'in_progress'];
+      }
+      return parseStatusFilterFromUrl(raw);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
+    [searchParams, pathname],
   );
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const initialSearchQuery = searchParams?.get('search') || '';
   const categoryFilterParam = searchParams?.get('category') || '';
-
-  // Re-sync selectedStatuses from URL whenever search params change
-  useEffect(() => {
-    setSelectedStatuses(
-      parseStatusFilterFromUrl(searchParams?.get('status') ?? null),
-    );
-  }, [searchParams, pathname]);
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -111,7 +112,6 @@ export default function GamesPage({
 
   const handleStatusChange = useCallback(
     (statuses: GamesStatusFilter) => {
-      setSelectedStatuses(statuses);
       const serialized = serializeStatusFilterToUrl(statuses);
       updateParams({ status: serialized });
     },

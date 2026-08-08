@@ -4,7 +4,7 @@ export const byMessages = {
   glimworm_v1: { name: 'Глімворм' },
   lounge: {
     activeTitle: 'Гульнявыя залы',
-    emptyTitle: 'Залы не знойдзены. Стварыце першы, каб пачаць!',
+    emptyTitle: 'Зараз няма адкрытых пакояў — пачніце гульню супраць ІІ.',
     emptyFeaturedLink: 'Або сыграйце ў Марскі бой супраць ШI →',
     loadingRooms: 'Загрузка залаў...',
     searchPlaceholder: 'Пошук гульняў...',
@@ -151,6 +151,8 @@ export const byMessages = {
     seaBattleSonarHint: 'Паказаць размяшчэнне караблёў',
     seaBattleRadar: 'Радар',
     seaBattleRadarHint: 'Сканіраваць радок або слупок',
+    seaBattleRevealAll: 'Хваля сканіравання',
+    seaBattleRevealAllHint: 'Каротка паказаць усе караблі ў пачатку бою',
     tttBoardSize: 'Памер поля',
     tttWinLength: '{{n}} запар для перамогі',
     tttMaxPlayers: 'Да {{n}} гульцоў',
@@ -302,6 +304,9 @@ export const byMessages = {
     category: {
       cardGame: 'Картачная гульня',
       boardGame: 'Настольная гульня',
+      action: 'Экшн',
+      strategy: 'Стратэгія',
+      race: 'Гонка',
     },
     tags: {
       strategy: 'Стратэгія',
@@ -385,5 +390,10 @@ export const byMessages = {
     skull: 'Мёртвы',
     sweat: 'Туга!',
     clown: 'Клоун',
+  },
+  gamePicker: {
+    title: 'Выбярыце гульню супраць ІІ',
+    starting: 'Запуск...',
+    allCategory: 'Усе',
   },
 };

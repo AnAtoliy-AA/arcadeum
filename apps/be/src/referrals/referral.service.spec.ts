@@ -10,6 +10,14 @@ import { EconomySettingsService } from '../economy/economy-settings.service';
 
 const makeObjectId = () => new Types.ObjectId().toHexString();
 
+const chainable = (resolveWith: unknown) => {
+  const chain: Record<string, jest.Mock> = {};
+  chain.lean = jest.fn().mockReturnValue(chain);
+  chain.select = jest.fn().mockReturnValue(chain);
+  chain.exec = jest.fn().mockImplementation(() => Promise.resolve(resolveWith));
+  return chain;
+};
+
 describe('ReferralService', () => {
   let service: ReferralService;
   let walletService: { credit: jest.Mock };
@@ -20,16 +28,19 @@ describe('ReferralService', () => {
   // Shared mock model factories — reset between each test
   const referralModel = {
     findOne: jest.fn(),
+    find: jest.fn(),
     create: jest.fn(),
     countDocuments: jest.fn(),
   };
   const rewardModel = {
     findOne: jest.fn(),
-    create: jest.fn(),
     find: jest.fn(),
+    create: jest.fn(),
+    insertMany: jest.fn(),
   };
   const userModel = {
     findOne: jest.fn(),
+    find: jest.fn(),
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
   };
@@ -70,25 +81,23 @@ describe('ReferralService', () => {
     service = module.get(ReferralService);
 
     // Default stubs for a valid, non-duplicate referral
-    userModel.findOne.mockReturnValue({
-      exec: () =>
-        Promise.resolve({
-          id: referrerId,
-          referralCode: 'CODE',
-        }),
-    });
-    referralModel.findOne.mockResolvedValue(null);
+    userModel.findOne.mockReturnValue(
+      chainable({ _id: referrerId, referralCode: 'CODE' }),
+    );
+    referralModel.findOne.mockReturnValue(chainable(null));
     referralModel.create.mockResolvedValue({
       _id: new Types.ObjectId(),
     });
     userModel.findByIdAndUpdate.mockResolvedValue({});
     referralModel.countDocuments.mockResolvedValue(0);
-    rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' }); // already granted
-    rewardModel.find.mockResolvedValue([]);
+    rewardModel.find.mockReturnValue(chainable([]));
+    rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' });
+    rewardModel.insertMany.mockResolvedValue([]);
     userModel.findById.mockResolvedValue({
       referralCode: 'CODE',
       save: jest.fn().mockResolvedValue(undefined),
     });
+    userModel.find.mockReturnValue(chainable([]));
   });
 
   describe('generateReferralCode', () => {
@@ -101,9 +110,7 @@ describe('ReferralService', () => {
 
   describe('trackReferral — guards', () => {
     it('returns early on invalid referral code without wallet call', async () => {
-      userModel.findOne.mockReturnValueOnce({
-        exec: () => Promise.resolve(null),
-      });
+      userModel.findOne.mockReturnValueOnce(chainable(null));
 
       await service.trackReferral('BAD', referredUserId);
 
@@ -111,13 +118,12 @@ describe('ReferralService', () => {
     });
 
     it('returns early on self-referral without wallet call', async () => {
-      userModel.findOne.mockReturnValueOnce({
-        exec: () =>
-          Promise.resolve({
-            id: referredUserId, // referrer id === referred id
-            referralCode: 'CODE',
-          }),
-      });
+      userModel.findOne.mockReturnValueOnce(
+        chainable({
+          _id: referredUserId,
+          referralCode: 'CODE',
+        }),
+      );
 
       await service.trackReferral('CODE', referredUserId);
 
@@ -125,7 +131,7 @@ describe('ReferralService', () => {
     });
 
     it('returns early on duplicate referredUserId without wallet call', async () => {
-      referralModel.findOne.mockResolvedValueOnce({ referredUserId });
+      referralModel.findOne.mockReturnValueOnce(chainable({ referredUserId }));
 
       await service.trackReferral('CODE', referredUserId);
 
@@ -182,18 +188,14 @@ describe('ReferralService', () => {
       const zeroService = zeroModule.get(ReferralService);
 
       jest.clearAllMocks();
-      userModel.findOne.mockReturnValue({
-        exec: () =>
-          Promise.resolve({
-            id: referrerId,
-            referralCode: 'CODE',
-          }),
-      });
-      referralModel.findOne.mockResolvedValue(null);
+      userModel.findOne.mockReturnValue(
+        chainable({ _id: referrerId, referralCode: 'CODE' }),
+      );
+      referralModel.findOne.mockReturnValue(chainable(null));
       referralModel.create.mockResolvedValue({ _id: new Types.ObjectId() });
       userModel.findByIdAndUpdate.mockResolvedValue({});
       referralModel.countDocuments.mockResolvedValue(0);
-      rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' });
+      rewardModel.find.mockReturnValue(chainable([]));
 
       await zeroService.trackReferral('CODE', referredUserId);
 
@@ -207,8 +209,8 @@ describe('ReferralService', () => {
   describe('tier bonus payout', () => {
     it('credits tier 1 bonus when totalReferrals reaches 3', async () => {
       referralModel.countDocuments.mockResolvedValue(3);
-      rewardModel.findOne.mockResolvedValue(null);
-      rewardModel.create.mockResolvedValue({});
+      rewardModel.find.mockReturnValue(chainable([]));
+      rewardModel.insertMany.mockResolvedValue([]);
 
       await service.trackReferral('CODE', referredUserId);
 
@@ -229,7 +231,9 @@ describe('ReferralService', () => {
     it('does not skip tier 1 on a subsequent referral that has already crossed it', async () => {
       // 4 invites → tier 1 still applies; wallet idempotency deduplicates at storage
       referralModel.countDocuments.mockResolvedValue(4);
-      rewardModel.findOne.mockResolvedValue({ rewardId: 'existing' }); // badge already granted
+      rewardModel.find.mockReturnValue(
+        chainable([{ rewardId: 'badge_social_butterfly' }]),
+      );
 
       await service.trackReferral('CODE', referredUserId);
 
@@ -244,8 +248,8 @@ describe('ReferralService', () => {
 
     it('credits both tier 1 and tier 2 when total is 5 (seed scenario)', async () => {
       referralModel.countDocuments.mockResolvedValue(5);
-      rewardModel.findOne.mockResolvedValue(null);
-      rewardModel.create.mockResolvedValue({});
+      rewardModel.find.mockReturnValue(chainable([]));
+      rewardModel.insertMany.mockResolvedValue([]);
 
       await service.trackReferral('CODE', referredUserId);
 
@@ -282,19 +286,15 @@ describe('ReferralService', () => {
       const zeroTierService = zeroTierModule.get(ReferralService);
 
       jest.clearAllMocks();
-      userModel.findOne.mockReturnValue({
-        exec: () =>
-          Promise.resolve({
-            id: referrerId,
-            referralCode: 'CODE',
-          }),
-      });
-      referralModel.findOne.mockResolvedValue(null);
+      userModel.findOne.mockReturnValue(
+        chainable({ _id: referrerId, referralCode: 'CODE' }),
+      );
+      referralModel.findOne.mockReturnValue(chainable(null));
       referralModel.create.mockResolvedValue({ _id: new Types.ObjectId() });
       userModel.findByIdAndUpdate.mockResolvedValue({});
       referralModel.countDocuments.mockResolvedValue(3);
-      rewardModel.findOne.mockResolvedValue(null);
-      rewardModel.create.mockResolvedValue({});
+      rewardModel.find.mockReturnValue(chainable([]));
+      rewardModel.insertMany.mockResolvedValue([]);
 
       await zeroTierService.trackReferral('CODE', referredUserId);
 
@@ -311,8 +311,8 @@ describe('ReferralService', () => {
         .mockResolvedValueOnce({}) // per-referral call succeeds
         .mockRejectedValueOnce(new Error('wallet-down')); // tier call fails
       referralModel.countDocuments.mockResolvedValue(3);
-      rewardModel.findOne.mockResolvedValue(null);
-      rewardModel.create.mockResolvedValue({});
+      rewardModel.find.mockReturnValue(chainable([]));
+      rewardModel.insertMany.mockResolvedValue([]);
 
       await expect(
         service.trackReferral('CODE', referredUserId),

@@ -13,9 +13,7 @@ function findPlayer(
   state: CriticalState,
   playerId: string,
 ): CriticalPlayerState | undefined {
-  return state.players.find(
-    (p) => p.playerId === playerId,
-  ) as CriticalPlayerState;
+  return state.players.find((p) => p.playerId === playerId);
 }
 
 /**

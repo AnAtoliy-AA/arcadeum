@@ -27,6 +27,14 @@ interface ActiveEmote {
 interface ActiveEmotesContextValue {
   emotes: ActiveEmote[];
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
+  resolveEquipped?: (id?: string | null) => {
+    equippedAvatarId: string | null;
+    equippedBadgeId: string | null;
+    equippedNameColorId: string | null;
+    equippedFrameId: string | null;
+    equippedAuraId: string | null;
+    equippedBannerId: string | null;
+  } | null;
 }
 
 const ActiveEmotesContext = createContext<ActiveEmotesContextValue>({

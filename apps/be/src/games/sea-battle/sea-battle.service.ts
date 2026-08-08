@@ -411,19 +411,16 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     message: string,
     scope: ChatScope,
   ) {
-    // Primary mechanism is via engine action to ensure state update and realtime event
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      const updatedSession = await this.sessionsService.executeAction({
-        sessionId: session.id,
-        userId,
-        action: 'chat',
-        payload: {
-          message,
-          scope,
-        },
-      });
-      await this.emitSessionUpdate(updatedSession);
+    const senderName = await this.historyService.getUserDisplayName(userId);
+    const updated = await this.sessionsService.pushChatLog(
+      roomId,
+      userId,
+      message,
+      scope,
+      senderName || undefined,
+    );
+    if (updated) {
+      await this.emitSessionUpdate(updated);
     }
   }
 }

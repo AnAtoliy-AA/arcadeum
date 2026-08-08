@@ -1,58 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-
-
-const KEYFRAMES_CSS = `
-@keyframes chatBubbleFloat {
-  0% {
-    opacity: 0;
-    transform: translateY(140px) translateX(10px) scale(0.4) rotate(-8deg);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(70px) translateX(-15px) scale(1.2) rotate(5deg);
-  }
-  20% {
-    transform: translateY(20px) translateX(8px) scale(0.95) rotate(-3deg);
-  }
-  30% {
-    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
-  }
-  65% {
-    opacity: 1;
-    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-140px) translateX(-5px) scale(0.6) rotate(4deg);
-  }
-}
-
-@keyframes chatLabelPop {
-  0% {
-    opacity: 0;
-    transform: translateY(10px) scale(0.5);
-  }
-  15% {
-    opacity: 1;
-    transform: translateY(-2px) scale(1.15);
-  }
-  30% {
-    transform: translateY(0) scale(1);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.8);
-  }
-}
-`;
-
-let stylesInjected = false;
+import { FloatingBubbleLabel } from '@/features/games/ui/FloatingBubble';
 
 interface ChatMessagePopupProps {
   senderId?: string | null;
@@ -69,28 +18,30 @@ interface ChatMessagePopupProps {
   isOwn?: boolean;
 }
 
+const ACCENT_COLOR = 'rgba(99,102,241,0.9)';
+
 export function ChatMessagePopup({
   senderName,
+  senderEquippedAvatarId,
+  senderEquippedBadgeId,
+  senderEquippedNameColorId,
+  senderEquippedFrameId,
+  senderEquippedAuraId,
+  senderEquippedBannerId,
   message,
   visible,
   onDismiss,
 }: ChatMessagePopupProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!stylesInjected) {
-      const style = document.createElement('style');
-      style.textContent = KEYFRAMES_CSS;
-      document.head.appendChild(style);
-      stylesInjected = true;
-    }
-    const el = ref.current;
+    const el = containerRef.current;
     if (el) {
-      el.style.animation = 'chatBubbleFloat 3s ease-out forwards';
-      const label = el.querySelector('[data-msg-label]');
+      el.style.animation = 'floatingBubbleFloat 3s ease-out forwards';
+      const label = el.querySelector('[data-bubble-label]');
       if (label) {
         (label as HTMLElement).style.animation =
-          'chatLabelPop 3s ease-out forwards';
+          'floatingLabelPop 3s ease-out forwards';
       }
     }
   }, []);
@@ -102,9 +53,22 @@ export function ChatMessagePopup({
 
   if (!visible) return null;
 
+  const label = senderName ? (
+    <FloatingBubbleLabel
+      senderName={senderName}
+      equippedAvatarId={senderEquippedAvatarId}
+      equippedBadgeId={senderEquippedBadgeId}
+      equippedNameColorId={senderEquippedNameColorId}
+      equippedFrameId={senderEquippedFrameId}
+      equippedAuraId={senderEquippedAuraId}
+      equippedBannerId={senderEquippedBannerId}
+      accentColor={ACCENT_COLOR}
+    />
+  ) : undefined;
+
   return (
     <div
-      ref={ref}
+      ref={containerRef}
       onClick={onDismiss}
       data-testid="chat-message-popup"
       style={{
@@ -144,26 +108,7 @@ export function ChatMessagePopup({
       >
         {message}
       </div>
-      {senderName && (
-        <div
-          data-msg-label=""
-          style={{
-            color: '#fff',
-            fontSize: 12,
-            fontWeight: 800,
-            textShadow:
-              '0 0 8px rgba(99,102,241,0.9), 0 2px 10px rgba(0,0,0,0.8)',
-            letterSpacing: 1,
-            padding: '3px 10px',
-            borderRadius: 8,
-            backgroundColor: 'rgba(99, 102, 241, 0.35)',
-            whiteSpace: 'nowrap',
-            opacity: 0,
-          }}
-        >
-          {senderName}
-        </div>
-      )}
+      {label}
     </div>
   );
 }

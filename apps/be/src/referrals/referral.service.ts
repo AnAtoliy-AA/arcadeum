@@ -107,16 +107,19 @@ export class ReferralService {
       return user.referralCode;
     }
 
-    let code = this.generateReferralCode();
-    let attempts = 0;
-    while (attempts < 10) {
-      if (typeof code !== 'string')
-        throw new BadRequestException('Invalid referral code');
-      const existing = await this.userModel.findOne({ referralCode: code });
-      if (!existing) break;
-      code = this.generateReferralCode();
-      attempts++;
+    const candidates: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      candidates.push(this.generateReferralCode());
     }
+
+    const existing = await this.userModel
+      .find({ referralCode: { $in: candidates } })
+      .select('referralCode')
+      .lean<{ referralCode: string }[]>()
+      .exec();
+    const usedSet = new Set(existing.map((e) => e.referralCode));
+    const code = candidates.find((c) => !usedSet.has(c));
+    if (!code) throw new BadRequestException('Failed to generate unique code');
 
     user.referralCode = code;
     await user.save();
@@ -135,13 +138,14 @@ export class ReferralService {
     const safeReferredUserId = referredUserId;
     const referrer = await this.userModel
       .findOne({ referralCode: safeCode })
+      .lean()
       .exec();
     if (!referrer) {
       this.logger.warn(`Invalid referral code: ${safeCode}`);
       return;
     }
 
-    const referrerId = (referrer as UserDocument).id as string;
+    const referrerId = referrer._id.toString();
 
     if (referrerId === safeReferredUserId) {
       this.logger.warn('User cannot refer themselves');
@@ -150,9 +154,13 @@ export class ReferralService {
 
     if (typeof safeReferredUserId !== 'string')
       throw new BadRequestException('Invalid referredUserId');
-    const existingReferral = await this.referralModel.findOne({
-      referredUserId: safeReferredUserId,
-    });
+    const existingReferral = await this.referralModel
+      .findOne({
+        referredUserId: safeReferredUserId,
+      })
+      .lean()
+      .select('_id')
+      .exec();
     if (existingReferral) {
       this.logger.warn(`User ${safeReferredUserId} already has a referral`);
       return;
@@ -250,30 +258,42 @@ export class ReferralService {
       status: 'completed',
     });
 
-    for (const tier of REWARD_TIERS) {
-      if (totalReferrals < tier.requiredInvites) continue;
+    const eligibleRewards = REWARD_TIERS.filter(
+      (t) => totalReferrals >= t.requiredInvites,
+    ).flatMap((t) => t.rewards.map((r) => ({ ...r, tier: t.tier })));
 
-      for (const reward of tier.rewards) {
-        const existing = await this.rewardModel.findOne({
+    if (eligibleRewards.length === 0) return;
+
+    const rewardIds = eligibleRewards.map((r) => r.rewardId);
+    const existingRewards = await this.rewardModel
+      .find({ userId, rewardId: { $in: rewardIds } })
+      .select('rewardId')
+      .lean<{ rewardId: string }[]>()
+      .exec();
+    const existingSet = new Set(existingRewards.map((r) => r.rewardId));
+
+    const newRewards = eligibleRewards.filter(
+      (r) => !existingSet.has(r.rewardId),
+    );
+    if (newRewards.length > 0) {
+      await this.rewardModel.insertMany(
+        newRewards.map((r) => ({
           userId,
-          rewardId: reward.rewardId,
-        });
-
-        if (!existing) {
-          await this.rewardModel.create({
-            userId,
-            rewardId: reward.rewardId,
-            rewardType: reward.rewardType,
-            tier: tier.tier,
-            unlockedAt: new Date(),
-          });
-          this.logger.log(
-            `Granted reward ${reward.rewardId} to user ${userId}`,
-          );
-        }
+          rewardId: r.rewardId,
+          rewardType: r.rewardType,
+          tier: r.tier,
+          unlockedAt: new Date(),
+        })),
+      );
+      for (const r of newRewards) {
+        this.logger.log(`Granted reward ${r.rewardId} to user ${userId}`);
       }
+    }
 
-      await this.payoutTierBonus(userId, tier.tier, tier.requiredInvites);
+    for (const tier of REWARD_TIERS) {
+      if (totalReferrals >= tier.requiredInvites) {
+        await this.payoutTierBonus(userId, tier.tier, tier.requiredInvites);
+      }
     }
   }
 

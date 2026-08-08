@@ -8,6 +8,15 @@ import { GameChat } from '../GameChat';
 import { useGameChatStore } from '../../store/gameChatStore';
 import type { ChatLogEntry } from '../../store/gameChatStore';
 
+vi.mock('@/shared/ui/PlayerAvatar', () => ({
+  EquippedPlayerAvatar: ({ name }: { name?: string }) =>
+    React.createElement('span', { 'data-testid': 'player-avatar' }, name),
+}));
+
+vi.mock('@/features/shop/hooks/useEquippedCosmetics', () => ({
+  useEquippedCosmetics: () => ({ nameColor: null }),
+}));
+
 function renderChat(ui: React.ReactElement) {
   return render(
     <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
@@ -40,18 +49,22 @@ vi.mock('@arcadeum/ui', async () => {
       React.createElement('span', null, children),
     ChatInput: () =>
       React.createElement('input', { 'data-testid': 'chat-input' }),
+    PlayerAvatar: ({ name }: { name?: string }) =>
+      React.createElement('span', { 'data-testid': 'player-avatar' }, name),
     ChatMessage: ({
       senderName,
       senderColor,
       content,
       isOwn,
       type,
+      senderAvatar,
     }: {
       senderName?: string;
       senderColor?: string;
       content: string;
       isOwn?: boolean;
       type?: 'system' | 'action' | 'message';
+      senderAvatar?: React.ReactNode;
     }) =>
       React.createElement(
         'div',
@@ -62,6 +75,7 @@ vi.mock('@arcadeum/ui', async () => {
           'data-sender-color': senderColor ?? '',
           'data-type': type ?? 'message',
         },
+        senderAvatar,
         content,
       ),
   };
@@ -103,9 +117,9 @@ describe('GameChat', () => {
     const rendered = screen.getAllByTestId('chat-message');
     expect(rendered).toHaveLength(2);
     expect(rendered[0]?.getAttribute('data-is-own')).toBe('true');
-    expect(rendered[0]?.getAttribute('data-sender')).toBe('You');
+    expect(rendered[0]?.textContent).toContain('You');
     expect(rendered[1]?.getAttribute('data-is-own')).toBe('false');
-    expect(rendered[1]?.getAttribute('data-sender')).toBe('Bob');
+    expect(rendered[1]?.textContent).toContain('Bob');
   });
 
   it('renders system and action logs separately from chat messages', () => {
@@ -136,9 +150,8 @@ describe('GameChat', () => {
     // render via the new GameChatSystemRow surface.
     const chatRendered = screen.getAllByTestId('chat-message');
     expect(chatRendered).toHaveLength(1);
-    expect(chatRendered[0]?.textContent).toBe('hi');
-    expect(chatRendered[0]?.getAttribute('data-sender')).toBe('You');
-    expect(chatRendered[0]?.getAttribute('data-sender-color')).toMatch(/^#/);
+    expect(chatRendered[0]?.textContent).toContain('hi');
+    expect(chatRendered[0]?.textContent).toContain('You');
 
     // System / action messages still appear somewhere in the rendered tree.
     expect(screen.getByText(/Drew a card/)).toBeTruthy();
@@ -191,6 +204,6 @@ describe('GameChat', () => {
 
     const rendered = screen.getAllByTestId('chat-message');
     expect(rendered[0]?.getAttribute('data-is-own')).toBe('false');
-    expect(rendered[0]?.getAttribute('data-sender')).toBe('Alice');
+    expect(rendered[0]?.textContent).toContain('Alice');
   });
 });

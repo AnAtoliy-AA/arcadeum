@@ -169,7 +169,7 @@ export const NavHeaderLink = styled(LinkButton, {
     },
     accent: {
       true: {
-        color: '$primary',
+        color: '$accent',
         fontWeight: '700',
       },
     },

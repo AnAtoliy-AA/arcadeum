@@ -17,7 +17,7 @@ interface AttackBoardCellProps {
   isAttackable: boolean;
   isPending?: boolean;
   isMe: boolean;
-  highlight?: 'sonar' | 'radar' | null;
+  highlight?: 'sonar' | 'radar' | 'scanWave' | null;
   highlightCellState?: number;
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
@@ -74,7 +74,20 @@ export const AttackBoardCell = memo(function AttackBoardCell({
               borderColor: 'rgba(168, 85, 247, 0.4)',
               backgroundColor: 'rgba(168, 85, 247, 0.06)',
             }
-        : {};
+        : highlight === 'scanWave'
+          ? isShip
+            ? {
+                boxShadow: '0 0 12px 4px rgba(251, 191, 36, 0.9)',
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(251, 191, 36, 0.25)',
+                animation: 'sb-scanwave-pulse 0.5s ease-in-out infinite alternate',
+              }
+            : {
+                boxShadow: '0 0 4px 1px rgba(251, 191, 36, 0.3)',
+                borderColor: 'rgba(251, 191, 36, 0.4)',
+                backgroundColor: 'rgba(251, 191, 36, 0.06)',
+              }
+          : {};
 
   const previewStyle: React.CSSProperties =
     isWeaponPreview && weaponPreviewType === 'sonar'
@@ -199,9 +212,13 @@ export const AttackBoardCell = memo(function AttackBoardCell({
             ? isShip
               ? '🚢'
               : '🔊'
-            : isShip
-              ? '🚢'
-              : '📡'}
+            : highlight === 'scanWave'
+              ? isShip
+                ? '🚢'
+                : '🌊'
+              : isShip
+                ? '🚢'
+                : '📡'}
         </div>
       )}
     </BoardCell>

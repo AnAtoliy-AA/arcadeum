@@ -29,12 +29,7 @@ export interface CriticalPlayerState {
  * when absent.
  */
 export type CriticalLogKind =
-  | 'play'
-  | 'draw'
-  | 'defuse'
-  | 'eliminated'
-  | 'critical'
-  | 'system';
+  'play' | 'draw' | 'defuse' | 'eliminated' | 'critical' | 'system';
 
 export interface CriticalLogEntry {
   id: string;

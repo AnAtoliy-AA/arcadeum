@@ -37,7 +37,7 @@ function makeState(opts: {
     currentTeamIndex: opts.currentTeamIndex ?? 0,
     logs: [],
     gridSize: 10,
-  } as SeaBattleState;
+  };
 }
 
 describe('team-rotation.utils', () => {

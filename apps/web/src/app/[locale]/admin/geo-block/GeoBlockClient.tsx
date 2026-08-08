@@ -55,6 +55,7 @@ export default function GeoBlockClient() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching in effect
     fetchCountries();
   }, [fetchCountries]);
 

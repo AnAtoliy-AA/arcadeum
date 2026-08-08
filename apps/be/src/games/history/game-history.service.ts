@@ -20,18 +20,23 @@ import {
 } from './game-history.types';
 import { GameHistoryBuilderService } from './game-history-builder.service';
 import { GameHistoryStatsService } from './game-history-stats.service';
+import { GameHistoryRematchService } from './game-history-rematch.service';
 import { escapeRegExp } from '../../common/utils/escape-regexp';
 import { isValidStatus } from '../game-validation.util';
 import {
   BaseGameState,
   ChatScope,
 } from '../engines/base/game-engine.interface';
-import { ATLAS_CONNECTION } from '../../common/providers/mongo-connections.provider';
+import {
+  ATLAS_CONNECTION,
+  OCI_CONNECTION,
+} from '../../common/providers/mongo-connections.provider';
 @Injectable()
 export class GameHistoryService {
   constructor(
     private readonly builder: GameHistoryBuilderService,
     private readonly statsService: GameHistoryStatsService,
+    private readonly rematchService: GameHistoryRematchService,
     @Optional()
     @InjectModel(GameSession.name, ATLAS_CONNECTION)
     private readonly gameSessionModel?: Model<GameSession>,
@@ -44,6 +49,9 @@ export class GameHistoryService {
     @Optional()
     @InjectModel(User.name, ATLAS_CONNECTION)
     private readonly userModel?: Model<User>,
+    @Optional()
+    @InjectModel(GameRoom.name, OCI_CONNECTION)
+    private readonly ociRoomModel?: Model<GameRoom>,
   ) {}
   private get atlasReady(): boolean {
     return !!(
@@ -52,6 +60,21 @@ export class GameHistoryService {
       this.historyHiddenModel
     );
   }
+
+  async getUserDisplayName(userId: string): Promise<string> {
+    if (!this.userModel) return '';
+    try {
+      const user = await this.userModel
+        .findById(userId)
+        .select('displayName username')
+        .lean()
+        .exec();
+      return user?.displayName ?? user?.username ?? '';
+    } catch {
+      return '';
+    }
+  }
+
   async listHistoryForUser(
     userId: string,
     options: {
@@ -292,139 +315,7 @@ export class GameHistoryService {
     dto: HistoryRematchDto,
     userId: string,
   ): Promise<{ id: string; invitedIds: string[] }> {
-    if (!this.gameRoomModel)
-      throw new NotFoundException('History service unavailable');
-    const { roomId: originalRoomId, participantIds } = dto;
-
-    // Get original room
-    const originalRoom = await this.gameRoomModel
-      .findById(originalRoomId)
-      .lean()
-      .exec();
-
-    if (!originalRoom) {
-      throw new NotFoundException(`Original room not found: ${originalRoomId}`);
-    }
-
-    // Check if user was a participant
-    const isParticipant =
-      originalRoom.hostId === userId ||
-      originalRoom.participants.some((p) => p.userId === userId);
-
-    if (!isParticipant) {
-      throw new BadRequestException(
-        'You were not a participant in the original game',
-      );
-    }
-
-    // Determine which participants to invite
-    // If participantIds is provided and not empty, use those
-    // Otherwise, invite all original participants (except the new host)
-    const originalParticipantIds = originalRoom.participants
-      .map((p) => p.userId)
-      .filter((id) => id !== userId);
-
-    const invitedIds =
-      participantIds && participantIds.length > 0
-        ? participantIds.filter((id) => id !== userId) // filter out host
-        : originalParticipantIds;
-
-    // Build participants array: host + any bots that were stamped into the
-    // carried-over team config. Without this, team-mode rematches start with
-    // empty seats — startSession then fails with "Not enough players" because
-    // the bot ids referenced in teams aren't actually room participants.
-    const now = new Date();
-    const participants: { userId: string; joinedAt: Date }[] = [
-      { userId, joinedAt: now },
-    ];
-    const carriedOptions = dto.gameOptions || originalRoom.gameOptions || {};
-    const carriedTeams = (
-      carriedOptions as {
-        teams?: { playerIds?: string[]; targetSize?: number }[];
-      }
-    ).teams;
-    if (Array.isArray(carriedTeams)) {
-      const seen = new Set<string>([userId]);
-      for (const team of carriedTeams) {
-        if (!Array.isArray(team.playerIds)) continue;
-        for (const pid of team.playerIds) {
-          if (typeof pid !== 'string') continue;
-          if (!pid.startsWith('bot-')) continue;
-          if (seen.has(pid)) continue;
-          seen.add(pid);
-          participants.push({ userId: pid, joinedAt: now });
-        }
-      }
-    }
-
-    // In team mode the room cap must accommodate the team config (up to 8 in
-    // MAX_PLAYERS_TEAM_MODE). Without this bump, rematching out of a small
-    // FFA-sized room (maxPlayers=5/6) into a team game leaves the lobby
-    // showing "8 / 6" once the bots get added.
-    const rematchMaxPlayers = Array.isArray(carriedTeams)
-      ? Math.max(
-          originalRoom.maxPlayers ?? 0,
-          carriedTeams.reduce(
-            (sum, t) =>
-              sum + (typeof t.targetSize === 'number' ? t.targetSize : 0),
-            0,
-          ),
-          participants.length,
-        )
-      : originalRoom.maxPlayers;
-
-    // Generate rematch name: "someName" -> "someName Rematch 1" -> "someName Rematch 2"
-    // Extract base name (strip existing " Rematch N" suffix if present)
-    const rematchSuffixMatch = originalRoom.name.match(/^(.+?) Rematch \d+$/);
-    const baseName = rematchSuffixMatch
-      ? rematchSuffixMatch[1]
-      : originalRoom.name;
-
-    // Find existing rematch rooms with the same base name
-    const escapedBaseName = escapeRegExp(baseName);
-    const existingRematches = await this.gameRoomModel
-      .find({
-        name: { $regex: new RegExp(`^${escapedBaseName} Rematch \\d+$`) },
-      })
-      .select('name')
-      .lean()
-      .exec();
-
-    const usedNumbers = new Set(
-      existingRematches
-        .map((r) => {
-          const match = r.name.match(/ Rematch (\d+)$/);
-          return match ? parseInt(match[1], 10) : 0;
-        })
-        .filter((n) => n > 0),
-    );
-
-    let rematchNumber = 1;
-    while (usedNumbers.has(rematchNumber)) {
-      rematchNumber++;
-    }
-    const rematchName = `${baseName} Rematch ${rematchNumber}`;
-
-    // Create new room with same settings
-    const newRoom = await this.gameRoomModel.create({
-      gameId: originalRoom.gameId,
-      name: rematchName,
-      hostId: userId,
-      visibility: originalRoom.visibility,
-      maxPlayers: rematchMaxPlayers,
-      participants,
-      status: 'lobby',
-      createdAt: now,
-      updatedAt: now,
-      gameOptions: {
-        ...(dto.gameOptions || originalRoom.gameOptions || {}),
-        rematchInvitedIds: invitedIds,
-        rematchMessage: dto.message,
-        rematchPreviousRoomId: originalRoomId,
-      },
-    });
-
-    return { id: newRoom._id.toString(), invitedIds };
+    return this.rematchService.createRematchFromHistory(dto, userId);
   }
 
   /**
@@ -435,6 +326,7 @@ export class GameHistoryService {
     userId: string,
     message: string,
     scope: ChatScope,
+    isAuthenticated = false,
   ): Promise<void> {
     if (!this.gameRoomModel || !this.gameSessionModel) return;
     const room = await this.gameRoomModel.findById(roomId).lean().exec();
@@ -443,13 +335,17 @@ export class GameHistoryService {
       throw new NotFoundException(`Room not found: ${roomId}`);
     }
 
-    // Check if user was a participant
-    const isParticipant =
-      room.hostId === userId ||
-      room.participants.some((p) => p.userId === userId);
+    // Anonymous users must be participants to chat
+    if (!isAuthenticated) {
+      const isParticipant =
+        room.hostId === userId ||
+        room.participants.some((p) => p.userId === userId);
 
-    if (!isParticipant) {
-      throw new BadRequestException('You were not a participant in this game');
+      if (!isParticipant) {
+        throw new BadRequestException(
+          'You were not a participant in this game',
+        );
+      }
     }
 
     // Get latest session for this room
@@ -459,6 +355,8 @@ export class GameHistoryService {
       .exec();
 
     if (!session) {
+      // No session yet (lobby state) — silently skip, lobby has its own room chat
+      if (isAuthenticated) return;
       throw new NotFoundException('No session found for this room');
     }
     // Add message to logs in session state

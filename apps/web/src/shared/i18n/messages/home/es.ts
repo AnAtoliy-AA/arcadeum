@@ -1,11 +1,11 @@
 export const es = {
   kicker: 'Juegos de mesa gratis en línea',
   tagline:
-    '{{appName}} es tu plataforma para jugar gratis a juegos de mesa en línea con amigos — Batalla Naval, estrategia, cartas y más.',
+    '{{appName}} es tu plataforma para jugar gratis a juegos de mesa en línea con amigos o solo contra la IA — Batalla Naval, estrategia, cartas y más.',
   description:
-    'Disfruta de una amplia variedad de juegos de mesa gratis en línea. Crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
+    'Disfruta de una amplia variedad de juegos de mesa gratis en línea. Desafía a bots inteligentes, crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
   primaryCtaLabel: 'Comenzar',
-  playWithBotsLabel: 'Jugar con Bots',
+  playWithBotsLabel: 'Jugar contra la IA',
   defaultRoomName: 'Partida de {{name}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Jugar',
@@ -32,10 +32,12 @@ export const es = {
   gamesPagerPrev: 'Juego anterior',
   gamesPagerNext: 'Siguiente juego',
   demoBadgeLabel: 'Versión demo',
-  // Features section
   featuresTitle: '¿Por qué {{appName}}?',
   featuresSubtitle:
     'Todo lo que necesitas para jugar juegos de mesa online con amigos',
+  featureBotsTitle: 'Jugar contra la IA',
+  featureBotsDescription:
+    'Practica solo o desafía a bots inteligentes en dificultad fácil, media o difícil cuando tus amigos no estén conectados.',
   featureRoomsTitle: 'Salas en Tiempo Real',
   featureRoomsDescription:
     'Crea salas de juego al instante y empieza a jugar con amigos en segundos.',

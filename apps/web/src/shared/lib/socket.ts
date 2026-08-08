@@ -8,6 +8,7 @@ import {
   setEncryptionKey,
   resetEncryptionKey,
 } from './socket-encryption';
+import { useSocketStatus } from './socket-status';
 
 function resolveSocketUrl(): string {
   const apiUrl = resolveApiUrl('');
@@ -32,19 +33,6 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
-// Leaderboards realtime is a "nice-to-have" push channel — the page renders
-// fine without it. Going websocket-only skips socket.io's polling preamble
-// (~3 XHRs per connect) and the long-poll heartbeats it keeps alive when
-// polling is in the transport list. If the websocket can't be established
-// (e.g. behind a strict proxy) the page just falls back to capture-driven
-// refetches; nothing breaks.
-const LEADERBOARD_SOCKET_OPTIONS = {
-  transports: ['websocket'],
-  autoConnect: false,
-  reconnectionAttempts: 5,
-  reconnectionDelayMax: 10_000,
-};
-
 const gamesSocket = io(
   `${SOCKET_BASE_URL}/games`,
   SOCKET_OPTIONS,
@@ -54,13 +42,44 @@ const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
 
 const leaderboardsSocket = io(
   `${SOCKET_BASE_URL}/leaderboards`,
-  LEADERBOARD_SOCKET_OPTIONS,
+  SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
 
 const friendsSock = io(
   `${SOCKET_BASE_URL}/friends`,
   SOCKET_OPTIONS,
 ) as AuthenticatedSocket;
+
+const walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
+  transports: ['websocket'],
+  autoConnect: false,
+}) as AuthenticatedSocket;
+
+// Guard against emit() calls on a socket whose transport was never
+// initialised (autoConnect: false + never called connect()).  In that
+// state socket.io's _packet() blows up with
+// "Cannot read properties of undefined (reading 'write')".
+// Swallowing the emit is safe — the data is silently dropped.
+//
+// We use try-catch rather than checking `socket.connected` because
+// E2E mocks (Playwright) override `connected` via defineProperty to
+// return `true` even when the underlying engine was never created.
+function guardEmit(socket: Socket): void {
+  const originalEmit = socket.emit.bind(socket);
+  socket.emit = ((event: string, ...args: unknown[]) => {
+    try {
+      return originalEmit(event, ...args);
+    } catch {
+      return socket;
+    }
+  }) as Socket['emit'];
+}
+
+guardEmit(gamesSocket);
+guardEmit(chatsSocket);
+guardEmit(leaderboardsSocket);
+guardEmit(friendsSock);
+guardEmit(walletSock);
 
 let currentAuthToken: string | null = null;
 
@@ -174,6 +193,15 @@ export function connectFriendsSocket(
   };
 }
 
+export function connectWalletSocket(token: string): void {
+  walletSock.auth = { token };
+  if (!walletSock.connected) walletSock.connect();
+}
+
+export function disconnectWalletSocket(): void {
+  if (walletSock.connected) walletSock.disconnect();
+}
+
 /**
  * Connect game socket without authentication (for spectating public games)
  * Pass the anonymous userId so the backend sends the encryption key
@@ -215,11 +243,15 @@ export function disconnectSockets(): void {
   if (friendsSock) {
     friendsSock.disconnect();
   }
+  if (walletSock) {
+    walletSock.disconnect();
+  }
 
   gamesSocket.auth = {};
   chatsSocket.auth = {};
   leaderboardsSocket.auth = {};
   friendsSock.auth = {};
+  walletSock.auth = {};
   resetEncryptionKey();
 }
 
@@ -227,12 +259,33 @@ export const gameSocket: Socket = gamesSocket;
 export const chatSocket: Socket = chatsSocket;
 export const leaderboardSocket: Socket = leaderboardsSocket;
 export const friendsSocket: Socket = friendsSock;
+export const walletSocket: Socket = walletSock;
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
   const win = window as unknown as Record<string, unknown>;
   win.gameSocket = gameSocket;
   win.chatSocket = chatSocket;
+
+  // Wire up global connection status tracking AFTER exposing to window.
+  // In E2E tests, the Playwright mock wraps the socket via a defineProperty
+  // setter on window.gameSocket — listeners registered before the wrap only
+  // land on the real socket and are invisible to the mock's trigger().
+  gamesSocket.on('connect', () => {
+    useSocketStatus.getState().setConnected(true);
+  });
+
+  gamesSocket.on('disconnect', () => {
+    useSocketStatus.getState().setConnected(false);
+  });
+
+  gamesSocket.io.on('reconnect_attempt', () => {
+    useSocketStatus.getState().incrementReconnectAttempts();
+  });
+
+  gamesSocket.io.on('reconnect', () => {
+    useSocketStatus.getState().resetReconnectAttempts();
+  });
 }
 
 /**

@@ -72,6 +72,11 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* ─── Layout ───────────────────────────────────────────── */
+.layout-main {
+  flex: 1;
+}
+
 /* ─── Accessibility ─────────────────────────────────────── */
 .sr-only {
   position: absolute;

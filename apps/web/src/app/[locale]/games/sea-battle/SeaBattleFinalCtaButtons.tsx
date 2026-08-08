@@ -2,7 +2,7 @@
 
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
 import styles from './SeaBattleLanding.module.scss';
-import { QuickplayButton } from './QuickplayButton';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import { useHeroVariant } from './heroVariantContext';
 
 const SEA_BATTLE_GAME_ID = 'sea_battle_v1';

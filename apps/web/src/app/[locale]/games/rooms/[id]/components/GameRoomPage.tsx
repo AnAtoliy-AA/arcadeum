@@ -387,6 +387,7 @@ export default function GameRoomPage({
         room={room}
         session={initialSession as GameSessionSummary | null}
         userId={snapshot.userId}
+        isAuthenticated={isAuthenticated}
         inviteCode={room?.inviteCode}
         isDisconnected={isDisconnected}
         isReconnecting={isReconnecting}

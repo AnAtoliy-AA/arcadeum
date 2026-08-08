@@ -156,9 +156,7 @@ export function generateChess960BackRank(): (ChessPiece | null)[] {
     pieces[k] = 'knight';
   }
 
-  return pieces.map((type) =>
-    type ? ({ type, color: 'white' } as ChessPiece) : null,
-  );
+  return pieces.map((type) => (type ? { type, color: 'white' } : null));
 }
 
 export function isThreefoldRepetition(history: string[]): boolean {

@@ -15,6 +15,18 @@ import {
   MoveShipPayload,
   BatchPlacementPayload,
 } from './sea-battle.types';
+
+function maybeBuildScanWave(state: SeaBattleState): void {
+  if (!state.specialWeapons?.revealAll) return;
+  const duration = (state.revealAllDuration as number | undefined) ?? 1;
+  state.lastScanWave = {
+    cells: state.players.map((p) => ({
+      playerId: p.playerId,
+      board: p.board,
+    })),
+    duration,
+  };
+}
 import { randomlyPlaceShips } from './sea-battle.utils';
 import type {
   GameActionResult,
@@ -172,6 +184,7 @@ export function runConfirmPlacement(
   const allReady = state.players.every((p) => p.placementComplete);
   if (allReady) {
     state.phase = GAME_PHASE.BATTLE;
+    maybeBuildScanWave(state);
     state.logs.push(makeLog('system', 'All ships placed! Battle begins!'));
   } else {
     const readyCount = state.players.filter((p) => p.placementComplete).length;
@@ -255,6 +268,7 @@ export function runBatchPlacement(
   const allReady = state.players.every((p) => p.placementComplete);
   if (allReady) {
     state.phase = GAME_PHASE.BATTLE;
+    maybeBuildScanWave(state);
     state.logs.push(makeLog('system', 'All ships placed! Battle begins!'));
   }
 

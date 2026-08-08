@@ -1,8 +1,8 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.23.179",
+  "version": "1.24.35",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node scripts/patch-tamagui-token-init.mjs",
@@ -23,19 +23,19 @@
     "release": "standard-version"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.4.3",
-    "@commitlint/config-conventional": "^20.4.3",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "auto-changelog": "^2.5.0",
-    "dotenv": "^17.2.2",
-    "husky": "^9.1.4",
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "auto-changelog": "^2.6.0",
+    "dotenv": "^17.4.2",
+    "husky": "^9.1.7",
     "jimp": "^0.22.12",
-    "lint-staged": "^15.2.10",
-    "markdown-it": "^14.2.0",
-    "prettier": "3.4.2",
+    "lint-staged": "^15.5.2",
+    "markdown-it": "^14.3.0",
+    "prettier": "3.9.6",
     "standard-version": "^9.5.0",
-    "turbo": "^2.9.14"
+    "turbo": "^2.10.8"
   },
   "pnpm": {
     "overrides": {
@@ -45,12 +45,8 @@
       "@tamagui/shorthands": "2.0.0-rc.23",
       "@tamagui/config": "2.0.0-rc.23",
       "@tamagui/lucide-icons": "2.0.0-rc.23",
-      "tamagui>react": "19.1.0",
-      "tamagui>react-dom": "19.1.0",
-      "@tamagui/core>react": "19.1.0",
-      "@tamagui/core>react-dom": "19.1.0",
-      "@tamagui/web>react": "19.1.0",
-      "@tamagui/web>react-dom": "19.1.0",
+      "react": "19.1.0",
+      "react-dom": "19.1.0",
       "react-server-dom-webpack": "19.0.1",
       "shell-quote": "1.8.4",
       "handlebars": ">=4.7.9",

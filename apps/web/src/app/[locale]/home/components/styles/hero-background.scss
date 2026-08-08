@@ -28,11 +28,16 @@
   object-position: center center;
   opacity: 0;
   filter: saturate(1.15) brightness(0.85);
-  transition: opacity 0.8s ease-in-out;
   will-change: opacity;
 
   &.active {
     opacity: 1;
+  }
+
+  /* Variant images crossfade in; the default image skips the transition
+     so the LCP element paints immediately (saves ~110ms render delay). */
+  &.active:not(.hero-bg-default) {
+    transition: opacity 0.8s ease-in-out;
   }
 }
 

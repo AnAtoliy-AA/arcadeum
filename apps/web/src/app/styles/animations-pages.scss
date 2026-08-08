@@ -44,6 +44,8 @@
   padding-top: var(--t-space-10);
   padding-bottom: var(--t-space-10);
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
 }
 
 .category-tabs-main {
@@ -484,6 +486,8 @@
   padding-top: var(--t-space-12);
   padding-bottom: var(--t-space-12);
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 .steps-container-main {
@@ -614,6 +618,8 @@
   flex-direction: column;
   gap: var(--t-space-10);
   padding: var(--t-space-12) var(--t-space-6);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
 }
 
 @include bp.narrow {
@@ -694,6 +700,8 @@
   align-items: center;
   padding-top: var(--t-space-12);
   padding-bottom: var(--t-space-12);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
 }
 
 .download-card-main {
@@ -738,6 +746,8 @@
   align-items: center;
   gap: var(--t-space-8);
   padding: var(--t-space-12) var(--t-space-4);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 @media (min-width: 1151px) {
@@ -844,6 +854,8 @@
   align-items: center;
   gap: var(--t-space-10);
   padding: var(--t-space-28) var(--t-space-4);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
 }
 
 @media (min-width: 1151px) {

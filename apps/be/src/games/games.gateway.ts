@@ -173,6 +173,7 @@ export class GamesGateway {
           : undefined;
       if (anonId) {
         (client.data as Record<string, unknown>).anonId = anonId;
+        this.realtime.trackSocket(anonId, client.id);
       }
       this.logger.verbose(
         `Anonymous client connected to games namespace: ${client.id}`,

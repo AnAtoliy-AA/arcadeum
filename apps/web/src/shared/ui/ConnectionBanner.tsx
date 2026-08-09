@@ -16,7 +16,7 @@ export function ConnectionBanner() {
       aria-live="polite"
       style={{
         position: 'fixed',
-        top: 0,
+        bottom: 0,
         left: 0,
         right: 0,
         zIndex: 9999,
@@ -26,6 +26,7 @@ export function ConnectionBanner() {
         textAlign: 'center',
         fontSize: 14,
         fontWeight: 500,
+        pointerEvents: 'none',
       }}
     >
       {t('common.statuses.connectionLost')}

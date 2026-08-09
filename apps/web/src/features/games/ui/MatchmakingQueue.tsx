@@ -60,14 +60,14 @@ export function useMatchmaking() {
 
   const joinQueue = useCallback(
     async (gameId: string, variant?: string) => {
-      store.startQueue(gameId, variant);
-
       let userId = snapshot.userId;
       if (!userId) {
         await getAnonymousIdWithSignature();
         userId = localStorage.getItem('arcadeum_anon_id');
       }
       if (!userId) return;
+
+      store.startQueue(gameId, variant);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
         gameId,
@@ -77,8 +77,11 @@ export function useMatchmaking() {
     [snapshot.userId, store],
   );
 
-  const leaveQueue = useCallback(() => {
-    const userId = snapshot.userId;
+  const leaveQueue = useCallback(async () => {
+    let userId = snapshot.userId;
+    if (!userId) {
+      userId = localStorage.getItem('arcadeum_anon_id');
+    }
     if (!userId) return;
     store.stopQueue();
     void emitEncrypted(gameSocket, 'games.matchmaking.leave', { userId });

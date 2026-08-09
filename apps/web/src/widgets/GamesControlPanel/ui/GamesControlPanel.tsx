@@ -7,6 +7,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
+import { useGameStore } from '@/features/games/store/gameStore';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   Modal,
@@ -91,6 +92,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   }, [roomId, snapshot.userId, router]);
 
   const handleExitRoom = useCallback(() => {
+    useGameStore.setState({ room: null, session: null });
     router.push('/games');
   }, [router]);
 

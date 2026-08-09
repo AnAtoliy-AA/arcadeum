@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.40] - 2026-08-09
+
+### Added
+- add more shop backgrounds and translations
+
+### Fixed
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
+
+
+## [1.24.39] - 2026-08-09
+
+### Fixed
+- move connection banner to bottom of screen
+- prevent connection banner from blocking pointer events
+- keep socket connected for anonymous users on games page
+- connect game socket for anonymous users in room
+- centralize socket connection in BrowserRegistry
+- anonymous player connection and quick match issues
+- allow anonymous players to send in-game chat messages
+
+### Documentation
+- add socket architecture reference
+
+
+## [1.24.38] - 2026-08-09
+
+### Added
+- display logo in video end card
+- enhance scenarios, trim white screen and add platform link
+
+
+## [1.24.37] - 2026-08-09
+
+### Fixed
+- allow video presentation iframe autoplay on mobile safari (ARC-890) (ARC-890)
+- remove force:true from home games slider e2e clicks to fix webkit viewport failures
+- remove force:true from video presentation e2e click to fix Tablet Safari flake
+- move pnpm config from .npmrc to pnpm-workspace.yaml
+- scope pnpm config to [pnpm] section to silence npm warnings
+- remove content-visibility from presentation section to fix e2e test
+- refactor public-announcements test to unit style to fix flaky SIGSEGV
+
+### Improved
+- optimize home page performance
+
+
+## [1.24.36] - 2026-08-09
+
+### Fixed
+- use anonymous ID for unauthenticated players in quick match
+
+
 ## [1.24.35] - 2026-08-08
 
 ### Fixed

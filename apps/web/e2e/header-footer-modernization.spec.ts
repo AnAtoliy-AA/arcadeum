@@ -56,7 +56,7 @@ test.describe('Header and Footer Modernization', () => {
     await ensureNavigationVisible(page);
 
     const activeLink = isMobile
-      ? page.getByTestId('mobile-nav-games')
+      ? page.getByTestId('mobile-nav-rooms')
       : page.locator('nav.nav-styled').getByTestId('nav-games').first();
 
     await expect(activeLink).toBeVisible();

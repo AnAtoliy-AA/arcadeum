@@ -189,7 +189,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     audioRef.current = newAudio;
   }, []);
   useEffect(() => {
-    if (!musicEnabled) return;
+    if (!musicEnabled || !visible) return;
     if (!audioARef.current) {
       audioARef.current = new Audio();
       audioARef.current.preload = 'metadata';
@@ -265,10 +265,9 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
         events.forEach(([evt, fn]) => a.removeEventListener(evt, fn));
       });
     };
-  }, [musicEnabled, index, crossfadeTo, track.src]);
-
-  useEffect(
-    () => () => {
+  }, [musicEnabled, visible, index, crossfadeTo, track.src]);
+  useEffect(() => {
+    return () => {
       cancelAnimationFrame(crossfadeRafRef.current);
       [audioARef.current, audioBRef.current].forEach((a) => {
         if (a) {
@@ -279,9 +278,19 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioARef.current = null;
       audioBRef.current = null;
       audioRef.current = null;
-    },
-    [],
-  );
+    };
+  }, []);
+  useEffect(() => {
+    if (visible) return;
+    cancelAnimationFrame(crossfadeRafRef.current);
+    [audioARef.current, audioBRef.current].forEach((a) => {
+      if (a) {
+        a.pause();
+        a.src = '';
+      }
+    });
+    audioRef.current = null;
+  }, [visible]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -295,7 +304,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     audio.pause();
     audio.currentTime = 0;
   }, []);
-
   const playIndex = useCallback(
     (nextIndex: number) => {
       let idx = nextIndex;
@@ -313,14 +321,12 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     },
     [index, enabledTracks, shuffle, shuffleOrder, tracks.length],
   );
-
   const next = useCallback(() => {
     const ni = shuffle
       ? shuffleOrder[(shuffleOrder.indexOf(index) + 1) % shuffleOrder.length]
       : (index + 1) % tracks.length;
     playIndex(ni);
   }, [index, shuffle, shuffleOrder, tracks.length, playIndex]);
-
   const prev = useCallback(() => {
     const pi = shuffle
       ? shuffleOrder[
@@ -356,19 +362,16 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     const a = audioRef.current;
     if (a) a.currentTime = Math.max(a.currentTime - 10, 0);
   }, []);
-
   const toggleShuffle = useCallback(() => {
     if (!shuffle) setShuffleOrder(shuffleArray(tracks.length));
     setShuffle(!shuffle);
   }, [shuffle, tracks.length, setShuffle]);
-
   const cycleRepeat = useCallback(() => {
     const next = repeat === 'off' ? 'all' : repeat === 'all' ? 'one' : 'off';
     const a = audioRef.current;
     if (a) a.loop = next === 'one';
     setRepeat(next);
   }, [repeat, setRepeat]);
-
   const toggleTrack = useCallback((trackIndex: number) => {
     setEnabledTracks((prev) => {
       const next = new Set(prev);
@@ -395,7 +398,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     },
     [tracks, index],
   );
-
   useEffect(() => {
     if (!musicEnabled) return;
     const ms =
@@ -437,7 +439,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (!ms) return;
     ms.playbackState = isPlaying ? 'playing' : 'paused';
   }, [isPlaying]);
-
   const closePlayer = useCallback(() => {
     const audio = audioRef.current;
     if (audio && !audio.paused) {
@@ -445,7 +446,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     }
     setVisible(false);
   }, []);
-
   usePlayerKeyboard({
     enabled: musicEnabled,
     visible,
@@ -457,7 +457,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     next,
     setVolume,
   });
-
   return {
     tracks,
     index,

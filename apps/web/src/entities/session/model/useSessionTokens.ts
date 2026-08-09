@@ -63,10 +63,10 @@ export function useSessionTokens(): SessionTokensValue {
   }, [snapshot.accessTokenExpiresAt, storeRefreshTokens]);
 
   const userId = useMemo(() => {
-    if (snapshot.userId) return snapshot.userId;
+    if (snapshot.userId && snapshot.accessToken) return snapshot.userId;
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('arcadeum_anon_id');
-  }, [snapshot.userId]);
+  }, [snapshot.userId, snapshot.accessToken]);
 
   const finalSnapshot = useMemo(
     () => ({

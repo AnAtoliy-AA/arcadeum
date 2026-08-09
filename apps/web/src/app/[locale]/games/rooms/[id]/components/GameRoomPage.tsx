@@ -10,6 +10,7 @@ import React, {
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { connectSockets } from '@/shared/lib/socket';
 import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom } from '@/features/games/hooks/useGameRoom';
@@ -111,6 +112,12 @@ export default function GameRoomPage({
     isAuthenticated,
     searchParams,
   ]);
+
+  useEffect(() => {
+    if (isAuthenticated && snapshot.accessToken) {
+      connectSockets(snapshot.accessToken);
+    }
+  }, [isAuthenticated, snapshot.accessToken]);
 
   const initialData: GameInitialData = useMemo(
     () => ({ room: roomInfo, session: initialSessionData }),

@@ -44,7 +44,7 @@ test.describe('Home Page Games Grid Refinement', () => {
       return;
     }
 
-    await nextButton.click({ force: true });
+    await nextButton.click();
 
     const newScrollLeft = await sliderTrack.evaluate((el) => el.scrollLeft);
     expect(newScrollLeft).toBeGreaterThanOrEqual(0);
@@ -63,7 +63,8 @@ test.describe('Home Page Games Grid Refinement', () => {
     const questionIcon = criticalCard.getByTestId('game-help-button');
     await expect(questionIcon).toBeVisible();
 
-    await questionIcon.click({ force: true });
+    await questionIcon.scrollIntoViewIfNeeded();
+    await questionIcon.click();
 
     await expect(
       page.locator('[role="dialog"][data-state="open"]'),
@@ -83,7 +84,8 @@ test.describe('Home Page Games Grid Refinement', () => {
       .first();
     const playNowButton = criticalCard.getByTestId('game-play-button').first();
 
-    await playNowButton.click({ force: true });
+    await playNowButton.scrollIntoViewIfNeeded();
+    await playNowButton.click();
 
     // Should be on the game landing page
     await expect(page).toHaveURL(/\/games\/critical/);

@@ -69,7 +69,7 @@ export function HeroBackground() {
         fetchPriority="high"
         quality={75}
         sizes="(max-width: 768px) 768px, (max-width: 1200px) 1200px, 100vw"
-        className={`hero-background-image ${bgImage === DEFAULT_HERO_BG ? 'active' : ''}`}
+        className={`hero-background-image hero-bg-default ${bgImage === DEFAULT_HERO_BG ? 'active' : ''}`}
       />
       {shouldShowVariants &&
         VARIANT_IMAGES.filter(

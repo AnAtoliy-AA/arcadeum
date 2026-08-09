@@ -10,11 +10,6 @@ import React, {
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import {
-  connectSockets,
-  connectSocketsAnonymous,
-  disconnectSockets,
-} from '@/shared/lib/socket';
 import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom } from '@/features/games/hooks/useGameRoom';
@@ -115,27 +110,6 @@ export default function GameRoomPage({
     snapshot.userId,
     isAuthenticated,
     searchParams,
-  ]);
-
-  useEffect(() => {
-    if (roomInfoLoading || visibilityError) return;
-    if (!roomInfo && roomVisibility !== 'private') return;
-    if (isAuthenticated) {
-      connectSockets(snapshot.accessToken);
-    } else if (snapshot.userId || roomVisibility === 'public') {
-      connectSocketsAnonymous(snapshot.userId ?? undefined);
-    }
-    return () => {
-      disconnectSockets();
-    };
-  }, [
-    isAuthenticated,
-    snapshot.accessToken,
-    snapshot.userId,
-    roomVisibility,
-    roomInfo,
-    roomInfoLoading,
-    visibilityError,
   ]);
 
   const initialData: GameInitialData = useMemo(

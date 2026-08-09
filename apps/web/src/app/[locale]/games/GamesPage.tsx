@@ -13,7 +13,7 @@ import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { gameSocket, connectSockets } from '@/shared/lib/socket';
+import { gameSocket } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { gameMetadata } from '@/features/games/registry';
 import { GamesEmpty } from './components/GamesEmpty';
@@ -146,15 +146,6 @@ export default function GamesPage({
   }, [deferredSearchQuery, updateParams]);
 
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
-
-  useEffect(() => {
-    connectSockets(snapshot.accessToken || undefined);
-    return () => {
-      import('@/shared/lib/socket').then(({ disconnectSockets }) => {
-        disconnectSockets();
-      });
-    };
-  }, [snapshot.accessToken]);
 
   useEffect(() => {
     const handleRoomUpdate = () => {

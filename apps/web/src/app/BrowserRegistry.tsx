@@ -2,7 +2,11 @@
 
 import { ReactNode, useEffect } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
-import { disconnectSockets } from '@/shared/lib/socket';
+import {
+  connectSockets,
+  connectSocketsAnonymous,
+  disconnectSockets,
+} from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { config as tamaguiConfig } from '@/shared/config/tamagui.config';
 
@@ -73,6 +77,17 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
 
   useEffect(() => {
     useSessionStore.getState().setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    const state = useSessionStore.getState();
+    if (!state.hydrated) return;
+    const { accessToken, userId } = state.snapshot;
+    if (accessToken) {
+      connectSockets(accessToken);
+    } else if (userId) {
+      connectSocketsAnonymous(userId);
+    }
   }, []);
 
   return <>{children}</>;

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.36] - 2026-08-09
+
+### Fixed
+- use anonymous ID for unauthenticated players in quick match
+
+
 ## [1.24.35] - 2026-08-08
 
 ### Fixed

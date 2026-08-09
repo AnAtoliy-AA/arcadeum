@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.42] - 2026-08-09
+
+### Improved
+- also gate audio element creation on player visibility
+- reduce network payloads by optimizing assets and deferring audio loading
+
+
 ## [1.24.41] - 2026-08-09
 
 ### Fixed

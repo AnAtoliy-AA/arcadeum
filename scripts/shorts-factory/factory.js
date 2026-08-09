@@ -31,16 +31,40 @@ const axios = require('axios');
 const FormData = require('form-data');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
+// Parse CLI arguments
+const parsedArgs = {
+  testScenario: null,
+  aspectRatio: null,
+};
+
+for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === '--test-scenario' && process.argv[i + 1]) {
+    parsedArgs.testScenario = process.argv[i + 1];
+    i++;
+  } else if (process.argv[i] === '--aspect-ratio' && process.argv[i + 1]) {
+    parsedArgs.aspectRatio = process.argv[i + 1];
+    i++;
+  }
+}
+
+// Aspect ratio mapping
+const VIEWPORTS = {
+  '9:16': { width: 1080, height: 1920 },
+  '1:1': { width: 1080, height: 1080 },
+  '16:9': { width: 1920, height: 1080 },
+};
+
+const selectedAspectRatio = parsedArgs.aspectRatio || '9:16';
+const selectedViewport = VIEWPORTS[selectedAspectRatio] || VIEWPORTS['9:16'];
+
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
 const CONFIG = {
-  // Video dimensions (9:16 vertical)
-  viewport: {
-    width: 1080,
-    height: 1920,
-  },
+  // Video dimensions
+  viewport: selectedViewport,
+  aspectRatio: selectedAspectRatio,
 
   // Base URL
   baseUrl: 'https://arcadeum.games',
@@ -54,6 +78,7 @@ const CONFIG = {
   videoDuration: { min: 5, max: 10 }, // seconds (randomized)
   fadeOutDuration: 2, // seconds
   fadeOutStartOffset: 2, // seconds before end to start fade
+  musicVolume: 0.35, // 35% volume
 
   // Postiz API
   postizBaseUrl:
@@ -904,8 +929,22 @@ async function captureBrowsing() {
     const page = await context.newPage();
     log('info', 'New page created');
 
-    // Pick a random scenario
-    const scenario = randomElement(SCENARIOS);
+    // Pick a scenario
+    let scenario;
+    if (parsedArgs.testScenario) {
+      scenario = SCENARIOS.find((s) => s.name === parsedArgs.testScenario);
+      if (scenario) {
+        log('info', `Using requested test scenario: ${scenario.name}`);
+      } else {
+        log(
+          'warn',
+          `Requested test scenario "${parsedArgs.testScenario}" not found, falling back to random.`,
+        );
+      }
+    }
+    if (!scenario) {
+      scenario = randomElement(SCENARIOS);
+    }
     log('info', `Running scenario: ${scenario.name}`);
     log('info', `Caption will be: "${scenario.caption}"`);
 
@@ -1010,6 +1049,63 @@ function runFFmpeg(args, label) {
   });
 }
 
+const TRACK_VOLUME_OVERRIDES = {
+  'battleship-grid.mp3': 0.3,
+  'clockwork-horizon.mp3': 0.4,
+  'glass-grid.mp3': 0.35,
+  'grid-of-torpedoes.mp3': 0.25,
+  'gridline-armada.mp3': 0.35,
+  'gridwater-clash.mp3': 0.3,
+  'iron-tide.mp3': 0.2,
+  'iron-wake.mp3': 0.25,
+};
+
+function getTrackVolume(trackUrl) {
+  const filename = path.basename(trackUrl);
+  if (TRACK_VOLUME_OVERRIDES[filename] !== undefined) {
+    return TRACK_VOLUME_OVERRIDES[filename];
+  }
+  return CONFIG.musicVolume;
+}
+
+const END_CARD_CTAS = [
+  'arcadeum.games',
+  'Play & Earn Now!',
+  'Join the Arena!',
+  'Ready to climb?',
+  'Claim your rewards!',
+];
+
+function getScenarioTags(scenarioName) {
+  const name = (scenarioName || '').toLowerCase();
+  const tags = ['#arcadeum', '#web3', '#gaming'];
+  if (
+    name.includes('game') ||
+    name.includes('battle') ||
+    name.includes('critical') ||
+    name.includes('tictactoe') ||
+    name.includes('cascade')
+  ) {
+    tags.push('#gamers', '#p2e');
+  }
+  if (
+    name.includes('shop') ||
+    name.includes('reward') ||
+    name.includes('economy')
+  ) {
+    tags.push('#crypto', '#rewards');
+  }
+  if (
+    name.includes('community') ||
+    name.includes('leaderboard') ||
+    name.includes('chat') ||
+    name.includes('profile')
+  ) {
+    tags.push('#community', '#social');
+  }
+  return tags.join(' ');
+}
+
 /**
  * Processes the raw video with FFmpeg: trim, add audio, append end card
  */
@@ -1022,7 +1118,8 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   // Select a random audio track
   const tracks = await getAudioTracks();
   const audioTrack = randomElement(tracks);
-  log('info', `Selected audio track: ${audioTrack}`);
+  const trackVolume = getTrackVolume(audioTrack);
+  log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
   // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
@@ -1061,8 +1158,10 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
       audioTrack,
       '-t',
       trimDuration.toFixed(3),
+      '-vf',
+      `eq=contrast=1.05:saturation=1.15,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
       '-af',
-      `afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
+      `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
       '-c:v',
       'libx264',
       '-preset',
@@ -1080,7 +1179,7 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
     'main video',
   );
 
-  // Step 2: Create end card (black background + logo.png overlay + arcadeum.games text + fade-in audio)
+  // Step 2: Create end card (black background + logo.png overlay + random CTA + fade-in audio)
   const logoPath = path.join(
     __dirname,
     '..',
@@ -1090,12 +1189,17 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
     'public',
     'logo.png',
   );
+  const endCardCta = randomElement(END_CARD_CTAS);
+  const logoScale = Math.round(CONFIG.viewport.width * 0.45);
+  const fontSize = Math.round(CONFIG.viewport.width * 0.06);
+  const textOffsetY = Math.round(CONFIG.viewport.height * 0.08);
+
   await runFFmpeg(
     [
       '-f',
       'lavfi',
       '-i',
-      `color=c=black:s=1080x1920:d=${endCardDuration}:r=30`,
+      `color=c=black:s=${CONFIG.viewport.width}x${CONFIG.viewport.height}:d=${endCardDuration}:r=30`,
       '-i',
       logoPath,
       '-f',
@@ -1103,7 +1207,7 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
       '-i',
       `anullsrc=r=44100:cl=stereo`,
       '-filter_complex',
-      `[1:v]scale=500:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-150:format=auto,drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2+150:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
+      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-150:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
       '-map',
       '[v]',
       '-map',
@@ -1423,8 +1527,9 @@ async function main() {
 
     // Step 3: Request approval (if enabled)
     const baseCaption = captureResult.caption || randomElement(CAPTIONS);
-    const caption = `${baseCaption}\n\nPlay now: ${CONFIG.baseUrl}`;
     const scenario = captureResult.scenario || 'unknown';
+    const hashtags = getScenarioTags(scenario);
+    const caption = `${baseCaption}\n\nPlay now: ${CONFIG.baseUrl}\n\n${hashtags}`;
     log('info', `Selected caption: "${caption}"`);
 
     const approval = await requestApproval(outputVideoPath, caption, scenario);

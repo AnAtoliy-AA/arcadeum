@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.41] - 2026-08-09
+
+### Fixed
+- fix move logic, win conditions, and rules documentation
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
+
+
 ## [1.24.40] - 2026-08-09
 
 ### Added

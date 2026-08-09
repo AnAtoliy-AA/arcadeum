@@ -356,8 +356,7 @@ export class GameHistoryService {
 
     if (!session) {
       // No session yet (lobby state) — silently skip, lobby has its own room chat
-      if (isAuthenticated) return;
-      throw new NotFoundException('No session found for this room');
+      return;
     }
     // Add message to logs in session state
     const logEntry = {

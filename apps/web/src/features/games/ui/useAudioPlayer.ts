@@ -99,6 +99,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   }, []);
 
   useEffect(() => {
+    if (!musicEnabled || !visible) return;
     let dead = false;
     fetchTracks()
       .then((data) => {
@@ -130,7 +131,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     return () => {
       dead = true;
     };
-  }, [gameId]);
+  }, [gameId, musicEnabled, visible]);
 
   const volumeRef = useRef(volume);
   const enabledTracksRef = useRef(enabledTracks);
@@ -140,7 +141,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const tracksLengthRef = useRef(tracks.length);
   const indexRef = useRef(index);
   const track = tracks[index];
-
   useEffect(() => {
     enabledTracksRef.current = enabledTracks;
     repeatRef.current = repeat;

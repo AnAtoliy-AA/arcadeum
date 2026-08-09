@@ -13,7 +13,11 @@ import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import { gameSocket, connectSockets } from '@/shared/lib/socket';
+import {
+  gameSocket,
+  connectSockets,
+  connectSocketsAnonymous,
+} from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { gameMetadata } from '@/features/games/registry';
 import { GamesEmpty } from './components/GamesEmpty';
@@ -148,8 +152,13 @@ export default function GamesPage({
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   useEffect(() => {
-    connectSockets(snapshot.accessToken || undefined);
-  }, [snapshot.accessToken]);
+    if (snapshot.accessToken) {
+      connectSockets(snapshot.accessToken);
+    } else if (snapshot.userId) {
+      // Anonymous user - connect socket without auth
+      connectSocketsAnonymous(snapshot.userId);
+    }
+  }, [snapshot.accessToken, snapshot.userId]);
 
   useEffect(() => {
     const handleRoomUpdate = () => {

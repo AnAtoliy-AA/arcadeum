@@ -26,6 +26,7 @@ export function ConnectionBanner() {
         textAlign: 'center',
         fontSize: 14,
         fontWeight: 500,
+        pointerEvents: 'none',
       }}
     >
       {t('common.statuses.connectionLost')}

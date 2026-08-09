@@ -1080,19 +1080,34 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
     'main video',
   );
 
-  // Step 2: Create end card (black background + arcadeum.games text + fade-in audio)
+  // Step 2: Create end card (black background + logo.png overlay + arcadeum.games text + fade-in audio)
+  const logoPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'apps',
+    'web',
+    'public',
+    'logo.png',
+  );
   await runFFmpeg(
     [
       '-f',
       'lavfi',
       '-i',
       `color=c=black:s=1080x1920:d=${endCardDuration}:r=30`,
+      '-i',
+      logoPath,
       '-f',
       'lavfi',
       '-i',
       `anullsrc=r=44100:cl=stereo`,
-      '-vf',
-      `drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'`,
+      '-filter_complex',
+      `[1:v]scale=500:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-150:format=auto,drawtext=text='arcadeum.games':fontcolor=white:fontsize=72:x=(w-text_w)/2:y=(h-text_h)/2+150:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
+      '-map',
+      '[v]',
+      '-map',
+      '2:a',
       '-af',
       `afade=t=in:st=0:d=0.5`,
       '-t',

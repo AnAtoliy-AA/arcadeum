@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.43] - 2026-08-09
+
+### Added
+- implement visual, audio and cli enhancements (ARC-SHORTS)
+
+
 ## [1.24.42] - 2026-08-09
 
 ### Improved

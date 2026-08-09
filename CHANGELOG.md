@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.38] - 2026-08-09
+
+### Added
+- display logo in video end card
+- enhance scenarios, trim white screen and add platform link
+
+
 ## [1.24.37] - 2026-08-09
 
 ### Fixed

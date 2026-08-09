@@ -1,7 +1,7 @@
 {
-  "name": "Arcadeum",
-  "short_name": "Arcadeum",
-  "description": "Arcadeum is your online platform to play board games with friends.",
+  "name": "Arcadeum Games",
+  "short_name": "Arcadeum Games",
+  "description": "Arcadeum Games is your online platform to play board games with friends and AI.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -26,10 +26,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Play Games",
+      "name": "Play with AI & Friends",
       "short_name": "Play",
       "url": "/games",
-      "description": "Browse and play games"
+      "description": "Browse and play games with friends and AI"
     }
   ]
 }

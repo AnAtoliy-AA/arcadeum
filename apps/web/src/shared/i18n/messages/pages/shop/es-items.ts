@@ -1,0 +1,356 @@
+export const shopItemsEs = {
+  avatar: {
+    default01: { name: 'Avatar predeterminado', desc: 'El avatar inicial.' },
+    fox01: { name: 'Zorro', desc: 'Un zorro astuto.' },
+    cat01: { name: 'Gato', desc: 'Un gato curioso.' },
+    dragon01: { name: 'Dragón', desc: 'Un dragón feroz.' },
+    phoenix01: { name: 'Fénix', desc: 'Un fénix que renace.' },
+    cosmic01: { name: 'Cósmico', desc: 'Una leyenda cósmica.' },
+    wolf01: {
+      name: 'Lobo Cibernético',
+      desc: 'Un lobo cibernético hiperrealista.',
+    },
+    panther01: {
+      name: 'Pantera Cibernética',
+      desc: 'Una pantera cibernética hiperrealista.',
+    },
+    tiger01: {
+      name: 'Tigre Cibernético',
+      desc: 'Un tigre cibernético hiperrealista.',
+    },
+    eagle01: {
+      name: 'Águila Cibernética',
+      desc: 'Un águila cibernética hiperrealista.',
+    },
+    lion01: {
+      name: 'León Cibernético',
+      desc: 'Un león cibernético hiperrealista.',
+    },
+    shark01: {
+      name: 'Tiburón Cibernético',
+      desc: 'Un tiburón cibernético hiperrealista.',
+    },
+    catsiam: {
+      name: 'Gato Siamés Cibernético',
+      desc: 'Un gato siamés cibernético hiperrealista.',
+    },
+    catpersian: {
+      name: 'Gato Persa Cibernético',
+      desc: 'Un gato persa cibernético hiperrealista.',
+    },
+    catbengal: {
+      name: 'Gato Bengalí Cibernético',
+      desc: 'Un gato bengalí cibernético hiperrealista.',
+    },
+    phoenixcyber: {
+      name: 'Fénix Cibernético',
+      desc: 'Un fénix cibernético hiperrealista.',
+    },
+    dragoncyber: {
+      name: 'Dragón Cibernético',
+      desc: 'Un dragón cibernético hiperrealista.',
+    },
+    leopardcyber: {
+      name: 'Leopardo Cibernético',
+      desc: 'Un leopardo cibernético hiperrealista.',
+    },
+    eaglecyber: {
+      name: 'Águila Cibernética Élite',
+      desc: 'Una variante de águila cibernética hiperrealista.',
+    },
+    falconcyber: {
+      name: 'Halcón Cibernético',
+      desc: 'Un halcón cibernético hiperrealista.',
+    },
+    gorillacyber: {
+      name: 'Gorila Cibernético',
+      desc: 'Un gorila cibernético hiperrealista.',
+    },
+    pandacyber: {
+      name: 'Panda Cibernético',
+      desc: 'Un panda cibernético hiperrealista.',
+    },
+    cheetahcyber: {
+      name: 'Guepardo Cibernético',
+      desc: 'Un guepardo cibernético hiperrealista.',
+    },
+    wolfcyber: {
+      name: 'Lobo Cibernético Élite',
+      desc: 'Una variante de lobo cibernético hiperrealista.',
+    },
+    tigercyber: {
+      name: 'Tigre Cibernético Élite',
+      desc: 'Una variante de tigre cibernético hiperrealista.',
+    },
+    bearcyber: {
+      name: 'Oso Cibernético',
+      desc: 'Un oso cibernético hiperrealista.',
+    },
+    lioncyber: {
+      name: 'León Cibernético Élite',
+      desc: 'Una variante de león cibernético hiperrealista.',
+    },
+    sharkcyber: {
+      name: 'Tiburón Cibernético Élite',
+      desc: 'Una variante de tiburón cibernético hiperrealista.',
+    },
+  },
+  badge: {
+    newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },
+    veteran: { name: 'Veterano', desc: 'Un jugador experimentado.' },
+    champion: { name: 'Campeón', desc: 'Un campeón probado.' },
+    legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
+    elite: {
+      name: 'Escudo de Élite',
+      desc: 'Un escudo cibernético prestigioso.',
+    },
+    mythic: {
+      name: 'Estrella Mítica',
+      desc: 'Un emblema de estrella celestial dorada.',
+    },
+    vanguard: {
+      name: 'Escudo de Vanguardia',
+      desc: 'Un blasón defensivo blindado.',
+    },
+    nexus: {
+      name: 'Estrella Nexo',
+      desc: 'Una poderosa estrella cósmica futurista.',
+    },
+  },
+  name_color: {
+    default: { name: 'Predeterminado', desc: 'El color de nombre inicial.' },
+    slate: { name: 'Pizarra', desc: 'Un gris fresco y tranquilo.' },
+    emerald: { name: 'Esmeralda', desc: 'Un verde esmeralda fresco.' },
+    cyan: { name: 'Cian', desc: 'Un cian eléctrico.' },
+    violet: { name: 'Violeta', desc: 'Un violeta vivo.' },
+    sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
+    aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
+    nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico brillante.' },
+    glitch: {
+      name: 'Glitch',
+      desc: 'Un color de artefacto digital cambiante.',
+    },
+    neon: {
+      name: 'Neón',
+      desc: 'Un degradado brillante de verde neón y cian.',
+    },
+    solar: { name: 'Solar', desc: 'Un degradado solar radiante de naranja.' },
+    magma: {
+      name: 'Magma',
+      desc: 'Un degradado de magma rojo y naranja fundidos.',
+    },
+    oceanic: {
+      name: 'Oceánico',
+      desc: 'Un degradado azul oceánico profundo.',
+    },
+    forest: {
+      name: 'Bosque',
+      desc: 'Un degradado verde exuberante de bosque.',
+    },
+    prismatic: {
+      name: 'Prismático',
+      desc: 'Un degradado prismático vibrante y cambiante.',
+    },
+    void: {
+      name: 'Vacío',
+      desc: 'Un degradado violeta oscuro del espacio profundo.',
+    },
+    sakura: {
+      name: 'Sakura',
+      desc: 'Un degradado rosa suave de flor de cerezo.',
+    },
+    gold: {
+      name: 'Dorado',
+      desc: 'Un prestigioso degradado dorado brillante.',
+    },
+    supernova: {
+      name: 'Supernova',
+      desc: 'Un degradado deslumbrante de explosión cósmica.',
+    },
+    synthwave: {
+      name: 'Synthwave',
+      desc: 'Un degradado retro de neón magenta y cian.',
+    },
+  },
+  game_skin: {
+    default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
+  },
+  banner: {
+    default: { name: 'Predeterminado', desc: 'El fondo inicial.' },
+    slate: { name: 'Pizarra', desc: 'Un fondo gris oscuro discreto.' },
+    tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
+    twilight: {
+      name: 'Crepúsculo',
+      desc: 'Índigo que se funde en rosa intenso.',
+    },
+    nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
+    cyberpunk: {
+      name: 'Cyberpunk',
+      desc: 'Un degradado de horizonte futurista neón.',
+    },
+    void: {
+      name: 'Vacío',
+      desc: 'Un fondo de agujero negro del espacio profundo.',
+    },
+    magma: { name: 'Magma', desc: 'Un degradado de magma fundido.' },
+    sakura: { name: 'Sakura', desc: 'Un degradado suave de flor de cerezo.' },
+    solar: { name: 'Solar', desc: 'Un degradado solar radiante.' },
+    neon: { name: 'Neón', desc: 'Un degradado neón brillante.' },
+    oceanic: {
+      name: 'Oceánico',
+      desc: 'Un degradado azul oceánico profundo.',
+    },
+    prismatic: {
+      name: 'Prismático',
+      desc: 'Un degradado prismático cambiante.',
+    },
+    supernova: {
+      name: 'Supernova',
+      desc: 'Un degradado de explosión de supernova cósmica.',
+    },
+    synthwave: {
+      name: 'Synthwave',
+      desc: 'Un degradado retrofuturista de neón synthwave.',
+    },
+  },
+  aura: {
+    default: { name: 'Predeterminada', desc: 'El aura inicial.' },
+    silver: { name: 'Aura plateada', desc: 'Un halo plateado sutil.' },
+    cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
+    violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
+    prism: {
+      name: 'Aura prisma',
+      desc: 'Una radiancia prismática cambiante.',
+    },
+    gold: {
+      name: 'Aura dorada',
+      desc: 'Un prestigioso brillo dorado resplandeciente.',
+    },
+    glitch: {
+      name: 'Aura glitch',
+      desc: 'Un brillo de distorsión digital animado.',
+    },
+    neon: {
+      name: 'Aura neón',
+      desc: 'Un halo brillante de verde neón y cian.',
+    },
+    solar: { name: 'Aura solar', desc: 'Un halo solar radiante.' },
+    magma: {
+      name: 'Aura magma',
+      desc: 'Un brillo de magma fundido caliente.',
+    },
+    oceanic: {
+      name: 'Aura oceánica',
+      desc: 'Un brillo azul oceánico profundo.',
+    },
+    sakura: {
+      name: 'Aura sakura',
+      desc: 'Un brillo rosa suave de flor de cerezo.',
+    },
+    void: {
+      name: 'Aura vacío',
+      desc: 'Un brillo de distorsión cósmica oscura.',
+    },
+    supernova: {
+      name: 'Aura supernova',
+      desc: 'Un brillo cegador de energía cósmica.',
+    },
+    synthwave: {
+      name: 'Aura synthwave',
+      desc: 'Un aura brillante de neón retro.',
+    },
+  },
+  frame: {
+    default: { name: 'Predeterminado', desc: 'El marco inicial.' },
+    silver: { name: 'Marco plateado', desc: 'Un anillo plateado cepillado.' },
+    emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
+    violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
+    prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
+    gold: {
+      name: 'Marco dorado',
+      desc: 'Un anillo de oro pulido y brillante.',
+    },
+    cyberpunk: {
+      name: 'Marco cyberpunk',
+      desc: 'Un marco cyberpunk de neón vibrante.',
+    },
+    neon: {
+      name: 'Marco neón',
+      desc: 'Un anillo brillante de verde neón y cian.',
+    },
+    solar: {
+      name: 'Marco solar',
+      desc: 'Un anillo solar radiante de naranja.',
+    },
+    magma: {
+      name: 'Marco magma',
+      desc: 'Un anillo de magma fundido caliente.',
+    },
+    oceanic: {
+      name: 'Marco oceánico',
+      desc: 'Un anillo azul oceánico profundo.',
+    },
+    sakura: {
+      name: 'Marco sakura',
+      desc: 'Un anillo rosa suave de flor de cerezo.',
+    },
+    prismatic: {
+      name: 'Marco prismático',
+      desc: 'Un anillo prismático cambiante.',
+    },
+    void: { name: 'Marco vacío', desc: 'Un anillo cósmico oscuro.' },
+    supernova: {
+      name: 'Marco supernova',
+      desc: 'Un anillo radiante de explosión cósmica.',
+    },
+    synthwave: {
+      name: 'Marco synthwave',
+      desc: 'Un anillo retro de neón synthwave.',
+    },
+  },
+  background: {
+    default: { name: 'Predeterminado', desc: 'Fondo inicial.' },
+    slate: { name: 'Fondo pizarra', desc: 'Lavado pizarra apagado.' },
+    ocean: {
+      name: 'Fondo océano',
+      desc: 'Degradado azul-turquesa profundo.',
+    },
+    violet: { name: 'Fondo violeta', desc: 'Degradado violeta intenso.' },
+    aurora: {
+      name: 'Fondo aurora',
+      desc: 'Degradado turquesa-violeta-rosa.',
+    },
+    neon: {
+      name: 'Fondo neón',
+      desc: 'Un degradado brillante de verde neón y cian.',
+    },
+    magma: {
+      name: 'Fondo magma',
+      desc: 'Un degradado de magma rojo y naranja fundidos.',
+    },
+    sunset: {
+      name: 'Fondo atardecer',
+      desc: 'Un degradado cálido de naranja y rosa de atardecer.',
+    },
+    cyberpunk: {
+      name: 'Fondo cyberpunk',
+      desc: 'Un degradado de horizonte futurista neón.',
+    },
+    void: {
+      name: 'Fondo vacío',
+      desc: 'Un degradado violeta oscuro del espacio profundo.',
+    },
+    sakura: {
+      name: 'Fondo sakura',
+      desc: 'Un degradado rosa suave de flor de cerezo.',
+    },
+    gold: {
+      name: 'Fondo dorado',
+      desc: 'Un prestigioso degradado dorado brillante.',
+    },
+    synthwave: {
+      name: 'Fondo synthwave',
+      desc: 'Un degradado vibrante retro de neón magenta y cian.',
+    },
+  },
+};

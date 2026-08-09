@@ -36,7 +36,7 @@ test.describe('Home Page', () => {
   test('should have games link in navigation', async ({ page }) => {
     await ensureNavigationVisible(page);
     const gamesLink = page
-      .getByRole('link', { name: /games/i })
+      .getByRole('link', { name: /rooms/i })
       .filter({ visible: true });
     await expect(gamesLink.first()).toBeVisible();
   });
@@ -44,7 +44,7 @@ test.describe('Home Page', () => {
   test('should navigate to games page', async ({ page, isMobile }) => {
     await ensureNavigationVisible(page);
     const gamesLink = isMobile
-      ? page.getByTestId('mobile-nav-games')
+      ? page.getByTestId('mobile-nav-rooms')
       : page.getByTestId('nav-games');
 
     await expect(gamesLink).toBeVisible();

@@ -45,7 +45,7 @@ test.describe('Mobile Menu', () => {
     await menuButton.click({ force: true });
     await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 
-    const gamesLink = page.getByTestId('mobile-nav-games');
+    const gamesLink = page.getByTestId('mobile-nav-rooms');
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();
 

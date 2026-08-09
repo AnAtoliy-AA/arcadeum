@@ -117,16 +117,22 @@ export const frMessages = {
         objective: 'Objectif',
         howToPlay: 'Comment Jouer',
         kingPromotion: 'Promotion de Roi',
+        backwardCaptures: "Captures Vers l'Arrière",
         forcedCaptures: 'Captures Forcées',
+        winConditions: 'Gagner et Perdre',
       },
       objective:
         "Capturez toutes les pièces de votre adversaire ou bloquez-les pour qu'ils n'aient aucun coup légal.",
       steps:
         "Les joueurs alternent pour déplacer une pièce en diagonale vers l'avant.\nLes pièces claires avancent vers le haut ; les foncées vers le bas.\nUne pièce peut se déplacer sur une case diagonale vide adjacente.\nPour capturer, sautez par-dessus une pièce adverse jusqu'au-delà.",
       kingPromotion:
-        "Quand une pièce atteint l'extrémité opposée du plateau, elle devient un roi.\nLes rois peuvent se déplacer et capturer dans toutes les directions diagonales.",
+        "Quand une pièce atteint l'extrémité opposée du plateau, elle devient un roi.\nLes rois peuvent se déplacer et capturer dans toutes les directions diagonales.\nDans les règles internationales et russes, les rois peuvent glisser sur plusieurs cases dans une direction (rois volants).",
+      backwardCaptures:
+        "Dans certains ensembles de règles, les pièces normales (dames) peuvent capturer les pièces adverses derrière elles.\nLes dames se déplacent toujours vers l'avant, mais peuvent capturer dans toutes les directions diagonales quand les captures vers l'arrière sont activées.\nCette option est toujours active dans les règles internationales et peut être configurée dans d'autres variantes.",
       forcedCaptures:
-        'Si une capture est disponible, le joueur doit la prendre.\nSi plusieurs captures sont disponibles, le joueur doit en choisir une.\nUne chaîne de sauts multiples doit être entièrement complétée.',
+        'Si une capture est disponible, le joueur doit la prendre.\nSi plusieurs captures sont disponibles, le joueur doit en choisir une.\nUne chaîne de sauts multiples doit être entièrement complétée — vous ne pouvez pas vous arrêter si plus de captures sont disponibles.',
+      winConditions:
+        "Vous gagniez quand :\n• Vous capturez toutes les pièces de l'adversaire\n• L'adversaire n'a aucun coup légal à son tour\n\nVous perdez quand :\n• Toutes vos pièces sont capturées\n• Vous n'avez aucun coup légal à votre tour\n\nLa partie est NULLE quand les deux joueurs n'ont que des rois avec un matériau égal et aucun ne peut forcer la victoire.",
     },
     gameOver: {
       won: 'Victoire !',

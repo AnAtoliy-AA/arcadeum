@@ -38,10 +38,22 @@ export function RulesModal({ open, onClose }: RulesModalProps) {
       body: t('games.checkers_v1.rules.kingPromotion'),
     },
     {
+      icon: '🔄',
+      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+      header: t('games.checkers_v1.rules.headers.backwardCaptures'),
+      body: t('games.checkers_v1.rules.backwardCaptures'),
+    },
+    {
       icon: '⚡',
       gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
       header: t('games.checkers_v1.rules.headers.forcedCaptures'),
       body: t('games.checkers_v1.rules.forcedCaptures'),
+    },
+    {
+      icon: '🏆',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      header: t('games.checkers_v1.rules.headers.winConditions'),
+      body: t('games.checkers_v1.rules.winConditions'),
     },
   ];
 

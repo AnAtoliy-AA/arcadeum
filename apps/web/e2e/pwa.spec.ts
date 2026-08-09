@@ -7,8 +7,8 @@ test.describe('PWA Features', () => {
     expect(response.ok()).toBe(true);
 
     const manifest = await response.json();
-    expect(manifest.name).toBe('Arcadeum');
-    expect(manifest.short_name).toBe('Arcadeum');
+    expect(manifest.name).toBe('Arcadeum Games');
+    expect(manifest.short_name).toBe('Arcadeum Games');
     expect(manifest.display).toBe('standalone');
     expect(manifest.theme_color).toBe('#151718');
     expect(manifest.background_color).toBe('#151718');

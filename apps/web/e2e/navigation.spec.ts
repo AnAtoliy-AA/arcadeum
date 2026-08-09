@@ -71,7 +71,7 @@ test.describe('Navigation', () => {
   test('should navigate to games page', async ({ page }) => {
     await ensureNavigationVisible(page);
     const gamesLink = getIsMobile(page)
-      ? page.getByTestId('mobile-nav-games')
+      ? page.getByTestId('mobile-nav-rooms')
       : page.getByTestId('nav-games');
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();

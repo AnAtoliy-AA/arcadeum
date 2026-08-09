@@ -56,11 +56,15 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
       )
         return;
+
+      // Read layout once, write once — avoids layout thrash
       const rect = stack.getBoundingClientRect();
       const px = (e.clientX - rect.left) / rect.width - 0.5;
       const py = (e.clientY - rect.top) / rect.height - 0.5;
-      stack.style.setProperty('--tilt-x', `${px * MAX_TILT_DEG * 2}deg`);
-      stack.style.setProperty('--tilt-y', `${-py * MAX_TILT_DEG * 2}deg`);
+
+      // Use a single transform write instead of two setProperty calls
+      stack.style.transform = `perspective(600px) rotateY(${px * MAX_TILT_DEG * 2}deg) rotateX(${-py * MAX_TILT_DEG * 2}deg)`;
+
       if (!pointerDownRef.current) {
         const nextHovered = indexFromPointerX(e.clientX, stack);
         setHoveredIndex(nextHovered);
@@ -84,8 +88,7 @@ export function HeroCardStack({ playLabel }: { playLabel: string }) {
   const handlePointerLeave = useCallback(() => {
     const stack = stackRef.current;
     if (!stack) return;
-    stack.style.setProperty('--tilt-x', '0deg');
-    stack.style.setProperty('--tilt-y', '0deg');
+    stack.style.transform = 'perspective(600px) rotateY(0deg) rotateX(0deg)';
     pointerDownRef.current = false;
     setHoveredIndex(null);
     resetBgImage();

@@ -8,7 +8,6 @@ import {
   setEncryptionKey,
   resetEncryptionKey,
 } from './socket-encryption';
-import { useSocketStatus } from './socket-status';
 
 function resolveSocketUrl(): string {
   const apiUrl = resolveApiUrl('');
@@ -33,27 +32,65 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
-const gamesSocket = io(
-  `${SOCKET_BASE_URL}/games`,
-  SOCKET_OPTIONS,
-) as AuthenticatedSocket;
+// Lazy socket instances — created on first access to avoid heavy init at module load
+let _gamesSocket: AuthenticatedSocket | null = null;
+let _chatsSocket: AuthenticatedSocket | null = null;
+let _leaderboardsSocket: AuthenticatedSocket | null = null;
+let _friendsSock: AuthenticatedSocket | null = null;
+let _walletSock: AuthenticatedSocket | null = null;
 
-const chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
+function getGamesSocket(): AuthenticatedSocket {
+  if (!_gamesSocket) {
+    _gamesSocket = io(
+      `${SOCKET_BASE_URL}/games`,
+      SOCKET_OPTIONS,
+    ) as AuthenticatedSocket;
+    guardEmit(_gamesSocket);
+    setupEncryptionKeyHandler(_gamesSocket);
+  }
+  return _gamesSocket;
+}
 
-const leaderboardsSocket = io(
-  `${SOCKET_BASE_URL}/leaderboards`,
-  SOCKET_OPTIONS,
-) as AuthenticatedSocket;
+function getChatsSocket(): AuthenticatedSocket {
+  if (!_chatsSocket) {
+    _chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
+    guardEmit(_chatsSocket);
+  }
+  return _chatsSocket;
+}
 
-const friendsSock = io(
-  `${SOCKET_BASE_URL}/friends`,
-  SOCKET_OPTIONS,
-) as AuthenticatedSocket;
+function getLeaderboardsSocket(): AuthenticatedSocket {
+  if (!_leaderboardsSocket) {
+    _leaderboardsSocket = io(
+      `${SOCKET_BASE_URL}/leaderboards`,
+      SOCKET_OPTIONS,
+    ) as AuthenticatedSocket;
+    guardEmit(_leaderboardsSocket);
+  }
+  return _leaderboardsSocket;
+}
 
-const walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
-  transports: ['websocket'],
-  autoConnect: false,
-}) as AuthenticatedSocket;
+function getFriendsSock(): AuthenticatedSocket {
+  if (!_friendsSock) {
+    _friendsSock = io(
+      `${SOCKET_BASE_URL}/friends`,
+      SOCKET_OPTIONS,
+    ) as AuthenticatedSocket;
+    guardEmit(_friendsSock);
+  }
+  return _friendsSock;
+}
+
+function getWalletSock(): AuthenticatedSocket {
+  if (!_walletSock) {
+    _walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
+      transports: ['websocket'],
+      autoConnect: false,
+    }) as AuthenticatedSocket;
+    guardEmit(_walletSock);
+  }
+  return _walletSock;
+}
 
 // Guard against emit() calls on a socket whose transport was never
 // initialised (autoConnect: false + never called connect()).  In that
@@ -75,12 +112,6 @@ function guardEmit(socket: Socket): void {
   }) as Socket['emit'];
 }
 
-guardEmit(gamesSocket);
-guardEmit(chatsSocket);
-guardEmit(leaderboardsSocket);
-guardEmit(friendsSock);
-guardEmit(walletSock);
-
 let currentAuthToken: string | null = null;
 
 /**
@@ -97,7 +128,7 @@ async function flushMessageQueue(): Promise<void> {
     const msg = messageQueue.shift();
     if (msg) {
       const data = await maybeEncrypt(msg.payload);
-      gamesSocket.emit(msg.event, data);
+      getGamesSocket().emit(msg.event, data);
     }
   }
 }
@@ -126,9 +157,6 @@ function setupEncryptionKeyHandler(socket: AuthenticatedSocket): void {
   });
 }
 
-// Set up encryption key handler for games socket
-setupEncryptionKeyHandler(gamesSocket);
-
 function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
   socketInstance.auth = { token };
 }
@@ -142,26 +170,26 @@ export function connectSockets(token: string | null | undefined): void {
   if (currentAuthToken !== token) {
     currentAuthToken = token;
 
-    if (gamesSocket.connected) {
-      gamesSocket.disconnect();
+    if (getGamesSocket().connected) {
+      getGamesSocket().disconnect();
     }
-    if (chatsSocket.connected) {
-      chatsSocket.disconnect();
+    if (getChatsSocket().connected) {
+      getChatsSocket().disconnect();
     }
   }
 
-  applyAuth(gamesSocket, token);
-  applyAuth(chatsSocket, token);
-  applyAuth(friendsSock, token);
+  applyAuth(getGamesSocket(), token);
+  applyAuth(getChatsSocket(), token);
+  applyAuth(getFriendsSock(), token);
 
-  if (!gamesSocket.connected) {
-    gamesSocket.connect();
+  if (!getGamesSocket().connected) {
+    getGamesSocket().connect();
   }
-  if (!chatsSocket.connected) {
-    chatsSocket.connect();
+  if (!getChatsSocket().connected) {
+    getChatsSocket().connect();
   }
-  if (!friendsSock.connected) {
-    friendsSock.connect();
+  if (!getFriendsSock().connected) {
+    getFriendsSock().connect();
   }
 }
 
@@ -174,32 +202,32 @@ export function connectSockets(token: string | null | undefined): void {
 export function connectLeaderboardSocket(
   token: string | null | undefined,
 ): () => void {
-  if (token) applyAuth(leaderboardsSocket, token);
-  else leaderboardsSocket.auth = {};
-  if (!leaderboardsSocket.connected) leaderboardsSocket.connect();
+  if (token) applyAuth(getLeaderboardsSocket(), token);
+  else getLeaderboardsSocket().auth = {};
+  if (!getLeaderboardsSocket().connected) getLeaderboardsSocket().connect();
   return () => {
-    if (leaderboardsSocket.connected) leaderboardsSocket.disconnect();
+    if (getLeaderboardsSocket().connected) getLeaderboardsSocket().disconnect();
   };
 }
 
 export function connectFriendsSocket(
   token: string | null | undefined,
 ): () => void {
-  if (token) applyAuth(friendsSock, token);
-  else friendsSock.auth = {};
-  if (!friendsSock.connected) friendsSock.connect();
+  if (token) applyAuth(getFriendsSock(), token);
+  else getFriendsSock().auth = {};
+  if (!getFriendsSock().connected) getFriendsSock().connect();
   return () => {
-    if (friendsSock.connected) friendsSock.disconnect();
+    if (getFriendsSock().connected) getFriendsSock().disconnect();
   };
 }
 
 export function connectWalletSocket(token: string): void {
-  walletSock.auth = { token };
-  if (!walletSock.connected) walletSock.connect();
+  getWalletSock().auth = { token };
+  if (!getWalletSock().connected) getWalletSock().connect();
 }
 
 export function disconnectWalletSocket(): void {
-  if (walletSock.connected) walletSock.disconnect();
+  if (getWalletSock().connected) getWalletSock().disconnect();
 }
 
 /**
@@ -213,79 +241,100 @@ export function connectSocketsAnonymous(userId?: string): void {
   }
 
   // Clear any auth
-  gamesSocket.auth = {};
+  getGamesSocket().auth = {};
 
   // Pass anonId so gateway recognizes the client and sends encryption key
   if (userId) {
-    gamesSocket.io.opts.query = {
-      ...(gamesSocket.io.opts.query as Record<string, string>),
+    getGamesSocket().io.opts.query = {
+      ...(getGamesSocket().io.opts.query as Record<string, string>),
       anonId: userId,
     };
   }
 
-  if (!gamesSocket.connected) {
-    gamesSocket.connect();
+  if (!getGamesSocket().connected) {
+    getGamesSocket().connect();
   }
 }
 
 export function disconnectSockets(): void {
   currentAuthToken = null;
 
-  if (gamesSocket) {
-    gamesSocket.disconnect();
+  if (_gamesSocket) {
+    _gamesSocket.disconnect();
   }
-  if (chatsSocket) {
-    chatsSocket.disconnect();
+  if (_chatsSocket) {
+    _chatsSocket.disconnect();
   }
-  if (leaderboardsSocket) {
-    leaderboardsSocket.disconnect();
+  if (_leaderboardsSocket) {
+    _leaderboardsSocket.disconnect();
   }
-  if (friendsSock) {
-    friendsSock.disconnect();
+  if (_friendsSock) {
+    _friendsSock.disconnect();
   }
-  if (walletSock) {
-    walletSock.disconnect();
+  if (_walletSock) {
+    _walletSock.disconnect();
   }
 
-  gamesSocket.auth = {};
-  chatsSocket.auth = {};
-  leaderboardsSocket.auth = {};
-  friendsSock.auth = {};
-  walletSock.auth = {};
+  if (_gamesSocket) _gamesSocket.auth = {};
+  if (_chatsSocket) _chatsSocket.auth = {};
+  if (_leaderboardsSocket) _leaderboardsSocket.auth = {};
+  if (_friendsSock) _friendsSock.auth = {};
+  if (_walletSock) _walletSock.auth = {};
   resetEncryptionKey();
 }
 
-export const gameSocket: Socket = gamesSocket;
-export const chatSocket: Socket = chatsSocket;
-export const leaderboardSocket: Socket = leaderboardsSocket;
-export const friendsSocket: Socket = friendsSock;
-export const walletSocket: Socket = walletSock;
+// Lazy getters for exported socket references — instantiate on first use
+export function getGameSocket(): Socket {
+  return getGamesSocket();
+}
+
+export function getChatSocket(): Socket {
+  return getChatsSocket();
+}
+
+export function getLeaderboardSocket(): Socket {
+  return getLeaderboardsSocket();
+}
+
+export function getFriendsSocketRef(): Socket {
+  return getFriendsSock();
+}
+
+export function getWalletSocketRef(): Socket {
+  return getWalletSock();
+}
+
+// Backward-compatible exports — lazily delegate to actual socket instances
+function createLazySocket(getter: () => AuthenticatedSocket): Socket {
+  return new Proxy({} as Socket, {
+    get(_target, prop, receiver) {
+      const socket = getter();
+      const value = Reflect.get(socket, prop, receiver);
+      if (typeof value === 'function') {
+        return value.bind(socket);
+      }
+      return value;
+    },
+    set(_target, prop, value) {
+      const socket = getter();
+      return Reflect.set(socket, prop, value);
+    },
+  });
+}
+
+export const gameSocket: Socket = createLazySocket(getGamesSocket);
+export const chatSocket: Socket = createLazySocket(getChatsSocket);
+export const leaderboardSocket: Socket = createLazySocket(
+  getLeaderboardsSocket,
+);
+export const friendsSocket: Socket = createLazySocket(getFriendsSock);
+export const walletSocket: Socket = createLazySocket(getWalletSock);
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
   const win = window as unknown as Record<string, unknown>;
-  win.gameSocket = gameSocket;
-  win.chatSocket = chatSocket;
-
-  // Wire up global connection status tracking AFTER exposing to window.
-  // In E2E tests, the Playwright mock wraps the socket via a defineProperty
-  // setter on window.gameSocket — listeners registered before the wrap only
-  // land on the real socket and are invisible to the mock's trigger().
-  gamesSocket.on('connect', () => {
-    useSocketStatus.getState().setConnected(true);
-  });
-
-  gamesSocket.on('disconnect', () => {
-    useSocketStatus.getState().setConnected(false);
-  });
-
-  gamesSocket.io.on('reconnect_attempt', () => {
-    useSocketStatus.getState().incrementReconnectAttempts();
-  });
-
-  gamesSocket.io.on('reconnect', () => {
-    useSocketStatus.getState().resetReconnectAttempts();
-  });
+  win.gameSocket = getGamesSocket;
+  win.chatSocket = getChatsSocket;
 }
 
 /**
@@ -315,10 +364,11 @@ export function useSocket(event: string, handler: SocketEventHandler): void {
       handler(...args);
     };
 
-    gameSocket.on(event, listener);
+    const s = getGamesSocket();
+    s.on(event, listener);
 
     return () => {
-      gameSocket.off(event, listener);
+      s.off(event, listener);
     };
   }, [event, handler]);
 }
@@ -337,10 +387,11 @@ export function useChatSocket(
       handler(...args);
     };
 
-    chatSocket.on(event, listener);
+    const s = getChatsSocket();
+    s.on(event, listener);
 
     return () => {
-      chatSocket.off(event, listener);
+      s.off(event, listener);
     };
   }, [event, handler]);
 }
@@ -351,9 +402,10 @@ export function useLeaderboardSocket(
 ): void {
   useEffect(() => {
     const listener = (...args: unknown[]) => handler(...args);
-    leaderboardSocket.on(event, listener);
+    const s = getLeaderboardsSocket();
+    s.on(event, listener);
     return () => {
-      leaderboardSocket.off(event, listener);
+      s.off(event, listener);
     };
   }, [event, handler]);
 }
@@ -364,9 +416,10 @@ export function useFriendsSocket(
 ): void {
   useEffect(() => {
     const listener = (...args: unknown[]) => handler(...args);
-    friendsSocket.on(event, listener);
+    const s = getFriendsSock();
+    s.on(event, listener);
     return () => {
-      friendsSocket.off(event, listener);
+      s.off(event, listener);
     };
   }, [event, handler]);
 }

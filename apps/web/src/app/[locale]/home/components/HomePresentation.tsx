@@ -51,10 +51,11 @@ export default function HomePresentation() {
       <div className="video-container-main" data-reveal data-reveal-delay="2">
         {isPlaying ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=0&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+            src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=1&playsinline=1&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
             allowFullScreen
             title="Arcadeum Trailer"
             sandbox="allow-scripts allow-same-origin allow-popups"
+            allow="autoplay; encrypted-media"
             style={{
               position: 'absolute',
               top: 0,
@@ -70,6 +71,7 @@ export default function HomePresentation() {
           <div
             className="video-placeholder-main"
             data-testid="video-placeholder"
+            onClick={handlePlayClick}
           >
             <Image
               src="/images/home/video-cover.webp"

@@ -84,6 +84,14 @@ export function getKingDirections(): Array<[number, number]> {
 export function getDirectionsForPiece(
   piece: Piece,
   playerColor: string,
+): Array<[number, number]> {
+  if (piece.type === 'king') return getKingDirections();
+  return getMoveDirections(playerColor);
+}
+
+export function getCaptureDirectionsForPiece(
+  piece: Piece,
+  playerColor: string,
   backwardCaptures = false,
 ): Array<[number, number]> {
   if (piece.type === 'king') return getKingDirections();
@@ -143,7 +151,7 @@ export function hasCapturesFrom(
   const piece = board[row][col];
   if (!piece || piece.playerId !== playerId) return false;
 
-  const directions = getDirectionsForPiece(
+  const directions = getCaptureDirectionsForPiece(
     piece,
     playerColor,
     backwardCaptures,
@@ -191,17 +199,12 @@ export function findSimpleMoves(
   col: number,
   playerId: string,
   playerColor: string,
-  backwardCaptures = false,
   flyingKings = false,
 ): MoveStep[] {
   const piece = board[row][col];
   if (!piece || piece.playerId !== playerId) return [];
 
-  const directions = getDirectionsForPiece(
-    piece,
-    playerColor,
-    backwardCaptures,
-  );
+  const directions = getDirectionsForPiece(piece, playerColor);
   const moves: MoveStep[] = [];
   const size = board.length;
   const isFlying = flyingKings && piece.type === 'king';
@@ -239,7 +242,7 @@ export function findCaptures(
   const piece = board[row][col];
   if (!piece || piece.playerId !== playerId) return [];
 
-  const directions = getDirectionsForPiece(
+  const directions = getCaptureDirectionsForPiece(
     piece,
     playerColor,
     backwardCaptures,
@@ -338,7 +341,6 @@ export function findAllSimpleMovesForPlayer(
   board: Board,
   playerId: string,
   playerColor: string,
-  backwardCaptures = false,
   flyingKings = false,
 ): MoveStep[] {
   const moves: MoveStep[] = [];
@@ -347,15 +349,7 @@ export function findAllSimpleMovesForPlayer(
     for (let c = 0; c < size; c++) {
       if (board[r][c]?.playerId === playerId) {
         moves.push(
-          ...findSimpleMoves(
-            board,
-            r,
-            c,
-            playerId,
-            playerColor,
-            backwardCaptures,
-            flyingKings,
-          ),
+          ...findSimpleMoves(board, r, c, playerId, playerColor, flyingKings),
         );
       }
     }
@@ -378,13 +372,7 @@ export function getAvailableMovesForPlayer(
     flyingKings,
   );
   if (captures.length > 0) return captures;
-  return findAllSimpleMovesForPlayer(
-    board,
-    playerId,
-    playerColor,
-    backwardCaptures,
-    flyingKings,
-  );
+  return findAllSimpleMovesForPlayer(board, playerId, playerColor, flyingKings);
 }
 
 export function applyMove(

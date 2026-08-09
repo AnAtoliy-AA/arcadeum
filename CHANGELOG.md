@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.40] - 2026-08-09
+
+### Added
+- add more shop backgrounds and translations
+
+### Fixed
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
+
+
+## [1.24.39] - 2026-08-09
+
+### Fixed
+- move connection banner to bottom of screen
+- prevent connection banner from blocking pointer events
+- keep socket connected for anonymous users on games page
+- connect game socket for anonymous users in room
+- centralize socket connection in BrowserRegistry
+- anonymous player connection and quick match issues
+- allow anonymous players to send in-game chat messages
+
+### Documentation
+- add socket architecture reference
+
+
 ## [1.24.38] - 2026-08-09
 
 ### Added

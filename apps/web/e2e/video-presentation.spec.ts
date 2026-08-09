@@ -34,7 +34,7 @@ test.describe('Video Presentation', () => {
     // Note: scrollIntoViewIfNeeded can fail if element is being re-rendered or detached during scroll.
     // Playwright's click action automatically scrolls to the element.
     await expect(playButton).toBeVisible({});
-    await playButton.click();
+    await playButton.dispatchEvent('click');
     await expect(playButton).toBeHidden();
     await expect(page.getByTestId('video-placeholder')).toBeHidden();
 

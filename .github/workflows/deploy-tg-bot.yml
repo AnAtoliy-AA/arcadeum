@@ -27,6 +27,8 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             git fetch origin main
             git reset --hard origin/main
 

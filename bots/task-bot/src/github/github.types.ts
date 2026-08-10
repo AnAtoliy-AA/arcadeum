@@ -113,3 +113,15 @@ export interface CreateWorktreeOptions {
 export interface RemoveWorktreeOptions {
   jobId: string;
 }
+
+export type GitHubIssueView = IssueData;
+export type GitHubIssueSimple = SimpleIssueData;
+export type GitHubPRView = PRData;
+export type GitHubCheck = PRCheck;
+export type GitHubReview = PRReview;
+export type GitHubIssueListItem = IssueListItem;
+export type GitHubIssueBody = GitHubIssue;
+
+export namespace GitHubService {
+  export type GitHubPR = PRData;
+}

@@ -68,6 +68,7 @@ export async function handleImplement(
     githubService: GitHubService;
     queueService: ImplementQueueService;
     prefsService: PreferencesService;
+    logger: any;
   },
   ctx: Context,
 ): Promise<void> {
@@ -97,6 +98,7 @@ export async function handleFix(
     githubService: GitHubService;
     queueService: ImplementQueueService;
     prefsService: PreferencesService;
+    logger: any;
   },
   ctx: Context,
 ): Promise<void> {

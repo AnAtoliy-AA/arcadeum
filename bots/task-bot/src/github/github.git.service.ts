@@ -2,11 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { execFileSync } from 'child_process';
 
-import { GitHubService as GitHubServiceTypes } from './github.types';
+const GITHUB_RATE_LIMIT_DELAY_MS = 500;
 
 @Injectable()
 export class GitHubGitService {
   private readonly logger = new Logger(GitHubGitService.name);
+  private lastGhCallTime = 0;
 
   constructor(private readonly config: ConfigService) {}
 
@@ -65,7 +66,7 @@ export class GitHubGitService {
     branchName: string,
     baseBranch: string,
     cwd?: string,
-    engine: 'opencode',
+    engine: 'opencode' = 'opencode',
   ): { success: boolean; message: string } {
     const workdir = cwd ?? this.getCwd();
     try {

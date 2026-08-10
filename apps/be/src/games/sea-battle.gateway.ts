@@ -16,6 +16,7 @@ import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { ChatScope } from './engines';
 import { SeaBattleTeamConfigService } from './rooms/sea-battle-team-config.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { GamesService } from './games.service';
 import {
   createRunTeamAction,
   handleSetTeamMode,
@@ -39,6 +40,7 @@ export class SeaBattleGateway implements GameMessageHandler {
     private readonly seaBattleService: SeaBattleService,
     private readonly teamConfigService: SeaBattleTeamConfigService,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly gamesService: GamesService,
   ) {}
 
   private get runTeamAction() {
@@ -339,12 +341,7 @@ export class SeaBattleGateway implements GameMessageHandler {
     ) as ChatScope;
     validatePayloadUserId(client, userId);
     try {
-      await this.seaBattleService.postHistoryNote(
-        userId,
-        roomId,
-        message,
-        scope,
-      );
+      await this.gamesService.postHistoryNote(roomId, userId, message, scope);
       client.emit(
         'seaBattle.session.history_note.ack',
         maybeEncrypt({ roomId, userId, scope }),

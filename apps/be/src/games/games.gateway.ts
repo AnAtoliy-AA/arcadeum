@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
@@ -21,6 +22,7 @@ import {
 } from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
 import { handleHistoryNote } from './games.gateway.history-note';
+import { handleSessionDeleteChat } from './games.gateway.session-delete-chat';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -59,6 +61,7 @@ export class GamesGateway {
   constructor(
     private readonly gamesService: GamesService,
     private readonly realtime: GamesRealtimeService,
+    private readonly sessionsService: GameSessionsService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly matchmakingService: GameRoomsMatchmakingService,
@@ -122,6 +125,17 @@ export class GamesGateway {
         this.logger,
         socket,
         this.gamesService,
+        (c, u) => this.validateUserId(c, u),
+        payload,
+      ),
+    );
+
+    registry.set('games.session.delete_chat', (socket, payload) =>
+      handleSessionDeleteChat(
+        this.logger,
+        socket,
+        this.sessionsService,
+        this.realtime,
         (c, u) => this.validateUserId(c, u),
         payload,
       ),

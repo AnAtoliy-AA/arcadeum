@@ -10,12 +10,10 @@ import { CriticalService } from './critical/critical.service';
 import {
   extractRoomAndUser,
   extractString,
-  getIsAuthenticated,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { ChatScope } from './engines';
 
 @Injectable()
 export class CriticalGateway implements GameMessageHandler {
@@ -40,8 +38,6 @@ export class CriticalGateway implements GameMessageHandler {
   }
 
   readonly handlers: Record<string, GameMessageHandlerFn> = {
-    'games.session.history_note': (client, payload) =>
-      this.handleHistoryNote(client, payload),
     'games.session.start': (client, payload) =>
       this.handleSessionStart(client, payload),
     'games.session.play_defuse': (client, payload) =>
@@ -51,49 +47,6 @@ export class CriticalGateway implements GameMessageHandler {
     'games.session.commit_alter_future': (client, payload) =>
       this.handleSessionCommitAlterFuture(client, payload),
   };
-
-  private async handleHistoryNote(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const message = extractString(payload, 'message');
-    const raw =
-      typeof payload?.scope === 'string'
-        ? payload.scope.trim().toLowerCase()
-        : 'all';
-
-    const scope = ['players', 'private'].includes(raw) ? raw : 'all';
-    const isAuthenticated = getIsAuthenticated(client);
-
-    validatePayloadUserId(client, userId);
-
-    try {
-      await this.criticalService.postHistoryNote(
-        userId,
-        roomId,
-        message,
-        scope as ChatScope,
-        isAuthenticated,
-      );
-      client.emit(
-        'games.session.history_note.ack',
-        maybeEncrypt({
-          roomId,
-          userId,
-          scope,
-        }),
-      );
-    } catch (error) {
-      const msg =
-        error instanceof Error && typeof error.message === 'string'
-          ? error.message
-          : 'Unable to post history note.';
-      this.logger.warn(
-        `Failed to post history note for room ${roomId}, user ${userId}: ${msg}`,
-      );
-    }
-  }
 
   private async handleSessionStart(
     client: Socket,

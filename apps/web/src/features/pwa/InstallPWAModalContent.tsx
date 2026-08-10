@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, Paragraph } from 'tamagui';
+import { XStack, Paragraph, Text } from 'tamagui';
 import {
   Avatar,
   Modal,
@@ -60,11 +60,11 @@ export function InstallPWAModalContent() {
           <PWAFeaturesList>
             <PWAFeatureItem>
               <PWAFeatureIcon>⚡</PWAFeatureIcon>
-              {t('pwa.install.features.fast')}
+              <Text>{t('pwa.install.features.fast')}</Text>
             </PWAFeatureItem>
             <PWAFeatureItem>
               <PWAFeatureIcon>🔔</PWAFeatureIcon>
-              {t('pwa.install.features.notifications')}
+              <Text>{t('pwa.install.features.notifications')}</Text>
             </PWAFeatureItem>
           </PWAFeaturesList>
 

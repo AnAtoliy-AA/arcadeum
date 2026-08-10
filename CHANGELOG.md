@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.44] - 2026-08-10
+
+### Fixed
+- open chat panel on mobile before assertions
+- fix in-game chat e2e tests by adding mock echo and fixing field names
+- use correct navigation URL in in-game-chat e2e tests
+- unify all game chat to use shared GamesHistoryFacade.postHistoryNote
+- persist session chat message deletion to OCI
+- catch NotFoundException from Atlas in postHistoryNote for quick-play rooms
+
+
 ## [1.24.43] - 2026-08-09
 
 ### Added

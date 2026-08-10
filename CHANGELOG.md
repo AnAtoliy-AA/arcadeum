@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.1] - 2026-08-10
+
+### Fixed
+- copy scripts dir in Dockerfiles and remove stale git locks
+
+
+## [1.25.0] - 2026-08-10
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.24.46] - 2026-08-10
+
+### Fixed
+- wrap PWA feature text in Text component to fix console error
+
+
+## [1.24.45] - 2026-08-10
+
+### Fixed
+- remove duplicate release poster and add Instagram channel
+
+
+## [1.24.44] - 2026-08-10
+
+### Fixed
+- open chat panel on mobile before assertions
+- fix in-game chat e2e tests by adding mock echo and fixing field names
+- use correct navigation URL in in-game-chat e2e tests
+- unify all game chat to use shared GamesHistoryFacade.postHistoryNote
+- persist session chat message deletion to OCI
+- catch NotFoundException from Atlas in postHistoryNote for quick-play rooms
+
+
+## [1.24.43] - 2026-08-09
+
+### Added
+- implement visual, audio and cli enhancements (ARC-SHORTS)
+
+
 ## [1.24.42] - 2026-08-09
 
 ### Improved

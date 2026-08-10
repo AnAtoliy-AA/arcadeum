@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.46] - 2026-08-10
+
+### Fixed
+- wrap PWA feature text in Text component to fix console error
+
+
 ## [1.24.45] - 2026-08-10
 
 ### Fixed

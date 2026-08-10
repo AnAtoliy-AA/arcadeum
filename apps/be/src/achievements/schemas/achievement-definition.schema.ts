@@ -67,3 +67,4 @@ export type AchievementDefinitionDocument = AchievementDefinition;
 export const AchievementDefinitionSchema = SchemaFactory.createForClass(
   AchievementDefinition,
 );
+AchievementDefinitionSchema.index({ category: 1, sortOrder: 1 });

@@ -3,6 +3,7 @@
 exports[`i18n completeness > every non-EN locale matches the keys present in EN (modulo baseline) 1`] = `
 {
   "by": [
+    "common.statuses.connectionLost",
     "games.critical_v1.variants.adventure.alter_future_3x",
     "games.critical_v1.variants.adventure.alter_future_5x",
     "games.critical_v1.variants.adventure.blackout",
@@ -511,8 +512,11 @@ exports[`i18n completeness > every non-EN locale matches the keys present in EN 
     "games.critical_v1.variants.zen.tribute",
     "games.critical_v1.variants.zen.wildcard",
   ],
-  "es": [],
+  "es": [
+    "common.statuses.connectionLost",
+  ],
   "fr": [
+    "common.statuses.connectionLost",
     "games.critical_v1.variants.adventure.alter_future_3x",
     "games.critical_v1.variants.adventure.alter_future_5x",
     "games.critical_v1.variants.adventure.blackout",
@@ -1022,6 +1026,7 @@ exports[`i18n completeness > every non-EN locale matches the keys present in EN 
     "games.critical_v1.variants.zen.wildcard",
   ],
   "ru": [
+    "common.statuses.connectionLost",
     "games.critical_v1.variants.adventure.alter_future_3x",
     "games.critical_v1.variants.adventure.alter_future_5x",
     "games.critical_v1.variants.adventure.blackout",

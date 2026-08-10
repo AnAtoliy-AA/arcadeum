@@ -12,9 +12,17 @@ import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { GameSessionsService } from './sessions/game-sessions.service';
+import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
+import {
+  handleRoomChat,
+  handleDeleteRoomChat,
+} from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
+import { handleHistoryNote } from './games.gateway.history-note';
+import { handleSessionDeleteChat } from './games.gateway.session-delete-chat';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -29,6 +37,18 @@ import {
 } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
+import type { GameMessageHandler } from './game-message-handler.interface';
+import { CheckersGateway } from './checkers.gateway';
+import { TicTacToeGateway } from './tic-tac-toe.gateway';
+import { ChessGateway } from './chess.gateway';
+import { CascadeGateway } from './cascade.gateway';
+import { CatDashGateway } from './cat-dash.gateway';
+import { TexasHoldemGateway } from './texas-holdem.gateway';
+import { CriticalGateway } from './critical.gateway';
+import { CriticalActionsGateway } from './critical-actions.gateway';
+import { SeaBattleGateway } from './sea-battle.gateway';
+import { GlimwormGateway } from './glimworm.gateway';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -41,25 +61,112 @@ export class GamesGateway {
   constructor(
     private readonly gamesService: GamesService,
     private readonly realtime: GamesRealtimeService,
+    private readonly sessionsService: GameSessionsService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly matchmakingService: GameRoomsMatchmakingService,
+    private readonly checkersHandler: CheckersGateway,
+    private readonly ticTacToeHandler: TicTacToeGateway,
+    private readonly chessHandler: ChessGateway,
+    private readonly cascadeHandler: CascadeGateway,
+    private readonly catDashHandler: CatDashGateway,
+    private readonly texasHoldemHandler: TexasHoldemGateway,
+    private readonly criticalHandler: CriticalGateway,
+    private readonly criticalActionsHandler: CriticalActionsGateway,
+    private readonly seaBattleHandler: SeaBattleGateway,
+    private readonly glimwormHandler: GlimwormGateway,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
 
-    // Raise per-socket listener cap for the shared games namespace.
-    const PER_SOCKET_LISTENER_CAP = 20;
-    this.server.use((socket, next) => {
-      socket.setMaxListeners(PER_SOCKET_LISTENER_CAP);
-      next();
+    const gameHandlers: GameMessageHandler[] = [
+      this.checkersHandler,
+      this.ticTacToeHandler,
+      this.chessHandler,
+      this.cascadeHandler,
+      this.catDashHandler,
+      this.texasHoldemHandler,
+      this.criticalHandler,
+      this.criticalActionsHandler,
+      this.seaBattleHandler,
+      this.glimwormHandler,
+    ];
+
+    const registry = new Map<string, GameMessageHandler['handlers'][string]>();
+    for (const handler of gameHandlers) {
+      for (const [event, fn] of Object.entries(handler.handlers)) {
+        registry.set(event, fn);
+      }
+    }
+
+    registry.set('games.room.chat', (socket, payload) =>
+      handleRoomChat(
+        this.logger,
+        this.server,
+        socket,
+        this.realtime,
+        this.gamesService,
+        payload,
+      ),
+    );
+    registry.set('games.room.delete_chat', (socket, payload) =>
+      handleDeleteRoomChat(
+        this.logger,
+        this.server,
+        socket,
+        this.realtime,
+        this.gamesService,
+        payload,
+      ),
+    );
+
+    registry.set('games.session.history_note', (socket, payload) =>
+      handleHistoryNote(
+        this.logger,
+        socket,
+        this.gamesService,
+        (c, u) => this.validateUserId(c, u),
+        payload,
+      ),
+    );
+
+    registry.set('games.session.delete_chat', (socket, payload) =>
+      handleSessionDeleteChat(
+        this.logger,
+        socket,
+        this.sessionsService,
+        this.realtime,
+        (c, u) => this.validateUserId(c, u),
+        payload,
+      ),
+    );
+
+    this.server.on('connection', (socket: Socket) => {
+      socket.onAny((event: string, ...args: unknown[]) => {
+        const handler = registry.get(event);
+        if (handler) {
+          const result = handler(
+            socket,
+            (args[0] as Record<string, unknown>) ?? {},
+          );
+          if (result && typeof result === 'object' && 'catch' in result) {
+            result.catch((err: unknown) => {
+              this.logger.error(
+                `onAny handler failed for ${event}: ${err instanceof Error ? err.message : String(err)}`,
+              );
+            });
+          }
+        }
+      });
     });
 
-    this.logger.debug('Games gateway initialized.');
+    this.logger.debug(
+      `Games gateway initialized with ${registry.size} game event handlers.`,
+    );
   }
 
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
-    // Verify JWT if present (optional — guest mode allowed without token)
     const authUserId = await verifySocketJwt(
       client,
       this.jwt,
@@ -74,22 +181,19 @@ export class GamesGateway {
       );
       this.realtime.trackSocket(authUserId, client.id);
     } else {
-      // Store the anonId from handshake to prevent impersonation
       const anonId =
         typeof client.handshake?.query?.anonId === 'string'
           ? client.handshake.query.anonId
           : undefined;
       if (anonId) {
         (client.data as Record<string, unknown>).anonId = anonId;
+        this.realtime.trackSocket(anonId, client.id);
       }
       this.logger.verbose(
         `Anonymous client connected to games namespace: ${client.id}`,
       );
     }
 
-    // Only send encryption key to clients with a valid identity
-    // (JWT-authenticated or anonymous with a proper anon_ ID).
-    // Never broadcast the key to completely unauthenticated connections.
     if (isSocketEncryptionEnabled()) {
       const hasIdentity =
         authUserId ||
@@ -118,12 +222,15 @@ export class GamesGateway {
     this.logger.verbose(`Client disconnected ${client.id}`);
 
     const userId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
-    if (userId) {
-      this.realtime.untrackSocket(userId, client.id);
+      string | undefined;
+    const anonId = (client.data as Record<string, unknown>)?.anonId as
+      string | undefined;
+    const activeUserId = userId || anonId;
+    if (activeUserId) {
+      this.realtime.untrackSocket(activeUserId, client.id);
+      this.matchmakingService.leaveQueue(activeUserId);
     }
-    if (!userId || !this.server) return;
+    if (!activeUserId || !this.server) return;
 
     for (const room of client.rooms) {
       if (room.startsWith('game-room:')) {
@@ -136,20 +243,13 @@ export class GamesGateway {
     }
   }
 
-  /**
-   * Prevents users from impersonating others.
-   * For authenticated users: ensures payload userId matches JWT.
-   * For anonymous users: ensures payload userId matches the anonId from handshake.
-   */
   private validateUserId(client: Socket, payloadUserId: string): void {
     const authUserId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     const isAuthenticated =
       (client.data as Record<string, unknown>)?.authenticated === true;
     const anonId = (client.data as Record<string, unknown>)?.anonId as
-      | string
-      | undefined;
+      string | undefined;
 
     if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
       this.logger.warn(
@@ -242,8 +342,7 @@ export class GamesGateway {
     const session = await this.gamesService.findSessionByRoom(roomId);
     if (!session) return;
     const userId = (client.data as Record<string, unknown>)?.userId as
-      | string
-      | undefined;
+      string | undefined;
     let diffSession = session;
     if (userId) {
       try {
@@ -319,45 +418,6 @@ export class GamesGateway {
     );
   }
 
-  @SubscribeMessage('games.session.history_note')
-  async handleHistoryNote(
-    @MessageBody()
-    payload: {
-      roomId: string;
-      userId: string;
-      message: string;
-      scope: string;
-    },
-    @ConnectedSocket() client: Socket,
-  ): Promise<void> {
-    const roomId = extractString(payload, 'roomId');
-    const userId = extractString(payload, 'userId');
-    const message = extractString(payload, 'message');
-    const scopeRaw =
-      typeof payload?.scope === 'string'
-        ? payload.scope.trim().toLowerCase()
-        : 'all';
-    const scope = ['players', 'private'].includes(scopeRaw) ? scopeRaw : 'all';
-
-    this.validateUserId(client, userId);
-
-    try {
-      await this.gamesService.postHistoryNote(
-        roomId,
-        userId,
-        message,
-        scope as 'all' | 'players' | 'private',
-      );
-      client.emit(
-        'games.session.history_note.ack',
-        maybeEncrypt({ roomId, userId, scope }),
-      );
-    } catch (error) {
-      this.logger.error(
-        `handleHistoryNote failed for room ${roomId}: ${error}`,
-      );
-    }
-  }
   @SubscribeMessage('games.session.undo_request')
   onUndoRequest(
     @ConnectedSocket() client: Socket,
@@ -386,5 +446,39 @@ export class GamesGateway {
     payload: unknown,
   ): void {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
+  }
+
+  @SubscribeMessage('games.matchmaking.join')
+  handleMatchmakingJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      userId: string;
+      gameId: string;
+      variant?: string;
+    },
+  ): void {
+    const userId = extractString(payload, 'userId');
+    const gameId = extractString(payload, 'gameId');
+    const variant = payload.variant ? String(payload.variant) : undefined;
+
+    this.validateUserId(client, userId);
+
+    this.matchmakingService.joinQueue(userId, client.id, gameId, variant);
+    client.emit('games.matchmaking.joined', maybeEncrypt({ gameId, variant }));
+  }
+
+  @SubscribeMessage('games.matchmaking.leave')
+  handleMatchmakingLeave(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: {
+      userId: string;
+    },
+  ): void {
+    const userId = extractString(payload, 'userId');
+    this.validateUserId(client, userId);
+    this.matchmakingService.leaveQueue(userId);
+    client.emit('games.matchmaking.left', maybeEncrypt({}));
   }
 }

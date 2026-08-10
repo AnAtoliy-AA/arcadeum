@@ -3,7 +3,8 @@ import type { Socket } from 'socket.io-client';
 import * as encryption from './socket-encryption';
 import { renderHook, waitFor } from '@testing-library/react';
 
-const { mockSocket } = vi.hoisted(() => {
+const { mockSocket, rawEmit } = vi.hoisted(() => {
+  const rawEmit = vi.fn();
   return {
     mockSocket: {
       connected: false,
@@ -21,9 +22,13 @@ const { mockSocket } = vi.hoisted(() => {
       }),
       on: vi.fn(),
       off: vi.fn(),
-      emit: vi.fn(),
+      emit: rawEmit,
       auth: {},
+      io: {
+        on: vi.fn(),
+      },
     },
+    rawEmit,
   };
 });
 
@@ -71,14 +76,12 @@ describe('socket', () => {
     vi.spyOn(encryption, 'maybeEncrypt').mockResolvedValue(
       'encrypted-data' as unknown as Uint8Array,
     );
+    mockSocket.connected = true;
     await emitEncrypted(mockSocket as unknown as Socket, 'test-event', {
       foo: 'bar',
     });
     expect(encryption.maybeEncrypt).toHaveBeenCalledWith({ foo: 'bar' });
-    expect(mockSocket.emit).toHaveBeenCalledWith(
-      'test-event',
-      'encrypted-data',
-    );
+    expect(rawEmit).toHaveBeenCalledWith('test-event', 'encrypted-data');
   });
 
   it('handles encryption key from server', async () => {
@@ -130,9 +133,9 @@ describe('socket', () => {
     expect(mockSocket.auth).toEqual({});
   });
 
-  it('disconnects games + chat + leaderboards + friends sockets when connected', () => {
+  it('disconnects games + chat + leaderboards + friends + wallet sockets when connected', () => {
     mockSocket.connected = true;
-    // Override strict behavior for this test to allow all four checks to
+    // Override strict behavior for this test to allow all five checks to
     // pass on the shared mock instance.
     (mockSocket.disconnect as unknown as Mock).mockImplementation(
       function (this: { connected: boolean }) {
@@ -142,7 +145,7 @@ describe('socket', () => {
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(4);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(5);
 
     // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(

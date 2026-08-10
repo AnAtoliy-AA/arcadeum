@@ -98,3 +98,22 @@ export async function revokeInventoryAction(input: {
   if (!res.ok) return { ok: false, error: classify(res.status) };
   return { ok: true, data: (await res.json()) as InventoryItemView };
 }
+
+export interface SearchedUser {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+}
+
+export async function searchUsersAction(
+  query: string,
+): Promise<AdminShopActionResult<SearchedUser[]>> {
+  if (!query.trim()) return { ok: true, data: [] };
+  const res = await serverAuthFetch(
+    `/auth/users/search?q=${encodeURIComponent(query)}&includeSelf=true`,
+  );
+  if (!res.ok) return { ok: false, error: classify(res.status) };
+  return { ok: true, data: (await res.json()) as SearchedUser[] };
+}
+

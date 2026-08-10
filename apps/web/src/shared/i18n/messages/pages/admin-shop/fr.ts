@@ -41,6 +41,15 @@ export const adminShopFr = {
     cancel: 'Cancel',
     success: 'Item granted.',
     error: "Couldn't grant the item. Check inputs and try again.",
+    searchUserPlaceholder: 'Type to search user (email or username)...',
+    searchItemPlaceholder: 'Type to search or select item...',
+    suggestedReasonsLabel: 'Suggested reasons:',
+    reasons: {
+      support: 'Support case resolution',
+      reward: 'Event reward',
+      compensation: 'Compensation for downtime',
+      test: 'Test / Debug',
+    },
   },
   inspectDialog: {
     title: 'Inventory for {userId}',

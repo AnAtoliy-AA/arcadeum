@@ -31,6 +31,7 @@ export const en = {
   },
   statuses: {
     authenticated: 'You are signed in.',
+    connectionLost: 'Connection lost. Reconnecting...',
   },
   roles: {
     free: 'Free',

@@ -38,6 +38,14 @@ function isSecureOrigin(req: Request): boolean {
   return req.protocol === 'https' || req.get('x-forwarded-proto') === 'https';
 }
 
+function getCookieDomain(req: Request): string | undefined {
+  const host = (req.get('host') ?? '').split(':')[0].toLowerCase();
+  if (host === 'arcadeum.games' || host.endsWith('.arcadeum.games')) {
+    return '.arcadeum.games';
+  }
+  return undefined;
+}
+
 function setTokenCookies(
   res: Response,
   req: Request,
@@ -47,6 +55,7 @@ function setTokenCookies(
   refreshTokenExpiresAt: Date,
 ): void {
   const secure = isSecureOrigin(req);
+  const domain = getCookieDomain(req);
   const maxAgeAccess = accessTokenExpiresAt
     ? Math.min(
         accessTokenExpiresAt.getTime() - Date.now(),
@@ -61,7 +70,7 @@ function setTokenCookies(
     httpOnly: true,
     secure,
     sameSite: 'lax',
-    domain: '.arcadeum.games',
+    ...(domain ? { domain } : {}),
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
@@ -70,7 +79,7 @@ function setTokenCookies(
     httpOnly: true,
     secure,
     sameSite: 'lax',
-    domain: '.arcadeum.games',
+    ...(domain ? { domain } : {}),
     path: '/',
     maxAge: Math.max(maxAgeRefresh, 0),
   });
@@ -78,12 +87,13 @@ function setTokenCookies(
 
 function clearTokenCookies(res: Response, req: Request): void {
   const secure = isSecureOrigin(req);
+  const domain = getCookieDomain(req);
   const options = {
     path: '/',
     httpOnly: true,
     secure,
     sameSite: 'lax' as const,
-    domain: '.arcadeum.games',
+    ...(domain ? { domain } : {}),
   };
   res.clearCookie('access_token', options);
   res.clearCookie('refresh_token', options);
@@ -257,7 +267,11 @@ export class AuthController {
   @Get('users/search')
   @UseGuards(JwtAuthGuard)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
-  async searchUsers(@Req() req: Request, @Query('q') query?: string) {
+  async searchUsers(
+    @Req() req: Request,
+    @Query('q') query?: string,
+    @Query('includeSelf') includeSelf?: string,
+  ) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
@@ -265,6 +279,7 @@ export class AuthController {
     return this.authService.searchUsers({
       query: query ?? '',
       requestingUserId: user.userId,
+      includeSelf: includeSelf === 'true',
     });
   }
 

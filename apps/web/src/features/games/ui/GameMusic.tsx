@@ -26,6 +26,32 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   if (!musicEnabled || !player.visible) return null;
 
+  if (player.loading) {
+    return (
+      <YStack
+        position="fixed"
+        zIndex={1000}
+        width={200}
+        paddingVertical="$3"
+        paddingHorizontal="$3"
+        borderRadius={28}
+        backgroundColor="rgba(255,255,255,0.18)"
+        borderWidth={1}
+        borderColor="rgba(255,255,255,0.5)"
+        style={{
+          backdropFilter: 'blur(50px) saturate(1.6)',
+          WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
+          left: 16,
+          bottom: 16,
+        }}
+      >
+        <Text fontSize={12} color="rgba(255,255,255,0.7)">
+          Loading music…
+        </Text>
+      </YStack>
+    );
+  }
+
   const labels = {
     play: t('musicPlayer.play'),
     pause: t('musicPlayer.pause'),

@@ -42,7 +42,6 @@ export default function ChatPage() {
   // Store
   const {
     messages,
-    isConnected,
     setMessages,
     reset,
     loading: isLoading,
@@ -59,7 +58,7 @@ export default function ChatPage() {
   }
 
   // Socket Hook
-  const { sendMessage } = useChatSocket({ chatId, receiverIds });
+  const { sendMessage, isConnected } = useChatSocket({ chatId, receiverIds });
 
   // Initial fetch
   useEffect(() => {
@@ -147,7 +146,6 @@ export default function ChatPage() {
         <GlassCard
           flex={1}
           p={0}
-          overflow="hidden"
           gap={0}
           borderWidth={1}
           borderColor="$glassBorder"

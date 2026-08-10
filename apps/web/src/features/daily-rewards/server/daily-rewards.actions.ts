@@ -20,18 +20,25 @@ export async function claimDailyRewardAction(): Promise<ClaimDailyRewardResult> 
     res = await serverAuthFetch('/daily-rewards/claim', {
       method: 'POST',
     });
-  } catch {
+  } catch (err) {
+    console.error('[claimDailyReward] fetch failed:', err);
     return { ok: false, code: 'unknown' };
   }
 
   if (res.status === 409) return { ok: false, code: 'already_claimed' };
   if (res.status === 401) return { ok: false, code: 'unauthorized' };
-  if (!res.ok) return { ok: false, code: 'unknown' };
+  if (!res.ok) {
+    const body = await res.text().catch(() => '<unreadable>');
+    console.error(`[claimDailyReward] backend ${res.status}:`, body);
+    return { ok: false, code: 'unknown' };
+  }
 
   let data: DailyRewardClaimResult;
   try {
     data = (await res.json()) as DailyRewardClaimResult;
   } catch {
+    const raw = await res.text().catch(() => '<unreadable>');
+    console.error('[claimDailyReward] JSON parse failed, raw:', raw);
     return { ok: false, code: 'unknown' };
   }
 

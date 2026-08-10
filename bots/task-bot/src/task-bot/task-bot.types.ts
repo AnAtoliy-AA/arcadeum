@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-type Engine = 'opencode' | 'mimo';
+type Engine = 'opencode';
 type Priority = 'low' | 'normal' | 'high' | 'urgent';
 
 interface ParsedTask {

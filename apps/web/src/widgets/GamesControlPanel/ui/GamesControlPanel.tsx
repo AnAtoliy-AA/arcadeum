@@ -7,6 +7,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
+import { useGameStore } from '@/features/games/store/gameStore';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   Modal,
@@ -35,6 +36,9 @@ interface GamesControlPanelProps {
   isFullscreen?: boolean;
   toggleFullscreen?: () => void;
   isSpectating?: boolean;
+  isGameOver?: boolean;
+  onRematch?: () => void;
+  rematchLoading?: boolean;
 }
 
 export function GamesControlPanel(props: GamesControlPanelProps) {
@@ -53,6 +57,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     isFullscreen,
     toggleFullscreen,
     isSpectating,
+    isGameOver,
+    onRematch,
+    rematchLoading,
   } = props;
 
   const { snapshot } = useSessionTokens();
@@ -85,6 +92,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   }, [roomId, snapshot.userId, router]);
 
   const handleExitRoom = useCallback(() => {
+    useGameStore.setState({ room: null, session: null });
     router.push('/games');
   }, [router]);
 
@@ -316,6 +324,31 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       )}
 
       {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
+
+      {isGameOver && onRematch && (
+        <Button
+          variant="primary"
+          size="sm"
+          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          onClick={onRematch}
+          disabled={rematchLoading}
+          data-testid="rematch-button"
+          animation="quick"
+          pressStyle={{ scale: 0.95 }}
+        >
+          🔄
+          <Text $sm={{ display: 'none' }}>
+            {' ' +
+              (rematchLoading
+                ? t(
+                    'games.table.rematch.loading' as import('@/shared/lib/useTranslation').TranslationKey,
+                  ) || 'Loading...'
+                : t(
+                    'games.table.rematch.button' as import('@/shared/lib/useTranslation').TranslationKey,
+                  ) || 'Play Again')}
+          </Text>
+        </Button>
+      )}
 
       <Button
         variant="glass"

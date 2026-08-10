@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/be/**'
+      - 'apps/web/**'
       - 'bots/tg-bot/**'
       - 'bots/task-bot/**'
       - 'scripts/shorts-factory/**'
@@ -26,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+      web: ${{ steps.filter.outputs.web }}
       task-bot: ${{ steps.filter.outputs.task-bot }}
       shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
     steps:
@@ -40,10 +42,51 @@ jobs:
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
+            web:
+              - 'apps/web/**'
+              - 'packages/ui/**'
             task-bot:
               - 'bots/task-bot/**'
             shorts-factory:
               - 'scripts/shorts-factory/**'
+
+  deploy-web:
+    name: Deploy Web (Next.js)
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            cd apps/web
+            pnpm build
+
+            # Copy static assets + public into standalone output
+            STANDALONE=".next/standalone/apps/web"
+            cp -r .next/static "$STANDALONE/.next/static"
+            cp -r public "$STANDALONE/public" 2>/dev/null || true
+
+            cd "$DEPLOY_DIR"
+            pm2 restart arcadeum-web
+
+            echo "==> Web deploy done (branch: $BRANCH)!"
+            pm2 list arcadeum-web
 
   deploy-tg-bot:
     name: Deploy TG Bot + Backend
@@ -72,12 +115,45 @@ jobs:
             pnpm --filter be build
             pnpm --filter tg-bot build
 
-            pm2 restart arcadeum-be arcadeum-tg-bot || \
-              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
-               pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
-               pm2 save)
+            pm2 restart arcadeum-be || \
+              (pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js" && pm2 save)
+            pm2 restart arcadeum-tg-bot || \
+              (pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && pm2 save)
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
+            pm2 list
+
+  deploy-be-reserve:
+    name: Deploy Reserve Backend (Worker)
+    needs: changes
+    if: needs.changes.outputs.be-or-tg == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_WORKER_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_WORKER_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+            pnpm --filter be build
+
+            pm2 restart arcadeum-be-reserve || \
+              pm2 start /opt/arcadeum/scripts/start-be-reserve.sh --name arcadeum-be-reserve
+
+            pm2 save
+
+            echo "==> Reserve BE deploy done (branch: $BRANCH)!"
             pm2 list
 
   deploy-task-bot:
@@ -103,7 +179,7 @@ jobs:
             git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
 
             cd "$DEPLOY_DIR/bots/task-bot"
-            npm install --legacy-peer-deps 2>/dev/null || npm install
+            npm install --legacy-peer-deps --ignore-scripts 2>/dev/null || npm install --ignore-scripts
             npx tsc
 
             pm2 restart task-bot task-bot-worker || \
@@ -138,6 +214,26 @@ jobs:
 
             echo "==> Installing dependencies..."
             pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+            echo "==> Installing Playwright browsers..."
+            npx playwright install chromium --with-deps 2>/dev/null || npx playwright install chromium
+
+            echo "==> Creating directories..."
+            mkdir -p raw_captures output pending
+
+            echo "==> Ensuring shorts-factory wrapper script exists..."
+            if [ ! -f /opt/arcadeum/scripts/shorts-factory-random.sh ]; then
+              sudo tee /opt/arcadeum/scripts/shorts-factory-random.sh > /dev/null <<'WRAPPER'
+            #!/usr/bin/env bash
+            DELAY=$(( RANDOM % 7200 ))
+            echo "[$(date)] Waiting ${DELAY} seconds before running shorts factory..."
+            sleep $DELAY
+            cd /opt/arcadeum
+            exec node scripts/shorts-factory/factory.js
+            WRAPPER
+              sudo chmod +x /opt/arcadeum/scripts/shorts-factory-random.sh
+              echo "Created shorts-factory-random.sh"
+            fi
 
             echo "==> Restarting shorts-factory timer..."
             sudo systemctl restart shorts-factory.timer 2>/dev/null || true

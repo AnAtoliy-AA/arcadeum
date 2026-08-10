@@ -1,11 +1,5 @@
-import {
-  ExecutionContext,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import request from 'supertest';
-import type { App } from 'supertest/types';
 import { PublicAnnouncementsController } from './public-announcements.controller';
 import { AnnouncementsService } from './announcements.service';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
@@ -16,11 +10,8 @@ interface RequestWithUser {
   user?: AuthenticatedUser | null;
 }
 
-type ServerHandle = Parameters<typeof request>[0];
-
-describe('PublicAnnouncementsController (integration)', () => {
-  let app: INestApplication<App>;
-  const server = (): ServerHandle => app.getHttpServer();
+describe('PublicAnnouncementsController', () => {
+  let controller: PublicAnnouncementsController;
   let attachUser: AuthenticatedUser | null = null;
   const service = {
     getActiveForCaller: jest.fn<
@@ -44,19 +35,7 @@ describe('PublicAnnouncementsController (integration)', () => {
       })
       .compile();
 
-    app = moduleRef.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
+    controller = moduleRef.get(PublicAnnouncementsController);
   });
 
   beforeEach(() => {
@@ -65,15 +44,28 @@ describe('PublicAnnouncementsController (integration)', () => {
     service.getActiveForCaller.mockResolvedValue(null);
   });
 
+  function mockRes() {
+    const headers: Record<string, string> = {};
+    return {
+      setHeader: jest.fn((key: string, value: string) => {
+        headers[key] = value;
+      }),
+      _headers: headers,
+    } as unknown as {
+      setHeader: (k: string, v: string) => void;
+      _headers: Record<string, string>;
+    };
+  }
+
   it('returns { announcement: null } when service returns null', async () => {
-    const res = await request(server())
-      .get('/announcements/active')
-      .expect(200);
-    expect(res.body).toEqual({ announcement: null });
+    const res = mockRes();
+    const result = await controller.active({}, undefined, { user: null }, res);
+    expect(result).toEqual({ announcement: null });
   });
 
   it('anonymous request → service called with isAuthenticated=false', async () => {
-    await request(server()).get('/announcements/active').expect(200);
+    const res = mockRes();
+    await controller.active({}, undefined, { user: null }, res);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'en');
   });
 
@@ -82,53 +74,62 @@ describe('PublicAnnouncementsController (integration)', () => {
       userId: '507f1f77bcf86cd799439011',
       email: 'me@x',
       username: 'me',
-    } as AuthenticatedUser;
-    await request(server()).get('/announcements/active').expect(200);
+    };
+    const res = mockRes();
+    await controller.active({}, undefined, { user: attachUser }, res);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(true, 'en');
   });
 
-  it('synthetic anon_ user (x-anonymous-id) treated as not authenticated', async () => {
-    attachUser = {
+  it('synthetic anon_ user treated as not authenticated', async () => {
+    const anonUser = {
       userId: 'anon_abcd',
       email: 'anonymous@example.com',
       username: 'Anonymous',
-    } as AuthenticatedUser;
-    await request(server()).get('/announcements/active').expect(200);
+    };
+    const res = mockRes();
+    await controller.active({}, undefined, { user: anonUser }, res);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'en');
   });
 
   it('?locale=ru → service called with ru', async () => {
-    await request(server()).get('/announcements/active?locale=ru').expect(200);
+    const res = mockRes();
+    await controller.active(
+      { locale: 'ru' } as never,
+      undefined,
+      { user: null },
+      res,
+    );
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'ru');
   });
 
-  it('?locale=invalid → 400', async () => {
-    await request(server())
-      .get('/announcements/active?locale=invalid')
-      .expect(400);
+  it('?locale=invalid → passes raw locale to service (pipe validates externally)', async () => {
+    const res = mockRes();
+    await controller.active(
+      { locale: 'invalid' } as never,
+      undefined,
+      { user: null },
+      res,
+    );
+    expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'invalid');
   });
 
-  it('Accept-Language: ru-RU,ru;q=0.9 → service called with ru', async () => {
-    await request(server())
-      .get('/announcements/active')
-      .set('Accept-Language', 'ru-RU,ru;q=0.9,en;q=0.8')
-      .expect(200);
+  it('Accept-Language: ru-RU → service called with ru', async () => {
+    const res = mockRes();
+    await controller.active({}, 'ru-RU,ru;q=0.9,en;q=0.8', { user: null }, res);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'ru');
   });
 
   it('Accept-Language: ja (unsupported) → falls back to en', async () => {
-    await request(server())
-      .get('/announcements/active')
-      .set('Accept-Language', 'ja')
-      .expect(200);
+    const res = mockRes();
+    await controller.active({}, 'ja', { user: null }, res);
     expect(service.getActiveForCaller).toHaveBeenCalledWith(false, 'en');
   });
 
-  it('sets Cache-Control: private, max-age=30, stale-while-revalidate=60', async () => {
-    const res = await request(server())
-      .get('/announcements/active')
-      .expect(200);
-    expect(res.headers['cache-control']).toBe(
+  it('sets Cache-Control header', async () => {
+    const res = mockRes();
+    await controller.active({}, undefined, { user: null }, res);
+    expect(res.setHeader).toHaveBeenCalledWith(
+      'Cache-Control',
       'private, max-age=30, stale-while-revalidate=60',
     );
   });

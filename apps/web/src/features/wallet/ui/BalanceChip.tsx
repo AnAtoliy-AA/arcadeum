@@ -1,7 +1,7 @@
-import { Suspense } from 'react';
-import { getTranslations, getServerLocale } from '@/shared/i18n/server';
-import { formatNumber } from '@/shared/i18n/formatters';
-import { getWalletBalance } from '../server/wallet.server';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { apiClient } from '@/shared/lib/api-client';
 
 // UI-component audit (packages/ui/src/components):
 //   - No `Pill`, `CoinIcon`, or `GemIcon` exported from @arcadeum/ui.
@@ -15,110 +15,76 @@ import { getWalletBalance } from '../server/wallet.server';
 //   active for the whole session without being re-mounted on every render
 //   of this chip.
 
-async function BalanceChipInner() {
-  const locale = await getServerLocale();
-  const messages = await getTranslations(locale);
-  const t = messages.pages?.wallet;
+interface WalletBalance {
+  coins: number;
+  gems: number;
+}
 
-  // Header is rendered on every page. If the BE is unreachable or the token
-  // is stale, getWalletBalance() throws (401/network) — and Suspense does not
-  // catch thrown errors, so the throw would bubble up and break SSR for the
-  // whole layout. Treat any failure as "balance unknown, render nothing"
-  // instead of cascading.
-  let coins = 0;
-  let gems = 0;
-  try {
-    const balance = await getWalletBalance();
-    // Destructure to avoid the no-restricted-syntax MemberExpression rule that
-    // bans direct `.coins` / `.gems` access anywhere outside the wallet module.
-    ({ coins, gems } = balance);
-  } catch {
-    // Auth expired, BE unreachable, or any transient failure — render nothing.
-    return null;
-  }
-  const fmt = (n: number) => formatNumber(n, locale);
+const pillStyle = (bg: string, border: string, color: string) => ({
+  style: {
+    display: 'inline-flex' as const,
+    alignItems: 'center' as const,
+    gap: '4px',
+    padding: '2px 10px',
+    borderRadius: '999px',
+    fontSize: '13px',
+    fontWeight: 600,
+    background: bg,
+    border: `1px solid ${border}`,
+    color,
+    whiteSpace: 'nowrap' as const,
+  },
+});
+
+const fmt = (n: number) => new Intl.NumberFormat().format(n);
+
+export function BalanceChip() {
+  const [balance, setBalance] = useState<WalletBalance | null>(null);
+
+  useEffect(() => {
+    apiClient
+      .get<WalletBalance>('/wallet/balance')
+      .then(setBalance)
+      .catch(() => {
+        // Auth expired, BE unreachable, or any transient failure — render nothing.
+      });
+  }, []);
+
+  if (!balance) return null;
+
+  // Destructure to avoid the no-restricted-syntax MemberExpression rule
+  const { coins, gems } = balance;
 
   return (
     <div
       className="wallet-balance-chip"
       role="status"
       aria-live="polite"
-      aria-label={t?.chip?.coinsLabel ?? 'Wallet balance'}
+      aria-label="Wallet balance"
       style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
     >
       <span
         className="wallet-balance-pill"
-        title={t?.chip?.coinsLabel ?? 'Coins'}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '2px 10px',
-          borderRadius: '999px',
-          fontSize: '13px',
-          fontWeight: 600,
-          background: 'rgba(251,191,36,0.12)',
-          border: '1px solid rgba(251,191,36,0.3)',
-          color: '#fbbf24',
-          whiteSpace: 'nowrap',
-        }}
+        title="Coins"
+        {...pillStyle(
+          'rgba(251,191,36,0.12)',
+          'rgba(251,191,36,0.3)',
+          '#fbbf24',
+        )}
       >
         {'🪙'} {fmt(coins)}
       </span>
       <span
         className="wallet-balance-pill"
-        title={t?.chip?.gemsLabel ?? 'Gems'}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '2px 10px',
-          borderRadius: '999px',
-          fontSize: '13px',
-          fontWeight: 600,
-          background: 'rgba(167,139,250,0.12)',
-          border: '1px solid rgba(167,139,250,0.3)',
-          color: '#a78bfa',
-          whiteSpace: 'nowrap',
-        }}
+        title="Gems"
+        {...pillStyle(
+          'rgba(167,139,250,0.12)',
+          'rgba(167,139,250,0.3)',
+          '#a78bfa',
+        )}
       >
         {'💎'} {fmt(gems)}
       </span>
     </div>
-  );
-}
-
-export function BalanceChip() {
-  return (
-    <Suspense
-      fallback={
-        <div
-          className="wallet-balance-chip-skeleton"
-          aria-hidden
-          style={{ display: 'flex', gap: '8px' }}
-        >
-          <span
-            style={{
-              display: 'inline-block',
-              width: '64px',
-              height: '24px',
-              borderRadius: '999px',
-              background: 'rgba(255,255,255,0.06)',
-            }}
-          />
-          <span
-            style={{
-              display: 'inline-block',
-              width: '56px',
-              height: '24px',
-              borderRadius: '999px',
-              background: 'rgba(255,255,255,0.06)',
-            }}
-          />
-        </div>
-      }
-    >
-      <BalanceChipInner />
-    </Suspense>
   );
 }

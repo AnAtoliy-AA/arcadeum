@@ -43,11 +43,22 @@ export default async function ShopPage({
   const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const accessToken = await getServerAccessToken();
 
-  const catalog = await getCatalog().catch(() => []);
+  // Parallelize all independent API calls to reduce SSR latency
+  const [catalogResult, rateResult, gemPacksResult] = await Promise.allSettled([
+    getCatalog(),
+    getConversionRate(),
+    getActivePackages(),
+  ]);
+
+  const catalog =
+    catalogResult.status === 'fulfilled' ? catalogResult.value : [];
+  const gemToCoinRate =
+    rateResult.status === 'fulfilled' ? rateResult.value.rate : 100;
+  const gemPacks =
+    gemPacksResult.status === 'fulfilled' ? gemPacksResult.value : [];
 
   let inventory: InventoryView = EMPTY_INVENTORY;
   let balance: WalletBalanceView = EMPTY_BALANCE;
-  let gemToCoinRate = 100;
 
   if (accessToken) {
     [inventory, balance] = await Promise.all([
@@ -55,14 +66,6 @@ export default async function ShopPage({
       getWalletBalance().catch(() => EMPTY_BALANCE),
     ]);
   }
-  try {
-    const rate = await getConversionRate();
-    gemToCoinRate = rate.rate;
-  } catch {
-    // fall back to the default rate
-  }
-
-  const gemPacks = await getActivePackages().catch(() => []);
   const { gems: balanceGems } = balance;
   const nextGemPack = pickNextGemPack(balanceGems, gemPacks);
   // Limited-drop hero filters out items the user already owns and rotates

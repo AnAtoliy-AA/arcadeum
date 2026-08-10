@@ -11,6 +11,7 @@ import {
   LobbyPlayerName,
   LobbyPlayerAvatarText,
 } from './lobbyStyles';
+import { InGameAvatar } from './InGameAvatar';
 
 // ============ Avatar Colors ============
 
@@ -70,11 +71,19 @@ export function SortablePlayerItem({
       {...(isHost ? { ...attributes, ...listeners } : {})}
     >
       <PlayerItem $isHost={isRoomHost}>
-        <LobbyPlayerAvatar backgroundColor={avatarColor}>
-          <LobbyPlayerAvatarText>
-            {member.displayName.slice(0, 2).toUpperCase()}
-          </LobbyPlayerAvatarText>
-        </LobbyPlayerAvatar>
+        {member.equippedAvatarId ? (
+          <InGameAvatar
+            playerId={member.id}
+            name={member.displayName}
+            size="sm"
+          />
+        ) : (
+          <LobbyPlayerAvatar backgroundColor={avatarColor}>
+            <LobbyPlayerAvatarText>
+              {member.displayName.slice(0, 2).toUpperCase()}
+            </LobbyPlayerAvatarText>
+          </LobbyPlayerAvatar>
+        )}
         <PlayerInfo>
           <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
           {isRoomHost && (

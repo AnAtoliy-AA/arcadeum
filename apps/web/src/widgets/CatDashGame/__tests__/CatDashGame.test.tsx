@@ -19,6 +19,8 @@ function renderWithTheme(ui: React.ReactNode) {
 const mockSnapshot: CatDashClientState = {
   trackType: 'linear',
   theme: 'village',
+  columns: 10,
+  trackLength: 21,
   currentPlayerIndex: 0,
   turnNumber: 1,
   track: Array.from({ length: 21 }, (_, i) => ({
@@ -65,8 +67,8 @@ describe('CatDashBoard', () => {
         resolveName={(id) => id ?? ''}
       />,
     );
-    expect(screen.getByText('0')).toBeTruthy();
-    expect(screen.getByText('20')).toBeTruthy();
+    expect(screen.getByText('1')).toBeTruthy();
+    expect(screen.getByText('21')).toBeTruthy();
   });
 
   it('renders player indicators', () => {

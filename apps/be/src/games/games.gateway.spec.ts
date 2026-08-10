@@ -6,10 +6,7 @@ import { CriticalActionsGateway } from './critical-actions.gateway';
 import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import type {
-  StartCriticalSessionResult,
-  GameSessionSummary,
-} from './games.types';
+import type { StartCriticalSessionResult } from './games.types';
 
 const mockJwt = {} as never;
 const mockConfig = {} as never;
@@ -53,15 +50,11 @@ describe('CriticalGateway', () => {
       findSessionByRoom: mockFindSessionByRoom,
     } as unknown as jest.Mocked<CriticalService>;
 
-    gateway = new CriticalGateway(
-      criticalService as unknown as CriticalService,
-      mockJwt,
-      mockConfig,
-    );
+    gateway = new CriticalGateway(criticalService, mockJwt, mockConfig);
 
     actionsGateway = new CriticalActionsGateway(
-      gamesService as unknown as GamesService,
-      criticalService as unknown as CriticalService,
+      gamesService,
+      criticalService,
       mockJwt,
       mockConfig,
     );
@@ -161,7 +154,7 @@ describe('CriticalGateway', () => {
 
       mockFindSessionByRoom.mockResolvedValue({
         id: 'session-1',
-      } as GameSessionSummary);
+      });
 
       mockDrawCard.mockResolvedValue({
         id: 'session-1',
@@ -201,7 +194,7 @@ describe('CriticalGateway', () => {
     it('wraps draw errors in WsException', async () => {
       mockFindSessionByRoom.mockResolvedValue({
         id: 'session-1',
-      } as GameSessionSummary);
+      });
       mockDrawCard.mockRejectedValue(new BadRequestException('Deck is empty.'));
 
       expect.assertions(2);

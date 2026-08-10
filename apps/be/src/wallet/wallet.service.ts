@@ -1,3 +1,4 @@
+import { runInTransaction } from '../common/utils/transaction.util';
 import {
   BadRequestException,
   forwardRef,
@@ -194,25 +195,16 @@ export class WalletService {
 
   private async withSession<T>(
     parentSession: ClientSession | undefined,
-    fn: (session: ClientSession, isOwn: boolean) => Promise<T>,
+    fn: (session: ClientSession | undefined, isOwn: boolean) => Promise<T>,
   ): Promise<T> {
     if (parentSession) {
       return fn(parentSession, false);
     }
-    const ownSession = await this.connection.startSession();
-    try {
-      let result!: T;
-      await ownSession.withTransaction(async () => {
-        result = await fn(ownSession, true);
-      });
-      return result;
-    } finally {
-      await ownSession.endSession();
-    }
+    return runInTransaction(this.connection, (session) => fn(session, true));
   }
 
   private async doWrite(
-    session: ClientSession,
+    session: ClientSession | undefined,
     isOwnSession: boolean,
     args: {
       userId: string;
@@ -255,9 +247,7 @@ export class WalletService {
         const current = await this.userModel
           .findById(userId, null, { session })
           .lean();
-        const available = current
-          ? this.pickBalance(current as unknown as UserBalanceFields, currency)
-          : 0;
+        const available = current ? this.pickBalance(current, currency) : 0;
         throw new InsufficientFundsException(currency, amount, available);
       }
       throw new NotFoundException('wallet.userNotFound');

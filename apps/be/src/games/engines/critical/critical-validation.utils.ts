@@ -330,7 +330,7 @@ export function validateCriticalAction(
       ) {
         return validateCriticalAction(
           state,
-          (card || 'unstash') as string,
+          card || 'unstash',
           context,
           payload,
         );

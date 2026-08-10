@@ -1,13 +1,7 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useCallback, useState } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { resolveApiUrl } from '@/shared/lib/api-base';
-import {
-  maybeEncrypt,
-  maybeDecrypt,
-  setEncryptionKey,
-  resetEncryptionKey,
-} from '@/shared/lib/socket-encryption';
+import { chatSocket } from '@/shared/lib/socket';
+import { maybeEncrypt, maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useChatStore } from '../store/chatStore';
 import { ChatMessage } from '../api';
 
@@ -18,140 +12,81 @@ interface UseChatSocketProps {
 
 export const useChatSocket = ({ chatId, receiverIds }: UseChatSocketProps) => {
   const { snapshot } = useSessionTokens();
-  const socketRef = useRef<Socket | null>(null);
-
-  const {
-    isConnected,
-    setConnected,
-    setAuthenticated,
-    addMessage,
-    setMessages,
-  } = useChatStore();
+  const { addMessage, setMessages } = useChatStore();
+  const [isConnected, setIsConnected] = useState(chatSocket.connected);
 
   useEffect(() => {
-    if (!chatId || !snapshot.accessToken) return;
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
 
-    // Connect to Socket.IO
-    const socketUrl = resolveApiUrl('/');
-    const socket = io(socketUrl, {
-      transports: ['websocket'],
-      auth: {
-        token: snapshot.accessToken,
-      },
+    chatSocket.on('connect', onConnect);
+    chatSocket.on('disconnect', onDisconnect);
+
+    return () => {
+      chatSocket.off('connect', onConnect);
+      chatSocket.off('disconnect', onDisconnect);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!chatId || !snapshot.userId || !isConnected) return;
+
+    const users = [snapshot.userId, ...receiverIds.split(',').filter(Boolean)];
+    chatSocket.emit('joinChat', {
+      chatId,
+      currentUserId: snapshot.userId,
+      users,
     });
+  }, [chatId, snapshot.userId, receiverIds, isConnected]);
 
-    const handleConnect = () => {
-      setConnected(true);
-      setAuthenticated(true);
+  useEffect(() => {
+    if (!chatId) return;
 
-      // Join chat after connection
-      if (chatId) {
-        socket.emit('joinChat', {
-          chatId,
-          currentUserId: snapshot.userId,
-          users: [snapshot.userId, ...receiverIds.split(',')],
-        });
-      }
+    const onMessage = async (payload: unknown) => {
+      const msg = await maybeDecrypt<ChatMessage>(payload);
+      if (msg) addMessage(msg);
     };
 
-    socket.on('connect', handleConnect);
-
-    socket.on('socket.encryption_key', async (data: { key: string }) => {
-      await setEncryptionKey(data.key);
-    });
-
-    socket.on('message', async (payload: unknown) => {
-      const message = await maybeDecrypt<ChatMessage>(payload);
-      if (message) {
-        addMessage(message);
-      }
-    });
-
-    socket.on('chatMessages', async (payload: unknown) => {
+    const onChatMessages = async (payload: unknown) => {
       const msgs = await maybeDecrypt<ChatMessage[]>(payload);
       if (msgs && Array.isArray(msgs)) {
         setMessages(msgs);
       }
-    });
+    };
 
-    socket.on('disconnect', () => {
-      setConnected(false);
-      setAuthenticated(false);
-      resetEncryptionKey();
-    });
-
-    socket.on('connect_error', (_err) => {
-      setConnected(false);
-      setAuthenticated(false);
-    });
-
-    socketRef.current = socket;
-
-    // Expose for Playwright mocks
-    if (
-      typeof window !== 'undefined' &&
-      (window as unknown as { isPlaywright?: boolean }).isPlaywright
-    ) {
-      (window as unknown as { chatSocket: unknown }).chatSocket = socket;
-
-      // In Playwright, we often need to force the connection state
-      // because the mock socket might not trigger 'connect' automatically
-      // if it's wrapping a real socket that's failing to connect.
-      handleConnect();
-    }
+    chatSocket.on('message', onMessage);
+    chatSocket.on('chatMessages', onChatMessages);
 
     return () => {
-      if (socket.connected) {
-        socket.disconnect();
-      }
-      socketRef.current = null;
-      setConnected(false);
-      resetEncryptionKey();
+      chatSocket.off('message', onMessage);
+      chatSocket.off('chatMessages', onChatMessages);
     };
-  }, [
-    chatId,
-    snapshot.accessToken,
-    snapshot.userId,
-    receiverIds,
-    setConnected,
-    setAuthenticated,
-    addMessage,
-    setMessages,
-  ]);
+  }, [chatId, addMessage, setMessages]);
 
   const sendMessage = useCallback(
     async (content: string) => {
-      if (
-        !content.trim() ||
-        !chatId ||
-        !snapshot.accessToken ||
-        !socketRef.current
-      )
-        return;
+      if (!content.trim() || !chatId || !snapshot.userId) return;
 
-      try {
-        const tempId = `temp-${Date.now()}`;
-        const messagePayload = {
-          chatId,
-          senderId: snapshot.userId || '',
-          receiverIds: receiverIds.split(',').filter(Boolean),
-          content: content.trim(),
-          tempId,
-        };
+      const tempId = `temp-${Date.now()}`;
+      const messagePayload = {
+        chatId,
+        senderId: snapshot.userId,
+        receiverIds: receiverIds.split(',').filter(Boolean),
+        content: content.trim(),
+        tempId,
+      };
 
-        // Optimistically update
-        const optimisticMessage: ChatMessage = {
-          id: tempId,
-          senderUsername: snapshot.displayName || snapshot.username || 'You',
-          timestamp: new Date().toISOString(),
-          ...messagePayload,
-        };
+      const optimisticMessage: ChatMessage = {
+        id: tempId,
+        senderUsername: snapshot.displayName || snapshot.username || 'You',
+        timestamp: new Date().toISOString(),
+        ...messagePayload,
+      };
 
-        addMessage(optimisticMessage);
+      addMessage(optimisticMessage);
 
-        const encryptedPayload = await maybeEncrypt(messagePayload);
-        socketRef.current.emit('sendMessage', encryptedPayload);
-      } catch {}
+      const encryptedPayload = await maybeEncrypt(messagePayload);
+      chatSocket.emit('sendMessage', encryptedPayload);
     },
     [chatId, snapshot, receiverIds, addMessage],
   );

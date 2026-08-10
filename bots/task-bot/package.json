@@ -1,6 +1,6 @@
 {
   "name": "task-bot",
-  "version": "1.23.179",
+  "version": "1.24.46",
   "description": "Telegram bot for automated task implementation",
   "private": true,
   "license": "UNLICENSED",
@@ -38,7 +38,7 @@
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
-    "globals": "^16.0.0",
+    "globals": "16.0.0",
     "jest": "^29.7.0",
     "prettier": "^3.4.2",
     "ts-jest": "^29.2.5",

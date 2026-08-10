@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Footer Links', () => {
   // Footer tests are sensitive to slow page loads across parallel browsers.
@@ -44,7 +45,7 @@ test.describe('Footer Links', () => {
 
     const footer = page.locator('footer').first();
     // On mobile, footer sections are collapsible - expand Legal section if needed
-    const privacyLink = footer.locator('a[href="/privacy"]');
+    const privacyLink = footer.locator(`a[href="${routes.privacy}"]`);
     if (!(await privacyLink.isVisible())) {
       const legalToggle = footer
         .getByText('LEGAL')
@@ -55,9 +56,9 @@ test.describe('Footer Links', () => {
         await legalToggle.click({ force: true });
       }
     }
-    await expect(footer.locator('a[href="/privacy"]')).toBeVisible({});
-    await expect(footer.locator('a[href="/terms"]')).toBeVisible();
-    await expect(footer.locator('a[href="/contact"]')).toBeVisible();
+    await expect(footer.locator(`a[href="${routes.privacy}"]`)).toBeVisible({});
+    await expect(footer.locator(`a[href="${routes.terms}"]`)).toBeVisible();
+    await expect(footer.locator(`a[href="${routes.contact}"]`)).toBeVisible();
 
     // Check header does not contain legal links (desktop)
     const header = page.locator('header');

@@ -32,12 +32,12 @@ export function parseTask(
 ): ParsedTask {
   let cleaned = text.trim();
 
-  let engine: Engine = userId && prefsService ? prefsService.getEngine(userId) : 'mimo';
+  let engine: Engine = userId && prefsService ? prefsService.getEngine(userId) : 'opencode';
   const engineMatch = cleaned.match(/--engine[=:](\S+)/i);
   if (engineMatch) {
     const requested = engineMatch[1].toLowerCase();
-    if (requested !== 'mimo' && requested !== 'opencode') {
-      throw new Error(`Invalid engine: ${requested}. Valid engines: mimo, opencode`);
+    if (requested !== 'opencode') {
+      throw new Error(`Invalid engine: ${requested}. Valid engines: opencode`);
     }
     engine = requested as Engine;
     cleaned = cleaned.replace(/--engine=\S+/i, '').trim();

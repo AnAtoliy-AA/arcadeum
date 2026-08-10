@@ -1,77 +1,42 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsException,
-} from '@nestjs/websockets';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import type { Server, Socket } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
+import type { Socket } from 'socket.io';
+import type {
+  GameMessageHandler,
+  GameMessageHandlerFn,
+} from './game-message-handler.interface';
 import { GamesService } from './games.service';
 import {
   extractRoomAndUser,
   extractString,
+  getIsAuthenticated,
   handleError,
   validatePayloadUserId,
 } from './games.gateway.utils';
-
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
-import { corsOriginMatcher } from '../common/utils/cors.util';
-import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
-@WebSocketGateway({
-  namespace: 'games',
-  cors: { origin: corsOriginMatcher },
-})
 @Injectable()
-export class TexasHoldemGateway {
+export class TexasHoldemGateway implements GameMessageHandler {
   private readonly logger = new Logger(TexasHoldemGateway.name);
-
-  @WebSocketServer() server: Server;
 
   constructor(
     private readonly gamesService: GamesService,
     private readonly texasHoldemService: TexasHoldemService,
-    private readonly jwt: JwtService,
-    private readonly config: ConfigService,
   ) {}
 
-  async handleConnection(client: Socket): Promise<void> {
-    this.logger.verbose(`Client connected ${client.id}`);
+  readonly handlers: Record<string, GameMessageHandlerFn> = {
+    'games.session.start_holdem': (client, payload) =>
+      this.handleStartTexasHoldem(client, payload),
+    'games.session.holdem_action': (client, payload) =>
+      this.handleTexasHoldemAction(client, payload),
+    'games.session.holdem_history_note': (client, payload) =>
+      this.handleTexasHoldemHistoryNote(client, payload),
+  };
 
-    const authUserId = await verifySocketJwt(
-      client,
-      this.jwt,
-      this.config,
-      this.logger,
-      'TexasHoldemGateway',
-    );
-
-    if (authUserId) {
-      this.logger.debug(
-        `Authenticated user ${authUserId} connected to TexasHoldem namespace`,
-      );
-    } else {
-      this.logger.verbose(
-        `Anonymous client connected to TexasHoldem namespace: ${client.id}`,
-      );
-    }
-  }
-
-  @SubscribeMessage('games.session.start_holdem')
-  async handleStartTexasHoldem(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      engine?: string;
-      startingChips?: number;
-    },
+  private async handleStartTexasHoldem(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const userId = extractString(payload, 'userId');
     const roomIdRaw =
@@ -88,7 +53,6 @@ export class TexasHoldemGateway {
         roomId,
         engine,
       );
-
       client.emit('games.session.holdem_started', maybeEncrypt(result));
     } catch (error) {
       handleError(
@@ -104,16 +68,9 @@ export class TexasHoldemGateway {
     }
   }
 
-  @SubscribeMessage('games.session.holdem_action')
-  async handleTexasHoldemAction(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      action?: string;
-      raiseAmount?: number;
-    },
+  private async handleTexasHoldemAction(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const action = extractString(payload, 'action', { toLowerCase: true });
@@ -137,7 +94,6 @@ export class TexasHoldemGateway {
         action,
         raiseAmount,
       );
-
       client.emit(
         'games.session.holdem_action.performed',
         maybeEncrypt({
@@ -161,49 +117,38 @@ export class TexasHoldemGateway {
     }
   }
 
-  @SubscribeMessage('games.session.holdem_history_note')
-  async handleTexasHoldemHistoryNote(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    payload: {
-      roomId?: string;
-      userId?: string;
-      message?: string;
-      scope?: string;
-    },
+  private async handleTexasHoldemHistoryNote(
+    client: Socket,
+    payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     const message = extractString(payload, 'message');
-    const scopeRaw =
-      typeof payload?.scope === 'string'
-        ? payload.scope.trim().toLowerCase()
-        : 'all';
-
-    const scope = scopeRaw === 'players' ? 'players' : 'all';
+    const isAuthenticated = getIsAuthenticated(client);
 
     validatePayloadUserId(client, userId);
 
     try {
-      await this.texasHoldemService.postHistoryNote(userId, roomId, message);
-
+      await this.gamesService.postHistoryNote(
+        roomId,
+        userId,
+        message,
+        'all',
+        isAuthenticated,
+      );
       client.emit(
         'games.session.holdem_history_note.ack',
         maybeEncrypt({
           roomId,
           userId,
-          scope,
         }),
       );
     } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        {
-          action: 'post history note',
-          roomId,
-          userId,
-        },
-        'Unable to post history note.',
+      const msg =
+        error instanceof Error && typeof error.message === 'string'
+          ? error.message
+          : 'Unable to post history note.';
+      this.logger.warn(
+        `Failed to post history note for room ${roomId}, user ${userId}: ${msg}`,
       );
     }
   }

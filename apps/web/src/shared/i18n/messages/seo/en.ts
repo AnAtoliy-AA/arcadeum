@@ -6,6 +6,7 @@ export const en = {
   home: {
     title: `${APP} — Play Free Online Board Games with Friends`,
     description: `Play free online board games with friends on ${APP}. Battleship, strategy, and card games — create a room, share the link, and play in your browser. No download, no signup.`,
+    badge: 'Play with Friends or AI',
   },
   games: {
     title: `Free Online Board Games · ${APP}`,

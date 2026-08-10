@@ -111,16 +111,22 @@ export const enMessages = {
         objective: 'Objective',
         howToPlay: 'How to Play',
         kingPromotion: 'King Promotion',
+        backwardCaptures: 'Backward Captures',
         forcedCaptures: 'Forced Captures',
+        winConditions: 'Win & Lose',
       },
       objective:
         "Capture all your opponent's pieces or block them so they have no legal moves.",
       steps:
         "Players take turns moving one piece diagonally forward.\nLight pieces move up; dark pieces move down.\nA piece can move to an empty adjacent diagonal square.\nTo capture, jump over an opponent's piece to the empty square beyond it.",
       kingPromotion:
-        'When a piece reaches the opposite end of the board, it becomes a king.\nKings can move and capture in any diagonal direction (forward and backward).',
+        'When a man reaches the opposite end of the board, it becomes a king.\nKings can move and capture in any diagonal direction (forward and backward).\nKings can also slide multiple squares in one direction (flying kings in International and Russian rulesets).',
+      backwardCaptures:
+        'In some rulesets, regular pieces (men) can capture opponent pieces behind them.\nMen always move forward, but can capture in any diagonal direction when backward captures are enabled.\nThis option is always on in International rules and can be toggled in other variants.',
       forcedCaptures:
-        'If a capture is available, the player must take it.\nIf multiple captures are available, the player must choose one.\nA multi-jump chain must be completed in full.',
+        'If a capture is available, the player must take it.\nIf multiple captures are available, the player must choose one.\nA multi-jump chain must be completed in full — you cannot stop early if more captures are available.',
+      winConditions:
+        'You WIN when:\n• You capture all opponent pieces\n• The opponent has no legal moves on their turn\n\nYou LOSE when:\n• All your pieces are captured\n• You have no legal moves on your turn\n\nThe game is a DRAW when both players have only kings with equal material and neither can force a win.',
     },
     gameOver: {
       won: 'Victory!',

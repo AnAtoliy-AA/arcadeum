@@ -1,0 +1,133 @@
+/* Hero Background — image container, overlay, gradient drift, noise */
+
+.hero-section-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  min-height: 90vh;
+  position: relative;
+  overflow: visible;
+  width: 100%;
+}
+
+.hero-background-image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.hero-background-image {
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  filter: saturate(1.15) brightness(0.85);
+  will-change: opacity;
+
+  &.active {
+    opacity: 1;
+  }
+
+  /* Variant images crossfade in; the default image skips the transition
+     so the LCP element paints immediately (saves ~110ms render delay). */
+  &.active:not(.hero-bg-default) {
+    transition: opacity 0.8s ease-in-out;
+  }
+}
+
+.hero-background-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 20%, var(--background) 95%),
+    linear-gradient(to bottom, transparent 60%, var(--background) 100%);
+}
+
+@media (max-width: 768px) {
+  .hero-background-overlay {
+    background:
+      radial-gradient(circle at 50% 50%, transparent 40%, var(--background) 110%),
+      linear-gradient(to bottom, transparent 60%, var(--background) 100%);
+  }
+}
+
+.hero-background-overlay::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  background:
+    radial-gradient(circle at 20% 25%, var(--backgroundRadialStart) 0%, transparent 45%),
+    radial-gradient(circle at 80% 75%, var(--backgroundRadialStart) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, var(--primary-gradient-start) 0%, transparent 50%);
+  opacity: 0.8;
+  filter: blur(100px);
+  will-change: transform;
+  animation: hero-gradient-drift 22s ease-in-out infinite alternate;
+}
+
+.hero-background-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@keyframes hero-gradient-drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate(4%, 3%) rotate(60deg) scale(1.06);
+  }
+
+  100% {
+    transform: translate(-3%, -4%) rotate(120deg) scale(0.94);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-background-overlay::before {
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    filter: blur(40px);
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-background-overlay::before {
+    animation: none;
+  }
+}
+
+/* Animation delay utility classes to avoid inline styles */
+.hero-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.hero-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.hero-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.hero-delay-400 {
+  animation-delay: 0.4s;
+}

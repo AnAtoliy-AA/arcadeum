@@ -30,3 +30,4 @@ export class Referral extends Document {
 }
 
 export const ReferralSchema = SchemaFactory.createForClass(Referral);
+ReferralSchema.index({ referrerId: 1, status: 1, createdAt: -1 });

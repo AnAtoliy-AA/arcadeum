@@ -40,13 +40,13 @@ jobs:
           fi
 
           if [[ "$BASE" == "staging" ]]; then
-            if [[ ! "$TITLE" =~ ^demo ]]; then
+            if [[ ! "$TITLE" =~ ^[Dd]emo ]]; then
               echo "❌ PR title must start with 'demo' to merge to staging."
               echo "   Got: $TITLE"
               exit 1
             fi
           elif [[ "$BASE" == "main" ]]; then
-            if [[ ! "$TITLE" =~ ^release ]]; then
+            if [[ ! "$TITLE" =~ ^[Rr]elease ]]; then
               echo "❌ PR title must start with 'release' to merge to main."
               echo "   Got: $TITLE"
               exit 1

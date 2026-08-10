@@ -9,9 +9,13 @@ import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/Con
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
+import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
+import { gameSocket } from '@/shared/lib/socket';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
@@ -22,6 +26,7 @@ interface GamePageLayoutProps {
   session?: GameSessionSummary | null;
   inviteCode?: string;
   userId: string | null;
+  isAuthenticated?: boolean;
 
   // Connection overlays
   isDisconnected: boolean;
@@ -48,6 +53,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     session,
     inviteCode,
     userId,
+    isAuthenticated = false,
     isDisconnected,
     isReconnecting,
     isIdle,
@@ -96,17 +102,30 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     (id?: string | null) => {
       if (!id) return null;
       const member = room.members?.find((m) => m.id === id);
-      if (!member) return null;
-      return {
-        equippedAvatarId: member.equippedAvatarId ?? null,
-        equippedBadgeId: member.equippedBadgeId ?? null,
-        equippedNameColorId: member.equippedNameColorId ?? null,
-        equippedFrameId: member.equippedFrameId ?? null,
-        equippedAuraId: member.equippedAuraId ?? null,
-        equippedBannerId: member.equippedBannerId ?? null,
-      };
+      if (member) {
+        return {
+          equippedAvatarId: member.equippedAvatarId ?? null,
+          equippedBadgeId: member.equippedBadgeId ?? null,
+          equippedNameColorId: member.equippedNameColorId ?? null,
+          equippedFrameId: member.equippedFrameId ?? null,
+          equippedAuraId: member.equippedAuraId ?? null,
+          equippedBannerId: member.equippedBannerId ?? null,
+        };
+      }
+      if (id === userId) {
+        const snap = useSessionStore.getState().snapshot;
+        return {
+          equippedAvatarId: snap.equippedAvatarId ?? null,
+          equippedBadgeId: snap.equippedBadgeId ?? null,
+          equippedNameColorId: snap.equippedNameColorId ?? null,
+          equippedFrameId: snap.equippedFrameId ?? null,
+          equippedAuraId: snap.equippedAuraId ?? null,
+          equippedBannerId: snap.equippedBannerId ?? null,
+        };
+      }
+      return null;
     },
-    [room.members],
+    [room.members, userId],
   );
 
   const gameRegisteredResolver = useGameChatStore((s) => s.resolveDisplayName);
@@ -138,6 +157,60 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       .getState()
       .registerFallbackResolveDisplayName(resolveDisplayName);
   }, [resolveDisplayName]);
+
+  const { isGameOver, onRematch, rematchLoading } = useGameRematchStore();
+
+  const isLobby = room.status === 'lobby';
+  const isHost = room.hostId === userId;
+  const isPlayer = !!(
+    userId &&
+    (isHost || room.members?.some((m) => m.id === userId))
+  );
+
+  const { sendMessage: roomChatSend, deleteMessage: roomChatDelete } =
+    useGameRoomChat(roomId, userId, isLobby);
+
+  const handleDeleteMessage = useCallback(
+    (messageId: string) => {
+      const log = useGameChatStore
+        .getState()
+        .logs.find((l) => l.id === messageId);
+      if (!log) return;
+      if (isLobby && log.type !== 'action') {
+        roomChatDelete?.(messageId);
+      } else {
+        gameSocket.emit('games.session.delete_chat', {
+          roomId,
+          userId,
+          messageId,
+        });
+      }
+    },
+    [isLobby, roomChatDelete, roomId, userId],
+  );
+
+  // Subscribe to the store's sendMessage so we can detect when a game widget
+  // overwrites it with a session-based function.  When that happens we
+  // re-register the lobby-level function so chat keeps working in lobby mode.
+  const storeSendMessage = useGameChatStore((s) => s.sendMessage);
+
+  useEffect(() => {
+    if (isLobby && roomChatSend) {
+      useGameChatStore.getState().registerSendMessage(roomChatSend);
+    }
+  }, [isLobby, roomChatSend, storeSendMessage]);
+
+  // Seed chat store with existing room chat logs when in lobby
+  useEffect(() => {
+    if (isLobby && Array.isArray(room.chatLogs) && room.chatLogs.length > 0) {
+      const logs = room.chatLogs.map((l) => ({
+        ...l,
+        type: 'message' as const,
+        scope: (l.scope || 'all') as import('@/shared/types/games').ChatScope,
+      }));
+      useGameChatStore.getState().setLogs(logs);
+    }
+  }, [isLobby, room.chatLogs]);
 
   return (
     <>
@@ -184,10 +257,19 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
           isSpectating={isSpectating}
+          isGameOver={isGameOver}
+          onRematch={onRematch ?? undefined}
+          rematchLoading={rematchLoading}
         />
 
         <GameRow flexDirection={roomFlexDirection}>
-          <ActiveEmotesProvider value={{ emotes: activeEmotes, resolveDisplayName }}>
+          <ActiveEmotesProvider
+            value={{
+              emotes: activeEmotes,
+              resolveDisplayName,
+              resolveEquipped,
+            }}
+          >
             {children({ isFullscreen, toggleFullscreen })}
           </ActiveEmotesProvider>
 
@@ -198,7 +280,11 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               resolveDisplayName={resolveDisplayNameForList}
               resolveEquipped={resolveEquipped}
               currentUserId={userId}
+              isPlayer={isPlayer}
+              isAuthenticated={isAuthenticated}
               onEmote={sendEmote}
+              isHost={isHost}
+              onDeleteMessage={handleDeleteMessage}
             />
           </ChatPanel>
         </GameRow>

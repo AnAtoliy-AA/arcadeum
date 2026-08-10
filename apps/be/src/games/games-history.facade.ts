@@ -1,3 +1,4 @@
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameHistoryService } from './history/game-history.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
@@ -10,7 +11,10 @@ import type { GameSessionSummary } from './sessions/game-sessions.service';
  * Games History Facade
  * Delegates history-related operations from GamesService
  */
+@Injectable()
 export class GamesHistoryFacade {
+  private readonly logger = new Logger(GamesHistoryFacade.name);
+
   constructor(
     private readonly historyService: GameHistoryService,
     private readonly sessionsService: GameSessionsService,
@@ -105,10 +109,41 @@ export class GamesHistoryFacade {
       s: GameSessionSummary,
       pId: string,
     ) => GameSessionSummary,
+    isAuthenticated = false,
   ) {
-    await this.historyService.postHistoryNote(roomId, userId, message, scope);
+    // Best-effort: try to write to Atlas history and validate anonymous
+    // participation. Quick-play rooms may only exist in OCI, so a
+    // NotFoundException here is non-fatal — the OCI path below is authoritative.
+    try {
+      await this.historyService.postHistoryNote(
+        roomId,
+        userId,
+        message,
+        scope,
+        isAuthenticated,
+      );
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        this.logger.debug(
+          `Room ${roomId} not found in Atlas — skipping Atlas history write (quick-play room)`,
+        );
+      } else {
+        throw err;
+      }
+    }
 
-    const session = await this.sessionsService.findSessionByRoom(roomId);
+    // Write the chat message via the sessions service (OCI connection)
+    // instead of re-reading from a potentially stale Atlas snapshot.
+    // pushChatLog writes to OCI and returns the updated session.
+    const senderName = await this.historyService.getUserDisplayName(userId);
+    const session = await this.sessionsService.pushChatLog(
+      roomId,
+      userId,
+      message,
+      scope,
+      senderName || undefined,
+    );
+
     if (session) {
       await this.realtimeService.emitSessionSnapshot(
         roomId,

@@ -1,7 +1,9 @@
+import { shopItemsEs } from './es-items';
+
 export const shopEs = {
   meta: {
     title: 'Tienda · Arcadeum',
-    description: 'Avatares, insignias, colores de nombre y skins de juego.',
+    description: 'Avatares, insignias, colores de nombre y temas de partida.',
   },
   topBar: {
     eyebrow: 'Mercado de cosméticos',
@@ -9,79 +11,79 @@ export const shopEs = {
     nav: {
       shop: 'Tienda',
       inventory: 'Inventario',
-      wallet: 'Cartera',
+      wallet: 'Monedero',
     },
     topUp: 'Recargar',
   },
   signIn: {
-    title: 'Inicia sesión para comprar y equipar',
-    body: 'Puedes ver el catálogo como invitado, pero el inventario y las compras requieren una cuenta.',
+    title: 'Inicia sesión para comprar y equipar artículos',
+    body: 'Puedes explorar el catálogo como invitado, pero el inventario y las compras requieren una cuenta.',
     cta: 'Iniciar sesión',
   },
   hero: {
     tag: 'Drop limitado',
     tryOn: 'Probar',
-    buyNow: 'Comprar',
-    bodySuffix: 'Visible en lobby, chat y durante las partidas.',
+    buyNow: 'Comprar ahora',
+    bodySuffix: 'Visible en la sala, el chat y durante las partidas.',
   },
   mannequin: {
-    tryOn: 'Probando',
+    tryOn: 'Probar',
     stage: { level: 'NIV {level} · En línea', online: 'En línea' },
     slots: {
       avatar: {
         label: 'Avatar',
-        desc: 'Retrato del perfil mostrado en lobby y chat.',
+        desc: 'Retrato de perfil mostrado en la sala y en el chat.',
         empty: 'Vacío',
       },
       badge: {
         label: 'Insignia',
-        desc: 'Pequeño icono junto a tu nombre en las listas.',
+        desc: 'Icono pequeño junto a tu nombre en las listas.',
         empty: 'Vacío',
       },
       name_color: {
         label: 'Color de nombre',
-        desc: 'Color o degradado aplicado a tu nombre.',
+        desc: 'Color o degradado aplicado a tu nombre de usuario.',
         empty: 'Vacío',
       },
       game_skin: {
-        label: 'Skin de juego',
-        desc: 'Tema visual dentro de las partidas.',
+        label: 'Tema de partida',
+        desc: 'Tema visual dentro de las salas de juego.',
         empty: 'Vacío',
       },
       banner: {
         label: 'Banner',
-        desc: 'Fondo completo del escenario de tu perfil y lobby.',
+        desc: 'Fondo completo para tu perfil y podio de la sala.',
         empty: 'Vacío',
       },
       aura: {
         label: 'Aura',
-        desc: 'Rayos brillantes que orbitan tu avatar en el lobby y las partidas.',
+        desc: 'Rayos brillantes en órbita alrededor de tu avatar en la sala y en las partidas.',
         empty: 'Vacío',
       },
       frame: {
         label: 'Marco',
-        desc: 'Anillo decorativo que rodea tu avatar.',
+        desc: 'Anillo decorativo que envuelve tu avatar.',
         empty: 'Vacío',
       },
       background: {
         label: 'Fondo',
-        desc: 'Lavado de color detrás de tu avatar.',
+        desc: 'Luz de color pintada detrás de tu avatar, dentro del marco.',
         empty: 'Vacío',
       },
     },
     action: {
-      previewingEyebrow: 'Probando',
-      selectedSlotEyebrow: 'Slot seleccionado',
-      loadoutEyebrow: 'Tu equipo',
+      previewingEyebrow: 'Vista previa',
+      selectedSlotEyebrow: 'Ranura seleccionada',
+      loadoutEyebrow: 'Tu equipamiento',
       equippedEyebrow: 'Equipado',
-      idleTitle: 'Pasa el cursor por un artículo para probártelo',
+      idleTitle: 'Pasa el cursor sobre un artículo para probarlo',
       idleBody:
-        'O toca un slot arriba para filtrar el catálogo. Vender reembolsa el 50% en monedas.',
+        'O toca una ranura de arriba para filtrar el catálogo. Vender reembolsa el 50% en monedas.',
       buyEquip: 'Comprar y equipar',
       equip: 'Equipar',
       unequip: 'Desequipar',
       sell: 'Vender · 50%',
-      clear: 'Quitar selección',
+      clear: 'Limpiar selección',
       slotEmpty: 'Vacío',
     },
     wallet: {
@@ -109,7 +111,7 @@ export const shopEs = {
       collapse: 'Contraer',
     },
     skins: {
-      title: 'Skins de juego',
+      title: 'Temas de partida',
       eyebrow: '{count} artículos',
       viewAll: 'Ver todo',
       collapse: 'Contraer',
@@ -139,14 +141,14 @@ export const shopEs = {
       collapse: 'Contraer',
     },
     legendary: {
-      title: 'Legendarios',
-      eyebrow: 'Máxima rareza',
+      title: 'Legendario',
+      eyebrow: 'Rareza superior',
       viewAll: 'Ver todo',
       collapse: 'Contraer',
     },
   },
   card: {
-    owned: 'Tuyo',
+    owned: 'Comprado',
     equipped: 'Equipado',
     buyEquip: 'Comprar y equipar',
     equip: 'Equipar',
@@ -155,8 +157,8 @@ export const shopEs = {
   },
   inventory: {
     title: 'Inventario',
-    eyebrow: '{count} artículos',
-    empty: 'Aún no tienes nada.',
+    eyebrow: '{count} en propiedad',
+    empty: 'Aún no tienes nada en propiedad.',
   },
   rarities: {
     common: 'Común',
@@ -165,8 +167,8 @@ export const shopEs = {
     legendary: 'Legendario',
   },
   empty: {
-    title: 'La tienda no está disponible ahora',
-    body: 'Estamos en ello. Inténtalo en un minuto.',
+    title: 'La tienda no está disponible en este momento',
+    body: 'Estamos trabajando en ello. Inténtalo de nuevo en un minuto.',
   },
   purchase: {
     title: 'Confirmar compra',
@@ -176,10 +178,10 @@ export const shopEs = {
     yourBalance: 'Tienes {amount} {currency}.',
     free: 'Gratis',
     successTitle: 'Equipado',
-    successBody: '{name} ahora está equipado.',
+    successBody: '{name} ha sido equipado.',
     errors: {
       insufficientFunds: 'No tienes suficiente para comprar esto.',
-      unavailable: 'Este artículo no está disponible ahora.',
+      unavailable: 'Este artículo no está disponible actualmente.',
       generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
     },
   },
@@ -195,132 +197,5 @@ export const shopEs = {
       generic: 'No se pudo vender el artículo. Inténtalo de nuevo.',
     },
   },
-  items: {
-    avatar: {
-      default01: { name: 'Avatar predeterminado', desc: 'El avatar inicial.' },
-      fox01: { name: 'Zorro', desc: 'Un zorro astuto.' },
-      cat01: { name: 'Gato', desc: 'Un gato curioso.' },
-      dragon01: { name: 'Dragón', desc: 'Un dragón feroz.' },
-      phoenix01: { name: 'Fénix', desc: 'Un fénix que renace.' },
-      cosmic01: { name: 'Cósmico', desc: 'Una leyenda cósmica.' },
-      wolf01: {
-        name: 'Lobo Cibernético',
-        desc: 'Un lobo cibernético hiperrealista.',
-      },
-      panther01: {
-        name: 'Pantera Cibernética',
-        desc: 'Una pantera cibernética hiperrealista.',
-      },
-      tiger01: {
-        name: 'Tigre Cibernético',
-        desc: 'Un tigre cibernético hiperrealista.',
-      },
-      eagle01: {
-        name: 'Águila Cibernética',
-        desc: 'Un águila cibernética hiperrealista.',
-      },
-      lion01: {
-        name: 'León Cibernético',
-        desc: 'Un león cibernético hiperrealista.',
-      },
-      shark01: {
-        name: 'Tiburón Cibernético',
-        desc: 'Un tiburón cibernético hiperrealista.',
-      },
-      catsiam: {
-        name: 'Gato Siamés Cibernético',
-        desc: 'Un gato siamés cibernético hiperrealista.',
-      },
-      catpersian: {
-        name: 'Gato Persa Cibernético',
-        desc: 'Un gato persa cibernético hiperrealista.',
-      },
-      catbengal: {
-        name: 'Gato Bengalí Cibernético',
-        desc: 'Un gato bengalí cibernético hiperrealista.',
-      },
-      phoenixcyber: {
-        name: 'Fénix Cibernético',
-        desc: 'Un fénix cibernético hiperrealista.',
-      },
-      dragoncyber: {
-        name: 'Dragón Cibernético',
-        desc: 'Un dragón cibernético hiperrealista.',
-      },
-    },
-    badge: {
-      newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },
-      veteran: { name: 'Veterano', desc: 'Un jugador experimentado.' },
-      champion: { name: 'Campeón', desc: 'Un campeón probado.' },
-      legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
-      elite: {
-        name: 'Escudo de Élite',
-        desc: 'Un escudo cibernético prestigioso.',
-      },
-      mythic: {
-        name: 'Estrella Mítica',
-        desc: 'Un emblema de estrella celestial dorada.',
-      },
-      vanguard: {
-        name: 'Escudo de Vanguardia',
-        desc: 'Un blasón defensivo blindado.',
-      },
-      nexus: {
-        name: 'Estrella Nexo',
-        desc: 'Una poderosa estrella cósmica futurista.',
-      },
-    },
-    name_color: {
-      default: { name: 'Predeterminado', desc: 'El color de nombre inicial.' },
-      slate: { name: 'Pizarra', desc: 'Un gris fresco y tranquilo.' },
-      emerald: { name: 'Esmeralda', desc: 'Un verde esmeralda fresco.' },
-      cyan: { name: 'Cian', desc: 'Un cian eléctrico.' },
-      violet: { name: 'Violeta', desc: 'Un violeta vivo.' },
-      sunset: { name: 'Atardecer', desc: 'Un degradado cálido de atardecer.' },
-      aurora: { name: 'Aurora', desc: 'Un degradado cambiante de aurora.' },
-      nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico brillante.' },
-      glitch: { name: 'Glitch', desc: 'Un color de artefacto digital cambiante.' },
-      neon: { name: 'Neón', desc: 'Un degradado brillante de verde neón y cian.' },
-      solar: { name: 'Solar', desc: 'Un degradado solar radiante de naranja.' },
-    },
-    game_skin: {
-      default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
-    },
-    banner: {
-      default: { name: 'Predeterminado', desc: 'El fondo inicial.' },
-      slate: { name: 'Pizarra', desc: 'Un fondo gris oscuro discreto.' },
-      tide: { name: 'Marea', desc: 'Un degradado fresco de turquesa a cian.' },
-      twilight: { name: 'Crepúsculo', desc: 'Índigo que se funde en rosa intenso.' },
-      nebula: { name: 'Nebulosa', desc: 'Un degradado cósmico multicolor.' },
-      cyberpunk: { name: 'Cyberpunk', desc: 'Un degradado de horizonte futurista neón.' },
-      void: { name: 'Vacío', desc: 'Un fondo de agujero negro del espacio profundo.' },
-    },
-    aura: {
-      default: { name: 'Predeterminada', desc: 'El aura inicial.' },
-      silver: { name: 'Aura plateada', desc: 'Un halo plateado sutil.' },
-      cyan: { name: 'Aura cian', desc: 'Un brillo eléctrico nítido.' },
-      violet: { name: 'Aura violeta', desc: 'Un brillo violeta intenso.' },
-      prism: { name: 'Aura prisma', desc: 'Una radiancia prismática cambiante.' },
-      gold: { name: 'Aura dorada', desc: 'Un prestigioso brillo dorado resplandeciente.' },
-      glitch: { name: 'Aura glitch', desc: 'Un brillo de distorsión digital animado.' },
-    },
-    frame: {
-      default: { name: 'Predeterminado', desc: 'El marco inicial.' },
-      silver: { name: 'Marco plateado', desc: 'Un anillo plateado cepillado.' },
-      emerald: { name: 'Marco esmeralda', desc: 'Un anillo esmeralda vivo.' },
-      violet: { name: 'Marco violeta', desc: 'Un anillo violeta pulido.' },
-      prism: { name: 'Marco prisma', desc: 'Un anillo prismático cambiante.' },
-      gold: { name: 'Marco dorado', desc: 'Un anillo de oro pulido y brillante.' },
-      cyberpunk: { name: 'Marco cyberpunk', desc: 'Un marco cyberpunk de neón vibrante.' },
-      neon: { name: 'Marco neón', desc: 'Un anillo brillante de verde neón y cian.' },
-      solar: { name: 'Marco solar', desc: 'Un anillo solar radiante de naranja.' },
-    },
-    background: {
-      default: { name: 'Predeterminado', desc: 'Fondo inicial.' },
-      slate: { name: 'Fondo pizarra', desc: 'Lavado pizarra apagado.' },
-      ocean: { name: 'Fondo océano', desc: 'Degradado azul-turquesa profundo.' },
-      violet: { name: 'Fondo violeta', desc: 'Degradado violeta intenso.' },
-      aurora: { name: 'Fondo aurora', desc: 'Degradado turquesa-violeta-rosa.' },
-    },
-  },
+  items: shopItemsEs,
 };

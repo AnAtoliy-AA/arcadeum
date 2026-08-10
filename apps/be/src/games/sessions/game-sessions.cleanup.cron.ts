@@ -5,9 +5,10 @@ import { Model } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
+import { GameSessionsArchiveService } from './game-sessions.archive.service';
 
-/** Mark sessions stale after 7 days of inactivity. */
-const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+/** Mark sessions stale after 30 days of inactivity. */
+const STALE_THRESHOLD_MS = 30 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class GameSessionsCleanupCron {
@@ -18,12 +19,37 @@ export class GameSessionsCleanupCron {
     private readonly sessionModel: Model<GameSession>,
     @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly roomModel: Model<GameRoom>,
+    private readonly archiveService: GameSessionsArchiveService,
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async cleanupStaleActiveSessions(): Promise<void> {
     try {
       const threshold = new Date(Date.now() - STALE_THRESHOLD_MS);
+
+      const staleSessions = await this.sessionModel
+        .find({
+          status: 'active',
+          updatedAt: { $lt: threshold },
+        })
+        .lean()
+        .exec();
+
+      for (const session of staleSessions) {
+        await this.archiveService.archiveSessionToAtlas({
+          id: session._id.toString(),
+          roomId: session.roomId,
+          gameId: session.gameId,
+          engine: session.engine,
+          status: 'completed',
+          state: session.state,
+          createdAt:
+            session.createdAt instanceof Date
+              ? session.createdAt.toISOString()
+              : new Date(session.createdAt).toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }
 
       const result = await this.sessionModel.updateMany(
         {
@@ -38,7 +64,7 @@ export class GameSessionsCleanupCron {
 
       if (result.modifiedCount > 0) {
         this.logger.log(
-          `Marked ${result.modifiedCount} stale active session(s) as completed and stripped stateHistory/logs.`,
+          `Archived and marked ${result.modifiedCount} stale active session(s) as completed.`,
         );
       }
     } catch (err) {
@@ -93,6 +119,31 @@ export class GameSessionsCleanupCron {
   async deleteOldCompletedSessions(): Promise<void> {
     try {
       const sessionThreshold = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+      const oldSessions = await this.sessionModel
+        .find({
+          status: 'completed',
+          updatedAt: { $lt: sessionThreshold },
+        })
+        .lean()
+        .exec();
+
+      for (const session of oldSessions) {
+        await this.archiveService.archiveSessionToAtlas({
+          id: session._id.toString(),
+          roomId: session.roomId,
+          gameId: session.gameId,
+          engine: session.engine,
+          status: session.status,
+          state: session.state,
+          createdAt:
+            session.createdAt instanceof Date
+              ? session.createdAt.toISOString()
+              : new Date(session.createdAt).toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }
+
       const sessionResult = await this.sessionModel.deleteMany({
         status: 'completed',
         updatedAt: { $lt: sessionThreshold },

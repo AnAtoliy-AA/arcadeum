@@ -71,7 +71,12 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       color: idx === 0 ? 'white' : ('black' as const),
       isBot: false,
     }));
-    const timeControl = config?.timeControl ?? null;
+    const opts =
+      config && typeof config === 'object' && 'options' in config
+        ? (config.options as ChessEngineConfig)
+        : config;
+    const timeControl = opts?.timeControl ?? null;
+    const botDifficulty = opts?.botDifficulty ?? 'medium';
     const clocks = timeControl
       ? ({
           white: {
@@ -84,7 +89,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
           },
         } as const)
       : null;
-    const variant = config?.variant ?? 'standard';
+    const variant = opts?.variant ?? 'standard';
     const initialBoard =
       variant === 'chess960'
         ? (() => {
@@ -100,6 +105,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     return {
       variant,
       timeControl,
+      botDifficulty,
       board: initialBoard,
       currentTurnColor: 'white',
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
@@ -409,9 +415,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   private markDraw(
     state: ChessState,
     key:
-      | 'isDrawByFiftyMoveRule'
-      | 'isInsufficientMaterial'
-      | 'isDrawByRepetition',
+      'isDrawByFiftyMoveRule' | 'isInsufficientMaterial' | 'isDrawByRepetition',
     message: string,
   ): void {
     (state as Record<string, unknown>)[key] = true;

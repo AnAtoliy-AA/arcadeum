@@ -31,8 +31,6 @@ function isPayload(value: unknown): value is WebVitalsPayload {
   return typeof v.name === 'string' && typeof v.value === 'number';
 }
 
-export const runtime = 'edge';
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let payload: unknown;
   try {

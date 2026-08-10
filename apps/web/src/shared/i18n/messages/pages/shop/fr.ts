@@ -1,3 +1,5 @@
+import { shopItemsFr } from './fr-items';
+
 export const shopFr = {
   meta: {
     title: 'Boutique · Arcadeum',
@@ -30,7 +32,7 @@ export const shopFr = {
     slots: {
       avatar: {
         label: 'Avatar',
-        desc: 'Portrait de profil affiché dans le lobby et le chat.',
+        desc: 'Portrait de profil affiché dans le lobby and le chat.',
         empty: 'Vide',
       },
       badge: {
@@ -195,138 +197,5 @@ export const shopFr = {
       generic: "Impossible de vendre l'article. Réessayez.",
     },
   },
-  items: {
-    avatar: {
-      default01: { name: 'Avatar par défaut', desc: "L'avatar de départ." },
-      fox01: { name: 'Renard', desc: 'Un renard rusé.' },
-      cat01: { name: 'Chat', desc: 'Un chat curieux.' },
-      dragon01: { name: 'Dragon', desc: 'Un dragon féroce.' },
-      phoenix01: { name: 'Phénix', desc: 'Un phénix renaissant.' },
-      cosmic01: { name: 'Cosmique', desc: 'Une légende cosmique.' },
-      wolf01: {
-        name: 'Loup Cybernétique',
-        desc: 'Un loup cybernétique hyperréaliste.',
-      },
-      panther01: {
-        name: 'Panthère Cybernétique',
-        desc: 'Une panthère cybernétique hyperréaliste.',
-      },
-      tiger01: {
-        name: 'Tigre Cybernétique',
-        desc: 'Un tigre cybernétique hyperréaliste.',
-      },
-      eagle01: {
-        name: 'Aigle Cybernétique',
-        desc: 'Un aigle cybernétique hyperréaliste.',
-      },
-      lion01: {
-        name: 'Lion Cybernétique',
-        desc: 'Un lion cybernétique hyperréaliste.',
-      },
-      shark01: {
-        name: 'Requin Cybernétique',
-        desc: 'Un requin cybernétique hyperréaliste.',
-      },
-      catsiam: {
-        name: 'Chat Siamois Cybernétique',
-        desc: 'Un chat siamois cybernétique hyperréaliste.',
-      },
-      catpersian: {
-        name: 'Chat Persan Cybernétique',
-        desc: 'Un chat persan cybernétique hyperréaliste.',
-      },
-      catbengal: {
-        name: 'Chat du Bengale Cybernétique',
-        desc: 'Un chat du Bengale cybernétique hyperréaliste.',
-      },
-      phoenixcyber: {
-        name: 'Phénix Cybernétique',
-        desc: 'Un phénix cybernétique hyperréaliste.',
-      },
-      dragoncyber: {
-        name: 'Dragon Cybernétique',
-        desc: 'Un dragon cybernétique hyperréaliste.',
-      },
-    },
-    badge: {
-      newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },
-      veteran: { name: 'Vétéran', desc: 'Un joueur expérimenté.' },
-      champion: { name: 'Champion', desc: 'Un champion confirmé.' },
-      legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
-      elite: {
-        name: 'Bouclier d’Élite',
-        desc: 'Un bouclier cybernétique prestigieux.',
-      },
-      mythic: {
-        name: 'Étoile Mythique',
-        desc: 'Un emblème d’étoile céleste dorée.',
-      },
-      vanguard: {
-        name: 'Bouclier de l’Avant-garde',
-        desc: 'Un blason défensif blindé.',
-      },
-      nexus: {
-        name: 'Étoile du Nexus',
-        desc: 'Une puissante étoile cosmique futuriste.',
-      },
-    },
-    name_color: {
-      default: { name: 'Par défaut', desc: 'La couleur de nom initiale.' },
-      slate: { name: 'Ardoise', desc: 'Un gris calme et frais.' },
-      emerald: { name: 'Émeraude', desc: 'Un vert émeraude éclatant.' },
-      cyan: { name: 'Cyan', desc: 'Un cyan électrique.' },
-      violet: { name: 'Violet', desc: 'Un violet vif.' },
-      sunset: {
-        name: 'Coucher de soleil',
-        desc: 'Un dégradé chaud de coucher de soleil.',
-      },
-      aurora: {
-        name: 'Aurore',
-        desc: 'Un dégradé changeant d’aurore boréale.',
-      },
-      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique brillant.' },
-      glitch: { name: 'Glitch', desc: 'Une couleur d’artéfact numérique changeante.' },
-      neon: { name: 'Néon', desc: 'Un dégradé éclatant de vert néon et de cyan.' },
-      solar: { name: 'Solaire', desc: 'Un dégradé solaire éclatant d’orange.' },
-    },
-    game_skin: {
-      default: { name: 'Par défaut', desc: 'Le thème de jeu initial.' },
-    },
-    banner: {
-      default: { name: 'Par défaut', desc: 'L’arrière-plan initial.' },
-      slate: { name: 'Ardoise', desc: 'Un arrière-plan gris ardoise sobre.' },
-      tide: { name: 'Marée', desc: 'Un dégradé frais turquoise vers cyan.' },
-      twilight: { name: 'Crépuscule', desc: 'Indigo fondu dans un rose intense.' },
-      nebula: { name: 'Nébuleuse', desc: 'Un dégradé cosmique multicolor.' },
-      cyberpunk: { name: 'Cyberpunk', desc: 'Un dégradé d’horizon futuriste néon.' },
-      void: { name: 'Vide', desc: 'Un arrière-plan de trou noir de l’espace profond.' },
-    },
-    aura: {
-      default: { name: 'Par défaut', desc: 'L’aura initiale.' },
-      silver: { name: 'Aura argentée', desc: 'Un halo argenté sutil.' },
-      cyan: { name: 'Aura cyan', desc: 'Un éclat électrique net.' },
-      violet: { name: 'Aura violette', desc: 'Un éclat violet riche.' },
-      prism: { name: 'Aura prisme', desc: 'Une radiance prismatique changeante.' },
-      gold: { name: 'Aura dorée', desc: 'Un éclat d’or brillant prestigieux.' },
-      glitch: { name: 'Aura glitch', desc: 'Une lueur de distorsion numérique animée.' },
-    },
-    frame: {
-      default: { name: 'Par défaut', desc: 'Le cadre initial.' },
-      silver: { name: 'Cadre argenté', desc: 'Un anneau argenté brossé.' },
-      emerald: { name: 'Cadre émeraude', desc: 'Un anneau émeraude vif.' },
-      violet: { name: 'Cadre violet', desc: 'Un anneau violet poli.' },
-      prism: { name: 'Cadre prisme', desc: 'Un anneau prismatique changeant.' },
-      gold: { name: 'Cadre doré', desc: 'Un anneau doré poli et brillant.' },
-      cyberpunk: { name: 'Cadre cyberpunk', desc: 'Un cadre cyberpunk néon vibrant.' },
-      neon: { name: 'Cadre néon', desc: 'Un anneau éclatant de vert néon et de cyan.' },
-      solar: { name: 'Cadre solaire', desc: 'Un anneau solaire éclatant d’orange.' },
-    },
-    background: {
-      default: { name: 'Par défaut', desc: 'Arrière-plan de départ.' },
-      slate: { name: 'Ardoise', desc: 'Lavis ardoise sobre.' },
-      ocean: { name: 'Océan', desc: 'Dégradé bleu-turquoise profond.' },
-      violet: { name: 'Violet', desc: 'Dégradé violet intense.' },
-      aurora: { name: 'Aurore', desc: 'Dégradé turquoise-violet-rose.' },
-    },
-  },
+  items: shopItemsFr,
 };

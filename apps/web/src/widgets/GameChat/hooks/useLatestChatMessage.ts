@@ -13,14 +13,19 @@ interface UseLatestChatMessageResult {
   dismiss: () => void;
 }
 
+const EMOJI_STARTER = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+
+function isEmoteMessage(message: string): boolean {
+  if (!message) return false;
+  const firstCodePoint = message.codePointAt(0);
+  if (firstCodePoint === undefined) return false;
+  return EMOJI_STARTER.test(String.fromCodePoint(firstCodePoint));
+}
+
 export function useLatestChatMessage(
   logs: ChatLogEntry[],
 ): UseLatestChatMessageResult {
   const [dismissedId, setDismissedId] = useState<string | null>(null);
-  // Only messages created after the hook mounted are eligible for a popup.
-  // Otherwise every page refresh would replay the latest historical message
-  // as if it had just been sent. useState's lazy initializer captures the
-  // mount time exactly once.
   const [mountTime] = useState<number>(() => Date.now());
 
   const derivedMessage = useMemo<LatestChatMessage | null>(() => {
@@ -30,6 +35,7 @@ export function useLatestChatMessage(
       .reverse()
       .find((log) => {
         if (log.type !== 'message' || !log.senderId) return false;
+        if (isEmoteMessage(log.message)) return false;
         const t = log.createdAt
           ? new Date(log.createdAt).getTime()
           : Number.POSITIVE_INFINITY;

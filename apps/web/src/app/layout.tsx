@@ -7,6 +7,8 @@ import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
 import { setupTamagui } from '@/shared/config/tamagui.config';
@@ -150,6 +152,18 @@ export default async function RootLayout({
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
           </>
         )}
+        {process.env.NEXT_PUBLIC_API_BASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_API_BASE_URL}
+            />
+            <link
+              rel="dns-prefetch"
+              href={process.env.NEXT_PUBLIC_API_BASE_URL}
+            />
+          </>
+        )}
         <JsonLd data={jsonLd} />
       </head>
       <body className={fontClassName}>
@@ -157,6 +171,12 @@ export default async function RootLayout({
           Skip to content
         </a>
         <WebVitalsReporter />
+        {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
+          <>
+            <SpeedInsights />
+            <Analytics />
+          </>
+        )}
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>
             <LazySessionRoleSync />

@@ -2,10 +2,7 @@ import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 export type GemPurchaseStatus =
-  | 'pending'
-  | 'completed'
-  | 'failed'
-  | 'cancelled';
+  'pending' | 'completed' | 'failed' | 'cancelled';
 
 @Schema({ timestamps: true })
 export class GemPurchase {

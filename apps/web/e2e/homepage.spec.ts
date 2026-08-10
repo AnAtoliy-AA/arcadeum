@@ -36,7 +36,7 @@ test.describe('Home Page', () => {
   test('should have games link in navigation', async ({ page }) => {
     await ensureNavigationVisible(page);
     const gamesLink = page
-      .getByRole('link', { name: /games/i })
+      .getByRole('link', { name: /rooms/i })
       .filter({ visible: true });
     await expect(gamesLink.first()).toBeVisible();
   });
@@ -44,7 +44,7 @@ test.describe('Home Page', () => {
   test('should navigate to games page', async ({ page, isMobile }) => {
     await ensureNavigationVisible(page);
     const gamesLink = isMobile
-      ? page.getByTestId('mobile-nav-games')
+      ? page.getByTestId('mobile-nav-rooms')
       : page.getByTestId('nav-games');
 
     await expect(gamesLink).toBeVisible();
@@ -121,5 +121,14 @@ test.describe('Home Page', () => {
     await expect(getStartedButton).toBeVisible();
     await getStartedButton.click();
     await expect(page).toHaveURL(/\/games/);
+  });
+
+  test('should open game picker modal via Play vs AI button', async ({
+    page,
+  }) => {
+    const playVsAiButton = page.getByTestId('hero-play-vs-ai-button');
+    await expect(playVsAiButton).toBeVisible();
+    await playVsAiButton.click();
+    await expect(page.getByTestId('game-picker-title')).toBeVisible();
   });
 });

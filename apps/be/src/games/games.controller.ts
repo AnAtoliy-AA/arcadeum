@@ -312,7 +312,7 @@ export class GamesController {
         user.userId,
         roomId,
         dto.engine,
-      ) as Promise<StartCriticalSessionResult>;
+      );
     }
 
     // Default to Critical (legacy behavior)

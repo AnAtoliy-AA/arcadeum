@@ -83,7 +83,7 @@ export const featuredGames: FeaturedGame[] = [
     genre: 'Board',
     pace: 'Strategy',
     category: 'Strategy',
-    players: '2–6',
+    players: '2–4',
     duration: '10 min',
     playingNow: null,
     isPlayable: true,

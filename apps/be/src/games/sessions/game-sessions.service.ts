@@ -16,6 +16,7 @@ import {
   BaseGameState,
 } from '../engines/base/game-engine.interface';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
+import { enforceStateSizeLimit } from './game-sessions.size-check';
 
 export interface GameSessionSummary {
   id: string;
@@ -52,9 +53,6 @@ export interface ExecuteActionOptions {
  * Game Sessions Service
  * Handles game session lifecycle and state management
  */
-/** Max session document size in bytes. Typical: 2-13KB. Alert at 100KB, strip at 500KB. */
-const WARN_DOC_SIZE_BYTES = 100 * 1024;
-const STRIP_DOC_SIZE_BYTES = 500 * 1024;
 
 @Injectable()
 export class GameSessionsService {
@@ -88,14 +86,8 @@ export class GameSessionsService {
     options: CreateSessionOptions,
   ): Promise<GameSessionSummary> {
     const { roomId, gameId, playerIds, config } = options;
-
-    // Get the game engine
     const engine = this.engineRegistry.getEngine(gameId);
-
-    // Initialize game state using the engine
     const initialState = engine.initializeState(playerIds, config);
-
-    // Create session document
     const session = await this.ociSessionModel.create({
       roomId,
       gameId,
@@ -109,44 +101,32 @@ export class GameSessionsService {
     return this.toSessionSummary(session);
   }
 
-  /**
-   * Find session by room ID
-   */
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
-    if (typeof roomId !== 'string') {
-      return null;
-    }
-    const safeRoomId = String(roomId);
+    if (typeof roomId !== 'string') return null;
     const session = await this.ociSessionModel
-      .findOne({ roomId: safeRoomId })
+      .findOne({ roomId: String(roomId) })
       .sort({ createdAt: -1 })
       .lean()
       .exec();
-
     return session
       ? this.toSessionSummary(session as unknown as GameSession)
       : null;
   }
 
-  /**
-   * Find active sessions for a specific game that haven't been updated for a while
-   */
   async findStaleActiveSessions(
     gameId: string,
     staleThresholdMs: number,
     limit: number = 100,
   ): Promise<GameSessionSummary[]> {
-    const thresholdDate = new Date(Date.now() - staleThresholdMs);
     const sessions = await this.ociSessionModel
       .find({
         gameId,
         status: 'active',
-        updatedAt: { $lt: thresholdDate },
+        updatedAt: { $lt: new Date(Date.now() - staleThresholdMs) },
       })
       .limit(limit)
       .lean()
       .exec();
-
     return sessions.map((s) =>
       this.toSessionSummary(s as unknown as GameSession),
     );
@@ -160,57 +140,78 @@ export class GameSessionsService {
       .findById(sessionId)
       .lean()
       .exec();
-
-    if (!session) {
+    if (!session)
       throw new NotFoundException(`Session not found: ${sessionId}`);
-    }
-
     return this.toSessionSummary(session as unknown as GameSession);
   }
 
-  /**
-   * Update session state
-   */
   async updateSessionState(
     options: UpdateSessionStateOptions,
   ): Promise<GameSessionSummary> {
     const { sessionId, state, status } = options;
-
     const session = await this.ociSessionModel.findById(sessionId).exec();
-
-    if (!session) {
+    if (!session)
       throw new NotFoundException(`Session not found: ${sessionId}`);
-    }
-
     session.state = state;
     session.markModified('state');
-    if (status) {
-      session.status = status;
-    }
-
-    // Safety valve: strip stateHistory if document is approaching BSON limit
-    const approxSize = Buffer.byteLength(
-      JSON.stringify(session.state),
-      'utf-8',
-    );
-    if (approxSize > STRIP_DOC_SIZE_BYTES) {
-      this.logger.warn(
-        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
-      );
-      const s = session.state;
-      if (Array.isArray(s.stateHistory)) s.stateHistory = [];
-      if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
-      session.markModified('state');
-    } else if (approxSize > WARN_DOC_SIZE_BYTES) {
-      this.logger.warn(
-        `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
-      );
-    }
-
+    if (status) session.status = status;
+    enforceStateSizeLimit(session, sessionId, this.logger);
     session.updatedAt = new Date();
-
     await session.save();
+    return this.toSessionSummary(session);
+  }
 
+  async pushChatLog(
+    roomId: string,
+    userId: string,
+    message: string,
+    scope: string,
+    senderName?: string,
+  ): Promise<GameSessionSummary | null> {
+    const session = await this.ociSessionModel
+      .findOne({ roomId })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (!session) return null;
+    const state = session.state;
+    if (!Array.isArray(state.logs)) state.logs = [];
+    (state.logs as Array<Record<string, unknown>>).push({
+      id: globalThis.crypto.randomUUID().slice(0, 12),
+      type: 'message',
+      message,
+      createdAt: new Date().toISOString(),
+      scope,
+      senderId: userId,
+      senderName: senderName ?? null,
+    });
+    session.markModified('state');
+    session.updatedAt = new Date();
+    await session.save();
+    return this.toSessionSummary(session);
+  }
+
+  async deleteChatLog(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ): Promise<GameSessionSummary | null> {
+    const session = await this.ociSessionModel
+      .findOne({ roomId })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (!session) return null;
+    const state = session.state;
+    const logs = state.logs as Array<Record<string, unknown>> | undefined;
+    if (!Array.isArray(logs)) return null;
+    const target = logs.find((l) => l.id === messageId);
+    if (!target) return null;
+    const isHost =
+      Array.isArray(state.playerOrder) && state.playerOrder[0] === callerId;
+    if (!isHost && target.senderId !== callerId) return null;
+    state.logs = logs.filter((l) => l.id !== messageId);
+    session.markModified('state');
+    session.updatedAt = new Date();
+    await session.save();
     return this.toSessionSummary(session);
   }
 
@@ -242,7 +243,7 @@ export class GameSessionsService {
       if (engine.normalizeState) {
         session.state = engine.normalizeState(
           session.state as unknown as BaseGameState,
-        ) as unknown as Record<string, unknown>;
+        );
         session.markModified('state');
       }
 
@@ -269,7 +270,7 @@ export class GameSessionsService {
 
       // Update session with new state
       if (result.state) {
-        session.state = result.state as unknown as Record<string, unknown>;
+        session.state = result.state;
         session.markModified('state');
       }
 
@@ -281,23 +282,7 @@ export class GameSessionsService {
       }
 
       // Safety valve: strip stateHistory if document is approaching BSON limit
-      const approxSize = Buffer.byteLength(
-        JSON.stringify(session.state),
-        'utf-8',
-      );
-      if (approxSize > STRIP_DOC_SIZE_BYTES) {
-        this.logger.warn(
-          `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
-        );
-        const s = session.state;
-        if (Array.isArray(s.stateHistory)) s.stateHistory = [];
-        if (Array.isArray(s.logs)) s.logs = s.logs.slice(-20);
-        session.markModified('state');
-      } else if (approxSize > WARN_DOC_SIZE_BYTES) {
-        this.logger.warn(
-          `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
-        );
-      }
+      enforceStateSizeLimit(session, sessionId, this.logger);
 
       session.updatedAt = new Date();
 
@@ -465,7 +450,7 @@ export class GameSessionsService {
     }
 
     if (result.state) {
-      session.state = result.state as unknown as Record<string, unknown>;
+      session.state = result.state;
       session.markModified('state');
     }
     session.updatedAt = new Date();

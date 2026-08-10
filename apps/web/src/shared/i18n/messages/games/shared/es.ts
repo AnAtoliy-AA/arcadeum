@@ -4,7 +4,8 @@ export const esMessages = {
   glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Salas de Juego',
-    emptyTitle: 'No se encontraron salas. ¡Crea una para empezar!',
+    emptyTitle:
+      'No hay salas abiertas en este momento — comienza una contra la IA.',
     emptyFeaturedLink: 'O entra a Batalla Naval contra la IA →',
     loadingRooms: 'Cargando salas...',
     searchPlaceholder: 'Buscar juegos...',
@@ -151,6 +152,9 @@ export const esMessages = {
     seaBattleSonarHint: 'Revelar ubicaciones de barcos',
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Escanear una fila o columna',
+    seaBattleRevealAll: 'Onda de escaneo',
+    seaBattleRevealAllHint:
+      'Revelar todos los barcos brevemente al inicio del combate',
     tttBoardSize: 'Tamaño del Tablero',
     tttWinLength: '{{n}} en fila para ganar',
     tttMaxPlayers: 'Hasta {{n}} jugadores',
@@ -306,8 +310,11 @@ export const esMessages = {
       powerups: 'Bonificaciones',
     },
     category: {
-      cardGame: 'Juego de cartas',
-      boardGame: 'Juego de mesa',
+      cardGame: 'Juego de Cartas',
+      boardGame: 'Juego de Mesa',
+      action: 'Acción',
+      strategy: 'Estrategia',
+      race: 'Carrera',
     },
     tags: {
       strategy: 'Estrategia',
@@ -392,5 +399,10 @@ export const esMessages = {
     skull: 'Muerto',
     sweat: '¡Casi!',
     clown: 'Payaso',
+  },
+  gamePicker: {
+    title: 'Elige un juego para jugar contra la IA',
+    starting: 'Iniciando...',
+    allCategory: 'Todos',
   },
 };

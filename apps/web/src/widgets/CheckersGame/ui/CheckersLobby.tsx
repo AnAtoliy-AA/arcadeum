@@ -34,7 +34,11 @@ interface CheckersLobbyProps {
   userId: string;
   isHost: boolean;
   startBusy: boolean;
-  onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
+  onStartGame: (options?: {
+    withBots?: boolean;
+    botCount?: number;
+    botDifficulty?: string;
+  }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
@@ -223,7 +227,9 @@ export function CheckersLobby({
         userId={userId}
         isHost={isHost}
         startBusy={startBusy}
-        onStartGame={onStartGame}
+        onStartGame={(opts) =>
+          onStartGame({ ...opts, botDifficulty: opts?.difficulty ?? 'medium' })
+        }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}
         onKickPlayer={onKickPlayer}

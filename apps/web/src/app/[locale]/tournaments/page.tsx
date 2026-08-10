@@ -7,6 +7,8 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { getTranslations } from '@/shared/i18n/server';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import TournamentsClient from './TournamentsClient';
+import { fetchPublicTournaments } from '@/features/tournaments/api';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 
 export async function generateMetadata({
   params,
@@ -30,15 +32,37 @@ export default async function TournamentsPage({
 }) {
   const { locale: rawLocale } = await params;
   const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
-  const messages = await getTranslations(locale);
+  const [messages, accessToken] = await Promise.all([
+    getTranslations(locale),
+    getServerAccessToken(),
+  ]);
   const routes = buildRoutes(locale);
+
+  let items: Array<{
+    name: string;
+    url: string;
+    description?: string;
+    itemType?: string;
+  }> = [];
+
+  try {
+    const res = await fetchPublicTournaments({ locale, accessToken });
+    items = (res.items ?? []).map((t) => ({
+      name: t.name,
+      url: `${routes.tournaments}#${t.id}`,
+      description: t.description || t.prizeDescription || undefined,
+      itemType: 'SportsEvent',
+    }));
+  } catch {
+    // Fail-safe fallbacks
+  }
 
   const collectionPage = buildCollectionPageJsonLd({
     locale,
     pageUrl: routes.tournaments,
     name: messages.seo?.tournaments?.title ?? 'Tournaments',
     description: messages.seo?.tournaments?.description,
-    items: [],
+    items,
   });
   const breadcrumb = buildBreadcrumbJsonLd({
     locale,

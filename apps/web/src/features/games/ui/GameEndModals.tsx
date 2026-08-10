@@ -41,6 +41,7 @@ export function GameEndModals({
           players={players}
           currentUserId={currentUserId}
           rematchLoading={gameEnd.rematchLoading}
+          rematchError={gameEnd.rematchError}
           onClose={gameEnd.closeRematchModal}
           onConfirm={gameEnd.handleRematch}
           t={t}

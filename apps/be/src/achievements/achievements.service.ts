@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
@@ -55,14 +57,25 @@ export class AchievementsService {
     private readonly progressModel: Model<UserAchievementDocument>,
     private readonly wallet: WalletService,
     private readonly statsService: GameHistoryStatsService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
-  async getStatus(userId: string): Promise<AchievementsStatus> {
-    const definitions = await this.definitionModel
+  private async getCachedDefinitions(): Promise<AchievementDefinition[]> {
+    const cacheKey = 'achievement_definitions';
+    const cached = await this.cache.get<AchievementDefinition[]>(cacheKey);
+    if (cached) return cached;
+
+    const definitions = (await this.definitionModel
       .find()
       .sort({ sortOrder: 1 })
       .lean()
-      .exec();
+      .exec()) as unknown as AchievementDefinition[];
+    await this.cache.set(cacheKey, definitions, 300_000);
+    return definitions;
+  }
+
+  async getStatus(userId: string): Promise<AchievementsStatus> {
+    const definitions = await this.getCachedDefinitions();
     const progress = await this.getOrCreateProgress(userId);
     const stats = await this.statsService.getPlayerStats(userId);
 
@@ -100,7 +113,7 @@ export class AchievementsService {
   async checkAndUnlock(userId: string): Promise<string[]> {
     if (userId.startsWith('bot-')) return [];
 
-    const definitions = await this.definitionModel.find().lean().exec();
+    const definitions = await this.getCachedDefinitions();
     const progress = await this.getOrCreateProgress(userId);
     const stats = await this.statsService.getPlayerStats(userId);
     const newlyUnlocked: string[] = [];
@@ -134,9 +147,7 @@ export class AchievementsService {
   }
 
   async getDefinitions(): Promise<AchievementDefinition[]> {
-    return this.definitionModel.find().lean().exec() as unknown as Promise<
-      AchievementDefinition[]
-    >;
+    return this.getCachedDefinitions();
   }
 
   async checkAndUnlockWithDefinitions(
@@ -184,7 +195,7 @@ export class AchievementsService {
     if (typeof userId !== 'string' || typeof achievementId !== 'string') {
       throw new Error('Invalid parameters');
     }
-    const all = await this.definitionModel.find().lean().exec();
+    const all = await this.getCachedDefinitions();
     const definition = all.find((d) => d.achievementId === achievementId);
     if (!definition) throw new Error('Achievement not found');
 

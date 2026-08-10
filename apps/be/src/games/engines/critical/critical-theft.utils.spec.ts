@@ -19,7 +19,7 @@ function makePlayer(
     score: 0,
     stash: [],
     markedCards: [],
-  } as unknown as CriticalPlayerState;
+  };
 }
 
 function makeState(players: CriticalPlayerState[]): CriticalState {

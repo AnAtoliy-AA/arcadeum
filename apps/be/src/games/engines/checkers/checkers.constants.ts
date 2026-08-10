@@ -57,6 +57,7 @@ export const DEFAULT_OPTIONS = {
   ruleVariant: 'american' as RuleVariant,
   forcedCaptures: true,
   backwardCaptures: false,
+  botDifficulty: 'medium' as const,
 };
 
 export const INITIAL_PIECES_PER_PLAYER = 12;

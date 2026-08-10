@@ -22,13 +22,18 @@ export function validatePayloadUserId(
   payloadUserId: string,
 ): void {
   const authUserId = (client.data as Record<string, unknown>)?.userId as
-    | string
-    | undefined;
-  const isAuthenticated =
-    (client.data as Record<string, unknown>)?.authenticated === true;
+    string | undefined;
+  const isAuthenticated = getIsAuthenticated(client);
   if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
     throw new WsException('Cannot perform actions as another user.');
   }
+}
+
+/**
+ * Returns true if the socket belongs to an authenticated (non-anonymous) user.
+ */
+export function getIsAuthenticated(client: Socket): boolean {
+  return (client.data as Record<string, unknown>)?.authenticated === true;
 }
 
 export const SIMPLE_ACTION_CARDS = [

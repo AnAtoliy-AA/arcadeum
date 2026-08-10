@@ -63,7 +63,7 @@ export const mapperStub: Pick<GameRoomsMapper, 'prepareRoomSummary'> = {
 };
 
 export function getOpts(room: FakeRoom): SeaBattleGameOptions {
-  return room.gameOptions as SeaBattleGameOptions;
+  return room.gameOptions;
 }
 
 export function getTeams(room: FakeRoom): SeaBattleTeamConfigEntry[] {

@@ -121,9 +121,7 @@ export function dispatchTheftPackAction(
 
     case 'snatch': {
       if (!targetPlayerId) return { success: false, error: 'Target required' };
-      const snatchPayload = payload as
-        | { requestedCard?: CriticalCard }
-        | undefined;
+      const snatchPayload = payload;
       if (!snatchPayload?.requestedCard)
         return { success: false, error: 'requestedCard required' };
       playCard();

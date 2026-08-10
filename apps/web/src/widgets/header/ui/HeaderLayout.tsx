@@ -24,7 +24,8 @@ export function HeaderLayout({ children, balanceChip }: HeaderLayoutProps) {
             priority
           />
           <span className="logo-text" data-testid="logo-text">
-            {appConfig.appName || 'Arcadeum'}
+            <span className="logo-text-top">Arcadeum</span>
+            <span className="logo-text-bottom">Games</span>
           </span>
         </Logo>
         {balanceChip}

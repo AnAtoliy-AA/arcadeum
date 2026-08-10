@@ -197,6 +197,7 @@ export class CheckersService implements OnModuleInit, OnModuleDestroy {
       ruleVariant: string;
       forcedCaptures: boolean;
       backwardCaptures: boolean;
+      botDifficulty: 'easy' | 'medium' | 'hard';
     }>;
     return {
       variant: (r.variant as CheckersOptions['variant']) ?? 'classic',
@@ -204,6 +205,9 @@ export class CheckersService implements OnModuleInit, OnModuleDestroy {
         (r.ruleVariant as CheckersOptions['ruleVariant']) ?? 'american',
       forcedCaptures: r.forcedCaptures !== false,
       backwardCaptures: r.backwardCaptures === true,
+      botDifficulty: ['easy', 'medium', 'hard'].includes(r.botDifficulty!)
+        ? r.botDifficulty
+        : 'medium',
     };
   }
 }

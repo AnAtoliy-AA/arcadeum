@@ -4,7 +4,7 @@ export const enMessages = {
   glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Game Rooms',
-    emptyTitle: 'No rooms found. Create one to get started!',
+    emptyTitle: 'No open rooms right now — start one vs AI.',
     emptyFeaturedLink: 'Or jump into Sea Battle vs AI →',
     loadingRooms: 'Loading rooms...',
     searchPlaceholder: 'Search games...',
@@ -151,6 +151,8 @@ export const enMessages = {
     seaBattleSonarHint: 'Reveal ship locations',
     seaBattleRadar: 'Radar',
     seaBattleRadarHint: 'Scan a row or column',
+    seaBattleRevealAll: 'Scan Wave',
+    seaBattleRevealAllHint: 'Reveal all ships briefly at battle start',
     tttBoardSize: 'Board Size',
     tttWinLength: '{{n}} in a row to win',
     tttMaxPlayers: 'Up to {{n}} players',
@@ -302,6 +304,9 @@ export const enMessages = {
     category: {
       cardGame: 'Card Game',
       boardGame: 'Board Game',
+      action: 'Action',
+      strategy: 'Strategy',
+      race: 'Race',
     },
     tags: {
       strategy: 'Strategy',
@@ -385,5 +390,10 @@ export const enMessages = {
     skull: 'Dead',
     sweat: 'Close!',
     clown: 'Clown',
+  },
+  gamePicker: {
+    title: 'Pick a game to play vs AI',
+    starting: 'Starting...',
+    allCategory: 'All',
   },
 };

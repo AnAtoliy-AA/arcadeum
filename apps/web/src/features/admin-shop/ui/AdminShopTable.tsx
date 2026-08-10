@@ -7,6 +7,7 @@ import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import { AdminShopEditDialog } from './AdminShopEditDialog';
 import { AdminShopGrantDialog } from './AdminShopGrantDialog';
+import { AdminShopItemPreview } from './AdminShopItemPreview';
 
 type Labels = typeof adminShopEn;
 
@@ -94,7 +95,15 @@ export function AdminShopTable({ catalog, labels }: Props) {
                   }}
                 >
                   <Td>
-                    <code>{item.id}</code>
+                    <XStack alignItems="center" gap="$2">
+                      <AdminShopItemPreview
+                        size={32}
+                        colorValue={item.colorValue}
+                        assetUrl={item.assetUrl}
+                        itemId={item.id}
+                      />
+                      <code>{item.id}</code>
+                    </XStack>
                   </Td>
                   <Td>{labels.category[item.category]}</Td>
                   <Td>{labels.rarity[item.rarity]}</Td>
@@ -162,6 +171,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
         onClose={() => setGrantOpen(false)}
         labels={labels}
         defaultItemId={grantDefaultItemId}
+        catalog={catalog}
       />
     </>
   );

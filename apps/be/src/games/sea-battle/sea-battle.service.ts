@@ -13,10 +13,8 @@ import {
   GameSessionsService,
   GameSessionSummary,
 } from '../sessions/game-sessions.service';
-import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { StartGameSessionResult } from '../games.types';
-import { ChatScope } from '../engines/base/game-engine.interface';
 import { SeaBattleBotService } from './sea-battle-bot.service';
 import {
   MAX_PLAYERS,
@@ -49,7 +47,6 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
-    private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => SeaBattleBotService))
     private readonly botService: SeaBattleBotService,
@@ -400,30 +397,5 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     await this.checkAndSyncRoomStatus(updatedSession);
     await this.emitSessionUpdate(updatedSession);
     return updatedSession;
-  }
-
-  /**
-   * Post a note to Sea Battle history
-   */
-  async postHistoryNote(
-    userId: string,
-    roomId: string,
-    message: string,
-    scope: ChatScope,
-  ) {
-    // Primary mechanism is via engine action to ensure state update and realtime event
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      const updatedSession = await this.sessionsService.executeAction({
-        sessionId: session.id,
-        userId,
-        action: 'chat',
-        payload: {
-          message,
-          scope,
-        },
-      });
-      await this.emitSessionUpdate(updatedSession);
-    }
   }
 }

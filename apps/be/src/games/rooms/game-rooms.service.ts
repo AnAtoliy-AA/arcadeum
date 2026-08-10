@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
@@ -28,6 +27,8 @@ import {
 } from './game-rooms.types';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
+import { GameRoomsChatService } from './game-rooms.chat.service';
+import { generateUniqueInviteCode } from './game-rooms.invite-code';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 import { validateGameOptions } from './game-rooms.config-validator';
@@ -57,6 +58,7 @@ export class GameRoomsService {
     private readonly ociRoomModel: Model<GameRoom>,
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsRematchService: GameRoomsRematchService,
+    private readonly gameRoomsChatService: GameRoomsChatService,
     private readonly engineRegistry: GameEngineRegistry,
     @Optional()
     @InjectModel(GameRoom.name, ATLAS_CONNECTION)
@@ -69,7 +71,7 @@ export class GameRoomsService {
     userId: string,
     dto: CreateGameRoomDto,
   ): Promise<GameRoomSummary> {
-    const inviteCode = await this.generateInviteCode();
+    const inviteCode = await generateUniqueInviteCode(this.ociRoomModel);
 
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
@@ -477,16 +479,21 @@ export class GameRoomsService {
     );
   }
 
-  private async generateInviteCode(): Promise<string> {
-    let code: string;
-    let exists = true;
-    while (exists) {
-      code = randomBytes(4).toString('hex').toUpperCase();
-      const existing = await this.ociRoomModel
-        .findOne({ inviteCode: code })
-        .exec();
-      exists = !!existing;
-    }
-    return code!;
+  async postRoomChat(
+    roomId: string,
+    userId: string,
+    senderName: string,
+    message: string,
+    scope: string,
+  ) {
+    return this.gameRoomsChatService.postRoomChat(roomId, userId, senderName, message, scope);
+  }
+
+  async deleteRoomChatMessage(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ) {
+    return this.gameRoomsChatService.deleteRoomChatMessage(roomId, callerId, messageId);
   }
 }

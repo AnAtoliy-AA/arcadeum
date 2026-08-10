@@ -7,6 +7,462 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.46] - 2026-08-10
+
+### Fixed
+- wrap PWA feature text in Text component to fix console error
+
+
+## [1.24.45] - 2026-08-10
+
+### Fixed
+- remove duplicate release poster and add Instagram channel
+
+
+## [1.24.44] - 2026-08-10
+
+### Fixed
+- open chat panel on mobile before assertions
+- fix in-game chat e2e tests by adding mock echo and fixing field names
+- use correct navigation URL in in-game-chat e2e tests
+- unify all game chat to use shared GamesHistoryFacade.postHistoryNote
+- persist session chat message deletion to OCI
+- catch NotFoundException from Atlas in postHistoryNote for quick-play rooms
+
+
+## [1.24.43] - 2026-08-09
+
+### Added
+- implement visual, audio and cli enhancements (ARC-SHORTS)
+
+
+## [1.24.42] - 2026-08-09
+
+### Improved
+- also gate audio element creation on player visibility
+- reduce network payloads by optimizing assets and deferring audio loading
+
+
+## [1.24.41] - 2026-08-09
+
+### Fixed
+- fix move logic, win conditions, and rules documentation
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
+
+
+## [1.24.40] - 2026-08-09
+
+### Added
+- add more shop backgrounds and translations
+
+### Fixed
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
+
+
+## [1.24.39] - 2026-08-09
+
+### Fixed
+- move connection banner to bottom of screen
+- prevent connection banner from blocking pointer events
+- keep socket connected for anonymous users on games page
+- connect game socket for anonymous users in room
+- centralize socket connection in BrowserRegistry
+- anonymous player connection and quick match issues
+- allow anonymous players to send in-game chat messages
+
+### Documentation
+- add socket architecture reference
+
+
+## [1.24.38] - 2026-08-09
+
+### Added
+- display logo in video end card
+- enhance scenarios, trim white screen and add platform link
+
+
+## [1.24.37] - 2026-08-09
+
+### Fixed
+- allow video presentation iframe autoplay on mobile safari (ARC-890) (ARC-890)
+- remove force:true from home games slider e2e clicks to fix webkit viewport failures
+- remove force:true from video presentation e2e click to fix Tablet Safari flake
+- move pnpm config from .npmrc to pnpm-workspace.yaml
+- scope pnpm config to [pnpm] section to silence npm warnings
+- remove content-visibility from presentation section to fix e2e test
+- refactor public-announcements test to unit style to fix flaky SIGSEGV
+
+### Improved
+- optimize home page performance
+
+
+## [1.24.36] - 2026-08-09
+
+### Fixed
+- use anonymous ID for unauthenticated players in quick match
+
+
+## [1.24.35] - 2026-08-08
+
+### Fixed
+- remove overflow hidden from chat GlassCard to fix pointer events
+- fix custom eslint set-state-in-effect rule in HeroCardStack
+- optimize pagespeed scores and accessibility, fix hydration mismatch and bg hover
+
+
+## [1.24.34] - 2026-08-08
+
+### Added
+- add global socket connection status tracking and reconnection banner
+
+### Fixed
+- use try-catch in guardEmit to survive mock-overridden connected state
+- guard chat socket emit against transport crash in E2E
+- prevent ConnectionBanner from blocking E2E test selectors
+- reuse shared chatSocket instead of creating ad-hoc connections
+
+### Refactored
+- use default reconnection for leaderboards socket
+- consolidate walletSocket into shared socket module
+
+
+## [1.24.33] - 2026-08-07
+
+### Added
+- add GeoIP redirection and sitemap/rich schema optimization (ARC-890) (ARC-890)
+
+
+## [1.24.32] - 2026-08-07
+
+### Added
+- add Telegram approval flow for video review
+
+### Fixed
+- replace dynamic require() with static imports for lint compliance
+- add Playwright install to CI/CD and fix Instagram post type
+
+
+## [1.24.31] - 2026-08-07
+
+### Fixed
+- fix CI workflow issues across multiple workflows
+
+
+## [1.24.30] - 2026-08-07
+
+### Fixed
+- bot turn detection in team mode and mobile-menu e2e timeout
+- lint errors across web and backend (set-state-in-effect, unused imports, any assignments)
+- disable standalone output on Vercel for Next.js 16.3 compat
+
+
+## [1.24.29] - 2026-08-07
+
+### Fixed
+- scan wave shows once, weapon sizes, teammate visibility
+
+
+## [1.24.28] - 2026-08-07
+
+### Fixed
+- fix checkers multi-step validation and board orientation
+
+
+## [1.24.27] - 2026-08-07
+
+### Added
+- use premium spritesheets for avatars and badges (ARC-777) (ARC-777)
+
+### Fixed
+- decrypt socket payload in handleHistoryNote (ARC-777) (ARC-777)
+
+
+## [1.24.26] - 2026-08-06
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.24.25] - 2026-08-06
+
+### Added
+- game picker respects admin visibility and adds translations
+- use create-room game art in picker modal and lazy-load it
+- game picker modal uses SVG symbols and adds category tabs
+- play vs AI hero button opens game picker modal
+
+### Fixed
+- reduce desktop hero padding to keep buttons visible
+- hero section buttons and card overflow on mobile
+
+### Refactored
+- split oversized game services under 500-line limit
+
+
+## [1.24.24] - 2026-08-06
+
+### Added
+- add field status overlay showing hits, misses, and unexplored cells
+
+
+## [1.24.23] - 2026-08-06
+
+### Added
+- add settings gear icon for unauthenticated desktop users
+
+
+## [1.24.22] - 2026-08-05
+
+### Added
+- admin update abbility to grant shop items to users
+
+### Fixed
+- avoid any in query condition
+
+
+## [1.24.21] - 2026-08-05
+
+### Added
+- lobby chat with message deletion
+- add scan wave weapon - reveal all ships at battle start
+- scale sonar/radar size with grid dimensions
+
+### Fixed
+- eslint warnings
+- restore ChatLogEntry import in GameChat.tsx
+- resolve lint errors in gateway and sea-battle service
+- resolve watcher display names in chat log entries
+- enable authenticated watcher chat and resolve watcher avatars in game chat
+- unify game chat layout with bottom-aligned avatar and name
+- enable message deletion for emotes in game chat
+- add avatar to emote bubble and fix lobby chat
+- decrypt encrypted socket events in lobby chat listener
+- show player avatars in lobby player list
+- always show sonar/radar buttons and disable when unavailable
+
+### Refactored
+- extract ChatLogItem and chat helpers to reduce GameChat.tsx below 500 lines
+- clean up formatting in game services and gateway
+- extract SenderName component from ChatMessage
+- unify game chat avatar+name rendering and fix emote display
+- extract shared FloatingBubbleLabel for popup avatar and name badge
+- simplify useGameRoomChat decryption logic
+- extract isSonarDisabled/isRadarDisabled booleans
+
+
+## [1.24.20] - 2026-08-05
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.24.19] - 2026-08-04
+
+### Fixed
+- keep ship placement in local state until confirm
+
+
+## [1.24.18] - 2026-08-04
+
+### Fixed
+- add @Optional() decorators to GameHistoryRematchService model injections
+- make Atlas connection optional in GameHistoryRematchService
+- add currentPlayerId to TicTacToeBoard for hover cursor with sign
+- fix sea battle rematch button and disable Vercel analytics in e2e
+
+
+## [1.24.17] - 2026-08-04
+
+### Fixed
+- skip Vercel analytics scripts in non-production environments
+
+### Improved
+- fix MongoDB idle connections and batch N+1 queries (ARC-883)
+
+### Refactored
+- consolidate game gateways into single-namespace handler registry (ARC-883)
+
+
+## [1.24.16] - 2026-08-04
+
+### Added
+- add 5 new premium cyber animal avatars
+- add Cyber Panda & Cyber Cheetah avatars
+- add Supernova and Synthwave themed cosmetics
+
+
+## [1.24.15] - 2026-08-04
+
+### Added
+- implement smooth serpentine winding curves and expand row padding (ARC-882) (ARC-882)
+- scale up board cells to 22px and tokens to 38px (ARC-882) (ARC-882)
+- scale up board cells, tokens, and turn badge sizes (ARC-882) (ARC-882)
+- enhance cat designs and add themed board backgrounds (ARC-882) (ARC-882)
+- integrate serpentine layout and configurable board size (ARC-882) (ARC-882)
+- add standalone serpentine game page
+- add AI play CTA, bot features, lobby empty states and fix player count
+- add player ELO rating schema and calculations with E2E tests (ARC-881) (ARC-881)
+- implement matchmaking queue system with frontend status modal (ARC-876) (ARC-876)
+- add AI bot difficulty support for Chess and Checkers (ARC-880) (ARC-880)
+
+### Fixed
+- fix matchmaking portal unmount logic and update E2E test scripts
+- replace Tamagui Dialog.Portal with direct createPortal to fix CI rendering
+- use locale-aware routes in footer to fix identical links a11y issue
+- fix matchmaking modal not appearing and consolidate QuickplayButton
+- generate anon id in joinQueue for anonymous matchmaking
+- resolve strict mode violation in matchmaking test by using first() locator
+- update Sea Battle QuickplayButton to support matchmaking and match test ID
+- correct matchmaking and empty state text assertions
+- correct url assertion with literal comma in homepage test
+
+
+## [1.24.14] - 2026-08-02
+
+### Fixed
+- use ecosystem.config.js for PM2 and fix Socket.IO CORS on OCI
+
+
+## [1.24.13] - 2026-08-02
+
+### Added
+- enable PM2 cluster mode for 3x BE instances
+- add OCI deployment support with standalone output
+
+
+## [1.24.12] - 2026-08-02
+
+### Added
+- add @vercel/analytics for detailed performance monitoring
+
+### Fixed
+- destructure wallet balance to pass ESLint rule
+- resolve all build warnings
+
+
+## [1.24.11] - 2026-08-02
+
+### Added
+- switch default MongoDB connection to Atlas for shared data
+- add Atlas-to-local MongoDB sync script
+- add reserve BE failover with automatic client-side fallback
+
+### Fixed
+- archive abandoned games to Atlas before cleanup
+
+
+## [1.24.10] - 2026-08-01
+
+### Fixed
+- add missing providers to GitHubModule
+
+
+## [1.24.9] - 2026-08-01
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.24.8] - 2026-08-01
+
+### Refactored
+- remove mimo engine, use opencode only
+- remove mimo engine, use opencode only
+
+
+## [1.24.7] - 2026-08-01
+
+### Documentation
+- update roadmap with growth plan and current status (ARC-ROADMAP)
+
+
+## [1.24.6] - 2026-08-01
+
+### Added
+- auto-cleanup old videos + Instagram + multi-theme (ARC-212) (ARC-212)
+- dual output (full video + short clip), stable selectors (ARC-212) (ARC-212)
+- add gameplay recording script (ARC-212) (ARC-212)
+- add arcadeum.games end card to videos
+
+### Fixed
+- Instagram posting via Postiz (ARC-212) (ARC-212)
+- audio in shorts + random themes + varied card play (ARC-212) (ARC-212)
+- animated end card + faster navigation (ARC-212) (ARC-212)
+- real mobile emulation + working gameplay (ARC-212) (ARC-212)
+- two separate sessions - desktop full + mobile short (ARC-212) (ARC-212)
+- desktop viewport for full video, vertical crop for shorts (ARC-212) (ARC-212)
+- full video 80-90s to avoid YouTube Shorts classification (ARC-212) (ARC-212)
+- fetch audio tracks dynamically from CDN tracks.json
+- fix OCI deployment and add multi-platform support
+
+
+## [1.24.5] - 2026-08-01
+
+### Added
+- cache achievement definitions in achievements service
+- add Redis caching to public announcements fetch
+- import AppCacheModule globally in Appmodule
+- add AppCacheModule configuration with Redis/Memory fallback support
+
+### Fixed
+- resolve mongoose model typecast warning in achievements service cache
+
+### Improved
+- implement Redis Pub/Sub adapter support in CompressedIoAdapter
+- implement active announcement cache eviction on mutations
+- enable Socket.IO WebSocket compression adapter
+- add compound index for refresh tokens validation and rotation
+- add compound index for achievement definitions category and sort order
+- add compound index for referrals status and date
+- add compound index for player-stat-record query path
+
+### Documentation
+- add environment variable documentation for APP_CACHE_TTL_SECONDS
+
+
+## [1.24.4] - 2026-08-01
+
+### Added
+- add Cyber Falcon & Gorilla avatars and restrict ARC pricing to gems
+- add Cyber Leopard and Cyber Eagle Elite avatars
+- add 24 new premium cosmetics including magma, oceanic, and sakura themes
+
+
+## [1.24.3] - 2026-07-31
+
+### Fixed
+- resolve react-hooks/set-state-in-effect error in HeroBackground
+- remove aria-label mismatch on install PWA button
+
+### Improved
+- optimize hero background images and split SCSS
+
+### Refactored
+- simplify ObjectId string conversion in auth and payment-notes
+
+
+## [1.24.2] - 2026-07-31
+
+### Fixed
+- fix remaining CI failures from GamesPage and GameVariantSelector
+- fix @arcadeum/ui test failures from Tamagui duplicate packages
+- add parens for nullish coalescing in GameVariantSelector
+- resolve lint and backend e2e test failures from dependabot upgrades
+
+
+## [1.24.1] - 2026-07-31
+
+### Fixed
+- add standalone mongo transaction fallback to shop services
+- resolve cookie domain and standalone mongo transaction fallback
+
+
+## [1.24.0] - 2026-07-31
+
+### Changed
+- Internal improvements and maintenance
+
+
 ## [1.23.179] - 2026-07-31
 
 ### Fixed

@@ -61,7 +61,7 @@ describe('ImplementProcessor', () => {
         id: '1',
         data: {
           issueNum: '123',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'implement' as const,
@@ -76,7 +76,7 @@ describe('ImplementProcessor', () => {
       expect(mockGitHubService.createWorktree).toHaveBeenCalledWith('1');
       expect(mockGitHubService.implementLocally).toHaveBeenCalledWith(
         '123',
-        'mimo',
+        'opencode',
         '/tmp/task-bot/test',
         { title: 'Test Issue', body: '## Requirements\n- [ ] Do something' },
       );
@@ -91,7 +91,7 @@ describe('ImplementProcessor', () => {
         id: '2',
         data: {
           issueNum: '456',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'fix' as const,
@@ -105,7 +105,7 @@ describe('ImplementProcessor', () => {
 
       expect(mockGitHubService.fixPR).toHaveBeenCalledWith(
         '10',
-        'mimo',
+        'opencode',
         '/tmp/task-bot/test',
         { branchName: 'fix-branch', failedChecks: undefined, reviewComments: undefined },
       );
@@ -118,7 +118,7 @@ describe('ImplementProcessor', () => {
         id: '3',
         data: {
           issueNum: '789',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'ci-fix' as const,
@@ -133,7 +133,7 @@ describe('ImplementProcessor', () => {
 
       expect(mockGitHubService.checkAndFixCI).toHaveBeenCalledWith(
         '20',
-        'mimo',
+        'opencode',
         '/tmp/task-bot/test',
         {
           branchName: 'ci-branch',
@@ -150,7 +150,7 @@ describe('ImplementProcessor', () => {
         id: '4',
         data: {
           issueNum: '999',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'implement' as const,
@@ -171,7 +171,7 @@ describe('ImplementProcessor', () => {
         id: '5',
         data: {
           issueNum: '111',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'implement' as const,
@@ -185,7 +185,7 @@ describe('ImplementProcessor', () => {
 
       expect(mockReviewQueue.addJob).toHaveBeenCalledWith(
         '111',
-        'mimo',
+        'opencode',
         123456,
         789,
         'https://github.com/test/pr/1',
@@ -197,7 +197,7 @@ describe('ImplementProcessor', () => {
         id: '6',
         data: {
           issueNum: '222',
-          engine: 'mimo',
+          engine: 'opencode',
           chatId: 123456,
           userId: 789,
           type: 'implement' as const,
@@ -212,7 +212,7 @@ describe('ImplementProcessor', () => {
       expect(mockCIPollService.startPolling).toHaveBeenCalledWith(
         '1',
         '222',
-        'mimo',
+        'opencode',
       );
     });
   });

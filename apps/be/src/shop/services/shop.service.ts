@@ -1,3 +1,4 @@
+import { runInTransaction } from '../../common/utils/transaction.util';
 import {
   BadRequestException,
   Injectable,
@@ -127,7 +128,7 @@ export class ShopService {
       background: null,
     };
 
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       // 1. Wallet debit (parentSession).
       const reason =
         effective.priceCurrency === 'arcadeum'
@@ -232,7 +233,7 @@ export class ShopService {
       throw new BadRequestException('shop.noRefundDue');
     }
 
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       await this.wallet.credit(
         userId,
         'coins',
@@ -273,7 +274,7 @@ export class ShopService {
     const purchaseId = `shop-grant-${nonce}`;
 
     let row!: InventoryRowSnapshot;
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       // Dedup on (userId, purchaseId). If a prior row exists with the same
       // nonce, short-circuit to it.
       const prior = await this.inventory.findByUserAndPurchaseId(
@@ -282,7 +283,7 @@ export class ShopService {
         session,
       );
       if (prior) {
-        row = prior as InventoryRowSnapshot;
+        row = prior;
         return;
       }
       const created = await this.inventoryModel.create(
@@ -332,7 +333,7 @@ export class ShopService {
     const def = getCatalogItem(row.itemId);
     const userIdString = row.userId.toString();
 
-    await this.connection.transaction(async (session) => {
+    await runInTransaction(this.connection, async (session) => {
       await this.inventoryModel.updateOne(
         { _id: row._id },
         {
@@ -491,9 +492,7 @@ export class ShopService {
       paidAmount: row.paidAmount ?? null,
       paidCurrency: row.paidCurrency ?? null,
       soldAt: row.soldAt ? row.soldAt.toISOString() : null,
-      createdAt: row.createdAt
-        ? row.createdAt.toISOString()
-        : new Date().toISOString(),
+      createdAt: (row.createdAt ?? new Date()).toISOString(),
     };
   }
 }

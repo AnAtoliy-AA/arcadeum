@@ -10,9 +10,8 @@ function inBounds(row: number, col: number, size: number): boolean {
 function getDirectionsForPiece(
   piece: Piece,
   playerColor: PlayerColor,
-  backwardCaptures = false,
 ): Array<[number, number]> {
-  if (piece.type === 'king' || backwardCaptures) {
+  if (piece.type === 'king') {
     return [
       [-1, -1],
       [-1, 1],
@@ -32,6 +31,22 @@ function getDirectionsForPiece(
   ];
 }
 
+function getCaptureDirectionsForPiece(
+  piece: Piece,
+  playerColor: PlayerColor,
+  backwardCaptures = false,
+): Array<[number, number]> {
+  if (piece.type === 'king' || backwardCaptures) {
+    return [
+      [-1, -1],
+      [-1, 1],
+      [1, -1],
+      [1, 1],
+    ];
+  }
+  return getDirectionsForPiece(piece, playerColor);
+}
+
 export function findCapturesFrom(
   board: Board,
   row: number,
@@ -44,7 +59,7 @@ export function findCapturesFrom(
   const piece = board[row][col];
   if (!piece || piece.playerId !== playerId) return [];
 
-  const directions = getDirectionsForPiece(
+  const directions = getCaptureDirectionsForPiece(
     piece,
     playerColor,
     backwardCaptures,
@@ -116,17 +131,12 @@ export function findSimpleMovesFrom(
   col: number,
   playerId: string,
   playerColor: PlayerColor,
-  backwardCaptures = false,
   flyingKings = false,
 ): MoveStep[] {
   const piece = board[row][col];
   if (!piece || piece.playerId !== playerId) return [];
 
-  const directions = getDirectionsForPiece(
-    piece,
-    playerColor,
-    backwardCaptures,
-  );
+  const directions = getDirectionsForPiece(piece, playerColor);
   const moves: MoveStep[] = [];
   const size = board.length;
   const isFlying = flyingKings && piece.type === 'king';
@@ -187,27 +197,22 @@ export function applyMoveToBoard(board: Board, steps: MoveStep[]): Board {
   if (steps.length === 0) return newBoard;
 
   const firstStep = steps[0];
-  const piece = newBoard[firstStep.fromRow][firstStep.fromCol];
+  let piece = newBoard[firstStep.fromRow][firstStep.fromCol];
   if (!piece) return newBoard;
+
+  newBoard[firstStep.fromRow][firstStep.fromCol] = null;
+
+  const size = newBoard.length;
 
   for (const step of steps) {
     if (step.capturedRow !== undefined && step.capturedCol !== undefined) {
       newBoard[step.capturedRow][step.capturedCol] = null;
     }
-  }
-
-  const lastStep = steps[steps.length - 1];
-  const movingPiece = { ...piece };
-
-  if (movingPiece.type === 'man') {
-    const size = newBoard.length;
-    if (lastStep.toRow === 0 || lastStep.toRow === size - 1) {
-      movingPiece.type = 'king';
+    if (piece.type === 'man' && (step.toRow === 0 || step.toRow === size - 1)) {
+      piece = { ...piece, type: 'king' };
     }
+    newBoard[step.toRow][step.toCol] = piece;
   }
-
-  newBoard[firstStep.fromRow][firstStep.fromCol] = null;
-  newBoard[lastStep.toRow][lastStep.toCol] = movingPiece;
 
   return newBoard;
 }

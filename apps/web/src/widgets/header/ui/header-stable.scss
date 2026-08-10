@@ -53,9 +53,27 @@
 }
 
 .logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.logo-text-top {
   color: var(--primary);
   font-weight: 800;
-  font-size: 24px;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.logo-text-bottom {
+  align-self: flex-end;
+  color: #a1a1aa; /* sleek slate-gray */
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 1px;
 }
 
 .nav-styled {
@@ -114,6 +132,15 @@
 
 .link-no-decoration:hover {
   color: #ffffff;
+}
+
+.gear-icon-wrapper {
+  display: inline-flex;
+  transition: transform 0.4s ease;
+}
+
+.gear-icon-wrapper:hover {
+  transform: rotate(90deg);
 }
 
 .header-inner .mobile-menu-container {

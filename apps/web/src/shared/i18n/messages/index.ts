@@ -95,7 +95,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
   ]);
 
   const [gamesModule, homeData] = await Promise.all([
-    import('./games').then(async (m) => ({
+    import('./games/index').then(async (m) => ({
       data: await m.loadGames(locale),
     })),
     homeMod.loadHomeMessages(locale),

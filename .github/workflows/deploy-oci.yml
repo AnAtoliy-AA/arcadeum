@@ -119,8 +119,9 @@ jobs:
             pnpm --filter be build
             pnpm --filter tg-bot build
 
-            pm2 restart arcadeum-be || \
-              (pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js" && pm2 save)
+            pm2 delete arcadeum-be 2>/dev/null || true
+            pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js"
+            pm2 save
             pm2 restart arcadeum-tg-bot || \
               (pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && pm2 save)
 

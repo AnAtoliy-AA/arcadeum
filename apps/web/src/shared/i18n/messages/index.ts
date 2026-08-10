@@ -4,7 +4,7 @@ import type { Locale, TranslationBundle } from '../types';
 import type { en as authEn } from './auth';
 import type { en as pagesEn } from './pages';
 import type { en as commonEn } from './common';
-import type { en as gamesEn } from './games';
+import type { GamesMessagesBundle } from './games';
 import type { en as historyEn } from './history';
 import type { en as homeEn } from './home';
 import type { en as legalEn } from './legal';
@@ -33,7 +33,7 @@ export type EnglishTranslations = {
   navigation: typeof navigationEn;
   chat: (typeof chatMessages)['en'];
   chatList: (typeof chatListMessages)['en'];
-  games: typeof gamesEn;
+  games: GamesMessagesBundle;
   history: typeof historyEn;
   payments: typeof paymentsEn;
   legal: typeof legalEn;
@@ -57,9 +57,8 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     pages,
     chat,
     common,
-    games,
     history,
-    home,
+    homeMod,
     legal,
     navigation,
     payments,
@@ -78,7 +77,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./pages'),
     import('./chat'),
     import('./common'),
-    import('./games'),
     import('./history'),
     import('./home'),
     import('./legal'),
@@ -96,17 +94,24 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./wallet'),
   ]);
 
+  const [gamesModule, homeData] = await Promise.all([
+    import('./games').then(async (m) => ({
+      data: await m.loadGames(locale),
+    })),
+    homeMod.loadHomeMessages(locale),
+  ]);
+
   return {
     common: common[locale],
     pages: pages[locale],
-    home: home[locale],
+    home: homeData,
     settings: settings[locale],
     support: support[locale],
     auth: auth[locale],
     navigation: navigation[locale],
     chat: chat.chatMessages[locale],
     chatList: chat.chatListMessages[locale],
-    games: games[locale],
+    games: gamesModule.data as GamesMessagesBundle,
     history: history[locale],
     payments: payments[locale],
     legal: legal[locale],

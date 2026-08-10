@@ -1,95 +1,62 @@
-import * as shared from './shared/index';
-import * as critical from './critical/index';
-import * as texasHoldem from './texas-holdem';
-import * as seaBattle from './sea-battle/index';
-import * as glimworm from './glimworm/index';
-import * as ticTacToe from './tic-tac-toe/index';
-import * as cascade from './cascade/index';
-import * as chess from './chess/index';
-import * as checkers from './checkers/index';
-import * as catDash from './cat-dash/index';
+import type { Locale } from '../../types';
+import type { SharedGamesMessages } from './shared/index';
+import type { CriticalGamesMessages } from './critical/index';
+import type { TexasHoldemGamesMessages } from './texas-holdem';
+import type { SeaBattleGamesMessages } from './sea-battle/index';
+import type { GlimwormGamesMessages } from './glimworm/index';
+import type { TicTacToeMessages } from './tic-tac-toe/index';
+import type { CascadeMessages } from './cascade/index';
+import type { ChessMessages } from './chess/index';
+import type { CheckersMessages } from './checkers/index';
+import type { CatDashMessages } from './cat-dash/index';
 
-/** Combined games messages type derived from actual message objects */
-export type GamesMessagesBundle = shared.SharedGamesMessages &
-  critical.CriticalGamesMessages &
-  texasHoldem.TexasHoldemGamesMessages &
-  seaBattle.SeaBattleGamesMessages &
-  glimworm.GlimwormGamesMessages &
-  ticTacToe.TicTacToeMessages &
-  cascade.CascadeMessages &
-  chess.ChessMessages &
-  checkers.CheckersMessages &
-  catDash.CatDashMessages;
+export type GamesMessagesBundle = SharedGamesMessages &
+  CriticalGamesMessages &
+  TexasHoldemGamesMessages &
+  SeaBattleGamesMessages &
+  GlimwormGamesMessages &
+  TicTacToeMessages &
+  CascadeMessages &
+  ChessMessages &
+  CheckersMessages &
+  CatDashMessages;
 
-export const en = {
-  ...shared.en,
-  ...critical.en,
-  ...texasHoldem.en,
-  ...seaBattle.en,
-  ...glimworm.en,
-  ...ticTacToe.en,
-  ...cascade.en,
-  ...chess.en,
-  ...checkers.en,
-  ...catDash.en,
+type GameModule = {
+  en: Record<string, unknown>;
+  es: Record<string, unknown>;
+  fr: Record<string, unknown>;
+  ru: Record<string, unknown>;
+  by: Record<string, unknown>;
 };
 
-export const es = {
-  ...shared.es,
-  ...critical.es,
-  ...texasHoldem.es,
-  ...seaBattle.es,
-  ...glimworm.es,
-  ...ticTacToe.es,
-  ...cascade.es,
-  ...chess.es,
-  ...checkers.es,
-  ...catDash.es,
+type GameLoader = () => Promise<GameModule>;
+
+const GAME_LOADERS: Record<string, GameLoader> = {
+  shared: () => import('./shared/index'),
+  critical: () => import('./critical/index'),
+  texasHoldem: () => import('./texas-holdem'),
+  seaBattle: () => import('./sea-battle/index'),
+  glimworm: () => import('./glimworm/index'),
+  ticTacToe: () => import('./tic-tac-toe/index'),
+  cascade: () => import('./cascade/index'),
+  chess: () => import('./chess/index'),
+  checkers: () => import('./checkers/index'),
+  catDash: () => import('./cat-dash/index'),
 };
 
-export const fr = {
-  ...shared.fr,
-  ...critical.fr,
-  ...texasHoldem.fr,
-  ...seaBattle.fr,
-  ...glimworm.fr,
-  ...ticTacToe.fr,
-  ...cascade.fr,
-  ...chess.fr,
-  ...checkers.fr,
-  ...catDash.fr,
-};
+export async function loadGames(
+  locale: Locale,
+): Promise<Record<string, unknown>> {
+  const entries = await Promise.all(
+    Object.values(GAME_LOADERS).map(async (load) => {
+      const mod = await load();
+      return mod[locale] as Record<string, unknown>;
+    }),
+  );
 
-export const ru = {
-  ...shared.ru,
-  ...critical.ru,
-  ...texasHoldem.ru,
-  ...seaBattle.ru,
-  ...glimworm.ru,
-  ...ticTacToe.ru,
-  ...cascade.ru,
-  ...chess.ru,
-  ...checkers.ru,
-  ...catDash.ru,
-};
-
-export const by = {
-  ...shared.by,
-  ...critical.by,
-  ...texasHoldem.by,
-  ...seaBattle.by,
-  ...glimworm.by,
-  ...ticTacToe.by,
-  ...cascade.by,
-  ...chess.by,
-  ...checkers.by,
-  ...catDash.by,
-};
-
-export const gamesMessages = {
-  en,
-  es,
-  fr,
-  ru,
-  by,
-} as const;
+  const result: Record<string, unknown> = {};
+  for (const entry of entries) {
+    Object.assign(result, entry);
+  }
+  return result;
+}

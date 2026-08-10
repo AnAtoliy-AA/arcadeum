@@ -24,18 +24,31 @@
 }
 
 .hero-background-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center center;
-  opacity: 0;
   filter: saturate(1.15) brightness(0.85);
   will-change: opacity;
+
+  /* Default image is visible immediately — no opacity toggle needed.
+     This lets the LCP element paint in the server HTML without waiting
+     for client hydration to add the .active class. */
+  &.hero-bg-default {
+    opacity: 1;
+  }
+
+  /* Non-default variant images start hidden and crossfade in. */
+  &:not(.hero-bg-default) {
+    opacity: 0;
+  }
 
   &.active {
     opacity: 1;
   }
 
   /* Variant images crossfade in; the default image skips the transition
-     so the LCP element paints immediately (saves ~110ms render delay). */
+     so the LCP element paints immediately. */
   &.active:not(.hero-bg-default) {
     transition: opacity 0.8s ease-in-out;
   }

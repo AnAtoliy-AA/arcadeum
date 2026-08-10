@@ -8,7 +8,7 @@ import {
   Typography,
   YStack,
 } from '@arcadeum/ui';
-import { Spinner } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import {
   usePublicTournaments,

@@ -52,7 +52,7 @@ vi.mock('@arcadeum/ui', () => ({
 
 const render = (ui: React.ReactElement) => {
   return rtlRender(
-    <LanguageProvider locale="en">
+    <LanguageProvider locale="en" initialMessages={{}}>
       <TamaguiProvider config={config} defaultTheme="dark">
         {ui}
       </TamaguiProvider>

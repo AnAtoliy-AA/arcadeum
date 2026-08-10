@@ -146,7 +146,7 @@ export default async function LocaleLayout({
   return (
     <>
       <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-      <LanguageProvider locale={locale}>
+      <LanguageProvider locale={locale} initialMessages={messages}>
         <PWAProvider>
           <SoundProvider>
             <LayoutShell>

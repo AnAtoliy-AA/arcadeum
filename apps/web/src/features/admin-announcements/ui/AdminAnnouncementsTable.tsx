@@ -1,6 +1,7 @@
 'use client';
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text } from 'tamagui';
+import { Text } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   type AdminAnnouncementItem,

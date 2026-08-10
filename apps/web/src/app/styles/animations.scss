@@ -533,3 +533,9 @@
     opacity: 0.25;
   }
 }
+
+@keyframes arcadeum-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

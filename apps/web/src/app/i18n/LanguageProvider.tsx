@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
 } from 'react';
@@ -79,9 +80,11 @@ function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
 export function LanguageProvider({
   children,
   locale,
+  initialMessages,
 }: {
   children: ReactNode;
   locale: Locale;
+  initialMessages?: TranslationBundle;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -92,9 +95,11 @@ export function LanguageProvider({
     getServerSnapshot,
   );
 
-  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(() =>
-    getMessages(locale ?? DEFAULT_LOCALE),
+  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(
+    () => initialMessages ?? getMessages(locale ?? DEFAULT_LOCALE),
   );
+
+  const initialLocaleRef = useRef(locale);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -104,6 +109,8 @@ export function LanguageProvider({
 
     document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
+    if (initialMessages && locale === initialLocaleRef.current) return;
+
     let mounted = true;
     loadMessages(locale).then((msgs) => {
       if (mounted) setLoadedMessages(msgs);
@@ -111,6 +118,7 @@ export function LanguageProvider({
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
 
   const setLocale = useCallback(

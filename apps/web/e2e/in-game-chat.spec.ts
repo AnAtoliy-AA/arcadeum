@@ -81,7 +81,7 @@ test.describe('In-Game Chat Messaging', () => {
           roomId,
           senderId: OPPONENT_ID,
           senderName: 'Opponent',
-          content: 'Hey there!',
+          message: 'Hey there!',
           type: 'message',
           timestamp: Date.now(),
         });
@@ -207,7 +207,7 @@ test.describe('In-Game Chat Messaging', () => {
           roomId,
           senderId: OPPONENT_ID,
           senderName: 'Opponent',
-          content: 'First message',
+          message: 'First message',
           type: 'message',
           timestamp,
         });
@@ -216,7 +216,7 @@ test.describe('In-Game Chat Messaging', () => {
           roomId,
           senderId: OPPONENT_ID,
           senderName: 'Opponent',
-          content: 'Second message',
+          message: 'Second message',
           type: 'message',
           timestamp: timestamp + 1000,
         });

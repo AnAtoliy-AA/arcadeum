@@ -171,6 +171,23 @@ export async function mockGameSocket(
               setTimeout(() => s.trigger(h.responseEvent, h.responseData), 100);
               return s;
             }
+            if (event === 'games.room.chat' && mocks?.roomId) {
+              const payload = args[0] as Record<string, unknown>;
+              setTimeout(() => {
+                s.trigger('games.room.chat', {
+                  id: `mock-log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                  roomId: mocks.roomId,
+                  senderId: payload.userId ?? mocks.userId,
+                  senderName: 'Test User',
+                  message: payload.message,
+                  type: 'message',
+                  scope: payload.scope ?? 'all',
+                  createdAt: new Date().toISOString(),
+                  timestamp: Date.now(),
+                });
+              }, 50);
+              return s;
+            }
             if (mocks?.roomId && prop === 'gameSocket') {
               return s;
             }
@@ -297,6 +314,23 @@ export async function mockAllOnPage(page: Page): Promise<void> {
           if (mocks?.handlers && mocks.handlers[event]) {
             const h = mocks.handlers[event];
             setTimeout(() => s.trigger(h.responseEvent, h.responseData), 100);
+            return s;
+          }
+          if (event === 'games.room.chat' && mocks?.roomId) {
+            const payload = args[0] as Record<string, unknown>;
+            setTimeout(() => {
+              s.trigger('games.room.chat', {
+                id: `mock-log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                roomId: mocks.roomId,
+                senderId: payload.userId ?? mocks.userId,
+                senderName: 'Test User',
+                message: payload.message,
+                type: 'message',
+                scope: payload.scope ?? 'all',
+                createdAt: new Date().toISOString(),
+                timestamp: Date.now(),
+              });
+            }, 50);
             return s;
           }
           if (mocks?.roomId && prop === 'gameSocket') return s;

@@ -10,6 +10,7 @@ import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
 import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
+import { gameSocket } from '@/shared/lib/socket';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -161,24 +162,31 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   const isLobby = room.status === 'lobby';
   const isHost = room.hostId === userId;
-  const isPlayer = !!(userId && (isHost || room.members?.some((m) => m.id === userId)));
+  const isPlayer = !!(
+    userId &&
+    (isHost || room.members?.some((m) => m.id === userId))
+  );
 
   const { sendMessage: roomChatSend, deleteMessage: roomChatDelete } =
     useGameRoomChat(roomId, userId, isLobby);
 
   const handleDeleteMessage = useCallback(
     (messageId: string) => {
-      const log = useGameChatStore.getState().logs.find((l) => l.id === messageId);
+      const log = useGameChatStore
+        .getState()
+        .logs.find((l) => l.id === messageId);
       if (!log) return;
       if (isLobby && log.type !== 'action') {
         roomChatDelete?.(messageId);
       } else {
-        useGameChatStore.setState((s) => ({
-          logs: s.logs.filter((l) => l.id !== messageId),
-        }));
+        gameSocket.emit('games.session.delete_chat', {
+          roomId,
+          userId,
+          messageId,
+        });
       }
     },
-    [isLobby, roomChatDelete],
+    [isLobby, roomChatDelete, roomId, userId],
   );
 
   // Subscribe to the store's sendMessage so we can detect when a game widget
@@ -256,7 +264,11 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
         <GameRow flexDirection={roomFlexDirection}>
           <ActiveEmotesProvider
-            value={{ emotes: activeEmotes, resolveDisplayName, resolveEquipped }}
+            value={{
+              emotes: activeEmotes,
+              resolveDisplayName,
+              resolveEquipped,
+            }}
           >
             {children({ isFullscreen, toggleFullscreen })}
           </ActiveEmotesProvider>

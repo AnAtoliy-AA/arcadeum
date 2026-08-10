@@ -162,11 +162,8 @@ export class GameSessionsService {
       .findById(sessionId)
       .lean()
       .exec();
-
-    if (!session) {
+    if (!session)
       throw new NotFoundException(`Session not found: ${sessionId}`);
-    }
-
     return this.toSessionSummary(session as unknown as GameSession);
   }
 
@@ -212,7 +209,6 @@ export class GameSessionsService {
       .sort({ createdAt: -1 })
       .exec();
     if (!session) return null;
-
     const state = session.state;
     if (!Array.isArray(state.logs)) state.logs = [];
     (state.logs as Array<Record<string, unknown>>).push({
@@ -224,6 +220,31 @@ export class GameSessionsService {
       senderId: userId,
       senderName: senderName ?? null,
     });
+    session.markModified('state');
+    session.updatedAt = new Date();
+    await session.save();
+    return this.toSessionSummary(session);
+  }
+
+  async deleteChatLog(
+    roomId: string,
+    callerId: string,
+    messageId: string,
+  ): Promise<GameSessionSummary | null> {
+    const session = await this.ociSessionModel
+      .findOne({ roomId })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (!session) return null;
+    const state = session.state;
+    const logs = state.logs as Array<Record<string, unknown>> | undefined;
+    if (!Array.isArray(logs)) return null;
+    const target = logs.find((l) => l.id === messageId);
+    if (!target) return null;
+    const isHost =
+      Array.isArray(state.playerOrder) && state.playerOrder[0] === callerId;
+    if (!isHost && target.senderId !== callerId) return null;
+    state.logs = logs.filter((l) => l.id !== messageId);
     session.markModified('state');
     session.updatedAt = new Date();
     await session.save();

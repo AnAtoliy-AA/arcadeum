@@ -266,25 +266,6 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       return this.successResult(newState);
     }
 
-    const currentHasMoves = hasAnyMoves(
-      newBoard,
-      context.userId,
-      playerColor,
-      backwardCaptures,
-      flyingKings,
-    );
-    if (!currentHasMoves) {
-      newState.winnerId = opponentId;
-      newState.phase = GAME_PHASE.GAME_OVER;
-      newState.logs.push(
-        this.createLogEntry(
-          'system',
-          `${opponentId} wins! ${context.userId} has no moves.`,
-        ),
-      );
-      return this.successResult(newState);
-    }
-
     const currentKingCount = this.countKings(newBoard, context.userId);
     const opponentKingCount = this.countKings(newBoard, opponentId);
     if (
@@ -292,11 +273,15 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       opponentKingCount > 0 &&
       currentPieces + opponentPieces <= 4
     ) {
-      if (
+      const isKingVsKing =
+        currentKingCount === currentPieces &&
+        opponentKingCount === opponentPieces;
+      const isBalancedKings =
         currentKingCount === opponentKingCount &&
         currentPieces <= 2 &&
-        opponentPieces <= 2
-      ) {
+        opponentPieces <= 2;
+
+      if (isKingVsKing || isBalancedKings) {
         newState.isDraw = true;
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.logs.push(

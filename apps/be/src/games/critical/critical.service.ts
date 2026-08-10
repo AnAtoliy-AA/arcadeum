@@ -10,11 +10,9 @@ import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
-import { GameHistoryService } from '../history/game-history.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { CriticalActionsService } from '../actions/critical/critical-actions.service';
 import { StartGameSessionResult } from '../games.types';
-import { ChatScope } from '../engines/base/game-engine.interface';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import { CriticalBotService } from './critical-bot.service';
 import { GameBotWatchdog } from '../game-bot-watchdog';
@@ -27,7 +25,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly sessionsService: GameSessionsService,
-    private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly criticalActions: CriticalActionsService,
     @Inject(forwardRef(() => CriticalBotService))
@@ -260,40 +257,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     );
 
     return { room: updatedRoom, session };
-  }
-
-  /**
-   * Post a note to Critical history
-   */
-  async postHistoryNote(
-    userId: string,
-    roomId: string,
-    message: string,
-    scope: ChatScope,
-    isAuthenticated = false,
-  ) {
-    await this.historyService.postHistoryNote(
-      roomId,
-      userId,
-      message,
-      scope,
-      isAuthenticated,
-    );
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      await this.realtimeService.emitSessionSnapshot(
-        roomId,
-        session,
-        async (s, pId) => {
-          const sanitized =
-            await this.sessionsService.getSanitizedStateForPlayer(s.id, pId);
-          if (sanitized && typeof sanitized === 'object') {
-            return { ...s, state: sanitized as Record<string, unknown> };
-          }
-          return s;
-        },
-      );
-    }
   }
 
   /**

@@ -114,16 +114,22 @@ export const esMessages = {
         objective: 'Objetivo',
         howToPlay: 'Cómo Jugar',
         kingPromotion: 'Promoción de Rey',
+        backwardCaptures: 'Capturas Hacia Atrás',
         forcedCaptures: 'Capturas Obligatorias',
+        winConditions: 'Ganar y Perder',
       },
       objective:
         'Captura todas las piezas de tu oponente o bloquéalas para que no tengan movimientos legales.',
       steps:
         'Los jugadores se turnan para mover una pieza en diagonal hacia adelante.\nLas piezas claras se mueven hacia arriba; las oscuras hacia abajo.\nUna pieza puede moverse a una casilla diagonal vacía adyacente.\nPara capturar, salta sobre una pieza del oponente hasta la casilla vacía más allá.',
       kingPromotion:
-        'Cuando una pieza llega al extremo opuesto del tablero, se convierte en rey.\nLos reyes pueden moverse y capturar en cualquier dirección diagonal (hacia adelante y hacia atrás).',
+        'Cuando una pieza llega al extremo opuesto del tablero, se convierte en rey.\nLos reyes pueden moverse y capturar en cualquier dirección diagonal (hacia adelante y hacia atrás).\nEn las reglas internacionales y rusas, los reyes pueden deslizarse múltiples casillas en una dirección (reyes voladores).',
+      backwardCaptures:
+        'En algunos conjuntos de reglas, las piezas normales (damas) pueden capturar piezas del oponente detrás de ellas.\nLas damas siempre se mueven hacia adelante, pero pueden capturar en cualquier dirección diagonal cuando las capturas hacia atrás están habilitadas.\nEsta opción siempre está activa en las reglas internacionales y se puede configurar en otras variantes.',
       forcedCaptures:
-        'Si hay una captura disponible, el jugador debe tomarla.\nSi hay múltiples capturas disponibles, el jugador debe elegir una.\nUna cadena de saltos múltiples debe completarse en su totalidad.',
+        'Si hay una captura disponible, el jugador debe tomarla.\nSi hay múltiples capturas disponibles, el jugador debe elegir una.\nUna cadena de saltos múltiples debe completarse en su totalidad — no puedes detenerte si hay más capturas disponibles.',
+      winConditions:
+        'Ganas cuando:\n• Capturas todas las piezas del oponente\n• El oponente no tiene movimientos legales en su turno\n\nPierdes cuando:\n• Todas tus piezas son capturadas\n• No tienes movimientos legales en tu turno\n\nEl juego es EMPATE cuando ambos jugadores solo tienen reyes con material igual y ninguno puede forzar una victoria.',
     },
     gameOver: {
       won: '¡Victoria!',

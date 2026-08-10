@@ -128,9 +128,9 @@ export class TexasHoldemGateway implements GameMessageHandler {
     validatePayloadUserId(client, userId);
 
     try {
-      await this.texasHoldemService.postHistoryNote(
-        userId,
+      await this.gamesService.postHistoryNote(
         roomId,
+        userId,
         message,
         'all',
         isAuthenticated,

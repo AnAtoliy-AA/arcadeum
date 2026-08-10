@@ -1,7 +1,12 @@
 import { GAME_PHASE, RULE_VARIANT_CONFIGS } from './checkers.constants';
-import type { CheckersState, MovePayload } from './checkers.types';
+import type {
+  Board,
+  CheckersState,
+  MovePayload,
+  MoveStep,
+  Piece,
+} from './checkers.types';
 import {
-  applyMove,
   findCaptures,
   findAllCapturesForPlayer,
   getAvailableMovesForPlayer,
@@ -9,6 +14,36 @@ import {
   inBounds,
   isPlayerPiece,
 } from './checkers.utils';
+
+function applyStepWithPromotion(
+  board: Board,
+  step: MoveStep,
+  playerColor: string,
+  size: number,
+): { board: Board; promoted: boolean } {
+  const newBoard = board.map((row) =>
+    row.map((cell) => (cell ? { ...cell } : null)),
+  );
+  const piece = newBoard[step.fromRow][step.fromCol];
+  if (!piece) return { board: newBoard, promoted: false };
+
+  newBoard[step.fromRow][step.fromCol] = null;
+
+  if (step.capturedRow !== undefined && step.capturedCol !== undefined) {
+    newBoard[step.capturedRow][step.capturedCol] = null;
+  }
+
+  const promotionRow = playerColor === 'light' ? 0 : size - 1;
+  let promoted = false;
+  let finalPiece: Piece = piece;
+  if (piece.type === 'man' && step.toRow === promotionRow) {
+    finalPiece = { ...piece, type: 'king' };
+    promoted = true;
+  }
+
+  newBoard[step.toRow][step.toCol] = finalPiece;
+  return { board: newBoard, promoted };
+}
 
 export function validateMovePiece(
   state: CheckersState,
@@ -117,7 +152,13 @@ export function validateMovePiece(
       return { ok: false, error: `Invalid step ${i + 1}` };
     }
 
-    currentBoard = applyMove(currentBoard, [validStep], playerColor);
+    const result = applyStepWithPromotion(
+      currentBoard,
+      validStep,
+      playerColor,
+      size,
+    );
+    currentBoard = result.board;
   }
 
   if (isCaptureChain) {

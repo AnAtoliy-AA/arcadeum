@@ -68,6 +68,8 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
             git fetch origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
@@ -106,6 +108,8 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
             git fetch origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
@@ -141,6 +145,8 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
             git fetch origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
@@ -172,6 +178,9 @@ jobs:
           script: |
             set -euo pipefail
             DEPLOY_DIR="/opt/arcadeum"
+
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             cd "$DEPLOY_DIR/bots/task-bot"
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
@@ -205,6 +214,8 @@ jobs:
           script: |
             set -e
             cd /opt/arcadeum
+
+            rm -f /opt/arcadeum/.git/index.lock
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 

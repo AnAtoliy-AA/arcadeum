@@ -3,6 +3,7 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY scripts/ scripts/
 COPY apps/tg-bot/package.json apps/tg-bot/
 
 RUN corepack enable && pnpm install --frozen-lockfile

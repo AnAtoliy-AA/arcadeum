@@ -10,7 +10,6 @@ import { NotificationService, JobNotification } from '../notification/notificati
 import { Bot } from 'grammy';
 
 import { SCOPE_KEYWORDS, type ParsedTask, type PendingRetry, type Engine, type Priority } from './task-bot.types';
-import { registerCommands } from './task-bot.commands';
 import {
   handleTask,
   handleListTasks,
@@ -27,21 +26,21 @@ import { parseTask, createAndTriggerTask, queueImplementation } from './task-bot
 
 @Injectable()
 export class TaskBotService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(TaskBotService.name);
+  readonly logger = new Logger(TaskBotService.name);
   private readonly allowedUserIds: Set<number>;
-  private readonly pendingTasks = new Map<string, { text: string; userId: number }>();
-  private readonly pendingRetries = new Map<string, PendingRetry>();
-  private readonly autoContinueTimers = new Map<string, NodeJS.Timeout>();
-  private bot!: Bot;
+  readonly pendingTasks = new Map<string, { text: string; userId: number }>();
+  readonly pendingRetries = new Map<string, PendingRetry>();
+  readonly autoContinueTimers = new Map<string, NodeJS.Timeout>();
+  bot!: Bot;
 
   constructor(
-    private readonly config: ConfigService,
+    readonly config: ConfigService,
     private readonly telegramService: TelegramService,
-    private readonly roadmapService: RoadmapService,
-    private readonly prefsService: PreferencesService,
-    private readonly githubService: GitHubService,
-    private readonly queueService: ImplementQueueService,
-    private readonly notificationService: NotificationService,
+    readonly roadmapService: RoadmapService,
+    readonly prefsService: PreferencesService,
+    readonly githubService: GitHubService,
+    readonly queueService: ImplementQueueService,
+    readonly notificationService: NotificationService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -54,7 +53,6 @@ export class TaskBotService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     this.bot = this.telegramService.getBot();
-    registerCommands(this);
 
     await this.bot.api.setMyCommands([
       { command: 'task', description: 'Create a task (ARC auto-assigned)' },
@@ -80,7 +78,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     );
   }
 
-  private isAllowed(ctx: Context): boolean {
+  isAllowed(ctx: Context): boolean {
     if (this.allowedUserIds.size === 0) return true;
     const userId = ctx.from?.id;
     return userId !== undefined && this.allowedUserIds.has(userId);
@@ -98,7 +96,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   handleCallbackQuery = (ctx: Context) => handleCallbackQuery(this, ctx);
 
   parseTask = (text: string, autoArc: boolean, userId?: number): ParsedTask =>
-    parseTask(text, autoArc, userId, this.prefsService, this.roadmapService);
+    parseTask(text, autoArc, userId, this.prefsService);
 
   createAndTriggerTask = (task: ParsedTask, ctx: Context) => createAndTriggerTask(this, task, ctx);
 

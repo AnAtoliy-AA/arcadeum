@@ -14,6 +14,14 @@ const ROOM_ID = '647f1a2b3c4d5e6f7a8b9c0d';
 const OPPONENT_ID = '647f1a2b3c4d5e6f7a8b9c0e';
 const OPPONENT_NAME = 'Opponent';
 
+async function openChatPanel(page: import('@playwright/test').Page) {
+  const panel = page.getByTestId('game-chat-panel');
+  if (!(await panel.isVisible())) {
+    await page.getByTestId('toggle-chat-button').click();
+    await expect(panel).toBeVisible();
+  }
+}
+
 test.describe('In-Game Chat Messaging', () => {
   test.afterEach(() => {
     checkNoBackendErrors();
@@ -51,6 +59,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     const input = page.getByRole('textbox', { name: /message/i });
@@ -71,6 +80,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     // Simulate incoming chat from opponent
@@ -96,6 +106,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     // Character count should show 0/240
@@ -112,6 +123,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     const input = page.getByRole('textbox', { name: /message/i });
@@ -129,6 +141,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     const input = page.getByRole('textbox', { name: /message/i });
@@ -160,6 +173,8 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
+
     // Chat input should show sign-in placeholder
     const input = page.getByRole('textbox', { name: /message/i });
     await expect(input).toHaveAttribute('placeholder', /sign in to chat/i);
@@ -170,6 +185,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     // Default scope should be "All" for FFA mode
@@ -194,6 +210,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
 
     const timestamp = Date.now();
@@ -232,6 +249,7 @@ test.describe('In-Game Chat Messaging', () => {
     await navigateTo(page, `/games/rooms/${ROOM_ID}`);
     await waitForRoomReady(page);
 
+    await openChatPanel(page);
     await expect(page.getByTestId('game-chat-panel')).toBeVisible();
     await expect(page.getByText('Table Chat')).toBeVisible();
   });

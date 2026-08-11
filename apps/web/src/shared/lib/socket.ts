@@ -309,6 +309,7 @@ function createLazySocket(getter: () => AuthenticatedSocket): Socket {
   return new Proxy({} as Socket, {
     get(_target, prop, receiver) {
       const socket = getter();
+      if (!socket) return undefined;
       const value = Reflect.get(socket, prop, receiver);
       if (typeof value === 'function') {
         return value.bind(socket);
@@ -317,6 +318,7 @@ function createLazySocket(getter: () => AuthenticatedSocket): Socket {
     },
     set(_target, prop, value) {
       const socket = getter();
+      if (!socket) return false;
       return Reflect.set(socket, prop, value);
     },
   });
@@ -333,8 +335,8 @@ export const walletSocket: Socket = createLazySocket(getWalletSock);
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
   const win = window as unknown as Record<string, unknown>;
-  win.gameSocket = getGamesSocket;
-  win.chatSocket = getChatsSocket;
+  win.gameSocket = getGamesSocket();
+  win.chatSocket = getChatsSocket();
 }
 
 /**

@@ -101,6 +101,11 @@ export function LanguageProvider({
 
   const initialLocaleRef = useRef(locale);
 
+  // Defer heavy translation loading until the browser is idle so hydration,
+  // first paint, and interactivity are not blocked by 19+ dynamic imports.
+  // Server-rendered HTML already contains the correct translated text for the
+  // initial page; client-side translations are only needed for SPA navigation
+  // and dynamic content updates that happen after the page is interactive.
   useEffect(() => {
     if (typeof document === 'undefined') return;
     document.documentElement.setAttribute('lang', locale);
@@ -112,9 +117,17 @@ export function LanguageProvider({
     if (initialMessages && locale === initialLocaleRef.current) return;
 
     let mounted = true;
-    loadMessages(locale).then((msgs) => {
-      if (mounted) setLoadedMessages(msgs);
-    });
+    const scheduleLoad = () => {
+      loadMessages(locale).then((msgs) => {
+        if (mounted) setLoadedMessages(msgs);
+      });
+    };
+    // Use requestIdleCallback when available (not Safari), otherwise setTimeout
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(scheduleLoad, { timeout: 2000 });
+    } else {
+      setTimeout(scheduleLoad, 0);
+    }
     return () => {
       mounted = false;
     };

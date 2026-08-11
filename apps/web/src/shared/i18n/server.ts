@@ -6,6 +6,26 @@ import {
   type Locale,
   type TranslationBundle,
 } from './index';
+import { loadHomeMessages } from './messages/home';
+import { loadGames } from './messages/games/load-games';
+
+/** Lazy-load only the `seo` namespace for a given locale. */
+export async function loadSeo(locale: Locale) {
+  switch (locale) {
+    case 'en':
+      return (await import('./messages/seo/en')).en;
+    case 'es':
+      return (await import('./messages/seo/es')).es;
+    case 'fr':
+      return (await import('./messages/seo/fr')).fr;
+    case 'ru':
+      return (await import('./messages/seo/ru')).ru;
+    case 'by':
+      return (await import('./messages/seo/by')).by;
+    default:
+      return (await import('./messages/seo/en')).en;
+  }
+}
 
 /**
  * Server-side utility to load translations.
@@ -18,6 +38,66 @@ export async function getTranslations(
   locale?: Locale,
 ): Promise<TranslationBundle> {
   return loadMessages(locale ?? (await getServerLocale()));
+}
+
+/**
+ * Lightweight alternative to `getTranslations` that loads only the
+ * `home` and `games` translation namespaces. Keeps the RSC flight
+ * payload small for pages that don't need the full bundle (e.g. the
+ * marketing home page).
+ */
+export async function getHomeTranslations(locale?: Locale) {
+  const loc = locale ?? (await getServerLocale());
+  const [home, games] = await Promise.all([
+    loadHomeMessages(loc),
+    loadGames(loc),
+  ]);
+  return { home, games };
+}
+
+/**
+ * Load only the namespaces that client components need on the initial
+ * render of the home page. Much smaller than the full bundle (~5 vs
+ * 20+ modules) but eliminates "missing translation" warnings during
+ * hydration when `requestIdleCallback` hasn't fired yet.
+ *
+ * Namespaces included: navigation, games, home, pwa, common.
+ */
+export async function getInitialTranslations(
+  locale?: Locale,
+): Promise<TranslationBundle> {
+  const loc = locale ?? (await getServerLocale());
+  const [navigationMod, pwaMod, commonMod, homeData, gamesData] =
+    await Promise.all([
+      import('./messages/navigation'),
+      import('./messages/pwa'),
+      import('./messages/common'),
+      loadHomeMessages(loc),
+      loadGames(loc),
+    ]);
+  return {
+    common: commonMod[loc],
+    pages: {} as TranslationBundle['pages'],
+    home: homeData,
+    settings: {} as TranslationBundle['settings'],
+    support: {} as TranslationBundle['support'],
+    auth: {} as TranslationBundle['auth'],
+    navigation: navigationMod[loc],
+    chat: {} as TranslationBundle['chat'],
+    chatList: {} as TranslationBundle['chatList'],
+    games: gamesData as TranslationBundle['games'],
+    history: {} as TranslationBundle['history'],
+    payments: {} as TranslationBundle['payments'],
+    legal: {} as TranslationBundle['legal'],
+    stats: {} as TranslationBundle['stats'],
+    pwa: pwaMod[loc],
+    referrals: {} as TranslationBundle['referrals'],
+    seo: {} as TranslationBundle['seo'],
+    notifications: {} as TranslationBundle['notifications'],
+    battlePass: {} as TranslationBundle['battlePass'],
+    musicPlayer: {} as TranslationBundle['musicPlayer'],
+    wallet: {} as TranslationBundle['wallet'],
+  };
 }
 
 /**

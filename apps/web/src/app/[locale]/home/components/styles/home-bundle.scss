@@ -7,6 +7,7 @@
  *   hero-cards.scss      — card stack fan layout, hover/active states
  *   hero-buttons.scss    — CTA button styles
  *   presentation.scss    — slide deck component
+ *   animations-pages     — section layouts, cards, steps, features, etc.
  */
 
 @use 'hero-title' as *;
@@ -14,3 +15,5 @@
 @use 'hero-cards' as *;
 @use 'hero-buttons' as *;
 @use 'presentation' as *;
+@use 'download-buttons' as *;
+@use '../../../../styles/animations-pages' as *;

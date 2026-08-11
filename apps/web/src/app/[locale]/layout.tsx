@@ -23,7 +23,25 @@ import {
   localeToHreflang,
   type Locale,
 } from '@/shared/i18n';
-import { getTranslations } from '@/shared/i18n/server';
+import { getInitialTranslations } from '@/shared/i18n/server';
+
+/** Lazy-load only the seo namespace — avoids pulling 20+ modules into the RSC payload. */
+async function loadSeo(locale: Locale) {
+  switch (locale) {
+    case 'en':
+      return (await import('@/shared/i18n/messages/seo/en')).en;
+    case 'es':
+      return (await import('@/shared/i18n/messages/seo/es')).es;
+    case 'fr':
+      return (await import('@/shared/i18n/messages/seo/fr')).fr;
+    case 'ru':
+      return (await import('@/shared/i18n/messages/seo/ru')).ru;
+    case 'by':
+      return (await import('@/shared/i18n/messages/seo/by')).by;
+    default:
+      return (await import('@/shared/i18n/messages/seo/en')).en;
+  }
+}
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
@@ -84,7 +102,11 @@ export async function generateMetadata({
   };
 }
 
-import { MatchmakingQueueModal } from '@/features/games/ui/MatchmakingQueue';
+const MatchmakingQueueModal = dynamic(() =>
+  import('@/features/games/ui/MatchmakingQueue').then(
+    (m) => m.MatchmakingQueueModal,
+  ),
+);
 
 export default async function LocaleLayout({
   children,
@@ -96,15 +118,16 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [authToken, messages] = await Promise.all([
+  const [authToken, seoMessages, initialMessages] = await Promise.all([
     getServerAccessToken(),
-    getTranslations(locale),
+    loadSeo(locale),
+    getInitialTranslations(locale),
   ]);
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const routes = buildRoutes(locale);
   const localizedDescription =
-    messages.seo?.home?.description ?? appConfig.seoDescription;
+    seoMessages.home?.description ?? appConfig.seoDescription;
   const inLanguage = SCHEMA_LANGUAGE_MAP[locale];
 
   // WebSite + SoftwareApplication structured data, localized via `inLanguage`
@@ -146,7 +169,7 @@ export default async function LocaleLayout({
   return (
     <>
       <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-      <LanguageProvider locale={locale} initialMessages={messages}>
+      <LanguageProvider locale={locale} initialMessages={initialMessages}>
         <PWAProvider>
           <SoundProvider>
             <LayoutShell>

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { SupportIcon } from '@arcadeum/ui';
-import { getTranslations } from '@/shared/i18n/server';
+import { getHomeTranslations } from '@/shared/i18n/server';
 import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
 import { HeroPlayVsAiButton } from './HeroPlayVsAiButton';
@@ -29,7 +29,7 @@ const HERO_CARDS = [
 const FAN_OFFSET = 140;
 
 export default async function HomeHero() {
-  const messages = await getTranslations();
+  const messages = await getHomeTranslations();
   const homeCopy = messages.home ?? {};
   const gamesCopy = messages.games ?? {};
   const routes = buildRoutes('en');
@@ -57,9 +57,7 @@ export default async function HomeHero() {
       <div className="hero-container-main">
         <div className="hero-content-main">
           <div className="animate-fade-in-up hero-delay-200">
-            <span className="hero-kicker-main">
-              ✦ {kicker}
-            </span>
+            <span className="hero-kicker-main">✦ {kicker}</span>
           </div>
 
           {/*
@@ -138,7 +136,7 @@ export default async function HomeHero() {
                     src={card.bgImage}
                     alt={`${gameName} game card preview`}
                     fill
-                    quality={70}
+                    quality={55}
                     sizes="(max-width: 1150px) 240px, 280px"
                     placeholder="blur"
                     blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="

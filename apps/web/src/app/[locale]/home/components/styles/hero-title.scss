@@ -87,24 +87,6 @@
   z-index: 2;
   pointer-events: none;
 
-  /* Primary Rainbow + Glass Shine Overlay */
-  // background: linear-gradient(135deg,
-  //     rgba(255, 255, 255, 0) 0%,
-  //     rgba(255, 255, 255, 0) 40%,
-  //     rgba(255, 255, 255, 0.4) 50%,
-  //     rgba(255, 255, 255, 0) 60%,
-  //     rgba(255, 255, 255, 0) 100%),
-  //   linear-gradient(90deg,
-  //     #ff0080 0%,
-  //     #7928ca 20%,
-  //     #007cf0 40%,
-  //     #00dfd8 60%,
-  //     #4ade80 80%,
-  //     #fbbf24 100%,
-  //     #ff0080 120%);
-  // background-size:
-  //   200% auto,
-  //   200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

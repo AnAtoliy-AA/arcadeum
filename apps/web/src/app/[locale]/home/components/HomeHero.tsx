@@ -57,7 +57,7 @@ export default async function HomeHero() {
       <div className="hero-container-main">
         <div className="hero-content-main">
           <div className="animate-fade-in-up hero-delay-200">
-            <span className="hero-kicker-main kicker-hydration-shimmer">
+            <span className="hero-kicker-main">
               ✦ {kicker}
             </span>
           </div>

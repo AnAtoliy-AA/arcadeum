@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.3] - 2026-08-11
+
+### Fixed
+- remove GPU-heavy animations from hero kicker, title, and background
+
+### Refactored
+- remove dead CSS and orphaned class from hero perf cleanup
+
+
 ## [1.25.2] - 2026-08-10
 
 ### Fixed

@@ -70,9 +70,9 @@
     radial-gradient(circle at 80% 75%, var(--backgroundRadialStart) 0%, transparent 45%),
     radial-gradient(circle at 50% 50%, var(--primary-gradient-start) 0%, transparent 50%);
   opacity: 0.8;
-  filter: blur(100px);
+//   filter: blur(100px);
   will-change: transform;
-  animation: hero-gradient-drift 22s ease-in-out infinite alternate;
+//   animation: hero-gradient-drift 22s ease-in-out infinite alternate;
 }
 
 .hero-background-overlay::after {
@@ -104,7 +104,7 @@
     height: 120%;
     top: -10%;
     left: -10%;
-    filter: blur(40px);
+    // filter: blur(40px);
     animation: none;
   }
 }

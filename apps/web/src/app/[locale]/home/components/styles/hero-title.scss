@@ -88,23 +88,23 @@
   pointer-events: none;
 
   /* Primary Rainbow + Glass Shine Overlay */
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0) 40%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0) 60%,
-      rgba(255, 255, 255, 0) 100%),
-    linear-gradient(90deg,
-      #ff0080 0%,
-      #7928ca 20%,
-      #007cf0 40%,
-      #00dfd8 60%,
-      #4ade80 80%,
-      #fbbf24 100%,
-      #ff0080 120%);
-  background-size:
-    200% auto,
-    200% auto;
+  // background: linear-gradient(135deg,
+  //     rgba(255, 255, 255, 0) 0%,
+  //     rgba(255, 255, 255, 0) 40%,
+  //     rgba(255, 255, 255, 0.4) 50%,
+  //     rgba(255, 255, 255, 0) 60%,
+  //     rgba(255, 255, 255, 0) 100%),
+  //   linear-gradient(90deg,
+  //     #ff0080 0%,
+  //     #7928ca 20%,
+  //     #007cf0 40%,
+  //     #00dfd8 60%,
+  //     #4ade80 80%,
+  //     #fbbf24 100%,
+  //     #ff0080 120%);
+  // background-size:
+  //   200% auto,
+  //   200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -113,7 +113,6 @@
   filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
 
   animation:
-    hero-shimmer 8s linear infinite,
     hero-color-shift 15s linear infinite;
 }
 
@@ -154,31 +153,4 @@
   }
 }
 
-@keyframes hero-shimmer {
-  0% {
-    background-position: 0% center;
-  }
 
-  100% {
-    background-position: 200% center;
-  }
-}
-
-@media (max-width: 1150px) {
-
-  /*
-   * Hide the rainbow overlay entirely on smaller viewports. It would
-   * otherwise paint over the <h1> after font load and become the LCP
-   * element with a 5s+ time. The base 3D-extruded title (FCP-time) is
-   * the LCP element instead.
-   */
-  .hero-title-shimmer::after {
-    display: none;
-  }
-
-  .hero-title-shimmer {
-    perspective: none;
-    transform-style: flat;
-    animation: none;
-  }
-}

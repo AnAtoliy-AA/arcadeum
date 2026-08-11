@@ -4,6 +4,10 @@
 @use './styles/utilities';
 @use '../widgets/header/ui/header-stable';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Typography classes — inlined from @arcadeum/ui to avoid a separate render-blocking chunk */
 .typography-gradient-primary {
   background: linear-gradient(135deg, var(--color) 0%, var(--primary) 100%);

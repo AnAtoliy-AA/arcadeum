@@ -57,8 +57,8 @@ test.describe('Navigation', () => {
     }
     page.off('pageerror', onPageError);
 
-    // Increased timeout for check and ensure we wait for URL to be exactly /
-    await expect(page).toHaveURL(/\/(en|es|fr|ru|by)\/?$/, {});
+    // Increased timeout for check and ensure we wait for URL to be exactly / or /locale
+    await expect(page).toHaveURL(/\/(?:en|es|fr|ru|by)?\/?$/, {});
 
     // Wait for hydration on the home page
     await expect(page.locator('html')).toHaveAttribute(

@@ -167,7 +167,7 @@ function createStyles(palette: Palette) {
       alignItems: 'center',
     },
     backdrop: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       backgroundColor: overlayBackground,
     },
     sheet: {

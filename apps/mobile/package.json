@@ -96,7 +96,7 @@
     "jest-expo": "~57.0.3",
     "prettier": "^3.9.6",
     "react-native-svg-transformer": "^1.5.3",
-    "react-test-renderer": "19.2.8",
+    "react-test-renderer": "19.1.0",
     "serve": "^14.2.6",
     "typescript": "~5.9.3"
   },

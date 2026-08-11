@@ -55,11 +55,11 @@ export function createCardStyles(
       paddingBottom: 40,
     },
     cardBackdrop: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       zIndex: 0,
     },
     cardGradientLayer: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       opacity: 0.85,
     },
     cardGlowPrimary: {

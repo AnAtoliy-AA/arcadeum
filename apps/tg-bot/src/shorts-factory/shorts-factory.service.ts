@@ -44,7 +44,9 @@ export class ShortsFactoryService {
 
   async notifyAdmin(pending: PendingVideo): Promise<number | undefined> {
     if (!this.adminChatId) {
-      this.logger.warn('SHORTS_FACTORY_ADMIN_CHAT_ID not set, skipping admin notification');
+      this.logger.warn(
+        'SHORTS_FACTORY_ADMIN_CHAT_ID not set, skipping admin notification',
+      );
       return undefined;
     }
 

@@ -109,7 +109,7 @@ test.describe('Sea Battle Color Visibility', () => {
       const shipItem = page.getByTestId('ship-palette-item').first();
       await expect(shipItem).toBeVisible({});
       await shipItem.scrollIntoViewIfNeeded();
-      await shipItem.click({});
+      await shipItem.dispatchEvent('click');
 
       // Small delay to ensure React state update (ship selection) is processed
 

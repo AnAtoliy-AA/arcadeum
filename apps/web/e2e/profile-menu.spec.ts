@@ -36,7 +36,7 @@ test.describe('Profile Menu Modernization', () => {
 
     // Verify border radius
     const borderRadius = await dropdown.evaluate(
-      (el) => window.getComputedStyle(el).borderRadius,
+      (el) => window.getComputedStyle(el).borderRadius || window.getComputedStyle(el).borderTopLeftRadius,
     );
     expect(borderRadius).toBe('20px'); // $5 radius is 20px
 

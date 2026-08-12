@@ -137,6 +137,22 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.bot.command('shorts', (ctx: Context) => {
+      const isPrivate = ctx.chat?.type === 'private';
+      const senderId = String(ctx.from?.id ?? '');
+      const chatId = String(ctx.chat?.id ?? '');
+      const adminChatId =
+        this.config.get<string>('SHORTS_FACTORY_ADMIN_CHAT_ID') ??
+        this.config.get<string>('TELEGRAM_DM_CHAT_ID') ??
+        '';
+
+      if (!isPrivate && senderId !== adminChatId && chatId !== adminChatId) {
+        void ctx.reply(
+          '⚠️ <b>Restricted:</b> The /shorts command can only be run by admins in private DM.',
+          { parse_mode: 'HTML' },
+        );
+        return;
+      }
+
       void ctx.reply(
         '🎬 <b>Triggering Shorts Factory...</b>\n\nGenerating new short video and preparing preview...',
         { parse_mode: 'HTML' },
@@ -148,9 +164,12 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
       proc.on('error', (err) => {
         this.logger.error(`Shorts Factory process error: ${err.message}`);
-        void ctx.reply(`❌ <b>Shorts Factory Failed to launch:</b>\n<pre>${err.message}</pre>`, {
-          parse_mode: 'HTML',
-        });
+        void ctx.reply(
+          `❌ <b>Shorts Factory Failed to launch:</b>\n<pre>${err.message}</pre>`,
+          {
+            parse_mode: 'HTML',
+          },
+        );
       });
     });
 
@@ -224,15 +243,26 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       }
     });
 
-    void this.bot.api.setMyCommands([
+    const publicCommands = [
       { command: 'start', description: 'Welcome message' },
       { command: 'status', description: 'Monitor status & uptime' },
       { command: 'ca', description: 'Contract address & links' },
       { command: 'chart', description: 'Price chart links' },
       { command: 'holders', description: 'Holder distribution' },
-      { command: 'shorts', description: 'Trigger Shorts factory post' },
       { command: 'help', description: 'Show help & command list' },
-    ]);
+    ];
+
+    void this.bot.api.setMyCommands(publicCommands, {
+      scope: { type: 'all_group_chats' },
+    });
+
+    void this.bot.api.setMyCommands(
+      [
+        ...publicCommands,
+        { command: 'shorts', description: 'Trigger Shorts factory post' },
+      ],
+      { scope: { type: 'all_private_chats' } },
+    );
 
     void this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),

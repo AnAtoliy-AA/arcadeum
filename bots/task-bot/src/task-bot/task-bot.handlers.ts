@@ -14,6 +14,7 @@ import {
 } from './task-bot.parsing';
 
 export { handleTask, handleListTasks, handleImplement, handleFix, handleQueueStatus, handleStatus, handlePrefs, handleShorts } from './task-bot.commands';
+export { handleCallbackQuery } from './task-bot.callbacks';
 
 export async function handleTaskMessage(
   service: TaskBotService,

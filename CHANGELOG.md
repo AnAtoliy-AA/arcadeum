@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.11] - 2026-08-12
+
+### Fixed
+- use port 4005 to avoid collision with be-dev
+- import ShortsFactoryModule in TaskBotModule
+
+
 ## [1.25.10] - 2026-08-12
 
 ### Added

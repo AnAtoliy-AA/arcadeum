@@ -5,6 +5,7 @@ import { RoadmapModule } from '../roadmap/roadmap.module';
 import { PreferencesModule } from '../preferences/preferences.module';
 import { GitHubModule } from '../github/github.module';
 import { QueueModule } from '../queue/queue.module';
+import { ShortsFactoryModule } from '../shorts-factory/shorts-factory.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { QueueModule } from '../queue/queue.module';
     PreferencesModule,
     GitHubModule,
     QueueModule,
+    ShortsFactoryModule,
   ],
   providers: [TaskBotService],
   exports: [TaskBotService],

@@ -125,8 +125,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       borderRadius={16}
       borderWidth={1}
       borderColor="$glassBorder"
-      position="relative"
-      zIndex={50}
     >
       {isSpectating && (
         <XStack

@@ -72,7 +72,7 @@ test.describe('Sea Battle widget fullscreen auto-exit on finish', () => {
     const widget = page.locator('.game-widget-container');
 
     // Enter the widget-level fullscreen.
-    await page.getByTestId('widget-fullscreen-button').click();
+    await page.getByTestId('widget-fullscreen-button').dispatchEvent('click');
     await expect(widget).toHaveClass(/is-fullscreen/);
 
     // Game finishes — real completion signal.

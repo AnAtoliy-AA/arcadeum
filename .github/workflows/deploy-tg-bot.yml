@@ -27,6 +27,8 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
             git fetch origin main
             git reset --hard origin/main
 
@@ -35,10 +37,11 @@ jobs:
             pnpm --filter be build
             pnpm --filter tg-bot build
 
-            pm2 restart arcadeum-be arcadeum-tg-bot || \
-              (pm2 start "node apps/be/dist/src/main.js" --name arcadeum-be && \
-               pm2 start "node apps/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && \
-               pm2 save)
+            pm2 delete arcadeum-be 2>/dev/null || true
+            pm2 delete arcadeum-tg-bot 2>/dev/null || true
+            pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js"
+            pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot --cwd "$DEPLOY_DIR"
+            pm2 save
 
             echo "==> Done!"
             pm2 list

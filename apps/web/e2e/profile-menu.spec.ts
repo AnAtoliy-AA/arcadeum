@@ -23,7 +23,7 @@ test.describe('Profile Menu Modernization', () => {
       await trigger.click();
     }
 
-    const dropdown = page.locator('[data-profile-menu] > div').last();
+    const dropdown = page.getByTestId('profile-dropdown');
     await dropdown.waitFor({ state: 'visible' });
     await expect(dropdown).toBeVisible();
 
@@ -36,7 +36,9 @@ test.describe('Profile Menu Modernization', () => {
 
     // Verify border radius
     const borderRadius = await dropdown.evaluate(
-      (el) => window.getComputedStyle(el).borderRadius,
+      (el) =>
+        window.getComputedStyle(el).borderRadius ||
+        window.getComputedStyle(el).borderTopLeftRadius,
     );
     expect(borderRadius).toBe('20px'); // $5 radius is 20px
 
@@ -62,7 +64,7 @@ test.describe('Profile Menu Modernization', () => {
     } else {
       await trigger.click();
     }
-    const dropdown = page.locator('[data-profile-menu] > div').last();
+    const dropdown = page.getByTestId('profile-dropdown');
     await dropdown.waitFor({ state: 'visible' });
     const adminLink = page.getByTestId('header-admin-link');
     await adminLink.waitFor({ state: 'visible' });

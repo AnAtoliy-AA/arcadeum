@@ -264,41 +264,6 @@
   opacity: 0.75;
 }
 
-.animate-shimmer-mid,
-[data-hydrated="true"] .kicker-hydration-shimmer,
-.is-hydrated .kicker-hydration-shimmer {
-  position: relative;
-  display: inline-block;
-  color: var(--primary);
-}
-
-[data-hydrated="true"] .kicker-hydration-shimmer::after,
-.is-hydrated .kicker-hydration-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transform: skewX(-20deg);
-  animation: shimmer-glide 4s infinite alternate 1s;
-  pointer-events: none;
-}
-
-@keyframes shimmer-glide {
-  0% {
-    transform: translateX(-100%) skewX(-20deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-20deg);
-  }
-}
 
 .fade-on-mount {
   opacity: 0;
@@ -531,5 +496,11 @@
   }
   50% {
     opacity: 0.25;
+  }
+}
+
+@keyframes arcadeum-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

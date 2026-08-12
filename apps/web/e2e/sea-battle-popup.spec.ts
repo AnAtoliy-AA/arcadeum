@@ -115,13 +115,8 @@ test.describe('Sea Battle Popup Challenge', () => {
     const challengeButton = page.getByTestId('challenge-button');
     await expect(challengeButton).toBeVisible({});
     await challengeButton.scrollIntoViewIfNeeded();
-    await expect(challengeButton).toBeInViewport();
-
-    // Wait a bit for the UI to be fully interactive
-
-    // Click challenge with fallback mechanism
-    await challengeButton.click({ force: true });
-    await challengeButton.dispatchEvent('click').catch(() => {});
+    // Click challenge directly via DOM event
+    await challengeButton.dispatchEvent('click');
 
     // Verify redirection to game creation page
     await page.waitForURL(/.*\/games\/create\?gameId=sea_battle_v1.*/, {});

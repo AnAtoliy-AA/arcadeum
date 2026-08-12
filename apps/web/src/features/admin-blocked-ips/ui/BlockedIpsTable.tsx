@@ -1,7 +1,8 @@
 'use client';
 
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text } from 'tamagui';
+import { Text } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { BlockedIp } from '../api';
 
 export interface BlockedIpsTableLabels {

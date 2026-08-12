@@ -6,9 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { Bot, type Context } from 'grammy';
-import type { PendingVideo } from '../shorts-factory/shorts-factory.service';
+import { exec } from 'node:child_process';
 
 interface TransactionData {
   type: 'buy' | 'sell';
@@ -145,65 +144,19 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
             '/ca — Contract address & links\n' +
             '/chart — Price chart links\n' +
             '/holders — Holder distribution\n' +
-            '/shorts — Shorts factory status\n' +
             '/help — Show this message',
           { parse_mode: 'HTML' },
         ),
     );
 
-    this.bot.on('callback_query:data', async (ctx) => {
-      const data = ctx.callbackQuery.data;
-      if (data.startsWith('sf_')) {
-        const [action, videoId] = data.split(':');
-        const pendingDir =
-          process.env.SHORTS_FACTORY_PENDING_DIR ?? '/opt/arcadeum/pending';
-        const filePath = path.join(pendingDir, `${videoId}.json`);
-
-        try {
-          const raw = fs.readFileSync(filePath, 'utf-8');
-          const pending = JSON.parse(raw) as PendingVideo;
-
-          if (action === 'sf_confirm' && pending.status === 'pending') {
-            pending.status = 'approved';
-            fs.writeFileSync(filePath, JSON.stringify(pending, null, 2));
-            await ctx.answerCallbackQuery({ text: '✅ Video approved' });
-            await ctx.editMessageText(
-              `✅ <b>Short Approved</b>\n\n` +
-                `<b>Scenario:</b> ${pending.scenario}\n` +
-                `<b>Caption:</b> ${pending.caption}\n` +
-                `<b>Approved at:</b> ${new Date().toLocaleString()}`,
-              { parse_mode: 'HTML' },
-            );
-          } else if (
-            action === 'sf_regenerate' &&
-            pending.status === 'pending'
-          ) {
-            pending.status = 'regenerated';
-            fs.writeFileSync(filePath, JSON.stringify(pending, null, 2));
-            await ctx.answerCallbackQuery({
-              text: '🔄 Video will be regenerated',
-            });
-            await ctx.editMessageText(
-              `🔄 <b>Short Regeneration Requested</b>\n\n` +
-                `<b>Scenario:</b> ${pending.scenario}\n` +
-                `<b>Requested at:</b> ${new Date().toLocaleString()}`,
-              { parse_mode: 'HTML' },
-            );
-          } else {
-            await ctx.answerCallbackQuery({
-              text: '⚠️ Already processed',
-              show_alert: true,
-            });
-          }
-        } catch (err) {
-          this.logger.error(`Callback query error: ${err}`);
-          await ctx.answerCallbackQuery({
-            text: '❌ Error processing request',
-            show_alert: true,
-          });
-        }
-      }
-    });
+    void this.bot.api.setMyCommands([
+      { command: 'start', description: 'Welcome message' },
+      { command: 'status', description: 'Monitor status & uptime' },
+      { command: 'ca', description: 'Contract address & links' },
+      { command: 'chart', description: 'Price chart links' },
+      { command: 'holders', description: 'Holder distribution' },
+      { command: 'help', description: 'Show help & command list' },
+    ]);
 
     void this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),

@@ -25,6 +25,7 @@ const {
   stat,
   readFile,
   writeFile,
+  chmod,
 } = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
@@ -139,7 +140,8 @@ async function requestApproval(videoPath, caption, scenario) {
 
   // Save pending metadata
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
-  await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+  await chmod(metadataPath, 0o666).catch(() => {});
   log('info', `Saved pending video metadata: ${metadataPath}`);
 
   // Notify Telegram bot
@@ -147,13 +149,13 @@ async function requestApproval(videoPath, caption, scenario) {
     const response = await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/pending`,
       pending,
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
-    log('info', 'Notified Telegram bot for approval', {
-      messageId: response.data.messageId,
-    });
-    pending.messageId = response.data.messageId;
-    await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+
+    if (response.data?.messageId) {
+      pending.messageId = response.data.messageId;
+      await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+    }
   } catch (err) {
     log('error', 'Failed to notify Telegram bot', { error: err.message });
     // Continue without approval if bot is unavailable
@@ -227,7 +229,7 @@ async function reportResult(id, success, message, platforms) {
         status: success ? 'posted' : 'failed',
         result: { success, message, platforms },
       },
-      { timeout: 10000 },
+      { timeout: 120000 },
     );
     log('info', 'Reported result to Telegram bot');
   } catch (err) {
@@ -1069,11 +1071,11 @@ function getTrackVolume(trackUrl) {
 }
 
 const END_CARD_CTAS = [
-  'arcadeum.games',
-  'Play & Earn Now!',
+  'Play Online Now!',
   'Join the Arena!',
-  'Ready to climb?',
-  'Claim your rewards!',
+  'Ready to Play?',
+  'Play Free Games!',
+  'Challenge Players!',
 ];
 
 function getScenarioTags(scenarioName) {
@@ -1191,8 +1193,10 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   );
   const endCardCta = randomElement(END_CARD_CTAS);
   const logoScale = Math.round(CONFIG.viewport.width * 0.45);
-  const fontSize = Math.round(CONFIG.viewport.width * 0.06);
-  const textOffsetY = Math.round(CONFIG.viewport.height * 0.08);
+  const fontSize = Math.round(CONFIG.viewport.width * 0.055);
+  const urlFontSize = Math.round(CONFIG.viewport.width * 0.07);
+  const textOffsetY = Math.round(CONFIG.viewport.height * 0.06);
+  const urlOffsetY = Math.round(CONFIG.viewport.height * 0.14);
 
   await runFFmpeg(
     [
@@ -1207,7 +1211,7 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
       '-i',
       `anullsrc=r=44100:cl=stereo`,
       '-filter_complex',
-      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-150:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
+      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-180:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)',drawtext=text='arcadeum.games':fontcolor=yellow:fontsize=${urlFontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${urlOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
       '-map',
       '[v]',
       '-map',

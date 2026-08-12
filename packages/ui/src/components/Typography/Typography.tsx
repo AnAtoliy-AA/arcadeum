@@ -1,6 +1,5 @@
 'use client';
 import { Text, styled, GetProps } from 'tamagui';
-import './Typography.css';
 
 const StyledTypography = styled(Text, {
   name: 'Typography',

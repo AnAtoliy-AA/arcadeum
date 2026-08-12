@@ -2,6 +2,7 @@ import { Context } from 'grammy';
 import { Bot } from 'grammy';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { access } from 'fs/promises';
 
 import { NotificationService, JobNotification } from '../notification/notification.service';
 import type { PendingRetry, Engine } from './task-bot.types';
@@ -177,12 +178,12 @@ function sendMessageWithButtons(
     reply_markup: {
       inline_keyboard: buttonRows.filter((r) => r.length > 0),
     },
-  }).catch(() => {
+  }).then(() => {}).catch(() => {
     return service.bot.api.sendMessage(chatId, text, {
       reply_markup: {
         inline_keyboard: buttonRows.filter((r) => r.length > 0),
       },
-    });
+    }).then(() => {});
   });
 }
 
@@ -197,6 +198,15 @@ export function sanitizeMessage(text: string): string {
 
 export function escapeMarkdown(text: string): string {
   return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+}
+
+export async function checkWorktreeExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function scheduleAutoContinue(

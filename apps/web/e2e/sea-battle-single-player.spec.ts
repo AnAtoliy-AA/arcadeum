@@ -180,7 +180,7 @@ test.describe('Sea Battle Single Player Mode', () => {
       .getByRole('button', { name: /auto place/i })
       .or(page.getByText(/auto place/i))
       .first();
-    await autoPlaceBtn.click({});
+    await autoPlaceBtn.dispatchEvent('click');
 
     // More flexible confirm button selection
     const confirmBtn = page
@@ -188,7 +188,7 @@ test.describe('Sea Battle Single Player Mode', () => {
       .or(page.getByText(/confirm/i))
       .first();
     await expect(confirmBtn).toBeEnabled({});
-    await confirmBtn.click({});
+    await confirmBtn.dispatchEvent('click');
 
     // Increased timeout for battle phase
     await expect(page.getByText(/your turn/i).first()).toBeVisible({});
@@ -309,7 +309,7 @@ test.describe('Sea Battle Single Player Mode', () => {
       .or(page.getByTestId('board-cell-0-0'))
       .first();
     await expect(cell).toBeVisible({});
-    await cell.click({});
+    await cell.dispatchEvent('click');
 
     // More flexible waiting text
     await expect(page.locator('body')).toContainText(

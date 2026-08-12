@@ -7,6 +7,147 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.17] - 2026-08-12
+
+### Fixed
+- replace Play & Earn CTA with Play Online Now gaming CTAs (ARC-201) (ARC-201)
+
+
+## [1.25.16] - 2026-08-12
+
+### Fixed
+- set mode 0o666 on pending json files for write access (ARC-201) (ARC-201)
+
+
+## [1.25.15] - 2026-08-12
+
+### Fixed
+- clean up task-bot.handlers.ts syntax and exports (ARC-201) (ARC-201)
+- properly forward handleCallbackQuery to task-bot.callbacks (ARC-201) (ARC-201)
+- re-export handleCallbackQuery from task-bot.handlers (ARC-201) (ARC-201)
+
+
+## [1.25.14] - 2026-08-12
+
+### Fixed
+- process inline callback buttons for all users and add callback logging (ARC-201) (ARC-201)
+
+
+## [1.25.13] - 2026-08-12
+
+### Fixed
+- attach all command handlers and callback_query:data listener in onApplicationBootstrap (ARC-201) (ARC-201)
+
+
+## [1.25.12] - 2026-08-12
+
+### Fixed
+- handle sf_confirm approval callback and register /shorts in all_private_chats scope (ARC-201) (ARC-201)
+
+
+## [1.25.11] - 2026-08-12
+
+### Fixed
+- use port 4005 to avoid collision with be-dev
+- import ShortsFactoryModule in TaskBotModule
+
+
+## [1.25.10] - 2026-08-12
+
+### Added
+- move Shorts Factory trigger and video previews to task-bot (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused import in telegram service
+
+
+## [1.25.9] - 2026-08-12
+
+### Fixed
+- fallback to telegram chat if video file not on local disk
+
+
+## [1.25.8] - 2026-08-12
+
+### Fixed
+- launch shorts factory process asynchronously without blocking on pollForApproval (ARC-201) (ARC-201)
+
+
+## [1.25.7] - 2026-08-12
+
+### Added
+- register bot slash commands via setMyCommands (ARC-201) (ARC-201)
+
+
+## [1.25.6] - 2026-08-12
+
+### Added
+- send video preview with confirm and regenerate inline buttons (ARC-201) (ARC-201)
+- add /shorts command to trigger shorts factory post from Telegram (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused stdout and stderr callback params to resolve eslint error (ARC-201) (ARC-201)
+- increase axios timeout for tg bot approval notification (ARC-201) (ARC-201)
+- fix root playwright browser installation and add website url to end card (ARC-201) (ARC-201)
+
+
+## [1.25.5] - 2026-08-12
+
+### Fixed
+- use dispatchEvent click calls and fix border-radius check for cross-browser stability in profile-menu and sea-battle E2E tests
+- load all translation bundles in getInitialTranslations to fix SSR hydration warnings on subpages
+- include settings, legal, notifications, referrals, battlePass, and chat in getInitialTranslations to resolve hydration warnings
+- resolve E2E tests pointer interception via dispatchEvent
+- resolve E2E tests click interception, typescript type errors, and test assertions
+- only apply control panel z-index on desktop to prevent mobile pointer event interception
+- use hasFullBundle ref to gate deferred translation load
+- load full translations on SPA navigation
+- restore middleware filename and update E2E tests for root rewrite
+- revert package version changes and fix socket window mapping for E2E tests
+- use forks pool for vitest to prevent segfault
+- extract loadGames from barrel index to fix Turbopack dev resolution
+- use explicit games/index path for Turbopack dynamic import
+- align Spinner test role with component implementation
+
+### Improved
+- optimize home performance and fix hero card coordinates math
+- CSS-only spinners, lazy i18n, server-rendered hero, fix translation hydration
+- reduce main-thread work and improve interactivity
+
+
+## [1.25.4] - 2026-08-11
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.25.3] - 2026-08-11
+
+### Fixed
+- remove GPU-heavy animations from hero kicker, title, and background
+
+### Refactored
+- remove dead CSS and orphaned class from hero perf cleanup
+
+
+## [1.25.2] - 2026-08-10
+
+### Fixed
+- use ecosystem.config.js for BE start to fix CORS
+
+
+## [1.25.1] - 2026-08-10
+
+### Fixed
+- copy scripts dir in Dockerfiles and remove stale git locks
+
+
+## [1.25.0] - 2026-08-10
+
+### Changed
+- Internal improvements and maintenance
+
+
 ## [1.24.46] - 2026-08-10
 
 ### Fixed

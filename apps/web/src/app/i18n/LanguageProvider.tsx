@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
 } from 'react';
@@ -79,9 +80,11 @@ function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
 export function LanguageProvider({
   children,
   locale,
+  initialMessages,
 }: {
   children: ReactNode;
   locale: Locale;
+  initialMessages?: TranslationBundle;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -92,10 +95,25 @@ export function LanguageProvider({
     getServerSnapshot,
   );
 
-  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(() =>
-    getMessages(locale ?? DEFAULT_LOCALE),
+  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(
+    () => initialMessages ?? getMessages(locale ?? DEFAULT_LOCALE),
   );
 
+  // Track whether we have already loaded the *complete* translation bundle.
+  // `getInitialTranslations()` returns partial bundles (empty settings, auth,
+  // chat, etc.) — these must not prevent the deferred full-bundle load.
+  const hasFullBundle = useRef(
+    !!(
+      initialMessages?.settings &&
+      Object.keys(initialMessages.settings).length > 0
+    ),
+  );
+
+  // Defer heavy translation loading until the browser is idle so hydration,
+  // first paint, and interactivity are not blocked by 19+ dynamic imports.
+  // Server-rendered HTML already contains the correct translated text for the
+  // initial page; client-side translations are only needed for SPA navigation
+  // and dynamic content updates that happen after the page is interactive.
   useEffect(() => {
     if (typeof document === 'undefined') return;
     document.documentElement.setAttribute('lang', locale);
@@ -104,10 +122,26 @@ export function LanguageProvider({
 
     document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
+    // Skip loading only when the full bundle has already been loaded for this
+    // locale.  Partial bundles from `getInitialTranslations()` still need the
+    // deferred load so that SPA navigation has complete translations.
+    if (hasFullBundle.current) return;
+
     let mounted = true;
-    loadMessages(locale).then((msgs) => {
-      if (mounted) setLoadedMessages(msgs);
-    });
+    const scheduleLoad = () => {
+      loadMessages(locale).then((msgs) => {
+        if (mounted) {
+          setLoadedMessages(msgs);
+          hasFullBundle.current = true;
+        }
+      });
+    };
+    // Use requestIdleCallback when available (not Safari), otherwise setTimeout
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(scheduleLoad, { timeout: 2000 });
+    } else {
+      setTimeout(scheduleLoad, 0);
+    }
     return () => {
       mounted = false;
     };

@@ -68,9 +68,8 @@ export const Container = styled(BaseGameContainer, {
   borderRadius: 24,
   minHeight: 0,
   position: 'relative',
+  overflow: 'auto' as 'scroll',
   overflowX: 'hidden',
-  overflowY: 'auto',
-  backdropFilter: 'blur(20px)',
   height: 'auto',
   flexDirection: 'column',
   minWidth: 0,
@@ -84,12 +83,12 @@ export const Container = styled(BaseGameContainer, {
     paddingTop: 0,
     paddingBottom: 0,
     borderRadius: 16,
+    overflow: 'auto' as 'scroll',
     overflowX: 'hidden',
-    overflowY: 'auto',
   },
 
   variants: {
-    $isMyTurn: {
+    isMyTurn: {
       true: {
         borderWidth: 2,
         borderColor: 'rgba(34, 197, 94, 0.8)',
@@ -109,7 +108,7 @@ export const Container = styled(BaseGameContainer, {
         maxHeight: '100vh',
         borderRadius: 0,
         background: '#151718',
-        overflowY: 'auto',
+        overflow: 'auto' as 'scroll',
         overflowX: 'hidden',
         zIndex: 1100,
         paddingHorizontal: '$1',
@@ -313,10 +312,7 @@ export const SharedHandSection = styled(YStack, {
 });
 
 export type TurnStatusVariant =
-  | 'completed'
-  | 'yourTurn'
-  | 'waiting'
-  | 'default';
+  'completed' | 'yourTurn' | 'waiting' | 'default';
 
 export interface SharedHeaderProps {
   variantEmoji: string;

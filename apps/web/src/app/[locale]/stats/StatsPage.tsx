@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, useEffect, startTransition } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  startTransition,
+} from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { styled, XStack, YStack, Text } from 'tamagui';
 import {
@@ -64,72 +70,87 @@ export default function StatsPage({
   });
 
   const records = useLocalStatsStore((s) => s.records);
-  const localBreakdown = useMemo(() => {
-    const byGame = new Map<
-      string,
-      { totalGames: number; wins: number; losses: number; draws: number }
-    >();
-    for (const record of records) {
-      const existing = byGame.get(record.gameId) ?? {
-        totalGames: 0,
-        wins: 0,
-        losses: 0,
-        draws: 0,
+
+  // Single-pass computation over records — avoids 4 separate array scans
+  const { localBreakdown, localStats, localStreaks, localFavoriteGame } =
+    useMemo(() => {
+      const byGame = new Map<
+        string,
+        { totalGames: number; wins: number; losses: number; draws: number }
+      >();
+      let wins = 0;
+      let losses = 0;
+      let draws = 0;
+
+      for (const record of records) {
+        // Breakdown
+        const existing = byGame.get(record.gameId) ?? {
+          totalGames: 0,
+          wins: 0,
+          losses: 0,
+          draws: 0,
+        };
+        existing.totalGames++;
+        if (record.result === 'won') {
+          existing.wins++;
+          wins++;
+        } else if (record.result === 'lost') {
+          existing.losses++;
+          losses++;
+        } else {
+          existing.draws++;
+          draws++;
+        }
+        byGame.set(record.gameId, existing);
+      }
+
+      const totalGames = records.length;
+      const breakdown = Array.from(byGame.entries())
+        .map(([gameId, stats]) => ({
+          gameId,
+          ...stats,
+          winRate:
+            stats.totalGames > 0
+              ? Math.round((stats.wins / stats.totalGames) * 100)
+              : 0,
+        }))
+        .sort((a, b) => b.totalGames - a.totalGames);
+
+      const statsResult = {
+        totalGames,
+        wins,
+        losses,
+        draws,
+        winRate: totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0,
+        byGameType: breakdown,
       };
-      existing.totalGames++;
-      if (record.result === 'won') existing.wins++;
-      else if (record.result === 'lost') existing.losses++;
-      else existing.draws++;
-      byGame.set(record.gameId, existing);
-    }
-    return Array.from(byGame.entries())
-      .map(([gameId, stats]) => ({
-        gameId,
-        ...stats,
-        winRate:
-          stats.totalGames > 0
-            ? Math.round((stats.wins / stats.totalGames) * 100)
-            : 0,
-      }))
-      .sort((a, b) => b.totalGames - a.totalGames);
-  }, [records]);
-  const localStats = useMemo(() => {
-    const wins = records.filter((r) => r.result === 'won').length;
-    const losses = records.filter((r) => r.result === 'lost').length;
-    const draws = records.filter((r) => r.result === 'draw').length;
-    const totalGames = records.length;
-    return {
-      totalGames,
-      wins,
-      losses,
-      draws,
-      winRate: totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0,
-      byGameType: localBreakdown,
-    };
-  }, [records, localBreakdown]);
+
+      // Streaks and favorite game from store
+      const streaks = useLocalStatsStore.getState().getStreaks();
+      const favoriteGame = useLocalStatsStore.getState().getFavoriteGame();
+
+      return {
+        localBreakdown: breakdown,
+        localStats: statsResult,
+        localStreaks: streaks,
+        localFavoriteGame: favoriteGame,
+      };
+    }, [records]);
+
   const hasLocalStats = localStats.totalGames > 0;
 
-  const localStreaks = useMemo(
-    () => useLocalStatsStore.getState().getStreaks(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
-    [records.length],
-  );
-  const localFavoriteGame = useMemo(
-    () => useLocalStatsStore.getState().getFavoriteGame(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- records triggers re-computation via getState()
-    [records.length],
-  );
-
-  const serverStreaks = isLoggedIn && stats
-    ? {
-        currentStreak: stats.currentStreak ?? 0,
-        currentStreakType: stats.currentStreakType ?? null,
-        bestWinStreak: stats.bestWinStreak ?? 0,
-      }
-    : localStreaks;
-  const serverFavoriteGame = isLoggedIn && stats
-    ? (stats.favoriteGame ?? localFavoriteGame)
-    : localFavoriteGame;
+  const serverStreaks =
+    isLoggedIn && stats
+      ? {
+          currentStreak: stats.currentStreak ?? 0,
+          currentStreakType: stats.currentStreakType ?? null,
+          bestWinStreak: stats.bestWinStreak ?? 0,
+        }
+      : localStreaks;
+  const serverFavoriteGame =
+    isLoggedIn && stats
+      ? (stats.favoriteGame ?? localFavoriteGame)
+      : localFavoriteGame;
 
   useEffect(() => {
     if (!isLoggedIn || !snapshot.accessToken || records.length === 0) return;

@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { YStack, Text, Spinner } from 'tamagui';
+import { YStack, Text } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import { Button } from '@arcadeum/ui';
 import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';

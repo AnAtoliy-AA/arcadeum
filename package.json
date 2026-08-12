@@ -47,6 +47,7 @@
       "@tamagui/lucide-icons": "2.0.0-rc.23",
       "react": "19.1.0",
       "react-dom": "19.1.0",
+      "react-test-renderer": "19.1.0",
       "react-server-dom-webpack": "19.0.1",
       "shell-quote": "1.8.4",
       "handlebars": ">=4.7.9",

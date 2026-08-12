@@ -109,10 +109,10 @@ const handledCodes = new Set<string>();
 
 function base64UrlEncode(arrayBuffer: ArrayBuffer): string {
   const bytes = new Uint8Array(arrayBuffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i += 1) {
-    binary += String.fromCharCode(bytes[i]);
-  }
+  // Use Array.from instead of byte-by-byte string concatenation
+  const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join(
+    '',
+  );
   return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')

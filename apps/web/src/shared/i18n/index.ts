@@ -1,4 +1,3 @@
-import { translations } from './translations';
 import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
@@ -30,9 +29,34 @@ export type {
   TranslationBundle,
 };
 
-export function getMessages(locale: Locale): TranslationBundle {
-  // @ts-expect-error - translations only contains 'en' statically now
-  return translations[locale] ?? translations[DEFAULT_LOCALE];
+/**
+ * Returns an empty translation bundle as a synchronous fallback.
+ * The actual translations are loaded asynchronously via loadMessages().
+ */
+export function getMessages(_locale: Locale): TranslationBundle {
+  return {
+    common: {} as never,
+    pages: {} as never,
+    home: {} as never,
+    settings: {} as never,
+    support: {} as never,
+    auth: {} as never,
+    navigation: {} as never,
+    chat: {} as never,
+    chatList: {} as never,
+    games: {} as never,
+    history: {} as never,
+    payments: {} as never,
+    legal: {} as never,
+    stats: {} as never,
+    pwa: {} as never,
+    referrals: {} as never,
+    seo: {} as never,
+    notifications: {} as never,
+    battlePass: {} as never,
+    musicPlayer: {} as never,
+    wallet: {} as never,
+  };
 }
 
 export function isLocale(value: unknown): value is Locale {

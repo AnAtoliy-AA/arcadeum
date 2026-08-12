@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 export type SpinnerSize = 'sm' | 'md' | 'lg' | 'small' | 'large' | 'tiny';
@@ -20,17 +22,16 @@ const BORDER_MAP: Record<string, string> = {
   large: '4px',
 };
 
-export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: SpinnerSize;
-  color?: string;
-}
-
-export const Spinner: React.FC<SpinnerProps> = ({
+export function Spinner({
   size = 'md',
   color,
   className,
   ...props
-}) => {
+}: {
+  size?: SpinnerSize;
+  color?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
   const s = SIZE_MAP[size] ?? SIZE_MAP.md;
   const b = BORDER_MAP[size] ?? BORDER_MAP.md;
 
@@ -52,4 +53,4 @@ export const Spinner: React.FC<SpinnerProps> = ({
       {...props}
     />
   );
-};
+}

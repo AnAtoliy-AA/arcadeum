@@ -42,21 +42,42 @@ vi.mock('socket.io-client', () => {
 import {
   connectSockets,
   connectSocketsAnonymous,
+  connectLeaderboardSocket,
+  connectWalletSocket,
   disconnectSockets,
   emitEncrypted,
   useSocket,
   useChatSocket,
 } from './socket';
 
-// Capture initial listeners
-const initialOnCalls = [...(mockSocket.on as unknown as Mock).mock.calls];
+// Trigger lazy socket initialization so encryption handlers are registered
+connectSockets('init-trigger');
+disconnectSockets();
+
+// Capture the encryption handlers registered during lazy init
+// (setupEncryptionKeyHandler is called once per socket lifetime)
+const encryptionKeyHandler = (mockSocket.on as unknown as Mock).mock.calls.find(
+  (call: unknown[]) => call[0] === 'socket.encryption_key',
+)?.[1];
+const disconnectHandler = (mockSocket.on as unknown as Mock).mock.calls.find(
+  (call: unknown[]) => call[0] === 'disconnect',
+)?.[1];
 
 describe('socket', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     mockSocket.connected = false;
     mockSocket.auth = {};
-    // Do not clear mockSocket.on because we need the listeners registered at import time
+    // Only clear call counts for mocks that change between tests.
+    // Do NOT touch mockSocket.on / mockSocket.off / mockSocket.io.on —
+    // those hold encryption handler registrations from setupEncryptionKeyHandler
+    // that need to survive across tests.
+    (mockSocket.connect as unknown as Mock).mockClear();
+    (mockSocket.disconnect as unknown as Mock).mockClear();
+    rawEmit.mockClear();
+    (mockSocket.off as unknown as Mock).mockClear();
+    (mockSocket.io.on as unknown as Mock).mockClear();
+    // Re-trigger lazy init (no-op if already initialized, but resets auth state)
+    connectSockets('reinit-trigger');
   });
 
   it('connects sockets with token', () => {
@@ -85,17 +106,13 @@ describe('socket', () => {
   });
 
   it('handles encryption key from server', async () => {
-    const keyListener = initialOnCalls.find(
-      (call: unknown[]) => call[0] === 'socket.encryption_key',
-    )?.[1];
-
-    expect(keyListener).toBeDefined();
+    expect(encryptionKeyHandler).toBeDefined();
 
     const setKeySpy = vi
       .spyOn(encryption, 'setEncryptionKey')
       .mockResolvedValue(true);
 
-    await keyListener({ key: 'new-server-key' });
+    await encryptionKeyHandler({ key: 'new-server-key' });
 
     expect(setKeySpy).toHaveBeenCalledWith('new-server-key');
   });
@@ -107,12 +124,9 @@ describe('socket', () => {
   });
 
   it('handles invalid encryption key from server', async () => {
-    const keyListener = initialOnCalls.find(
-      (call: unknown[]) => call[0] === 'socket.encryption_key',
-    )?.[1];
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    await keyListener(null);
+    await encryptionKeyHandler(null);
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining('Invalid encryption key'),
     );
@@ -134,14 +148,13 @@ describe('socket', () => {
   });
 
   it('disconnects games + chat + leaderboards + friends + wallet sockets when connected', () => {
+    // Initialize all 5 lazy socket instances
+    connectSockets('init-all');
+    connectLeaderboardSocket('init-all');
+    connectWalletSocket('init-all');
+    // Reset mock state for clean assertions
     mockSocket.connected = true;
-    // Override strict behavior for this test to allow all five checks to
-    // pass on the shared mock instance.
-    (mockSocket.disconnect as unknown as Mock).mockImplementation(
-      function (this: { connected: boolean }) {
-        return this;
-      },
-    );
+    (mockSocket.disconnect as unknown as Mock).mockClear();
 
     disconnectSockets();
 
@@ -179,14 +192,10 @@ describe('socket', () => {
   });
 
   it('handles disconnect and resets encryption', () => {
-    const disconnectListener = initialOnCalls.find(
-      (call: unknown[]) => call[0] === 'disconnect',
-    )?.[1];
-
-    expect(disconnectListener).toBeDefined();
+    expect(disconnectHandler).toBeDefined();
 
     const resetSpy = vi.spyOn(encryption, 'resetEncryptionKey');
-    disconnectListener();
+    disconnectHandler();
 
     expect(resetSpy).toHaveBeenCalled();
   });

@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text } from 'tamagui';
+import { Text } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { UsersTableRow } from './UsersTableRow';

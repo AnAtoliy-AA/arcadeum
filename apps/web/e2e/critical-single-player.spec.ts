@@ -113,7 +113,7 @@ test.describe('Critical Single Player Mode', () => {
         {
           playerId: userId,
           alive: true,
-          hand: ['strike', 'skip'],
+          hand: ['strike', 'evade'],
           defuseCount: 1,
           stash: [],
         },
@@ -194,18 +194,17 @@ test.describe('Critical Single Player Mode', () => {
 
     const showChatBtn = page.getByRole('button', { name: /show chat/i });
 
+    // Only click if the button is still visible (it disappears after a successful click)
+    if (await drawBtn.isVisible()) {
+      await drawBtn.dispatchEvent('click');
+    }
+
+    // On mobile, the chat might be hidden behind a toggle
+    if (await showChatBtn.isVisible()) {
+      await showChatBtn.dispatchEvent('click');
+    }
+
     await expect(async () => {
-      // Only click if the button is still visible (it disappears after a successful click)
-      // We use force: true to bypass WebKit hanging on actionability checks due to the "Your turn" toast overlay
-      if (await drawBtn.isVisible()) {
-        await drawBtn.click({ force: true });
-      }
-
-      // On mobile, the chat might be hidden behind a toggle
-      if (await showChatBtn.isVisible()) {
-        await showChatBtn.click({ force: true });
-      }
-
       // Synchronous check to avoid explicit timeouts inside the test
       expect(await page.getByText(/Drawn/i).first().isVisible()).toBe(true);
     }).toPass();

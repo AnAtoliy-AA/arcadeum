@@ -108,7 +108,7 @@ export function AppThemeProvider({
     [resolvedTheme],
   );
 
-  // Sync theme to document element
+  // Sync theme to document element — batch heavy DOM writes into idle callback
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -124,56 +124,61 @@ export function AppThemeProvider({
       return;
     }
 
+    // Fast synchronous writes — lightweight, needed immediately for FOUC prevention
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
 
-    // Update classes meticulously
     doc.classList.forEach((c) => {
       if (c.startsWith('t_')) doc.classList.remove(c);
     });
     doc.classList.add(`t_${resolvedTheme}`);
 
-    // Sync all theme tokens from the active Tamagui theme to CSS variables
-    // This handles both base tokens (color, background) and our custom high-contrast tokens
-    const activeTamaguiTheme = tamaguiConfig.themes[
-      resolvedTheme
-    ] as unknown as Record<
-      string,
-      { val?: string; variable?: string } | string
-    >;
-    if (activeTamaguiTheme) {
-      Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
-        if (value) {
-          // Safely extract the variable value string
-          // Tamagui variables are often objects with a .get(), .val, or .variable property
-          const stringValue =
-            typeof value === 'object' && value !== null
-              ? value.val || value.variable || String(value)
-              : String(value);
+    // Defer expensive Tamagui token iteration to idle time
+    const applyTokenWrites = () => {
+      const activeTamaguiTheme = tamaguiConfig.themes[
+        resolvedTheme
+      ] as unknown as Record<
+        string,
+        { val?: string; variable?: string } | string
+      >;
+      if (activeTamaguiTheme) {
+        Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
+          if (value) {
+            const stringValue =
+              typeof value === 'object' && value !== null
+                ? value.val || value.variable || String(value)
+                : String(value);
 
-          if (
-            stringValue &&
-            typeof stringValue === 'string' &&
-            !stringValue.includes('[object')
-          ) {
-            doc.style.setProperty(`--${key}`, stringValue);
-            doc.style.setProperty(`--color-${key}`, stringValue);
+            if (
+              stringValue &&
+              typeof stringValue === 'string' &&
+              !stringValue.includes('[object')
+            ) {
+              doc.style.setProperty(`--${key}`, stringValue);
+              doc.style.setProperty(`--color-${key}`, stringValue);
+            }
           }
-        }
-      });
+        });
+      }
+
+      doc.style.setProperty('--background', themeTokensValue.background.base);
+      doc.style.setProperty('--foreground', themeTokensValue.text.primary);
+      doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
+      doc.style.setProperty('--primary', themeTokensValue.text.accent);
+      doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
+      doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
+
+      const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
+      document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
+      document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
+    };
+
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(applyTokenWrites, { timeout: 200 });
+    } else {
+      // Safari fallback
+      setTimeout(applyTokenWrites, 0);
     }
-
-    // Explicitly sync foundational tokens for standard CSS fallbacks
-    doc.style.setProperty('--background', themeTokensValue.background.base);
-    doc.style.setProperty('--foreground', themeTokensValue.text.primary);
-    doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
-    doc.style.setProperty('--primary', themeTokensValue.text.accent);
-    doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
-    doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
-
-    const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
-    document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
-    document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
   }, [resolvedTheme, themeTokensValue, themePreference]);
 
   useEffect(() => {

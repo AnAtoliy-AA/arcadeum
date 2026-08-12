@@ -1,3 +1,3 @@
-// Re-export translations from modular structure
+// Re-export translations type from modular structure
 // This file is kept for backward compatibility
-export { translations } from "./messages";
+export type { EnglishTranslations } from './messages';

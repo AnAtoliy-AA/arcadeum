@@ -1,12 +1,12 @@
 import { useLanguage } from '@/shared/i18n/useLanguage';
-import { translations } from '../i18n/translations';
+import type { EnglishTranslations } from '../i18n/translations';
 import type { StringPaths } from './translation-paths';
 
 /**
  * Type-safe translation key - inferred from actual English translations
  * This ensures all keys are based on the concrete implementation
  */
-export type TranslationKey = StringPaths<typeof translations.en>;
+export type TranslationKey = StringPaths<EnglishTranslations>;
 
 /**
  * Checks if we're in development mode

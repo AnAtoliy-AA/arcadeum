@@ -9,7 +9,7 @@
   justify-content: center;
   /* Cursor-driven parallax: vars set by HomeHero on pointer move. Tilts the
      whole stack (per-card transforms are untouched). */
-  transform: rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+  transform: perspective(600px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
   transform-style: preserve-3d;
   transition: transform 0.25s ease-out;
 }
@@ -36,12 +36,12 @@
     0 6px 14px rgba(0, 0, 0, 0.3),
     0 20px 40px -10px rgba(0, 0, 0, 0.55);
   transform: translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate)) scale(var(--card-scale));
-  opacity: 0;
+  opacity: 1;
   transition:
     transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.6s ease-out,
     box-shadow 0.3s ease;
-  pointer-events: none;
+  pointer-events: auto;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -136,33 +136,6 @@
   white-space: nowrap;
 }
 
-.hero-card-active .hero-card-play-cta {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-card-play-cta {
-    transition: opacity 0.15s ease;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-[data-hydrated="true"] .hero-card-main,
-.is-hydrated .hero-card-main {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.hero-card-stack .hero-card-main.hero-card-active {
-  transform: translate(var(--card-x), calc(var(--card-y) - 20px)) rotate(var(--card-rotate)) scale(1.05);
-  z-index: 100;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-    0 12px 24px rgba(0, 0, 0, 0.4),
-    0 30px 60px -12px rgba(0, 0, 0, 0.7);
-}
-
 .hero-card-main::after {
   content: '';
   position: absolute;
@@ -177,16 +150,40 @@
   transition: transform 1.6s ease;
 }
 
-.hero-card-active::after {
+/* Active card state via data-hovered attribute (no JS classList needed) */
+.hero-card-stack[data-hovered="0"] .hero-card-main:nth-child(1),
+.hero-card-stack[data-hovered="1"] .hero-card-main:nth-child(2),
+.hero-card-stack[data-hovered="2"] .hero-card-main:nth-child(3) {
+  transform: translate(var(--card-x), calc(var(--card-y) - 20px)) rotate(var(--card-rotate)) scale(1.05);
+  z-index: 100;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 12px 24px rgba(0, 0, 0, 0.4),
+    0 30px 60px -12px rgba(0, 0, 0, 0.7);
+}
+
+.hero-card-stack[data-hovered="0"] .hero-card-main:nth-child(1) .hero-card-play-cta,
+.hero-card-stack[data-hovered="1"] .hero-card-main:nth-child(2) .hero-card-play-cta,
+.hero-card-stack[data-hovered="2"] .hero-card-main:nth-child(3) .hero-card-play-cta {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.hero-card-stack[data-hovered="0"] .hero-card-main:nth-child(1)::after,
+.hero-card-stack[data-hovered="1"] .hero-card-main:nth-child(2)::after,
+.hero-card-stack[data-hovered="2"] .hero-card-main:nth-child(3)::after {
   transform: translateX(100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-  .hero-card-main::after,
-  .hero-card-active::after {
+  .hero-card-stack[data-hovered] .hero-card-main::after {
     transition: none;
     transform: translateX(-100%);
+  }
+
+  .hero-card-play-cta {
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

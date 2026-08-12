@@ -98,10 +98,7 @@ export const Loading = styled(YStack, {
   padding: '4rem',
 });
 
-export const Spinner = styled(SharedSpinner, {
-  name: 'Spinner',
-  size: 'xl',
-});
+export { SharedSpinner as Spinner };
 
 // Error: replaced Card with plain div (Card had variant/padding attrs)
 export const Error = styled(Text, {

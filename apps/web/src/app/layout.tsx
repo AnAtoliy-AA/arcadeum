@@ -12,6 +12,7 @@ import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
 import { setupTamagui } from '@/shared/config/tamagui.config';
+import { resetTamaguiCSSInjection } from '@/shared/config/tamagui-css-injected';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
@@ -87,6 +88,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Reset Tamagui SSR CSS guard so exactly one <style> block is emitted
+  // per request (useServerInsertedHTML fires per RSC streaming chunk).
+  resetTamaguiCSSInjection();
+
   const fontClassName = `${geistSans.variable} ${geistSans.className}`;
   const cookieStore = await cookies();
   const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';

@@ -192,7 +192,7 @@ function getLocaleFromCountry(countryCode?: string | null): Locale | null {
   return null;
 }
 
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   const feedbackPreflight = handleVercelFeedbackPreflight(req);
@@ -256,6 +256,13 @@ export function proxy(req: NextRequest) {
 
   const url = req.nextUrl.clone();
   if (pathname === '/') {
+    // Serve the default locale at `/` directly (no redirect) to avoid a
+    // 308 round-trip that hurts LCP / TTI for first-time visitors.
+    if (locale === DEFAULT_LOCALE) {
+      url.pathname = `/${locale}`;
+      url.search = search;
+      return NextResponse.rewrite(url);
+    }
     url.pathname = `/${locale}`;
   } else {
     const first = segments[0];

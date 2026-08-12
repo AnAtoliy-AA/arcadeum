@@ -113,7 +113,10 @@ test.describe('Sea Battle Color Visibility', () => {
 
       // Hover the cell — cell.hover() reliably dispatches pointer/mouse events
       await cell.scrollIntoViewIfNeeded();
-      await cell.hover();
+      await cell.dispatchEvent('pointermove', {
+        bubbles: true,
+        cancelable: true,
+      });
 
       // Wait for the data-highlighted attribute to reflect React state update
       await expect(cell).toHaveAttribute('data-highlighted', 'true');

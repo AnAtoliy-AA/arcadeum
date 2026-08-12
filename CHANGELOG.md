@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.5] - 2026-08-12
+
+### Fixed
+- use dispatchEvent click calls and fix border-radius check for cross-browser stability in profile-menu and sea-battle E2E tests
+- load all translation bundles in getInitialTranslations to fix SSR hydration warnings on subpages
+- include settings, legal, notifications, referrals, battlePass, and chat in getInitialTranslations to resolve hydration warnings
+- resolve E2E tests pointer interception via dispatchEvent
+- resolve E2E tests click interception, typescript type errors, and test assertions
+- only apply control panel z-index on desktop to prevent mobile pointer event interception
+- use hasFullBundle ref to gate deferred translation load
+- load full translations on SPA navigation
+- restore middleware filename and update E2E tests for root rewrite
+- revert package version changes and fix socket window mapping for E2E tests
+- use forks pool for vitest to prevent segfault
+- extract loadGames from barrel index to fix Turbopack dev resolution
+- use explicit games/index path for Turbopack dynamic import
+- align Spinner test role with component implementation
+
+### Improved
+- optimize home performance and fix hero card coordinates math
+- CSS-only spinners, lazy i18n, server-rendered hero, fix translation hydration
+- reduce main-thread work and improve interactivity
+
+
 ## [1.25.4] - 2026-08-11
 
 ### Changed

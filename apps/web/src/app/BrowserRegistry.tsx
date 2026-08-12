@@ -5,6 +5,10 @@ import { useServerInsertedHTML } from 'next/navigation';
 import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { config as tamaguiConfig } from '@/shared/config/tamagui.config';
+import {
+  wasTamaguiCSSInjected,
+  markTamaguiCSSInjected,
+} from '@/shared/config/tamagui-css-injected';
 
 // Prime config immediately for SSR and Client environments
 
@@ -15,6 +19,7 @@ interface BrowserRegistryProps {
 export default function BrowserRegistry({ children }: BrowserRegistryProps) {
   useServerInsertedHTML(() => {
     try {
+      if (wasTamaguiCSSInjected()) return null;
       if (typeof tamaguiConfig.getCSS !== 'function') {
         console.error(
           'tamaguiConfig.getCSS is not a function. Current config:',
@@ -26,8 +31,11 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
       if (!code) {
         return null;
       }
+      markTamaguiCSSInjected();
       return (
         <style
+          href="tamagui-css"
+          precedence="default"
           dangerouslySetInnerHTML={{
             __html: code,
           }}

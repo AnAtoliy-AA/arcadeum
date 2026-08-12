@@ -13,13 +13,14 @@ import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 
 test.describe('Locale routing — middleware redirects', () => {
-  test('unprefixed `/` redirects to `/en` for a fresh cookie-less visitor', async ({
+  test('unprefixed `/` serves `/en` content directly without redirect for a fresh cookie-less visitor', async ({
     page,
   }) => {
     await page.context().clearCookies();
     const response = await page.goto('/', { waitUntil: 'commit' });
     expect(response?.status()).toBeLessThan(400);
-    await expect(page).toHaveURL(/\/en\/?$/);
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   });
 
   test('unprefixed `/games` redirects to `/en/games` for a cookie-less visitor', async ({

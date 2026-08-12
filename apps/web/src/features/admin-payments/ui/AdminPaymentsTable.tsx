@@ -1,6 +1,7 @@
 'use client';
 import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text, View } from 'tamagui';
+import { Text, View } from 'tamagui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminPaymentNoteItem } from '../api';
 
 export interface AdminPaymentsTableLabels {

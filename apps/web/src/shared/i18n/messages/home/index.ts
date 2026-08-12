@@ -1,19 +1,24 @@
 import type { DeepPartial } from '../../base-types';
-import { en } from './en';
-import { es } from './es';
-import { fr } from './fr';
-import { ru } from './ru';
-import { by } from './by';
+import type { en } from './en';
 
-export { en, es, fr, ru, by };
+export type { en } from './en';
 
-export const homeMessages = {
-  en,
-  es,
-  fr,
-  ru,
-  by,
-} as const;
-
-/** Derived type with Partial wrapper for backward compatibility */
 export type HomeMessages = DeepPartial<typeof en>;
+
+/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+export async function loadHomeMessages(locale: string) {
+  switch (locale) {
+    case 'en':
+      return (await import('./en')).en;
+    case 'es':
+      return (await import('./es')).es;
+    case 'fr':
+      return (await import('./fr')).fr;
+    case 'ru':
+      return (await import('./ru')).ru;
+    case 'by':
+      return (await import('./by')).by;
+    default:
+      return (await import('./en')).en;
+  }
+}

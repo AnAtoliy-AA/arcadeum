@@ -264,6 +264,6 @@ const createStyles = (palette: Palette) =>
       fontWeight: '700',
     },
     backgroundOverlay: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
     },
   });

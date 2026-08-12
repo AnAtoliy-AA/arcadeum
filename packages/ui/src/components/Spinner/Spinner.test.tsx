@@ -16,15 +16,15 @@ const render = (ui: React.ReactElement) => {
 describe('Spinner', () => {
   it('renders correctly with default props', () => {
     render(<Spinner />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('renders with different sizes', () => {
     const { unmount } = render(<Spinner size="sm" />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
     unmount();
 
     render(<Spinner size="lg" />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 });

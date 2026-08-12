@@ -6,7 +6,7 @@ export const getBackgroundStyles = (palette: Palette) => {
     isLight,
     gameRoom: { backgroundGlow, decorPlay, decorCheck, backgroundGradient },
   } = palette;
-  const fill = StyleSheet.absoluteFillObject;
+  const fill = StyleSheet.absoluteFill;
 
   return {
     backgroundDecor: {

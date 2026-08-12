@@ -115,12 +115,19 @@ export default function MarketCapSparkline() {
   const isUp = priceChange >= 0;
 
   const values = data.map((d) => d.value);
-  const minVal = values.length > 0 ? Math.min(...values) : 0;
-  const maxVal = values.length > 0 ? Math.max(...values) : 0;
+  // Single-pass min/max to avoid Math.max(...spread) stack overflow risk
+  let minVal = Infinity;
+  let maxVal = -Infinity;
+  for (const v of values) {
+    if (v < minVal) minVal = v;
+    if (v > maxVal) maxVal = v;
+  }
+  if (minVal === Infinity) minVal = 0;
+  if (maxVal === -Infinity) maxVal = 0;
   const pricePadding = (maxVal - minVal) * 0.1 || maxVal * 0.1;
 
-  const periodHigh = values.length > 0 ? Math.max(...values) : 0;
-  const periodLow = values.length > 0 ? Math.min(...values) : 0;
+  const periodHigh = maxVal;
+  const periodLow = minVal;
   const periodVol = data.reduce((a, d) => a + (d.volume ?? 0), 0);
 
   return (

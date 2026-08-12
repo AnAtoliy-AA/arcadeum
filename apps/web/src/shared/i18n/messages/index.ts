@@ -1,76 +1,64 @@
 import type { Locale, TranslationBundle } from '../types';
 
-// Static imports for the default locale (English) to ensure it's always available immediately
-import { en as authEn } from './auth';
-import { en as pagesEn } from './pages';
-import { chatMessages, chatListMessages } from './chat';
-import { en as commonEn } from './common';
-import { en as gamesEn } from './games';
-import { en as historyEn } from './history';
-import { en as homeEn } from './home';
-import { en as legalEn } from './legal';
-import { en as navigationEn } from './navigation';
-import { en as paymentsEn } from './payments';
-import { en as pwaEn } from './pwa';
-import { en as settingsEn } from './settings';
-import { en as referralsEn } from './referrals';
-import { en as seoEn } from './seo';
-import { en as statsEn } from './stats';
-import { en as supportEn } from './support';
-import { en as notificationsEn } from './notifications';
-import { en as battlePassEn } from './battle-pass';
-import { en as musicPlayerEn } from './music-player';
-import { en as walletEn } from './wallet';
+// Type-only import for TranslationKey inference — erased at compile time
+import type { en as authEn } from './auth';
+import type { en as pagesEn } from './pages';
+import type { en as commonEn } from './common';
+import type { GamesMessagesBundle } from './games';
+import type { en as historyEn } from './history';
+import type { en as homeEn } from './home';
+import type { en as legalEn } from './legal';
+import type { en as navigationEn } from './navigation';
+import type { en as paymentsEn } from './payments';
+import type { en as pwaEn } from './pwa';
+import type { en as settingsEn } from './settings';
+import type { en as referralsEn } from './referrals';
+import type { en as seoEn } from './seo';
+import type { en as statsEn } from './stats';
+import type { en as supportEn } from './support';
+import type { en as notificationsEn } from './notifications';
+import type { en as battlePassEn } from './battle-pass';
+import type { en as musicPlayerEn } from './music-player';
+import type { en as walletEn } from './wallet';
+import type { chatMessages, chatListMessages } from './chat';
 
-/**
- * Static translations bundle for the default locale.
- * This is used for SSR and as a fallback.
- */
-export const translations = {
-  en: {
-    common: commonEn,
-    pages: pagesEn,
-    home: homeEn,
-    settings: settingsEn,
-    support: supportEn,
-    auth: authEn,
-    navigation: navigationEn,
-    chat: chatMessages.en,
-    chatList: chatListMessages.en,
-    games: gamesEn,
-    history: historyEn,
-    payments: paymentsEn,
-    legal: legalEn,
-    stats: statsEn,
-    pwa: pwaEn,
-    referrals: referralsEn,
-    seo: seoEn,
-    notifications: notificationsEn,
-    battlePass: battlePassEn,
-    musicPlayer: musicPlayerEn,
-    wallet: walletEn,
-  },
-} as const;
+/** English translation type — used only for type inference, no runtime cost */
+export type EnglishTranslations = {
+  common: typeof commonEn;
+  pages: typeof pagesEn;
+  home: typeof homeEn;
+  settings: typeof settingsEn;
+  support: typeof supportEn;
+  auth: typeof authEn;
+  navigation: typeof navigationEn;
+  chat: (typeof chatMessages)['en'];
+  chatList: (typeof chatListMessages)['en'];
+  games: GamesMessagesBundle;
+  history: typeof historyEn;
+  payments: typeof paymentsEn;
+  legal: typeof legalEn;
+  stats: typeof statsEn;
+  pwa: typeof pwaEn;
+  referrals: typeof referralsEn;
+  seo: typeof seoEn;
+  notifications: typeof notificationsEn;
+  battlePass: typeof battlePassEn;
+  musicPlayer: typeof musicPlayerEn;
+  wallet: typeof walletEn;
+};
 
 /**
  * Dynamically loads translation bundles for a specific locale.
- * This enables code-splitting, so users only download the messages they need.
+ * All locales (including English) are code-split to keep the initial bundle small.
  */
 export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
-  // If English, return the statically bundled version
-  if (locale === 'en') {
-    return translations.en;
-  }
-
-  // Dynamically import all message modules in parallel
   const [
     auth,
     pages,
     chat,
     common,
-    games,
     history,
-    home,
+    homeMod,
     legal,
     navigation,
     payments,
@@ -89,7 +77,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./pages'),
     import('./chat'),
     import('./common'),
-    import('./games'),
     import('./history'),
     import('./home'),
     import('./legal'),
@@ -107,18 +94,24 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./wallet'),
   ]);
 
-  // Extract the specific locale from each module
+  const [gamesModule, homeData] = await Promise.all([
+    import('./games/load-games').then(async (m) => ({
+      data: await m.loadGames(locale),
+    })),
+    homeMod.loadHomeMessages(locale),
+  ]);
+
   return {
     common: common[locale],
     pages: pages[locale],
-    home: home[locale],
+    home: homeData,
     settings: settings[locale],
     support: support[locale],
     auth: auth[locale],
     navigation: navigation[locale],
     chat: chat.chatMessages[locale],
     chatList: chat.chatListMessages[locale],
-    games: games[locale],
+    games: gamesModule.data as GamesMessagesBundle,
     history: history[locale],
     payments: payments[locale],
     legal: legal[locale],

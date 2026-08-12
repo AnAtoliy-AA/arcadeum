@@ -36,8 +36,7 @@ export const ProfileDropdown = styled(YStack, {
   backgroundColor: 'rgba(12, 14, 15, 0.98)',
   borderColor: '$glassBorder',
   borderWidth: 1,
-  borderRadius: '$5',
-  overflow: 'hidden',
+  borderRadius: 20,
   zIndex: 1000,
   top: 'calc(100% + 12px)',
   backdropFilter: 'blur(32px) saturate(160%)',
@@ -84,6 +83,8 @@ export const ProfileDropdownWrapper = ProfileDropdown.styleable(
         isOpen={isOpen}
         {...props}
         onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
+        data-testid="profile-dropdown"
+        borderRadius={20}
       >
         {/* Top Glow Edge — outside scroll area so it stays pinned */}
         <YStack

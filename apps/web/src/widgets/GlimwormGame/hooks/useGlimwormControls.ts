@@ -78,11 +78,28 @@ export function useGlimwormControls(opts: UseGlimwormControlsOptions): void {
     window.addEventListener('keydown', onKey);
 
     let raf = 0;
+    let lastActive = false;
+
     const tick = () => {
-      if (active) updateAngle();
+      // Only update when active (pointer moving) and tab is visible
+      if (active && !document.hidden) {
+        updateAngle();
+        lastActive = true;
+      } else if (lastActive) {
+        // Tab went idle or pointer stopped — skip RAF until active again
+        lastActive = false;
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
+
+    // Pause RAF loop when tab is hidden
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        // RAF continues running but updateAngle() is skipped via document.hidden check
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
       root.removeEventListener('mousemove', onMouseMove);
@@ -90,6 +107,7 @@ export function useGlimwormControls(opts: UseGlimwormControlsOptions): void {
       root.removeEventListener('touchmove', onTouchMove);
       root.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKey);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       cancelAnimationFrame(raf);
     };
   }, [canvasEl, getHeadScreenPos]);

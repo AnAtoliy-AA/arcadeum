@@ -119,10 +119,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         paddingHorizontal: '$3',
         borderRadius: 12,
       }}
-      $gtMd={{
-        position: 'relative',
-        zIndex: 50,
-      }}
       paddingVertical="$3"
       paddingHorizontal="$6"
       backgroundColor="$glassBg"

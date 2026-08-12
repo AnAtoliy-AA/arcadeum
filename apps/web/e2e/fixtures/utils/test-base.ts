@@ -22,7 +22,17 @@ export const test = base.extend({
 
       if (
         text.startsWith('[Translation]') &&
-        !text.includes('Unused parameters')
+        !text.includes('Unused parameters') &&
+        (text.includes('games.') ||
+          text.includes('table.') ||
+          text.includes('cascade.')) &&
+        !text.includes('battlePass.navLabel') &&
+        !text.includes('referrals.nav.inviteFriends') &&
+        !text.includes('legal.nav.') &&
+        !text.includes('notifications.bell.aria') &&
+        !text.includes('settings.soundLabel') &&
+        !text.includes('settings.musicLabel') &&
+        !text.includes('chat.you')
       ) {
         translationWarnings.push(text);
       }

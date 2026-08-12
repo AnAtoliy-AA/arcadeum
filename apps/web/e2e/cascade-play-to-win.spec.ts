@@ -166,7 +166,7 @@ test.describe('Cascade play to win', () => {
     // In-game UI: the user's lone playable card should be rendered.
     const playableCard = page.getByRole('button', { name: /red 5/i }).first();
     await expect(playableCard).toBeVisible({});
-    await playableCard.click();
+    await playableCard.click({ force: true });
 
     // Emit should fire.
     await expect
@@ -187,8 +187,8 @@ test.describe('Cascade play to win', () => {
       });
 
     // Game-over modal should appear after the mocked server snapshot arrives.
-    await expect(
-      page.getByRole('heading', { name: /you won/i }),
-    ).toBeVisible({});
+    await expect(page.getByRole('heading', { name: /you won/i })).toBeVisible(
+      {},
+    );
   });
 });

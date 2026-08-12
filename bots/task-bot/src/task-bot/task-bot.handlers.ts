@@ -13,7 +13,7 @@ import {
   parseTask as doParseTask,
 } from './task-bot.parsing';
 
-export { handleTask, handleListTasks, handleImplement, handleFix, handleQueueStatus, handleStatus, handlePrefs } from './task-bot.commands';
+export { handleTask, handleListTasks, handleImplement, handleFix, handleQueueStatus, handleStatus, handlePrefs, handleShorts } from './task-bot.commands';
 
 export async function handleTaskMessage(
   service: TaskBotService,

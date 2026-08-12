@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ShortsFactoryService } from './shorts-factory.service';
-import { ShortsFactoryController } from './shorts-factory.controller';
 import { TelegramModule } from '../telegram/telegram.module';
+import { ShortsFactoryController } from './shorts-factory.controller';
+import { ShortsFactoryService } from './shorts-factory.service';
 
 @Module({
   imports: [TelegramModule],

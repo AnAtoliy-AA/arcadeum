@@ -22,7 +22,7 @@ export interface PendingVideo {
 @Injectable()
 export class ShortsFactoryService {
   private readonly logger = new Logger(ShortsFactoryService.name);
-  private readonly adminChatId: string;
+  private adminChatId: string;
   private readonly pendingDir: string;
 
   constructor(
@@ -42,8 +42,19 @@ export class ShortsFactoryService {
     return this.pendingDir;
   }
 
+  setAdminChatId(chatId: string) {
+    if (chatId) {
+      this.adminChatId = chatId;
+    }
+  }
+
+  getAdminChatId(): string {
+    return this.adminChatId;
+  }
+
   async notifyAdmin(pending: PendingVideo): Promise<number | undefined> {
-    if (!this.adminChatId) {
+    const targetChatId = this.adminChatId;
+    if (!targetChatId) {
       this.logger.warn(
         'SHORTS_FACTORY_ADMIN_CHAT_ID not set, skipping admin notification',
       );
@@ -66,7 +77,7 @@ export class ShortsFactoryService {
 
       if (pending.videoPath && fs.existsSync(pending.videoPath)) {
         const result = await bot.api.sendVideo(
-          this.adminChatId,
+          targetChatId,
           new InputFile(pending.videoPath),
           {
             caption: message,
@@ -74,15 +85,15 @@ export class ShortsFactoryService {
             reply_markup: keyboard,
           },
         );
-        this.logger.log(`Sent video approval request for ${pending.id}`);
+        this.logger.log(`Sent video approval request for ${pending.id} to ${targetChatId}`);
         return result.message_id;
       }
 
-      const result = await bot.api.sendMessage(this.adminChatId, message, {
+      const result = await bot.api.sendMessage(targetChatId, message, {
         parse_mode: 'HTML',
         reply_markup: keyboard,
       });
-      this.logger.log(`Sent approval request for video ${pending.id}`);
+      this.logger.log(`Sent approval request for video ${pending.id} to ${targetChatId}`);
       return result.message_id;
     } catch (err) {
       this.logger.error(`Failed to send admin notification: ${err}`);

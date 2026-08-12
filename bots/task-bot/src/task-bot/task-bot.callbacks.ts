@@ -23,6 +23,16 @@ export async function handleCallbackQuery(
   const data = ctx.callbackQuery?.data;
   if (!data) return;
 
+  if (data.startsWith('sf_confirm:') || data.startsWith('sf_regenerate:')) {
+    const action = data.split(':')[0];
+    if (action === 'sf_confirm') {
+      await ctx.answerCallbackQuery('✅ Video approved for posting');
+    } else {
+      await ctx.answerCallbackQuery('🔄 Video will be regenerated');
+    }
+    return;
+  }
+
   if (data.startsWith('continue:') || data.startsWith('retry:') || data.startsWith('cancel:')) {
     const action = data.split(':')[0] as 'continue' | 'retry' | 'cancel';
     const retryKey = data.slice(data.indexOf(':') + 1);

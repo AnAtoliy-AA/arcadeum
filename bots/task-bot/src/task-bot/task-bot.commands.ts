@@ -275,3 +275,33 @@ export async function handlePrefs(
     { parse_mode: 'Markdown' },
   );
 }
+
+export async function handleShorts(
+  service: {
+    shortsFactoryService: import('../shorts-factory/shorts-factory.service').ShortsFactoryService;
+    logger: any;
+  },
+  ctx: Context,
+): Promise<void> {
+  const { exec } = await import('node:child_process');
+
+  if (ctx.chat?.id) {
+    service.shortsFactoryService.setAdminChatId(String(ctx.chat.id));
+  }
+
+  await ctx.reply(
+    '🎬 <b>Triggering Shorts Factory...</b>\n\nGenerating new short video and preparing preview...',
+    { parse_mode: 'HTML' },
+  );
+
+  const proc = exec(
+    'cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js',
+  );
+
+  proc.on('error', (err) => {
+    service.logger.error(`Shorts Factory process error: ${err.message}`);
+    void ctx.reply(`❌ <b>Shorts Factory Failed to launch:</b>\n<pre>${err.message}</pre>`, {
+      parse_mode: 'HTML',
+    });
+  });
+}

@@ -10,6 +10,7 @@ import { NotificationService, JobNotification } from '../notification/notificati
 import { Bot } from 'grammy';
 
 import { SCOPE_KEYWORDS, type ParsedTask, type PendingRetry, type Engine, type Priority } from './task-bot.types';
+import { ShortsFactoryService } from '../shorts-factory/shorts-factory.service';
 import {
   handleTask,
   handleListTasks,
@@ -18,6 +19,7 @@ import {
   handleQueueStatus,
   handleStatus,
   handlePrefs,
+  handleShorts,
   handleTaskMessage,
   handleCallbackQuery,
 } from './task-bot.handlers';
@@ -41,6 +43,7 @@ export class TaskBotService implements OnApplicationBootstrap {
     readonly githubService: GitHubService,
     readonly queueService: ImplementQueueService,
     readonly notificationService: NotificationService,
+    readonly shortsFactoryService: ShortsFactoryService,
   ) {
     const raw = this.config.get<string>('TELEGRAM_ALLOWED_USERS') ?? '';
     this.allowedUserIds = new Set(
@@ -62,8 +65,14 @@ export class TaskBotService implements OnApplicationBootstrap {
       { command: 'status', description: 'Check implementation status' },
       { command: 'queue', description: 'Check worker queue status' },
       { command: 'prefs', description: 'Set preferences' },
+      { command: 'shorts', description: 'Trigger Shorts factory video post' },
       { command: 'help', description: 'Show available commands' },
     ]);
+
+    this.bot.command('shorts', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleShorts(ctx);
+    });
 
     this.notificationService.onNotification((notification: JobNotification) => {
       this.handleNotification(notification);
@@ -92,6 +101,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   handleQueueStatus = (ctx: Context) => handleQueueStatus(this, ctx);
   handleStatus = (ctx: Context) => handleStatus(this, ctx);
   handlePrefs = (ctx: Context) => handlePrefs(this, ctx);
+  handleShorts = (ctx: Context) => handleShorts(this, ctx);
   handleTaskMessage = (ctx: Context) => handleTaskMessage(this, ctx);
   handleCallbackQuery = (ctx: Context) => handleCallbackQuery(this, ctx);
 

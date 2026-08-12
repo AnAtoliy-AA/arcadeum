@@ -119,14 +119,16 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         paddingHorizontal: '$3',
         borderRadius: 12,
       }}
+      $gtMd={{
+        position: 'relative',
+        zIndex: 50,
+      }}
       paddingVertical="$3"
       paddingHorizontal="$6"
       backgroundColor="$glassBg"
       borderRadius={16}
       borderWidth={1}
       borderColor="$glassBorder"
-      position="relative"
-      zIndex={50}
     >
       {isSpectating && (
         <XStack

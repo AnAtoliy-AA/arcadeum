@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.6] - 2026-08-12
+
+### Added
+- send video preview with confirm and regenerate inline buttons (ARC-201) (ARC-201)
+- add /shorts command to trigger shorts factory post from Telegram (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused stdout and stderr callback params to resolve eslint error (ARC-201) (ARC-201)
+- increase axios timeout for tg bot approval notification (ARC-201) (ARC-201)
+- fix root playwright browser installation and add website url to end card (ARC-201) (ARC-201)
+
+
 ## [1.25.5] - 2026-08-12
 
 ### Fixed

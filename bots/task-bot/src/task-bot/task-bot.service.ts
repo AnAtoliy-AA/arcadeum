@@ -57,7 +57,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     this.bot = this.telegramService.getBot();
 
-    await this.bot.api.setMyCommands([
+    const commands = [
       { command: 'task', description: 'Create a task (ARC auto-assigned)' },
       { command: 'tasks', description: 'List open tasks' },
       { command: 'implement', description: 'Implement an issue' },
@@ -67,7 +67,10 @@ export class TaskBotService implements OnApplicationBootstrap {
       { command: 'prefs', description: 'Set preferences' },
       { command: 'shorts', description: 'Trigger Shorts factory video post' },
       { command: 'help', description: 'Show available commands' },
-    ]);
+    ];
+
+    await this.bot.api.setMyCommands(commands, { scope: { type: 'default' } });
+    await this.bot.api.setMyCommands(commands, { scope: { type: 'all_private_chats' } });
 
     this.bot.command('shorts', (ctx: Context) => {
       if (!this.isAllowed(ctx)) return;

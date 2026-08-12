@@ -6,10 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { Bot, type Context } from 'grammy';
 import { exec } from 'node:child_process';
-import type { PendingVideo } from '../shorts-factory/shorts-factory.service';
 
 interface TransactionData {
   type: 'buy' | 'sell';

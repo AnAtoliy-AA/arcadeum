@@ -99,7 +99,15 @@ export function LanguageProvider({
     () => initialMessages ?? getMessages(locale ?? DEFAULT_LOCALE),
   );
 
-  const initialLocaleRef = useRef(locale);
+  // Track whether we have already loaded the *complete* translation bundle.
+  // `getInitialTranslations()` returns partial bundles (empty settings, auth,
+  // chat, etc.) — these must not prevent the deferred full-bundle load.
+  const hasFullBundle = useRef(
+    !!(
+      initialMessages?.settings &&
+      Object.keys(initialMessages.settings).length > 0
+    ),
+  );
 
   // Defer heavy translation loading until the browser is idle so hydration,
   // first paint, and interactivity are not blocked by 19+ dynamic imports.
@@ -114,17 +122,18 @@ export function LanguageProvider({
 
     document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
-    // Only skip loading when the initial bundle is complete (i.e. settings
-    // namespace is populated).  `getInitialTranslations()` returns partial
-    // bundles — the full client-side bundle must still be loaded for SPA
-    // navigation to render correctly.
-    if (initialMessages?.settings && locale === initialLocaleRef.current)
-      return;
+    // Skip loading only when the full bundle has already been loaded for this
+    // locale.  Partial bundles from `getInitialTranslations()` still need the
+    // deferred load so that SPA navigation has complete translations.
+    if (hasFullBundle.current) return;
 
     let mounted = true;
     const scheduleLoad = () => {
       loadMessages(locale).then((msgs) => {
-        if (mounted) setLoadedMessages(msgs);
+        if (mounted) {
+          setLoadedMessages(msgs);
+          hasFullBundle.current = true;
+        }
       });
     };
     // Use requestIdleCallback when available (not Safari), otherwise setTimeout
@@ -136,7 +145,6 @@ export function LanguageProvider({
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
 
   const setLocale = useCallback(

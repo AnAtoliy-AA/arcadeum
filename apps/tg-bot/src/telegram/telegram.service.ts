@@ -144,7 +144,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
       exec(
         'cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js',
-        (error, stdout, stderr) => {
+        (error) => {
           if (error) {
             void ctx.reply(
               `❌ <b>Shorts Factory Failed:</b>\n<pre>${error.message.slice(0, 1000)}</pre>`,

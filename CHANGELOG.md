@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.7] - 2026-08-12
+
+### Added
+- register bot slash commands via setMyCommands (ARC-201) (ARC-201)
+
+
 ## [1.25.6] - 2026-08-12
 
 ### Added

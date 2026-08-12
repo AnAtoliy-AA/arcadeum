@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Bot, type Context } from 'grammy';
+import { exec } from 'node:child_process';
 import type { PendingVideo } from '../shorts-factory/shorts-factory.service';
 
 interface TransactionData {
@@ -135,6 +136,30 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       );
     });
 
+    this.bot.command('shorts', (ctx: Context) => {
+      void ctx.reply(
+        '🎬 <b>Triggering Shorts Factory...</b>\n\nGenerating new short video and publishing to social platforms...',
+        { parse_mode: 'HTML' },
+      );
+
+      exec(
+        'cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js',
+        (error, stdout, stderr) => {
+          if (error) {
+            void ctx.reply(
+              `❌ <b>Shorts Factory Failed:</b>\n<pre>${error.message.slice(0, 1000)}</pre>`,
+              { parse_mode: 'HTML' },
+            );
+          } else {
+            void ctx.reply(
+              `✅ <b>Shorts Factory Execution Completed!</b>\n\nShort video generated and published successfully.`,
+              { parse_mode: 'HTML' },
+            );
+          }
+        },
+      );
+    });
+
     this.bot.command(
       'help',
       (ctx: Context) =>
@@ -145,7 +170,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
             '/ca — Contract address & links\n' +
             '/chart — Price chart links\n' +
             '/holders — Holder distribution\n' +
-            '/shorts — Shorts factory status\n' +
+            '/shorts — Trigger Shorts factory post\n' +
             '/help — Show this message',
           { parse_mode: 'HTML' },
         ),

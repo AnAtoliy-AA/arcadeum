@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.14] - 2026-08-12
+
+### Fixed
+- process inline callback buttons for all users and add callback logging (ARC-201) (ARC-201)
+
+
 ## [1.25.13] - 2026-08-12
 
 ### Fixed

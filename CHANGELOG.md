@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.9] - 2026-08-12
+
+### Fixed
+- fallback to telegram chat if video file not on local disk
+
+
 ## [1.25.8] - 2026-08-12
 
 ### Fixed

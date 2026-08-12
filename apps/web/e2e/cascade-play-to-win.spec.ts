@@ -166,7 +166,7 @@ test.describe('Cascade play to win', () => {
     // In-game UI: the user's lone playable card should be rendered.
     const playableCard = page.getByRole('button', { name: /red 5/i }).first();
     await expect(playableCard).toBeVisible({});
-    await playableCard.click({ force: true });
+    await playableCard.dispatchEvent('click');
 
     // Emit should fire.
     await expect

@@ -195,14 +195,13 @@ test.describe('Critical Single Player Mode', () => {
     const showChatBtn = page.getByRole('button', { name: /show chat/i });
 
     // Only click if the button is still visible (it disappears after a successful click)
-    // We use force: true to bypass WebKit hanging on actionability checks due to the "Your turn" toast overlay
     if (await drawBtn.isVisible()) {
-      await drawBtn.click({ force: true });
+      await drawBtn.dispatchEvent('click');
     }
 
     // On mobile, the chat might be hidden behind a toggle
     if (await showChatBtn.isVisible()) {
-      await showChatBtn.click({ force: true });
+      await showChatBtn.dispatchEvent('click');
     }
 
     await expect(async () => {

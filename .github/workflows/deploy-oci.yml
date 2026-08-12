@@ -189,12 +189,13 @@ jobs:
             git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
 
             cd "$DEPLOY_DIR/bots/task-bot"
-            npm install --legacy-peer-deps --ignore-scripts 2>/dev/null || npm install --ignore-scripts
-            npx tsc
+            pnpm build || npx tsc
 
-            pm2 restart task-bot task-bot-worker || \
+            sudo chown -R ubuntu:ubuntu /opt/arcadeum/pending 2>/dev/null || true
+            sudo chmod -R 777 /opt/arcadeum/pending 2>/dev/null || true
+
+            pm2 restart task-bot || \
               (pm2 start dist/main.js --name task-bot --cwd "$DEPLOY_DIR/bots/task-bot" && \
-               pm2 start dist/worker.js --name task-bot-worker --cwd "$DEPLOY_DIR/bots/task-bot" && \
                pm2 save)
 
             echo "==> Task Bot deployed (branch: $BRANCH)!"
@@ -231,8 +232,10 @@ jobs:
             npx playwright install chromium --with-deps 2>/dev/null || npx playwright install chromium
             sudo npx playwright install chromium 2>/dev/null || true
 
-            echo "==> Creating directories..."
+            echo "==> Creating directories and setting permissions..."
             mkdir -p raw_captures output pending
+            sudo chown -R ubuntu:ubuntu /opt/arcadeum/pending 2>/dev/null || true
+            sudo chmod -R 777 /opt/arcadeum/pending 2>/dev/null || true
 
             echo "==> Ensuring shorts-factory wrapper script exists..."
             if [ ! -f /opt/arcadeum/scripts/shorts-factory-random.sh ]; then

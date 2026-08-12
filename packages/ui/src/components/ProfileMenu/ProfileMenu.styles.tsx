@@ -37,7 +37,6 @@ export const ProfileDropdown = styled(YStack, {
   borderColor: '$glassBorder',
   borderWidth: 1,
   borderRadius: '$5',
-  overflow: 'hidden',
   zIndex: 1000,
   top: 'calc(100% + 12px)',
   backdropFilter: 'blur(32px) saturate(160%)',

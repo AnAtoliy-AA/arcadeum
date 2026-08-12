@@ -111,35 +111,14 @@ test.describe('Sea Battle Color Visibility', () => {
       await shipItem.scrollIntoViewIfNeeded();
       await shipItem.dispatchEvent('click');
 
-      // Small delay to ensure React state update (ship selection) is processed
-
-      // Hover the cell — use mouse.move with bounding box for reliable WebKit pointer events
+      // Hover the cell — cell.hover() reliably dispatches pointer/mouse events
       await cell.scrollIntoViewIfNeeded();
-      const cellBox = await cell.boundingBox();
-      if (cellBox) {
-        await page.mouse.move(
-          cellBox.x + cellBox.width / 2,
-          cellBox.y + cellBox.height / 2,
-          { steps: 3 },
-        );
-      }
+      await cell.hover();
 
-      // Wait for the background color to change (React state update reflection)
-      // This is a more robust way to check for hover highlights than data-attributes
-      await page.waitForFunction(
-        ({ selector, initialBg }) => {
-          const el = document.querySelector(selector);
-          if (!el) return false;
-          const currentBg = window.getComputedStyle(el).backgroundColor;
-          return currentBg !== initialBg;
-        },
-        { selector: '[data-row="1"][data-col="1"]', initialBg },
-        {},
-      );
+      // Wait for the data-highlighted attribute to reflect React state update
+      await expect(cell).toHaveAttribute('data-highlighted', 'true');
 
-      // Small delay to ensure the highlight color is stable
-
-      // Now read the highlighted background for the final assertion
+      // Read the highlighted background for the final assertion
       const highlightedBg = await cell.evaluate(
         (el) => window.getComputedStyle(el).backgroundColor,
       );

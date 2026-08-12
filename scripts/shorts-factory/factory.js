@@ -1071,10 +1071,11 @@ function getTrackVolume(trackUrl) {
 }
 
 const END_CARD_CTAS = [
-  'Play & Earn Now!',
+  'Play Online Now!',
   'Join the Arena!',
-  'Ready to climb?',
-  'Claim your rewards!',
+  'Ready to Play?',
+  'Play Free Games!',
+  'Challenge Players!',
 ];
 
 function getScenarioTags(scenarioName) {

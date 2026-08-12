@@ -32,10 +32,11 @@ pnpm add playwright axios
 # Install Playwright browsers
 echo "==> Installing Playwright Chromium browser..."
 npx playwright install chromium
+sudo npx playwright install chromium
 
 # Install Playwright system dependencies
 echo "==> Installing Playwright system dependencies..."
-npx playwright install-deps chromium
+npx playwright install-deps chromium 2>/dev/null || true
 
 # Create required directories
 echo "==> Creating directories..."
@@ -55,7 +56,7 @@ POSTIZ_YOUTUBE_INTEGRATION_ID=SET_ME
 POSTIZ_INSTAGRAM_INTEGRATION_ID=
 POSTIZ_TIKTOK_INTEGRATION_ID=
 TG_BOT_URL=http://localhost:4001
-SHORTS_FACTORY_APPROVAL=false
+SHORTS_FACTORY_APPROVAL=true
 ENVEOF
   echo "Created .env file — edit it and fill in POSTIZ_API_KEY and platform integration IDs"
   echo "Get API key from: https://postiz.arcadeum.games -> Settings -> API Keys"

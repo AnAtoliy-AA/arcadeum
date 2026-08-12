@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InlineKeyboard } from 'grammy';
+import * as fs from 'node:fs';
+import { InlineKeyboard, InputFile } from 'grammy';
 import { TelegramService } from '../telegram/telegram.service';
 
 export interface PendingVideo {
@@ -60,6 +61,21 @@ export class ShortsFactoryService {
 
     try {
       const bot = this.telegram.getBot();
+
+      if (pending.videoPath && fs.existsSync(pending.videoPath)) {
+        const result = await bot.api.sendVideo(
+          this.adminChatId,
+          new InputFile(pending.videoPath),
+          {
+            caption: message,
+            parse_mode: 'HTML',
+            reply_markup: keyboard,
+          },
+        );
+        this.logger.log(`Sent video approval request for ${pending.id}`);
+        return result.message_id;
+      }
+
       const result = await bot.api.sendMessage(this.adminChatId, message, {
         parse_mode: 'HTML',
         reply_markup: keyboard,

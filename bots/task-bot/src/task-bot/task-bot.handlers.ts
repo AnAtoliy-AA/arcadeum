@@ -14,10 +14,9 @@ import {
 } from './task-bot.parsing';
 
 export { handleTask, handleListTasks, handleImplement, handleFix, handleQueueStatus, handleStatus, handlePrefs, handleShorts } from './task-bot.commands';
-export { handleCallbackQuery } from './task-bot.callbacks';
 
 export async function handleTaskMessage(
-  service: TaskBotService,
+  service: any,
   ctx: Context,
 ): Promise<void> {
   const text = ctx.message?.text;
@@ -38,49 +37,12 @@ export async function handleTaskMessage(
 }
 
 export async function handleCallbackQuery(
-  service: TaskBotService,
+  service: any,
   ctx: Context,
 ): Promise<void> {
-  const data = ctx.callbackQuery?.data;
-  if (!data) return;
-
-  if (data.startsWith('continue:') || data.startsWith('retry:') || data.startsWith('cancel:')) {
-    const action = data.split(':')[0] as 'continue' | 'retry' | 'cancel';
-    const retryKey = data.slice(data.indexOf(':') + 1);
-    const pending = service.pendingRetries.get(retryKey);
-
-    if (!pending) {
-      await ctx.answerCallbackQuery('Expired. Send the command again.');
-      return;
-    }
-
-    if (Date.now() > pending.expiresAt) {
-      service.pendingRetries.delete(retryKey);
-      await ctx.answerCallbackQuery('Expired. Send the command again.');
-      return;
-    }
-
-    service.pendingRetries.delete(retryKey);
-    const existingTimer = service.autoContinueTimers.get(retryKey);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-      service.autoContinueTimers.delete(retryKey);
-    }
-    await ctx.answerCallbackQuery();
-
-    if (action === 'cancel') {
-      await ctx.reply('Cancelled.');
-      return;
-    }
-
-    const useExistingWorktree = action === 'continue' && pending.worktreePath;
-
-    try {
-      if (pending.jobType === 'fix' || pending.jobType === 'ci-fix') {
-        const pr = service.githubService.viewPr(pending.targetNum);
-        if (!pr) {
-          await ctx.reply(`PR #${pending.targetNum} not found.`);
-          return;
+  const { handleCallbackQuery: doHandleCallbackQuery } = await import('./task-bot.callbacks');
+  await doHandleCallbackQuery(service, ctx);
+}
         }
         const failedChecks = service.githubService.getPrChecks(pending.targetNum).filter(
           (c) => c.state === 'FAILURE' || c.state === 'failure',

@@ -147,7 +147,7 @@ async function requestApproval(videoPath, caption, scenario) {
     const response = await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/pending`,
       pending,
-      { timeout: 10000 },
+      { timeout: 120000 },
     );
     log('info', 'Notified Telegram bot for approval', {
       messageId: response.data.messageId,
@@ -227,7 +227,7 @@ async function reportResult(id, success, message, platforms) {
         status: success ? 'posted' : 'failed',
         result: { success, message, platforms },
       },
-      { timeout: 10000 },
+      { timeout: 120000 },
     );
     log('info', 'Reported result to Telegram bot');
   } catch (err) {

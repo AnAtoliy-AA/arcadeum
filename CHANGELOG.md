@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.15] - 2026-08-12
+
+### Fixed
+- clean up task-bot.handlers.ts syntax and exports (ARC-201) (ARC-201)
+- properly forward handleCallbackQuery to task-bot.callbacks (ARC-201) (ARC-201)
+- re-export handleCallbackQuery from task-bot.handlers (ARC-201) (ARC-201)
+
+
 ## [1.25.14] - 2026-08-12
 
 ### Fixed

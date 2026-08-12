@@ -72,9 +72,66 @@ export class TaskBotService implements OnApplicationBootstrap {
     await this.bot.api.setMyCommands(commands, { scope: { type: 'default' } });
     await this.bot.api.setMyCommands(commands, { scope: { type: 'all_private_chats' } });
 
+    this.bot.command('task', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleTask(ctx);
+    });
+
+    this.bot.command('tasks', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleListTasks(ctx);
+    });
+
+    this.bot.command('implement', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleImplement(ctx);
+    });
+
+    this.bot.command('fix', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleFix(ctx);
+    });
+
+    this.bot.command('status', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleStatus(ctx);
+    });
+
+    this.bot.command('queue', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleQueueStatus(ctx);
+    });
+
+    this.bot.command('prefs', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handlePrefs(ctx);
+    });
+
     this.bot.command('shorts', (ctx: Context) => {
       if (!this.isAllowed(ctx)) return;
       void this.handleShorts(ctx);
+    });
+
+    this.bot.command('help', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void ctx.reply(
+        '📖 <b>Task Bot Commands</b>\n\n' +
+          '/task — Create a task\n' +
+          '/tasks — List open tasks\n' +
+          '/implement — Implement an issue\n' +
+          '/fix — Fix CI / review feedback\n' +
+          '/status — Check status\n' +
+          '/queue — Worker queue status\n' +
+          '/prefs — Set preferences\n' +
+          '/shorts — Trigger Shorts Factory video post\n' +
+          '/help — Show this help message',
+        { parse_mode: 'HTML' },
+      );
+    });
+
+    this.bot.on('callback_query:data', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleCallbackQuery(ctx);
     });
 
     this.notificationService.onNotification((notification: JobNotification) => {

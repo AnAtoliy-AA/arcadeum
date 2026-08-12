@@ -32,10 +32,11 @@ pnpm add playwright axios
 # Install Playwright browsers
 echo "==> Installing Playwright Chromium browser..."
 npx playwright install chromium
+sudo npx playwright install chromium
 
 # Install Playwright system dependencies
 echo "==> Installing Playwright system dependencies..."
-npx playwright install-deps chromium
+npx playwright install-deps chromium 2>/dev/null || true
 
 # Create required directories
 echo "==> Creating directories..."

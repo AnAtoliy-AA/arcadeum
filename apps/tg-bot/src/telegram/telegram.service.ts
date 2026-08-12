@@ -230,6 +230,16 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       }
     });
 
+    void this.bot.api.setMyCommands([
+      { command: 'start', description: 'Welcome message' },
+      { command: 'status', description: 'Monitor status & uptime' },
+      { command: 'ca', description: 'Contract address & links' },
+      { command: 'chart', description: 'Price chart links' },
+      { command: 'holders', description: 'Holder distribution' },
+      { command: 'shorts', description: 'Trigger Shorts factory post' },
+      { command: 'help', description: 'Show help & command list' },
+    ]);
+
     void this.bot.start({
       onStart: () => this.logger.log('Bot polling started'),
     });

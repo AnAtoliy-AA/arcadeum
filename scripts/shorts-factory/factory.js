@@ -25,6 +25,7 @@ const {
   stat,
   readFile,
   writeFile,
+  chmod,
 } = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
@@ -139,7 +140,8 @@ async function requestApproval(videoPath, caption, scenario) {
 
   // Save pending metadata
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
-  await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+  await chmod(metadataPath, 0o666).catch(() => {});
   log('info', `Saved pending video metadata: ${metadataPath}`);
 
   // Notify Telegram bot
@@ -147,13 +149,13 @@ async function requestApproval(videoPath, caption, scenario) {
     const response = await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/pending`,
       pending,
-      { timeout: 120000 },
+      { timeout: 15000 },
     );
-    log('info', 'Notified Telegram bot for approval', {
-      messageId: response.data.messageId,
-    });
-    pending.messageId = response.data.messageId;
-    await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+
+    if (response.data?.messageId) {
+      pending.messageId = response.data.messageId;
+      await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+    }
   } catch (err) {
     log('error', 'Failed to notify Telegram bot', { error: err.message });
     // Continue without approval if bot is unavailable

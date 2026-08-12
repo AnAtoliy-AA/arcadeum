@@ -67,54 +67,7 @@ export async function getInitialTranslations(
   locale?: Locale,
 ): Promise<TranslationBundle> {
   const loc = locale ?? (await getServerLocale());
-  const [
-    navigationMod,
-    pwaMod,
-    commonMod,
-    homeData,
-    gamesData,
-    settingsMod,
-    notificationsMod,
-    battlePassMod,
-    referralsMod,
-    legalMod,
-    chatMod,
-  ] = await Promise.all([
-    import('./messages/navigation'),
-    import('./messages/pwa'),
-    import('./messages/common'),
-    loadHomeMessages(loc),
-    loadGames(loc),
-    import('./messages/settings'),
-    import('./messages/notifications'),
-    import('./messages/battle-pass'),
-    import('./messages/referrals'),
-    import('./messages/legal'),
-    import('./messages/chat'),
-  ]);
-  return {
-    common: commonMod[loc],
-    pages: {} as TranslationBundle['pages'],
-    home: homeData,
-    settings: settingsMod[loc],
-    support: {} as TranslationBundle['support'],
-    auth: {} as TranslationBundle['auth'],
-    navigation: navigationMod[loc],
-    chat: chatMod.chatMessages[loc],
-    chatList: chatMod.chatListMessages[loc],
-    games: gamesData as TranslationBundle['games'],
-    history: {} as TranslationBundle['history'],
-    payments: {} as TranslationBundle['payments'],
-    legal: legalMod[loc],
-    stats: {} as TranslationBundle['stats'],
-    pwa: pwaMod[loc],
-    referrals: referralsMod[loc],
-    seo: {} as TranslationBundle['seo'],
-    notifications: notificationsMod[loc],
-    battlePass: battlePassMod[loc],
-    musicPlayer: {} as TranslationBundle['musicPlayer'],
-    wallet: {} as TranslationBundle['wallet'],
-  };
+  return loadMessages(loc);
 }
 
 /**

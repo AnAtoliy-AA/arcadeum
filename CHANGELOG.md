@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.13] - 2026-08-12
+
+### Fixed
+- attach all command handlers and callback_query:data listener in onApplicationBootstrap (ARC-201) (ARC-201)
+
+
 ## [1.25.12] - 2026-08-12
 
 ### Fixed

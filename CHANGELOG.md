@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.10] - 2026-08-12
+
+### Added
+- move Shorts Factory trigger and video previews to task-bot (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused import in telegram service
+
+
 ## [1.25.9] - 2026-08-12
 
 ### Fixed

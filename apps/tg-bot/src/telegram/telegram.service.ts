@@ -138,26 +138,20 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
     this.bot.command('shorts', (ctx: Context) => {
       void ctx.reply(
-        '🎬 <b>Triggering Shorts Factory...</b>\n\nGenerating new short video and publishing to social platforms...',
+        '🎬 <b>Triggering Shorts Factory...</b>\n\nGenerating new short video and preparing preview...',
         { parse_mode: 'HTML' },
       );
 
-      exec(
+      const proc = exec(
         'cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js',
-        (error) => {
-          if (error) {
-            void ctx.reply(
-              `❌ <b>Shorts Factory Failed:</b>\n<pre>${error.message.slice(0, 1000)}</pre>`,
-              { parse_mode: 'HTML' },
-            );
-          } else {
-            void ctx.reply(
-              `✅ <b>Shorts Factory Execution Completed!</b>\n\nShort video generated and published successfully.`,
-              { parse_mode: 'HTML' },
-            );
-          }
-        },
       );
+
+      proc.on('error', (err) => {
+        this.logger.error(`Shorts Factory process error: ${err.message}`);
+        void ctx.reply(`❌ <b>Shorts Factory Failed to launch:</b>\n<pre>${err.message}</pre>`, {
+          parse_mode: 'HTML',
+        });
+      });
     });
 
     this.bot.command(

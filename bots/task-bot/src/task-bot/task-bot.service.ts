@@ -130,7 +130,9 @@ export class TaskBotService implements OnApplicationBootstrap {
     });
 
     this.bot.on('callback_query:data', (ctx: Context) => {
-      if (!this.isAllowed(ctx)) return;
+      this.logger.log(
+        `Received callback_query data: "${ctx.callbackQuery?.data}" from user ${ctx.from?.id}`,
+      );
       void this.handleCallbackQuery(ctx);
     });
 

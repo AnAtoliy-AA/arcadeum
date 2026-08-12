@@ -31,6 +31,7 @@ export async function handleCallbackQuery(
     const path = await import('node:path');
     const filePath = path.join(pendingDir, `${videoId}.json`);
 
+    service.logger.log(`Handling Shorts callback: ${data}`);
     try {
       const fs = await import('node:fs');
       if (fs.existsSync(filePath)) {

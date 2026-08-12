@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.17] - 2026-08-12
+
+### Fixed
+- replace Play & Earn CTA with Play Online Now gaming CTAs (ARC-201) (ARC-201)
+
+
 ## [1.25.16] - 2026-08-12
 
 ### Fixed

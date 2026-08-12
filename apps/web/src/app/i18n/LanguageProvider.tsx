@@ -114,7 +114,12 @@ export function LanguageProvider({
 
     document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
-    if (initialMessages && locale === initialLocaleRef.current) return;
+    // Only skip loading when the initial bundle is complete (i.e. settings
+    // namespace is populated).  `getInitialTranslations()` returns partial
+    // bundles — the full client-side bundle must still be loaded for SPA
+    // navigation to render correctly.
+    if (initialMessages?.settings && locale === initialLocaleRef.current)
+      return;
 
     let mounted = true;
     const scheduleLoad = () => {

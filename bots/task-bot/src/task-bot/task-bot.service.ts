@@ -20,6 +20,7 @@ import {
   handleStatus,
   handlePrefs,
   handleShorts,
+  handleVersion,
   handleTaskMessage,
   handleCallbackQuery,
 } from './task-bot.handlers';
@@ -66,6 +67,7 @@ export class TaskBotService implements OnApplicationBootstrap {
       { command: 'queue', description: 'Check worker queue status' },
       { command: 'prefs', description: 'Set preferences' },
       { command: 'shorts', description: 'Trigger Shorts factory video post' },
+      { command: 'version', description: 'Show bot & server versions' },
       { command: 'help', description: 'Show available commands' },
     ];
 
@@ -112,6 +114,11 @@ export class TaskBotService implements OnApplicationBootstrap {
       void this.handleShorts(ctx);
     });
 
+    this.bot.command('version', (ctx: Context) => {
+      if (!this.isAllowed(ctx)) return;
+      void this.handleVersion(ctx);
+    });
+
     this.bot.command('help', (ctx: Context) => {
       if (!this.isAllowed(ctx)) return;
       void ctx.reply(
@@ -124,6 +131,7 @@ export class TaskBotService implements OnApplicationBootstrap {
           '/queue — Worker queue status\n' +
           '/prefs — Set preferences\n' +
           '/shorts — Trigger Shorts Factory video post\n' +
+          '/version — Show bot & server versions\n' +
           '/help — Show this help message',
         { parse_mode: 'HTML' },
       );
@@ -164,6 +172,7 @@ export class TaskBotService implements OnApplicationBootstrap {
   handleStatus = (ctx: Context) => handleStatus(this, ctx);
   handlePrefs = (ctx: Context) => handlePrefs(this, ctx);
   handleShorts = (ctx: Context) => handleShorts(this, ctx);
+  handleVersion = (ctx: Context) => handleVersion(this, ctx);
   handleTaskMessage = (ctx: Context) => handleTaskMessage(this, ctx);
   handleCallbackQuery = (ctx: Context) => handleCallbackQuery(this, ctx);
 

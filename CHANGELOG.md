@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.18] - 2026-08-13
+
+### Added
+- add /version command to show bot versions (ARC-201) (ARC-201)
+- add Other Scenario regenerate button (ARC-201) (ARC-201)
+- support unlimited video regenerations via task-bot (ARC-201) (ARC-201)
+- add X/Twitter posting via Postiz (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused fs and exec imports in telegram service (ARC-201) (ARC-201)
+
+
 ## [1.25.17] - 2026-08-12
 
 ### Fixed

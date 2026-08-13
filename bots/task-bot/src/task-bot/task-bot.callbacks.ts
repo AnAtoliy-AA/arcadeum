@@ -23,7 +23,11 @@ export async function handleCallbackQuery(
   const data = ctx.callbackQuery?.data;
   if (!data) return;
 
-  if (data.startsWith('sf_confirm:') || data.startsWith('sf_regenerate:')) {
+  if (
+    data.startsWith('sf_confirm:') ||
+    data.startsWith('sf_regenerate:') ||
+    data.startsWith('sf_regenerate_other:')
+  ) {
     const parts = data.split(':');
     const action = parts[0];
     const videoId = parts[1];
@@ -53,22 +57,27 @@ export async function handleCallbackQuery(
               { parse_mode: 'HTML' },
             );
           });
-        } else if (action === 'sf_regenerate') {
+        } else if (action === 'sf_regenerate' || action === 'sf_regenerate_other') {
           content.status = 'regenerated';
           fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
           await ctx.answerCallbackQuery('🔄 Video regeneration requested!');
           const oldCaption = ctx.callbackQuery?.message?.caption ?? '';
-          const newCaption = oldCaption + '\n\n🔄 <b>REGENERATION REQUESTED</b>';
+          const label = action === 'sf_regenerate_other' ? 'NEW SCENARIO' : 'REGENERATION REQUESTED';
+          const newCaption = oldCaption + `\n\n🔄 <b>${label}</b>`;
           await ctx.editMessageCaption({
             caption: newCaption,
             parse_mode: 'HTML',
           }).catch(() => {
-            return ctx.editMessageText('🔄 <b>REGENERATION REQUESTED</b>', {
+            return ctx.editMessageText(`🔄 <b>${label}</b>`, {
               parse_mode: 'HTML',
             });
           });
 
-          await spawnRegeneration(service, content.scenario);
+          if (action === 'sf_regenerate_other') {
+            await spawnRegeneration(service);
+          } else {
+            await spawnRegeneration(service, content.scenario);
+          }
         }
       } else {
         await ctx.answerCallbackQuery('⚠️ Pending task expired or not found');

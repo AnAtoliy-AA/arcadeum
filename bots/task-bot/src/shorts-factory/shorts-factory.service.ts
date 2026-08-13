@@ -63,7 +63,8 @@ export class ShortsFactoryService {
 
     const keyboard = new InlineKeyboard()
       .text('✅ Confirm', `sf_confirm:${pending.id}`)
-      .text('🔄 Regenerate', `sf_regenerate:${pending.id}`);
+      .text('🔄 Regenerate', `sf_regenerate:${pending.id}`)
+      .text('🎲 Other Scenario', `sf_regenerate_other:${pending.id}`);
 
     const message =
       `🎬 <b>New Short Ready for Review</b>\n\n` +

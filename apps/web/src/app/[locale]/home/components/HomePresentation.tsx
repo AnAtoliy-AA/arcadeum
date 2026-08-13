@@ -42,13 +42,25 @@ export default function HomePresentation() {
       id="presentation"
       data-testid="presentation-section"
       ref={sectionRef}
-      className="presentation-section-main"
+      className="mx-auto flex w-full max-w-[1400px] flex-col items-center gap-8 px-4 py-12 min-[1151px]:px-0 min-[1151px]:py-20"
     >
-      <div className="section-header-main" data-reveal data-reveal-delay="1">
-        <h2 className="section-title-main">{sectionTitle}</h2>
-        <p className="section-subtitle-main">{sectionSubtitle}</p>
+      <div
+        className="mx-auto flex w-full max-w-[1400px] flex-col items-center gap-3 px-4"
+        data-reveal
+        data-reveal-delay="1"
+      >
+        <h2 className="m-0 text-center text-[32px] font-bold tracking-[-0.5px] text-color">
+          {sectionTitle}
+        </h2>
+        <p className="m-0 mx-auto max-w-[600px] text-center text-[18px] text-color opacity-70">
+          {sectionSubtitle}
+        </p>
       </div>
-      <div className="video-container-main" data-reveal data-reveal-delay="2">
+      <div
+        className="relative w-full max-w-[1000px] overflow-hidden rounded-[24px] border border-border-color bg-black pb-[56.25%]"
+        data-reveal
+        data-reveal-delay="2"
+      >
         {isPlaying ? (
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${presentationVideoId}?autoplay=1&rel=0&controls=1&mute=1&playsinline=1&partitioned=1&widget_referrer=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
@@ -69,7 +81,7 @@ export default function HomePresentation() {
           />
         ) : (
           <div
-            className="video-placeholder-main"
+            className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black"
             data-testid="video-placeholder"
             onClick={handlePlayClick}
           >
@@ -83,11 +95,11 @@ export default function HomePresentation() {
               data-testid="video-thumbnail"
               style={{ objectFit: 'cover', opacity: 0.85 }}
             />
-            <div className="video-overlay-main" />
-            <div className="pulse-ring-main" />
+            <div className="absolute inset-0 z-[1] bg-video-overlay" />
+            <div className="absolute z-[1] h-[90px] w-[90px] animate-pulse-ring rounded-full border-[2.5px] border-white/50 pointer-events-none" />
             <button
               type="button"
-              className="play-btn-main"
+              className="absolute z-[2] flex h-[90px] w-[90px] cursor-pointer items-center justify-center rounded-full border-[1.5px] border-white/40 bg-white/15 transition-[transform,background-color,border-color] duration-200 hover:scale-[1.15] hover:border-white/50 hover:bg-primary active:scale-[0.95]"
               onClick={handlePlayClick}
               onKeyDown={handlePlayKeyDown}
               aria-label="Play video"

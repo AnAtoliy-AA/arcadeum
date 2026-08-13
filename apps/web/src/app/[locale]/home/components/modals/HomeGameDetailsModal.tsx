@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, startTransition } from 'react';
-import { YStack, XStack, Text, styled, H4, SizableText } from 'tamagui';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
   ModalBody,
+  LinkButton,
 } from '@arcadeum/ui';
-import { LinkButton } from '@arcadeum/ui';
 import { useRoutes } from '@/shared/config/useRoutes';
 import {
   useTranslation,
@@ -17,6 +16,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import { useLanguage } from '@/shared/i18n/context';
 import { FALLBACK_ACCENT, GameSymbol } from '../featured-games/gameMeta';
+import { featuredGames } from '../../data/games';
 
 interface HomeGameDetailsModalProps {
   isOpen: boolean;
@@ -24,32 +24,6 @@ interface HomeGameDetailsModalProps {
   gameId: string;
   initialTab?: 'rules' | 'info';
 }
-
-const ModalGlassContent = styled(ModalContent, {
-  backgroundColor: 'rgba(21,23,24,0.8)',
-  backdropFilter: 'blur(20px)',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  position: 'relative',
-  overflow: 'hidden',
-});
-
-const HeaderBackgroundEmoji = styled(YStack, {
-  position: 'absolute',
-  top: -20,
-  right: -20,
-  opacity: 0.1,
-  pointerEvents: 'none',
-  zIndex: 0,
-});
-
-const tabStyles = `
-  .tab-pill { background: transparent; border: none; border-radius: 999px; padding: 0.6rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(236,239,238,0.7); }
-  .tab-pill.active { background: #151718; color: #ecefee; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-  .tab-pill:hover { color: #ecefee; }
-`;
-
-import { featuredGames } from '../../data/games';
 
 export function HomeGameDetailsModal({
   isOpen,
@@ -100,107 +74,73 @@ export function HomeGameDetailsModal({
   }, [game, t]);
 
   const renderRules = () => (
-    <YStack gap="$4" position="relative" zIndex={1}>
+    <div className="relative z-[1] flex flex-col gap-4">
       {rulesData.map((rule) => (
-        <XStack
+        <div
           key={rule.id}
-          backgroundColor="rgba(21,23,24,0.5)"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius={20}
-          padding="$5"
-          gap="$5"
-          alignItems="flex-start"
+          className="flex items-start gap-5 rounded-[20px] border border-border-color bg-[rgba(21,23,24,0.5)] p-5"
         >
-          <YStack
-            width={44}
-            height={44}
-            borderRadius={12}
-            background={game?.accentColor ?? FALLBACK_ACCENT}
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
-            boxShadow="0 4px 12px rgba(0,0,0,0.2)"
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            style={{ background: game?.accentColor ?? FALLBACK_ACCENT }}
           >
-            <SizableText fontWeight="900" size="$4" color="white">
+            <span className="text-[16px] font-black text-white">
               {rule.index}
-            </SizableText>
-          </YStack>
-          <YStack gap="$2" flex={1}>
-            <H4
+            </span>
+          </div>
+          <div className="flex flex-1 flex-col gap-2">
+            <h4
               role="heading"
               aria-level={4}
-              fontWeight="700"
-              size="$5"
-              color="$color"
-              lineHeight={24}
+              className="m-0 text-[20px] font-bold leading-6 text-color"
             >
               {rule.name}
-            </H4>
-            <SizableText color="$color" opacity={0.7} size="$3" lineHeight={20}>
+            </h4>
+            <p className="m-0 text-[16px] leading-5 text-color opacity-70">
               {rule.description}
-            </SizableText>
-          </YStack>
-        </XStack>
+            </p>
+          </div>
+        </div>
       ))}
-    </YStack>
+    </div>
   );
 
   const renderGameInfo = () => {
     if (!game) return null;
 
     return (
-      <YStack gap="$5" position="relative" zIndex={1}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+      <div className="relative z-[1] flex flex-col gap-5">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
           {game.variants.map((v) => {
             const active = !v.disabled;
             return (
-              <YStack
+              <div
                 key={v.id}
-                borderRadius={16}
-                padding="$4"
-                gap="$3"
-                opacity={v.disabled ? 0.6 : 1}
-                borderWidth={1}
-                borderColor={active ? '$borderColor' : 'transparent'}
-                hoverStyle={
+                className={`flex flex-col gap-3 rounded-2xl border p-4 transition-[transform,background-color] duration-200 ${
                   active
-                    ? { backgroundColor: '$backgroundHover', scale: 1.05 }
-                    : undefined
-                }
+                    ? 'border-border-color hover:scale-[1.05] hover:bg-[var(--backgroundHover)]'
+                    : 'border-transparent opacity-60'
+                }`}
               >
-                <Text color="$color" fontWeight="700" fontSize="$4">
+                <span className="text-[18px] font-bold text-color">
                   {t(v.nameKey) || v.id}
-                </Text>
-                <SizableText
-                  fontSize={11}
-                  fontWeight="800"
-                  textTransform="uppercase"
-                  letterSpacing={1}
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  borderRadius={6}
-                  backgroundColor={
-                    active ? 'rgba(122,215,255,0.12)' : 'rgba(236,239,238,0.12)'
-                  }
-                  color={active ? '#7ad7ff' : 'rgba(236,239,238,0.45)'}
-                  width="fit-content"
+                </span>
+                <span
+                  className={`w-fit rounded-[6px] px-3 py-1 text-[11px] font-extrabold uppercase tracking-[1px] ${
+                    active
+                      ? 'bg-[rgba(122,215,255,0.12)] text-[#7ad7ff]'
+                      : 'bg-[rgba(236,239,238,0.12)] text-[rgba(236,239,238,0.45)]'
+                  }`}
                 >
                   {active
                     ? (homeCopy.gameAvailableNow ?? 'Playable')
                     : (homeCopy.gameComingSoon ?? 'Coming Soon')}
-                </SizableText>
-              </YStack>
+                </span>
+              </div>
             );
           })}
         </div>
-      </YStack>
+      </div>
     );
   };
 
@@ -208,82 +148,86 @@ export function HomeGameDetailsModal({
 
   return (
     <Modal key={isOpen ? gameId : undefined} open={isOpen} onClose={onClose}>
-      <ModalGlassContent maxWidth="800px">
-        <style>{tabStyles}</style>
-        <HeaderBackgroundEmoji aria-hidden>
-          <GameSymbol
-            gameId={game.id}
-            width={160}
-            height={160}
-            style={{
-              color: game.accentColor ?? FALLBACK_ACCENT,
-              filter: 'blur(2px)',
-            }}
-          />
-        </HeaderBackgroundEmoji>
-        <ModalHeader onClose={onClose}>
-          <ModalTitle>
-            <span
+      <ModalContent maxWidth="800px">
+        <div className="relative overflow-hidden rounded-3xl border border-border-color bg-[rgba(21,23,24,0.8)] backdrop-blur-[20px]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-5 -top-5 z-0 opacity-10"
+          >
+            <GameSymbol
+              gameId={game.id}
+              width={160}
+              height={160}
               style={{
                 color: game.accentColor ?? FALLBACK_ACCENT,
-                fontSize: '2.25rem',
-                fontWeight: '900',
-                letterSpacing: '-0.02em',
+                filter: 'blur(2px)',
               }}
-            >
-              {t(game.nameKey)}
-            </span>
-          </ModalTitle>
-        </ModalHeader>
-        <ModalBody>
-          <div
-            style={{
-              background: 'rgba(50,53,61,0.25)',
-              padding: '0.35rem',
-              borderRadius: 999,
-              width: 'fit-content',
-              marginBottom: '2.5rem',
-              border: '1px solid rgba(50,53,61,0.31)',
-              display: 'flex',
-            }}
-          >
-            <button
-              className={`tab-pill${activeTab === 'rules' ? ' active' : ''}`}
-              onClick={() => startTransition(() => setActiveTab('rules'))}
-            >
-              {homeCopy.rulesTab ?? 'Rules'}
-            </button>
-            <button
-              className={`tab-pill${activeTab === 'info' ? ' active' : ''}`}
-              onClick={() => startTransition(() => setActiveTab('info'))}
-            >
-              {homeCopy.infoTab ?? 'Game Themes'}
-            </button>
+            />
           </div>
-
-          {activeTab === 'rules' ? renderRules() : renderGameInfo()}
-
-          <XStack
-            justifyContent="space-between"
-            alignItems="center"
-            marginTop="$7"
-            paddingTop="$6"
-            borderTopWidth={1}
-            borderTopColor="$borderColor"
-          >
-            <SizableText color="rgba(236, 239, 238, 0.7)" fontSize="$3">
-              {locale.toUpperCase()} •{' '}
-              {t(`games.shared.category.${game.type}Game` as TranslationKey)}
-            </SizableText>
-            <LinkButton
-              href={`${routes.gameCreate}?gameId=${game.id}`}
-              aria-label={`${homeCopy.gamePlayButton ?? 'Play Now!'} ${t(game.nameKey)}`}
+          <ModalHeader onClose={onClose}>
+            <ModalTitle>
+              <span
+                style={{
+                  color: game.accentColor ?? FALLBACK_ACCENT,
+                  fontSize: '2.25rem',
+                  fontWeight: '900',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                {t(game.nameKey)}
+              </span>
+            </ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div
+              className="mb-10 flex w-fit rounded-full border border-[rgba(50,53,61,0.31)] bg-[rgba(50,53,61,0.25)] p-[0.35rem]"
+              role="tablist"
             >
-              {homeCopy.gamePlayButton ?? 'Play Now!'}
-            </LinkButton>
-          </XStack>
-        </ModalBody>
-      </ModalGlassContent>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'rules'}
+                className={`cursor-pointer rounded-full px-8 py-2.5 text-[0.9rem] font-bold uppercase tracking-[0.05em] transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] ${
+                  activeTab === 'rules'
+                    ? 'bg-[#151718] text-[#ecefee] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
+                    : 'bg-transparent text-[rgba(236,239,238,0.7)] hover:text-[#ecefee]'
+                }`}
+                onClick={() => startTransition(() => setActiveTab('rules'))}
+              >
+                {homeCopy.rulesTab ?? 'Rules'}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'info'}
+                className={`cursor-pointer rounded-full px-8 py-2.5 text-[0.9rem] font-bold uppercase tracking-[0.05em] transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] ${
+                  activeTab === 'info'
+                    ? 'bg-[#151718] text-[#ecefee] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
+                    : 'bg-transparent text-[rgba(236,239,238,0.7)] hover:text-[#ecefee]'
+                }`}
+                onClick={() => startTransition(() => setActiveTab('info'))}
+              >
+                {homeCopy.infoTab ?? 'Game Themes'}
+              </button>
+            </div>
+
+            {activeTab === 'rules' ? renderRules() : renderGameInfo()}
+
+            <div className="mt-7 flex items-center justify-between border-t border-border-color pt-6">
+              <span className="text-[16px] text-[rgba(236,239,238,0.7)]">
+                {locale.toUpperCase()} •{' '}
+                {t(`games.shared.category.${game.type}Game` as TranslationKey)}
+              </span>
+              <LinkButton
+                href={`${routes.gameCreate}?gameId=${game.id}`}
+                aria-label={`${homeCopy.gamePlayButton ?? 'Play Now!'} ${t(game.nameKey)}`}
+              >
+                {homeCopy.gamePlayButton ?? 'Play Now!'}
+              </LinkButton>
+            </div>
+          </ModalBody>
+        </div>
+      </ModalContent>
     </Modal>
   );
 }

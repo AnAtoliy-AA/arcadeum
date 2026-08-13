@@ -67,6 +67,8 @@ export async function handleCallbackQuery(
               parse_mode: 'HTML',
             });
           });
+
+          await spawnRegeneration(service, content.scenario);
         }
       } else {
         await ctx.answerCallbackQuery('⚠️ Pending task expired or not found');
@@ -230,6 +232,22 @@ export async function handleCallbackQuery(
   } else {
     await ctx.reply('Failed to create issue. Check gh auth status.');
   }
+}
+
+async function spawnRegeneration(
+  service: { logger: any },
+  scenario?: string,
+): Promise<void> {
+  const { exec } = await import('node:child_process');
+  const scenarioFlag = scenario
+    ? ` --test-scenario ${JSON.stringify(scenario)}`
+    : '';
+  const proc = exec(
+    `cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js${scenarioFlag}`,
+  );
+  proc.on('error', (err) => {
+    service.logger.error(`Shorts Factory regeneration spawn error: ${err.message}`);
+  });
 }
 
 async function queueImplementation(

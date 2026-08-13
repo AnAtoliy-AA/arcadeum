@@ -1578,9 +1578,12 @@ async function main() {
         );
       }
     } else if (approval.regenerated) {
-      log('info', 'Regeneration requested, restarting...');
+      log(
+        'info',
+        'Regeneration requested — task-bot spawns a fresh run with --test-scenario',
+      );
       await cleanup();
-      return main(); // Recursive call to regenerate
+      process.exit(0);
     }
 
     // Step 5: Cleanup temporary files

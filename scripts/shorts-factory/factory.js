@@ -89,6 +89,7 @@ const CONFIG = {
   postizIntegrationId: process.env.POSTIZ_YOUTUBE_INTEGRATION_ID || '',
   postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
   postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
+  postizXId: process.env.POSTIZ_X_INTEGRATION_ID || '',
 
   // Telegram Bot API
   tgBotUrl: process.env.TG_BOT_URL || 'http://localhost:4001',
@@ -140,7 +141,9 @@ async function requestApproval(videoPath, caption, scenario) {
 
   // Save pending metadata
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
-  await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2), {
+    mode: 0o666,
+  });
   await chmod(metadataPath, 0o666).catch(() => {});
   log('info', `Saved pending video metadata: ${metadataPath}`);
 
@@ -154,7 +157,9 @@ async function requestApproval(videoPath, caption, scenario) {
 
     if (response.data?.messageId) {
       pending.messageId = response.data.messageId;
-      await writeFile(metadataPath, JSON.stringify(pending, null, 2), { mode: 0o666 });
+      await writeFile(metadataPath, JSON.stringify(pending, null, 2), {
+        mode: 0o666,
+      });
     }
   } catch (err) {
     log('error', 'Failed to notify Telegram bot', { error: err.message });
@@ -1371,9 +1376,29 @@ async function publishToSocials(videoPath, caption) {
     });
   }
 
+  if (CONFIG.postizXId) {
+    platforms.push({
+      id: CONFIG.postizXId,
+      type: 'X/Twitter',
+      buildPost: (uploadedFile, cap) => ({
+        integration: { id: CONFIG.postizXId },
+        value: [
+          {
+            content: cap.slice(0, 280),
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'twitter',
+          tweet_type: 'tweet',
+        },
+      }),
+    });
+  }
+
   if (platforms.length === 0) {
     throw new Error(
-      'At least one integration ID must be set (POSTIZ_YOUTUBE_INTEGRATION_ID, POSTIZ_INSTAGRAM_INTEGRATION_ID, or POSTIZ_TIKTOK_INTEGRATION_ID)',
+      'At least one integration ID must be set (POSTIZ_YOUTUBE_INTEGRATION_ID, POSTIZ_INSTAGRAM_INTEGRATION_ID, POSTIZ_TIKTOK_INTEGRATION_ID, or POSTIZ_X_INTEGRATION_ID)',
     );
   }
 
@@ -1553,9 +1578,12 @@ async function main() {
         );
       }
     } else if (approval.regenerated) {
-      log('info', 'Regeneration requested, restarting...');
+      log(
+        'info',
+        'Regeneration requested — task-bot spawns a fresh run with --test-scenario',
+      );
       await cleanup();
-      return main(); // Recursive call to regenerate
+      process.exit(0);
     }
 
     // Step 5: Cleanup temporary files

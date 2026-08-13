@@ -3,7 +3,51 @@ import { Context } from 'grammy';
 import { GitHubService } from '../github/github.service';
 import { ImplementQueueService } from '../queue/implement-queue.service';
 import { PreferencesService } from '../preferences/preferences.service';
+import { ShortsFactoryService } from '../shorts-factory/shorts-factory.service';
 import { queueImplementation, createAndTriggerTask } from './task-bot.parsing';
+
+export async function handleVersion(
+  service: {
+    logger: any;
+    shortsFactoryService: ShortsFactoryService;
+  },
+  ctx: Context,
+): Promise<void> {
+  const { execSync } = await import('node:child_process');
+
+  let pkgVersion = 'unknown';
+  try {
+    pkgVersion = require('../../package.json').version as string;
+  } catch {
+    // ignore
+  }
+
+  let commit = 'unknown';
+  try {
+    commit = execSync('git rev-parse --short HEAD', { cwd: '/opt/arcadeum' })
+      .toString()
+      .trim();
+  } catch {
+    // ignore
+  }
+
+  let nodeVersion = 'unknown';
+  try {
+    nodeVersion = execSync('node --version').toString().trim();
+  } catch {
+    // ignore
+  }
+
+  await ctx.reply(
+    '🤖 <b>Arcadeum Bots</b>\n\n' +
+      `📦 task-bot: <code>v${pkgVersion}</code>\n` +
+      `🔀 commit: <code>${commit}</code>\n` +
+      `🟢 node: <code>${nodeVersion}</code>\n\n` +
+      `Server: <code>152.70.47.29</code>`,
+    { parse_mode: 'HTML' },
+  );
+}
+
 
 export async function handleTask(
   service: {

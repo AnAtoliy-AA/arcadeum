@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 
 interface OfflineViewProps {
@@ -19,17 +18,13 @@ export function OfflineView({
   };
 
   return (
-    <YStack
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      padding="$6"
-      backgroundColor="$background"
+    <div
+      className="flex min-h-screen flex-col items-center justify-center p-6"
       style={{ textAlign: 'center' }}
     >
-      <Text fontSize={80} marginBottom="$5" opacity={0.8}>
+      <span style={{ fontSize: 80, marginBottom: '1.25rem', opacity: 0.8 }}>
         📡
-      </Text>
+      </span>
       <h1
         style={{
           fontSize: '2rem',
@@ -54,6 +49,6 @@ export function OfflineView({
       <Button onClick={handleRetry} size="lg">
         {retryText}
       </Button>
-    </YStack>
+    </div>
   );
 }

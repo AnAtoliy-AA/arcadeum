@@ -56,9 +56,11 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose?.();
       }}
-      role="presentation"
+      aria-hidden="true"
     >
-      {children}
+      <div role="dialog" aria-modal="true">
+        {children}
+      </div>
     </div>
   );
 });

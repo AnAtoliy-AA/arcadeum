@@ -1,4 +1,4 @@
-import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
 import config from '../../tamagui.config';
 import { Select } from './Select';
@@ -21,6 +21,17 @@ describe('Select', () => {
         <option value="2">Option 2</option>
       </Select>,
     );
+    expect(screen.getByTestId('select')).toBeInTheDocument();
+  });
+
+  it('opens dropdown and shows options', () => {
+    render(
+      <Select data-testid="select">
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+      </Select>,
+    );
+    fireEvent.click(screen.getByTestId('select'));
     expect(screen.getByText('Option 1')).toBeInTheDocument();
     expect(screen.getByText('Option 2')).toBeInTheDocument();
   });
@@ -28,15 +39,18 @@ describe('Select', () => {
   it('handles value changes', () => {
     const handleChange = vi.fn();
     render(
-      <Select onValueChange={handleChange} data-testid="select">
-        <option value="1">Option 1</option>
-        <option value="2">Option 2</option>
-      </Select>,
+      <Select
+        onValueChange={handleChange}
+        data-testid="select"
+        options={[
+          { value: '1', label: 'Option 1' },
+          { value: '2', label: 'Option 2' },
+        ]}
+      />,
     );
-    // Note: Since this is a custom Tamagui select, fireEvent.change on the trigger 
-    // doesn't work like a native select. For the purpose of this test, 
-    // we are just verifying it renders and takes the prop.
-    // In a full E2E test we would interact with the portal.
+    fireEvent.click(screen.getByTestId('select'));
+    fireEvent.click(screen.getByText('Option 2'));
+    expect(handleChange).toHaveBeenCalledWith('2');
   });
 
   it('renders in disabled state', () => {

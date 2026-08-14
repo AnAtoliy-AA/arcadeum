@@ -195,6 +195,8 @@ const neonDarkTheme = {
 const neonLightTheme = {
   ...lightTheme,
   primary: '#0891b2',
+  primaryGradientStart: '#22d3ee',
+  primaryGradientEnd: '#06b6d4',
   accent: '#06b6d4',
   primaryText: '#0f172a',
 };
@@ -216,6 +218,8 @@ const violetLightTheme = {
   background: '#faf5ff',
   color: '#1e1b4b',
   primary: '#5b21b6',
+  primaryGradientStart: '#4c1d95',
+  primaryGradientEnd: '#5b21b6',
   accent: '#6d28d9',
   glassBg: 'rgba(255, 255, 255, 0.8)',
   borderColor: 'rgba(167, 139, 250, 0.3)',
@@ -243,6 +247,8 @@ const tealLightTheme = {
   background: '#f0fdfa',
   color: '#042f2e',
   primary: '#0f766e',
+  primaryGradientStart: '#115e59',
+  primaryGradientEnd: '#0f766e',
   accent: '#0891b2',
   glassBg: 'rgba(255, 255, 255, 0.8)',
   borderColor: 'rgba(45, 212, 191, 0.15)',

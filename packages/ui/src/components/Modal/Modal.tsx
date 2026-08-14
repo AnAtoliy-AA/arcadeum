@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { CloseIcon } from '../Icons';
 import { Button } from '../Button/Button';
@@ -28,6 +28,8 @@ export type ModalBodyProps = BaseModalProps;
 export type ModalFooterProps = BaseModalProps;
 
 export const Modal = memo(function Modal({ open, onClose, children }: ModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   // Lock body scroll while open.
   useEffect(() => {
     if (!open) return;
@@ -35,6 +37,23 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  // Move focus into the dialog on open and restore it to the trigger on close.
+  useEffect(() => {
+    if (!open) return;
+    const previouslyFocused = document.activeElement;
+    const dialog = dialogRef.current;
+    if (
+      dialog &&
+      previouslyFocused instanceof HTMLElement &&
+      !dialog.contains(previouslyFocused)
+    ) {
+      dialog.focus();
+    }
+    return () => {
+      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
     };
   }, [open]);
 
@@ -57,7 +76,13 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
         if (e.target === e.currentTarget) onClose?.();
       }}
     >
-      <div role="dialog" aria-modal="true" data-state={open ? 'open' : 'closed'}>
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
+        data-state={open ? 'open' : 'closed'}
+      >
         {children}
       </div>
     </div>

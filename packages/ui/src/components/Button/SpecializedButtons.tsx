@@ -14,7 +14,7 @@ export const BotCountButton = ({
     active={active}
     size="sm"
     data-active={active ? 'on' : undefined}
-    className="px-2 py-2 font-semibold"
+    className="!px-2 !py-2 font-semibold"
     {...props}
   >
     {children}
@@ -81,7 +81,7 @@ export const RefreshButton = ({
   <IconButton
     rotatable
     shape="circle"
-    className="p-1 hover:opacity-100"
+    className="!p-1 hover:opacity-100"
     style={{ opacity }}
     {...props}
   >
@@ -98,7 +98,7 @@ export const ModalButton = (props: ModalButtonProps) => (
 export interface OptionButtonProps extends ButtonProps {}
 
 export const OptionButton = (props: OptionButtonProps) => (
-  <Button variant="chip" size="md" className="flex flex-col gap-2 p-4" {...props} />
+  <Button variant="chip" size="md" className="flex flex-col gap-2 !p-4" {...props} />
 );
 
 export const CreateRoomButton = (props: ButtonProps) => (

@@ -47,7 +47,7 @@ export const buttonShapes: Record<string, string> = {
   rectangle: '',
   round: 'rounded-full',
   square: 'rounded-none',
-  circle: 'aspect-square rounded-full p-0 justify-center items-center',
+  circle: 'aspect-square rounded-full !p-0 justify-center items-center',
 };
 
 /** Variant → [base classes] applied via className. */
@@ -159,7 +159,7 @@ export const buttonVariants: Record<string, string> = {
     'aspect-square',
     'justify-center',
     'items-center',
-    'p-0',
+    '!p-0',
     'text-[var(--color)]',
     'shadow-none',
     'bg-[rgba(255,255,255,0.05)]',
@@ -179,7 +179,7 @@ export const buttonVariants: Record<string, string> = {
     'aspect-square',
     'justify-center',
     'items-center',
-    'p-0',
+    '!p-0',
     'relative',
     'border',
     'border-white/20',
@@ -209,7 +209,7 @@ export const buttonVariants: Record<string, string> = {
     'bg-transparent',
     'border-transparent',
     'h-auto',
-    'p-0',
+    '!p-0',
     'shadow-none',
     'hover:opacity-70',
     'hover:shadow-none',

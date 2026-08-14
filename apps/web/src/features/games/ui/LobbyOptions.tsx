@@ -72,25 +72,20 @@ export function LobbyChipGroup({
             variant="chip"
             size="sm"
             data-testid={`${testIdPrefix}-${option.id}`}
-            data-active={isActive}
+            data-active={isActive ? 'on' : undefined}
             disabled={isDisabled}
-            backgroundColor={
-              isActive ? `${accentColor}20` : 'rgba(255, 255, 255, 0.04)'
-            }
-            borderColor={
-              isActive ? `${accentColor}80` : 'rgba(255, 255, 255, 0.10)'
-            }
-            color={isActive ? accentColor : '#cbd5e1'}
-            hoverStyle={{
-              backgroundColor: isActive
-                ? `${accentColor}30`
-                : 'rgba(255, 255, 255, 0.08)',
-            }}
-            borderRadius={10}
-            fontWeight={500}
-            fontSize={13}
-            opacity={option.comingSoon ? 0.4 : disabled && !isActive ? 0.5 : 1}
-            onPress={() => !isDisabled && onChange(option.id)}
+            onClick={() => !isDisabled && onChange(option.id)}
+            className={`rounded-[10px] font-medium text-[13px] ${
+              isActive
+                ? `bg-[${accentColor}20] border-[${accentColor}80] text-[${accentColor}] hover:bg-[${accentColor}30]`
+                : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
+            } ${
+              option.comingSoon
+                ? 'opacity-[0.4]'
+                : disabled && !isActive
+                  ? 'opacity-[0.5]'
+                  : ''
+            }`}
           >
             {option.emoji && <Text marginRight={2}>{option.emoji}</Text>}
             {option.label}

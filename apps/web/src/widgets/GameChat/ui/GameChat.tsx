@@ -18,10 +18,7 @@ import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';
 import { ChatQuickBar } from './ChatQuickBar';
 import { ChatLogItem } from './ChatLogItem';
-import {
-  logBelongsToScope,
-  lastMessagePreview,
-} from './chatHelpers';
+import { logBelongsToScope, lastMessagePreview } from './chatHelpers';
 import {
   ACCENT_GRADIENT,
   ACCENT_PINK,
@@ -219,7 +216,7 @@ export function GameChat({
           <YStack flex={1} />
           <IconButton
             size="sm"
-            padding="$1"
+            className="p-1"
             title="Settings"
             aria-label="Chat settings"
           >
@@ -227,7 +224,7 @@ export function GameChat({
           </IconButton>
           <IconButton
             size="sm"
-            padding="$1"
+            className="p-1"
             onClick={() => setCollapsed(true)}
             title="Minimize"
             aria-label="Minimize chat"
@@ -237,7 +234,7 @@ export function GameChat({
           {onClose ? (
             <IconButton
               size="sm"
-              padding="$1"
+              className="p-1"
               onClick={onClose}
               title="Close"
               aria-label="Close chat"
@@ -324,8 +321,7 @@ export function GameChat({
                     : (log.senderName ?? undefined)
                   : undefined;
                 const senderColor = log.senderId
-                  ? (resolveActorColor?.(log.senderId) ??
-                    undefined)
+                  ? (resolveActorColor?.(log.senderId) ?? undefined)
                   : undefined;
                 const targetId = log.targetId;
                 const targetName = targetId
@@ -382,11 +378,7 @@ export function GameChat({
             maxLength={240}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={
-              canSend
-                ? SCOPE_PLACEHOLDER[scope]
-                : signInPlaceholder
-            }
+            placeholder={canSend ? SCOPE_PLACEHOLDER[scope] : signInPlaceholder}
             disabled={!canSend}
             aria-label="Message"
             style={{
@@ -401,7 +393,7 @@ export function GameChat({
           />
           <IconButton
             size="sm"
-            padding="$1"
+            className="p-1"
             onClick={send}
             disabled={!draft.trim() || !canSend}
             aria-label="Send message"

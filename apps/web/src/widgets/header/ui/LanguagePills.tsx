@@ -49,7 +49,7 @@ export default function LanguagePills({
           key={loc}
           variant="chip"
           size="sm"
-          isActive={locale === loc}
+          active={locale === loc}
           onClick={() => handlePick(loc)}
           aria-pressed={locale === loc}
           aria-label={`Switch language to ${LOCALE_LABEL[loc]}`}

@@ -83,10 +83,8 @@ export function AdminBulkRewardsView({ labels }: Props) {
               .replace('{type}', rewardType)}
           </Text>
           <XStack gap="$2">
-            <Button onPress={confirmSubmit} theme="primary">
-              {labels.confirm.confirm}
-            </Button>
-            <Button onPress={() => setConfirmOpen(false)} variant="outline">
+            <Button onClick={confirmSubmit}>{labels.confirm.confirm}</Button>
+            <Button onClick={() => setConfirmOpen(false)} variant="outline">
               {labels.confirm.cancel}
             </Button>
           </XStack>
@@ -153,12 +151,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
           </Text>
         )}
 
-        <Button
-          onPress={handleSubmit}
-          disabled={isPending}
-          theme="primary"
-          width="100%"
-        >
+        <Button onClick={handleSubmit} disabled={isPending} fullWidth>
           {isPending ? labels.form.submitting : labels.form.submit}
         </Button>
       </YStack>

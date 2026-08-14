@@ -1,52 +1,68 @@
-import { GetProps } from 'tamagui';
-import { StyledButton } from './StyledButton';
-
 export type ButtonVariant =
   | 'primary'
   | 'secondary'
   | 'danger'
   | 'ghost'
   | 'icon'
+  | 'icon glass'
   | 'link'
   | 'chip'
   | 'listItem'
   | 'glass'
   | 'outline'
-  | 'neutral'
-  | 'success'
-  | 'warning'
-  | 'info'
   | 'victory';
 
-export type GameVariant = 'cyberpunk' | 'underwater' | 'crime' | 'horror' | 'adventure' | 'high-altitude-hike';
+export type GameVariant =
+  | 'cyberpunk'
+  | 'underwater'
+  | 'crime'
+  | 'horror'
+  | 'adventure'
+  | 'high-altitude-hike';
 export type ButtonSize = 'sm' | 'md' | 'lg';
-export type ResponsiveProp<T> = T | { [key: string]: T };
 
+/** Corner shape — overrides the radius from the chosen size. */
+export type ButtonShape = 'rectangle' | 'round' | 'square' | 'circle';
 
-export type ButtonProps = Omit<GetProps<typeof StyledButton>, 'size' | 'onClick' | '$uiSize' | 'buttonSize'> & {
+export type ButtonProps = {
   children?: React.ReactNode;
-  variant?: ResponsiveProp<ButtonVariant>;
-  size?: ResponsiveProp<ButtonSize>;
+  /** Visual style. Pass an array to compose multiple variants. */
+  variant?: ButtonVariant | ButtonVariant[];
+  size?: ButtonSize;
+  shape?: ButtonShape;
   loading?: boolean;
   showShimmer?: boolean;
   fullWidth?: boolean;
   disabled?: boolean;
   pulse?: boolean;
   jump?: boolean;
-  isActive?: boolean;
-  pill?: boolean;
+  /** Selected state — `chip` becomes gold-tinted, other variants get a primary highlight. */
+  active?: boolean;
+  /** Outline form of a color variant (`variant="danger" outline`). */
+  outline?: boolean;
+  /** Ghost form of a color variant (`variant="danger" ghost`). */
+  ghost?: boolean;
+  /** 180° hover spin — used on `icon` / `iconGlass`. */
+  rotatable?: boolean;
   gameVariant?: GameVariant;
-  /** @deprecated Use onClick instead */
-  onPress?: GetProps<typeof StyledButton>['onPress'];
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   ref?: React.Ref<HTMLButtonElement>;
   className?: string;
   id?: string;
   style?: React.CSSProperties;
   type?: 'button' | 'submit' | 'reset';
-  'data-testid'?: string;
-  'aria-label'?: string;
-  'aria-pressed'?: boolean | 'true' | 'false';
+  tabIndex?: number;
   title?: string;
   icon?: React.ReactNode;
+  'data-testid'?: string;
+  'data-active'?: string | boolean;
+  'aria-label'?: string;
+  'aria-pressed'?: boolean | 'true' | 'false';
+  'aria-selected'?: boolean | 'true' | 'false';
+  role?: React.AriaRole;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
 };

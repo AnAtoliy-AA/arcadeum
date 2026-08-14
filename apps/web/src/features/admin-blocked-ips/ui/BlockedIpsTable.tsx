@@ -74,7 +74,7 @@ export function BlockedIpsTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={onClearAll}
+          onClick={onClearAll}
           data-testid="blocked-ips-clear-all"
         >
           {labels.clearAll}
@@ -131,7 +131,7 @@ export function BlockedIpsTable({
             <Button
               variant="outline"
               size="sm"
-              onPress={() => onUnblock(item.ip)}
+              onClick={() => onUnblock(item.ip)}
               disabled={pendingIp === item.ip}
               data-testid={`blocked-ip-unblock-${item.ip}`}
             >

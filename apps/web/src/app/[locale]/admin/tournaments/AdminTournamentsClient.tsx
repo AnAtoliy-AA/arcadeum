@@ -110,8 +110,7 @@ interface TransitionState {
 export default function AdminTournamentsClient() {
   const { messages } = useLanguage();
   const adminMessages = messages.pages?.admin as
-    | (Record<string, unknown> & { tournaments?: TournamentsI18n })
-    | undefined;
+    (Record<string, unknown> & { tournaments?: TournamentsI18n }) | undefined;
   const t = adminMessages?.tournaments;
 
   const [page, setPage] = useState(1);
@@ -302,11 +301,11 @@ export default function AdminTournamentsClient() {
               <XStack gap="$3" justifyContent="flex-end">
                 <Button
                   variant="outline"
-                  onPress={() => setPendingDelete(null)}
+                  onClick={() => setPendingDelete(null)}
                 >
                   {t.actions.cancel}
                 </Button>
-                <Button onPress={confirmDelete}>{t.actions.delete}</Button>
+                <Button onClick={confirmDelete}>{t.actions.delete}</Button>
               </XStack>
             </YStack>
           )}
@@ -347,7 +346,7 @@ export default function AdminTournamentsClient() {
                     key={s}
                     size="sm"
                     variant={pendingTransition.to === s ? undefined : 'outline'}
-                    onPress={() =>
+                    onClick={() =>
                       setPendingTransition((prev) =>
                         prev ? { ...prev, to: s } : prev,
                       )
@@ -384,14 +383,14 @@ export default function AdminTournamentsClient() {
               <XStack gap="$3" justifyContent="flex-end">
                 <Button
                   variant="outline"
-                  onPress={() => {
+                  onClick={() => {
                     setPendingTransition(null);
                     setResultText('');
                   }}
                 >
                   {t.transitionPrompt.cancel}
                 </Button>
-                <Button onPress={confirmTransition}>
+                <Button onClick={confirmTransition}>
                   {t.transitionPrompt.confirm}
                 </Button>
               </XStack>

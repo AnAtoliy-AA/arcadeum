@@ -169,7 +169,7 @@ function AdminShopGrantDialogInner({
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => {
+                onClick={() => {
                   setUserId('');
                   setSelectedUser(null);
                 }}
@@ -187,7 +187,9 @@ function AdminShopGrantDialogInner({
                 autoComplete="new-password"
                 style={inputStyle}
               />
-              {(isUserSearching || (userSearchQuery.trim().length > 0 && userResults.length === 0)) && (
+              {(isUserSearching ||
+                (userSearchQuery.trim().length > 0 &&
+                  userResults.length === 0)) && (
                 <YStack
                   position="absolute"
                   top="100%"
@@ -285,15 +287,15 @@ function AdminShopGrantDialogInner({
                 {itemInfo && (
                   <Text fontSize="$1" color="$colorPress">
                     {labels.category[itemInfo.category]} •{' '}
-                    {labels.rarity[itemInfo.rarity]} •{' '}
-                    {itemInfo.priceAmount} {itemInfo.priceCurrency}
+                    {labels.rarity[itemInfo.rarity]} • {itemInfo.priceAmount}{' '}
+                    {itemInfo.priceCurrency}
                   </Text>
                 )}
               </YStack>
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => {
+                onClick={() => {
                   setItemId('');
                 }}
               >
@@ -392,10 +394,8 @@ function AdminShopGrantDialogInner({
                 key={text}
                 size="sm"
                 variant="outline"
-                onPress={() => setReason(text)}
-                padding="$1 $2"
-                fontSize="$1"
-                borderRadius="$4"
+                onClick={() => setReason(text)}
+                className="py-1 px-2 text-[12px] rounded-[16px]"
               >
                 {text}
               </Button>
@@ -414,11 +414,11 @@ function AdminShopGrantDialogInner({
         ) : null}
 
         <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
-          <Button variant="outline" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.grantDialog.cancel}
           </Button>
           <Button
-            onPress={handleGrant}
+            onClick={handleGrant}
             disabled={isPending}
             data-testid="admin-shop-grant-submit"
           >

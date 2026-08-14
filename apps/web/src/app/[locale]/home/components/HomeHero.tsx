@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { LinkButton, SupportIcon } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
-import { SupportIcon } from '@arcadeum/ui';
 import { getHomeTranslations } from '@/shared/i18n/server';
 import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
@@ -90,20 +90,18 @@ export default async function HomeHero() {
 
           <div className="animate-[fadeInUp_0.6s_ease-out_both] [animation-delay:0.4s]">
             <div className="mt-2 flex flex-wrap justify-start gap-4">
-              <Link
-                href={routes.games}
-                className="home-link-button inline-flex h-[60px] cursor-pointer items-center justify-center rounded-2xl border-t border-t-white/35 bg-gold-gradient px-8 font-extrabold text-[rgb(26,26,26)] no-underline shadow-[rgba(255,165,0,0.7)_0px_4px_12px] transition-[transform,filter] duration-200 [transition-timing-function:cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-[2px] hover:brightness-110 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
-              >
+              <LinkButton href={routes.games} variant="victory" size="lg">
                 {primaryLabel}
-              </Link>
+              </LinkButton>
               <HeroPlayVsAiButton label={playWithBotsLabel} />
-              <Link
+              <LinkButton
                 href={appConfig.supportCta.href}
-                className="home-link-button inline-flex h-[60px] cursor-pointer items-center justify-center gap-3 rounded-2xl border border-glass-border border-t-[rgba(255,255,255,0.14)] bg-secondary bg-glass-gradient px-8 font-extrabold text-secondary-text no-underline shadow-[0_4px_15px_rgba(0,0,0,0.05)] transition-[transform,filter] duration-200 [transition-timing-function:cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-[2px] hover:bg-glass-gradient-hover hover:opacity-100 hover:shadow-[0_10px_30px_rgba(0,0,0,0.15)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
+                variant="secondary"
+                size="lg"
+                icon={<SupportIcon size={18} />}
               >
-                <SupportIcon size={18} />
                 {supportLabel}
-              </Link>
+              </LinkButton>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
+  Button,
   LinkButton,
 } from '@arcadeum/ui';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -183,32 +184,28 @@ export function HomeGameDetailsModal({
               className="mb-10 flex w-fit rounded-full border border-[rgba(50,53,61,0.31)] bg-[rgba(50,53,61,0.25)] p-[0.35rem]"
               role="tablist"
             >
-              <button
-                type="button"
+              <Button
+                variant="chip"
+                active={activeTab === 'rules'}
+                shape="round"
                 role="tab"
                 aria-selected={activeTab === 'rules'}
-                className={`cursor-pointer rounded-full px-8 py-2.5 text-[0.9rem] font-bold uppercase tracking-[0.05em] transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] ${
-                  activeTab === 'rules'
-                    ? 'bg-[#151718] text-[#ecefee] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
-                    : 'bg-transparent text-[rgba(236,239,238,0.7)] hover:text-[#ecefee]'
-                }`}
                 onClick={() => startTransition(() => setActiveTab('rules'))}
+                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
               >
                 {homeCopy.rulesTab ?? 'Rules'}
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="chip"
+                active={activeTab === 'info'}
+                shape="round"
                 role="tab"
                 aria-selected={activeTab === 'info'}
-                className={`cursor-pointer rounded-full px-8 py-2.5 text-[0.9rem] font-bold uppercase tracking-[0.05em] transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] ${
-                  activeTab === 'info'
-                    ? 'bg-[#151718] text-[#ecefee] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
-                    : 'bg-transparent text-[rgba(236,239,238,0.7)] hover:text-[#ecefee]'
-                }`}
                 onClick={() => startTransition(() => setActiveTab('info'))}
+                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
               >
                 {homeCopy.infoTab ?? 'Game Themes'}
-              </button>
+              </Button>
             </div>
 
             {activeTab === 'rules' ? renderRules() : renderGameInfo()}

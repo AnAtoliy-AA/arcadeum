@@ -264,11 +264,11 @@ export default function AdminAnnouncementsClient() {
               <XStack gap="$3" justifyContent="flex-end">
                 <Button
                   variant="outline"
-                  onPress={() => setPendingDelete(null)}
+                  onClick={() => setPendingDelete(null)}
                 >
                   {t.actions.cancel}
                 </Button>
-                <Button onPress={confirmDelete}>{t.actions.delete}</Button>
+                <Button onClick={confirmDelete}>{t.actions.delete}</Button>
               </XStack>
             </YStack>
           )}

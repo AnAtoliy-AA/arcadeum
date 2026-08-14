@@ -231,14 +231,14 @@ export function HistoryDetailModal({
                 {showRemoveConfirm ? (
                   <XStack gap="$4">
                     <Button
-                      flex={1}
+                      style={{ flex: 1 }}
                       variant="secondary"
                       onClick={() => onSetShowRemoveConfirm(false)}
                     >
                       {t('history.detail.removeCancel')}
                     </Button>
                     <Button
-                      flex={1}
+                      style={{ flex: 1 }}
                       variant="danger"
                       onClick={onRemove}
                       disabled={removeLoading}

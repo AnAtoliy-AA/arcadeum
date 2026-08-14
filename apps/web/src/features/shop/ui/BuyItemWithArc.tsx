@@ -65,7 +65,7 @@ export function BuyItemWithArc({
         <Typography variant="body" alpha="high">
           Item purchased! Check your inventory.
         </Typography>
-        <Button onPress={onCancel} variant="secondary">
+        <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
       </YStack>
@@ -78,7 +78,7 @@ export function BuyItemWithArc({
         <Typography variant="body" color="$red10">
           {error}
         </Typography>
-        <Button onPress={onCancel} variant="secondary">
+        <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
       </YStack>

@@ -269,7 +269,7 @@ export function ShopHero({
 
             <XStack gap="$3" alignItems="center" flexWrap="wrap">
               <Button
-                onPress={handleActionPress}
+                onClick={handleActionPress}
                 disabled={isPending}
                 data-testid={actionTestId}
                 data-action={action}

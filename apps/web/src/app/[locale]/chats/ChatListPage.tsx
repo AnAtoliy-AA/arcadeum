@@ -41,19 +41,9 @@ const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
   <Button
     variant="ghost"
     size="md"
-    p="$4"
-    w="100%"
-    justifyContent="flex-start"
-    br={0}
-    bbw={isLast ? 0 : 1}
-    bbc="$borderColor"
-    bg="$background"
-    color="$color"
-    gap="$3"
-    hoverStyle={{
-      bg: '$background',
-      opacity: 0.9,
-    }}
+    className={`p-4 w-full justify-start rounded-none bg-[var(--background)] text-[var(--color)] gap-3 hover:bg-[var(--background)] hover:opacity-90 ${
+      isLast ? 'border-b-0' : 'border-b border-b-[var(--borderColor)]'
+    }`}
     {...props}
   />
 );

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  IconButton,
   MaximizeIcon,
   MinimizeIcon,
 } from '@arcadeum/ui';
@@ -193,26 +194,28 @@ export function WebPresentation() {
           className="pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100"
           style={{ left: 16 }}
         >
-          <button
-            className="pointer-events-auto inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-black/45 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[12px] backdrop-saturate-180 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:border-white/50 hover:bg-black/70 hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)] active:scale-[0.95] [&_svg]:drop-shadow-[0_0_6px_rgba(0,0,0,0.8)]"
+          <IconButton
+            variant="icon glass"
+            size="md"
             onClick={prevSlide}
             aria-label="Previous slide"
           >
             <ArrowLeftIcon size={24} />
-          </button>
+          </IconButton>
         </div>
 
         <div
           className="pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100"
           style={{ right: 16 }}
         >
-          <button
-            className="pointer-events-auto inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-black/45 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[12px] backdrop-saturate-180 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:border-white/50 hover:bg-black/70 hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)] active:scale-[0.95] [&_svg]:drop-shadow-[0_0_6px_rgba(0,0,0,0.8)]"
+          <IconButton
+            variant="icon glass"
+            size="md"
             onClick={nextSlide}
             aria-label="Next slide"
           >
             <ArrowRightIcon size={24} />
-          </button>
+          </IconButton>
         </div>
 
         <div className="flex items-center justify-between bg-presentation-bottom p-4 pointer-events-auto">
@@ -221,8 +224,9 @@ export function WebPresentation() {
           </div>
 
           <div className="pointer-events-auto">
-            <button
-              className="inline-flex cursor-pointer items-center justify-center rounded-[10px] border border-white/20 bg-black/45 p-2 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[12px] backdrop-saturate-180 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:border-white/50 hover:bg-black/70 hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)] active:scale-[0.95] [&_svg]:drop-shadow-[0_0_6px_rgba(0,0,0,0.8)]"
+            <IconButton
+              variant="icon glass"
+              size="md"
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
@@ -231,7 +235,7 @@ export function WebPresentation() {
               ) : (
                 <MaximizeIcon size={20} />
               )}
-            </button>
+            </IconButton>
           </div>
         </div>
       </div>

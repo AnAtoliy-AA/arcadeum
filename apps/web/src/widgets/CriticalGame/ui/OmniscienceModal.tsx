@@ -72,10 +72,9 @@ export default function OmniscienceModal({
                 {hand.cards.map((card, idx) => (
                   <OptionButton
                     key={`${hand.playerId}-${idx}`}
-                    $selected={false}
-                    $variant={cardVariant as GameVariant}
-                    padding={0}
-                    height="auto"
+                    active={false}
+                    gameVariant={cardVariant as GameVariant}
+                    style={{ padding: 0, height: 'auto' }}
                   >
                     <YStack
                       alignItems="center"

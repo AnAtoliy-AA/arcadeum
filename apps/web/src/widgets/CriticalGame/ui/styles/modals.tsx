@@ -187,7 +187,7 @@ export const CloseButton = ({
   <Button
     variant="icon"
     size="sm"
-    hoverStyle={{ rotate: '90deg' }}
+    className="hover:rotate-[90deg]"
     gameVariant={(variant || $variant) as GameVariant}
     onClick={onClick || onPress}
     {...props}

@@ -38,7 +38,7 @@ export function GamesHeader({
           <Button
             variant="chip"
             size="sm"
-            isActive={viewMode === 'grid'}
+            active={viewMode === 'grid'}
             onClick={() => onViewModeChange('grid')}
             title="Grid view"
             style={{ borderRadius: 0 }}
@@ -48,7 +48,7 @@ export function GamesHeader({
           <Button
             variant="chip"
             size="sm"
-            isActive={viewMode === 'list'}
+            active={viewMode === 'list'}
             onClick={() => onViewModeChange('list')}
             title="List view"
             style={{ borderRadius: 0 }}

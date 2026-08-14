@@ -59,9 +59,8 @@ export function GamesSearch({
       <Button
         variant="primary"
         onClick={handleSearchClick}
-        flexShrink={0}
         size="md"
-        px="$6"
+        className="shrink-0 px-6"
       >
         {buttonLabel}
       </Button>

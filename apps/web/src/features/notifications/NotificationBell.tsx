@@ -61,18 +61,9 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
         size="md"
         aria-label={t('notifications.bell.aria') as string}
         data-testid={testId}
-        onHoverIn={ensureLoaded}
+        onMouseEnter={ensureLoaded}
         onFocus={ensureLoaded}
-        hoverStyle={{
-          transform: 'scale(1.1)',
-          backgroundColor: 'rgba(255, 255, 255, 0.15)',
-          borderColor: 'rgba(255, 255, 255, 0.25)',
-          shadowColor: 'rgba(0,0,0,0.3)',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 1,
-          shadowRadius: 10,
-        }}
-        onPress={() => {
+        onClick={() => {
           setOpen((o) => {
             const next = !o;
             if (next) {
@@ -82,6 +73,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
             return next;
           });
         }}
+        className="hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
       >
         <BellIcon size={20} />
         {unreadCount > 0 && (
@@ -152,7 +144,7 @@ const NotificationPopover = memo(function NotificationPopover({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => void markAllRead(token)}
+          onClick={() => void markAllRead(token)}
         >
           {t('notifications.bell.markAllRead')}
         </Button>

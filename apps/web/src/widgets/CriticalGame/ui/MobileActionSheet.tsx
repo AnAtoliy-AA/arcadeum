@@ -75,7 +75,7 @@ export function MobileActionSheet({
               variant={isSelected ? 'primary' : 'secondary'}
               size="md"
               onClick={() => setSelectedTarget(opp.playerId)}
-              isActive={isSelected}
+              active={isSelected}
             >
               {resolveDisplayName(opp.playerId)}
             </Button>

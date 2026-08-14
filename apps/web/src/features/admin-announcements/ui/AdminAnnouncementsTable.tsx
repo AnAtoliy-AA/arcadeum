@@ -197,7 +197,7 @@ export function AdminAnnouncementsTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  onPress={() => onEdit(item)}
+                  onClick={() => onEdit(item)}
                   data-testid={`edit-${item.id}`}
                 >
                   {labels.edit}
@@ -205,7 +205,7 @@ export function AdminAnnouncementsTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  onPress={() => onDelete(item)}
+                  onClick={() => onDelete(item)}
                   data-testid={`delete-${item.id}`}
                 >
                   {labels.delete}
@@ -225,7 +225,7 @@ export function AdminAnnouncementsTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
@@ -238,7 +238,7 @@ export function AdminAnnouncementsTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}

@@ -49,7 +49,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
           {catalog.length} items
         </Text>
         <Button
-          onPress={() => openGrantForItem(undefined)}
+          onClick={() => openGrantForItem(undefined)}
           data-testid="admin-shop-grant-open"
         >
           {labels.buttons.grant}

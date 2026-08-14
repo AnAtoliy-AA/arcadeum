@@ -39,21 +39,12 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
             type="button"
             variant="glass"
             size="lg"
-            height="auto"
-            minHeight={130}
-            isActive={isActive}
-            padding="$4"
-            flexDirection="column"
-            gap="$3"
-            borderWidth={1.5}
-            borderColor={isActive ? '$primary' : '$glassBorder'}
-            backgroundColor={isActive ? '$glassBgHover' : '$glassBg'}
-            hoverStyle={{
-              y: -5,
-              borderColor: isActive ? '$accent' : '$glassBorderHover',
-              backgroundColor: '$glassBgHover',
-              scale: 1.02,
-            }}
+            active={isActive}
+            className={`h-auto min-h-[130px] p-4 flex-col gap-3 border-[1.5px] hover:-translate-y-[5px] hover:scale-[1.02] hover:bg-[var(--glassBgHover)] ${
+              isActive
+                ? 'border-[var(--primary)] bg-[var(--glassBgHover)] hover:border-[var(--accent)]'
+                : 'border-[var(--glassBorder)] bg-[var(--glassBg)] hover:border-[var(--glassBorderHover)]'
+            }`}
             onClick={() => onSelect(preset.value)}
           >
             <Typography fontSize={38} marginBottom="$1">

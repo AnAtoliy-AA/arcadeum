@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { Button, IconButton } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { featuredGames } from '../data/games';
@@ -107,19 +108,17 @@ export default function HomeGames() {
         data-reveal-delay="2"
       >
         {categories.map((cat) => (
-          <button
+          <Button
             key={cat}
-            type="button"
-            className={`whitespace-nowrap cursor-pointer rounded-full border bg-transparent px-[14px] py-[6px] font-['JetBrains_Mono',ui-monospace,SFMono-Regular,monospace] text-[11px] uppercase tracking-[0.18em] text-text-secondary transition-[border-color,color,background] duration-150 hover:border-glass-border-hover hover:text-color${
-              activeCategory === cat
-                ? ' category-tab-active-main border-gold bg-[rgba(255,209,102,0.1)] text-gold'
-                : ' border-glass-border'
-            }`}
-            onClick={() => setActiveCategory(cat)}
+            variant="chip"
+            active={activeCategory === cat}
+            shape="round"
             aria-pressed={activeCategory === cat}
+            onClick={() => setActiveCategory(cat)}
+            className="whitespace-nowrap font-['JetBrains_Mono',ui-monospace,SFMono-Regular,monospace] text-[11px] uppercase tracking-[0.18em]"
           >
             {cat}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -192,17 +191,13 @@ interface SliderArrowProps {
 function SliderArrow({ direction, enabled, onClick, label }: SliderArrowProps) {
   const isLeft = direction === 'left';
   return (
-    <button
-      type="button"
+    <IconButton
+      variant="icon glass"
+      size="md"
       onClick={onClick}
       aria-label={label}
       data-testid={isLeft ? 'prev-game-button' : 'next-game-button'}
       disabled={!enabled}
-      className="relative flex h-[54px] w-[54px] cursor-pointer items-center justify-center overflow-hidden rounded-full border border-glass-border bg-glass-bg text-color transition-[transform,opacity] duration-200 before:absolute before:inset-0 before:z-0 before:bg-primary before:opacity-0 before:transition-opacity before:duration-200 hover:scale-110 hover:border-transparent hover:before:opacity-100 active:scale-95 [&>svg]:relative [&>svg]:z-[1]"
-      style={{
-        opacity: enabled ? 1 : 0.3,
-        pointerEvents: enabled ? 'auto' : 'none',
-      }}
     >
       <svg
         width={24}
@@ -216,6 +211,6 @@ function SliderArrow({ direction, enabled, onClick, label }: SliderArrowProps) {
       >
         <path d={isLeft ? 'M15 18l-6-6 6-6' : 'M9 5l6 6-6 6'} />
       </svg>
-    </button>
+    </IconButton>
   );
 }

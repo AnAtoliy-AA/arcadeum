@@ -42,8 +42,7 @@ const FALLBACK: ResetCopy = {
   signInCta: 'Continue to sign in',
   missingToken:
     'This link is missing its reset code. Request a new one from the sign-in page.',
-  invalidToken:
-    'This reset link is invalid or has expired. Request a new one.',
+  invalidToken: 'This reset link is invalid or has expired. Request a new one.',
   passwordTooShort: 'Password must be at least 8 characters.',
   passwordMismatch: "Passwords don't match.",
   error: 'Could not update password. Please try again.',
@@ -90,7 +89,9 @@ export default function ResetPasswordClient() {
     } catch (err) {
       setStatus('error');
       const message = err instanceof Error ? err.message : '';
-      setErrorText(message === 'TOKEN_INVALID' ? copy.invalidToken : copy.error);
+      setErrorText(
+        message === 'TOKEN_INVALID' ? copy.invalidToken : copy.error,
+      );
     }
   };
 
@@ -113,7 +114,7 @@ export default function ResetPasswordClient() {
         <Link href="/auth" style={{ textDecoration: 'none' }}>
           <Button
             variant="primary"
-            uiSize="md"
+            size="md"
             data-testid="reset-password-signin-cta"
           >
             {copy.signInCta}
@@ -168,7 +169,7 @@ export default function ResetPasswordClient() {
           <Button
             type="submit"
             variant="primary"
-            uiSize="md"
+            size="md"
             disabled={!token || status === 'submitting'}
             data-testid="reset-password-submit"
           >

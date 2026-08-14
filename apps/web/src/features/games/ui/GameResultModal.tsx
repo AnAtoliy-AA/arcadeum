@@ -126,12 +126,19 @@ const ActionsContainer = styled(YStack, {
   width: '100%',
 });
 
-const HomeLink = styled(LinkButton, {
-  name: 'HomeLink',
-  variant: 'secondary',
-  marginTop: '$2',
-  width: '100%',
-});
+const HomeLink = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof LinkButton>) => (
+  <LinkButton
+    variant="secondary"
+    className={['mt-2 w-full', className].filter(Boolean).join(' ')}
+    {...props}
+  >
+    {children}
+  </LinkButton>
+);
 
 // --- Main Component ---
 

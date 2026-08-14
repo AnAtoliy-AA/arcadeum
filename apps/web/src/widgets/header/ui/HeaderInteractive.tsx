@@ -150,7 +150,6 @@ export function HeaderInteractive() {
                   isActive={false}
                   accent={item.accent}
                   icon={item.icon}
-                  gap="$2"
                   onClick={item.onClick}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
@@ -164,7 +163,6 @@ export function HeaderInteractive() {
                   isActive={pathname === item.href}
                   accent={item.accent}
                   icon={item.icon}
-                  gap="$2"
                   data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
                   data-active={pathname === item.href ? 'true' : undefined}
                 >
@@ -190,12 +188,7 @@ export function HeaderInteractive() {
                   size="md"
                   aria-label={t('common.actions.support')}
                   tabIndex={-1}
-                  hoverStyle={{
-                    y: -2,
-                    transform: 'scale(1.1)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    borderColor: 'rgba(255, 255, 255, 0.25)',
-                  }}
+                  className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
                 >
                   <SupportIcon size={20} />
                 </Button>
@@ -234,12 +227,7 @@ export function HeaderInteractive() {
                     size="md"
                     aria-label={t('navigation.settingsTab')}
                     tabIndex={-1}
-                    hoverStyle={{
-                      y: -2,
-                      transform: 'scale(1.1)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                      borderColor: 'rgba(255, 255, 255, 0.25)',
-                    }}
+                    className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
                   >
                     <GearIcon size={20} />
                   </Button>

@@ -15,7 +15,7 @@ import plugin from 'tailwindcss/plugin';
  *   `animate-*` utilities instead of SCSS classes.
  */
 export default {
-  content: ['./src/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}', '../../packages/ui/src/**/*.{ts,tsx}'],
   corePlugins: {
     preflight: false,
   },
@@ -108,6 +108,26 @@ export default {
         'pulse-animation': {
           '0%': { transform: 'scale(1)', opacity: '0.8' },
           '100%': { transform: 'scale(1.5)', opacity: '0' },
+        },
+        'btn-pulse': {
+          '0%, 100%': {
+            transform: 'scale(1)',
+            boxShadow: '0 0 0 0 rgba(255, 171, 0, 0.4)',
+          },
+          '70%': {
+            transform: 'scale(1.03)',
+            boxShadow: '0 0 0 15px rgba(255, 171, 0, 0)',
+          },
+        },
+        'btn-jump': {
+          '0%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-6px)' },
+          '70%': { transform: 'translateY(2px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        'btn-shimmer': {
+          '0%': { transform: 'translateX(-100%)' },
+          '60%, 100%': { transform: 'translateX(280%)' },
         },
       },
       animation: {

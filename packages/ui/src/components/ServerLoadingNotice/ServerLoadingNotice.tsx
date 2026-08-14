@@ -69,7 +69,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
             variant="outline" 
             size="sm" 
             onClick={onSupportClick}
-            pill
+            shape="round"
             style={{ 
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               borderColor: 'rgba(255, 255, 255, 0.1)'

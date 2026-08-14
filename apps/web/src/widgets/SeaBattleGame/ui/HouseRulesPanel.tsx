@@ -28,8 +28,7 @@ export function HouseRulesPanel({
   const shipCount =
     (gameOptions.shipCount as number) ?? getDefaultShipCount(gridSize);
   const sw = gameOptions.specialWeapons as
-    | { sonar?: boolean; radar?: boolean; revealAll?: boolean }
-    | undefined;
+    { sonar?: boolean; radar?: boolean; revealAll?: boolean } | undefined;
 
   return (
     <YStack gap="$3" paddingVertical="$2">
@@ -55,29 +54,19 @@ export function HouseRulesPanel({
                 variant="chip"
                 size="sm"
                 disabled={disabled}
-                data-active={active}
-                backgroundColor={
-                  active ? 'rgba(59,130,246,0.15)' : 'transparent'
-                }
-                borderColor={
-                  active ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'
-                }
-                color={
-                  disabled
+                data-active={active ? 'on' : undefined}
+                className={`rounded-[8px] font-semibold text-[13px] ${
+                  active
+                    ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
+                    : 'bg-[transparent] border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.05)]'
+                } ${disabled ? 'opacity-40' : 'opacity-100'}`}
+                style={{
+                  color: disabled
                     ? '#52525b'
                     : active
                       ? 'var(--color, #3b82f6)'
-                      : '#e2e8f0'
-                }
-                hoverStyle={{
-                  backgroundColor: active
-                    ? 'rgba(59,130,246,0.2)'
-                    : 'rgba(255,255,255,0.05)',
+                      : '#e2e8f0',
                 }}
-                borderRadius={8}
-                fontWeight={600}
-                fontSize={13}
-                opacity={disabled ? 0.4 : 1}
                 onClick={() => {
                   if (disabled) return;
                   onOptionChange({
@@ -104,22 +93,15 @@ export function HouseRulesPanel({
                 key={count}
                 variant="chip"
                 size="sm"
-                data-active={active}
-                backgroundColor={
-                  active ? 'rgba(59,130,246,0.15)' : 'transparent'
-                }
-                borderColor={
-                  active ? 'var(--color, #3b82f6)' : 'rgba(255,255,255,0.2)'
-                }
-                color={active ? 'var(--color, #3b82f6)' : '#e2e8f0'}
-                hoverStyle={{
-                  backgroundColor: active
-                    ? 'rgba(59,130,246,0.2)'
-                    : 'rgba(255,255,255,0.05)',
+                data-active={active ? 'on' : undefined}
+                className={`rounded-[8px] font-semibold text-[13px] ${
+                  active
+                    ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
+                    : 'bg-[transparent] border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.05)]'
+                }`}
+                style={{
+                  color: active ? 'var(--color, #3b82f6)' : '#e2e8f0',
                 }}
-                borderRadius={8}
-                fontWeight={600}
-                fontSize={13}
                 onClick={() => onOptionChange({ shipCount: count })}
               >
                 {count}

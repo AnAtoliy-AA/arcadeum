@@ -71,11 +71,10 @@ export const ChatInput = memo(function ChatInput({
         disabled={disabled || !value.trim()}
         variant="primary"
         size="sm"
-        circular
+        shape="circle"
         icon={<SendIcon size={18} />}
         aria-label="Send"
-        hoverStyle={{ scale: 1.1 }}
-        pressStyle={{ scale: 0.9 }}
+        className="hover:scale-[1.1] active:scale-[0.9]"
       />
     </InputContainer>
   );

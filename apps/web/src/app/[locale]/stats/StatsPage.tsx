@@ -223,7 +223,7 @@ export default function StatsPage({
 
         <TabGroup role="group" aria-label={t('stats.myStatsTab')}>
           <TabButton
-            $active={activeTab === 'my-stats'}
+            isActive={activeTab === 'my-stats'}
             onClick={() => startTransition(() => setActiveTab('my-stats'))}
             aria-pressed={activeTab === 'my-stats'}
             data-testid="stats-tab-my-stats"
@@ -231,7 +231,7 @@ export default function StatsPage({
             {t('stats.myStatsTab')}
           </TabButton>
           <TabButton
-            $active={activeTab === 'leaderboard'}
+            isActive={activeTab === 'leaderboard'}
             onClick={() => startTransition(() => setActiveTab('leaderboard'))}
             aria-pressed={activeTab === 'leaderboard'}
             data-testid="stats-tab-leaderboard"
@@ -357,20 +357,19 @@ const TabGroup = styled(XStack, {
 } as unknown as Record<string, unknown>);
 
 interface TabButtonProps {
-  $active?: boolean;
+  isActive?: boolean;
   onClick?: () => void;
   children?: React.ReactNode;
   'aria-pressed'?: boolean;
   'data-testid'?: string;
 }
 
-const TabButton = ({ $active, children, ...props }: TabButtonProps) => (
+const TabButton = ({ isActive, children, ...props }: TabButtonProps) => (
   <Button
-    variant={$active ? 'primary' : 'chip'}
+    variant={isActive ? 'primary' : 'chip'}
     size="md"
-    isActive={$active}
-    minWidth={120}
-    justifyContent="center"
+    active={isActive}
+    className="min-w-[120px] justify-center"
     {...props}
   >
     {children}

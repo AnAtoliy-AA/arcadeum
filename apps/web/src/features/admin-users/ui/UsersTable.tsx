@@ -222,15 +222,15 @@ export function UsersTable({
             <Button
               variant="outline"
               size="sm"
-              onPress={() => setSelectedIds(new Set())}
+              onClick={() => setSelectedIds(new Set())}
             >
               {labels.table.deselectAll}
             </Button>
             <Button
-              variant="outline"
+              variant="danger"
+              outline
               size="sm"
-              color="$red10"
-              onPress={handleBulkDelete}
+              onClick={handleBulkDelete}
               data-testid="bulk-delete-button"
             >
               {labels.table.deleteSelected}
@@ -248,7 +248,7 @@ export function UsersTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
@@ -261,7 +261,7 @@ export function UsersTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}

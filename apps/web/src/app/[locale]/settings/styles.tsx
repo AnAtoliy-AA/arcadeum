@@ -147,15 +147,10 @@ export const BlockedUserInfo = styled(YStack, {
 
 export const UnblockButton = (props: ButtonProps) => (
   <Button
-    variant="secondary"
+    variant="danger"
+    outline
     size="sm"
-    borderRadius={12}
-    whiteSpace="nowrap"
-    hoverStyle={{
-      borderColor: '#ef4444',
-      color: '#ef4444',
-      backgroundColor: '#ef444410',
-    }}
+    className="rounded-[12px] whitespace-nowrap"
     {...props}
   />
 );

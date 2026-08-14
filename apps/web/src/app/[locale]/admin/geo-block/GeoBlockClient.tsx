@@ -137,7 +137,7 @@ export default function GeoBlockClient() {
                 data-testid="geo-block-reason-input"
               />
               <Button
-                onPress={handleAdd}
+                onClick={handleAdd}
                 disabled={adding || !newCountryCode.trim()}
                 data-testid="geo-block-add-btn"
               >
@@ -165,7 +165,7 @@ export default function GeoBlockClient() {
                   variant={
                     blockedCodes.has(country.code) ? 'secondary' : 'primary'
                   }
-                  onPress={() => {
+                  onClick={() => {
                     if (!blockedCodes.has(country.code)) {
                       setNewCountryCode(country.code);
                       setNewReason('Cryptocurrency transactions restricted');
@@ -231,7 +231,7 @@ export default function GeoBlockClient() {
                       <Button
                         size="sm"
                         variant="secondary"
-                        onPress={() => handleRemove(country.countryCode)}
+                        onClick={() => handleRemove(country.countryCode)}
                         data-testid={`remove-country-${country.countryCode}`}
                       >
                         Remove

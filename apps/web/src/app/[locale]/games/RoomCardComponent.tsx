@@ -334,8 +334,10 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 href={routes.gameRoom(room.id)}
                 variant="primary"
                 size="sm"
-                flex={viewMode === 'grid' ? 1 : 0}
-                style={{ whiteSpace: 'nowrap' }}
+                style={{
+                  flex: viewMode === 'grid' ? 1 : 0,
+                  whiteSpace: 'nowrap',
+                }}
               >
                 {t('games.common.joinRoom')}
               </LinkButton>

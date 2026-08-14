@@ -55,7 +55,7 @@ export default function CascadeCreationConfig({
                 key={mode.id}
                 variant="secondary"
                 size="sm"
-                isActive={(options.mode ?? 'classic') === mode.id}
+                active={(options.mode ?? 'classic') === mode.id}
                 onClick={() => handleUpdate({ mode: mode.id })}
                 data-testid={`cascade-mode-${mode.id}`}
               >
@@ -75,7 +75,7 @@ export default function CascadeCreationConfig({
           <Button
             variant="secondary"
             size="sm"
-            isActive={options.lastCardCallEnabled !== false}
+            active={options.lastCardCallEnabled !== false}
             onClick={() =>
               handleUpdate({
                 lastCardCallEnabled:

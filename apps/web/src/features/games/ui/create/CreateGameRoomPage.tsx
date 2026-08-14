@@ -10,17 +10,13 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { gamesApi, type CatalogResponse } from '@/features/games/api';
 import { buildComingSoonMaps, isCreateBlocked } from './createPageState';
-import { Button } from '@arcadeum/ui/components/Button/Button';
 import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
 import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
-import { Section } from '@arcadeum/ui/components/Section/Section';
-import { Input } from '@arcadeum/ui/components/Input/Input';
-import { TextArea } from '@arcadeum/ui/components/TextArea/TextArea';
-import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
 import { Card } from '@arcadeum/ui/components/Card/Card';
 import { gamesCatalog } from '@/features/games/ui/create/constants';
+import { RoomDetailsSection } from './RoomDetailsSection';
 const CriticalCreationConfig = dynamic(
   () => import('@/widgets/CriticalGame/ui/CreationConfig'),
   { ssr: false },
@@ -46,11 +42,10 @@ import { useRoutes } from '@/shared/config/useRoutes';
 
 import {
   FormContainer,
-  Row,
   StickyMobileCta,
 } from '@/features/games/ui/create/styles';
 import { GameSelectorSection } from './GameSelectorSection';
-import { YStack, XStack, Text } from 'tamagui';
+import { Text } from 'tamagui';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
@@ -334,105 +329,23 @@ export default function CreateGameRoomPage() {
               />
             )}
 
-            <Section title={t('games.create.sectionDetails') || 'Room Details'}>
-              <FormGroup
-                label={t('games.create.fieldName') || 'Room Name'}
-                htmlFor="room-name"
-                required
-              >
-                <Input
-                  id="room-name"
-                  type="text"
-                  placeholder={
-                    t('games.create.namePlaceholder') || 'Enter room name'
-                  }
-                  value={name}
-                  onChange={handleNameChange}
-                  onFocus={handleNameFocus}
-                  required
-                  aria-required="true"
-                  fullWidth
-                  size="lg"
-                />
-              </FormGroup>
-
-              <Row>
-                <FormGroup flexGrow={1} flexBasis={0} $xs={{ flexGrow: 0, flexBasis: 'auto' }}
-                  label={t('games.create.fieldMaxPlayers') || 'Max Players (optional)'}
-                  htmlFor="max-players"
-                >
-                  <XStack gap="$2" alignItems="flex-start">
-                    <Input key="max-players-input" id="max-players" type="number" min="2"
-                      max={visibleGames.find((g) => g.id === gameId)?.maxPlayers || undefined}
-                      placeholder={t('games.create.autoPlaceholder') || 'Auto'}
-                      value={maxPlayers}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxPlayers(e.target.value)}
-                      aria-label={t('games.create.maxPlayersAria') || 'Maximum number of players'}
-                      flex={1} fullWidth size="lg"
-                    />
-                    {maxPlayers ? (
-                      <YStack flexShrink={0} width={150} justifyContent="center">
-                        <Button type="button" variant="secondary" onClick={() => setMaxPlayers('')}
-                          size="lg" aria-label="Set to Auto" data-testid="auto-max-players-button" width="100%"
-                        >
-                          {t('games.create.autoButton') || 'Auto'}
-                        </Button>
-                      </YStack>
-                    ) : null}
-                  </XStack>
-                </FormGroup>
-
-                <FormGroup flexGrow={1} flexBasis={0} $xs={{ flexGrow: 0, flexBasis: 'auto' }}
-                  label={t('games.create.fieldVisibility') || 'Visibility'} htmlFor="visibility"
-                >
-                  <Button id="visibility" type="button" variant="secondary"
-                    isActive={visibility === 'public'}
-                    onClick={() => setVisibility(visibility === 'public' ? 'private' : 'public')}
-                    aria-pressed={visibility === 'public'}
-                    aria-label={visibility === 'public' ? 'Public room' : 'Private room'}
-                    data-testid="visibility-toggle-button" fullWidth size="lg"
-                  >
-                    {visibility === 'public' ? '🌐 Public' : '🔒 Private'}
-                  </Button>
-                </FormGroup>
-              </Row>
-
-              <FormGroup
-                label={t('games.password.label') || 'Room Password (optional)'}
-                htmlFor="room-password"
-              >
-                <Input
-                  id="room-password"
-                  type="password"
-                  placeholder={t('games.password.placeholder') || 'Set a password'}
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                  aria-label={t('games.password.label') || 'Room Password (optional)'}
-                  maxLength={64}
-                  fullWidth
-                  size="lg"
-                />
-              </FormGroup>
-
-              <FormGroup
-                label={t('games.create.fieldNotes') || 'Notes (optional)'}
-                htmlFor="notes"
-              >
-                <TextArea
-                  id="notes"
-                  placeholder={
-                    t('games.create.notesPlaceholder') || 'Add notes...'
-                  }
-                  value={notes}
-                  onChangeText={setNotes}
-                  aria-label={
-                    t('games.create.notesAria') ||
-                    'Additional notes for the room'
-                  }
-                  fullWidth
-                />
-              </FormGroup>
-            </Section>
+            <RoomDetailsSection
+              name={name}
+              onNameChange={handleNameChange}
+              onNameFocus={handleNameFocus}
+              maxPlayers={maxPlayers}
+              onMaxPlayersChange={(value) => setMaxPlayers(value)}
+              visibility={visibility}
+              onVisibilityToggle={() =>
+                setVisibility(visibility === 'public' ? 'private' : 'public')
+              }
+              password={password}
+              onPasswordChange={(value) => setPassword(value)}
+              notes={notes}
+              onNotesChange={(value) => setNotes(value)}
+              gameId={gameId}
+              t={t}
+            />
 
             {error && (
               <Card variant="error" padding="sm">

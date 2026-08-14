@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useThemeController } from '@/app/theme/ThemeContext';
@@ -143,6 +144,7 @@ export default function SettingsContent({
   const settingsCopy = messages.settings ?? {};
   const { snapshot } = useSessionTokens();
   const { appVersion } = appConfig;
+  const router = useRouter();
 
   const pageTitle = settingsCopy.title ?? SETTINGS_TITLE_FALLBACK;
 
@@ -198,9 +200,9 @@ export default function SettingsContent({
       useSessionStore.getState().clearTokens();
       window.location.replace('/');
     } else {
-      window.location.href = '/auth';
+      router.push('/auth');
     }
-  }, [snapshot.email]);
+  }, [snapshot.email, router]);
 
   const gameplayTitle = settingsCopy.gameplayTitle ?? 'Gameplay';
   const gameplayDescription =
@@ -282,11 +284,11 @@ export default function SettingsContent({
                 <Button
                   key={option.code}
                   data-testid={`lang-btn-${option.code}`}
-                  isActive={locale === option.code}
+                  active={locale === option.code}
                   aria-pressed={locale === option.code ? 'true' : 'false'}
                   variant={locale === option.code ? 'primary' : 'secondary'}
                   size="md"
-                  minWidth={90}
+                  className="min-w-[90px]"
                   onClick={() => setLocale(option.code)}
                 >
                   {option.label}
@@ -305,7 +307,10 @@ export default function SettingsContent({
                 aria-label={settingsCopy.soundLabel ?? 'Sound'}
               />
             </ToggleRow>
-            <ToggleRow data-testid="audio-cues-row" onClick={handleToggleAudioCues}>
+            <ToggleRow
+              data-testid="audio-cues-row"
+              onClick={handleToggleAudioCues}
+            >
               <ToggleLabel>{audioCuesLabel}</ToggleLabel>
               <ToggleInput
                 type="checkbox"

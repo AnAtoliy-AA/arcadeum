@@ -126,7 +126,7 @@ export function UsersTableRow({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onWalletOpen(item.id)}
+          onClick={() => onWalletOpen(item.id)}
           disabled={isDeleted}
           data-testid={`wallet-open-${item.id}`}
         >
@@ -138,7 +138,7 @@ export function UsersTableRow({
               <Button
                 variant="outline"
                 size="sm"
-                onPress={() => onUnblock(item.id)}
+                onClick={() => onUnblock(item.id)}
                 disabled={isPending}
                 data-testid={`unblock-${item.id}`}
               >
@@ -148,7 +148,7 @@ export function UsersTableRow({
               <Button
                 variant="outline"
                 size="sm"
-                onPress={() => onBlock(item.id)}
+                onClick={() => onBlock(item.id)}
                 disabled={isPending}
                 data-testid={`block-${item.id}`}
               >
@@ -156,10 +156,10 @@ export function UsersTableRow({
               </Button>
             )}
             <Button
-              variant="outline"
+              variant="danger"
+              outline
               size="sm"
-              color="$red10"
-              onPress={() => onDelete(item.id)}
+              onClick={() => onDelete(item.id)}
               disabled={isPending}
               data-testid={`delete-${item.id}`}
             >
@@ -171,7 +171,7 @@ export function UsersTableRow({
           <Button
             variant="outline"
             size="sm"
-            onPress={() => onRestore(item.id)}
+            onClick={() => onRestore(item.id)}
             disabled={isPending}
             data-testid={`restore-${item.id}`}
           >

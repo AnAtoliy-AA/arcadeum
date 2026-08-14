@@ -102,9 +102,7 @@ export function SortablePlayerItem({
                 onMoveUp();
               }}
               disabled={index === 0}
-              paddingVertical="$1"
-              paddingHorizontal="$2"
-              minWidth="auto"
+              className="py-1 px-2 min-w-[auto]"
             >
               ↑
             </Button>
@@ -116,9 +114,7 @@ export function SortablePlayerItem({
                 onMoveDown();
               }}
               disabled={index === totalCount - 1}
-              paddingVertical="$1"
-              paddingHorizontal="$2"
-              minWidth="auto"
+              className="py-1 px-2 min-w-[auto]"
             >
               ↓
             </Button>
@@ -126,16 +122,14 @@ export function SortablePlayerItem({
         )}
         {onKick && !isRoomHost && (
           <Button
-            variant="ghost"
+            variant="danger"
+            ghost
             size="sm"
             onClick={(e: { stopPropagation: () => void }) => {
               e.stopPropagation();
               onKick();
             }}
-            paddingVertical="$1"
-            paddingHorizontal="$2"
-            minWidth="auto"
-            style={{ color: '#ef4444' }}
+            className="py-1 px-2 min-w-[auto]"
           >
             ✕
           </Button>

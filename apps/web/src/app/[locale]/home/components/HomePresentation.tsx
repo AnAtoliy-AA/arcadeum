@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { Button } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
@@ -97,9 +98,10 @@ export default function HomePresentation() {
             />
             <div className="absolute inset-0 z-[1] bg-video-overlay" />
             <div className="absolute z-[1] h-[90px] w-[90px] animate-pulse-ring rounded-full border-[2.5px] border-white/50 pointer-events-none" />
-            <button
-              type="button"
-              className="absolute z-[2] flex h-[90px] w-[90px] cursor-pointer items-center justify-center rounded-full border-[1.5px] border-white/40 bg-white/15 transition-[transform,background-color,border-color] duration-200 hover:scale-[1.15] hover:border-white/50 hover:bg-primary active:scale-[0.95]"
+            <Button
+              variant="icon glass"
+              size="lg"
+              className="absolute z-[2] !h-[90px] !w-[90px]"
               onClick={handlePlayClick}
               onKeyDown={handlePlayKeyDown}
               aria-label="Play video"
@@ -110,7 +112,7 @@ export default function HomePresentation() {
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
-            </button>
+            </Button>
           </div>
         )}
       </div>

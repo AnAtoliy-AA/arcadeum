@@ -202,7 +202,7 @@ export default function FriendsPageContent({
                 onClick={handleSendRequest}
                 disabled={sending || !username.trim()}
                 icon={<UserIcon size={16} />}
-                testID="add-friend-button"
+                data-testid="add-friend-button"
               >
                 {sending
                   ? (tt.addFriend?.sending ?? 'Sending…')
@@ -271,7 +271,7 @@ export default function FriendsPageContent({
                         variant="primary"
                         size="sm"
                         onClick={() => handleAccept(req.id)}
-                        testID={`accept-${req.id}`}
+                        data-testid={`accept-${req.id}`}
                       >
                         {tt.requests?.accept ?? 'Accept'}
                       </Button>
@@ -279,7 +279,7 @@ export default function FriendsPageContent({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDecline(req.id)}
-                        testID={`decline-${req.id}`}
+                        data-testid={`decline-${req.id}`}
                       >
                         {tt.requests?.decline ?? 'Decline'}
                       </Button>
@@ -353,7 +353,7 @@ export default function FriendsPageContent({
                         variant="primary"
                         size="sm"
                         onClick={handleInviteToGame}
-                        testID={`invite-${friend.userId}`}
+                        data-testid={`invite-${friend.userId}`}
                       >
                         {tt.inviteToGame ?? 'Invite'}
                       </Button>
@@ -361,7 +361,7 @@ export default function FriendsPageContent({
                         variant="ghost"
                         size="sm"
                         onClick={() => setRemoveTarget(friend)}
-                        testID={`remove-${friend.userId}`}
+                        data-testid={`remove-${friend.userId}`}
                       >
                         {tt.removeFriend ?? 'Remove'}
                       </Button>
@@ -392,7 +392,7 @@ export default function FriendsPageContent({
             <Button
               variant="primary"
               onClick={() => removeTarget && handleRemove(removeTarget.userId)}
-              testID="confirm-remove-friend"
+              data-testid="confirm-remove-friend"
             >
               {tt.removeFriend ?? 'Remove'}
             </Button>

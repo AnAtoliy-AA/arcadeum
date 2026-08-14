@@ -28,7 +28,7 @@ export default function AdminError({
       <Typography variant="body" uiSize="md" alpha="medium">
         {t?.body ?? 'An error occurred while loading this admin page.'}
       </Typography>
-      <Button onPress={reset} mt="$3">
+      <Button onClick={reset} className="mt-3">
         {t?.retry ?? 'Try again'}
       </Button>
     </GlassCard>

@@ -218,7 +218,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
       <Button
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         onClick={handleTrigger}
         aria-label={t('games.common.shareTooltip')}
         aria-haspopup="menu"

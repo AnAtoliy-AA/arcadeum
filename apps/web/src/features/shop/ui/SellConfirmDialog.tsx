@@ -84,11 +84,11 @@ export function SellConfirmDialog({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="outline" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
-            onPress={handleConfirm}
+            onClick={handleConfirm}
             disabled={isPending}
             data-testid="sell-confirm-button"
           >

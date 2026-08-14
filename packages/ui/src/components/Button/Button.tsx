@@ -1,81 +1,114 @@
-import React, { memo, Children, useMemo } from 'react';
-import type { ReactElement } from 'react';
-import { StyledButton, Shimmer } from './StyledButton';
-import { Typography } from '../Typography/Typography';
-import type { ButtonProps } from './types';
+import { forwardRef, useMemo } from 'react';
 
-export { Shimmer };
+import { ButtonProps } from './types';
+import { resolveButtonClasses } from './buttonClasses';
 
-import { filterProps } from '../../utils/filterProps';
+/**
+ * Shimmer overlay — a plain span animated with the btn-shimmer keyframes
+ * defined in the web / ui Tailwind configs.
+ */
+export const Shimmer = () => (
+  <span
+    aria-hidden
+    className="pointer-events-none absolute bottom-0 left-[-40%] top-0 w-[90%] animate-[btn-shimmer_2.25s_ease-in-out_infinite] bg-[linear-gradient(115deg,transparent,rgba(255,255,255,0.45),transparent)]"
+    style={{ transform: 'skewX(-20deg)' }}
+  />
+);
 
-export const Button = memo(function Button({
-  children,
-  variant = 'primary',
-  size = 'md',
-  loading,
-  showShimmer = false,
-  fullWidth,
-  disabled,
-  pulse = false,
-  jump = false,
-  isActive,
-  pill = false,
-  gameVariant,
-  onPress,
-  onClick,
-  icon,
-  ...rest
-}: ButtonProps): ReactElement {
-  const filteredProps = filterProps({ ...rest, onPress, onClick });
-
-  const hasTextChildren = Children.toArray(children).some(
-    child => typeof child === 'string' || typeof child === 'number'
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    children,
+    variant = 'primary',
+    size = 'md',
+    shape,
+    loading = false,
+    showShimmer = false,
+    fullWidth = false,
+    disabled = false,
+    pulse = false,
+    jump = false,
+    active = false,
+    outline = false,
+    ghost = false,
+    rotatable = false,
+    gameVariant,
+    onClick,
+    className,
+    id,
+    style,
+    type,
+    tabIndex,
+    title,
+    icon,
+    'data-testid': dataTestId,
+    'data-active': dataActive,
+    'aria-pressed': ariaPressed,
+    'aria-label': ariaLabel,
+    ...rest
+  },
+  ref,
+) {
+  const classNames = useMemo(
+    () =>
+      resolveButtonClasses({
+        variant,
+        gameVariant,
+        size,
+        shape,
+        active,
+        outline,
+        ghost,
+        rotatable,
+        fullWidth,
+        disabled,
+        loading,
+        pulse,
+        jump,
+        className,
+      }),
+    [
+      variant,
+      gameVariant,
+      size,
+      shape,
+      active,
+      outline,
+      ghost,
+      rotatable,
+      fullWidth,
+      disabled,
+      loading,
+      pulse,
+      jump,
+      className,
+    ],
   );
-
-  const renderedChildren = hasTextChildren ? (
-    <Typography
-      uiSize={size as any}
-      color="inherit"
-      fontWeight="600"
-    // Use display="contents" to avoid breaking flex layout if possible, 
-    // or just rely on it being a single flex item.
-    >
-      {children}
-    </Typography>
-  ) : (
-    children
-  );
-
-  const renderedIcon = icon && (typeof icon === 'string' || typeof icon === 'number') ? (
-    <Typography uiSize={size as any} color="inherit">{icon}</Typography>
-  ) : (
-    icon
-  );
+  const isDisabled = disabled || loading;
 
   return (
-    <StyledButton
-      ref={rest.ref as unknown as React.Ref<HTMLElement>}
-      $uiSize={size as any}
-      size={undefined as any}
-      isActive={isActive && !loading && !disabled}
-      disabled={loading || disabled}
-      animation="medium"
-      fontWeight="600"
-      letterSpacing={0.5}
-      variant={variant as any}
-      fullWidth={fullWidth}
-      pulse={pulse}
-      jump={jump}
-      pill={pill}
-      gameVariant={gameVariant}
-      {...filteredProps}
+    <button
+      ref={ref}
+      id={id}
+      type={type ?? 'button'}
+      className={classNames}
+      disabled={isDisabled}
+      aria-busy={loading || undefined}
+      aria-disabled={isDisabled || undefined}
+      aria-pressed={ariaPressed}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
+      data-active={dataActive}
+      style={style}
+      tabIndex={tabIndex}
+      title={title}
+      onClick={onClick}
+      {...rest}
     >
-      {renderedIcon}
-      {renderedChildren}
-      {showShimmer && <Shimmer />}
-    </StyledButton>
+      <span className="flex h-full w-full flex-row items-center justify-center gap-2 font-semibold tracking-[0.5px]">
+        {icon}
+        {children}
+      </span>
+      {showShimmer && !isDisabled ? <Shimmer /> : null}
+    </button>
   );
 });
-
-Button.displayName = 'Button';
-

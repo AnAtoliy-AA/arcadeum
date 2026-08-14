@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { IconButton, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
@@ -156,26 +157,29 @@ export function HomeGameCard({
         </ul>
 
         <div className="featured-card-foot-main mt-auto flex gap-2">
-          <Link
+          <LinkButton
             href={getPlayHref(game, routes, locale, comingSoon)}
-            className="featured-card-cta-main inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 border-t border-t-white/35 bg-gold-gradient px-4 py-[11px] text-[14px] font-extrabold tracking-[0.01em] text-[rgb(26,26,26)] no-underline transition-[filter,transform] duration-[180ms] hover:-translate-y-px hover:brightness-[1.08] active:translate-y-px focus-visible:outline-2 focus-visible:outline-[#ff9500] focus-visible:outline-offset-[3px] aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:border-t-transparent aria-disabled:bg-[rgba(110,113,145,0.5)] aria-disabled:text-white/85 aria-disabled:shadow-none aria-disabled:[background-image:none]"
+            variant="victory"
+            size="sm"
+            disabled={isDisabled}
+            className="featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold"
             data-testid="game-play-button"
-            aria-disabled={isDisabled ? 'true' : undefined}
             aria-label={`${playLabel} ${t(game.nameKey)}`}
           >
             <PlayTriangle aria-hidden />
             <span>{playLabel}</span>
-          </Link>
-          <button
-            type="button"
+          </LinkButton>
+          <IconButton
+            variant="icon"
+            size="sm"
             onClick={() => onOpenDetails(game.id)}
             title={homeCopy.showMore ?? 'Show Details'}
             aria-label={homeCopy.gameHowToPlay ?? 'How to play'}
             data-testid="game-help-button"
-            className="featured-card-info-main grid cursor-pointer place-items-center rounded-[10px] border border-glass-border bg-white/[0.03] p-[11px_14px] text-color opacity-65 transition-[color,opacity] duration-[150ms] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+            className="opacity-65 hover:opacity-100"
           >
             <InfoIcon aria-hidden />
-          </button>
+          </IconButton>
         </div>
       </div>
     </article>

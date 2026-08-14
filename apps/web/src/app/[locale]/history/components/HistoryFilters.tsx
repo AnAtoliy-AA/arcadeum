@@ -60,8 +60,7 @@ export function HistoryFilters({
         <Button
           variant="ghost"
           size="sm"
-          whiteSpace="nowrap"
-          $xs={{ width: '100%' }}
+          className="whitespace-nowrap max-[480px]:w-full"
           onClick={handleClearFilters}
         >
           {t('history.filter.clear')}

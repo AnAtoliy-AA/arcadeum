@@ -1,6 +1,6 @@
-import { Select as TamaguiSelect, styled } from 'tamagui';
 import { memo } from 'react';
 import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type SelectProps = {
   value?: string;
@@ -23,62 +23,11 @@ export type SelectProps = {
   size?: 'sm' | 'md' | 'lg';
 };
 
-// `unstyled` bypasses the default variant that sets `elevate: true`, which Tamagui 2.0.0-rc.23
-// forwards as a raw DOM attribute, causing a React warning.
-const StyledSelectViewport = styled(TamaguiSelect.Viewport, {
-  unstyled: true,
-  size: '$4',
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColorHover',
-  shadowColor: '$shadowColor',
-  shadowRadius: 20,
-  shadowOpacity: 0.12,
-  overflow: 'hidden',
-});
-
-const StyledSelectTrigger = styled(TamaguiSelect.Trigger, {
-  name: 'SelectTrigger',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  borderRadius: '$4',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-
-  hoverStyle: {
-    borderColor: '$primary',
-  },
-
-  focusStyle: {
-    borderColor: '$primary',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-
-  variants: {
-    size: {
-      sm: { height: 36, px: '$3' },
-      md: { height: 48, px: '$4' },
-      lg: { height: 60, px: '$5' },
-    },
-    error: {
-      true: {
-        borderColor: '$error',
-        hoverStyle: { borderColor: '$error' },
-        focusStyle: { borderColor: '$error' },
-      },
-    },
-    fullWidth: {
-      true: {
-        width: '100%',
-      },
-    },
-  } as const,
-  defaultVariants: {
-    size: 'md',
-  },
-});
+const sizeClasses: Record<NonNullable<SelectProps['size']>, string> = {
+  sm: 'h-9 px-3 text-[13px]',
+  md: 'h-12 px-4 text-[14px]',
+  lg: 'h-[60px] px-5 text-[15px]',
+};
 
 export const Select = memo(function Select({
   error = false,
@@ -106,50 +55,40 @@ export const Select = memo(function Select({
   };
 
   return (
-    <TamaguiSelect
+    <select
+      id={id}
+      name={name}
       value={value}
       defaultValue={defaultValue}
-      onValueChange={handleValueChange}
-      open={open}
-      onOpenChange={onOpenChange}
-      name={name}
+      disabled={disabled}
+      onChange={(e) => handleValueChange(e.target.value)}
+      onClick={open !== undefined ? () => onOpenChange?.(!open) : undefined}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
+      style={style}
+      className={cx(
+        'appearance-none',
+        'cursor-pointer',
+        'rounded-[16px]',
+        'border',
+        'bg-[var(--background)]',
+        'text-[var(--color)]',
+        'outline-none',
+        'transition-[border-color] duration-200',
+        fullWidth ? 'w-full' : 'w-auto',
+        error
+          ? 'border-[var(--error)]'
+          : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+        sizeClasses[size],
+        className,
+      )}
     >
-      <StyledSelectTrigger
-        error={error}
-        fullWidth={fullWidth}
-        size={size}
-        id={id}
-        disabled={disabled}
-        data-testid={dataTestId}
-        style={style}
-        className={className}
-        aria-label={ariaLabel}
-      >
-        <TamaguiSelect.Value />
-      </StyledSelectTrigger>
-
-      <TamaguiSelect.Content>
-        <TamaguiSelect.ScrollUpButton />
-        <StyledSelectViewport>
-          <TamaguiSelect.Group>
-            {options?.map((option, i) => (
-              <TamaguiSelect.Item
-                index={i}
-                key={option.value}
-                value={option.value}
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderRadius="$3"
-                cursor="pointer"
-              >
-                <TamaguiSelect.ItemText color="$color">{option.label}</TamaguiSelect.ItemText>
-              </TamaguiSelect.Item>
-            ))}
-            {children}
-          </TamaguiSelect.Group>
-        </StyledSelectViewport>
-        <TamaguiSelect.ScrollDownButton />
-      </TamaguiSelect.Content>
-    </TamaguiSelect>
+      {options?.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+      {children}
+    </select>
   );
 });

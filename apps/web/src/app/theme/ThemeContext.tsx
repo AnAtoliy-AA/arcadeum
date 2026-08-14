@@ -9,7 +9,6 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
 import {
@@ -18,7 +17,7 @@ import {
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
-import tamaguiConfig from '@/shared/config/tamagui.config';
+import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -133,11 +132,9 @@ export function AppThemeProvider({
     });
     doc.classList.add(`t_${resolvedTheme}`);
 
-    // Defer expensive Tamagui token iteration to idle time
+    // Defer expensive theme token iteration to idle time
     const applyTokenWrites = () => {
-      const activeTamaguiTheme = tamaguiConfig.themes[
-        resolvedTheme
-      ] as unknown as Record<
+      const activeTamaguiTheme = themeDefinitions[resolvedTheme] as Record<
         string,
         { val?: string; variable?: string } | string
       >;
@@ -205,13 +202,7 @@ export function AppThemeProvider({
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <TamaguiProvider
-        config={tamaguiConfig}
-        defaultTheme={resolvedTheme}
-        disableInjectCSS={process.env.NODE_ENV === 'production'}
-      >
-        {children}
-      </TamaguiProvider>
+      {children}
     </ThemeContext.Provider>
   );
 }

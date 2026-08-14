@@ -76,19 +76,19 @@ export default async function HomeHero() {
             </span>
           </h1>
 
-          <div className="animate-[fadeInUp_0.6s_ease-out_both] [animation-delay:0.1s]">
+          <div>
             <p className="hero-tagline-main m-0 text-[32px] font-bold leading-[1.2] text-color opacity-90 max-[1150px]:text-[24px]">
               {tagline}
             </p>
           </div>
 
-          <div className="animate-[fadeInUp_0.6s_ease-out_both] [animation-delay:0.3s]">
+          <div>
             <p className="m-0 max-w-[500px] text-[18px] text-color opacity-75">
               {description}
             </p>
           </div>
 
-          <div className="animate-[fadeInUp_0.6s_ease-out_both] [animation-delay:0.4s]">
+          <div>
             <div className="mt-2 flex flex-wrap justify-start gap-4">
               <LinkButton href={routes.games} variant="victory" size="lg">
                 {primaryLabel}

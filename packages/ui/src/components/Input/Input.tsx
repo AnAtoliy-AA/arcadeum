@@ -1,75 +1,111 @@
-import { Input as TamaguiInput, styled, GetProps, TamaguiComponent } from 'tamagui';
+import { forwardRef } from 'react';
+import { cx } from '../../utils/cx';
 
-const StyledInput = styled(TamaguiInput, {
-  name: 'Input',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  borderRadius: '$4',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: '$4',
-  fontFamily: '$body',
-
-  hoverStyle: {
-    borderColor: '$primary',
-  },
-
-  focusStyle: {
-    borderColor: '$primary',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-
-  variants: {
-    size: {
-      sm: { height: 36, px: '$3', fontSize: '$3' },
-      md: { height: 48, px: '$4', fontSize: '$4' },
-      lg: { height: 60, px: '$5', fontSize: '$5' },
-    },
-    error: {
-      true: {
-        borderColor: '$error',
-        hoverStyle: { borderColor: '$error' },
-        focusStyle: { borderColor: '$error' },
-      },
-    },
-    fullWidth: {
-      true: {
-        width: '100%',
-      },
-    },
-  } as const,
-  defaultVariants: {
-    size: 'md',
-  },
-});
-
-export type InputProps = GetProps<typeof TamaguiInput> & {
+export type InputProps = {
   size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   fullWidth?: boolean;
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;
+  value?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  disabled?: boolean;
+  required?: boolean;
+  type?: string;
+  id?: string;
+  name?: string;
+  maxLength?: number;
+  min?: number | string;
+  max?: number | string;
+  autoComplete?: string;
+  'data-testid'?: string;
+  'aria-label'?: string;
+  'aria-required'?: boolean | string;
+  className?: string;
+  style?: React.CSSProperties;
+  flex?: number | string;
+  width?: number | string;
+  minWidth?: number | string;
+  /** Tamagui responsive shorthand — mapped to minWidth/width. */
+  $xs?: { minWidth?: number | string; width?: number | string };
+  /** Tamagui-compat: fires with the new value. */
+  onChangeText?: (text: string) => void;
+  /** Tamagui-compat: fires on Enter. */
+  onSubmitEditing?: () => void;
+  /** Tamagui-compat alias for data-testid. */
+  testID?: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>;
+
+const sizeClasses: Record<NonNullable<InputProps['size']>, string> = {
+  sm: 'h-9 px-3 text-[14px]',
+  md: 'h-12 px-4 text-[16px]',
+  lg: 'h-[60px] px-5 text-[20px]',
 };
 
-import { filterProps } from '../../utils/filterProps';
-
-export const Input = StyledInput.styleable<InputProps>((
-  { size, error, fullWidth, onPress, onClick, ...props }, 
-  ref
-) => {
-  const filteredProps = filterProps({ ...props, onPress, onClick });
-
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    size = 'md',
+    error,
+    fullWidth,
+    onPress,
+    onClick,
+    className,
+    style,
+    flex,
+    width,
+    minWidth,
+    $xs,
+    onChangeText,
+    onSubmitEditing,
+    testID,
+    'data-testid': dataTestId,
+    onChange,
+    ...rest
+  },
+  ref,
+) {
   return (
-    <StyledInput
-      {...(filteredProps as unknown as GetProps<typeof StyledInput>)}
+    <input
       ref={ref}
-      size={size}
-      error={error}
-      fullWidth={fullWidth}
+      data-testid={testID ?? dataTestId}
+      className={cx(
+        'rounded-[16px] border bg-[var(--background)] text-[var(--color)] outline-none transition-[border-color] duration-200',
+        sizeClasses[size],
+        fullWidth && 'w-full',
+        error
+          ? 'border-[var(--error)]'
+          : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+        className,
+      )}
+      style={{
+        ...(flex !== undefined ? { flex } : null),
+        ...(width !== undefined ? { width } : null),
+        ...(minWidth !== undefined ? { minWidth } : null),
+        ...($xs
+          ? {
+              minWidth: $xs.minWidth,
+              width: $xs.width,
+            }
+          : null),
+        ...style,
+      }}
+      onChange={(e) => {
+        onChange?.(e);
+        onChangeText?.(e.target.value);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') onSubmitEditing?.();
+      }}
+      onClick={(e) => {
+        onClick?.(e);
+        onPress?.();
+      }}
+      {...rest}
     />
   );
 });

@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { XStack, GlobeIcon } from '@arcadeum/ui';
+import { GlobeIcon } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
@@ -42,7 +42,7 @@ export default function LanguagePills({
   );
 
   return (
-    <XStack alignItems="center" gap="$2" flexWrap="wrap" data-testid={testId}>
+    <div className="flex flex-wrap items-center gap-2" data-testid={testId}>
       <GlobeIcon size={18} />
       {SUPPORTED_LOCALES.map((loc) => (
         <Button
@@ -58,6 +58,6 @@ export default function LanguagePills({
           {LOCALE_LABEL[loc]}
         </Button>
       ))}
-    </XStack>
+    </div>
   );
 }

@@ -333,6 +333,7 @@ const nextConfig: NextConfig = {
     '@arcadeum/ui',
   ],
   experimental: {
+    inlineCss: true,
     optimizePackageImports: [
       'tamagui',
       '@tamagui/core',

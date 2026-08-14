@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, XStack, styled, View } from 'tamagui';
 import { memo, useMemo, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import {
@@ -19,6 +18,7 @@ import { Typography } from '../Typography/Typography';
 import { Container } from '../Container/Container';
 import { FooterLink } from './FooterLink';
 import { SocialIcon } from './SocialIcon';
+import { cx } from '../../utils/cx';
 
 export type SocialLink = {
   id: string;
@@ -64,110 +64,6 @@ const SOCIAL_MAPPING = [
 
 const CURRENT_YEAR = 2026;
 
-const FooterRoot = styled(View, {
-  name: 'Footer',
-  width: '100%',
-  backgroundColor: 'var(--glass-background)',
-  borderTopWidth: 0,
-  paddingTop: '$12',
-  paddingBottom: '$10',
-  position: 'relative',
-  backdropFilter: 'blur(32px) saturate(180%)',
-
-  $sm: {
-    paddingTop: '$10',
-    paddingBottom: '$8',
-  },
-});
-
-const FooterBorderLine = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 1,
-  pointerEvents: 'none',
-  background:
-    'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
-  opacity: 0.8,
-});
-
-const FooterGrid = styled(XStack, {
-  gap: '$12',
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  width: '100%',
-
-  $tablet: {
-    gap: '$8',
-  },
-
-  $sm: {
-    flexDirection: 'column',
-    gap: 0,
-    alignItems: 'center',
-  },
-});
-
-const BrandColumn = styled(YStack, {
-  gap: '$6',
-  flex: 2,
-  minWidth: 320,
-  maxWidth: 600,
-
-  $sm: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
-    alignItems: 'center',
-    minWidth: '100%',
-    paddingBottom: '$10',
-    borderBottomWidth: 1,
-    borderBottomColor: '$glassBorder',
-    marginBottom: '$6',
-  },
-});
-
-const FooterColumnContainer = styled(YStack, {
-  gap: '$4',
-  minWidth: 180,
-
-  $sm: {
-    minWidth: '100%',
-    gap: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: '$glassBorder',
-    paddingBottom: '$4', // Clearance when closed
-  },
-});
-
-const ColumnHeader = styled(XStack, {
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingVertical: '$4',
-  cursor: 'pointer',
-
-  $gtSm: {
-    paddingVertical: 0,
-    paddingBottom: '$2',
-    pointerEvents: 'none',
-  },
-});
-
-const ColumnContent = styled(YStack, {
-  gap: '$3',
-
-  $sm: {
-    paddingBottom: '$6',
-    paddingTop: '$2',
-    alignItems: 'center',
-  },
-});
-
-const ChevronContainer = styled(View, {
-  $gtSm: { display: 'none' },
-});
-
 type CollapsibleColumnProps = {
   title: string;
   children: ReactNode;
@@ -179,41 +75,28 @@ const CollapsibleColumn = ({ title, children, defaultOpen = false }: Collapsible
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return (
-    <FooterColumnContainer>
-      <ColumnHeader onClick={toggle}>
+    <div className="flex min-w-[180px] flex-col gap-4 sm:min-w-full sm:gap-0 sm:border-b sm:border-[var(--glassBorder)] sm:pb-4">
+      <div
+        onClick={toggle}
+        className="flex cursor-pointer items-center justify-between py-4 sm:pointer-events-none sm:py-0 sm:pb-2"
+      >
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}
         </Typography>
-        <ChevronContainer rotate={isOpen ? '180deg' : '0deg'}>
+        <span
+          className="sm:hidden"
+          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+        >
           <ChevronDownIcon size={16} />
-        </ChevronContainer>
-      </ColumnHeader>
+        </span>
+      </div>
 
-      <YStack $sm={{ display: isOpen ? 'flex' : 'none' }}>
-        <ColumnContent>
-          {children}
-        </ColumnContent>
-      </YStack>
-    </FooterColumnContainer>
+      <div className={cx('flex flex-col gap-3 sm:flex sm:pb-6 sm:pt-2 sm:items-center', !isOpen && 'hidden sm:flex')}>
+        {children}
+      </div>
+    </div>
   );
 };
-
-const BottomBar = styled(XStack, {
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  marginTop: '$12',
-  paddingTop: '$8',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  gap: '$6',
-
-  $sm: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginTop: '$10',
-  },
-});
 
 export const Footer = memo(function Footer({
   social,
@@ -292,88 +175,100 @@ export const Footer = memo(function Footer({
   const footerSections = sections || defaultSections;
 
   return (
-    <YStack asChild width="100%">
-      <footer>
-        <FooterRoot>
-          <FooterBorderLine />
-          <Container size="xl">
-            <FooterGrid>
-              <BrandColumn>
-                <YStack gap="$4" $sm={{ alignItems: 'center' }}>
-                  <Typography
-                    variant="heading"
-                    uiSize="3xl"
-                    weight="800"
-                    gradient="primary"
-                    $sm={{ textCenter: true }}
-                  >
-                    {appName.toUpperCase()}
-                  </Typography>
-                  <Typography
-                    uiSize="md"
-                    alpha="medium"
-                    lineHeight={24}
-                    maxWidth={500}
-                    $sm={{ textCenter: true }}
-                  >
-                    {description}
-                  </Typography>
-                </YStack>
+    <footer className="w-full">
+      <div
+        className="relative w-full pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] sm:pb-8 sm:pt-10"
+        style={{ backgroundColor: 'var(--glass-background)' }}
+      >
+        {/* Top glow border */}
+        <div
+          className="pointer-events-none absolute left-0 right-0 top-0 h-px opacity-80"
+          style={{
+            background:
+              'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
+          }}
+        />
+        <Container size="xl">
+          <div className="flex w-full flex-wrap justify-between gap-12 sm:flex-col sm:items-center sm:gap-0">
+            {/* Brand column */}
+            <div className="flex min-w-[320px] max-w-[600px] flex-2 flex-col gap-6 sm:min-w-full sm:flex-grow-0 sm:flex-shrink-0 sm:items-center sm:pb-10 sm:mb-6 sm:border-b sm:border-[var(--glassBorder)]">
+              <div className="flex flex-col gap-4 sm:items-center">
+                <Typography
+                  variant="heading"
+                  uiSize="3xl"
+                  weight="800"
+                  gradient="primary"
+                  className="sm:text-center"
+                >
+                  {appName.toUpperCase()}
+                </Typography>
+                <Typography
+                  uiSize="md"
+                  alpha="medium"
+                  className="sm:text-center"
+                  style={{ lineHeight: 24, maxWidth: 500 }}
+                >
+                  {description}
+                </Typography>
+              </div>
 
-                <YStack gap="$4" $sm={{ alignItems: 'center' }}>
-                  <Typography variant="label" uiSize="xs" weight="700" tracking="xl">
-                    {followUsLabel.toUpperCase()}
-                  </Typography>
-                  <XStack gap="$3" flexWrap="wrap" $sm={{ justifyContent: 'center' }}>
-                    {socialLinks.map((link) => (
-                      <SocialIcon
-                        key={link.id}
-                        href={link.href}
-                        target={link.external ? '_blank' : undefined}
-                        rel={link.external ? 'noopener noreferrer' : undefined}
-                        aria-label={link.label}
-                        data-testid={`footer-social-${link.id}`}
-                      >
-                        {link.icon}
-                      </SocialIcon>
-                    ))}
-                  </XStack>
-                </YStack>
-              </BrandColumn>
-
-              {footerSections.map((section) => (
-                <CollapsibleColumn key={section.title} title={section.title}>
-                  {section.links.map((link) => (
-                    <FooterLink key={link.href} href={link.href}>
-                      {link.label}
-                    </FooterLink>
+              <div className="flex flex-col gap-4 sm:items-center">
+                <Typography variant="label" uiSize="xs" weight="700" tracking="xl">
+                  {followUsLabel.toUpperCase()}
+                </Typography>
+                <div className="flex flex-wrap gap-3 sm:justify-center">
+                  {socialLinks.map((link) => (
+                    <SocialIcon
+                      key={link.id}
+                      href={link.href}
+                      target={link.external ? '_blank' : undefined}
+                      rel={link.external ? 'noopener noreferrer' : undefined}
+                      aria-label={link.label}
+                      data-testid={`footer-social-${link.id}`}
+                    >
+                      {link.icon}
+                    </SocialIcon>
                   ))}
-                </CollapsibleColumn>
-              ))}
-            </FooterGrid>
+                </div>
+              </div>
+            </div>
 
-            <BottomBar>
-              <YStack gap="$1" $sm={{ alignItems: 'center' }}>
-                <Typography uiSize="sm" alpha="medium" $sm={{ textCenter: true }}>
-                  {copyrightLabel || `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
-                </Typography>
-                <XStack gap="$2" alignItems="center">
-                  <View width={6} height={6} borderRadius={3} backgroundColor="$success" />
-                  <Typography variant="label" uiSize="xs" tracking="xl">
-                    {stableReleaseLabel} {versionLabel}
-                  </Typography>
-                </XStack>
-              </YStack>
+            {footerSections.map((section) => (
+              <CollapsibleColumn key={section.title} title={section.title}>
+                {section.links.map((link) => (
+                  <FooterLink key={link.href} href={link.href}>
+                    {link.label}
+                  </FooterLink>
+                ))}
+              </CollapsibleColumn>
+            ))}
+          </div>
 
-              <XStack alignItems="center" gap="$6" flexWrap="wrap" justifyContent="center">
-                <Typography uiSize="xs" $sm={{ textCenter: true }}>
-                  {craftedWithLoveLabel}
+          {/* Bottom bar */}
+          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-[var(--borderColor)] pt-8 sm:mt-10 sm:flex-col sm:items-center">
+            <div className="flex flex-col gap-1 sm:items-center">
+              <Typography uiSize="sm" alpha="medium" className="sm:text-center">
+                {copyrightLabel || `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
+              </Typography>
+              <div className="flex items-center gap-2">
+                <span
+                  className="inline-block h-[6px] w-[6px] rounded-[3px]"
+                  style={{ backgroundColor: 'var(--success)' }}
+                />
+                <Typography variant="label" uiSize="xs" tracking="xl">
+                  {stableReleaseLabel} {versionLabel}
                 </Typography>
-              </XStack>
-            </BottomBar>
-          </Container>
-        </FooterRoot>
-      </footer>
-    </YStack>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <Typography uiSize="xs" className="sm:text-center">
+                {craftedWithLoveLabel}
+              </Typography>
+            </div>
+          </div>
+        </Container>
+      </div>
+    </footer>
   );
 });

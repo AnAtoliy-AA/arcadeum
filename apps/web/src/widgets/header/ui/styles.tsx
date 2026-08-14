@@ -6,6 +6,7 @@ import {
   LinkButton,
   type LinkButtonProps,
 } from '@arcadeum/ui/components/Button/LinkButton';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
@@ -32,9 +33,10 @@ export const NavLinkWrapper = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={['relative flex h-[72px] items-center justify-center', className]
-      .filter(Boolean)
-      .join(' ')}
+    className={cx(
+      'relative flex h-[72px] items-center justify-center',
+      className,
+    )}
     {...rest}
   />
 );
@@ -45,9 +47,7 @@ export const DesktopOnly = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={['hidden items-center gap-2 md:flex', className]
-      .filter(Boolean)
-      .join(' ')}
+    className={cx('hidden items-center gap-2 md:flex', className)}
     {...rest}
   />
 );
@@ -57,12 +57,7 @@ export const HeaderMobileHidden = ({
   className,
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={['hidden items-center sm:flex', className]
-      .filter(Boolean)
-      .join(' ')}
-    {...rest}
-  />
+  <div className={cx('hidden items-center sm:flex', className)} {...rest} />
 );
 
 export const NavHeaderLink = ({
@@ -73,14 +68,12 @@ export const NavHeaderLink = ({
   ...props
 }: LinkButtonProps & { accent?: boolean; isActive?: boolean }) => (
   <LinkButton
-    className={[
+    className={cx(
       'overflow-visible rounded-[16px] hover:bg-[var(--backgroundHover)] hover:-translate-y-[1px] active:translate-y-[1px]',
       isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
       accent && 'font-bold',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     style={accent ? { color: 'var(--accent)' } : undefined}
     {...props}
   >
@@ -102,12 +95,10 @@ export const MobileNav = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={[
+    className={cx(
       'fixed bottom-0 left-0 right-0 top-[var(--header-height,64px)] z-[1] flex h-[100dvh] w-full max-w-[100vw] flex-col gap-1 overflow-y-auto border-t border-[var(--glassBorder)] bg-[var(--background)] px-5 pb-4 pt-4',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...rest}
   />
 );
@@ -117,12 +108,10 @@ export const MobileVersionText = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={[
+    className={cx(
       'mt-auto px-2 py-4 text-center text-[12px] leading-[16px] opacity-80',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...rest}
   />
 );
@@ -132,12 +121,10 @@ export const MobileUserCard = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={[
+    className={cx(
       'flex flex-wrap items-center gap-3 rounded-[16px] border border-[var(--glassBorder)] bg-[rgba(255,255,255,0.04)] p-3',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...rest}
   />
 );
@@ -146,10 +133,7 @@ export const MobileSection = ({
   className,
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={['flex flex-col gap-1', className].filter(Boolean).join(' ')}
-    {...rest}
-  />
+  <div className={cx('flex flex-col gap-1', className)} {...rest} />
 );
 
 export const MobileSectionLabel = ({
@@ -157,12 +141,10 @@ export const MobileSectionLabel = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={[
+    className={cx(
       'px-4 pb-1 pt-3 text-[12px] font-bold leading-[16px] tracking-[3px] opacity-80',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...rest}
   />
 );
@@ -172,12 +154,10 @@ export const MobileBottomBar = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={[
+    className={cx(
       'mt-auto flex flex-wrap items-center justify-between gap-3 px-2 py-3',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...rest}
   />
 );
@@ -189,13 +169,11 @@ export const NavMobileLink = ({
   ...props
 }: LinkButtonProps & { isActive?: boolean }) => (
   <LinkButton
-    className={[
+    className={cx(
       'justify-start px-4 py-3 hover:bg-[rgba(255,255,255,0.05)]',
       isActive && '!bg-[rgba(255,255,255,0.08)] !text-[var(--primary)]',
       className,
-    ]
-      .filter(Boolean)
-      .join(' ')}
+    )}
     {...props}
   >
     {children}

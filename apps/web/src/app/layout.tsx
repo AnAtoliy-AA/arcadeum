@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist } from 'next/font/google';
 
 import './globals.scss';
+import './fonts.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
@@ -11,19 +11,15 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
-import { setupTamagui } from '@/shared/config/tamagui.config';
-import { resetTamaguiCSSInjection } from '@/shared/config/tamagui-css-injected';
 import { ThemeName, ThemePreference } from '@/shared/config/theme';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
 import { LazySessionRoleSync } from '@/shared/ui/LazySessionRoleSync';
 
-const geistSans = Geist({
+const geistSans = {
   variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-});
+  className: 'font-geist-variable',
+};
 
 // NOTE: openGraph.locale is set per-locale in [locale]/layout.tsx
 // generateMetadata — no need to duplicate it here.
@@ -80,18 +76,11 @@ export const viewport: Viewport = {
   themeColor: '#151718',
 };
 
-// Prime Tamagui config as early as possible on the server
-setupTamagui();
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Reset Tamagui SSR CSS guard so exactly one <style> block is emitted
-  // per request (useServerInsertedHTML fires per RSC streaming chunk).
-  resetTamaguiCSSInjection();
-
   const fontClassName = `${geistSans.variable} ${geistSans.className}`;
   const cookieStore = await cookies();
   const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
@@ -151,6 +140,13 @@ export default async function RootLayout({
          * R2 CDN hosts game cover images and assets loaded eagerly.
          * YouTube preconnects moved to presentation section (loaded on click).
          */}
+        <link
+          rel="preload"
+          href="/fonts/geist-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {process.env.NEXT_PUBLIC_CDN_URL && (
           <>
             <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />

@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text, styled, Circle, FontSizeTokens } from 'tamagui';
 import { memo, useMemo } from 'react';
 import type { ReactElement } from 'react';
 
@@ -13,43 +12,12 @@ const sizeMap: Record<AvatarSize, number> = {
   xl: 80,
 };
 
-const fontSizeMap: Record<AvatarSize, FontSizeTokens> = {
-  sm: '$2',
-  md: '$4',
-  lg: '$6',
-  xl: '$8',
+const fontSizeMap: Record<AvatarSize, number> = {
+  sm: 14,
+  md: 18,
+  lg: 24,
+  xl: 32,
 };
-
-const StyledAvatarContainer = styled(Circle, {
-  name: 'AvatarContainer',
-  backgroundColor: '$primary',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-  shadowColor: '$shadowColor',
-  shadowOpacity: 0.2,
-  shadowRadius: 10,
-
-  variants: {
-    size: {
-      sm: { width: sizeMap.sm, height: sizeMap.sm },
-      md: { width: sizeMap.md, height: sizeMap.md },
-      lg: { width: sizeMap.lg, height: sizeMap.lg },
-      xl: { width: sizeMap.xl, height: sizeMap.xl },
-    },
-  } as const,
-});
-
-const GlisteningOverlay = styled(YStack, {
-  position: 'absolute',
-  inset: 0,
-  opacity: 0.15,
-  background: 'linear-gradient(135deg, $glassBorder 0%, transparent 100%)',
-  pointerEvents: 'none',
-});
 
 function getInitials(name: string): string {
   if (!name) return '?';
@@ -93,14 +61,24 @@ export const Avatar = memo(function Avatar({
   const fontSize = fontSizeMap[size];
 
   return (
-    <StyledAvatarContainer
-      size={size}
+    <div
       data-testid={dataTestId}
-      style={style}
-      borderColor={borderColor}
-      boxShadow={boxShadow}
-      borderWidth={borderWidth}
-      overflow={src ? 'visible' : 'hidden'}
+      style={{
+        width: sizeValue,
+        height: sizeValue,
+        borderRadius: sizeValue / 2,
+        backgroundColor: 'var(--primary)',
+        borderWidth: borderWidth ?? 1,
+        borderStyle: 'solid',
+        borderColor: borderColor ?? 'var(--borderColor)',
+        overflow: src ? 'visible' : 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        boxShadow: boxShadow ?? '0 2px 10px var(--shadowColor)',
+        ...style,
+      }}
     >
       {src ? (
         <img
@@ -118,11 +96,26 @@ export const Avatar = memo(function Avatar({
           }}
         />
       ) : (
-        <Text color="$white" fontWeight="700" fontSize={fontSize}>
+        <span
+          style={{
+            color: '#f5f7ff',
+            fontWeight: 700,
+            fontSize,
+          }}
+        >
           {initials}
-        </Text>
+        </span>
       )}
-      <GlisteningOverlay />
-    </StyledAvatarContainer>
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0.15,
+          background: 'linear-gradient(135deg, var(--glassBorder) 0%, transparent 100%)',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
   );
 });

@@ -1,6 +1,4 @@
 import React from 'react';
-import { XStack } from 'tamagui';
-import { Typography } from '../Typography/Typography';
 
 export type UserRole =
   | 'free'
@@ -52,8 +50,6 @@ const roleStyles: Record<UserRole, RoleStyle> = {
   admin: {
     bg: 'linear-gradient(135deg, var(--danger), color-mix(in srgb, var(--danger) 70%, black))',
     text: 'var(--white)',
-    // Filled admin uses white-on-red; outlined needs the role color directly
-    // so the border + text both read as "admin".
     outlinedText: 'var(--danger)',
     glow: '0 0 12px color-mix(in srgb, var(--danger) 40%, transparent)',
   },
@@ -64,9 +60,7 @@ export interface RoleBadgeProps {
   children: React.ReactNode;
   /**
    * - `filled` (default): role-tinted gradient background with glow.
-   * - `outlined`: transparent background, role-color border + text. Quieter
-   *   treatment for dense contexts (header chip, inline lists) where the
-   *   filled variant dominates.
+   * - `outlined`: transparent background, role-color border + text.
    */
   variant?: 'filled' | 'outlined';
 }
@@ -76,27 +70,22 @@ export function RoleBadge({ role, children, variant = 'filled' }: RoleBadgeProps
   const isOutlined = variant === 'outlined';
   const textColor = isOutlined ? (style.outlinedText ?? style.text) : style.text;
   return (
-    <XStack
-      alignItems="center"
-      paddingVertical={2}
-      paddingHorizontal={7}
-      borderRadius={5}
+    <span
+      className="inline-flex items-center rounded-[5px] whitespace-nowrap py-[2px] px-[7px]"
       style={{
-        display: 'inline-flex',
         background: isOutlined ? 'transparent' : style.bg,
         boxShadow: isOutlined ? 'none' : (style.glow ?? 'none'),
-        border: isOutlined ? `1px solid color-mix(in srgb, ${textColor} 60%, transparent)` : 'none',
-        whiteSpace: 'nowrap',
+        border: isOutlined
+          ? `1px solid color-mix(in srgb, ${textColor} 60%, transparent)`
+          : 'none',
+        textTransform: 'uppercase',
+        color: textColor,
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: 1,
       }}
     >
-      <Typography
-        uiSize="xs"
-        weight="700"
-        tracking="md"
-        style={{ textTransform: 'uppercase', color: textColor }}
-      >
-        {children}
-      </Typography>
-    </XStack>
+      {children}
+    </span>
   );
 }

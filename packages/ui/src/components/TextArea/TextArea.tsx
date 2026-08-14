@@ -1,52 +1,14 @@
-import { TextArea as TamaguiTextArea, styled, GetProps, TamaguiComponent } from 'tamagui';
-
-const StyledTextArea = styled(TamaguiTextArea, {
-  name: 'TextArea',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  borderRadius: '$4',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: '$4',
-  fontFamily: '$body',
-  minHeight: 120,
-
-  hoverStyle: {
-    borderColor: '$primary',
-  },
-
-  focusStyle: {
-    borderColor: '$primary',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-
-  variants: {
-    error: {
-      true: {
-        borderColor: '$error',
-        hoverStyle: { borderColor: '$error' },
-        focusStyle: { borderColor: '$error' },
-      },
-    },
-    fullWidth: {
-      true: {
-        width: '100%',
-      },
-    },
-  } as const,
-});
+import { forwardRef } from 'react';
+import { cx } from '../../utils/cx';
 
 export type TextAreaProps = {
   value?: string;
   defaultValue?: string;
   placeholder?: string;
-  onChange?: GetProps<typeof TamaguiTextArea>['onChange'];
+  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   onChangeText?: (text: string) => void;
-  onFocus?: GetProps<typeof TamaguiTextArea>['onFocus'];
-  onBlur?: GetProps<typeof TamaguiTextArea>['onBlur'];
+  onFocus?: React.FocusEventHandler<HTMLTextAreaElement>;
+  onBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
   disabled?: boolean;
   error?: boolean;
   fullWidth?: boolean;
@@ -56,10 +18,12 @@ export type TextAreaProps = {
   autoFocus?: boolean;
   rows?: number;
   required?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-export const TextArea: TamaguiComponent<TextAreaProps> = StyledTextArea.styleable<TextAreaProps>(
-  (
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  function TextArea(
     {
       value,
       defaultValue,
@@ -77,29 +41,43 @@ export const TextArea: TamaguiComponent<TextAreaProps> = StyledTextArea.styleabl
       autoFocus,
       rows,
       required,
+      className,
+      style,
     },
-    ref
-  ) => (
-    <StyledTextArea
-      ref={ref}
-      value={value}
-      defaultValue={defaultValue}
-      placeholder={placeholder}
-      onChange={onChange}
-      onChangeText={onChangeText}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      disabled={disabled}
-      error={error}
-      fullWidth={fullWidth}
-      data-testid={dataTestId}
-      id={id}
-      name={name}
-      autoFocus={autoFocus}
-      rows={rows}
-      required={required}
-    />
-  )
+    ref,
+  ) {
+    return (
+      <textarea
+        ref={ref}
+        id={id}
+        name={name}
+        value={value}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        disabled={disabled}
+        autoFocus={autoFocus}
+        rows={rows}
+        required={required}
+        aria-required={required || undefined}
+        data-testid={dataTestId}
+        onChange={(e) => {
+          onChange?.(e);
+          onChangeText?.(e.target.value);
+        }}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        className={cx(
+          'min-h-[120px] rounded-[16px] border bg-[var(--background)] px-4 py-3 text-[16px] text-[var(--color)] outline-none transition-[border-color] duration-200',
+          fullWidth && 'w-full',
+          error
+            ? 'border-[var(--error)]'
+            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+          className,
+        )}
+        style={style}
+      />
+    );
+  },
 );
 
 TextArea.displayName = 'TextArea';

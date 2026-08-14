@@ -45,6 +45,6 @@ describe('Select', () => {
         <option value="1">Option 1</option>
       </Select>,
     );
-    expect(screen.getByTestId('select')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByTestId('select')).toBeDisabled();
   });
 });

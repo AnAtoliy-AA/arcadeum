@@ -4,7 +4,7 @@ import { PAGINATION } from '@/shared/config/constants';
 import type {
   HistorySummary,
   HistoryDetail,
-} from '@/app/[locale]/history/types';
+} from '@/app/[locale]/(app)/history/types';
 
 interface GetHistoryParams {
   search?: string;

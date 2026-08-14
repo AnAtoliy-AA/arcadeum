@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from './Button';
 import { LinkButton, type LinkButtonProps } from './LinkButton';
 import { ArrowRightIcon, PlusCircleIcon } from '../Icons/index';
+import { cx } from '../../utils/cx';
 import type { ButtonProps, GameVariant } from './types';
 
 export const BotCountButton = ({
@@ -43,7 +44,7 @@ export const StartButton = ({
   ...props
 }: ButtonProps & { className?: string; width?: string | number }) => (
   <div
-    className={['start-button-glow', className].filter(Boolean).join(' ')}
+    className={cx('start-button-glow', className)}
     style={{
       display: 'inline-block',
       borderRadius: 20,

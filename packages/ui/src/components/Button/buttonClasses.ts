@@ -6,6 +6,7 @@
  * button keeps working across web light/dark/neon/purple themes.
  */
 import type { ButtonShape, ButtonVariant, GameVariant } from './types';
+import { cx } from '../../utils/cx';
 
 export const buttonBase = [
   'relative',
@@ -383,7 +384,7 @@ export const buttonFlags = {
 export function compileButtonClasses(
   parts: Array<string | false | null | undefined>,
 ): string {
-  const joined = parts.filter(Boolean).join(' ');
+  const joined = cx(...parts);
   if (process.env.NEXT_PUBLIC_E2E === 'true') {
     return joined
       .split(' ')

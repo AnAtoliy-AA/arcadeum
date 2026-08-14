@@ -9,7 +9,7 @@ import {
   ToggleRow,
   ToggleLabel,
   ToggleInput,
-} from '@/app/[locale]/settings/styles';
+} from '@/app/[locale]/(app)/settings/styles';
 import { useNotificationsStore } from './notifications.store';
 import {
   NOTIFICATION_CATEGORIES,

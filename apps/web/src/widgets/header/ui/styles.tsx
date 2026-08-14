@@ -75,7 +75,7 @@ export const NavHeaderLink = ({
   <LinkButton
     className={[
       'overflow-visible rounded-[16px] hover:bg-[var(--backgroundHover)] hover:-translate-y-[1px] active:translate-y-[1px]',
-      isActive && 'bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
+      isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
       accent && 'font-bold',
       className,
     ]

@@ -5,15 +5,19 @@ import { resolveButtonClasses } from './buttonClasses';
 
 /**
  * Shimmer overlay — a plain span animated with the btn-shimmer keyframes
- * defined in the web / ui Tailwind configs.
+ * defined in the web / ui Tailwind configs. Disabled in e2e mode so
+ * screenshots stay stable.
  */
-export const Shimmer = () => (
-  <span
-    aria-hidden
-    className="pointer-events-none absolute bottom-0 left-[-40%] top-0 w-[90%] animate-[btn-shimmer_2.25s_ease-in-out_infinite] bg-[linear-gradient(115deg,transparent,rgba(255,255,255,0.45),transparent)]"
-    style={{ transform: 'skewX(-20deg)' }}
-  />
-);
+export const Shimmer = () => {
+  if (process.env.NEXT_PUBLIC_E2E === 'true') return null;
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute bottom-0 left-[-40%] top-0 w-[90%] animate-[btn-shimmer_2.25s_ease-in-out_infinite] bg-[linear-gradient(115deg,transparent,rgba(255,255,255,0.45),transparent)]"
+      style={{ transform: 'skewX(-20deg)' }}
+    />
+  );
+};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {

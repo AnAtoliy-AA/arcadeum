@@ -18,8 +18,6 @@ export const buttonBase = [
   'overflow-hidden',
   'select-none',
   'border',
-  'border-transparent',
-  'bg-transparent',
   'p-0',
   'text-center',
   'no-underline',
@@ -111,6 +109,8 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 
   ghost: [
+    'bg-transparent',
+    'border-transparent',
     'text-[var(--color)]',
     'shadow-none',
     'hover:bg-[var(--glassBgHover)]',
@@ -132,6 +132,8 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 
   'ghost danger': [
+    'bg-transparent',
+    'border-transparent',
     'text-[var(--danger)]',
     'shadow-none',
     'hover:bg-[color:color-mix(in_srgb,var(--danger)_12%,transparent)]',
@@ -143,6 +145,7 @@ export const buttonVariants: Record<string, string> = {
   outline: [
     'border',
     'border-[var(--borderColor)]',
+    'bg-transparent',
     'text-[var(--color)]',
     'shadow-[0_3px_1px_rgba(0,0,0,0.3)]',
     'hover:bg-[var(--glassBgHover)]',
@@ -203,6 +206,8 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 
   link: [
+    'bg-transparent',
+    'border-transparent',
     'h-auto',
     'p-0',
     'shadow-none',
@@ -245,6 +250,8 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 
   listItem: [
+    'bg-transparent',
+    'border-transparent',
     'h-[44px]',
     'justify-start',
     'w-full',
@@ -355,9 +362,9 @@ export const gameButtonVariants: Record<string, string> = {
 export const buttonFlags = {
   fullWidth: 'w-full',
   isActive: [
-    'bg-[var(--primary)]',
-    'bg-[linear-gradient(160deg,var(--primaryGradientStart)_0%,var(--primaryGradientEnd)_100%)]',
-    'text-[var(--primaryText)]',
+    '!bg-[var(--primary)]',
+    '!bg-[linear-gradient(160deg,var(--primaryGradientStart)_0%,var(--primaryGradientEnd)_100%)]',
+    '!text-[var(--primaryText)]',
     '-translate-y-[3px]',
     'shadow-[0_6px_3px_var(--primary)]',
   ].join(' '),
@@ -369,8 +376,9 @@ export const buttonFlags = {
 
 /**
  * Join button class parts into a single string.
- * In e2e mode (`NEXT_PUBLIC_E2E=true`) press-state (`active:`) classes are
- * stripped so screenshots stay stable.
+ * In e2e mode (`NEXT_PUBLIC_E2E=true`) press-state (`active:`) classes and
+ * infinite button animations (`pulse`/`jump` keyframes) are stripped so
+ * elements stay stable for screenshots and Playwright actions.
  */
 export function compileButtonClasses(
   parts: Array<string | false | null | undefined>,
@@ -379,7 +387,7 @@ export function compileButtonClasses(
   if (process.env.NEXT_PUBLIC_E2E === 'true') {
     return joined
       .split(' ')
-      .filter((c) => !c.startsWith('active:'))
+      .filter((c) => !c.startsWith('active:') && !c.startsWith('animate-[btn-'))
       .join(' ');
   }
   return joined;

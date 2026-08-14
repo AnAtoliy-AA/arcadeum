@@ -2,7 +2,6 @@
 
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
-import { YStack, XStack, Text } from 'tamagui';
 import { Empty } from '../styles';
 
 export function GamesEmpty() {
@@ -10,11 +9,14 @@ export function GamesEmpty() {
 
   return (
     <Empty data-testid="games-empty">
-      <YStack gap="$4" alignItems="center" justifyContent="center">
-        <Text fontSize="$5" fontWeight="600" color="$color" textAlign="center">
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span
+          className="text-center text-[20px] font-semibold"
+          style={{ color: 'var(--color)' }}
+        >
           {t('games.lounge.emptyTitle')}
-        </Text>
-        <XStack gap="$3" flexWrap="wrap" justifyContent="center" marginTop="$2">
+        </span>
+        <div className="mt-2 flex flex-wrap justify-center gap-3">
           <QuickplayButton
             gameId="chess_v1"
             mode="ai"
@@ -33,8 +35,8 @@ export function GamesEmpty() {
             label="Play Sea Battle vs AI"
             buttonVariant="secondary"
           />
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </Empty>
   );
 }

@@ -75,23 +75,23 @@ const CollapsibleColumn = ({ title, children, defaultOpen = false }: Collapsible
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return (
-    <div className="flex min-w-[180px] flex-col gap-4 sm:min-w-full sm:gap-0 sm:border-b sm:border-[var(--glassBorder)] sm:pb-4">
+    <div className="flex min-w-[180px] flex-col gap-4 max-[800px]:min-w-full max-[800px]:gap-0 max-[800px]:border-b max-[800px]:border-[var(--glassBorder)] max-[800px]:pb-4">
       <div
         onClick={toggle}
-        className="flex cursor-pointer items-center justify-between py-4 sm:pointer-events-none sm:py-0 sm:pb-2"
+        className="flex cursor-pointer items-center justify-between py-4 max-[800px]:pointer-events-none max-[800px]:py-0 max-[800px]:pb-2"
       >
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}
         </Typography>
         <span
-          className="sm:hidden"
+          className="max-[800px]:hidden"
           style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
         >
           <ChevronDownIcon size={16} />
         </span>
       </div>
 
-      <div className={cx('flex flex-col gap-3 sm:flex sm:pb-6 sm:pt-2 sm:items-center', !isOpen && 'hidden sm:flex')}>
+      <div className={cx('flex flex-col gap-3 max-[800px]:flex max-[800px]:pb-6 max-[800px]:pt-2 max-[800px]:items-center', !isOpen && 'hidden max-[800px]:flex')}>
         {children}
       </div>
     </div>
@@ -177,8 +177,8 @@ export const Footer = memo(function Footer({
   return (
     <footer className="w-full">
       <div
-        className="relative w-full pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] sm:pb-8 sm:pt-10"
-        style={{ backgroundColor: 'var(--glass-background)' }}
+        className="relative w-full pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] max-[800px]:pb-8 max-[800px]:pt-10"
+        style={{ backgroundColor: 'var(--glassBg)' }}
       >
         {/* Top glow border */}
         <div
@@ -189,34 +189,34 @@ export const Footer = memo(function Footer({
           }}
         />
         <Container size="xl">
-          <div className="flex w-full flex-wrap justify-between gap-12 sm:flex-col sm:items-center sm:gap-0">
+          <div className="flex w-full flex-wrap justify-between gap-12 max-[800px]:flex-col max-[800px]:items-center max-[800px]:gap-0">
             {/* Brand column */}
-            <div className="flex min-w-[320px] max-w-[600px] flex-2 flex-col gap-6 sm:min-w-full sm:flex-grow-0 sm:flex-shrink-0 sm:items-center sm:pb-10 sm:mb-6 sm:border-b sm:border-[var(--glassBorder)]">
-              <div className="flex flex-col gap-4 sm:items-center">
+            <div className="flex min-w-[320px] max-w-[600px] grow-[2] flex-col gap-6 max-[800px]:min-w-full max-[800px]:flex-grow-0 max-[800px]:flex-shrink-0 max-[800px]:items-center max-[800px]:pb-10 max-[800px]:mb-6 max-[800px]:border-b max-[800px]:border-[var(--glassBorder)]">
+              <div className="flex flex-col gap-4 max-[800px]:items-center">
                 <Typography
                   variant="heading"
                   uiSize="3xl"
                   weight="800"
                   gradient="primary"
-                  className="sm:text-center"
+                  className="max-[800px]:text-center"
                 >
                   {appName.toUpperCase()}
                 </Typography>
                 <Typography
                   uiSize="md"
                   alpha="medium"
-                  className="sm:text-center"
+                  className="max-[800px]:text-center"
                   style={{ lineHeight: 24, maxWidth: 500 }}
                 >
                   {description}
                 </Typography>
               </div>
 
-              <div className="flex flex-col gap-4 sm:items-center">
+              <div className="flex flex-col gap-4 max-[800px]:items-center">
                 <Typography variant="label" uiSize="xs" weight="700" tracking="xl">
                   {followUsLabel.toUpperCase()}
                 </Typography>
-                <div className="flex flex-wrap gap-3 sm:justify-center">
+                <div className="flex flex-wrap gap-3 max-[800px]:justify-center">
                   {socialLinks.map((link) => (
                     <SocialIcon
                       key={link.id}
@@ -245,9 +245,9 @@ export const Footer = memo(function Footer({
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-[var(--borderColor)] pt-8 sm:mt-10 sm:flex-col sm:items-center">
-            <div className="flex flex-col gap-1 sm:items-center">
-              <Typography uiSize="sm" alpha="medium" className="sm:text-center">
+          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-[var(--borderColor)] pt-8 max-[800px]:mt-10 max-[800px]:flex-col max-[800px]:items-center">
+            <div className="flex flex-col gap-1 max-[800px]:items-center">
+              <Typography uiSize="sm" alpha="medium" className="max-[800px]:text-center">
                 {copyrightLabel || `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
               </Typography>
               <div className="flex items-center gap-2">
@@ -262,7 +262,7 @@ export const Footer = memo(function Footer({
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-6">
-              <Typography uiSize="xs" className="sm:text-center">
+              <Typography uiSize="xs" className="max-[800px]:text-center">
                 {craftedWithLoveLabel}
               </Typography>
             </div>

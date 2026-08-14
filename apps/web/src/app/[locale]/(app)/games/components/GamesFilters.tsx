@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { GamesSearch } from '@/features/games';
-import { XStack, Text } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -151,22 +150,19 @@ export function GamesFilters({
       </FilterGroup>
 
       <FilterGroup>
-        <XStack gap="$2" alignItems="center">
+        <div className="flex items-center gap-2">
           <FilterLabel>
             {t('games.lounge.filters.participationLabel')}
           </FilterLabel>
           {!isAuthenticated && (
-            <Text
-              fontSize="$2"
-              color="$color"
-              opacity={0.6}
-              fontStyle="italic"
-              marginBottom="$1"
+            <span
+              className="mb-1 text-[12px] italic opacity-60"
+              style={{ color: 'var(--color)' }}
             >
               ({t('games.create.loginRequired').toLowerCase()})
-            </Text>
+            </span>
           )}
-        </XStack>
+        </div>
         <FilterChips>
           {(
             Object.keys(PARTICIPATION_KEYS) as Array<

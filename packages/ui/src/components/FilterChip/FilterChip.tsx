@@ -36,9 +36,9 @@ export function FilterChip({
         'transition-[background-color,border-color,box-shadow] duration-150',
         'focus:outline-none',
         active
-          ? 'border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.12)] text-white'
-          : 'border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)]',
-        'hover:border-[rgba(255,255,255,0.16)] hover:bg-[rgba(255,255,255,0.1)]',
+          ? 'border-[color:color-mix(in_srgb,var(--color)_40%,transparent)] bg-[color:color-mix(in_srgb,var(--color)_12%,transparent)] text-[var(--color)]'
+          : 'border-[color:color-mix(in_srgb,var(--color)_14%,transparent)] bg-[color:color-mix(in_srgb,var(--color)_6%,transparent)] text-[var(--textSecondary)]',
+        'hover:border-[color:color-mix(in_srgb,var(--color)_20%,transparent)] hover:bg-[color:color-mix(in_srgb,var(--color)_10%,transparent)]',
         'active:scale-[0.97]',
         disabled && 'pointer-events-none cursor-not-allowed opacity-40',
       )}

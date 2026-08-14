@@ -138,7 +138,7 @@ export const Empty = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'col-span-full block rounded-[20px] border border-dashed border-[var(--borderColor)] bg-[var(--background)] px-8 py-16 text-center text-[1.1rem] text-[rgba(236,239,238,0.45)]',
+      'col-span-full block rounded-[20px] border border-dashed border-[var(--borderColor)] bg-[var(--background)] px-8 py-16 text-center text-[1.1rem] text-[var(--textSecondary)]',
       className,
     )}
     {...rest}
@@ -164,7 +164,7 @@ export const EndOfListText = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'col-span-full block p-8 text-center text-[0.95rem] text-[rgba(236,239,238,0.45)]',
+      'col-span-full block p-8 text-center text-[0.95rem] text-[var(--textSecondary)]',
       className,
     )}
     {...rest}

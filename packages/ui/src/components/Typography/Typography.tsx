@@ -2,6 +2,17 @@
 import { forwardRef } from 'react';
 import { cx } from '../../utils/cx';
 
+function normalizeLineHeight(
+  lineHeight: number | string,
+): React.CSSProperties['lineHeight'] {
+  // Tamagui treated numeric lineHeight as px (e.g. 24 → 24px). React would
+  // emit a unitless value (24 → 24em), ballooning the rendered line box.
+  if (typeof lineHeight === 'number') {
+    return lineHeight >= 10 ? `${lineHeight}px` : lineHeight;
+  }
+  return lineHeight;
+}
+
 export type TypographyProps = {
   children?: React.ReactNode;
   uiSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
@@ -147,7 +158,9 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       ...(flex !== undefined ? { flex } : null),
       ...(gap !== undefined ? { gap } : null),
       ...(textAlign ? { textAlign } : null),
-      ...(lineHeight !== undefined ? { lineHeight: lineHeight as React.CSSProperties['lineHeight'] } : null),
+      ...(lineHeight !== undefined
+        ? { lineHeight: normalizeLineHeight(lineHeight) }
+        : null),
       ...(textDecorationLine ? { textDecorationLine: textDecorationLine as React.CSSProperties['textDecorationLine'] } : null),
       ...(width !== undefined ? { width } : null),
       ...(whiteSpace ? { whiteSpace: whiteSpace as React.CSSProperties['whiteSpace'] } : null),

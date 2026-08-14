@@ -191,7 +191,7 @@ export const NavMobileLink = ({
   <LinkButton
     className={[
       'justify-start px-4 py-3 hover:bg-[rgba(255,255,255,0.05)]',
-      isActive && 'bg-[rgba(255,255,255,0.08)] text-[var(--primary)]',
+      isActive && '!bg-[rgba(255,255,255,0.08)] !text-[var(--primary)]',
       className,
     ]
       .filter(Boolean)

@@ -70,7 +70,7 @@ type CollapsibleColumnProps = {
   defaultOpen?: boolean;
 };
 
-const CollapsibleColumn = ({ title, children, defaultOpen = false }: CollapsibleColumnProps) => {
+const CollapsibleColumn = ({ title, children, defaultOpen = true }: CollapsibleColumnProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 

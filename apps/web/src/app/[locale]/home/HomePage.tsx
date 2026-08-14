@@ -2,6 +2,7 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import { NoscriptFallback } from './components/NoscriptFallback';
 import { ServerGamesNav } from './components/ServerGamesNav';
+import type { Locale } from '@/shared/i18n';
 
 import dynamic from 'next/dynamic';
 
@@ -27,12 +28,12 @@ const InstallAppCta = dynamic(() =>
   import('@/widgets/install-app').then((m) => m.InstallAppCta),
 );
 
-export default function HomePage() {
+export default function HomePage({ locale }: { locale: Locale }) {
   return (
     <PageLayout data-testid="page-layout">
       {/* Server-rendered navigation for AI agents */}
       <ServerGamesNav />
-      <HomeHero />
+      <HomeHero locale={locale} />
       {/* Compact daily-reward CTA. Self-suppresses unless the user can claim
           right now, keeping the marketing-heavy home page uncluttered. */}
       <DailyRewardChip />

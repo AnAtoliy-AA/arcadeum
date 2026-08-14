@@ -4,38 +4,43 @@ import { LinkButton, SupportIcon } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { getHomeTranslations } from '@/shared/i18n/server';
+import type { Locale } from '@/shared/i18n';
 import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
 import { HeroPlayVsAiButton } from './HeroPlayVsAiButton';
+import {
+  HERO_VARIANT_BG_IMAGES,
+  HERO_CARD_FAN_OFFSET,
+} from '../data/heroVariants';
 
 const HERO_CARDS = [
   {
     id: 'fantasy',
     nameKey: 'games.critical_v1.variants.fantasy.name',
-    bgImage: '/images/variants/fantasy_bg.webp',
+    bgImage: HERO_VARIANT_BG_IMAGES[0],
   },
   {
     id: 'galaxy',
     nameKey: 'games.critical_v1.variants.galaxy.name',
-    bgImage: '/images/variants/galaxy_bg.webp',
+    bgImage: HERO_VARIANT_BG_IMAGES[1],
   },
   {
     id: 'steampunk',
     nameKey: 'games.critical_v1.variants.steampunk.name',
-    bgImage: '/images/variants/steampunk_bg.webp',
+    bgImage: HERO_VARIANT_BG_IMAGES[2],
   },
 ] as const;
 
-const FAN_OFFSET = 140;
+const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
 
 const HERO_CARD_TRANSITION =
   'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), opacity 0.6s ease-out, box-shadow 0.3s ease';
 
-export default async function HomeHero() {
-  const messages = await getHomeTranslations();
+export default async function HomeHero({ locale }: { locale: Locale }) {
+  const messages = await getHomeTranslations(locale);
   const homeCopy = messages.home ?? {};
   const gamesCopy = messages.games ?? {};
-  const routes = buildRoutes('en');
+  const routes = buildRoutes(locale);
 
   const kicker = homeCopy.kicker ?? 'Free online board games';
   const tagline =
@@ -67,8 +72,7 @@ export default async function HomeHero() {
 
           <h1
             id="hero-heading"
-            className="hero-title-shimmer m-0 block p-0 text-center text-[140px] font-black leading-[1.1] tracking-[-4px] text-[#042f2e] [-webkit-text-fill-color:#042f2e] text-shadow-hero3d [perspective:1000px] [transform-style:preserve-3d] animate-hero-float-3d transition-transform duration-200 [transition-timing-function:cubic-bezier(0.175,0.885,0.32,1.275)] max-[1150px]:text-[clamp(48px,15vw,84px)] max-[1150px]:leading-none max-[1150px]:tracking-[-2px]"
-            data-text="Arcadeum"
+            className="relative m-0 block p-0 text-center text-[140px] font-black leading-[1.1] tracking-[-4px] text-[#042f2e] [-webkit-text-fill-color:#042f2e] text-shadow-hero3d [perspective:1000px] [transform-style:preserve-3d] animate-hero-float-3d transition-transform duration-200 [transition-timing-function:cubic-bezier(0.175,0.885,0.32,1.275)] max-[1150px]:text-[clamp(48px,15vw,84px)] max-[1150px]:leading-none max-[1150px]:tracking-[-2px]"
           >
             Arcadeum
             <span className="hero-title-sub mr-[0.05em] block text-right text-[0.35em] font-black uppercase leading-none tracking-[0.12em] text-[#ccfbf1] [-webkit-text-fill-color:#ccfbf1] text-shadow-hero3dSub animate-sub-hue-shift [will-change:filter]">

@@ -32,7 +32,7 @@ export default function InstallAppCta() {
         <p className="m-0 max-w-[500px] text-center text-[18px] leading-5 text-color opacity-70">
           {description}
         </p>
-        <div style={{ marginTop: 'var(--t-space-4)', width: '100%' }}>
+        <div className="mt-4 w-full">
           <StaticDownloadButtons
             onInstall={onInstall}
             onShowInstructions={onShowInstructions}

@@ -11,6 +11,9 @@ import {
 } from '@arcadeum/ui';
 import { slides } from '../data/slides';
 
+const NAV_BUTTON_WRAPPER =
+  'pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100';
+
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -190,10 +193,7 @@ export function WebPresentation() {
         </div>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <div
-          className="pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100"
-          style={{ left: 16 }}
-        >
+        <div className={NAV_BUTTON_WRAPPER} style={{ left: 16 }}>
           <IconButton
             variant="icon glass"
             size="md"
@@ -204,10 +204,7 @@ export function WebPresentation() {
           </IconButton>
         </div>
 
-        <div
-          className="pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100"
-          style={{ right: 16 }}
-        >
+        <div className={NAV_BUTTON_WRAPPER} style={{ right: 16 }}>
           <IconButton
             variant="icon glass"
             size="md"

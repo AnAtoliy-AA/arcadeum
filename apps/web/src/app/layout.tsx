@@ -16,10 +16,9 @@ import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
 import { LazySessionRoleSync } from '@/shared/ui/LazySessionRoleSync';
 
-const geistSans = {
-  variable: '--font-geist-sans',
-  className: 'font-geist-variable',
-};
+// Self-hosted Geist variable font — the .font-geist-variable class (fonts.css)
+// sets the font stack and exposes --font-geist-sans for SCSS consumers.
+const FONT_CLASS = 'font-geist-variable';
 
 // NOTE: openGraph.locale is set per-locale in [locale]/layout.tsx
 // generateMetadata — no need to duplicate it here.
@@ -81,7 +80,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const fontClassName = `${geistSans.variable} ${geistSans.className}`;
   const cookieStore = await cookies();
   const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
   const themePreference =
@@ -167,7 +165,7 @@ export default async function RootLayout({
         )}
         <JsonLd data={jsonLd} />
       </head>
-      <body className={fontClassName}>
+      <body className={FONT_CLASS}>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

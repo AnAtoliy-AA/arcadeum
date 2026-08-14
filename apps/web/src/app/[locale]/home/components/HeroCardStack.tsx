@@ -11,14 +11,14 @@ import React, {
   type CSSProperties,
 } from 'react';
 import { useHeroBackgroundStore } from '../store/heroBackgroundStore';
+import {
+  HERO_CARD_FAN_OFFSET,
+  HERO_VARIANT_BG_IMAGES,
+} from '../data/heroVariants';
 
-const FAN_OFFSET = 140;
+const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
 
-const HERO_BG_IMAGES = [
-  '/images/variants/fantasy_bg.webp',
-  '/images/variants/galaxy_bg.webp',
-  '/images/variants/steampunk_bg.webp',
-];
+const HERO_BG_IMAGES = HERO_VARIANT_BG_IMAGES;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();

@@ -90,11 +90,7 @@ export function HomeGameDetailsModal({
             </span>
           </div>
           <div className="flex flex-1 flex-col gap-2">
-            <h4
-              role="heading"
-              aria-level={4}
-              className="m-0 text-[20px] font-bold leading-6 text-color"
-            >
+            <h4 className="m-0 text-[20px] font-bold leading-6 text-color">
               {rule.name}
             </h4>
             <p className="m-0 text-[16px] leading-5 text-color opacity-70">

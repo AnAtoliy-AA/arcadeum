@@ -833,7 +833,7 @@ async function executeStep(page, step) {
     case 'navigate': {
       const url = `${CONFIG.baseUrl}${step.url}`;
       log('info', `Step: Navigate to ${url}`);
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await waitForContent(page);
       if (step.wait) await sleep(step.wait);
       break;

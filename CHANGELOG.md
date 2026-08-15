@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.21] - 2026-08-15
+
+### Fixed
+- repair layouts and clicks broken by CSS-migration quirks
+
+### Refactored
+- remove Tamagui runtime shims and migration leftovers
+- remove Tamagui migration leftovers and fix CI build
+- drop Tamagui migration leftovers after Tailwind switch
+- fix theme resolution and drop migration leftovers
+- clean up Tamagui migration leftovers
+- remove Tamagui legacy layers after Tailwind migration
+- migrate all remaining Tamagui components to Tailwind
+- migrate widgets/ from Tamagui to Tailwind classes
+- migrate features/ from Tamagui to Tailwind classes
+- migrate app shell from Tamagui to Tailwind classes
+
+### Documentation
+- replace all Tamagui references with Tailwind guidance
+- mark tamagui-to-tailwind plan as complete
+
+
 ## [1.25.20] - 2026-08-15
 
 ### Added

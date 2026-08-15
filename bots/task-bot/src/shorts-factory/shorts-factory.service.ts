@@ -141,13 +141,15 @@ export class ShortsFactoryService {
   }): Promise<void> {
     if (!this.adminChatId) return;
 
-    const emoji = result.success ? '✅' : '❌';
+    const platformList = result.platforms?.length
+      ? '\n\n<b>Published to:</b>\n' +
+        result.platforms.map((p) => `  ✅ ${p}`).join('\n')
+      : '';
+
     const text =
       `${emoji} <b>Post ${result.success ? 'Succeeded' : 'Failed'}</b>\n\n` +
       `${result.message}` +
-      (result.platforms?.length
-        ? `\n\n<b>Platforms:</b> ${result.platforms.join(', ')}`
-        : '');
+      platformList;
 
     try {
       const bot = this.telegram.getBot();

@@ -1128,13 +1128,13 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   const trackVolume = getTrackVolume(audioTrack);
   log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
-  // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
+  // Calculate trim duration (cap at 13 seconds for optimal 15s total duration with end card)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
   const remainingDuration = Math.max(
-    2,
+    3,
     (recordedDuration - startOffsetMs) / 1000,
   );
-  const trimDuration = Math.min(remainingDuration, 8);
+  const trimDuration = Math.min(remainingDuration, 13);
   const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
   const endCardDuration = 2;
 

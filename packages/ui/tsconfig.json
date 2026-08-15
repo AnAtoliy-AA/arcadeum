@@ -14,11 +14,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-native",
     "types": ["@testing-library/jest-dom", "vitest/globals"],
-    "paths": {
-      "tamagui": ["../../node_modules/tamagui"],
-      "@tamagui/core": ["../../node_modules/@tamagui/core"],
-      "@tamagui/web": ["../../node_modules/@tamagui/web"]
-    }
+    "paths": {}
   },
   "include": ["src/**/*"]
 }
